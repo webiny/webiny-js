@@ -50,10 +50,11 @@ export default new ContextPlugin<AdminUsersContext>(async context => {
             if (!permission) {
                 throw new NotAuthorizedError();
             }
+            const tenant = context.tenancy.getCurrentTenant();
 
             let group: Group = null;
             try {
-                group = await storageOperations.get({
+                group = await storageOperations.get(tenant, {
                     slug
                 });
             } catch (ex) {
@@ -76,9 +77,9 @@ export default new ContextPlugin<AdminUsersContext>(async context => {
             if (!permission) {
                 throw new NotAuthorizedError();
             }
-
+            const tenant = context.tenancy.getCurrentTenant();
             try {
-                return await storageOperations.list({
+                return await storageOperations.list(tenant, {
                     sort: ["createdOn_ASC"]
                 });
             } catch (ex) {
@@ -101,7 +102,7 @@ export default new ContextPlugin<AdminUsersContext>(async context => {
 
             await new CreateDataModel().populate({ ...input, tenant: tenant.id }).validate();
 
-            const existing = await storageOperations.get({
+            const existing = await storageOperations.get(tenant, {
                 slug: input.slug
             });
             if (existing) {
@@ -126,7 +127,7 @@ export default new ContextPlugin<AdminUsersContext>(async context => {
             };
 
             try {
-                return await storageOperations.create({
+                return await storageOperations.create(tenant, {
                     group
                 });
             } catch (ex) {
@@ -145,11 +146,12 @@ export default new ContextPlugin<AdminUsersContext>(async context => {
             if (!permission) {
                 throw new NotAuthorizedError();
             }
+            const tenant = context.tenancy.getCurrentTenant();
 
             const model = await new UpdateDataModel().populate(input);
             await model.validate();
 
-            const original = await storageOperations.get({
+            const original = await storageOperations.get(tenant, {
                 slug
             });
             if (!original) {
@@ -165,12 +167,12 @@ export default new ContextPlugin<AdminUsersContext>(async context => {
                 ...data
             };
             try {
-                const result = await storageOperations.update({
+                const result = await storageOperations.update(tenant, {
                     original,
                     group
                 });
                 if (permissionsChanged) {
-                    await storageOperations.updateUserLinks({
+                    await storageOperations.updateUserLinks(tenant, {
                         group: result
                     });
                 }
@@ -191,15 +193,16 @@ export default new ContextPlugin<AdminUsersContext>(async context => {
             if (!permission) {
                 throw new NotAuthorizedError();
             }
+            const tenant = context.tenancy.getCurrentTenant();
 
-            const group = await storageOperations.get({
+            const group = await storageOperations.get(tenant, {
                 slug
             });
             if (!group) {
                 throw new NotFoundError(`Group "${slug}" was not found!`);
             }
             try {
-                await storageOperations.create({
+                await storageOperations.delete(tenant, {
                     group
                 });
                 return true;
