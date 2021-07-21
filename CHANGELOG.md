@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.11.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.11.0-beta.1...v5.11.0-beta.2) (2021-07-21)
+
+
+### Bug Fixes
+
+* **app-form-builder:** sort out mismatch between plugin types and their usage ([8722694](https://github.com/webiny/webiny-js/commit/87226947a0ded6b25b4091819477e6ce97f67d50))
+* **cli:** add upgrade script for website app ([c8e6465](https://github.com/webiny/webiny-js/commit/c8e646593acb073af026cbad98b4411f2091cd66))
+* **cwp-template-aws:** enable form field validators ([38342bc](https://github.com/webiny/webiny-js/commit/38342bc77467a3a48d4b5cda22a8b9099d795bfb))
+
+
+
+
+
 # [5.11.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.11.0-beta.0...v5.11.0-beta.1) (2021-07-21)
 
 
