@@ -1,6 +1,6 @@
 import React, { Fragment } from "react";
-import { Element } from "./elements/Element";
 import { Cell, Grid, GridInner } from "@webiny/ui/Grid";
+import { Element } from "./Element";
 
 interface LayoutItem {
     element: string;
@@ -74,7 +74,6 @@ export class ViewLayout {
             for (let j = 0; j < row.length; j++) {
                 if (row[j].element === lookFor.id) {
                     const span = 12 / (row.length + 1);
-                    console.log(lookFor.id, element.id, row);
                     row.splice(j + 1, 0, { element: element.id, span });
                     // Update spans on all items
                     row.forEach(item => (item.span = span));
@@ -113,7 +112,7 @@ export class ViewLayout {
         return this;
     }
 
-    render(props: any, depth = 0) {
+    render(props, depth = 0) {
         if (!this._grid) {
             return (
                 <Fragment>
@@ -151,7 +150,7 @@ export class ViewLayout {
                             return (
                                 <Cell key={item.element} span={item.span}>
                                     <ElementID key={item.element}>
-                                        {element.render(props, depth + 1)}
+                                        {element.render(props)}
                                     </ElementID>
                                 </Cell>
                             );

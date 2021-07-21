@@ -1,31 +1,32 @@
 import React, { Fragment } from "react";
-import { Form, FormOnSubmit } from "@webiny/form";
-import { Element, ElementConfig } from "~/views/Users/elements/Element";
+import { Form, FormOnSubmit, FormRenderPropParams } from "@webiny/form";
+import { Element, ElementConfig } from "@webiny/ui-composer/Element";
 
-interface Props<TViewProps = Record<string, any>> {
-    viewProps: TViewProps;
-}
-
-interface FormElementConfig<TViewProps> extends ElementConfig {
-    onSubmit(props: Props<TViewProps>): FormOnSubmit;
-    getData(props: Props<TViewProps>): Record<string, any>;
-    getInvalidFields?(props: Props<TViewProps>): Record<string, any>;
-    isDisabled?(props: Props<TViewProps>): boolean;
+interface FormElementConfig extends ElementConfig {
+    onSubmit: FormOnSubmit;
+    getData(): Record<string, any>;
+    getInvalidFields?(): Record<string, any>;
+    isDisabled?(): boolean;
     onChange?: FormOnSubmit;
     onInvalid?: () => void;
     submitOnEnter?: boolean;
     validateOnFirstSubmit?: boolean;
 }
 
-export class FormElement<TViewProps> extends Element<FormElementConfig<TViewProps>> {
+export interface FormElementRenderProps {
+    formProps: FormRenderPropParams;
+}
+
+export class FormElement extends Element<FormElementConfig> {
     constructor(id, config) {
         super(id, config);
 
         this.toggleGrid(false);
     }
-    render(props: Props<TViewProps>) {
+
+    render(props) {
         return (
-            <Form onSubmit={this.config.onSubmit(props)} data={this.config.getData(props)}>
+            <Form onSubmit={this.config.onSubmit} data={this.config.getData()}>
                 {formProps => <Fragment>{super.render({ ...props, formProps })}</Fragment>}
             </Form>
         );

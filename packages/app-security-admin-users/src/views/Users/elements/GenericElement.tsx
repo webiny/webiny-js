@@ -1,11 +1,11 @@
 import React from "react";
-import { Element } from "~/views/Users/elements/Element";
+import { Element } from "@webiny/ui-composer/Element";
 
-interface Renderer<TProps> {
-    (props: TProps): React.ReactNode;
+interface Renderer<TRenderProps> {
+    (props: TRenderProps): React.ReactNode;
 }
 
-export class GenericElement<TRenderProps> extends Element {
+export class GenericElement<TRenderProps = any> extends Element {
     private _render: Renderer<TRenderProps>;
 
     constructor(id, render: Renderer<TRenderProps>) {

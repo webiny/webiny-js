@@ -4,7 +4,7 @@ import GroupAutocomplete from "~/views/Components/GroupAutocomplete";
 import { InputElement } from "~/views/Users/elements/InputElement";
 
 export class GroupAutocompleteElement extends InputElement {
-    render({ formProps }: any): React.ReactElement<any> {
+    render({ formProps }: any): React.ReactElement {
         const { Bind } = formProps as FormRenderPropParams;
 
         return (

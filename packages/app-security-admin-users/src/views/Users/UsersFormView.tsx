@@ -1,8 +1,8 @@
 import React from "react";
-import { View } from "./View";
+import { View } from "@webiny/ui-composer/View";
 import { plugins } from "@webiny/plugins";
 import { Form } from "@webiny/form";
-import { UsersFormViewPlugin } from "~/views/Users/UsersFormViewPlugin";
+import { UsersFormViewPlugin } from "./UsersFormViewPlugin";
 import {
     SimpleFormElement,
     SimpleFormElementRenderProps
@@ -14,8 +14,7 @@ import styled from "@emotion/styled";
 import { AccordionElement, AccordionItemElement } from "~/views/Users/elements/AccordionElement";
 import { ReactComponent as SecurityIcon } from "../../assets/icons/security-24px.svg";
 import { ReactComponent as SettingsIcon } from "~/assets/icons/settings-24px.svg";
-import { PanelElement } from "~/views/Users/elements/PanelElement";
-import { useUserForm } from "./hooks/useUserForm";
+import { UseUserForm } from "./hooks/useUserForm";
 import AvatarImage from "../Components/AvatarImage";
 import { GenericElement } from "~/views/Users/elements/GenericElement";
 
@@ -27,9 +26,7 @@ const AvatarWrapper = styled("div")({
     margin: "24px 100px 32px"
 });
 
-type ViewProps = ReturnType<typeof useUserForm>;
-
-export class UsersFormView extends View {
+export class UsersFormView extends View<UseUserForm> {
     constructor() {
         super("users-form-view");
 
@@ -42,10 +39,9 @@ export class UsersFormView extends View {
             .forEach(plugin => plugin.apply(this));
     }
 
-    submit(viewProps: any, data: FormData, form?: Form) {
-        console.log("UsersFormView.submit", JSON.stringify(data, null, 2));
+    submit(data: FormData, form?: Form) {
         this.dispatchEvent("onSubmit", { data, form });
-        viewProps.onSubmit(data);
+        this.hook.onSubmit(data);
     }
 
     onSubmit(cb: (data: any, form: Form) => void) {
@@ -54,41 +50,38 @@ export class UsersFormView extends View {
 
     private addElements() {
         const simpleForm = this.addElement(
-            new SimpleFormElement<ViewProps>("users-form", {
-                isLoading(props) {
-                    return props.viewProps.loading;
+            new SimpleFormElement("users-form", {
+                isLoading: () => {
+                    return this.hook.loading;
                 },
-                onSubmit: ({ viewProps }) => (data: FormData, form) => {
-                    this.submit(viewProps, data, form);
+                onSubmit: (data: FormData, form: Form) => {
+                    this.submit(data, form);
                 },
-                getTitle({ viewProps }) {
-                    return viewProps.fullName || "New User";
+                getTitle: () => {
+                    return this.hook.fullName || "New User";
                 },
-                getFormData({ viewProps }) {
-                    return viewProps.user;
+                getFormData: () => {
+                    return this.hook.user;
                 },
-                onCancel({ viewProps }) {
-                    viewProps.cancelEditing();
+                onCancel: () => {
+                    this.hook.cancelEditing();
                 }
             })
-        ) as SimpleFormElement<ViewProps>;
+        ) as SimpleFormElement;
 
-        const avatar = new GenericElement<SimpleFormElementRenderProps<ViewProps>>(
-            "avatar",
-            props => {
-                const { Bind } = props.formProps;
+        const avatar = new GenericElement<SimpleFormElementRenderProps>("avatar", props => {
+            const { Bind } = props.formProps;
 
-                return (
-                    <AvatarWrapper>
-                        <Bind name="avatar">
-                            <AvatarImage round />
-                        </Bind>
-                    </AvatarWrapper>
-                );
-            }
-        );
+            return (
+                <AvatarWrapper>
+                    <Bind name="avatar">
+                        <AvatarImage round />
+                    </Bind>
+                </AvatarWrapper>
+            );
+        });
 
-        avatar.moveAbove(simpleForm.getElement("container"));
+        avatar.moveAbove(simpleForm.getFormContainer());
 
         const accordion = new AccordionElement("accordion", {
             items: [
@@ -111,7 +104,7 @@ export class UsersFormView extends View {
         simpleForm.getFormContentElement().toggleGrid(false);
         simpleForm.getFormContentElement().addElement(accordion);
 
-        const bioAccordion = accordion.getElement<AccordionItemElement>("bio");
+        const bioAccordion = accordion.getAccordionItemElement("bio");
         bioAccordion.addElement(
             new InputElement("firstName", {
                 label: "First Name",
@@ -130,13 +123,13 @@ export class UsersFormView extends View {
                 label: "Email",
                 validators: validation.create("required,email"),
                 beforeChange: (value: string, cb) => cb(value.toLowerCase()),
-                shouldRender({ formProps }) {
-                    return formProps.data.firstName === "Pavel";
+                shouldRender(props) {
+                    return props.formProps.data.firstName === "Pavel";
                 }
             })
         );
 
-        bioAccordion.getElement<InputElement>("login").setDisabled(true);
+        bioAccordion.getElement<InputElement>("login").setIsDisabled(true);
 
         const groupAccordion = accordion.getElement<AccordionItemElement>("groups");
         groupAccordion.addElement(

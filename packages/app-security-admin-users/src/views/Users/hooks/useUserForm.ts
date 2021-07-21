@@ -14,6 +14,8 @@ const pickDataForUpdateOperation = data => {
     return pick(data, ["password", "firstName", "lastName", "avatar", "group"]);
 };
 
+export type UseUserForm = ReturnType<typeof useUserForm>;
+
 export function useUserForm() {
     const { location, history } = useRouter();
     const { showSnackbar } = useSnackbar();
@@ -21,7 +23,7 @@ export function useUserForm() {
     const query = new URLSearchParams(location.search);
     const newUser = query.get("new") === "true";
     const login = query.get("login");
-    
+
     const { data, loading: userLoading } = useQuery(READ_USER, {
         variables: { login },
         skip: !login,
@@ -87,7 +89,7 @@ export function useUserForm() {
     const user = userLoading ? {} : data ? data.security.user.data : {};
 
     const showEmptyView = !newUser && !userLoading && isEmpty(user);
-    
+
     return {
         login,
         loading,

@@ -1,10 +1,13 @@
 import React, { Fragment } from "react";
-import { FormRenderPropParams } from "@webiny/form";
-import { InputElement } from "./InputElement";
+import { InputElement, InputElementRenderProps } from "./InputElement";
 
 export class PasswordElement extends InputElement {
-    render({ formProps }: any): React.ReactElement<any> {
-        const { Bind } = formProps as FormRenderPropParams;
+    render(props: InputElementRenderProps): React.ReactElement {
+        if (!props.formProps) {
+            throw Error(`PasswordElement must be placed inside of a FormElement.`);
+        }
+
+        const { Bind } = props.formProps;
 
         return (
             <Bind name={this.id}>
@@ -13,7 +16,7 @@ export class PasswordElement extends InputElement {
                         <label>{this.config.label}</label>
                         <input
                             type="password"
-                            disabled={this.disabled}
+                            disabled={this.isDisabled(props)}
                             value={value || ""}
                             onChange={e => onChange(e.target.value)}
                         />

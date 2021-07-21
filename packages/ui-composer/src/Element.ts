@@ -1,21 +1,22 @@
 import React from "react";
-import { ViewLayout } from "~/views/Users/ViewLayout";
+import { ViewLayout } from "./ViewLayout";
+import { View } from "./View";
 
-export interface ElementConfig {
-    shouldRender?(props: any): boolean;
+export interface ElementConfig<TProps = any> {
+    shouldRender?(props: TProps): boolean;
 }
 
-export abstract class Element<T extends ElementConfig = ElementConfig> {
-    private _config: T;
+export abstract class Element<TConfig extends ElementConfig = ElementConfig> {
+    private _config: TConfig;
     private _elements = new Map();
-    private _layout;
+    private _layout: ViewLayout;
     private _wrappers = [];
     private _id: string;
     private _parent: Element;
 
-    constructor(id: string, config?: T) {
+    constructor(id: string, config?: TConfig) {
         this._id = id;
-        this._config = config || ({} as T);
+        this._config = config || ({} as TConfig);
         this._layout = new ViewLayout(elementId => this.getElement(elementId));
     }
 
@@ -23,8 +24,19 @@ export abstract class Element<T extends ElementConfig = ElementConfig> {
         return this._id;
     }
 
-    get config(): T {
+    get config(): TConfig {
         return this._config;
+    }
+
+    get depth() {
+        let depth = 0;
+        let parent = this.getParent();
+        while (parent && !(parent instanceof View)) {
+            depth++;
+            parent = parent.getParent();
+        }
+
+        return depth;
     }
 
     setParent(parent: Element) {
@@ -35,7 +47,7 @@ export abstract class Element<T extends ElementConfig = ElementConfig> {
         return this._parent;
     }
 
-    addElement(element: Element<any>): Element<any> {
+    addElement(element: Element): Element {
         element.setParent(this);
         this._elements.set(element.id, element);
         this._layout.insertElementAtTheBottom(element);
@@ -46,7 +58,7 @@ export abstract class Element<T extends ElementConfig = ElementConfig> {
         this._layout.setGrid(flag);
     }
 
-    getElement<T extends Element = Element>(id: string): T {
+    getElement<T extends Element>(id: string): T {
         const ownElement = this._elements.get(id);
         if (ownElement) {
             return ownElement;
@@ -137,12 +149,8 @@ export abstract class Element<T extends ElementConfig = ElementConfig> {
         this._layout.removeElement(element);
     }
 
-    render(props: any, depth?: number): React.ReactNode {
-        const content = this._layout.render(
-            props,
-            (elementId: string) => this.getElement(elementId),
-            typeof depth === "undefined" ? 0 : depth
-        );
+    render(props?: any): React.ReactNode {
+        const content = this._layout.render(props, this.depth);
 
         return this._wrappers.reduce((el, Component) => {
             return React.createElement(Component, {}, el);
