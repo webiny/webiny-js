@@ -109,7 +109,11 @@ const Field = props => {
                     </Typography>
                 </Info>
                 <Actions>
-                    <IconButton icon={<EditIcon />} onClick={() => onEdit(field)} />
+                    <IconButton
+                        data-testid={"cms.editor.edit-field"}
+                        icon={<EditIcon />}
+                        onClick={() => onEdit(field)}
+                    />
                     <Menu
                         className={menuStyles}
                         handle={<IconButton icon={<MoreVerticalIcon />} />}

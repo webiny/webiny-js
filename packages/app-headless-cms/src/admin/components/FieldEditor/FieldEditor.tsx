@@ -70,7 +70,7 @@ const Editor = () => {
                                 onDrop={item => onFieldDrop(item, { row: index, index: null })}
                             />
                             {/* Row start - includes field drop zones and fields */}
-                            <Row>
+                            <Row data-testid={"cms.editor.field-row"}>
                                 {row.map((field, fieldIndex) => (
                                     <Draggable
                                         key={field.fieldId}

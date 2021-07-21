@@ -68,22 +68,15 @@ jobs:
       - name: Run unit tests
         run: yarn test:unit
 
-      # 5. Deploy to "dev" environment (we skip deployment if the WEBINY_PULUMI_BACKEND is missing).
-      # We want to have a single central storage of our cloud infrastructure state files, for example
-      # - an Amazon S3 bucket or Pulumi Service.
-      # https://www.webiny.com/docs/key-topics/ci-cd/cloud-infrastructure-state-files
       - name: Deploy
-        if: env.WEBINY_PULUMI_BACKEND
         run: yarn webiny deploy --env dev
 
       # 6. Run integration tests.
       - name: Run integration tests
-        if: env.WEBINY_PULUMI_BACKEND
         run: yarn test:integration
 
       # 7. Run end-to-end tests.
       - name: Run end-to-end tests
-        if: env.WEBINY_PULUMI_BACKEND
         run: yarn test:e2e
 
       # Add additional steps if needed. For example, if you have additional E2E

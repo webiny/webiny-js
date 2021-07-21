@@ -66,7 +66,7 @@ class Graphql {
                 runtime: "nodejs12.x",
                 handler: "handler.handler",
                 role: this.role.arn,
-                timeout: 60,
+                timeout: 30,
                 memorySize: 512,
                 code: new pulumi.asset.AssetArchive({
                     ".": new pulumi.asset.FileArchive("../code/graphql/build")

@@ -60,13 +60,6 @@ jobs:
     name: Build and run integration and E2E tests
     needs: build-test-static-unit
     runs-on: ubuntu-latest
-
-    # We skip this job if the WEBINY_PULUMI_BACKEND environment variable is missing.
-    # This environment variable must exist because it determines where our cloud infrastructure
-    # state files will be stored.
-    # https://www.webiny.com/docs/key-topics/ci-cd/cloud-infrastructure-state-files
-    if: secrets.WEBINY_PULUMI_BACKEND
-
     environment: pr
     env:
       NODE_OPTIONS: --max_old_space_size=4096

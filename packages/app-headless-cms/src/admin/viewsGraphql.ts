@@ -11,6 +11,7 @@ const BASE_CONTENT_MODEL_FIELDS = `
     modelId
     name
     savedOn
+    plugin
     fields {
         id
     }
@@ -33,9 +34,11 @@ export const LIST_MENU_CONTENT_GROUPS_MODELS = gql`
                 id
                 name
                 icon
+                plugin
                 contentModels {
                     name
                     modelId
+                    plugin
                     createdBy {
                         id
                         displayName

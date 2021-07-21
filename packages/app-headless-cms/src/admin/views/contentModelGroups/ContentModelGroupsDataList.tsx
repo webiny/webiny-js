@@ -28,6 +28,7 @@ import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18
 import { ReactComponent as FilterIcon } from "@webiny/app-admin/assets/icons/filter-24px.svg";
 import { serializeSorters, deserializeSorters } from "../utils";
 import usePermission from "../../hooks/usePermission";
+import { Tooltip } from "@webiny/ui/Tooltip";
 
 const t = i18n.ns("app-headless-cms/admin/content-model-groups/data-list");
 
@@ -215,10 +216,28 @@ const ContentModelGroupsDataList = ({ canCreate }: ContentModelGroupsDataListPro
                             {canDelete(item, "cms.contentModelGroup") && (
                                 <ListItemMeta>
                                     <ListActions>
-                                        <DeleteIcon
-                                            onClick={() => deleteItem(item)}
-                                            data-testid={"cms.contentModelGroup.list-item.delete"}
-                                        />
+                                        {item.plugin ? (
+                                            <Tooltip
+                                                content={
+                                                    "Content model group is registered via a plugin."
+                                                }
+                                                placement={"bottom"}
+                                            >
+                                                <DeleteIcon
+                                                    disabled
+                                                    data-testid={
+                                                        "cms.contentModelGroup.list-item.delete"
+                                                    }
+                                                />
+                                            </Tooltip>
+                                        ) : (
+                                            <DeleteIcon
+                                                onClick={() => deleteItem(item)}
+                                                data-testid={
+                                                    "cms.contentModelGroup.list-item.delete"
+                                                }
+                                            />
+                                        )}
                                     </ListActions>
                                 </ListItemMeta>
                             )}

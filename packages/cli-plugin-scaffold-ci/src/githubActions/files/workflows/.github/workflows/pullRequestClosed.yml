@@ -3,6 +3,7 @@ name: Pull Requests
 on:
   pull_request:
     branches: [dev, staging, prod]
+    types: [closed]
 
 jobs:
   # This first step ensures we don't run the workflow if the repository is empty.
@@ -19,17 +20,10 @@ jobs:
         id: webiny-project-js
         run: echo "::set-output name=ready::${{ hashFiles('webiny.project.ts') != '' }}"
 
-  build-test-static-unit:
-    name: Build and run static and unit tests
+  destroy-project:
+    name: Destroy project deployed into a short-lived environment
     needs: repository-check
     runs-on: ubuntu-latest
-
-    # We skip this job if the WEBINY_PULUMI_BACKEND environment variable is missing.
-    # This environment variable must exist because it determines where our cloud infrastructure
-    # state files will be stored.
-    # https://www.webiny.com/docs/key-topics/ci-cd/cloud-infrastructure-state-files
-    if: secrets.WEBINY_PULUMI_BACKEND
-
     environment: pr
     env:
       NODE_OPTIONS: --max_old_space_size=4096
@@ -38,7 +32,6 @@ jobs:
       PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
       PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
       WEBINY_PULUMI_BACKEND: ${{ secrets.WEBINY_PULUMI_BACKEND }}
-
     steps:
       - uses: actions/setup-node@v2
         with:
