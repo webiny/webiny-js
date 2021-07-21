@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.11.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.11.0-beta.0...v5.11.0-beta.1) (2021-07-21)
+
+
+### Bug Fixes
+
+* **cwp-template-aws:** add object field plugins to user project ([7832e57](https://github.com/webiny/webiny-js/commit/7832e579491495928f01996f3006b08a7d4ec40a))
+
+
+### Features
+
+* **cli:** cms object field upgrade ([473c47b](https://github.com/webiny/webiny-js/commit/473c47bad1c4b7be3a2ce504802eec0cb6280400))
+
+
+
+
+
 # [5.11.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.10.0...v5.11.0-beta.0) (2021-07-21)
 
 
