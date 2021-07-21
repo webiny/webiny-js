@@ -19,10 +19,12 @@ import { cleanupItem } from "@webiny/db-dynamodb/utils/cleanup";
 import { queryAll } from "@webiny/db-dynamodb/utils/query";
 import { sortItems } from "@webiny/db-dynamodb/utils/sort";
 import { batchWriteAll } from "@webiny/db-dynamodb/utils/batchWrite";
+import { Tenant } from "@webiny/api-tenancy/types";
 
 interface Params {
     context: AdminUsersContext;
 }
+
 export class GroupsStorageOperationsDdb implements GroupsStorageOperations {
     private readonly context: AdminUsersContext;
     private readonly table: Table;
@@ -47,9 +49,12 @@ export class GroupsStorageOperationsDdb implements GroupsStorageOperations {
         });
     }
 
-    public async get({ slug }: GroupsStorageOperationsGetParams): Promise<Group | null> {
+    public async get(
+        tenant: Tenant,
+        { slug }: GroupsStorageOperationsGetParams
+    ): Promise<Group | null> {
         const keys = {
-            PK: this.createPartitionKey(),
+            PK: this.createPartitionKey(tenant),
             SK: this.createSortKey(slug)
         };
         try {
@@ -70,12 +75,15 @@ export class GroupsStorageOperationsDdb implements GroupsStorageOperations {
         }
     }
 
-    public async list({ sort }: GroupsStorageOperationsListParams): Promise<Group[]> {
+    public async list(
+        tenant: Tenant,
+        { sort }: GroupsStorageOperationsListParams
+    ): Promise<Group[]> {
         let items: Group[] = [];
         try {
             items = await queryAll<Group>({
                 entity: this.entity,
-                partitionKey: this.createPartitionKey(),
+                partitionKey: this.createPartitionKey(tenant),
                 options: {
                     beginsWith: "G#"
                 }
@@ -96,9 +104,12 @@ export class GroupsStorageOperationsDdb implements GroupsStorageOperations {
         return sortedItems.map(item => this.cleanupItem(item));
     }
 
-    public async create({ group }: GroupsStorageOperationsCreateParams): Promise<Group> {
+    public async create(
+        tenant: Tenant,
+        { group }: GroupsStorageOperationsCreateParams
+    ): Promise<Group> {
         const keys = {
-            PK: this.createPartitionKey(),
+            PK: this.createPartitionKey(tenant),
             SK: this.createSortKey(group.slug)
         };
 
@@ -120,9 +131,12 @@ export class GroupsStorageOperationsDdb implements GroupsStorageOperations {
         }
     }
 
-    public async update({ group }: GroupsStorageOperationsUpdateParams): Promise<Group> {
+    public async update(
+        tenant: Tenant,
+        { group }: GroupsStorageOperationsUpdateParams
+    ): Promise<Group> {
         const keys = {
-            PK: this.createPartitionKey(),
+            PK: this.createPartitionKey(tenant),
             SK: this.createSortKey(group.slug)
         };
 
@@ -144,9 +158,12 @@ export class GroupsStorageOperationsDdb implements GroupsStorageOperations {
         }
     }
 
-    public async delete({ group }: GroupsStorageOperationsDeleteParams): Promise<Group> {
+    public async delete(
+        tenant: Tenant,
+        { group }: GroupsStorageOperationsDeleteParams
+    ): Promise<Group> {
         const keys = {
-            PK: this.createPartitionKey(),
+            PK: this.createPartitionKey(tenant),
             SK: this.createSortKey(group.slug)
         };
 
@@ -167,14 +184,15 @@ export class GroupsStorageOperationsDdb implements GroupsStorageOperations {
         }
     }
 
-    public async updateUserLinks({
-        group
-    }: GroupsStorageOperationsUpdateUserLinksParams): Promise<void> {
+    public async updateUserLinks(
+        tenant: Tenant,
+        { group }: GroupsStorageOperationsUpdateUserLinksParams
+    ): Promise<void> {
         let links: DbItemSecurityUser2Tenant[] = [];
         try {
             links = await queryAll<DbItemSecurityUser2Tenant>({
                 entity: this.entity,
-                partitionKey: this.createPartitionKey(),
+                partitionKey: this.createPartitionKey(tenant),
                 options: {
                     index: "GSI1",
                     beginsWith: `${this.createSortKey(group.slug)}#`
@@ -216,8 +234,8 @@ export class GroupsStorageOperationsDdb implements GroupsStorageOperations {
         return cleanupItem(this.entity, item, ["TYPE"]);
     }
 
-    private createPartitionKey() {
-        return `T#${this.context.tenancy.getCurrentTenant().id}`;
+    private createPartitionKey(tenant: Tenant) {
+        return `T#${tenant.id}`;
     }
 
     private createSortKey(slug: string): string {
