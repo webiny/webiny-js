@@ -184,30 +184,35 @@ export interface AdminUsersContext
         DbContext {
     security: AdminUsers & SecurityContextBase;
 }
+
 /**
  * @category ApiKeyStorageOperations
  */
 export interface ApiKeyStorageOperationsGetParams {
     id: string;
 }
+
 /**
  * @category ApiKeyStorageOperations
  */
 export interface ApiKeyStorageOperationsGetByTokenParams {
     token: string;
 }
+
 /**
  * @category ApiKeyStorageOperations
  */
 export interface ApiKeyStorageOperationsListParams {
     sort?: string[];
 }
+
 /**
  * @category ApiKeyStorageOperations
  */
 export interface ApiKeyStorageOperationsCreateParams {
     apiKey: ApiKey;
 }
+
 /**
  * @category ApiKeyStorageOperations
  */
@@ -215,6 +220,7 @@ export interface ApiKeyStorageOperationsUpdateParams {
     original: ApiKey;
     apiKey: ApiKey;
 }
+
 /**
  * @category ApiKeyStorageOperations
  */
@@ -236,30 +242,35 @@ export interface ApiKeyStorageOperations {
     update: (params: ApiKeyStorageOperationsUpdateParams) => Promise<ApiKey>;
     delete: (params: ApiKeyStorageOperationsDeleteParams) => Promise<ApiKey>;
 }
+
 /**
  * @category GroupsStorageOperations
  */
 export interface GroupsStorageOperationsGetParams {
     slug: string;
 }
+
 /**
  * @category GroupsStorageOperations
  */
 export interface GroupsStorageOperationsListParams {
     sort?: string[];
 }
+
 /**
  * @category GroupsStorageOperations
  */
 export interface GroupsStorageOperationsCreateParams {
     group: Group;
 }
+
 /**
  * @category GroupsStorageOperations
  */
 export interface GroupsStorageOperationsCreateParams {
     group: Group;
 }
+
 /**
  * @category GroupsStorageOperations
  */
@@ -267,29 +278,35 @@ export interface GroupsStorageOperationsUpdateParams {
     original: Group;
     group: Group;
 }
+
 /**
  * @category GroupsStorageOperations
  */
 export interface GroupsStorageOperationsDeleteParams {
     group: Group;
 }
+
 /**
  * @category GroupsStorageOperations
  */
 export interface GroupsStorageOperationsUpdateUserLinksParams {
     group: Group;
 }
+
 /**
  * @category StorageOperations
  * @category GroupsStorageOperations
  */
 export interface GroupsStorageOperations {
-    get: (params: GroupsStorageOperationsGetParams) => Promise<Group>;
-    list: (params: GroupsStorageOperationsListParams) => Promise<Group[]>;
-    create: (params: GroupsStorageOperationsCreateParams) => Promise<Group>;
-    update: (params: GroupsStorageOperationsUpdateParams) => Promise<Group>;
-    delete: (params: GroupsStorageOperationsDeleteParams) => Promise<Group>;
-    updateUserLinks: (params: GroupsStorageOperationsUpdateUserLinksParams) => Promise<void>;
+    get: (tenant: Tenant, params: GroupsStorageOperationsGetParams) => Promise<Group>;
+    list: (tenant: Tenant, params: GroupsStorageOperationsListParams) => Promise<Group[]>;
+    create: (tenant: Tenant, params: GroupsStorageOperationsCreateParams) => Promise<Group>;
+    update: (tenant: Tenant, params: GroupsStorageOperationsUpdateParams) => Promise<Group>;
+    delete: (tenant: Tenant, params: GroupsStorageOperationsDeleteParams) => Promise<Group>;
+    updateUserLinks: (
+        tenant: Tenant,
+        params: GroupsStorageOperationsUpdateUserLinksParams
+    ) => Promise<void>;
 }
 
 /**
@@ -299,6 +316,7 @@ export interface GroupsStorageOperations {
 export interface System {
     version?: string;
 }
+
 /**
  * @category StorageOperations
  * @category SystemStorageOperations
@@ -306,6 +324,7 @@ export interface System {
 export interface SystemStorageOperationsCreateParams {
     system: System;
 }
+
 /**
  * @category StorageOperations
  * @category SystemStorageOperations
@@ -314,6 +333,7 @@ export interface SystemStorageOperationsUpdateParams {
     original: System;
     system: System;
 }
+
 /**
  * @category StorageOperations
  * @category SystemStorageOperations
@@ -331,6 +351,7 @@ export interface SystemStorageOperations {
 export interface UserStorageOperationsGetParams {
     id: string;
 }
+
 /**
  * @category StorageOperations
  * @category UserStorageOperations
@@ -338,6 +359,7 @@ export interface UserStorageOperationsGetParams {
 export interface UserStorageOperationsListParamsWhere {
     tenant: string;
 }
+
 /**
  * @category StorageOperations
  * @category UserStorageOperations
@@ -346,6 +368,7 @@ export interface UserStorageOperationsListParams {
     where: UserStorageOperationsListParamsWhere;
     sort?: string[];
 }
+
 /**
  * @category StorageOperations
  * @category UserStorageOperations
@@ -353,6 +376,7 @@ export interface UserStorageOperationsListParams {
 export interface UserStorageOperationsCreateParams {
     user: User;
 }
+
 /**
  * @category StorageOperations
  * @category UserStorageOperations
@@ -361,6 +385,7 @@ export interface UserStorageOperationsUpdateParams {
     user: User;
     original: User;
 }
+
 /**
  * @category StorageOperations
  * @category UserStorageOperations
@@ -375,10 +400,12 @@ export interface UserStorageOperationsLinkUserToTenantParams {
     user: User;
     link: TenantAccess;
 }
+
 export interface UserStorageOperationsUnlinkUserFromTenantParams {
     tenant: Tenant;
     user: User;
 }
+
 /**
  * @category StorageOperations
  * @category UserStorageOperations
