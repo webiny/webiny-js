@@ -1,4 +1,7 @@
 const path = require("path");
+const i18nUpgrade = require("./upgradeApiI18n");
+const objectFieldUpgrade = require("./upgradeObjectField");
+
 const targetVersion = "5.11.0";
 
 /**
@@ -41,7 +44,6 @@ module.exports = {
     async upgrade(options, context) {
         const { info } = context;
         const glob = require("fast-glob");
-        const i18nUpgrade = require("./upgradeApiI18n");
 
         const {
             createMorphProject,
@@ -50,11 +52,14 @@ module.exports = {
             prettierFormat
         } = require("../utils");
 
-        const files = await glob([...Object.values(i18nUpgrade.files)], {
-            cwd: context.project.root,
-            onlyFiles: true,
-            ignore: ["**/node_modules/**"]
-        });
+        const files = await glob(
+            [...Object.values(i18nUpgrade.files), ...Object.values(objectFieldUpgrade.files)],
+            {
+                cwd: context.project.root,
+                onlyFiles: true,
+                ignore: ["**/node_modules/**"]
+            }
+        );
 
         const project = createMorphProject(files);
         /**
@@ -62,9 +67,13 @@ module.exports = {
          */
         await i18nUpgrade.upgradeGraphQLIndex(project, context);
         /**
-         * Upgrade the headless cms with new packages.
+         * Upgrade the api headless cms with new packages.
          */
         await i18nUpgrade.upgradeHeadlessCMSIndex(project, context);
+        /**
+         * Upgrade the app headless cms with new packages.
+         */
+        await objectFieldUpgrade.upgradeAppHeadlessCMS(project, context);
 
         info("Adding dependencies...");
 
