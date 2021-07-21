@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.11.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.10.0...v5.11.0-beta.0) (2021-07-21)
+
+
+### Bug Fixes
+
+* create 'pr' repository environment ([a2bd051](https://github.com/webiny/webiny-js/commit/a2bd051f45f08dc169fefdb91f7d93e0683215a3))
+* deploy and destroy PR environments ([62daedb](https://github.com/webiny/webiny-js/commit/62daedbe994412af1d3f31b66ee94fbcebaf1459))
+* update workflow files ([f7e078c](https://github.com/webiny/webiny-js/commit/f7e078c9fd0c71f8e330a20f708addd1113195e2))
+* update workflows ([602f191](https://github.com/webiny/webiny-js/commit/602f19107df806861f8179436cd79955918588aa))
+
+
+
+
+
 # [5.10.0](https://github.com/webiny/webiny-js/compare/v5.10.0-beta.2...v5.10.0) (2021-07-06)
 
 **Note:** Version bump only for package @webiny/cli-plugin-scaffold-ci

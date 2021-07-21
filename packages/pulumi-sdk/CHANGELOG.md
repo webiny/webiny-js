@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.11.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.10.0...v5.11.0-beta.0) (2021-07-21)
+
+
+### Bug Fixes
+
+* handle array args ([ef48271](https://github.com/webiny/webiny-js/commit/ef4827170d82211c0ff64d50b9b39d5ccc2544ff))
+* use only v3 and related Pulumi versions ([87b1a9b](https://github.com/webiny/webiny-js/commit/87b1a9bcb1772dce0ca884b15e5923ac0247a5c4))
+
+
+### Features
+
+* update Pulumi to the latest version ([1d86e26](https://github.com/webiny/webiny-js/commit/1d86e26467c8067bf4a2bcebb2fd7e18c9cf8ce3))
+
+
+
+
+
 # [5.10.0](https://github.com/webiny/webiny-js/compare/v5.10.0-beta.2...v5.10.0) (2021-07-06)
 
 **Note:** Version bump only for package @webiny/pulumi-sdk

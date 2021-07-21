@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.11.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.10.0...v5.11.0-beta.0) (2021-07-21)
+
+
+### Bug Fixes
+
+* wait a bit before executing installation ([a4e1cac](https://github.com/webiny/webiny-js/commit/a4e1cac0988cceacf4956207d581af4730aff519))
+
+
+
+
+
 # [5.10.0](https://github.com/webiny/webiny-js/compare/v5.10.0-beta.2...v5.10.0) (2021-07-06)
 
 **Note:** Version bump only for package @webiny/app-page-builder
