@@ -3,6 +3,7 @@ import { SecurityContextBase, SecurityPermission } from "@webiny/api-security/ty
 import { TenancyContext, Tenant } from "@webiny/api-tenancy/types";
 import { HttpContext } from "@webiny/handler-http/types";
 import { DbContext } from "@webiny/handler-db/types";
+import { SecurityIdentity } from "@webiny/api-security/types";
 
 export interface CreatedBy {
     id: string;
@@ -130,7 +131,7 @@ export interface UsersCRUD {
     getUserByPersonalAccessToken(token: string): Promise<User>;
     listTokens(login: string): Promise<UserPersonalAccessToken[]>;
     createToken(
-        login: string,
+        identity: SecurityIdentity,
         data: CreatePersonalAccessTokenInput
     ): Promise<UserPersonalAccessToken>;
     updateToken(
@@ -358,6 +359,7 @@ export interface UserStorageOperationsGetParams {
  */
 export interface UserStorageOperationsListParamsWhere {
     tenant: string;
+    id_in?: string[];
 }
 
 /**
@@ -394,6 +396,10 @@ export interface UserStorageOperationsDeleteParams {
     user: User;
 }
 
+/**
+ * @category StorageOperations
+ * @category UserStorageOperations
+ */
 export interface UserStorageOperationsLinkUserToTenantParams {
     tenant: Tenant;
     group: Group;
@@ -401,6 +407,10 @@ export interface UserStorageOperationsLinkUserToTenantParams {
     link: TenantAccess;
 }
 
+/**
+ * @category StorageOperations
+ * @category UserStorageOperations
+ */
 export interface UserStorageOperationsUnlinkUserFromTenantParams {
     tenant: Tenant;
     user: User;
@@ -411,14 +421,31 @@ export interface UserStorageOperationsUnlinkUserFromTenantParams {
  * @category UserStorageOperations
  */
 export interface UserStorageOperations {
+    // users
     get: (params: UserStorageOperationsGetParams) => Promise<User>;
     list: (params: UserStorageOperationsListParams) => Promise<User[]>;
     create: (params: UserStorageOperationsCreateParams) => Promise<User>;
     update: (params: UserStorageOperationsUpdateParams) => Promise<User>;
     delete: (params: UserStorageOperationsDeleteParams) => Promise<User>;
-
+    // helpers
     linkUserToTenant: (params: UserStorageOperationsLinkUserToTenantParams) => Promise<void>;
     unlinkUserFromTenant: (
         params: UserStorageOperationsUnlinkUserFromTenantParams
     ) => Promise<void>;
+}
+
+/**
+ * @category StorageOperations
+ * @category TokenStorageOperations
+ */
+export interface TokenStorageOperationsCreateParams {
+    identity: SecurityIdentity;
+    token: UserPersonalAccessToken;
+}
+/**
+ * @category StorageOperations
+ * @category TokenStorageOperations
+ */
+export interface TokenStorageOperations {
+    createToken: (params: TokenStorageOperationsCreateParams) => Promise<UserPersonalAccessToken>;
 }
