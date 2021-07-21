@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.11.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.10.0...v5.11.0-beta.0) (2021-07-21)
+
+
+### Bug Fixes
+
+* check if the icon exist before using it ([26711c9](https://github.com/webiny/webiny-js/commit/26711c943fe512f829fe3539ffc9f578f95e37aa))
+* disable content model / group actions accordingly ([b2c2a81](https://github.com/webiny/webiny-js/commit/b2c2a81e6bbb583a8c547f98e3a821129e305aaf))
+* wait a bit before executing installation ([a4e1cac](https://github.com/webiny/webiny-js/commit/a4e1cac0988cceacf4956207d581af4730aff519))
+* wait a bit before executing installation ([be49e32](https://github.com/webiny/webiny-js/commit/be49e3299ac8988da4b2a077e32ebb08b402fdf4))
+
+
+### Features
+
+* add `plugin` field ([ad130c6](https://github.com/webiny/webiny-js/commit/ad130c62100c64a53858851e0ec33850dbcfad29))
+
+
+
+
+
 # [5.10.0](https://github.com/webiny/webiny-js/compare/v5.10.0-beta.2...v5.10.0) (2021-07-06)
 
 **Note:** Version bump only for package @webiny/app-headless-cms
