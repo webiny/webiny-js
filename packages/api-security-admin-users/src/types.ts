@@ -130,16 +130,12 @@ export interface UsersCRUD {
     getPersonalAccessToken(login: string, tokenId: string): Promise<UserPersonalAccessToken>;
     getUserByPersonalAccessToken(token: string): Promise<User>;
     listTokens(login: string): Promise<UserPersonalAccessToken[]>;
-    createToken(
-        identity: SecurityIdentity,
-        data: CreatePersonalAccessTokenInput
-    ): Promise<UserPersonalAccessToken>;
+    createToken(data: CreatePersonalAccessTokenInput): Promise<UserPersonalAccessToken>;
     updateToken(
-        login: string,
         tokenId: string,
         data: UpdatePersonalAccessTokenInput
     ): Promise<UpdatePersonalAccessTokenInput>;
-    deleteToken(login: string, tokenId: string): Promise<boolean>;
+    deleteToken(tokenId: string): Promise<boolean>;
 }
 
 export interface ApiKeysCRUD {
