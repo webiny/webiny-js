@@ -1,5 +1,5 @@
 import { Plugin } from "@webiny/plugins";
-import { AdminUsersContext, User as BaseUser } from "../types";
+import { AdminUsersContext, User as BaseUser } from "~/types";
 
 type PromiseVoid = void | Promise<void>;
 
