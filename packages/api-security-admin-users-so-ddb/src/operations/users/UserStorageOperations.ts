@@ -10,18 +10,27 @@ import {
     DbItemSecurityUser2Tenant,
     UserStorageOperationsLinkUserToTenantParams,
     Group,
-    UserStorageOperationsUnlinkUserFromTenantParams
+    UserStorageOperationsUnlinkUserFromTenantParams,
+    UserPersonalAccessToken,
+    UserStorageOperationsCreateTokenParams,
+    UserStorageOperationsDeleteTokenParams,
+    UserStorageOperationsGetTokenParams,
+    UserStorageOperationsGetUserByPatParams,
+    UserStorageOperationsListTokensParams,
+    UserStorageOperationsUpdateTokenParams
 } from "@webiny/api-security-admin-users/types";
 import { createTable } from "~/definitions/table";
 import { createUserEntity } from "~/definitions/userEntity";
 import { Entity, Table } from "dynamodb-toolbox";
 import WebinyError from "@webiny/error";
 import { cleanupItem } from "@webiny/db-dynamodb/utils/cleanup";
-import { queryAll } from "@webiny/db-dynamodb/utils/query";
+import { queryAll, QueryAllParams, queryOne, QueryParams } from "@webiny/db-dynamodb/utils/query";
 import { createLinksEntity } from "~/definitions/linksEntity";
 import { batchReadAll } from "@webiny/db-dynamodb/utils/batchRead";
 import { batchWriteAll } from "@webiny/db-dynamodb/utils/batchWrite";
 import { Tenant } from "@webiny/api-tenancy/types";
+import { createTokenEntity } from "~/definitions/tokenEntity";
+import { NotFoundError } from "jest-dynalite/dist/config";
 
 interface Params {
     context: AdminUsersContext;
@@ -31,6 +40,7 @@ export class UserStorageOperationsDdb implements UserStorageOperations {
     private readonly context: AdminUsersContext;
     private readonly table: Table;
     private readonly entity: Entity<any>;
+    private readonly tokenEntity: Entity<any>;
     private readonly linksEntity: Entity<any>;
 
     public constructor({ context }: Params) {
@@ -45,13 +55,18 @@ export class UserStorageOperationsDdb implements UserStorageOperations {
             table: this.table
         });
 
+        this.tokenEntity = createTokenEntity({
+            context,
+            table: this.table
+        });
+
         this.linksEntity = createLinksEntity({
             context,
             table: this.table
         });
     }
 
-    public async get(params: UserStorageOperationsGetParams): Promise<User | null> {
+    public async getUser(params: UserStorageOperationsGetParams): Promise<User | null> {
         const { id } = params;
         const keys = {
             PK: this.createPartitionKey(id),
@@ -76,7 +91,42 @@ export class UserStorageOperationsDdb implements UserStorageOperations {
         }
     }
 
-    public async list(params: UserStorageOperationsListParams): Promise<User[]> {
+    public async getUserByPersonalAccessToken(
+        params: UserStorageOperationsGetUserByPatParams
+    ): Promise<User> {
+        const { token } = params;
+        const queryParams: QueryParams = {
+            partitionKey: "PAT",
+            entity: this.tokenEntity,
+            options: {
+                index: "GSI1",
+                eq: token,
+                limit: 1
+            }
+        };
+        let login = undefined;
+        try {
+            const result = await queryOne<UserPersonalAccessToken>(queryParams);
+            if (!result) {
+                throw new NotFoundError("Could not find token info.");
+            }
+            login = result.login;
+        } catch (ex) {
+            throw new WebinyError(
+                ex.message || "Could not find token info.",
+                ex.code || "GET_USER_ERROR",
+                {
+                    queryParams
+                }
+            );
+        }
+
+        return this.getUser({
+            id: login
+        });
+    }
+
+    public async listUsers(params: UserStorageOperationsListParams): Promise<User[]> {
         const { where } = params;
 
         let userTenantAccessList: DbItemSecurityUser2Tenant[] = [];
@@ -121,7 +171,7 @@ export class UserStorageOperationsDdb implements UserStorageOperations {
         }
     }
 
-    public async create(params: UserStorageOperationsCreateParams): Promise<User> {
+    public async createUser(params: UserStorageOperationsCreateParams): Promise<User> {
         const { user } = params;
         const keys = {
             PK: this.createUserPartitionKey(user),
@@ -146,7 +196,7 @@ export class UserStorageOperationsDdb implements UserStorageOperations {
         }
     }
 
-    public async update(params: UserStorageOperationsUpdateParams): Promise<User> {
+    public async updateUser(params: UserStorageOperationsUpdateParams): Promise<User> {
         const { user, original } = params;
         const keys = {
             PK: this.createUserPartitionKey(user),
@@ -171,7 +221,7 @@ export class UserStorageOperationsDdb implements UserStorageOperations {
         }
     }
 
-    public async delete(params: UserStorageOperationsDeleteParams): Promise<User> {
+    public async deleteUser(params: UserStorageOperationsDeleteParams): Promise<User> {
         const { user } = params;
 
         let items = [];
@@ -291,8 +341,145 @@ export class UserStorageOperationsDdb implements UserStorageOperations {
         }
     }
 
+    public async createToken(
+        params: UserStorageOperationsCreateTokenParams
+    ): Promise<UserPersonalAccessToken> {
+        const { identity, token } = params;
+        const keys = {
+            PK: this.createPartitionKey(identity.id),
+            SK: `PAT#${token.id}`,
+            GSI1_PK: "PAT",
+            GSI1_SK: token.token
+        };
+        try {
+            await this.tokenEntity.put({
+                ...token,
+                ...keys,
+                TYPE: "security.pat"
+            });
+            return token;
+        } catch (ex) {
+            throw new WebinyError(
+                ex.message || "Cannot create user access token.",
+                ex.code || "CREATE_USER_ACCESS_TOKEN_ERROR",
+                {
+                    keys,
+                    token
+                }
+            );
+        }
+    }
+
+    public async updateToken(
+        params: UserStorageOperationsUpdateTokenParams
+    ): Promise<UserPersonalAccessToken> {
+        const { original, token } = params;
+        const keys = {
+            PK: `U#${original.login}`,
+            SK: `PAT#${original.id}`
+        };
+
+        try {
+            await this.tokenEntity.put({
+                ...token,
+                ...keys
+            });
+            return token;
+        } catch (ex) {
+            throw new WebinyError(
+                ex.message || "Cannot update user access token.",
+                ex.code || "UPDATE_USER_ACCESS_TOKEN_ERROR",
+                {
+                    keys,
+                    token,
+                    original
+                }
+            );
+        }
+    }
+
+    public async deleteToken(
+        params: UserStorageOperationsDeleteTokenParams
+    ): Promise<UserPersonalAccessToken> {
+        const { identity, token } = params;
+        const keys = {
+            PK: this.createPartitionKey(identity.id),
+            SK: `PAT#${token.id}`
+        };
+
+        try {
+            await this.tokenEntity.delete(keys);
+            return token;
+        } catch (ex) {
+            throw new WebinyError(
+                ex.message || "Cannot delete user access token.",
+                ex.code || "DELETE_USER_ACCESS_TOKEN_ERROR",
+                {
+                    keys,
+                    token
+                }
+            );
+        }
+    }
+
+    public async getPersonalAccessToken(
+        params: UserStorageOperationsGetTokenParams
+    ): Promise<UserPersonalAccessToken> {
+        const { login, tokenId } = params;
+        const keys = {
+            PK: `U#${login}`,
+            SK: `PAT#${tokenId}`
+        };
+        try {
+            const result = await this.tokenEntity.get(keys);
+            if (!result || !result.Item) {
+                return null;
+            }
+            return this.cleanupTokenItem(result.Item);
+        } catch (ex) {
+            throw new WebinyError(
+                ex.message || "Cannot get user access token.",
+                ex.code || "GET_USER_ACCESS_TOKEN_ERROR",
+                {
+                    login,
+                    tokenId
+                }
+            );
+        }
+    }
+
+    public async listTokens(
+        params: UserStorageOperationsListTokensParams
+    ): Promise<UserPersonalAccessToken[]> {
+        const { login } = params;
+        const queryParams: QueryAllParams = {
+            entity: this.tokenEntity,
+            partitionKey: `U#${login}`,
+            options: {
+                beginsWith: "PAT#"
+            }
+        };
+        try {
+            return await queryAll<UserPersonalAccessToken>(queryParams);
+        } catch (ex) {
+            throw new WebinyError(
+                ex.messsage || "Cannot list user tokens.",
+                ex.code || "LIST_TOKENS_ERROR",
+                {
+                    login
+                }
+            );
+        }
+    }
+
     private cleanupItem(item: User & Record<string, any>): User {
         return cleanupItem(this.entity, item);
+    }
+
+    private cleanupTokenItem(
+        item: UserPersonalAccessToken & Record<string, any>
+    ): UserPersonalAccessToken {
+        return cleanupItem(this.tokenEntity, item);
     }
     /**
      * There is a need for this method because of the old way of saving the user data.

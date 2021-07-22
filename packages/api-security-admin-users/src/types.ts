@@ -352,6 +352,13 @@ export interface SystemStorageOperations {
 export interface UserStorageOperationsGetParams {
     id: string;
 }
+/**
+ * @category StorageOperations
+ * @category UserStorageOperations
+ */
+export interface UserStorageOperationsGetUserByPatParams {
+    token: string;
+}
 
 /**
  * @category StorageOperations
@@ -400,6 +407,50 @@ export interface UserStorageOperationsDeleteParams {
  * @category StorageOperations
  * @category UserStorageOperations
  */
+export interface UserStorageOperationsCreateTokenParams {
+    identity: SecurityIdentity;
+    token: UserPersonalAccessToken;
+}
+
+/**
+ * @category StorageOperations
+ * @category UserStorageOperations
+ */
+export interface UserStorageOperationsUpdateTokenParams {
+    original: UserPersonalAccessToken;
+    token: UserPersonalAccessToken;
+}
+
+/**
+ * @category StorageOperations
+ * @category UserStorageOperations
+ */
+export interface UserStorageOperationsDeleteTokenParams {
+    identity: SecurityIdentity;
+    token: UserPersonalAccessToken;
+}
+
+/**
+ * @category StorageOperations
+ * @category UserStorageOperations
+ */
+export interface UserStorageOperationsGetTokenParams {
+    login: string;
+    tokenId: string;
+}
+
+/**
+ * @category StorageOperations
+ * @category UserStorageOperations
+ */
+export interface UserStorageOperationsListTokensParams {
+    login: string;
+}
+
+/**
+ * @category StorageOperations
+ * @category UserStorageOperations
+ */
 export interface UserStorageOperationsLinkUserToTenantParams {
     tenant: Tenant;
     group: Group;
@@ -422,30 +473,37 @@ export interface UserStorageOperationsUnlinkUserFromTenantParams {
  */
 export interface UserStorageOperations {
     // users
-    get: (params: UserStorageOperationsGetParams) => Promise<User>;
-    list: (params: UserStorageOperationsListParams) => Promise<User[]>;
-    create: (params: UserStorageOperationsCreateParams) => Promise<User>;
-    update: (params: UserStorageOperationsUpdateParams) => Promise<User>;
-    delete: (params: UserStorageOperationsDeleteParams) => Promise<User>;
-    // helpers
+    getUser: (params: UserStorageOperationsGetParams) => Promise<User>;
+    getUserByPersonalAccessToken: (
+        params: UserStorageOperationsGetUserByPatParams
+    ) => Promise<User>;
+    listUsers: (params: UserStorageOperationsListParams) => Promise<User[]>;
+    createUser: (params: UserStorageOperationsCreateParams) => Promise<User>;
+    updateUser: (params: UserStorageOperationsUpdateParams) => Promise<User>;
+    /**
+     * Delete the user and the tokens that are connected to the user.
+     */
+    deleteUser: (params: UserStorageOperationsDeleteParams) => Promise<User>;
+    // tokens
+    createToken: (
+        params: UserStorageOperationsCreateTokenParams
+    ) => Promise<UserPersonalAccessToken>;
+    updateToken: (
+        params: UserStorageOperationsUpdateTokenParams
+    ) => Promise<UserPersonalAccessToken>;
+    deleteToken: (
+        params: UserStorageOperationsDeleteTokenParams
+    ) => Promise<UserPersonalAccessToken>;
+    getPersonalAccessToken: (
+        params: UserStorageOperationsGetTokenParams
+    ) => Promise<UserPersonalAccessToken>;
+    listTokens: (
+        params: UserStorageOperationsListTokensParams
+    ) => Promise<UserPersonalAccessToken[]>;
+
+    // linkers
     linkUserToTenant: (params: UserStorageOperationsLinkUserToTenantParams) => Promise<void>;
     unlinkUserFromTenant: (
         params: UserStorageOperationsUnlinkUserFromTenantParams
     ) => Promise<void>;
-}
-
-/**
- * @category StorageOperations
- * @category TokenStorageOperations
- */
-export interface TokenStorageOperationsCreateParams {
-    identity: SecurityIdentity;
-    token: UserPersonalAccessToken;
-}
-/**
- * @category StorageOperations
- * @category TokenStorageOperations
- */
-export interface TokenStorageOperations {
-    createToken: (params: TokenStorageOperationsCreateParams) => Promise<UserPersonalAccessToken>;
 }
