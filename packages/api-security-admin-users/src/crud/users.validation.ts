@@ -1,7 +1,7 @@
 import { withFields, string } from "@commodo/fields";
 import { object } from "commodo-fields-object";
 import { validation } from "@webiny/validation";
-import { UserPlugin } from "../plugins/UserPlugin";
+import { UserPlugin } from "~/plugins/UserPlugin";
 
 const CreateUserDataModel = withFields({
     login: string({ validation: validation.create("required,minLength:2") }),

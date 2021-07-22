@@ -1,5 +1,5 @@
 import { SecurityPermission } from "@webiny/api-security/types";
-import { AdminUsersContext } from "../types";
+import { AdminUsersContext } from "~/types";
 import { AuthorizationPlugin } from "@webiny/api-security/plugins/AuthorizationPlugin";
 
 export class AnonymousAuthorizationPlugin extends AuthorizationPlugin<AdminUsersContext> {
