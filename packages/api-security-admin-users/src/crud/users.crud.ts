@@ -22,7 +22,7 @@ import { UserLoaders } from "./users.loaders";
 import validationPlugin from "./users.validation";
 import { UserStorageOperationsProvider } from "~/plugins/UserStorageOperationsProvider";
 import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
-import { SecurityIdentity } from "@webiny/api-security/types";
+import crypto from "crypto";
 
 const CreateAccessTokenDataModel = withFields({
     name: string({ validation: validation.create("required,maxLength:100") }),
@@ -43,6 +43,18 @@ const executeCallback = async <TCallbackFunction extends (params: any) => void |
             await plugin[callback](params);
         }
     }
+};
+
+const generateToken = (tokenLength = 48) => {
+    const token = crypto
+        .randomBytes(Math.ceil(tokenLength / 2))
+        .toString("hex")
+        .slice(0, tokenLength - 1);
+
+    // Personal access tokens are prefixed with a letter "p" to make token verification easier.
+    // When authentication plugins kick in, they will be able to tell if they should handle the token by
+    // checking the first letter and either process the token or skip authentication completely.
+    return `p${token}`;
 };
 
 export default new ContextPlugin<AdminUsersContext>(async context => {
@@ -114,14 +126,16 @@ export default new ContextPlugin<AdminUsersContext>(async context => {
             return user;
         },
 
-        async createToken(
-            identity: SecurityIdentity,
-            data: CreatePersonalAccessTokenInput
-        ): Promise<UserPersonalAccessToken> {
+        async createToken(data: CreatePersonalAccessTokenInput): Promise<UserPersonalAccessToken> {
+            const identity = context.security.getIdentity();
+            if (!identity) {
+                throw new NotAuthorizedError();
+            }
             await new CreateAccessTokenDataModel().populate(data).validate();
 
             const token: UserPersonalAccessToken = {
                 ...data,
+                token: generateToken(),
                 id: mdbid(),
                 login: identity.id,
                 createdOn: new Date().toISOString()
@@ -215,8 +229,9 @@ export default new ContextPlugin<AdminUsersContext>(async context => {
         async deleteToken(id: string): Promise<boolean> {
             const identity = context.security.getIdentity();
             if (!identity) {
-                throw new Error("Not authorized!");
+                throw new NotAuthorizedError();
             }
+
             const token = await context.security.users.getPersonalAccessToken(identity.id, id);
 
             if (!token) {
@@ -475,14 +490,24 @@ export default new ContextPlugin<AdminUsersContext>(async context => {
         },
 
         async updateToken(
-            login: string,
             tokenId: string,
             data: UpdatePersonalAccessTokenInput
         ): Promise<UpdatePersonalAccessTokenInput> {
+            const identity = context.security.getIdentity();
+            if (!identity) {
+                throw new NotAuthorizedError();
+            }
+
             const { name } = data;
             await new UpdateAccessTokenDataModel().populate({ name }).validate();
 
-            const original = await context.security.users.getPersonalAccessToken(login, tokenId);
+            const original = await context.security.users.getPersonalAccessToken(
+                identity.id,
+                tokenId
+            );
+            if (!original) {
+                throw new NotFoundError();
+            }
 
             const token: UserPersonalAccessToken = {
                 ...original,
