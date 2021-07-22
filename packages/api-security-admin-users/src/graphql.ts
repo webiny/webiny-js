@@ -5,4 +5,4 @@ import user from "./graphql/user.gql";
 import pat from "./graphql/pat.gql";
 import apiKey from "./graphql/apiKey.gql";
 
-export default [base, install, user, group, pat, apiKey];
+export default () => [base, install, user, group, pat, apiKey];
