@@ -16,11 +16,11 @@ describe(`Test "Security" install`, () => {
     });
 
     test(`should run "install" successfully`, async () => {
-        let [response] = await install.install({
+        const [installResponse] = await install.install({
             data: { firstName: "first test", lastName: "last test", login: "firstlast@test.com" }
         });
 
-        expect(response).toEqual({
+        expect(installResponse).toEqual({
             data: {
                 security: {
                     install: {
@@ -32,11 +32,11 @@ describe(`Test "Security" install`, () => {
         });
 
         // Running "install" again should throw an error
-        [response] = await install.install({
+        const [reinstallResponse] = await install.install({
             data: { firstName: "first test", lastName: "last test", login: "firstlast@test.com" }
         });
 
-        expect(response).toEqual({
+        expect(reinstallResponse).toEqual({
             data: {
                 security: {
                     install: {
@@ -52,9 +52,9 @@ describe(`Test "Security" install`, () => {
         });
 
         // Let's see whether "isInstalled" return true now?
-        [response] = await install.isInstalled();
+        const [isInstalledResponse] = await install.isInstalled();
 
-        expect(response).toEqual({
+        expect(isInstalledResponse).toEqual({
             data: {
                 security: {
                     version: expect.any(String)
@@ -63,10 +63,33 @@ describe(`Test "Security" install`, () => {
         });
 
         // There have to be 2 groups installed
-        [response] = await securityGroup.list();
-        const { listGroups: groups } = response.data.security;
-        expect(groups.data.length).toBe(2);
-        expect(groups.data[0].slug).toBe("anonymous");
-        expect(groups.data[1].slug).toBe("full-access");
+        const [groupsResponse] = await securityGroup.list();
+        expect(groupsResponse).toEqual({
+            data: {
+                security: {
+                    listGroups: {
+                        data: [
+                            {
+                                description: "Grants full access to all apps.",
+                                name: "Full Access",
+                                permissions: [
+                                    {
+                                        name: "*"
+                                    }
+                                ],
+                                slug: "full-access"
+                            },
+                            {
+                                description: "Permissions for anonymous users (public access).",
+                                name: "Anonymous",
+                                permissions: [],
+                                slug: "anonymous"
+                            }
+                        ],
+                        error: null
+                    }
+                }
+            }
+        });
     });
 });
