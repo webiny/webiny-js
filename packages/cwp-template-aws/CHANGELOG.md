@@ -3,6 +3,54 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.11.0](https://github.com/webiny/webiny-js/compare/v5.11.0-beta.2...v5.11.0) (2021-07-22)
+
+**Note:** Version bump only for package @webiny/cwp-template-aws
+
+
+
+
+
+# [5.11.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.11.0-beta.1...v5.11.0-beta.2) (2021-07-21)
+
+
+### Bug Fixes
+
+* **cwp-template-aws:** enable form field validators ([38342bc](https://github.com/webiny/webiny-js/commit/38342bc77467a3a48d4b5cda22a8b9099d795bfb))
+
+
+
+
+
+# [5.11.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.11.0-beta.0...v5.11.0-beta.1) (2021-07-21)
+
+
+### Bug Fixes
+
+* **cwp-template-aws:** add object field plugins to user project ([7832e57](https://github.com/webiny/webiny-js/commit/7832e579491495928f01996f3006b08a7d4ec40a))
+
+
+
+
+
+# [5.11.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.10.0...v5.11.0-beta.0) (2021-07-21)
+
+
+### Bug Fixes
+
+* decrease "graphql" function's timeout back to 30s ([0c5806e](https://github.com/webiny/webiny-js/commit/0c5806e1272b341d1a5f513faae9da371dc32e9c))
+* increase timeout ([9183c30](https://github.com/webiny/webiny-js/commit/9183c30ca29243008ccac65095ccb04de8483b39))
+* remove ES-related configs ([81d82af](https://github.com/webiny/webiny-js/commit/81d82afb3f3bf0de2d1f8886798d89248c14967a))
+
+
+### Features
+
+* **api-i18n:** storage operations ([#1758](https://github.com/webiny/webiny-js/issues/1758)) ([a488eee](https://github.com/webiny/webiny-js/commit/a488eee18ac4f674cb0dcd53d88a88b6659a802a))
+
+
+
+
+
 # [5.10.0](https://github.com/webiny/webiny-js/compare/v5.10.0-beta.2...v5.10.0) (2021-07-06)
 
 **Note:** Version bump only for package @webiny/cwp-template-aws

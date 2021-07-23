@@ -186,28 +186,42 @@ const findElementIndex = (plugins, afterElement) => {
  *
  * @param context {CliContext}
  * @param source {tsMorph.SourceFile}
- * @param imports {{elementName: String, importPath: String, afterElement: String | undefined}[]}
+ * @param imports {{elementName: String, importPath: String, afterElement: String | undefined, isImportCallable: boolean, addToPlugins: boolean}[]}
  * @param file {String}
  */
 const addImportsToSource = ({ context, source, imports, file }) => {
     const { info, warning, error } = context;
-    /**
-     * We need the plugins property in the createHandler argument.
-     * @type {tsMorph.Node}
-     */
-    const plugins = source.getFirstDescendant(
-        node => tsMorph.Node.isPropertyAssignment(node) && node.getName() === "plugins"
-    );
-    if (!plugins) {
-        error(
-            `Cannot find "plugins" property of the "createHandler" argument object in ${info.hl(
-                file
-            )}.`
+    let pluginsElement;
+    const getPluginsElement = () => {
+        if (pluginsElement) {
+            return pluginsElement;
+        }
+        /**
+         * We need the plugins property in the createHandler argument.
+         * @type {tsMorph.Node}
+         */
+        pluginsElement = source.getFirstDescendant(
+            node => tsMorph.Node.isPropertyAssignment(node) && node.getName() === "plugins"
         );
-        return;
-    }
+        if (!pluginsElement) {
+            error(
+                `Cannot find "plugins" property of the "createHandler" argument object in ${info.hl(
+                    file
+                )}.`
+            );
+        }
+        return pluginsElement;
+    };
+
     for (const value of imports) {
-        const { elementName, importPath, afterElement, afterImport } = value;
+        const {
+            elementName,
+            importPath,
+            afterElement,
+            afterImport,
+            isImportCallable = true,
+            addToPlugins = true
+        } = value;
 
         const importDefinition = source.getImportDeclaration(importPath);
         /**
@@ -250,6 +264,17 @@ const addImportsToSource = ({ context, source, imports, file }) => {
                 moduleSpecifier: importPath
             });
         }
+        if (addToPlugins === false) {
+            continue;
+        }
+
+        const importedElementName = `${elementName}${isImportCallable === false ? "" : "()"}`;
+
+        const plugins = getPluginsElement();
+        if (!plugins) {
+            error(`Could not add ${error.hl(importedElementName)} to the plugins.`);
+            continue;
+        }
         /**
          * If after is specified, add the imported value after the one given in the args..
          */
@@ -262,14 +287,14 @@ const addImportsToSource = ({ context, source, imports, file }) => {
                     )} of the createHandler.plugins array in ${warning.hl(file)}.`
                 );
             } else {
-                plugins.getInitializer().insertElement(afterIndex + 1, `${elementName}()`);
+                plugins.getInitializer().insertElement(afterIndex + 1, importedElementName);
                 continue;
             }
         }
         /**
          * Add imported plugin at the end of the array as no other options are viable.
          */
-        plugins.getInitializer().addElement(`${elementName}()`);
+        plugins.getInitializer().addElement(importedElementName);
     }
 };
 
