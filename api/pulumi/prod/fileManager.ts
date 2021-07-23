@@ -150,10 +150,7 @@ class FileManager {
                 ]
             },
             {
-                dependsOn: [
-                    this.bucket,
-                    this.functions.manage
-                ]
+                dependsOn: [this.bucket, this.functions.manage]
             }
         );
     }
