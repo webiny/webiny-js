@@ -3,7 +3,7 @@ import { UserStorageOperationsDdb } from "./UserStorageOperations";
 import { UserStorageOperations } from "@webiny/api-security-admin-users/types";
 
 export class UserStorageOperationsProviderDdb extends UserStorageOperationsProvider {
-    public name = "sau.storageOperationsProvider.system.ddb";
+    public name = "sau.storageOperationsProvider.user.ddb";
 
     public async provide({ context }): Promise<UserStorageOperations> {
         return new UserStorageOperationsDdb({

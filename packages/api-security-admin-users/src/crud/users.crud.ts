@@ -16,13 +16,15 @@ import {
     UpdatePersonalAccessTokenInput,
     UpdateUserInput,
     User,
-    UserPersonalAccessToken
+    UserPersonalAccessToken,
+    UserStorageOperations
 } from "~/types";
 import { UserLoaders } from "./users.loaders";
 import validationPlugin from "./users.validation";
 import { UserStorageOperationsProvider } from "~/plugins/UserStorageOperationsProvider";
 import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
 import crypto from "crypto";
+import { getStorageOperations } from "~/crud/storageOperations";
 
 const CreateAccessTokenDataModel = withFields({
     name: string({ validation: validation.create("required,maxLength:100") }),
@@ -58,27 +60,10 @@ const generateToken = (tokenLength = 48) => {
 };
 
 export default new ContextPlugin<AdminUsersContext>(async context => {
-    const providers = context.plugins.byType<UserStorageOperationsProvider>(
+    const storageOperations = await getStorageOperations<UserStorageOperations>(
+        context,
         UserStorageOperationsProvider.type
     );
-    /**
-     * Always take the last given provider - although if everything is loaded as it must, there should not be more than one.
-     * We do not check/verify for multiple providers.
-     */
-    const provider = providers.pop();
-    if (!provider) {
-        throw new WebinyError(
-            "Could not find a UserStorageOperationsProvider plugin registered.",
-            "PROVIDER_PLUGIN_ERROR",
-            {
-                type: UserStorageOperationsProvider.type
-            }
-        );
-    }
-
-    const storageOperations = await provider.provide({
-        context
-    });
 
     const userPlugins = context.plugins.byType<UserPlugin>(UserPlugin.type);
     /**
@@ -172,12 +157,23 @@ export default new ContextPlugin<AdminUsersContext>(async context => {
             const login = data.login.toLowerCase();
             const identity = security.getIdentity();
 
-            const existing = await context.security.users.getUser(login, {
-                auth: false
-            });
+            try {
+                const existing = await storageOperations.getUser({
+                    id: login
+                });
 
-            if (existing) {
-                throw new WebinyError("User with that login already exists.", "USER_EXISTS");
+                if (existing) {
+                    throw new Error();
+                }
+            } catch (ex) {
+                throw new WebinyError(
+                    ex.message || "User with that login already exists.",
+                    ex.code || "USER_EXISTS",
+                    {
+                        ...(ex.data || {}),
+                        id: login
+                    }
+                );
             }
             let createdBy = null;
             if (identity) {
@@ -190,7 +186,7 @@ export default new ContextPlugin<AdminUsersContext>(async context => {
 
             const user: User = {
                 ...data,
-                id: mdbid(),
+                id: login,
                 login,
                 createdOn: new Date().toISOString(),
                 createdBy
@@ -375,6 +371,7 @@ export default new ContextPlugin<AdminUsersContext>(async context => {
                 });
             }
             const link: TenantAccess = {
+                id: user.id || user.login,
                 tenant: {
                     id: tenant.id,
                     name: tenant.name

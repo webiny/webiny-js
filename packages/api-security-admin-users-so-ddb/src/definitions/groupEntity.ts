@@ -48,7 +48,7 @@ export const createGroupEntity = (params: Params): Entity<any> => {
                 type: "string"
             },
             permissions: {
-                type: "map"
+                type: "list"
             },
             ...attributes
         }

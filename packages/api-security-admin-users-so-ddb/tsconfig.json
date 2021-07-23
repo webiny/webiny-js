@@ -12,6 +12,9 @@
       "path": "../db-dynamodb"
     },
     {
+      "path": "../handler-db"
+    },
+    {
       "path": "../error"
     }
   ],
@@ -24,6 +27,8 @@
       "@webiny/api-tenancy": ["../api-tenancy/src"],
       "@webiny/db-dynamodb/*": ["../db-dynamodb/src/*"],
       "@webiny/db-dynamodb": ["../db-dynamodb/src"],
+      "@webiny/handler-db/*": ["../handler-db/src/*"],
+      "@webiny/handler-db": ["../handler-db/src"],
       "@webiny/error/*": ["../error/src/*"],
       "@webiny/error": ["../error/src"]
     },

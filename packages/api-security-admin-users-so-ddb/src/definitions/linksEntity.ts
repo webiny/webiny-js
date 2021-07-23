@@ -20,7 +20,16 @@ export const createLinksEntity = (params: Params): Entity<any> => {
             SK: {
                 sortKey: true
             },
+            GSI1_PK: {
+                type: "string"
+            },
+            GSI1_SK: {
+                type: "string"
+            },
             TYPE: {
+                type: "string"
+            },
+            id: {
                 type: "string"
             },
             tenant: {
