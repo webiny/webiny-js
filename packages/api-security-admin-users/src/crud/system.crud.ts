@@ -1,6 +1,7 @@
 import {
     AdminUsersContext,
     CreateUserInput,
+    CrudOptions,
     Group,
     System,
     SystemStorageOperations
@@ -16,7 +17,11 @@ const createDefaultGroups = async (
     let anonymousGroup: Group = null;
     let fullAccessGroup: Group = null;
 
-    const groups = await context.security.groups.listGroups();
+    const options: CrudOptions = {
+        auth: false
+    };
+
+    const groups = await context.security.groups.listGroups(options);
 
     groups.forEach(group => {
         if (group.slug === "full-access") {
@@ -29,23 +34,29 @@ const createDefaultGroups = async (
     });
 
     if (!fullAccessGroup) {
-        fullAccessGroup = await context.security.groups.createGroup({
-            name: "Full Access",
-            description: "Grants full access to all apps.",
-            system: true,
-            slug: "full-access",
-            permissions: [{ name: "*" }]
-        });
+        fullAccessGroup = await context.security.groups.createGroup(
+            {
+                name: "Full Access",
+                description: "Grants full access to all apps.",
+                system: true,
+                slug: "full-access",
+                permissions: [{ name: "*" }]
+            },
+            options
+        );
     }
 
     if (!anonymousGroup) {
-        anonymousGroup = await context.security.groups.createGroup({
-            name: "Anonymous",
-            description: "Permissions for anonymous users (public access).",
-            system: true,
-            slug: "anonymous",
-            permissions: []
-        });
+        anonymousGroup = await context.security.groups.createGroup(
+            {
+                name: "Anonymous",
+                description: "Permissions for anonymous users (public access).",
+                system: true,
+                slug: "anonymous",
+                permissions: []
+            },
+            options
+        );
     }
 
     return { fullAccessGroup, anonymousGroup };
@@ -136,8 +147,22 @@ export default new ContextPlugin<AdminUsersContext>(async context => {
 
             context.tenancy.setCurrentTenant(tenant);
 
-            // Create default groups
-            const { fullAccessGroup } = await createDefaultGroups(context);
+            let fullAccessGroup;
+            try {
+                // Create default groups
+                const { fullAccessGroup: group } = await createDefaultGroups(context);
+                fullAccessGroup = group;
+            } catch (ex) {
+                throw new WebinyError(
+                    "Could not create default groups.",
+                    "CREATE_DEFAULT_GROUPS_ERROR",
+                    {
+                        message: ex.message,
+                        code: ex.code,
+                        data: ex.data
+                    }
+                );
+            }
 
             const user: CreateUserInput = {
                 ...input,

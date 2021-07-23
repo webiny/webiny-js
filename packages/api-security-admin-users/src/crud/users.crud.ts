@@ -9,12 +9,9 @@ import WebinyError from "@webiny/error";
 import { UserPlugin } from "~/plugins/UserPlugin";
 import {
     AdminUsersContext,
-    CreatePersonalAccessTokenInput,
-    CreateUserInput,
+    CrudOptions,
     Group,
     TenantAccess,
-    UpdatePersonalAccessTokenInput,
-    UpdateUserInput,
     User,
     UserPersonalAccessToken,
     UserStorageOperations
@@ -75,6 +72,17 @@ export default new ContextPlugin<AdminUsersContext>(async context => {
      */
     const loaders = new UserLoaders({ context, storageOperations });
 
+    const checkPermission = async (options?: CrudOptions) => {
+        if (options && options.auth === false) {
+            return;
+        }
+        const permission = await context.security.getPermission("security.user");
+
+        if (!permission) {
+            throw new NotAuthorizedError();
+        }
+    };
+
     context.security.users = {
         async login(): Promise<User> {
             const { security } = context;
@@ -111,7 +119,7 @@ export default new ContextPlugin<AdminUsersContext>(async context => {
             return user;
         },
 
-        async createToken(data: CreatePersonalAccessTokenInput): Promise<UserPersonalAccessToken> {
+        async createToken(data): Promise<UserPersonalAccessToken> {
             const identity = context.security.getIdentity();
             if (!identity) {
                 throw new NotAuthorizedError();
@@ -142,17 +150,10 @@ export default new ContextPlugin<AdminUsersContext>(async context => {
             }
         },
 
-        async createUser(data: CreateUserInput, options: { auth?: boolean } = {}): Promise<User> {
+        async createUser(data, options): Promise<User> {
             const { security, tenancy } = context;
 
-            const auth = "auth" in options ? options.auth : true;
-
-            if (auth) {
-                const permission = await security.getPermission("security.user");
-                if (!permission) {
-                    throw new NotAuthorizedError();
-                }
-            }
+            await checkPermission(options);
 
             const login = data.login.toLowerCase();
             const identity = security.getIdentity();
@@ -207,7 +208,7 @@ export default new ContextPlugin<AdminUsersContext>(async context => {
                     inputData: data
                 });
                 const tenant = tenancy.getCurrentTenant();
-                const group = await security.groups.getGroup(data.group);
+                const group = await security.groups.getGroup(data.group, options);
                 await security.users.linkUserToTenant(result.login, tenant, group);
                 return result;
             } catch (ex) {
@@ -222,7 +223,7 @@ export default new ContextPlugin<AdminUsersContext>(async context => {
             }
         },
 
-        async deleteToken(id: string): Promise<boolean> {
+        async deleteToken(id): Promise<boolean> {
             const identity = context.security.getIdentity();
             if (!identity) {
                 throw new NotAuthorizedError();
@@ -254,13 +255,10 @@ export default new ContextPlugin<AdminUsersContext>(async context => {
             return true;
         },
 
-        async deleteUser(login: string): Promise<boolean> {
+        async deleteUser(login): Promise<boolean> {
             const { security } = context;
 
-            const permission = await security.getPermission("security.user");
-            if (!permission) {
-                throw new NotAuthorizedError();
-            }
+            await checkPermission();
 
             const user = await context.security.users.getUser(login);
             const identity = security.getIdentity();
@@ -303,10 +301,7 @@ export default new ContextPlugin<AdminUsersContext>(async context => {
             return true;
         },
 
-        async getPersonalAccessToken(
-            login: string,
-            tokenId: string
-        ): Promise<UserPersonalAccessToken> {
+        async getPersonalAccessToken(login, tokenId): Promise<UserPersonalAccessToken> {
             try {
                 return storageOperations.getPersonalAccessToken({
                     login,
@@ -325,26 +320,17 @@ export default new ContextPlugin<AdminUsersContext>(async context => {
             }
         },
 
-        async getUser(login: string, options: { auth?: boolean } = {}): Promise<User> {
-            const { security } = context;
-            const auth = "auth" in options ? options.auth : true;
-
-            if (auth) {
-                const permission = await security.getPermission("security.user");
-
-                if (!permission) {
-                    throw new NotAuthorizedError();
-                }
-            }
+        async getUser(login, options): Promise<User> {
+            await checkPermission(options);
 
             return loaders.getUser.load(login);
         },
 
-        async getUserAccess(login: string): Promise<TenantAccess[]> {
+        async getUserAccess(login): Promise<TenantAccess[]> {
             return loaders.getUserAccess.load(login);
         },
 
-        async getUserByPersonalAccessToken(token: string): Promise<User> {
+        async getUserByPersonalAccessToken(token): Promise<User> {
             try {
                 return await storageOperations.getUserByPersonalAccessToken({
                     token
@@ -407,7 +393,7 @@ export default new ContextPlugin<AdminUsersContext>(async context => {
             await loaders.addDataLoaderAccessCache(id, link);
         },
 
-        async unlinkUserFromTenant(id: string, tenant: Tenant): Promise<void> {
+        async unlinkUserFromTenant(id, tenant): Promise<void> {
             const user = await context.security.users.getUser(id, {
                 auth: false
             });
@@ -436,7 +422,7 @@ export default new ContextPlugin<AdminUsersContext>(async context => {
             await loaders.deleteDataLoaderAccessCache(id, tenant);
         },
 
-        async listTokens(login: string): Promise<UserPersonalAccessToken[]> {
+        async listTokens(login): Promise<UserPersonalAccessToken[]> {
             try {
                 return storageOperations.listTokens({
                     login
@@ -453,18 +439,10 @@ export default new ContextPlugin<AdminUsersContext>(async context => {
             }
         },
 
-        async listUsers(params: { tenant?: string; auth?: boolean } = {}): Promise<User[]> {
-            const { security, tenancy } = context;
+        async listUsers(params, options): Promise<User[]> {
+            const { tenancy } = context;
 
-            const auth = "auth" in params ? params.auth : true;
-
-            if (auth) {
-                const permission = await security.getPermission("security.user");
-
-                if (!permission) {
-                    throw new NotAuthorizedError();
-                }
-            }
+            await checkPermission(options);
 
             const tenant = params.tenant || tenancy.getCurrentTenant().id;
 
@@ -486,10 +464,7 @@ export default new ContextPlugin<AdminUsersContext>(async context => {
             }
         },
 
-        async updateToken(
-            tokenId: string,
-            data: UpdatePersonalAccessTokenInput
-        ): Promise<UpdatePersonalAccessTokenInput> {
+        async updateToken(tokenId, data) {
             const identity = context.security.getIdentity();
             if (!identity) {
                 throw new NotAuthorizedError();
@@ -528,7 +503,7 @@ export default new ContextPlugin<AdminUsersContext>(async context => {
             }
         },
 
-        async updateUser(login: string, data: UpdateUserInput): Promise<User> {
+        async updateUser(login, data): Promise<User> {
             const { security, tenancy } = context;
             const permission = await security.getPermission("security.user");
 

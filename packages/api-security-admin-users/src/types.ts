@@ -109,19 +109,31 @@ export interface SystemCRUD {
     install(input: CreateUserInput): Promise<void>;
 }
 
+/**
+ * @private
+ * @internal
+ */
+export interface CrudOptions {
+    auth?: boolean;
+}
+
 export interface GroupsCRUD {
-    getGroup(slug: string): Promise<Group | null>;
-    listGroups(): Promise<Group[]>;
-    createGroup(data: GroupInput): Promise<Group>;
+    getGroup(slug: string, options?: CrudOptions): Promise<Group | null>;
+    listGroups(options?: CrudOptions): Promise<Group[]>;
+    createGroup(data: GroupInput, options?: CrudOptions): Promise<Group>;
     updateGroup(slug: string, data: Partial<Omit<GroupInput, "system" | "slug">>): Promise<Group>;
     deleteGroup(slug: string): Promise<boolean>;
 }
 
+interface UsersCRUDListUsersParams {
+    tenant?: string;
+}
+
 export interface UsersCRUD {
     login(): Promise<User>;
-    getUser(login: string, options?: { auth?: boolean }): Promise<User>;
-    listUsers(options?: { tenant?: string; auth?: boolean }): Promise<User[]>;
-    createUser(data: CreateUserInput, options?: { auth?: boolean }): Promise<User>;
+    getUser(login: string, options?: CrudOptions): Promise<User>;
+    listUsers(params?: UsersCRUDListUsersParams, options?: CrudOptions): Promise<User[]>;
+    createUser(data: CreateUserInput, options?: CrudOptions): Promise<User>;
     updateUser(login: string, data: UpdateUserInput): Promise<User>;
     deleteUser(login: string): Promise<boolean>;
     linkUserToTenant(id: string, tenant: Tenant, group: Group): Promise<void>;

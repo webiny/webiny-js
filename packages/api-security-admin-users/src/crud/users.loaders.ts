@@ -64,7 +64,7 @@ export class UserLoaders {
         }
     }
 
-    private async _getUserAccess(ids): Promise<TenantAccess[]> {
+    private async _getUserAccess(ids): Promise<TenantAccess[][]> {
         if (ids.length === 0) {
             return [];
         }
@@ -75,10 +75,7 @@ export class UserLoaders {
                     id_in: ids
                 }
             });
-            return ids.map(id => {
-                const item = results.find(result => result.id === id);
-                return item || null;
-            });
+            return ids.map(id => results.filter(result => result.id === id));
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not execute multiple read in getUserAccess.",

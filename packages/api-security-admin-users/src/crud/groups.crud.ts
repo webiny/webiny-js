@@ -1,7 +1,7 @@
 import { object } from "commodo-fields-object";
 import { withFields, string } from "@commodo/fields";
 import { validation } from "@webiny/validation";
-import { AdminUsersContext, Group, GroupsStorageOperations } from "~/types";
+import { AdminUsersContext, CrudOptions, Group, GroupsStorageOperations } from "~/types";
 import WebinyError from "@webiny/error";
 import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
 import { GroupsStorageOperationsProvider } from "~/plugins/GroupsStorageOperationsProvider";
@@ -33,13 +33,20 @@ export default new ContextPlugin<AdminUsersContext>(async context => {
         GroupsStorageOperationsProvider.type
     );
 
-    context.security.groups = {
-        async getGroup(slug) {
-            const permission = await context.security.getPermission("security.group");
+    const checkPermission = async (options?: CrudOptions) => {
+        if (options && options.auth === false) {
+            return;
+        }
+        const permission = await context.security.getPermission("security.group");
 
-            if (!permission) {
-                throw new NotAuthorizedError();
-            }
+        if (!permission) {
+            throw new NotAuthorizedError();
+        }
+    };
+
+    context.security.groups = {
+        async getGroup(slug, options) {
+            await checkPermission(options);
             const tenant = context.tenancy.getCurrentTenant();
 
             let group: Group = null;
@@ -61,12 +68,8 @@ export default new ContextPlugin<AdminUsersContext>(async context => {
             }
             return group;
         },
-        async listGroups() {
-            const permission = await context.security.getPermission("security.group");
-
-            if (!permission) {
-                throw new NotAuthorizedError();
-            }
+        async listGroups(options) {
+            await checkPermission(options);
             const tenant = context.tenancy.getCurrentTenant();
             try {
                 return await storageOperations.list(tenant, {
@@ -79,12 +82,8 @@ export default new ContextPlugin<AdminUsersContext>(async context => {
                 );
             }
         },
-        async createGroup(input) {
-            const permission = await context.security.getPermission("security.group");
-
-            if (!permission) {
-                throw new NotAuthorizedError();
-            }
+        async createGroup(input, options) {
+            await checkPermission(options);
 
             const identity = context.security.getIdentity();
 
@@ -131,11 +130,8 @@ export default new ContextPlugin<AdminUsersContext>(async context => {
             }
         },
         async updateGroup(slug, input) {
-            const permission = await context.security.getPermission("security.group");
+            await checkPermission();
 
-            if (!permission) {
-                throw new NotAuthorizedError();
-            }
             const tenant = context.tenancy.getCurrentTenant();
 
             const model = await new UpdateDataModel().populate(input);
@@ -178,11 +174,8 @@ export default new ContextPlugin<AdminUsersContext>(async context => {
             }
         },
         async deleteGroup(slug) {
-            const permission = await context.security.getPermission("security.group");
+            await checkPermission();
 
-            if (!permission) {
-                throw new NotAuthorizedError();
-            }
             const tenant = context.tenancy.getCurrentTenant();
 
             const group = await storageOperations.get(tenant, {

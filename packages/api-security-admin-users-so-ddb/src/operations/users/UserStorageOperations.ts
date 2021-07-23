@@ -483,23 +483,28 @@ export class UserStorageOperationsDdb implements UserStorageOperations {
         }
     }
 
-    public async listUsersLinks(params: UserStorageOperationsListUsersLinksParams): Promise<any> {
+    public async listUsersLinks(
+        params: UserStorageOperationsListUsersLinksParams
+    ): Promise<TenantAccess[]> {
         const ids = params.where.id_in;
         if (ids.length === 0) {
             return [];
         }
-
-        const batch = ids.map(id => {
-            return this.linksEntity.getBatch({
-                PK: `U#${id}`,
-                SK: { $beginsWith: `LINK#` }
+        const queries: Promise<TenantAccess[]>[] = ids.map(id => {
+            return queryAll<TenantAccess>({
+                partitionKey: `U#${id}`,
+                entity: this.linksEntity,
+                options: {
+                    beginsWith: "LINK#"
+                }
             });
         });
         try {
-            const items = await batchReadAll({
-                table: this.table,
-                items: batch
-            });
+            const results = await Promise.all(queries);
+            const items = [];
+            for (const result of results) {
+                items.push(...result);
+            }
             return items.map(item => this.cleanupLinksItem(item));
         } catch (ex) {
             throw new WebinyError(
@@ -520,10 +525,11 @@ export class UserStorageOperationsDdb implements UserStorageOperations {
             });
         });
         try {
-            return await batchReadAll<User>({
+            const results = await batchReadAll<User>({
                 table: this.table,
                 items
             });
+            return results.map(item => this.cleanupItem(item));
         } catch (ex) {
             throw new WebinyError(
                 ex.messsage || "Cannot batch read users by ID.",

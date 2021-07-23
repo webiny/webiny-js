@@ -98,9 +98,11 @@ export default (opts: UseGqlHandlerParams = {}) => {
                 if (!identity) {
                     return null;
                 }
-
-                const allPermissions = await context.security.users.getUserAccess(identity.id);
-                const tenantAccess = allPermissions.find(p => p.tenant.id === tenant.id);
+                const permissions = await context.security.users.getUserAccess(identity.id);
+                if (!permissions) {
+                    return null;
+                }
+                const tenantAccess = permissions.find(p => p.tenant.id === tenant.id);
                 return tenantAccess ? tenantAccess.group.permissions : null;
             }
         },
