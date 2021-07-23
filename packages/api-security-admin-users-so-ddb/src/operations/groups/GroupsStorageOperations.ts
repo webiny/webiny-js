@@ -1,6 +1,5 @@
 import {
     AdminUsersContext,
-    DbItemSecurityUser2Tenant,
     Group,
     GroupsStorageOperations,
     GroupsStorageOperationsCreateParams,
@@ -8,7 +7,8 @@ import {
     GroupsStorageOperationsGetParams,
     GroupsStorageOperationsListParams,
     GroupsStorageOperationsUpdateParams,
-    GroupsStorageOperationsUpdateUserLinksParams
+    GroupsStorageOperationsUpdateUserLinksParams,
+    TenantAccess
 } from "@webiny/api-security-admin-users/types";
 import { Entity, Table } from "dynamodb-toolbox";
 import { createTable } from "~/definitions/table";
@@ -20,6 +20,7 @@ import { queryAll } from "@webiny/db-dynamodb/utils/query";
 import { sortItems } from "@webiny/db-dynamodb/utils/sort";
 import { batchWriteAll } from "@webiny/db-dynamodb/utils/batchWrite";
 import { Tenant } from "@webiny/api-tenancy/types";
+import { DbItem } from "~/types";
 
 interface Params {
     context: AdminUsersContext;
@@ -99,7 +100,7 @@ export class GroupsStorageOperationsDdb implements GroupsStorageOperations {
             items,
             sort,
             context: this.context,
-            fields: ["createdOn_DESC"]
+            fields: ["createdOn"]
         });
         return sortedItems.map(item => this.cleanupItem(item));
     }
@@ -188,9 +189,9 @@ export class GroupsStorageOperationsDdb implements GroupsStorageOperations {
         tenant: Tenant,
         { group }: GroupsStorageOperationsUpdateUserLinksParams
     ): Promise<void> {
-        let links: DbItemSecurityUser2Tenant[] = [];
+        let links: DbItem<TenantAccess>[] = [];
         try {
-            links = await queryAll<DbItemSecurityUser2Tenant>({
+            links = await queryAll<DbItem<TenantAccess>>({
                 entity: this.entity,
                 partitionKey: this.createPartitionKey(tenant),
                 options: {

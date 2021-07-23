@@ -44,6 +44,9 @@ export const createUserEntity = (params: Params): Entity<any> => {
             createdOn: {
                 type: "string"
             },
+            group: {
+                type: "string"
+            },
             ...attributes
         }
     });

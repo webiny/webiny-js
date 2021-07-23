@@ -2,7 +2,6 @@ import { ContextInterface } from "@webiny/handler/types";
 import { SecurityContextBase, SecurityPermission } from "@webiny/api-security/types";
 import { TenancyContext, Tenant } from "@webiny/api-tenancy/types";
 import { HttpContext } from "@webiny/handler-http/types";
-import { DbContext } from "@webiny/handler-db/types";
 import { SecurityIdentity } from "@webiny/api-security/types";
 
 export interface CreatedBy {
@@ -47,6 +46,7 @@ export interface UserPersonalAccessToken {
 }
 
 export interface TenantAccess {
+    id: string;
     tenant: {
         id: string;
         name: string;
@@ -147,22 +147,6 @@ export interface ApiKeysCRUD {
     deleteApiKey(id: string): Promise<boolean>;
 }
 
-// Helper types when working with database
-export interface DbItemSecurityUser2Tenant {
-    PK: string;
-    SK: string;
-    TYPE: "SecurityUser2Tenant";
-    tenant: {
-        id: string;
-        name: string;
-    };
-    group: {
-        slug: string;
-        name: string;
-        permissions: SecurityPermission[];
-    };
-}
-
 export interface ApiKeyPermission extends SecurityPermission {
     name: "security.apiKey";
 }
@@ -174,11 +158,7 @@ export interface AdminUsers {
     system?: SystemCRUD;
 }
 
-export interface AdminUsersContext
-    extends TenancyContext,
-        ContextInterface,
-        HttpContext,
-        DbContext {
+export interface AdminUsersContext extends TenancyContext, ContextInterface, HttpContext {
     security: AdminUsers & SecurityContextBase;
 }
 
@@ -361,7 +341,7 @@ export interface UserStorageOperationsGetUserByPatParams {
  * @category UserStorageOperations
  */
 export interface UserStorageOperationsListParamsWhere {
-    tenant: string;
+    tenant?: string;
     id_in?: string[];
 }
 
@@ -463,6 +443,12 @@ export interface UserStorageOperationsUnlinkUserFromTenantParams {
     user: User;
 }
 
+export interface UserStorageOperationsListUsersLinksParams {
+    where: {
+        id_in: string[];
+    };
+}
+
 /**
  * @category StorageOperations
  * @category UserStorageOperations
@@ -497,9 +483,10 @@ export interface UserStorageOperations {
         params: UserStorageOperationsListTokensParams
     ) => Promise<UserPersonalAccessToken[]>;
 
-    // linkers
+    // links
     linkUserToTenant: (params: UserStorageOperationsLinkUserToTenantParams) => Promise<void>;
     unlinkUserFromTenant: (
         params: UserStorageOperationsUnlinkUserFromTenantParams
     ) => Promise<void>;
+    listUsersLinks: (params: UserStorageOperationsListUsersLinksParams) => Promise<TenantAccess[]>;
 }

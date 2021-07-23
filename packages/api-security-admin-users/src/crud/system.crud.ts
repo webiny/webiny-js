@@ -1,7 +1,14 @@
-import { AdminUsersContext, CreateUserInput, Group, System } from "~/types";
+import {
+    AdminUsersContext,
+    CreateUserInput,
+    Group,
+    System,
+    SystemStorageOperations
+} from "~/types";
 import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
 import { SystemStorageOperationsProvider } from "~/plugins/SystemStorageOperationsProvider";
 import WebinyError from "@webiny/error";
+import { getStorageOperations } from "~/crud/storageOperations";
 
 const createDefaultGroups = async (
     context: AdminUsersContext
@@ -45,21 +52,10 @@ const createDefaultGroups = async (
 };
 
 export default new ContextPlugin<AdminUsersContext>(async context => {
-    const pluginType = SystemStorageOperationsProvider.type;
-
-    const providerPlugin = context.plugins
-        .byType<SystemStorageOperationsProvider>(pluginType)
-        .find(() => true);
-
-    if (!providerPlugin) {
-        throw new WebinyError(`Missing "${pluginType}" plugin.`, "PLUGIN_NOT_FOUND", {
-            type: pluginType
-        });
-    }
-
-    const storageOperations = await providerPlugin.provide({
-        context
-    });
+    const storageOperations = await getStorageOperations<SystemStorageOperations>(
+        context,
+        SystemStorageOperationsProvider.type
+    );
 
     context.security.system = {
         async get() {
@@ -153,7 +149,7 @@ export default new ContextPlugin<AdminUsersContext>(async context => {
             } catch (ex) {
                 await context.tenancy.deleteTenant("root");
 
-                throw new WebinyError(ex.message, "SECURITY_INSTALL_ABORTED", {});
+                throw new WebinyError(ex.message, "SECURITY_INSTALL_ABORTED", ex.data || {});
             }
 
             // Store app version

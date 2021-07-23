@@ -1,13 +1,14 @@
 import { object } from "commodo-fields-object";
 import { withFields, string } from "@commodo/fields";
 import { validation } from "@webiny/validation";
-import { AdminUsersContext, Group } from "~/types";
+import { AdminUsersContext, Group, GroupsStorageOperations } from "~/types";
 import WebinyError from "@webiny/error";
 import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
 import { GroupsStorageOperationsProvider } from "~/plugins/GroupsStorageOperationsProvider";
 import { NotFoundError } from "@webiny/handler-graphql";
 import { NotAuthorizedError } from "@webiny/api-security";
 import deepEqual from "deep-equal";
+import { getStorageOperations } from "~/crud/storageOperations";
 
 const CreateDataModel = withFields({
     tenant: string({ validation: validation.create("required") }),
@@ -27,21 +28,10 @@ const UpdateDataModel = withFields({
 })();
 
 export default new ContextPlugin<AdminUsersContext>(async context => {
-    const pluginType = GroupsStorageOperationsProvider.type;
-
-    const providerPlugin = context.plugins
-        .byType<GroupsStorageOperationsProvider>(pluginType)
-        .find(() => true);
-
-    if (!providerPlugin) {
-        throw new WebinyError(`Missing "${pluginType}" plugin.`, "PLUGIN_NOT_FOUND", {
-            type: pluginType
-        });
-    }
-
-    const storageOperations = await providerPlugin.provide({
-        context
-    });
+    const storageOperations = await getStorageOperations<GroupsStorageOperations>(
+        context,
+        GroupsStorageOperationsProvider.type
+    );
 
     context.security.groups = {
         async getGroup(slug) {
@@ -208,8 +198,8 @@ export default new ContextPlugin<AdminUsersContext>(async context => {
                 return true;
             } catch (ex) {
                 throw new WebinyError(
-                    ex.message || "Could not create group.",
-                    ex.code || "CREATE_GROUP_ERROR",
+                    ex.message || "Could not delete group.",
+                    ex.code || "DELETE_GROUP_ERROR",
                     {
                         group
                     }

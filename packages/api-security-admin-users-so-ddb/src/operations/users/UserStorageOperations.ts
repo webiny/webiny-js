@@ -7,7 +7,6 @@ import {
     UserStorageOperationsDeleteParams,
     UserStorageOperationsGetParams,
     UserStorageOperationsListParams,
-    DbItemSecurityUser2Tenant,
     UserStorageOperationsLinkUserToTenantParams,
     Group,
     UserStorageOperationsUnlinkUserFromTenantParams,
@@ -17,7 +16,9 @@ import {
     UserStorageOperationsGetTokenParams,
     UserStorageOperationsGetUserByPatParams,
     UserStorageOperationsListTokensParams,
-    UserStorageOperationsUpdateTokenParams
+    UserStorageOperationsUpdateTokenParams,
+    UserStorageOperationsListUsersLinksParams,
+    TenantAccess
 } from "@webiny/api-security-admin-users/types";
 import { createTable } from "~/definitions/table";
 import { createUserEntity } from "~/definitions/userEntity";
@@ -31,6 +32,7 @@ import { batchWriteAll } from "@webiny/db-dynamodb/utils/batchWrite";
 import { Tenant } from "@webiny/api-tenancy/types";
 import { createTokenEntity } from "~/definitions/tokenEntity";
 import { NotFoundError } from "jest-dynalite/dist/config";
+import { DbItem } from "~/types";
 
 interface Params {
     context: AdminUsersContext;
@@ -128,25 +130,34 @@ export class UserStorageOperationsDdb implements UserStorageOperations {
 
     public async listUsers(params: UserStorageOperationsListParams): Promise<User[]> {
         const { where } = params;
+        if (!where.tenant && !where.id_in) {
+            throw new WebinyError(
+                `There must be either a tenant or id_in sent when querying for list of users.`,
+                "MALFORMED_WHERE_LIST_USERS_ERROR",
+                { where }
+            );
+        }
+        if (where.id_in) {
+            return this.listUsersByIds(where.id_in);
+        }
 
-        let userTenantAccessList: DbItemSecurityUser2Tenant[] = [];
-        const usersPartitionKey = `T#${where.tenant}`;
-        const usersOptions = {
-            beginsWith: "G#"
+        let userTenantAccessList: DbItem<TenantAccess>[] = [];
+        const queryAllParams = {
+            entity: this.linksEntity,
+            partitionKey: `T#${where.tenant}`,
+            options: {
+                beginsWith: "G#"
+            }
         };
         try {
-            userTenantAccessList = await queryAll({
-                entity: this.linksEntity,
-                partitionKey: usersPartitionKey,
-                options: usersOptions
-            });
+            userTenantAccessList = await queryAll(queryAllParams);
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Cannot load users via secondary index.",
                 ex.code || "LIST_USERS_VIA_SECONDARY_INDEX_ERROR",
                 {
-                    partitionKey: usersPartitionKey,
-                    options: usersOptions
+                    partitionKey: queryAllParams.partitionKey,
+                    options: queryAllParams.options
                 }
             );
         }
@@ -298,7 +309,7 @@ export class UserStorageOperationsDdb implements UserStorageOperations {
         params: UserStorageOperationsUnlinkUserFromTenantParams
     ): Promise<void> {
         const { tenant, user } = params;
-        let userTenantAccessList: DbItemSecurityUser2Tenant[] = [];
+        let userTenantAccessList: DbItem<TenantAccess>[] = [];
         const usersPartitionKey = this.createUserPartitionKey(user);
         const usersOptions = {
             beginsWith: `LINK#T#${tenant.id}#G#`,
@@ -472,6 +483,58 @@ export class UserStorageOperationsDdb implements UserStorageOperations {
         }
     }
 
+    public async listUsersLinks(params: UserStorageOperationsListUsersLinksParams): Promise<any> {
+        const ids = params.where.id_in;
+        if (ids.length === 0) {
+            return [];
+        }
+
+        const batch = ids.map(id => {
+            return this.linksEntity.getBatch({
+                PK: `U#${id}`,
+                SK: { $beginsWith: `LINK#` }
+            });
+        });
+        try {
+            const items = await batchReadAll({
+                table: this.table,
+                items: batch
+            });
+            return items.map(item => this.cleanupLinksItem(item));
+        } catch (ex) {
+            throw new WebinyError(
+                ex.messsage || "Cannot list user links.",
+                ex.code || "LIST_USER_LINKS_ERROR",
+                {
+                    ids
+                }
+            );
+        }
+    }
+
+    private async listUsersByIds(ids: string[]): Promise<User[]> {
+        const items = ids.map(id => {
+            return this.entity.getBatch({
+                PK: this.createPartitionKey(id),
+                SK: this.createUserSortKey()
+            });
+        });
+        try {
+            return await batchReadAll<User>({
+                table: this.table,
+                items
+            });
+        } catch (ex) {
+            throw new WebinyError(
+                ex.messsage || "Cannot batch read users by ID.",
+                ex.code || "BATCH_READ_BY_ID_ERROR",
+                {
+                    ids
+                }
+            );
+        }
+    }
+
     private cleanupItem(item: User & Record<string, any>): User {
         return cleanupItem(this.entity, item);
     }
@@ -480,6 +543,10 @@ export class UserStorageOperationsDdb implements UserStorageOperations {
         item: UserPersonalAccessToken & Record<string, any>
     ): UserPersonalAccessToken {
         return cleanupItem(this.tokenEntity, item);
+    }
+
+    private cleanupLinksItem(item: TenantAccess & Record<string, any>): TenantAccess {
+        return cleanupItem(this.linksEntity, item);
     }
     /**
      * There is a need for this method because of the old way of saving the user data.
