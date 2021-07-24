@@ -168,7 +168,7 @@ export default (opts: UseGqlHandlerParams = {}) => {
     };
 
     const securityUserPAT = {
-        async getCurrentUser(variables, headers = {}) {
+        async getCurrentUser(variables = {}, headers = {}) {
             return invoke({
                 body: { query: GET_CURRENT_SECURITY_USER_WITH_PAT, variables },
                 headers

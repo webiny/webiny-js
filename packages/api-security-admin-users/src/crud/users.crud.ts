@@ -119,16 +119,19 @@ export default new ContextPlugin<AdminUsersContext>(async context => {
             return user;
         },
 
-        async createToken(data): Promise<UserPersonalAccessToken> {
+        async createToken(input): Promise<UserPersonalAccessToken> {
             const identity = context.security.getIdentity();
             if (!identity) {
                 throw new NotAuthorizedError();
             }
+            const data = {
+                ...input,
+                token: generateToken()
+            };
             await new CreateAccessTokenDataModel().populate(data).validate();
 
             const token: UserPersonalAccessToken = {
                 ...data,
-                token: generateToken(),
                 id: mdbid(),
                 login: identity.id,
                 createdOn: new Date().toISOString()
