@@ -29,6 +29,9 @@
       "path": "../ui-composer"
     },
     {
+      "path": "../ui-elements"
+    },
+    {
       "path": "../validation"
     }
   ],
@@ -53,6 +56,8 @@
       "@webiny/ui": ["../ui/src"],
       "@webiny/ui-composer/*": ["../ui-composer/src/*"],
       "@webiny/ui-composer": ["../ui-composer/src"],
+      "@webiny/ui-elements/*": ["../ui-elements/src/*"],
+      "@webiny/ui-elements": ["../ui-elements/src"],
       "@webiny/validation/*": ["../validation/src/*"],
       "@webiny/validation": ["../validation/src"]
     },

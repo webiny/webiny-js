@@ -1,14 +1,12 @@
 import React from "react";
 import { View } from "@webiny/ui-composer/View";
-import { SplitView } from "~/views/Users/SplitView";
+import { AdminView } from "@webiny/app-admin/views/AdminView";
+import { SplitView } from "@webiny/app-admin/views/SplitView";
+import { ViewElement } from "@webiny/ui-elements/ViewElement";
+import { ButtonElement } from "@webiny/ui-elements/ButtonElement";
+import { AdminViewPlugin } from "@webiny/app-admin/plugins/AdminViewPlugin";
 import { UsersFormView } from "~/views/Users/UsersFormView";
 import { useUserForm } from "~/views/Users/hooks/useUserForm";
-import { ViewElement } from "~/views/Users/elements/ViewElement";
-import { AdminView } from "~/views/Users/AdminView";
-import { ButtonElement } from "~/views/Users/elements/ButtonElement";
-import Logo from "@webiny/app-admin/plugins/logo/Logo";
-import { AdminViewPlugin } from "~/views/Users/AdminViewPlugin";
-import {plugins} from "@webiny/plugins";
 
 export class UsersView extends View {
     constructor() {
@@ -37,7 +35,7 @@ export class UsersView extends View {
                 label: "Show on the left",
                 type: "primary",
                 onClick: ({ render }) => {
-                    splitView.getRightPanel().moveToTheLeftOf(splitView.getLeftPanel());
+                    splitView.getRightPanel().moveBefore(splitView.getLeftPanel());
                     render();
                 }
             })
@@ -48,18 +46,10 @@ export class UsersView extends View {
                 label: "Show on the right",
                 type: "primary",
                 onClick: ({ render }) => {
-                    splitView.getRightPanel().moveToTheRightOf(splitView.getLeftPanel());
+                    splitView.getRightPanel().moveAfter(splitView.getLeftPanel());
                     render();
                 }
             })
         );
     }
 }
-
-class MyAdminViewPlugin extends AdminViewPlugin {
-    apply(view: AdminView): void {
-        view.setLogo(<Logo white />);
-    }
-}
-
-plugins.register(new MyAdminViewPlugin());

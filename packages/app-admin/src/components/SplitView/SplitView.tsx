@@ -1,97 +1,54 @@
-import * as React from "react";
-import classSet from "classnames";
-import { Cell, Grid, GridInner, CellProps } from "@webiny/ui/Grid";
-import { css } from "emotion";
-import styled from "@emotion/styled";
-import { clone } from "lodash";
-import { getClasses } from "@webiny/ui/Helpers";
+import React, { useEffect } from "react";
+import { CellProps } from "@webiny/ui/Grid";
+import { ViewComponent } from "@webiny/ui-composer/View";
+import { GenericElement } from "@webiny/ui-elements/GenericElement";
+import { SplitView as SplitViewClass } from "~/views/SplitView";
 
-const grid = css({
-    "&.mdc-layout-grid": {
-        padding: 0,
-        backgroundColor: "var(--mdc-theme-background)"
-    }
-});
+const view = new SplitViewClass("split-view");
 
-const gridInner = css({
-    "&.mdc-layout-grid__inner": {
-        gridGap: 0
-    }
-});
-
-const RightPanelWrapper = styled("div")({
-    backgroundColor: "var(--mdc-theme-background)",
-    overflow: "auto",
-    height: "calc(100vh - 70px)"
-});
-
-const leftPanel = css({
-    backgroundColor: "var(--mdc-theme-surface)",
-    ">.webiny-data-list": {
-        display: "flex",
-        flexDirection: "column",
-        height: "calc(100vh - 70px)",
-        ".mdc-list": {
-            overflow: "auto"
-        }
-    },
-    ">.mdc-list": {
-        display: "flex",
-        flexDirection: "column",
-        maxHeight: "calc(100vh - 70px)",
-        overflow: "auto"
-    }
-});
-
-type SplitViewProps = {
-    children: React.ReactElement<any> | React.ReactElement<any>[];
+interface SplitViewProps {
     className?: string;
-};
+    children: React.ReactElement | React.ReactElement[];
+}
 
+/**
+ * This component serves as a backwards-compatibility layer for older views and views created using our scaffolding 
+ * tools. This ensures that the old way of constructing views internally uses the new UI Composer. 
+ */
 const SplitView = (props: SplitViewProps) => {
-    return (
-        <Grid className={classSet(grid, props.className, "webiny-split-view")}>
-            <GridInner className={gridInner + " webiny-split-view__inner"}>
-                {props.children}
-            </GridInner>
-        </Grid>
-    );
+    useEffect(() => {
+        React.Children.forEach(props.children, child => {
+            if (child.type === LeftPanel) {
+                view.getLeftPanel().setContentElement(
+                    new GenericElement("leftPanelContent", () => {
+                        return child.props.children;
+                    })
+                );
+            }
+
+            if (child.type === RightPanel) {
+                view.getRightPanel().setContentElement(
+                    new GenericElement("rightPanelContent", () => {
+                        return child.props.children;
+                    })
+                );
+            }
+        });
+
+        view.refresh();
+    }, []);
+
+    return <ViewComponent view={view} />;
 };
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const LeftPanel = (props: CellProps) => {
-    const propList = clone(props);
-    if (!propList.hasOwnProperty("span")) {
-        propList.span = 5;
-    }
-
-    return (
-        <Cell
-            {...getClasses(
-                propList,
-                classSet(leftPanel, props.className, "webiny-split-view__left-panel")
-            )}
-        >
-            {propList.children}
-        </Cell>
-    );
+    return null;
 };
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const RightPanel = (props: CellProps) => {
-    const propList = clone(props);
-    if (!propList.hasOwnProperty("span")) {
-        propList.span = 7;
-    }
-
-    return (
-        <Cell {...getClasses(propList, "webiny-split-view__right-panel")}>
-            <RightPanelWrapper
-                className={"webiny-split-view__right-panel-wrapper"}
-                id={"webiny-split-view-right-panel"}
-            >
-                {propList.children}
-            </RightPanelWrapper>
-        </Cell>
-    );
+    return null;
 };
 
 export { SplitView, LeftPanel, RightPanel };

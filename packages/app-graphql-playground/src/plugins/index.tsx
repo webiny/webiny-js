@@ -13,6 +13,8 @@ import Playground from "./Playground";
 import { GraphQLPlaygroundTabPlugin } from "../types";
 // @ts-ignore
 import placeholder from "!!raw-loader!./placeholder.graphql";
+import { NavigationViewPlugin } from "@webiny/app-admin/plugins/NavigationViewPlugin";
+import { NavigationMenuElement } from "@webiny/app-admin/elements/NavigationMenuElement";
 
 const t = i18n.ns("app-admin/navigation");
 
@@ -22,22 +24,18 @@ type GraphQLPlaygroundOptions = {
 
 // @ts-ignore
 export default (options: GraphQLPlaygroundOptions) => [
-    {
-        type: "admin-drawer-footer-menu",
-        name: "admin-drawer-footer-menu-api-playground",
-        render({ hideMenu }) {
-            return (
-                <Link to="/api-playground">
-                    <ListItem ripple={false} onClick={hideMenu}>
-                        <ListItemGraphic>
-                            <Icon icon={<InfoIcon />} />
-                        </ListItemGraphic>
-                        {t`API Playground`}
-                    </ListItem>
-                </Link>
-            );
-        }
-    } as AdminDrawerFooterMenuPlugin,
+    new NavigationViewPlugin(view => {
+        view.getFooterElement().addMenuElement(
+            new NavigationMenuElement("apiPlayground", {
+                label: "API Playground",
+                icon: <InfoIcon />,
+                path: "/api-playground",
+                onClick: () => {
+                    view.getNavigationHook().hideMenu();
+                }
+            })
+        );
+    }),
     {
         name: "route-api-playground",
         type: "route",

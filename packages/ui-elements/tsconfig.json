@@ -1,0 +1,21 @@
+{
+  "extends": "../../tsconfig",
+  "exclude": ["node_modules", "./dist", "../plugins", "../ui-composer"],
+  "references": [
+    {
+      "path": "../plugins"
+    },
+    {
+      "path": "../ui-composer"
+    }
+  ],
+  "compilerOptions": {
+    "paths": {
+      "@webiny/plugins/*": ["../plugins/src/*"],
+      "@webiny/plugins": ["../plugins/src"],
+      "@webiny/ui-composer/*": ["../ui-composer/src/*"],
+      "@webiny/ui-composer": ["../ui-composer/src"]
+    },
+    "baseUrl": "."
+  }
+}

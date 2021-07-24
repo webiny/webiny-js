@@ -1,8 +1,9 @@
-import * as React from "react";
+import React, { ReactElement } from "react";
 import { Plugin } from "@webiny/plugins/types";
 import { ApolloClient } from "apollo-client";
-import { Menu, Item, Section } from "./plugins/menu/Navigation/components";
-import { ReactElement } from "react";
+import Menu from "./defaults/menu/Navigation/components/Menu";
+import Section from "./defaults/menu/Navigation/components/Section";
+import Item from "./defaults/menu/Navigation/components/Item";
 
 type RenderParams = {
     content: React.ReactNode;

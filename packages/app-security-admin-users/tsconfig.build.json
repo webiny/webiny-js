@@ -12,6 +12,7 @@
     "../form",
     "../react-router",
     "../ui-composer",
+    "../ui-elements",
     "../ui",
     "../validation",
     "../plugins"

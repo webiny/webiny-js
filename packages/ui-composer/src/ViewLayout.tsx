@@ -120,6 +120,12 @@ export class ViewLayout {
                         <Fragment key={index}>
                             {row.map(item => {
                                 const element = this._getElement(item.element);
+
+                                if (!element) {
+                                    console.warn(`Element "${item.element}" was not found!`);
+                                    return null;
+                                }
+
                                 if (!element.shouldRender(props)) {
                                     return null;
                                 }

@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Plugin } from "@webiny/plugins";
-import { Menu, Item, Section } from "./menu/Navigation/components";
+import { Menu, Item, Section } from "~/defaults/menu/Navigation/components";
 
 interface Props {
     Menu: typeof Menu;

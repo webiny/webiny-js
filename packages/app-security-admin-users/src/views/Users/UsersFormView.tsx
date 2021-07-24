@@ -1,22 +1,22 @@
 import React from "react";
+import styled from "@emotion/styled";
 import { View } from "@webiny/ui-composer/View";
 import { plugins } from "@webiny/plugins";
 import { Form } from "@webiny/form";
-import { UsersFormViewPlugin } from "./UsersFormViewPlugin";
+import { validation } from "@webiny/validation";
 import {
     SimpleFormElement,
     SimpleFormElementRenderProps
-} from "~/views/Users/elements/SimpleFormElement";
-import { InputElement } from "~/views/Users/elements/InputElement";
-import { validation } from "@webiny/validation";
-import { GroupAutocompleteElement } from "~/views/Users/elements/GroupAutocompleteElement";
-import styled from "@emotion/styled";
-import { AccordionElement, AccordionItemElement } from "~/views/Users/elements/AccordionElement";
+} from "@webiny/app-admin/elements/SimpleFormElement";
+import { GenericElement } from "@webiny/ui-elements/GenericElement";
+import { AccordionElement, AccordionItemElement } from "@webiny/ui-elements/AccordionElement";
+import { InputElement } from "@webiny/ui-elements/InputElement";
 import { ReactComponent as SecurityIcon } from "../../assets/icons/security-24px.svg";
 import { ReactComponent as SettingsIcon } from "~/assets/icons/settings-24px.svg";
 import { UseUserForm } from "./hooks/useUserForm";
 import AvatarImage from "../Components/AvatarImage";
-import { GenericElement } from "~/views/Users/elements/GenericElement";
+import { GroupAutocompleteElement } from "~/elements/GroupAutocompleteElement";
+import { UsersFormViewPlugin } from "./UsersFormViewPlugin";
 
 const FormWrapper = styled("div")({
     margin: "0 100px"
@@ -41,7 +41,7 @@ export class UsersFormView extends View<UseUserForm> {
 
     submit(data: FormData, form?: Form) {
         this.dispatchEvent("onSubmit", { data, form });
-        this.hook.onSubmit(data);
+        this.hookValues.onSubmit(data);
     }
 
     onSubmit(cb: (data: any, form: Form) => void) {
@@ -52,19 +52,19 @@ export class UsersFormView extends View<UseUserForm> {
         const simpleForm = this.addElement(
             new SimpleFormElement("users-form", {
                 isLoading: () => {
-                    return this.hook.loading;
+                    return this.hookValues.loading;
                 },
                 onSubmit: (data: FormData, form: Form) => {
                     this.submit(data, form);
                 },
                 getTitle: () => {
-                    return this.hook.fullName || "New User";
+                    return this.hookValues.fullName || "New User";
                 },
                 getFormData: () => {
-                    return this.hook.user;
+                    return this.hookValues.user;
                 },
                 onCancel: () => {
-                    this.hook.cancelEditing();
+                    this.hookValues.cancelEditing();
                 }
             })
         ) as SimpleFormElement;

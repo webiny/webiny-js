@@ -1,6 +1,6 @@
 {
   "extends": "../../tsconfig",
-  "include": ["src", "./custom.d.ts"],
+  "include": ["src"],
   "references": [
     {
       "path": "../app"
@@ -21,11 +21,18 @@
       "path": "../ui"
     },
     {
+      "path": "../ui-composer"
+    },
+    {
+      "path": "../ui-elements"
+    },
+    {
       "path": "../validation"
     }
   ],
   "compilerOptions": {
     "paths": {
+      "~/*": ["./src/*"],
       "@webiny/app/*": ["../app/src/*"],
       "@webiny/app": ["../app/src"],
       "@webiny/app-security/*": ["../app-security/src/*"],
@@ -38,6 +45,10 @@
       "@webiny/react-router": ["../react-router/src"],
       "@webiny/ui/*": ["../ui/src/*"],
       "@webiny/ui": ["../ui/src"],
+      "@webiny/ui-composer/*": ["../ui-composer/src/*"],
+      "@webiny/ui-composer": ["../ui-composer/src"],
+      "@webiny/ui-elements/*": ["../ui-elements/src/*"],
+      "@webiny/ui-elements": ["../ui-elements/src"],
       "@webiny/validation/*": ["../validation/src/*"],
       "@webiny/validation": ["../validation/src"]
     },

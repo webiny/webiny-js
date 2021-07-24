@@ -9001,6 +9001,8 @@ __metadata:
     "@webiny/project-utils": ^5.10.0
     "@webiny/react-router": ^5.10.0
     "@webiny/ui": ^5.10.0
+    "@webiny/ui-composer": ^5.10.0
+    "@webiny/ui-elements": ^5.10.0
     "@webiny/validation": ^5.10.0
     apollo-cache: ^1.3.5
     apollo-client: ^2.6.8
@@ -9034,6 +9036,7 @@ __metadata:
     semver: ^7.3.4
     shortid: ^2.2.12
     store: ^2.0.12
+    ttypescript: ^1.5.12
     typescript: ^4.1.3
   languageName: unknown
   linkType: soft
@@ -9501,6 +9504,7 @@ __metadata:
     "@webiny/react-router": ^5.10.0
     "@webiny/ui": ^5.10.0
     "@webiny/ui-composer": ^5.10.0
+    "@webiny/ui-elements": ^5.10.0
     "@webiny/validation": ^5.10.0
     apollo-cache: ^1.3.5
     apollo-client: ^2.6.10
@@ -10414,6 +10418,24 @@ __metadata:
 "@webiny/ui-composer@^5.10.0, @webiny/ui-composer@workspace:packages/ui-composer":
   version: 0.0.0-use.local
   resolution: "@webiny/ui-composer@workspace:packages/ui-composer"
+  dependencies:
+    "@babel/cli": ^7.5.5
+    "@babel/core": ^7.5.5
+    "@babel/preset-env": ^7.5.5
+    "@babel/runtime": ^7.5.5
+    "@webiny/cli": ^5.10.0
+    "@webiny/plugins": ^5.10.0
+    "@webiny/project-utils": ^5.10.0
+    react: ^16.14.0
+    react-dom: ^16.14.0
+    rimraf: ^3.0.2
+    typescript: ^4.1.3
+  languageName: unknown
+  linkType: soft
+
+"@webiny/ui-elements@^5.10.0, @webiny/ui-elements@workspace:packages/ui-elements":
+  version: 0.0.0-use.local
+  resolution: "@webiny/ui-elements@workspace:packages/ui-elements"
   dependencies:
     "@babel/cli": ^7.5.5
     "@babel/core": ^7.5.5

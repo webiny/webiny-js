@@ -1,9 +1,14 @@
 import React from "react";
 import { ViewLayout } from "./ViewLayout";
 import { View } from "./View";
+import { Plugin } from "@webiny/plugins";
 
 export interface ElementConfig<TProps = any> {
     shouldRender?(props: TProps): boolean;
+}
+
+export interface ElementRenderer {
+    (params: { props: any; superRender: (props: any) => React.ReactNode }): React.ReactNode;
 }
 
 export abstract class Element<TConfig extends ElementConfig = ElementConfig> {
@@ -13,6 +18,7 @@ export abstract class Element<TConfig extends ElementConfig = ElementConfig> {
     private _wrappers = [];
     private _id: string;
     private _parent: Element;
+    private _renderer: ElementRenderer;
 
     constructor(id: string, config?: TConfig) {
         this._id = id;
@@ -39,6 +45,18 @@ export abstract class Element<TConfig extends ElementConfig = ElementConfig> {
         return depth;
     }
 
+    protected getRenderer() {
+        if (!this._renderer) {
+            return null;
+            // throw new Error(`Element ${this.constructor.name} is missing a renderer!`);
+        }
+        return this._renderer;
+    }
+
+    setRenderer(renderer: ElementRenderer) {
+        this._renderer = renderer;
+    }
+
     setParent(parent: Element) {
         this._parent = parent;
     }
@@ -47,10 +65,38 @@ export abstract class Element<TConfig extends ElementConfig = ElementConfig> {
         return this._parent;
     }
 
+    getParentOfType(type: any): Element {
+        let parent = this.getParent();
+        while (parent) {
+            if (parent instanceof type) {
+                break;
+            }
+
+            parent = parent.getParent();
+        }
+
+        return parent;
+    }
+
+    getView(): View {
+        let parent = this.getParent();
+        while (parent && !(parent instanceof View)) {
+            parent = parent.getParent();
+        }
+
+        return parent as View;
+    }
+
     addElement(element: Element): Element {
         element.setParent(this);
+
+        // We only need to modify layout if we're adding a new element
+        if (!this._elements.has(element.id)) {
+            this._layout.insertElementAtTheBottom(element);
+        }
+
         this._elements.set(element.id, element);
-        this._layout.insertElementAtTheBottom(element);
+
         return element;
     }
 
@@ -90,20 +136,20 @@ export abstract class Element<TConfig extends ElementConfig = ElementConfig> {
         targetElement.addElement(this);
     }
 
-    moveToTheRightOf(targetElement: Element) {
+    moveAfter(targetElement: Element) {
         const parent = this.getParent();
         if (parent) {
             parent.removeElement(this);
         }
-        targetElement.getParent().insertElementToTheRightOf(targetElement, this);
+        targetElement.getParent().insertElementAfter(targetElement, this);
     }
 
-    moveToTheLeftOf(targetElement: Element) {
+    moveBefore(targetElement: Element) {
         const parent = this.getParent();
         if (parent) {
             parent.removeElement(this);
         }
-        targetElement.getParent().insertElementToTheLeftOf(targetElement, this);
+        targetElement.getParent().insertElementBefore(targetElement, this);
     }
 
     moveAbove(targetElement: Element) {
@@ -122,20 +168,20 @@ export abstract class Element<TConfig extends ElementConfig = ElementConfig> {
         targetElement.getParent().insertElementBelow(targetElement, this);
     }
 
-    moveToTheTopOf(targetElement: Element) {
+    moveToTheBeginningOf(targetElement: Element) {
         const parent = this.getParent();
         if (parent) {
             parent.removeElement(this);
         }
-        targetElement.insertElementAtTheTop(this);
+        targetElement.insertElementAtTheBeginning(this);
     }
 
-    moveToTheBottomOf(targetElement: Element) {
+    moveToTheEndOf(targetElement: Element) {
         const parent = this.getParent();
         if (parent) {
             parent.removeElement(this);
         }
-        targetElement.insertElementAtTheBottom(this);
+        targetElement.insertElementAtTheEnd(this);
     }
 
     removeElement(element?: Element<any>): void {
@@ -150,15 +196,30 @@ export abstract class Element<TConfig extends ElementConfig = ElementConfig> {
     }
 
     render(props?: any): React.ReactNode {
-        const content = this._layout.render(props, this.depth);
+        const superRender = props => {
+            const content = this._layout.render(props, this.depth);
 
-        return this._wrappers.reduce((el, Component) => {
-            return React.createElement(Component, {}, el);
-        }, content);
+            return this._wrappers.reduce((el, Component) => {
+                return React.createElement(Component, {}, el);
+            }, content);
+        };
+
+        const renderer = this.getRenderer();
+        if (!renderer) {
+            return superRender(props);
+        }
+
+        return renderer({ props, superRender });
     }
 
     replaceWith(element: Element) {
-        // TODO
+        if (element.id === this.id) {
+            this.getParent().addElement(element);
+            return;
+        }
+
+        element.moveAfter(this);
+        this.removeElement();
     }
 
     shouldRender(props) {
@@ -187,31 +248,60 @@ export abstract class Element<TConfig extends ElementConfig = ElementConfig> {
         return this;
     }
 
-    protected insertElementToTheRightOf(lookFor: Element<any>, element: Element<any>) {
+    protected insertElementAfter(lookFor: Element<any>, element: Element<any>) {
         element.setParent(this);
         this._elements.set(element.id, element);
         this._layout.insertElementToTheRightOf(lookFor, element);
         return this;
     }
 
-    protected insertElementToTheLeftOf(lookFor: Element<any>, element: Element<any>) {
+    protected insertElementBefore(lookFor: Element<any>, element: Element<any>) {
         element.setParent(this);
         this._elements.set(element.id, element);
         this._layout.insertElementToTheLeftOf(lookFor, element);
         return this;
     }
 
-    protected insertElementAtTheTop(element: Element<any>) {
+    protected insertElementAtTheBeginning(element: Element<any>) {
         element.setParent(this);
         this._elements.set(element.id, element);
         this._layout.insertElementAtTheTop(element);
         return this;
     }
 
-    protected insertElementAtTheBottom(element: Element<any>) {
+    protected insertElementAtTheEnd(element: Element<any>) {
         element.setParent(this);
         this._elements.set(element.id, element);
         this._layout.insertElementAtTheBottom(element);
         return this;
+    }
+}
+
+interface ApplyFunction<TElement> {
+    (element: TElement): void;
+}
+
+export class ElementPlugin<TElement> extends Plugin {
+    public static readonly type: string;
+    private _apply: ApplyFunction<TElement>;
+
+    constructor(apply?: ApplyFunction<TElement>) {
+        super();
+
+        this._apply = apply;
+
+        if (!this.type) {
+            throw Error(`Missing "type" definition in "${this.constructor.name}"!`);
+        }
+    }
+
+    apply(element: TElement) {
+        if (!this._apply) {
+            throw Error(
+                `You must either pass an "apply" function to plugin constructor, or extend the plugin class and override the "apply" method.`
+            );
+        }
+
+        this._apply(element);
     }
 }

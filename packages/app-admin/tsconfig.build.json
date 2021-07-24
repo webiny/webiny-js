@@ -11,13 +11,17 @@
     "../plugins",
     "../react-router",
     "../ui",
+    "../ui-composer",
+    "../ui-elements",
     "../validation"
   ],
   "compilerOptions": {
     "rootDir": "./src",
     "outDir": "./dist",
     "declarationDir": "./dist",
-    "paths": {},
+    "paths": {
+      "~/*": ["./src/*"]
+    },
     "baseUrl": "."
   },
   "references": []

@@ -2,9 +2,11 @@ import React, { useCallback, useState } from "react";
 import { Plugin } from "@webiny/plugins";
 import { Element } from "./Element";
 
-export abstract class View<THook = any> extends Element {
+export abstract class View extends Element {
     private _events = new Map();
-    private _hook: THook;
+    private _hookDefinitions: Record<string, Function> = {};
+    private _hookValues: Record<string, any> = {};
+    private _props: { render: Function; [key: string]: any };
 
     constructor(id) {
         super(id);
@@ -12,12 +14,28 @@ export abstract class View<THook = any> extends Element {
         this.toggleGrid(false);
     }
 
-    get hook() {
-        return this._hook;
+    get props() {
+        return this._props;
     }
 
-    set hook(value) {
-        this._hook = value;
+    set props(value) {
+        this._props = value;
+    }
+
+    addHookDefinition(key: string, hook: Function) {
+        this._hookDefinitions[key] = hook;
+    }
+
+    getHookDefinitions() {
+        return this._hookDefinitions;
+    }
+
+    setHookValues(values: Record<string, any>) {
+        this._hookValues = values;
+    }
+
+    getHook<THook = any>(key: string): THook {
+        return this._hookValues[key];
     }
 
     dispatchEvent(name: string, params = {}) {
@@ -30,6 +48,19 @@ export abstract class View<THook = any> extends Element {
         callbacks.add(cb);
         this._events.set(event, callbacks);
     }
+
+    render(props?: any): React.ReactNode {
+        // We want to keep track of props that triggered the render cycle.
+        this._props = props;
+
+        return super.render(props);
+    }
+
+    refresh() {
+        if (this._props && typeof this._props.render === "function") {
+            this._props.render();
+        }
+    }
 }
 
 export abstract class ViewPlugin<T> extends Plugin {
@@ -38,19 +69,21 @@ export abstract class ViewPlugin<T> extends Plugin {
 
 interface ViewComponentProps {
     view: View;
-    hook?: Function;
     [key: string]: any;
 }
 
-export const ViewComponent = ({ view, hook, ...props }: ViewComponentProps): React.ReactElement => {
+export const ViewComponent = ({ view, ...props }: ViewComponentProps): React.ReactElement => {
     const [, setCount] = useState(0);
 
     const render = useCallback(() => {
         setCount(count => count + 1);
     }, []);
 
-    if (hook) {
-        view.hook = hook();
+    const hooks = view.getHookDefinitions();
+    if (hooks) {
+        view.setHookValues(
+            Object.keys(hooks).reduce((acc, key) => ({ ...acc, [key]: hooks[key]() }), {})
+        );
     }
 
     return <>{view.render({ ...props, render })}</>;
