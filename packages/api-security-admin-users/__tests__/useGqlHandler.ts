@@ -153,7 +153,7 @@ export default (opts: UseGqlHandlerParams = {}) => {
         async delete(variables) {
             return invoke({ body: { query: DELETE_SECURITY_USER, variables } });
         },
-        async list(variables, headers = {}) {
+        async list(variables = {}, headers = {}) {
             return invoke({ body: { query: LIST_SECURITY_USERS, variables }, headers });
         },
         async get(variables) {

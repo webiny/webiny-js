@@ -444,13 +444,16 @@ export default new ContextPlugin<AdminUsersContext>(async context => {
 
             await checkPermission(options);
 
-            const tenant = params.tenant || tenancy.getCurrentTenant().id;
+            const { tenant: tenantParam } = params || {};
+
+            const tenant = tenantParam || tenancy.getCurrentTenant().id;
 
             try {
                 return storageOperations.listUsers({
                     where: {
                         tenant
-                    }
+                    },
+                    sort: ["createdOn_ASC"]
                 });
             } catch (ex) {
                 throw new WebinyError(

@@ -33,6 +33,7 @@ import { Tenant } from "@webiny/api-tenancy/types";
 import { createTokenEntity } from "~/definitions/tokenEntity";
 import { NotFoundError } from "jest-dynalite/dist/config";
 import { DbItem } from "~/types";
+import { sortItems } from "@webiny/db-dynamodb/utils/sort";
 
 interface Params {
     context: AdminUsersContext;
@@ -129,7 +130,7 @@ export class UserStorageOperationsDdb implements UserStorageOperations {
     }
 
     public async listUsers(params: UserStorageOperationsListParams): Promise<User[]> {
-        const { where } = params;
+        const { where, sort } = params;
         if (!where.tenant && !where.id_in) {
             throw new WebinyError(
                 `There must be either a tenant or id_in sent when querying for list of users.`,
@@ -146,6 +147,7 @@ export class UserStorageOperationsDdb implements UserStorageOperations {
             entity: this.linksEntity,
             partitionKey: `T#${where.tenant}`,
             options: {
+                index: "GSI1",
                 beginsWith: "G#"
             }
         };
@@ -168,18 +170,26 @@ export class UserStorageOperationsDdb implements UserStorageOperations {
             });
         });
 
+        let users: User[];
         try {
-            const users = await batchReadAll<User>({
+            const results = await batchReadAll<User>({
                 table: this.table,
                 items: batch
             });
-            return users.map(user => this.cleanupItem(user));
+            users = results.map(user => this.cleanupItem(user));
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Cannot load users.",
                 ex.code || "LIST_USERS_ERROR"
             );
         }
+
+        return sortItems({
+            context: this.context,
+            items: users,
+            sort,
+            fields: ["createdOn"]
+        });
     }
 
     public async createUser(params: UserStorageOperationsCreateParams): Promise<User> {
