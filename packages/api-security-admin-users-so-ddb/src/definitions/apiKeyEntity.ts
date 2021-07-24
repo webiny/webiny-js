@@ -21,6 +21,12 @@ export const createApiKeyEntity = (params: Params): Entity<any> => {
             SK: {
                 sortKey: true
             },
+            GSI1_PK: {
+                type: "string"
+            },
+            GSI1_SK: {
+                type: "string"
+            },
             TYPE: {
                 type: "string"
             },
@@ -46,7 +52,7 @@ export const createApiKeyEntity = (params: Params): Entity<any> => {
                 type: "string"
             },
             permissions: {
-                type: "map"
+                type: "list"
             },
             ...attributes
         }

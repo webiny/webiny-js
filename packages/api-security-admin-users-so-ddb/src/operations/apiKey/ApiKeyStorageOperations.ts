@@ -14,7 +14,7 @@ import { Entity, Table } from "dynamodb-toolbox";
 import { createTable } from "~/definitions/table";
 import { createApiKeyEntity } from "~/definitions/apiKeyEntity";
 import { cleanupItem } from "@webiny/db-dynamodb/utils/cleanup";
-import { queryAll } from "@webiny/db-dynamodb/utils/query";
+import { queryAll, queryOne, QueryOneParams } from "@webiny/db-dynamodb/utils/query";
 import { sortItems } from "@webiny/db-dynamodb/utils/sort";
 
 interface Params {
@@ -64,24 +64,25 @@ export class ApiKeyStorageOperationsDdb implements ApiKeyStorageOperations {
     }
 
     public async getByToken({ token }: ApiKeyStorageOperationsGetByTokenParams): Promise<ApiKey> {
-        const keys = {
-            GSI1_PK: this.createGsiPartitionKey(),
-            GSI1_SK: this.createGsiSortKey(token)
+        const queryParams: QueryOneParams = {
+            entity: this.entity,
+            partitionKey: this.createGsiPartitionKey(),
+            options: {
+                eq: this.createGsiSortKey(token),
+                index: "GSI1"
+            }
         };
 
         try {
-            const result = await this.entity.get(keys);
-            if (!result || !result.Item) {
-                return null;
-            }
-            return this.cleanupItem(result.Item);
+            const result = await queryOne<ApiKey>(queryParams);
+            return this.cleanupItem(result);
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not load api key by token.",
                 ex.code || "GET_BY_TOKEN_API_KEY_ERROR",
                 {
-                    keys,
-                    token
+                    partitionKey: queryParams.partitionKey,
+                    options: queryParams.options
                 }
             );
         }
