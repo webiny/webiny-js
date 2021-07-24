@@ -80,7 +80,7 @@ export default ({ region, userPoolId }) => {
                 await cognito.adminUpdateUserAttributes(verify).promise();
 
                 // Check if this is the first user in the system, and if so, set permanent password.
-                const users = await context.security.users.listUsers({ auth: false });
+                const users = await context.security.users.listUsers({}, { auth: false });
 
                 if (!users.length) {
                     await cognito
