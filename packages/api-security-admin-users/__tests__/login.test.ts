@@ -8,9 +8,14 @@ describe(`"Login" test`, () => {
     const login = "admin@webiny.com";
 
     beforeEach(async () => {
-        await install.install({
+        const [response] = await install.install({
             data: { firstName: "John", lastName: "Doe", login }
         });
+        if (response?.data?.security?.install?.error) {
+            console.log(response.data.security.install.error);
+            throw new Error(response.data.security.install.error.message);
+            process.exit(0);
+        }
     });
 
     test("Should be able to login", async () => {

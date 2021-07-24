@@ -1,16 +1,20 @@
 import DataLoader from "dataloader";
-import omit from "lodash.omit";
 import WebinyError from "@webiny/error";
 import { Tenant } from "@webiny/api-tenancy/types";
-import dbArgs from "./dbArgs";
-import { AdminUsersContext, TenantAccess, User } from "../types";
+import { AdminUsersContext, TenantAccess, User, UserStorageOperations } from "~/types";
 
+interface Params {
+    context: AdminUsersContext;
+    storageOperations: UserStorageOperations;
+}
 export class UserLoaders {
-    private loaders = new Map<string, DataLoader<any, any>>();
-    private context: AdminUsersContext;
+    private readonly loaders = new Map<string, DataLoader<any, any>>();
+    private readonly context: AdminUsersContext;
+    private readonly storageOperations: UserStorageOperations;
 
-    constructor(context: AdminUsersContext) {
-        this.context = context;
+    constructor(params: Params) {
+        this.context = params.context;
+        this.storageOperations = params.storageOperations;
     }
 
     get getUser() {
@@ -37,23 +41,17 @@ export class UserLoaders {
         if (ids.length === 0) {
             return [];
         }
-        const batch = this.context.db.batch();
-        for (const id of ids) {
-            batch.read({
-                ...dbArgs,
-                query: {
-                    PK: `U#${id}`,
-                    SK: "A"
+
+        try {
+            const results = await this.storageOperations.listUsers({
+                where: {
+                    tenant: undefined,
+                    id_in: ids
                 }
             });
-        }
-        try {
-            const results = await batch.execute();
-            return results.map(res => {
-                if (res[0][0]) {
-                    return omit(res[0][0], ["PK", "SK"]);
-                }
-                return undefined;
+            return ids.map(id => {
+                const item = results.find(result => result.id === id);
+                return item || null;
             });
         } catch (ex) {
             throw new WebinyError(
@@ -66,36 +64,18 @@ export class UserLoaders {
         }
     }
 
-    private async _getUserAccess(ids) {
+    private async _getUserAccess(ids): Promise<TenantAccess[][]> {
         if (ids.length === 0) {
             return [];
         }
 
-        const reads = Promise.all(
-            ids.map(id => {
-                return this.context.db.read({
-                    ...dbArgs,
-                    query: {
-                        PK: `U#${id}`,
-                        SK: { $beginsWith: `LINK#` }
-                    }
-                });
-            })
-        );
         try {
-            const resultGroups = await reads;
-            const links = [];
-            for (const results of resultGroups) {
-                links.push(
-                    results[0].map(item => {
-                        return {
-                            group: item.group,
-                            tenant: item.tenant
-                        };
-                    })
-                );
-            }
-            return links;
+            const results = await this.storageOperations.listUsersLinks({
+                where: {
+                    id_in: ids
+                }
+            });
+            return ids.map(id => results.filter(result => result.id === id));
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not execute multiple read in getUserAccess.",

@@ -6,7 +6,7 @@ import {
     ListResponse,
     ListErrorResponse
 } from "@webiny/handler-graphql/responses";
-import { AdminUsersContext, CreateUserInput, UpdateUserInput, User } from "../types";
+import { AdminUsersContext, CreateUserInput, UpdateUserInput, User } from "~/types";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSchemaPlugin";
 import { NotAuthorizedError } from "@webiny/api-security";
 
