@@ -5,6 +5,8 @@ const FILES = {
     headlessCMS: "api/code/headlessCMS/src/security.ts"
 };
 
+const importName = "securityAdminUsersDynamoDbStorageOperations";
+
 const addElement = ({ context, source }) => {
     const { error } = context;
     /**
@@ -24,7 +26,7 @@ const addElement = ({ context, source }) => {
     const arrayExpression = exportDefaultExpression.getFirstDescendant(node => {
         return tsMorph.Node.isArrayLiteralExpression(node);
     });
-    arrayExpression.addElement("securityAdminUsersDynamoDbStorageOperations()");
+    arrayExpression.addElement(`${importName}()`);
 };
 
 const upgradeGraphQLIndex = async (project, context) => {
@@ -39,8 +41,8 @@ const upgradeGraphQLIndex = async (project, context) => {
         source,
         imports: [
             {
-                elementName: "securityAdminUsersDynamoDbStorageOperations",
-                importPath: "@api-security-admin-users-so-ddb",
+                elementName: importName,
+                importPath: "@webiny/api-security-admin-users-so-ddb",
                 addToPlugins: false
             }
         ],
@@ -65,8 +67,8 @@ const upgradeHeadlessCMSIndex = async (project, context) => {
         source,
         imports: [
             {
-                elementName: "securityAdminUsersDynamoDbStorageOperations",
-                importPath: "@api-security-admin-users-so-ddb",
+                elementName: importName,
+                importPath: "@webiny/api-security-admin-users-so-ddb",
                 addToPlugins: false
             }
         ],
