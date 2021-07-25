@@ -27,7 +27,7 @@ export class ContentElement extends Element {
     }
 
     addMenuElement(element: NavigationMenuElement) {
-        return this.addElement(element);
+        return this.addElement<NavigationMenuElement>(element);
     }
 
     render(props?: any): React.ReactNode {

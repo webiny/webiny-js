@@ -6,7 +6,6 @@ import { plugins } from "@webiny/plugins";
 import { HeaderElement } from "./NavigationView/HeaderElement";
 import { ContentElement } from "./NavigationView/ContentElement";
 import { FooterElement } from "./NavigationView/FooterElement";
-import { NavigationViewPlugin } from "~/plugins/NavigationViewPlugin";
 import { useNavigation, UseNavigation } from "~/views/NavigationView/useNavigation";
 
 export enum ElementID {
@@ -30,11 +29,6 @@ export class NavigationView extends View {
         this.addElement(new HeaderElement(ElementID.Header, elementConfig));
         this.addElement(new ContentElement(ElementID.Content));
         this.addElement(new FooterElement(ElementID.Footer, elementConfig));
-
-        // Apply plugins
-        plugins
-            .byType<NavigationViewPlugin>(NavigationViewPlugin.type)
-            .forEach(plugin => plugin.apply(this));
     }
 
     getNavigationHook(): UseNavigation {

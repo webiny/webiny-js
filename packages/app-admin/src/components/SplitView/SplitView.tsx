@@ -1,10 +1,8 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { CellProps } from "@webiny/ui/Grid";
 import { ViewComponent } from "@webiny/ui-composer/View";
 import { GenericElement } from "@webiny/ui-elements/GenericElement";
 import { SplitView as SplitViewClass } from "~/views/SplitView";
-
-const view = new SplitViewClass("split-view");
 
 interface SplitViewProps {
     className?: string;
@@ -12,11 +10,14 @@ interface SplitViewProps {
 }
 
 /**
- * This component serves as a backwards-compatibility layer for older views and views created using our scaffolding 
- * tools. This ensures that the old way of constructing views internally uses the new UI Composer. 
+ * This component serves as a backwards-compatibility layer for older views and views created using our scaffolding
+ * tools. This ensures that the old way of constructing views internally uses the new UI Composer.
  */
 const SplitView = (props: SplitViewProps) => {
+    const [view, setView] = useState(null);
+
     useEffect(() => {
+        const view = new SplitViewClass("split-view");
         React.Children.forEach(props.children, child => {
             if (child.type === LeftPanel) {
                 view.getLeftPanel().setContentElement(
@@ -24,6 +25,8 @@ const SplitView = (props: SplitViewProps) => {
                         return child.props.children;
                     })
                 );
+
+                return;
             }
 
             if (child.type === RightPanel) {
@@ -32,11 +35,21 @@ const SplitView = (props: SplitViewProps) => {
                         return child.props.children;
                     })
                 );
+
+                return;
             }
+
+            view.addElement(
+                new GenericElement(`${child.type.toString()}-${Date.now()}`, () => child)
+            );
         });
 
-        view.refresh();
+        setView(view);
     }, []);
+
+    if (!view) {
+        return null;
+    }
 
     return <ViewComponent view={view} />;
 };

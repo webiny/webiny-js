@@ -6,6 +6,7 @@ import { ReactComponent as FileIcon } from "~/assets/icons/insert_drive_file-24p
 import { FileManager } from "~/components";
 import { NavigationViewPlugin } from "~/plugins/NavigationViewPlugin";
 import { NavigationMenuElement } from "~/elements/NavigationMenuElement";
+import { ElementRenderer, ElementRenderParams } from "@webiny/ui-composer/ElementRenderer";
 
 const listItemStyle = css({
     ".mdc-list &.mdc-list-item:hover": {
@@ -13,6 +14,28 @@ const listItemStyle = css({
         backgroundColor: "var(--mdc-theme-background)"
     }
 });
+
+class FileManagerMenuItemRenderer extends ElementRenderer<NavigationMenuElement> {
+    render({ element }: ElementRenderParams<NavigationMenuElement>): React.ReactNode {
+        return (
+            <FileManager>
+                {({ showFileManager }) => (
+                    <ListItem
+                        ripple={false}
+                        onClick={showFileManager}
+                        className={listItemStyle}
+                        data-testid={element.config.testId}
+                    >
+                        <ListItemGraphic>
+                            <Icon icon={element.config.icon} />
+                        </ListItemGraphic>
+                        {element.config.label}
+                    </ListItem>
+                )}
+            </FileManager>
+        );
+    }
+}
 
 export default () => {
     return new NavigationViewPlugin(view => {
@@ -22,25 +45,7 @@ export default () => {
             testId: "admin-drawer-footer-menu-file-manager"
         });
 
-        element.setRenderer(() => {
-            return (
-                <FileManager>
-                    {({ showFileManager }) => (
-                        <ListItem
-                            ripple={false}
-                            onClick={showFileManager}
-                            className={listItemStyle}
-                            data-testid={element.config.testId}
-                        >
-                            <ListItemGraphic>
-                                <Icon icon={element.config.icon} />
-                            </ListItemGraphic>
-                            {element.config.label}
-                        </ListItem>
-                    )}
-                </FileManager>
-            );
-        });
+        element.addRenderer(new FileManagerMenuItemRenderer());
 
         view.getFooterElement().addMenuElement(element);
     });

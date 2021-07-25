@@ -1,29 +1,27 @@
 import React from "react";
-import { ViewLayout } from "./ViewLayout";
+import { Layout } from "./Layout";
 import { View } from "./View";
 import { Plugin } from "@webiny/plugins";
+import { ElementRenderer } from "./ElementRenderer";
 
 export interface ElementConfig<TProps = any> {
     shouldRender?(props: TProps): boolean;
 }
 
-export interface ElementRenderer {
-    (params: { props: any; superRender: (props: any) => React.ReactNode }): React.ReactNode;
-}
-
 export abstract class Element<TConfig extends ElementConfig = ElementConfig> {
     private _config: TConfig;
     private _elements = new Map();
-    private _layout: ViewLayout;
+    private _tags = new Set();
+    private _layout: Layout;
     private _wrappers = [];
     private _id: string;
     private _parent: Element;
-    private _renderer: ElementRenderer;
+    private _renderers: ElementRenderer<any>[] = [];
 
     constructor(id: string, config?: TConfig) {
         this._id = id;
         this._config = config || ({} as TConfig);
-        this._layout = new ViewLayout(elementId => this.getElement(elementId));
+        this._layout = new Layout(elementId => this.getElement(elementId));
     }
 
     get id() {
@@ -45,16 +43,8 @@ export abstract class Element<TConfig extends ElementConfig = ElementConfig> {
         return depth;
     }
 
-    protected getRenderer() {
-        if (!this._renderer) {
-            return null;
-            // throw new Error(`Element ${this.constructor.name} is missing a renderer!`);
-        }
-        return this._renderer;
-    }
-
-    setRenderer(renderer: ElementRenderer) {
-        this._renderer = renderer;
+    addRenderer(renderer: ElementRenderer<any>) {
+        this._renderers.push(renderer);
     }
 
     setParent(parent: Element) {
@@ -78,16 +68,28 @@ export abstract class Element<TConfig extends ElementConfig = ElementConfig> {
         return parent;
     }
 
-    getView(): View {
+    addTag(tag: string) {
+        this._tags.add(tag);
+    }
+
+    hasTag(tag: string) {
+        return this._tags.has(tag);
+    }
+
+    removeTag(tag: string) {
+        this._tags.delete(tag);
+    }
+
+    getView<TView extends View = View>(): TView {
         let parent = this.getParent();
         while (parent && !(parent instanceof View)) {
             parent = parent.getParent();
         }
 
-        return parent as View;
+        return parent as TView;
     }
 
-    addElement(element: Element): Element {
+    addElement<TElement extends Element = Element>(element: TElement): TElement {
         element.setParent(this);
 
         // We only need to modify layout if we're adding a new element
@@ -126,6 +128,21 @@ export abstract class Element<TConfig extends ElementConfig = ElementConfig> {
 
     getElements(): Element[] {
         return Array.from(this._elements.values());
+    }
+
+    getElementsByTag(tag: string): Element[] {
+        const elements = Array.from(this._elements.values());
+
+        // Search child elements recursively
+        for (const element of elements) {
+            if (element instanceof Element) {
+                const descendants = element.getElements();
+                for (const descendant of descendants) {
+                    descendant.getElementsByTag(tag).forEach(el => elements.push(el));
+                }
+            }
+        }
+        return elements.filter(el => el.hasTag(tag));
     }
 
     moveTo(targetElement: Element) {
@@ -196,7 +213,7 @@ export abstract class Element<TConfig extends ElementConfig = ElementConfig> {
     }
 
     render(props?: any): React.ReactNode {
-        const superRender = props => {
+        const layoutRenderer = props => {
             const content = this._layout.render(props, this.depth);
 
             return this._wrappers.reduce((el, Component) => {
@@ -204,12 +221,18 @@ export abstract class Element<TConfig extends ElementConfig = ElementConfig> {
             }, content);
         };
 
-        const renderer = this.getRenderer();
-        if (!renderer) {
-            return superRender(props);
-        }
+        const renderers: ElementRenderer<any>[] = [...this._renderers].filter(pl =>
+            pl.canRender(this)
+        );
+        
+        const next = (props: any) => {
+            if (renderers.length > 0) {
+                return renderers.pop().render({ element: this, props, next });
+            }
+            return layoutRenderer(props);
+        };
 
-        return renderer({ props, superRender });
+        return next(props);
     }
 
     replaceWith(element: Element) {

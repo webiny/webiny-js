@@ -15,7 +15,7 @@ interface ElementGetter {
     (elementId: string): Element<any>;
 }
 
-export class ViewLayout {
+export class Layout {
     private _grid = true;
     private _layout: LayoutItem[][] = [];
     private _getElement: ElementGetter;

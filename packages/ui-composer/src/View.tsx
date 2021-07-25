@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from "react";
-import { Plugin } from "@webiny/plugins";
+import { Plugin, plugins } from "@webiny/plugins";
 import { Element } from "./Element";
 
 export abstract class View extends Element {
@@ -24,6 +24,28 @@ export abstract class View extends Element {
 
     addHookDefinition(key: string, hook: Function) {
         this._hookDefinitions[key] = hook;
+    }
+
+    /**
+     * TODO: I want this to be "ViewPlugin" class, instead of "any".
+     * Tried the suggestions in this link and couldn't get it to work:
+     * https://www.reddit.com/r/typescript/comments/ad1oiu/pass_class_as_parameter_that_extends_another_class/
+     */
+    applyPlugin(pluginClass: any) {
+        plugins.byType<ViewPlugin<any>>(pluginClass.type).forEach(plugin => plugin.apply(this));
+    }
+
+    async awaitElement<TElement extends Element = Element<any>>(id: string): Promise<TElement> {
+        let interval;
+        return new Promise(resolve => {
+            setInterval(() => {
+                const element = this.getElement<TElement>(id);
+                if (element) {
+                    clearInterval(interval);
+                    resolve(element);
+                }
+            }, 200);
+        });
     }
 
     getHookDefinitions() {
@@ -63,8 +85,33 @@ export abstract class View extends Element {
     }
 }
 
-export abstract class ViewPlugin<T> extends Plugin {
-    abstract apply(view: T): void;
+export interface ApplyFunction<TView> {
+    (view: TView): void;
+}
+
+export abstract class ViewPlugin<TView> extends Plugin {
+    public static readonly type: string;
+    private _apply: ApplyFunction<TView>;
+
+    constructor(apply?: ApplyFunction<TView>) {
+        super();
+
+        this._apply = apply;
+
+        if (!this.type) {
+            throw Error(`Missing "type" definition in "${this.constructor.name}"!`);
+        }
+    }
+
+    apply(view: TView) {
+        if (!this._apply) {
+            throw Error(
+                `You must either pass an "apply" function to plugin constructor, or extend the plugin class and override the "apply" method.`
+            );
+        }
+
+        this._apply(view);
+    }
 }
 
 interface ViewComponentProps {

@@ -35,6 +35,12 @@
       "path": "../ui"
     },
     {
+      "path": "../ui-composer"
+    },
+    {
+      "path": "../ui-elements"
+    },
+    {
       "path": "../validation"
     }
   ],
@@ -63,6 +69,10 @@
       "@webiny/react-router": ["../react-router/src"],
       "@webiny/ui/*": ["../ui/src/*"],
       "@webiny/ui": ["../ui/src"],
+      "@webiny/ui-composer/*": ["../ui-composer/src/*"],
+      "@webiny/ui-composer": ["../ui-composer/src"],
+      "@webiny/ui-elements/*": ["../ui-elements/src/*"],
+      "@webiny/ui-elements": ["../ui-elements/src"],
       "@webiny/validation/*": ["../validation/src/*"],
       "@webiny/validation": ["../validation/src"]
     },

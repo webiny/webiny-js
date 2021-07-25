@@ -16,7 +16,7 @@ const Loader = ({ children, ...props }) => (
 const ContentModelEditor = lazy(() => import("../views/Editor"));
 const ContentModelsView = lazy(() => import("../views/ContentModels/ContentModels"));
 const ContentModelGroupsView = lazy(() => import("../views/ContentModelGroups/ContentModelGroups"));
-const ContentEntiesView = lazy(() => import("../views/ContentEntries"));
+const ContentEntries = lazy(() => import("../views/ContentEntries"));
 
 const plugins: RoutePlugin[] = [
     {
@@ -55,7 +55,7 @@ const plugins: RoutePlugin[] = [
                                 <title>{t`Content`}</title>
                             </Helmet>
                             <Loader>
-                                <ContentEntiesView />
+                                <ContentEntries />
                             </Loader>
                         </AdminLayout>
                     </SecureRoute>

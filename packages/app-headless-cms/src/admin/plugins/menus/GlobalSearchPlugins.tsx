@@ -1,16 +1,18 @@
 import React, { useEffect } from "react";
 import get from "lodash/get";
-import { i18n } from "@webiny/app/i18n";
 import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
-import { useQuery } from "../../hooks";
 import { AdminGlobalSearchPlugin } from "@webiny/app-admin/types";
 import { plugins } from "@webiny/plugins";
-import { LIST_MENU_CONTENT_GROUPS_MODELS } from "./../../viewsGraphql";
-import { ReactComponent as HeadlessCmsIcon } from "../../icons/devices_other-black-24px.svg";
+import { useQuery } from "~/admin/hooks";
+import { LIST_MENU_CONTENT_GROUPS_MODELS } from "~/admin/viewsGraphql";
 
-const t = i18n.ns("app-headless-cms/admin/menus");
-
-const HeadlessCmsMenu = ({ Menu, children }) => {
+/**
+ * DISCLAIMER!
+ * This file is OLD and needs refactoring into something that makes more sense in the context of the new UI Composer.
+ * Even if we keep a dedicated `AdminGlobalSearchPlugin`, it needs to be converted to a proper class.
+ * This can be a "good first issue" for community to solve.
+ */
+const GlobalSearchPlugins = () => {
     const { getCurrentLocale } = useI18N();
     const response = useQuery(LIST_MENU_CONTENT_GROUPS_MODELS);
 
@@ -51,11 +53,7 @@ const HeadlessCmsMenu = ({ Menu, children }) => {
         });
     }, [locale, cmgHash]);
 
-    return (
-        <Menu name="headless-cms" icon={<HeadlessCmsIcon />} label={t`Headless CMS`}>
-            {children}
-        </Menu>
-    );
+    return null;
 };
 
-export default HeadlessCmsMenu;
+export default GlobalSearchPlugins;

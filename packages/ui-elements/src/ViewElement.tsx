@@ -8,6 +8,11 @@ interface ViewElementConfig extends ElementConfig {
 }
 
 export class ViewElement extends Element<ViewElementConfig> {
+    constructor(id: string, config: ViewElementConfig) {
+        super(id, config);
+        config.view.setParent(this);
+    }
+
     render(props?: any): React.ReactNode {
         if (!this.config.view) {
             return null;

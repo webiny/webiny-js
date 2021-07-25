@@ -1,9 +1,9 @@
 import React, { useCallback, useMemo } from "react";
-import { Cell } from "@webiny/ui/Grid";
 import { SplitView, LeftPanel } from "@webiny/app-admin/components/SplitView";
 import { useSecurity } from "@webiny/app-security";
 import ContentModelsDataList from "./ContentModelsDataList";
 import NewContentModelDialog from "./NewContentModelDialog";
+import { Cell } from "@webiny/ui/Grid";
 
 function ContentModels() {
     const [newContentModelDialogOpened, openNewContentModelDialog] = React.useState(false);
@@ -29,7 +29,6 @@ function ContentModels() {
     return (
         <>
             <NewContentModelDialog open={newContentModelDialogOpened} onClose={onClose} />
-
             <SplitView>
                 <Cell span={3} />
                 <LeftPanel span={6}>

@@ -1,6 +1,5 @@
 import React from "react";
 import Helmet from "react-helmet";
-import { plugins } from "@webiny/plugins";
 import { View } from "@webiny/ui-composer/View";
 import { Element } from "@webiny/ui-composer/Element";
 import { GenericElement } from "@webiny/ui-elements/GenericElement";
@@ -11,6 +10,7 @@ import { AdminViewPlugin } from "~/plugins/AdminViewPlugin";
 import { NavigationView } from "~/views/NavigationView";
 import Snackbar from "./AdminView/components/Snackbar";
 import { DialogContainer } from "./AdminView/components/Dialog";
+import { NavigationViewPlugin } from "~/plugins/NavigationViewPlugin";
 
 export class AdminView extends View {
     private _title: string;
@@ -26,14 +26,17 @@ export class AdminView extends View {
             })
         );
 
+        const navigationView = new NavigationView();
+        
         this.addElement(new HeaderElement("header"));
         this.addElement(new ContentElement("content"));
-        this.addElement(new ViewElement("navigation", { view: new NavigationView() }));
+        this.addElement(new ViewElement("navigation", { view: navigationView }));
         this.addElement(new GenericElement("snackbarContainer", () => <Snackbar />));
         this.addElement(new GenericElement("dialogContainer", () => <DialogContainer />));
 
         // Apply plugins
-        plugins.byType<AdminViewPlugin>(AdminViewPlugin.type).forEach(plugin => plugin.apply(this));
+        this.applyPlugin(AdminViewPlugin);
+        navigationView.applyPlugin(NavigationViewPlugin);
     }
 
     setTitle(title: string) {
