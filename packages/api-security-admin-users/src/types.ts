@@ -27,7 +27,7 @@ export interface User {
      */
     id: string;
     /**
-     * Old.
+     * Old ID.
      */
     login: string;
     firstName: string;

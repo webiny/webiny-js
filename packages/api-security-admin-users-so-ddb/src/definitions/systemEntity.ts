@@ -8,7 +8,7 @@ interface Params {
 }
 export const createSystemEntity = (params: Params): Entity<any> => {
     const { context, table } = params;
-    const entityName = "System";
+    const entityName = "SecuritySystem";
     const attributes = getExtraAttributes(context, entityName);
     return new Entity({
         table,

@@ -195,6 +195,11 @@ export default new ContextPlugin<AdminUsersContext>(async context => {
                 createdOn: new Date().toISOString(),
                 createdBy
             };
+            /**
+             * Always delete the password from the user data, just in case something passed it into the input.
+             */
+            delete user["password"];
+
             let result: User;
             try {
                 await executeCallback<UserPlugin["beforeCreate"]>(userPlugins, "beforeCreate", {
@@ -528,6 +533,12 @@ export default new ContextPlugin<AdminUsersContext>(async context => {
                 ...original,
                 ...updateData
             };
+            user.id = user.id || user.login;
+
+            /**
+             * Always delete the password from the user data, just in case something passed it into the input.
+             */
+            delete user["password"];
 
             try {
                 await executeCallback<UserPlugin["beforeUpdate"]>(userPlugins, "beforeUpdate", {

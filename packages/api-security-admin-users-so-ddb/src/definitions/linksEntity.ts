@@ -8,7 +8,7 @@ interface Params {
 }
 export const createLinksEntity = (params: Params): Entity<any> => {
     const { context, table } = params;
-    const entityName = "User2Tenant";
+    const entityName = "SecurityUser2Tenant";
     const attributes = getExtraAttributes(context, entityName);
     return new Entity({
         table,

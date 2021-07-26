@@ -31,7 +31,6 @@ import { batchReadAll } from "@webiny/db-dynamodb/utils/batchRead";
 import { batchWriteAll } from "@webiny/db-dynamodb/utils/batchWrite";
 import { Tenant } from "@webiny/api-tenancy/types";
 import { createTokenEntity } from "~/definitions/tokenEntity";
-import { NotFoundError } from "jest-dynalite/dist/config";
 import { DbItem } from "~/types";
 import { sortItems } from "@webiny/db-dynamodb/utils/sort";
 
@@ -111,7 +110,7 @@ export class UserStorageOperationsDdb implements UserStorageOperations {
         try {
             const result = await queryOne<UserPersonalAccessToken>(queryParams);
             if (!result) {
-                throw new NotFoundError("Could not find token info.");
+                throw new WebinyError("Could not find token info.", "TOKEN_NOT_FOUND");
             }
             login = result.login;
         } catch (ex) {

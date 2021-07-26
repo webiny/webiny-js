@@ -8,7 +8,7 @@ interface Params {
 }
 export const createTokenEntity = (params: Params): Entity<any> => {
     const { context, table } = params;
-    const entityName = "Token";
+    const entityName = "SecurityToken";
     const attributes = getExtraAttributes(context, entityName);
     return new Entity({
         table,

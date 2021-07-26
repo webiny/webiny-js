@@ -8,7 +8,7 @@ interface Params {
 }
 export const createGroupEntity = (params: Params): Entity<any> => {
     const { context, table } = params;
-    const entityName = "Group";
+    const entityName = "SecurityGroup";
     const attributes = getExtraAttributes(context, entityName);
     return new Entity({
         table,

@@ -9,7 +9,7 @@ interface Params {
 
 export const createApiKeyEntity = (params: Params): Entity<any> => {
     const { context, table } = params;
-    const entityName = "ApiKey";
+    const entityName = "SecurityApiKey";
     const attributes = getExtraAttributes(context, entityName);
     return new Entity({
         table,

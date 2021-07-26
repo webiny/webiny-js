@@ -50,7 +50,12 @@ export class UserLoaders {
                 }
             });
             return ids.map(id => {
-                const item = results.find(result => result.id === id);
+                const item = results.find(result => {
+                    if (!result.id && result.login === id) {
+                        return true;
+                    }
+                    return result.id === id;
+                });
                 return item || null;
             });
         } catch (ex) {
@@ -58,6 +63,7 @@ export class UserLoaders {
                 ex.message || "Could not execute batch read in getUser.",
                 ex.code || "BATCH_READ_ERROR",
                 {
+                    ...ex.data,
                     ids
                 }
             );
@@ -75,7 +81,17 @@ export class UserLoaders {
                     id_in: ids
                 }
             });
-            return ids.map(id => results.filter(result => result.id === id));
+            return ids.map(id =>
+                results.filter(result => {
+                    /**
+                     * This is for the old systems that do not have ID in the db.
+                     */
+                    if (!result.id) {
+                        return true;
+                    }
+                    return result.id === id;
+                })
+            );
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not execute multiple read in getUserAccess.",
