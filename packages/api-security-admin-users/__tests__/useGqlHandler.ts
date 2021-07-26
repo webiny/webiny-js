@@ -3,10 +3,7 @@ import apolloServerPlugins from "@webiny/handler-graphql";
 import tenancyPlugins from "@webiny/api-tenancy";
 import securityPlugins from "@webiny/api-security";
 import { SecurityIdentity } from "@webiny/api-security";
-import dbPlugins from "@webiny/handler-db";
 import { PluginCollection } from "@webiny/plugins/types";
-import { DynamoDbDriver } from "@webiny/db-dynamodb";
-import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import adminUsersPlugins from "../src/index";
 // Graphql
 import {
@@ -53,21 +50,22 @@ type UseGqlHandlerParams = {
 export default (opts: UseGqlHandlerParams = {}) => {
     const defaults = { mockUser: true, fullAccess: false, plugins: [] };
     opts = Object.assign({}, defaults, opts);
-    const documentClient = new DocumentClient({
-        convertEmptyValues: true,
-        endpoint: process.env.MOCK_DYNAMODB_ENDPOINT,
-        sslEnabled: false,
-        region: "local"
-    });
+
+    // @ts-ignore
+    if (typeof __getStorageOperationsPlugins !== "function") {
+        throw new Error(`There is no global "__getStorageOperationsPlugins" function.`);
+    }
+    // @ts-ignore
+    const storageOperations = __getStorageOperationsPlugins();
+    if (typeof storageOperations !== "function") {
+        throw new Error(
+            `A product of "__getStorageOperationsPlugins" must be a function to initialize storage operations.`
+        );
+    }
 
     // Creates the actual handler. Feel free to add additional plugins if needed.
     const handler = createHandler(
-        dbPlugins({
-            table: "Security",
-            driver: new DynamoDbDriver({
-                documentClient
-            })
-        }),
+        storageOperations(),
         tenancyPlugins(),
         securityPlugins(),
         adminUsersPlugins(),
@@ -100,9 +98,11 @@ export default (opts: UseGqlHandlerParams = {}) => {
                 if (!identity) {
                     return null;
                 }
-
-                const allPermissions = await context.security.users.getUserAccess(identity.id);
-                const tenantAccess = allPermissions.find(p => p.tenant.id === tenant.id);
+                const permissions = await context.security.users.getUserAccess(identity.id);
+                if (!permissions) {
+                    return null;
+                }
+                const tenantAccess = permissions.find(p => p.tenant.id === tenant.id);
                 return tenantAccess ? tenantAccess.group.permissions : null;
             }
         },
@@ -132,7 +132,7 @@ export default (opts: UseGqlHandlerParams = {}) => {
         async delete(variables) {
             return invoke({ body: { query: DELETE_SECURITY_GROUP, variables } });
         },
-        async list(variables) {
+        async list(variables = {}) {
             return invoke({ body: { query: LIST_SECURITY_GROUPS, variables } });
         },
         async get(variables) {
@@ -153,7 +153,7 @@ export default (opts: UseGqlHandlerParams = {}) => {
         async delete(variables) {
             return invoke({ body: { query: DELETE_SECURITY_USER, variables } });
         },
-        async list(variables, headers = {}) {
+        async list(variables = {}, headers = {}) {
             return invoke({ body: { query: LIST_SECURITY_USERS, variables }, headers });
         },
         async get(variables) {
@@ -168,7 +168,7 @@ export default (opts: UseGqlHandlerParams = {}) => {
     };
 
     const securityUserPAT = {
-        async getCurrentUser(variables, headers = {}) {
+        async getCurrentUser(variables = {}, headers = {}) {
             return invoke({
                 body: { query: GET_CURRENT_SECURITY_USER_WITH_PAT, variables },
                 headers
@@ -219,7 +219,6 @@ export default (opts: UseGqlHandlerParams = {}) => {
         securityUser,
         securityUserPAT,
         securityApiKeys,
-        install,
-        documentClient
+        install
     };
 };

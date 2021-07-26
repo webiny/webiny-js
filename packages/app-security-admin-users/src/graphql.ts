@@ -21,6 +21,7 @@ export const LOGIN = gql`
                 error {
                     code
                     message
+                    data
                 }
             }
         }
