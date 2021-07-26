@@ -14,6 +14,9 @@
       "path": "../../../packages/api-security-admin-users"
     },
     {
+      "path": "../../../packages/api-security-admin-users-so-ddb"
+    },
+    {
       "path": "../../../packages/api-security-cognito-authentication"
     },
     {

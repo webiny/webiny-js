@@ -8907,19 +8907,19 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-security-admin-users-so-ddb@workspace:packages/api-security-admin-users-so-ddb":
+"@webiny/api-security-admin-users-so-ddb@^5.11.0, @webiny/api-security-admin-users-so-ddb@workspace:packages/api-security-admin-users-so-ddb":
   version: 0.0.0-use.local
   resolution: "@webiny/api-security-admin-users-so-ddb@workspace:packages/api-security-admin-users-so-ddb"
   dependencies:
     "@babel/cli": ^7.5.5
     "@babel/core": ^7.5.5
-    "@webiny/api-security-admin-users": ^5.10.0
-    "@webiny/api-tenancy": ^5.10.0
-    "@webiny/cli": ^5.10.0
-    "@webiny/db-dynamodb": ^5.10.0
-    "@webiny/error": ^5.10.0
-    "@webiny/handler-db": ^5.10.0
-    "@webiny/project-utils": ^5.10.0
+    "@webiny/api-security-admin-users": ^5.11.0
+    "@webiny/api-tenancy": ^5.11.0
+    "@webiny/cli": ^5.11.0
+    "@webiny/db-dynamodb": ^5.11.0
+    "@webiny/error": ^5.11.0
+    "@webiny/handler-db": ^5.11.0
+    "@webiny/project-utils": ^5.11.0
     dynamodb-toolbox: ^0.3.4
     jest: ^26.6.3
     jest-dynalite: ^3.2.0
@@ -8930,7 +8930,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-security-admin-users@^5.10.0, @webiny/api-security-admin-users@^5.11.0, @webiny/api-security-admin-users@workspace:packages/api-security-admin-users":
+"@webiny/api-security-admin-users@^5.11.0, @webiny/api-security-admin-users@workspace:packages/api-security-admin-users":
   version: 0.0.0-use.local
   resolution: "@webiny/api-security-admin-users@workspace:packages/api-security-admin-users"
   dependencies:
@@ -9002,7 +9002,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-tenancy@^5.10.0, @webiny/api-tenancy@^5.11.0, @webiny/api-tenancy@workspace:packages/api-tenancy":
+"@webiny/api-tenancy@^5.11.0, @webiny/api-tenancy@workspace:packages/api-tenancy":
   version: 0.0.0-use.local
   resolution: "@webiny/api-tenancy@workspace:packages/api-tenancy"
   dependencies:
@@ -9942,7 +9942,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/cli@^5.10.0, @webiny/cli@^5.11.0, @webiny/cli@workspace:packages/cli":
+"@webiny/cli@^5.11.0, @webiny/cli@workspace:packages/cli":
   version: 0.0.0-use.local
   resolution: "@webiny/cli@workspace:packages/cli"
   dependencies:
@@ -10016,7 +10016,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/db-dynamodb@^5.10.0, @webiny/db-dynamodb@^5.11.0, @webiny/db-dynamodb@workspace:packages/db-dynamodb":
+"@webiny/db-dynamodb@^5.11.0, @webiny/db-dynamodb@workspace:packages/db-dynamodb":
   version: 0.0.0-use.local
   resolution: "@webiny/db-dynamodb@workspace:packages/db-dynamodb"
   dependencies:
@@ -10055,7 +10055,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/error@^5.10.0, @webiny/error@^5.11.0, @webiny/error@workspace:packages/error":
+"@webiny/error@^5.11.0, @webiny/error@workspace:packages/error":
   version: 0.0.0-use.local
   resolution: "@webiny/error@workspace:packages/error"
   dependencies:
@@ -10151,7 +10151,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/handler-db@^5.10.0, @webiny/handler-db@^5.11.0, @webiny/handler-db@workspace:packages/handler-db":
+"@webiny/handler-db@^5.11.0, @webiny/handler-db@workspace:packages/handler-db":
   version: 0.0.0-use.local
   resolution: "@webiny/handler-db@workspace:packages/handler-db"
   dependencies:
@@ -10308,7 +10308,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/project-utils@^5.10.0, @webiny/project-utils@^5.11.0, @webiny/project-utils@workspace:packages/project-utils":
+"@webiny/project-utils@^5.11.0, @webiny/project-utils@workspace:packages/project-utils":
   version: 0.0.0-use.local
   resolution: "@webiny/project-utils@workspace:packages/project-utils"
   dependencies:
@@ -11390,6 +11390,7 @@ __metadata:
     "@webiny/api-security": ^5.11.0
     "@webiny/api-security-admin-users": ^5.11.0
     "@webiny/api-security-admin-users-cognito": ^5.11.0
+    "@webiny/api-security-admin-users-so-ddb": ^5.11.0
     "@webiny/api-security-cognito-authentication": ^5.11.0
     "@webiny/api-tenancy": ^5.11.0
     "@webiny/cli": ^5.11.0
@@ -11415,6 +11416,7 @@ __metadata:
     "@webiny/api-i18n-ddb": ^5.11.0
     "@webiny/api-security": ^5.11.0
     "@webiny/api-security-admin-users": ^5.11.0
+    "@webiny/api-security-admin-users-so-ddb": ^5.11.0
     "@webiny/api-security-cognito-authentication": ^5.11.0
     "@webiny/api-tenancy": ^5.11.0
     "@webiny/cli": ^5.11.0
