@@ -1,5 +1,5 @@
 import { SecurityIdentity, SecurityPermission } from "@webiny/api-security/types";
-import { AdminUsersContext } from "../types";
+import { AdminUsersContext } from "~/types";
 import { AuthorizationPlugin } from "@webiny/api-security/plugins/AuthorizationPlugin";
 
 export interface Config {

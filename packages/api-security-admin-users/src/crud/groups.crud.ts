@@ -1,9 +1,14 @@
 import { object } from "commodo-fields-object";
 import { withFields, string } from "@commodo/fields";
 import { validation } from "@webiny/validation";
-import dbArgs from "./dbArgs";
-import { AdminUsersContext, DbItemSecurityUser2Tenant, Group, GroupsCRUD } from "../types";
-import { paginateBatch } from "./paginateBatch";
+import { AdminUsersContext, CrudOptions, Group, GroupsStorageOperations } from "~/types";
+import WebinyError from "@webiny/error";
+import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
+import { GroupsStorageOperationsProvider } from "~/plugins/GroupsStorageOperationsProvider";
+import { NotFoundError } from "@webiny/handler-graphql";
+import { NotAuthorizedError } from "@webiny/api-security";
+import deepEqual from "deep-equal";
+import { getStorageOperations } from "~/crud/storageOperations";
 
 const CreateDataModel = withFields({
     tenant: string({ validation: validation.create("required") }),
@@ -22,42 +27,84 @@ const UpdateDataModel = withFields({
     permissions: object({ list: true })
 })();
 
-export default (context: AdminUsersContext): GroupsCRUD => {
-    const { db } = context;
-    return {
-        async getGroup(tenant, slug) {
-            const [[group]] = await db.read<Group>({
-                ...dbArgs,
-                query: { PK: `T#${tenant.id}`, SK: `G#${slug}` },
-                limit: 1
-            });
+export default new ContextPlugin<AdminUsersContext>(async context => {
+    const storageOperations = await getStorageOperations<GroupsStorageOperations>(
+        context,
+        GroupsStorageOperationsProvider.type
+    );
 
+    const checkPermission = async (options?: CrudOptions) => {
+        if (options && options.auth === false) {
+            return;
+        }
+        const permission = await context.security.getPermission("security.group");
+
+        if (!permission) {
+            throw new NotAuthorizedError();
+        }
+    };
+
+    context.security.groups = {
+        async getGroup(slug, options) {
+            await checkPermission(options);
+            const tenant = context.tenancy.getCurrentTenant();
+
+            let group: Group = null;
+            try {
+                group = await storageOperations.get(tenant, {
+                    slug
+                });
+            } catch (ex) {
+                throw new WebinyError(
+                    ex.message || "Could not get group.",
+                    ex.code || "GET_GROUP_ERROR",
+                    {
+                        slug
+                    }
+                );
+            }
+            if (!group) {
+                throw new NotFoundError(`Unable to find group with slug: ${slug}`);
+            }
             return group;
         },
-        async listGroups(tenant) {
-            const [groups] = await db.read<Group>({
-                ...dbArgs,
-                query: { PK: `T#${tenant.id}`, SK: { $beginsWith: "G#" } }
-            });
-
-            return groups;
+        async listGroups(options) {
+            await checkPermission(options);
+            const tenant = context.tenancy.getCurrentTenant();
+            try {
+                return await storageOperations.list(tenant, {
+                    sort: ["createdOn_ASC"]
+                });
+            } catch (ex) {
+                throw new WebinyError(
+                    ex.message || "Could not list API keys.",
+                    ex.code || "LIST_API_KEY_ERROR"
+                );
+            }
         },
-        async createGroup(tenant, data) {
+        async createGroup(input, options) {
+            await checkPermission(options);
+
             const identity = context.security.getIdentity();
 
-            if (await this.getGroup(tenant, data.slug)) {
-                throw {
-                    message: `Group with slug "${data.slug}" already exists.`,
-                    code: "GROUP_EXISTS"
-                };
+            const tenant = context.tenancy.getCurrentTenant();
+
+            await new CreateDataModel().populate({ ...input, tenant: tenant.id }).validate();
+
+            const existing = await storageOperations.get(tenant, {
+                slug: input.slug
+            });
+            if (existing) {
+                throw new WebinyError(
+                    `Group with slug "${input.slug}" already exists.`,
+                    "GROUP_EXISTS"
+                );
             }
 
-            await new CreateDataModel().populate({ ...data, tenant: tenant.id }).validate();
-
-            const group = {
+            const group: Group = {
                 tenant: tenant.id,
                 system: false,
-                ...data,
+                ...input,
                 createdOn: new Date().toISOString(),
                 createdBy: identity
                     ? {
@@ -68,67 +115,89 @@ export default (context: AdminUsersContext): GroupsCRUD => {
                     : null
             };
 
-            await db.create({
-                ...dbArgs,
-                data: {
-                    PK: `T#${tenant.id}`,
-                    SK: `G#${data.slug}`,
-                    TYPE: "security.group",
-                    ...group
-                }
-            });
-
-            return group;
+            try {
+                return await storageOperations.create(tenant, {
+                    group
+                });
+            } catch (ex) {
+                throw new WebinyError(
+                    ex.message || "Could not create group.",
+                    ex.code || "CREATE_GROUP_ERROR",
+                    {
+                        group
+                    }
+                );
+            }
         },
-        async updateGroup(tenant, slug, data) {
-            const model = await new UpdateDataModel().populate(data);
+        async updateGroup(slug, input) {
+            await checkPermission();
+
+            const tenant = context.tenancy.getCurrentTenant();
+
+            const model = await new UpdateDataModel().populate(input);
             await model.validate();
 
-            await db.update({
-                ...dbArgs,
-                query: { PK: `T#${tenant.id}`, SK: `G#${slug}` },
-                data: await model.toJSON({ onlyDirty: true })
+            const original = await storageOperations.get(tenant, {
+                slug
             });
+            if (!original) {
+                throw new NotFoundError(`Group "${slug}" was not found!`);
+            }
 
-            return true;
-        },
-        async deleteGroup(tenant, slug) {
-            await db.delete({
-                ...dbArgs,
-                query: {
-                    PK: `T#${tenant.id}`,
-                    SK: `G#${slug}`
-                }
-            });
+            const data = await model.toJSON({ onlyDirty: true });
 
-            return true;
-        },
-        async updateUserLinks(tenant, group) {
-            const [links] = await db.read<DbItemSecurityUser2Tenant>({
-                ...dbArgs,
-                query: {
-                    GSI1_PK: `T#${tenant.id}`,
-                    GSI1_SK: { $beginsWith: `G#${group.slug}#` }
-                }
-            });
+            const permissionsChanged = !deepEqual(data.permissions, original.permissions);
 
-            await paginateBatch<DbItemSecurityUser2Tenant>(links, 25, async links => {
-                const batch = db.batch();
-                for (let i = 0; i < links.length; i++) {
-                    batch.update({
-                        ...dbArgs,
-                        query: { PK: links[i].PK, SK: links[i].SK },
-                        data: Object.assign(links[i], {
-                            group: {
-                                slug: group.slug,
-                                name: group.name,
-                                permissions: group.permissions
-                            }
-                        })
+            const group: Group = {
+                ...original,
+                ...data
+            };
+            try {
+                const result = await storageOperations.update(tenant, {
+                    original,
+                    group
+                });
+                if (permissionsChanged) {
+                    await storageOperations.updateUserLinks(tenant, {
+                        group: result
                     });
                 }
-                await batch.execute();
+                return result;
+            } catch (ex) {
+                throw new WebinyError(
+                    ex.message || "Could not update group.",
+                    ex.code || "UPDATE_GROUP_ERROR",
+                    {
+                        group
+                    }
+                );
+            }
+        },
+        async deleteGroup(slug) {
+            await checkPermission();
+
+            const tenant = context.tenancy.getCurrentTenant();
+
+            const group = await storageOperations.get(tenant, {
+                slug
             });
+            if (!group) {
+                throw new NotFoundError(`Group "${slug}" was not found!`);
+            }
+            try {
+                await storageOperations.delete(tenant, {
+                    group
+                });
+                return true;
+            } catch (ex) {
+                throw new WebinyError(
+                    ex.message || "Could not delete group.",
+                    ex.code || "DELETE_GROUP_ERROR",
+                    {
+                        group
+                    }
+                );
+            }
         }
     };
-};
+});

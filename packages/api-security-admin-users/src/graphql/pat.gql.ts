@@ -1,19 +1,11 @@
-import crypto from "crypto";
-import { Response, ErrorResponse, NotFoundResponse } from "@webiny/handler-graphql/responses";
-import { AdminUsersContext, User } from "../types";
+import { Response, ErrorResponse } from "@webiny/handler-graphql/responses";
+import {
+    AdminUsersContext,
+    CreatePersonalAccessTokenInput,
+    UpdatePersonalAccessTokenInput,
+    User
+} from "~/types";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSchemaPlugin";
-
-const generateToken = (tokenLength = 48) => {
-    const token = crypto
-        .randomBytes(Math.ceil(tokenLength / 2))
-        .toString("hex")
-        .slice(0, tokenLength - 1);
-
-    // Personal access tokens are prefixed with a letter "p" to make token verification easier.
-    // When authentication plugins kick in, they will be able to tell if they should handle the token by
-    // checking the first letter and either process the token or skip authentication completely.
-    return `p${token}`;
-};
 
 export default new GraphQLSchemaPlugin<AdminUsersContext>({
     typeDefs: /* GraphQL */ `
@@ -77,83 +69,53 @@ export default new GraphQLSchemaPlugin<AdminUsersContext>({
             }
         },
         SecurityMutation: {
-            createPAT: async (root, { data }, context) => {
-                const identity = context.security.getIdentity();
-                if (!identity) {
-                    throw new Error("Not authorized!");
-                }
-
+            createPAT: async (
+                root,
+                { data }: { data: CreatePersonalAccessTokenInput },
+                context
+            ) => {
                 try {
-                    const token = generateToken();
-                    const tokenData = await context.security.users.createToken(identity.id, {
-                        ...data,
-                        token
-                    });
+                    const pat = await context.security.users.createToken(data);
 
-                    return new Response({ pat: tokenData, token });
-                } catch (e) {
+                    return new Response({
+                        pat,
+                        token: pat.token
+                    });
+                } catch (ex) {
                     return new ErrorResponse({
-                        code: e.code,
-                        message: e.message,
-                        data: e.data || null
+                        code: ex.code,
+                        message: ex.message,
+                        data: ex.data || null
                     });
                 }
             },
-            updatePAT: async (root, { id, data }, context) => {
-                const identity = context.security.getIdentity();
-                if (!identity) {
-                    throw new Error("Not authorized!");
-                }
-
+            updatePAT: async (
+                root,
+                { id, data }: { id: string; data: UpdatePersonalAccessTokenInput },
+                context
+            ) => {
                 try {
-                    const existingToken = await context.security.users.getPersonalAccessToken(
-                        identity.id,
-                        id
-                    );
+                    const token = await context.security.users.updateToken(id, data);
 
-                    if (!existingToken) {
-                        return new NotFoundResponse(`PAT "${id}" was not found!`);
-                    }
-
-                    const updatedData = await context.security.users.updateToken(
-                        identity.id,
-                        id,
-                        data
-                    );
-
-                    return new Response(Object.assign({}, existingToken, updatedData));
-                } catch (e) {
+                    return new Response(token);
+                } catch (ex) {
                     return new ErrorResponse({
-                        code: e.code,
-                        message: e.message,
-                        data: e.data || null
+                        code: ex.code,
+                        message: ex.message,
+                        data: ex.data || null
                     });
                 }
             },
             deletePAT: async (root, { id }, context) => {
-                const identity = context.security.getIdentity();
-                if (!identity) {
-                    throw new Error("Not authorized!");
-                }
-
                 try {
-                    const existingToken = await context.security.users.getPersonalAccessToken(
-                        identity.id,
-                        id
-                    );
-
-                    if (!existingToken) {
-                        return new NotFoundResponse(`PAT "${id}" was not found!`);
-                    }
-
-                    await context.security.users.deleteToken(identity.id, id);
+                    await context.security.users.deleteToken(id);
 
                     return new Response(true);
-                } catch (e) {
+                } catch (ex) {
                     return new ErrorResponse({
-                        code: e.code,
-                        message: e.message,
-                        data: e.data || null
+                        code: ex.code,
+                        message: ex.message,
+                        data: ex.data || null
                     });
                 }
             }

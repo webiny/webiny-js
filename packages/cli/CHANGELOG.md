@@ -3,6 +3,52 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.11.0](https://github.com/webiny/webiny-js/compare/v5.11.0-beta.2...v5.11.0) (2021-07-22)
+
+**Note:** Version bump only for package @webiny/cli
+
+
+
+
+
+# [5.11.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.11.0-beta.1...v5.11.0-beta.2) (2021-07-21)
+
+
+### Bug Fixes
+
+* **cli:** add upgrade script for website app ([c8e6465](https://github.com/webiny/webiny-js/commit/c8e646593acb073af026cbad98b4411f2091cd66))
+
+
+
+
+
+# [5.11.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.11.0-beta.0...v5.11.0-beta.1) (2021-07-21)
+
+
+### Features
+
+* **cli:** cms object field upgrade ([473c47b](https://github.com/webiny/webiny-js/commit/473c47bad1c4b7be3a2ce504802eec0cb6280400))
+
+
+
+
+
+# [5.11.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.10.0...v5.11.0-beta.0) (2021-07-21)
+
+
+### Bug Fixes
+
+* **cli:** put i18n-ddb package version to current context.version ([#1801](https://github.com/webiny/webiny-js/issues/1801)) ([ee7218e](https://github.com/webiny/webiny-js/commit/ee7218efac949a2fd9b3498e286b102da64c1d6e))
+
+
+### Features
+
+* **api-i18n:** storage operations ([#1758](https://github.com/webiny/webiny-js/issues/1758)) ([a488eee](https://github.com/webiny/webiny-js/commit/a488eee18ac4f674cb0dcd53d88a88b6659a802a))
+
+
+
+
+
 # [5.10.0](https://github.com/webiny/webiny-js/compare/v5.10.0-beta.2...v5.10.0) (2021-07-06)
 
 **Note:** Version bump only for package @webiny/cli

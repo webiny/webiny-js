@@ -27,6 +27,9 @@
       "path": "../../../packages/api-security-admin-users-cognito"
     },
     {
+      "path": "../../../packages/api-security-admin-users-so-ddb"
+    },
+    {
       "path": "../../../packages/api-headless-cms"
     },
     {

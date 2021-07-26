@@ -217,8 +217,8 @@ jobs:
         run: git config --global user.name "webiny-bot"
 
       - name: Disable Webiny telemetry
-        run: > 
-          mkdir ~/.webiny && 
+        run: >
+          mkdir ~/.webiny &&
           echo '{ "id": "ci", "telemetry": false }' > ~/.webiny/config
 
       - name: Create a new Webiny project
@@ -241,7 +241,7 @@ jobs:
       ELASTIC_SEARCH_INDEX_PREFIX: ${{ needs.cache-keys.outputs.ts }}_
       PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
       PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
-      WEBINY_PULUMI_BACKEND: ${{ secrets.WEBINY_PULUMI_BACKEND }}${{ needs.cache-keys.outputs.ts }}
+      WEBINY_PULUMI_BACKEND: ${{ secrets.WEBINY_PULUMI_BACKEND }}_${{ needs.cache-keys.outputs.ts }}
     steps:
       # After the run is over, destroy deployed cloud infrastructure.
       # Must be immediately defined here.
@@ -284,7 +284,7 @@ jobs:
 
       - name: Disable Webiny telemetry
         run: >
-          mkdir ~/.webiny && 
+          mkdir ~/.webiny &&
           echo '{ "id": "ci", "telemetry": false }' > ~/.webiny/config
 
       - name: Create a new Webiny project
@@ -346,24 +346,15 @@ jobs:
         working-directory: webiny-js
         run: yarn cypress run --spec "cypress/integration/adminInstallation/**/*.spec.js"
 
-      - name: Installation wizard test - Upload screenshots and videos to Slack
-        uses: trymbill/cypress-slack-video-upload-action@v1.3.0
-        if: ${{ failure() }}
-        with:
-          token: ${{ secrets.SLACK_TOKEN }}
-          channels: C027VQG8080
-          workdir: webiny-js/cypress
-          message-text: Installation wizard Cypress tests failed! They have been placed in this thread, good luck.
-
       - name: Cypress - run the rest of Admin Area tests
         working-directory: webiny-js
         run: yarn cypress run --spec "cypress/integration/admin/**/*.spec.js"
 
-      - name: Admin Area tests - Upload screenshots and videos to Slack
+      - name: Upload screenshots to Slack
         uses: trymbill/cypress-slack-video-upload-action@v1.3.0
-        if: ${{ failure() }}
+        if: failure()
         with:
           token: ${{ secrets.SLACK_TOKEN }}
           channels: C027VQG8080
           workdir: webiny-js/cypress
-          message-text: Admin Area Cypress tests failed! They have been placed in this thread, good luck.
+          message-text: Cypress tests failed! Scrennshots have been placed in this thread, good luck.

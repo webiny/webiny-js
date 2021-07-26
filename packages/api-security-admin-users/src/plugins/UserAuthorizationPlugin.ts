@@ -1,5 +1,5 @@
 import { SecurityIdentity, SecurityPermission } from "@webiny/api-security/types";
-import { AdminUsersContext, TenantAccess } from "../types";
+import { AdminUsersContext, TenantAccess } from "~/types";
 import { AuthorizationPlugin } from "@webiny/api-security/plugins/AuthorizationPlugin";
 import { Tenant } from "@webiny/api-tenancy/types";
 import WebinyError from "@webiny/error";
