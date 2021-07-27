@@ -278,7 +278,7 @@ const PagesDataList = ({ onCreatePage, canCreate }: PagesDataListProps) => {
                                         </ListTextOverline>
                                         {page.createdBy && (
                                             <ListItemTextSecondary>
-                                                Created by: {page.createdBy.firstName || "N/A"}.
+                                                Created by: {page.createdBy.displayName || "N/A"}.
                                                 Last modified: <TimeAgo datetime={page.savedOn} />.
                                             </ListItemTextSecondary>
                                         )}
