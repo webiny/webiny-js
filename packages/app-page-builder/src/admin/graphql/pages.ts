@@ -25,12 +25,29 @@ export const DATA_FIELDS = `
     
 `;
 
+export const LIST_PAGES_DATA_FIELDS = `
+    id
+    pid
+    status
+    title
+    version
+    savedOn
+    category {
+        name
+        slug
+    }
+    createdBy {
+        id
+        displayName
+    }
+`;
+
 export const CREATE_PAGE = gql`
     mutation PbCreatePage($from: ID, $category: String) {
         pageBuilder {
             createPage(from: $from, category: $category) {
                 data {
-                    id
+                    ${LIST_PAGES_DATA_FIELDS}
                 }
                 ${error}
             }
@@ -49,20 +66,7 @@ export const LIST_PAGES = gql`
         pageBuilder {
             listPages(where: $where, sort: $sort, limit: $limit, page: $page, search: $search) {
                 data {
-                    id
-                    pid
-                    status
-                    title
-                    version
-                    savedOn
-                    category {
-                        name
-                        slug
-                    }
-                    createdBy {
-                        id
-                        displayName
-                    }
+                    ${LIST_PAGES_DATA_FIELDS}
                 }
                 meta {
                     page
