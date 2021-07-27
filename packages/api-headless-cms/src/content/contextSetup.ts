@@ -1,4 +1,5 @@
 import { CmsContext } from "~/types";
+import WebinyError from "@webiny/error";
 import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
 
 interface CmsHttpParameters {
@@ -25,31 +26,31 @@ const extractHandlerHttpParameters = (context: CmsContext): CmsHttpParameters =>
     };
 };
 
-const setContextCmsVariables = async (context: CmsContext): Promise<void> => {
-    const locale = await context.i18n.getLocale(context.cms.locale);
-    if (!locale) {
-        throw new Error(`There is no locale "${context.cms.locale}" in the system.`);
-    }
-    context.cms.getLocale = () => locale;
-};
-
 export default () => {
     return new ContextPlugin<CmsContext>(async context => {
         if (context.http.request.method === "OPTIONS") {
             return;
+        } else if (context.cms) {
+            throw new WebinyError(
+                "Context setup plugin must be first to run. Cannot have anything before it.",
+                "CMS_CONTEXT_INITIALIZED_ERROR"
+            );
         }
 
         const { type, locale } = extractHandlerHttpParameters(context);
 
+        const systemLocale = context.i18n.getLocale(locale);
+        if (!systemLocale) {
+            throw new WebinyError(`There is no locale "${locale}" in the system.`);
+        }
+
         context.cms = {
-            ...(context.cms || ({} as any)),
             type,
             locale,
+            getLocale: () => systemLocale,
             READ: type === "read",
             PREVIEW: type === "preview",
             MANAGE: type === "manage"
-        };
-
-        await setContextCmsVariables(context);
+        } as any;
     });
 };

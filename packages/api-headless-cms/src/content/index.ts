@@ -17,9 +17,9 @@ interface CmsContentPluginsIndexArgs {
 }
 
 export default (options: CmsContentPluginsIndexArgs = {}) => [
+    contextSetup(),
     modelManager(),
     pluginsCrudSetup(),
-    contextSetup(),
     contentModelGroupCrud(),
     contentModelCrud(),
     contentEntry(),
