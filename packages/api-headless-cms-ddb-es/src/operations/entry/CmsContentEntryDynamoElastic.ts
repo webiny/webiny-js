@@ -34,6 +34,7 @@ import { Client } from "@elastic/elasticsearch";
 import { ElasticsearchContext } from "@webiny/api-elasticsearch/types";
 import { createLimit } from "@webiny/api-elasticsearch/limit";
 import { encodeCursor } from "@webiny/api-elasticsearch/cursors";
+import { compress } from "@webiny/api-elasticsearch/compression";
 
 export const TYPE_ENTRY = "cms.entry";
 export const TYPE_ENTRY_LATEST = TYPE_ENTRY + ".l";
@@ -47,22 +48,22 @@ const getEntryData = (context: CmsContext, entry: CmsContentEntry) => {
     };
 };
 
-const getESLatestEntryData = (context: CmsContext, entry: CmsContentEntry) => {
-    return {
+const getESLatestEntryData = async (context: CmsContext, entry: CmsContentEntry) => {
+    return compress({
         ...getEntryData(context, entry),
         latest: true,
         TYPE: TYPE_ENTRY_LATEST,
         __type: TYPE_ENTRY_LATEST
-    };
+    });
 };
 
-const getESPublishedEntryData = (context: CmsContext, entry: CmsContentEntry) => {
-    return {
+const getESPublishedEntryData = async (context: CmsContext, entry: CmsContentEntry) => {
+    return compress({
         ...getEntryData(context, entry),
         published: true,
         TYPE: TYPE_ENTRY_PUBLISHED,
         __type: TYPE_ENTRY_PUBLISHED
-    };
+    });
 };
 
 interface ConstructorArgs {
@@ -125,6 +126,7 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
 
         const { index: esIndex } = configurations.es(this.context, model);
 
+        const esLatestData = await getESLatestEntryData(this.context, esEntry);
         const batch = db
             .batch()
             /**
@@ -157,7 +159,7 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
                     PK: this.getPartitionKey(entry.id),
                     SK: this.getSortKeyLatest(),
                     index: esIndex,
-                    data: getESLatestEntryData(this.context, esEntry)
+                    data: esLatestData
                 }
             });
 
@@ -196,6 +198,8 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
 
         const primaryKey = this.getPartitionKey(storageEntry.id);
         const batch = db.batch();
+
+        const esLatestData = await getESLatestEntryData(this.context, esEntry);
         batch
             /**
              * Create main entry item
@@ -238,7 +242,7 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
                     PK: primaryKey,
                     SK: this.getSortKeyLatest(),
                     index: esIndex,
-                    data: getESLatestEntryData(this.context, esEntry)
+                    data: esLatestData
                 }
             });
         try {
@@ -388,6 +392,8 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
                 model,
                 storageEntry: lodashCloneDeep(storageEntryToSetAsLatest)
             });
+
+            const esLatestData = await getESLatestEntryData(this.context, esEntry);
             /**
              * In the end we need to set the new latest entry
              */
@@ -413,7 +419,7 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
                         PK: primaryKey,
                         SK: this.getSortKeyLatest(),
                         index: esConfig.index,
-                        data: getESLatestEntryData(this.context, esEntry)
+                        data: esLatestData
                     }
                 });
         }
@@ -571,6 +577,7 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
 
             const { index: esIndex } = configurations.es(this.context, model);
 
+            const esLatestData = await getESLatestEntryData(this.context, esDoc);
             batch.update({
                 ...configurations.esDb(),
                 query: {
@@ -581,7 +588,7 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
                     PK: primaryKey,
                     SK: this.getSortKeyLatest(),
                     index: esIndex,
-                    data: getESLatestEntryData(this.context, esDoc)
+                    data: esLatestData
                 }
             });
         }
@@ -774,11 +781,12 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
         /**
          * Update the published revision entry in ES.
          */
+        const esLatestData = await getESPublishedEntryData(this.context, preparedEntryData);
         const esData = {
             PK: primaryKey,
             SK: this.getSortKeyPublished(),
             index: es.index,
-            data: getESPublishedEntryData(this.context, preparedEntryData)
+            data: esLatestData
         };
 
         if (publishedESEntryData) {
@@ -877,6 +885,7 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
                 storageEntry: lodashCloneDeep(latestStorageEntry)
             });
 
+            const esLatestData = await getESLatestEntryData(this.context, preparedEntryData);
             batch.update({
                 ...configurations.esDb(),
                 query: {
@@ -887,10 +896,7 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
                     PK: primaryKey,
                     SK: this.getSortKeyLatest(),
                     index: es.index,
-                    data: {
-                        ...getESLatestEntryData(this.context, preparedEntryData),
-                        SK: this.getSortKeyLatest()
-                    }
+                    data: esLatestData
                 }
             });
         }
@@ -955,6 +961,7 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
                 storageEntry: lodashCloneDeep(latestStorageEntry)
             });
 
+            const esLatestData = await getESLatestEntryData(this.context, preparedEntryData);
             batch.update({
                 ...configurations.esDb(),
                 query: {
@@ -965,7 +972,7 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
                     PK: primaryKey,
                     SK: this.getSortKeyLatest(),
                     index: es.index,
-                    data: getESLatestEntryData(this.context, preparedEntryData)
+                    data: esLatestData
                 }
             });
         }
@@ -1028,6 +1035,8 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
                 model,
                 storageEntry: lodashCloneDeep(latestStorageEntry)
             });
+
+            const esLatestData = await getESLatestEntryData(this.context, preparedEntryData);
             batch.update({
                 query: {
                     PK: primaryKey,
@@ -1037,7 +1046,7 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
                     PK: primaryKey,
                     SK: this.getSortKeyLatest(),
                     index: es.index,
-                    data: getESLatestEntryData(this.context, preparedEntryData)
+                    data: esLatestData
                 }
             });
         }
