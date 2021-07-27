@@ -14,6 +14,11 @@ export const readPageListVariables = () => {
     return variables;
 };
 
+export const writePageListVariablesToLocalStorage = variables => {
+    // Needs to be refactored. Possibly, with our own GQL client, this is going to be much easier to handle.
+    localStorage.setItem("wby_pb_pages_list_latest_variables", JSON.stringify(variables));
+};
+
 /*
  * We need to preserve the order of entries with new entry addition
  * because we're not re-fetching the list but updating it directly inside cache.

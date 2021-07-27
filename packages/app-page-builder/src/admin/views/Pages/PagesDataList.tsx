@@ -4,6 +4,7 @@ import { i18n } from "@webiny/app/i18n";
 import { useRouter } from "@webiny/react-router";
 import { useQuery } from "@apollo/react-hooks";
 import debounce from "lodash/debounce";
+import isEmpty from "lodash/isEmpty";
 import get from "lodash/get";
 import { LIST_PAGES } from "../../graphql/pages";
 import TimeAgo from "timeago-react";
@@ -31,6 +32,7 @@ import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18
 import { ReactComponent as FilterIcon } from "@webiny/app-admin/assets/icons/filter-24px.svg";
 import SearchUI from "@webiny/app-admin/components/SearchUI";
 import { deserializeSorters, serializeSorters } from "../utils";
+import * as GQLCache from "~/admin/views/Pages/cache";
 
 const t = i18n.ns("app-page-builder/admin/pages/data-list");
 const rightAlign = css({
@@ -65,6 +67,17 @@ const sorters = [
         sorters: { title: "desc" }
     }
 ];
+
+const getVariables = (search, sort, where) => {
+    if (!search.query && sort.createdOn === "desc" && isEmpty(where)) {
+        return GQLCache.readPageListVariables();
+    }
+    return {
+        search,
+        sort,
+        where
+    };
+};
 
 type PagesDataListProps = {
     onCreatePage: (event?: React.SyntheticEvent) => void;
@@ -102,18 +115,13 @@ const PagesDataList = ({ onCreatePage, canCreate }: PagesDataListProps) => {
         });
     }, [filter]);
 
-    const variables = {
-        where,
-        sort,
-        search
-    };
+    const variables = getVariables(search, sort, where);
 
     const listQuery = useQuery(LIST_PAGES, {
         variables
     });
 
-    // Needs to be refactored. Possibly, with our own GQL client, this is going to be much easier to handle.
-    localStorage.setItem("wby_pb_pages_list_latest_variables", JSON.stringify(variables));
+    GQLCache.writePageListVariablesToLocalStorage(variables);
 
     const listPagesData = get(listQuery, "data.pageBuilder.listPages.data", []);
     const selectedPageId = new URLSearchParams(location.search).get("id");
