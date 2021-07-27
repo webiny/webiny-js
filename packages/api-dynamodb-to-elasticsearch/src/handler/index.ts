@@ -2,6 +2,7 @@ import { Converter } from "aws-sdk/clients/dynamodb";
 import { HandlerPlugin } from "@webiny/handler/types";
 import { ElasticsearchContext } from "@webiny/api-elasticsearch/types";
 import WebinyError from "@webiny/error";
+import { decompress } from "@webiny/api-elasticsearch/compression";
 
 const getError = (item: any): string | null => {
     if (!item.index || !item.index.error || !item.index.error.reason) {
@@ -37,7 +38,7 @@ export default (): HandlerPlugin<ElasticsearchContext> => ({
         const [event] = context.args;
         const operations = [];
 
-        event.Records.forEach(record => {
+        for (const record of event.Records) {
             const newImage = Converter.unmarshall(record.dynamodb.NewImage);
 
             if (newImage.ignore === true) {
@@ -47,11 +48,25 @@ export default (): HandlerPlugin<ElasticsearchContext> => ({
             const oldImage = Converter.unmarshall(record.dynamodb.OldImage);
             const keys = Converter.unmarshall(record.dynamodb.Keys);
             const _id = `${keys.PK}:${keys.SK}`;
+            /**
+             * We must decompress the data that is going into the Elasticsearch.
+             */
+            const data = await decompress(newImage.data);
+            /**
+             * No point in writing null or undefined data into the Elasticsearch.
+             * This might happen on some error while decompressing. We will log it.
+             *
+             * Data should NEVER be null or undefined in the Elasticsearch DynamoDB table. If it is - it is a BUG.
+             */
+            if (!data) {
+                console.log(`Could not get decompressed data, skipping ES operation. ID: ${_id}`);
+                continue;
+            }
 
             switch (record.eventName) {
                 case "INSERT":
                 case "MODIFY":
-                    operations.push({ index: { _id, _index: newImage.index } }, newImage.data);
+                    operations.push({ index: { _id, _index: newImage.index } }, data);
                     break;
                 case "REMOVE":
                     operations.push({ delete: { _id, _index: oldImage.index } });
@@ -59,7 +74,7 @@ export default (): HandlerPlugin<ElasticsearchContext> => ({
                 default:
                     break;
             }
-        });
+        }
 
         if (!operations.length) {
             return;
