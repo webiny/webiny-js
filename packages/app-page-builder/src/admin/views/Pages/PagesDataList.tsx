@@ -109,7 +109,6 @@ const PagesDataList = ({ onCreatePage, canCreate }: PagesDataListProps) => {
     };
 
     const listQuery = useQuery(LIST_PAGES, {
-        fetchPolicy: "network-only",
         variables
     });
 
