@@ -10,7 +10,8 @@
     "../form",
     "../react-router",
     "../validation",
-    "../ui"
+    "../ui",
+    "../ui-composer"
   ],
   "compilerOptions": {
     "rootDir": "./src",

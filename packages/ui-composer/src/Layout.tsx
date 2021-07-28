@@ -4,7 +4,7 @@ import { Element } from "./Element";
 
 interface LayoutItem {
     element: string;
-    span: number;
+    width: number;
 }
 
 const ElementID = ({ children }) => {
@@ -13,6 +13,10 @@ const ElementID = ({ children }) => {
 
 interface ElementGetter {
     (elementId: string): Element<any>;
+}
+
+interface Sorter {
+    (elementA: Element, elementB: Element): number;
 }
 
 export class Layout {
@@ -28,6 +32,19 @@ export class Layout {
         this._grid = flag;
     }
 
+    sort(sorter: Sorter) {
+        if (this._grid) {
+            return;
+        }
+
+        this._layout = this._layout.sort((a, b) => {
+            const elementA = this._getElement(a[0].element);
+            const elementB = this._getElement(b[0].element);
+
+            return sorter(elementA, elementB);
+        });
+    }
+
     removeElement(element: Element<any>) {
         for (let i = 0; i < this._layout.length; i++) {
             const row = this._layout[i];
@@ -35,7 +52,7 @@ export class Layout {
                 if (row[j].element === element.id) {
                     row.splice(j, 1);
                     // Update spans on all items
-                    row.forEach(item => (item.span = 12 / row.length));
+                    row.forEach(item => (item.width = 12 / row.length));
                     return;
                 }
             }
@@ -47,7 +64,7 @@ export class Layout {
             const row = this._layout[i];
             for (let j = 0; j < row.length; j++) {
                 if (row[j].element === lookFor.id) {
-                    this._layout.splice(i, 0, [{ element: element.id, span: 12 }]);
+                    this._layout.splice(i, 0, [{ element: element.id, width: 12 }]);
                     return this;
                 }
             }
@@ -60,7 +77,7 @@ export class Layout {
             const row = this._layout[i];
             for (let j = 0; j < row.length; j++) {
                 if (row[j].element === lookFor.id) {
-                    this._layout.splice(i + 1, 0, [{ element: element.id, span: 12 }]);
+                    this._layout.splice(i + 1, 0, [{ element: element.id, width: 12 }]);
                     return this;
                 }
             }
@@ -73,10 +90,10 @@ export class Layout {
             const row = this._layout[i];
             for (let j = 0; j < row.length; j++) {
                 if (row[j].element === lookFor.id) {
-                    const span = 12 / (row.length + 1);
-                    row.splice(j + 1, 0, { element: element.id, span });
+                    const width = 12 / (row.length + 1);
+                    row.splice(j + 1, 0, { element: element.id, width });
                     // Update spans on all items
-                    row.forEach(item => (item.span = span));
+                    row.forEach(item => (item.width = width));
                     return this;
                 }
             }
@@ -90,11 +107,11 @@ export class Layout {
             const row = this._layout[i];
             for (let j = 0; j < row.length; j++) {
                 if (row[j].element === lookFor.id) {
-                    const span = 12 / (row.length + 1);
+                    const width = 12 / (row.length + 1);
                     // Insert new element to the left
-                    row.splice(j, 0, { element: element.id, span });
+                    row.splice(j, 0, { element: element.id, width });
                     // Update spans on all items
-                    row.forEach(item => (item.span = span));
+                    row.forEach(item => (item.width = width));
                     return this;
                 }
             }
@@ -103,12 +120,12 @@ export class Layout {
     }
 
     insertElementAtTheTop(element: Element<any>) {
-        this._layout.unshift([{ element: element.id, span: 12 }]);
+        this._layout.unshift([{ element: element.id, width: 12 }]);
         return this;
     }
 
     insertElementAtTheBottom(element: Element<any>) {
-        this._layout.push([{ element: element.id, span: 12 }]);
+        this._layout.push([{ element: element.id, width: 12 }]);
         return this;
     }
 
@@ -154,7 +171,7 @@ export class Layout {
                                 return null;
                             }
                             return (
-                                <Cell key={item.element} span={item.span}>
+                                <Cell key={item.element} span={item.width}>
                                     <ElementID key={item.element}>
                                         {element.render(props)}
                                     </ElementID>

@@ -17,7 +17,7 @@ const SplitView = (props: SplitViewProps) => {
     const [view, setView] = useState(null);
 
     useEffect(() => {
-        const view = new SplitViewClass("split-view");
+        const view = new SplitViewClass("default");
         React.Children.forEach(props.children, child => {
             if (child.type === LeftPanel) {
                 view.getLeftPanel().setContentElement(

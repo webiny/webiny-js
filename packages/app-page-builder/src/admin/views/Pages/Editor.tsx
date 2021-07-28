@@ -1,13 +1,13 @@
 import React, { useCallback, useState } from "react";
 import editorMock from "../../assets/editor-mock.png";
-import { createElement } from "../../../editor/helpers";
+import { createElement } from "~/editor/helpers";
 import { useRouter } from "@webiny/react-router";
 import { useQuery, useMutation } from "@apollo/react-hooks";
 import { Editor as PbEditor } from "../../../editor";
 import { useSavedElements } from "../../hooks/useSavedElements";
-import Snackbar from "@webiny/app-admin/plugins/snackbar/Snackbar";
+import Snackbar from "@webiny/app-admin/views/AdminView/components/Snackbar";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
-import { DialogContainer } from "@webiny/app-admin/plugins/dialog/Dialog";
+import { DialogContainer } from "@webiny/app-admin/views/AdminView/components/Dialog";
 import { Typography } from "@webiny/ui/Typography";
 import { LoadingEditor, LoadingTitle } from "./EditorStyled.js";
 import { GET_PAGE, CREATE_PAGE_FROM } from "./graphql";

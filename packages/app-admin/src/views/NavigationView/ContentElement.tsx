@@ -1,36 +1,48 @@
 import React from "react";
-import sortBy from "lodash/sortBy";
 import { Element } from "@webiny/ui-composer/Element";
 import { DrawerContent } from "@webiny/ui/Drawer";
-import { plugins } from "@webiny/plugins";
-import { AdminMenuPlugin } from "~/types";
-// import Section from "~/defaults/menu/Navigation/components/Section";
-// import Menu from "~/defaults/menu/Navigation/components/Menu";
-// import Item from "~/defaults/menu/Navigation/components/Item";
-import { NavigationMenuElement } from "~/elements/NavigationMenuElement";
 import { navContent } from "~/views/NavigationView/Styled";
+import { TAGS } from "~/elements/NavigationMenuElement";
 
 export class ContentElement extends Element {
+    private _sorters = [];
+
     constructor(id: string) {
         super(id);
 
         this.toggleGrid(false);
 
-        const menuPlugins = plugins.byType<AdminMenuPlugin>("admin-menu");
+        this.addSorter((a, b) => {
+            if (a.hasTag(TAGS.APP) && b.hasTag(TAGS.UTILS)) {
+                return -1;
+            }
 
-        // IMPORTANT! The following piece of code is for BACKWARDS COMPATIBILITY purposes only!
+            if (a.hasTag(TAGS.UTILS) && b.hasTag(TAGS.APP)) {
+                return 1;
+            }
 
-        menuPlugins &&
-            sortBy(menuPlugins, [p => p.order || 50, p => p.name]).forEach(plugin => {
-                // TODO: scaffold an admin module and make sure it renders in the navigation
-            });
+            return a.config.label.localeCompare(b.config.label);
+        });
     }
 
-    addMenuElement(element: NavigationMenuElement) {
-        return this.addElement<NavigationMenuElement>(element);
+
+    addElement<TElement extends Element = Element>(element: TElement): TElement {
+        super.addElement(element);
+        this.runSorters();
+        return element;
+    }
+
+    addSorter(sorter: Function) {
+        this._sorters.push(sorter);
     }
 
     render(props?: any): React.ReactNode {
         return <DrawerContent className={navContent}>{super.render(props)}</DrawerContent>;
+    }
+
+    private runSorters() {
+        for (const sorter of this._sorters) {
+            this.getLayout().sort(sorter);
+        }
     }
 }

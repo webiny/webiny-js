@@ -1,14 +1,13 @@
 import * as React from "react";
 import SearchBar from "./SearchBar";
-import { AdminHeaderMiddlePlugin } from "../../types";
+import { AdminViewPlugin } from "~/plugins/AdminViewPlugin";
+import { GenericElement } from "@webiny/ui-elements/GenericElement";
 
-export const globalSearch: AdminHeaderMiddlePlugin = {
-    name: "admin-global-search",
-    type: "admin-header-middle",
-    render() {
-        return <SearchBar />;
-    }
-};
+export const globalSearch = new AdminViewPlugin(view => {
+    view.getHeaderElement()
+        .getCenterSection()
+        .addElement(new GenericElement("searchBar", () => <SearchBar />));
+});
 
 export const globalSearchHotkey = {
     type: "admin-global-search-prevent-hotkey",

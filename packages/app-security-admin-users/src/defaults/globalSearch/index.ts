@@ -4,7 +4,7 @@ import { AdminGlobalSearchPlugin } from "@webiny/app-admin/types";
 export const globalSearchUsers: AdminGlobalSearchPlugin = {
     type: "admin-global-search",
     name: "global-search-users",
-    route: "/users",
+    route: "/security/users",
     label: "Users",
     search: {
         fields: ["firstName", "lastName", "email"]

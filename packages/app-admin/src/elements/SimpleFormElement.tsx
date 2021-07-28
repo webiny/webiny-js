@@ -35,7 +35,7 @@ export class SimpleFormElement extends Element<SimpleFormElementConfig> {
         return super.render({ ...props });
     }
 
-    addElement(element: Element<any>): Element<any> {
+    addElement<TElement extends Element = Element>(element: TElement): TElement {
         if (element.id === "form") {
             return super.addElement(element);
         }

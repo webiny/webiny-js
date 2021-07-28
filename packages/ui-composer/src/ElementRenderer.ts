@@ -5,7 +5,7 @@ export interface ElementRenderParams<TElement> {
 }
 
 export interface RenderNext {
-    (props: any): React.ReactNode;
+    (props?: any): React.ReactNode;
 }
 
 export abstract class ElementRenderer<TElement> {

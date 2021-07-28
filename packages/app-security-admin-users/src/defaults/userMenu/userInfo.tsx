@@ -7,6 +7,8 @@ import { ListItem, ListItemGraphic } from "@webiny/ui/List";
 import { Typography } from "@webiny/ui/Typography";
 import { Avatar } from "@webiny/ui/Avatar";
 import { AdminHeaderUserMenuUserInfoPlugin } from "@webiny/app-admin/types";
+import { AdminViewPlugin } from "@webiny/app-admin/plugins/AdminViewPlugin";
+import { GenericElement } from "@webiny/ui-elements/GenericElement";
 
 const avatarImage = css({
     height: "40px !important",
@@ -96,12 +98,11 @@ const UserInfo = () => {
     );
 };
 
-export default (): AdminHeaderUserMenuUserInfoPlugin => {
-    return {
-        name: "admin-header-user-menu-user-info",
-        type: "admin-header-user-menu-user-info",
-        render() {
-            return <UserInfo />;
-        }
-    };
+export default () => {
+    return new AdminViewPlugin(async view => {
+        const userMenu = await view.awaitElement("userMenu");
+        const userInfo = new GenericElement("userInfo", () => <UserInfo />);
+        userInfo.moveToTheBeginningOf(userMenu);
+        view.refresh();
+    });
 };

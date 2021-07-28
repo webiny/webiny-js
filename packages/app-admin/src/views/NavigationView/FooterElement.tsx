@@ -6,52 +6,42 @@ import { plugins } from "@webiny/plugins";
 import { AdminDrawerFooterMenuPlugin } from "~/types";
 import { GenericElement } from "@webiny/ui-elements/GenericElement";
 import { NavigationMenuElement } from "~/elements/NavigationMenuElement";
+import { PlaceholderElement } from "@webiny/ui-elements/PlaceholderElement";
 
 interface FooterElementConfig extends ElementConfig {
     closeMenu: () => void;
 }
 
 export class FooterElement extends Element<FooterElementConfig> {
+    private _footerPlaceholder: PlaceholderElement;
+
     constructor(id: string, config: FooterElementConfig) {
         super(id);
 
         this.toggleGrid(false);
 
-        const footerMenuPlugins = plugins.byType<AdminDrawerFooterMenuPlugin>(
-            "admin-drawer-footer-menu"
+        this._footerPlaceholder = this.addElement(
+            new PlaceholderElement("navigation.footer.placeholder")
         );
 
-        const props = {
-            hideMenu: () => config.closeMenu()
-        };
-        //
-        // footerMenuPlugins &&
-        //     footerMenuPlugins.forEach(plugin => {
-        //         this.addElement(
-        //             new GenericElement(plugin.name, () => {
-        //                 return (
-        //                     <React.Fragment key={plugin.name}>
-        //                         {plugin.render(props)}
-        //                     </React.Fragment>
-        //                 );
-        //             })
-        //         );
-        //     });
+        new GenericElement("webiny.version", () => {
+            return (
+                <ListItem ripple={false} className={subFooter}>
+                    Webiny v{process.env.REACT_APP_WEBINY_VERSION}
+                </ListItem>
+            );
+        }).moveAfter(this._footerPlaceholder);
     }
 
     addMenuElement(element: NavigationMenuElement) {
-        return this.addElement(element);
+        element.moveBefore(this._footerPlaceholder);
+        return element;
     }
 
     render(props?: any): React.ReactNode {
         return (
             <MenuFooter>
-                <List nonInteractive>
-                    {super.render(props)}
-                    <ListItem ripple={false} className={subFooter}>
-                        Webiny v{process.env.REACT_APP_WEBINY_VERSION}
-                    </ListItem>
-                </List>
+                <List nonInteractive>{super.render(props)}</List>
             </MenuFooter>
         );
     }

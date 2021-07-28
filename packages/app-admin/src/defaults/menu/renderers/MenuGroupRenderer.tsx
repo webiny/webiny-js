@@ -48,11 +48,15 @@ const menuTitleActive = css({
 export class MenuGroupRenderer extends ElementRenderer<NavigationMenuElement> {
     canRender(element: NavigationMenuElement): boolean {
         const isInContent = Boolean(element.getParentOfType(ContentElement));
-        return element.depth === 1 && isInContent;
+        return element.depth === 1 && isInContent && !element.config.path;
     }
 
     render({ element, props, next }: ElementRenderParams<NavigationMenuElement>): React.ReactNode {
         const hasChildren = element.getElements().length > 0;
+
+        if (!hasChildren) {
+            return null;
+        }
 
         const withLink = content => {
             const defaultOnClick = element.getView<NavigationView>().getNavigationHook().hideMenu;
@@ -105,7 +109,7 @@ export class MenuGroupRenderer extends ElementRenderer<NavigationMenuElement> {
                     <Transition in={element.isExpanded} timeout={100} appear unmountOnExit>
                         {state => (
                             <div style={{ ...defaultStyle, ...transitionStyles[state] }}>
-                                {next(props)}
+                                {next()}
                             </div>
                         )}
                     </Transition>

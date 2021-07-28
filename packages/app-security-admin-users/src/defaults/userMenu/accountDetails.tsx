@@ -2,7 +2,9 @@ import React from "react";
 import { ListItem, ListItemGraphic } from "@webiny/ui/List";
 import { Icon } from "@webiny/ui/Icon";
 import { Link } from "@webiny/react-router";
-import { AdminHeaderUserMenuPlugin } from "@webiny/app-admin/types";
+import { AdminViewPlugin } from "@webiny/app-admin/plugins/AdminViewPlugin";
+import { UserMenuElement } from "@webiny/app-admin/elements/UserMenuElement";
+import { GenericElement } from "@webiny/ui-elements/GenericElement";
 import { ReactComponent as AccountIcon } from "../../assets/icons/round-account_circle-24px.svg";
 
 const AccountDetails = () => {
@@ -18,12 +20,10 @@ const AccountDetails = () => {
     );
 };
 
-export default (): AdminHeaderUserMenuPlugin => {
-    return {
-        name: "admin-header-user-menu-account-details",
-        type: "admin-header-user-menu",
-        render() {
-            return <AccountDetails />;
-        }
-    };
+export default () => {
+    return new AdminViewPlugin(view => {
+        const userMenu = view.getElement<UserMenuElement>("userMenu");
+
+        userMenu.addElement(new GenericElement("accountDetails", () => <AccountDetails />));
+    });
 };

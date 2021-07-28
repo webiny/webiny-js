@@ -10,13 +10,12 @@ import { AdminViewPlugin } from "~/plugins/AdminViewPlugin";
 import { NavigationView } from "~/views/NavigationView";
 import Snackbar from "./AdminView/components/Snackbar";
 import { DialogContainer } from "./AdminView/components/Dialog";
-import { NavigationViewPlugin } from "~/plugins/NavigationViewPlugin";
 
 export class AdminView extends View {
     private _title: string;
 
     constructor() {
-        super("admin-layout");
+        super("AdminView");
 
         this.toggleGrid(false);
 
@@ -26,17 +25,14 @@ export class AdminView extends View {
             })
         );
 
-        const navigationView = new NavigationView();
-        
         this.addElement(new HeaderElement("header"));
         this.addElement(new ContentElement("content"));
-        this.addElement(new ViewElement("navigation", { view: navigationView }));
+        this.addElement(new ViewElement("navigation", { view: new NavigationView() }));
         this.addElement(new GenericElement("snackbarContainer", () => <Snackbar />));
         this.addElement(new GenericElement("dialogContainer", () => <DialogContainer />));
 
         // Apply plugins
         this.applyPlugin(AdminViewPlugin);
-        navigationView.applyPlugin(NavigationViewPlugin);
     }
 
     setTitle(title: string) {
@@ -47,7 +43,7 @@ export class AdminView extends View {
         const content = this.getContentElement();
 
         // Remove previous content
-        content.getElements().forEach(el => el.removeElement());
+        content.getElements().forEach(el => el.remove());
 
         // Add new content
         content.addElement(element);

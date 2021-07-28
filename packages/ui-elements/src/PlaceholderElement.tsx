@@ -5,4 +5,8 @@ export class PlaceholderElement extends Element {
     render(props: any) {
         return null;
     }
+    
+    remove() {
+        return;
+    }
 }

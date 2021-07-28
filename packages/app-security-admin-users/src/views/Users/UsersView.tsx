@@ -3,53 +3,31 @@ import { View } from "@webiny/ui-composer/View";
 import { AdminView } from "@webiny/app-admin/views/AdminView";
 import { SplitView } from "@webiny/app-admin/views/SplitView";
 import { ViewElement } from "@webiny/ui-elements/ViewElement";
-import { ButtonElement } from "@webiny/ui-elements/ButtonElement";
-import { AdminViewPlugin } from "@webiny/app-admin/plugins/AdminViewPlugin";
 import { UsersFormView } from "~/views/Users/UsersFormView";
-import { useUserForm } from "~/views/Users/hooks/useUserForm";
+import { GenericElement } from "@webiny/ui-elements/GenericElement";
+import UsersDataList from "~/views/Users/UsersDataList";
 
 export class UsersView extends View {
     constructor() {
-        super("admin-users-view");
+        super("UsersView");
         this.addElements();
     }
 
-    private addElements() {
-        const adminLayout = new AdminView();
-        adminLayout.setTitle("Security - Users");
+    setTitle(title: string) {
+        this.getElement<AdminView>("AdminView").setTitle(title);
+    }
 
-        const splitView = new SplitView("admin-users-split-view", {
-            rightPanel: new ViewElement("admin-users-form", {
-                view: new UsersFormView(),
-                hook: useUserForm
+    private addElements() {
+        const adminView = this.addElement<AdminView>(new AdminView());
+        adminView.setTitle("Security - Users");
+
+        const splitView = new SplitView("adminUsers", {
+            leftPanel: new GenericElement("adminUsersLis", () => <UsersDataList />),
+            rightPanel: new ViewElement("adminUsersForm", {
+                view: new UsersFormView()
             })
         });
 
-        adminLayout.setContentElement(new ViewElement("split-view", { view: splitView }));
-
-        this.addElement(adminLayout);
-
-        // Experimental
-        this.getElement("headerRight").addElement(
-            new ButtonElement("left-form", {
-                label: "Show on the left",
-                type: "primary",
-                onClick: ({ render }) => {
-                    splitView.getRightPanel().moveBefore(splitView.getLeftPanel());
-                    render();
-                }
-            })
-        );
-
-        this.getElement("headerRight").addElement(
-            new ButtonElement("right-form", {
-                label: "Show on the right",
-                type: "primary",
-                onClick: ({ render }) => {
-                    splitView.getRightPanel().moveAfter(splitView.getLeftPanel());
-                    render();
-                }
-            })
-        );
+        adminView.setContentElement(new ViewElement("adminUsersSplitView", { view: splitView }));
     }
 }

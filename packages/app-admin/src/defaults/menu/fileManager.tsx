@@ -38,15 +38,17 @@ class FileManagerMenuItemRenderer extends ElementRenderer<NavigationMenuElement>
 }
 
 export default () => {
-    return new NavigationViewPlugin(view => {
-        const element = new NavigationMenuElement("fileManager", {
-            label: "File Manager",
-            icon: <FileIcon />,
-            testId: "admin-drawer-footer-menu-file-manager"
-        });
+    return [
+        new NavigationViewPlugin(view => {
+            const element = new NavigationMenuElement("fileManager", {
+                label: "File Manager",
+                icon: <FileIcon />,
+                testId: "admin-drawer-footer-menu-file-manager"
+            });
 
-        element.addRenderer(new FileManagerMenuItemRenderer());
+            element.addRenderer(new FileManagerMenuItemRenderer());
 
-        view.getFooterElement().addMenuElement(element);
-    });
+            view.getFooterElement().addMenuElement(element);
+        })
+    ];
 };

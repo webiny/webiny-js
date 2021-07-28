@@ -51,7 +51,7 @@ export class SplitView extends View {
     private _rightPanel: SplitViewPanelElement;
 
     constructor(id, config: SplitViewConfig = {}) {
-        super(id);
+        super(`SplitView.${id}`);
 
         this.toggleGrid(false);
         this.addClassName(grid);

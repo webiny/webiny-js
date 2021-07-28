@@ -54,8 +54,7 @@ const plugins: RoutePlugin[] = [
                 path={"/security/api-keys"}
                 render={() => (
                     <SecureRoute permission={Permission.ApiKeys}>
-                        <AdminLayout>
-                            <Helmet title={"Security - API Keys"} />
+                        <AdminLayout title={"Security - API Keys"}>
                             <ApiKeys />
                         </AdminLayout>
                     </SecureRoute>

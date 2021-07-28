@@ -1,12 +1,18 @@
 import React, { useCallback, useState } from "react";
-import { Plugin, plugins } from "@webiny/plugins";
+import pWaitFor from "p-wait-for";
+import { Plugin } from "@webiny/plugins";
 import { Element } from "./Element";
+
+const ViewID = ({ children }) => {
+    return children;
+};
 
 export abstract class View extends Element {
     private _events = new Map();
     private _hookDefinitions: Record<string, Function> = {};
     private _hookValues: Record<string, any> = {};
     private _props: { render: Function; [key: string]: any };
+    private _isRendered = false;
 
     constructor(id) {
         super(id);
@@ -26,26 +32,10 @@ export abstract class View extends Element {
         this._hookDefinitions[key] = hook;
     }
 
-    /**
-     * TODO: I want this to be "ViewPlugin" class, instead of "any".
-     * Tried the suggestions in this link and couldn't get it to work:
-     * https://www.reddit.com/r/typescript/comments/ad1oiu/pass_class_as_parameter_that_extends_another_class/
-     */
-    applyPlugin(pluginClass: any) {
-        plugins.byType<ViewPlugin<any>>(pluginClass.type).forEach(plugin => plugin.apply(this));
-    }
-
     async awaitElement<TElement extends Element = Element<any>>(id: string): Promise<TElement> {
-        let interval;
-        return new Promise(resolve => {
-            setInterval(() => {
-                const element = this.getElement<TElement>(id);
-                if (element) {
-                    clearInterval(interval);
-                    resolve(element);
-                }
-            }, 200);
-        });
+        await pWaitFor(() => this.getElement<TElement>(id) !== undefined);
+
+        return this.getElement<TElement>(id);
     }
 
     getHookDefinitions() {
@@ -71,11 +61,18 @@ export abstract class View extends Element {
         this._events.set(event, callbacks);
     }
 
+    async isRendered() {
+        return pWaitFor(() => this._isRendered, { interval: 50 });
+    }
+
     render(props?: any): React.ReactNode {
         // We want to keep track of props that triggered the render cycle.
         this._props = props;
 
-        return super.render(props);
+        // Mark view as rendered
+        this._isRendered = true;
+
+        return <ViewID key={this.id}>{super.render(props)}</ViewID>;
     }
 
     refresh() {

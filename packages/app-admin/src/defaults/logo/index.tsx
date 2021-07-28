@@ -17,7 +17,7 @@ export default () => [
             <Logo onClick={() => view.getNavigationHook().hideMenu()} />
         );
 
-        // Fetch logo plugin for backwards compatibility.
+        // IMPORTANT: Fetch logo plugin for backwards compatibility.
         const logoPlugin = plugins.byName<AdminMenuLogoPlugin>("admin-menu-logo");
         if (logoPlugin) {
             view.getHeaderElement().setLogo(

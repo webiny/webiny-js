@@ -1,17 +1,10 @@
 import React, { ReactElement } from "react";
 import { Plugin } from "@webiny/plugins/types";
 import { ApolloClient } from "apollo-client";
-import Menu from "./defaults/menu/Navigation/components/Menu";
-import Section from "./defaults/menu/Navigation/components/Section";
-import Item from "./defaults/menu/Navigation/components/Item";
+import { ItemProps, MenuProps, SectionProps } from "~/views/NavigationView/legacyMenu";
 
 type RenderParams = {
     content: React.ReactNode;
-};
-
-export type AdminLayoutComponentPlugin = Plugin & {
-    type: "admin-layout-component";
-    render(params: RenderParams): React.ReactNode;
 };
 
 export type AdminGlobalSearchPlugin = Plugin & {
@@ -34,6 +27,9 @@ export type AdminDrawerFooterMenuPlugin = Plugin & {
     render(params: any): React.ReactElement;
 };
 
+/**
+ * LEGACY TYPE. Only for backwards compatibility.
+ */
 export type AdminMenuLogoPlugin = Plugin & {
     name: "admin-menu-logo";
     type: "admin-menu-logo";
@@ -63,20 +59,11 @@ export type AdminHeaderUserMenuUserInfoPlugin = Plugin & {
 export type AdminMenuPlugin = Plugin & {
     type: "admin-menu";
     render(props: {
-        Menu: typeof Menu;
-        Section: typeof Section;
-        Item: typeof Item;
+        Menu: React.ComponentType<MenuProps>;
+        Section: React.ComponentType<SectionProps>;
+        Item: React.ComponentType<ItemProps>;
     }): React.ReactNode;
     order?: number;
-};
-
-/**
- * Enables adding custom header elements to the left side of the top bar.
- * @see https://docs.webiny.com/docs/webiny-apps/admin/development/plugins-reference/app#admin-header-left
- */
-export type AdminHeaderLeftPlugin = Plugin & {
-    type: "admin-header-left";
-    render(params: RenderParams): React.ReactNode;
 };
 
 /**
@@ -86,20 +73,6 @@ export type AdminHeaderLeftPlugin = Plugin & {
 export type AdminHeaderRightPlugin = Plugin & {
     type: "admin-header-right";
     render(params: RenderParams): React.ReactNode;
-};
-
-/**
- * Enables adding custom header elements to the middle of the top bar.
- * @see https://docs.webiny.com/docs/webiny-apps/admin/development/plugins-reference/app#admin-header-middle
- */
-export type AdminHeaderMiddlePlugin = Plugin & {
-    type: "admin-header-middle";
-    render(params: RenderParams): React.ReactNode;
-};
-
-export type AdminMenuSettingsPlugin = Plugin & {
-    type: "admin-menu-settings";
-    render(props: { Section: typeof Section; Item: typeof Item }): React.ReactNode;
 };
 
 export type AdminFileManagerFileTypePlugin = Plugin & {

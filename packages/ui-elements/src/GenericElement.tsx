@@ -8,12 +8,13 @@ interface Renderer<TRenderProps> {
 export class GenericElement<TRenderProps = any> extends Element {
     private _render: Renderer<TRenderProps>;
 
-    constructor(id, render: Renderer<TRenderProps>) {
+    constructor(id, render?: Renderer<TRenderProps>) {
         super(id);
+        this.toggleGrid(false);
 
         this._render = render;
     }
     render(props: TRenderProps) {
-        return this._render(props);
+        return typeof this._render === "function" ? this._render(props) : super.render(props);
     }
 }

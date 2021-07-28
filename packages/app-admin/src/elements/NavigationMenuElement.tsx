@@ -1,11 +1,10 @@
 import React from "react";
 import { default as localStorage } from "store";
-import { plugins } from "@webiny/plugins";
 import { Element, ElementConfig } from "@webiny/ui-composer/Element";
 import { NavigationMenuElementPlugin } from "~/plugins/NavigationMenuElementPlugin";
 
-interface NavigationMenuElementConfig extends ElementConfig {
-    label: string;
+export interface NavigationMenuElementConfig extends ElementConfig {
+    label: React.ReactNode;
     icon?: React.ReactElement;
     path?: string;
     onClick?: Function;
@@ -15,10 +14,16 @@ interface NavigationMenuElementConfig extends ElementConfig {
 
 const LOCAL_STORAGE_KEY = "webiny_apps_menu_sections";
 
+export enum TAGS {
+    UTILS = "utils",
+    APP = "app"
+}
+
 export class NavigationMenuElement extends Element<NavigationMenuElementConfig> {
     private _isExpanded = false;
+    private _sorters = [];
 
-    constructor(id, config: NavigationMenuElementConfig) {
+    constructor(id: string, config: NavigationMenuElementConfig) {
         super(id, config);
 
         this.toggleGrid(false);
@@ -26,12 +31,32 @@ export class NavigationMenuElement extends Element<NavigationMenuElementConfig> 
         const state = this.loadState();
         this._isExpanded = state.includes(this.id);
 
+        this.addSorter((a, b) => {
+            if (a.hasTag(TAGS.APP) && b.hasTag(TAGS.UTILS)) {
+                return -1;
+            }
+
+            if (a.hasTag(TAGS.UTILS) && b.hasTag(TAGS.APP)) {
+                return 1;
+            }
+
+            return a.config.label.localeCompare(b.config.label);
+        });
+
         // Apply plugins
-        plugins
-            .byType<NavigationMenuElementPlugin>(NavigationMenuElementPlugin.type)
-            .forEach(plugin => plugin.apply(this));
+        this.applyPlugin(NavigationMenuElementPlugin);
     }
-    
+
+    addElement<TElement extends Element = Element>(element: TElement): TElement {
+        super.addElement(element);
+        this.runSorters();
+        return element;
+    }
+
+    addSorter(sorter: Function) {
+        this._sorters.push(sorter);
+    }
+
     get isExpanded() {
         return this._isExpanded;
     }
@@ -77,13 +102,16 @@ export class NavigationMenuElement extends Element<NavigationMenuElementConfig> 
     }
 
     private loadState() {
-        return localStorage
-            .get(LOCAL_STORAGE_KEY)
-            .split(",")
-            .filter(Boolean);
+        return (localStorage.get(LOCAL_STORAGE_KEY) || "").split(",").filter(Boolean);
     }
 
     private storeState(state) {
         localStorage.set(LOCAL_STORAGE_KEY, state.join(","));
+    }
+
+    private runSorters() {
+        for (const sorter of this._sorters) {
+            this.getLayout().sort(sorter);
+        }
     }
 }

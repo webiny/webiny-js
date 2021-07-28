@@ -40,7 +40,7 @@ class Logo extends React.Component<any> {
             width: this.props.width,
             height: this.props.height,
             display: this.props.display,
-            marginTop: 12,
+            marginTop: 8,
             color: undefined
         };
 

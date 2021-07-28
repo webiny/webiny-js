@@ -1,7 +1,6 @@
 import React from "react";
 import styled from "@emotion/styled";
 import { View } from "@webiny/ui-composer/View";
-import { plugins } from "@webiny/plugins";
 import { Form } from "@webiny/form";
 import { validation } from "@webiny/validation";
 import {
@@ -13,10 +12,10 @@ import { AccordionElement, AccordionItemElement } from "@webiny/ui-elements/Acco
 import { InputElement } from "@webiny/ui-elements/InputElement";
 import { ReactComponent as SecurityIcon } from "../../assets/icons/security-24px.svg";
 import { ReactComponent as SettingsIcon } from "~/assets/icons/settings-24px.svg";
-import { UseUserForm } from "./hooks/useUserForm";
 import AvatarImage from "../Components/AvatarImage";
 import { GroupAutocompleteElement } from "~/elements/GroupAutocompleteElement";
-import { UsersFormViewPlugin } from "./UsersFormViewPlugin";
+import { UsersFormViewPlugin } from "~/plugins/UsersFormViewPlugin";
+import { UseUserForm, useUserForm } from "~/views/Users/hooks/useUserForm";
 
 const FormWrapper = styled("div")({
     margin: "0 100px"
@@ -26,22 +25,27 @@ const AvatarWrapper = styled("div")({
     margin: "24px 100px 32px"
 });
 
-export class UsersFormView extends View<UseUserForm> {
+export class UsersFormView extends View {
     constructor() {
-        super("users-form-view");
+        super("UsersFormView");
+
+        this.toggleGrid(false);
+        this.addHookDefinition("userForm", useUserForm);
 
         // Setup default view
         this.addElements();
 
         // Apply plugins
-        plugins
-            .byType<UsersFormViewPlugin>(UsersFormViewPlugin.type)
-            .forEach(plugin => plugin.apply(this));
+        this.applyPlugin(UsersFormViewPlugin);
+    }
+
+    getUserFormHook(): UseUserForm {
+        return this.getHook("userForm");
     }
 
     submit(data: FormData, form?: Form) {
         this.dispatchEvent("onSubmit", { data, form });
-        this.hookValues.onSubmit(data);
+        this.getUserFormHook().onSubmit(data);
     }
 
     onSubmit(cb: (data: any, form: Form) => void) {
@@ -49,25 +53,25 @@ export class UsersFormView extends View<UseUserForm> {
     }
 
     private addElements() {
-        const simpleForm = this.addElement(
-            new SimpleFormElement("users-form", {
+        const simpleForm = this.addElement<SimpleFormElement>(
+            new SimpleFormElement("UsersForm", {
                 isLoading: () => {
-                    return this.hookValues.loading;
+                    return this.getUserFormHook().loading;
                 },
                 onSubmit: (data: FormData, form: Form) => {
                     this.submit(data, form);
                 },
                 getTitle: () => {
-                    return this.hookValues.fullName || "New User";
+                    return this.getUserFormHook().fullName || "New User";
                 },
                 getFormData: () => {
-                    return this.hookValues.user;
+                    return this.getUserFormHook().user;
                 },
                 onCancel: () => {
-                    this.hookValues.cancelEditing();
+                    this.getUserFormHook().cancelEditing();
                 }
             })
-        ) as SimpleFormElement;
+        );
 
         const avatar = new GenericElement<SimpleFormElementRenderProps>("avatar", props => {
             const { Bind } = props.formProps;
@@ -122,10 +126,7 @@ export class UsersFormView extends View<UseUserForm> {
             new InputElement("login", {
                 label: "Email",
                 validators: validation.create("required,email"),
-                beforeChange: (value: string, cb) => cb(value.toLowerCase()),
-                shouldRender(props) {
-                    return props.formProps.data.firstName === "Pavel";
-                }
+                beforeChange: (value: string, cb) => cb(value.toLowerCase())
             })
         );
 
@@ -139,31 +140,6 @@ export class UsersFormView extends View<UseUserForm> {
             })
         );
 
-        this.toggleGrid(false);
-        this.wrapWith(FormWrapper);
-
-        // MODIFY THE FORM BEYOND RECOGNIZABLE!
-        // const leftIds = ["firstName", "lastName"];
-        // const rightIds = ["login", "group"];
-        //
-        // // Add left and right panels
-        // const leftPanel = new PanelElement("leftPanel");
-        // const rightPanel = new PanelElement("rightPanel");
-        //
-        // const formContent = simpleForm.getFormContentElement();
-        // leftPanel.moveToTheTopOf(formContent);
-        // rightPanel.moveToTheRightOf(leftPanel);
-        //
-        // leftIds.forEach(id => this.getElement(id).moveToTheBottomOf(leftPanel));
-        // rightIds.forEach(id => this.getElement(id).moveToTheBottomOf(rightPanel));
-        //
-        // const extraData = new InputElement("extra", { label: "Extra Data" });
-        // extraData.moveToTheRightOf(this.getElement("login"));
-        //
-        // formContent.toggleGrid(true);
-        // simpleForm.getFormHeaderElement().setIcon(<SecurityIcon />);
-        // simpleForm.getSubmitButtonElement().moveTo(simpleForm.getFormHeaderElement());
-        //
-        // accordion.removeElement();
+        this.wrapWith(({ children }) => <FormWrapper>{children}</FormWrapper>);
     }
 }

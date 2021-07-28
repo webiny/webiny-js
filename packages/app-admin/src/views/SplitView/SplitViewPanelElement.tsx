@@ -21,7 +21,7 @@ export class SplitViewPanelElement extends Element<any> {
 
     setContentElement(element: Element) {
         // Remove previous content
-        this.getElements().forEach(el => el.removeElement());
+        this.getElements().forEach(el => el.remove());
 
         // Add new content
         this.addElement(element);
