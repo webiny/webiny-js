@@ -19,6 +19,23 @@ export const writePageListVariablesToLocalStorage = variables => {
     localStorage.setItem("wby_pb_pages_list_latest_variables", JSON.stringify(variables));
 };
 
+const extractVariables = key => {
+    // TODO: Find a better way to parse the query/id from cache
+    const variables = key.replace("$ROOT_QUERY.pageBuilder.listPages(", "").replace(")", "");
+    return JSON.parse(variables);
+};
+
+const modifyCacheForAllListPagesQuery = (cache, operation: (variables: any) => void) => {
+    const existingQueriesInCache = Object.keys(cache.data.data).filter(
+        key => key.includes(".listPages") && !key.endsWith(".meta")
+    );
+
+    existingQueriesInCache.forEach(cacheKey => {
+        const variables = extractVariables(cacheKey);
+        operation(variables);
+    });
+};
+
 /*
  * We need to preserve the order of entries with new entry addition
  * because we're not re-fetching the list but updating it directly inside cache.
@@ -33,67 +50,70 @@ const sortEntries = (list, sort) => {
     return orderBy(list, [key], [order]);
 };
 
-export const addPageToListCache = (cache, page: PbPageData, variables) => {
-    const gqlParams = { query: GQL.LIST_PAGES, variables };
+export const addPageToListCache = (cache, page: PbPageData) => {
+    modifyCacheForAllListPagesQuery(cache, variables => {
+        const gqlParams = { query: GQL.LIST_PAGES, variablesFromCache: variables };
+        const data = cache.readQuery(gqlParams);
+        const listPagesData = get(data, "pageBuilder.listPages.data");
+        if (!listPagesData) {
+            return;
+        }
 
-    const data = cache.readQuery(gqlParams);
-    const listPagesData = get(data, "pageBuilder.listPages.data");
-    if (!listPagesData) {
-        return;
-    }
-
-    cache.writeQuery({
-        ...gqlParams,
-        data: dotProp.set(
-            data,
-            "pageBuilder.listPages.data",
-            sortEntries([page, ...listPagesData], variables.sort)
-        )
+        cache.writeQuery({
+            ...gqlParams,
+            data: dotProp.set(
+                data,
+                "pageBuilder.listPages.data",
+                sortEntries([page, ...listPagesData], variables.sort)
+            )
+        });
     });
 };
 
-export const updateLatestRevisionInListCache = (cache, revision, variables) => {
-    const gqlParams = { query: GQL.LIST_PAGES, variables };
+export const updateLatestRevisionInListCache = (cache, revision) => {
+    modifyCacheForAllListPagesQuery(cache, variables => {
+        const gqlParams = { query: GQL.LIST_PAGES, variables };
+        const data = cache.readQuery(gqlParams);
 
-    const data = cache.readQuery(gqlParams);
+        const listPagesData = get(data, "pageBuilder.listPages.data");
+        if (!listPagesData) {
+            return;
+        }
 
-    const listPagesData = get(data, "pageBuilder.listPages.data");
-    if (!listPagesData) {
-        return;
-    }
+        const [uniqueId] = revision.id.split("#");
+        const index = listPagesData.findIndex(item => item.id.startsWith(uniqueId));
+        if (index === -1) {
+            return;
+        }
 
-    const [uniqueId] = revision.id.split("#");
-    const index = listPagesData.findIndex(item => item.id.startsWith(uniqueId));
-    if (index === -1) {
-        return;
-    }
-
-    cache.writeQuery({
-        ...gqlParams,
-        data: dotProp.set(data, `pageBuilder.listPages.data.${index}`, revision)
+        cache.writeQuery({
+            ...gqlParams,
+            data: dotProp.set(data, `pageBuilder.listPages.data.${index}`, revision)
+        });
     });
 };
 
-export const removePageFromListCache = (cache, page, variables) => {
+export const removePageFromListCache = (cache, page) => {
     // Delete the item from list cache
-    const gqlParams = { query: GQL.LIST_PAGES, variables };
+    modifyCacheForAllListPagesQuery(cache, variables => {
+        const gqlParams = { query: GQL.LIST_PAGES, variables };
+        const data = cache.readQuery(gqlParams);
 
-    const data = cache.readQuery(gqlParams);
+        const listPagesData = get(data, "pageBuilder.listPages.data");
+        if (!listPagesData) {
+            return;
+        }
 
-    const listPagesData = get(data, "pageBuilder.listPages.data");
-    if (!listPagesData) {
-        return;
-    }
+        const [uniqueId] = page.id.split("#");
+        const index = listPagesData.findIndex(item => item.id.startsWith(uniqueId));
+        if (index === -1) {
+            return;
+        }
 
-    const [uniqueId] = page.id.split("#");
-    const index = listPagesData.findIndex(item => item.id.startsWith(uniqueId));
-    if (index === -1) {
-        return;
-    }
-
-    cache.writeQuery({
-        ...gqlParams,
-        data: dotProp.delete(data, `pageBuilder.listPages.data.${index}`)
+        cache.writeQuery({
+            ...gqlParams,
+            data: dotProp.delete(data, `pageBuilder.listPages.data.${index}`)
+        });
     });
 };
 

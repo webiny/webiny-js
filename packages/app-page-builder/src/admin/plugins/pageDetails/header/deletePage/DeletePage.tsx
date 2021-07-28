@@ -49,11 +49,7 @@ const DeletePage = props => {
                             return;
                         }
                         // Also, delete the page from "LIST_PAGES_ cache
-                        GQLCache.removePageFromListCache(
-                            cache,
-                            page,
-                            GQLCache.readPageListVariables()
-                        );
+                        GQLCache.removePageFromListCache(cache, page);
                     }
                 });
 

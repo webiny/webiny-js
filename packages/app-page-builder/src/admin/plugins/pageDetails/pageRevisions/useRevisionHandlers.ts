@@ -22,11 +22,7 @@ export function useRevisionHandlers(props) {
                     return;
                 }
 
-                GQLCache.updateLatestRevisionInListCache(
-                    cache,
-                    data.pageBuilder.createPage.data,
-                    GQLCache.readPageListVariables()
-                );
+                GQLCache.updateLatestRevisionInListCache(cache, data.pageBuilder.createPage.data);
             }
         });
         const { data, error } = res.pageBuilder.createPage;
@@ -55,11 +51,7 @@ export function useRevisionHandlers(props) {
                 const revisions = GQLCache.removeRevisionFromEntryCache(cache, revision);
 
                 if (revision.id === page.id) {
-                    GQLCache.updateLatestRevisionInListCache(
-                        cache,
-                        revisions[0],
-                        GQLCache.readPageListVariables()
-                    );
+                    GQLCache.updateLatestRevisionInListCache(cache, revisions[0]);
                     // Redirect to the first revision in the list of all entry revisions.
                     return history.push(
                         `/page-builder/pages?id=` + encodeURIComponent(revisions[0].id)

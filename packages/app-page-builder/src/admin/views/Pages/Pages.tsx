@@ -32,11 +32,7 @@ const Pages = () => {
                         return;
                     }
 
-                    GQLCache.addPageToListCache(
-                        cache,
-                        data.pageBuilder.createPage.data,
-                        GQLCache.readPageListVariables()
-                    );
+                    GQLCache.addPageToListCache(cache, data.pageBuilder.createPage.data);
                 }
             });
 

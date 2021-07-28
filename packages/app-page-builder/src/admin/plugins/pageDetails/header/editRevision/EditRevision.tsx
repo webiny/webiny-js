@@ -29,11 +29,7 @@ const EditRevision = props => {
                     return;
                 }
 
-                GQLCache.updateLatestRevisionInListCache(
-                    cache,
-                    data.pageBuilder.createPage.data,
-                    GQLCache.readPageListVariables()
-                );
+                GQLCache.updateLatestRevisionInListCache(cache, data.pageBuilder.createPage.data);
             }
         });
         setInProgress(false);
