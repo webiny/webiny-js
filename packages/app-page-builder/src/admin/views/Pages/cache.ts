@@ -52,7 +52,7 @@ const sortEntries = (list, sort) => {
 
 export const addPageToListCache = (cache, page: PbPageData) => {
     modifyCacheForAllListPagesQuery(cache, variables => {
-        const gqlParams = { query: GQL.LIST_PAGES, variablesFromCache: variables };
+        const gqlParams = { query: GQL.LIST_PAGES, variables };
         const data = cache.readQuery(gqlParams);
         const listPagesData = get(data, "pageBuilder.listPages.data");
         if (!listPagesData) {
