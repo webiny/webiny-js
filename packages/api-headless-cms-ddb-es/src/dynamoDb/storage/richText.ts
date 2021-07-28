@@ -3,6 +3,7 @@ import WebinyError from "@webiny/error";
 import { CmsModelFieldToStoragePlugin } from "@webiny/api-headless-cms/types";
 
 export type OriginalValue = Record<string, any> | any[];
+
 export interface StorageValue {
     compression: string;
     value: any;
@@ -69,10 +70,11 @@ export default (): CmsModelFieldToStoragePlugin<OriginalValue, StorageValue> => 
                     }
                 );
             }
-            if (!value) {
-                return value;
+            try {
+                return jsonpack.unpack(value);
+            } catch {
+                return null;
             }
-            return jsonpack.unpack(value);
         },
         async toStorage({ value }) {
             /**
