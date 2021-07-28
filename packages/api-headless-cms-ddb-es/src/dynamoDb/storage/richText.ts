@@ -33,7 +33,7 @@ export default (): CmsModelFieldToStoragePlugin<OriginalValue, StorageValue> => 
         type: "cms-model-field-to-storage",
         name: "cms-model-field-to-storage-rich-text",
         fieldType: "rich-text",
-        async fromStorage({ model, field, value: storageValue }) {
+        async fromStorage({ field, value: storageValue }) {
             if (!storageValue) {
                 return storageValue;
             } else if (typeof storageValue !== "object") {
@@ -69,10 +69,12 @@ export default (): CmsModelFieldToStoragePlugin<OriginalValue, StorageValue> => 
                     }
                 );
             }
-
+            if (!value) {
+                return value;
+            }
             return jsonpack.unpack(value);
         },
-        async toStorage({ model, field, value }) {
+        async toStorage({ value }) {
             /**
              * There is a possibility that we are trying to compress already compressed value.
              * Introduced a bug with 5.8.0 storage operations, so just return the value to correct it.
@@ -81,10 +83,9 @@ export default (): CmsModelFieldToStoragePlugin<OriginalValue, StorageValue> => 
                 return value as any;
             }
             value = transformArray(value);
-            const packed = jsonpack.pack(value);
             return {
                 compression: "jsonpack",
-                value: packed
+                value: value ? jsonpack.pack(value) : value
             };
         }
     };
