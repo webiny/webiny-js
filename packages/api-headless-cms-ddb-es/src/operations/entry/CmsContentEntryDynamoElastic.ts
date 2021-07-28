@@ -34,7 +34,7 @@ import { Client } from "@elastic/elasticsearch";
 import { ElasticsearchContext } from "@webiny/api-elasticsearch/types";
 import { createLimit } from "@webiny/api-elasticsearch/limit";
 import { encodeCursor } from "@webiny/api-elasticsearch/cursors";
-import { compress, CompressedData, decompress } from "@webiny/api-elasticsearch/compression";
+import { compress, decompress } from "@webiny/api-elasticsearch/compression";
 
 export const TYPE_ENTRY = "cms.entry";
 export const TYPE_ENTRY_LATEST = TYPE_ENTRY + ".l";
@@ -49,7 +49,7 @@ const getEntryData = (context: CmsContext, entry: CmsContentEntry) => {
 };
 
 const getESLatestEntryData = async (context: CmsContext, entry: CmsContentEntry) => {
-    return compress({
+    return compress(context, {
         ...getEntryData(context, entry),
         latest: true,
         TYPE: TYPE_ENTRY_LATEST,
@@ -58,7 +58,7 @@ const getESLatestEntryData = async (context: CmsContext, entry: CmsContentEntry)
 };
 
 const getESPublishedEntryData = async (context: CmsContext, entry: CmsContentEntry) => {
-    return compress({
+    return compress(context, {
         ...getEntryData(context, entry),
         published: true,
         TYPE: TYPE_ENTRY_PUBLISHED,
@@ -70,7 +70,7 @@ interface ElasticsearchTableItem {
     PK: string;
     SK: string;
     index: string;
-    data: CompressedData;
+    data: any;
 }
 
 interface ConstructorArgs {
@@ -82,7 +82,7 @@ interface ConstructorArgs {
  * Use some other implementation for general-use purpose.
  */
 export default class CmsContentEntryDynamoElastic implements CmsContentEntryStorageOperations {
-    private readonly _context: CmsContext;
+    private readonly context: CmsContext;
     private _partitionKey: string;
     private readonly _dataLoaders: DataLoadersHandler;
     private _esClient: Client;
@@ -99,10 +99,6 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
         return this._esClient;
     }
 
-    private get context(): CmsContext {
-        return this._context;
-    }
-
     private get partitionKey(): string {
         if (!this._partitionKey) {
             this._partitionKey = `${createBasePartitionKey(this.context)}#CME`;
@@ -111,7 +107,7 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
     }
 
     public constructor({ context }: ConstructorArgs) {
-        this._context = context;
+        this.context = context;
         this._dataLoaders = new DataLoadersHandler(context, this);
     }
 
@@ -763,7 +759,10 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
             /**
              * Need to decompress the data from Elasticsearch DynamoDB table.
              */
-            const latestEsEntryDataDecompressed = await decompress(latestESEntryData.data);
+            const latestEsEntryDataDecompressed = await decompress(
+                this.context,
+                latestESEntryData.data
+            );
             batch.update({
                 ...configurations.esDb(),
                 query: {

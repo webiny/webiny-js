@@ -7,5 +7,22 @@
     { "path": "../../../../packages/handler-logs" },
     { "path": "../../../../packages/handler-db" },
     { "path": "../../../../packages/db-dynamodb" }
-  ]
+  ],
+  "compilerOptions": {
+    "paths": {
+      "~/*": ["./src/*"],
+      "@webiny/handler-aws/*": ["../../../packages/handler-aws/src/*"],
+      "@webiny/handler-aws": ["../../../packages/handler-aws/src"],
+      "@webiny/api-page-builder/*": ["../../../packages/api-page-builder/src/*"],
+      "@webiny/api-page-builder": ["../../../packages/api-page-builder/src"],
+      "@webiny/api-i18n/*": ["../../../packages/api-i18n/src/*"],
+      "@webiny/api-i18n": ["../../../packages/api-i18n/src"],
+      "@webiny/handler-logs/*": ["../../../packages/handler-logs/src/*"],
+      "@webiny/handler-logs": ["../../../packages/handler-logs/src"],
+      "@webiny/handler-db/*": ["../../../packages/handler-db/src/*"],
+      "@webiny/handler-db": ["../../../packages/handler-db/src"],
+      "@webiny/db-dynamodb/*": ["../../../packages/db-dynamodb/src/*"],
+      "@webiny/db-dynamodb": ["../../../packages/db-dynamodb/src"]
+    }
+  }
 }

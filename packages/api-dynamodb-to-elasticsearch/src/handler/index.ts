@@ -65,7 +65,7 @@ export default (): HandlerPlugin<ElasticsearchContext> => ({
                 /**
                  * We must decompress the data that is going into the Elasticsearch.
                  */
-                data = await decompress(newImage.data);
+                data = await decompress(context, newImage.data);
                 /**
                  * No point in writing null or undefined data into the Elasticsearch.
                  * This might happen on some error while decompressing. We will log it.
@@ -75,7 +75,7 @@ export default (): HandlerPlugin<ElasticsearchContext> => ({
                  */
                 if (!data) {
                     console.log(
-                        `Could not get decompressed data, skipping ES operation. ID: ${_id}`
+                        `Could not get decompressed data, skipping ES operation "${operation}", ID ${_id}`
                     );
                     continue;
                 }
