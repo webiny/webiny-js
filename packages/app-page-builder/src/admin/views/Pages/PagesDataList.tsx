@@ -4,7 +4,6 @@ import { i18n } from "@webiny/app/i18n";
 import { useRouter } from "@webiny/react-router";
 import { useQuery } from "@apollo/react-hooks";
 import debounce from "lodash/debounce";
-import isEmpty from "lodash/isEmpty";
 import get from "lodash/get";
 import { LIST_PAGES } from "../../graphql/pages";
 import TimeAgo from "timeago-react";
@@ -68,17 +67,6 @@ const sorters = [
     }
 ];
 
-const getVariables = (search, sort, where) => {
-    if (!search.query && sort.createdOn === "desc" && isEmpty(where)) {
-        return GQLCache.readPageListVariables();
-    }
-    return {
-        search,
-        sort,
-        where
-    };
-};
-
 type PagesDataListProps = {
     onCreatePage: (event?: React.SyntheticEvent) => void;
     canCreate: boolean;
@@ -115,7 +103,11 @@ const PagesDataList = ({ onCreatePage, canCreate }: PagesDataListProps) => {
         });
     }, [filter]);
 
-    const variables = getVariables(search, sort, where);
+    const variables = {
+        search,
+        sort,
+        where
+    };
 
     const listQuery = useQuery(LIST_PAGES, {
         variables
