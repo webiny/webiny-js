@@ -363,6 +363,13 @@ Thanks goes to these wonderful people:
                         <sub><b>Ankur Raiyani</b></sub>
                     </a>
                     <br />
+                </td></tr><tr><td align="center">
+                    <a href="https://github.com/karthick3018">
+                        <img src="https://avatars.githubusercontent.com/u/47154512?v=4" width="100px;" alt="Karthick Raja"/>
+                        <br />
+                        <sub><b>Karthick Raja</b></sub>
+                    </a>
+                    <br />
                 </td></tr>
 </table>
 <!-- markdownlint-enable -->

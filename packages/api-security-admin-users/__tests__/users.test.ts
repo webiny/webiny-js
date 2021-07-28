@@ -20,12 +20,12 @@ describe("Security User CRUD Test", () => {
 
     test("should create, read, update and delete users", async () => {
         // Create user groups
-        let [response] = await securityGroup.create({
+        const [createGroupAResponse] = await securityGroup.create({
             data: groupMocks.groupA
         });
 
-        groupA = response.data.security.createGroup.data;
-        expect(response).toEqual({
+        groupA = createGroupAResponse.data.security.createGroup.data;
+        expect(createGroupAResponse).toEqual({
             data: {
                 security: {
                     createGroup: {
@@ -36,21 +36,21 @@ describe("Security User CRUD Test", () => {
             }
         });
 
-        [response] = await securityGroup.create({
+        const [createGroupBResponse] = await securityGroup.create({
             data: groupMocks.groupB
         });
 
-        groupB = response.data.security.createGroup.data;
+        groupB = createGroupBResponse.data.security.createGroup.data;
 
         // Let's create a user.
-        [response] = await securityUser.create({
+        const [createUserAResponse] = await securityUser.create({
             data: {
                 ...mocks.userA,
                 group: groupA.slug
             }
         });
 
-        expect(response).toEqual({
+        expect(createUserAResponse).toEqual({
             data: {
                 security: {
                     createUser: {
@@ -68,14 +68,14 @@ describe("Security User CRUD Test", () => {
             }
         });
 
-        [response] = await securityUser.create({
+        const [createUserBResponse] = await securityUser.create({
             data: {
                 ...mocks.userB,
                 group: groupA.slug
             }
         });
 
-        expect(response).toEqual({
+        expect(createUserBResponse).toEqual({
             data: {
                 security: {
                     createUser: {
@@ -94,9 +94,9 @@ describe("Security User CRUD Test", () => {
         });
 
         // Let's check whether both of the group exists
-        [response] = await securityUser.list();
+        const [listUsersResponse] = await securityUser.list();
 
-        expect(response).toMatchObject({
+        expect(listUsersResponse).toMatchObject({
             data: {
                 security: {
                     listUsers: {
@@ -134,14 +134,14 @@ describe("Security User CRUD Test", () => {
 
         // Let's update the "userB" name
         const updatedName = "User B";
-        [response] = await securityUser.update({
+        const [updateUserResponse] = await securityUser.update({
             login: mocks.userB.login,
             data: {
                 lastName: updatedName
             }
         });
 
-        expect(response).toEqual({
+        expect(updateUserResponse).toEqual({
             data: {
                 security: {
                     updateUser: {
@@ -161,11 +161,11 @@ describe("Security User CRUD Test", () => {
         });
 
         // Delete  "userB"
-        [response] = await securityUser.delete({
+        const [deleteUserResponse] = await securityUser.delete({
             login: mocks.userB.login
         });
 
-        expect(response).toEqual({
+        expect(deleteUserResponse).toEqual({
             data: {
                 security: {
                     deleteUser: {
@@ -177,11 +177,11 @@ describe("Security User CRUD Test", () => {
         });
 
         // Should not contain "userB"
-        [response] = await securityUser.get({
+        const [getUserBResponse] = await securityUser.get({
             login: mocks.userB.login
         });
 
-        expect(response).toEqual({
+        expect(getUserBResponse).toEqual({
             data: {
                 security: {
                     getUser: {
@@ -197,9 +197,9 @@ describe("Security User CRUD Test", () => {
         });
 
         // Should contain "userA"
-        [response] = await securityUser.get({ login: mocks.userA.login });
+        const [getUserAResponse] = await securityUser.get({ login: mocks.userA.login });
 
-        expect(response).toEqual({
+        expect(getUserAResponse).toEqual({
             data: {
                 security: {
                     getUser: {
@@ -218,12 +218,12 @@ describe("Security User CRUD Test", () => {
         });
 
         // Update user's group
-        [response] = await securityUser.update({
+        const [updateUserAResponse] = await securityUser.update({
             login: mocks.userA.login,
             data: { group: groupB.slug }
         });
 
-        expect(response).toEqual({
+        expect(updateUserAResponse).toEqual({
             data: {
                 security: {
                     updateUser: {
@@ -267,7 +267,9 @@ describe("Security User CRUD Test", () => {
                         error: {
                             code: "USER_EXISTS",
                             message: "User with that login already exists.",
-                            data: null
+                            data: {
+                                id: "admin@webiny.com"
+                            }
                         }
                     }
                 }

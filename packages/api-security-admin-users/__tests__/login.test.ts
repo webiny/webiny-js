@@ -8,9 +8,14 @@ describe(`"Login" test`, () => {
     const login = "admin@webiny.com";
 
     beforeEach(async () => {
-        await install.install({
+        const [response] = await install.install({
             data: { firstName: "John", lastName: "Doe", login }
         });
+        if (response?.data?.security?.install?.error) {
+            console.log(response.data.security.install.error);
+            throw new Error(response.data.security.install.error.message);
+            process.exit(0);
+        }
     });
 
     test("Should be able to login", async () => {
@@ -33,14 +38,37 @@ describe(`"Login" test`, () => {
                 }
             }
         });
+
+        /**
+         * We must try the second login to verify that user is not created again.
+         */
+        const [secondResponse] = await securityUser.login();
+
+        expect(secondResponse).toEqual({
+            data: {
+                security: {
+                    login: {
+                        data: {
+                            login: "admin@webiny.com",
+                            firstName: "John",
+                            lastName: "Doe",
+                            avatar: null,
+                            gravatar: createGravatar(login),
+                            access: [{ id: "root", name: "Root", permissions: [{ name: "*" }] }]
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
     });
 
     test("Should be able to update current user", async () => {
-        let [response] = await securityUser.updateCurrentUser({
+        const [updateUserResponse] = await securityUser.updateCurrentUser({
             data: { firstName: "Jane", lastName: "Wayne" }
         });
 
-        expect(response).toMatchObject({
+        expect(updateUserResponse).toMatchObject({
             data: {
                 security: {
                     updateCurrentUser: {
@@ -56,9 +84,9 @@ describe(`"Login" test`, () => {
         });
 
         // Let's see if the current user record updated or not
-        [response] = await securityUser.get({ login: "admin@webiny.com" });
+        const [getUserResponse] = await securityUser.get({ login: "admin@webiny.com" });
 
-        expect(response).toMatchObject({
+        expect(getUserResponse).toMatchObject({
             data: {
                 security: {
                     getUser: {

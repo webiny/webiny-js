@@ -4,6 +4,7 @@ import graphqlPlugins from "@webiny/handler-graphql";
 import i18nPlugins from "@webiny/api-i18n/graphql";
 import i18nDynamoDbStorageOperations from "@webiny/api-i18n-ddb";
 import adminUsersPlugins from "@webiny/api-security-admin-users";
+import securityAdminUsersDynamoDbStorageOperations from "@webiny/api-security-admin-users-so-ddb";
 import i18nContentPlugins from "@webiny/api-i18n-content/plugins";
 import pageBuilderPlugins from "@webiny/api-page-builder/graphql";
 import dbPlugins from "@webiny/handler-db";
@@ -59,6 +60,7 @@ export const handler = createHandler({
             }
         }),
         adminUsersPlugins(),
+        securityAdminUsersDynamoDbStorageOperations(),
         pageBuilderPlugins(),
         formBuilderPlugins(),
         headlessCmsPlugins(),
