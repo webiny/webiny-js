@@ -24,6 +24,7 @@ import { createElasticsearchBody } from "~/operations/files/body";
 import { transformFromIndex, transformToIndex } from "~/operations/files/transformers";
 import { FileIndexTransformPlugin } from "~/plugins/FileIndexTransformPlugin";
 import { createLimit } from "@webiny/api-elasticsearch/limit";
+import { compress, CompressedData } from "@webiny/api-elasticsearch/compression";
 
 interface FileItem extends File {
     PK: string;
@@ -35,7 +36,7 @@ interface EsFileItem {
     PK: string;
     SK: string;
     index: string;
-    data: File;
+    data: CompressedData;
 }
 
 interface ConstructorParams {
@@ -156,10 +157,11 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
             plugins: this.getFileIndexTransformPlugins(),
             file
         });
+        const esCompressedData = await compress(esData);
         const esItem: EsFileItem = {
             ...keys,
             index: this.esIndex,
-            data: esData
+            data: esCompressedData
         };
         try {
             await this._entity.put(item);
@@ -193,10 +195,11 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
             plugins: this.getFileIndexTransformPlugins(),
             file
         });
+        const esCompressedData = await compress(esData);
         const esItem: EsFileItem = {
             ...keys,
             index: this.esIndex,
-            data: esData
+            data: esCompressedData
         };
         try {
             await this._entity.put(item);
@@ -253,11 +256,12 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
                         ...file
                     })
                 );
+                const esCompressedData = await compress(file);
                 batches.push(
                     this._esEntity.putBatch({
                         ...keys,
                         index: this.esIndex,
-                        data: file
+                        data: esCompressedData
                     })
                 );
             }
