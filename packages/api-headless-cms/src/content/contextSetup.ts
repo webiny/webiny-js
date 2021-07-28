@@ -2,22 +2,13 @@ import { CmsContext } from "~/types";
 import WebinyError from "@webiny/error";
 import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
 
-interface CmsHttpParameters {
-    type: string;
-    locale: string;
-}
-
-const throwPlainError = (type: string): void => {
-    throw new Error(`Missing context.http.request.path parameter "${type}".`);
-};
-
-const extractHandlerHttpParameters = (context: CmsContext): CmsHttpParameters => {
-    const { key = "" } = context.http.request.path.parameters || {};
+const extractHandlerHttpParameters = (context: CmsContext) => {
+    const { key = "" } = context.http?.request?.path?.parameters || {};
     const [type, locale] = key.split("/");
     if (!type) {
-        throwPlainError("type");
+        throw new WebinyError(`Missing context.http.request.path parameter "type".`);
     } else if (!locale) {
-        throwPlainError("locale");
+        throw new WebinyError(`Missing context.http.request.path parameter "locale".`);
     }
 
     return {
@@ -28,11 +19,11 @@ const extractHandlerHttpParameters = (context: CmsContext): CmsHttpParameters =>
 
 export default () => {
     return new ContextPlugin<CmsContext>(async context => {
-        if (context.http.request.method === "OPTIONS") {
+        if (context.http?.request?.method === "OPTIONS") {
             return;
         } else if (context.cms) {
             throw new WebinyError(
-                "Context setup plugin must be first to run. Cannot have anything before it.",
+                "Context setup plugin must be first to be registered. Cannot have anything before it.",
                 "CMS_CONTEXT_INITIALIZED_ERROR"
             );
         }
