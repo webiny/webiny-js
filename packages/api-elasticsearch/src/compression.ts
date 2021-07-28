@@ -34,7 +34,7 @@ const convertToBuffer = value => {
     return value;
 };
 
-interface CompressedData {
+export interface CompressedData {
     compression: string;
     value: string;
 }

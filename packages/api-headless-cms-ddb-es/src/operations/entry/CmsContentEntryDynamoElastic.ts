@@ -34,7 +34,7 @@ import { Client } from "@elastic/elasticsearch";
 import { ElasticsearchContext } from "@webiny/api-elasticsearch/types";
 import { createLimit } from "@webiny/api-elasticsearch/limit";
 import { encodeCursor } from "@webiny/api-elasticsearch/cursors";
-import { compress } from "@webiny/api-elasticsearch/compression";
+import { compress, CompressedData, decompress } from "@webiny/api-elasticsearch/compression";
 
 export const TYPE_ENTRY = "cms.entry";
 export const TYPE_ENTRY_LATEST = TYPE_ENTRY + ".l";
@@ -65,6 +65,13 @@ const getESPublishedEntryData = async (context: CmsContext, entry: CmsContentEnt
         __type: TYPE_ENTRY_PUBLISHED
     });
 };
+
+interface ElasticsearchTableItem {
+    PK: string;
+    SK: string;
+    index: string;
+    data: CompressedData;
+}
 
 interface ConstructorArgs {
     context: CmsContext;
@@ -646,8 +653,8 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
                     SK: this.getSortKeyPublished()
                 }
             });
-        let latestESEntryData: CmsContentEntry | undefined;
-        let publishedESEntryData: CmsContentEntry | undefined;
+        let latestESEntryData: ElasticsearchTableItem | undefined;
+        let publishedESEntryData: ElasticsearchTableItem | undefined;
         try {
             [[[latestESEntryData]], [[publishedESEntryData]]] = await readBatch.execute();
         } catch (ex) {
@@ -753,6 +760,10 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
          * If we are publishing the latest revision, let's also update the latest revision's status in ES.
          */
         if (latestStorageEntry && latestStorageEntry.id === entry.id) {
+            /**
+             * Need to decompress the data from Elasticsearch DynamoDB table.
+             */
+            const latestEsEntryDataDecompressed = await decompress(latestESEntryData.data);
             batch.update({
                 ...configurations.esDb(),
                 query: {
@@ -763,7 +774,7 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
                     ...latestESEntryData,
                     SK: this.getSortKeyLatest(),
                     data: {
-                        ...((latestESEntryData as any).data || {}),
+                        ...latestEsEntryDataDecompressed,
                         status: CONTENT_ENTRY_STATUS.PUBLISHED,
                         locked: true,
                         savedOn: entry.savedOn,

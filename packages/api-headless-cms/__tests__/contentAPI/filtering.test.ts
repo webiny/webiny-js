@@ -692,7 +692,13 @@ describe("filtering", () => {
         // If this `until` resolves successfully, we know entry is accessible via the "read" API
         await until(
             () => productReader.listProducts({}).then(([data]) => data),
-            ({ data }) => data.listProducts.data.length === 4,
+            ({ data }) => {
+                if (data.listProducts.data.length !== 4) {
+                    return false;
+                }
+                return true;
+                // return (data.listProducts.data as any[]).every(item => !!item.meta.publishedOn);
+            },
             { name: "list all products", tries: 10 }
         );
         /*************************
