@@ -79,9 +79,8 @@ class GzipCompression extends CompressionPlugin {
     }
 
     public async decompress(data: CompressedData): Promise<OriginalData | null> {
-        const buf = await ungzip(convertToBuffer(data.value));
-
         try {
+            const buf = await ungzip(convertToBuffer(data.value));
             const value = buf.toString(FROM_STORAGE_ENCODING);
             return JSON.parse(value);
         } catch (ex) {

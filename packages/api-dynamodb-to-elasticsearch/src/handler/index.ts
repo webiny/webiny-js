@@ -48,7 +48,7 @@ export default (): HandlerPlugin<ElasticsearchContext> => ({
             const newImage = Converter.unmarshall(record.dynamodb.NewImage);
 
             if (newImage.ignore === true) {
-                return;
+                continue;
             }
 
             const oldImage = Converter.unmarshall(record.dynamodb.OldImage);
@@ -60,7 +60,7 @@ export default (): HandlerPlugin<ElasticsearchContext> => ({
              * On operations other than REMOVE we decompress the data and store it into the Elasticsearch.
              * No need to try to decompress if operation is REMOVE since there is no data sent into that operation.
              */
-            let data: any;
+            let data: any = undefined;
             if (operation !== Operations.REMOVE) {
                 /**
                  * We must decompress the data that is going into the Elasticsearch.
@@ -71,9 +71,9 @@ export default (): HandlerPlugin<ElasticsearchContext> => ({
                  * This might happen on some error while decompressing. We will log it.
                  *
                  * Data should NEVER be null or undefined in the Elasticsearch DynamoDB table, unless it is a delete operations.
-                 * If it is null or undefined - it is a bug.
+                 * If it is - it is a bug.
                  */
-                if (!data) {
+                if (data === undefined || data === null) {
                     console.log(
                         `Could not get decompressed data, skipping ES operation "${operation}", ID ${_id}`
                     );
