@@ -832,8 +832,7 @@ export default (): ContextPlugin<CmsContext> => ({
 
                 const entry: CmsContentEntry = {
                     ...originalEntry,
-                    status: STATUS_CHANGES_REQUESTED,
-                    locked: false
+                    status: STATUS_CHANGES_REQUESTED
                 };
 
                 let storageEntry: CmsStorageContentEntry = undefined;
@@ -916,8 +915,7 @@ export default (): ContextPlugin<CmsContext> => ({
 
                 const entry: CmsContentEntry = {
                     ...originalEntry,
-                    status: STATUS_REVIEW_REQUESTED,
-                    locked: true
+                    status: STATUS_REVIEW_REQUESTED
                 };
 
                 let storageEntry: CmsStorageContentEntry = undefined;
