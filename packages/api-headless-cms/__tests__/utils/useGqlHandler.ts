@@ -71,6 +71,7 @@ export const useGqlHandler = (args?: GQLHandlerCallableArgs) => {
                             return {
                                 id: apiKey,
                                 name: apiKey,
+                                tenant: tenant.id,
                                 permissions: identity.permissions || [],
                                 token,
                                 createdBy: {
@@ -141,18 +142,6 @@ export const useGqlHandler = (args?: GQLHandlerCallableArgs) => {
                     return createIdentity(identity);
                 }
             },
-            {
-                type: "context",
-                apply(context) {
-                    context.cms = {
-                        ...(context.cms || {}),
-                        getLocale: () => ({
-                            code: "en-US"
-                        }),
-                        locale: "en-US"
-                    };
-                }
-            },
             //
             plugins
         ],
@@ -166,6 +155,9 @@ export const useGqlHandler = (args?: GQLHandlerCallableArgs) => {
             body: JSON.stringify(body),
             ...rest
         });
+        if (httpMethod === "OPTIONS" && !response.body) {
+            return [null, response];
+        }
         // The first element is the response body, and the second is the raw response.
         return [JSON.parse(response.body), response];
     };
