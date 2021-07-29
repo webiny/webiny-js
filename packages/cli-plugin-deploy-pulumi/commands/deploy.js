@@ -55,9 +55,6 @@ module.exports = async (inputs, context) => {
         );
     }
 
-    const PULUMI_SECRETS_PROVIDER = process.env.PULUMI_SECRETS_PROVIDER;
-    const PULUMI_CONFIG_PASSPHRASE = process.env.PULUMI_CONFIG_PASSPHRASE;
-
     await login(projectApplication);
 
     const pulumi = await getPulumi({
@@ -66,38 +63,23 @@ module.exports = async (inputs, context) => {
         }
     });
 
-    let stackExists = true;
-    try {
-        await pulumi.run({
-            command: ["stack", "select", env],
-            args: {
-                secretsProvider: PULUMI_SECRETS_PROVIDER
-            },
-            execa: {
-                env: {
-                    PULUMI_CONFIG_PASSPHRASE
-                }
+    const PULUMI_SECRETS_PROVIDER = process.env.PULUMI_SECRETS_PROVIDER;
+    const PULUMI_CONFIG_PASSPHRASE = process.env.PULUMI_CONFIG_PASSPHRASE;
+
+    await pulumi.run({
+        command: ["stack", "select", env],
+        args: {
+            create: true,
+            secretsProvider: PULUMI_SECRETS_PROVIDER
+        },
+        execa: {
+            env: {
+                PULUMI_CONFIG_PASSPHRASE
             }
-        });
-    } catch (e) {
-        stackExists = false;
-    }
+        }
+    });
 
-    if (!stackExists) {
-        await pulumi.run({
-            command: ["stack", "init", env],
-            args: {
-                secretsProvider: PULUMI_SECRETS_PROVIDER
-            },
-            execa: {
-                env: { PULUMI_CONFIG_PASSPHRASE }
-            }
-        });
-    }
-
-    const isFirstDeploy = !stackExists;
-
-    const hookDeployArgs = { isFirstDeploy, context, env, inputs, projectApplication };
+    const hookDeployArgs = { context, env, inputs, projectApplication };
 
     if (inputs.preview) {
         context.info(`Skipped "hook-before-deploy" hook.`);
