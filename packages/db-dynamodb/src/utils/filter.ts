@@ -55,6 +55,14 @@ const extractWhereArgs = (key: string) => {
 
 const createFilters = (params: Omit<Params, "items">): Filter[] => {
     const { context, where } = params;
+
+    const keys = Object.keys(where);
+    /**
+     * Skip everything if there are no conditions to be applied.
+     */
+    if (keys.length === 0) {
+        return [];
+    }
     const filterPlugins = getMappedPlugins<ValueFilterPlugin>({
         context,
         type: ValueFilterPlugin.type,
@@ -65,7 +73,7 @@ const createFilters = (params: Omit<Params, "items">): Filter[] => {
         ValueTransformPlugin.type
     );
 
-    return Object.keys(where)
+    return keys
         .map(key => {
             const { field, operation, negate } = extractWhereArgs(key);
             const value = where[key];
@@ -110,11 +118,18 @@ const transform = (value: any, transformValuePlugin?: ValueTransformPlugin): any
 /**
  * Creates a filter callable that we can send to the .filter() method of the array.
  */
-const createFilterCallable = ({ where, context }) => {
+const createFilterCallable = ({ where, context }): ((item: any) => boolean) | null => {
     const filters = createFilters({
         where,
         context
     });
+    /**
+     * Just return null so there are no filters to be applied.
+     * Later in the code we check for null so we do not loop through the items.
+     */
+    if (filters.length === 0) {
+        return null;
+    }
 
     return (item: any) => {
         for (const filter of filters) {
@@ -138,5 +153,11 @@ export const filterItems = <T extends any = any>(params: Params<T>): T[] => {
         where,
         context
     });
+    /**
+     * No point in going through all the items when there are no filters to be applied.
+     */
+    if (!filter) {
+        return items;
+    }
     return items.filter(filter);
 };
