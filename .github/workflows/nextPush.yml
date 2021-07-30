@@ -294,6 +294,17 @@ jobs:
           --assign-to-yarnrc '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
           --template-options '{"region":"eu-central-1"}'
 
+      - name: Upload project files
+        uses: actions/upload-artifact@v2
+        with:
+          name: project-files
+          retention-days: 1
+          path: |
+            test-project/
+            !test-project/node_modules/**/*
+            !test-project/**/node_modules/**/*
+            !test-project/.yarn/cache/**/*
+
       - name: Print CLI version
         working-directory: test-project
         run: yarn webiny --version
