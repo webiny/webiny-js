@@ -52,11 +52,14 @@ module.exports = {
             prettierFormat
         } = require("../utils");
 
-        const files = await glob([...Object.values(securityUpgrade.files)], {
-            cwd: context.project.root,
-            onlyFiles: true,
-            ignore: ["**/node_modules/**"]
-        });
+        const files = await glob(
+            [...Object.values(securityUpgrade.files), ...Object.values(elasticsearchUpgrade.files)],
+            {
+                cwd: context.project.root,
+                onlyFiles: true,
+                ignore: ["**/node_modules/**"]
+            }
+        );
 
         const project = createMorphProject(files);
         /**

@@ -1,3 +1,4 @@
+const tsMorph = require("ts-morph");
 const { addImportsToSource } = require("../utils");
 const FILES = {
     dynamodbToElastic: "api/code/dynamoToElastic/src/index.ts",
@@ -19,17 +20,18 @@ const upgradeDynamoDbToElasticIndex = (project, context) => {
      */
     const plugins = source.getFirstDescendant(
         node =>
-            Node.isPropertyAssignment(node) &&
-            Node.isArrayLiteralExpression(node) &&
+            tsMorph.Node.isPropertyAssignment(node) &&
+            tsMorph.Node.isArrayLiteralExpression(node) &&
             node.getName() === "plugins"
     );
     /**
      * We need to upgrade the old createHandler if plugins do not exist.
      */
     if (!plugins) {
-        const createHandler = file.getFirstDescendant(
+        const createHandler = source.getFirstDescendant(
             node =>
-                Node.isCallExpression(node) && node.getExpression().getText() === "createHandler"
+                tsMorph.Node.isCallExpression(node) &&
+                node.getExpression().getText() === "createHandler"
         );
 
         const createHandlerPlugins = createHandler.getArguments();
@@ -104,5 +106,6 @@ const upgradeHeadlessCMSIndex = (project, context) => {
 module.exports = {
     upgradeDynamoDbToElasticIndex,
     upgradeGraphQLIndex,
-    upgradeHeadlessCMSIndex
+    upgradeHeadlessCMSIndex,
+    files: FILES
 };
