@@ -1,5 +1,6 @@
 const path = require("path");
 const securityUpgrade = require("./upgradeApiSecurity");
+const elasticsearchUpgrade = require("./upgradeElasticsearch");
 
 const targetVersion = "5.12.0";
 
@@ -59,14 +60,25 @@ module.exports = {
 
         const project = createMorphProject(files);
         /**
-         * Upgrade the graphql with new packages.
+         * Upgrade the graphql with new security packages.
          */
         await securityUpgrade.upgradeGraphQLIndex(project, context);
         /**
-         * Upgrade the api headless cms with new packages.
+         * Upgrade the api headless cms with new security packages.
          */
         await securityUpgrade.upgradeHeadlessCMSIndex(project, context);
-
+        /**
+         * Upgrade the dynamodb to elasticsearch with new compression package.
+         */
+        await elasticsearchUpgrade.upgradeDynamoDbToElasticIndex(project, context);
+        /**
+         * Upgrade the graphql with new compression package.
+         */
+        await elasticsearchUpgrade.upgradeGraphQLIndex(project, context);
+        /**
+         * Upgrade the api headless cms to elasticsearch with new compression package.
+         */
+        await elasticsearchUpgrade.upgradeHeadlessCMSIndex(project, context);
         info("Adding dependencies...");
 
         addPackagesToDependencies(path.resolve(process.cwd(), "api/code/graphql"), {
