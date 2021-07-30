@@ -9,11 +9,6 @@ module.exports = async (args = {}, options = {}) => {
     const pulumi = new Pulumi(
         merge(
             {
-                execa: {
-                    env: {
-                        PULUMI_CONFIG_PASSPHRASE: process.env.PULUMI_CONFIG_PASSPHRASE
-                    }
-                },
                 beforePulumiInstall: () => {
                     console.log(
                         `It looks like this is your first time using ${green(
