@@ -16,7 +16,13 @@ const initialContentModelGroup = {
 };
 
 export default new ContextPlugin<CmsContext>(async context => {
-    const { tenancy } = context;
+    /**
+     * If cms is not defined on the context, do not continue, but log it.
+     */
+    if (!context.cms) {
+        console.log("Missing cms on context. Skipping System crud.");
+        return;
+    }
 
     const pluginType = "cms-system-storage-operations-provider";
     const providerPlugins = context.plugins.byType<CmsSystemStorageOperationsProviderPlugin>(
@@ -41,7 +47,7 @@ export default new ContextPlugin<CmsContext>(async context => {
         ...context.cms,
         system: {
             async getVersion() {
-                if (!tenancy.getCurrentTenant()) {
+                if (!context.tenancy.getCurrentTenant()) {
                     return null;
                 }
 

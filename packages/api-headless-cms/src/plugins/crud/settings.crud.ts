@@ -6,13 +6,20 @@ import {
     CmsSettingsPermission,
     CmsSettings,
     CmsSettingsStorageOperationsProviderPlugin
-} from "../../types";
+} from "~/types";
 import WebinyError from "@webiny/error";
 
 export default {
     type: "context",
     name: "context-settings-crud",
     apply: async context => {
+        /**
+         * If cms is not defined on the context, do not continue, but log it.
+         */
+        if (!context.cms) {
+            console.log("Missing cms on context. Skipping Settings crud.");
+            return;
+        }
         const pluginType = "cms-settings-storage-operations-provider";
         const providerPlugins = context.plugins.byType<CmsSettingsStorageOperationsProviderPlugin>(
             pluginType
