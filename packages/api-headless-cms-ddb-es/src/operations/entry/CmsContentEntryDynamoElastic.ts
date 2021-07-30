@@ -29,7 +29,6 @@ import {
     prepareEntryToIndex
 } from "../../helpers";
 import { createBasePartitionKey, paginateBatch } from "~/utils";
-import { entryFromStorageTransform } from "@webiny/api-headless-cms/transformers";
 import { Client } from "@elastic/elasticsearch";
 import { ElasticsearchContext } from "@webiny/api-elasticsearch/types";
 import { createLimit } from "@webiny/api-elasticsearch/limit";
@@ -863,18 +862,12 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
          * If we are unpublishing the latest revision, let's also update the latest revision entry's status in ES.
          */
         if (latestStorageEntry.id === entry.id) {
-            /**
-             * !! IMPORTANT !!
-             * Unfortunately we need to transform from the storage because prepare entry needs the non-transformed version of it.
-             * This should not be done in the storage operations unless it is really, really necessary.
-             */
-            await entryFromStorageTransform(this.context, model, latestStorageEntry);
             const es = configurations.es(this.context, model);
 
             const preparedEntryData = prepareEntryToIndex({
                 context: this.context,
                 model,
-                storageEntry: lodashCloneDeep(latestStorageEntry)
+                storageEntry: lodashCloneDeep(storageEntry)
             });
 
             batch.update({
@@ -940,19 +933,12 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
          * If we updated the latest version, then make sure the changes are propagated to ES too.
          */
         if (latestStorageEntry.id === entry.id) {
-            /**
-             * !! IMPORTANT !!
-             * Unfortunately we need to transform from the storage because prepare entry needs the non-transformed version of it.
-             * This should not be done in the storage operations unless it is really, really necessary.
-             */
-            await entryFromStorageTransform(this.context, model, latestStorageEntry);
-
             const es = configurations.es(this.context, model);
 
             const preparedEntryData = prepareEntryToIndex({
                 context: this.context,
                 model,
-                storageEntry: lodashCloneDeep(latestStorageEntry)
+                storageEntry: lodashCloneDeep(storageEntry)
             });
 
             batch.update({
@@ -1015,20 +1001,15 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
          * If we updated the latest version, then make sure the changes are propagated to ES too.
          */
         if (latestStorageEntry.id === entry.id) {
-            /**
-             * !! IMPORTANT !!
-             * Unfortunately we need to transform from the storage because prepare entry needs the non-transformed version of it.
-             * This should not be done in the storage operations unless it is really, really necessary.
-             */
-            await entryFromStorageTransform(this.context, model, latestStorageEntry);
             const es = configurations.es(this.context, model);
 
             const preparedEntryData = prepareEntryToIndex({
                 context: this.context,
                 model,
-                storageEntry: lodashCloneDeep(latestStorageEntry)
+                storageEntry: lodashCloneDeep(storageEntry)
             });
             batch.update({
+                ...configurations.esDb(),
                 query: {
                     PK: primaryKey,
                     SK: this.getSortKeyLatest()

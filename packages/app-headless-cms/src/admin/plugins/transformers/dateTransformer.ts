@@ -17,10 +17,10 @@ export default (): CmsFieldValueTransformer => ({
     transform: (value, field) => {
         // check types in packages/app-headless-cms/src/admin/plugins/fieldRenderers/dateTime/dateTimeField.tsx
         const type = field.settings.type;
-        /**
-         * No transformation for these types
-         */
-        if (excludeTypesTransformation.includes(type) === true) {
+        if (!value) {
+            console.log(`Field "${field.fieldId}" has no value.`);
+            return null;
+        } else if (excludeTypesTransformation.includes(type) === true) {
             return value;
         } else if (type === "dateTimeWithoutTimezone" && value.includes(" ")) {
             /**
