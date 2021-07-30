@@ -118,6 +118,7 @@ export default () => {
         cognitoAppClientId: cognito.userPoolClient.id,
         updatePbSettingsFunction: pageBuilder.functions.updateSettings.arn,
         psQueueAdd: prerenderingService.functions.queue.add.arn,
-        psQueueProcess: prerenderingService.functions.queue.process.arn
+        psQueueProcess: prerenderingService.functions.queue.process.arn,
+        dynamoDbTable: dynamoDb.table.name
     };
 };
