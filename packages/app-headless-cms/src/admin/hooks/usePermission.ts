@@ -62,6 +62,12 @@ const usePermission = () => {
                 return false;
             }
             if (permission.own) {
+                /**
+                 * There will be no "createdBy" field for a new entry therefore we enable the access.
+                 */
+                if (!item.createdBy) {
+                    return true;
+                }
                 return get(item, "createdBy.id") === identity.login;
             }
             if (typeof permission.rwd === "string") {
