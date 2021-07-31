@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.11.1-beta.0](https://github.com/webiny/webiny-js/compare/v5.11.0...v5.11.1-beta.0) (2021-07-31)
+
+
+### Bug Fixes
+
+* **api-security-admin-users-cognito:** unset password attribute from user object ([12b32cf](https://github.com/webiny/webiny-js/commit/12b32cfd4f1ae22f662ca64ea78fc98484a8f6fe))
+
+
+
+
+
 # [5.11.0](https://github.com/webiny/webiny-js/compare/v5.11.0-beta.2...v5.11.0) (2021-07-22)
 
 **Note:** Version bump only for package @webiny/api-security-admin-users-cognito

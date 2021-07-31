@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.11.1-beta.0](https://github.com/webiny/webiny-js/compare/v5.11.0...v5.11.1-beta.0) (2021-07-31)
+
+
+### Bug Fixes
+
+* **admin-users:** add upgrade script ([a604e34](https://github.com/webiny/webiny-js/commit/a604e34a5af7bc2b772e820107e939500397ae48))
+
+
+
+
+
 # [5.11.0](https://github.com/webiny/webiny-js/compare/v5.11.0-beta.2...v5.11.0) (2021-07-22)
 
 **Note:** Version bump only for package @webiny/app-security-admin-users

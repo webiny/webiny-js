@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.11.1-beta.0](https://github.com/webiny/webiny-js/compare/v5.11.0...v5.11.1-beta.0) (2021-07-31)
+
+
+### Bug Fixes
+
+* **admin-users:** add upgrade script ([a604e34](https://github.com/webiny/webiny-js/commit/a604e34a5af7bc2b772e820107e939500397ae48))
+* **api-security-admin-users-cognito:** unset password attribute from user object ([12b32cf](https://github.com/webiny/webiny-js/commit/12b32cfd4f1ae22f662ca64ea78fc98484a8f6fe))
+* **create-webiny-project:** force yarn v2 ([31e23f6](https://github.com/webiny/webiny-js/commit/31e23f69bdc1574aabc7deda49ee0371c3e8a759))
+
+
+
+
+
 # [5.11.0](https://github.com/webiny/webiny-js/compare/v5.11.0-beta.2...v5.11.0) (2021-07-22)
 
 **Note:** Version bump only for package webiny-js
