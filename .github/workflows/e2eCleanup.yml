@@ -9,7 +9,7 @@ jobs:
   cleanup:
     name: Cleanup
     runs-on: ubuntu-latest
-    environment: next
+    environment: e2e-cleanup
     env:
       NODE_OPTIONS: --max_old_space_size=4096
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
