@@ -95,6 +95,7 @@ export type ApiKeyInput = {
 export type SystemCRUD = {
     getVersion(): Promise<string>;
     setVersion(version: string): Promise<void>;
+    upgrade(version: string, data?: Record<string, any>): Promise<boolean>;
 };
 
 export type GroupsCRUD = {

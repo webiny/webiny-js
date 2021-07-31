@@ -1,5 +1,5 @@
 import gql from "graphql-tag";
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, lazy } from "react";
 import { useApolloClient } from "@apollo/react-hooks";
 import { Form } from "@webiny/form";
 import { i18n } from "@webiny/app/i18n";
@@ -165,6 +165,14 @@ export default [
         },
         render({ onInstalled }) {
             return <Install onInstalled={onInstalled} />;
-        }
+        },
+        upgrades: [
+            {
+                version: "5.11.1",
+                getComponent() {
+                    return lazy(() => import("./upgrades/v5.11.1"));
+                }
+            }
+        ]
     }
 ];

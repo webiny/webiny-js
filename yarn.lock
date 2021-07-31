@@ -8916,6 +8916,7 @@ __metadata:
     "@commodo/fields": 1.1.2-beta.20
     "@webiny/api-security": ^5.11.0
     "@webiny/api-tenancy": ^5.11.0
+    "@webiny/api-upgrade": ^5.11.0
     "@webiny/cli": ^5.11.0
     "@webiny/db-dynamodb": ^5.11.0
     "@webiny/error": ^5.11.0
