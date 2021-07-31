@@ -10,8 +10,8 @@ const { Octokit } = require("@octokit/rest");
 
 (async () => {
     try {
-        const owner = 'webiny';
-        const repo = 'webiny-js';
+        const owner = "webiny";
+        const repo = "webiny-js";
         const token = argv.token || process.env.GH_TOKEN;
         if (!token) {
             throw new Error(`GitHub token is missing.`);
