@@ -7,8 +7,7 @@ on:
 
 jobs:
   cleanup:
-    needs: [cache-keys, verdaccio-publish]
-    name: End-to-end tests
+    name: Cleanup
     runs-on: ubuntu-latest
     environment: next
     env:
