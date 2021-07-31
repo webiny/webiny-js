@@ -17,10 +17,10 @@ jobs:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       AWS_ELASTIC_SEARCH_DOMAIN_NAME: ${{ secrets.AWS_ELASTIC_SEARCH_DOMAIN_NAME }}
-      ELASTIC_SEARCH_INDEX_PREFIX: ${{ needs.cache-keys.outputs.ts }}_
+      ELASTIC_SEARCH_INDEX_PREFIX: ${{ github.event.client_payload.ts }}_
       PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
       PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
-      WEBINY_PULUMI_BACKEND: ${{ secrets.WEBINY_PULUMI_BACKEND }}_${{ needs.cache-keys.outputs.ts }}
+      WEBINY_PULUMI_BACKEND: ${{ secrets.WEBINY_PULUMI_BACKEND }}_${{ github.event.client_payload.ts }}
     steps:
       - uses: actions/setup-node@v2
         with:
@@ -42,15 +42,15 @@ jobs:
       - name: Install dependencies
         working-directory: test-project
         run: yarn
-#
-#      - name: Destroy API project application's cloud infrastructure resources
-#        working-directory: test-project
-#        run: yarn webiny destroy api --env dev
-#
-#      - name: Destroy Admin Area project application's cloud infrastructure resources
-#        working-directory: test-project
-#        run: yarn webiny destroy apps/admin --env dev
-#
-#      - name: Destroy Website project application's cloud infrastructure resources
-#        working-directory: test-project
-#        run: yarn webiny destroy apps/website --env dev
+
+      - name: Destroy API project application's cloud infrastructure resources
+        working-directory: test-project
+        run: yarn webiny destroy api --env dev
+
+      - name: Destroy Admin Area project application's cloud infrastructure resources
+        working-directory: test-project
+        run: yarn webiny destroy apps/admin --env dev
+
+      - name: Destroy Website project application's cloud infrastructure resources
+        working-directory: test-project
+        run: yarn webiny destroy apps/website --env dev
