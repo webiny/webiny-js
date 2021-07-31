@@ -355,4 +355,5 @@ jobs:
 
       - name: Trigger cleanup
         if: always()
+        working-directory: webiny-js
         run:  yarn dispatch-github-event --event e2e-cleanup --payload "{\"ts\":\"${{ needs.cache-keys.outputs.ts }}\",\"workflow\":\"${{ github.workflow }}\",\"commit\":\"${{ github.sha }}\"}"
