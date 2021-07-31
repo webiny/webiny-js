@@ -10,7 +10,6 @@ env:
 
 jobs:
   cleanup:
-    needs: [cache-keys, verdaccio-publish]
     name: Cloud infrastructure cleanup
     runs-on: ubuntu-latest
     env:
