@@ -65,13 +65,13 @@ jobs:
         run: yarn
 
       - name: Destroy API project application's cloud infrastructure resources
-        working-directory: test-project/project-files
+        working-directory: test-project
         run: yarn webiny destroy api --env dev
 
       - name: Destroy Admin Area project application's cloud infrastructure resources
-        working-directory: test-project/project-files
+        working-directory: test-project
         run: yarn webiny destroy apps/admin --env dev
 
       - name: Destroy Website project application's cloud infrastructure resources
-        working-directory: test-project/project-files
+        working-directory: test-project
         run: yarn webiny destroy apps/website --env dev
