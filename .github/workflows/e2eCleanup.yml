@@ -5,13 +5,12 @@ on:
   repository_dispatch:
     types: [e2e-cleanup]
 
-env:
-  NODE_OPTIONS: --max_old_space_size=4096
-
 jobs:
   cleanup:
-    name: Cloud infrastructure cleanup
+    needs: [cache-keys, verdaccio-publish]
+    name: End-to-end tests
     runs-on: ubuntu-latest
+    environment: next
     env:
       NODE_OPTIONS: --max_old_space_size=4096
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -32,25 +31,48 @@ jobs:
           workflow: ${{ github.event.client_payload.workflow }}
           workflow_conclusion: completed
           commit: ${{ github.event.client_payload.commit }}
-          path: test-project
+          name: verdaccio-files
+          path: verdaccio-files
+
+      - name: Start Verdaccio local server
+        working-directory: verdaccio-files
+        run: yarn add pm2 verdaccio && npx pm2 start verdaccio -- -c .verdaccio.yaml
+
+      - name: Configure NPM to use local registry (for `npx create-webiny-project`)
+        run: npm config set registry http://localhost:4873
+
+      - name: Set git email (needed for create-webiny-project)
+        run: git config --global user.email "webiny-bot@webiny.com"
+
+      - name: Set git username (needed for create-webiny-project)
+        run: git config --global user.name "webiny-bot"
 
       - name: Disable Webiny telemetry
         run: >
           mkdir ~/.webiny &&
           echo '{ "id": "ci", "telemetry": false }' > ~/.webiny/config
 
+      - name: Download artifact
+        uses: dawidd6/action-download-artifact@v2
+        with:
+          workflow: ${{ github.event.client_payload.workflow }}
+          workflow_conclusion: completed
+          commit: ${{ github.event.client_payload.commit }}
+          name: project-files
+          path: test-project
+
       - name: Install dependencies
         working-directory: test-project
         run: yarn
 
       - name: Destroy API project application's cloud infrastructure resources
-        working-directory: test-project
+        working-directory: test-project/project-files
         run: yarn webiny destroy api --env dev
 
       - name: Destroy Admin Area project application's cloud infrastructure resources
-        working-directory: test-project
+        working-directory: test-project/project-files
         run: yarn webiny destroy apps/admin --env dev
 
       - name: Destroy Website project application's cloud infrastructure resources
-        working-directory: test-project
+        working-directory: test-project/project-files
         run: yarn webiny destroy apps/website --env dev
