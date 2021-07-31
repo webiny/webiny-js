@@ -1,0 +1,56 @@
+name: E2E Cleanup
+
+on:
+  workflow_dispatch:
+  repository_dispatch:
+    types: [e2e-cleanup]
+
+env:
+  NODE_OPTIONS: --max_old_space_size=4096
+
+jobs:
+  cleanup:
+    needs: [cache-keys, verdaccio-publish]
+    name: Cloud infrastructure cleanup
+    runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: --max_old_space_size=4096
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_ELASTIC_SEARCH_DOMAIN_NAME: ${{ secrets.AWS_ELASTIC_SEARCH_DOMAIN_NAME }}
+      ELASTIC_SEARCH_INDEX_PREFIX: ${{ needs.cache-keys.outputs.ts }}_
+      PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
+      PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
+      WEBINY_PULUMI_BACKEND: ${{ secrets.WEBINY_PULUMI_BACKEND }}_${{ needs.cache-keys.outputs.ts }}
+    steps:
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 12
+
+      - name: Download artifact
+        uses: dawidd6/action-download-artifact@v2
+        with:
+          workflow: ${{ github.event.client_payload.workflow }}
+          commit: ${{ github.event.client_payload.commit }}
+          path: test-project
+
+      - name: Disable Webiny telemetry
+        run: >
+          mkdir ~/.webiny &&
+          echo '{ "id": "ci", "telemetry": false }' > ~/.webiny/config
+
+      - name: Install dependencies
+        working-directory: test-project
+        run: yarn
+#
+#      - name: Destroy API project application's cloud infrastructure resources
+#        working-directory: test-project
+#        run: yarn webiny destroy api --env dev
+#
+#      - name: Destroy Admin Area project application's cloud infrastructure resources
+#        working-directory: test-project
+#        run: yarn webiny destroy apps/admin --env dev
+#
+#      - name: Destroy Website project application's cloud infrastructure resources
+#        working-directory: test-project
+#        run: yarn webiny destroy apps/website --env dev
