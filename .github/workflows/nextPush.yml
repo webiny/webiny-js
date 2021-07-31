@@ -243,23 +243,6 @@ jobs:
       PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
       WEBINY_PULUMI_BACKEND: ${{ secrets.WEBINY_PULUMI_BACKEND }}_${{ needs.cache-keys.outputs.ts }}
     steps:
-      # After the run is over, destroy deployed cloud infrastructure.
-      # Must be immediately defined here.
-      - uses: webiny/action-post-run@2.0.1
-        with:
-          working-directory: test-project
-          run: yarn webiny destroy api --env dev
-
-      - uses: webiny/action-post-run@2.0.1
-        with:
-          working-directory: test-project
-          run: yarn webiny destroy apps/admin --env dev
-
-      - uses: webiny/action-post-run@2.0.1
-        with:
-          working-directory: test-project
-          run: yarn webiny destroy apps/website --env dev
-
       - uses: actions/setup-node@v2
         with:
           node-version: 12
@@ -369,3 +352,7 @@ jobs:
           channels: C027VQG8080
           workdir: webiny-js/cypress
           message-text: Cypress tests failed! Scrennshots have been placed in this thread, good luck.
+
+      - name: Trigger cleanup
+        if: always()
+        run:  yarn dispatch-github-event --event e2e-cleanup --payload "{\"ts\":\"${{ needs.cache-keys.outputs.ts }}\",\"workflow\":\"${{ github.workflow }}\",\"commit\":\"${{ github.sha }}\"}"
