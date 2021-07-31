@@ -30,7 +30,7 @@ jobs:
         uses: dawidd6/action-download-artifact@v2
         with:
           workflow: ${{ github.event.client_payload.workflow }}
-          workflow_conclusion: neutral
+          workflow_conclusion: failure
           commit: ${{ github.event.client_payload.commit }}
           path: test-project
 
