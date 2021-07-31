@@ -31,6 +31,7 @@ import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18
 import { ReactComponent as FilterIcon } from "@webiny/app-admin/assets/icons/filter-24px.svg";
 import SearchUI from "@webiny/app-admin/components/SearchUI";
 import { deserializeSorters, serializeSorters } from "../utils";
+import * as GQLCache from "~/admin/views/Pages/cache";
 
 const t = i18n.ns("app-page-builder/admin/pages/data-list");
 const rightAlign = css({
@@ -103,18 +104,16 @@ const PagesDataList = ({ onCreatePage, canCreate }: PagesDataListProps) => {
     }, [filter]);
 
     const variables = {
-        where,
+        search,
         sort,
-        search
+        where
     };
 
     const listQuery = useQuery(LIST_PAGES, {
-        fetchPolicy: "network-only",
         variables
     });
 
-    // Needs to be refactored. Possibly, with our own GQL client, this is going to be much easier to handle.
-    localStorage.setItem("wby_pb_pages_list_latest_variables", JSON.stringify(variables));
+    GQLCache.writePageListVariablesToLocalStorage(variables);
 
     const listPagesData = get(listQuery, "data.pageBuilder.listPages.data", []);
     const selectedPageId = new URLSearchParams(location.search).get("id");
