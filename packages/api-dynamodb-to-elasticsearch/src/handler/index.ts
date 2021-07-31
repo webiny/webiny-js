@@ -2,6 +2,13 @@ import { Converter } from "aws-sdk/clients/dynamodb";
 import { HandlerPlugin } from "@webiny/handler/types";
 import { ElasticsearchContext } from "@webiny/api-elasticsearch/types";
 import WebinyError from "@webiny/error";
+import { decompress } from "@webiny/api-elasticsearch/compression";
+
+enum Operations {
+    INSERT = "INSERT",
+    MODIFY = "MODIFY",
+    REMOVE = "REMOVE"
+}
 
 const getError = (item: any): string | null => {
     if (!item.index || !item.index.error || !item.index.error.reason) {
@@ -37,29 +44,55 @@ export default (): HandlerPlugin<ElasticsearchContext> => ({
         const [event] = context.args;
         const operations = [];
 
-        event.Records.forEach(record => {
+        for (const record of event.Records) {
             const newImage = Converter.unmarshall(record.dynamodb.NewImage);
 
             if (newImage.ignore === true) {
-                return;
+                continue;
             }
 
             const oldImage = Converter.unmarshall(record.dynamodb.OldImage);
             const keys = Converter.unmarshall(record.dynamodb.Keys);
             const _id = `${keys.PK}:${keys.SK}`;
+            const operation = record.eventName;
+
+            /**
+             * On operations other than REMOVE we decompress the data and store it into the Elasticsearch.
+             * No need to try to decompress if operation is REMOVE since there is no data sent into that operation.
+             */
+            let data: any = undefined;
+            if (operation !== Operations.REMOVE) {
+                /**
+                 * We must decompress the data that is going into the Elasticsearch.
+                 */
+                data = await decompress(context, newImage.data);
+                /**
+                 * No point in writing null or undefined data into the Elasticsearch.
+                 * This might happen on some error while decompressing. We will log it.
+                 *
+                 * Data should NEVER be null or undefined in the Elasticsearch DynamoDB table, unless it is a delete operations.
+                 * If it is - it is a bug.
+                 */
+                if (data === undefined || data === null) {
+                    console.log(
+                        `Could not get decompressed data, skipping ES operation "${operation}", ID ${_id}`
+                    );
+                    continue;
+                }
+            }
 
             switch (record.eventName) {
-                case "INSERT":
-                case "MODIFY":
-                    operations.push({ index: { _id, _index: newImage.index } }, newImage.data);
+                case Operations.INSERT:
+                case Operations.MODIFY:
+                    operations.push({ index: { _id, _index: newImage.index } }, data);
                     break;
-                case "REMOVE":
+                case Operations.REMOVE:
                     operations.push({ delete: { _id, _index: oldImage.index } });
                     break;
                 default:
                     break;
             }
-        });
+        }
 
         if (!operations.length) {
             return;
