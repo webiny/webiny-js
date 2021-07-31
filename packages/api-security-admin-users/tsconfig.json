@@ -9,6 +9,9 @@
       "path": "../api-tenancy"
     },
     {
+      "path": "../api-upgrade"
+    },
+    {
       "path": "../db-dynamodb"
     },
     {
@@ -42,6 +45,8 @@
       "@webiny/api-security": ["../api-security/src"],
       "@webiny/api-tenancy/*": ["../api-tenancy/src/*"],
       "@webiny/api-tenancy": ["../api-tenancy/src"],
+      "@webiny/api-upgrade/*": ["../api-upgrade/src/*"],
+      "@webiny/api-upgrade": ["../api-upgrade/src"],
       "@webiny/db-dynamodb/*": ["../db-dynamodb/src/*"],
       "@webiny/db-dynamodb": ["../db-dynamodb/src"],
       "@webiny/error/*": ["../error/src/*"],

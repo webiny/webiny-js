@@ -53,6 +53,11 @@ export default new GraphQLSchemaPlugin<AdminUsersContext>({
             login: String!
         }
 
+        type SecurityUpgradeResponse {
+            data: Boolean
+            error: SecurityError
+        }
+
         extend type SecurityQuery {
             "Get installed version"
             version: String
@@ -61,6 +66,9 @@ export default new GraphQLSchemaPlugin<AdminUsersContext>({
         extend type SecurityMutation {
             "Install Security"
             install(data: SecurityInstallInput!): SecurityBooleanResponse
+
+            "Upgrade Security"
+            upgrade(version: String!): SecurityUpgradeResponse
         }
     `,
     resolvers: {
@@ -116,6 +124,14 @@ export default new GraphQLSchemaPlugin<AdminUsersContext>({
                     // Store app version
                     await context.security.system.setVersion(context.WEBINY_VERSION);
 
+                    return new Response(true);
+                } catch (e) {
+                    return new ErrorResponse(e);
+                }
+            },
+            upgrade: async (_, args, context) => {
+                try {
+                    await context.security.system.upgrade(args.version);
                     return new Response(true);
                 } catch (e) {
                     return new ErrorResponse(e);
