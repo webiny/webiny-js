@@ -53,7 +53,7 @@ export class SplitView extends View {
     constructor(id, config: SplitViewConfig = {}) {
         super(`SplitView.${id}`);
 
-        this.toggleGrid(false);
+        this.useGrid(false);
         this.addClassName(grid);
         this.addClassName("webiny-split-view");
         this.addElements();
@@ -93,13 +93,13 @@ export class SplitView extends View {
 
     private addElements() {
         this._leftPanel = new SplitViewPanelElement("leftPanel");
-        this._leftPanel.toggleGrid(false);
+        this._leftPanel.useGrid(false);
         this._leftPanel.setWidth(5);
         this._leftPanel.addClassName(leftPanel);
         this._leftPanel.addClassName("webiny-split-view__left-panel");
 
         this._rightPanel = new SplitViewPanelElement("rightPanel");
-        this._rightPanel.toggleGrid(false);
+        this._rightPanel.useGrid(false);
         this._rightPanel.setWidth(7);
         this._rightPanel.addClassName(rightPanel);
         this._rightPanel.addClassName("webiny-split-view__right-panel");

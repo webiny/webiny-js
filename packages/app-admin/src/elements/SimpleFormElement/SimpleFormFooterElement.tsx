@@ -18,7 +18,7 @@ export class SimpleFormFooterElement extends Element {
     constructor(id) {
         super(id);
 
-        this.toggleGrid(false);
+        this.useGrid(false);
     }
 
     render(props) {

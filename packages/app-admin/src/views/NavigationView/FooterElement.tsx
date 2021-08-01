@@ -16,7 +16,7 @@ export class FooterElement extends Element<FooterElementConfig> {
     constructor(id: string, config: FooterElementConfig) {
         super(id, config);
 
-        this.toggleGrid(false);
+        this.useGrid(false);
 
         this._footerPlaceholder = this.addElement(
             new PlaceholderElement("navigation.footer.placeholder")

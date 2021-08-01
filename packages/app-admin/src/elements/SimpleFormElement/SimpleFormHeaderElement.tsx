@@ -36,13 +36,13 @@ export class SimpleFormHeaderElement extends Element<SimpleFormHeaderConfig> {
     constructor(id, config: SimpleFormHeaderConfig) {
         super(id, config);
 
-        this.toggleGrid(false);
+        this.useGrid(false);
     }
 
     setIcon(icon: React.ReactElement) {
         this.config.icon = icon;
     }
-    
+
     addAction(element: Element) {
         this.addElement(element);
     }

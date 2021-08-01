@@ -26,7 +26,7 @@ export class NavigationView extends View {
     constructor() {
         super("NavigationView");
 
-        this.toggleGrid(false);
+        this.useGrid(false);
         this.addHookDefinition("navigation", useNavigation);
         this.addHookDefinition("security", useSecurity);
 

@@ -74,7 +74,7 @@ export const CmsMenuLoader = React.memo(({ view }: Props) => {
     return (
         <>
             <GlobalSearchPlugins />
-            <ContentGroupsMenuItems view={view}/>
+            <ContentGroupsMenuItems view={view} />
         </>
     );
 });

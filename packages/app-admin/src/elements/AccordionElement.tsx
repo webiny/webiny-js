@@ -36,7 +36,7 @@ export class AccordionElement extends Element<Config> {
     constructor(id, config: Config) {
         super(id, config);
 
-        this.toggleGrid(false);
+        this.useGrid(false);
 
         this.config.items.forEach(item => {
             this.addElement(new AccordionItemElement(item.id, item));

@@ -11,7 +11,7 @@ import { PageSettingsTabsElement } from "~/editor/views/PageSettingsView/PageSet
 import { PbEditorPageSettingsPlugin } from "~/plugins/PbEditorPageSettingsPlugin";
 import { SimpleFormView } from "@webiny/app-admin/elements/SimpleFormView";
 import { GenericElement } from "@webiny/ui-composer/elements/GenericElement";
-import {FormElement, FormElementRenderProps} from "@webiny/app-admin/elements/FormElement";
+import { FormElement, FormElementRenderProps } from "@webiny/app-admin/elements/FormElement";
 
 export class PageSettingsView extends OverlayView {
     private _splitView: SplitView;

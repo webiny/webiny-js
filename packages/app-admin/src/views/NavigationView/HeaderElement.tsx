@@ -19,7 +19,7 @@ export class HeaderElement extends Element<HeaderElementConfig> {
     constructor(id: string, config: HeaderElementConfig) {
         super(id, config);
 
-        this.toggleGrid(false);
+        this.useGrid(false);
         this.addElement(new PlaceholderElement(ElementID.MenuButton));
         this.addElement(new PlaceholderElement(ElementID.Logo));
     }

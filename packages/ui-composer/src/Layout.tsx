@@ -89,7 +89,7 @@ export class Layout {
         return this;
     }
 
-    insertElementToTheRightOf(lookFor: Element<any>, element: Element<any>) {
+    insertElementAfter(lookFor: Element<any>, element: Element<any>) {
         for (let i = 0; i < this._layout.length; i++) {
             const row = this._layout[i];
             for (let j = 0; j < row.length; j++) {
@@ -106,7 +106,7 @@ export class Layout {
         return this;
     }
 
-    insertElementToTheLeftOf(lookFor: Element<any>, element: Element<any>) {
+    insertElementBefore(lookFor: Element<any>, element: Element<any>) {
         for (let i = 0; i < this._layout.length; i++) {
             const row = this._layout[i];
             for (let j = 0; j < row.length; j++) {
@@ -123,12 +123,12 @@ export class Layout {
         return this;
     }
 
-    insertElementAtTheTop(element: Element<any>) {
+    insertElementAtTheBeginning(element: Element<any>) {
         this._layout.unshift([{ element: element.id, width: 12 }]);
         return this;
     }
 
-    insertElementAtTheBottom(element: Element<any>) {
+    insertElementAtTheEnd(element: Element<any>) {
         this._layout.push([{ element: element.id, width: 12 }]);
         return this;
     }

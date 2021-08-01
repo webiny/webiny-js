@@ -28,7 +28,7 @@ export class DynamicFieldsetElement extends FormFieldElement<DynamicFieldsetElem
     constructor(id: string, config: DynamicFieldsetElementConfig) {
         super(id, config);
 
-        this.toggleGrid(false);
+        this.useGrid(false);
 
         this.applyPlugins(DynamicFieldsetElement);
     }

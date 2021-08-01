@@ -14,10 +14,10 @@ export interface PageSettingsTabElementConfig extends ElementConfig {
 export class PageSettingsTabElement extends Element<PageSettingsTabElementConfig> {
     constructor(id: string, config: PageSettingsTabElementConfig) {
         super(id, config);
-        this.toggleGrid(false);
+        this.useGrid(false);
 
         this.addRenderer(new PageSettingsTabElementRenderer());
-        
+
         this.applyPlugins(PageSettingsTabElement);
     }
 

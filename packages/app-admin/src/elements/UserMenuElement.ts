@@ -6,8 +6,8 @@ export class UserMenuElement extends Element {
 
     constructor() {
         super("userMenu");
-        
-        this.toggleGrid(false);
+
+        this.useGrid(false);
 
         this.addRenderer(new UserMenuRenderer());
     }

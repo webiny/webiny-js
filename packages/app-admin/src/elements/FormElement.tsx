@@ -21,7 +21,7 @@ export class FormElement extends Element<FormElementConfig> {
     constructor(id, config) {
         super(id, config);
 
-        this.toggleGrid(false);
+        this.useGrid(false);
     }
 
     render(props) {

@@ -16,7 +16,7 @@ export class AdminView extends View {
     constructor() {
         super("AdminView");
 
-        this.toggleGrid(false);
+        this.useGrid(false);
 
         this.addElement(
             new GenericElement("helmet", () => {

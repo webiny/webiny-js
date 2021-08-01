@@ -32,8 +32,7 @@
     "lodash.get": "^4.4.2",
     "prop-types": "^15.7.2",
     "react": "^16.14.0",
-    "react-dom": "^16.14.0",
-    "react-helmet": "^5.2.0"
+    "react-dom": "^16.14.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",

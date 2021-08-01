@@ -25,7 +25,7 @@ export class NavigationMenuElement extends Element<NavigationMenuElementConfig> 
     constructor(id: string, config: NavigationMenuElementConfig) {
         super(id, config);
 
-        this.toggleGrid(false);
+        this.useGrid(false);
 
         const state = this.loadState();
         this._isExpanded = state.includes(this.id);

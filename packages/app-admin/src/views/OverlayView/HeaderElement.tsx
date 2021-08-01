@@ -37,7 +37,7 @@ export class HeaderElement extends Element<HeaderElementConfig> {
             }
         });
 
-        this.toggleGrid(false);
+        this.useGrid(false);
     }
 
     setTitle(title: GetterWithoutProps<string>) {

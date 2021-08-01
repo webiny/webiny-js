@@ -8,7 +8,10 @@ import {
     SimpleFormElementRenderProps
 } from "@webiny/app-admin/elements/SimpleFormView";
 import { GenericElement } from "@webiny/ui-composer/elements/GenericElement";
-import { AccordionElement, AccordionItemElement } from "@webiny/app-admin/elements/AccordionElement";
+import {
+    AccordionElement,
+    AccordionItemElement
+} from "@webiny/app-admin/elements/AccordionElement";
 import { InputElement } from "@webiny/app-admin/elements/InputElement";
 import { ReactComponent as SecurityIcon } from "../../assets/icons/security-24px.svg";
 import { ReactComponent as SettingsIcon } from "~/assets/icons/settings-24px.svg";
@@ -28,7 +31,7 @@ export class UsersFormView extends View {
     constructor() {
         super("UsersFormView");
 
-        this.toggleGrid(false);
+        this.useGrid(false);
         this.addHookDefinition("userForm", useUserForm);
 
         // Setup default view
@@ -104,7 +107,7 @@ export class UsersFormView extends View {
             ]
         });
 
-        simpleForm.getFormContentElement().toggleGrid(false);
+        simpleForm.getFormContentElement().useGrid(false);
         simpleForm.getFormContentElement().addElement(accordion);
 
         const bioAccordion = accordion.getAccordionItemElement("bio");

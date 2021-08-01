@@ -17,7 +17,7 @@ export class HeaderElement extends Element {
     constructor(id: string) {
         super(id);
 
-        this.toggleGrid(false);
+        this.useGrid(false);
 
         const leftSection = this.addElement(new HeaderSectionLeftElement("headerLeft"));
         leftSection.addElement(new PlaceholderElement(ElementID.MenuButton));

@@ -10,7 +10,7 @@ const ContentWrapper = styled("div")({
 export class ContentElement extends Element {
     constructor(id: string) {
         super(id);
-        this.toggleGrid(false);
+        this.useGrid(false);
     }
 
     render(props): React.ReactNode {

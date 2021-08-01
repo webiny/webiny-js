@@ -4,12 +4,17 @@
   "references": [
     {
       "path": "../plugins"
+    },
+    {
+      "path": "../ui"
     }
   ],
   "compilerOptions": {
     "paths": {
       "@webiny/plugins/*": ["../plugins/src/*"],
-      "@webiny/plugins": ["../plugins/src"]
+      "@webiny/plugins": ["../plugins/src"],
+      "@webiny/ui/*": ["../ui/src/*"],
+      "@webiny/ui": ["../ui/src"]
     },
     "baseUrl": "."
   }

@@ -42,7 +42,7 @@ export class SimpleFormView extends View<SimpleFormViewConfig> {
         super(id, config);
 
         this.addElements();
-        this.toggleGrid(false);
+        this.useGrid(false);
 
         this.applyPlugins(SimpleFormView);
     }

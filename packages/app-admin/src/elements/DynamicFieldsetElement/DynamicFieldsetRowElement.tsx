@@ -17,7 +17,7 @@ export class DynamicFieldsetRowElement extends Element<any> {
     }
 
     render(props?: any): React.ReactNode {
-        return super.render(props)
+        return super.render(props);
         return <DynamicFieldsetRow>{}</DynamicFieldsetRow>;
     }
 }

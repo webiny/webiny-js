@@ -10,7 +10,7 @@ export class GenericElement<TRenderProps = any> extends Element {
 
     constructor(id, render?: Renderer<TRenderProps>) {
         super(id);
-        this.toggleGrid(false);
+        this.useGrid(false);
 
         this._render = render;
     }

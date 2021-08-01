@@ -39,6 +39,7 @@ const SplitView = (props: SplitViewProps) => {
                 return;
             }
 
+            // Support for any other React element.
             view.addElement(
                 new GenericElement(`${child.type.toString()}-${Date.now()}`, () => child)
             );
@@ -51,7 +52,7 @@ const SplitView = (props: SplitViewProps) => {
         return null;
     }
 
-    return <ViewComponent view={view} />;
+    return <ViewComponent view={view}>{props.children}</ViewComponent>;
 };
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars

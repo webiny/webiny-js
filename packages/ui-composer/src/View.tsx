@@ -1,7 +1,7 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import pWaitFor from "p-wait-for";
 import { Plugin, plugins } from "@webiny/plugins";
-import {Element, ElementConfig} from "./Element";
+import { Element, ElementConfig } from "./Element";
 
 const ViewID = ({ children }) => {
     return children;
@@ -17,7 +17,7 @@ export class View<TConfig = ElementConfig> extends Element<TConfig> {
     constructor(id, config?: TConfig) {
         super(id, config);
 
-        this.toggleGrid(false);
+        this.useGrid(false);
     }
 
     get props() {

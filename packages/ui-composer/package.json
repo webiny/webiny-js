@@ -11,6 +11,7 @@
   "dependencies": {
     "@babel/runtime": "^7.5.5",
     "@webiny/plugins": "^5.10.0",
+    "@webiny/ui": "^5.10.0",
     "react": "^16.14.0",
     "react-dom": "^16.14.0"
   },

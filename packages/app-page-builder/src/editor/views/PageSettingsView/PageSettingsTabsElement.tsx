@@ -6,7 +6,7 @@ export class PageSettingsTabsElement extends Element {
     constructor(id: string) {
         super(id);
 
-        this.toggleGrid(false);
+        this.useGrid(false);
         this.addRenderer(new PageSettingsTabsElementRenderer());
     }
 }

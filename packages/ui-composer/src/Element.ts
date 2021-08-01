@@ -161,7 +161,7 @@ export abstract class Element<TConfig extends ElementConfig = ElementConfig> {
 
         // We only need to modify layout if we're adding a new element
         if (!this._elements.has(element.id)) {
-            this._layout.insertElementAtTheBottom(element);
+            this._layout.insertElementAtTheEnd(element);
         }
 
         this._elements.set(element.id, element);
@@ -169,7 +169,7 @@ export abstract class Element<TConfig extends ElementConfig = ElementConfig> {
         return element;
     }
 
-    toggleGrid(flag: boolean) {
+    useGrid(flag: boolean) {
         this._layout.setGrid(flag);
     }
 
@@ -349,28 +349,28 @@ export abstract class Element<TConfig extends ElementConfig = ElementConfig> {
     protected insertElementAfter(lookFor: Element<any>, element: Element<any>) {
         element.setParent(this);
         this._elements.set(element.id, element);
-        this._layout.insertElementToTheRightOf(lookFor, element);
+        this._layout.insertElementAfter(lookFor, element);
         return this;
     }
 
     protected insertElementBefore(lookFor: Element<any>, element: Element<any>) {
         element.setParent(this);
         this._elements.set(element.id, element);
-        this._layout.insertElementToTheLeftOf(lookFor, element);
+        this._layout.insertElementBefore(lookFor, element);
         return this;
     }
 
     protected insertElementAtTheBeginning(element: Element<any>) {
         element.setParent(this);
         this._elements.set(element.id, element);
-        this._layout.insertElementAtTheTop(element);
+        this._layout.insertElementAtTheBeginning(element);
         return this;
     }
 
     protected insertElementAtTheEnd(element: Element<any>) {
         element.setParent(this);
         this._elements.set(element.id, element);
-        this._layout.insertElementAtTheBottom(element);
+        this._layout.insertElementAtTheEnd(element);
         return this;
     }
 }
@@ -396,15 +396,10 @@ export class ElementPlugin<TElement extends Element> extends Plugin {
     }
 
     canHandle(elementClass: Class<Element>) {
-        // console.log(
-        //     `:================== Plugin for: ${this._elementClass.prototype.constructor.name} ========================:`
-        // );
-        // console.log(
-        //     "canHandle",
-        //     elementClass.prototype.constructor.name,
-        //     elementClass === this._elementClass
-        // );
-
+        /**
+         * We need to compare exact classes because we only want to run plugins for an exact class
+         * and not the entire inheritance tree.
+         */
         return elementClass === this._elementClass;
     }
 

@@ -10,7 +10,7 @@ export class ContentElement extends Element {
     constructor(id: string) {
         super(id);
 
-        this.toggleGrid(false);
+        this.useGrid(false);
 
         this.addSorter((a, b) => {
             if (a.hasTag(TAGS.APP) && b.hasTag(TAGS.UTILS)) {
@@ -24,7 +24,6 @@ export class ContentElement extends Element {
             return a.config.label.localeCompare(b.config.label);
         });
     }
-
 
     addElement<TElement extends Element = Element>(element: TElement): TElement {
         super.addElement(element);

@@ -6,6 +6,7 @@ export interface FormFieldElementConfig<TRenderProps = FormRenderPropParams>
     name: string;
     validators?: Function;
     beforeChange?: BeforeChange;
+    afterChange?: AfterChange;
     defaultValue?: any;
     isDisabled?: boolean | IsDisabled;
     label?: string;
@@ -41,7 +42,15 @@ export class FormFieldElement<
 
     constructor(id: string, config: TConfig) {
         super(id, config);
-        
+
+        if (config.beforeChange) {
+            this._beforeChange.push(config.beforeChange);
+        }
+
+        if (config.afterChange) {
+            this._afterChange.push(config.afterChange);
+        }
+
         this.applyPlugins(FormFieldElement);
     }
 
@@ -80,7 +89,7 @@ export class FormFieldElement<
     setPlaceholder(placeholder: string) {
         this.config.placeholder = placeholder;
     }
-    
+
     setDefaultValue(value: any) {
         this.config.defaultValue = value;
     }
@@ -116,6 +125,14 @@ export class FormFieldElement<
 
     addAfterChange(cb: AfterChange) {
         this._afterChange.push(cb);
+    }
+
+    setBeforeChange(cb: BeforeChange) {
+        this._beforeChange = [cb];
+    }
+
+    setAfterChange(cb: AfterChange) {
+        this._afterChange = [cb];
     }
 
     setIsDisabled(isDisabled: boolean | IsDisabled) {

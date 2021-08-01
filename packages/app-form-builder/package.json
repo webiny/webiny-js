@@ -13,6 +13,7 @@
   ],
   "license": "MIT",
   "dependencies": {
+    "@apollo/react-common": "^3.1.4",
     "@apollo/react-hooks": "^3.1.5",
     "@babel/runtime": "^7.5.5",
     "@editorjs/editorjs": "^2.20.1",

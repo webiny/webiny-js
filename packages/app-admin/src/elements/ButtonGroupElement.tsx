@@ -18,7 +18,7 @@ export class ButtonGroupElement extends Element<any> {
     constructor(id: string) {
         super(id);
 
-        this.toggleGrid(false);
+        this.useGrid(false);
     }
 
     render(props?: any): React.ReactNode {

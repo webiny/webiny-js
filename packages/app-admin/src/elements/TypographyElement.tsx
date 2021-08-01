@@ -24,7 +24,7 @@ interface TypographyElementConfig extends ElementConfig {
 export class TypographyElement extends Element<TypographyElementConfig> {
     constructor(id: string, config: TypographyElementConfig) {
         super(id, config);
-        this.toggleGrid(false);
+        this.useGrid(false);
 
         this.applyPlugins(TypographyElement);
     }

@@ -18,7 +18,7 @@ interface SimpleFormContainerConfig extends ElementConfig {
 export class SimpleFormContainerElement extends Element<SimpleFormContainerConfig> {
     constructor(id: string, config: SimpleFormContainerConfig) {
         super(id, config);
-        this.toggleGrid(false);
+        this.useGrid(false);
     }
 
     render(props) {

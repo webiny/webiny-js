@@ -61,7 +61,9 @@ class Fieldset extends React.Component<FieldsetProps> {
     renderRow = (cb: (params: Object) => React.ReactNode) => {
         const { value } = this.props;
         this.rows = value.map((record, index) => {
-            return <DynamicFieldsetRow key={index}>{cb({ data: record, index })}</DynamicFieldsetRow>;
+            return (
+                <DynamicFieldsetRow key={index}>{cb({ data: record, index })}</DynamicFieldsetRow>
+            );
         });
     };
 

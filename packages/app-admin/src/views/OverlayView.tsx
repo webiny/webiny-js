@@ -6,7 +6,6 @@ import { UseOverlayView, useOverlayView } from "./OverlayView/useOverlayView";
 import { HeaderElement } from "./OverlayView/HeaderElement";
 import { ContentElement } from "./OverlayView/ContentElement";
 
-
 // !GOOD FIRST ISSUE!
 // Extract rendering and styling into an OverlayViewRenderer class.
 
@@ -47,7 +46,7 @@ export class OverlayView extends View {
 
     constructor(id = "OverlayView") {
         super(id);
-        this.toggleGrid(false);
+        this.useGrid(false);
 
         this.addHookDefinition("overlay", useOverlayView);
 
@@ -61,7 +60,7 @@ export class OverlayView extends View {
 
         this.applyPlugins(OverlayView);
     }
-    
+
     setTitle(title: () => string) {
         this.getHeaderElement().setTitle(title);
     }
