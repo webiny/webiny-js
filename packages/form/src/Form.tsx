@@ -91,6 +91,10 @@ export class Form extends React.Component<FormProps, State> {
         return !_.isEqual(validation, state.validation) ? { validation } : null;
     }
 
+    get data() {
+        return this.state.data;
+    }
+
     static executeValidators = async (
         value: any,
         validators: Function | Array<Function>,
@@ -292,7 +296,7 @@ export class Form extends React.Component<FormProps, State> {
                     }
 
                     // Execute onAfterChange
-                    afterChange && afterChange(value);
+                    afterChange && afterChange(value, this);
 
                     return value;
                 });
@@ -316,7 +320,7 @@ export class Form extends React.Component<FormProps, State> {
         return this.validateFns[name];
     };
 
-    __setValue = (name: string, value: any) => {
+    setValue = (name: string, value: any) => {
         this.onChangeFns[name](value);
     };
 
@@ -351,7 +355,7 @@ export class Form extends React.Component<FormProps, State> {
             { onKeyDown: this.__onKeyDown },
             children({
                 data: _.cloneDeep(this.state.data),
-                setValue: this.__setValue,
+                setValue: this.setValue,
                 form: this,
                 submit: this.submit,
                 Bind: this.Bind
