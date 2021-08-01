@@ -184,7 +184,7 @@ jobs:
             .verdaccio.yaml
 
   test-create-webiny-project:
-    needs: [verdaccio-publish]
+    needs: [cache-keys, verdaccio-publish]
     name: Test "create-webiny-project" (different operating systems)
     strategy:
       fail-fast: false
