@@ -1,11 +1,11 @@
 import React from "react";
 import HTML5Backend from "react-dnd-html5-backend";
 import { DndProvider } from "react-dnd";
-import Snackbar from "@webiny/app-admin/plugins/snackbar/Snackbar";
 import { Editor } from "~/admin/components/ContentModelEditor/Editor";
 import { useRouter } from "@webiny/react-router";
 import { useCms } from "~/admin/hooks";
 import { ContentModelEditorProvider } from "~/admin/components/ContentModelEditor/Context";
+import Snackbar from "@webiny/app-admin/views/AdminView/components/Snackbar";
 type QueryMatch = {
     modelId?: string;
 };

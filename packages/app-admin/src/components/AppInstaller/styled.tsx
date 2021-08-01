@@ -38,13 +38,22 @@ export const InstallContent = styled("div")({
     }
 });
 
-export const installerSplitView = css({
-    ".webiny-split-view__inner": {
-        height: "100vh",
-        ".webiny-split-view__right-panel-wrapper": {
-            height: "100vh"
+export const FullHeight = styled("div")({
+    "> .mdc-layout-grid": {
+        padding: 0,
+        backgroundColor: "var(--mdc-theme-background)",
+        "> .mdc-layout-grid__inner": {
+            gridGap: 0
         }
     }
+});
+
+export const leftPanel = css({
+    backgroundColor: "var(--mdc-theme-surface)"
+});
+
+export const rightPanel = css({
+    backgroundColor: "var(--mdc-theme-background)"
 });
 
 export const SuccessDialog = styled("div")({

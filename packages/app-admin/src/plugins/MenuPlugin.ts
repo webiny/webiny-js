@@ -1,11 +1,11 @@
 import * as React from "react";
 import { Plugin } from "@webiny/plugins";
-import { Menu, Item, Section } from "./menu/Navigation/components";
+import { ItemProps, MenuProps, SectionProps } from "~/views/NavigationView/legacyMenu";
 
 interface Props {
-    Menu: typeof Menu;
-    Section: typeof Section;
-    Item: typeof Item;
+    Menu: React.ComponentType<MenuProps>;
+    Section: React.ComponentType<SectionProps>;
+    Item: React.ComponentType<ItemProps>;
 }
 
 interface Config {
