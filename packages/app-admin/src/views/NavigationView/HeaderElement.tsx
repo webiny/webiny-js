@@ -1,5 +1,5 @@
 import React from "react";
-import { Element, ElementConfig } from "@webiny/ui-composer/Element";
+import { UIElement, UIElementConfig } from "@webiny/ui-composer/UIElement";
 import { DrawerHeader } from "@webiny/ui/Drawer";
 import { GenericElement } from "@webiny/ui-composer/elements/GenericElement";
 import { PlaceholderElement } from "@webiny/ui-composer/elements/PlaceholderElement";
@@ -11,11 +11,11 @@ export enum ElementID {
     MenuButton = "headerMenuButton"
 }
 
-interface HeaderElementConfig extends ElementConfig {
+interface HeaderElementConfig extends UIElementConfig {
     closeMenu: () => void;
 }
 
-export class HeaderElement extends Element<HeaderElementConfig> {
+export class HeaderElement extends UIElement<HeaderElementConfig> {
     constructor(id: string, config: HeaderElementConfig) {
         super(id, config);
 

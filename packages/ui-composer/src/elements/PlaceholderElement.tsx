@@ -1,7 +1,7 @@
 import React from "react";
-import { Element } from "../Element";
+import { UIElement } from "../UIElement";
 
-export class PlaceholderElement extends Element {
+export class PlaceholderElement extends UIElement {
     render(props: any) {
         return null;
     }

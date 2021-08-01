@@ -1,12 +1,12 @@
 import React from "react";
-import { Element, ElementConfig } from "../Element";
-import { View, ViewComponent } from "../View";
+import { UIElement, UIElementConfig } from "../UIElement";
+import { UIView, UIViewComponent } from "../UIView";
 
-interface ViewElementConfig extends ElementConfig {
-    view: View;
+interface ViewElementConfig extends UIElementConfig {
+    view: UIView;
 }
 
-export class ViewElement extends Element<ViewElementConfig> {
+export class ViewElement extends UIElement<ViewElementConfig> {
     constructor(id: string, config: ViewElementConfig) {
         super(id, config);
         config.view.setParent(this);
@@ -17,6 +17,6 @@ export class ViewElement extends Element<ViewElementConfig> {
             return null;
         }
 
-        return <ViewComponent {...props} view={this.config.view} />;
+        return <UIViewComponent {...props} view={this.config.view} />;
     }
 }

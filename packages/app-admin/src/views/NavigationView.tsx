@@ -2,7 +2,7 @@ import React, { Fragment } from "react";
 import sortBy from "lodash/sortBy";
 import { nanoid } from "nanoid";
 import { Drawer } from "@webiny/ui/Drawer";
-import { View } from "@webiny/ui-composer/View";
+import { UIView } from "@webiny/ui-composer/UIView";
 import { plugins } from "@webiny/plugins";
 import { GenericElement } from "@webiny/ui-composer/elements/GenericElement";
 import { UseSecurity, useSecurity } from "@webiny/app-security";
@@ -22,7 +22,7 @@ export enum ElementID {
     SettingsMenu = "menu.settings"
 }
 
-export class NavigationView extends View {
+export class NavigationView extends UIView {
     constructor() {
         super("NavigationView");
 

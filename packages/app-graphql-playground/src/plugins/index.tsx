@@ -10,7 +10,7 @@ import { GraphQLPlaygroundTabPlugin } from "../types";
 // @ts-ignore
 import placeholder from "!!raw-loader!./placeholder.graphql";
 import { NavigationMenuElement } from "@webiny/app-admin/elements/NavigationMenuElement";
-import { ViewPlugin } from "@webiny/ui-composer/View";
+import { UIViewPlugin } from "@webiny/ui-composer/UIView";
 import { NavigationView } from "@webiny/app-admin/views/NavigationView";
 
 type GraphQLPlaygroundOptions = {
@@ -19,7 +19,7 @@ type GraphQLPlaygroundOptions = {
 
 // @ts-ignore
 export default (options: GraphQLPlaygroundOptions) => [
-    new ViewPlugin<NavigationView>(NavigationView, view => {
+    new UIViewPlugin<NavigationView>(NavigationView, view => {
         view.getFooterElement().addMenuElement(
             new NavigationMenuElement("apiPlayground", {
                 label: "API Playground",

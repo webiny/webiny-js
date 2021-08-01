@@ -5,7 +5,7 @@ import { useSecurity } from "@webiny/app-security/hooks/useSecurity";
 import { ReactComponent as SignOutIcon } from "../../assets/icons/round-lock_open-24px.svg";
 import { UserMenuElement } from "@webiny/app-admin/elements/UserMenuElement";
 import { GenericElement } from "@webiny/ui-composer/elements/GenericElement";
-import { ViewPlugin } from "@webiny/ui-composer/View";
+import { UIViewPlugin } from "@webiny/ui-composer/UIView";
 import { AdminView } from "@webiny/app-admin/views/AdminView";
 
 const SignOut = () => {
@@ -29,7 +29,7 @@ const SignOut = () => {
 };
 
 export default () => {
-    return new ViewPlugin<AdminView>(AdminView, view => {
+    return new UIViewPlugin<AdminView>(AdminView, view => {
         const userMenu = view.getElement<UserMenuElement>("userMenu");
         const signOut = new GenericElement("signOut", () => <SignOut />);
         signOut.moveToTheEndOf(userMenu);

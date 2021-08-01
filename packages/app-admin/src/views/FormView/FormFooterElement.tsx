@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "@emotion/styled";
-import { Element } from "@webiny/ui-composer/Element";
+import { UIElement } from "@webiny/ui-composer/UIElement";
 
 const ButtonWrapper = styled("div")({
     display: "flex",
@@ -14,7 +14,7 @@ const ButtonWrapper = styled("div")({
     }
 });
 
-export class SimpleFormFooterElement extends Element {
+export class FormFooterElement extends UIElement {
     constructor(id) {
         super(id);
 

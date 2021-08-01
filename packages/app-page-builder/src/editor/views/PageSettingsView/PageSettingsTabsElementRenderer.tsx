@@ -1,6 +1,6 @@
 import React from "react";
 import { css } from "emotion";
-import { ElementRenderer, ElementRenderParams } from "@webiny/ui-composer/ElementRenderer";
+import { UIRenderer, UIRenderParams } from "@webiny/ui-composer/UIRenderer";
 import { PageSettingsTabsElement } from "~/editor/views/PageSettingsView/PageSettingsTabsElement";
 import { List } from "@webiny/ui/List";
 
@@ -11,8 +11,8 @@ export const listStyle = css({
     }
 });
 
-export class PageSettingsTabsElementRenderer extends ElementRenderer<PageSettingsTabsElement> {
-    render({ next }: ElementRenderParams<PageSettingsTabsElement>): React.ReactNode {
+export class PageSettingsTabsElementRenderer extends UIRenderer<PageSettingsTabsElement> {
+    render({ next }: UIRenderParams<PageSettingsTabsElement>): React.ReactNode {
         return (
             <List twoLine className={listStyle}>
                 {next()}

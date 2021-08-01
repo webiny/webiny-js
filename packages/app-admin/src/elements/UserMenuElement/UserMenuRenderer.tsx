@@ -1,5 +1,5 @@
 import React from "react";
-import { ElementRenderer, ElementRenderParams } from "@webiny/ui-composer/ElementRenderer";
+import { UIRenderer, UIRenderParams } from "@webiny/ui-composer/UIRenderer";
 import { css } from "emotion";
 import { Menu } from "@webiny/ui/Menu";
 import { TopAppBarActionItem } from "@webiny/ui/TopAppBar";
@@ -12,8 +12,8 @@ const menuDialog = css({
     }
 });
 
-export class UserMenuRenderer extends ElementRenderer<UserMenuElement> {
-    render({ element, props, next }: ElementRenderParams<UserMenuElement>): React.ReactNode {
+export class UserMenuRenderer extends UIRenderer<UserMenuElement> {
+    render({ element, props, next }: UIRenderParams<UserMenuElement>): React.ReactNode {
         const handle = element.getMenuHandleElement();
         return (
             <Menu

@@ -4,7 +4,7 @@ import {
     FormFieldElementConfig,
     FormFieldElementRenderProps
 } from "~/elements/FormFieldElement";
-import { Element } from "@webiny/ui-composer/Element";
+import { UIElement } from "@webiny/ui-composer/UIElement";
 import { DynamicFieldset } from "@webiny/ui/DynamicFieldset";
 import { Grid } from "@webiny/ui/Grid";
 import { DynamicFieldsetRowElement } from "~/elements/DynamicFieldsetElement/DynamicFieldsetRowElement";
@@ -15,13 +15,13 @@ interface DynamicFieldsetActions {
 }
 
 export interface DynamicFieldsetElementConfig extends FormFieldElementConfig {
-    createHeader?: (params: { actions: DynamicFieldsetActions }) => Element;
+    createHeader?: (params: { actions: DynamicFieldsetActions }) => UIElement;
     createRow?: (params: {
         actions: DynamicFieldsetActions;
         index: number;
         row: DynamicFieldsetRowElement;
-    }) => Element;
-    createEmpty?: (params: { actions: DynamicFieldsetActions }) => Element;
+    }) => UIElement;
+    createEmpty?: (params: { actions: DynamicFieldsetActions }) => UIElement;
 }
 
 export class DynamicFieldsetElement extends FormFieldElement<DynamicFieldsetElementConfig> {
@@ -37,7 +37,7 @@ export class DynamicFieldsetElement extends FormFieldElement<DynamicFieldsetElem
         return this.config.createHeader;
     }
 
-    setHeaderElement(element: Element) {
+    setHeaderElement(element: UIElement) {
         this.config.createHeader = () => element;
     }
 
@@ -57,7 +57,7 @@ export class DynamicFieldsetElement extends FormFieldElement<DynamicFieldsetElem
         return this.config.createEmpty;
     }
 
-    setEmptyElement(element: Element) {
+    setEmptyElement(element: UIElement) {
         this.config.createEmpty = () => element;
     }
 

@@ -1,12 +1,8 @@
 import React from "react";
 import styled from "@emotion/styled";
-import { View } from "@webiny/ui-composer/View";
+import { UIView } from "@webiny/ui-composer/UIView";
 import { Form } from "@webiny/form";
 import { validation } from "@webiny/validation";
-import {
-    SimpleFormView,
-    SimpleFormElementRenderProps
-} from "@webiny/app-admin/elements/SimpleFormView";
 import { GenericElement } from "@webiny/ui-composer/elements/GenericElement";
 import {
     AccordionElement,
@@ -18,6 +14,8 @@ import { ReactComponent as SettingsIcon } from "~/assets/icons/settings-24px.svg
 import AvatarImage from "../Components/AvatarImage";
 import { GroupAutocompleteElement } from "~/elements/GroupAutocompleteElement";
 import { UseUserForm, useUserForm } from "~/views/Users/hooks/useUserForm";
+import { FormView } from "@webiny/app-admin/views/FormView";
+import { FormElementRenderProps } from "@webiny/app-admin/elements/FormElement";
 
 const FormWrapper = styled("div")({
     margin: "0 100px"
@@ -27,7 +25,7 @@ const AvatarWrapper = styled("div")({
     margin: "24px 100px 32px"
 });
 
-export class UsersFormView extends View {
+export class UsersFormView extends UIView {
     constructor() {
         super("UsersFormView");
 
@@ -55,8 +53,8 @@ export class UsersFormView extends View {
     }
 
     private addElements() {
-        const simpleForm = this.addElement<SimpleFormView>(
-            new SimpleFormView("UsersForm", {
+        const simpleForm = this.addElement<FormView>(
+            new FormView("UsersForm", {
                 isLoading: () => {
                     return this.getUserFormHook().loading;
                 },
@@ -75,7 +73,7 @@ export class UsersFormView extends View {
             })
         );
 
-        const avatar = new GenericElement<SimpleFormElementRenderProps>("avatar", props => {
+        const avatar = new GenericElement<FormElementRenderProps>("avatar", props => {
             const { Bind } = props.formProps;
 
             return (

@@ -2,7 +2,7 @@ import React, { Fragment } from "react";
 import { css } from "emotion";
 import { Transition } from "react-transition-group";
 import classNames from "classnames";
-import { ElementRenderer, ElementRenderParams } from "@webiny/ui-composer/ElementRenderer";
+import { UIRenderer, UIRenderParams } from "@webiny/ui-composer/UIRenderer";
 import { List, ListItem, ListItemGraphic, ListItemMeta } from "@webiny/ui/List";
 import { IconButton } from "@webiny/ui/Button";
 import { ReactComponent as UpIcon } from "~/assets/icons/round-keyboard_arrow_up-24px.svg";
@@ -45,13 +45,13 @@ const menuTitleActive = css({
     backgroundColor: "var(--mdc-theme-background)"
 });
 
-export class MenuGroupRenderer extends ElementRenderer<NavigationMenuElement> {
+export class MenuGroupRenderer extends UIRenderer<NavigationMenuElement> {
     canRender(element: NavigationMenuElement): boolean {
         const isInContent = Boolean(element.getParentOfType(ContentElement));
         return element.depth === 1 && isInContent && !element.config.path;
     }
 
-    render({ element, props, next }: ElementRenderParams<NavigationMenuElement>): React.ReactNode {
+    render({ element, props, next }: UIRenderParams<NavigationMenuElement>): React.ReactNode {
         const hasChildren = element.getElements().length > 0;
 
         if (!hasChildren) {

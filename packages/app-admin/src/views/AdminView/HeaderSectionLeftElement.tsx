@@ -1,13 +1,13 @@
 import React from "react";
 import { css } from "emotion";
-import { Element } from "@webiny/ui-composer/Element";
+import { UIElement } from "@webiny/ui-composer/UIElement";
 import { TopAppBarSection } from "@webiny/ui/TopAppBar";
 
 const edgeBars = css({
     width: "25%"
 });
 
-export class HeaderSectionLeftElement extends Element {
+export class HeaderSectionLeftElement extends UIElement {
     constructor(id: string) {
         super(id);
 

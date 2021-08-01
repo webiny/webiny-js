@@ -7,7 +7,7 @@ import { ListItem, ListItemGraphic } from "@webiny/ui/List";
 import { Typography } from "@webiny/ui/Typography";
 import { Avatar } from "@webiny/ui/Avatar";
 import { GenericElement } from "@webiny/ui-composer/elements/GenericElement";
-import { ViewPlugin } from "@webiny/ui-composer/View";
+import { UIViewPlugin } from "@webiny/ui-composer/UIView";
 import { AdminView } from "@webiny/app-admin/views/AdminView";
 
 const avatarImage = css({
@@ -99,7 +99,7 @@ const UserInfo = () => {
 };
 
 export default () => {
-    return new ViewPlugin<AdminView>(AdminView, async view => {
+    return new UIViewPlugin<AdminView>(AdminView, async view => {
         const userMenu = await view.awaitElement("userMenu");
         const userInfo = new GenericElement("userInfo", () => <UserInfo />);
         userInfo.moveToTheBeginningOf(userMenu);

@@ -1,9 +1,9 @@
 import React from "react";
 import pWaitFor from "p-wait-for";
 import { Plugin, plugins } from "@webiny/plugins";
-import { Layout } from "./Layout";
-import { View } from "./View";
-import { ElementRenderer } from "./ElementRenderer";
+import { UILayout } from "./UILayout";
+import { UIView } from "./UIView";
+import { UIRenderer } from "./UIRenderer";
 
 type Class<T> = new (...args: any[]) => T;
 
@@ -11,39 +11,39 @@ export interface ShouldRender<TProps = any> {
     (params: { props: TProps; next: Function }): boolean;
 }
 
-export interface ElementConfig<TProps = any> {
+export interface UIElementConfig<TProps = any> {
     shouldRender?: ShouldRender<TProps>;
     tags?: string[];
 }
 
-interface ElementWrapperProps {
+interface UIElementWrapperProps {
     children: React.ReactNode;
     [key: string]: any;
 }
 
-export interface ElementWrapper {
-    (props: ElementWrapperProps): React.ReactElement;
+export interface UIElementWrapper {
+    (props: UIElementWrapperProps): React.ReactElement;
 }
 
 function defaultShouldRender() {
     return true;
 }
 
-export abstract class Element<TConfig extends ElementConfig = ElementConfig> {
-    protected _elements = new Map<string, Element>();
+export abstract class UIElement<TConfig extends UIElementConfig = UIElementConfig> {
+    protected _elements = new Map<string, UIElement>();
     private _config: TConfig;
     private _tags = new Set();
-    private _layout: Layout;
-    private _wrappers: ElementWrapper[] = [];
+    private _layout: UILayout;
+    private _wrappers: UIElementWrapper[] = [];
     private _id: string;
-    private _parent: Element;
-    private _renderers: ElementRenderer<any>[] = [];
+    private _parent: UIElement;
+    private _renderers: UIRenderer<any>[] = [];
     private _shouldRender: ShouldRender[] = [defaultShouldRender];
 
     constructor(id: string, config?: TConfig) {
         this._id = id;
         this._config = config || ({} as TConfig);
-        this._layout = new Layout(elementId => this.getElement(elementId));
+        this._layout = new UILayout(elementId => this.getElement(elementId));
 
         if (!config) {
             return;
@@ -74,7 +74,7 @@ export abstract class Element<TConfig extends ElementConfig = ElementConfig> {
         let depth = 0;
 
         let parent = this.getParent();
-        while (parent && !(parent instanceof View)) {
+        while (parent && !(parent instanceof UIView)) {
             depth++;
             parent = parent.getParent();
         }
@@ -84,7 +84,7 @@ export abstract class Element<TConfig extends ElementConfig = ElementConfig> {
 
     get hasParentGrid() {
         let parent = this.getParent();
-        while (parent && !(parent instanceof View)) {
+        while (parent && !(parent instanceof UIView)) {
             if (parent.isGridEnabled()) {
                 return true;
             }
@@ -94,15 +94,15 @@ export abstract class Element<TConfig extends ElementConfig = ElementConfig> {
         return false;
     }
 
-    applyPlugins(elementClass: Class<Element>) {
+    applyPlugins(elementClass: Class<UIElement>) {
         const type = `ElementPlugin.${elementClass.prototype.constructor.name}`;
-        const elPlugins = plugins.byType<ElementPlugin<any>>(type);
+        const elPlugins = plugins.byType<UIElementPlugin<any>>(type);
         elPlugins
             .filter(plugin => plugin.canHandle(elementClass))
             .forEach(plugin => plugin.apply(this));
     }
 
-    addRenderer(renderer: ElementRenderer<any>) {
+    addRenderer(renderer: UIRenderer<any>) {
         this._renderers.push(renderer);
     }
 
@@ -114,15 +114,15 @@ export abstract class Element<TConfig extends ElementConfig = ElementConfig> {
         return this._layout;
     }
 
-    setParent(parent: Element) {
+    setParent(parent: UIElement) {
         this._parent = parent;
     }
 
-    getParent(): Element {
+    getParent(): UIElement {
         return this._parent;
     }
 
-    getParentOfType<TParent extends Element = Element>(type: any): TParent {
+    getParentOfType<TParent extends UIElement = UIElement>(type: any): TParent {
         let parent = this.getParent();
         while (parent) {
             if (parent instanceof type) {
@@ -147,7 +147,7 @@ export abstract class Element<TConfig extends ElementConfig = ElementConfig> {
         this._tags.delete(tag);
     }
 
-    getView<TView extends View = View>(type: Class<View> = View): TView {
+    getView<TView extends UIView = UIView>(type: Class<UIView> = UIView): TView {
         let parent = this.getParent();
         while (parent && !(parent instanceof type)) {
             parent = parent.getParent();
@@ -156,7 +156,7 @@ export abstract class Element<TConfig extends ElementConfig = ElementConfig> {
         return parent as TView;
     }
 
-    addElement<TElement extends Element = Element>(element: TElement): TElement {
+    addElement<TElement extends UIElement = UIElement>(element: TElement): TElement {
         element.setParent(this);
 
         // We only need to modify layout if we're adding a new element
@@ -173,7 +173,7 @@ export abstract class Element<TConfig extends ElementConfig = ElementConfig> {
         this._layout.setGrid(flag);
     }
 
-    getElement<T extends Element = Element>(id: string): T {
+    getElement<T extends UIElement = UIElement>(id: string): T {
         const ownElement = this._elements.get(id);
         if (ownElement) {
             return ownElement as T;
@@ -182,7 +182,7 @@ export abstract class Element<TConfig extends ElementConfig = ElementConfig> {
         // Search child elements recursively until an element is found
         const elements = this._elements.values();
         for (const element of elements) {
-            if (element instanceof Element) {
+            if (element instanceof UIElement) {
                 const descendant = element.getElement<T>(id);
                 if (descendant) {
                     return descendant;
@@ -193,16 +193,16 @@ export abstract class Element<TConfig extends ElementConfig = ElementConfig> {
         return null;
     }
 
-    getElements(): Element[] {
+    getElements(): UIElement[] {
         return Array.from(this._elements.values());
     }
 
-    getElementsByTag(tag: string): Element[] {
+    getElementsByTag(tag: string): UIElement[] {
         const elements = Array.from(this._elements.values());
 
         // Search child elements recursively
         for (const element of elements) {
-            if (element instanceof Element) {
+            if (element instanceof UIElement) {
                 const descendants = element.getElements();
                 for (const descendant of descendants) {
                     descendant.getElementsByTag(tag).forEach(el => elements.push(el));
@@ -212,7 +212,7 @@ export abstract class Element<TConfig extends ElementConfig = ElementConfig> {
         return elements.filter(el => el.hasTag(tag));
     }
 
-    moveTo(targetElement: Element) {
+    moveTo(targetElement: UIElement) {
         const parent = this.getParent();
         if (parent) {
             parent.remove(this);
@@ -220,7 +220,7 @@ export abstract class Element<TConfig extends ElementConfig = ElementConfig> {
         targetElement.addElement(this);
     }
 
-    moveAfter(targetElement: Element) {
+    moveAfter(targetElement: UIElement) {
         const parent = this.getParent();
         if (parent) {
             parent.remove(this);
@@ -228,7 +228,7 @@ export abstract class Element<TConfig extends ElementConfig = ElementConfig> {
         targetElement.getParent().insertElementAfter(targetElement, this);
     }
 
-    moveBefore(targetElement: Element) {
+    moveBefore(targetElement: UIElement) {
         const parent = this.getParent();
         if (parent) {
             parent.remove(this);
@@ -236,7 +236,7 @@ export abstract class Element<TConfig extends ElementConfig = ElementConfig> {
         targetElement.getParent().insertElementBefore(targetElement, this);
     }
 
-    moveAbove(targetElement: Element) {
+    moveAbove(targetElement: UIElement) {
         const parent = this.getParent();
         if (parent) {
             parent.remove(this);
@@ -244,7 +244,7 @@ export abstract class Element<TConfig extends ElementConfig = ElementConfig> {
         targetElement.getParent().insertElementAbove(targetElement, this);
     }
 
-    moveBelow(targetElement: Element) {
+    moveBelow(targetElement: UIElement) {
         const parent = this.getParent();
         if (parent) {
             parent.remove(this);
@@ -252,7 +252,7 @@ export abstract class Element<TConfig extends ElementConfig = ElementConfig> {
         targetElement.getParent().insertElementBelow(targetElement, this);
     }
 
-    moveToTheBeginningOf(targetElement: Element) {
+    moveToTheBeginningOf(targetElement: UIElement) {
         const parent = this.getParent();
         if (parent) {
             parent.remove(this);
@@ -260,7 +260,7 @@ export abstract class Element<TConfig extends ElementConfig = ElementConfig> {
         targetElement.insertElementAtTheBeginning(this);
     }
 
-    moveToTheEndOf(targetElement: Element) {
+    moveToTheEndOf(targetElement: UIElement) {
         const parent = this.getParent();
         if (parent) {
             parent.remove(this);
@@ -268,7 +268,7 @@ export abstract class Element<TConfig extends ElementConfig = ElementConfig> {
         targetElement.insertElementAtTheEnd(this);
     }
 
-    remove(element?: Element<any>): void {
+    remove(element?: UIElement<any>): void {
         if (!element) {
             // Delete self
             this.addTag("removed");
@@ -294,7 +294,7 @@ export abstract class Element<TConfig extends ElementConfig = ElementConfig> {
             }, content);
         };
 
-        const renderers: ElementRenderer<any>[] = [...this._renderers].filter(pl =>
+        const renderers: UIRenderer<any>[] = [...this._renderers].filter(pl =>
             pl.canRender(this, props)
         );
 
@@ -308,7 +308,7 @@ export abstract class Element<TConfig extends ElementConfig = ElementConfig> {
         return next(props);
     }
 
-    replaceWith(element: Element) {
+    replaceWith(element: UIElement) {
         if (element.id === this.id) {
             this.getParent().addElement(element);
             return;
@@ -327,47 +327,47 @@ export abstract class Element<TConfig extends ElementConfig = ElementConfig> {
         return next(props);
     }
 
-    wrapWith(wrapper: ElementWrapper) {
+    wrapWith(wrapper: UIElementWrapper) {
         // TODO: see if we want to wrap with an instance of an Element, or is a React component enough.
         this._wrappers.push(wrapper);
     }
 
-    protected insertElementAbove(lookFor: Element<any>, element: Element<any>) {
+    protected insertElementAbove(lookFor: UIElement<any>, element: UIElement<any>) {
         element.setParent(this);
         this._elements.set(element.id, element);
         this._layout.insertElementAbove(lookFor, element);
         return this;
     }
 
-    protected insertElementBelow(lookFor: Element<any>, element: Element<any>) {
+    protected insertElementBelow(lookFor: UIElement<any>, element: UIElement<any>) {
         element.setParent(this);
         this._elements.set(element.id, element);
         this._layout.insertElementBelow(lookFor, element);
         return this;
     }
 
-    protected insertElementAfter(lookFor: Element<any>, element: Element<any>) {
+    protected insertElementAfter(lookFor: UIElement<any>, element: UIElement<any>) {
         element.setParent(this);
         this._elements.set(element.id, element);
         this._layout.insertElementAfter(lookFor, element);
         return this;
     }
 
-    protected insertElementBefore(lookFor: Element<any>, element: Element<any>) {
+    protected insertElementBefore(lookFor: UIElement<any>, element: UIElement<any>) {
         element.setParent(this);
         this._elements.set(element.id, element);
         this._layout.insertElementBefore(lookFor, element);
         return this;
     }
 
-    protected insertElementAtTheBeginning(element: Element<any>) {
+    protected insertElementAtTheBeginning(element: UIElement<any>) {
         element.setParent(this);
         this._elements.set(element.id, element);
         this._layout.insertElementAtTheBeginning(element);
         return this;
     }
 
-    protected insertElementAtTheEnd(element: Element<any>) {
+    protected insertElementAtTheEnd(element: UIElement<any>) {
         element.setParent(this);
         this._elements.set(element.id, element);
         this._layout.insertElementAtTheEnd(element);
@@ -379,8 +379,8 @@ interface ApplyFunction<TElement> {
     (element: TElement): void;
 }
 
-export class ElementPlugin<TElement extends Element> extends Plugin {
-    public static readonly type: string = "ElementPlugin";
+export class UIElementPlugin<TElement extends UIElement> extends Plugin {
+    public static readonly type: string = "UIElementPlugin";
     private _apply: ApplyFunction<TElement>;
     private _elementClass: Class<TElement>;
 
@@ -392,10 +392,10 @@ export class ElementPlugin<TElement extends Element> extends Plugin {
     }
 
     get type() {
-        return `ElementPlugin.${this._elementClass.prototype.constructor.name}`;
+        return `UIElementPlugin.${this._elementClass.prototype.constructor.name}`;
     }
 
-    canHandle(elementClass: Class<Element>) {
+    canHandle(elementClass: Class<UIElement>) {
         /**
          * We need to compare exact classes because we only want to run plugins for an exact class
          * and not the entire inheritance tree.

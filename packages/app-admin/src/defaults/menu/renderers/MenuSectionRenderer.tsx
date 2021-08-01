@@ -1,7 +1,7 @@
 import React, { Fragment } from "react";
 import { css } from "emotion";
 import { Typography } from "@webiny/ui/Typography";
-import { ElementRenderer, ElementRenderParams } from "@webiny/ui-composer/ElementRenderer";
+import { UIRenderer, UIRenderParams } from "@webiny/ui-composer/UIRenderer";
 import { NavigationMenuElement } from "~/elements/NavigationMenuElement";
 
 const menuSectionTitle = css({
@@ -16,12 +16,12 @@ const iconWrapper = css({
     color: "var(--mdc-theme-on-surface)"
 });
 
-export class MenuSectionRenderer extends ElementRenderer<NavigationMenuElement> {
+export class MenuSectionRenderer extends UIRenderer<NavigationMenuElement> {
     canRender(element: NavigationMenuElement): boolean {
         return element.depth === 2;
     }
 
-    render({ element, props, next }: ElementRenderParams<NavigationMenuElement>): React.ReactNode {
+    render({ element, props, next }: UIRenderParams<NavigationMenuElement>): React.ReactNode {
         return (
             <Fragment>
                 <div className={menuSectionTitle}>

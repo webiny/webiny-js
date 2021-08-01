@@ -1,6 +1,6 @@
 import React, { Fragment } from "react";
 import { Cell, Grid, GridInner } from "@webiny/ui/Grid";
-import { Element } from "./Element";
+import { UIElement } from "./UIElement";
 
 interface LayoutItem {
     element: string;
@@ -12,14 +12,14 @@ const ElementID = ({ children }) => {
 };
 
 interface ElementGetter {
-    (elementId: string): Element<any>;
+    (elementId: string): UIElement<any>;
 }
 
 interface Sorter {
-    (elementA: Element, elementB: Element): number;
+    (elementA: UIElement, elementB: UIElement): number;
 }
 
-export class Layout {
+export class UILayout {
     private _grid = true;
     private _layout: LayoutItem[][] = [];
     private _getElement: ElementGetter;
@@ -49,7 +49,7 @@ export class Layout {
         });
     }
 
-    removeElement(element: Element<any>) {
+    removeElement(element: UIElement<any>) {
         for (let i = 0; i < this._layout.length; i++) {
             const row = this._layout[i];
             for (let j = 0; j < row.length; j++) {
@@ -63,7 +63,7 @@ export class Layout {
         }
     }
 
-    insertElementAbove(lookFor: Element<any>, element: Element<any>) {
+    insertElementAbove(lookFor: UIElement<any>, element: UIElement<any>) {
         for (let i = 0; i < this._layout.length; i++) {
             const row = this._layout[i];
             for (let j = 0; j < row.length; j++) {
@@ -76,7 +76,7 @@ export class Layout {
         return this;
     }
 
-    insertElementBelow(lookFor: Element<any>, element: Element<any>) {
+    insertElementBelow(lookFor: UIElement<any>, element: UIElement<any>) {
         for (let i = 0; i < this._layout.length; i++) {
             const row = this._layout[i];
             for (let j = 0; j < row.length; j++) {
@@ -89,7 +89,7 @@ export class Layout {
         return this;
     }
 
-    insertElementAfter(lookFor: Element<any>, element: Element<any>) {
+    insertElementAfter(lookFor: UIElement<any>, element: UIElement<any>) {
         for (let i = 0; i < this._layout.length; i++) {
             const row = this._layout[i];
             for (let j = 0; j < row.length; j++) {
@@ -106,7 +106,7 @@ export class Layout {
         return this;
     }
 
-    insertElementBefore(lookFor: Element<any>, element: Element<any>) {
+    insertElementBefore(lookFor: UIElement<any>, element: UIElement<any>) {
         for (let i = 0; i < this._layout.length; i++) {
             const row = this._layout[i];
             for (let j = 0; j < row.length; j++) {
@@ -123,12 +123,12 @@ export class Layout {
         return this;
     }
 
-    insertElementAtTheBeginning(element: Element<any>) {
+    insertElementAtTheBeginning(element: UIElement<any>) {
         this._layout.unshift([{ element: element.id, width: 12 }]);
         return this;
     }
 
-    insertElementAtTheEnd(element: Element<any>) {
+    insertElementAtTheEnd(element: UIElement<any>) {
         this._layout.push([{ element: element.id, width: 12 }]);
         return this;
     }

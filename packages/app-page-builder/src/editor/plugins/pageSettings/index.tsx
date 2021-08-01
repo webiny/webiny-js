@@ -7,7 +7,7 @@ import { ReactComponent as SettingsIcon } from "./icons/round-settings-24px.svg"
 import { ReactComponent as SocialIcon } from "./icons/round-thumb_up-24px.svg";
 import { ReactComponent as SeoIcon } from "./icons/round-search-24px.svg";
 import { GeneralSettingsView } from "~/editor/views/GeneralSettingsView";
-import { ViewPlugin } from "@webiny/ui-composer/View";
+import { UIViewPlugin } from "@webiny/ui-composer/UIView";
 import { PageSettingsView } from "~/editor/views/PageSettingsView";
 import { SocialSettingsView } from "~/editor/views/SocialSettingsView";
 import { FileManagerElement } from "@webiny/app-admin/elements/FileManagerElement";
@@ -16,7 +16,7 @@ import { HiddenElement } from "@webiny/app-admin/elements/HiddenElement";
 import { SEOSettingsView } from "~/editor/views/SEOSettingsView";
 
 const plugins: PluginCollection = [
-    new ViewPlugin<PageSettingsView>(PageSettingsView, view => {
+    new UIViewPlugin<PageSettingsView>(PageSettingsView, view => {
         view.addSection({
             id: "general",
             title: "General settings",
@@ -44,7 +44,7 @@ const plugins: PluginCollection = [
     /**
      * When image is changed in General settings, generate OG image tags in Social Media settings.
      */
-    new ViewPlugin<GeneralSettingsView>(GeneralSettingsView, view => {
+    new UIViewPlugin<GeneralSettingsView>(GeneralSettingsView, view => {
         const image = view.getElement<FileManagerElement>("image");
         if (!image) {
             return;

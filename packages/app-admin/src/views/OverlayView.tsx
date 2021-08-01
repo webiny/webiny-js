@@ -1,7 +1,7 @@
 import React from "react";
 import { Transition } from "react-transition-group";
 import styled from "@emotion/styled";
-import { View } from "@webiny/ui-composer/View";
+import { UIView } from "@webiny/ui-composer/UIView";
 import { UseOverlayView, useOverlayView } from "./OverlayView/useOverlayView";
 import { HeaderElement } from "./OverlayView/HeaderElement";
 import { ContentElement } from "./OverlayView/ContentElement";
@@ -41,7 +41,7 @@ interface OnExited {
     (view: OverlayView): void;
 }
 
-export class OverlayView extends View {
+export class OverlayView extends UIView {
     private _onExited: OnExited[] = [];
 
     constructor(id = "OverlayView") {

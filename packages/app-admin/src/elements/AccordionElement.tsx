@@ -1,8 +1,8 @@
 import React from "react";
-import { Element, ElementConfig } from "@webiny/ui-composer/Element";
+import { UIElement, UIElementConfig } from "@webiny/ui-composer/UIElement";
 import { Accordion, AccordionItem } from "@webiny/ui/Accordion";
 
-interface Item extends ElementConfig {
+interface Item extends UIElementConfig {
     id: string;
     title: string;
     description: string;
@@ -10,7 +10,7 @@ interface Item extends ElementConfig {
     open?: boolean;
 }
 
-export class AccordionItemElement extends Element<Item> {
+export class AccordionItemElement extends UIElement<Item> {
     constructor(id, config: Item) {
         super(id, config);
     }
@@ -28,11 +28,11 @@ export class AccordionItemElement extends Element<Item> {
     }
 }
 
-interface Config extends ElementConfig {
+interface Config extends UIElementConfig {
     items: Item[];
 }
 
-export class AccordionElement extends Element<Config> {
+export class AccordionElement extends UIElement<Config> {
     constructor(id, config: Config) {
         super(id, config);
 

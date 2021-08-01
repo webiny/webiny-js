@@ -1,4 +1,4 @@
 import React from "react";
-import { Element } from "@webiny/ui-composer/Element";
+import { UIElement } from "@webiny/ui-composer/UIElement";
 
-export class PanelElement extends Element<any> {}
+export class PanelElement extends UIElement<any> {}

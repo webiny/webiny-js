@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "@emotion/styled";
-import { ElementRenderer, ElementRenderParams } from "@webiny/ui-composer/ElementRenderer";
+import { UIRenderer, UIRenderParams } from "@webiny/ui-composer/UIRenderer";
 import { FormElementMessage } from "@webiny/ui/FormElementMessage";
 import { FileManagerElement } from "~/elements/FileManagerElement";
 import { FileManager } from "~/components";
@@ -30,14 +30,14 @@ export interface FileManagerElementRenderProps extends FormFieldElementRenderPro
     onChange: (value: any) => void;
 }
 
-export class FileManagerElementRenderer extends ElementRenderer<
+export class FileManagerElementRenderer extends UIRenderer<
     FileManagerElement,
     FormFieldElementRenderProps
 > {
     render({
         element,
         props
-    }: ElementRenderParams<FileManagerElement, FormFieldElementRenderProps>): React.ReactNode {
+    }: UIRenderParams<FileManagerElement, FormFieldElementRenderProps>): React.ReactNode {
         if (!props.formProps) {
             throw Error(`FileManagerElement must be placed inside of a FormElement.`);
         }

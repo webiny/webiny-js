@@ -1,22 +1,20 @@
 import React from "react";
 import { FormOnSubmit } from "@webiny/form";
 import { CircularProgress } from "@webiny/ui/Progress";
-import { Element, ElementConfig } from "@webiny/ui-composer/Element";
+import { UIElement, UIElementConfig } from "@webiny/ui-composer/UIElement";
 import { FormElement, FormElementRenderProps } from "@webiny/app-admin/elements/FormElement";
 import { ButtonElement } from "~/elements/ButtonElement";
 import { GenericElement } from "@webiny/ui-composer/elements/GenericElement";
-import { SimpleFormContentElement } from "./SimpleFormElement/SimpleFormContentElement";
-import { SimpleFormHeaderElement } from "./SimpleFormElement/SimpleFormHeaderElement";
-import { SimpleFormFooterElement } from "./SimpleFormElement/SimpleFormFooterElement";
-import { SimpleFormContainerElement } from "./SimpleFormElement/SimpleFormContainerElement";
-import { View } from "@webiny/ui-composer/View";
+import { FormContentElement } from "./FormView/FormContentElement";
+import { FormHeaderElement } from "./FormView/FormHeaderElement";
+import { FormFooterElement } from "./FormView/FormFooterElement";
+import { FormContainerElement } from "./FormView/FormContainerElement";
+import { UIView } from "@webiny/ui-composer/UIView";
 
-export type SimpleFormElementRenderProps = FormElementRenderProps;
-
-export interface SimpleFormViewConfig extends ElementConfig {
+export interface FormViewConfig extends UIElementConfig {
     setupForm?: boolean;
     onSubmit?: FormOnSubmit;
-    getTitle?: (props: SimpleFormElementRenderProps) => string;
+    getTitle?: (props: FormElementRenderProps) => string;
     getFormData?: () => Record<string, any>;
     isLoading?: () => boolean;
     onCancel?: () => void;
@@ -26,15 +24,15 @@ export interface SimpleFormViewConfig extends ElementConfig {
 }
 
 interface GetterWithProps<T> {
-    (props: SimpleFormElementRenderProps): T;
+    (props: FormElementRenderProps): T;
 }
 
 interface GetterWithoutProps<T> {
     (): T;
 }
 
-export class SimpleFormView extends View<SimpleFormViewConfig> {
-    constructor(id, config?: SimpleFormViewConfig) {
+export class FormView extends UIView<FormViewConfig> {
+    constructor(id, config?: FormViewConfig) {
         if (!("setupForm" in config)) {
             config.setupForm = true;
         }
@@ -44,10 +42,10 @@ export class SimpleFormView extends View<SimpleFormViewConfig> {
         this.addElements();
         this.useGrid(false);
 
-        this.applyPlugins(SimpleFormView);
+        this.applyPlugins(FormView);
     }
 
-    addElement<TElement extends Element = Element>(element: TElement): TElement {
+    addElement<TElement extends UIElement = UIElement>(element: TElement): TElement {
         if (element.id === "form" || element.id === "formContainer") {
             return super.addElement(element);
         }
@@ -71,19 +69,19 @@ export class SimpleFormView extends View<SimpleFormViewConfig> {
         this.config.getFormData = getter;
     }
 
-    getFormContainer(): SimpleFormContainerElement {
+    getFormContainer(): FormContainerElement {
         return this.getElement("formContainer");
     }
 
-    getFormContentElement(): SimpleFormContentElement {
+    getFormContentElement(): FormContentElement {
         return this.getElement("formContent");
     }
 
-    getFormHeaderElement(): SimpleFormHeaderElement {
+    getFormHeaderElement(): FormHeaderElement {
         return this.getElement("formHeader");
     }
 
-    getFormFooterElement(): SimpleFormFooterElement {
+    getFormFooterElement(): FormFooterElement {
         return this.getElement("formFooter");
     }
 
@@ -92,7 +90,7 @@ export class SimpleFormView extends View<SimpleFormViewConfig> {
     }
 
     private addElements() {
-        const formContainer = new SimpleFormContainerElement("formContainer", {
+        const formContainer = new FormContainerElement("formContainer", {
             testId: this.config.testId,
             className: this.config.className,
             noElevation: this.config.noElevation
@@ -122,19 +120,19 @@ export class SimpleFormView extends View<SimpleFormViewConfig> {
         );
 
         this.addElement(
-            new SimpleFormHeaderElement("formHeader", {
+            new FormHeaderElement("formHeader", {
                 getTitle: props => {
                     return this.config.getTitle(props);
                 }
             })
         );
 
-        this.addElement(new SimpleFormContentElement("formContent"));
+        this.addElement(new FormContentElement("formContent"));
 
-        const footer = new SimpleFormFooterElement("formFooter");
+        const footer = new FormFooterElement("formFooter");
         this.addElement(footer);
 
-        const submitButton = new ButtonElement<SimpleFormElementRenderProps>("submit", {
+        const submitButton = new ButtonElement<FormElementRenderProps>("submit", {
             type: "primary",
             label: "Save",
             onClick: props => {

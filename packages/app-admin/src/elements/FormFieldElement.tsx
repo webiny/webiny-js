@@ -1,8 +1,8 @@
 import { FormRenderPropParams, Form } from "@webiny/form";
-import { Element, ElementConfig } from "@webiny/ui-composer/Element";
+import { UIElement, UIElementConfig } from "@webiny/ui-composer/UIElement";
 
 export interface FormFieldElementConfig<TRenderProps = FormRenderPropParams>
-    extends ElementConfig<TRenderProps> {
+    extends UIElementConfig<TRenderProps> {
     name: string;
     validators?: Function;
     beforeChange?: BeforeChange;
@@ -36,7 +36,7 @@ interface AfterChange {
 
 export class FormFieldElement<
     TConfig extends FormFieldElementConfig = FormFieldElementConfig
-> extends Element<TConfig> {
+> extends UIElement<TConfig> {
     private _beforeChange: BeforeChange[] = [];
     private _afterChange: AfterChange[] = [];
 

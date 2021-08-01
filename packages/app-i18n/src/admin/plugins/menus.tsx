@@ -1,10 +1,10 @@
 import React from "react";
 import { NavigationMenuElement } from "@webiny/app-admin/elements/NavigationMenuElement";
-import { ViewPlugin } from "@webiny/ui-composer/View";
+import { UIViewPlugin } from "@webiny/ui-composer/UIView";
 import { NavigationView } from "@webiny/app-admin/views/NavigationView";
 
 export default [
-    new ViewPlugin<NavigationView>(NavigationView, async view => {
+    new UIViewPlugin<NavigationView>(NavigationView, async view => {
         await view.isRendered();
 
         const { identity } = view.getSecurityHook();

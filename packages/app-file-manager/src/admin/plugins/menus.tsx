@@ -8,7 +8,7 @@ import {
 } from "@webiny/app-admin/elements/NavigationMenuElement";
 import { NavigationView } from "@webiny/app-admin/views/NavigationView";
 import { RoutePlugin } from "@webiny/app/plugins/RoutePlugin";
-import { ViewPlugin } from "@webiny/ui-composer/View";
+import { UIViewPlugin } from "@webiny/ui-composer/UIView";
 import FileManagerSettings from "../views/FileManagerSettings";
 
 const PERMISSION_FM_SETTINGS = "fm.settings";
@@ -48,7 +48,7 @@ export default [
             />
         )
     }),
-    new ViewPlugin<NavigationView>(NavigationView, async view => {
+    new UIViewPlugin<NavigationView>(NavigationView, async view => {
         await view.isRendered();
 
         const { identity } = view.getSecurityHook();

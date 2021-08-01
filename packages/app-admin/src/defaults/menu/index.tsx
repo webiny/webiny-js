@@ -5,18 +5,18 @@ import { MenuGroupRenderer } from "~/defaults/menu/renderers/MenuGroupRenderer";
 import { MenuSectionRenderer } from "~/defaults/menu/renderers/MenuSectionRenderer";
 import { MenuSectionItemRenderer } from "~/defaults/menu/renderers/MenuSectionItemRenderer";
 import { MenuLinkRenderer } from "~/defaults/menu/renderers/MenuLinkRenderer";
-import { ElementPlugin } from "@webiny/ui-composer/Element";
+import { UIElementPlugin } from "@webiny/ui-composer/UIElement";
 import { NavigationMenuElement } from "~/elements/NavigationMenuElement";
-import { ViewPlugin } from "@webiny/ui-composer/View";
+import { UIViewPlugin } from "@webiny/ui-composer/UIView";
 import { NavigationView } from "~/views/NavigationView";
 
 export default [
-    new ViewPlugin<NavigationView>(NavigationView, view => {
+    new UIViewPlugin<NavigationView>(NavigationView, view => {
         view.getHeaderElement().setMenuButton(
             <IconButton icon={<MenuIcon />} onClick={() => view.getNavigationHook().hideMenu()} />
         );
     }),
-    new ElementPlugin<NavigationMenuElement>(NavigationMenuElement, element => {
+    new UIElementPlugin<NavigationMenuElement>(NavigationMenuElement, element => {
         element.addRenderer(new MenuGroupRenderer());
         element.addRenderer(new MenuSectionRenderer());
         element.addRenderer(new MenuSectionItemRenderer());

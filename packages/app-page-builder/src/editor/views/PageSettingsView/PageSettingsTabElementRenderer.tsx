@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "@emotion/styled";
 import { css } from "emotion";
-import { ElementRenderer, ElementRenderParams } from "@webiny/ui-composer/ElementRenderer";
+import { UIRenderer, UIRenderParams } from "@webiny/ui-composer/UIRenderer";
 import { ListItem, ListItemGraphic } from "@webiny/ui/List";
 import { Icon } from "@webiny/ui/Icon";
 import { Typography } from "@webiny/ui/Typography";
@@ -30,8 +30,8 @@ export const TitleContent = styled("div")({
     flexDirection: "column"
 });
 
-export class PageSettingsTabElementRenderer extends ElementRenderer<PageSettingsTabElement> {
-    render({ element }: ElementRenderParams<PageSettingsTabElement>): React.ReactNode {
+export class PageSettingsTabElementRenderer extends UIRenderer<PageSettingsTabElement> {
+    render({ element }: UIRenderParams<PageSettingsTabElement>): React.ReactNode {
         const { setActiveSection } = element
             .getView<PageSettingsView>(PageSettingsView)
             .getPageSettingsHook();

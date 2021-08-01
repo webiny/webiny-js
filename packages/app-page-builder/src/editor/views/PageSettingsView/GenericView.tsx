@@ -1,4 +1,4 @@
-import { View } from "@webiny/ui-composer/View";
+import { UIView } from "@webiny/ui-composer/UIView";
 
 interface GenericViewRender {
     (props?: any): React.ReactNode;
@@ -7,7 +7,7 @@ interface GenericViewRender {
 /**
  * This view class serves as an adapter for plugins created using PbEditorPageSettingsPlugin class.
  */
-export class GenericView extends View {
+export class GenericView extends UIView {
     private _render: GenericViewRender;
 
     constructor(id, render: GenericViewRender) {

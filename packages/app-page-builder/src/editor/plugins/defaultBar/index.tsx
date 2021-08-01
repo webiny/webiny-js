@@ -17,7 +17,7 @@ import Title from "./components/Title";
 import BackButton from "./components/BackButton";
 import Revisions from "./components/Revisions";
 import EditorResponsiveBar from "./components/EditorResponsiveBar";
-import { ViewComponent } from "@webiny/ui-composer/View";
+import { UIViewComponent } from "@webiny/ui-composer/UIView";
 import { PageSettingsView } from "~/editor/views/PageSettingsView";
 
 export default [
@@ -33,7 +33,7 @@ export default [
         },
         render() {
             //return <PageSettings />;
-            return <ViewComponent view={new PageSettingsView()} />;
+            return <UIViewComponent view={new PageSettingsView()} />;
         }
     } as PbEditorBarPlugin,
     {

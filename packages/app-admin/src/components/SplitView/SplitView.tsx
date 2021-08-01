@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { CellProps } from "@webiny/ui/Grid";
-import { ViewComponent } from "@webiny/ui-composer/View";
+import { UIViewComponent } from "@webiny/ui-composer/UIView";
 import { GenericElement } from "@webiny/ui-composer/elements/GenericElement";
 import { SplitView as SplitViewClass } from "~/views/SplitView";
 
@@ -52,7 +52,7 @@ const SplitView = (props: SplitViewProps) => {
         return null;
     }
 
-    return <ViewComponent view={view}>{props.children}</ViewComponent>;
+    return <UIViewComponent view={view}>{props.children}</UIViewComponent>;
 };
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars

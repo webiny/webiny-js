@@ -1,7 +1,7 @@
 import React from "react";
 import { FormFieldElement, FormFieldElementConfig } from "~/elements/FormFieldElement";
 import { FileManagerElementRenderer } from "~/elements/FileManagerElement/FileManagerElementRenderer";
-import { Element } from "@webiny/ui-composer/Element";
+import { UIElement } from "@webiny/ui-composer/UIElement";
 import { EmptyStateElement } from "./FileManagerElement/EmptyStateElement";
 
 export interface FileManagerElementConfig extends FormFieldElementConfig {
@@ -27,7 +27,7 @@ export interface FileManagerElementConfig extends FormFieldElementConfig {
 }
 
 export class FileManagerElement extends FormFieldElement<FileManagerElementConfig> {
-    private _emptyStateElement: Element;
+    private _emptyStateElement: UIElement;
 
     constructor(id: string, config: FileManagerElementConfig) {
         super(id, config);

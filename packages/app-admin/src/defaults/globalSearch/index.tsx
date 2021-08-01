@@ -1,7 +1,7 @@
 import * as React from "react";
 import SearchBar from "./SearchBar";
 import { GenericElement } from "@webiny/ui-composer/elements/GenericElement";
-import { ViewPlugin } from "@webiny/ui-composer/View";
+import { UIViewPlugin } from "@webiny/ui-composer/UIView";
 import { AdminView } from "~/views/AdminView";
 
 // !EXAMPLE!
@@ -13,7 +13,7 @@ import { AdminView } from "~/views/AdminView";
 //     }
 // }
 
-export const globalSearch = new ViewPlugin<AdminView>(AdminView, view => {
+export const globalSearch = new UIViewPlugin<AdminView>(AdminView, view => {
     view.getHeaderElement()
         .getCenterSection()
         .addElement(new GenericElement("searchBar", () => <SearchBar />));

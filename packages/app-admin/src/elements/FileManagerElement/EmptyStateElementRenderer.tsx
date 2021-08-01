@@ -1,6 +1,6 @@
 import React from "react";
 import { EmptyStateElement } from "./EmptyStateElement";
-import { ElementRenderer, ElementRenderParams } from "@webiny/ui-composer/ElementRenderer";
+import { UIRenderer, UIRenderParams } from "@webiny/ui-composer/UIRenderer";
 import * as Ui from "@webiny/ui/ImageUpload";
 import { Image } from "@webiny/app/components";
 import { FileManagerElementRenderProps } from "~/elements/FileManagerElement/FileManagerElementRenderer";
@@ -9,14 +9,14 @@ import { ReactComponent as AddFileIcon } from "~/assets/icons/attach_file_black_
 import { Typography } from "@webiny/ui/Typography";
 import { ReactComponent as RemoveImageIcon } from "@webiny/ui/ImageUpload/icons/round-close-24px.svg";
 
-export class EmptyStateElementRenderer extends ElementRenderer<
+export class EmptyStateElementRenderer extends UIRenderer<
     EmptyStateElement,
     FileManagerElementRenderProps
 > {
     render({
         element,
         props
-    }: ElementRenderParams<EmptyStateElement, FileManagerElementRenderProps>): React.ReactNode {
+    }: UIRenderParams<EmptyStateElement, FileManagerElementRenderProps>): React.ReactNode {
         const accept = props.fileManagerElement.getAccept();
         const acceptsOnlyImages = !accept || accept.every(el => el.startsWith("image/"));
 

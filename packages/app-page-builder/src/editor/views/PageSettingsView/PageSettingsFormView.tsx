@@ -1,9 +1,9 @@
 import React from "react";
-import { Element } from "@webiny/ui-composer/Element";
-import { SimpleFormView } from "@webiny/app-admin/elements/SimpleFormView";
+import { UIElement } from "@webiny/ui-composer/UIElement";
 import { PageSettingsView } from "../PageSettingsView";
+import { FormView } from "@webiny/app-admin/views/FormView";
 
-export class PageSettingsFormView extends SimpleFormView {
+export class PageSettingsFormView extends FormView {
     constructor(id) {
         super(id, { setupForm: false });
 
@@ -14,7 +14,7 @@ export class PageSettingsFormView extends SimpleFormView {
     /**
      * Add a field to form content.
      */
-    addField<TElement extends Element = Element>(element: TElement): TElement {
+    addField<TElement extends UIElement = UIElement>(element: TElement): TElement {
         return this.getFormContentElement().addElement<TElement>(element);
     }
 

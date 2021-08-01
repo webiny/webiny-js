@@ -2,7 +2,7 @@ import React from "react";
 import { css } from "emotion";
 import { Link } from "@webiny/react-router";
 import { List, ListItem } from "@webiny/ui/List";
-import { ElementRenderer, ElementRenderParams } from "@webiny/ui-composer/ElementRenderer";
+import { UIRenderer, UIRenderParams } from "@webiny/ui-composer/UIRenderer";
 import { NavigationMenuElement } from "~/elements/NavigationMenuElement";
 import { NavigationView } from "~/views/NavigationView";
 
@@ -32,12 +32,12 @@ const submenuList = css({
     }
 });
 
-export class MenuSectionItemRenderer extends ElementRenderer<NavigationMenuElement> {
+export class MenuSectionItemRenderer extends UIRenderer<NavigationMenuElement> {
     canRender(element: NavigationMenuElement): boolean {
         return element.depth === 3;
     }
 
-    render({ element, props, next }: ElementRenderParams<NavigationMenuElement>): React.ReactNode {
+    render({ element, props, next }: UIRenderParams<NavigationMenuElement>): React.ReactNode {
         const defaultOnClick = element.getView<NavigationView>().getNavigationHook().hideMenu;
         const onClick = element.config.onClick || defaultOnClick;
 

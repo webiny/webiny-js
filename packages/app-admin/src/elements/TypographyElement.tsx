@@ -1,5 +1,5 @@
 import React from "react";
-import { Element, ElementConfig } from "@webiny/ui-composer/Element";
+import { UIElement, UIElementConfig } from "@webiny/ui-composer/UIElement";
 import { Typography } from "@webiny/ui/Typography";
 
 export type TypographyT =
@@ -17,11 +17,11 @@ export type TypographyT =
     | "button"
     | "overline";
 
-interface TypographyElementConfig extends ElementConfig {
+interface TypographyElementConfig extends UIElementConfig {
     typography: TypographyT;
 }
 
-export class TypographyElement extends Element<TypographyElementConfig> {
+export class TypographyElement extends UIElement<TypographyElementConfig> {
     constructor(id: string, config: TypographyElementConfig) {
         super(id, config);
         this.useGrid(false);

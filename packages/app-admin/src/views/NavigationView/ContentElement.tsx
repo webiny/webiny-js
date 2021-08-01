@@ -1,10 +1,10 @@
 import React from "react";
-import { Element } from "@webiny/ui-composer/Element";
+import { UIElement } from "@webiny/ui-composer/UIElement";
 import { DrawerContent } from "@webiny/ui/Drawer";
 import { navContent } from "~/views/NavigationView/Styled";
 import { TAGS } from "~/elements/NavigationMenuElement";
 
-export class ContentElement extends Element {
+export class ContentElement extends UIElement {
     private _sorters = [];
 
     constructor(id: string) {
@@ -25,7 +25,7 @@ export class ContentElement extends Element {
         });
     }
 
-    addElement<TElement extends Element = Element>(element: TElement): TElement {
+    addElement<TElement extends UIElement = UIElement>(element: TElement): TElement {
         super.addElement(element);
         this.runSorters();
         return element;

@@ -9,9 +9,9 @@ import {
 } from "~/editor/views/PageSettingsView/PageSettingsTabElement";
 import { PageSettingsTabsElement } from "~/editor/views/PageSettingsView/PageSettingsTabsElement";
 import { PbEditorPageSettingsPlugin } from "~/plugins/PbEditorPageSettingsPlugin";
-import { SimpleFormView } from "@webiny/app-admin/elements/SimpleFormView";
 import { GenericElement } from "@webiny/ui-composer/elements/GenericElement";
 import { FormElement, FormElementRenderProps } from "@webiny/app-admin/elements/FormElement";
+import { FormView } from "@webiny/app-admin/views/FormView";
 
 export class PageSettingsView extends OverlayView {
     private _splitView: SplitView;
@@ -100,7 +100,7 @@ export class PageSettingsView extends OverlayView {
         );
 
         oldPlugins.forEach(pl => {
-            const formView = new SimpleFormView(pl.name);
+            const formView = new FormView(pl.name);
             formView.setTitle(() => pl.title);
             formView.setFormData(() => this.getPageSettingsHook().pageData);
             formView.setOnSubmit(data => this.getPageSettingsHook().savePage(data));

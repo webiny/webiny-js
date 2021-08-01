@@ -1,11 +1,11 @@
 import React from "react";
 import { NavigationMenuElement } from "~/elements/NavigationMenuElement";
 import { ReactComponent as GithubIcon } from "~/assets/icons/github-brands.svg";
-import { ViewPlugin } from "@webiny/ui-composer/View";
+import { UIViewPlugin } from "@webiny/ui-composer/UIView";
 import { NavigationView } from "~/views/NavigationView";
 
 export default () => {
-    return new ViewPlugin<NavigationView>(NavigationView, view => {
+    return new UIViewPlugin<NavigationView>(NavigationView, view => {
         view.getFooterElement().addMenuElement(
             new NavigationMenuElement("github", {
                 label: "Source",

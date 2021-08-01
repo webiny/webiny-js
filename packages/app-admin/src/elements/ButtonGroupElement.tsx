@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Element } from "@webiny/ui-composer/Element";
+import { UIElement } from "@webiny/ui-composer/UIElement";
 import styled from "@emotion/styled";
 
 const ButtonGroup = styled("div")({
@@ -14,7 +14,7 @@ const ButtonGroup = styled("div")({
     }
 });
 
-export class ButtonGroupElement extends Element<any> {
+export class ButtonGroupElement extends UIElement<any> {
     constructor(id: string) {
         super(id);
 

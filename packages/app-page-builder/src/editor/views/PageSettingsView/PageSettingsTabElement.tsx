@@ -1,17 +1,17 @@
 import React from "react";
-import { Element, ElementConfig } from "@webiny/ui-composer/Element";
-import { View } from "@webiny/ui-composer/View";
+import { UIElement, UIElementConfig } from "@webiny/ui-composer/UIElement";
+import { UIView } from "@webiny/ui-composer/UIView";
 import { PageSettingsTabElementRenderer } from "~/editor/views/PageSettingsView/PageSettingsTabElementRenderer";
 
-export interface PageSettingsTabElementConfig extends ElementConfig {
+export interface PageSettingsTabElementConfig extends UIElementConfig {
     id: string;
     title: string;
     description: string;
     icon: React.ReactElement;
-    view: View;
+    view: UIView;
 }
 
-export class PageSettingsTabElement extends Element<PageSettingsTabElementConfig> {
+export class PageSettingsTabElement extends UIElement<PageSettingsTabElementConfig> {
     constructor(id: string, config: PageSettingsTabElementConfig) {
         super(id, config);
         this.useGrid(false);
@@ -33,7 +33,7 @@ export class PageSettingsTabElement extends Element<PageSettingsTabElementConfig
         this.config.icon = icon;
     }
 
-    setView(view: View) {
+    setView(view: UIView) {
         this.config.view = view;
     }
 }

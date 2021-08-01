@@ -1,13 +1,13 @@
 import React from "react";
 import { css } from "emotion";
-import { Element, ElementConfig } from "@webiny/ui-composer/Element";
+import { UIElement, UIElementConfig } from "@webiny/ui-composer/UIElement";
 import { TopAppBarSecondary, TopAppBarSection } from "@webiny/ui/TopAppBar";
 import { IconButton } from "@webiny/ui/Button";
 import { ReactComponent as CloseIcon } from "@webiny/app-admin/components/OverlayLayout/icons/close.svg";
 import { PlaceholderElement } from "@webiny/ui-composer/elements/PlaceholderElement";
 import { HeaderTitleElement } from "./HeaderTitleElement";
 
-interface HeaderElementConfig extends ElementConfig {
+interface HeaderElementConfig extends UIElementConfig {
     onClose: (event: React.MouseEvent) => void;
     getTitle?: GetterWithoutProps<string>;
 }
@@ -23,10 +23,10 @@ interface GetterWithoutProps<T> {
     (): T;
 }
 
-export class HeaderElement extends Element<HeaderElementConfig> {
-    private _leftSection: Element = new PlaceholderElement("leftSection");
-    private _centerSection: Element;
-    private _rightSection: Element = new PlaceholderElement("rightSection");
+export class HeaderElement extends UIElement<HeaderElementConfig> {
+    private _leftSection: UIElement = new PlaceholderElement("leftSection");
+    private _centerSection: UIElement;
+    private _rightSection: UIElement = new PlaceholderElement("rightSection");
 
     constructor(id: string, config: HeaderElementConfig) {
         super(id, config);
@@ -44,15 +44,15 @@ export class HeaderElement extends Element<HeaderElementConfig> {
         this.config.getTitle = title;
     }
 
-    setLeftSectionElement(element: Element) {
+    setLeftSectionElement(element: UIElement) {
         this._leftSection = element;
     }
 
-    setCenterSectionElement(element: Element) {
+    setCenterSectionElement(element: UIElement) {
         this._centerSection = element;
     }
 
-    setRightSectionElement(element: Element) {
+    setRightSectionElement(element: UIElement) {
         this._rightSection = element;
     }
 

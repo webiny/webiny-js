@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { ViewComponent } from "@webiny/ui-composer/View";
+import { UIViewComponent } from "@webiny/ui-composer/UIView";
 import { GenericElement } from "@webiny/ui-composer/elements/GenericElement";
 import { AdminView } from "~/views/AdminView";
 
@@ -26,5 +26,5 @@ export const AdminLayout = ({ title, children }: AdminLayoutProps) => {
         return null;
     }
 
-    return <ViewComponent view={view} />;
+    return <UIViewComponent view={view} />;
 };

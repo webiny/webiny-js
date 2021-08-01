@@ -3,17 +3,17 @@ import Logo from "~/defaults/logo/Logo";
 import { plugins } from "@webiny/plugins";
 import { AdminMenuLogoPlugin } from "~/types";
 import { logoStyle } from "~/views/NavigationView/Styled";
-import { ViewPlugin } from "@webiny/ui-composer/View";
+import { UIViewPlugin } from "@webiny/ui-composer/UIView";
 import { AdminView } from "~/views/AdminView";
 import { NavigationView } from "~/views/NavigationView";
 
 export default () => [
     /* Set logo in the layout header. */
-    new ViewPlugin<AdminView>(AdminView, view => {
+    new UIViewPlugin<AdminView>(AdminView, view => {
         view.getHeaderElement().setLogo(<Logo white />);
     }),
     /* Set logo in the navigation drawer. */
-    new ViewPlugin<NavigationView>(NavigationView, view => {
+    new UIViewPlugin<NavigationView>(NavigationView, view => {
         view.getHeaderElement().setLogo(
             <Logo onClick={() => view.getNavigationHook().hideMenu()} />
         );

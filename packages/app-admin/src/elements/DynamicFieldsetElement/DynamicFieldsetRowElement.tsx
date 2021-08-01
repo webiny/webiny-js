@@ -1,5 +1,5 @@
 import React from "react";
-import { Element } from "@webiny/ui-composer/Element";
+import { UIElement } from "@webiny/ui-composer/UIElement";
 import styled from "@emotion/styled";
 
 const DynamicFieldsetRow = styled("div")({
@@ -9,7 +9,7 @@ const DynamicFieldsetRow = styled("div")({
 // !GOOD FIRST ISSUE!
 // Extract rendering and styling into a DynamicFieldsetRowElementRenderer class.
 
-export class DynamicFieldsetRowElement extends Element<any> {
+export class DynamicFieldsetRowElement extends UIElement<any> {
     constructor(id: string) {
         super(id);
 

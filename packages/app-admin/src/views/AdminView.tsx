@@ -1,7 +1,7 @@
 import React from "react";
 import Helmet from "react-helmet";
-import { View } from "@webiny/ui-composer/View";
-import { Element } from "@webiny/ui-composer/Element";
+import { UIView } from "@webiny/ui-composer/UIView";
+import { UIElement } from "@webiny/ui-composer/UIElement";
 import { GenericElement } from "@webiny/ui-composer/elements/GenericElement";
 import { ViewElement } from "@webiny/ui-composer/elements/ViewElement";
 import { HeaderElement } from "./AdminView/HeaderElement";
@@ -10,7 +10,7 @@ import { NavigationView } from "~/views/NavigationView";
 import Snackbar from "./AdminView/components/Snackbar";
 import { DialogContainer } from "./AdminView/components/Dialog";
 
-export class AdminView extends View {
+export class AdminView extends UIView {
     private _title: string;
 
     constructor() {
@@ -38,7 +38,7 @@ export class AdminView extends View {
         this._title = title;
     }
 
-    setContentElement(element: Element) {
+    setContentElement(element: UIElement) {
         const content = this.getContentElement();
 
         // Remove previous content

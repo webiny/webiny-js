@@ -1,14 +1,14 @@
 import React from "react";
-import { Element, ElementConfig } from "@webiny/ui-composer/Element";
+import { UIElement, UIElementConfig } from "@webiny/ui-composer/UIElement";
 import { Typography } from "@webiny/ui/Typography";
-import { ElementRenderer, ElementRenderParams } from "@webiny/ui-composer/ElementRenderer";
+import { UIRenderer, UIRenderParams } from "@webiny/ui-composer/UIRenderer";
 
-interface HeaderTitleElementConfig extends ElementConfig {
+interface HeaderTitleElementConfig extends UIElementConfig {
     title: () => string;
 }
 
-export class HeaderTitleElementRenderer extends ElementRenderer<HeaderTitleElement> {
-    render({ element }: ElementRenderParams<HeaderTitleElement>): React.ReactNode {
+export class HeaderTitleElementRenderer extends UIRenderer<HeaderTitleElement> {
+    render({ element }: UIRenderParams<HeaderTitleElement>): React.ReactNode {
         return (
             <Typography
                 style={{ margin: "0 auto", color: "var(--mdc-theme-on-surface)" }}
@@ -20,7 +20,7 @@ export class HeaderTitleElementRenderer extends ElementRenderer<HeaderTitleEleme
     }
 }
 
-export class HeaderTitleElement extends Element<HeaderTitleElementConfig> {
+export class HeaderTitleElement extends UIElement<HeaderTitleElementConfig> {
     constructor(id: string, config: HeaderTitleElementConfig) {
         super(id, config);
 

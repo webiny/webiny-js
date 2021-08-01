@@ -1,7 +1,7 @@
 import React from "react";
 import { Input } from "@webiny/ui/Input";
 import { BindComponentProps, FormRenderPropParams } from "@webiny/form";
-import { Element, ElementConfig } from "@webiny/ui-composer/Element";
+import { UIElement, UIElementConfig } from "@webiny/ui-composer/UIElement";
 
 export interface TextareaElementRenderProps {
     formProps: FormRenderPropParams;
@@ -11,10 +11,10 @@ interface IsDisabled {
     (props: TextareaElementRenderProps): boolean;
 }
 
-export interface TextareaElementConfig extends ElementConfig {
+export interface TextareaElementConfig extends UIElementConfig {
     name: string;
-    label: React.ReactNode;
-    description: React.ReactNode;
+    label: string;
+    description: string | React.ReactElement;
     validators?: Function;
     beforeChange?: BindComponentProps["beforeChange"];
     defaultValue?: any;
@@ -22,7 +22,7 @@ export interface TextareaElementConfig extends ElementConfig {
     rows: number;
 }
 
-export class TextareaElement extends Element<TextareaElementConfig> {
+export class TextareaElement extends UIElement<TextareaElementConfig> {
     constructor(id: string, config: TextareaElementConfig) {
         super(id, config);
 
@@ -33,7 +33,7 @@ export class TextareaElement extends Element<TextareaElementConfig> {
         this.config.label = label;
     }
 
-    setDescription(description: React.ReactNode) {
+    setDescription(description: string | React.ReactElement) {
         this.config.description = description;
     }
 

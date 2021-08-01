@@ -1,13 +1,13 @@
 import React from "react";
 import { GenericElement } from "@webiny/ui-composer/elements/GenericElement";
 import { CmsMenuLoader } from "./menus/CmsMenuLoader";
-import { ViewPlugin } from "@webiny/ui-composer/View";
+import { UIViewPlugin } from "@webiny/ui-composer/UIView";
 import { NavigationView } from "@webiny/app-admin/views/NavigationView";
 // import { NavigationMenuElement } from "@webiny/app-admin/elements/NavigationMenuElement";
 // import { ReactComponent as BeenHere } from "~/admin/icons/beenhere.svg";
 
 export default [
-    new ViewPlugin<NavigationView>(NavigationView, view => {
+    new UIViewPlugin<NavigationView>(NavigationView, view => {
         view.addElement(
             new GenericElement("headlessCms.menuLoader", () => {
                 return <CmsMenuLoader view={view} />;

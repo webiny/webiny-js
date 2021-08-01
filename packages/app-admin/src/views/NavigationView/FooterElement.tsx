@@ -1,16 +1,16 @@
 import React from "react";
 import { List, ListItem } from "@webiny/ui/List";
-import { Element, ElementConfig } from "@webiny/ui-composer/Element";
+import { UIElement, UIElementConfig } from "@webiny/ui-composer/UIElement";
 import { GenericElement } from "@webiny/ui-composer/elements/GenericElement";
 import { PlaceholderElement } from "@webiny/ui-composer/elements/PlaceholderElement";
 import { NavigationMenuElement } from "~/elements/NavigationMenuElement";
 import { MenuFooter, subFooter } from "./Styled";
 
-interface FooterElementConfig extends ElementConfig {
+interface FooterElementConfig extends UIElementConfig {
     closeMenu: () => void;
 }
 
-export class FooterElement extends Element<FooterElementConfig> {
+export class FooterElement extends UIElement<FooterElementConfig> {
     private _footerPlaceholder: PlaceholderElement;
 
     constructor(id: string, config: FooterElementConfig) {

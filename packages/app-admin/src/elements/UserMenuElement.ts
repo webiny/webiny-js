@@ -1,8 +1,8 @@
-import { Element } from "@webiny/ui-composer/Element";
+import { UIElement } from "@webiny/ui-composer/UIElement";
 import { UserMenuRenderer } from "~/elements/UserMenuElement/UserMenuRenderer";
 
-export class UserMenuElement extends Element {
-    private _menuHandleElement: Element;
+export class UserMenuElement extends UIElement {
+    private _menuHandleElement: UIElement;
 
     constructor() {
         super("userMenu");
@@ -12,7 +12,7 @@ export class UserMenuElement extends Element {
         this.addRenderer(new UserMenuRenderer());
     }
 
-    setMenuHandleElement(element: Element) {
+    setMenuHandleElement(element: UIElement) {
         this._menuHandleElement = element;
     }
 

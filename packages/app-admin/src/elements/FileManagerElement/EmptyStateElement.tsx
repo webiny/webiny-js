@@ -1,8 +1,8 @@
 import React from "react";
-import { Element } from "@webiny/ui-composer/Element";
+import { UIElement } from "@webiny/ui-composer/UIElement";
 import { EmptyStateElementRenderer } from "./EmptyStateElementRenderer";
 
-export class EmptyStateElement extends Element<any> {
+export class EmptyStateElement extends UIElement<any> {
     constructor(id: string) {
         super(id);
 

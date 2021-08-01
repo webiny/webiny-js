@@ -1,19 +1,19 @@
 import React from "react";
 import { Link } from "@webiny/react-router";
 import { ListItem, ListItemGraphic } from "@webiny/ui/List";
-import { ElementRenderer, ElementRenderParams } from "@webiny/ui-composer/ElementRenderer";
+import { UIRenderer, UIRenderParams } from "@webiny/ui-composer/UIRenderer";
 import { NavigationMenuElement } from "~/elements/NavigationMenuElement";
 import { NavigationView } from "~/views/NavigationView";
 import { Icon } from "@webiny/ui/Icon";
 import { FooterElement } from "~/views/NavigationView/FooterElement";
 
-export class MenuLinkRenderer extends ElementRenderer<NavigationMenuElement> {
+export class MenuLinkRenderer extends UIRenderer<NavigationMenuElement> {
     canRender(element: NavigationMenuElement): boolean {
         const isInFooter = Boolean(element.getParentOfType(FooterElement));
         return element.depth === 1 && isInFooter;
     }
 
-    render({ element, props, next }: ElementRenderParams<NavigationMenuElement>): React.ReactNode {
+    render({ element, props, next }: UIRenderParams<NavigationMenuElement>): React.ReactNode {
         const defaultOnClick = element.getView<NavigationView>().getNavigationHook().hideMenu;
         const onClick = element.config.onClick || defaultOnClick;
 

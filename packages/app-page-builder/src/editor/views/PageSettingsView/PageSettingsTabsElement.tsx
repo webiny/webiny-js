@@ -1,8 +1,8 @@
 import React from "react";
-import { Element } from "@webiny/ui-composer/Element";
+import { UIElement } from "@webiny/ui-composer/UIElement";
 import { PageSettingsTabsElementRenderer } from "./PageSettingsTabsElementRenderer";
 
-export class PageSettingsTabsElement extends Element {
+export class PageSettingsTabsElement extends UIElement {
     constructor(id: string) {
         super(id);
 

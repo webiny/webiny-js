@@ -1,8 +1,8 @@
 import React from "react";
 import { default as localStorage } from "store";
-import { Element, ElementConfig } from "@webiny/ui-composer/Element";
+import { UIElement, UIElementConfig } from "@webiny/ui-composer/UIElement";
 
-export interface NavigationMenuElementConfig extends ElementConfig {
+export interface NavigationMenuElementConfig extends UIElementConfig {
     label: React.ReactNode;
     icon?: React.ReactElement;
     path?: string;
@@ -18,7 +18,7 @@ export enum TAGS {
     APP = "app"
 }
 
-export class NavigationMenuElement extends Element<NavigationMenuElementConfig> {
+export class NavigationMenuElement extends UIElement<NavigationMenuElementConfig> {
     private _isExpanded = false;
     private _sorters = [];
 
@@ -46,7 +46,7 @@ export class NavigationMenuElement extends Element<NavigationMenuElementConfig> 
         this.applyPlugins(NavigationMenuElement);
     }
 
-    addElement<TElement extends Element = Element>(element: TElement): TElement {
+    addElement<TElement extends UIElement = UIElement>(element: TElement): TElement {
         super.addElement(element);
         this.runSorters();
         return element;

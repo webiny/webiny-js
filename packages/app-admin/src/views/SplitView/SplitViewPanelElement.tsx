@@ -1,9 +1,9 @@
 import React from "react";
 import classNames from "classnames";
-import { Element } from "@webiny/ui-composer/Element";
+import { UIElement } from "@webiny/ui-composer/UIElement";
 import { Cell } from "@webiny/ui/Grid";
 
-export class SplitViewPanelElement extends Element<any> {
+export class SplitViewPanelElement extends UIElement<any> {
     private _width = 12;
     private _classNames = new Set();
 
@@ -19,7 +19,7 @@ export class SplitViewPanelElement extends Element<any> {
         this._classNames.delete(className);
     }
 
-    setContentElement(element: Element) {
+    setContentElement(element: UIElement) {
         // Remove previous content
         this.getElements().forEach(el => el.remove());
 

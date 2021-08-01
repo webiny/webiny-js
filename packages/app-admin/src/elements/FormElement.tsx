@@ -1,8 +1,8 @@
 import React, { Fragment } from "react";
 import { Form, FormOnSubmit, FormRenderPropParams } from "@webiny/form";
-import { Element, ElementConfig } from "@webiny/ui-composer/Element";
+import { UIElement, UIElementConfig } from "@webiny/ui-composer/UIElement";
 
-interface FormElementConfig extends ElementConfig {
+interface FormElementConfig extends UIElementConfig {
     onSubmit: FormOnSubmit;
     getData(): Record<string, any>;
     getInvalidFields?(): Record<string, any>;
@@ -17,7 +17,7 @@ export interface FormElementRenderProps {
     formProps: FormRenderPropParams;
 }
 
-export class FormElement extends Element<FormElementConfig> {
+export class FormElement extends UIElement<FormElementConfig> {
     constructor(id, config) {
         super(id, config);
 

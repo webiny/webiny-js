@@ -2,9 +2,9 @@ import React from "react";
 import { css } from "emotion";
 import { Cell, Grid } from "@webiny/ui/Grid";
 import { Typography } from "@webiny/ui/Typography";
-import { Element, ElementConfig } from "@webiny/ui-composer/Element";
+import { UIElement, UIElementConfig } from "@webiny/ui-composer/UIElement";
 import { Icon } from "@webiny/ui/Icon";
-import { SimpleFormElementRenderProps } from "~/elements/SimpleFormView";
+import { FormElementRenderProps } from "~/elements/FormElement";
 
 const iconClass = css({
     marginRight: 15,
@@ -27,13 +27,13 @@ const actionsClass = css({
     alignItems: "center"
 });
 
-interface SimpleFormHeaderConfig extends ElementConfig {
-    getTitle(props: SimpleFormElementRenderProps): string;
+interface FormHeaderConfig extends UIElementConfig {
+    getTitle(props: FormElementRenderProps): string;
     icon?: React.ReactElement;
 }
 
-export class SimpleFormHeaderElement extends Element<SimpleFormHeaderConfig> {
-    constructor(id, config: SimpleFormHeaderConfig) {
+export class FormHeaderElement extends UIElement<FormHeaderConfig> {
+    constructor(id, config: FormHeaderConfig) {
         super(id, config);
 
         this.useGrid(false);
@@ -43,7 +43,7 @@ export class SimpleFormHeaderElement extends Element<SimpleFormHeaderConfig> {
         this.config.icon = icon;
     }
 
-    addAction(element: Element) {
+    addAction(element: UIElement) {
         this.addElement(element);
     }
 

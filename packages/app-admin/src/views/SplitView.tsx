@@ -2,8 +2,8 @@ import React from "react";
 import classNames from "classnames";
 import { css } from "emotion";
 import { Grid } from "@webiny/ui/Grid";
-import { View } from "@webiny/ui-composer/View";
-import { Element } from "@webiny/ui-composer/Element";
+import { UIView } from "@webiny/ui-composer/UIView";
+import { UIElement } from "@webiny/ui-composer/UIElement";
 import { SplitViewPanelElement } from "./SplitView/SplitViewPanelElement";
 
 const grid = css({
@@ -41,11 +41,11 @@ const rightPanel = css({
 });
 
 interface SplitViewConfig {
-    leftPanel?: Element;
-    rightPanel?: Element;
+    leftPanel?: UIElement;
+    rightPanel?: UIElement;
 }
 
-export class SplitView extends View {
+export class SplitView extends UIView {
     private _classNames = new Set();
     private _leftPanel: SplitViewPanelElement;
     private _rightPanel: SplitViewPanelElement;

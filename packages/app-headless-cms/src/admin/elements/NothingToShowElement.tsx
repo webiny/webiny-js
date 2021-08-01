@@ -1,9 +1,9 @@
 import React from "react";
 import { NavigationMenuElement } from "@webiny/app-admin/elements/NavigationMenuElement";
-import { ElementRenderer, ElementRenderParams } from "@webiny/ui-composer/ElementRenderer";
+import { UIRenderer, UIRenderParams } from "@webiny/ui-composer/UIRenderer";
 import { List, ListItem } from "@webiny/ui/List";
 import { css } from "emotion";
-import { ElementConfig } from "@webiny/ui-composer/Element";
+import { UIElementConfig } from "@webiny/ui-composer/UIElement";
 
 const linkStyle = css({
     color: "var(--mdc-theme-text-primary-on-background)",
@@ -31,7 +31,7 @@ const submenuList = css({
     }
 });
 
-interface NothingToShowElementConfig extends ElementConfig {
+interface NothingToShowElementConfig extends UIElementConfig {
     label: string;
 }
 
@@ -43,12 +43,12 @@ export class NothingToShowElement extends NavigationMenuElement {
     }
 }
 
-export class NothingToShowRenderer extends ElementRenderer<NavigationMenuElement> {
+export class NothingToShowRenderer extends UIRenderer<NavigationMenuElement> {
     canRender(element: NavigationMenuElement): boolean {
         return element instanceof NothingToShowElement;
     }
 
-    render({ element }: ElementRenderParams<NavigationMenuElement>): React.ReactNode {
+    render({ element }: UIRenderParams<NavigationMenuElement>): React.ReactNode {
         return (
             <List className={submenuList} style={{ opacity: 0.4 }}>
                 <ListItem className={submenuItems} ripple={false} disabled>

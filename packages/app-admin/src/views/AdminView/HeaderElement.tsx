@@ -1,5 +1,5 @@
 import React from "react";
-import { Element } from "@webiny/ui-composer/Element";
+import { UIElement } from "@webiny/ui-composer/UIElement";
 import { TopAppBarPrimary, TopAppBarTitle } from "@webiny/ui/TopAppBar";
 import { GenericElement } from "@webiny/ui-composer/elements/GenericElement";
 import { PlaceholderElement } from "@webiny/ui-composer/elements/PlaceholderElement";
@@ -13,7 +13,7 @@ enum ElementID {
     Logo = "headerLogo"
 }
 
-export class HeaderElement extends Element {
+export class HeaderElement extends UIElement {
     constructor(id: string) {
         super(id);
 

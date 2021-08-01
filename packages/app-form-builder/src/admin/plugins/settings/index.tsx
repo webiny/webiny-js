@@ -5,7 +5,7 @@ import FormsSettings from "./components/FormsSettings";
 import { SecureRoute } from "@webiny/app-security/components";
 import { RoutePlugin } from "@webiny/app/plugins/RoutePlugin";
 import { NavigationMenuElement } from "@webiny/app-admin/elements/NavigationMenuElement";
-import { ViewPlugin } from "@webiny/ui-composer/View";
+import { UIViewPlugin } from "@webiny/ui-composer/UIView";
 import { NavigationView } from "@webiny/app-admin/views/NavigationView";
 
 const plugins = [
@@ -23,7 +23,7 @@ const plugins = [
             />
         )
     }),
-    new ViewPlugin<NavigationView>(NavigationView, async view => {
+    new UIViewPlugin<NavigationView>(NavigationView, async view => {
         await view.isRendered();
 
         const { identity } = view.getSecurityHook();

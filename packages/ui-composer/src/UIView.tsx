@@ -1,13 +1,13 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useState } from "react";
 import pWaitFor from "p-wait-for";
 import { Plugin, plugins } from "@webiny/plugins";
-import { Element, ElementConfig } from "./Element";
+import { UIElement, UIElementConfig } from "./UIElement";
 
-const ViewID = ({ children }) => {
+const UIViewID = ({ children }) => {
     return children;
 };
 
-export class View<TConfig = ElementConfig> extends Element<TConfig> {
+export class UIView<TConfig = UIElementConfig> extends UIElement<TConfig> {
     private _events = new Map();
     private _hookDefinitions: Record<string, Function> = {};
     private _hookValues: Record<string, any> = {};
@@ -32,15 +32,15 @@ export class View<TConfig = ElementConfig> extends Element<TConfig> {
         this._hookDefinitions[key] = hook;
     }
 
-    applyPlugins(viewClass: Class<View>) {
-        const type = `ViewPlugin.${viewClass.prototype.constructor.name}`;
-        const elPlugins = plugins.byType<ViewPlugin<any>>(type);
+    applyPlugins(viewClass: Class<UIView>) {
+        const type = `UIViewPlugin.${viewClass.prototype.constructor.name}`;
+        const elPlugins = plugins.byType<UIViewPlugin<any>>(type);
         elPlugins
             .filter(plugin => plugin.canHandle(viewClass))
             .forEach(plugin => plugin.apply(this));
     }
 
-    async awaitElement<TElement extends Element = Element<any>>(id: string): Promise<TElement> {
+    async awaitElement<TElement extends UIElement = UIElement<any>>(id: string): Promise<TElement> {
         await pWaitFor(() => this.getElement<TElement>(id) !== undefined);
 
         return this.getElement<TElement>(id);
@@ -80,7 +80,7 @@ export class View<TConfig = ElementConfig> extends Element<TConfig> {
         // Mark view as rendered
         this._isRendered = true;
 
-        return <ViewID key={this.id}>{super.render(props)}</ViewID>;
+        return <UIViewID key={this.id}>{super.render(props)}</UIViewID>;
     }
 
     refresh() {
@@ -96,8 +96,8 @@ export interface ApplyFunction<TView> {
 
 type Class<T> = new (...args: any[]) => T;
 
-export class ViewPlugin<TView extends any> extends Plugin {
-    public static readonly type: string = "ViewPlugin";
+export class UIViewPlugin<TView extends any> extends Plugin {
+    public static readonly type: string = "UIViewPlugin";
     private _apply: ApplyFunction<TView>;
     private _viewClass: Class<TView>;
 
@@ -109,10 +109,10 @@ export class ViewPlugin<TView extends any> extends Plugin {
     }
 
     get type() {
-        return `ViewPlugin.${this._viewClass.prototype.constructor.name}`;
+        return `UIViewPlugin.${this._viewClass.prototype.constructor.name}`;
     }
 
-    canHandle(viewClass: Class<View>) {
+    canHandle(viewClass: Class<UIView>) {
         return viewClass === this._viewClass;
     }
 
@@ -121,12 +121,12 @@ export class ViewPlugin<TView extends any> extends Plugin {
     }
 }
 
-interface ViewComponentProps {
-    view: View;
+interface UIViewComponentProps {
+    view: UIView;
     [key: string]: any;
 }
 
-export const ViewComponent = ({ view, ...props }: ViewComponentProps): React.ReactElement => {
+export const UIViewComponent = ({ view, ...props }: UIViewComponentProps): React.ReactElement => {
     const [, setCount] = useState(0);
 
     const render = useCallback(() => {

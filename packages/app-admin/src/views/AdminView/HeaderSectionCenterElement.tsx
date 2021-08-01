@@ -1,13 +1,13 @@
 import React from "react";
 import { css } from "emotion";
-import { Element } from "@webiny/ui-composer/Element";
+import { UIElement } from "@webiny/ui-composer/UIElement";
 import { TopAppBarSection } from "@webiny/ui/TopAppBar";
 
 const middleBar = css({
     width: "50%"
 });
 
-export class HeaderSectionCenterElement extends Element {
+export class HeaderSectionCenterElement extends UIElement {
     constructor(id: string) {
         super(id);
 

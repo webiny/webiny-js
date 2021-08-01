@@ -4,7 +4,7 @@ import { Icon } from "@webiny/ui/Icon";
 import { Link } from "@webiny/react-router";
 import { UserMenuElement } from "@webiny/app-admin/elements/UserMenuElement";
 import { GenericElement } from "@webiny/ui-composer/elements/GenericElement";
-import { ViewPlugin } from "@webiny/ui-composer/View";
+import { UIViewPlugin } from "@webiny/ui-composer/UIView";
 import { AdminView } from "@webiny/app-admin/views/AdminView";
 import { ReactComponent as AccountIcon } from "../../assets/icons/round-account_circle-24px.svg";
 
@@ -22,7 +22,7 @@ const AccountDetails = () => {
 };
 
 export default () => {
-    return new ViewPlugin<AdminView>(AdminView, view => {
+    return new UIViewPlugin<AdminView>(AdminView, view => {
         const userMenu = view.getElement<UserMenuElement>("userMenu");
 
         userMenu.addElement(new GenericElement("accountDetails", () => <AccountDetails />));

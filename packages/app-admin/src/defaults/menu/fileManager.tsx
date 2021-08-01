@@ -5,8 +5,8 @@ import { Icon } from "@webiny/ui/Icon";
 import { ReactComponent as FileIcon } from "~/assets/icons/insert_drive_file-24px.svg";
 import { FileManager } from "~/components";
 import { NavigationMenuElement } from "~/elements/NavigationMenuElement";
-import { ElementRenderer, ElementRenderParams } from "@webiny/ui-composer/ElementRenderer";
-import { ViewPlugin } from "@webiny/ui-composer/View";
+import { UIRenderer, UIRenderParams } from "@webiny/ui-composer/UIRenderer";
+import { UIViewPlugin } from "@webiny/ui-composer/UIView";
 import { NavigationView } from "~/views/NavigationView";
 
 const listItemStyle = css({
@@ -16,8 +16,8 @@ const listItemStyle = css({
     }
 });
 
-class FileManagerMenuItemRenderer extends ElementRenderer<NavigationMenuElement> {
-    render({ element }: ElementRenderParams<NavigationMenuElement>): React.ReactNode {
+class FileManagerMenuItemRenderer extends UIRenderer<NavigationMenuElement> {
+    render({ element }: UIRenderParams<NavigationMenuElement>): React.ReactNode {
         return (
             <FileManager>
                 {({ showFileManager }) => (
@@ -40,7 +40,7 @@ class FileManagerMenuItemRenderer extends ElementRenderer<NavigationMenuElement>
 
 export default () => {
     return [
-        new ViewPlugin<NavigationView>(NavigationView, view => {
+        new UIViewPlugin<NavigationView>(NavigationView, view => {
             const element = new NavigationMenuElement("fileManager", {
                 label: "File Manager",
                 icon: <FileIcon />,

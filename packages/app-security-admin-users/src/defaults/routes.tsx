@@ -4,7 +4,7 @@ import { Route } from "@webiny/react-router";
 import { AdminLayout } from "@webiny/app-admin/components/AdminLayout";
 import { SecureRoute } from "@webiny/app-security/components";
 import { RoutePlugin } from "@webiny/app/types";
-import { ViewComponent } from "@webiny/ui-composer/View";
+import { UIViewComponent } from "@webiny/ui-composer/UIView";
 import { Groups } from "../views/Groups";
 import { ApiKeys } from "../views/ApiKeys";
 import { Account } from "../views/Account";
@@ -39,7 +39,7 @@ const plugins: RoutePlugin[] = [
                 path={"/security/users"}
                 render={() => (
                     <SecureRoute permission={Permission.Users}>
-                        <ViewComponent view={new UsersView()} />
+                        <UIViewComponent view={new UsersView()} />
                     </SecureRoute>
                 )}
             />
