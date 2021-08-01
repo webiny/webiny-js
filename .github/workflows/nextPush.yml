@@ -175,10 +175,10 @@ jobs:
       - name: Release to Verdaccio
         run: yarn lerna:publish:verdaccio
 
-      - name: Cache Verdaccio files (for cleanup workflow)
+      - name: Cache Verdaccio files
         uses: actions/cache@v2
         with:
-          key: cleanup-verdaccio-files-${{ needs.cache-keys.outputs.ts }}
+          key: verdaccio-files-${{ needs.cache-keys.outputs.ts }}
           path: |
             .verdaccio/
             .verdaccio.yaml
@@ -197,10 +197,16 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
 
-      - uses: actions/download-artifact@v2
+      - name: Retrieve cached Verdaccio files
+        uses: actions/cache@v2
         with:
-          name: verdaccio-files
-          path: verdaccio-files
+          key: verdaccio-files-${{ needs.cache-keys.outputs.ts }}
+          path: |
+            .verdaccio/
+            .verdaccio.yaml
+
+      - name: Move cached Verdaccio files into verdaccio-files folder
+        run: mkdir verdaccio-files && mv .verdaccio verdaccio-files/.verdaccio && mv .verdaccio.yaml verdaccio-files/.verdaccio.yaml
 
       - name: Start Verdaccio local server
         working-directory: verdaccio-files
@@ -246,10 +252,16 @@ jobs:
         with:
           node-version: 12
 
-      - uses: actions/download-artifact@v2
+      - name: Retrieve cached Verdaccio files
+        uses: actions/cache@v2
         with:
-          name: verdaccio-files
-          path: verdaccio-files
+          key: verdaccio-files-${{ needs.cache-keys.outputs.ts }}
+          path: |
+            .verdaccio/
+            .verdaccio.yaml
+
+      - name: Move cached Verdaccio files into verdaccio-files folder
+        run: mkdir verdaccio-files && mv .verdaccio verdaccio-files/.verdaccio && mv .verdaccio.yaml verdaccio-files/.verdaccio.yaml
 
       - name: Start Verdaccio local server
         working-directory: verdaccio-files
@@ -276,10 +288,10 @@ jobs:
           --assign-to-yarnrc '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
           --template-options '{"region":"eu-central-1"}'
 
-      - name: Cache project files (for cleanup workflow)
+      - name: Cache project files
         uses: actions/cache@v2
         with:
-          key: cleanup-project-files-${{ needs.cache-keys.outputs.ts }}
+          key: project-files-${{ needs.cache-keys.outputs.ts }}
           path: |
             test-project/
             !test-project/node_modules/**/*
