@@ -70,13 +70,18 @@ const usePermission = () => {
     const canEdit = useCallback(
         (item, permissionName) => {
             const permission = identity.getPermission(permissionName);
-            const creatorId = get(item, "createdBy.id");
 
             if (!permission) {
                 return false;
             }
-            if (permission.own && creatorId) {
-                return creatorId === identity.login;
+            if (permission.own) {
+                /**
+                 * There will be no "createdBy" field for a new entry therefore we enable the access.
+                 */
+                if (!item.createdBy) {
+                    return true;
+                }
+                return get(item, "createdBy.id") === identity.login;
             }
             if (typeof permission.rwd === "string") {
                 return permission.rwd.includes("w");

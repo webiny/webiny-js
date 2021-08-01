@@ -58,15 +58,22 @@ const PBInstaller = ({ onInstalled }) => {
     const onSubmit = useCallback(async form => {
         setLoading(true);
         setError(null);
-        const { data: res } = await client.mutate({ mutation: INSTALL, variables: { data: form } });
-        setLoading(false);
-        const { error } = res.pageBuilder.install;
-        if (error) {
-            setError(error.message);
-            return;
-        }
+        setTimeout(async () => {
+            // Temporary fix for the ES index creation failure.
+            // Let's try waiting a bit before running the installation.
+            const { data: res } = await client.mutate({
+                mutation: INSTALL,
+                variables: { data: form }
+            });
+            setLoading(false);
+            const { error } = res.pageBuilder.install;
+            if (error) {
+                setError(error.message);
+                return;
+            }
 
-        onInstalled();
+            onInstalled();
+        }, 10000);
     }, []);
 
     const label = error ? (

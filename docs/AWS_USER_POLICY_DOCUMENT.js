@@ -227,6 +227,19 @@ const policyForProgrammaticAccess = {
                 "logs:UpdateLogDelivery"
             ],
             Resource: "*"
+        },
+        {
+            Sid: "PermissionForPassRole",
+            Effect: "Allow",
+            Action: ["iam:PassRole"],
+            Resource: [
+                "arn:aws:iam::*:role/fm-lambda-role-*",
+                "arn:aws:iam::*:role/pre-rendering-service-lambda-role*",
+                "arn:aws:iam::*:role/dynamo-to-elastic-lambda-role-*",
+                "arn:aws:iam::*:role/headless-cms-lambda-role-*",
+                "arn:aws:iam::*:role/pb-update-settings-lambda-role-*",
+                "arn:aws:iam::*:role/api-lambda-role-*"
+            ]
         }
     ]
 };

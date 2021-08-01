@@ -1,4 +1,4 @@
-import numberIndexing from "../../../../src/elasticsearch/indexing/numberIndexing";
+import numberIndexing from "~/elasticsearch/indexing/numberIndexing";
 
 describe("numberIndexing", () => {
     const plugin = numberIndexing();
@@ -19,22 +19,14 @@ describe("numberIndexing", () => {
             ["15.4300023", "15.4300021"]
         ]
     ];
-    test.each(numbers)(
-        "toIndex should transform a number to a string",
-        (num: any, expected: any) => {
-            const toIndexEntry: any = {
-                values: {
-                    number: num
-                }
-            };
-            const field: any = {
-                fieldId: "number"
-            };
-            const result = plugin.toIndex({ toIndexEntry, field } as any);
+    test.each(numbers)("toIndex should transform %j to %j", (num: any, expected: any) => {
+        const field: any = {
+            fieldId: "number"
+        };
+        const result = plugin.toIndex({ value: num, field } as any);
 
-            expect(result.values.number).toEqual(expected);
-        }
-    );
+        expect(result.value).toEqual(expected);
+    });
     const strings = [
         ["1", 1],
         ["4382", 4382],
@@ -52,20 +44,12 @@ describe("numberIndexing", () => {
             [15.4300023, 15.4300021]
         ]
     ];
-    test.each(strings)(
-        "fromIndex should transform a string to a number",
-        (str: any, expected: any) => {
-            const entry: any = {
-                values: {
-                    number: str
-                }
-            };
-            const field: any = {
-                fieldId: "number"
-            };
-            const result = plugin.fromIndex({ entry, field } as any);
+    test.each(strings)("fromIndex should transform %j back to %j", (str: any, expected: any) => {
+        const field: any = {
+            fieldId: "number"
+        };
+        const result = plugin.fromIndex({ value: str, field } as any);
 
-            expect(result.values.number).toEqual(expected);
-        }
-    );
+        expect(result).toEqual(expected);
+    });
 });

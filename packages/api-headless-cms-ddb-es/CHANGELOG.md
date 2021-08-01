@@ -3,6 +3,42 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.11.0](https://github.com/webiny/webiny-js/compare/v5.11.0-beta.2...v5.11.0) (2021-07-22)
+
+**Note:** Version bump only for package @webiny/api-headless-cms-ddb-es
+
+
+
+
+
+# [5.11.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.11.0-beta.1...v5.11.0-beta.2) (2021-07-21)
+
+**Note:** Version bump only for package @webiny/api-headless-cms-ddb-es
+
+
+
+
+
+# [5.11.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.11.0-beta.0...v5.11.0-beta.1) (2021-07-21)
+
+**Note:** Version bump only for package @webiny/api-headless-cms-ddb-es
+
+
+
+
+
+# [5.11.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.10.0...v5.11.0-beta.0) (2021-07-21)
+
+
+### Bug Fixes
+
+* **api-headless-cms:** error when referenced entry is deleted ([#1789](https://github.com/webiny/webiny-js/issues/1789)) ([921ba32](https://github.com/webiny/webiny-js/commit/921ba32496fcc1d6eb70de7c9d438fbbdae64b2b))
+* **api-headless-cms:** get published entry revision from referenced field ([#1775](https://github.com/webiny/webiny-js/issues/1775)) ([8850ed7](https://github.com/webiny/webiny-js/commit/8850ed7a7db8e0e6e3b10cf2431e6da432167be7))
+
+
+
+
+
 # [5.10.0](https://github.com/webiny/webiny-js/compare/v5.10.0-beta.2...v5.10.0) (2021-07-06)
 
 **Note:** Version bump only for package @webiny/api-headless-cms-ddb-es

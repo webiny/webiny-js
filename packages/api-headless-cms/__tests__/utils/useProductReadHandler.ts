@@ -18,6 +18,22 @@ const productFields = `
     color
     availableSizes
     richText
+    variant {
+        name
+        price
+        category {
+            id
+            title
+        }
+        options {
+            name
+            price
+            category {
+                id
+                title
+            }
+        }
+    }
 `;
 
 const errorFields = `

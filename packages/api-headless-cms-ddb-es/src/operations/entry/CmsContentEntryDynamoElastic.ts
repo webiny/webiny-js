@@ -29,11 +29,11 @@ import {
     prepareEntryToIndex
 } from "../../helpers";
 import { createBasePartitionKey, paginateBatch } from "~/utils";
-import { entryFromStorageTransform } from "@webiny/api-headless-cms/transformers";
 import { Client } from "@elastic/elasticsearch";
 import { ElasticsearchContext } from "@webiny/api-elasticsearch/types";
 import { createLimit } from "@webiny/api-elasticsearch/limit";
 import { encodeCursor } from "@webiny/api-elasticsearch/cursors";
+import { compress, decompress } from "@webiny/api-elasticsearch/compression";
 
 export const TYPE_ENTRY = "cms.entry";
 export const TYPE_ENTRY_LATEST = TYPE_ENTRY + ".l";
@@ -47,23 +47,30 @@ const getEntryData = (context: CmsContext, entry: CmsContentEntry) => {
     };
 };
 
-const getESLatestEntryData = (context: CmsContext, entry: CmsContentEntry) => {
-    return {
+const getESLatestEntryData = async (context: CmsContext, entry: CmsContentEntry) => {
+    return compress(context, {
         ...getEntryData(context, entry),
         latest: true,
         TYPE: TYPE_ENTRY_LATEST,
         __type: TYPE_ENTRY_LATEST
-    };
+    });
 };
 
-const getESPublishedEntryData = (context: CmsContext, entry: CmsContentEntry) => {
-    return {
+const getESPublishedEntryData = async (context: CmsContext, entry: CmsContentEntry) => {
+    return compress(context, {
         ...getEntryData(context, entry),
         published: true,
         TYPE: TYPE_ENTRY_PUBLISHED,
         __type: TYPE_ENTRY_PUBLISHED
-    };
+    });
 };
+
+interface ElasticsearchTableItem {
+    PK: string;
+    SK: string;
+    index: string;
+    data: any;
+}
 
 interface ConstructorArgs {
     context: CmsContext;
@@ -74,7 +81,7 @@ interface ConstructorArgs {
  * Use some other implementation for general-use purpose.
  */
 export default class CmsContentEntryDynamoElastic implements CmsContentEntryStorageOperations {
-    private readonly _context: CmsContext;
+    private readonly context: CmsContext;
     private _partitionKey: string;
     private readonly _dataLoaders: DataLoadersHandler;
     private _esClient: Client;
@@ -91,10 +98,6 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
         return this._esClient;
     }
 
-    private get context(): CmsContext {
-        return this._context;
-    }
-
     private get partitionKey(): string {
         if (!this._partitionKey) {
             this._partitionKey = `${createBasePartitionKey(this.context)}#CME`;
@@ -103,7 +106,7 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
     }
 
     public constructor({ context }: ConstructorArgs) {
-        this._context = context;
+        this.context = context;
         this._dataLoaders = new DataLoadersHandler(context, this);
     }
 
@@ -120,12 +123,12 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
         const esEntry = prepareEntryToIndex({
             context: this.context,
             model,
-            originalEntry: lodashCloneDeep(entry),
             storageEntry: lodashCloneDeep(storageEntry)
         });
 
         const { index: esIndex } = configurations.es(this.context, model);
 
+        const esLatestData = await getESLatestEntryData(this.context, esEntry);
         const batch = db
             .batch()
             /**
@@ -158,7 +161,7 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
                     PK: this.getPartitionKey(entry.id),
                     SK: this.getSortKeyLatest(),
                     index: esIndex,
-                    data: getESLatestEntryData(this.context, esEntry)
+                    data: esLatestData
                 }
             });
 
@@ -191,13 +194,14 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
         const esEntry = prepareEntryToIndex({
             context: this.context,
             model,
-            originalEntry: lodashCloneDeep(entry),
             storageEntry: lodashCloneDeep(storageEntry)
         });
         const { index: esIndex } = configurations.es(this.context, model);
 
         const primaryKey = this.getPartitionKey(storageEntry.id);
         const batch = db.batch();
+
+        const esLatestData = await getESLatestEntryData(this.context, esEntry);
         batch
             /**
              * Create main entry item
@@ -240,7 +244,7 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
                     PK: primaryKey,
                     SK: this.getSortKeyLatest(),
                     index: esIndex,
-                    data: getESLatestEntryData(this.context, esEntry)
+                    data: esLatestData
                 }
             });
         try {
@@ -388,9 +392,10 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
             const esEntry = prepareEntryToIndex({
                 context: this.context,
                 model,
-                originalEntry: lodashCloneDeep(entryToSetAsLatest),
                 storageEntry: lodashCloneDeep(storageEntryToSetAsLatest)
             });
+
+            const esLatestData = await getESLatestEntryData(this.context, esEntry);
             /**
              * In the end we need to set the new latest entry
              */
@@ -416,7 +421,7 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
                         PK: primaryKey,
                         SK: this.getSortKeyLatest(),
                         index: esConfig.index,
-                        data: getESLatestEntryData(this.context, esEntry)
+                        data: esLatestData
                     }
                 });
         }
@@ -445,6 +450,7 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
         }
         return items.shift();
     }
+
     /**
      * Implemented search via the Elasticsearch.
      */
@@ -504,6 +510,7 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
             items
         };
     }
+
     public async update(
         model: CmsContentModel,
         args: CmsContentEntryStorageOperationsUpdateArgs
@@ -563,7 +570,6 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
             const esEntry = prepareEntryToIndex({
                 context: this.context,
                 model,
-                originalEntry: lodashCloneDeep(entry),
                 storageEntry: lodashCloneDeep(storageEntry)
             });
             const esDoc = {
@@ -573,6 +579,7 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
 
             const { index: esIndex } = configurations.es(this.context, model);
 
+            const esLatestData = await getESLatestEntryData(this.context, esDoc);
             batch.update({
                 ...configurations.esDb(),
                 query: {
@@ -583,7 +590,7 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
                     PK: primaryKey,
                     SK: this.getSortKeyLatest(),
                     index: esIndex,
-                    data: getESLatestEntryData(this.context, esDoc)
+                    data: esLatestData
                 }
             });
         }
@@ -641,8 +648,8 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
                     SK: this.getSortKeyPublished()
                 }
             });
-        let latestESEntryData: CmsContentEntry | undefined;
-        let publishedESEntryData: CmsContentEntry | undefined;
+        let latestESEntryData: ElasticsearchTableItem | undefined;
+        let publishedESEntryData: ElasticsearchTableItem | undefined;
         try {
             [[[latestESEntryData]], [[publishedESEntryData]]] = await readBatch.execute();
         } catch (ex) {
@@ -748,6 +755,13 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
          * If we are publishing the latest revision, let's also update the latest revision's status in ES.
          */
         if (latestStorageEntry && latestStorageEntry.id === entry.id) {
+            /**
+             * Need to decompress the data from Elasticsearch DynamoDB table.
+             */
+            const latestEsEntryDataDecompressed = await decompress(
+                this.context,
+                latestESEntryData.data
+            );
             batch.update({
                 ...configurations.esDb(),
                 query: {
@@ -758,7 +772,7 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
                     ...latestESEntryData,
                     SK: this.getSortKeyLatest(),
                     data: {
-                        ...((latestESEntryData as any).data || {}),
+                        ...latestEsEntryDataDecompressed,
                         status: CONTENT_ENTRY_STATUS.PUBLISHED,
                         locked: true,
                         savedOn: entry.savedOn,
@@ -771,17 +785,17 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
         const preparedEntryData = prepareEntryToIndex({
             context: this.context,
             model,
-            originalEntry: lodashCloneDeep(entry),
             storageEntry: lodashCloneDeep(storageEntry)
         });
         /**
          * Update the published revision entry in ES.
          */
+        const esLatestData = await getESPublishedEntryData(this.context, preparedEntryData);
         const esData = {
             PK: primaryKey,
             SK: this.getSortKeyPublished(),
             index: es.index,
-            data: getESPublishedEntryData(this.context, preparedEntryData)
+            data: esLatestData
         };
 
         if (publishedESEntryData) {
@@ -866,25 +880,15 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
          * If we are unpublishing the latest revision, let's also update the latest revision entry's status in ES.
          */
         if (latestStorageEntry.id === entry.id) {
-            /**
-             * !! IMPORTANT !!
-             * Unfortunately we need to transform from the storage because prepare entry needs the non-transformed version of it.
-             * This should not be done in the storage operations unless it is really, really necessary.
-             */
-            const latestEntry = await entryFromStorageTransform(
-                this.context,
-                model,
-                latestStorageEntry
-            );
             const es = configurations.es(this.context, model);
 
             const preparedEntryData = prepareEntryToIndex({
                 context: this.context,
                 model,
-                originalEntry: lodashCloneDeep(latestEntry),
-                storageEntry: lodashCloneDeep(latestStorageEntry)
+                storageEntry: lodashCloneDeep(storageEntry)
             });
 
+            const esLatestData = await getESLatestEntryData(this.context, preparedEntryData);
             batch.update({
                 ...configurations.esDb(),
                 query: {
@@ -895,10 +899,7 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
                     PK: primaryKey,
                     SK: this.getSortKeyLatest(),
                     index: es.index,
-                    data: {
-                        ...getESLatestEntryData(this.context, preparedEntryData),
-                        SK: this.getSortKeyLatest()
-                    }
+                    data: esLatestData
                 }
             });
         }
@@ -948,26 +949,15 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
          * If we updated the latest version, then make sure the changes are propagated to ES too.
          */
         if (latestStorageEntry.id === entry.id) {
-            /**
-             * !! IMPORTANT !!
-             * Unfortunately we need to transform from the storage because prepare entry needs the non-transformed version of it.
-             * This should not be done in the storage operations unless it is really, really necessary.
-             */
-            const latestEntry = await entryFromStorageTransform(
-                this.context,
-                model,
-                latestStorageEntry
-            );
-
             const es = configurations.es(this.context, model);
 
             const preparedEntryData = prepareEntryToIndex({
                 context: this.context,
                 model,
-                originalEntry: lodashCloneDeep(latestEntry),
-                storageEntry: lodashCloneDeep(latestStorageEntry)
+                storageEntry: lodashCloneDeep(storageEntry)
             });
 
+            const esLatestData = await getESLatestEntryData(this.context, preparedEntryData);
             batch.update({
                 ...configurations.esDb(),
                 query: {
@@ -978,7 +968,7 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
                     PK: primaryKey,
                     SK: this.getSortKeyLatest(),
                     index: es.index,
-                    data: getESLatestEntryData(this.context, preparedEntryData)
+                    data: esLatestData
                 }
             });
         }
@@ -1028,25 +1018,17 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
          * If we updated the latest version, then make sure the changes are propagated to ES too.
          */
         if (latestStorageEntry.id === entry.id) {
-            /**
-             * !! IMPORTANT !!
-             * Unfortunately we need to transform from the storage because prepare entry needs the non-transformed version of it.
-             * This should not be done in the storage operations unless it is really, really necessary.
-             */
-            const latestEntry = await entryFromStorageTransform(
-                this.context,
-                model,
-                latestStorageEntry
-            );
             const es = configurations.es(this.context, model);
 
             const preparedEntryData = prepareEntryToIndex({
                 context: this.context,
                 model,
-                originalEntry: lodashCloneDeep(latestEntry),
-                storageEntry: lodashCloneDeep(latestStorageEntry)
+                storageEntry: lodashCloneDeep(storageEntry)
             });
+
+            const esLatestData = await getESLatestEntryData(this.context, preparedEntryData);
             batch.update({
+                ...configurations.esDb(),
                 query: {
                     PK: primaryKey,
                     SK: this.getSortKeyLatest()
@@ -1055,7 +1037,7 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
                     PK: primaryKey,
                     SK: this.getSortKeyLatest(),
                     index: es.index,
-                    data: getESLatestEntryData(this.context, preparedEntryData)
+                    data: esLatestData
                 }
             });
         }
@@ -1217,6 +1199,13 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
             }
         );
         /**
+         * When there are no lower versions from the given one, it seems that random one is taken.
+         * So just make sure that fetched entry version is not greater or equal to requested one.
+         */
+        if (!entry || entry.version >= version) {
+            return null;
+        }
+        /**
          * We need this due to possibly getting latest or published if given revision does not exist
          */
         if ((entry as any).TYPE !== TYPE_ENTRY) {
@@ -1265,6 +1254,7 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
         }
         return `${this.partitionKey}#${id}`;
     }
+
     /**
      * Gets a sort key in form of REV#version from:
      *   id#0003

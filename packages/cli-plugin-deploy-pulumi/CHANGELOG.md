@@ -3,6 +3,51 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.11.0](https://github.com/webiny/webiny-js/compare/v5.11.0-beta.2...v5.11.0) (2021-07-22)
+
+**Note:** Version bump only for package @webiny/cli-plugin-deploy-pulumi
+
+
+
+
+
+# [5.11.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.11.0-beta.1...v5.11.0-beta.2) (2021-07-21)
+
+**Note:** Version bump only for package @webiny/cli-plugin-deploy-pulumi
+
+
+
+
+
+# [5.11.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.11.0-beta.0...v5.11.0-beta.1) (2021-07-21)
+
+**Note:** Version bump only for package @webiny/cli-plugin-deploy-pulumi
+
+
+
+
+
+# [5.11.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.10.0...v5.11.0-beta.0) (2021-07-21)
+
+
+### Bug Fixes
+
+* adjust glob pattern to better target build folders ([0946beb](https://github.com/webiny/webiny-js/commit/0946beb37371a4c153426d1dcd7397646c8d1bfe))
+* only watch pulumi and build folders for changes ([8dba58a](https://github.com/webiny/webiny-js/commit/8dba58a45867a87920b310d46007f01ad9f1f418))
+* send debug flag to watch command ([d86eb1e](https://github.com/webiny/webiny-js/commit/d86eb1e5232adbcb8d4d4a4db54e57c029ed1432))
+* spread detected build folders ([000a834](https://github.com/webiny/webiny-js/commit/000a8349a79b701e7e8dc7ebbbe80c6efb2ee57d))
+* update dependencies ([5c3d9da](https://github.com/webiny/webiny-js/commit/5c3d9dad00f7502870ebd8519c7a93504b932311))
+* use only v3 and related Pulumi versions ([87b1a9b](https://github.com/webiny/webiny-js/commit/87b1a9bcb1772dce0ca884b15e5923ac0247a5c4))
+
+
+### Features
+
+* update Pulumi to the latest version ([1d86e26](https://github.com/webiny/webiny-js/commit/1d86e26467c8067bf4a2bcebb2fd7e18c9cf8ce3))
+
+
+
+
+
 # [5.10.0](https://github.com/webiny/webiny-js/compare/v5.10.0-beta.2...v5.10.0) (2021-07-06)
 
 **Note:** Version bump only for package @webiny/cli-plugin-deploy-pulumi

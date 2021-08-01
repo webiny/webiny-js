@@ -1,3 +1,4 @@
+import { introspectionQuery } from "graphql";
 import i18nContext from "@webiny/api-i18n/graphql/context";
 import i18nContentPlugins from "@webiny/api-i18n-content/plugins";
 import tenancyPlugins from "@webiny/api-tenancy";
@@ -24,7 +25,6 @@ import {
     UPDATE_CONTENT_MODEL_MUTATION
 } from "./graphql/contentModel";
 
-import { INTROSPECTION } from "./graphql/schema";
 import { ApiKey } from "@webiny/api-security-admin-users/types";
 
 /**
@@ -71,6 +71,7 @@ export const useGqlHandler = (args?: GQLHandlerCallableArgs) => {
                             return {
                                 id: apiKey,
                                 name: apiKey,
+                                tenant: tenant.id,
                                 permissions: identity.permissions || [],
                                 token,
                                 createdBy: {
@@ -141,18 +142,6 @@ export const useGqlHandler = (args?: GQLHandlerCallableArgs) => {
                     return createIdentity(identity);
                 }
             },
-            {
-                type: "context",
-                apply(context) {
-                    context.cms = {
-                        ...(context.cms || {}),
-                        getLocale: () => ({
-                            code: "en-US"
-                        }),
-                        locale: "en-US"
-                    };
-                }
-            },
             //
             plugins
         ],
@@ -166,6 +155,9 @@ export const useGqlHandler = (args?: GQLHandlerCallableArgs) => {
             body: JSON.stringify(body),
             ...rest
         });
+        if (httpMethod === "OPTIONS" && !response.body) {
+            return [null, response];
+        }
         // The first element is the response body, and the second is the raw response.
         return [JSON.parse(response.body), response];
     };
@@ -180,7 +172,7 @@ export const useGqlHandler = (args?: GQLHandlerCallableArgs) => {
         handler,
         invoke,
         async introspect() {
-            return invoke({ body: { query: INTROSPECTION } });
+            return invoke({ body: { query: introspectionQuery } });
         },
         // settings
         async isInstalledQuery() {

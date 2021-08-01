@@ -1,4 +1,4 @@
-import { CmsModelFieldToElasticsearchPlugin } from "../../types";
+import { CmsModelFieldToElasticsearchPlugin } from "~/types";
 
 const convertToString = (value: number[] | number) => {
     if (Array.isArray(value) === false) {
@@ -21,22 +21,12 @@ export default (): CmsModelFieldToElasticsearchPlugin => ({
     unmappedType: () => {
         return "float";
     },
-    toIndex: ({ toIndexEntry, field }) => {
-        const value = toIndexEntry.values[field.fieldId];
+    toIndex({ value }) {
         return {
-            values: {
-                ...toIndexEntry.values,
-                [field.fieldId]: convertToString(value)
-            }
+            value: convertToString(value)
         };
     },
-    fromIndex: ({ entry, field }) => {
-        const value = entry.values[field.fieldId];
-        return {
-            values: {
-                ...entry.values,
-                [field.fieldId]: convertToFloat(value)
-            }
-        };
+    fromIndex({ value }) {
+        return convertToFloat(value);
     }
 });

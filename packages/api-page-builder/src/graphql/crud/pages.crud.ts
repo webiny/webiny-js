@@ -1,5 +1,4 @@
 import mdbid from "mdbid";
-import path from "path";
 import uniqid from "uniqid";
 import trimStart from "lodash/trimStart";
 import omit from "lodash/omit";
@@ -395,7 +394,9 @@ const plugin: ContextPlugin<PbContext> = {
                         pagePath = normalizePath("untitled-" + uniqid.time());
                     } else {
                         pagePath = normalizePath(
-                            path.join(category.url, "untitled-" + uniqid.time())
+                            [category.url, "untitled-" + uniqid.time()]
+                                .join("/")
+                                .replace(/\/\//g, "/")
                         );
                     }
 

@@ -25,11 +25,20 @@ import {
 } from "./contentModel/hooks";
 import { NotAuthorizedError } from "@webiny/api-security";
 import WebinyError from "@webiny/error";
+import { ContentModelPlugin } from "@webiny/api-headless-cms/content/plugins/ContentModelPlugin";
 
 export default (): ContextPlugin<CmsContext> => ({
     type: "context",
     name: "context-content-model-storageOperations",
     async apply(context) {
+        /**
+         * If cms is not defined on the context, do not continue, but log it.
+         */
+        if (!context.cms) {
+            console.log("Missing cms on context. Skipping ContentModel crud.");
+            return;
+        }
+
         const pluginType = "cms-content-model-storage-operations-provider";
         const providerPlugins = context.plugins.byType<CmsContentModelStorageOperationsProvider>(
             pluginType
@@ -71,19 +80,33 @@ export default (): ContextPlugin<CmsContext> => ({
         };
 
         const modelsGet = async (modelId: string) => {
-            const model = await storageOperations.get({
+            const pluginModel: ContentModelPlugin = context.plugins
+                .byType<ContentModelPlugin>(ContentModelPlugin.type)
+                .find(plugin => plugin.contentModel.modelId === modelId);
+
+            if (pluginModel) {
+                return pluginModel.contentModel;
+            }
+
+            const databaseModel = await storageOperations.get({
                 id: modelId
             });
 
-            if (!model) {
+            if (!databaseModel) {
                 throw new NotFoundError(`Content model "${modelId}" was not found!`);
             }
 
-            return model;
+            return databaseModel;
         };
 
         const modelsList = async (): Promise<CmsContentModel[]> => {
-            return await loaders.listModels.load("listModels");
+            const databaseModels = await loaders.listModels.load("listModels");
+
+            const pluginsModels: CmsContentModel[] = context.plugins
+                .byType<ContentModelPlugin>(ContentModelPlugin.type)
+                .map<CmsContentModel>(plugin => plugin.contentModel);
+
+            return [...databaseModels, ...pluginsModels];
         };
 
         const models: CmsContentModelContext = {

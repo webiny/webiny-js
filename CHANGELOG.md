@@ -3,6 +3,116 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.11.0](https://github.com/webiny/webiny-js/compare/v5.11.0-beta.2...v5.11.0) (2021-07-22)
+
+**Note:** Version bump only for package webiny-js
+
+
+
+
+
+# [5.11.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.11.0-beta.1...v5.11.0-beta.2) (2021-07-21)
+
+
+### Bug Fixes
+
+* **app-form-builder:** sort out mismatch between plugin types and their usage ([8722694](https://github.com/webiny/webiny-js/commit/87226947a0ded6b25b4091819477e6ce97f67d50))
+* **cli:** add upgrade script for website app ([c8e6465](https://github.com/webiny/webiny-js/commit/c8e646593acb073af026cbad98b4411f2091cd66))
+* **cwp-template-aws:** enable form field validators ([38342bc](https://github.com/webiny/webiny-js/commit/38342bc77467a3a48d4b5cda22a8b9099d795bfb))
+
+
+
+
+
+# [5.11.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.11.0-beta.0...v5.11.0-beta.1) (2021-07-21)
+
+
+### Bug Fixes
+
+* **cwp-template-aws:** add object field plugins to user project ([7832e57](https://github.com/webiny/webiny-js/commit/7832e579491495928f01996f3006b08a7d4ec40a))
+
+
+### Features
+
+* **cli:** cms object field upgrade ([473c47b](https://github.com/webiny/webiny-js/commit/473c47bad1c4b7be3a2ce504802eec0cb6280400))
+
+
+
+
+
+# [5.11.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.10.0...v5.11.0-beta.0) (2021-07-21)
+
+
+### Bug Fixes
+
+* add plugins checks ([ce6ef60](https://github.com/webiny/webiny-js/commit/ce6ef60e53f6d498291f1e9a4c94c40e76fec040))
+* add plugins checks ([9a4b554](https://github.com/webiny/webiny-js/commit/9a4b554d65633b0fe2c09e7bf281733e73cdd8c5))
+* add underscore ([7904956](https://github.com/webiny/webiny-js/commit/7904956c8d9e3e655313fa63682710cb54c87fec))
+* adjust glob pattern to better target build folders ([0946beb](https://github.com/webiny/webiny-js/commit/0946beb37371a4c153426d1dcd7397646c8d1bfe))
+* assign default value if needed ([ecc37f9](https://github.com/webiny/webiny-js/commit/ecc37f94146a6f420f05ba7c654b70f6a3dfa5b0))
+* check if message.errors is array ([36370f8](https://github.com/webiny/webiny-js/commit/36370f827ccd11e4df0a59a484d2dd8d155e073d))
+* check if the icon exist before using it ([26711c9](https://github.com/webiny/webiny-js/commit/26711c943fe512f829fe3539ffc9f578f95e37aa))
+* correct class name ([d3d29e1](https://github.com/webiny/webiny-js/commit/d3d29e15a7d9747abd6e0ae301f9558f5402698c))
+* correct label ([98657b5](https://github.com/webiny/webiny-js/commit/98657b5536fc71dc08fb6962bb56a8689c43c8fa))
+* create 'pr' repository environment ([a2bd051](https://github.com/webiny/webiny-js/commit/a2bd051f45f08dc169fefdb91f7d93e0683215a3))
+* decrease "graphql" function's timeout back to 30s ([0c5806e](https://github.com/webiny/webiny-js/commit/0c5806e1272b341d1a5f513faae9da371dc32e9c))
+* deploy and destroy PR environments ([62daedb](https://github.com/webiny/webiny-js/commit/62daedbe994412af1d3f31b66ee94fbcebaf1459))
+* disable content model / group actions accordingly ([b2c2a81](https://github.com/webiny/webiny-js/commit/b2c2a81e6bbb583a8c547f98e3a821129e305aaf))
+* do not process field locking if the model is registered via a plugin ([0541a62](https://github.com/webiny/webiny-js/commit/0541a62f9e376a0010ab9c3623c69032abf90221))
+* enable GraphQL schema extension ([fb325ad](https://github.com/webiny/webiny-js/commit/fb325ad4272601ca214ef9271133fe992d8f7f51))
+* form builder pattern type validators missing from ui [#1706](https://github.com/webiny/webiny-js/issues/1706) ([0240c20](https://github.com/webiny/webiny-js/commit/0240c2000d1743160c601ae4ce40dd2f949d4d07))
+* handle array args ([ef48271](https://github.com/webiny/webiny-js/commit/ef4827170d82211c0ff64d50b9b39d5ccc2544ff))
+* improve assertion ([6c2c8da](https://github.com/webiny/webiny-js/commit/6c2c8da2fabfd4ba4aa1b355756cd51c89a53b81))
+* include models from plugins in queries ([3f28cf2](https://github.com/webiny/webiny-js/commit/3f28cf274cbe406973c93d98fa5d2fc3ad303750))
+* increase timeout ([9183c30](https://github.com/webiny/webiny-js/commit/9183c30ca29243008ccac65095ccb04de8483b39))
+* loosen CM's locale property ([78bfa93](https://github.com/webiny/webiny-js/commit/78bfa938d14a8a5576e04bff948bbd77f908d70f))
+* loosen CMG type properties ([48f052a](https://github.com/webiny/webiny-js/commit/48f052a933dc3e39c30dbc39b2d114fdfab505e0))
+* loosen types ([aac3de9](https://github.com/webiny/webiny-js/commit/aac3de9326e84b7271222ecd2053fd781ed8ef39))
+* make lockedFields field optional ([a8e12ba](https://github.com/webiny/webiny-js/commit/a8e12ba09ba61501ed7fe4a745575a73c873b8cf))
+* move Cypress screenshots to the bottom ([2ef1a86](https://github.com/webiny/webiny-js/commit/2ef1a86c37f14b1c1c9a1d97ec9474a29a4a0550))
+* move logic back into the list method ([bb63d9f](https://github.com/webiny/webiny-js/commit/bb63d9f2c92ef6563e92f891793dd98baa841d0d))
+* no need to process anything if the object does not exist ([b4b2433](https://github.com/webiny/webiny-js/commit/b4b24335f954a28a2b758d983590f91a96bc9e3e))
+* only watch pulumi and build folders for changes ([8dba58a](https://github.com/webiny/webiny-js/commit/8dba58a45867a87920b310d46007f01ad9f1f418))
+* prevent duplicate modelId-s ([e131418](https://github.com/webiny/webiny-js/commit/e131418916c9f4817e60ec886c71285b0ac2a5b0))
+* remove checks for 5.0.0-beta.4 installations ([c9e0676](https://github.com/webiny/webiny-js/commit/c9e06765e87cf2e333e722261c7d5174140dc55a))
+* remove duplicates check ([bf42e96](https://github.com/webiny/webiny-js/commit/bf42e96c7ed43a848082c1dae9908d591b26f596))
+* remove ES-related configs ([81d82af](https://github.com/webiny/webiny-js/commit/81d82afb3f3bf0de2d1f8886798d89248c14967a))
+* remove redundant `RANDOM_CACHE_KEY_SUFFIX` ([fc732f6](https://github.com/webiny/webiny-js/commit/fc732f624ed0082817f2b6116c4bb4cf4e3c0d88))
+* revert change ([353edb0](https://github.com/webiny/webiny-js/commit/353edb01bcef5eac3eaac825c2ce039c723b2d14))
+* send debug flag to watch command ([d86eb1e](https://github.com/webiny/webiny-js/commit/d86eb1e5232adbcb8d4d4a4db54e57c029ed1432))
+* simplify plugin ([24b639e](https://github.com/webiny/webiny-js/commit/24b639e727331f55207cd0b73f55690308586f0c))
+* skip version locking for @pulumi/* packages ([57df01d](https://github.com/webiny/webiny-js/commit/57df01d209c4b212197751ad81b94cb4e88a67c1))
+* spread detected build folders ([000a834](https://github.com/webiny/webiny-js/commit/000a8349a79b701e7e8dc7ebbbe80c6efb2ee57d))
+* uncomment e2e job ([e110292](https://github.com/webiny/webiny-js/commit/e11029202da14e0a7a262073a18372c9f05daeae))
+* update dependencies ([9093ad8](https://github.com/webiny/webiny-js/commit/9093ad85efd3d0e49639753cf72926806a9e2776))
+* update dependencies ([5c3d9da](https://github.com/webiny/webiny-js/commit/5c3d9dad00f7502870ebd8519c7a93504b932311))
+* update error message ([5a88900](https://github.com/webiny/webiny-js/commit/5a88900abe4ae9349de9c13b19f18d2aadf103f0))
+* update workflow files ([f7e078c](https://github.com/webiny/webiny-js/commit/f7e078c9fd0c71f8e330a20f708addd1113195e2))
+* update workflows ([602f191](https://github.com/webiny/webiny-js/commit/602f19107df806861f8179436cd79955918588aa))
+* use only v3 and related Pulumi versions ([87b1a9b](https://github.com/webiny/webiny-js/commit/87b1a9bcb1772dce0ca884b15e5923ac0247a5c4))
+* wait a bit before executing build ([dbfe97c](https://github.com/webiny/webiny-js/commit/dbfe97caa4d307441a46bece8f1d171f21a3b4de))
+* wait a bit before executing FB installation ([937f976](https://github.com/webiny/webiny-js/commit/937f976b40741c908b6d384c23656cbdd694957f))
+* wait a bit before executing installation ([a4e1cac](https://github.com/webiny/webiny-js/commit/a4e1cac0988cceacf4956207d581af4730aff519))
+* wait a bit before executing installation ([be49e32](https://github.com/webiny/webiny-js/commit/be49e3299ac8988da4b2a077e32ebb08b402fdf4))
+* **api-form-builder:** check if settings record exist before accessing version ([2386c5b](https://github.com/webiny/webiny-js/commit/2386c5bd4fd810d8a0ca143c3362ddaa3a74baac))
+* **api-headless-cms:** error when referenced entry is deleted ([#1789](https://github.com/webiny/webiny-js/issues/1789)) ([921ba32](https://github.com/webiny/webiny-js/commit/921ba32496fcc1d6eb70de7c9d438fbbdae64b2b))
+* **api-headless-cms:** get published entry revision from referenced field ([#1775](https://github.com/webiny/webiny-js/issues/1775)) ([8850ed7](https://github.com/webiny/webiny-js/commit/8850ed7a7db8e0e6e3b10cf2431e6da432167be7))
+* **cli:** put i18n-ddb package version to current context.version ([#1801](https://github.com/webiny/webiny-js/issues/1801)) ([ee7218e](https://github.com/webiny/webiny-js/commit/ee7218efac949a2fd9b3498e286b102da64c1d6e))
+
+
+### Features
+
+* add "plugin" GQL field ([f3aae41](https://github.com/webiny/webiny-js/commit/f3aae4130fbb21fb0be812112d616e377ce73ad0))
+* add `plugin` field ([ad130c6](https://github.com/webiny/webiny-js/commit/ad130c62100c64a53858851e0ec33850dbcfad29))
+* create ContentModelGroupPlugin ([474f555](https://github.com/webiny/webiny-js/commit/474f555de3d3b62319c907614c03a5dd74e90c3a))
+* take group plugins into consideration ([4d42152](https://github.com/webiny/webiny-js/commit/4d4215289d2bb00be36385ca6c14a8d77b0b983d))
+* **api-i18n:** storage operations ([#1758](https://github.com/webiny/webiny-js/issues/1758)) ([a488eee](https://github.com/webiny/webiny-js/commit/a488eee18ac4f674cb0dcd53d88a88b6659a802a))
+* update Pulumi to the latest version ([1d86e26](https://github.com/webiny/webiny-js/commit/1d86e26467c8067bf4a2bcebb2fd7e18c9cf8ce3))
+
+
+
+
+
 # [5.10.0](https://github.com/webiny/webiny-js/compare/v5.10.0-beta.2...v5.10.0) (2021-07-06)
 
 

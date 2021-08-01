@@ -34,6 +34,7 @@ export const LIST_API_KEYS = /* GraphQL */ `
                 error {
                     code
                     message
+                    data
                 }
             }
         }
@@ -51,6 +52,11 @@ export const GET_API_KEY = /* GraphQL */ `
                     token
                     permissions
                 }
+                error {
+                    code
+                    message
+                    data
+                }
             }
         }
     }
@@ -67,6 +73,11 @@ export const UPDATE_API_KEY = /* GraphQL */ `
                     token
                     permissions
                 }
+                error {
+                    code
+                    message
+                    data
+                }
             }
         }
     }
@@ -77,6 +88,11 @@ export const DELETE_API_KEY = /* GraphQL */ `
         security {
             deleteApiKey(id: $id) {
                 data
+                error {
+                    code
+                    message
+                    data
+                }
             }
         }
     }

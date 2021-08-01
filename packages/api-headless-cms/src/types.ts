@@ -2,7 +2,11 @@ import { Plugin } from "@webiny/plugins/types";
 import { I18NContext, I18NLocale } from "@webiny/api-i18n/types";
 import { ContextInterface } from "@webiny/handler/types";
 import { TenancyContext } from "@webiny/api-tenancy/types";
-import { GraphQLFieldResolver, GraphQLSchemaDefinition } from "@webiny/handler-graphql/types";
+import {
+    GraphQLFieldResolver,
+    GraphQLSchemaDefinition,
+    Resolvers
+} from "@webiny/handler-graphql/types";
 import { BaseI18NContentContext } from "@webiny/api-i18n-content/types";
 import { SecurityPermission } from "@webiny/api-security/types";
 import { HttpContext } from "@webiny/handler-http/types";
@@ -112,25 +116,25 @@ export interface CmsContentModelField {
     /**
      * Text below the field to clarify what is it meant to be in the field value
      */
-    helpText: string;
+    helpText?: string;
     /**
      * Text to be displayed in the field
      */
-    placeholderText: string;
+    placeholderText?: string;
     /**
      * Are predefined values enabled? And list of them
      */
-    predefinedValues: CmsContentModelFieldPredefinedValues;
+    predefinedValues?: CmsContentModelFieldPredefinedValues;
     /**
      * Field renderer. Blank if determined automatically.
      */
-    renderer: CmsContentModelFieldRenderer;
+    renderer?: CmsContentModelFieldRenderer;
     /**
      * List of validations for the field
      *
      * @default []
      */
-    validation: CmsContentModelFieldValidation[];
+    validation?: CmsContentModelFieldValidation[];
     /**
      * List of validations for the list of values, when a field is set to accept a list of values.
      * These validations will be applied to the entire list, and `validation` (see above) will be applied
@@ -138,12 +142,12 @@ export interface CmsContentModelField {
      *
      * @default []
      */
-    listValidation: CmsContentModelFieldValidation[];
+    listValidation?: CmsContentModelFieldValidation[];
     /**
      * Is this a multiple values field?
      *
      */
-    multipleValues: boolean;
+    multipleValues?: boolean;
     /**
      * Any user defined settings.
      *
@@ -287,7 +291,7 @@ export interface CmsContentModel {
     /**
      * Locale this model belongs to.
      */
-    locale: string;
+    locale?: string;
     /**
      * Content model group reference object.
      */
@@ -308,11 +312,11 @@ export interface CmsContentModel {
     /**
      * Date created
      */
-    createdOn: Date;
+    createdOn?: Date;
     /**
      * Date saved. Changes on both save and create.
      */
-    savedOn: Date;
+    savedOn?: Date;
     /**
      * CreatedBy object wrapper. Contains id, name and type of the user.
      */
@@ -335,7 +339,7 @@ export interface CmsContentModel {
     /**
      * List of locked fields. Updated when entry is saved and a field has been used.
      */
-    lockedFields: LockedField[];
+    lockedFields?: LockedField[];
     /**
      * The field that is being displayed as entry title.
      * It is picked as first available text field. Or user can select own field.
@@ -349,6 +353,18 @@ export interface CmsContentModel {
 export interface CmsModelFieldDefinition {
     fields: string;
     typeDefs?: string;
+}
+
+export interface CmsModelFieldToGraphQLCreateResolver {
+    (params: {
+        models: CmsContentModel[];
+        model: CmsContentModel;
+        graphQLType: string;
+        field: CmsContentModelField;
+        createFieldResolvers: any;
+    }):
+        | GraphQLFieldResolver
+        | { resolver: GraphQLFieldResolver; typeResolvers: Resolvers<CmsContext> };
 }
 
 /**
@@ -430,7 +446,11 @@ export interface CmsModelFieldToGraphQLPlugin extends Plugin {
          * }
          * ```
          */
-        createTypeField(params: { model: CmsContentModel; field: CmsContentModelField }): string;
+        createTypeField(params: {
+            model: CmsContentModel;
+            field: CmsContentModelField;
+            fieldTypePlugins: CmsFieldTypePlugins;
+        }): CmsModelFieldDefinition | string;
         /**
          * Definition for field resolver.
          * By default it is simple return of the `instance.values[fieldId]` but if required, users can define their own.
@@ -445,11 +465,7 @@ export interface CmsModelFieldToGraphQLPlugin extends Plugin {
          * }
          * ```
          */
-        createResolver?: (params: {
-            models: CmsContentModel[];
-            model: CmsContentModel;
-            field: CmsContentModelField;
-        }) => GraphQLFieldResolver;
+        createResolver?: CmsModelFieldToGraphQLCreateResolver;
         /**
          * Read API schema definitions for the field and resolvers for them.
          *
@@ -534,6 +550,7 @@ export interface CmsModelFieldToGraphQLPlugin extends Plugin {
         createTypeField: (params: {
             model: CmsContentModel;
             field: CmsContentModelField;
+            fieldTypePlugins: CmsFieldTypePlugins;
         }) => CmsModelFieldDefinition | string;
         /**
          * Definition for input GraphQL field type.
@@ -553,7 +570,8 @@ export interface CmsModelFieldToGraphQLPlugin extends Plugin {
         createInputField: (params: {
             model: CmsContentModel;
             field: CmsContentModelField;
-        }) => string;
+            fieldTypePlugins: CmsFieldTypePlugins;
+        }) => CmsModelFieldDefinition | string;
         /**
          * Definition for field resolver.
          * By default it is simple return of the `instance.values[fieldId]` but if required, users can define their own.
@@ -568,11 +586,7 @@ export interface CmsModelFieldToGraphQLPlugin extends Plugin {
          * }
          * ```
          */
-        createResolver?: (params: {
-            models: CmsContentModel[];
-            model: CmsContentModel;
-            field: CmsContentModelField;
-        }) => GraphQLFieldResolver;
+        createResolver?: CmsModelFieldToGraphQLCreateResolver;
     };
 }
 
@@ -727,27 +741,27 @@ export interface CmsContentModelGroup {
     /**
      * Locale this group belongs to.
      */
-    locale: string;
+    locale?: string;
     /**
      * Description for the group.
      */
-    description: string;
+    description?: string;
     /**
      * Icon for the group. In a form of "ico/ico".
      */
-    icon: string;
+    icon?: string;
     /**
      * CreatedBy reference object.
      */
-    createdBy: CreatedBy;
+    createdBy?: CreatedBy;
     /**
      * Date group was created on.
      */
-    createdOn: Date;
+    createdOn?: Date;
     /**
      * Date group was created or changed on.
      */
-    savedOn: Date;
+    savedOn?: Date;
 }
 
 /**
@@ -1539,13 +1553,10 @@ export interface CmsContentEntryPermission extends SecurityPermission {
  */
 export interface CmsModelFieldToStoragePluginToStorageArgs<T> {
     model: CmsContentModel;
-    entry: CmsContentEntry;
     field: CmsContentModelField;
-    context: CmsContext;
-    /**
-     * The value to be transformed to storage type from the original one.
-     */
     value: T;
+    getStoragePlugin(fieldType: string): CmsModelFieldToStoragePlugin<T>;
+    context: CmsContext;
 }
 
 /**
@@ -1559,13 +1570,10 @@ export interface CmsModelFieldToStoragePluginToStorageArgs<T> {
  */
 export interface CmsModelFieldToStoragePluginFromStorageArgs<T> {
     model: CmsContentModel;
-    entry: CmsContentEntry;
     field: CmsContentModelField;
-    context: CmsContext;
-    /**
-     * The value to be transformed from storage type into the original one.
-     */
     value: T;
+    getStoragePlugin(fieldType: string): CmsModelFieldToStoragePlugin<T>;
+    context: CmsContext;
 }
 
 /**
@@ -1576,7 +1584,10 @@ export interface CmsModelFieldToStoragePluginFromStorageArgs<T> {
  * @category ContentEntry
  * @category Storage
  */
-export interface CmsModelFieldToStoragePlugin<Original = any, Converted = any> extends Plugin {
+export interface CmsModelFieldToStoragePlugin<
+    Original = Record<string, any>,
+    Converted = Record<string, any>
+> extends Plugin {
     /**
      * A plugin type
      */
@@ -1593,7 +1604,7 @@ export interface CmsModelFieldToStoragePlugin<Original = any, Converted = any> e
      * A function that is ran when storing the data. You can do what ever transformations you need on input value and return a new value that is stored into the database.
      *
      * ```ts
-     * toStorage({value}) {
+     * toStorage({ value }) {
      *      return gzip(value);
      * }
      * ```
@@ -1603,7 +1614,7 @@ export interface CmsModelFieldToStoragePlugin<Original = any, Converted = any> e
      * A function that is ran when retrieving the data from the database. You either revert the action you did in the `toStorage` or handle it via some other way available to you.
      *
      * ```ts
-     * fromStorage({value}) {
+     * fromStorage({ value }) {
      *      return ungzip(value);
      * }
      * ```

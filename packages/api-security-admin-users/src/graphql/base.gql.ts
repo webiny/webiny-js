@@ -1,12 +1,10 @@
-import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
+import { AdminUsersContext } from "~/types";
+import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins";
 
 const emptyResolver = () => ({});
 
-const plugin: GraphQLSchemaPlugin = {
-    type: "graphql-schema",
-    name: "graphql-schema-security-base",
-    schema: {
-        typeDefs: `
+export default new GraphQLSchemaPlugin<AdminUsersContext>({
+    typeDefs: `
             type SecurityQuery {
                 _empty: String
             }
@@ -39,15 +37,12 @@ const plugin: GraphQLSchemaPlugin = {
                 error: SecurityError
             }
         `,
-        resolvers: {
-            Query: {
-                security: emptyResolver
-            },
-            Mutation: {
-                security: emptyResolver
-            }
+    resolvers: {
+        Query: {
+            security: emptyResolver
+        },
+        Mutation: {
+            security: emptyResolver
         }
     }
-};
-
-export default plugin;
+});

@@ -4,6 +4,7 @@ import models from "./mocks/contentModels";
 import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
 import { useCategoryReadHandler } from "../utils/useCategoryReadHandler";
 import { useProductManageHandler } from "../utils/useProductManageHandler";
+import { useProductReadHandler } from "../utils/useProductReadHandler";
 
 jest.setTimeout(25000);
 
@@ -118,6 +119,11 @@ describe("READ - Resolvers", () => {
 
         if (update.errors) {
             console.error(`[beforeEach] ${update.errors[0].message}`);
+            process.exit(1);
+        }
+
+        if (update.data.updateContentModel.error) {
+            console.error(`[beforeEach] ${update.data.updateContentModel.error.message}`);
             process.exit(1);
         }
         return targetModel;
@@ -1396,6 +1402,89 @@ describe("READ - Resolvers", () => {
                     },
                     error: null
                 }
+            }
+        });
+    });
+
+    test("should store and retrieve nested objects", async () => {
+        await setupModel("product", contentModelGroup);
+
+        const { vegetables } = await categoryManagerHelper({
+            ...manageOpts
+        });
+
+        const { until, getProduct } = useProductReadHandler({ ...readOpts });
+
+        const { createProduct, publishProduct } = useProductManageHandler({
+            ...manageOpts
+        });
+
+        const categoryValue = {
+            modelId: "category",
+            entryId: vegetables.id
+        };
+
+        const [potatoResponse] = await createProduct({
+            data: {
+                title: "Potato",
+                price: 99.9,
+                availableOn: "2020-12-25",
+                color: "white",
+                image: "image.png",
+                availableSizes: ["s", "m"],
+                category: categoryValue,
+                variant: {
+                    name: "Variant 1",
+                    price: 100,
+                    category: categoryValue,
+                    options: [
+                        {
+                            name: "Option 1",
+                            price: 10,
+                            category: categoryValue
+                        },
+                        {
+                            name: "Option 2",
+                            price: 20,
+                            category: categoryValue
+                        }
+                    ]
+                }
+            }
+        });
+
+        const potato = potatoResponse.data.createProduct.data;
+
+        await publishProduct({ revision: potato.id });
+
+        const result = await until(
+            () =>
+                getProduct({
+                    where: {
+                        id: potato.id
+                    }
+                }).then(([data]) => data),
+            ({ data }) => !!data.getProduct.data.id
+        );
+
+        expect(result.data.getProduct.data).toMatchObject({
+            id: potato.id,
+            title: "Potato",
+            price: 99.9,
+            availableOn: "2020-12-25",
+            color: "white",
+            availableSizes: ["s", "m"],
+            category: {
+                id: vegetables.id,
+                title: "Vegetables"
+            },
+            variant: {
+                name: "Variant 1",
+                price: 100,
+                options: [
+                    { name: "Option 1", price: 10 },
+                    { name: "Option 2", price: 20 }
+                ]
             }
         });
     });

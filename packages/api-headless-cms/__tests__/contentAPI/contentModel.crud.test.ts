@@ -135,6 +135,7 @@ describe("content model test", () => {
                         savedOn: expect.stringMatching(/^20/),
                         fields: [],
                         layout: [],
+                        plugin: false,
                         group: {
                             id: contentModelGroup.id,
                             name: contentModelGroup.name
@@ -504,7 +505,8 @@ describe("content model test", () => {
                         },
                         modelId: contentModel.modelId,
                         layout: [[textField.id], [numberField.id]],
-                        name: "new name"
+                        name: "new name",
+                        plugin: false
                     },
                     error: null
                 }

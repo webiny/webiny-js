@@ -10,6 +10,9 @@ const usePermission = () => {
 
     const canEdit = useCallback(
         item => {
+            if (hasFullAccess) {
+                return true;
+            }
             const creatorId = get(item, "createdBy.id");
             if (!pbPagePermission) {
                 return false;
@@ -22,11 +25,14 @@ const usePermission = () => {
             }
             return true;
         },
-        [pbPagePermission]
+        [pbPagePermission, hasFullAccess]
     );
 
     const canDelete = useCallback(
         item => {
+            if (hasFullAccess) {
+                return true;
+            }
             if (!pbPagePermission) {
                 return false;
             }
@@ -38,7 +44,7 @@ const usePermission = () => {
             }
             return true;
         },
-        [pbPagePermission]
+        [pbPagePermission, hasFullAccess]
     );
 
     const canPublish = useCallback(() => {

@@ -1,11 +1,11 @@
-import { FbFormFieldPatternValidatorPlugin } from "../../../../../types";
+import { FbBuilderFormFieldPatternValidatorPlugin } from "~/types";
 
 export default {
-    type: "fb-form-field-validator-pattern",
+    type: "form-editor-field-validator-pattern",
     name: "form-editor-field-validator-pattern-url",
     pattern: {
         message: "Please enter a valid URL.",
         name: "url",
         label: "URL"
     }
-} as FbFormFieldPatternValidatorPlugin;
+} as FbBuilderFormFieldPatternValidatorPlugin;

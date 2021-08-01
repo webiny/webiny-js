@@ -5,13 +5,13 @@ import { Select } from "@webiny/ui/Select";
 import { plugins } from "@webiny/plugins";
 import { validation } from "@webiny/validation";
 import {
-    FbFormFieldPatternValidatorPlugin,
+    FbBuilderFormFieldPatternValidatorPlugin,
     FbBuilderFormFieldValidatorPlugin
-} from "../../../../types";
+} from "~/types";
 
 export default {
     type: "form-editor-field-validator",
-    name: "fb-form-field-validator-pattern",
+    name: "form-editor-field-validator-pattern",
     validator: {
         name: "pattern",
         label: "Pattern",
@@ -22,11 +22,10 @@ export default {
         },
         renderSettings({ Bind, setValue, setMessage, data }) {
             const inputsDisabled = data.settings.preset !== "custom";
-            const presetPlugins = plugins.byType<FbFormFieldPatternValidatorPlugin>(
-                "fb-form-field-validator-pattern"
+            const presetPlugins = plugins.byType<FbBuilderFormFieldPatternValidatorPlugin>(
+                "form-editor-field-validator-pattern"
             );
 
-            // TODO: @ts-adrian neda mi da dolje posaljem
             const selectOptions: any = presetPlugins.map(item => (
                 <option key={item.pattern.name} value={item.pattern.name}>
                     {item.pattern.label}

@@ -19,6 +19,7 @@ import WebinyError from "@webiny/error";
 import { afterUpdateHook } from "./contentModelGroup/afterUpdate.hook";
 import { beforeUpdateHook } from "./contentModelGroup/beforeUpdate.hook";
 import { afterCreateHook } from "./contentModelGroup/afterCreate.hook";
+import { ContentModelGroupPlugin } from "~/content/plugins/ContentModelGroupPlugin";
 
 const CreateContentModelGroupModel = withFields({
     name: string({ validation: validation.create("required,maxLength:100") }),
@@ -36,6 +37,13 @@ const UpdateContentModelGroupModel = withFields({
 export default (): ContextPlugin<CmsContext> => ({
     type: "context",
     async apply(context) {
+        /**
+         * If cms is not defined on the context, do not continue, but log it.
+         */
+        if (!context.cms) {
+            console.log("Missing cms on context. Skipping ContentModelGroup crud.");
+            return;
+        }
         const pluginType = "cms-content-model-group-storage-operations-provider";
         const providerPlugins = context.plugins.byType<
             CmsContentModelGroupStorageOperationsProvider
@@ -60,6 +68,14 @@ export default (): ContextPlugin<CmsContext> => ({
         };
 
         const groupsGet = async (id: string) => {
+            const groupPlugin: ContentModelGroupPlugin = context.plugins
+                .byType<ContentModelGroupPlugin>(ContentModelGroupPlugin.type)
+                .find((item: ContentModelGroupPlugin) => item.contentModelGroup.id === id);
+
+            if (groupPlugin) {
+                return groupPlugin.contentModelGroup;
+            }
+
             let group: CmsContentModelGroup | null = null;
             try {
                 group = await storageOperations.get({ id });
@@ -79,7 +95,13 @@ export default (): ContextPlugin<CmsContext> => ({
         const groupsList = async (args?: CmsContentModelGroupListArgs) => {
             const { where, limit } = args || {};
             try {
-                return await storageOperations.list({ where, limit });
+                const pluginsGroups: CmsContentModelGroup[] = context.plugins
+                    .byType<ContentModelGroupPlugin>(ContentModelGroupPlugin.type)
+                    .map<CmsContentModelGroup>(plugin => plugin.contentModelGroup);
+
+                const databaseGroups = await storageOperations.list({ where, limit });
+
+                return [...databaseGroups, ...pluginsGroups];
             } catch (ex) {
                 throw new WebinyError(ex.message, ex.code || "LIST_ERROR", {
                     ...(ex.data || {}),
@@ -163,7 +185,7 @@ export default (): ContextPlugin<CmsContext> => ({
                     return group;
                 } catch (ex) {
                     throw new WebinyError(
-                        ex.message || "Could not save data model.",
+                        ex.message || "Could not save data model group.",
                         ex.code || "ERROR_ON_CREATE",
                         {
                             ...(ex.data || {}),
