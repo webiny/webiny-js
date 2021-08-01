@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { css } from "emotion";
+import { OverlayView } from "../OverlayView";
 
 const noScroll = css({
     overflow: "hidden",
@@ -13,17 +14,23 @@ export function useOverlayView() {
 
     useEffect(() => {
         if (isVisible) {
+            OverlayView.openedViews++;
             document.body.classList.add(noScroll);
-        } else {
+        } else if (!OverlayView.openedViews) {
             document.body.classList.remove(noScroll);
         }
     }, [isVisible]);
 
     useEffect(() => {
         return () => {
-            document.body.classList.remove(noScroll);
+            if (OverlayView.openedViews > 0) {
+                OverlayView.openedViews--;
+            }
+            if (!OverlayView.openedViews) {
+                document.body.classList.remove(noScroll);
+            }
         };
-    });
+    }, []);
 
     return { isVisible, setIsVisible };
 }

@@ -41,7 +41,17 @@ interface OnExited {
     (view: OverlayView): void;
 }
 
+interface OnEntered {
+    (view: OverlayView): void;
+}
+
 export class OverlayView extends UIView {
+    /**
+     * This property is used to track the amount of opened overlays. Since we're applying a CSS class to disable
+     * window scroll, we must make sure we don't remove that CSS class until all the overlays are closed.
+     */
+    static openedViews = 0;
+    private _onEntered: OnEntered[] = [];
     private _onExited: OnExited[] = [];
 
     constructor(id = "OverlayView") {
@@ -65,8 +75,16 @@ export class OverlayView extends UIView {
         this.getHeaderElement().setTitle(title);
     }
 
+    onEntered() {
+        [...this._onEntered].reverse().forEach(cb => cb(this));
+    }
+
     onExited() {
         [...this._onExited].reverse().forEach(cb => cb(this));
+    }
+
+    addOnEntered(cb: OnExited) {
+        this._onEntered.push(cb);
     }
 
     addOnExited(cb: OnExited) {
@@ -92,7 +110,13 @@ export class OverlayView extends UIView {
     render(props) {
         const { isVisible } = this.getOverlayHook();
         return (
-            <Transition in={isVisible} timeout={100} appear onExited={() => this.onExited()}>
+            <Transition
+                in={isVisible}
+                timeout={100}
+                appear
+                onExited={() => this.onExited()}
+                onEntered={() => this.onEntered()}
+            >
                 {state => (
                     <OverlayLayoutWrapper style={{ ...defaultStyle, ...transitionStyles[state] }}>
                         {super.render(props)}
