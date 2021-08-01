@@ -5,6 +5,7 @@ import { ReactComponent as HeadlessCmsIcon } from "~/admin/icons/devices_other-b
 import GlobalSearchPlugins from "./GlobalSearchPlugins";
 import usePermission from "~/admin/hooks/usePermission";
 import { ContentGroupsMenuItems } from "./ContentGroupsMenuItems";
+import { ContentGroupMenuElement } from "~/admin/elements/ContentGroupMenuElement";
 
 interface Props {
     view: NavigationView;
@@ -36,6 +37,18 @@ export const CmsMenuLoader = React.memo(({ view }: Props) => {
                 icon: <HeadlessCmsIcon />
             })
         );
+
+        mainMenu.addSorter((a, b) => {
+            if (a instanceof ContentGroupMenuElement && b instanceof NavigationMenuElement) {
+                return 1;
+            }
+
+            if (a instanceof NavigationMenuElement && b instanceof ContentGroupMenuElement) {
+                return -1;
+            }
+
+            return 0;
+        });
 
         /**
          * Add "Content Models" section if the user can create either models or groups.

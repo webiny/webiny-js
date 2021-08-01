@@ -1,12 +1,12 @@
 import trim from "lodash/trim";
-import { InputElement } from "@webiny/app-admin/elements/InputElement";
+import { InputElement } from "@webiny/app-admin/elements/form/InputElement";
 import { PageSettingsFormView } from "~/editor/views/PageSettingsView/PageSettingsFormView";
 import { validation } from "@webiny/validation";
 import { SmallButtonElement } from "@webiny/app-admin/elements/SmallButtonElement";
 import { TypographyElement } from "@webiny/app-admin/elements/TypographyElement";
 import { LabelElement } from "@webiny/app-admin/elements/LabelElement";
 import { ButtonElement } from "@webiny/app-admin/elements/ButtonElement";
-import { DynamicFieldsetElement } from "@webiny/app-admin/elements/DynamicFieldsetElement";
+import { DynamicFieldsetElement } from "@webiny/app-admin/elements/form/DynamicFieldsetElement";
 import { ButtonGroupElement } from "@webiny/app-admin/elements/ButtonGroupElement";
 
 export class SEOSettingsView extends PageSettingsFormView {

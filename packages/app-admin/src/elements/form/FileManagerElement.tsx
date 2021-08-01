@@ -1,7 +1,7 @@
 import React from "react";
-import { FormFieldElement, FormFieldElementConfig } from "~/elements/FormFieldElement";
-import { FileManagerElementRenderer } from "~/elements/FileManagerElement/FileManagerElementRenderer";
 import { UIElement } from "@webiny/ui-composer/UIElement";
+import { FormFieldElement, FormFieldElementConfig } from "./FormFieldElement";
+import { FileManagerElementRenderer } from "./FileManagerElement/FileManagerElementRenderer";
 import { EmptyStateElement } from "./FileManagerElement/EmptyStateElement";
 
 export interface FileManagerElementConfig extends FormFieldElementConfig {

@@ -4,7 +4,7 @@ import { Cell, Grid } from "@webiny/ui/Grid";
 import { Typography } from "@webiny/ui/Typography";
 import { UIElement, UIElementConfig } from "@webiny/ui-composer/UIElement";
 import { Icon } from "@webiny/ui/Icon";
-import { FormElementRenderProps } from "~/elements/FormElement";
+import { FormElementRenderProps } from "~/elements/form/FormElement";
 
 const iconClass = css({
     marginRight: 15,

@@ -10,9 +10,9 @@ import { GeneralSettingsView } from "~/editor/views/GeneralSettingsView";
 import { UIViewPlugin } from "@webiny/ui-composer/UIView";
 import { PageSettingsView } from "~/editor/views/PageSettingsView";
 import { SocialSettingsView } from "~/editor/views/SocialSettingsView";
-import { FileManagerElement } from "@webiny/app-admin/elements/FileManagerElement";
+import { FileManagerElement } from "@webiny/app-admin/elements/form/FileManagerElement";
 import appendOgImageDimensions from "./appendOgImageDimensions";
-import { HiddenElement } from "@webiny/app-admin/elements/HiddenElement";
+import { HiddenElement } from "@webiny/app-admin/elements/form/HiddenElement";
 import { SEOSettingsView } from "~/editor/views/SEOSettingsView";
 
 const plugins: PluginCollection = [

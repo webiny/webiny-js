@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { useSecurity } from "@webiny/app-security";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { ButtonPrimary } from "@webiny/ui/Button";
-import { SplitView, LeftPanel, RightPanel } from "../SplitView";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Typography } from "@webiny/ui/Typography";
 import { Elevation } from "@webiny/ui/Elevation";
@@ -14,9 +13,12 @@ import {
     alertClass,
     InnerContent,
     InstallContent,
-    installerSplitView,
-    SuccessDialog
+    SuccessDialog,
+    FullHeight,
+    leftPanel,
+    rightPanel
 } from "./styled";
+
 
 const markInstallerAsCompleted = () =>
     (localStorage["wby_installer_status"] = process.env.REACT_APP_WEBINY_VERSION);
@@ -49,21 +51,23 @@ export const AppInstaller = ({ children }) => {
 
     const renderLayout = (content, secure = false) => {
         return (
-            <SplitView className={installerSplitView}>
-                <LeftPanel span={2}>
-                    <Sidebar
-                        allInstallers={installers}
-                        installer={installer}
-                        showLogin={showLogin}
-                    />
-                </LeftPanel>
-                <RightPanel span={10}>
-                    {!showLogin && !secure && content}
-                    {(showLogin || secure) && (
-                        <View name={"admin.installation.secureInstaller"}>{content}</View>
-                    )}
-                </RightPanel>
-            </SplitView>
+            <FullHeight>
+                <Grid>
+                    <Cell span={2} className={leftPanel}>
+                        <Sidebar
+                            allInstallers={installers}
+                            installer={installer}
+                            showLogin={showLogin}
+                        />
+                    </Cell>
+                    <Cell span={10} className={rightPanel}>
+                        {!showLogin && !secure && content}
+                        {(showLogin || secure) && (
+                            <View name={"admin.installation.secureInstaller"}>{content}</View>
+                        )}
+                    </Cell>
+                </Grid>
+            </FullHeight>
         );
     };
 
@@ -98,7 +102,7 @@ export const AppInstaller = ({ children }) => {
     if (skippingVersions) {
         return renderBody(
             <Elevation z={1} className={alertClass}>
-                <Grid>
+                <Grid className={"webiny-split-view"}>
                     <Cell span={12}>
                         <Typography use={"headline4"}>Important!</Typography>
                     </Cell>

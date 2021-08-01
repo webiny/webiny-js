@@ -1,12 +1,12 @@
 import slugify from "slugify";
-import { InputElement } from "@webiny/app-admin/elements/InputElement";
+import { InputElement } from "@webiny/app-admin/elements/form/InputElement";
 import { validation } from "@webiny/validation";
-import { TextareaElement } from "@webiny/app-admin/elements/TextareaElement";
+import { TextareaElement } from "@webiny/app-admin/elements/form/TextareaElement";
 import { PageSettingsFormView } from "~/editor/views/PageSettingsView/PageSettingsFormView";
-import { SelectElement } from "@webiny/app-admin/elements/SelectElement";
+import { SelectElement } from "@webiny/app-admin/elements/form/SelectElement";
 import { plugins } from "@webiny/plugins";
 import { PbPageLayoutPlugin } from "~/types";
-import { FileManagerElement } from "@webiny/app-admin/elements/FileManagerElement";
+import { FileManagerElement } from "@webiny/app-admin/elements/form/FileManagerElement";
 import { TagsMultiAutocompleteElement } from "~/editor/elements/TagsMultiAutocompletetElement";
 
 const toSlug = (value, cb) => {

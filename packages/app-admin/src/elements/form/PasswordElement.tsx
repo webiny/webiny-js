@@ -1,6 +1,6 @@
 import React, { Fragment } from "react";
 import { InputElement } from "./InputElement";
-import { FormFieldElementRenderProps } from "~/elements/FormFieldElement";
+import { FormFieldElementRenderProps } from "~/elements/form/FormFieldElement";
 
 export class PasswordElement extends InputElement {
     render(props: FormFieldElementRenderProps): React.ReactElement {

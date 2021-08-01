@@ -4,7 +4,7 @@ import {
     FormFieldElement,
     FormFieldElementConfig,
     FormFieldElementRenderProps
-} from "~/elements/FormFieldElement";
+} from "~/elements/form/FormFieldElement";
 
 export interface SelectElementOption {
     value: string;

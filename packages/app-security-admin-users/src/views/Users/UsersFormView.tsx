@@ -8,14 +8,14 @@ import {
     AccordionElement,
     AccordionItemElement
 } from "@webiny/app-admin/elements/AccordionElement";
-import { InputElement } from "@webiny/app-admin/elements/InputElement";
+import { InputElement } from "@webiny/app-admin/elements/form/InputElement";
 import { ReactComponent as SecurityIcon } from "../../assets/icons/security-24px.svg";
 import { ReactComponent as SettingsIcon } from "~/assets/icons/settings-24px.svg";
 import AvatarImage from "../Components/AvatarImage";
 import { GroupAutocompleteElement } from "~/elements/GroupAutocompleteElement";
 import { UseUserForm, useUserForm } from "~/views/Users/hooks/useUserForm";
 import { FormView } from "@webiny/app-admin/views/FormView";
-import { FormElementRenderProps } from "@webiny/app-admin/elements/FormElement";
+import { FormElementRenderProps } from "@webiny/app-admin/elements/form/FormElement";
 
 const FormWrapper = styled("div")({
     margin: "0 100px"

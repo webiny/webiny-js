@@ -2,9 +2,9 @@ import React from "react";
 import styled from "@emotion/styled";
 import { UIRenderer, UIRenderParams } from "@webiny/ui-composer/UIRenderer";
 import { FormElementMessage } from "@webiny/ui/FormElementMessage";
-import { FileManagerElement } from "~/elements/FileManagerElement";
+import { FileManagerElement } from "~/elements/form/FileManagerElement";
 import { FileManager } from "~/components";
-import { FormFieldElementRenderProps } from "~/elements/FormFieldElement";
+import { FormFieldElementRenderProps } from "~/elements/form/FormFieldElement";
 
 const ImageUploadWrapper = styled("div")({
     position: "relative",

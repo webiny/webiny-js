@@ -10,7 +10,7 @@ import {
 import { PageSettingsTabsElement } from "~/editor/views/PageSettingsView/PageSettingsTabsElement";
 import { PbEditorPageSettingsPlugin } from "~/plugins/PbEditorPageSettingsPlugin";
 import { GenericElement } from "@webiny/ui-composer/elements/GenericElement";
-import { FormElement, FormElementRenderProps } from "@webiny/app-admin/elements/FormElement";
+import { FormElement, FormElementRenderProps } from "@webiny/app-admin/elements/form/FormElement";
 import { FormView } from "@webiny/app-admin/views/FormView";
 
 export class PageSettingsView extends OverlayView {

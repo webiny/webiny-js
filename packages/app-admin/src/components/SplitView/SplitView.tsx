@@ -20,6 +20,9 @@ const SplitView = (props: SplitViewProps) => {
         const view = new SplitViewClass("default");
         React.Children.forEach(props.children, child => {
             if (child.type === LeftPanel) {
+                if (child.props.span) {
+                    view.getLeftPanel().setWidth(child.props.span);
+                }
                 view.getLeftPanel().setContentElement(
                     new GenericElement("leftPanelContent", () => {
                         return child.props.children;
@@ -30,6 +33,9 @@ const SplitView = (props: SplitViewProps) => {
             }
 
             if (child.type === RightPanel) {
+                if (child.props.span) {
+                    view.getRightPanel().setWidth(child.props.span);
+                }
                 view.getRightPanel().setContentElement(
                     new GenericElement("rightPanelContent", () => {
                         return child.props.children;

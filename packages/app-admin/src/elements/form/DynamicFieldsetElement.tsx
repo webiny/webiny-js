@@ -3,11 +3,11 @@ import {
     FormFieldElement,
     FormFieldElementConfig,
     FormFieldElementRenderProps
-} from "~/elements/FormFieldElement";
+} from "~/elements/form/FormFieldElement";
 import { UIElement } from "@webiny/ui-composer/UIElement";
 import { DynamicFieldset } from "@webiny/ui/DynamicFieldset";
 import { Grid } from "@webiny/ui/Grid";
-import { DynamicFieldsetRowElement } from "~/elements/DynamicFieldsetElement/DynamicFieldsetRowElement";
+import { DynamicFieldsetRowElement } from "./DynamicFieldsetElement/DynamicFieldsetRowElement";
 
 interface DynamicFieldsetActions {
     add: (index?: number) => () => void;

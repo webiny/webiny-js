@@ -3,7 +3,7 @@ import { EmptyStateElement } from "./EmptyStateElement";
 import { UIRenderer, UIRenderParams } from "@webiny/ui-composer/UIRenderer";
 import * as Ui from "@webiny/ui/ImageUpload";
 import { Image } from "@webiny/app/components";
-import { FileManagerElementRenderProps } from "~/elements/FileManagerElement/FileManagerElementRenderer";
+import { FileManagerElementRenderProps } from "~/elements/form/FileManagerElement/FileManagerElementRenderer";
 import { AddImageIconWrapper, AddImageWrapper, FilePreviewWrapper, RemoveImage } from "./styled";
 import { ReactComponent as AddFileIcon } from "~/assets/icons/attach_file_black_24dp.svg";
 import { Typography } from "@webiny/ui/Typography";
