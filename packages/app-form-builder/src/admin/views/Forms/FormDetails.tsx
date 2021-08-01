@@ -12,7 +12,7 @@ import { useSecurity } from "@webiny/app-security";
 import EmptyView from "@webiny/app-admin/components/EmptyView";
 import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
 import { i18n } from "@webiny/app/i18n";
-import {useForms} from "./useForms";
+import { useForms } from "./useForms";
 
 const t = i18n.ns("app-form-builder/admin/views/forms/form-details");
 

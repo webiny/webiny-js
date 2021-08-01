@@ -287,7 +287,7 @@ export abstract class UIElement<TConfig extends UIElementConfig = UIElementConfi
 
     render(props?: any): React.ReactNode {
         const layoutRenderer = props => {
-            const content = this._layout.render(props, this.depth, this.hasParentGrid);
+            const content = this._layout.render(props, this.hasParentGrid);
 
             return this._wrappers.reduce((el, wrapper) => {
                 return wrapper({ ...props, children: el });

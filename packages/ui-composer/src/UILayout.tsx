@@ -20,7 +20,7 @@ interface Sorter {
 }
 
 function getElementKey(element: UIElement) {
-    return `${element.constructor.name}:${element.id}`
+    return `${element.constructor.name}:${element.id}`;
 }
 
 export class UILayout {
@@ -137,7 +137,7 @@ export class UILayout {
         return this;
     }
 
-    render(props, depth = 0, hasParentGrid = false) {
+    render(props, hasParentGrid = false) {
         if (!this._grid) {
             return (
                 <Fragment>
@@ -154,7 +154,7 @@ export class UILayout {
                                 if (!element.shouldRender(props)) {
                                     return null;
                                 }
-                                
+
                                 return (
                                     <ElementID key={getElementKey(element)}>
                                         {element.render(props)}

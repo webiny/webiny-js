@@ -19,7 +19,6 @@ import {
     rightPanel
 } from "./styled";
 
-
 const markInstallerAsCompleted = () =>
     (localStorage["wby_installer_status"] = process.env.REACT_APP_WEBINY_VERSION);
 

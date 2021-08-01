@@ -20,7 +20,9 @@ const BUTTONS = {
     secondary: ButtonSecondary
 };
 
-export class ButtonElement<TRenderProps = any> extends UIElement<ButtonElementConfig<TRenderProps>> {
+export class ButtonElement<TRenderProps = any> extends UIElement<
+    ButtonElementConfig<TRenderProps>
+> {
     setLabel(label: string) {
         this.config.label = label;
     }
