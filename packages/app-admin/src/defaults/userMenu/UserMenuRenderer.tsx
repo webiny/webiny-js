@@ -4,7 +4,7 @@ import { css } from "emotion";
 import { Menu } from "@webiny/ui/Menu";
 import { TopAppBarActionItem } from "@webiny/ui/TopAppBar";
 import { List } from "@webiny/ui/List";
-import { UserMenuElement } from "~/elements/UserMenuElement";
+import { UserMenuElement } from "./UserMenuElement";
 
 const menuDialog = css({
     "&.mdc-menu": {

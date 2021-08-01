@@ -19,6 +19,10 @@ interface Sorter {
     (elementA: UIElement, elementB: UIElement): number;
 }
 
+function getElementKey(element: UIElement) {
+    return `${element.constructor.name}:${element.id}`
+}
+
 export class UILayout {
     private _grid = true;
     private _layout: LayoutItem[][] = [];
@@ -150,9 +154,9 @@ export class UILayout {
                                 if (!element.shouldRender(props)) {
                                     return null;
                                 }
-
+                                
                                 return (
-                                    <ElementID key={item.element}>
+                                    <ElementID key={getElementKey(element)}>
                                         {element.render(props)}
                                     </ElementID>
                                 );
@@ -176,7 +180,7 @@ export class UILayout {
                             }
                             return (
                                 <Cell key={item.element} span={item.width}>
-                                    <ElementID key={item.element}>
+                                    <ElementID key={getElementKey(element)}>
                                         {element.render(props)}
                                     </ElementID>
                                 </Cell>

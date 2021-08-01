@@ -1,5 +1,5 @@
 import { UIElement } from "@webiny/ui-composer/UIElement";
-import { UserMenuRenderer } from "~/elements/UserMenuElement/UserMenuRenderer";
+import { UserMenuRenderer } from "./UserMenuRenderer";
 
 export class UserMenuElement extends UIElement {
     private _menuHandleElement: UIElement;

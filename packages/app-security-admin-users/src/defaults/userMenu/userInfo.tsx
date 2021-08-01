@@ -99,8 +99,12 @@ const UserInfo = () => {
 };
 
 export default () => {
-    return new UIViewPlugin<AdminView>(AdminView, async view => {
-        const userMenu = await view.awaitElement("userMenu");
+    return new UIViewPlugin<AdminView>(AdminView, view => {
+        const userMenu = view.getElement("userMenu");
+        if (!userMenu) {
+            return;
+        }
+
         const userInfo = new GenericElement("userInfo", () => <UserInfo />);
         userInfo.moveToTheBeginningOf(userMenu);
         view.refresh();

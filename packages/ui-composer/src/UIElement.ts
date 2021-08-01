@@ -95,7 +95,7 @@ export abstract class UIElement<TConfig extends UIElementConfig = UIElementConfi
     }
 
     applyPlugins(elementClass: Class<UIElement>) {
-        const type = `ElementPlugin.${elementClass.prototype.constructor.name}`;
+        const type = `UIElementPlugin.${elementClass.prototype.constructor.name}`;
         const elPlugins = plugins.byType<UIElementPlugin<any>>(type);
         elPlugins
             .filter(plugin => plugin.canHandle(elementClass))
