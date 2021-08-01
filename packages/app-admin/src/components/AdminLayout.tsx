@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { ViewComponent } from "@webiny/ui-composer/View";
-import { GenericElement } from "@webiny/ui-elements/GenericElement";
+import { GenericElement } from "@webiny/ui-composer/elements/GenericElement";
 import { AdminView } from "~/views/AdminView";
 
 interface AdminLayoutProps {

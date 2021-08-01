@@ -1,11 +1,11 @@
 import React from "react";
 import { Element } from "@webiny/ui-composer/Element";
 import { TopAppBarPrimary, TopAppBarTitle } from "@webiny/ui/TopAppBar";
-import { GenericElement } from "@webiny/ui-elements/GenericElement";
+import { GenericElement } from "@webiny/ui-composer/elements/GenericElement";
+import { PlaceholderElement } from "@webiny/ui-composer/elements/PlaceholderElement";
 import { HeaderSectionLeftElement } from "./HeaderSectionLeftElement";
 import { HeaderSectionCenterElement } from "./HeaderSectionCenterElement";
 import { HeaderSectionRightElement } from "./HeaderSectionRightElement";
-import { PlaceholderElement } from "@webiny/ui-elements/PlaceholderElement";
 import Hamburger from "./components/Hamburger";
 
 enum ElementID {

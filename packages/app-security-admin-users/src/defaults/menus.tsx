@@ -1,10 +1,10 @@
 import React from "react";
-import { NavigationViewPlugin } from "@webiny/app-admin/plugins/NavigationViewPlugin";
 import { NavigationMenuElement, TAGS } from "@webiny/app-admin/elements/NavigationMenuElement";
-import { ReactComponent as SecurityIcon } from "../assets/icons/baseline-security-24px.svg";
 import { Permission } from "./constants";
+import { ViewPlugin } from "@webiny/ui-composer/View";
+import { NavigationView } from "@webiny/app-admin/views/NavigationView";
 
-export default new NavigationViewPlugin(async view => {
+export default new ViewPlugin<NavigationView>(NavigationView, async view => {
     await view.isRendered();
 
     const { identity } = view.getSecurityHook();
@@ -22,12 +22,6 @@ export default new NavigationViewPlugin(async view => {
             tags: [TAGS.UTILS]
         })
     );
-
-    // const section = mainMenu.addElement(
-    //     new NavigationMenuElement("security.section", {
-    //         label: ""
-    //     })
-    // );
 
     if (users) {
         mainMenu.addElement(

@@ -4,9 +4,10 @@ import { ListItem, ListItemGraphic } from "@webiny/ui/List";
 import { Icon } from "@webiny/ui/Icon";
 import { ReactComponent as FileIcon } from "~/assets/icons/insert_drive_file-24px.svg";
 import { FileManager } from "~/components";
-import { NavigationViewPlugin } from "~/plugins/NavigationViewPlugin";
 import { NavigationMenuElement } from "~/elements/NavigationMenuElement";
 import { ElementRenderer, ElementRenderParams } from "@webiny/ui-composer/ElementRenderer";
+import { ViewPlugin } from "@webiny/ui-composer/View";
+import { NavigationView } from "~/views/NavigationView";
 
 const listItemStyle = css({
     ".mdc-list &.mdc-list-item:hover": {
@@ -39,7 +40,7 @@ class FileManagerMenuItemRenderer extends ElementRenderer<NavigationMenuElement>
 
 export default () => {
     return [
-        new NavigationViewPlugin(view => {
+        new ViewPlugin<NavigationView>(NavigationView, view => {
             const element = new NavigationMenuElement("fileManager", {
                 label: "File Manager",
                 icon: <FileIcon />,

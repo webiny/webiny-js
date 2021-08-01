@@ -4,7 +4,7 @@ import { Cell, Grid } from "@webiny/ui/Grid";
 import { Typography } from "@webiny/ui/Typography";
 import { Element, ElementConfig } from "@webiny/ui-composer/Element";
 import { Icon } from "@webiny/ui/Icon";
-import { SimpleFormElementRenderProps } from "~/elements/SimpleFormElement";
+import { SimpleFormElementRenderProps } from "~/elements/SimpleFormView";
 
 const iconClass = css({
     marginRight: 15,
@@ -41,6 +41,10 @@ export class SimpleFormHeaderElement extends Element<SimpleFormHeaderConfig> {
 
     setIcon(icon: React.ReactElement) {
         this.config.icon = icon;
+    }
+    
+    addAction(element: Element) {
+        this.addElement(element);
     }
 
     render(props: any): any {

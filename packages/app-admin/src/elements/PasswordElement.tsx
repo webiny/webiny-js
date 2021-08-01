@@ -1,8 +1,9 @@
 import React, { Fragment } from "react";
-import { InputElement, InputElementRenderProps } from "./InputElement";
+import { InputElement } from "./InputElement";
+import { FormFieldElementRenderProps } from "~/elements/FormFieldElement";
 
 export class PasswordElement extends InputElement {
-    render(props: InputElementRenderProps): React.ReactElement {
+    render(props: FormFieldElementRenderProps): React.ReactElement {
         if (!props.formProps) {
             throw Error(`PasswordElement must be placed inside of a FormElement.`);
         }
@@ -13,7 +14,7 @@ export class PasswordElement extends InputElement {
             <Bind name={this.id}>
                 {({ value, onChange }) => (
                     <Fragment>
-                        <label>{this.config.label}</label>
+                        <label>{this.getLabel()}</label>
                         <input
                             type="password"
                             disabled={this.isDisabled(props)}

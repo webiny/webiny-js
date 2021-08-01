@@ -4,8 +4,9 @@ import { AdminLayout } from "@webiny/app-admin/components/AdminLayout";
 import FormsSettings from "./components/FormsSettings";
 import { SecureRoute } from "@webiny/app-security/components";
 import { RoutePlugin } from "@webiny/app/plugins/RoutePlugin";
-import { NavigationViewPlugin } from "@webiny/app-admin/plugins/NavigationViewPlugin";
 import { NavigationMenuElement } from "@webiny/app-admin/elements/NavigationMenuElement";
+import { ViewPlugin } from "@webiny/ui-composer/View";
+import { NavigationView } from "@webiny/app-admin/views/NavigationView";
 
 const plugins = [
     new RoutePlugin({
@@ -22,7 +23,7 @@ const plugins = [
             />
         )
     }),
-    new NavigationViewPlugin(async view => {
+    new ViewPlugin<NavigationView>(NavigationView, async view => {
         await view.isRendered();
 
         const { identity } = view.getSecurityHook();

@@ -1,7 +1,6 @@
 import React from "react";
 import { default as localStorage } from "store";
 import { Element, ElementConfig } from "@webiny/ui-composer/Element";
-import { NavigationMenuElementPlugin } from "~/plugins/NavigationMenuElementPlugin";
 
 export interface NavigationMenuElementConfig extends ElementConfig {
     label: React.ReactNode;
@@ -44,7 +43,7 @@ export class NavigationMenuElement extends Element<NavigationMenuElementConfig> 
         });
 
         // Apply plugins
-        this.applyPlugin(NavigationMenuElementPlugin);
+        this.applyPlugins(NavigationMenuElement);
     }
 
     addElement<TElement extends Element = Element>(element: TElement): TElement {

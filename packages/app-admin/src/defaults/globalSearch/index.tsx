@@ -1,9 +1,19 @@
 import * as React from "react";
 import SearchBar from "./SearchBar";
-import { AdminViewPlugin } from "~/plugins/AdminViewPlugin";
-import { GenericElement } from "@webiny/ui-elements/GenericElement";
+import { GenericElement } from "@webiny/ui-composer/elements/GenericElement";
+import { ViewPlugin } from "@webiny/ui-composer/View";
+import { AdminView } from "~/views/AdminView";
 
-export const globalSearch = new AdminViewPlugin(view => {
+// !EXAMPLE!
+// This demonstrates how you can create view-specific plugin classes.
+//
+// class AdminViewPlugin extends ViewPlugin<AdminView> {
+//     constructor(apply: ApplyFunction<AdminView>) {
+//         super(AdminView, apply);
+//     }
+// }
+
+export const globalSearch = new ViewPlugin<AdminView>(AdminView, view => {
     view.getHeaderElement()
         .getCenterSection()
         .addElement(new GenericElement("searchBar", () => <SearchBar />));

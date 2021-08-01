@@ -2,11 +2,10 @@ import React from "react";
 import Helmet from "react-helmet";
 import { View } from "@webiny/ui-composer/View";
 import { Element } from "@webiny/ui-composer/Element";
-import { GenericElement } from "@webiny/ui-elements/GenericElement";
-import { ViewElement } from "@webiny/ui-elements/ViewElement";
+import { GenericElement } from "@webiny/ui-composer/elements/GenericElement";
+import { ViewElement } from "@webiny/ui-composer/elements/ViewElement";
 import { HeaderElement } from "./AdminView/HeaderElement";
 import { ContentElement } from "./AdminView/ContentElement";
-import { AdminViewPlugin } from "~/plugins/AdminViewPlugin";
 import { NavigationView } from "~/views/NavigationView";
 import Snackbar from "./AdminView/components/Snackbar";
 import { DialogContainer } from "./AdminView/components/Dialog";
@@ -32,7 +31,7 @@ export class AdminView extends View {
         this.addElement(new GenericElement("dialogContainer", () => <DialogContainer />));
 
         // Apply plugins
-        this.applyPlugin(AdminViewPlugin);
+        this.applyPlugins(AdminView);
     }
 
     setTitle(title: string) {

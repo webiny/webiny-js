@@ -4,7 +4,7 @@ import { nanoid } from "nanoid";
 import { Drawer } from "@webiny/ui/Drawer";
 import { View } from "@webiny/ui-composer/View";
 import { plugins } from "@webiny/plugins";
-import { GenericElement } from "@webiny/ui-elements/GenericElement";
+import { GenericElement } from "@webiny/ui-composer/elements/GenericElement";
 import { UseSecurity, useSecurity } from "@webiny/app-security";
 import { HeaderElement } from "./NavigationView/HeaderElement";
 import { ContentElement } from "./NavigationView/ContentElement";
@@ -14,7 +14,6 @@ import { AdminMenuPlugin } from "~/types";
 import { NavigationMenuElement, TAGS } from "~/elements/NavigationMenuElement";
 import { ItemProps, MenuProps, SectionProps } from "./NavigationView/legacyMenu";
 import { ReactComponent as SettingsIcon } from "~/assets/icons/round-settings-24px.svg";
-import { NavigationViewPlugin } from "~/plugins/NavigationViewPlugin";
 
 export enum ElementID {
     Header = "navigationHeader",
@@ -49,7 +48,7 @@ export class NavigationView extends View {
         // Load legacy plugins and convert them into elements
         this.setupLegacyMenuPlugins();
 
-        this.applyPlugin(NavigationViewPlugin);
+        this.applyPlugins(NavigationView);
     }
 
     addAppMenuElement(element: NavigationMenuElement) {

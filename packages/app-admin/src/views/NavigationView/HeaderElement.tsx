@@ -1,8 +1,8 @@
 import React from "react";
 import { Element, ElementConfig } from "@webiny/ui-composer/Element";
 import { DrawerHeader } from "@webiny/ui/Drawer";
-import { GenericElement } from "@webiny/ui-elements/GenericElement";
-import { PlaceholderElement } from "@webiny/ui-elements/PlaceholderElement";
+import { GenericElement } from "@webiny/ui-composer/elements/GenericElement";
+import { PlaceholderElement } from "@webiny/ui-composer/elements/PlaceholderElement";
 import { TopAppBarTitle } from "@webiny/ui/TopAppBar";
 import { MenuHeader, navHeader } from "./Styled";
 

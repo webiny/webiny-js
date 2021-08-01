@@ -6,9 +6,9 @@ import { Image } from "@webiny/app/components";
 import { ListItem, ListItemGraphic } from "@webiny/ui/List";
 import { Typography } from "@webiny/ui/Typography";
 import { Avatar } from "@webiny/ui/Avatar";
-import { AdminHeaderUserMenuUserInfoPlugin } from "@webiny/app-admin/types";
-import { AdminViewPlugin } from "@webiny/app-admin/plugins/AdminViewPlugin";
-import { GenericElement } from "@webiny/ui-elements/GenericElement";
+import { GenericElement } from "@webiny/ui-composer/elements/GenericElement";
+import { ViewPlugin } from "@webiny/ui-composer/View";
+import { AdminView } from "@webiny/app-admin/views/AdminView";
 
 const avatarImage = css({
     height: "40px !important",
@@ -99,7 +99,7 @@ const UserInfo = () => {
 };
 
 export default () => {
-    return new AdminViewPlugin(async view => {
+    return new ViewPlugin<AdminView>(AdminView, async view => {
         const userMenu = await view.awaitElement("userMenu");
         const userInfo = new GenericElement("userInfo", () => <UserInfo />);
         userInfo.moveToTheBeginningOf(userMenu);

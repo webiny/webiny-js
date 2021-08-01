@@ -1,9 +1,10 @@
 import React from "react";
-import { NavigationViewPlugin } from "@webiny/app-admin/plugins/NavigationViewPlugin";
 import { NavigationMenuElement } from "@webiny/app-admin/elements/NavigationMenuElement";
+import { ViewPlugin } from "@webiny/ui-composer/View";
+import { NavigationView } from "@webiny/app-admin/views/NavigationView";
 
 export default [
-    new NavigationViewPlugin(async view => {
+    new ViewPlugin<NavigationView>(NavigationView, async view => {
         await view.isRendered();
 
         const { identity } = view.getSecurityHook();
@@ -28,9 +29,9 @@ export default [
         // This shows how you can attach your own logic and conditionally show/hide element.
         //
         // localesMenu.addShouldRender(({ next }) => {
-        //     // WARNING! Nonsense example :) 
+        //     // WARNING! Nonsense example :)
         //     // If label matches, continue with other checks in the chain.
-        
+
         //     if (localesMenu.config.label === "Locales") {
         //         return next();
         //     }

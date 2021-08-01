@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { CellProps } from "@webiny/ui/Grid";
 import { ViewComponent } from "@webiny/ui-composer/View";
-import { GenericElement } from "@webiny/ui-elements/GenericElement";
+import { GenericElement } from "@webiny/ui-composer/elements/GenericElement";
 import { SplitView as SplitViewClass } from "~/views/SplitView";
 
 interface SplitViewProps {

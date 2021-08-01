@@ -1,15 +1,15 @@
 import * as React from "react";
 import { Route } from "@webiny/react-router";
 import { AdminLayout } from "@webiny/app-admin/components/AdminLayout";
-import FileManagerSettings from "../views/FileManagerSettings";
 import { SecureRoute } from "@webiny/app-security/components";
-import { NavigationViewPlugin } from "@webiny/app-admin/plugins/NavigationViewPlugin";
 import {
     NavigationMenuElement,
     NavigationMenuElementConfig
 } from "@webiny/app-admin/elements/NavigationMenuElement";
 import { NavigationView } from "@webiny/app-admin/views/NavigationView";
 import { RoutePlugin } from "@webiny/app/plugins/RoutePlugin";
+import { ViewPlugin } from "@webiny/ui-composer/View";
+import FileManagerSettings from "../views/FileManagerSettings";
 
 const PERMISSION_FM_SETTINGS = "fm.settings";
 
@@ -48,7 +48,7 @@ export default [
             />
         )
     }),
-    new NavigationViewPlugin(async view => {
+    new ViewPlugin<NavigationView>(NavigationView, async view => {
         await view.isRendered();
 
         const { identity } = view.getSecurityHook();

@@ -4,17 +4,16 @@ import { View } from "@webiny/ui-composer/View";
 import { Form } from "@webiny/form";
 import { validation } from "@webiny/validation";
 import {
-    SimpleFormElement,
+    SimpleFormView,
     SimpleFormElementRenderProps
-} from "@webiny/app-admin/elements/SimpleFormElement";
-import { GenericElement } from "@webiny/ui-elements/GenericElement";
-import { AccordionElement, AccordionItemElement } from "@webiny/ui-elements/AccordionElement";
-import { InputElement } from "@webiny/ui-elements/InputElement";
+} from "@webiny/app-admin/elements/SimpleFormView";
+import { GenericElement } from "@webiny/ui-composer/elements/GenericElement";
+import { AccordionElement, AccordionItemElement } from "@webiny/app-admin/elements/AccordionElement";
+import { InputElement } from "@webiny/app-admin/elements/InputElement";
 import { ReactComponent as SecurityIcon } from "../../assets/icons/security-24px.svg";
 import { ReactComponent as SettingsIcon } from "~/assets/icons/settings-24px.svg";
 import AvatarImage from "../Components/AvatarImage";
 import { GroupAutocompleteElement } from "~/elements/GroupAutocompleteElement";
-import { UsersFormViewPlugin } from "~/plugins/UsersFormViewPlugin";
 import { UseUserForm, useUserForm } from "~/views/Users/hooks/useUserForm";
 
 const FormWrapper = styled("div")({
@@ -36,7 +35,7 @@ export class UsersFormView extends View {
         this.addElements();
 
         // Apply plugins
-        this.applyPlugin(UsersFormViewPlugin);
+        this.applyPlugins(UsersFormView);
     }
 
     getUserFormHook(): UseUserForm {
@@ -53,8 +52,8 @@ export class UsersFormView extends View {
     }
 
     private addElements() {
-        const simpleForm = this.addElement<SimpleFormElement>(
-            new SimpleFormElement("UsersForm", {
+        const simpleForm = this.addElement<SimpleFormView>(
+            new SimpleFormView("UsersForm", {
                 isLoading: () => {
                     return this.getUserFormHook().loading;
                 },
@@ -111,12 +110,14 @@ export class UsersFormView extends View {
         const bioAccordion = accordion.getAccordionItemElement("bio");
         bioAccordion.addElement(
             new InputElement("firstName", {
+                name: "firstName",
                 label: "First Name",
                 validators: validation.create("required")
             })
         );
         bioAccordion.addElement(
             new InputElement("lastName", {
+                name: "lastName",
                 label: "Last Name",
                 validators: validation.create("required")
             })
@@ -124,6 +125,7 @@ export class UsersFormView extends View {
 
         bioAccordion.addElement(
             new InputElement("login", {
+                name: "login",
                 label: "Email",
                 validators: validation.create("required,email"),
                 beforeChange: (value: string, cb) => cb(value.toLowerCase())
@@ -135,6 +137,7 @@ export class UsersFormView extends View {
         const groupAccordion = accordion.getElement<AccordionItemElement>("groups");
         groupAccordion.addElement(
             new GroupAutocompleteElement("group", {
+                name: "group",
                 label: "Group",
                 validators: validation.create("required")
             })

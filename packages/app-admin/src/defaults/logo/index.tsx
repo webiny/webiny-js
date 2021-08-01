@@ -1,18 +1,19 @@
 import React from "react";
-import { AdminViewPlugin } from "~/plugins/AdminViewPlugin";
 import Logo from "~/defaults/logo/Logo";
-import { NavigationViewPlugin } from "~/plugins/NavigationViewPlugin";
 import { plugins } from "@webiny/plugins";
 import { AdminMenuLogoPlugin } from "~/types";
 import { logoStyle } from "~/views/NavigationView/Styled";
+import { ViewPlugin } from "@webiny/ui-composer/View";
+import { AdminView } from "~/views/AdminView";
+import { NavigationView } from "~/views/NavigationView";
 
 export default () => [
     /* Set logo in the layout header. */
-    new AdminViewPlugin(view => {
+    new ViewPlugin<AdminView>(AdminView, view => {
         view.getHeaderElement().setLogo(<Logo white />);
     }),
     /* Set logo in the navigation drawer. */
-    new NavigationViewPlugin(view => {
+    new ViewPlugin<NavigationView>(NavigationView, view => {
         view.getHeaderElement().setLogo(
             <Logo onClick={() => view.getNavigationHook().hideMenu()} />
         );

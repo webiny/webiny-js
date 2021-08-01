@@ -35,6 +35,8 @@ interface NothingToShowElementConfig extends ElementConfig {
     label: string;
 }
 
+
+
 export class NothingToShowElement extends NavigationMenuElement {
     constructor(id, config: NothingToShowElementConfig) {
         super(id, config);

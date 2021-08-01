@@ -1,12 +1,10 @@
 import React from "react";
 import { List, ListItem } from "@webiny/ui/List";
 import { Element, ElementConfig } from "@webiny/ui-composer/Element";
-import { MenuFooter, subFooter } from "./Styled";
-import { plugins } from "@webiny/plugins";
-import { AdminDrawerFooterMenuPlugin } from "~/types";
-import { GenericElement } from "@webiny/ui-elements/GenericElement";
+import { GenericElement } from "@webiny/ui-composer/elements/GenericElement";
+import { PlaceholderElement } from "@webiny/ui-composer/elements/PlaceholderElement";
 import { NavigationMenuElement } from "~/elements/NavigationMenuElement";
-import { PlaceholderElement } from "@webiny/ui-elements/PlaceholderElement";
+import { MenuFooter, subFooter } from "./Styled";
 
 interface FooterElementConfig extends ElementConfig {
     closeMenu: () => void;
@@ -16,7 +14,7 @@ export class FooterElement extends Element<FooterElementConfig> {
     private _footerPlaceholder: PlaceholderElement;
 
     constructor(id: string, config: FooterElementConfig) {
-        super(id);
+        super(id, config);
 
         this.toggleGrid(false);
 

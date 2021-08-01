@@ -2,9 +2,9 @@ import React from "react";
 import { View } from "@webiny/ui-composer/View";
 import { AdminView } from "@webiny/app-admin/views/AdminView";
 import { SplitView } from "@webiny/app-admin/views/SplitView";
-import { ViewElement } from "@webiny/ui-elements/ViewElement";
+import { ViewElement } from "@webiny/ui-composer/elements/ViewElement";
+import { GenericElement } from "@webiny/ui-composer/elements/GenericElement";
 import { UsersFormView } from "~/views/Users/UsersFormView";
-import { GenericElement } from "@webiny/ui-elements/GenericElement";
 import UsersDataList from "~/views/Users/UsersDataList";
 
 export class UsersView extends View {

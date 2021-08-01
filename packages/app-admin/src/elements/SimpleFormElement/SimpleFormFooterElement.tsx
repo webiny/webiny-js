@@ -8,7 +8,10 @@ const ButtonWrapper = styled("div")({
     borderTop: "1px solid var(--mdc-theme-on-background)",
     color: "var(--mdc-theme-text-primary-on-background)",
     textAlign: "right",
-    padding: 25
+    padding: 25,
+    ">:last-child": {
+        marginLeft: "auto"
+    }
 });
 
 export class SimpleFormFooterElement extends Element {
