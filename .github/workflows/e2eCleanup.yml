@@ -24,14 +24,16 @@ jobs:
         with:
           node-version: 12
 
-      - name: Download artifact
-        uses: dawidd6/action-download-artifact@v2
+      - name: Retrieve cached Verdaccio files
+        uses: actions/cache@v2
         with:
-          workflow: ${{ github.event.client_payload.workflow }}
-          workflow_conclusion: completed
-          commit: ${{ github.event.client_payload.commit }}
-          name: verdaccio-files
-          path: verdaccio-files
+          key: verdaccio-files-${{ github.event.client_payload.ts
+          path: |
+            .verdaccio/
+            .verdaccio.yaml
+
+      - name: Move cached Verdaccio files into verdaccio-files folder
+        run: mkdir verdaccio-files && mv .verdaccio verdaccio-files/.verdaccio && mv .verdaccio.yaml verdaccio-files/.verdaccio.yaml
 
       - name: Start Verdaccio local server
         working-directory: verdaccio-files
@@ -51,14 +53,15 @@ jobs:
           mkdir ~/.webiny &&
           echo '{ "id": "ci", "telemetry": false }' > ~/.webiny/config
 
-      - name: Download artifact
-        uses: dawidd6/action-download-artifact@v2
+      - name: Retrieve cached project files
+        uses: actions/cache@v2
         with:
-          workflow: ${{ github.event.client_payload.workflow }}
-          workflow_conclusion: completed
-          commit: ${{ github.event.client_payload.commit }}
-          name: project-files
-          path: test-project
+          key: project-files-${{ github.event.client_payload.ts
+          path: |
+            test-project/
+            !test-project/node_modules/**/*
+            !test-project/**/node_modules/**/*
+            !test-project/.yarn/cache/**/*
 
       - name: Install dependencies
         working-directory: test-project
