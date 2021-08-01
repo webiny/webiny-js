@@ -175,11 +175,10 @@ jobs:
       - name: Release to Verdaccio
         run: yarn lerna:publish:verdaccio
 
-      - name: Upload verdaccio files
-        uses: actions/upload-artifact@v2
+      - name: Cache Verdaccio files (for cleanup workflow)
+        uses: actions/cache@v2
         with:
-          name: verdaccio-files
-          retention-days: 1
+          key: cleanup-verdaccio-files-${{ needs.cache-keys.outputs.ts }}
           path: |
             .verdaccio/
             .verdaccio.yaml
@@ -277,11 +276,10 @@ jobs:
           --assign-to-yarnrc '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
           --template-options '{"region":"eu-central-1"}'
 
-      - name: Upload project files
-        uses: actions/upload-artifact@v2
+      - name: Cache project files (for cleanup workflow)
+        uses: actions/cache@v2
         with:
-          name: project-files
-          retention-days: 1
+          key: cleanup-project-files-${{ needs.cache-keys.outputs.ts }}
           path: |
             test-project/
             !test-project/node_modules/**/*
