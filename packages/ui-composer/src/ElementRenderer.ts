@@ -1,6 +1,6 @@
-export interface ElementRenderParams<TElement> {
+export interface ElementRenderParams<TElement, TProps = any> {
     element: TElement;
-    props: any;
+    props: TProps;
     next: RenderNext;
 }
 
@@ -8,11 +8,11 @@ export interface RenderNext {
     (props?: any): React.ReactNode;
 }
 
-export abstract class ElementRenderer<TElement> {
+export abstract class ElementRenderer<TElement, TProps = any> {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    canRender(element: TElement) {
+    canRender(element: TElement, props: TProps) {
         return true;
     }
 
-    abstract render(params: ElementRenderParams<TElement>): React.ReactNode;
+    abstract render(params: ElementRenderParams<TElement, TProps>): React.ReactNode;
 }

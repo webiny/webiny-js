@@ -1,5 +1,5 @@
 import React from "react";
-import { Element } from "@webiny/ui-composer/Element";
+import { Element } from "../Element";
 
 interface Renderer<TRenderProps> {
     (props: TRenderProps): React.ReactNode;

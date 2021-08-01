@@ -1,21 +1,21 @@
 import React, { useCallback, useState } from "react";
 import pWaitFor from "p-wait-for";
-import { Plugin } from "@webiny/plugins";
-import { Element } from "./Element";
+import { Plugin, plugins } from "@webiny/plugins";
+import {Element, ElementConfig} from "./Element";
 
 const ViewID = ({ children }) => {
     return children;
 };
 
-export abstract class View extends Element {
+export class View<TConfig = ElementConfig> extends Element<TConfig> {
     private _events = new Map();
     private _hookDefinitions: Record<string, Function> = {};
     private _hookValues: Record<string, any> = {};
     private _props: { render: Function; [key: string]: any };
     private _isRendered = false;
 
-    constructor(id) {
-        super(id);
+    constructor(id, config?: TConfig) {
+        super(id, config);
 
         this.toggleGrid(false);
     }
@@ -30,6 +30,14 @@ export abstract class View extends Element {
 
     addHookDefinition(key: string, hook: Function) {
         this._hookDefinitions[key] = hook;
+    }
+
+    applyPlugins(viewClass: Class<View>) {
+        const type = `ViewPlugin.${viewClass.prototype.constructor.name}`;
+        const elPlugins = plugins.byType<ViewPlugin<any>>(type);
+        elPlugins
+            .filter(plugin => plugin.canHandle(viewClass))
+            .forEach(plugin => plugin.apply(this));
     }
 
     async awaitElement<TElement extends Element = Element<any>>(id: string): Promise<TElement> {
@@ -86,27 +94,29 @@ export interface ApplyFunction<TView> {
     (view: TView): void;
 }
 
-export abstract class ViewPlugin<TView> extends Plugin {
-    public static readonly type: string;
-    private _apply: ApplyFunction<TView>;
+type Class<T> = new (...args: any[]) => T;
 
-    constructor(apply?: ApplyFunction<TView>) {
+export class ViewPlugin<TView extends any> extends Plugin {
+    public static readonly type: string = "ViewPlugin";
+    private _apply: ApplyFunction<TView>;
+    private _viewClass: Class<TView>;
+
+    constructor(viewClass: Class<TView>, apply: ApplyFunction<TView>) {
         super();
 
         this._apply = apply;
+        this._viewClass = viewClass;
+    }
 
-        if (!this.type) {
-            throw Error(`Missing "type" definition in "${this.constructor.name}"!`);
-        }
+    get type() {
+        return `ViewPlugin.${this._viewClass.prototype.constructor.name}`;
+    }
+
+    canHandle(viewClass: Class<View>) {
+        return viewClass === this._viewClass;
     }
 
     apply(view: TView) {
-        if (!this._apply) {
-            throw Error(
-                `You must either pass an "apply" function to plugin constructor, or extend the plugin class and override the "apply" method.`
-            );
-        }
-
         this._apply(view);
     }
 }

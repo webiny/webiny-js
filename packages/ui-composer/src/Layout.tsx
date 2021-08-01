@@ -32,6 +32,10 @@ export class Layout {
         this._grid = flag;
     }
 
+    getGrid() {
+        return this._grid;
+    }
+
     sort(sorter: Sorter) {
         if (this._grid) {
             return;
@@ -129,7 +133,7 @@ export class Layout {
         return this;
     }
 
-    render(props, depth = 0) {
+    render(props, depth = 0, hasParentGrid = false) {
         if (!this._grid) {
             return (
                 <Fragment>
@@ -159,7 +163,7 @@ export class Layout {
             );
         }
 
-        const GridComponent = depth > 0 ? GridInner : Grid;
+        const GridComponent = hasParentGrid ? GridInner : Grid;
 
         return (
             <GridComponent>

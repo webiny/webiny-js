@@ -1,6 +1,6 @@
 import React from "react";
-import { Element, ElementConfig } from "@webiny/ui-composer/Element";
-import { View, ViewComponent } from "@webiny/ui-composer/View";
+import { Element, ElementConfig } from "../Element";
+import { View, ViewComponent } from "../View";
 
 interface ViewElementConfig extends ElementConfig {
     view: View;
@@ -17,6 +17,6 @@ export class ViewElement extends Element<ViewElementConfig> {
             return null;
         }
 
-        return <ViewComponent view={this.config.view} />;
+        return <ViewComponent {...props} view={this.config.view} />;
     }
 }

@@ -5,6 +5,8 @@ import { Layout } from "./Layout";
 import { View } from "./View";
 import { ElementRenderer } from "./ElementRenderer";
 
+type Class<T> = new (...args: any[]) => T;
+
 export interface ShouldRender<TProps = any> {
     (params: { props: TProps; next: Function }): boolean;
 }
@@ -60,12 +62,17 @@ export abstract class Element<TConfig extends ElementConfig = ElementConfig> {
         return this._id;
     }
 
+    isGridEnabled() {
+        return this._layout.getGrid();
+    }
+
     get config(): TConfig {
         return this._config;
     }
 
     get depth() {
         let depth = 0;
+
         let parent = this.getParent();
         while (parent && !(parent instanceof View)) {
             depth++;
@@ -75,8 +82,24 @@ export abstract class Element<TConfig extends ElementConfig = ElementConfig> {
         return depth;
     }
 
-    applyPlugin(pluginClass: any) {
-        plugins.byType<ElementPlugin<any>>(pluginClass.type).forEach(plugin => plugin.apply(this));
+    get hasParentGrid() {
+        let parent = this.getParent();
+        while (parent && !(parent instanceof View)) {
+            if (parent.isGridEnabled()) {
+                return true;
+            }
+            parent = parent.getParent();
+        }
+
+        return false;
+    }
+
+    applyPlugins(elementClass: Class<Element>) {
+        const type = `ElementPlugin.${elementClass.prototype.constructor.name}`;
+        const elPlugins = plugins.byType<ElementPlugin<any>>(type);
+        elPlugins
+            .filter(plugin => plugin.canHandle(elementClass))
+            .forEach(plugin => plugin.apply(this));
     }
 
     addRenderer(renderer: ElementRenderer<any>) {
@@ -99,7 +122,7 @@ export abstract class Element<TConfig extends ElementConfig = ElementConfig> {
         return this._parent;
     }
 
-    getParentOfType(type: any): Element {
+    getParentOfType<TParent extends Element = Element>(type: any): TParent {
         let parent = this.getParent();
         while (parent) {
             if (parent instanceof type) {
@@ -109,7 +132,7 @@ export abstract class Element<TConfig extends ElementConfig = ElementConfig> {
             parent = parent.getParent();
         }
 
-        return parent;
+        return parent as TParent;
     }
 
     addTag(tag: string) {
@@ -124,9 +147,9 @@ export abstract class Element<TConfig extends ElementConfig = ElementConfig> {
         this._tags.delete(tag);
     }
 
-    getView<TView extends View = View>(): TView {
+    getView<TView extends View = View>(type: Class<View> = View): TView {
         let parent = this.getParent();
-        while (parent && !(parent instanceof View)) {
+        while (parent && !(parent instanceof type)) {
             parent = parent.getParent();
         }
 
@@ -264,7 +287,7 @@ export abstract class Element<TConfig extends ElementConfig = ElementConfig> {
 
     render(props?: any): React.ReactNode {
         const layoutRenderer = props => {
-            const content = this._layout.render(props, this.depth);
+            const content = this._layout.render(props, this.depth, this.hasParentGrid);
 
             return this._wrappers.reduce((el, wrapper) => {
                 return wrapper({ ...props, children: el });
@@ -272,7 +295,7 @@ export abstract class Element<TConfig extends ElementConfig = ElementConfig> {
         };
 
         const renderers: ElementRenderer<any>[] = [...this._renderers].filter(pl =>
-            pl.canRender(this)
+            pl.canRender(this, props)
         );
 
         const next = (props: any) => {
@@ -356,27 +379,36 @@ interface ApplyFunction<TElement> {
     (element: TElement): void;
 }
 
-export class ElementPlugin<TElement> extends Plugin {
-    public static readonly type: string;
+export class ElementPlugin<TElement extends Element> extends Plugin {
+    public static readonly type: string = "ElementPlugin";
     private _apply: ApplyFunction<TElement>;
+    private _elementClass: Class<TElement>;
 
-    constructor(apply?: ApplyFunction<TElement>) {
+    constructor(elementClass: Class<TElement>, apply: ApplyFunction<TElement>) {
         super();
 
+        this._elementClass = elementClass;
         this._apply = apply;
+    }
 
-        if (!this.type) {
-            throw Error(`Missing "type" definition in "${this.constructor.name}"!`);
-        }
+    get type() {
+        return `ElementPlugin.${this._elementClass.prototype.constructor.name}`;
+    }
+
+    canHandle(elementClass: Class<Element>) {
+        // console.log(
+        //     `:================== Plugin for: ${this._elementClass.prototype.constructor.name} ========================:`
+        // );
+        // console.log(
+        //     "canHandle",
+        //     elementClass.prototype.constructor.name,
+        //     elementClass === this._elementClass
+        // );
+
+        return elementClass === this._elementClass;
     }
 
     apply(element: TElement) {
-        if (!this._apply) {
-            throw Error(
-                `You must either pass an "apply" function to plugin constructor, or extend the plugin class and override the "apply" method.`
-            );
-        }
-
         this._apply(element);
     }
 }
