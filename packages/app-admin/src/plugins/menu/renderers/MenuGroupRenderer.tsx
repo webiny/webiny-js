@@ -10,7 +10,7 @@ import { ReactComponent as DownIcon } from "~/assets/icons/round-keyboard_arrow_
 import { NavigationMenuElement } from "~/elements/NavigationMenuElement";
 import { ContentElement } from "~/views/NavigationView/ContentElement";
 import { NavigationView } from "~/views/NavigationView";
-import { Link } from "@webiny/react-router/";
+import { Link } from "@webiny/react-router";
 
 const defaultStyle = {
     transform: "translateY(-20px)",

@@ -1,4 +1,3 @@
-import React from "react";
 import { NavigationMenuElement, TAGS } from "@webiny/app-admin/elements/NavigationMenuElement";
 import { Permission } from "./constants";
 import { UIViewPlugin } from "@webiny/ui-composer/UIView";

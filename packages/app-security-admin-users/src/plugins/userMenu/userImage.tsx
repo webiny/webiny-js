@@ -5,7 +5,7 @@ import { useSecurity } from "@webiny/app-security/hooks/useSecurity";
 import { GenericElement } from "@webiny/ui-composer/elements/GenericElement";
 import { UIViewPlugin } from "@webiny/ui-composer/UIView";
 import { AdminView } from "@webiny/app-admin/views/AdminView";
-import { UserMenuElement } from "@webiny/app-admin/defaults/userMenu/UserMenuElement";
+import { UserMenuElement } from "@webiny/app-admin/plugins/userMenu/UserMenuElement";
 
 const UserImage = () => {
     const { identity } = useSecurity();

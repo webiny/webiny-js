@@ -1,9 +1,9 @@
 import cognitoSecurity from "@webiny/app-security-admin-users-cognito";
-import adminUsers from "@webiny/app-security-admin-users/defaults";
-import accountDetails from "@webiny/app-security-admin-users/defaults/userMenu/accountDetails";
-import signOut from "@webiny/app-security-admin-users/defaults/userMenu/signOut";
-import userImage from "@webiny/app-security-admin-users/defaults/userMenu/userImage";
-import userInfo from "@webiny/app-security-admin-users/defaults/userMenu/userInfo";
+import adminUsers from "@webiny/app-security-admin-users/plugins";
+import accountDetails from "@webiny/app-security-admin-users/plugins/userMenu/accountDetails";
+import signOut from "@webiny/app-security-admin-users/plugins/userMenu/signOut";
+import userImage from "@webiny/app-security-admin-users/plugins/userMenu/userImage";
+import userInfo from "@webiny/app-security-admin-users/plugins/userMenu/userInfo";
 import { getIdentityData } from "../components/getIdentityData";
 
 export default [

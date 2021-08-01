@@ -13,7 +13,7 @@ export class MenuLinkRenderer extends UIRenderer<NavigationMenuElement> {
         return element.depth === 1 && isInFooter;
     }
 
-    render({ element, props, next }: UIRenderParams<NavigationMenuElement>): React.ReactNode {
+    render({ element, props }: UIRenderParams<NavigationMenuElement>): React.ReactNode {
         const defaultOnClick = element.getView<NavigationView>().getNavigationHook().hideMenu;
         const onClick = element.config.onClick || defaultOnClick;
 

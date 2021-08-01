@@ -1,5 +1,4 @@
 import { plugins } from "@webiny/plugins";
-import { WebinyInitPlugin } from "@webiny/app/types";
 import welcomeScreenPlugins from "@webiny/app-plugin-admin-welcome-screen";
 import routeNotFound from "./routeNotFound";
 import basePlugins from "./base";
@@ -70,8 +69,3 @@ plugins.register([
      */
     scaffoldsPlugins()
 ]);
-
-/**
- *
- */
-plugins.byType<WebinyInitPlugin>("webiny-init").forEach(plugin => plugin.init());

@@ -37,7 +37,7 @@ export class MenuSectionItemRenderer extends UIRenderer<NavigationMenuElement> {
         return element.depth === 3;
     }
 
-    render({ element, props, next }: UIRenderParams<NavigationMenuElement>): React.ReactNode {
+    render({ element, props }: UIRenderParams<NavigationMenuElement>): React.ReactNode {
         const defaultOnClick = element.getView<NavigationView>().getNavigationHook().hideMenu;
         const onClick = element.config.onClick || defaultOnClick;
 

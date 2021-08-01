@@ -5,7 +5,7 @@ import { Link } from "@webiny/react-router";
 import { GenericElement } from "@webiny/ui-composer/elements/GenericElement";
 import { UIViewPlugin } from "@webiny/ui-composer/UIView";
 import { AdminView } from "@webiny/app-admin/views/AdminView";
-import { UserMenuElement } from "@webiny/app-admin/defaults/userMenu/UserMenuElement";
+import { UserMenuElement } from "@webiny/app-admin/plugins/userMenu/UserMenuElement";
 import { ReactComponent as AccountIcon } from "../../assets/icons/round-account_circle-24px.svg";
 
 const AccountDetails = () => {

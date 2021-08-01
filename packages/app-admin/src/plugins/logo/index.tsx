@@ -1,5 +1,5 @@
 import React from "react";
-import Logo from "~/defaults/logo/Logo";
+import Logo from "~/plugins/logo/Logo";
 import { plugins } from "@webiny/plugins";
 import { AdminMenuLogoPlugin } from "~/types";
 import { logoStyle } from "~/views/NavigationView/Styled";
