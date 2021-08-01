@@ -22,6 +22,8 @@ export default async ({ data, value, setValue }) => {
         image.onerror = reject;
         image.src = value.src;
     });
+    
+    console.log("image", image);
 
     meta.push(
         {
@@ -33,6 +35,8 @@ export default async ({ data, value, setValue }) => {
             content: String(image.height)
         }
     );
+    
+    console.log("meta", meta);
 
     setValue("settings.social.meta", meta);
 };

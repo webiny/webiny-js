@@ -7,8 +7,9 @@ import { SecureRoute } from "@webiny/app-security/components";
 import { i18n } from "@webiny/app/i18n";
 import Helmet from "react-helmet";
 import { RoutePlugin } from "@webiny/app/plugins/RoutePlugin";
-import { NavigationViewPlugin } from "@webiny/app-admin/plugins/NavigationViewPlugin";
 import { NavigationMenuElement } from "@webiny/app-admin/elements/NavigationMenuElement";
+import { ViewPlugin } from "@webiny/ui-composer/View";
+import { NavigationView } from "@webiny/app-admin/views/NavigationView";
 
 const t = i18n.ns("app-page-builder/admin/menus");
 
@@ -42,7 +43,7 @@ const allPlugins = [
             />
         )
     }),
-    new NavigationViewPlugin(async view => {
+    new ViewPlugin<NavigationView>(NavigationView, async view => {
         await view.isRendered();
 
         const { identity } = view.getSecurityHook();

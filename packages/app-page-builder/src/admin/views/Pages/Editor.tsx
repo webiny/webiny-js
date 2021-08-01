@@ -65,7 +65,7 @@ const Editor: React.FunctionComponent = () => {
             return (
                 <React.Fragment>
                     <PbEditor page={page} revisions={revisions} />
-                    <div style={{ zIndex: 10, position: "absolute" }}>
+                    <div style={{ zIndex: 18, position: "absolute" }}>
                         <Snackbar />
                     </div>
                     <div>
