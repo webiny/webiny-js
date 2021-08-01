@@ -27,7 +27,7 @@ jobs:
       - name: Retrieve cached Verdaccio files
         uses: actions/cache@v2
         with:
-          key: verdaccio-files-${{ github.event.client_payload.ts
+          key: verdaccio-files-${{ github.event.client_payload.ts }}
           path: |
             .verdaccio/
             .verdaccio.yaml
@@ -56,7 +56,7 @@ jobs:
       - name: Retrieve cached project files
         uses: actions/cache@v2
         with:
-          key: project-files-${{ github.event.client_payload.ts
+          key: project-files-${{ github.event.client_payload.ts }}
           path: |
             test-project/
             !test-project/node_modules/**/*
