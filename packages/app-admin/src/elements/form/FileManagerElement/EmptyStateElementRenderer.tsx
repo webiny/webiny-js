@@ -14,7 +14,6 @@ export class EmptyStateElementRenderer extends UIRenderer<
     FileManagerElementRenderProps
 > {
     render({
-        element,
         props
     }: UIRenderParams<EmptyStateElement, FileManagerElementRenderProps>): React.ReactNode {
         const accept = props.fileManagerElement.getAccept();

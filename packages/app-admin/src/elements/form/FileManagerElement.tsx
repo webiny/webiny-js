@@ -1,4 +1,3 @@
-import React from "react";
 import { UIElement } from "@webiny/ui-composer/UIElement";
 import { FormFieldElement, FormFieldElementConfig } from "./FormFieldElement";
 import { FileManagerElementRenderer } from "./FileManagerElement/FileManagerElementRenderer";

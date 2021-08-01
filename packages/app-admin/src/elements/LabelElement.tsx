@@ -20,7 +20,7 @@ export class LabelElement extends UIElement<LabelElementConfig> {
         this.config.text = text;
     }
 
-    render(props: any): React.ReactNode {
+    render(): React.ReactNode {
         return this.config.text;
     }
 }

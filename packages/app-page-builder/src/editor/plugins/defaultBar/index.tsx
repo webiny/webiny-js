@@ -5,8 +5,7 @@ import {
     PbEditorDefaultBarRightPageOptionsPlugin,
     PbEditorDefaultBarRightPlugin,
     PbEditorDefaultBarCenterPlugin
-} from "../../../types";
-import PageSettings from "./components/PageSettings";
+} from "~/types";
 import PageSettingsButton from "./components/PageSettingsButton";
 import PublishPageButton from "./components/PublishPageButton";
 import PreviewPageButton from "./components/PreviewPageButton";

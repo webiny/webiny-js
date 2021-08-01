@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { NavigationView } from "@webiny/app-admin/views/NavigationView";
-import { NavigationMenuElement, TAGS } from "@webiny/app-admin/elements/NavigationMenuElement";
+import { NavigationMenuElement } from "@webiny/app-admin/elements/NavigationMenuElement";
 import { ReactComponent as HeadlessCmsIcon } from "~/admin/icons/devices_other-black-24px.svg";
 import GlobalSearchPlugins from "./GlobalSearchPlugins";
 import usePermission from "~/admin/hooks/usePermission";

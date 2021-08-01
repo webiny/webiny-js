@@ -1,11 +1,10 @@
-import React from "react";
 import { UIElement } from "@webiny/ui-composer/UIElement";
-import { PageSettingsView } from "../PageSettingsView";
 import { FormView } from "@webiny/app-admin/views/FormView";
+import { PageSettingsView } from "../PageSettingsView";
 
 export class PageSettingsFormView extends FormView {
     constructor(id) {
-        super(id, { setupForm: false });
+        super(id);
 
         this.getSubmitButtonElement().setLabel("Save Settings");
         this.applyPlugins(PageSettingsFormView);
