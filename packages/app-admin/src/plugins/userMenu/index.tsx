@@ -1,13 +1,14 @@
 import React from "react";
-import { AdminHeaderRightPlugin } from "../../types";
-import UserMenu from "./UserMenu";
+import { GenericElement } from "@webiny/ui-composer/elements/GenericElement";
+import { Icon } from "@webiny/ui/Icon";
+import { UIViewPlugin } from "@webiny/ui-composer/UIView";
+import { UserMenuElement } from "./UserMenuElement";
+import { ReactComponent as Account } from "~/assets/icons/round-account_circle-24px.svg";
+import { AdminView } from "~/views/AdminView";
 
-const plugin: AdminHeaderRightPlugin = {
-    name: "admin-header-user-menu",
-    type: "admin-header-right",
-    render() {
-        return <UserMenu />;
-    }
-};
+export default new UIViewPlugin<AdminView>(AdminView, view => {
+    const rightSection = view.getHeaderElement().getRightSection();
 
-export default plugin;
+    const userMenu = rightSection.addElement(new UserMenuElement());
+    userMenu.setMenuHandleElement(new GenericElement("handle", () => <Icon icon={<Account />} />));
+});

@@ -40,7 +40,8 @@
   "adio": {
     "ignore": {
       "src": [
-        "aws-sdk"
+        "aws-sdk",
+        "zlib"
       ]
     }
   },

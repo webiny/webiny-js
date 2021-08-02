@@ -27,7 +27,20 @@ module.exports = async (inputs, context) => {
 
         let stackExists = true;
         try {
-            await pulumi.run({ command: ["stack", "select", env] });
+            const PULUMI_SECRETS_PROVIDER = process.env.PULUMI_SECRETS_PROVIDER;
+            const PULUMI_CONFIG_PASSPHRASE = process.env.PULUMI_CONFIG_PASSPHRASE;
+
+            await pulumi.run({
+                command: ["stack", "select", env],
+                args: {
+                    secretsProvider: PULUMI_SECRETS_PROVIDER
+                },
+                execa: {
+                    env: {
+                        PULUMI_CONFIG_PASSPHRASE
+                    }
+                }
+            });
         } catch (e) {
             stackExists = false;
         }

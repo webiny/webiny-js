@@ -15,62 +15,110 @@ describe("Security Access Token Test", () => {
 
     test("should create, list, update and delete a token", async () => {
         // Create a token
-        const [create] = await securityApiKeys.create({
+        const [createResponse] = await securityApiKeys.create({
             data: { name: "Github Actions", description: "Github Actions Token", permissions: [] }
         });
 
-        const { data: token } = create.data.security.createApiKey;
-
-        expect(token).toMatchObject({
-            id: expect.any(String),
-            name: "Github Actions",
-            description: "Github Actions Token",
-            token: expect.any(String),
-            createdOn: expect.any(String)
+        expect(createResponse).toEqual({
+            data: {
+                security: {
+                    createApiKey: {
+                        data: {
+                            id: expect.any(String),
+                            name: "Github Actions",
+                            description: "Github Actions Token",
+                            token: expect.any(String),
+                            permissions: [],
+                            createdOn: expect.any(String)
+                        },
+                        error: null
+                    }
+                }
+            }
         });
 
-        // List tokens
-        const [list] = await securityApiKeys.list();
+        const { data: token } = createResponse.data.security.createApiKey;
 
-        const { data: tokensList } = list.data.security.listApiKeys;
-        expect(tokensList).toBeInstanceOf(Array);
-        expect(tokensList.length).toBe(1);
-        expect(tokensList[0]).toMatchObject({
-            id: token.id,
-            name: "Github Actions",
-            token: token.token
+        // List tokens
+        const [listResponse] = await securityApiKeys.list();
+
+        expect(listResponse).toEqual({
+            data: {
+                security: {
+                    listApiKeys: {
+                        data: [
+                            {
+                                id: token.id,
+                                name: "Github Actions",
+                                token: token.token,
+                                description: "Github Actions Token",
+                                permissions: []
+                            }
+                        ],
+                        error: null
+                    }
+                }
+            }
         });
 
         // Get token
-        const [get] = await securityApiKeys.get({ id: token.id });
+        const [getResponse] = await securityApiKeys.get({ id: token.id });
 
-        const { data: oneToken } = get.data.security.getApiKey;
-        expect(oneToken).toMatchObject({
-            id: token.id,
-            name: "Github Actions",
-            token: token.token
+        expect(getResponse).toEqual({
+            data: {
+                security: {
+                    getApiKey: {
+                        data: {
+                            id: token.id,
+                            name: "Github Actions",
+                            token: token.token,
+                            description: "Github Actions Token",
+                            permissions: []
+                        },
+                        error: null
+                    }
+                }
+            }
         });
 
         // Update token
-        const [update] = await securityApiKeys.update({
+        const [updateResponse] = await securityApiKeys.update({
             id: token.id,
             data: { name: "Renamed token", description: "Updated description", permissions: [] }
         });
 
-        const { data: updatedToken } = update.data.security.updateApiKey;
-        expect(updatedToken).toMatchObject({
-            id: token.id,
-            name: "Renamed token",
-            description: "Updated description",
-            token: token.token
+        expect(updateResponse).toEqual({
+            data: {
+                security: {
+                    updateApiKey: {
+                        data: {
+                            id: token.id,
+                            name: "Renamed token",
+                            description: "Updated description",
+                            token: token.token,
+                            permissions: []
+                        },
+                        error: null
+                    }
+                }
+            }
         });
 
         // Delete token
-        const [deleted] = await securityApiKeys.delete({
+        const [deleteResponse] = await securityApiKeys.delete({
             id: token.id
         });
 
-        expect(deleted.data.security.deleteApiKey.data).toBe(true);
+        expect(deleteResponse).toEqual({
+            data: {
+                security: {
+                    deleteApiKey: {
+                        data: true,
+                        error: null
+                    }
+                }
+            }
+        });
     });
 
     test("should authenticate using API key sent via headers", async () => {
@@ -78,7 +126,7 @@ describe("Security Access Token Test", () => {
             plugins: [apiKeyAuthentication(), apiKeyAuthorization()]
         });
 
-        const [create] = await securityApiKeys.create({
+        const [createResponse] = await securityApiKeys.create({
             data: {
                 name: "API Key",
                 description: "API key description",
@@ -86,29 +134,69 @@ describe("Security Access Token Test", () => {
             }
         });
 
-        const { data: apiKey } = create.data.security.createApiKey;
-        expect(apiKey.token).toMatch(/a[a-f0-9]{47}/);
+        const { data: apiKey } = createResponse.data.security.createApiKey;
 
-        // Should throw Not Authorized error
-        const [listError] = await securityUser.list({}, { Authorization: "123" });
-        expect(listError.data.security.listUsers.data).toBe(null);
-        expect(listError.data.security.listUsers.error.code).toBe("SECURITY_NOT_AUTHORIZED");
-
-        // "listUsers" should return an array of users
-        const [list] = await securityUser.list({}, { Authorization: apiKey.token });
-
-        const users = list.data.security.listUsers;
-        expect(users).toMatchObject({
-            data: [
-                {
-                    firstName: "John",
-                    lastName: "Doe",
-                    login: "admin@webiny.com",
-                    group: {
-                        slug: "full-access"
+        expect(createResponse).toEqual({
+            data: {
+                security: {
+                    createApiKey: {
+                        data: {
+                            id: expect.any(String),
+                            name: "API Key",
+                            description: "API key description",
+                            permissions: [{ name: "security.user" }],
+                            token: expect.stringMatching(/a[a-f0-9]{47}/),
+                            createdOn: expect.stringMatching(/^20/)
+                        },
+                        error: null
                     }
                 }
-            ]
+            }
+        });
+
+        // Should throw Not Authorized error
+        const [listErrorResponse] = await securityUser.list({}, { Authorization: "123" });
+
+        expect(listErrorResponse).toEqual({
+            data: {
+                security: {
+                    listUsers: {
+                        data: null,
+                        error: {
+                            message: "Not authorized!",
+                            code: "SECURITY_NOT_AUTHORIZED",
+                            data: null
+                        }
+                    }
+                }
+            }
+        });
+
+        // "listUsers" should return an array of users
+        const [listResponse] = await securityUser.list({}, { Authorization: apiKey.token });
+
+        expect(listResponse).toEqual({
+            data: {
+                security: {
+                    listUsers: {
+                        data: [
+                            {
+                                firstName: "John",
+                                lastName: "Doe",
+                                login: "admin@webiny.com",
+                                avatar: null,
+                                gravatar:
+                                    "https://www.gravatar.com/avatar/c2f38b46a736d5c40769e909a4472cca",
+                                group: {
+                                    name: "Full Access",
+                                    slug: "full-access"
+                                }
+                            }
+                        ],
+                        error: null
+                    }
+                }
+            }
         });
     });
 });

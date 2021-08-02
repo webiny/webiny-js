@@ -2,7 +2,6 @@
   "private": true,
   "workspaces": {
     "packages": [
-      "plugins/cli-plugin-generate-ts-configs",
       "packages/*",
       "apps/admin/code",
       "apps/website/code",
@@ -129,6 +128,7 @@
     "commit:verify": "yarn lint-staged",
     "webiny-versions": "node ./scripts/webinyVersions.js",
     "release-latest": "node ./scripts/releaseLatest.js",
+    "dispatch-github-event": "node ./scripts/dispatchGitHubEvent.js",
     "lint-staged": "lint-staged",
     "postinstall": "yarn node ./scripts/linkWorkspaces.js",
     "prepublishOnly": "yarn node scripts/prepublishOnly.js",

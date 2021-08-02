@@ -175,17 +175,16 @@ jobs:
       - name: Release to Verdaccio
         run: yarn lerna:publish:verdaccio
 
-      - name: Upload verdaccio files
-        uses: actions/upload-artifact@v2
+      - name: Cache Verdaccio files
+        uses: actions/cache@v2
         with:
-          name: verdaccio-files
-          retention-days: 1
+          key: verdaccio-files-${{ needs.cache-keys.outputs.ts }}
           path: |
             .verdaccio/
             .verdaccio.yaml
 
   test-create-webiny-project:
-    needs: [verdaccio-publish]
+    needs: [cache-keys, verdaccio-publish]
     name: Test "create-webiny-project" (different operating systems)
     strategy:
       fail-fast: false
@@ -198,10 +197,16 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
 
-      - uses: actions/download-artifact@v2
+      - name: Retrieve cached Verdaccio files
+        uses: actions/cache@v2
         with:
-          name: verdaccio-files
-          path: verdaccio-files
+          key: verdaccio-files-${{ needs.cache-keys.outputs.ts }}
+          path: |
+            .verdaccio/
+            .verdaccio.yaml
+
+      - name: Move cached Verdaccio files into verdaccio-files folder
+        run: mkdir verdaccio-files && mv .verdaccio verdaccio-files/.verdaccio && mv .verdaccio.yaml verdaccio-files/.verdaccio.yaml
 
       - name: Start Verdaccio local server
         working-directory: verdaccio-files
@@ -242,32 +247,22 @@ jobs:
       PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
       PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
       WEBINY_PULUMI_BACKEND: ${{ secrets.WEBINY_PULUMI_BACKEND }}_${{ needs.cache-keys.outputs.ts }}
+      GH_TOKEN: ${{ secrets.GH_TOKEN }}
     steps:
-      # After the run is over, destroy deployed cloud infrastructure.
-      # Must be immediately defined here.
-      - uses: webiny/action-post-run@2.0.1
-        with:
-          working-directory: test-project
-          run: yarn webiny destroy api --env dev
-
-      - uses: webiny/action-post-run@2.0.1
-        with:
-          working-directory: test-project
-          run: yarn webiny destroy apps/admin --env dev
-
-      - uses: webiny/action-post-run@2.0.1
-        with:
-          working-directory: test-project
-          run: yarn webiny destroy apps/website --env dev
-
       - uses: actions/setup-node@v2
         with:
           node-version: 12
 
-      - uses: actions/download-artifact@v2
+      - name: Retrieve cached Verdaccio files
+        uses: actions/cache@v2
         with:
-          name: verdaccio-files
-          path: verdaccio-files
+          key: verdaccio-files-${{ needs.cache-keys.outputs.ts }}
+          path: |
+            .verdaccio/
+            .verdaccio.yaml
+
+      - name: Move cached Verdaccio files into verdaccio-files folder
+        run: mkdir verdaccio-files && mv .verdaccio verdaccio-files/.verdaccio && mv .verdaccio.yaml verdaccio-files/.verdaccio.yaml
 
       - name: Start Verdaccio local server
         working-directory: verdaccio-files
@@ -293,6 +288,16 @@ jobs:
           --tag next --no-interactive
           --assign-to-yarnrc '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
           --template-options '{"region":"eu-central-1"}'
+
+      - name: Cache project files
+        uses: actions/cache@v2
+        with:
+          key: project-files-${{ needs.cache-keys.outputs.ts }}
+          path: |
+            test-project/
+            !test-project/node_modules/**/*
+            !test-project/**/node_modules/**/*
+            !test-project/.yarn/cache/**/*
 
       - name: Print CLI version
         working-directory: test-project
@@ -358,3 +363,7 @@ jobs:
           channels: C027VQG8080
           workdir: webiny-js/cypress
           message-text: Cypress tests failed! Scrennshots have been placed in this thread, good luck.
+
+      - name: Trigger cleanup
+        if: always()
+        run: npx https://gist.github.com/doitadrian/6a3fa9f6b0e450ab88e3a5ba23f4e789 --event e2e-cleanup --payload "{\"ts\":\"${{ needs.cache-keys.outputs.ts }}\",\"workflow\":\"${{ github.workflow }}\",\"commit\":\"${{ github.sha }}\"}"

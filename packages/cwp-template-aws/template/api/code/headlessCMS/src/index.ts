@@ -10,6 +10,8 @@ import headlessCmsPlugins from "@webiny/api-headless-cms/content";
 import securityPlugins from "./security";
 import headlessCmsDynamoDbElasticStorageOperation from "@webiny/api-headless-cms-ddb-es";
 import logsPlugins from "@webiny/handler-logs";
+import securityAdminUsersDynamoDbStorageOperations from "@webiny/api-security-admin-users-so-ddb";
+import elasticsearchDataGzipCompression from "@webiny/api-elasticsearch/plugins/GzipCompression";
 
 // Imports plugins created via scaffolding utilities.
 import scaffoldsPlugins from "./plugins/scaffolds";
@@ -32,12 +34,14 @@ export const handler = createHandler({
             })
         }),
         securityPlugins(),
+        securityAdminUsersDynamoDbStorageOperations(),
         i18nPlugins(),
         i18nDynamoDbStorageOperations(),
         i18nContentPlugins(),
         headlessCmsPlugins({ debug }),
         headlessCmsDynamoDbElasticStorageOperation(),
-        scaffoldsPlugins()
+        scaffoldsPlugins(),
+        elasticsearchDataGzipCompression()
     ],
     http: { debug }
 });

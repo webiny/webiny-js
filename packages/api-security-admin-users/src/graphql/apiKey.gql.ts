@@ -1,6 +1,6 @@
 import { Response, ErrorResponse, ListResponse } from "@webiny/handler-graphql/responses";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSchemaPlugin";
-import { AdminUsersContext, ApiKeyInput } from "../types";
+import { AdminUsersContext, ApiKeyInput } from "~/types";
 
 export default new GraphQLSchemaPlugin<AdminUsersContext>({
     typeDefs: /* GraphQL */ `

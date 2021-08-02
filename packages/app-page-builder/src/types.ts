@@ -7,12 +7,6 @@ import { Plugin } from "@webiny/app/types";
 import { BindComponent } from "@webiny/form/Bind";
 import { IconPrefix, IconName } from "@fortawesome/fontawesome-svg-core";
 import { Form, FormSetValue } from "@webiny/form/Form";
-import { Item } from "@webiny/app-admin/plugins/menu/Navigation/components";
-
-export type PbMenuSettingsItemPlugin = Plugin & {
-    type: "menu-settings-page-builder";
-    render(props: { Item: typeof Item }): React.ReactNode;
-};
 
 export type PbElementDataSettingsSpacingValueType = {
     all?: string;

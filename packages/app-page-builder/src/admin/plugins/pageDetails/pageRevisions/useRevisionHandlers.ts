@@ -1,10 +1,10 @@
 import { useCallback } from "react";
 import { useApolloClient } from "@apollo/react-hooks";
 import { useRouter } from "@webiny/react-router";
-import { CREATE_PAGE, DELETE_PAGE, LIST_PAGES } from "../../../graphql/pages";
+import { CREATE_PAGE, DELETE_PAGE } from "~/admin/graphql/pages";
 import { usePublishRevisionHandler } from "./usePublishRevisionHandler";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
-import cloneDeep from "lodash/cloneDeep";
+import * as GQLCache from "~/admin/views/Pages/cache";
 
 export function useRevisionHandlers(props) {
     const { showSnackbar } = useSnackbar();
@@ -16,19 +16,25 @@ export function useRevisionHandlers(props) {
     const createRevision = useCallback(async () => {
         const { data: res } = await client.mutate({
             mutation: CREATE_PAGE,
-            variables: { from: revision.id }
+            variables: { from: revision.id },
+            update(cache, { data }) {
+                if (data.pageBuilder.createPage.error) {
+                    return;
+                }
+
+                GQLCache.updateLatestRevisionInListCache(cache, data.pageBuilder.createPage.data);
+            }
         });
         const { data, error } = res.pageBuilder.createPage;
 
         if (error) {
             return showSnackbar(error.message);
         }
-        console.log("[createRevision]");
+
         history.push(`/page-builder/editor/${encodeURIComponent(data.id)}`);
     }, [revision]);
 
     const editRevision = useCallback(() => {
-        console.log("[editRevision]");
         history.push(`/page-builder/editor/${encodeURIComponent(revision.id)}`);
     }, [revision]);
 
@@ -41,40 +47,21 @@ export function useRevisionHandlers(props) {
                     return;
                 }
 
-                let variables;
+                // We have other revisions, update entry's cache
+                const revisions = GQLCache.removeRevisionFromEntryCache(cache, revision);
 
-                try {
-                    variables = JSON.parse(
-                        localStorage.getItem("wby_pb_pages_list_latest_variables")
+                if (revision.id === page.id) {
+                    GQLCache.updateLatestRevisionInListCache(cache, revisions[0]);
+                    // Redirect to the first revision in the list of all entry revisions.
+                    return history.push(
+                        `/page-builder/pages?id=` + encodeURIComponent(revisions[0].id)
                     );
-                } catch {}
-
-                if (!variables) {
-                    return;
                 }
-
-                const data = cloneDeep(
-                    cache.readQuery<Record<string, any>>({ query: LIST_PAGES, variables })
-                );
-
-                data.pageBuilder.listPages.data = data.pageBuilder.listPages.data.filter(
-                    item => item.id !== page.id
-                );
-
-                cache.writeQuery({
-                    query: LIST_PAGES,
-                    variables,
-                    data
-                });
             }
         });
         const { error } = res.pageBuilder.deletePage;
         if (error) {
             return showSnackbar(error.message);
-        }
-
-        if (revision.id === page.id) {
-            history.push("/page-builder/pages");
         }
     }, [revision, page]);
 

@@ -6,6 +6,9 @@
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git"
   },
+  "keywords": [
+    "sau:base"
+  ],
   "description": "Admin user management (users, groups, API keys).",
   "author": "Webiny Ltd.",
   "license": "MIT",
@@ -13,12 +16,9 @@
     "@commodo/fields": "1.1.2-beta.20",
     "@webiny/api-security": "^5.11.1",
     "@webiny/api-tenancy": "^5.11.1",
-    "@webiny/api-upgrade": "^5.11.1",
-    "@webiny/db-dynamodb": "^5.11.1",
     "@webiny/error": "^5.11.1",
     "@webiny/handler": "^5.11.1",
     "@webiny/handler-aws": "^5.11.1",
-    "@webiny/handler-db": "^5.11.1",
     "@webiny/handler-graphql": "^5.11.1",
     "@webiny/handler-http": "^5.11.1",
     "@webiny/plugins": "^5.11.1",
@@ -27,7 +27,6 @@
     "dataloader": "^2.0.0",
     "deep-equal": "^2.0.4",
     "lodash.clonedeep": "^4.5.0",
-    "lodash.omit": "^4.5.0",
     "md5": "^2.3.0",
     "mdbid": "^1.0.0"
   },
@@ -37,7 +36,6 @@
     "@webiny/cli": "^5.11.1",
     "@webiny/project-utils": "^5.11.1",
     "jest": "^26.6.3",
-    "jest-dynalite": "^3.2.0",
     "rimraf": "^3.0.2",
     "ttypescript": "^1.5.12",
     "typescript": "^4.1.3"

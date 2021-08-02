@@ -31,6 +31,14 @@ export default (): ContextPlugin<CmsContext> => ({
     type: "context",
     name: "context-content-model-storageOperations",
     async apply(context) {
+        /**
+         * If cms is not defined on the context, do not continue, but log it.
+         */
+        if (!context.cms) {
+            console.log("Missing cms on context. Skipping ContentModel crud.");
+            return;
+        }
+
         const pluginType = "cms-content-model-storage-operations-provider";
         const providerPlugins = context.plugins.byType<CmsContentModelStorageOperationsProvider>(
             pluginType

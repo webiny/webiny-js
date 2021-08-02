@@ -31,6 +31,7 @@ import { deserializeSorters, serializeSorters } from "@webiny/app-page-builder/a
 import { Cell, Grid } from "@webiny/ui/Grid";
 import { Select } from "@webiny/ui/Select";
 import usePermission from "../../../hooks/usePermission";
+import { useForms } from "./useForms";
 
 const t = i18n.namespace("FormsApp.FormsDataList");
 const rightAlign = css({
@@ -42,9 +43,7 @@ const listItemMinHeight = css({
 });
 
 export type FormsDataListProps = {
-    listQuery: any;
     onCreateForm: () => void;
-    canCreate: boolean;
 };
 
 const SORTERS = [
@@ -71,7 +70,7 @@ const FormsDataList = (props: FormsDataListProps) => {
     const [filter, setFilter] = useState("");
     const [sort, setSort] = useState(serializeSorters({ savedOn: "desc" }));
 
-    const { listQuery } = props;
+    const { listQuery, canCreate } = useForms();
 
     const { location, history } = useRouter();
     const client = useApolloClient();
@@ -192,7 +191,7 @@ const FormsDataList = (props: FormsDataListProps) => {
             data={forms}
             loading={listQuery.loading}
             actions={
-                props.canCreate ? (
+                canCreate ? (
                     <ButtonSecondary data-testid="new-record-button" onClick={props.onCreateForm}>
                         <ButtonIcon icon={<AddIcon />} /> {t`New Form`}
                     </ButtonSecondary>

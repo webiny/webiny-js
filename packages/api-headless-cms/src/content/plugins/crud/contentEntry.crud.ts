@@ -117,7 +117,13 @@ export default (): ContextPlugin<CmsContext> => ({
     type: "context",
     name: "context-content-model-entry",
     async apply(context) {
-        const { security } = context;
+        /**
+         * If cms is not defined on the context, do not continue, but log it.
+         */
+        if (!context.cms) {
+            console.log("Missing cms on context. Skipping ContentEntry crud.");
+            return;
+        }
 
         const pluginType = "cms-content-entry-storage-operations-provider";
         const providerPlugins = context.plugins.byType<CmsContentEntryStorageOperationsProvider>(
@@ -314,7 +320,7 @@ export default (): ContextPlugin<CmsContext> => ({
 
                 await validateModelEntryData(context, model, input);
 
-                const identity = security.getIdentity();
+                const identity = context.security.getIdentity();
                 const locale = context.cms.getLocale();
 
                 const owner = {
@@ -429,7 +435,7 @@ export default (): ContextPlugin<CmsContext> => ({
                     latestStorageEntry
                 );
 
-                const identity = security.getIdentity();
+                const identity = context.security.getIdentity();
 
                 const latestId = latestStorageEntry ? latestStorageEntry.id : sourceId;
                 const { id, version: nextVersion } = increaseEntryIdVersion(latestId);
@@ -832,8 +838,7 @@ export default (): ContextPlugin<CmsContext> => ({
 
                 const entry: CmsContentEntry = {
                     ...originalEntry,
-                    status: STATUS_CHANGES_REQUESTED,
-                    locked: false
+                    status: STATUS_CHANGES_REQUESTED
                 };
 
                 let storageEntry: CmsStorageContentEntry = undefined;
@@ -916,8 +921,7 @@ export default (): ContextPlugin<CmsContext> => ({
 
                 const entry: CmsContentEntry = {
                     ...originalEntry,
-                    status: STATUS_REVIEW_REQUESTED,
-                    locked: true
+                    status: STATUS_REVIEW_REQUESTED
                 };
 
                 let storageEntry: CmsStorageContentEntry = undefined;

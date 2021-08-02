@@ -26,25 +26,11 @@ context("Pages Creation", () => {
         cy.findByTestId("pb-editor-publish-confirmation-dialog").within(() => {
             cy.findByText(/Confirm/i).click();
         });
-        /*
-         * We're doing this check just to wait for ES indexing.
-         * */
-        cy.waitUntil(
-            () =>
-                cy.pbListPages({ limit: 1, search: { query: newPageTitle } }).then(([page]) => {
-                    const { status } = page;
-                    return status === "published";
-                }),
-            {
-                description: `wait until page entry in updated in ES`
-            }
-        );
+
         // Wait till the "/pages" route
         cy.findAllByTestId("new-record-button")
             .first()
             .should("exist");
-        // We're reloading the page due to ES index delay and lack of apollo cache for "ListPages" query
-        cy.reload();
 
         cy.findByTestId("default-data-list").within(() => {
             cy.get(".mdc-list-item")
@@ -62,25 +48,11 @@ context("Pages Creation", () => {
         });
 
         cy.findByTestId("pb-editor-back-button").click();
-        /*
-         * We're doing this check just to wait for ES indexing.
-         * */
-        cy.waitUntil(
-            () =>
-                cy.pbListPages({ limit: 1, search: { query: newPageTitle } }).then(([page]) => {
-                    const { status } = page;
-                    return status === "draft";
-                }),
-            {
-                description: `wait until page entry in updated in ES`
-            }
-        );
+
         // Wait till the "/pages" route
         cy.findAllByTestId("new-record-button")
             .first()
             .should("exist");
-        // We're reloading the page due to ES index delay and lack of apollo cache for "ListPages" query
-        cy.reload();
 
         cy.findByTestId("default-data-list").within(() => {
             cy.get(".mdc-list-item")
@@ -98,9 +70,7 @@ context("Pages Creation", () => {
         cy.findByTestId("pb-page-details-header-delete-dialog").within(() => {
             cy.findByText(/Confirm/i).click();
         });
-        cy.wait(2000);
-        // We're reloading the page due to ES index delay and lack of apollo cache for "ListPages" query
-        cy.reload();
+
         cy.findByTestId("default-data-list").within(() => {
             cy.get(".mdc-list-item")
                 .first()

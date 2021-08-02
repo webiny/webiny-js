@@ -4,6 +4,7 @@ import graphqlPlugins from "@webiny/handler-graphql";
 import i18nPlugins from "@webiny/api-i18n/graphql";
 import i18nDynamoDbStorageOperations from "@webiny/api-i18n-ddb";
 import adminUsersPlugins from "@webiny/api-security-admin-users";
+import securityAdminUsersDynamoDbStorageOperations from "@webiny/api-security-admin-users-so-ddb";
 import i18nContentPlugins from "@webiny/api-i18n-content/plugins";
 import pageBuilderPlugins from "@webiny/api-page-builder/graphql";
 import dbPlugins from "@webiny/handler-db";
@@ -18,6 +19,7 @@ import formBuilderPlugins from "@webiny/api-form-builder/plugins";
 import securityPlugins from "./security";
 import headlessCmsPlugins from "@webiny/api-headless-cms/plugins";
 import headlessCmsDynamoDbElasticStorageOperation from "@webiny/api-headless-cms-ddb-es";
+import elasticsearchDataGzipCompression from "@webiny/api-elasticsearch/plugins/GzipCompression";
 
 // Imports plugins created via scaffolding utilities.
 import scaffoldsPlugins from "./plugins/scaffolds";
@@ -59,11 +61,13 @@ export const handler = createHandler({
             }
         }),
         adminUsersPlugins(),
+        securityAdminUsersDynamoDbStorageOperations(),
         pageBuilderPlugins(),
         formBuilderPlugins(),
         headlessCmsPlugins(),
         headlessCmsDynamoDbElasticStorageOperation(),
-        scaffoldsPlugins()
+        scaffoldsPlugins(),
+        elasticsearchDataGzipCompression()
     ],
     http: { debug }
 });

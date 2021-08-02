@@ -4,11 +4,9 @@
   "exclude": [
     "node_modules",
     "dist",
-    "../db-dynamodb",
     "../error",
     "../handler",
     "../handler-http",
-    "../handler-db",
     "../api-security",
     "../api-tenancy",
     "../api-upgrade",
@@ -21,7 +19,9 @@
     "rootDir": "./src",
     "outDir": "./dist",
     "declarationDir": "./dist",
-    "paths": {},
+    "paths": {
+      "~/*": ["./src/*"]
+    },
     "baseUrl": "."
   },
   "references": []

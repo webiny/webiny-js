@@ -21,6 +21,9 @@
     },
     {
       "path": "../ui"
+    },
+    {
+      "path": "../ui-composer"
     }
   ],
   "compilerOptions": {
@@ -38,7 +41,9 @@
       "@webiny/react-router/*": ["../react-router/src/*"],
       "@webiny/react-router": ["../react-router/src"],
       "@webiny/ui/*": ["../ui/src/*"],
-      "@webiny/ui": ["../ui/src"]
+      "@webiny/ui": ["../ui/src"],
+      "@webiny/ui-composer/*": ["../ui-composer/src/*"],
+      "@webiny/ui-composer": ["../ui-composer/src"]
     },
     "baseUrl": "."
   }

@@ -119,18 +119,27 @@ class FileManager {
                 function: this.functions.manage.arn,
                 principal: "s3.amazonaws.com",
                 sourceArn: this.bucket.arn
+            },
+            {
+                dependsOn: [this.bucket, this.functions.manage]
             }
         );
 
-        this.bucketNotification = new aws.s3.BucketNotification("bucketNotification", {
-            bucket: this.bucket.id,
-            lambdaFunctions: [
-                {
-                    lambdaFunctionArn: this.functions.manage.arn,
-                    events: ["s3:ObjectRemoved:*"]
-                }
-            ]
-        });
+        this.bucketNotification = new aws.s3.BucketNotification(
+            "bucketNotification",
+            {
+                bucket: this.bucket.id,
+                lambdaFunctions: [
+                    {
+                        lambdaFunctionArn: this.functions.manage.arn,
+                        events: ["s3:ObjectRemoved:*"]
+                    }
+                ]
+            },
+            {
+                dependsOn: [this.bucket, this.functions.manage, this.manageS3LambdaPermission]
+            }
+        );
     }
 }
 

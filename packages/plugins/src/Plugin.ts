@@ -3,7 +3,7 @@ export abstract class Plugin {
     public name: string;
 
     constructor() {
-        if (!this.type) {
+        if (!(this.constructor as typeof Plugin).type) {
             throw Error(`Missing "type" definition in "${this.constructor.name}"!`);
         }
     }

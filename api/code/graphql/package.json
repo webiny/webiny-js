@@ -21,6 +21,7 @@
     "@webiny/api-security": "^5.11.1",
     "@webiny/api-security-admin-users": "^5.11.1",
     "@webiny/api-security-admin-users-cognito": "^5.11.1",
+    "@webiny/api-security-admin-users-so-ddb": "^5.11.1",
     "@webiny/api-security-cognito-authentication": "^5.11.1",
     "@webiny/api-tenancy": "^5.11.1",
     "@webiny/cli": "^5.11.1",

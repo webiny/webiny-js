@@ -1,36 +1,51 @@
-import React from "react";
-import { MenuPlugin } from "@webiny/app-admin/plugins/MenuPlugin";
-import { i18n } from "@webiny/app/i18n";
-import { useSecurity } from "@webiny/app-security";
-import { ReactComponent as SecurityIcon } from "./../assets/icons/baseline-security-24px.svg";
+import { NavigationMenuElement, TAGS } from "@webiny/app-admin/elements/NavigationMenuElement";
 import { Permission } from "./constants";
+import { UIViewPlugin } from "@webiny/ui-composer/UIView";
+import { NavigationView } from "@webiny/app-admin/views/NavigationView";
 
-const t = i18n.ns("app-security/admin/menus");
+export default new UIViewPlugin<NavigationView>(NavigationView, async view => {
+    await view.isRendered();
 
-const SecurityMenu = ({ Menu, Section, Item }) => {
-    const { identity } = useSecurity();
-
+    const { identity } = view.getSecurityHook();
     const groups = identity.getPermission(Permission.Groups);
     const users = identity.getPermission(Permission.Users);
     const apiKeys = identity.getPermission(Permission.ApiKeys);
 
     if (!groups && !users && !apiKeys) {
-        return null;
+        return;
     }
 
-    return (
-        <Menu name="security" label={t`Security`} icon={<SecurityIcon />}>
-            <Section label={""}>
-                {users && <Item label={t`Users`} path="/security/users" />}
-                {groups && <Item label={t`Groups`} path="/security/groups" />}
-                {apiKeys && <Item label={t`API Keys`} path="/security/api-keys" />}
-            </Section>
-        </Menu>
+    const mainMenu = view.getSettingsMenuElement().addElement(
+        new NavigationMenuElement("security", {
+            label: "Security",
+            tags: [TAGS.UTILS]
+        })
     );
-};
 
-export default new MenuPlugin({
-    render(props) {
-        return <SecurityMenu {...props} />;
+    if (users) {
+        mainMenu.addElement(
+            new NavigationMenuElement("users", {
+                label: "Users",
+                path: "/security/users"
+            })
+        );
+    }
+
+    if (groups) {
+        mainMenu.addElement(
+            new NavigationMenuElement("groups", {
+                label: "Groups",
+                path: "/security/groups"
+            })
+        );
+    }
+
+    if (apiKeys) {
+        mainMenu.addElement(
+            new NavigationMenuElement("apiKeys", {
+                label: "API Keys",
+                path: "/security/api-keys"
+            })
+        );
     }
 });
