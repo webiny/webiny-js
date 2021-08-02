@@ -3,7 +3,7 @@ import Highlight from "react-highlight.js";
 import copy from "copy-to-clipboard";
 import elementToString from "react-element-to-jsx-string";
 import prettier from "prettier/standalone";
-import babylon from "prettier/parser-babylon";
+import parserBabel from "prettier/parser-babel";
 import styled from "@emotion/styled";
 
 type Props = {
@@ -71,7 +71,7 @@ class CodeBlock extends React.Component<Props, State> {
 
                 <Highlight language={this.props.lang || "html"}>
                     {prettier
-                        .format(source as string, { parser: "babylon", plugins: [babylon] })
+                        .format(source as string, { parser: "babylon", plugins: [parserBabel] })
                         .replace(">;", ">")}
                 </Highlight>
             </React.Fragment>
