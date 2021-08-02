@@ -25,7 +25,7 @@ jobs:
           node-version: 12
 
       - name: check WEBINY_PULUMI_BACKEND
-        run: echo '${{ secrets.WEBINY_PULUMI_BACKEND }}'
+        run: echo '${{ env.WEBINY_PULUMI_BACKEND }}'
       - name: Retrieve cached Verdaccio files
         uses: actions/cache@v2
         with:
