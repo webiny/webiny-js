@@ -11,6 +11,7 @@
     { "path": "../plugins" },
     { "path": "../react-router" },
     { "path": "../ui" },
+    { "path": "../ui-composer" },
     { "path": "../validation" }
   ],
   "compilerOptions": {
@@ -37,6 +38,8 @@
       "@webiny/react-router": ["../react-router/src"],
       "@webiny/ui/*": ["../ui/src/*"],
       "@webiny/ui": ["../ui/src"],
+      "@webiny/ui-composer/*": ["../ui-composer/src/*"],
+      "@webiny/ui-composer": ["../ui-composer/src"],
       "@webiny/validation/*": ["../validation/src/*"],
       "@webiny/validation": ["../validation/src"]
     }

@@ -5,8 +5,7 @@ import {
     PbEditorDefaultBarRightPageOptionsPlugin,
     PbEditorDefaultBarRightPlugin,
     PbEditorDefaultBarCenterPlugin
-} from "../../../types";
-import PageSettings from "./components/PageSettings";
+} from "~/types";
 import PageSettingsButton from "./components/PageSettingsButton";
 import PublishPageButton from "./components/PublishPageButton";
 import PreviewPageButton from "./components/PreviewPageButton";
@@ -17,6 +16,8 @@ import Title from "./components/Title";
 import BackButton from "./components/BackButton";
 import Revisions from "./components/Revisions";
 import EditorResponsiveBar from "./components/EditorResponsiveBar";
+import { UIViewComponent } from "@webiny/ui-composer/UIView";
+import { PageSettingsView } from "~/editor/views/PageSettingsView";
 
 export default [
     {
@@ -30,7 +31,8 @@ export default [
             return active.find(pl => pl.name === "pb-editor-page-settings-bar");
         },
         render() {
-            return <PageSettings />;
+            //return <PageSettings />;
+            return <UIViewComponent view={new PageSettingsView()} />;
         }
     } as PbEditorBarPlugin,
     {

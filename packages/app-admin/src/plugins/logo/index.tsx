@@ -1,29 +1,29 @@
 import React from "react";
-import Logo from "./Logo";
-import { TopAppBarTitle } from "@webiny/ui/TopAppBar";
-import { AdminHeaderLeftPlugin, AdminMenuLogoPlugin } from "../../types";
+import Logo from "~/plugins/logo/Logo";
+import { plugins } from "@webiny/plugins";
+import { AdminMenuLogoPlugin } from "~/types";
+import { logoStyle } from "~/views/NavigationView/Styled";
+import { UIViewPlugin } from "@webiny/ui-composer/UIView";
+import { AdminView } from "~/views/AdminView";
+import { NavigationView } from "~/views/NavigationView";
 
 export default () => [
-    {
-        name: "admin-header-logo",
-        type: "admin-header-left",
-        render() {
-            return (
-                <TopAppBarTitle>
-                    <Logo white />
-                </TopAppBarTitle>
+    /* Set logo in the layout header. */
+    new UIViewPlugin<AdminView>(AdminView, view => {
+        view.getHeaderElement().setLogo(<Logo white />);
+    }),
+    /* Set logo in the navigation drawer. */
+    new UIViewPlugin<NavigationView>(NavigationView, view => {
+        view.getHeaderElement().setLogo(
+            <Logo onClick={() => view.getNavigationHook().hideMenu()} />
+        );
+
+        // IMPORTANT: Fetch logo plugin for backwards compatibility.
+        const logoPlugin = plugins.byName<AdminMenuLogoPlugin>("admin-menu-logo");
+        if (logoPlugin) {
+            view.getHeaderElement().setLogo(
+                React.cloneElement(logoPlugin.render(), { className: logoStyle })
             );
         }
-    } as AdminHeaderLeftPlugin,
-    {
-        name: "admin-menu-logo",
-        type: "admin-menu-logo",
-        render() {
-            return (
-                <TopAppBarTitle>
-                    <Logo />
-                </TopAppBarTitle>
-            );
-        }
-    } as AdminMenuLogoPlugin
+    })
 ];
