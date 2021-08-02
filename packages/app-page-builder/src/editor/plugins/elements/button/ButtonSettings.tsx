@@ -66,16 +66,18 @@ const ButtonSettings: React.FunctionComponent<PbEditorPageElementSettingsRenderC
 
     const updateType = useCallback(value => getUpdateValue("type")(value), [getUpdateValue]);
     const updateIcon = useCallback(value => getUpdateValue("icon.id")(value?.id), [getUpdateValue]);
-    const updateIconColor = useCallback((value: string) => getUpdateValue("icon.color")(value), [
-        getUpdateValue
-    ]);
+    const updateIconColor = useCallback(
+        (value: string) => getUpdateValue("icon.color")(value),
+        [getUpdateValue]
+    );
     const updateIconColorPreview = useCallback(
         (value: string) => getUpdatePreview("icon.color")(value),
         [getUpdatePreview]
     );
-    const updateIconWidth = useCallback((value: string) => getUpdateValue("icon.width")(value), [
-        getUpdateValue
-    ]);
+    const updateIconWidth = useCallback(
+        (value: string) => getUpdateValue("icon.width")(value),
+        [getUpdateValue]
+    );
     const updateIconPosition = useCallback(
         (value: string) => getUpdateValue("icon.position")(value),
         [getUpdateValue]

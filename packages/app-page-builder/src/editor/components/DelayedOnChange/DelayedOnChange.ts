@@ -39,10 +39,7 @@ export const DelayedOnChange: React.FunctionComponent<Props> = ({ children, ...o
     const onValueStateChanged = (nextValue: string) => {
         localTimeout.current && clearTimeout(localTimeout.current);
         localTimeout.current = null;
-        localTimeout.current = (setTimeout(
-            () => applyValue(nextValue),
-            delay
-        ) as unknown) as number;
+        localTimeout.current = setTimeout(() => applyValue(nextValue), delay) as unknown as number;
     };
 
     // need to clear the timeout when unmounting the component

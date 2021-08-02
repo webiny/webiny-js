@@ -54,10 +54,7 @@ const deleteFile = () => {
 const updateFileName = newName => {
     // Edit the name and save it
     cy.findByTestId("fm.file-details.drawer").within(() => {
-        cy.findByPlaceholderText("Enter name")
-            .clear()
-            .type(newName)
-            .blur();
+        cy.findByPlaceholderText("Enter name").clear().type(newName).blur();
     });
     cy.findByText("Name successfully updated.").should("exist");
     // Exit file details view
@@ -197,9 +194,7 @@ context("File Manager - Update file details", () => {
         cy.findByTestId("fm-list-wrapper").within(() => {
             cy.findByText(newFileName1).should("exist");
         });
-        cy.get("@search-input")
-            .clear()
-            .type(newFileName2);
+        cy.get("@search-input").clear().type(newFileName2);
         cy.get(".react-spinner-material").should("not.exist");
         // File should be in list
         cy.findByTestId("fm-list-wrapper").within(() => {
@@ -255,9 +250,7 @@ context("File Manager - Update file details", () => {
             cy.findByText(map[tagNew]).should("exist");
         });
 
-        cy.get("@search-input")
-            .clear()
-            .type(tagOld);
+        cy.get("@search-input").clear().type(tagOld);
         cy.get(".react-spinner-material").should("not.exist");
         // File should be in list
         cy.findByTestId("fm-list-wrapper").within(() => {
@@ -265,9 +258,7 @@ context("File Manager - Update file details", () => {
         });
 
         // Search file for common tag
-        cy.get("@search-input")
-            .clear()
-            .type(tagCommon);
+        cy.get("@search-input").clear().type(tagCommon);
         cy.get(".react-spinner-material").should("not.exist");
         // Both files should be in list
         cy.findByTestId("fm-list-wrapper").within(() => {

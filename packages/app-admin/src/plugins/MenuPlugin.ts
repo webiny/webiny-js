@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Plugin } from "@webiny/plugins";
-import { ItemProps, MenuProps, SectionProps } from "~/views/NavigationView/legacyMenu";
+import { ItemProps, MenuProps, SectionProps } from "~/ui/views/NavigationView/legacyMenu";
 
 interface Props {
     Menu: React.ComponentType<MenuProps>;

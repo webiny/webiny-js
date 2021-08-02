@@ -13,7 +13,7 @@ yargs
         `To find more information, docs and tutorials, see ${blue("https://docs.webiny.com")}.`
     )
     .epilogue(`Want to contribute? ${blue("https://github.com/webiny/webiny-js")}.`)
-    .fail(function(msg, error, yargs) {
+    .fail(function (msg, error, yargs) {
         if (msg) {
             if (msg.includes("Not enough non-option arguments")) {
                 console.log();

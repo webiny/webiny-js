@@ -36,15 +36,8 @@ class Checkbox extends React.Component<Props> {
     };
 
     render() {
-        const {
-            value,
-            label,
-            disabled,
-            indeterminate,
-            description,
-            validation,
-            onClick
-        } = this.props;
+        const { value, label, disabled, indeterminate, description, validation, onClick } =
+            this.props;
         return (
             <React.Fragment>
                 <RmwcCheckbox

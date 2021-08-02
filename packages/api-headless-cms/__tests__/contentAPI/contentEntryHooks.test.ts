@@ -198,12 +198,8 @@ describe("contentEntryHooks", () => {
     });
 
     test("should execute hooks on delete revision", async () => {
-        const {
-            createCategory,
-            createCategoryFrom,
-            deleteCategory,
-            sleep
-        } = useCategoryManageHandler(manageOpts, [contentEntryHooks()]);
+        const { createCategory, createCategoryFrom, deleteCategory, sleep } =
+            useCategoryManageHandler(manageOpts, [contentEntryHooks()]);
 
         const [createResponse] = await createCategory({
             data: {
@@ -360,11 +356,10 @@ describe("contentEntryHooks", () => {
     });
 
     test("should execute hooks on unpublish", async () => {
-        const {
-            createCategory,
-            unpublishCategory,
-            publishCategory
-        } = useCategoryManageHandler(manageOpts, [contentEntryHooks()]);
+        const { createCategory, unpublishCategory, publishCategory } = useCategoryManageHandler(
+            manageOpts,
+            [contentEntryHooks()]
+        );
 
         const [createResponse] = await createCategory({
             data: {

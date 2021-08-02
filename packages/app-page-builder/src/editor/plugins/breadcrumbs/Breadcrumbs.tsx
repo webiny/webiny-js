@@ -13,33 +13,33 @@ const Breadcrumbs: React.FunctionComponent = () => {
     const [items, setItems] = useState([]);
     const [activeElement, setActiveElementAtomValue] = useRecoilState(activeElementAtom);
     const element = useRecoilValue(elementByIdSelector(activeElement));
-    const [highlightElementAtomValue, setHighlightElementAtomValue] = useRecoilState(
-        highlightElementAtom
-    );
+    const [highlightElementAtomValue, setHighlightElementAtomValue] =
+        useRecoilState(highlightElementAtom);
     const snapshot = useRecoilSnapshot();
     const lazyHighlight = useRecoilCallback(
-        ({ set }) => async (id: string) => {
-            if (highlightElementAtomValue) {
-                // Update the element that is currently highlighted
-                set(elementsAtom(highlightElementAtomValue), prevValue => {
+        ({ set }) =>
+            async (id: string) => {
+                if (highlightElementAtomValue) {
+                    // Update the element that is currently highlighted
+                    set(elementsAtom(highlightElementAtomValue), prevValue => {
+                        return {
+                            ...prevValue,
+                            isHighlighted: false
+                        };
+                    });
+                }
+
+                // Set the new highlighted element
+                setHighlightElementAtomValue(id);
+
+                // Update the element that is about to be highlighted
+                set(elementsAtom(id), prevValue => {
                     return {
                         ...prevValue,
-                        isHighlighted: false
+                        isHighlighted: true
                     };
                 });
-            }
-
-            // Set the new highlighted element
-            setHighlightElementAtomValue(id);
-
-            // Update the element that is about to be highlighted
-            set(elementsAtom(id), prevValue => {
-                return {
-                    ...prevValue,
-                    isHighlighted: true
-                };
-            });
-        },
+            },
         [highlightElementAtomValue]
     );
 

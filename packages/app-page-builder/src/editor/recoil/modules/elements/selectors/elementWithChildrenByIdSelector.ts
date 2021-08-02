@@ -11,10 +11,10 @@ export const elementWithChildrenByIdSelector = selectorFamily<PbEditorElement | 
                 return undefined;
             }
 
-            return ({
+            return {
                 ...element,
                 elements: element.elements.map((id: string) => get(elementByIdSelector(id)))
-            } as any) as PbEditorElement;
+            } as any as PbEditorElement;
         };
     }
 });

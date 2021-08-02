@@ -114,7 +114,11 @@ export const useReference: UseReferenceHook = ({ bind, field }) => {
         client
             .query({
                 query: GQL.SEARCH_CONTENT_ENTRIES,
-                variables: { modelIds: models.map(m => m.modelId), query: "__latest__", limit: 10 }
+                variables: {
+                    modelIds: models.map(m => m.modelId),
+                    query: "__latest__",
+                    limit: 10
+                }
             })
             .then(({ data }) => {
                 const latestEntryData = convertQueryDataToEntryList(data.content.data);

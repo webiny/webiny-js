@@ -3,8 +3,7 @@ const avatars = {
         id: "5fb297c01d35c932d44e79e3",
         name: "8kgvqs3io-8kgvqrn7i-John-Rambo-Sylvester-Stallone.jpg",
         key: "8kgvqs3io-8kgvqrn7i-John-Rambo-Sylvester-Stallone.jpg",
-        src:
-            "//d3ulsgnn9qke57.cloudfront.net/files/8kgvqs3io-8kgvqrn7i-John-Rambo-Sylvester-Stallone.jpg",
+        src: "//d3ulsgnn9qke57.cloudfront.net/files/8kgvqs3io-8kgvqrn7i-John-Rambo-Sylvester-Stallone.jpg",
         size: 97579,
         type: "image/jpeg"
     },
@@ -12,8 +11,7 @@ const avatars = {
         id: "5fb297c11d35c932d44e79e4",
         name: "8kgvqs3io-8kgvqrn7i-John-Rambo-Sylvester-Stallone.jpg",
         key: "8kgvqs3io-8kgvqrn7i-John-Rambo-Sylvester-Stallone.jpg",
-        src:
-            "//d3ulsgnn9qke57.cloudfront.net/files/8kgvqs3io-8kgvqrn7i-John-Rambo-Sylvester-Stallone.jpg",
+        src: "//d3ulsgnn9qke57.cloudfront.net/files/8kgvqs3io-8kgvqrn7i-John-Rambo-Sylvester-Stallone.jpg",
         size: 97579,
         type: "image/jpeg"
     },
@@ -21,8 +19,7 @@ const avatars = {
         id: "5fb297c11d35c932d44e79e5",
         name: "8kgvqs3io-8kgvqrn7i-John-Rambo-Sylvester-Stallone.jpg",
         key: "8kgvqs3io-8kgvqrn7i-John-Rambo-Sylvester-Stallone.jpg",
-        src:
-            "//d3ulsgnn9qke57.cloudfront.net/files/8kgvqs3io-8kgvqrn7i-John-Rambo-Sylvester-Stallone.jpg",
+        src: "//d3ulsgnn9qke57.cloudfront.net/files/8kgvqs3io-8kgvqrn7i-John-Rambo-Sylvester-Stallone.jpg",
         size: 97579,
         type: "image/jpeg"
     }

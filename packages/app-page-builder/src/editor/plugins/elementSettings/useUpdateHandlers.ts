@@ -18,9 +18,7 @@ type UpdateHandlersPropsType = {
     postModifyElement?: (args: PostModifyElementArgs) => void;
 };
 type HandlerUpdateCallableType = (name: string) => (value: any) => void;
-type UseUpdateHandlersType = (
-    props: UpdateHandlersPropsType
-) => {
+type UseUpdateHandlersType = (props: UpdateHandlersPropsType) => {
     getUpdateValue: HandlerUpdateCallableType;
     getUpdatePreview: HandlerUpdateCallableType;
 };

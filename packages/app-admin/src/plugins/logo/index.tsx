@@ -2,10 +2,10 @@ import React from "react";
 import Logo from "~/plugins/logo/Logo";
 import { plugins } from "@webiny/plugins";
 import { AdminMenuLogoPlugin } from "~/types";
-import { logoStyle } from "~/views/NavigationView/Styled";
-import { UIViewPlugin } from "@webiny/ui-composer/UIView";
-import { AdminView } from "~/views/AdminView";
-import { NavigationView } from "~/views/NavigationView";
+import { logoStyle } from "~/ui/views/NavigationView/Styled";
+import { UIViewPlugin } from "~/ui/UIView";
+import { AdminView } from "~/ui/views/AdminView";
+import { NavigationView } from "~/ui/views/NavigationView";
 
 export default () => [
     /* Set logo in the layout header. */

@@ -19,9 +19,7 @@ context("Groups Module", () => {
             .findByText("Save group")
             .click();
 
-        cy.findByText("Record saved successfully.")
-            .should("exist")
-            .wait(500);
+        cy.findByText("Record saved successfully.").should("exist").wait(500);
 
         cy.findByLabelText("Slug")
             .should("be.disabled")
@@ -30,9 +28,7 @@ context("Groups Module", () => {
             .findByText("Save group")
             .click();
 
-        cy.findByText("Record saved successfully.")
-            .should("exist")
-            .wait(500);
+        cy.findByText("Record saved successfully.").should("exist").wait(500);
 
         cy.findByTestId("default-data-list").within(() => {
             cy.get("div")
@@ -52,9 +48,7 @@ context("Groups Module", () => {
                 .within(() => cy.findByText("Confirm").click());
         });
 
-        cy.findByText("Record deleted successfully.")
-            .should("exist")
-            .wait(500);
+        cy.findByText("Record deleted successfully.").should("exist").wait(500);
         cy.findByTestId("default-data-list").within(() => {
             cy.findByText(`Test Group ${id}`).should("not.exist");
         });

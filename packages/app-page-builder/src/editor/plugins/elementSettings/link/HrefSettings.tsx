@@ -32,8 +32,9 @@ const classes = {
 type LinkSettingsPropsType = {
     element: PbEditorElement;
 };
-const LinkSettingsComponent: React.FunctionComponent<LinkSettingsPropsType &
-    PbEditorPageElementSettingsRenderComponentProps> = ({ element, defaultAccordionValue }) => {
+const LinkSettingsComponent: React.FunctionComponent<
+    LinkSettingsPropsType & PbEditorPageElementSettingsRenderComponentProps
+> = ({ element, defaultAccordionValue }) => {
     const handler = useEventActionHandler();
 
     const { href, newTab } = element.data?.link || {};

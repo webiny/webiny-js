@@ -25,9 +25,8 @@ export default new ContextPlugin<CmsContext>(async context => {
     }
 
     const pluginType = "cms-system-storage-operations-provider";
-    const providerPlugins = context.plugins.byType<CmsSystemStorageOperationsProviderPlugin>(
-        pluginType
-    );
+    const providerPlugins =
+        context.plugins.byType<CmsSystemStorageOperationsProviderPlugin>(pluginType);
     const providerPlugin = providerPlugins[providerPlugins.length - 1];
     if (!providerPlugin) {
         throw new WebinyError(`Missing "${pluginType}" plugin.`, "PLUGIN_NOT_FOUND", {
@@ -105,7 +104,9 @@ export default new ContextPlugin<CmsContext>(async context => {
                 await executeCallbacks<InstallationPlugin["beforeInstall"]>(
                     installationPlugins,
                     "beforeInstall",
-                    { context }
+                    {
+                        context
+                    }
                 );
 
                 // Add default content model group.
@@ -124,7 +125,9 @@ export default new ContextPlugin<CmsContext>(async context => {
                 await executeCallbacks<InstallationPlugin["afterInstall"]>(
                     installationPlugins,
                     "afterInstall",
-                    { context }
+                    {
+                        context
+                    }
                 );
 
                 // Set app version

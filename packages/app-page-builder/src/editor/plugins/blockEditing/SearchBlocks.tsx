@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { css } from "emotion";
 import { DeactivatePluginActionEvent, UpdateElementActionEvent } from "../../recoil/actions";
 import { createBlockElements } from "../../helpers";
 import { useEventActionHandler } from "../../hooks/useEventActionHandler";
@@ -7,12 +8,10 @@ import { useKeyHandler } from "../../hooks/useKeyHandler";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { plugins } from "@webiny/plugins";
 import { OverlayLayout } from "@webiny/app-admin/components/OverlayLayout";
-import { LeftPanel, RightPanel, SplitView } from "@webiny/app-admin/components/SplitView";
 import { List, ListItem, ListItemGraphic } from "@webiny/ui/List";
 import { Icon } from "@webiny/ui/Icon";
 import { DelayedOnChange } from "../../components/DelayedOnChange";
 import { Typography } from "@webiny/ui/Typography";
-
 import { ReactComponent as SearchIcon } from "../../assets/icons/search.svg";
 import {
     SimpleForm,
@@ -30,6 +29,8 @@ import { listItem, ListItemTitle, listStyle, TitleContent } from "./SearchBlocks
 import * as Styled from "./StyledComponents";
 import { PbEditorBlockCategoryPlugin, PbEditorBlockPlugin } from "~/types";
 import { elementWithChildrenByIdSelector, rootElementAtom } from "../../recoil/modules";
+import { Cell, Grid } from "@webiny/ui/Grid";
+import classNames from "classnames";
 
 const allBlockCategory: PbEditorBlockCategoryPlugin = {
     type: "pb-editor-block-category",
@@ -40,8 +41,42 @@ const allBlockCategory: PbEditorBlockCategoryPlugin = {
     icon: <AllIcon />
 };
 
+const grid = css({
+    "&.mdc-layout-grid": {
+        padding: 0,
+        backgroundColor: "var(--mdc-theme-background)",
+        ">.mdc-layout-grid__inner": {
+            gridGap: 0
+        }
+    }
+});
+
+const leftPanel = css({
+    backgroundColor: "var(--mdc-theme-surface)",
+    ">.webiny-data-list": {
+        display: "flex",
+        flexDirection: "column",
+        height: "calc(100vh - 70px)",
+        ".mdc-list": {
+            overflow: "auto"
+        }
+    },
+    ">.mdc-list": {
+        display: "flex",
+        flexDirection: "column",
+        maxHeight: "calc(100vh - 70px)",
+        overflow: "auto"
+    }
+});
+
+const rightPanel = css({
+    backgroundColor: "var(--mdc-theme-background)",
+    overflow: "auto",
+    height: "calc(100vh - 70px)"
+});
+
 const sortBlocks = blocks => {
-    return blocks.sort(function(a, b) {
+    return blocks.sort(function (a, b) {
         if (a.name === "pb-editor-block-empty") {
             return -1;
         }
@@ -69,9 +104,8 @@ const SearchBar = () => {
     const [editingBlock, setEditingBlock] = useState(null);
     const [activeCategory, setActiveCategory] = useState("all");
 
-    const [updatePageElementMutation, { loading: updateInProgress }] = useMutation(
-        UPDATE_PAGE_ELEMENT
-    );
+    const [updatePageElementMutation, { loading: updateInProgress }] =
+        useMutation(UPDATE_PAGE_ELEMENT);
     const [deletePageElementMutation] = useMutation(DELETE_PAGE_ELEMENT);
 
     const allCategories = useMemo(
@@ -248,8 +282,8 @@ const SearchBar = () => {
 
     return (
         <OverlayLayout barMiddle={renderSearchInput()} onExited={onExited}>
-            <SplitView>
-                <LeftPanel span={3}>
+            <Grid className={grid}>
+                <Cell span={3} className={classNames(leftPanel, "webiny-split-view__left-panel")}>
                     <List twoLine className={listStyle}>
                         {allCategories.map(p => (
                             <ListItem
@@ -271,8 +305,8 @@ const SearchBar = () => {
                             </ListItem>
                         ))}
                     </List>
-                </LeftPanel>
-                <RightPanel span={9}>
+                </Cell>
+                <Cell span={9} className={classNames(rightPanel, "webiny-split-view__right-panel")}>
                     {activeCategory && (
                         <SimpleForm>
                             <SimpleFormHeader
@@ -311,8 +345,8 @@ const SearchBar = () => {
                             </SimpleFormContent>
                         </SimpleForm>
                     )}
-                </RightPanel>
-            </SplitView>
+                </Cell>
+            </Grid>
         </OverlayLayout>
     );
 };

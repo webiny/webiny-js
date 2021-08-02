@@ -37,9 +37,7 @@ context("Pages Creation", () => {
         cy.visit("/page-builder/pages");
 
         cy.findByTestId("default-data-list").within(() => {
-            cy.get("div")
-                .first()
-                .click();
+            cy.get("div").first().click();
         });
 
         cy.findByTestId("pb-page-details")

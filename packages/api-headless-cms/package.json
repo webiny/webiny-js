@@ -59,7 +59,7 @@
     "graphql": "^14.6.0",
     "jest": "^26.6.3",
     "mdbid": "^1.0.0",
-    "prettier": "^1.19.1",
+    "prettier": "^2.3.2",
     "rimraf": "^3.0.2",
     "sinon": "^9.0.2",
     "ttypescript": "^1.5.12",

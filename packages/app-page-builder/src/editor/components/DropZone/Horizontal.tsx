@@ -31,7 +31,7 @@ const OuterDiv = React.memo<OuterDiv>(
         },
         (props: OuterDiv) => ({
             [props.below ? "bottom" : "top"]: 0,
-            [(InnerDiv as unknown) as string]: {
+            [InnerDiv as unknown as string]: {
                 backgroundColor: props.isOver
                     ? "var(--mdc-theme-primary)"
                     : "var(--mdc-theme-secondary)",

@@ -11,12 +11,8 @@ context("Account Module", () => {
         cy.should("value", Cypress.env("DEFAULT_ADMIN_USER_USERNAME"));
         cy.findByLabelText("Password");
         cy.should("value", "");
-        cy.findByLabelText("First Name")
-            .clear()
-            .type(firstName);
-        cy.findByLabelText("Last Name")
-            .clear()
-            .type(lastName);
+        cy.findByLabelText("First Name").clear().type(firstName);
+        cy.findByLabelText("Last Name").clear().type(lastName);
         cy.findByText("Update account").click();
         cy.findByText("Account saved successfully!");
         cy.should("exist");

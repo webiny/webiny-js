@@ -178,28 +178,26 @@ export class Form extends React.Component<FormProps, State> {
 
     validate = async () => {
         const { data = {}, validation = {} } = this.state;
-        const promises = Object.keys(this.inputs).map(
-            async (name): Promise<boolean> => {
-                const { validators } = this.inputs[name];
-                if (!validators || validators.length === 0) {
-                    return true;
-                }
-                const hasValue = !!data[name];
-                const isInputValid = validation[name] ? validation[name].isValid : undefined;
-                const shouldValidate = !hasValue || (hasValue && isInputValid !== true);
-                if (!shouldValidate) {
-                    return true;
-                }
-                if (isInputValid) {
-                    return true;
-                }
-                const result = await this.validateInput(name);
-                if (result === false) {
-                    return false;
-                }
+        const promises = Object.keys(this.inputs).map(async (name): Promise<boolean> => {
+            const { validators } = this.inputs[name];
+            if (!validators || validators.length === 0) {
                 return true;
             }
-        );
+            const hasValue = !!data[name];
+            const isInputValid = validation[name] ? validation[name].isValid : undefined;
+            const shouldValidate = !hasValue || (hasValue && isInputValid !== true);
+            if (!shouldValidate) {
+                return true;
+            }
+            if (isInputValid) {
+                return true;
+            }
+            const result = await this.validateInput(name);
+            if (result === false) {
+                return false;
+            }
+            return true;
+        });
 
         const results = await Promise.all(promises);
         // all values must be true to pass the validation

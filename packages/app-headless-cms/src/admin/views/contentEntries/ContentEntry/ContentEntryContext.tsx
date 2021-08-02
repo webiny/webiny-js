@@ -36,13 +36,8 @@ export interface ContentEntryContext extends ContentEntriesContext {
 export const Context = React.createContext<ContentEntryContext>(null);
 
 export const Provider = ({ children }) => {
-    const {
-        contentModel,
-        canCreate,
-        listQueryVariables,
-        setListQueryVariables,
-        sorters
-    } = useContentEntries();
+    const { contentModel, canCreate, listQueryVariables, setListQueryVariables, sorters } =
+        useContentEntries();
 
     const formRef = useRef(null);
     const tabsRef = useRef(null);

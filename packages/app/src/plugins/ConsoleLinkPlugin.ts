@@ -19,9 +19,9 @@ export class ConsoleLinkPlugin extends ApolloLinkPlugin {
                         ? JSON.stringify(operation.variables)
                         : "{ see request details in the Network tab }";
                     console.groupCollapsed(
-                        `Logs for graphQL ${
-                            isQuery ? "query" : "mutation"
-                        }: %c${operation.operationName || "anonymous operation"} %c${variables}%c`,
+                        `Logs for graphQL ${isQuery ? "query" : "mutation"}: %c${
+                            operation.operationName || "anonymous operation"
+                        } %c${variables}%c`,
                         "color: #fa5a28",
                         "color: #6b6b6b",
                         "color: black"

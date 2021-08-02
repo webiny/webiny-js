@@ -16,7 +16,7 @@ export interface UIElementConfig<TProps = any> {
     tags?: string[];
 }
 
-interface UIElementWrapperProps {
+export interface UIElementWrapperProps {
     children: React.ReactNode;
     [key: string]: any;
 }
@@ -29,11 +29,11 @@ function defaultShouldRender() {
     return true;
 }
 
-export abstract class UIElement<TConfig extends UIElementConfig = UIElementConfig> {
+export class UIElement<TConfig extends UIElementConfig = UIElementConfig> {
     protected _elements = new Map<string, UIElement>();
+    protected _layout: UILayout;
     private _config: TConfig;
     private _tags = new Set();
-    private _layout: UILayout;
     private _wrappers: UIElementWrapper[] = [];
     private _id: string;
     private _parent: UIElement;
@@ -56,6 +56,8 @@ export abstract class UIElement<TConfig extends UIElementConfig = UIElementConfi
         if (config.shouldRender) {
             this._shouldRender.push(config.shouldRender);
         }
+
+        this.applyPlugins(UIElement);
     }
 
     get id() {
@@ -108,6 +110,10 @@ export abstract class UIElement<TConfig extends UIElementConfig = UIElementConfi
 
     addShouldRender<TProps>(cb: ShouldRender<TProps>) {
         this._shouldRender.push(cb);
+    }
+
+    setLayout(layout: UILayout) {
+        this._layout = layout;
     }
 
     getLayout() {
@@ -375,7 +381,7 @@ export abstract class UIElement<TConfig extends UIElementConfig = UIElementConfi
     }
 }
 
-interface ApplyFunction<TElement> {
+export interface ApplyFunction<TElement> {
     (element: TElement): void;
 }
 

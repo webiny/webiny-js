@@ -11,13 +11,8 @@ import { useContentEntries } from "./useContentEntries";
 import { CmsEditorContentEntry } from "~/types";
 
 export function useContentEntriesList() {
-    const {
-        contentModel,
-        listQueryVariables,
-        setListQueryVariables,
-        sorters,
-        canCreate
-    } = useContentEntries();
+    const { contentModel, listQueryVariables, setListQueryVariables, sorters, canCreate } =
+        useContentEntries();
 
     const [loadMoreLoading, setLoadMoreLoading] = useState(false);
     const [filter, setFilter] = useState("");

@@ -10,9 +10,7 @@ context("Categories Module", () => {
 
         cy.findByLabelText("Name").type(`Cool Category ${id}`);
         cy.findByText("Save category").click();
-        cy.findAllByText("Value is required.")
-            .should("exist")
-            .should("have.length", 2);
+        cy.findAllByText("Value is required.").should("exist").should("have.length", 2);
         cy.findByLabelText("URL").type(`Some URL`);
         cy.findByText("Save category").click();
         cy.findByText("Value is required.").should("exist");
@@ -20,9 +18,7 @@ context("Categories Module", () => {
         cy.findByText("Save category").click();
         cy.findByText("Value is required.").should("not.exist");
         cy.findByText("Category URL must begin and end with a forward slash (`/`)").should("exist");
-        cy.findByLabelText("URL")
-            .clear()
-            .type(`/some-url-for-category-${id}/`);
+        cy.findByLabelText("URL").clear().type(`/some-url-for-category-${id}/`);
         cy.findByText("Save category").click();
         cy.findByText("Category URL must begin and end with a forward slash (`/`)").should(
             "not.exist"

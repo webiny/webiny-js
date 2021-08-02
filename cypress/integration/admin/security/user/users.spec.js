@@ -13,9 +13,7 @@ context("Security -> Users", () => {
         const [email, password] = [uniqid("", "@gmail.com"), uniqid()];
         const groupName = "Full Access";
         // Open user details form
-        cy.findAllByTestId("new-record-button")
-            .first()
-            .click();
+        cy.findAllByTestId("new-record-button").first().click();
         // Add user's detail
         cy.findByLabelText("First Name").type(firstName);
         cy.findByLabelText("Last Name").type(lastName);
@@ -41,9 +39,7 @@ context("Security -> Users", () => {
         cy.findByLabelText("First Name").type(newFirstName);
         cy.findByLabelText("Last Name").type(newLastName);
         cy.findByLabelText("Password").type(newPassword);
-        cy.findByLabelText("Group")
-            .clear()
-            .type(newGroupName);
+        cy.findByLabelText("Group").clear().type(newGroupName);
         cy.wait(1000);
         cy.findByText(newGroupName).click();
         // Save details

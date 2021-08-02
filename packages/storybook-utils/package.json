@@ -18,7 +18,7 @@
     "@emotion/styled": "^10.0.27",
     "copy-to-clipboard": "^3.0.8",
     "highlight.js": "^9.12.0",
-    "prettier": "^1.18.2",
+    "prettier": "^2.3.2",
     "react": "^16.14.0",
     "react-dom": "^16.14.0",
     "react-element-to-jsx-string": "^14.0.1",

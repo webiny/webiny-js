@@ -1,8 +1,8 @@
 import React, { Fragment } from "react";
 import { css } from "emotion";
 import { Typography } from "@webiny/ui/Typography";
-import { UIRenderer, UIRenderParams } from "@webiny/ui-composer/UIRenderer";
-import { NavigationMenuElement } from "~/elements/NavigationMenuElement";
+import { UIRenderer, UIRenderParams } from "~/ui/UIRenderer";
+import { NavigationMenuElement } from "~/ui/elements/NavigationMenuElement";
 
 const menuSectionTitle = css({
     marginLeft: 20,

@@ -71,8 +71,7 @@ describe("Settings Test", () => {
                     twitter: "https://www.twitter.com/",
                     image: {
                         id: "1kucKwtX3vI2w6tYuPwJsvRFn9g",
-                        src:
-                            "https://d1peg08dnrinui.cloudfront.net/files/9ki1goobp-webiny_security__1_.png"
+                        src: "https://d1peg08dnrinui.cloudfront.net/files/9ki1goobp-webiny_security__1_.png"
                     }
                 }
             }
@@ -98,8 +97,7 @@ describe("Settings Test", () => {
                                 twitter: "https://www.twitter.com/",
                                 image: {
                                     id: "1kucKwtX3vI2w6tYuPwJsvRFn9g",
-                                    src:
-                                        "https://d1peg08dnrinui.cloudfront.net/files/9ki1goobp-webiny_security__1_.png"
+                                    src: "https://d1peg08dnrinui.cloudfront.net/files/9ki1goobp-webiny_security__1_.png"
                                 }
                             }
                         },
@@ -132,8 +130,7 @@ describe("Settings Test", () => {
                                 twitter: "https://www.twitter.com/",
                                 image: {
                                     id: "1kucKwtX3vI2w6tYuPwJsvRFn9g",
-                                    src:
-                                        "https://d1peg08dnrinui.cloudfront.net/files/9ki1goobp-webiny_security__1_.png"
+                                    src: "https://d1peg08dnrinui.cloudfront.net/files/9ki1goobp-webiny_security__1_.png"
                                 }
                             }
                         },
@@ -220,8 +217,7 @@ describe("Settings Test", () => {
                     twitter: "https://www.twitter.com/",
                     image: {
                         id: "1kucKwtX3vI2w6tYuPwJsvRFn9g",
-                        src:
-                            "https://d1peg08dnrinui.cloudfront.net/files/9ki1goobp-webiny_security__1_.png"
+                        src: "https://d1peg08dnrinui.cloudfront.net/files/9ki1goobp-webiny_security__1_.png"
                     }
                 }
             }
@@ -250,8 +246,7 @@ describe("Settings Test", () => {
                                     facebook: "https://www.facebook.com/",
                                     image: {
                                         id: "1kucKwtX3vI2w6tYuPwJsvRFn9g",
-                                        src:
-                                            "https://d1peg08dnrinui.cloudfront.net/files/9ki1goobp-webiny_security__1_.png"
+                                        src: "https://d1peg08dnrinui.cloudfront.net/files/9ki1goobp-webiny_security__1_.png"
                                     },
                                     instagram: "https://www.instagram.com/",
                                     twitter: "https://www.twitter.com/"
@@ -286,8 +281,7 @@ describe("Settings Test", () => {
                     twitter: "https://www.twitter.com/-UPDATED",
                     image: {
                         id: "1kucKwtX3vI2w6tYuPwJsvRFn9g-UPDATED",
-                        src:
-                            "https://d1peg08dnrinui.cloudfront.net/files/9ki1goobp-webiny_security__1_.png-UPDATED"
+                        src: "https://d1peg08dnrinui.cloudfront.net/files/9ki1goobp-webiny_security__1_.png-UPDATED"
                     }
                 }
             }
@@ -316,8 +310,7 @@ describe("Settings Test", () => {
                                     facebook: "https://www.facebook.com/",
                                     image: {
                                         id: "1kucKwtX3vI2w6tYuPwJsvRFn9g",
-                                        src:
-                                            "https://d1peg08dnrinui.cloudfront.net/files/9ki1goobp-webiny_security__1_.png"
+                                        src: "https://d1peg08dnrinui.cloudfront.net/files/9ki1goobp-webiny_security__1_.png"
                                     },
                                     instagram: "https://www.instagram.com/",
                                     twitter: "https://www.twitter.com/"

@@ -10,7 +10,5 @@ import sharp from "sharp";
  */
 export default async (buffer, transformations) => {
     const { width } = transformations;
-    return await sharp(buffer)
-        .resize({ width })
-        .toBuffer();
+    return await sharp(buffer).resize({ width }).toBuffer();
 };

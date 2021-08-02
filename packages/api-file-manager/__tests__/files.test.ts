@@ -33,18 +33,11 @@ const fileCData = {
 };
 
 describe("Files CRUD test", () => {
-    const {
-        createFile,
-        updateFile,
-        createFiles,
-        getFile,
-        listFiles,
-        listTags,
-        until
-    } = useGqlHandler({
-        permissions: [{ name: "*" }],
-        identity: identityA
-    });
+    const { createFile, updateFile, createFiles, getFile, listFiles, listTags, until } =
+        useGqlHandler({
+            permissions: [{ name: "*" }],
+            identity: identityA
+        });
 
     test("should create, read, update and delete files", async () => {
         const [create] = await createFile({ data: fileAData });

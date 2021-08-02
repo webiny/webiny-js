@@ -131,15 +131,8 @@ const renderEmpty = ({ hasPreviouslyUploadedFiles, browseFiles, fmFilePermission
 };
 
 function FileManagerView(props: FileManagerViewProps) {
-    const {
-        onClose,
-        onChange,
-        accept,
-        multiple,
-        maxSize,
-        multipleMaxCount,
-        multipleMaxSize
-    } = props;
+    const { onClose, onChange, accept, multiple, maxSize, multipleMaxCount, multipleMaxSize } =
+        props;
 
     const {
         selected,

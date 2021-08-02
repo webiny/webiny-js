@@ -1,8 +1,8 @@
 import React from "react";
-import { GenericElement } from "@webiny/ui-composer/elements/GenericElement";
+import { GenericElement } from "@webiny/app-admin/ui/elements/GenericElement";
 import { CmsMenuLoader } from "./menus/CmsMenuLoader";
-import { UIViewPlugin } from "@webiny/ui-composer/UIView";
-import { NavigationView } from "@webiny/app-admin/views/NavigationView";
+import { UIViewPlugin } from "@webiny/app-admin/ui/UIView";
+import { NavigationView } from "@webiny/app-admin/ui/views/NavigationView";
 // import { NavigationMenuElement } from "@webiny/app-admin/elements/NavigationMenuElement";
 // import { ReactComponent as BeenHere } from "~/admin/icons/beenhere.svg";
 

@@ -10,7 +10,6 @@
     "../app-security",
     "../app-admin",
     "../ui",
-    "../ui-composer",
     "../react-router",
     "../plugins"
   ],

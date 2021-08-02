@@ -60,7 +60,7 @@ const sassLoader = {
 
 // This is the production and development configuration.
 // It is focused on developer experience, fast rebuilds, and a minimal bundle.
-module.exports = function(webpackEnv, { paths, babelCustomizer }) {
+module.exports = function (webpackEnv, { paths, babelCustomizer }) {
     const isEnvDevelopment = webpackEnv === "development";
     const isEnvProduction = webpackEnv === "production";
 

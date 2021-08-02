@@ -1,7 +1,7 @@
 import React, { ReactElement } from "react";
 import { Plugin } from "@webiny/plugins/types";
 import { ApolloClient } from "apollo-client";
-import { ItemProps, MenuProps, SectionProps } from "~/views/NavigationView/legacyMenu";
+import { ItemProps, MenuProps, SectionProps } from "~/ui/views/NavigationView/legacyMenu";
 
 type RenderParams = {
     content: React.ReactNode;

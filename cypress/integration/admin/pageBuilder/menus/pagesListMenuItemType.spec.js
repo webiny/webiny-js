@@ -51,12 +51,8 @@ describe("Menus Module", () => {
         cy.findByText("Value is required.").should("exist");
         cy.findByLabelText("Category").type(`Static`);
         cy.findByText("Static").click();
-        cy.findByText("Sort by...")
-            .prev()
-            .select("Title");
-        cy.findByText("Sort direction...")
-            .prev()
-            .select("Descending");
+        cy.findByText("Sort by...").prev().select("Title");
+        cy.findByText("Sort direction...").prev().select("Descending");
 
         cy.findByLabelText("Tags").type(`page-${id}-`);
         cy.findByText(`page-${id}-0`).click();
@@ -66,9 +62,7 @@ describe("Menus Module", () => {
 
         cy.findByLabelText("Tags").type(`some-custom-tag`);
         cy.findByText(`some-custom-tag`).click();
-        cy.findByText("Tags rule...")
-            .prev()
-            .select("Must include any of the tags");
+        cy.findByText("Tags rule...").prev().select("Must include any of the tags");
 
         cy.findByText(/Save Menu Item/i).click();
         cy.findByText("Save menu").click();
@@ -101,12 +95,8 @@ describe("Menus Module", () => {
             cy.findByTestId("pb-edit-icon-button").click();
         });
 
-        cy.findByText("Sort direction...")
-            .prev()
-            .select("Ascending");
-        cy.findByLabelText("Title")
-            .clear()
-            .type(`added-menu-${idEdited}`);
+        cy.findByText("Sort direction...").prev().select("Ascending");
+        cy.findByLabelText("Title").clear().type(`added-menu-${idEdited}`);
 
         cy.findByText(/Save Menu Item/i).click();
         cy.findByText("Save menu").click();

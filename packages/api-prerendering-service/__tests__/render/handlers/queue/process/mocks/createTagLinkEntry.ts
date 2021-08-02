@@ -7,7 +7,7 @@ type Entry = Record<string, any> & {
     key: string;
 };
 
-export default function({ url, key, value }): Entry {
+export default function ({ url, key, value }): Entry {
     return {
         PK: `T#root#PS#TAG#${key}`,
         SK: `${value}#${url}`,

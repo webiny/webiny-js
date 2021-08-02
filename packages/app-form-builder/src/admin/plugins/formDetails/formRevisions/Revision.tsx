@@ -63,13 +63,11 @@ type RevisionProps = {
 const Revision = (props: RevisionProps) => {
     const { revision: rev, form } = props;
     const { icon, text: tooltipText } = getIcon(rev);
-    const {
-        publishRevision,
-        createRevision,
-        deleteRevision,
-        editRevision,
-        unpublishRevision
-    } = useRevision({ revision: rev, form });
+    const { publishRevision, createRevision, deleteRevision, editRevision, unpublishRevision } =
+        useRevision({
+            revision: rev,
+            form
+        });
     const { canPublish, canUnpublish, canDelete, canEdit } = usePermission();
 
     const showMenu = canEdit(form) || canDelete(form) || canPublish() || canUnpublish();

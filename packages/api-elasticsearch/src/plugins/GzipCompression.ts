@@ -2,8 +2,8 @@ import { CompressionPlugin } from "~/plugins/definition/CompressionPlugin";
 import zlib from "zlib";
 
 export const gzip = (input: zlib.InputType, options?: zlib.ZlibOptions): Promise<Buffer> => {
-    return new Promise(function(resolve, reject) {
-        zlib.gzip(input, options, function(error, result) {
+    return new Promise(function (resolve, reject) {
+        zlib.gzip(input, options, function (error, result) {
             if (!error) {
                 resolve(result);
             } else {
@@ -13,8 +13,8 @@ export const gzip = (input: zlib.InputType, options?: zlib.ZlibOptions): Promise
     });
 };
 export const ungzip = (input: zlib.InputType, options?: zlib.ZlibOptions): Promise<Buffer> => {
-    return new Promise(function(resolve, reject) {
-        zlib.gunzip(input, options, function(error, result) {
+    return new Promise(function (resolve, reject) {
+        zlib.gunzip(input, options, function (error, result) {
             if (!error) {
                 resolve(result);
             } else {

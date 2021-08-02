@@ -12,7 +12,9 @@ const plugin: PbPageDetailsPlugin = {
                 {renderPlugins<PbPageDetailsRevisionContentPlugin>(
                     "pb-page-details-revision-content",
                     props,
-                    { wrapper: false }
+                    {
+                        wrapper: false
+                    }
                 )}
             </Tabs>
         );

@@ -32,9 +32,8 @@ const plugin: UpgradePlugin<CmsContext> = {
                 const securityGroup = securityGroupsWithCmsPermission[i];
                 console.log(`Updating permission for group: ${securityGroup.slug}`);
                 // Filter CMS content permissions.
-                const CmsContentPermissions = securityGroup.permissions.filter(
-                    isCmsContentPermission
-                );
+                const CmsContentPermissions =
+                    securityGroup.permissions.filter(isCmsContentPermission);
                 const restPermissions = securityGroup.permissions.filter(
                     permission => !isCmsContentPermission(permission)
                 );

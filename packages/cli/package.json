@@ -23,7 +23,7 @@
     "load-json-file": "6.2.0",
     "ncp": "^2.0.0",
     "pirates": "^4.0.1",
-    "prettier": "^1.14.2",
+    "prettier": "^2.3.2",
     "replace-in-path": "^1.0.4",
     "rimraf": "^3.0.2",
     "semver": "7.3.4",

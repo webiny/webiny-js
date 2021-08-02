@@ -4,12 +4,14 @@ import {
     CmsContentEntry
 } from "../../../../../types";
 
-export const resolveGetByIds: ResolverFactory = ({ model }) => async (root, args, { cms }) => {
-    try {
-        const response: CmsContentEntry[] = await cms.entries.getByIds(model, args.revisions);
+export const resolveGetByIds: ResolverFactory =
+    ({ model }) =>
+    async (root, args, { cms }) => {
+        try {
+            const response: CmsContentEntry[] = await cms.entries.getByIds(model, args.revisions);
 
-        return new Response(response);
-    } catch (e) {
-        return new ErrorResponse(e);
-    }
-};
+            return new Response(response);
+        } catch (e) {
+            return new ErrorResponse(e);
+        }
+    };

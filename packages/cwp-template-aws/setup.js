@@ -33,7 +33,9 @@ const setup = async args => {
         fs.moveSync(
             path.join(projectRoot, renames[i].prev),
             path.join(projectRoot, renames[i].next),
-            { overwrite: true }
+            {
+                overwrite: true
+            }
         );
     }
 

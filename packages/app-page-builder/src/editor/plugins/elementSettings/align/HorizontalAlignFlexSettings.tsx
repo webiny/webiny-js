@@ -67,77 +67,78 @@ enum AlignmentsTypeEnum {
 const alignments = Object.keys(icons);
 const DATA_NAMESPACE = "data.settings.horizontalAlignFlex";
 
-const HorizontalAlignFlexSettings: React.FunctionComponent<PbEditorPageElementSettingsRenderComponentProps> = ({
-    defaultAccordionValue = false
-}) => {
-    const { displayMode } = useRecoilValue(uiAtom);
-    const propName = `${DATA_NAMESPACE}.${displayMode}`;
-    const handler = useEventActionHandler();
-    const activeElementId = useRecoilValue(activeElementAtom);
-    const element = useRecoilValue(elementWithChildrenByIdSelector(activeElementId));
-    const fallbackValue = useMemo(
-        () =>
-            applyFallbackDisplayMode(displayMode, mode =>
-                get(element, `${DATA_NAMESPACE}.${mode}`)
-            ),
-        [displayMode]
-    );
-    const align = get(element, propName, fallbackValue || AlignmentsTypeEnum.CENTER);
+const HorizontalAlignFlexSettings: React.FunctionComponent<PbEditorPageElementSettingsRenderComponentProps> =
+    ({ defaultAccordionValue = false }) => {
+        const { displayMode } = useRecoilValue(uiAtom);
+        const propName = `${DATA_NAMESPACE}.${displayMode}`;
+        const handler = useEventActionHandler();
+        const activeElementId = useRecoilValue(activeElementAtom);
+        const element = useRecoilValue(elementWithChildrenByIdSelector(activeElementId));
+        const fallbackValue = useMemo(
+            () =>
+                applyFallbackDisplayMode(displayMode, mode =>
+                    get(element, `${DATA_NAMESPACE}.${mode}`)
+                ),
+            [displayMode]
+        );
+        const align = get(element, propName, fallbackValue || AlignmentsTypeEnum.CENTER);
 
-    const { config: activeEditorModeConfig } = useMemo(() => {
-        return plugins
-            .byType<PbEditorResponsiveModePlugin>("pb-editor-responsive-mode")
-            .find(pl => pl.config.displayMode === displayMode);
-    }, [displayMode]);
+        const { config: activeEditorModeConfig } = useMemo(() => {
+            return plugins
+                .byType<PbEditorResponsiveModePlugin>("pb-editor-responsive-mode")
+                .find(pl => pl.config.displayMode === displayMode);
+        }, [displayMode]);
 
-    const updateElement = (element: PbEditorElement) => {
-        handler.trigger(
-            new UpdateElementActionEvent({
-                element,
-                history: true
-            })
+        const updateElement = (element: PbEditorElement) => {
+            handler.trigger(
+                new UpdateElementActionEvent({
+                    element,
+                    history: true
+                })
+            );
+        };
+
+        const onClick = (type: AlignmentsTypeEnum) => {
+            const newElement = merge({}, element, set({}, propName, type));
+            updateElement(newElement);
+        };
+
+        const plugin = plugins
+            .byType<PbEditorPageElementPlugin>("pb-editor-page-element")
+            .find(pl => pl.elementType === element.type);
+
+        if (!plugin) {
+            return null;
+        }
+
+        return (
+            <Accordion
+                title={"Horizontal align"}
+                defaultValue={defaultAccordionValue}
+                icon={
+                    <Tooltip
+                        content={`Changes will apply for ${activeEditorModeConfig.displayMode}`}
+                    >
+                        {activeEditorModeConfig.icon}
+                    </Tooltip>
+                }
+            >
+                <ContentWrapper>
+                    {alignments.map(type => (
+                        <Tooltip key={type} content={iconDescriptions[type]} placement={"top"}>
+                            <IconButton
+                                className={classNames({
+                                    [classes.activeIcon]: align === type,
+                                    [classes.icon]: align !== type
+                                })}
+                                icon={icons[type]}
+                                onClick={() => onClick(type as AlignmentsTypeEnum)}
+                            />
+                        </Tooltip>
+                    ))}
+                </ContentWrapper>
+            </Accordion>
         );
     };
-
-    const onClick = (type: AlignmentsTypeEnum) => {
-        const newElement = merge({}, element, set({}, propName, type));
-        updateElement(newElement);
-    };
-
-    const plugin = plugins
-        .byType<PbEditorPageElementPlugin>("pb-editor-page-element")
-        .find(pl => pl.elementType === element.type);
-
-    if (!plugin) {
-        return null;
-    }
-
-    return (
-        <Accordion
-            title={"Horizontal align"}
-            defaultValue={defaultAccordionValue}
-            icon={
-                <Tooltip content={`Changes will apply for ${activeEditorModeConfig.displayMode}`}>
-                    {activeEditorModeConfig.icon}
-                </Tooltip>
-            }
-        >
-            <ContentWrapper>
-                {alignments.map(type => (
-                    <Tooltip key={type} content={iconDescriptions[type]} placement={"top"}>
-                        <IconButton
-                            className={classNames({
-                                [classes.activeIcon]: align === type,
-                                [classes.icon]: align !== type
-                            })}
-                            icon={icons[type]}
-                            onClick={() => onClick(type as AlignmentsTypeEnum)}
-                        />
-                    </Tooltip>
-                ))}
-            </ContentWrapper>
-        </Accordion>
-    );
-};
 
 export default React.memo(HorizontalAlignFlexSettings);

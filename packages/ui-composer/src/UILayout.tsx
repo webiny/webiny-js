@@ -1,15 +1,11 @@
-import React, { Fragment } from "react";
-import { Cell, Grid, GridInner } from "@webiny/ui/Grid";
+import React from "react";
 import { UIElement } from "./UIElement";
+import { Plugin, plugins } from "@webiny/plugins";
 
 interface LayoutItem {
     element: string;
     width: number;
 }
-
-const ElementID = ({ children }) => {
-    return children;
-};
 
 interface ElementGetter {
     (elementId: string): UIElement<any>;
@@ -19,17 +15,21 @@ interface Sorter {
     (elementA: UIElement, elementB: UIElement): number;
 }
 
-function getElementKey(element: UIElement) {
-    return `${element.constructor.name}:${element.id}`;
+interface UILayoutRenderer {
+    (params: { layout: UILayout; props: any; hasParentGrid: boolean }): React.ReactElement;
 }
 
 export class UILayout {
+    private _renderer: UILayoutRenderer;
     private _grid = true;
     private _layout: LayoutItem[][] = [];
     private _getElement: ElementGetter;
 
     constructor(elementGetter: ElementGetter) {
         this._getElement = elementGetter;
+
+        const layoutPlugins = plugins.byType<UILayoutPlugin<any>>(UILayoutPlugin.type);
+        layoutPlugins.forEach(plugin => plugin.apply(this));
     }
 
     setGrid(flag: boolean) {
@@ -38,6 +38,18 @@ export class UILayout {
 
     getGrid() {
         return this._grid;
+    }
+
+    getLayout() {
+        return this._layout;
+    }
+
+    setRenderer(renderer: UILayoutRenderer) {
+        this._renderer = renderer;
+    }
+
+    getElement(id) {
+        return this._getElement(id);
     }
 
     sort(sorter: Sorter) {
@@ -138,57 +150,31 @@ export class UILayout {
     }
 
     render(props, hasParentGrid = false) {
-        if (!this._grid) {
-            return (
-                <Fragment>
-                    {this._layout.map((row, index) => (
-                        <Fragment key={index}>
-                            {row.map(item => {
-                                const element = this._getElement(item.element);
-
-                                if (!element) {
-                                    console.warn(`Element "${item.element}" was not found!`);
-                                    return null;
-                                }
-
-                                if (!element.shouldRender(props)) {
-                                    return null;
-                                }
-
-                                return (
-                                    <ElementID key={getElementKey(element)}>
-                                        {element.render(props)}
-                                    </ElementID>
-                                );
-                            })}
-                        </Fragment>
-                    ))}
-                </Fragment>
+        if (!this._renderer) {
+            throw Error(
+                `UILayout needs a renderer! Register a UILayoutPlugin to configure a renderer.`
             );
         }
 
-        const GridComponent = hasParentGrid ? GridInner : Grid;
+        return this._renderer({ layout: this, props, hasParentGrid });
+    }
+}
 
-        return (
-            <GridComponent>
-                {this._layout.map((row, index) => (
-                    <Fragment key={index}>
-                        {row.map(item => {
-                            const element = this._getElement(item.element);
-                            if (!element.shouldRender(props)) {
-                                return null;
-                            }
-                            return (
-                                <Cell key={item.element} span={item.width}>
-                                    <ElementID key={getElementKey(element)}>
-                                        {element.render(props)}
-                                    </ElementID>
-                                </Cell>
-                            );
-                        })}
-                    </Fragment>
-                ))}
-            </GridComponent>
-        );
+interface ApplyFunction<TElement> {
+    (element: TElement): void;
+}
+
+export class UILayoutPlugin<TLayout extends UILayout = UILayout> extends Plugin {
+    public static readonly type: string = "UILayoutPlugin";
+    private _apply: ApplyFunction<TLayout>;
+
+    constructor(apply: ApplyFunction<TLayout>) {
+        super();
+
+        this._apply = apply;
+    }
+
+    apply(element: TLayout) {
+        this._apply(element);
     }
 }

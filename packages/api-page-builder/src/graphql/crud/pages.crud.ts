@@ -1235,7 +1235,10 @@ const plugin: ContextPlugin<PbContext> = {
                     await executeCallbacks<PagePlugin["beforeUnpublish"]>(
                         pagePlugins,
                         "beforeUnpublish",
-                        { context, page }
+                        {
+                            context,
+                            page
+                        }
                     );
 
                     page.status = STATUS_UNPUBLISHED;
@@ -1300,7 +1303,10 @@ const plugin: ContextPlugin<PbContext> = {
                     await executeCallbacks<PagePlugin["afterUnpublish"]>(
                         pagePlugins,
                         "afterUnpublish",
-                        { context, page }
+                        {
+                            context,
+                            page
+                        }
                     );
 
                     return page;

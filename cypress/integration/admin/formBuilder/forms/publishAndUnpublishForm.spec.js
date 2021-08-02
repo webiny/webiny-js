@@ -7,9 +7,7 @@ context("Forms Creation", () => {
         const newFormTitle = `Test form ${uniqid()}`;
         // 1. Create form
         cy.visit("/form-builder/forms");
-        cy.findAllByTestId("new-record-button")
-            .first()
-            .click();
+        cy.findAllByTestId("new-record-button").first().click();
         cy.findByTestId("fb-new-form-modal").within(() => {
             cy.findByPlaceholderText("Enter a name for your new form").type(newFormTitle);
             cy.findByText("+ Create").click();
@@ -18,9 +16,12 @@ context("Forms Creation", () => {
 
         // 2. Add "Email" field to the form
         cy.findByTestId("form-editor-field-group-contact").click();
-        cy.get(
-            `[data-testid="fb.editor.fields.field.email"]`
-        ).drag(`[data-testid="fb.editor.dropzone.center"]`, { force: true });
+        cy.get(`[data-testid="fb.editor.fields.field.email"]`).drag(
+            `[data-testid="fb.editor.dropzone.center"]`,
+            {
+                force: true
+            }
+        );
         cy.wait(1000);
 
         // 3. Publish form from inside the editor
@@ -62,9 +63,10 @@ context("Forms Creation", () => {
         cy.wait(500);
         // 5.1. Add "Website" field to the form
         cy.findByTestId("form-editor-field-group-contact").click();
-        cy.get(
-            `[data-testid="fb.editor.fields.field.website"]`
-        ).drag(`[data-testid="fb.editor.dropzone.horizontal-last"]`, { force: true });
+        cy.get(`[data-testid="fb.editor.fields.field.website"]`).drag(
+            `[data-testid="fb.editor.dropzone.horizontal-last"]`,
+            { force: true }
+        );
         cy.wait(1000);
         // 5.2. Publish the new revision
         cy.findByTestId("fb.editor.default-bar.publish").click();
@@ -120,9 +122,7 @@ context("Forms Creation", () => {
                     cy.findByTestId("fb.form-revisions.action-menu").click();
                 });
         });
-        cy.findAllByTestId("fb.form-revisions.action-menu.create-revision")
-            .last()
-            .click();
+        cy.findAllByTestId("fb.form-revisions.action-menu.create-revision").last().click();
         cy.wait(1000);
         // 8. Go back in form details view and check it's status
         cy.findByTestId("fb-editor-back-button").click();

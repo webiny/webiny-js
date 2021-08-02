@@ -9,7 +9,6 @@
     "../handler-http",
     "../api-security",
     "../api-tenancy",
-    "../api-upgrade",
     "../plugins",
     "../validation",
     "../handler-aws",

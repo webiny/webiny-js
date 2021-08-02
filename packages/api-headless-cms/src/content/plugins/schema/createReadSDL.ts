@@ -41,22 +41,28 @@ export const createReadSDL: CreateManageSDL = ({ model, fieldTypePlugins }): str
             ${fieldsRender.map(f => f.fields).join("\n")}
         }
         
-        ${getFilterFieldsRender &&
+        ${
+            getFilterFieldsRender &&
             `input ${rTypeName}GetWhereInput {
             ${getFilterFieldsRender}
-        }`}
+        }`
+        }
         
         
-        ${listFilterFieldsRender &&
+        ${
+            listFilterFieldsRender &&
             `input ${rTypeName}ListWhereInput {
             ${listFilterFieldsRender}
-        }`}
+        }`
+        }
         
         
-        ${sortEnumRender &&
+        ${
+            sortEnumRender &&
             `enum ${rTypeName}ListSorter {
             ${sortEnumRender}
-        }`}
+        }`
+        }
         
         type ${rTypeName}Response {
             data: ${rTypeName}

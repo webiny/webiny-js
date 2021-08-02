@@ -2,9 +2,9 @@ import React from "react";
 import { Avatar } from "@webiny/ui/Avatar";
 import { Image } from "@webiny/app/components";
 import { useSecurity } from "@webiny/app-security/hooks/useSecurity";
-import { GenericElement } from "@webiny/ui-composer/elements/GenericElement";
-import { UIViewPlugin } from "@webiny/ui-composer/UIView";
-import { AdminView } from "@webiny/app-admin/views/AdminView";
+import { GenericElement } from "@webiny/app-admin/ui/elements/GenericElement";
+import { UIViewPlugin } from "@webiny/app-admin/ui/UIView";
+import { AdminView } from "@webiny/app-admin/ui/views/AdminView";
 import { UserMenuElement } from "@webiny/app-admin/plugins/userMenu/UserMenuElement";
 
 const UserImage = () => {

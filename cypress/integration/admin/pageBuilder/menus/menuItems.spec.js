@@ -36,12 +36,8 @@ context("Menus Module", () => {
         cy.findByText("Value is required.").should("exist");
         cy.findByLabelText("Category").type(`Static`);
         cy.findByText("Static").click();
-        cy.findByText("Sort by...")
-            .prev()
-            .select("Title");
-        cy.findByText("Sort direction...")
-            .prev()
-            .select("Descending");
+        cy.findByText("Sort by...").prev().select("Title");
+        cy.findByText("Sort direction...").prev().select("Descending");
         cy.findByLabelText("Tags").type(`1: ${id}`);
         cy.findByText(`1: ${id}`).click();
         cy.findByLabelText("Tags").type(`2: ${id}`);
@@ -69,9 +65,7 @@ context("Menus Module", () => {
             .click()
             .wait(200);
         cy.findByText("Value must be a valid URL.").should("exist");
-        cy.findByLabelText("URL")
-            .clear()
-            .type(`https://${id}.com`);
+        cy.findByLabelText("URL").clear().type(`https://${id}.com`);
         cy.findByText(/Save Menu Item/i).click();
 
         // Test "Folder".
@@ -88,10 +82,7 @@ context("Menus Module", () => {
         cy.findByLabelText("Slug").type(`cool-menu-${id}`);
         cy.findByLabelText("Description").type("This is a cool test.");
 
-        cy.findByText("Save menu")
-            .click()
-            .wait(2000)
-            .reload();
+        cy.findByText("Save menu").click().wait(2000).reload();
 
         // After reload, let's check if we have all items still present.
         cy.findByText(`Page List ${id}`).should("exist");

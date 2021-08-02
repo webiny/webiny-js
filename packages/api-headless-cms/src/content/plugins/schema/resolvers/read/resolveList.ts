@@ -5,15 +5,15 @@ import {
     CmsContentEntry
 } from "../../../../../types";
 
-export const resolveList: ResolverFactory = ({ model }) => async (root, args, { cms }) => {
-    try {
-        const response: [CmsContentEntry[], CmsContentEntryMeta] = await cms.entries.listPublished(
-            model,
-            args
-        );
+export const resolveList: ResolverFactory =
+    ({ model }) =>
+    async (root, args, { cms }) => {
+        try {
+            const response: [CmsContentEntry[], CmsContentEntryMeta] =
+                await cms.entries.listPublished(model, args);
 
-        return new ListResponse(...response);
-    } catch (e) {
-        return new ListErrorResponse(e);
-    }
-};
+            return new ListResponse(...response);
+        } catch (e) {
+            return new ListErrorResponse(e);
+        }
+    };

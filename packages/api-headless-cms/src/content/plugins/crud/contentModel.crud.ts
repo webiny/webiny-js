@@ -40,9 +40,8 @@ export default (): ContextPlugin<CmsContext> => ({
         }
 
         const pluginType = "cms-content-model-storage-operations-provider";
-        const providerPlugins = context.plugins.byType<CmsContentModelStorageOperationsProvider>(
-            pluginType
-        );
+        const providerPlugins =
+            context.plugins.byType<CmsContentModelStorageOperationsProvider>(pluginType);
         /**
          * Storage operations for the content model.
          * Contains logic to save the data into the specific storage.
@@ -202,7 +201,7 @@ export default (): ContextPlugin<CmsContext> => ({
              * @internal
              */
             async updateModel(model, data) {
-                const input = (data as unknown) as CmsContentModelUpdateInput;
+                const input = data as unknown as CmsContentModelUpdateInput;
                 await beforeUpdateHook({
                     context,
                     storageOperations,
