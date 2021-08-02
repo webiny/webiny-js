@@ -1,0 +1,27 @@
+{
+  "extends": "../../../tsconfig",
+  "include": ["src"],
+  "compilerOptions": {
+    "composite": false,
+    "paths": {
+      "@webiny/app-admin/*": ["../../../packages/app-admin/src/*"],
+      "@webiny/app-admin": ["../../../packages/app-admin/src"],
+      "@webiny/app/*": ["../../../packages/app/src/*"],
+      "@webiny/app": ["../../../packages/app/src"],
+      "@webiny/app-security-admin-users/*": ["../../../packages/app-security-admin-users/src/*"],
+      "@webiny/app-security-admin-users": ["../../../packages/app-security-admin-users/src"],
+      "@webiny/app-security-admin-users-cognito/*": [
+        "../../../packages/app-security-admin-users-cognito/src/*"
+      ],
+      "@webiny/app-security-admin-users-cognito": [
+        "../../../packages/app-security-admin-users-cognito/src"
+      ],
+      "@webiny/app-plugin-admin-welcome-screen": [
+        "../../../packages/app-plugin-admin-welcome-screen"
+      ],
+      "@webiny/app-tenancy/*": ["../../../packages/app-tenancy/src/*"],
+      "@webiny/app-tenancy": ["../../../packages/app-tenancy/src"]
+    },
+    "baseUrl": "."
+  }
+}
