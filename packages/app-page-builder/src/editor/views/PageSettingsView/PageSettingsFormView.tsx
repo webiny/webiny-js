@@ -4,7 +4,7 @@ import { PageSettingsView } from "../PageSettingsView";
 
 export class PageSettingsFormView extends FormView {
     constructor(id) {
-        super(id);
+        super(id, { setupForm: false });
 
         this.getSubmitButtonElement().setLabel("Save Settings");
         this.applyPlugins(PageSettingsFormView);
