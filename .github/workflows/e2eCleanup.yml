@@ -63,9 +63,16 @@ jobs:
             !test-project/**/node_modules/**/*
             !test-project/.yarn/cache/**/*
 
+
+      - name: LL
+        run: ls -alh
+
       - name: Install dependencies
         working-directory: test-project
         run: yarn
+
+      - name: LL test-project
+        run: cd test-project && ls -alh
 
       - name: Destroy API project application's cloud infrastructure resources
         working-directory: test-project
