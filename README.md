@@ -370,6 +370,13 @@ Thanks goes to these wonderful people:
                         <sub><b>Karthick Raja</b></sub>
                     </a>
                     <br />
+                </td><td align="center">
+                    <a href="https://github.com/facorread">
+                        <img src="https://avatars.githubusercontent.com/u/127711?v=4" width="100px;" alt="Fabio A. Correa"/>
+                        <br />
+                        <sub><b>Fabio A. Correa</b></sub>
+                    </a>
+                    <br />
                 </td></tr>
 </table>
 <!-- markdownlint-enable -->

@@ -119,6 +119,9 @@ class FileManager {
                 function: this.functions.manage.arn,
                 principal: "s3.amazonaws.com",
                 sourceArn: this.bucket.arn
+            },
+            {
+                dependsOn: [this.bucket, this.functions.manage]
             }
         );
 
@@ -134,7 +137,7 @@ class FileManager {
                 ]
             },
             {
-                dependsOn: [this.bucket, this.functions.manage]
+                dependsOn: [this.bucket, this.functions.manage, this.manageS3LambdaPermission]
             }
         );
     }

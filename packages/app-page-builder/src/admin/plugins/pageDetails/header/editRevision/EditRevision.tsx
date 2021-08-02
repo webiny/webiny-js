@@ -3,12 +3,14 @@ import { IconButton } from "@webiny/ui/Button";
 import { useRouter } from "@webiny/react-router";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { ReactComponent as EditIcon } from "../../../../assets/edit.svg";
-import { CREATE_PAGE } from "../../../../graphql/pages";
+import { CREATE_PAGE } from "~/admin/graphql/pages";
+import * as GQLCache from "~/admin/views/Pages/cache";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { i18n } from "@webiny/app/i18n";
-const t = i18n.ns("app-headless-cms/app-page-builder/page-details/header/edit");
 import { useMutation } from "@apollo/react-hooks";
-import usePermission from "../../../../../hooks/usePermission";
+import usePermission from "~/hooks/usePermission";
+
+const t = i18n.ns("app-headless-cms/app-page-builder/page-details/header/edit");
 
 const EditRevision = props => {
     const { page } = props;
@@ -21,7 +23,14 @@ const EditRevision = props => {
     const createFromAndEdit = useCallback(async () => {
         setInProgress(true);
         const response = await createPageFrom({
-            variables: { from: page.id }
+            variables: { from: page.id },
+            update(cache, { data }) {
+                if (data.pageBuilder.createPage.error) {
+                    return;
+                }
+
+                GQLCache.updateLatestRevisionInListCache(cache, data.pageBuilder.createPage.data);
+            }
         });
         setInProgress(false);
         const { data, error } = response.data.pageBuilder.createPage;

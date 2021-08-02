@@ -162,6 +162,11 @@ export class UserStorageOperationsDdb implements UserStorageOperations {
                 }
             );
         }
+
+        if (userTenantAccessList.length === 0) {
+            return [];
+        }
+
         const batch = userTenantAccessList.map(item => {
             return this.entity.getBatch({
                 PK: item.PK,

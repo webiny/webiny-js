@@ -88,7 +88,6 @@ export const iconSearchType = css({
 });
 
 export const searchWrapper = css({
-    width: "100%",
     backgroundColor: "rgba(0, 0, 0, 0.1)",
     display: "flex",
     padding: "10px 20px",

@@ -8,7 +8,6 @@ export default () => {
         onEditorMount: handler => {
             // @ts-ignore
             return handler.on(UpdateElementTreeActionEvent, () => {
-                console.log("Running [UpdateElementTreeActionEvent] action.");
                 return {};
             });
         }

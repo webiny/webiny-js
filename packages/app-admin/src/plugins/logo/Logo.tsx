@@ -11,7 +11,8 @@ class Logo extends React.Component<any> {
         mobileHeight: 36,
         altText: "Webiny",
         className: "",
-        white: false
+        white: false,
+        onClick: null
     };
 
     checkDisplayInterval = null;
@@ -33,13 +34,13 @@ class Logo extends React.Component<any> {
     }
 
     render() {
-        const { className, altText, white } = this.props;
+        const { className, altText, white, onClick } = this.props;
 
         const style = {
             width: this.props.width,
             height: this.props.height,
             display: this.props.display,
-            marginTop: 12,
+            marginTop: 8,
             color: undefined
         };
 
@@ -53,7 +54,7 @@ class Logo extends React.Component<any> {
         }
 
         return (
-            <Link to={"/"}>
+            <Link to={"/"} onClick={onClick}>
                 <WebinyLogo
                     className={["webiny-logo", className].join(" ")}
                     style={style}

@@ -1,11 +1,7 @@
 import React from "react";
 import Helmet from "react-helmet";
 import ApolloClient from "apollo-client";
-import { AdminDrawerFooterMenuPlugin } from "@webiny/app-admin/types";
-import { ListItem, ListItemGraphic } from "@webiny/ui/List";
-import { Icon } from "@webiny/ui/Icon";
-import { i18n } from "@webiny/app/i18n";
-import { Link, Route } from "@webiny/react-router";
+import { Route } from "@webiny/react-router";
 import { AdminLayout } from "@webiny/app-admin/components/AdminLayout";
 import { RoutePlugin } from "@webiny/app/types";
 import { ReactComponent as InfoIcon } from "./graphql.svg";
@@ -13,8 +9,9 @@ import Playground from "./Playground";
 import { GraphQLPlaygroundTabPlugin } from "../types";
 // @ts-ignore
 import placeholder from "!!raw-loader!./placeholder.graphql";
-
-const t = i18n.ns("app-admin/navigation");
+import { NavigationMenuElement } from "@webiny/app-admin/elements/NavigationMenuElement";
+import { UIViewPlugin } from "@webiny/ui-composer/UIView";
+import { NavigationView } from "@webiny/app-admin/views/NavigationView";
 
 type GraphQLPlaygroundOptions = {
     createApolloClient(params: { uri: string }): ApolloClient<any>;
@@ -22,22 +19,18 @@ type GraphQLPlaygroundOptions = {
 
 // @ts-ignore
 export default (options: GraphQLPlaygroundOptions) => [
-    {
-        type: "admin-drawer-footer-menu",
-        name: "admin-drawer-footer-menu-api-playground",
-        render({ hideMenu }) {
-            return (
-                <Link to="/api-playground">
-                    <ListItem ripple={false} onClick={hideMenu}>
-                        <ListItemGraphic>
-                            <Icon icon={<InfoIcon />} />
-                        </ListItemGraphic>
-                        {t`API Playground`}
-                    </ListItem>
-                </Link>
-            );
-        }
-    } as AdminDrawerFooterMenuPlugin,
+    new UIViewPlugin<NavigationView>(NavigationView, view => {
+        view.getFooterElement().addMenuElement(
+            new NavigationMenuElement("apiPlayground", {
+                label: "API Playground",
+                icon: <InfoIcon />,
+                path: "/api-playground",
+                onClick: () => {
+                    view.getNavigationHook().hideMenu();
+                }
+            })
+        );
+    }),
     {
         name: "route-api-playground",
         type: "route",

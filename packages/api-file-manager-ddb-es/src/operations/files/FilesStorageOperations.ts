@@ -24,6 +24,7 @@ import { createElasticsearchBody } from "~/operations/files/body";
 import { transformFromIndex, transformToIndex } from "~/operations/files/transformers";
 import { FileIndexTransformPlugin } from "~/plugins/FileIndexTransformPlugin";
 import { createLimit } from "@webiny/api-elasticsearch/limit";
+import { compress } from "@webiny/api-elasticsearch/compression";
 
 interface FileItem extends File {
     PK: string;
@@ -35,7 +36,7 @@ interface EsFileItem {
     PK: string;
     SK: string;
     index: string;
-    data: File;
+    data: any;
 }
 
 interface ConstructorParams {
@@ -52,17 +53,13 @@ const cleanStorageFile = (file: File & Record<string, any>): File => {
 };
 
 export class FilesStorageOperations implements FileManagerFilesStorageOperations {
-    private readonly _context: any;
+    private readonly context: FileManagerContext;
     private _partitionKeyPrefix: string;
     private readonly _table: Table;
     private readonly _esTable: Table;
     private readonly _entity: Entity<any>;
     private readonly _esEntity: Entity<any>;
     private _esIndex: string;
-
-    private get context(): FileManagerContext {
-        return this._context;
-    }
 
     private get esIndex(): string {
         if (!this._esIndex) {
@@ -99,7 +96,7 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
     }
 
     public constructor({ context }: ConstructorParams) {
-        this._context = context;
+        this.context = context;
         this._table = defineTable({
             context
         });
@@ -156,10 +153,11 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
             plugins: this.getFileIndexTransformPlugins(),
             file
         });
+        const esCompressedData = await compress(this.context, esData);
         const esItem: EsFileItem = {
             ...keys,
             index: this.esIndex,
-            data: esData
+            data: esCompressedData
         };
         try {
             await this._entity.put(item);
@@ -193,10 +191,11 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
             plugins: this.getFileIndexTransformPlugins(),
             file
         });
+        const esCompressedData = await compress(this.context, esData);
         const esItem: EsFileItem = {
             ...keys,
             index: this.esIndex,
-            data: esData
+            data: esCompressedData
         };
         try {
             await this._entity.put(item);
@@ -253,11 +252,12 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
                         ...file
                     })
                 );
+                const esCompressedData = await compress(this.context, file);
                 batches.push(
                     this._esEntity.putBatch({
                         ...keys,
                         index: this.esIndex,
-                        data: file
+                        data: esCompressedData
                     })
                 );
             }

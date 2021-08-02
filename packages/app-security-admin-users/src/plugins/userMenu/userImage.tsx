@@ -2,7 +2,10 @@ import React from "react";
 import { Avatar } from "@webiny/ui/Avatar";
 import { Image } from "@webiny/app/components";
 import { useSecurity } from "@webiny/app-security/hooks/useSecurity";
-import { AdminHeaderUserMenuHandlePlugin } from "@webiny/app-admin/types";
+import { GenericElement } from "@webiny/ui-composer/elements/GenericElement";
+import { UIViewPlugin } from "@webiny/ui-composer/UIView";
+import { AdminView } from "@webiny/app-admin/views/AdminView";
+import { UserMenuElement } from "@webiny/app-admin/plugins/userMenu/UserMenuElement";
 
 const UserImage = () => {
     const { identity } = useSecurity();
@@ -24,12 +27,12 @@ const UserImage = () => {
     );
 };
 
-export default (): AdminHeaderUserMenuHandlePlugin => {
-    return {
-        name: "admin-header-user-menu-handle",
-        type: "admin-header-user-menu-handle",
-        render() {
-            return <UserImage />;
+export default () => {
+    return new UIViewPlugin<AdminView>(AdminView, view => {
+        const userMenu = view.getElement<UserMenuElement>("userMenu");
+
+        if (userMenu) {
+            userMenu.setMenuHandleElement(new GenericElement("handle", () => <UserImage />));
         }
-    };
+    });
 };

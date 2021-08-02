@@ -4,11 +4,12 @@ import { Route } from "@webiny/react-router";
 import { AdminLayout } from "@webiny/app-admin/components/AdminLayout";
 import { SecureRoute } from "@webiny/app-security/components";
 import { RoutePlugin } from "@webiny/app/types";
-import { Users } from "../views/Users";
+import { UIViewComponent } from "@webiny/ui-composer/UIView";
 import { Groups } from "../views/Groups";
 import { ApiKeys } from "../views/ApiKeys";
 import { Account } from "../views/Account";
 import { Permission } from "./constants";
+import { UsersView } from "~/views/Users/UsersView";
 
 const plugins: RoutePlugin[] = [
     {
@@ -38,10 +39,7 @@ const plugins: RoutePlugin[] = [
                 path={"/security/users"}
                 render={() => (
                     <SecureRoute permission={Permission.Users}>
-                        <AdminLayout>
-                            <Helmet title={"Security - Users"} />
-                            <Users />
-                        </AdminLayout>
+                        <UIViewComponent view={new UsersView()} />
                     </SecureRoute>
                 )}
             />
@@ -56,8 +54,7 @@ const plugins: RoutePlugin[] = [
                 path={"/security/api-keys"}
                 render={() => (
                     <SecureRoute permission={Permission.ApiKeys}>
-                        <AdminLayout>
-                            <Helmet title={"Security - API Keys"} />
+                        <AdminLayout title={"Security - API Keys"}>
                             <ApiKeys />
                         </AdminLayout>
                     </SecureRoute>

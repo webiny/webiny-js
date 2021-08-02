@@ -20,6 +20,7 @@ import formBuilderPlugins from "@webiny/api-form-builder/plugins";
 import securityPlugins from "./security";
 import headlessCmsPlugins from "@webiny/api-headless-cms/plugins";
 import headlessCmsDynamoDbElasticStorageOperation from "@webiny/api-headless-cms-ddb-es";
+import elasticsearchDataGzipCompression from "@webiny/api-elasticsearch/plugins/GzipCompression";
 
 // Imports plugins created via scaffolding utilities.
 import scaffoldsPlugins from "./plugins/scaffolds";
@@ -65,7 +66,8 @@ export const handler = createHandler({
         formBuilderPlugins(),
         headlessCmsPlugins(),
         headlessCmsDynamoDbElasticStorageOperation(),
-        scaffoldsPlugins()
+        scaffoldsPlugins(),
+        elasticsearchDataGzipCompression()
     ],
     http: { debug }
 });

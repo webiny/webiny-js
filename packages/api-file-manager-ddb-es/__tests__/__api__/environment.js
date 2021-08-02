@@ -7,6 +7,9 @@ const dynamoToElastic = require("@webiny/api-dynamodb-to-elasticsearch/handler")
 const { Client } = require("@elastic/elasticsearch");
 const { simulateStream } = require("@webiny/project-utils/testing/dynamodb");
 const NodeEnvironment = require("jest-environment-node");
+const elasticsearchDataGzipCompression = require("@webiny/api-elasticsearch/plugins/GzipCompression")
+    .default;
+const { ContextPlugin } = require("@webiny/handler/plugins/ContextPlugin");
 /**
  * For this to work it must load plugins that have already been built
  */
@@ -19,8 +22,14 @@ if (typeof plugins !== "function") {
 const ELASTICSEARCH_PORT = process.env.ELASTICSEARCH_PORT || "9200";
 
 const getStorageOperationsPlugins = ({ documentClient, elasticsearchClientContext }) => {
-    // Intercept DocumentClient operations and trigger dynamoToElastic function (almost like a DynamoDB Stream trigger)
-    simulateStream(documentClient, createHandler(elasticsearchClientContext, dynamoToElastic()));
+    /**
+     * Intercept DocumentClient operations and trigger dynamoToElastic function (almost like a DynamoDB Stream trigger)
+     */
+    const simulationContext = new ContextPlugin(async context => {
+        context.plugins.register([elasticsearchDataGzipCompression()]);
+        await elasticsearchClientContext.apply(context);
+    });
+    simulateStream(documentClient, createHandler(simulationContext, dynamoToElastic()));
 
     return () => {
         const pluginsValue = plugins();
@@ -30,7 +39,12 @@ const getStorageOperationsPlugins = ({ documentClient, elasticsearchClientContex
                 documentClient
             })
         });
-        return [...pluginsValue, ...dbPluginsValue, elasticsearchClientContext];
+        return [
+            elasticsearchDataGzipCompression(),
+            ...pluginsValue,
+            ...dbPluginsValue,
+            elasticsearchClientContext
+        ];
     };
 };
 

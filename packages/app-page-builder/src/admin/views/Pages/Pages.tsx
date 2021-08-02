@@ -9,6 +9,7 @@ import { useRouter } from "@webiny/react-router";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { useMutation } from "@apollo/react-hooks";
 import { CREATE_PAGE } from "../../graphql/pages";
+import * as GQLCache from "~/admin/views/Pages/cache";
 
 const Pages = () => {
     const [creatingPage, setCreatingPage] = useState(false);
@@ -25,7 +26,14 @@ const Pages = () => {
         try {
             setCreatingPage(true);
             const res = await create({
-                variables: { category }
+                variables: { category },
+                update(cache, { data }) {
+                    if (data.pageBuilder.createPage.error) {
+                        return;
+                    }
+
+                    GQLCache.addPageToListCache(cache, data.pageBuilder.createPage.data);
+                }
             });
 
             setCreatingPage(false);
@@ -35,7 +43,6 @@ const Pages = () => {
             if (error) {
                 showSnackbar(error.message);
             } else {
-                console.log("[Pages]");
                 history.push(`/page-builder/editor/${encodeURIComponent(data.id)}`);
             }
         } catch (e) {

@@ -3,7 +3,7 @@ import { set } from "dot-prop-immutable";
 import { useRouter, UseRouter } from "@webiny/react-router";
 import Downshift from "downshift";
 import { plugins } from "@webiny/plugins";
-import { AdminGlobalSearchPlugin, AdminGlobalSearchPreventHotkeyPlugin } from "../../types";
+import { AdminGlobalSearchPlugin, AdminGlobalSearchPreventHotkeyPlugin } from "~/types";
 import classnames from "classnames";
 import { Hotkeys } from "react-hotkeyz";
 

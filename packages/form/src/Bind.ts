@@ -25,7 +25,7 @@ export type BindComponentProps = {
     afterChange?: Function;
     defaultValue?: any;
     validators?: Function | Array<Function>;
-    children: ((props: BindComponentRenderProp) => React.ReactElement) | React.ReactElement;
+    children?: ((props: BindComponentRenderProp) => React.ReactElement) | React.ReactElement;
     validate?: Function;
 };
 

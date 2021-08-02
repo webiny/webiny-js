@@ -21,10 +21,14 @@
     },
     {
       "path": "../ui"
+    },
+    {
+      "path": "../ui-composer"
     }
   ],
   "compilerOptions": {
     "paths": {
+      "~/*": ["./src/*"],
       "@webiny/app/*": ["../app/src/*"],
       "@webiny/app": ["../app/src"],
       "@webiny/app-admin/*": ["../app-admin/src/*"],
@@ -38,7 +42,9 @@
       "@webiny/react-router/*": ["../react-router/src/*"],
       "@webiny/react-router": ["../react-router/src"],
       "@webiny/ui/*": ["../ui/src/*"],
-      "@webiny/ui": ["../ui/src"]
+      "@webiny/ui": ["../ui/src"],
+      "@webiny/ui-composer/*": ["../ui-composer/src/*"],
+      "@webiny/ui-composer": ["../ui-composer/src"]
     },
     "baseUrl": "."
   }

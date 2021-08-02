@@ -109,7 +109,7 @@ export class ApiKeyStorageOperationsDdb implements ApiKeyStorageOperations {
             items,
             sort,
             context: this.context,
-            fields: ["createdOn_DESC"]
+            fields: ["createdOn"]
         });
         return sortedItems.map(item => this.cleanupItem(item));
     }
