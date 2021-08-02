@@ -1,4 +1,4 @@
 name: admin
 runtime: nodejs
-description: Represents cloud infrastructure that hosts your project's Admin area.
+description: Represents cloud infrastructure needed for hosting the "Project application name" React application.
 main: pulumi/

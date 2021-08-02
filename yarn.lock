@@ -9891,25 +9891,26 @@ __metadata:
     "@babel/cli": ^7.5.5
     "@babel/core": ^7.5.5
     "@babel/preset-env": ^7.5.5
+    "@babel/preset-flow": ^7.0.0
     "@types/inquirer": ^7.3.1
     "@types/ncp": ^2.0.4
     "@types/pluralize": ^0.0.29
     "@webiny/cli": ^5.11.0
     "@webiny/cli-plugin-scaffold": ^5.11.0
-    "@webiny/error": ^5.11.0
+    "@webiny/handler": ^5.11.0
+    "@webiny/plugins": ^5.11.0
     "@webiny/project-utils": ^5.11.0
     case: ^1.6.3
     chalk: ^4.1.0
     execa: ^5.0.0
-    indent-string: ^4.0.0
+    find-up: ^5.0.0
     load-json-file: ^6.2.0
     ncp: ^2.0.0
     pluralize: ^8.0.0
     replace-in-path: ^1.0.4
     rimraf: ^3.0.2
+    terminal-link: ^2.1.1
     typescript: ^4.1.3
-    validate-npm-package-name: ^3.0.0
-    write-json-file: ^4.3.0
   languageName: unknown
   linkType: soft
 
@@ -26209,6 +26210,35 @@ fsevents@^1.2.7:
   checksum: 5f5a09b8339c86eac94a394b28927e1712c5c98771edd6ea3adfacf01b22fe18151aed8b1ff1bb3c02cf2325c97ba1c29894b6ba52520e2e40a6305d166489ab
   languageName: node
   linkType: hard
+
+"my-new-react-application@workspace:apps/my-new-react-application/code":
+  version: 0.0.0-use.local
+  resolution: "my-new-react-application@workspace:apps/my-new-react-application/code"
+  dependencies:
+    "@apollo/react-components": ^3.1.5
+    "@types/react": ^16.14.2
+    "@webiny/app": ^5.11.0
+    "@webiny/cli": ^5.11.0
+    "@webiny/cli-plugin-deploy-pulumi": ^5.11.0
+    "@webiny/plugins": ^5.11.0
+    "@webiny/project-utils": ^5.11.0
+    "@webiny/react-router": ^5.11.0
+    "@webiny/telemetry": ^5.11.0
+    apollo-cache: ^1.3.5
+    apollo-cache-inmemory: ^1.6.6
+    apollo-client: ^2.2.8
+    apollo-link: ^1.2.14
+    apollo-link-batch-http: ^1.2.14
+    apollo-utilities: ^1.3.4
+    core-js: ^3.0.1
+    cross-env: ^5.0.2
+    cross-fetch: ^3.0.4
+    invariant: ^2.2.4
+    react: ^16.14.0
+    react-dom: ^16.14.0
+    regenerator-runtime: ^0.13.5
+  languageName: unknown
+  linkType: soft
 
 "mz@npm:^2.5.0":
   version: 2.7.0
