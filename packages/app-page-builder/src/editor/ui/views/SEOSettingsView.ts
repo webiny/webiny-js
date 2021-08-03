@@ -59,14 +59,14 @@ export class SEOSettingsView extends PageSettingsFormView {
                 new InputElement(`metaTags.${index}.name`, {
                     name: `settings.seo.meta.${index}.name`,
                     label: "Name",
-                    validators: validation.create("required"),
+                    validators: () => validation.create("required"),
                     beforeChange: (tag, cb) => cb(trim(tag))
                 })
             );
             const contentElement = new InputElement(`metaTags.${index}.content`, {
                 name: `settings.seo.meta.${index}.content`,
                 label: "Content",
-                validators: validation.create("required"),
+                validators: () => validation.create("required"),
                 beforeChange: (tag, cb) => cb(trim(tag))
             });
 

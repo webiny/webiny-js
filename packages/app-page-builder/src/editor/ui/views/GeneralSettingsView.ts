@@ -24,7 +24,7 @@ export class GeneralSettingsView extends PageSettingsFormView {
                 name: "title",
                 label: "Title",
                 description: "Page title.",
-                validators: validation.create("required")
+                validators: () => validation.create("required")
             })
         );
 
@@ -33,7 +33,7 @@ export class GeneralSettingsView extends PageSettingsFormView {
                 name: "path",
                 label: "Path",
                 description: `For example: "/about-us". Must contain at least two characters.`,
-                validators: validation.create("required,minLength:2"),
+                validators: () => validation.create("required,minLength:2"),
                 beforeChange: toSlug
             })
         );
