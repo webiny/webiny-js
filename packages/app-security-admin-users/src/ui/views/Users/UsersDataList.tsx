@@ -58,7 +58,9 @@ const UsersDataList = () => {
     const { identity } = useSecurity();
     const { history } = useRouter();
     const { showSnackbar } = useSnackbar();
-    const { showConfirmation } = useConfirmationDialog();
+    const { showConfirmation } = useConfirmationDialog({
+        dataTestId: "default-data-list.delete-dialog"
+    });
 
     const filterUsers = useCallback(
         ({ login, firstName, lastName }) => {
@@ -155,10 +157,15 @@ const UsersDataList = () => {
                 <SearchUI value={filter} onChange={setFilter} inputPlaceholder={t`Search users`} />
             }
             modalOverlay={usersDataListModalOverlay}
-            modalOverlayAction={<DataListModalOverlayAction icon={<FilterIcon />} />}
+            modalOverlayAction={
+                <DataListModalOverlayAction
+                    icon={<FilterIcon />}
+                    data-testid={"default-data-list.filter"}
+                />
+            }
         >
             {({ data }) => (
-                <ScrollList twoLine avatarList>
+                <ScrollList twoLine avatarList data-testid="default-data-list">
                     {data.map(item => (
                         <ListItem key={item.login} selected={item.login === login}>
                             <ListItemGraphic>
@@ -185,7 +192,10 @@ const UsersDataList = () => {
                             <ListItemMeta>
                                 <ListActions>
                                     {identity && identity.id !== item.login ? (
-                                        <DeleteIcon onClick={() => deleteItem(item)} />
+                                        <DeleteIcon
+                                            onClick={() => deleteItem(item)}
+                                            data-testid={"default-data-list.delete"}
+                                        />
                                     ) : (
                                         <Tooltip
                                             placement={"bottom"}
