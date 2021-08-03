@@ -133,7 +133,9 @@ export class UsersFormView extends UIView {
             })
         );
 
-        bioAccordion.getElement<InputElement>("login").setIsDisabled(true);
+        bioAccordion.getElement<InputElement>("login").setIsDisabled(() => {
+            return this.getUserFormHook().user.login !== undefined;
+        });
 
         const groupAccordion = accordion.getElement<AccordionItemElement>("groups");
         groupAccordion.addElement(
