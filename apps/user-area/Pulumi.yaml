@@ -1,0 +1,4 @@
+name: userArea
+runtime: nodejs
+description: Represents cloud infrastructure needed for hosting the "User Area" React application.
+main: pulumi/
