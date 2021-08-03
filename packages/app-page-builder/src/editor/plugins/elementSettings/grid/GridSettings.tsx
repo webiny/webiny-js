@@ -1,13 +1,15 @@
 import React from "react";
 import { css } from "emotion";
 import styled from "@emotion/styled";
+import dotProp from "dot-prop-immutable";
 import { useRecoilValue } from "recoil";
 import { Grid, Cell } from "@webiny/ui/Grid";
+import { Switch } from "@webiny/ui/Switch";
 import {
     PbEditorGridPresetPluginType,
     PbEditorPageElementSettingsRenderComponentProps,
     PbEditorElement
-} from "../../../../types";
+} from "~/types";
 import { useEventActionHandler } from "../../../hooks/useEventActionHandler";
 import { createElement } from "../../../helpers";
 import { calculatePresetPluginCells, getPresetPlugins } from "../../../plugins/gridPresets";
@@ -100,6 +102,7 @@ export const GridSettings: React.FunctionComponent<PbEditorPageElementSettingsRe
         elementWithChildrenByIdSelector(activeElementId)
     ) as unknown) as PbEditorElement;
     const currentCellsType = element.data.settings?.grid?.cellsType;
+    const reverse = dotProp.get(element, "data.settings.grid.reverse");
     const presetPlugins = getPresetPlugins();
 
     const onInputSizeChange = (value: number, index: number) => {
@@ -187,6 +190,27 @@ export const GridSettings: React.FunctionComponent<PbEditorPageElementSettingsRe
                             </Cell>
                         );
                     })}
+                </Grid>
+                <Grid className={classes.grid}>
+                    <Cell span={12}>
+                        <Switch
+                            label={"Reverse"}
+                            description={`Reverse grid item's layout direction.`}
+                            value={reverse}
+                            onChange={value => {
+                                handler.trigger(
+                                    new UpdateElementActionEvent({
+                                        element: dotProp.set(
+                                            element,
+                                            "data.settings.grid.reverse",
+                                            value
+                                        ),
+                                        history: true
+                                    })
+                                );
+                            }}
+                        />
+                    </Cell>
                 </Grid>
             </ContentWrapper>
         </Accordion>

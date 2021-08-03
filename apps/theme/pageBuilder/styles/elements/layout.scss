@@ -44,14 +44,23 @@
 
 .webiny-pb-media-query--desktop .webiny-pb-layout-grid {
   flex-direction: row;
+  &--reverse {
+    flex-direction: row-reverse;
+  }
   // flex: 100% 1; // removed because Content #2
 }
 .webiny-pb-media-query--tablet .webiny-pb-layout-grid {
   flex-direction: row;
+  &--reverse {
+    flex-direction: row-reverse;
+  }
   // flex: 100% 1; // removed because Content #2
 }
 .webiny-pb-media-query--mobile-landscape .webiny-pb-layout-grid {
   flex-direction: column;
+  &--reverse {
+    flex-direction: column-reverse;
+  }
   max-width: 100% !important;
   //width: 100% !important; // added for Content #6
   //width: auto !important; // set to auto for CTA #9
@@ -74,6 +83,9 @@
 }
 .webiny-pb-media-query--mobile-portrait .webiny-pb-layout-grid {
   flex-direction: column;
+  &--reverse {
+    flex-direction: column-reverse;
+  }
   max-width: 100% !important;
   //width: 100% !important; // added for Content #6
   //width: auto !important; // set to auto for CTA #9
