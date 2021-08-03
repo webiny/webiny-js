@@ -114,6 +114,7 @@ export type PbElementDataSettingsType = {
     grid?: {
         cellsType?: string;
         size?: number;
+        reverse?: boolean;
     };
     columnWidth?: {
         value?: string;
