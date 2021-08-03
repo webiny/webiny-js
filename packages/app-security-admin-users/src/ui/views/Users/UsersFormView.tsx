@@ -16,7 +16,6 @@ import { GroupAutocompleteElement } from "~/ui/elements/GroupAutocompleteElement
 import { UseUserForm, useUserForm } from "~/ui/views/Users/hooks/useUserForm";
 import { FormView } from "@webiny/app-admin/ui/views/FormView";
 import { FormElementRenderProps } from "@webiny/app-admin/ui/elements/form/FormElement";
-import { PasswordElement } from "@webiny/app-admin/ui/elements/form/PasswordElement";
 
 const FormWrapper = styled("div")({
     margin: "0 100px"
