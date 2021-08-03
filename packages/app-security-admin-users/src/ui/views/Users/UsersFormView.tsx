@@ -16,6 +16,7 @@ import { GroupAutocompleteElement } from "~/ui/elements/GroupAutocompleteElement
 import { UseUserForm, useUserForm } from "~/ui/views/Users/hooks/useUserForm";
 import { FormView } from "@webiny/app-admin/ui/views/FormView";
 import { FormElementRenderProps } from "@webiny/app-admin/ui/elements/form/FormElement";
+import { PasswordElement } from "@webiny/app-admin/ui/elements/form/PasswordElement";
 
 const FormWrapper = styled("div")({
     margin: "0 100px"
@@ -73,6 +74,8 @@ export class UsersFormView extends UIView {
             })
         );
 
+        simpleForm.getSubmitButtonElement().setLabel("Save user");
+
         const avatar = new GenericElement<FormElementRenderProps>("avatar", props => {
             const { Bind } = props.formProps;
 
@@ -92,15 +95,16 @@ export class UsersFormView extends UIView {
                 {
                     id: "bio",
                     title: "Bio",
-                    open: true,
                     description: "Account information",
-                    icon: <SettingsIcon />
+                    icon: <SettingsIcon />,
+                    open: true
                 },
                 {
                     id: "groups",
                     title: "Groups",
                     description: "Assign to security group",
-                    icon: <SecurityIcon />
+                    icon: <SecurityIcon />,
+                    open: true
                 }
             ]
         });
@@ -113,14 +117,14 @@ export class UsersFormView extends UIView {
             new InputElement("firstName", {
                 name: "firstName",
                 label: "First Name",
-                validators: validation.create("required")
+                validators: () => validation.create("required")
             })
         );
         bioAccordion.addElement(
             new InputElement("lastName", {
                 name: "lastName",
                 label: "Last Name",
-                validators: validation.create("required")
+                validators: () => validation.create("required")
             })
         );
 
@@ -128,7 +132,7 @@ export class UsersFormView extends UIView {
             new InputElement("login", {
                 name: "login",
                 label: "Email",
-                validators: validation.create("required,email"),
+                validators: () => validation.create("required,email"),
                 beforeChange: (value: string, cb) => cb(value.toLowerCase())
             })
         );
@@ -142,7 +146,7 @@ export class UsersFormView extends UIView {
             new GroupAutocompleteElement("group", {
                 name: "group",
                 label: "Group",
-                validators: validation.create("required")
+                validators: () => validation.create("required")
             })
         );
 

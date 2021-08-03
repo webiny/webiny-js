@@ -7,7 +7,7 @@ import { SelectElement } from "@webiny/app-admin/ui/elements/form/SelectElement"
 import { plugins } from "@webiny/plugins";
 import { PbPageLayoutPlugin } from "~/types";
 import { FileManagerElement } from "@webiny/app-admin/ui/elements/form/FileManagerElement";
-import { TagsMultiAutocompleteElement } from "~/editor/ui/elements/TagsMultiAutocompletetElement";
+import { TagsMultiAutocompleteElement } from "~/editor/ui/elements/TagsMultiAutocompleteElement";
 
 const toSlug = (value, cb) => {
     cb(slugify(value, { replacement: "-", lower: true, remove: /[*#\?<>_\{\}\[\]+~.()'"!:;@]/g })); // eslint-disable-line

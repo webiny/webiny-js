@@ -191,7 +191,7 @@ const UsersDataList = () => {
 
                             <ListItemMeta>
                                 <ListActions>
-                                    {identity && identity.id !== item.login ? (
+                                    {identity && identity.login !== item.login ? (
                                         <DeleteIcon
                                             onClick={() => deleteItem(item)}
                                             data-testid={"default-data-list.delete"}

@@ -5,6 +5,12 @@
       "path": "../app"
     },
     {
+      "path": "../app-admin"
+    },
+    {
+      "path": "../app-security-admin-users"
+    },
+    {
       "path": "../app-security-cognito-authentication"
     },
     {
@@ -23,7 +29,10 @@
   "compilerOptions": {
     "paths": {
       "@webiny/app/*": ["../app/src/*"],
+      "@webiny/app-admin/*": ["../app-admin/src/*"],
       "@webiny/form": ["../form/src"],
+      "@webiny/app-security-admin-users/*": ["../app-security-admin-users/src/*"],
+      "@webiny/app-security-admin-users": ["../app-security-admin-users/src"],
       "@webiny/app-security-cognito-authentication/*": [
         "../app-security-cognito-authentication/src/*"
       ],
