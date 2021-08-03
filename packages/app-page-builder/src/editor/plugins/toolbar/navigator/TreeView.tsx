@@ -47,9 +47,7 @@ const TreeViewItem = ({ element, level, children, index }) => {
     const elementId = element.id;
     const { displayMode } = useRecoilValue(uiAtom);
     const [activeElement, setActiveElementAtomValue] = useRecoilState(activeElementAtom);
-    const [{ isHighlighted, data: elementData }, setElementAtomValue] = useRecoilState(
-        elementByIdSelector(elementId)
-    );
+    const [elementAtomValue, setElementAtomValue] = useRecoilState(elementByIdSelector(elementId));
     const { refresh, activeElementPath, setActiveElementPath } = useContext(NavigatorContext);
     const { move } = useMoveBlock(elementId);
     // Use "Drag&Drop"
@@ -75,7 +73,7 @@ const TreeViewItem = ({ element, level, children, index }) => {
                 return;
             }
             ev.stopPropagation();
-            if (isHighlighted) {
+            if (elementAtomValue && elementAtomValue.isHighlighted) {
                 return;
             }
             setElementAtomValue({ isHighlighted: true } as any);
@@ -99,7 +97,11 @@ const TreeViewItem = ({ element, level, children, index }) => {
         }
     }, [elementId]);
 
-    const hidden = get(elementData, `settings.visibility.${displayMode}.hidden`, false);
+    if (!elementAtomValue) {
+        return;
+    }
+
+    const hidden = get(elementAtomValue, `data.settings.visibility.${displayMode}.hidden`, false);
     const contentStyle = isOver && element.type !== BLOCK ? { opacity: 0.5 } : { opacity: 1 };
     const highlightItem = getHighlightItemProps({
         isOver,
