@@ -183,7 +183,7 @@ jobs:
             .verdaccio/
             .verdaccio.yaml
 
-      - name: Upload verdaccio files
+      - name: Create verdaccio-files artifact
         uses: actions/upload-artifact@v2
         with:
           name: verdaccio-files
@@ -308,7 +308,7 @@ jobs:
             !test-project/**/node_modules/**/*
             !test-project/.yarn/cache/**/*
 
-      - name: Create project files artifact
+      - name: Create project-files artifact
         uses: actions/upload-artifact@v2
         with:
           name: project-files
