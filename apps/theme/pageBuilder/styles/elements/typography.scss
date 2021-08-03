@@ -8,10 +8,38 @@ $leading: $baseLineHeight * 1rem !default;
 // I actually like this to be slightly smaller then the leading. Makes for tight headings.
 $scale: 1.414 !default;
 
+// font-sizes
+$webiny-pb-text-xs: 0.75rem;
+// line-height: 1rem;
+$webiny-pb-text-sm: 0.875rem;
+// line-height: 1.25rem;
+$webiny-pb-text-base: 1rem;
+// line-height: 1.5rem;
+$webiny-pb-text-lg: 1.125rem;
+// line-height: 1.75rem;
+$webiny-pb-text-xl: 1.25rem;
+// line-height: 1.75rem;
+$webiny-pb-text-2xl: 1.5rem;
+// line-height: 2rem;
+$webiny-pb-text-3xl: 1.875rem;
+// line-height: 2.25rem;
+$webiny-pb-text-4xl: 2.25rem;
+// line-height: 2.5rem;
+$webiny-pb-text-5xl: 3rem;
+// line-height: 1;
+$webiny-pb-text-6xl: 3.75rem;
+// line-height: 1;
+$webiny-pb-text-7xl: 4.5rem;
+// line-height: 1;
+$webiny-pb-text-8xl: 6rem;
+// line-height: 1;
+$webiny-pb-text-9xl: 8rem;
+// line-height: 1;
+
 body,
 .webiny-pb-page-document {
   /* Change default typefaces here */
-  font-family: var(--webiny-theme-typography-secondary-font-family, "Lato, sans-serif");
+  font-family: var(--webiny-theme-typography-primary-font-family, "Lato, sans-serif");
   font-size: $baseFontSize / 16 * 100%;
   // Make everything look a little nicer in webkit
   -webkit-font-smoothing: antialiased;
@@ -107,23 +135,67 @@ h6 {
 }
 
 // Heading default typography styles
-.webiny-pb-typography-heading {
-  font-family: var(--webiny-theme-typography-secondary-font-family, "Lato, sans-serif");
-  color: var(--desktop-color, var(--webiny-theme-color-text-primary, rgb(10, 10, 10)));
+%webiny-pb-typography-heading-base {
+  font-family: var(--webiny-theme-typography-primary-font-family, "sans-serif");
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
   text-decoration: inherit;
   text-transform: inherit;
-  line-height: 2rem;
+  font-weight: 700;
+  color: var(--desktop-color, var(--webiny-theme-color-text-primary, rgb(10, 10, 10)));
+
+  & .webiny-pb-media-query--tablet {
+    color: var(--tablet-color, var(--webiny-theme-color-text-primary, rgb(10, 10, 10)));
+  }
+  & .webiny-pb-media-query--mobile-landscape {
+    color: var(--mobile-landscape-color, var(--webiny-theme-color-text-primary, rgb(10, 10, 10)));
+  }
+  & .webiny-pb-media-query--mobile-portrait {
+    color: var(--mobile-portrait-color, var(--webiny-theme-color-text-primary, rgb(10, 10, 10)));
+  }
 }
-.webiny-pb-media-query--tablet .webiny-pb-typography-heading {
-  color: var(--tablet-color, var(--webiny-theme-color-text-primary, rgb(10, 10, 10)));
+
+// Start text sizing
+@mixin fontSize($fontSize, $lineHeight : 1)  {
+  & h1,h2,h3,h4,h5,h6 {
+    font-size: $fontSize;
+    line-height: $lineHeight;
+  }
 }
-.webiny-pb-media-query--mobile-landscape .webiny-pb-typography-heading {
-  color: var(--mobile-landscape-color, var(--webiny-theme-color-text-primary, rgb(10, 10, 10)));
+
+.webiny-pb-typography-heading {
+  @include fontSize($webiny-pb-text-lg, 2rem);
+  @extend %webiny-pb-typography-heading-base;
 }
-.webiny-pb-media-query--mobile-portrait .webiny-pb-typography-heading {
-  color: var(--mobile-portrait-color, var(--webiny-theme-color-text-primary, rgb(10, 10, 10)));
+
+.webiny-pb-typography-heading--1 {
+  @include fontSize($webiny-pb-text-7xl);
+  @extend %webiny-pb-typography-heading-base;
+}
+
+.webiny-pb-typography-heading--2{
+  @include fontSize($webiny-pb-text-5xl);
+  @extend %webiny-pb-typography-heading-base;
+}
+
+.webiny-pb-typography-heading--3 {
+  @include fontSize($webiny-pb-text-4xl);
+  @extend %webiny-pb-typography-heading-base;
+}
+
+.webiny-pb-typography-heading--4 {
+  @include fontSize($webiny-pb-text-3xl, 2rem);
+  @extend %webiny-pb-typography-heading-base;
+}
+
+.webiny-pb-typography-heading--5 {
+  @include fontSize($webiny-pb-text-2xl, 2rem);
+  @extend %webiny-pb-typography-heading-base;
+}
+
+.webiny-pb-typography-heading--6 {
+  @include fontSize($webiny-pb-text-xl, 1.75rem);
+  @extend %webiny-pb-typography-heading-base;
 }
 
 .webiny-pb-typography-body {
