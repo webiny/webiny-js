@@ -64,7 +64,9 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 {
                     name: "path",
                     message: "Enter application path:",
-                    default: `apps/my-new-react-application`,
+                    default: input => {
+                        return `apps/${Case.kebab(input.name)}`;
+                    },
                     validate: path => {
                         if (path.length < 2) {
                             return `Please enter a valid path in which the new React application will be created.`;

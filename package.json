@@ -7,6 +7,7 @@
       "apps/admin/code",
       "apps/website/code",
       "apps/my-new-react-application/code",
+      "apps/user-area/code",
       "apps/theme",
       "api/code/dynamoToElastic",
       "api/code/fileManager/*",

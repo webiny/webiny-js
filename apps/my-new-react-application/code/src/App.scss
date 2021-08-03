@@ -11,6 +11,15 @@ body {
 
 a {
   text-decoration: none;
+  color: white;
+}
+
+h1 {
+  font-size: 48px;
+}
+
+h2 {
+  font-size: 24px;
 }
 
 // Styles for the global Layout component (components/Layout.tsx).
@@ -18,8 +27,8 @@ a {
   width: 100%;
 }
 
-// Targets the home page.
-.home {
+// Targets the .home and .not-found pages.
+.home, .not-found {
   height: 100vh;
   text-align: center;
   background-image: url(images/splash-bg.svg);
@@ -42,29 +51,21 @@ a {
     .logo {
       margin-top: 100px;
     }
-    .title {
-      font-size: 48px;
-      font-weight: 700;
-      text-align: center;
-    }
-    .description {
-      font-size: 24px;
-      font-weight: 600;
-      line-height: 34px;
-      margin: 15px auto;
-      max-width: 337px;
-    }
-    .get-started-button {
-      text-transform: uppercase;
-      background-color: rgb(220, 210, 7);
-      padding: 10px 12px;
-      width: 255px;
-      cursor: pointer;
-      display: inline-block;
-      font-weight: bold;
-      color: black;
-      border-radius: 4px;
-      font-size: 14px;
+    ul {
+      list-style: none;
+      max-width: 960px;
+      margin: 35px auto;
+      padding: 0;
+      li {
+        width: 380px;
+        padding: 15px 40px;
+        display: inline-block;
+        text-align: left;
+        vertical-align: top;
+        h1 {
+          font-size: 24px;
+        }
+      }
     }
   }
 }

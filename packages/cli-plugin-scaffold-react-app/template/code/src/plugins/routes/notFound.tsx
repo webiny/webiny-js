@@ -18,7 +18,7 @@ function NotFound(props: RouteChildrenProps) {
                     Unfortunately, nothing was found at <code>{props.match.url}</code>.
                 </h2>
                 <div>
-                    Click <a href={"/"}>here</a> to go back.
+                    <a href={"/"}>Click here to go back.</a>
                 </div>
             </div>
         </Layout>
