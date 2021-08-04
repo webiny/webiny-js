@@ -6,15 +6,22 @@ import { plugins } from "@webiny/plugins";
 import { ApolloDynamicLink } from "@webiny/app/plugins/ApolloDynamicLink";
 import { ApolloCacheObjectIdPlugin } from "@webiny/app/plugins/ApolloCacheObjectIdPlugin";
 
+/**
+ * Creates a new Apollo client, pointed to the specified URI.
+ * Note the `ApolloDynamicLink` plugin. This is what gives us the ability to register
+ * new `ApolloLinkPlugin` plugins, that can modify different properties within each HTTP request.
+ * Check out the `plugins/apolloLinks.ts` file to see what `ApolloLinkPlugin` we're registering.
+ */
+
 export const createApolloClient = ({ uri }) => {
     return new ApolloClient({
         link: ApolloLink.from([
             /**
-             * This will process links from plugins on every request.
+             * This will process `ApolloLinkPlugin` plugins.
              */
             new ApolloDynamicLink(),
             /**
-             * This batches requests made to the API to pack multiple requests into a single HTTP request.
+             * This batches requests made to our GraphQL API (packs multiple requests into a single one).
              */
             new BatchHttpLink({ uri })
         ]),
@@ -22,8 +29,10 @@ export const createApolloClient = ({ uri }) => {
             addTypename: true,
             dataIdFromObject: obj => {
                 /**
-                 * Since every data type coming from API can have a different data structure,
-                 * we cannot rely on having an `id` field.
+                 * Since every data type received from our GraphQL API can have a different
+                 * data model, we cannot rely on just using the `id` field as the cache key.
+                 * If you'll need custom cache key handling, you can simply register a new
+                 * `ApolloCacheObjectIdPlugin` plugin in your `plugins/apollo.ts` file.
                  */
                 const getters = plugins.byType<ApolloCacheObjectIdPlugin>(
                     ApolloCacheObjectIdPlugin.type
@@ -37,7 +46,7 @@ export const createApolloClient = ({ uri }) => {
                 }
 
                 /**
-                 * As a fallback, try getting object's `id`.
+                 * As a fallback, try getting object's `id` property.
                  */
                 return obj.id || null;
             }

@@ -5,8 +5,10 @@ interface Props {
     className?: string;
 }
 
-// The default layout component which you can use on any page.
-// Feel free to customize it or create additional layout components.
+/**
+ * The default layout component which you can use on any page.
+ * Feel free to customize it or create additional layout components.
+ */
 export default function Layout(props: Props) {
     return (
         <div className={"layout"}>

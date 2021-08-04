@@ -7,7 +7,7 @@ import * as path from "path";
 class App {
     bucket: aws.s3.Bucket;
     constructor() {
-        this.bucket = new aws.s3.Bucket("admin-app", {
+        this.bucket = new aws.s3.Bucket("project-application-id", {
             acl: "public-read",
             forceDestroy: true,
             website: {
