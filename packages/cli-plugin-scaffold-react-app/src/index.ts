@@ -3,18 +3,19 @@ import fs from "fs";
 import path from "path";
 import util from "util";
 import ncpBase from "ncp";
-import pluralize from "pluralize";
 import Case from "case";
-import loadJsonFile from "load-json-file";
+import readJson from "load-json-file";
+import writeJson from "write-json-file";
 import { replaceInPath } from "replace-in-path";
 import chalk from "chalk";
-import findUp from "find-up";
 import link from "terminal-link";
 import {
     createScaffoldsIndexFile,
     updateScaffoldsIndexFile,
     formatCode
 } from "@webiny/cli-plugin-scaffold/utils";
+
+import { TsConfigJson, PackageJson } from "@webiny/cli-plugin-scaffold/types";
 
 const ncp = util.promisify(ncpBase.ncp);
 
@@ -52,7 +53,9 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 {
                     name: "description",
                     message: "Enter application description:",
-                    default: `This is a React application created via the New React Application scaffold.`,
+                    default: input => {
+                        return `This is the "${input.name}" React application.`;
+                    },
                     validate: description => {
                         if (description.length < 2) {
                             return `Please enter a short description for your new React application.`;
@@ -87,8 +90,12 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 `${chalk.bold("The following operations will be performed on your behalf:")}`
             );
 
-            console.log("- GraphQL API");
-            console.log(`- new React application created in ${chalk.green(input.path)}`);
+            console.log(`- a new React application will be created in ${chalk.green(input.path)}`);
+            console.log(
+                `- the list of workspaces will be updated in the root ${chalk.green(
+                    "package.json"
+                )} file`
+            );
 
             const prompt = inquirer.createPromptModule();
 
@@ -111,19 +118,41 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
 
             await ncp(templateFolderPath, input.path);
 
-            const codeReplacements = [
+            const replacements = [
                 { find: "Project application name", replaceWith: input.name },
                 { find: "Project application description", replaceWith: input.description },
                 { find: "projectApplicationId", replaceWith: Case.camel(input.name) },
                 { find: "project-application-id", replaceWith: Case.kebab(input.name) }
             ];
 
-            replaceInPath(path.join(input.path, "/**/*.*"), codeReplacements);
+            replaceInPath(path.join(input.path, "/**/*.*"), replacements);
 
             ora.stopAndPersist({
                 symbol: chalk.green("✔"),
                 text: `New React Application created in ${chalk.green(input.path)}.`
             });
+
+            ora.start(
+                `Updating the list of workspaces in the root ${chalk.green("package.json")} file...`
+            );
+            await wait(1000);
+
+            // Add package to workspaces
+            const rootPackageJsonPath = path.join(context.project.root, "package.json");
+            const rootPackageJson = await readJson<PackageJson>(rootPackageJsonPath);
+            if (!rootPackageJson.workspaces.packages.includes(input.path)) {
+                rootPackageJson.workspaces.packages.push(input.path);
+                await writeJson(rootPackageJsonPath, rootPackageJson);
+            }
+
+            ora.stopAndPersist({
+                symbol: chalk.green("✔"),
+                text: `The list of workspaces in the root ${chalk.green(
+                    "package.json"
+                )} file updated.`
+            });
+
+            await formatCode(["**/*.ts", "**/*.tsx"], { cwd: adminNewCodePath });
 
             // const dataModelName = {
             //     plural: pluralize(Case.camel(input.dataModelName)),
@@ -239,7 +268,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
             // await ncp(templateFolderPath, adminNewCodePath);
             //
             // // Replace generic "Target" with received "dataModelName" argument.
-            // const codeReplacements = [
+            // const replacements = [
             //     { find: "targetDataModels", replaceWith: Case.camel(dataModelName.plural) },
             //     { find: "TargetDataModels", replaceWith: Case.pascal(dataModelName.plural) },
             //     { find: "TARGET_DATA_MODELS", replaceWith: Case.constant(dataModelName.plural) },
@@ -253,8 +282,8 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
             //     { find: "Target Data Model", replaceWith: Case.title(dataModelName.singular) }
             // ];
             //
-            // replaceInPath(path.join(adminNewCodePath, "/**/*.ts"), codeReplacements);
-            // replaceInPath(path.join(adminNewCodePath, "/**/*.tsx"), codeReplacements);
+            // replaceInPath(path.join(adminNewCodePath, "/**/*.ts"), replacements);
+            // replaceInPath(path.join(adminNewCodePath, "/**/*.tsx"), replacements);
             //
             // const fileNameReplacements = [
             //     {
