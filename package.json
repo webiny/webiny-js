@@ -14,8 +14,7 @@
 			"api/code/pageBuilder/*",
 			"api/code/prerenderingService/render",
 			"api/code/prerenderingService/flush",
-			"api/code/prerenderingService/queue/*",
-			"apps/kobaja/code"
+			"api/code/prerenderingService/queue/*"
 		]
 	},
 	"author": "Webiny Ltd.",

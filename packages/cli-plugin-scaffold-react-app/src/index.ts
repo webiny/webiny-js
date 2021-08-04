@@ -13,7 +13,7 @@ import { formatCode } from "@webiny/cli-plugin-scaffold/utils";
 import execa from "execa";
 import Error from "@webiny/error";
 
-import { TsConfigJson, PackageJson } from "@webiny/cli-plugin-scaffold/types";
+import { PackageJson, TsConfigJson } from "@webiny/cli-plugin-scaffold/types";
 
 const ncp = util.promisify(ncpBase.ncp);
 
@@ -132,6 +132,14 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
 
             replaceInPath(path.join(input.path, "/**/*.*"), replacements);
 
+            const tsConfigJsonPath = path.join(input.path, "code", "tsconfig.json");
+            const tsConfigJson = await readJson<TsConfigJson>(tsConfigJsonPath);
+            tsConfigJson.extends = path.join(
+                path.relative(path.join(input.path, "code"), context.project.root),
+                "tsconfig.json"
+            );
+            await writeJson(tsConfigJsonPath, tsConfigJson);
+
             ora.stopAndPersist({
                 symbol: chalk.green("✔"),
                 text: `New React Application created in ${chalk.green(input.path)}.`
@@ -193,7 +201,8 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
             console.log(chalk.bold("Useful Links"));
 
             const links = [
-                ["Extend Admin Area", SCAFFOLD_DOCS_LINK],
+                ["Create Custom Application Tutorial", SCAFFOLD_DOCS_LINK],
+                ["New React Application Scaffold", SCAFFOLD_DOCS_LINK],
                 [
                     "Use the Watch Command",
                     "https://www.webiny.com/docs/how-to-guides/webiny-cli/use-watch-command"
