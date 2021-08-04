@@ -218,6 +218,48 @@ h6 {
 .webiny-pb-media-query--mobile-portrait .webiny-pb-typography-body {
   color: var(--mobile-portrait-color, var(--webiny-theme-color-text-primary, rgb(10, 10, 10)));
 }
+// Typography styles for paragraph
+%webiny-pb-typography-paragraph-base {
+  line-height: $leading;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  font-size: 1rem;
+  font-weight: 400;
+  letter-spacing: 0.03125em;
+  text-decoration: inherit;
+  text-transform: inherit;
+
+  color: var(--desktop-color, var(--webiny-theme-color-text-primary, rgb(10, 10, 10)));
+
+  & .webiny-pb-media-query--tablet {
+    color: var(--tablet-color, var(--webiny-theme-color-text-primary, rgb(10, 10, 10)));
+  }
+  & .webiny-pb-media-query--mobile-landscape {
+    color: var(--mobile-landscape-color, var(--webiny-theme-color-text-primary, rgb(10, 10, 10)));
+  }
+  & .webiny-pb-media-query--mobile-portrait {
+    color: var(--mobile-portrait-color, var(--webiny-theme-color-text-primary, rgb(10, 10, 10)));
+  }
+}
+
+.webiny-pb-typography-title {
+  @extend %webiny-pb-typography-paragraph-base;
+
+  font-size: $webiny-pb-text-lg;
+  font-weight: 600;
+}
+
+.webiny-pb-typography-subtitle {
+  @extend %webiny-pb-typography-paragraph-base;
+  font-size: $webiny-pb-text-base;
+  font-weight: 600;
+}
+
+.webiny-pb-typography-body-xl {
+  @extend %webiny-pb-typography-paragraph-base;
+  font-size: $webiny-pb-text-xl;
+  font-weight: normal;
+}
 
 .webiny-pb-typography-unordered-list {
   list-style: disc;
