@@ -15,7 +15,7 @@
 			"api/code/prerenderingService/render",
 			"api/code/prerenderingService/flush",
 			"api/code/prerenderingService/queue/*",
-			"apps/my-new-react-application"
+			"apps/kobaja/code"
 		]
 	},
 	"author": "Webiny Ltd.",

@@ -146,7 +146,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
             const rootPackageJsonPath = path.join(context.project.root, "package.json");
             const rootPackageJson = await readJson<PackageJson>(rootPackageJsonPath);
             if (!rootPackageJson.workspaces.packages.includes(input.path)) {
-                rootPackageJson.workspaces.packages.push(input.path);
+                rootPackageJson.workspaces.packages.push(`${input.path}/code`);
                 await writeJson(rootPackageJsonPath, rootPackageJson);
             }
 
@@ -177,21 +177,15 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 text: `Finalized.`
             });
         },
-        onSuccess: async () => {
+        onSuccess: async ({ input }) => {
             console.log();
             console.log(`${chalk.green("✔")} New React application created successfully.`);
             console.log();
             console.log(chalk.bold("Next Steps"));
 
             console.log(
-                `‣ deploy the extended GraphQL API and continue developing by running the ${chalk.green(
-                    "yarn webiny watch api/code/graphql --env dev"
-                )} command`
-            );
-
-            console.log(
-                `‣ after you've deployed the extended GraphQL API, continue developing your Admin Area React application locally by running the ${chalk.green(
-                    "yarn webiny watch apps/admin --env dev"
+                `‣ start the application locally by running the ${chalk.green(
+                    `yarn webiny watch ${input.path} --env dev`
                 )} command`
             );
 
