@@ -9,11 +9,9 @@ import writeJson from "write-json-file";
 import { replaceInPath } from "replace-in-path";
 import chalk from "chalk";
 import link from "terminal-link";
-import {
-    createScaffoldsIndexFile,
-    updateScaffoldsIndexFile,
-    formatCode
-} from "@webiny/cli-plugin-scaffold/utils";
+import { formatCode } from "@webiny/cli-plugin-scaffold/utils";
+import execa from "execa";
+import Error from "@webiny/error";
 
 import { TsConfigJson, PackageJson } from "@webiny/cli-plugin-scaffold/types";
 
@@ -54,7 +52,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                     name: "description",
                     message: "Enter application description:",
                     default: input => {
-                        return `This is the "${input.name}" React application.`;
+                        return `This is the ${input.name} React application.`;
                     },
                     validate: description => {
                         if (description.length < 2) {
@@ -70,9 +68,16 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                     default: input => {
                         return `apps/${Case.kebab(input.name)}`;
                     },
-                    validate: path => {
-                        if (path.length < 2) {
+                    validate: appPath => {
+                        if (!appPath || appPath.length < 2) {
                             return `Please enter a valid path in which the new React application will be created.`;
+                        }
+
+                        const locationPath = path.resolve(appPath);
+                        if (fs.existsSync(locationPath)) {
+                            return `Cannot continue - the ${chalk.red(
+                                appPath
+                            )} folder already exists.`;
                         }
 
                         return true;
@@ -152,187 +157,25 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 )} file updated.`
             });
 
-            await formatCode(["**/*.ts", "**/*.tsx"], { cwd: adminNewCodePath });
+            ora.start(`Finalizing...`);
 
-            // const dataModelName = {
-            //     plural: pluralize(Case.camel(input.dataModelName)),
-            //     singular: pluralize.singular(Case.camel(input.dataModelName))
-            // };
-            //
-            // // Admin Area paths.
-            // const adminScaffoldsPath = path.join(input.adminPluginsFolderPath, "scaffolds");
-            // const adminScaffoldsIndexPath = path.join(adminScaffoldsPath, "index.ts");
-            // const adminNewCodePath = path.join(
-            //     adminScaffoldsPath,
-            //     Case.camel(dataModelName.plural)
-            // );
-            // const adminPackageJsonPath = path.relative(
-            //     context.project.root,
-            //     findUp.sync("package.json", { cwd: input.graphqlPluginsFolderPath })
-            // );
-            //
-            // const adminDependenciesUpdates = [];
-            //
-            // // GraphQL API paths.
-            // const graphqlScaffoldsPath = path.join(input.graphqlPluginsFolderPath, "scaffolds");
-            // const graphqlScaffoldsIndexPath = path.join(graphqlScaffoldsPath, "index.ts");
-            // const graphqlNewCodePath = path.join(
-            //     graphqlScaffoldsPath,
-            //     Case.camel(dataModelName.plural)
-            // );
-            // const graphqlPackageJsonPath = path.relative(
-            //     context.project.root,
-            //     findUp.sync("package.json", { cwd: input.graphqlPluginsFolderPath })
-            // );
-            //
-            // // Get needed dependencies updates.
-            // const graphqlDependenciesUpdates = [];
-            // const packageJson = await loadJsonFile<Record<string, any>>(graphqlPackageJsonPath);
-            // if (!packageJson?.devDependencies?.["graphql-request"]) {
-            //     graphqlDependenciesUpdates.push(["devDependencies", "graphql-request", "^3.4.0"]);
-            // }
-            //
-            // const templateFolderPath = path.join(__dirname, "template");
-            //
-            // if (input.showConfirmation !== false) {
-            //     console.log();
-            //     console.log(
-            //         `${chalk.bold("The following operations will be performed on your behalf:")}`
-            //     );
-            //
-            //     console.log("- GraphQL API");
-            //     console.log(
-            //         `  - new plugins will be created in ${chalk.green(graphqlNewCodePath)}`
-            //     );
-            //     console.log(
-            //         `  - created plugins will be imported in ${chalk.green(
-            //             graphqlScaffoldsIndexPath
-            //         )}`
-            //     );
-            //
-            //     if (graphqlDependenciesUpdates.length) {
-            //         console.log(
-            //             `  - dependencies in ${chalk.green(
-            //                 graphqlPackageJsonPath
-            //             )} will be updated `
-            //         );
-            //     }
-            //
-            //     console.log("- Admin Area");
-            //     console.log(`  - new plugins will be created in ${chalk.green(adminNewCodePath)}`);
-            //     console.log(
-            //         `  - created plugins will be imported in ${chalk.green(
-            //             adminScaffoldsIndexPath
-            //         )}`
-            //     );
-            //
-            //     if (adminDependenciesUpdates.length) {
-            //         console.log(
-            //             `  - dependencies in ${chalk.green(adminPackageJsonPath)} will be updated `
-            //         );
-            //     }
-            //
-            //     const prompt = inquirer.createPromptModule();
-            //
-            //     const { proceed } = await prompt({
-            //         name: "proceed",
-            //         message: `Are you sure you want to continue?`,
-            //         type: "confirm",
-            //         default: false
-            //     });
-            //
-            //     if (!proceed) {
-            //         process.exit(0);
-            //     }
-            //     console.log();
-            // }
-            //
-            // const cliPluginScaffoldGraphQl = context.plugins.byName<CliCommandScaffoldTemplate>(
-            //     "cli-plugin-scaffold-graphql"
-            // );
-            //
-            // await cliPluginScaffoldGraphQl.scaffold.generate({
-            //     ...options,
-            //     input: {
-            //         showConfirmation: false,
-            //         dataModelName: input.dataModelName,
-            //         pluginsFolderPath: input.graphqlPluginsFolderPath
-            //     }
-            // });
-            //
-            // ora.start(`Creating new plugins in ${chalk.green(adminNewCodePath)}...`);
-            // await wait(1000);
-            //
-            // fs.mkdirSync(adminNewCodePath, { recursive: true });
-            //
-            // await ncp(templateFolderPath, adminNewCodePath);
-            //
-            // // Replace generic "Target" with received "dataModelName" argument.
-            // const replacements = [
-            //     { find: "targetDataModels", replaceWith: Case.camel(dataModelName.plural) },
-            //     { find: "TargetDataModels", replaceWith: Case.pascal(dataModelName.plural) },
-            //     { find: "TARGET_DATA_MODELS", replaceWith: Case.constant(dataModelName.plural) },
-            //     { find: "target-data-models", replaceWith: Case.kebab(dataModelName.plural) },
-            //     { find: "Target Data Models", replaceWith: Case.title(dataModelName.plural) },
-            //
-            //     { find: "targetDataModel", replaceWith: Case.camel(dataModelName.singular) },
-            //     { find: "TargetDataModel", replaceWith: Case.pascal(dataModelName.singular) },
-            //     { find: "TARGET_DATA_MODEL", replaceWith: Case.constant(dataModelName.singular) },
-            //     { find: "target-data-model", replaceWith: Case.kebab(dataModelName.singular) },
-            //     { find: "Target Data Model", replaceWith: Case.title(dataModelName.singular) }
-            // ];
-            //
-            // replaceInPath(path.join(adminNewCodePath, "/**/*.ts"), replacements);
-            // replaceInPath(path.join(adminNewCodePath, "/**/*.tsx"), replacements);
-            //
-            // const fileNameReplacements = [
-            //     {
-            //         find: "views/TargetDataModelsDataList.tsx",
-            //         replaceWith: `views/${Case.pascal(dataModelName.plural)}DataList.tsx`
-            //     },
-            //     {
-            //         find: "views/TargetDataModelsForm.tsx",
-            //         replaceWith: `views/${Case.pascal(dataModelName.plural)}Form.tsx`
-            //     },
-            //
-            //     {
-            //         find: "views/hooks/useTargetDataModelsForm.ts",
-            //         replaceWith: `views/hooks/use${Case.pascal(dataModelName.plural)}Form.ts`
-            //     },
-            //     {
-            //         find: "views/hooks/useTargetDataModelsDataList.ts",
-            //         replaceWith: `views/hooks/use${Case.pascal(dataModelName.plural)}DataList.ts`
-            //     }
-            // ];
-            //
-            // for (const fileNameReplacement of fileNameReplacements) {
-            //     fs.renameSync(
-            //         path.join(adminNewCodePath, fileNameReplacement.find),
-            //         path.join(adminNewCodePath, fileNameReplacement.replaceWith)
-            //     );
-            // }
-            //
-            // ora.stopAndPersist({
-            //     symbol: chalk.green("✔"),
-            //     text: `New plugins created in ${chalk.green(adminNewCodePath)}.`
-            // });
-            //
-            // ora.start(`Importing created plugins in ${chalk.green(adminScaffoldsIndexPath)}.`);
-            // await wait(1000);
-            //
-            // createScaffoldsIndexFile(adminScaffoldsPath);
-            // await updateScaffoldsIndexFile({
-            //     scaffoldsIndexPath: adminScaffoldsIndexPath,
-            //     importName: dataModelName.plural,
-            //     importPath: `./${dataModelName.plural}`
-            // });
-            //
-            // ora.stopAndPersist({
-            //     symbol: chalk.green("✔"),
-            //     text: `Imported created plugins in ${chalk.green(adminScaffoldsIndexPath)}.`
-            // });
-            //
-            // await formatCode(["**/*.ts", "**/*.tsx"], { cwd: adminNewCodePath });
+            // Once everything is done, run `yarn` so the new packages are automatically installed.
+            try {
+                await execa("yarn");
+                await execa("yarn", ["postinstall"]);
+            } catch (err) {
+                throw new Error(
+                    `Unable to install dependencies. Try running "yarn" in project root manually.`,
+                    err.message
+                );
+            }
+
+            await formatCode(["**/*.ts", "**/*.tsx"], { cwd: input.path });
+
+            ora.stopAndPersist({
+                symbol: chalk.green("✔"),
+                text: `Finalized.`
+            });
         },
         onSuccess: async () => {
             console.log();
