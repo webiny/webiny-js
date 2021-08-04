@@ -43,8 +43,11 @@ body {
   --webiny-theme-color-text-secondary: #{$webiny-pb-theme-text-secondary};
   --webiny-theme-color-border: #{$webiny-pb-theme-color-border};
   --webiny-theme-border-radius: #{$webiny-pb-theme-border-radius};
-  --webiny-theme-color-purple: #7b39d9;
-  --webiny-theme-color-yellow: #DCD207;
+  --webiny-theme-color-purple: hsl(265, 68%, 54%);
+  --webiny-theme-color-thanos: hsl(265, 78%, 46%);
+  --webiny-theme-color-yellow: hsl(57, 94%, 45%);
+  --webiny-theme-color-dark-gray: hsl(234, 23%, 35%);
+  --webiny-theme-color-dark: hsl(217, 14%, 13%);
 }
 
 body.dark-theme {
