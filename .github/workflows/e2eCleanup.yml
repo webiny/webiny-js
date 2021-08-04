@@ -24,6 +24,11 @@ jobs:
         with:
           node-version: 12
 
+      - uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.client_payload.ref }}
+          fetch-depth: 0
+
       - name: check WEBINY_PULUMI_BACKEND
         run: echo '${{ env.WEBINY_PULUMI_BACKEND }}'
       - name: Retrieve cached Verdaccio files
