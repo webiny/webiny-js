@@ -325,6 +325,14 @@ h6 {
   @include pb-lis-element($leading, #90c418, #ffffff);
 }
 
+.webiny-pb-typography-list--checkbox {
+  @include pb-list-with-checkbox($leading);
+}
+
+.webiny-pb-typography-list--big-numbers {
+  @include pb-list-with-big-numbers($leading);
+}
+
 .webiny-pb-typography-code {
   padding: 0.2em 0.4em;
   margin: 0;
