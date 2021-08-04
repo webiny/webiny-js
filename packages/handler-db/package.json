@@ -1,6 +1,6 @@
 {
   "name": "@webiny/handler-db",
-  "version": "5.11.1",
+  "version": "5.12.0-beta.0",
   "main": "index.js",
   "license": "MIT",
   "repository": {
@@ -11,15 +11,15 @@
   "author": "Webiny Ltd.",
   "dependencies": {
     "@babel/runtime": "^7.5.5",
-    "@webiny/db": "^5.11.1",
-    "@webiny/handler": "^5.11.1"
+    "@webiny/db": "^5.12.0-beta.0",
+    "@webiny/handler": "^5.12.0-beta.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",
     "@babel/core": "^7.5.5",
     "@babel/preset-env": "^7.5.5",
-    "@webiny/cli": "^5.11.1",
-    "@webiny/project-utils": "^5.11.1",
+    "@webiny/cli": "^5.12.0-beta.0",
+    "@webiny/project-utils": "^5.12.0-beta.0",
     "rimraf": "^3.0.2",
     "typescript": "^4.1.3"
   },

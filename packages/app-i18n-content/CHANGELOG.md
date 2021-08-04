@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.12.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.11.1...v5.12.0-beta.0) (2021-08-04)
+
+
+### Bug Fixes
+
+* restore SplitView component and fix cypress tests ([304a7b3](https://github.com/webiny/webiny-js/commit/304a7b3614e621e9b33fcce54f6ddb1018887b34))
+
+
+
+
+
 ## [5.11.1](https://github.com/webiny/webiny-js/compare/v5.11.1-beta.0...v5.11.1) (2021-07-31)
 
 **Note:** Version bump only for package @webiny/app-i18n-content
