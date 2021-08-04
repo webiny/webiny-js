@@ -5,6 +5,22 @@
   ) !important;
   color: transparent;
 }
+@mixin button-purple {
+  background-color: var(--webiny-theme-color-purple);
+  color: var(--webiny-theme-color-on-primary, #ffffff);
+}
+
+@mixin button-yellow {
+  background-color: var(--webiny-theme-color-yellow);
+  color: var(--webiny-theme-color-dark, #000000);
+  font-weight: 700;
+}
+
+@mixin button-dark {
+  background-color: var(--webiny-theme-color-dark);
+  color: var(--webiny-theme-color-on-primary, #ffffff);
+}
+
 @mixin button-primary {
   background-color: var(--webiny-theme-color-primary, #ee896b);
   color: var(--webiny-theme-color-on-primary, #ffffff);
@@ -63,11 +79,16 @@
   box-sizing: border-box;
   outline: none;
   border: none;
-  min-width: 100px;
+  min-width: 260px;
   width: auto;
   background-color: var(--webiny-theme-color-background, #fafbfb);
   font-family: var(--webiny-theme-typography-primary-font-family, "IBM Plex Sans, sans-serif");
   color: var(--webiny-theme-color-on-background, #131313);
+  -webkit-text-size-adjust: 100%;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  margin: 0;
+  height: 40px;
   > span {
     display: block;
     font-size: 1px;
@@ -132,6 +153,15 @@
   &--simple {
     @include button-simple();
   }
+  &--purple {
+    @include button-purple();
+  }
+  &--yellow {
+    @include button-yellow();
+  }
+  &--dark {
+    @include button-dark();
+  }
   &__icon {
     &--left {
       flex-direction: row;
@@ -164,47 +194,14 @@
     word-break: keep-all !important;
     overflow: hidden !important;
   }
-}
-.webiny-pb-media-query--tablet .webiny-pb-page-element-button {
-  border-radius: 4px;
-  background-color: var(--webiny-theme-color-background, #fafbfb);
-  color: var(--webiny-theme-color-on-background, #131313);
 
-  &--primary {
-    @include button-primary();
+  & .webiny-pb-media-query--tablet {
+    // device specific styles
   }
-  &--secondary {
-    @include button-secondary();
+  & .webiny-pb-media-query--mobile-landscape {
+    // device specific styles
   }
-  &--outline-primary {
-    @include button-outline-primary();
-  }
-  &--outline-secondary {
-    @include button-outline-secondary();
-  }
-  &--simple {
-    @include button-simple();
-  }
-}
-.webiny-pb-media-query--mobile-landscape .webiny-pb-page-element-button,
-.webiny-pb-media-query--mobile-portrait .webiny-pb-page-element-button {
-  border-radius: 4px;
-  background-color: var(--webiny-theme-color-background, #fafbfb);
-  color: var(--webiny-theme-color-on-background, #131313);
-
-  &--primary {
-    @include button-primary();
-  }
-  &--secondary {
-    @include button-secondary();
-  }
-  &--outline-primary {
-    @include button-outline-primary();
-  }
-  &--outline-secondary {
-    @include button-outline-secondary();
-  }
-  &--simple {
-    @include button-simple();
+  & .webiny-pb-media-query--mobile-portrait {
+    // device specific styles
   }
 }
