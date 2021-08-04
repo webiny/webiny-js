@@ -23,16 +23,16 @@ export class InputElement extends FormFieldElement {
         return (
             <Bind
                 name={this.getName()}
-                validators={this.getValidators()}
-                defaultValue={this.getDefaultValue()}
+                validators={this.getValidators(props)}
+                defaultValue={this.getDefaultValue(props)}
                 beforeChange={(value, cb) => this.onBeforeChange(value, cb)}
                 afterChange={(value, form) => this.onAfterChange(value, form)}
             >
                 <Input
-                    label={this.getLabel()}
-                    placeholder={this.getPlaceholder()}
-                    disabled={this.isDisabled(props)}
-                    description={this.getDescription()}
+                    label={this.getLabel(props)}
+                    placeholder={this.getPlaceholder(props)}
+                    disabled={this.getIsDisabled(props)}
+                    description={this.getDescription(props)}
                 />
             </Bind>
         );

@@ -76,7 +76,7 @@ export class DynamicFieldsetElement extends FormFieldElement<DynamicFieldsetElem
         const createEmpty = this.getCreateEmptyElement();
 
         return (
-            <Bind name={this.getName()} defaultValue={this.getDefaultValue()}>
+            <Bind name={this.getName()} defaultValue={this.getDefaultValue(props)}>
                 <DynamicFieldset>
                     {({ actions, header, row, empty }) => (
                         <React.Fragment>

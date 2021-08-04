@@ -45,14 +45,14 @@ export class FileManagerElementRenderer extends UIRenderer<
         const { Bind } = props.formProps;
 
         const accept = element.getAccept();
-        const label = element.getLabel();
-        const description = element.getDescription();
+        const label = element.getLabel(props);
+        const description = element.getDescription(props);
 
         return (
             <Bind
                 name={element.getName()}
-                validators={element.getValidators()}
-                defaultValue={element.getDefaultValue()}
+                validators={element.getValidators(props)}
+                defaultValue={element.getDefaultValue(props)}
                 beforeChange={(value, cb) => element.onBeforeChange(value, cb)}
                 afterChange={(value, form) => element.onAfterChange(value, form)}
             >

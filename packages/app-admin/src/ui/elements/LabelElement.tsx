@@ -5,6 +5,11 @@ export interface LabelElementConfig extends UIElementConfig {
     text: string;
 }
 
+/**
+ * !GOOD FIRST ISSUE!
+ * Add support for `text` config and `setText` setter to accept functions.
+ * See example in ButtonElement: packages/app-admin/src/ui/elements/ButtonElement.tsx
+ */
 export class LabelElement extends UIElement<LabelElementConfig> {
     constructor(id: string, config: LabelElementConfig) {
         super(id, config);

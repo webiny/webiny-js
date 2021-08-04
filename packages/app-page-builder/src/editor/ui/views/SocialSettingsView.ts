@@ -69,14 +69,14 @@ export class SocialSettingsView extends PageSettingsFormView {
                 new InputElement(`metaTags.${index}.property`, {
                     name: `settings.social.meta.${index}.property`,
                     label: "Property",
-                    validators: validation.create("required"),
+                    validators: () => validation.create("required"),
                     beforeChange: (tag, cb) => cb(trim(tag))
                 })
             );
             const contentElement = new InputElement(`metaTags.${index}.content`, {
                 name: `settings.social.meta.${index}.content`,
                 label: "Content",
-                validators: validation.create("required"),
+                validators: () => validation.create("required"),
                 beforeChange: (tag, cb) => cb(trim(tag))
             });
 

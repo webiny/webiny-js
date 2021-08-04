@@ -2,12 +2,16 @@ import React from "react";
 import { UIElement, UIElementConfig } from "~/ui/UIElement";
 import { Accordion, AccordionItem } from "@webiny/ui/Accordion";
 
-interface Item extends UIElementConfig {
+interface GetterWithProps<TProps, T> {
+    (props: TProps): T;
+}
+
+interface Item<TProps = any> extends UIElementConfig {
     id: string;
     title: string;
     description: string;
     icon: React.ReactElement;
-    open?: boolean;
+    open?: boolean | GetterWithProps<TProps, boolean>;
 }
 
 export class AccordionItemElement extends UIElement<Item> {
@@ -24,7 +28,13 @@ export class AccordionItemElement extends UIElement<Item> {
     }
 
     render(props) {
-        return <AccordionItem {...this.config}>{super.render(props)}</AccordionItem>;
+        const { open, ...rest } = this.config;
+        const isOpened = typeof open === "function" ? open(props) : open;
+        return (
+            <AccordionItem open={isOpened} {...rest}>
+                {super.render(props)}
+            </AccordionItem>
+        );
     }
 }
 

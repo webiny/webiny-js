@@ -1,25 +1,23 @@
+import React from "react";
 import { FormRenderPropParams, Form } from "@webiny/form";
 import { UIElement, UIElementConfig } from "~/ui/UIElement";
+import { FormElementRenderProps } from "~/ui/elements/form/FormElement";
 
 export interface FormFieldElementConfig<TRenderProps = FormRenderPropParams>
     extends UIElementConfig<TRenderProps> {
     name: string;
-    validators?: Function;
+    validators?: GetterWithProps<Function | Function[]>;
     beforeChange?: BeforeChange;
     afterChange?: AfterChange;
-    defaultValue?: any;
-    isDisabled?: boolean | IsDisabled;
-    label?: string;
-    description?: string | React.ReactElement;
-    placeholder?: string;
+    defaultValue?: any | GetterWithProps<any>;
+    isDisabled?: boolean | GetterWithProps<boolean>;
+    label?: string | GetterWithProps<string>;
+    description?: string | React.ReactElement | GetterWithProps<string | React.ReactElement>;
+    placeholder?: string | GetterWithProps<string>;
 }
 
 export interface FormFieldElementRenderProps {
     formProps: FormRenderPropParams;
-}
-
-interface IsDisabled {
-    (props: FormFieldElementRenderProps): boolean;
 }
 
 interface BeforeChange {
@@ -32,6 +30,10 @@ interface BeforeChangeCallback {
 
 interface AfterChange {
     (value: any, form: Form): void;
+}
+
+interface GetterWithProps<T> {
+    (props: FormElementRenderProps): T;
 }
 
 export class FormFieldElement<
@@ -58,40 +60,77 @@ export class FormFieldElement<
         return this.config.name;
     }
 
-    getValidators() {
-        return this.config.validators;
+    getValidators(props?: FormFieldElementRenderProps): Function | Function[] {
+        if (!this.config.validators) {
+            return null;
+        }
+
+        return this.config.validators(props);
     }
 
-    getDefaultValue() {
+    getDefaultValue(props?: FormFieldElementRenderProps): any {
+        if (typeof this.config.defaultValue === "function") {
+            return this.config.defaultValue(props);
+        }
+
         return this.config.defaultValue;
     }
 
-    getLabel() {
+    getLabel(props?: FormFieldElementRenderProps): string {
+        if (typeof this.config.label === "function") {
+            return this.config.label(props);
+        }
+
         return this.config.label;
     }
 
-    getDescription() {
+    getDescription(props?: FormFieldElementRenderProps): string | React.ReactElement {
+        if (typeof this.config.description === "function") {
+            return this.config.description(props);
+        }
+
         return this.config.description;
     }
 
-    getPlaceholder() {
+    getPlaceholder(props?: FormFieldElementRenderProps): string {
+        if (typeof this.config.placeholder === "function") {
+            return this.config.placeholder(props);
+        }
+
         return this.config.placeholder;
     }
 
-    setLabel(label: string) {
+    setLabel(label: string | GetterWithProps<string>) {
         this.config.label = label;
     }
 
-    setDescription(description: string | React.ReactElement) {
+    setDescription(
+        description: string | React.ReactElement | GetterWithProps<string | React.ReactElement>
+    ) {
         this.config.description = description;
     }
 
-    setPlaceholder(placeholder: string) {
+    setPlaceholder(placeholder: string | GetterWithProps<string>) {
         this.config.placeholder = placeholder;
     }
 
-    setDefaultValue(value: any) {
+    setDefaultValue(value: any | GetterWithProps<any>) {
         this.config.defaultValue = value;
+    }
+
+    getIsDisabled(props?: FormFieldElementRenderProps) {
+        if (typeof this.config.isDisabled === "function") {
+            return this.config.isDisabled(props);
+        }
+        return this.config.isDisabled;
+    }
+
+    setIsDisabled(isDisabled: boolean | GetterWithProps<boolean>) {
+        this.config.isDisabled = isDisabled;
+    }
+
+    setValidators(validators: GetterWithProps<Function>) {
+        this.config.validators = validators;
     }
 
     onBeforeChange(value, cb) {
@@ -133,17 +172,5 @@ export class FormFieldElement<
 
     setAfterChange(cb: AfterChange) {
         this._afterChange = [cb];
-    }
-
-    setIsDisabled(isDisabled: boolean | IsDisabled) {
-        this.config.isDisabled = isDisabled;
-    }
-
-    protected isDisabled(props: FormFieldElementRenderProps): boolean {
-        if (typeof this.config.isDisabled === "function") {
-            return this.config.isDisabled(props);
-        }
-
-        return this.config.isDisabled;
     }
 }

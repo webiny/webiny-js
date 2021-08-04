@@ -40,15 +40,15 @@ export class SelectElement extends FormFieldElement<SelectElementConfig> {
         return (
             <Bind
                 name={this.getName()}
-                validators={this.getValidators()}
-                defaultValue={this.getDefaultValue()}
+                validators={this.getValidators(props)}
+                defaultValue={this.getDefaultValue(props)}
                 beforeChange={(value, cb) => this.onBeforeChange(value, cb)}
                 afterChange={(value, form) => this.onAfterChange(value, form)}
             >
                 <Select
-                    label={this.getLabel()}
-                    disabled={this.isDisabled(props)}
-                    description={this.getDefaultValue()}
+                    label={this.getLabel(props)}
+                    disabled={this.getIsDisabled(props)}
+                    description={this.getDefaultValue(props)}
                 >
                     {this.getOptions().map(({ value, label }) => (
                         <option key={value} value={value}>

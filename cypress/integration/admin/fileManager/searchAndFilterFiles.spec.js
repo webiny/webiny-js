@@ -182,7 +182,8 @@ context("File Manager - Update file details", () => {
          * The search input is not responding to the first couple of clicks(interactions) while running the Cypress test.
          * So, at the moment we forcefully "awake" the sleeping input element before continuing with the search.
          */
-        cy.findByPlaceholderText("Search by filename or tags").as("search-input");
+
+        cy.get(`[data-testid="file-manager.search-input"]`).as("search-input");
         cy.get("@search-input").dblclick();
         cy.get("@search-input").dblclick();
         cy.get("@search-input").should("be.focused");

@@ -23,14 +23,14 @@ export class TagsMultiAutocompleteElement extends FormFieldElement {
         return (
             <Bind
                 name={this.getName()}
-                validators={this.getValidators()}
-                defaultValue={this.getDefaultValue()}
+                validators={this.getValidators(props)}
+                defaultValue={this.getDefaultValue(props)}
                 beforeChange={(value, cb) => this.onBeforeChange(value, cb)}
                 afterChange={(value, form) => this.onAfterChange(value, form)}
             >
                 <TagsMultiAutocomplete
-                    label={this.getLabel()}
-                    description={this.getDescription()}
+                    label={this.getLabel(props)}
+                    description={this.getDescription(props)}
                 />
             </Bind>
         );
