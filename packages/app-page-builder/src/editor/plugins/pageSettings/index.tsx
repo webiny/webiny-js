@@ -69,7 +69,7 @@ const plugins: PluginCollection = [
         });
     }),
     new AddQuerySelectionPlugin({
-        operationName: "GetPage",
+        operationName: "PbGetPage",
         selectionPath: "pageBuilder.getPage.data",
         addSelection: gql`
             {
@@ -88,7 +88,7 @@ const plugins: PluginCollection = [
         `
     }),
     new AddQuerySelectionPlugin({
-        operationName: "GetPage",
+        operationName: "PbGetPage",
         selectionPath: "pageBuilder.getPage.data",
         addSelection: gql`
             {
@@ -106,7 +106,7 @@ const plugins: PluginCollection = [
         `
     }),
     new AddQuerySelectionPlugin({
-        operationName: "GetPage",
+        operationName: "PbGetPage",
         selectionPath: "pageBuilder.getPage.data",
         addSelection: gql`
             {
