@@ -77,7 +77,7 @@ const Resizer = ({
         ev.preventDefault();
         ev.stopPropagation();
         const targetEvent =
-            ev.nativeEvent?.pageX !== undefined ? ev.nativeEvent : ((ev as unknown) as MouseEvent);
+            ev.nativeEvent?.pageX !== undefined ? ev.nativeEvent : (ev as unknown as MouseEvent);
         startPosition.current = getMousePosition(targetEvent);
 
         setIsDragging(true);

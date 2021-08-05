@@ -1,11 +1,11 @@
 import React from "react";
 import { Link } from "@webiny/react-router";
 import { ListItem, ListItemGraphic } from "@webiny/ui/List";
-import { UIRenderer, UIRenderParams } from "@webiny/ui-composer/UIRenderer";
-import { NavigationMenuElement } from "~/elements/NavigationMenuElement";
-import { NavigationView } from "~/views/NavigationView";
+import { UIRenderer, UIRenderParams } from "~/ui/UIRenderer";
+import { NavigationMenuElement } from "~/ui/elements/NavigationMenuElement";
+import { NavigationView } from "~/ui/views/NavigationView";
 import { Icon } from "@webiny/ui/Icon";
-import { FooterElement } from "~/views/NavigationView/FooterElement";
+import { FooterElement } from "~/ui/views/NavigationView/FooterElement";
 
 export class MenuLinkRenderer extends UIRenderer<NavigationMenuElement> {
     canRender(element: NavigationMenuElement): boolean {

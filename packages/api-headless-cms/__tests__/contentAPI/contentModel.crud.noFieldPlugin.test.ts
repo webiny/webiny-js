@@ -46,9 +46,8 @@ describe("content model test no field plugin", () => {
     });
 
     test("prevent content model update if a backend plugin for a field does not exist", async () => {
-        const { createContentModelMutation, updateContentModelMutation } = useContentGqlHandler(
-            manageHandlerOpts
-        );
+        const { createContentModelMutation, updateContentModelMutation } =
+            useContentGqlHandler(manageHandlerOpts);
 
         await createContentModelMutation({
             data: {

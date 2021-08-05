@@ -5,9 +5,7 @@ const selectPermission = (name, accessLevel) => {
         .click()
         .parent()
         .within(() => {
-            cy.get("select")
-                .first()
-                .select(accessLevel);
+            cy.get("select").first().select(accessLevel);
         });
 };
 
@@ -42,9 +40,7 @@ context("Security -> Group", () => {
         ];
 
         // Open group details form
-        cy.findAllByTestId("new-record-button")
-            .first()
-            .click();
+        cy.findAllByTestId("new-record-button").first().click();
         // Add group's detail
         cy.findByLabelText("Name").type(name);
         cy.findByLabelText("Slug").type(slug);
@@ -65,21 +61,15 @@ context("Security -> Group", () => {
 
         cy.findByLabelText("Name").should("have.value", name);
         // Add group's detail
-        cy.findByLabelText("Name")
-            .clear()
-            .type(newName);
-        cy.findByLabelText("Description")
-            .clear()
-            .type(newDescription);
+        cy.findByLabelText("Name").clear().type(newName);
+        cy.findByLabelText("Description").clear().type(newDescription);
         // Update permissions
         cy.findByTestId("permission.fm").click();
 
         cy.findByTestId("permission.fm")
             .parent()
             .within(() => {
-                cy.get("select")
-                    .first()
-                    .select("full");
+                cy.get("select").first().select("full");
             });
 
         // Save details
@@ -108,9 +98,7 @@ context("Security -> Group", () => {
         ];
 
         // Open group details form
-        cy.findAllByTestId("new-record-button")
-            .first()
-            .click();
+        cy.findAllByTestId("new-record-button").first().click();
         // Add group's detail
         cy.findByLabelText("Name").type(name);
         cy.findByLabelText("Slug").type(slug);

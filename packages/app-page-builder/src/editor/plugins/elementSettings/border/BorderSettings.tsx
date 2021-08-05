@@ -60,10 +60,10 @@ const BorderSettings: React.FunctionComponent<PbEditorPageElementSettingsRenderC
         [getUpdateValue, displayMode]
     );
 
-    const updateColor = useCallback(value => getUpdateValue(`${displayMode}.color`)(value), [
-        getUpdateValue,
-        displayMode
-    ]);
+    const updateColor = useCallback(
+        value => getUpdateValue(`${displayMode}.color`)(value),
+        [getUpdateValue, displayMode]
+    );
 
     const updateColorPreview = useCallback(
         value => getUpdatePreview(`${displayMode}.color`)(value),

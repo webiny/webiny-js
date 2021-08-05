@@ -102,9 +102,7 @@ context("Headless CMS - Search and Sort Content Models", () => {
                 cy.findByText(models[i].name).should("exist");
             }
         });
-        cy.get(`[data-testid="default-data-list"]`)
-            .children()
-            .should("have.length", totalModels);
+        cy.get(`[data-testid="default-data-list"]`).children().should("have.length", totalModels);
 
         // Should able to search a specific model by name
         cy.findByTestId("default-data-list.search").within(() => {

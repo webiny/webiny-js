@@ -126,9 +126,8 @@ export default (): ContextPlugin<CmsContext> => ({
         }
 
         const pluginType = "cms-content-entry-storage-operations-provider";
-        const providerPlugins = context.plugins.byType<CmsContentEntryStorageOperationsProvider>(
-            pluginType
-        );
+        const providerPlugins =
+            context.plugins.byType<CmsContentEntryStorageOperationsProvider>(pluginType);
         /**
          * Storage operations for the content entry.
          * Contains logic to save the data into the specific storage.
@@ -289,7 +288,7 @@ export default (): ContextPlugin<CmsContext> => ({
 
                 return [items, meta];
             },
-            listLatest: async function(model, args = {}) {
+            listLatest: async function (model, args = {}) {
                 return context.cms.entries.list(model, {
                     sort: ["createdOn_DESC"],
                     ...args,
@@ -299,7 +298,7 @@ export default (): ContextPlugin<CmsContext> => ({
                     }
                 });
             },
-            listPublished: async function(model, args = {}) {
+            listPublished: async function (model, args = {}) {
                 return context.cms.entries.list(model, {
                     sort: ["createdOn_DESC"],
                     ...args,

@@ -50,7 +50,7 @@ const createSystemField = (field: Partial<CmsContentModelField>): CmsContentMode
             }
         );
     }
-    return (field as unknown) as CmsContentModelField;
+    return field as unknown as CmsContentModelField;
 };
 
 export const systemFields = {

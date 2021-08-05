@@ -21,8 +21,7 @@ describe("Update Settings Handler Test", () => {
                     twitter: "https://www.twitter.com/",
                     image: {
                         id: "1kucKwtX3vI2w6tYuPwJsvRFn9g",
-                        src:
-                            "https://d1peg08dnrinui.cloudfront.net/files/9ki1goobp-webiny_security__1_.png"
+                        src: "https://d1peg08dnrinui.cloudfront.net/files/9ki1goobp-webiny_security__1_.png"
                     }
                 }
             }
@@ -50,8 +49,7 @@ describe("Update Settings Handler Test", () => {
                     instagram: "https://www.instagram.com/",
                     image: {
                         id: "1kucKwtX3vI2w6tYuPwJsvRFn9g",
-                        src:
-                            "https://d1peg08dnrinui.cloudfront.net/files/9ki1goobp-webiny_security__1_.png"
+                        src: "https://d1peg08dnrinui.cloudfront.net/files/9ki1goobp-webiny_security__1_.png"
                     }
                 },
                 pages: {

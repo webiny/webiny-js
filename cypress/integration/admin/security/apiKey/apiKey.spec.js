@@ -5,9 +5,7 @@ const selectPermission = (name, accessLevel) => {
         .click()
         .parent()
         .within(() => {
-            cy.get("select")
-                .first()
-                .select(accessLevel);
+            cy.get("select").first().select(accessLevel);
         });
 };
 
@@ -38,9 +36,7 @@ context("Security -> API Key", () => {
         const [name, description] = [uniqid("name-"), uniqid("description-")];
 
         // Open API key details form
-        cy.findAllByTestId("new-record-button")
-            .first()
-            .click();
+        cy.findAllByTestId("new-record-button").first().click();
         // Add API key's detail
         cy.findByLabelText("Name").type(name);
         cy.findByLabelText("Description").type(description);
@@ -59,12 +55,8 @@ context("Security -> API Key", () => {
         const [newName, newDescription] = [uniqid("new-name-"), uniqid("new-description-")];
         cy.findByLabelText("Name").should("have.value", name);
         // Add API key's detail
-        cy.findByLabelText("Name")
-            .clear()
-            .type(newName);
-        cy.findByLabelText("Description")
-            .clear()
-            .type(newDescription);
+        cy.findByLabelText("Name").clear().type(newName);
+        cy.findByLabelText("Description").clear().type(newDescription);
         // Update permissions
         selectPermission("permission.fm", "full");
         // Save details
@@ -89,9 +81,7 @@ context("Security -> API Key", () => {
         const [name, description] = [uniqid("name-"), uniqid("description-")];
 
         // Open API key details form
-        cy.findAllByTestId("new-record-button")
-            .first()
-            .click();
+        cy.findAllByTestId("new-record-button").first().click();
         // Add API key's detail
         cy.findByLabelText("Name").type(name);
         cy.findByLabelText("Description").type(description);

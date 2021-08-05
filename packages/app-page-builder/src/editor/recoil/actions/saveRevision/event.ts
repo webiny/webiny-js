@@ -7,9 +7,7 @@ export class SaveRevisionActionEvent extends BaseEventAction<SaveRevisionActionA
     }
 }
 
-export class ToggleSaveRevisionStateActionEvent extends BaseEventAction<
-    ToggleSaveRevisionStateActionArgsType
-> {
+export class ToggleSaveRevisionStateActionEvent extends BaseEventAction<ToggleSaveRevisionStateActionArgsType> {
     public getName(): string {
         return "ToggleSaveRevisionStateActionEvent";
     }

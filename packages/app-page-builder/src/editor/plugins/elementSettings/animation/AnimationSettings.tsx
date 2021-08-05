@@ -43,8 +43,9 @@ const DATA_NAMESPACE = "data.settings.animation";
 type SettingsPropsType = {
     animation: any;
 };
-const Settings: React.FunctionComponent<SettingsPropsType &
-    PbEditorPageElementSettingsRenderComponentProps> = ({ defaultAccordionValue }) => {
+const Settings: React.FunctionComponent<
+    SettingsPropsType & PbEditorPageElementSettingsRenderComponentProps
+> = ({ defaultAccordionValue }) => {
     const activeElementId = useRecoilValue(activeElementAtom);
     const element = useRecoilValue(elementByIdSelector(activeElementId));
 
@@ -177,8 +178,9 @@ type AnimationSettingsPropsType = {
     title?: string;
     styleAttribute?: string;
 };
-const AnimationSettings: React.FunctionComponent<AnimationSettingsPropsType &
-    PbEditorPageElementSettingsRenderComponentProps> = props => {
+const AnimationSettings: React.FunctionComponent<
+    AnimationSettingsPropsType & PbEditorPageElementSettingsRenderComponentProps
+> = props => {
     return (
         <ElementAnimation>
             {animation => {

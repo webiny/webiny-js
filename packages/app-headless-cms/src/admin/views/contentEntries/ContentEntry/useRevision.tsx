@@ -82,42 +82,44 @@ export const useRevision = ({ revision }: UseRevisionProps) => {
                     `/cms/content-entries/${modelId}/?id=${encodeURIComponent(revision.id)}`
                 );
             },
-            deleteRevision: ({ entry }) => async () => {
-                setLoading(true);
-                await client.mutate({
-                    mutation: DELETE_REVISION,
-                    variables: { revision: revision.id },
-                    update: (cache, { data }) => {
-                        const { error } = data.content;
-                        if (error) {
-                            return showSnackbar(error.message);
-                        }
+            deleteRevision:
+                ({ entry }) =>
+                async () => {
+                    setLoading(true);
+                    await client.mutate({
+                        mutation: DELETE_REVISION,
+                        variables: { revision: revision.id },
+                        update: (cache, { data }) => {
+                            const { error } = data.content;
+                            if (error) {
+                                return showSnackbar(error.message);
+                            }
 
-                        // We have other revisions, update entry's cache
-                        const revisions = GQLCache.removeRevisionFromEntryCache(
-                            contentModel,
-                            cache,
-                            revision
-                        );
-
-                        if (revision.id === entry.id) {
-                            GQLCache.updateLatestRevisionInListCache(
+                            // We have other revisions, update entry's cache
+                            const revisions = GQLCache.removeRevisionFromEntryCache(
                                 contentModel,
                                 cache,
-                                revisions[0],
-                                listQueryVariables
+                                revision
                             );
-                            // Redirect to the first revision in the list of all entry revisions.
-                            return history.push(
-                                `/cms/content-entries/${modelId}?id=` +
-                                    encodeURIComponent(revisions[0].id)
-                            );
-                        }
-                    }
-                });
 
-                setLoading(false);
-            },
+                            if (revision.id === entry.id) {
+                                GQLCache.updateLatestRevisionInListCache(
+                                    contentModel,
+                                    cache,
+                                    revisions[0],
+                                    listQueryVariables
+                                );
+                                // Redirect to the first revision in the list of all entry revisions.
+                                return history.push(
+                                    `/cms/content-entries/${modelId}?id=` +
+                                        encodeURIComponent(revisions[0].id)
+                                );
+                            }
+                        }
+                    });
+
+                    setLoading(false);
+                },
             publishRevision: () => async id => {
                 setLoading(true);
                 await client.mutate({

@@ -1,5 +1,5 @@
 import React from "react";
-import { UIRenderer, UIRenderParams } from "@webiny/ui-composer/UIRenderer";
+import { UIRenderer, UIRenderParams } from "~/ui/UIRenderer";
 import { css } from "emotion";
 import { Menu } from "@webiny/ui/Menu";
 import { TopAppBarActionItem } from "@webiny/ui/TopAppBar";

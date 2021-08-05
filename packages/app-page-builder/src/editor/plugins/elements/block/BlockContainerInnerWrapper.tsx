@@ -6,7 +6,7 @@ import { elementByIdSelector } from "../../../recoil/modules";
 import { ElementRoot } from "../../../../render/components/ElementRoot";
 
 const BlockContainerInnerWrapper = ({ elementId, children, displayMode }) => {
-    const element = (useRecoilValue(elementByIdSelector(elementId)) as unknown) as PbElement;
+    const element = useRecoilValue(elementByIdSelector(elementId)) as unknown as PbElement;
 
     return (
         <ElementRoot element={element}>

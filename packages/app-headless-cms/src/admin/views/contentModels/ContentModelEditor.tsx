@@ -5,7 +5,7 @@ import { Editor } from "~/admin/components/ContentModelEditor/Editor";
 import { useRouter } from "@webiny/react-router";
 import { useCms } from "~/admin/hooks";
 import { ContentModelEditorProvider } from "~/admin/components/ContentModelEditor/Context";
-import Snackbar from "@webiny/app-admin/views/AdminView/components/Snackbar";
+import Snackbar from "@webiny/app-admin/ui/views/AdminView/components/Snackbar";
 type QueryMatch = {
     modelId?: string;
 };

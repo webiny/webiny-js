@@ -30,7 +30,7 @@ const OuterDivVertical = React.memo<OuterDivVerticalProps>(
         (props: OuterDivVerticalProps) => ({
             [props.last ? "right" : "left"]: -2,
             textAlign: props.last ? "right" : "left",
-            [(InnerDivVertical as undefined) as string]: {
+            [InnerDivVertical as undefined as string]: {
                 backgroundColor: props.isOver
                     ? "var(--mdc-theme-primary)"
                     : "var(--mdc-theme-secondary)",

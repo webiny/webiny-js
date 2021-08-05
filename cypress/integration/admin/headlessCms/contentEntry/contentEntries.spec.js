@@ -69,9 +69,7 @@ describe("Headless CMS - Content Entries", () => {
             const newEntryTitle2 = newEntryTitle + "- 2nd";
 
             // a) Click on "New Entry" button
-            cy.findAllByTestId("new-record-button")
-                .first()
-                .click();
+            cy.findAllByTestId("new-record-button").first().click();
             // b) Fill entry details
             cy.findByLabelText("Title").type(newEntryTitle);
             cy.findByLabelText("Edition").type(newEntryEdition);
@@ -112,9 +110,7 @@ describe("Headless CMS - Content Entries", () => {
             });
 
             // Edit an entry
-            cy.findByLabelText("Title")
-                .clear()
-                .type(newEntryTitle2);
+            cy.findByLabelText("Title").clear().type(newEntryTitle2);
             cy.findByTestId("cms-content-save-content-button").click();
             // Check the new entry in list
             cy.findByTestId("default-data-list").within(() => {

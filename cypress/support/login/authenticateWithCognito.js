@@ -26,21 +26,21 @@ export default ({ username, password }) => {
         const cognitoUser = new AmazonCognitoIdentity.CognitoUser(userData);
         cognitoUser.authenticateUser(authenticationDetails, {
             onSuccess: resolve,
-            onFailure: function(err) {
+            onFailure: function (err) {
                 console.log(
                     `An error occurred while executing login command ("cognitoUser.authenticateUser")`,
                     err
                 );
                 reject(err);
             },
-            newPasswordRequired: function(userAttributes) {
+            newPasswordRequired: function (userAttributes) {
                 delete userAttributes.email_verified; // it's returned but not valid to submit
 
                 const newPassword = "12345678";
 
                 cognitoUser.completeNewPasswordChallenge(newPassword, userAttributes, {
                     onSuccess: resolve,
-                    onFailure: function(err) {
+                    onFailure: function (err) {
                         console.log(
                             `An error occurred while executing login command ("cognitoUser.completeNewPasswordChallenge")`,
                             err

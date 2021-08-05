@@ -75,7 +75,8 @@ interface ConstructorArgs {
     context: CmsContext;
 }
 export default class CmsContentModelGroupDynamoElastic
-    implements CmsContentModelGroupStorageOperations {
+    implements CmsContentModelGroupStorageOperations
+{
     private readonly _context: CmsContext;
     private _partitionKey: string;
 

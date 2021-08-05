@@ -129,8 +129,7 @@ describe("predefined values", () => {
                         data: [
                             {
                                 fieldId: "bugType",
-                                error:
-                                    "Value sent does not match any of the available predefined values."
+                                error: "Value sent does not match any of the available predefined values."
                             }
                         ]
                     }
@@ -166,8 +165,7 @@ describe("predefined values", () => {
                         data: [
                             {
                                 fieldId: "bugValue",
-                                error:
-                                    "Value sent does not match any of the available predefined values."
+                                error: "Value sent does not match any of the available predefined values."
                             }
                         ]
                     }
@@ -203,13 +201,11 @@ describe("predefined values", () => {
                         data: [
                             {
                                 fieldId: "bugType",
-                                error:
-                                    "Value sent does not match any of the available predefined values."
+                                error: "Value sent does not match any of the available predefined values."
                             },
                             {
                                 fieldId: "bugValue",
-                                error:
-                                    "Value sent does not match any of the available predefined values."
+                                error: "Value sent does not match any of the available predefined values."
                             }
                         ]
                     }

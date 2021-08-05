@@ -29,9 +29,7 @@ context("Admin Installation", () => {
 
             cy.findByText("Value must be a valid e-mail address.").should("exist");
 
-            cy.findByLabelText("Email")
-                .clear()
-                .type(Cypress.env("DEFAULT_ADMIN_USER_USERNAME"));
+            cy.findByLabelText("Email").clear().type(Cypress.env("DEFAULT_ADMIN_USER_USERNAME"));
             cy.findByLabelText("Password").type(Cypress.env("DEFAULT_ADMIN_USER_PASSWORD"));
 
             cy.findByTestId("install-security-button").click();
@@ -42,9 +40,7 @@ context("Admin Installation", () => {
             cy.findByTestId("submit-sign-in-form-button").click();
 
             // 2. I18N installation.
-            cy.findByLabelText("Select default locale")
-                .clear()
-                .type("en-u");
+            cy.findByLabelText("Select default locale").clear().type("en-u");
             cy.findByText("en-US").click();
             cy.findByTestId("install-i18n-button").click();
 

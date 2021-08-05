@@ -4,10 +4,10 @@ import { ListItem, ListItemGraphic } from "@webiny/ui/List";
 import { Icon } from "@webiny/ui/Icon";
 import { ReactComponent as FileIcon } from "~/assets/icons/insert_drive_file-24px.svg";
 import { FileManager } from "~/components";
-import { NavigationMenuElement } from "~/elements/NavigationMenuElement";
-import { UIRenderer, UIRenderParams } from "@webiny/ui-composer/UIRenderer";
-import { UIViewPlugin } from "@webiny/ui-composer/UIView";
-import { NavigationView } from "~/views/NavigationView";
+import { NavigationMenuElement } from "~/ui/elements/NavigationMenuElement";
+import { UIRenderer, UIRenderParams } from "~/ui/UIRenderer";
+import { UIViewPlugin } from "~/ui/UIView";
+import { NavigationView } from "~/ui/views/NavigationView";
 
 const listItemStyle = css({
     ".mdc-list &.mdc-list-item:hover": {

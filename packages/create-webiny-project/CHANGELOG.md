@@ -3,6 +3,49 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.12.0](https://github.com/webiny/webiny-js/compare/v5.12.0-beta.1...v5.12.0) (2021-08-05)
+
+**Note:** Version bump only for package create-webiny-project
+
+
+
+
+
+# [5.12.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.12.0-beta.0...v5.12.0-beta.1) (2021-08-05)
+
+**Note:** Version bump only for package create-webiny-project
+
+
+
+
+
+# [5.12.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.11.1...v5.12.0-beta.0) (2021-08-04)
+
+**Note:** Version bump only for package create-webiny-project
+
+
+
+
+
+## [5.11.1](https://github.com/webiny/webiny-js/compare/v5.11.1-beta.0...v5.11.1) (2021-07-31)
+
+**Note:** Version bump only for package create-webiny-project
+
+
+
+
+
+## [5.11.1-beta.0](https://github.com/webiny/webiny-js/compare/v5.11.0...v5.11.1-beta.0) (2021-07-31)
+
+
+### Bug Fixes
+
+* **create-webiny-project:** force yarn v2 ([31e23f6](https://github.com/webiny/webiny-js/commit/31e23f69bdc1574aabc7deda49ee0371c3e8a759))
+
+
+
+
+
 # [5.11.0](https://github.com/webiny/webiny-js/compare/v5.11.0-beta.2...v5.11.0) (2021-07-22)
 
 **Note:** Version bump only for package create-webiny-project

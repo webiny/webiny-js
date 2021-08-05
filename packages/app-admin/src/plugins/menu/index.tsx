@@ -5,10 +5,10 @@ import { MenuGroupRenderer } from "~/plugins/menu/renderers/MenuGroupRenderer";
 import { MenuSectionRenderer } from "~/plugins/menu/renderers/MenuSectionRenderer";
 import { MenuSectionItemRenderer } from "~/plugins/menu/renderers/MenuSectionItemRenderer";
 import { MenuLinkRenderer } from "~/plugins/menu/renderers/MenuLinkRenderer";
-import { UIElementPlugin } from "@webiny/ui-composer/UIElement";
-import { NavigationMenuElement } from "~/elements/NavigationMenuElement";
-import { UIViewPlugin } from "@webiny/ui-composer/UIView";
-import { NavigationView } from "~/views/NavigationView";
+import { UIElementPlugin } from "~/ui/UIElement";
+import { NavigationMenuElement } from "~/ui/elements/NavigationMenuElement";
+import { UIViewPlugin } from "~/ui/UIView";
+import { NavigationView } from "~/ui/views/NavigationView";
 
 export default [
     new UIViewPlugin<NavigationView>(NavigationView, view => {

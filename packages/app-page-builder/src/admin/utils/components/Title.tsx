@@ -35,37 +35,39 @@ const Title = props => {
     const closeEditDialog = useCallback(() => setEditDialog(false), []);
 
     const { onSubmit } = useHandlers(props, {
-        onSubmit: ({ id, refresh }) => async plugin => {
-            const { title: name } = plugin;
-            const response = await client.mutate({
-                mutation: UPDATE_PAGE_ELEMENT,
-                variables: {
-                    id,
-                    data: { name }
-                }
-            });
+        onSubmit:
+            ({ id, refresh }) =>
+            async plugin => {
+                const { title: name } = plugin;
+                const response = await client.mutate({
+                    mutation: UPDATE_PAGE_ELEMENT,
+                    variables: {
+                        id,
+                        data: { name }
+                    }
+                });
 
-            const { error, data } = response.data.pageBuilder.updatePageElement;
-            if (error) {
+                const { error, data } = response.data.pageBuilder.updatePageElement;
+                if (error) {
+                    closeEditDialog();
+                    setTimeout(() => {
+                        // For better UX, success message is shown after 300ms has passed.
+                        showSnackbar(error.message);
+                    }, 300);
+
+                    return;
+                }
+
+                // This will replace previously registered block plugin.
+                createElementPlugin(data);
                 closeEditDialog();
+                refresh();
+
                 setTimeout(() => {
                     // For better UX, success message is shown after 300ms has passed.
-                    showSnackbar(error.message);
+                    showSnackbar("Element " + plugin.title + " successfully saved.");
                 }, 300);
-
-                return;
             }
-
-            // This will replace previously registered block plugin.
-            createElementPlugin(data);
-            closeEditDialog();
-            refresh();
-
-            setTimeout(() => {
-                // For better UX, success message is shown after 300ms has passed.
-                showSnackbar("Element " + plugin.title + " successfully saved.");
-            }, 300);
-        }
     });
 
     return (

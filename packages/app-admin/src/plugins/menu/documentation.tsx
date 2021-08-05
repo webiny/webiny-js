@@ -1,8 +1,8 @@
 import React from "react";
-import { NavigationMenuElement } from "~/elements/NavigationMenuElement";
+import { NavigationMenuElement } from "~/ui/elements/NavigationMenuElement";
 import { ReactComponent as DocsIcon } from "~/assets/icons/icon-documentation.svg";
-import { UIViewPlugin } from "@webiny/ui-composer/UIView";
-import { NavigationView } from "~/views/NavigationView";
+import { UIViewPlugin } from "~/ui/UIView";
+import { NavigationView } from "~/ui/views/NavigationView";
 
 export default () => {
     return new UIViewPlugin<NavigationView>(NavigationView, view => {

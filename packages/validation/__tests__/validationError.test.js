@@ -1,6 +1,6 @@
 import { ValidationError } from "../src";
 
-describe("ValidationError class test", function() {
+describe("ValidationError class test", function () {
     it("set / get message must work correctly", () => {
         const error = new ValidationError("Message...", "custom", 123);
         expect(error.message).toEqual("Message...");

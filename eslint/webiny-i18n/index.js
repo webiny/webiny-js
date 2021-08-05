@@ -3,7 +3,7 @@ const get = require("lodash.get");
 module.exports = {
     rules: {
         namespaces: {
-            create: function(context) {
+            create: function (context) {
                 const rules = get(context, "options.0.rules", {});
                 return {
                     VariableDeclarator(node) {

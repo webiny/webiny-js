@@ -18,9 +18,7 @@ const createContentEntry = ({ model, entries }) => {
     entries.push({ title: newEntryTitle });
 
     // a) Click on "New Entry" button
-    cy.findAllByTestId("new-record-button")
-        .first()
-        .click();
+    cy.findAllByTestId("new-record-button").first().click();
     // b) Fill entry details
     cy.findByLabelText("Title").type(newEntryTitle);
     cy.findByLabelText("Edition").type(newEntryEdition.toString());
@@ -34,9 +32,7 @@ const createContentEntry = ({ model, entries }) => {
 const deleteContentEntry = () => {
     // Select entry
     cy.findByTestId("default-data-list").within(() => {
-        cy.get(".mdc-list-item")
-            .first()
-            .click();
+        cy.get(".mdc-list-item").first().click();
     });
     // Delete the entry
     cy.findByTestId("cms.content-form.header.more-options").click();
@@ -92,9 +88,7 @@ context("Search, Sort and Filter Content Entries", () => {
         cy.visit(`/cms/content-entries/${createdModel.modelId}`);
         cy.findByTestId("default-data-list.filter").click();
         cy.findByTestId("ui.list.data-list").within(() => {
-            cy.get("select")
-                .first()
-                .select("savedOn_DESC");
+            cy.get("select").first().select("savedOn_DESC");
             cy.wait(500);
         });
         cy.findByTestId("default-data-list.filter").click();
@@ -154,9 +148,7 @@ context("Search, Sort and Filter Content Entries", () => {
         // Sort groups by "Newest to Oldest"
         cy.findByTestId("default-data-list.filter").click();
         cy.findByTestId("ui.list.data-list").within(() => {
-            cy.get("select")
-                .first()
-                .select(NEWEST_TO_OLDEST);
+            cy.get("select").first().select(NEWEST_TO_OLDEST);
             cy.wait(500);
         });
         cy.findByTestId("default-data-list.filter").click();
@@ -173,9 +165,7 @@ context("Search, Sort and Filter Content Entries", () => {
         // Sort groups by "Oldest to Newest"
         cy.findByTestId("default-data-list.filter").click();
         cy.findByTestId("ui.list.data-list").within(() => {
-            cy.get("select")
-                .first()
-                .select(OLDEST_TO_NEWEST);
+            cy.get("select").first().select(OLDEST_TO_NEWEST);
             cy.wait(500);
         });
         cy.findByTestId("default-data-list.filter").click();
@@ -195,26 +185,20 @@ context("Search, Sort and Filter Content Entries", () => {
         // Get all items with "draft" status
         cy.findByTestId("default-data-list.filter").click();
         cy.findByTestId("ui.list.data-list").within(() => {
-            cy.get("select")
-                .last()
-                .select(STATUS.draft);
+            cy.get("select").last().select(STATUS.draft);
             cy.wait(500);
         });
         cy.findByTestId("default-data-list.filter").click();
 
         // Should contain all entries
         cy.findByTestId("default-data-list").within(() => {
-            cy.get(".mdc-list-item")
-                .siblings()
-                .should("have.length", entries.length);
+            cy.get(".mdc-list-item").siblings().should("have.length", entries.length);
         });
 
         // Get all items with "published" status
         cy.findByTestId("default-data-list.filter").click();
         cy.findByTestId("ui.list.data-list").within(() => {
-            cy.get("select")
-                .last()
-                .select(STATUS.published);
+            cy.get("select").last().select(STATUS.published);
             cy.wait(500);
         });
         cy.findByTestId("default-data-list.filter").click();

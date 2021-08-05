@@ -72,9 +72,9 @@ const FormSettings = ({ onExited }: FormSettingsProps) => {
                                         : null}
                                 </SF.SimpleFormContent>
                                 <SF.SimpleFormFooter>
-                                    <ButtonPrimary onClick={submit}>
-                                        {t`Save settings`}
-                                    </ButtonPrimary>
+                                    <ButtonPrimary
+                                        onClick={submit}
+                                    >{t`Save settings`}</ButtonPrimary>
                                 </SF.SimpleFormFooter>
                             </SF.SimpleForm>
                         )}

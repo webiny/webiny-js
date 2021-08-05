@@ -9,26 +9,27 @@ import {
 } from "./types";
 import middleware from "./middleware";
 
-export default (...plugins) => async (...args) => {
-    const context: Context = {
-        plugins: new PluginsContainer(plugins),
-        args,
-        // @ts-ignore
-        // this is injected using webpack.DefinePlugin at build time
-        WEBINY_VERSION: process.env.WEBINY_VERSION
-    };
+export default (...plugins) =>
+    async (...args) => {
+        const context: Context = {
+            plugins: new PluginsContainer(plugins),
+            args,
+            // @ts-ignore
+            // this is injected using webpack.DefinePlugin at build time
+            WEBINY_VERSION: process.env.WEBINY_VERSION
+        };
 
-    const result = await handle(args, context);
+        const result = await handle(args, context);
 
-    const handlerPlugins = context.plugins.byType<HandlerResultPlugin>("handler-result");
-    for (let i = 0; i < handlerPlugins.length; i++) {
-        if (handlerPlugins[i].apply) {
-            await handlerPlugins[i].apply(result, context);
+        const handlerPlugins = context.plugins.byType<HandlerResultPlugin>("handler-result");
+        for (let i = 0; i < handlerPlugins.length; i++) {
+            if (handlerPlugins[i].apply) {
+                await handlerPlugins[i].apply(result, context);
+            }
         }
-    }
 
-    return result;
-};
+        return result;
+    };
 
 async function handle(args, context: Context) {
     try {

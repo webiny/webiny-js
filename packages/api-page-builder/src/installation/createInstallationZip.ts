@@ -11,8 +11,5 @@ export default (destination = "./pageBuilderInstallation.zip") => {
         fs.mkdirSync(dir, { recursive: true });
     }
 
-    return zipper.sync
-        .zip(path.join(__dirname, "files"))
-        .compress()
-        .save(destination);
+    return zipper.sync.zip(path.join(__dirname, "files")).compress().save(destination);
 };

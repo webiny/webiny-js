@@ -67,11 +67,9 @@ type HorizontalAlignActionPropsType = {
         alignments: string[];
     };
 };
-const HorizontalAlignSettings: React.FunctionComponent<HorizontalAlignActionPropsType &
-    PbEditorPageElementSettingsRenderComponentProps> = ({
-    options: { alignments = DEFAULT_ALIGNMENTS },
-    defaultAccordionValue
-}) => {
+const HorizontalAlignSettings: React.FunctionComponent<
+    HorizontalAlignActionPropsType & PbEditorPageElementSettingsRenderComponentProps
+> = ({ options: { alignments = DEFAULT_ALIGNMENTS }, defaultAccordionValue }) => {
     const handler = useEventActionHandler();
     const activeElementId = useRecoilValue(activeElementAtom);
     const element = useRecoilValue(elementWithChildrenByIdSelector(activeElementId));

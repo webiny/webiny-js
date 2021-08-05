@@ -5,7 +5,7 @@ import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
 import { useArticleManageHandler } from "../utils/useArticleManageHandler";
 import { useArticleReadHandler } from "../utils/useArticleReadHandler";
 
-describe("latest entries", function() {
+describe("latest entries", function () {
     const manageOpts = { path: "manage/en-US" };
     const previewOpts = { path: "preview/en-US" };
     const readOpts = { path: "read/en-US" };
@@ -16,14 +16,10 @@ describe("latest entries", function() {
         createContentModelGroupMutation
     } = useContentGqlHandler(manageOpts);
 
-    const {
-        createCategory,
-        createCategoryFrom,
-        updateCategory,
-        publishCategory
-    } = useCategoryManageHandler({
-        ...manageOpts
-    });
+    const { createCategory, createCategoryFrom, updateCategory, publishCategory } =
+        useCategoryManageHandler({
+            ...manageOpts
+        });
 
     const setupContentModelGroup = async (): Promise<CmsContentModelGroup> => {
         const [createCMG] = await createContentModelGroupMutation({

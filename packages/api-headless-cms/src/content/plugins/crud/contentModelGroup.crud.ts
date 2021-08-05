@@ -45,9 +45,8 @@ export default (): ContextPlugin<CmsContext> => ({
             return;
         }
         const pluginType = "cms-content-model-group-storage-operations-provider";
-        const providerPlugins = context.plugins.byType<
-            CmsContentModelGroupStorageOperationsProvider
-        >(pluginType);
+        const providerPlugins =
+            context.plugins.byType<CmsContentModelGroupStorageOperationsProvider>(pluginType);
         /**
          * Storage operations operations for the content model group.
          * Contains logic to save the data into the specific storage.

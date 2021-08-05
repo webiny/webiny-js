@@ -70,15 +70,10 @@ type Props = {
 };
 
 const RevisionListItem = ({ revision }: Props) => {
-    const {
-        createRevision,
-        deleteRevision,
-        publishRevision,
-        unpublishRevision,
-        editRevision
-    } = useRevision({
-        revision
-    });
+    const { createRevision, deleteRevision, publishRevision, unpublishRevision, editRevision } =
+        useRevision({
+            revision
+        });
 
     const { entry, tabs } = useContentEntry();
     const { canEdit, canDelete, canPublish, canUnpublish } = usePermission();
@@ -90,7 +85,9 @@ const RevisionListItem = ({ revision }: Props) => {
             message={
                 <span>
                     {t`You are about to delete revision {revision}. Are you sure you want to continue?`(
-                        { revision: <strong>#{revision.meta.version}</strong> }
+                        {
+                            revision: <strong>#{revision.meta.version}</strong>
+                        }
                     )}
                 </span>
             }

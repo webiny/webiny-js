@@ -64,21 +64,27 @@ export const createManageSDL: CreateManageSDL = ({ model, fieldTypePlugins }): s
             .filter(Boolean)
             .join("\n")}
 
-        ${inputFields &&
+        ${
+            inputFields &&
             `input ${mTypeName}Input {
             ${inputFields.map(f => f.fields).join("\n")}
-        }`}
+        }`
+        }
 
-        ${getFilterFieldsRender &&
+        ${
+            getFilterFieldsRender &&
             `input ${mTypeName}GetWhereInput {
             ${getFilterFieldsRender}
-        }`}
+        }`
+        }
 
 
-        ${listFilterFieldsRender &&
+        ${
+            listFilterFieldsRender &&
             `input ${mTypeName}ListWhereInput {
             ${listFilterFieldsRender}
-        }`}
+        }`
+        }
 
         type ${mTypeName}Response {
             data: ${mTypeName}
@@ -96,10 +102,12 @@ export const createManageSDL: CreateManageSDL = ({ model, fieldTypePlugins }): s
             error: CmsError
         }
 
-        ${sortEnumRender &&
+        ${
+            sortEnumRender &&
             `enum ${mTypeName}ListSorter {
             ${sortEnumRender}
-        }`}
+        }`
+        }
 
         extend type Query {
             get${typeName}(revision: ID!): ${mTypeName}Response

@@ -14,7 +14,7 @@ yargs
     .help()
     .alias("help", "h")
     .scriptName("create-webiny-project")
-    .fail(function(msg, err) {
+    .fail(function (msg, err) {
         if (msg) {
             console.log(msg);
         }

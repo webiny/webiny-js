@@ -83,9 +83,9 @@ export const Name = () => {
     ) : (
         <NameWrapper>
             <FormMeta>
-                <Typography use={"overline"}>
-                    {`status: ${state.data.published ? t`published` : t`draft`}`}
-                </Typography>
+                <Typography use={"overline"}>{`status: ${
+                    state.data.published ? t`published` : t`draft`
+                }`}</Typography>
             </FormMeta>
             <div style={{ width: "100%", display: "flex" }}>
                 <Tooltip

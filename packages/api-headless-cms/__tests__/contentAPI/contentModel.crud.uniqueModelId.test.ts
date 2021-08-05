@@ -127,9 +127,8 @@ describe("content model test", () => {
     });
 
     test("should not allow creation of a model with an existing modelId (auto-generated modelId)", async () => {
-        const { createContentModelMutation, listContentModelsQuery } = useContentGqlHandler(
-            manageHandlerOpts
-        );
+        const { createContentModelMutation, listContentModelsQuery } =
+            useContentGqlHandler(manageHandlerOpts);
 
         await createContentModelMutation({
             data: {
@@ -164,9 +163,8 @@ describe("content model test", () => {
     });
 
     test("should not allow creation of a model with an existing modelId (auto-generated modelId, plural)", async () => {
-        const { createContentModelMutation, listContentModelsQuery } = useContentGqlHandler(
-            manageHandlerOpts
-        );
+        const { createContentModelMutation, listContentModelsQuery } =
+            useContentGqlHandler(manageHandlerOpts);
 
         await createContentModelMutation({
             data: {
@@ -201,9 +199,8 @@ describe("content model test", () => {
     });
 
     test("should not allow creation of a model with an existing modelId (auto-generated modelId, singular)", async () => {
-        const { createContentModelMutation, listContentModelsQuery } = useContentGqlHandler(
-            manageHandlerOpts
-        );
+        const { createContentModelMutation, listContentModelsQuery } =
+            useContentGqlHandler(manageHandlerOpts);
 
         await createContentModelMutation({
             data: {

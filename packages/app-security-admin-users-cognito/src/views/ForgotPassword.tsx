@@ -15,14 +15,8 @@ import { useForgotPassword } from "@webiny/app-security-cognito-authentication/h
 
 const ForgotPassword = () => {
     const { checkingUser, authData, changeState } = useAuthenticator();
-    const {
-        loading,
-        codeSent,
-        shouldRender,
-        setPassword,
-        requestCode,
-        error
-    } = useForgotPassword();
+    const { loading, codeSent, shouldRender, setPassword, requestCode, error } =
+        useForgotPassword();
 
     if (!shouldRender || checkingUser) {
         return null;

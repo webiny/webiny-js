@@ -114,9 +114,8 @@ export const beforeUpdateHook = async (args: Args) => {
 
     data.titleFieldId = getContentModelTitleFieldId(fields, titleFieldId);
 
-    const cmsLockedFieldPlugins = context.plugins.byType<CmsModelLockedFieldPlugin>(
-        "cms-model-locked-field"
-    );
+    const cmsLockedFieldPlugins =
+        context.plugins.byType<CmsModelLockedFieldPlugin>("cms-model-locked-field");
 
     // We must not allow removal or changes in fields that are already in use in content entries.
     for (const lockedField of lockedFields) {

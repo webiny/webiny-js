@@ -7,7 +7,7 @@ import { IconButton } from "@webiny/ui/Button";
 import noop from "lodash/noop";
 
 import { ReactComponent as CloseIcon } from "./icons/close.svg";
-import { OverlayView } from "~/views/OverlayView";
+import { OverlayView } from "~/ui/views/OverlayView";
 
 const OverlayLayoutWrapper = styled("div")({
     position: "fixed",

@@ -66,7 +66,8 @@ export default (): PluginCollection => [
                     return [];
                 },
                 async hasFullAccess(): Promise<boolean> {
-                    const permissions = (await context.security.getPermissions()) as SecurityPermission[];
+                    const permissions =
+                        (await context.security.getPermissions()) as SecurityPermission[];
 
                     return permissions.some(permission => {
                         return permission.name === "*";

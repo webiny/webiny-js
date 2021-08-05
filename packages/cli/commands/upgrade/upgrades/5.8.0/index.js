@@ -78,9 +78,8 @@ const plugin = {
          * Update the index.ts file in the headless cms directory.
          */
         const headlessCmsProject = createMorphProject([headlessCmsIndexFilePath]);
-        const headlessCmsIndexSourceFile = headlessCmsProject.getSourceFileOrThrow(
-            headlessCmsIndexFilePath
-        );
+        const headlessCmsIndexSourceFile =
+            headlessCmsProject.getSourceFileOrThrow(headlessCmsIndexFilePath);
         console.log("Adding new plugin to index.ts file.");
         insertImport(
             headlessCmsIndexSourceFile,

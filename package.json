@@ -2,7 +2,6 @@
   "private": true,
   "workspaces": {
     "packages": [
-      "plugins/cli-plugin-generate-ts-configs",
       "packages/*",
       "apps/admin/code",
       "apps/website/code",
@@ -93,7 +92,7 @@
     "minimatch": "^3.0.4",
     "node-fetch": "^2.6.1",
     "pm2": "^4.5.4",
-    "prettier": "^1.14.2",
+    "prettier": "^2.3.2",
     "rimraf": "^3.0.2",
     "rxjs": "^6.5.5",
     "semver": "^6.3.0",

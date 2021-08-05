@@ -31,12 +31,7 @@ module.exports = async ({ folder, context }) => {
             traverse(ast, {
                 ImportDeclaration: ({ node }) => {
                     if (node.source.value.startsWith("@webiny/")) {
-                        webinyPackages.add(
-                            node.source.value
-                                .split("/")
-                                .slice(0, 2)
-                                .join("/")
-                        );
+                        webinyPackages.add(node.source.value.split("/").slice(0, 2).join("/"));
                     }
                 }
             });

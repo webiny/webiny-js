@@ -308,9 +308,8 @@ export const createElasticsearchQueryBody = (params: CreateElasticsearchParams):
         searchPlugins
     });
 
-    const queryPlugins = context.plugins.byType<ElasticsearchQueryPlugin>(
-        "cms-elasticsearch-query"
-    );
+    const queryPlugins =
+        context.plugins.byType<ElasticsearchQueryPlugin>("cms-elasticsearch-query");
     for (const pl of queryPlugins) {
         pl.modify({ query, model, context });
     }

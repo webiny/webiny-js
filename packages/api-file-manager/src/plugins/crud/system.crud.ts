@@ -95,7 +95,9 @@ const systemCrudContextPlugin = new ContextPlugin<FileManagerContext>(async cont
             await executeCallbacks<InstallationPlugin["beforeInstall"]>(
                 installationPlugins,
                 "beforeInstall",
-                { context }
+                {
+                    context
+                }
             );
 
             await fileManager.settings.createSettings(data);
@@ -105,7 +107,9 @@ const systemCrudContextPlugin = new ContextPlugin<FileManagerContext>(async cont
             await executeCallbacks<InstallationPlugin["afterInstall"]>(
                 installationPlugins,
                 "afterInstall",
-                { context }
+                {
+                    context
+                }
             );
 
             return true;

@@ -88,9 +88,8 @@ const Field = props => {
     }, [field.fieldId]);
 
     const fieldPlugin = getFieldPlugin(field.type);
-    const editorFieldOptionPlugins = plugins.byType<CmsEditorFieldOptionPlugin>(
-        "cms-editor-field-option"
-    );
+    const editorFieldOptionPlugins =
+        plugins.byType<CmsEditorFieldOptionPlugin>("cms-editor-field-option");
 
     if (!fieldPlugin) {
         return null;

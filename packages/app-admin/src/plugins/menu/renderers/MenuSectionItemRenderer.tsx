@@ -2,9 +2,9 @@ import React from "react";
 import { css } from "emotion";
 import { Link } from "@webiny/react-router";
 import { List, ListItem } from "@webiny/ui/List";
-import { UIRenderer, UIRenderParams } from "@webiny/ui-composer/UIRenderer";
-import { NavigationMenuElement } from "~/elements/NavigationMenuElement";
-import { NavigationView } from "~/views/NavigationView";
+import { UIRenderer, UIRenderParams } from "~/ui/UIRenderer";
+import { NavigationMenuElement } from "~/ui/elements/NavigationMenuElement";
+import { NavigationView } from "~/ui/views/NavigationView";
 
 const linkStyle = css({
     color: "var(--mdc-theme-text-primary-on-background)",

@@ -8,24 +8,23 @@ context("Forms Creation", () => {
         const newFormTitle2 = `Test form ${uniqid()}`;
 
         cy.visit("/form-builder/forms");
-        cy.findAllByTestId("new-record-button")
-            .first()
-            .click();
+        cy.findAllByTestId("new-record-button").first().click();
         cy.findByTestId("fb-new-form-modal").within(() => {
             cy.findByPlaceholderText("Enter a name for your new form").type(newFormTitle);
             cy.findByText("+ Create").click();
         });
         cy.wait(1000);
         cy.findByTestId("fb-editor-form-title").click();
-        cy.get(`input[value="${newFormTitle}"]`)
-            .clear()
-            .type(`${newFormTitle2} {enter}`);
+        cy.get(`input[value="${newFormTitle}"]`).clear().type(`${newFormTitle2} {enter}`);
         cy.wait(333);
         // Add "Email" field to the form
         cy.findByTestId("form-editor-field-group-contact").click();
-        cy.get(
-            `[data-testid="fb.editor.fields.field.email"]`
-        ).drag(`[data-testid="fb.editor.dropzone.center"]`, { force: true });
+        cy.get(`[data-testid="fb.editor.fields.field.email"]`).drag(
+            `[data-testid="fb.editor.dropzone.center"]`,
+            {
+                force: true
+            }
+        );
         cy.wait(1000);
 
         cy.findByTestId("fb-editor-back-button").click();
@@ -98,9 +97,10 @@ context("Forms Creation", () => {
         cy.wait(500);
         // Add "LastName" field to the form
         cy.findByTestId("form-editor-field-group-contact").click();
-        cy.get(
-            `[data-testid="fb.editor.fields.field.lastName"]`
-        ).drag(`[data-testid="fb.editor.dropzone.horizontal-last"]`, { force: true });
+        cy.get(`[data-testid="fb.editor.fields.field.lastName"]`).drag(
+            `[data-testid="fb.editor.dropzone.horizontal-last"]`,
+            { force: true }
+        );
         cy.wait(500);
         cy.findByTestId("fb.editor.default-bar.publish").click();
         cy.findByTestId("fb.editor.default-bar.publish-dialog").within(() => {

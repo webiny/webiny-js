@@ -21,9 +21,8 @@ export default {
             return;
         }
         const pluginType = "cms-settings-storage-operations-provider";
-        const providerPlugins = context.plugins.byType<CmsSettingsStorageOperationsProviderPlugin>(
-            pluginType
-        );
+        const providerPlugins =
+            context.plugins.byType<CmsSettingsStorageOperationsProviderPlugin>(pluginType);
         const providerPlugin = providerPlugins[providerPlugins.length - 1];
         if (!providerPlugin) {
             throw new WebinyError(`Missing "${pluginType}" plugin.`, "PLUGIN_NOT_FOUND", {

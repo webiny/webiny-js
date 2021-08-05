@@ -2,14 +2,14 @@ import React, { Fragment } from "react";
 import { css } from "emotion";
 import { Transition } from "react-transition-group";
 import classNames from "classnames";
-import { UIRenderer, UIRenderParams } from "@webiny/ui-composer/UIRenderer";
+import { UIRenderer, UIRenderParams } from "~/ui/UIRenderer";
 import { List, ListItem, ListItemGraphic, ListItemMeta } from "@webiny/ui/List";
 import { IconButton } from "@webiny/ui/Button";
 import { ReactComponent as UpIcon } from "~/assets/icons/round-keyboard_arrow_up-24px.svg";
 import { ReactComponent as DownIcon } from "~/assets/icons/round-keyboard_arrow_down-24px.svg";
-import { NavigationMenuElement } from "~/elements/NavigationMenuElement";
-import { ContentElement } from "~/views/NavigationView/ContentElement";
-import { NavigationView } from "~/views/NavigationView";
+import { NavigationMenuElement } from "~/ui/elements/NavigationMenuElement";
+import { ContentElement } from "~/ui/views/NavigationView/ContentElement";
+import { NavigationView } from "~/ui/views/NavigationView";
 import { Link } from "@webiny/react-router";
 
 const defaultStyle = {

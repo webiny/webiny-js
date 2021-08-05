@@ -76,9 +76,7 @@ context("Headless CMS - Smoke Test", () => {
         cy.findByText(`Your content model was saved successfully!`).should("exist");
 
         // Great, it works! Let's go back to the list of content models, and try creating content entries.
-        cy.findByTestId("cms-editor-back-button")
-            .click()
-            .wait(1000);
+        cy.findByTestId("cms-editor-back-button").click().wait(1000);
 
         // Return to the list of all content models and navigate to entries view. We first create a book.
         cy.findByTestId("default-data-list").within(() => {
@@ -176,9 +174,7 @@ context("Headless CMS - Smoke Test", () => {
 
         cy.findByText(`${newModel1}-1`).click();
         cy.findByTestId("cms-content-details").within(() => {
-            cy.get(".react-spinner-material")
-                .should("not.exist")
-                .wait(1000);
+            cy.get(".react-spinner-material").should("not.exist").wait(1000);
             cy.findByText(/save & publish/i).click();
         });
 
@@ -193,9 +189,7 @@ context("Headless CMS - Smoke Test", () => {
             .wait(1000);
 
         cy.findByTestId("cms-content-details").within(() => {
-            cy.get(".react-spinner-material")
-                .should("not.exist")
-                .wait(1000);
+            cy.get(".react-spinner-material").should("not.exist").wait(1000);
 
             // Create a new revision, by changing the title and hitting the save button.
             cy.findByLabelText("Title")
@@ -221,16 +215,12 @@ context("Headless CMS - Smoke Test", () => {
 
         cy.findByText(`${newModel2}-1`).click();
         cy.findByTestId("cms-content-details").within(() => {
-            cy.get(".react-spinner-material")
-                .should("not.exist")
-                .wait(1000);
+            cy.get(".react-spinner-material").should("not.exist").wait(1000);
 
             // Create a new revision, by changing the title and hitting the save button.
             cy.findByTestId("cms-content-refresh-content-button").click();
             cy.wait(100);
-            cy.get(".react-spinner-material")
-                .should("not.exist")
-                .wait(1000);
+            cy.get(".react-spinner-material").should("not.exist").wait(1000);
 
             cy.findByLabelText("Book").should("value", `${newModel1}-1-Rev2`);
 

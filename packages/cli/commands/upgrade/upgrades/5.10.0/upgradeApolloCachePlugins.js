@@ -22,11 +22,7 @@ const upgradeApolloCachePlugins = async (tsmProject, context) => {
         dataIdFromObjectProperty.setInitializer(dataIdFromObjectValueInitializer);
 
         const pluginsImport = source.getImportDeclaration("@webiny/plugins");
-        const index =
-            source
-                .getImportDeclarations()
-                .pop()
-                .getChildIndex() + 1;
+        const index = source.getImportDeclarations().pop().getChildIndex() + 1;
         if (!pluginsImport) {
             source.insertImportDeclaration(index, {
                 defaultImport: "{ plugins }",
@@ -73,11 +69,7 @@ const upgradeApolloCachePlugins = async (tsmProject, context) => {
         );
 
         if (!apolloCachePluginImport) {
-            const index =
-                source
-                    .getImportDeclarations()
-                    .pop()
-                    .getChildIndex() + 1;
+            const index = source.getImportDeclarations().pop().getChildIndex() + 1;
 
             source.insertImportDeclaration(index, {
                 defaultImport: "apolloCacheObjectId",
