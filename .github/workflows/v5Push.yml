@@ -15,6 +15,7 @@ jobs:
       day: ${{ steps.create-cache-keys.outputs.day }}
       ts: ${{ steps.create-timestamp.outputs.ts }}
       webiny-version: ${{ steps.create-timestamp.outputs.webiny-version }}
+      webiny-version-123: ${{ steps.create-timestamp.outputs.webiny-version-123 }}
     steps:
       - uses: actions/checkout@v2
 
