@@ -15,7 +15,7 @@ jobs:
       day: ${{ steps.create-cache-keys.outputs.day }}
       ts: ${{ steps.create-timestamp.outputs.ts }}
       webiny-version: ${{ steps.create-timestamp.outputs.webiny-version }}
-      webiny-version-123: ${{ steps.create-timestamp.outputs.webiny-version-123 }}
+      wver: ${{ steps.create-timestamp.outputs.wver }}
     steps:
       - uses: actions/checkout@v2
 
@@ -28,8 +28,8 @@ jobs:
         run: echo "::set-output name=ts::$(node --eval "console.log(new Date().getTime())")"
 
       - name: Fetch current version of Webiny 123
-        id: webiny-version-123
-        run: echo "::set-output name=webiny-version-123::$(node --eval "console.log(require('./lerna.json'))")"
+        id: wver
+        run: echo "::set-output name=wver::$(node --eval "console.log(require('./lerna.json'))")"
 
       - name: Fetch current version of Webiny
         id: webiny-version
