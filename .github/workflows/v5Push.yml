@@ -29,7 +29,7 @@ jobs:
 
       - name: Fetch current version of Webiny 123
         id: webiny-version-123
-        run: echo "::set-output name=webiny-version::$(node --eval "console.log(require('./lerna.json'))")"
+        run: echo "::set-output name=webiny-version-123::$(node --eval "console.log(require('./lerna.json'))")"
 
       - name: Fetch current version of Webiny
         id: webiny-version
