@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.12.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.12.0-beta.0...v5.12.0-beta.1) (2021-08-05)
+
+
+### Bug Fixes
+
+* **app-page-builder:** rename GetPage operation to PbGetPage ([95f1665](https://github.com/webiny/webiny-js/commit/95f16650126fed2d23e5eeda361def0f856e490a))
+
+
+
+
+
 # [5.12.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.11.1...v5.12.0-beta.0) (2021-08-04)
 
 

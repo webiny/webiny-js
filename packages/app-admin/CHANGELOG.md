@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.12.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.12.0-beta.0...v5.12.0-beta.1) (2021-08-05)
+
+
+### Bug Fixes
+
+* **app-admin:** always return a validation function ([7ba6480](https://github.com/webiny/webiny-js/commit/7ba64804db173c65f0122d916140493d6e34d523))
+
+
+
+
+
 # [5.12.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.11.1...v5.12.0-beta.0) (2021-08-04)
 
 

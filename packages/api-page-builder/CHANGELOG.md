@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.12.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.12.0-beta.0...v5.12.0-beta.1) (2021-08-05)
+
+
+### Bug Fixes
+
+* **api-page-builder:** don't overwrite settings after validation ([59ff4be](https://github.com/webiny/webiny-js/commit/59ff4bee46215b7ccb1d3ada16d0db1c8c2f9172))
+* **api-page-builder:** explicitly enforce settings meta array ([fc26130](https://github.com/webiny/webiny-js/commit/fc2613088d5d68d4da1b8a6ef39fac65ad87d030))
+* **api-page-builder:** restore settings validation data assignment ([f500a8c](https://github.com/webiny/webiny-js/commit/f500a8cba9d1ed60691e836ba9ef7fc1f9455854))
+
+
+
+
+
 # [5.12.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.11.1...v5.12.0-beta.0) (2021-08-04)
 
 **Note:** Version bump only for package @webiny/api-page-builder
