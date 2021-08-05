@@ -18,10 +18,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: version
-        id: webiny-version
-        run: node --eval "console.log(require('./lerna.json').version)"
-
       - name: Fetch current version of Webiny
         id: fetch-webiny-version
         run: echo "::set-output name=webiny-version::$(node --eval "console.log(require('./lerna.json').version)")"
