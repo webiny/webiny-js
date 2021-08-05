@@ -26241,6 +26241,19 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
+"my-new-graphql-api@workspace:kobaja/code/graphql":
+  version: 0.0.0-use.local
+  resolution: "my-new-graphql-api@workspace:kobaja/code/graphql"
+  dependencies:
+    "@webiny/cli": ^5.11.0
+    "@webiny/cli-plugin-deploy-pulumi": ^5.11.0
+    "@webiny/handler-aws": ^5.11.0
+    "@webiny/handler-graphql": ^5.11.0
+    "@webiny/handler-logs": ^5.11.0
+    "@webiny/project-utils": ^5.11.0
+  languageName: unknown
+  linkType: soft
+
 "mz@npm:^2.5.0":
   version: 2.7.0
   resolution: "mz@npm:2.7.0"

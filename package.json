@@ -15,7 +15,7 @@
 			"api/code/prerenderingService/render",
 			"api/code/prerenderingService/flush",
 			"api/code/prerenderingService/queue/*",
-			"kobaja/code"
+			"kobaja/code/graphql"
 		]
 	},
 	"author": "Webiny Ltd.",
