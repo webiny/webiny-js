@@ -32,7 +32,7 @@ jobs:
 
       - name: Fetch current version of Webiny
         id: webiny-version
-        run: echo "::set-output name=webiny-version::$(node --eval "console.log(require('./lerna.json').version)")"
+        run: echo "::set-output name=webiny-version::$(node --eval "console.log('v' + require('./lerna.json').version)")"
 
   cache-dependencies-packages:
     name: Cache dependencies and packages
