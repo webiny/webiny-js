@@ -16,6 +16,8 @@ jobs:
       ts: ${{ steps.create-timestamp.outputs.ts }}
       webiny-version: ${{ steps.create-timestamp.outputs.webiny-version }}
     steps:
+      - uses: actions/checkout@v2
+
       - name: Create cache key (day)
         id: create-cache-keys
         run: echo "::set-output name=day::$(node --eval "console.log(new Date().getDate() + new Date().getDate())")"
