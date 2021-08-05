@@ -21,6 +21,10 @@ jobs:
       - name: node-version
         run: node --eval "console.log(require('./lerna.json').version)"
 
+      - name: Fetch current version of Webiny
+        id: webiny-version
+        run: echo "::set-output name=webiny-version::$(node --eval "console.log(require('./lerna.json').version)")"
+
       - name: Create cache key (day)
         id: create-cache-keys
         run: echo "::set-output name=day::$(node --eval "console.log(new Date().getDate() + new Date().getDate())")"
@@ -28,10 +32,6 @@ jobs:
       - name: Create timestamp
         id: create-timestamp
         run: echo "::set-output name=ts::$(node --eval "console.log(new Date().getTime())")"
-
-      - name: Fetch current version of Webiny
-        id: webiny-version
-        run: echo "::set-output name=webiny-version::$(node --eval "console.log(require(\"./lerna.json\").version)")"
 
   cache-dependencies-packages:
     name: Cache dependencies and packages
