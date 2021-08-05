@@ -2,7 +2,7 @@ import { UpdateDataModel, UpdateSettingsModel } from "./pages/models";
 import { PagePlugin } from "~/plugins/PagePlugin";
 
 export default new PagePlugin({
-    async beforeUpdate({ inputData, existingPage, updateData }) {
+    async beforeUpdate({ inputData, existingPage }) {
         const updateDataModel = new UpdateDataModel().populate(inputData);
         await updateDataModel.validate();
 
@@ -11,11 +11,5 @@ export default new PagePlugin({
             .populate(inputData.settings);
 
         await updateSettingsModel.validate();
-
-        updateData.settings = Object.assign(
-            {},
-            updateData.settings,
-            await updateSettingsModel.toJSON()
-        );
     }
 });
