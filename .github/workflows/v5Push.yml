@@ -14,11 +14,12 @@ jobs:
     outputs:
       day: ${{ steps.create-cache-keys.outputs.day }}
       ts: ${{ steps.create-timestamp.outputs.ts }}
-      webiny-version: ${{ steps.create-timestamp.outputs.webiny-version }}
+      webiny-version: ${{ steps.webiny-version.outputs.webiny-version }}
     steps:
       - uses: actions/checkout@v2
 
-      - name: node-version
+      - name: version
+        id: webiny-version
         run: node --eval "console.log(require('./lerna.json').version)"
 
       - name: Fetch current version of Webiny
