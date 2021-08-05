@@ -14,11 +14,12 @@ jobs:
     outputs:
       day: ${{ steps.create-cache-keys.outputs.day }}
       ts: ${{ steps.create-timestamp.outputs.ts }}
-      ts2: ${{ steps.create-timestamp.outputs.ts2 }}
       webiny-version: ${{ steps.create-timestamp.outputs.webiny-version }}
-      wver: ${{ steps.create-timestamp.outputs.wver }}
     steps:
       - uses: actions/checkout@v2
+
+      - name: node-version
+        run: node --eval "console.log(require('./lerna.json').version)"
 
       - name: Create cache key (day)
         id: create-cache-keys
@@ -28,17 +29,9 @@ jobs:
         id: create-timestamp
         run: echo "::set-output name=ts::$(node --eval "console.log(new Date().getTime())")"
 
-      - name: Create timestamp2
-        id: create-timestamp-2
-        run: echo "::set-output name=ts2::$(node --eval "console.log(new Date().getTime())")"
-
-      - name: Fetch current version of Webiny 123
-        id: wver
-        run: echo "::set-output name=wver::$(node --eval "console.log(require('./lerna.json'))")"
-
       - name: Fetch current version of Webiny
         id: webiny-version
-        run: echo "::set-output name=webiny-version::$(node --eval "console.log('v' + require('./lerna.json').version)")"
+        run: echo "::set-output name=webiny-version::$(node --eval "console.log(require(\"./lerna.json\").version)")"
 
   cache-dependencies-packages:
     name: Cache dependencies and packages
