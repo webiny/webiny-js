@@ -12,12 +12,10 @@ export default new PagePlugin({
 
         await updateSettingsModel.validate();
 
-        if (!Array.isArray(updateData.settings.seo.meta)) {
-            updateData.settings.seo.meta = [];
-        }
-
-        if (!Array.isArray(updateData.settings.social.meta)) {
-            updateData.settings.social.meta = [];
-        }
+        updateData.settings = Object.assign(
+            {},
+            updateData.settings,
+            await updateSettingsModel.toJSON()
+        );
     }
 });
