@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.12.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.11.1...v5.12.0-beta.0) (2021-08-04)
+
+
+### Bug Fixes
+
+* do not automatically apend PULUMI_CONFIG_PASSPHRASE env var ([e528e15](https://github.com/webiny/webiny-js/commit/e528e155f4314125dca7b98a336d15c10aabb173))
+* do not recreate stack on stack selection ([80fd640](https://github.com/webiny/webiny-js/commit/80fd640ef82f86aa346a3b50e1682fe6a0c11c58))
+* make sure forward slashes are always used ([437bba9](https://github.com/webiny/webiny-js/commit/437bba91380155c2fd3cee4f423b4b77e5b8d106))
+* send args and env variables when selecting stack ([49674e9](https://github.com/webiny/webiny-js/commit/49674e91e7711cfbbecced1fc51ff2762edc41c2))
+
+
+
+
+
 ## [5.11.1](https://github.com/webiny/webiny-js/compare/v5.11.1-beta.0...v5.11.1) (2021-07-31)
 
 **Note:** Version bump only for package @webiny/cli-plugin-deploy-pulumi

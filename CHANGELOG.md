@@ -3,6 +3,47 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.12.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.11.1...v5.12.0-beta.0) (2021-08-04)
+
+
+### Bug Fixes
+
+* bring back data-test-id props [no ci] ([189fbcc](https://github.com/webiny/webiny-js/commit/189fbccf42d80b3bf0f822b3cf0a6668518defd9))
+* move `p-wait-for` to regular dependencies ([bf42154](https://github.com/webiny/webiny-js/commit/bf42154cddebd291bc648061ca03811f2f92e9e5))
+* remove unused import ([ec0aca2](https://github.com/webiny/webiny-js/commit/ec0aca2c923d8ad1e55668c58b8bfd4f5b1dae59))
+* restore SplitView component and fix cypress tests ([304a7b3](https://github.com/webiny/webiny-js/commit/304a7b3614e621e9b33fcce54f6ddb1018887b34))
+* set validators as functions ([da73651](https://github.com/webiny/webiny-js/commit/da73651cf2540468aa0792bf2db43fa0e521f403))
+* **api-headless-cms:** context loading ([#1820](https://github.com/webiny/webiny-js/issues/1820)) ([8d154f7](https://github.com/webiny/webiny-js/commit/8d154f787c036ec1f84b5e41c09f0f2a9a97146e))
+* **api-headless-cms:** remove rich-text caching ([#1832](https://github.com/webiny/webiny-js/issues/1832)) ([3442b5b](https://github.com/webiny/webiny-js/commit/3442b5b1037247dfc02a53b05c00f1701dec98a9))
+* **api-headless-cms:** request review ([#1838](https://github.com/webiny/webiny-js/issues/1838)) ([7e8be75](https://github.com/webiny/webiny-js/commit/7e8be7559c378b2b3c90fb581d25a69090c02fff))
+* **api-headless-cms-ddb-es:** remove rich-text entry caching ([#1830](https://github.com/webiny/webiny-js/issues/1830)) ([fec654f](https://github.com/webiny/webiny-js/commit/fec654fb9d83a02c86cf981a7f5d72603a104aa3))
+* **api-security-admin-users:** remove permission caching from auth plugins and let that be handled by DataLoader ([3710396](https://github.com/webiny/webiny-js/commit/3710396359213e9051a875ff39c92748ba82bb75))
+* **app-headless-cms:** date transformer field no value error ([#1836](https://github.com/webiny/webiny-js/issues/1836)) ([ba53019](https://github.com/webiny/webiny-js/commit/ba53019b468bc08c31f922733cfa4d3174612fdc))
+* **app-headless-cms:** handle permission for new entry ([#1835](https://github.com/webiny/webiny-js/issues/1835)) ([4933658](https://github.com/webiny/webiny-js/commit/4933658db180583b738e86b98e07f01f939ee7e4))
+* **app-page-builder:** restore missing FormView config ([cec19bb](https://github.com/webiny/webiny-js/commit/cec19bb1c99ade4a889cf4eaf47d16b8fab17bf0))
+* **app-page-builder:** update right panel reference in BlocksList ([8b79ecb](https://github.com/webiny/webiny-js/commit/8b79ecbe79c26cb264ee769c9ce218a1b78e5185))
+* **app-security-admin-users:** conditionally disable email input [no ci] ([9178f99](https://github.com/webiny/webiny-js/commit/9178f996bc43cc37dfdd993f9e2e116c394479c7))
+* **storybook-utils:** import new prettier parser ([d0aec72](https://github.com/webiny/webiny-js/commit/d0aec7232d38c058c5f799775921a5b2f9caa0fe))
+* add dependsOn argument ([84f74a0](https://github.com/webiny/webiny-js/commit/84f74a0722afbb491f360ccf3b540b57ec3905ca))
+* do not automatically apend PULUMI_CONFIG_PASSPHRASE env var ([e528e15](https://github.com/webiny/webiny-js/commit/e528e155f4314125dca7b98a336d15c10aabb173))
+* do not recreate stack on stack selection ([80fd640](https://github.com/webiny/webiny-js/commit/80fd640ef82f86aa346a3b50e1682fe6a0c11c58))
+* force yarn version 2 ([1e96ebe](https://github.com/webiny/webiny-js/commit/1e96ebedb908cbd1c718f5dee51fa8823e78f779))
+* make sure forward slashes are always used ([437bba9](https://github.com/webiny/webiny-js/commit/437bba91380155c2fd3cee4f423b4b77e5b8d106))
+* resolve eslint errors ([57f5d18](https://github.com/webiny/webiny-js/commit/57f5d1857ea6a35b92b496b5bd8dd43fc0583df8))
+* send args and env variables when selecting stack ([49674e9](https://github.com/webiny/webiny-js/commit/49674e91e7711cfbbecced1fc51ff2762edc41c2))
+
+
+### Features
+
+* **app-admin:** add support for dynamic button labels ([58c6a93](https://github.com/webiny/webiny-js/commit/58c6a93b4f2a8546fbf63dbf7a3ca44f9ddd8472))
+* compress the data that goes into es ddb table ([#1821](https://github.com/webiny/webiny-js/issues/1821)) ([53b2b86](https://github.com/webiny/webiny-js/commit/53b2b8641ce7f0814ab9d6d07d67ab731828e46c))
+* introduce UI composer ([#1800](https://github.com/webiny/webiny-js/issues/1800)) ([35d1f85](https://github.com/webiny/webiny-js/commit/35d1f85531f615c0d1a0a333bc9cdb8167e4f51d))
+* **api-security-admin-users:** storage operations ([#1818](https://github.com/webiny/webiny-js/issues/1818)) ([d0c47f5](https://github.com/webiny/webiny-js/commit/d0c47f53cc99d02a77e5b1a04730b814acb83ab9))
+
+
+
+
+
 ## [5.11.1](https://github.com/webiny/webiny-js/compare/v5.11.1-beta.0...v5.11.1) (2021-07-31)
 
 **Note:** Version bump only for package webiny-js

@@ -61,8 +61,8 @@ export class FormFieldElement<
     }
 
     getValidators(props?: FormFieldElementRenderProps): Function | Function[] {
-        if (!this.config.validators) {
-            return null;
+        if (!this.config.validators || typeof this.config.validators !== "function") {
+            return () => true;
         }
 
         return this.config.validators(props);

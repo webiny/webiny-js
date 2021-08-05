@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.12.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.11.1...v5.12.0-beta.0) (2021-08-04)
+
+
+### Bug Fixes
+
+* **api-headless-cms:** context loading ([#1820](https://github.com/webiny/webiny-js/issues/1820)) ([8d154f7](https://github.com/webiny/webiny-js/commit/8d154f787c036ec1f84b5e41c09f0f2a9a97146e))
+* **api-headless-cms:** request review ([#1838](https://github.com/webiny/webiny-js/issues/1838)) ([7e8be75](https://github.com/webiny/webiny-js/commit/7e8be7559c378b2b3c90fb581d25a69090c02fff))
+
+
+### Features
+
+* compress the data that goes into es ddb table ([#1821](https://github.com/webiny/webiny-js/issues/1821)) ([53b2b86](https://github.com/webiny/webiny-js/commit/53b2b8641ce7f0814ab9d6d07d67ab731828e46c))
+
+
+
+
+
 ## [5.11.1](https://github.com/webiny/webiny-js/compare/v5.11.1-beta.0...v5.11.1) (2021-07-31)
 
 **Note:** Version bump only for package @webiny/api-headless-cms
