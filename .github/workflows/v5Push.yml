@@ -27,7 +27,7 @@ jobs:
         run: echo "::set-output name=ts::$(node --eval "console.log(new Date().getTime())")"
 
       - name: Fetch current version of Webiny 123
-        id: webiny-version
+        id: webiny-version-123
         run: echo "::set-output name=webiny-version::$(node --eval "console.log(require('./lerna.json'))")"
 
       - name: Fetch current version of Webiny
