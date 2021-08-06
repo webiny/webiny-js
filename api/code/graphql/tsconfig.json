@@ -6,6 +6,9 @@
       "path": "../../../packages/api-elasticsearch"
     },
     {
+      "path": "../../../packages/api-prerendering-service"
+    },
+    {
       "path": "../../../packages/api-i18n"
     },
     {
@@ -77,6 +80,8 @@
       "~/*": ["./src/*"],
       "@webiny/api-elasticsearch/*": ["../../../packages/api-elasticsearch/src/*"],
       "@webiny/api-elasticsearch": ["../../../packages/api-elasticsearch/src"],
+      "@webiny/api-prerendering-service/*": ["../../../packages/api-prerendering-service/src/*"],
+      "@webiny/api-prerendering-service": ["../../../packages/api-prerendering-service/src"],
       "@webiny/api-i18n/*": ["../../../packages/api-i18n/src/*"],
       "@webiny/api-i18n": ["../../../packages/api-i18n/src"],
       "@webiny/api-i18n-ddb/*": ["../../../packages/api-i18n-ddb/src/*"],
