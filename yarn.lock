@@ -11488,6 +11488,7 @@ __metadata:
     "@webiny/cli": ^5.11.0
     "@webiny/cli-plugin-deploy-pulumi": ^5.11.0
     "@webiny/db-dynamodb": ^5.11.0
+    "@webiny/handler": ^5.11.0
     "@webiny/handler-aws": ^5.11.0
     "@webiny/handler-db": ^5.11.0
     "@webiny/handler-graphql": ^5.11.0
@@ -20578,6 +20579,19 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
+"graphql-request@npm:^3.4.0":
+  version: 3.5.0
+  resolution: "graphql-request@npm:3.5.0"
+  dependencies:
+    cross-fetch: ^3.0.6
+    extract-files: ^9.0.0
+    form-data: ^3.0.0
+  peerDependencies:
+    graphql: 14.x || 15.x
+  checksum: 9be389f99e57b3bc5ae3880ad22c974ad12e9dc0903a9991517e75abcccf19e24960e394832ccfe056fd66ccc1a2f91986afef85db8eb8a4c1ae2fd642d16354
+  languageName: node
+  linkType: hard
+
 "graphql-scalars@npm:^1.7.0":
   version: 1.10.0
   resolution: "graphql-scalars@npm:1.10.0"
@@ -26247,10 +26261,12 @@ fsevents@^1.2.7:
   dependencies:
     "@webiny/cli": ^5.11.0
     "@webiny/cli-plugin-deploy-pulumi": ^5.11.0
+    "@webiny/handler": ^5.11.0
     "@webiny/handler-aws": ^5.11.0
     "@webiny/handler-graphql": ^5.11.0
     "@webiny/handler-logs": ^5.11.0
     "@webiny/project-utils": ^5.11.0
+    graphql-request: ^3.4.0
   languageName: unknown
   linkType: soft
 
