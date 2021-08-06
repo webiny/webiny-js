@@ -9,11 +9,11 @@ import writeJson from "write-json-file";
 import { replaceInPath } from "replace-in-path";
 import chalk from "chalk";
 import link from "terminal-link";
-import { formatCode } from "@webiny/cli-plugin-scaffold/utils";
+import { formatCode, addWorkspaceToRootPackageJson } from "@webiny/cli-plugin-scaffold/utils";
 import execa from "execa";
 import Error from "@webiny/error";
 
-import { PackageJson, TsConfigJson } from "@webiny/cli-plugin-scaffold/types";
+import { TsConfigJson } from "@webiny/cli-plugin-scaffold/types";
 
 const ncp = util.promisify(ncpBase.ncp);
 
@@ -150,13 +150,10 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
             );
             await wait(1000);
 
-            // Add package to workspaces
+            // Add package to workspaces.
             const rootPackageJsonPath = path.join(context.project.root, "package.json");
-            const rootPackageJson = await readJson<PackageJson>(rootPackageJsonPath);
-            if (!rootPackageJson.workspaces.packages.includes(input.path)) {
-                rootPackageJson.workspaces.packages.push(`${input.path}/code`);
-                await writeJson(rootPackageJsonPath, rootPackageJson);
-            }
+            const pathToAdd = `${input.path}/code`;
+            await addWorkspaceToRootPackageJson(rootPackageJsonPath, pathToAdd);
 
             ora.stopAndPersist({
                 symbol: chalk.green("✔"),
