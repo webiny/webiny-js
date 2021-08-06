@@ -1,32 +1,19 @@
 import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
-import policies, { EsDomain } from "./policies";
 
 interface GraphqlParams {
     env: Record<string, any>;
-    primaryDynamodbTable: aws.dynamodb.Table;
-    elasticsearchDynamodbTable: aws.dynamodb.Table;
-    bucket: aws.s3.Bucket;
-    elasticsearchDomain: EsDomain;
-    cognitoUserPool: aws.cognito.UserPool;
+    dbTable: aws.dynamodb.Table;
 }
 
 class Graphql {
     functions: {
         api: aws.lambda.Function;
     };
-    role: aws.iam.Role;
 
-    constructor({
-        env,
-        primaryDynamodbTable,
-        elasticsearchDynamodbTable,
-        bucket,
-        elasticsearchDomain,
-        cognitoUserPool
-    }: GraphqlParams) {
+    constructor({ env, dbTable }: GraphqlParams) {
         const roleName = "api-lambda-role";
-        this.role = new aws.iam.Role(roleName, {
+        const role = new aws.iam.Role(roleName, {
             assumeRolePolicy: {
                 Version: "2012-10-17",
                 Statement: [
@@ -41,29 +28,48 @@ class Graphql {
             }
         });
 
-        const policy = policies.getApiGraphqlLambdaPolicy({
-            primaryDynamodbTable,
-            elasticsearchDynamodbTable,
-            bucket,
-            elasticsearchDomain,
-            cognitoUserPool
+        const policy = new aws.iam.Policy("ApiGraphqlLambdaPolicy", {
+            description: "Enables the GraphQL API Lambda function to access AWS DynamoDB.",
+            policy: {
+                Version: "2012-10-17",
+                Statement: [
+                    {
+                        Sid: "PermissionForDynamodb",
+                        Effect: "Allow",
+                        Action: [
+                            "dynamodb:BatchGetItem",
+                            "dynamodb:BatchWriteItem",
+                            "dynamodb:DeleteItem",
+                            "dynamodb:GetItem",
+                            "dynamodb:PutItem",
+                            "dynamodb:Query",
+                            "dynamodb:Scan",
+                            "dynamodb:UpdateItem"
+                        ],
+                        Resource: [
+                            pulumi.interpolate`${dbTable.arn}`,
+                            pulumi.interpolate`${dbTable.arn}/*`
+                        ]
+                    }
+                ]
+            }
         });
 
         new aws.iam.RolePolicyAttachment(`${roleName}-ApiGraphqlLambdaPolicy`, {
-            role: this.role,
+            role,
             policyArn: policy.arn.apply(arn => arn)
         });
 
         new aws.iam.RolePolicyAttachment(`${roleName}-AWSLambdaBasicExecutionRole`, {
-            role: this.role,
+            role,
             policyArn: aws.iam.ManagedPolicy.AWSLambdaBasicExecutionRole
         });
 
         this.functions = {
             api: new aws.lambda.Function("graphql", {
-                runtime: "nodejs12.x",
+                runtime: "nodejs14.x",
                 handler: "handler.handler",
-                role: this.role.arn,
+                role: role.arn,
                 timeout: 30,
                 memorySize: 512,
                 code: new pulumi.asset.AssetArchive({
