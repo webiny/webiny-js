@@ -1,6 +1,7 @@
 import { HandlerContext } from "@webiny/handler/types";
 import { ElasticsearchContext } from "@webiny/api-elasticsearch/types";
 import { SecurityContext } from "@webiny/api-security/types";
+import { PrerenderingServiceClientContext } from "@webiny/api-prerendering-service/client/types";
 import { I18NContext } from "@webiny/api-i18n/types";
 import { BaseI18NContentContext as I18NContentContext } from "@webiny/api-i18n-content/types";
 import { PbContext } from "@webiny/api-page-builder/graphql/types";
@@ -14,6 +15,7 @@ export interface Context
         HttpContext,
         TenancyContext,
         ElasticsearchContext,
+        PrerenderingServiceClientContext,
         SecurityContext,
         I18NContext,
         I18NContentContext,
