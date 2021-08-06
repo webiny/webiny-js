@@ -3,6 +3,56 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.12.0](https://github.com/webiny/webiny-js/compare/v5.12.0-beta.1...v5.12.0) (2021-08-05)
+
+**Note:** Version bump only for package @webiny/app-headless-cms
+
+
+
+
+
+# [5.12.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.12.0-beta.0...v5.12.0-beta.1) (2021-08-05)
+
+**Note:** Version bump only for package @webiny/app-headless-cms
+
+
+
+
+
+# [5.12.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.11.1...v5.12.0-beta.0) (2021-08-04)
+
+
+### Bug Fixes
+
+* resolve eslint errors ([57f5d18](https://github.com/webiny/webiny-js/commit/57f5d1857ea6a35b92b496b5bd8dd43fc0583df8))
+* **app-headless-cms:** date transformer field no value error ([#1836](https://github.com/webiny/webiny-js/issues/1836)) ([ba53019](https://github.com/webiny/webiny-js/commit/ba53019b468bc08c31f922733cfa4d3174612fdc))
+* **app-headless-cms:** handle permission for new entry ([#1835](https://github.com/webiny/webiny-js/issues/1835)) ([4933658](https://github.com/webiny/webiny-js/commit/4933658db180583b738e86b98e07f01f939ee7e4))
+
+
+### Features
+
+* introduce UI composer ([#1800](https://github.com/webiny/webiny-js/issues/1800)) ([35d1f85](https://github.com/webiny/webiny-js/commit/35d1f85531f615c0d1a0a333bc9cdb8167e4f51d))
+
+
+
+
+
+## [5.11.1](https://github.com/webiny/webiny-js/compare/v5.11.1-beta.0...v5.11.1) (2021-07-31)
+
+**Note:** Version bump only for package @webiny/app-headless-cms
+
+
+
+
+
+## [5.11.1-beta.0](https://github.com/webiny/webiny-js/compare/v5.11.0...v5.11.1-beta.0) (2021-07-31)
+
+**Note:** Version bump only for package @webiny/app-headless-cms
+
+
+
+
+
 # [5.11.0](https://github.com/webiny/webiny-js/compare/v5.11.0-beta.2...v5.11.0) (2021-07-22)
 
 **Note:** Version bump only for package @webiny/app-headless-cms

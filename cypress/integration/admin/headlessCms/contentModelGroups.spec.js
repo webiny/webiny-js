@@ -8,9 +8,7 @@ context("Headless CMS - Content Model Groups", () => {
         const newGroup = `Group ${uniqid()}`;
         const newGroup2 = `Group-2 ${uniqid()}`;
         // Create a new group
-        cy.findAllByTestId("new-record-button")
-            .first()
-            .click();
+        cy.findAllByTestId("new-record-button").first().click();
         cy.findByLabelText("Name").type(newGroup);
         cy.findByLabelText("Description").type(
             `Trying to create a new Content Model Group: ${newGroup}`
@@ -28,9 +26,7 @@ context("Headless CMS - Content Model Groups", () => {
         });
 
         // Update groups' name
-        cy.findByLabelText("Name")
-            .clear()
-            .type(newGroup2);
+        cy.findByLabelText("Name").clear().type(newGroup2);
 
         cy.findByText(/Save content model group/i).click();
         // Loading should be completed
@@ -67,9 +63,7 @@ context("Headless CMS - Content Model Groups", () => {
         const newGroup2 = `Z Group ${uniqid()}`;
 
         // Create a Group one
-        cy.findAllByTestId("new-record-button")
-            .first()
-            .click();
+        cy.findAllByTestId("new-record-button").first().click();
         cy.findByLabelText("Name").type(newGroup1);
         cy.findByLabelText("Description").type(
             `Trying to create a new Content Model Group: ${newGroup1}`
@@ -80,9 +74,7 @@ context("Headless CMS - Content Model Groups", () => {
         cy.findByText("Content model group saved successfully!").should("exist");
 
         // Create a Group two
-        cy.findAllByTestId("new-record-button")
-            .first()
-            .click();
+        cy.findAllByTestId("new-record-button").first().click();
         cy.findByLabelText("Name").type(newGroup2);
         cy.findByLabelText("Description").type(
             `Trying to create a new Content Model Group: ${newGroup2}`

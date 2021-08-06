@@ -24,18 +24,12 @@ export const testPAT = ({ patComponentRoute, runAfterVisitingRoute }) => {
         .click()
         .findByTestId("account-tokens-dialog")
         .within(() => {
-            cy.findByLabelText("Token name")
-                .clear()
-                .type(tokenName)
-                .findByText("OK")
-                .click();
+            cy.findByLabelText("Token name").clear().type(tokenName).findByText("OK").click();
         })
         .findByText("Token created successfully!")
         .should("exist");
 
-    cy.findByTestId("created-token-dialog")
-        .findByText("Close")
-        .click();
+    cy.findByTestId("created-token-dialog").findByText("Close").click();
 
     cy.findByTestId("pat-tokens-list").within(() => {
         cy.findAllByTestId("pat-tokens-list-item").should("have.length", initialTokensCount + 1);

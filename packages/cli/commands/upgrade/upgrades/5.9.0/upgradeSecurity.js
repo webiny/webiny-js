@@ -23,10 +23,7 @@ async function upgradeGraphQLIndex(file, filePath, { info, error }) {
         );
 
         if (plugins) {
-            const security = plugins
-                .getInitializer()
-                .getElements()
-                .findIndex(isSecurityPlugins);
+            const security = plugins.getInitializer().getElements().findIndex(isSecurityPlugins);
             plugins.getInitializer().insertElement(security, "adminUsersPlugins()");
         } else {
             // If not found, the project may still be using the old array-like syntax

@@ -41,7 +41,7 @@ const allBlockCategory: PbEditorBlockCategoryPlugin = {
 };
 
 const sortBlocks = blocks => {
-    return blocks.sort(function(a, b) {
+    return blocks.sort(function (a, b) {
         if (a.name === "pb-editor-block-empty") {
             return -1;
         }
@@ -69,9 +69,8 @@ const SearchBar = () => {
     const [editingBlock, setEditingBlock] = useState(null);
     const [activeCategory, setActiveCategory] = useState("all");
 
-    const [updatePageElementMutation, { loading: updateInProgress }] = useMutation(
-        UPDATE_PAGE_ELEMENT
-    );
+    const [updatePageElementMutation, { loading: updateInProgress }] =
+        useMutation(UPDATE_PAGE_ELEMENT);
     const [deletePageElementMutation] = useMutation(DELETE_PAGE_ELEMENT);
 
     const allCategories = useMemo(

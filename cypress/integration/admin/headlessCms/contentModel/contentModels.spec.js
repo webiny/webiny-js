@@ -30,18 +30,22 @@ context("Headless CMS - Content Models CRUD", () => {
         ).should("exist");
         // 3.2 Edit tab -> add text field and number field -> Save button
         cy.findByTestId("cms.editor.tab.edit").click();
-        cy.get(
-            `[data-testid="cms-editor-fields-field-text"]`
-        ).drag(`[data-testid="cms-editor-first-field-area"]`, { force: true });
+        cy.get(`[data-testid="cms-editor-fields-field-text"]`).drag(
+            `[data-testid="cms-editor-first-field-area"]`,
+            {
+                force: true
+            }
+        );
         cy.findByTestId("cms-editor-edit-fields-dialog").within(() => {
             cy.findByLabelText("Label").type("Title");
             cy.findByText("Save").click();
         });
         cy.wait(1000);
 
-        cy.get(
-            `[data-testid="cms-editor-fields-field-number"]`
-        ).drag(`[data-testid="cms-editor-row-droppable-bottom-0"]`, { force: true });
+        cy.get(`[data-testid="cms-editor-fields-field-number"]`).drag(
+            `[data-testid="cms-editor-row-droppable-bottom-0"]`,
+            { force: true }
+        );
         cy.findByTestId("cms-editor-edit-fields-dialog").within(() => {
             cy.findByLabelText("Label").type("Edition");
             cy.findByText("Save").click();
@@ -88,9 +92,7 @@ context("Headless CMS - Content Models CRUD", () => {
             // c) Add required validator
             cy.findByTestId("cms.editor.field-validator.required").within(() => {
                 cy.findByLabelText("Enabled").check();
-                cy.findByLabelText("Message")
-                    .clear()
-                    .type("Title is required.");
+                cy.findByLabelText("Message").clear().type("Title is required.");
             });
             // d) Save field
             cy.findByText("Save").click();

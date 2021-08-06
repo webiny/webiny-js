@@ -141,9 +141,8 @@ describe("MANAGE - Resolvers", () => {
 
     test(`get category`, async () => {
         await setupContentModel();
-        const { createCategory, getCategory, listCategories } = useCategoryManageHandler(
-            manageOpts
-        );
+        const { createCategory, getCategory, listCategories } =
+            useCategoryManageHandler(manageOpts);
 
         const [create] = await createCategory({ data: { title: "Hardware", slug: "hardware" } });
 
@@ -279,9 +278,8 @@ describe("MANAGE - Resolvers", () => {
     test(`list categories (no parameters)`, async () => {
         await setupContentModel();
         // Use "manage" API to create and publish entries
-        const { until, createCategory, publishCategory, listCategories } = useCategoryManageHandler(
-            manageOpts
-        );
+        const { until, createCategory, publishCategory, listCategories } =
+            useCategoryManageHandler(manageOpts);
 
         // Create an entry
         const [create] = await createCategory({ data: { title: "Title 1", slug: "slug-1" } });
@@ -510,12 +508,8 @@ describe("MANAGE - Resolvers", () => {
     test(`create category revision`, async () => {
         await setupContentModel();
 
-        const {
-            until,
-            createCategory,
-            createCategoryFrom,
-            listCategories
-        } = useCategoryManageHandler(manageOpts);
+        const { until, createCategory, createCategoryFrom, listCategories } =
+            useCategoryManageHandler(manageOpts);
 
         const [create] = await createCategory({ data: { title: "Hardware", slug: "hardware" } });
         const { id } = create.data.createCategory.data;
@@ -600,9 +594,8 @@ describe("MANAGE - Resolvers", () => {
 
     test(`update category`, async () => {
         await setupContentModel();
-        const { until, createCategory, updateCategory, listCategories } = useCategoryManageHandler(
-            manageOpts
-        );
+        const { until, createCategory, updateCategory, listCategories } =
+            useCategoryManageHandler(manageOpts);
         const [create] = await createCategory({ data: { title: "Hardware", slug: "hardware" } });
 
         const createdCategory = create.data.createCategory.data;

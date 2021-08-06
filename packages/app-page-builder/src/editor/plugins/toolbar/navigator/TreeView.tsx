@@ -53,7 +53,12 @@ const TreeViewItem = ({ element, level, children, index }) => {
     const { refresh, activeElementPath, setActiveElementPath } = useContext(NavigatorContext);
     const { move } = useMoveBlock(elementId);
     // Use "Drag&Drop"
-    const { ref: dragAndDropRef, handlerId, isOver, dropItemAbove } = useSortableList({
+    const {
+        ref: dragAndDropRef,
+        handlerId,
+        isOver,
+        dropItemAbove
+    } = useSortableList({
         move,
         id: elementId,
         index,

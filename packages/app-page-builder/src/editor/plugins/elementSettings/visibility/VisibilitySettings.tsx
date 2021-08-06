@@ -57,9 +57,11 @@ export const useVisibilitySetting = elementId => {
     };
 };
 
-const VisibilitySettings: React.FunctionComponent<PbEditorPageElementSettingsRenderComponentProps & {
-    options: any;
-}> = ({ defaultAccordionValue }) => {
+const VisibilitySettings: React.FunctionComponent<
+    PbEditorPageElementSettingsRenderComponentProps & {
+        options: any;
+    }
+> = ({ defaultAccordionValue }) => {
     const { displayMode } = useRecoilValue(uiAtom);
     const activeElementId = useRecoilValue(activeElementAtom);
     const { element, updateVisibility } = useVisibilitySetting(activeElementId);

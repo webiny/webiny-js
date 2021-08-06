@@ -18,7 +18,7 @@ const BlocksList = props => {
     const prevProps = useRef(null);
 
     useEffect(() => {
-        rightPanelElement.current = document.getElementById("webiny-split-view-right-panel");
+        rightPanelElement.current = document.querySelector(".webiny-split-view__right-panel");
         setTimestamp(new Date().getTime());
     }, []);
 

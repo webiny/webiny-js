@@ -15,7 +15,6 @@
     "../plugins",
     "../react-router",
     "../ui",
-    "../ui-composer",
     "../validation"
   ],
   "references": [],

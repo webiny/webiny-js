@@ -6,18 +6,13 @@ context('Pages Previewing - with the "ssr-no-cache" query param', () => {
 
     it(`Step 1: Create a page with title: ${pageTitle1}`, () => {
         cy.visit("/page-builder/pages");
-        cy.findAllByTestId("new-record-button")
-            .first()
-            .click();
+        cy.findAllByTestId("new-record-button").first().click();
 
         cy.findByTestId("pb-new-page-category-modal").within(() => {
             cy.findByText("Static").click();
         });
         cy.findByTestId("pb-editor-page-title").click();
-        cy.get(`input[value="Untitled"]`)
-            .clear()
-            .type(pageTitle1)
-            .blur();
+        cy.get(`input[value="Untitled"]`).clear().type(pageTitle1).blur();
         cy.findByText("Page title updated successfully!");
     });
 
@@ -59,10 +54,7 @@ context('Pages Previewing - with the "ssr-no-cache" query param', () => {
         });
 
         cy.findByTestId("pb-editor-page-title").click();
-        cy.get(`input[value="${pageTitle1}"]`)
-            .clear()
-            .type(pageTitle2)
-            .blur();
+        cy.get(`input[value="${pageTitle1}"]`).clear().type(pageTitle2).blur();
 
         cy.findByText("Page title updated successfully!");
     });

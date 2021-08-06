@@ -164,7 +164,8 @@ const plugin = (): UpgradePlugin<CmsContext> => ({
 
                     const modelFieldFinder = createFieldFinder(models);
 
-                    const indexName = `root-headless-cms-${locale.code}-${model.modelId}`.toLowerCase();
+                    const indexName =
+                        `root-headless-cms-${locale.code}-${model.modelId}`.toLowerCase();
                     const PK = `T#root#L#${locale.code}#CMS#CME#${entry.id.split("#")[0]}`;
                     const SK = entry.__type === "cms.entry.l" ? "L" : "P";
                     const esData = {

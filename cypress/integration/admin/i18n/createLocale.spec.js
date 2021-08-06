@@ -6,9 +6,7 @@ context("I18N app", () => {
 
         cy.visit("/i18n/locales");
         // Create new locale
-        cy.findAllByTestId("new-record-button")
-            .first()
-            .click();
+        cy.findAllByTestId("new-record-button").first().click();
 
         cy.findByLabelText("Code").type(newCode);
         /**
@@ -18,9 +16,7 @@ context("I18N app", () => {
          *
          * Read more about it: https://www.cypress.io/blog/2020/07/22/do-not-get-too-detached/#investigation
          */
-        cy.findByText(newCode)
-            .as("code")
-            .should("exist");
+        cy.findByText(newCode).as("code").should("exist");
         cy.get("@code").click();
 
         cy.findByText(/Save/i).click();
@@ -74,9 +70,7 @@ context("I18N app", () => {
 
         cy.visit("/i18n/locales");
         // Create new locale
-        cy.findAllByTestId("new-record-button")
-            .first()
-            .click();
+        cy.findAllByTestId("new-record-button").first().click();
         cy.findByLabelText("Code").type(newCode);
         /**
          * Testing "Autocomplete" component is tricky.
@@ -85,9 +79,7 @@ context("I18N app", () => {
          *
          * Read more about it: https://www.cypress.io/blog/2020/07/22/do-not-get-too-detached/#investigation
          */
-        cy.findByText(newCode)
-            .as("code")
-            .should("exist");
+        cy.findByText(newCode).as("code").should("exist");
         cy.get("@code").click();
 
         cy.findByText(/Save/i).click();

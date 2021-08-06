@@ -4,7 +4,9 @@
   "exclude": [
     "node_modules",
     "../app",
+    "../app-admin",
     "../form",
+    "../app-security-admin-users",
     "../app-security-cognito-authentication",
     "../plugins",
     "../ui",

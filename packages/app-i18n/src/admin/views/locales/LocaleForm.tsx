@@ -26,14 +26,8 @@ const ButtonWrapper = styled("div")({
 });
 
 const I18NLocaleForm = () => {
-    const {
-        loading,
-        showEmptyView,
-        createLocale,
-        cancelEditing,
-        locale,
-        onSubmit
-    } = useLocaleForm();
+    const { loading, showEmptyView, createLocale, cancelEditing, locale, onSubmit } =
+        useLocaleForm();
 
     // Render "No content" selected view.
     if (showEmptyView) {

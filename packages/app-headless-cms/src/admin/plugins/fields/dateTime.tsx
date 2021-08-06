@@ -38,7 +38,9 @@ const plugin: CmsEditorFieldTypePlugin = {
             const fieldId = get(data, "fieldId", null);
             const lockedField = lockedFields.find(
                 lockedField => lockedField.fieldId === fieldId
-            ) as CmsEditorField<{ formatType: string }>;
+            ) as CmsEditorField<{
+                formatType: string;
+            }>;
 
             return (
                 <Grid>
@@ -59,12 +61,12 @@ const plugin: CmsEditorFieldTypePlugin = {
                             >
                                 <option value={t`date`}>{t`Date only`}</option>
                                 <option value={t`time`}>{t`Time only`}</option>
-                                <option value={t`dateTimeWithTimezone`}>
-                                    {t`Date and time with timezone`}
-                                </option>
-                                <option value={t`dateTimeWithoutTimezone`}>
-                                    {t`Date and time without timezone`}
-                                </option>
+                                <option
+                                    value={t`dateTimeWithTimezone`}
+                                >{t`Date and time with timezone`}</option>
+                                <option
+                                    value={t`dateTimeWithoutTimezone`}
+                                >{t`Date and time without timezone`}</option>
                             </Select>
                         </Bind>
                     </Cell>

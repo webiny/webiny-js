@@ -1,7 +1,7 @@
-import { NavigationMenuElement, TAGS } from "@webiny/app-admin/elements/NavigationMenuElement";
+import { NavigationMenuElement, TAGS } from "@webiny/app-admin/ui/elements/NavigationMenuElement";
 import { Permission } from "./constants";
-import { UIViewPlugin } from "@webiny/ui-composer/UIView";
-import { NavigationView } from "@webiny/app-admin/views/NavigationView";
+import { UIViewPlugin } from "@webiny/app-admin/ui/UIView";
+import { NavigationView } from "@webiny/app-admin/ui/views/NavigationView";
 
 export default new UIViewPlugin<NavigationView>(NavigationView, async view => {
     await view.isRendered();

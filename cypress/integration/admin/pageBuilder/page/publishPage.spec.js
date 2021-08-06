@@ -8,19 +8,14 @@ context(
 
         it(`Step 1: Create and publish page with title: ${pageTitle1}`, () => {
             cy.visit("/page-builder/pages");
-            cy.findAllByTestId("new-record-button")
-                .first()
-                .click();
+            cy.findAllByTestId("new-record-button").first().click();
 
             cy.findByTestId("pb-new-page-category-modal").within(() => {
                 cy.findByText("Static").click();
             });
             // Edit page title
             cy.findByTestId("pb-editor-page-title").click();
-            cy.get(`input[value="Untitled"]`)
-                .clear()
-                .type(pageTitle1)
-                .blur();
+            cy.get(`input[value="Untitled"]`).clear().type(pageTitle1).blur();
             cy.findByText("Page title updated successfully!");
             // Publish page
             cy.findByText("Publish").click();
@@ -66,10 +61,7 @@ context(
             });
             // Update title
             cy.findByTestId("pb-editor-page-title").click();
-            cy.get(`input[value="${pageTitle1}"]`)
-                .clear()
-                .type(pageTitle2)
-                .blur();
+            cy.get(`input[value="${pageTitle1}"]`).clear().type(pageTitle2).blur();
             cy.findByText("Page title updated successfully!");
             // Publish page
             cy.findByText("Publish changes").click();

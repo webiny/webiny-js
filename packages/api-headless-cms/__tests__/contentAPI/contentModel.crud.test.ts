@@ -234,9 +234,8 @@ describe("content model test", () => {
     });
 
     test("delete existing content model", async () => {
-        const { createContentModelMutation, deleteContentModelMutation } = useContentGqlHandler(
-            manageHandlerOpts
-        );
+        const { createContentModelMutation, deleteContentModelMutation } =
+            useContentGqlHandler(manageHandlerOpts);
 
         const [createResponse] = await createContentModelMutation({
             data: {
@@ -268,9 +267,8 @@ describe("content model test", () => {
             updateContentModelMutation,
             deleteContentModelMutation
         } = useContentGqlHandler(manageHandlerOpts);
-        const { createCategory, until, listCategories } = useCategoryManageHandler(
-            manageHandlerOpts
-        );
+        const { createCategory, until, listCategories } =
+            useCategoryManageHandler(manageHandlerOpts);
         const category = models.find(m => m.modelId === "category");
 
         // Create initial record
@@ -325,9 +323,8 @@ describe("content model test", () => {
     });
 
     test("get existing content model", async () => {
-        const { createContentModelMutation, getContentModelQuery } = useContentGqlHandler(
-            manageHandlerOpts
-        );
+        const { createContentModelMutation, getContentModelQuery } =
+            useContentGqlHandler(manageHandlerOpts);
 
         const [createResponse] = await createContentModelMutation({
             data: {
@@ -425,9 +422,8 @@ describe("content model test", () => {
     });
 
     test("update content model with new fields", async () => {
-        const { createContentModelMutation, updateContentModelMutation } = useContentGqlHandler(
-            manageHandlerOpts
-        );
+        const { createContentModelMutation, updateContentModelMutation } =
+            useContentGqlHandler(manageHandlerOpts);
         const [createResponse] = await createContentModelMutation({
             data: {
                 name: "Test Content model",
@@ -515,9 +511,8 @@ describe("content model test", () => {
     });
 
     test("error when assigning titleFieldId on non existing field", async () => {
-        const { createContentModelMutation, updateContentModelMutation } = useContentGqlHandler(
-            manageHandlerOpts
-        );
+        const { createContentModelMutation, updateContentModelMutation } =
+            useContentGqlHandler(manageHandlerOpts);
         const [createResponse] = await createContentModelMutation({
             data: {
                 name: "Test Content model",
@@ -603,10 +598,10 @@ describe("content model test", () => {
     });
 
     test("should execute hooks on update", async () => {
-        const {
-            createContentModelMutation,
-            updateContentModelMutation
-        } = useContentGqlHandler(manageHandlerOpts, [contentModelHooks()]);
+        const { createContentModelMutation, updateContentModelMutation } = useContentGqlHandler(
+            manageHandlerOpts,
+            [contentModelHooks()]
+        );
 
         const [createResponse] = await createContentModelMutation({
             data: {
@@ -646,10 +641,10 @@ describe("content model test", () => {
     });
 
     test("should execute hooks on delete", async () => {
-        const {
-            createContentModelMutation,
-            deleteContentModelMutation
-        } = useContentGqlHandler(manageHandlerOpts, [contentModelHooks()]);
+        const { createContentModelMutation, deleteContentModelMutation } = useContentGqlHandler(
+            manageHandlerOpts,
+            [contentModelHooks()]
+        );
 
         const [createResponse] = await createContentModelMutation({
             data: {
@@ -684,9 +679,8 @@ describe("content model test", () => {
     });
 
     test("should refresh the schema when added new field", async () => {
-        const { createContentModelMutation, updateContentModelMutation } = useContentGqlHandler(
-            manageHandlerOpts
-        );
+        const { createContentModelMutation, updateContentModelMutation } =
+            useContentGqlHandler(manageHandlerOpts);
         const { listBugs } = useBugManageHandler(manageHandlerOpts);
 
         const bugModel = models.find(m => m.modelId === "bug");

@@ -4,7 +4,7 @@ export default () =>
         xhr.open("GET", "https://api.ipify.org/?format=json", true);
         xhr.setRequestHeader("Content-Type", "application/json");
         xhr.send();
-        xhr.onload = function() {
+        xhr.onload = function () {
             try {
                 const response = JSON.parse(this.responseText);
                 resolve(response.ip);

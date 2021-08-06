@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { ListItem, ListItemGraphic, ListItemMeta } from "../List";
 import Transition from "react-transition-group/Transition";
 import { Icon } from "../Icon";
@@ -120,6 +120,10 @@ const AccordionItem = (props: AccordionItemProps) => {
     const toggleState = useCallback(() => {
         setState(!open);
     }, [open]);
+
+    useEffect(() => {
+        setState(props.open);
+    }, [props.open]);
 
     return (
         <div className={classNames("webiny-ui-accordion-item", props.className)}>

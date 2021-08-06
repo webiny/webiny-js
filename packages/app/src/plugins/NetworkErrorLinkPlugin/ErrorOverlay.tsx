@@ -35,9 +35,9 @@ const ErrorOverlay = ({ query, networkError }) => {
                 </div>
                 <div className="body">
                     <div className="body__summary">
-                        <Typography use={"subtitle1"}>
-                            {t`Error occurred while executing operation:`}
-                        </Typography>
+                        <Typography
+                            use={"subtitle1"}
+                        >{t`Error occurred while executing operation:`}</Typography>
                         <Pre>
                             <code>{query}</code>
                         </Pre>

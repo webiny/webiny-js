@@ -45,7 +45,7 @@
     "execa": "4.1.0",
     "jest": "^26.1.0",
     "merge": "^1.2.1",
-    "prettier": "^1.14.2",
+    "prettier": "^2.3.2",
     "ts-jest": "^26.4.4",
     "typescript": "4.1.3"
   },

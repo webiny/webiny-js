@@ -9,7 +9,6 @@
     "../plugins",
     "../react-router",
     "../ui",
-    "../ui-composer",
     "../app"
   ],
   "compilerOptions": {

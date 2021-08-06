@@ -19,9 +19,8 @@ export const markLockedFields = async ({ model, context }: Args): Promise<void> 
         return;
     }
 
-    const cmsLockedFieldPlugins = context.plugins.byType<CmsModelLockedFieldPlugin>(
-        "cms-model-locked-field"
-    );
+    const cmsLockedFieldPlugins =
+        context.plugins.byType<CmsModelLockedFieldPlugin>("cms-model-locked-field");
 
     const existingLockedFields = model.lockedFields || [];
     const lockedFields = [];

@@ -74,16 +74,11 @@ const Revision = ({ revision, page }: RevisionProps) => {
     const { getWebsiteUrl, getPageUrl } = usePageBuilderSettings();
     const [isSiteRunning, refreshSiteStatus] = useSiteStatus(getWebsiteUrl());
 
-    const {
-        deleteRevision,
-        createRevision,
-        publishRevision,
-        unpublishRevision,
-        editRevision
-    } = useRevisionHandlers({
-        revision,
-        page
-    });
+    const { deleteRevision, createRevision, publishRevision, unpublishRevision, editRevision } =
+        useRevisionHandlers({
+            revision,
+            page
+        });
 
     const { showConfigureWebsiteUrlDialog } = useConfigureWebsiteUrlDialog(
         getWebsiteUrl(),

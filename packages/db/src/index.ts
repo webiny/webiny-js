@@ -41,9 +41,7 @@ export type ConstructorArgs = {
 // Generates a short and sortable ID, e.g. "1607677774994.tfz58m".
 const shortId = () => {
     const time = new Date().getTime();
-    const uniqueId = Math.random()
-        .toString(36)
-        .slice(-6);
+    const uniqueId = Math.random().toString(36).slice(-6);
 
     return `${time}.${uniqueId}`;
 };

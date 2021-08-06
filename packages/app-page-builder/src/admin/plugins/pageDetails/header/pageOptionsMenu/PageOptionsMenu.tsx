@@ -50,13 +50,8 @@ const menuStyles = css({
 
 const PageOptionsMenu = props => {
     const { page } = props;
-    const {
-        settings,
-        isSpecialPage,
-        getPageUrl,
-        getWebsiteUrl,
-        updateSettingsMutation
-    } = usePageBuilderSettings();
+    const { settings, isSpecialPage, getPageUrl, getWebsiteUrl, updateSettingsMutation } =
+        usePageBuilderSettings();
 
     const [isSiteRunning, refreshSiteStatus] = useSiteStatus(getWebsiteUrl());
     const { showConfigureWebsiteUrlDialog } = useConfigureWebsiteUrlDialog(

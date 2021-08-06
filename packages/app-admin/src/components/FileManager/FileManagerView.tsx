@@ -131,15 +131,8 @@ const renderEmpty = ({ hasPreviouslyUploadedFiles, browseFiles, fmFilePermission
 };
 
 function FileManagerView(props: FileManagerViewProps) {
-    const {
-        onClose,
-        onChange,
-        accept,
-        multiple,
-        maxSize,
-        multipleMaxCount,
-        multipleMaxSize
-    } = props;
+    const { onClose, onChange, accept, multiple, maxSize, multipleMaxCount, multipleMaxSize } =
+        props;
 
     const {
         selected,
@@ -392,6 +385,7 @@ function FileManagerView(props: FileManagerViewProps) {
                                 onChange={e => searchOnChange(e.target.value)}
                                 placeholder={t`Search by filename or tags`}
                                 disabled={!fmFilePermission}
+                                data-testid={"file-manager.search-input"}
                             />
                         </InputSearch>
                     }

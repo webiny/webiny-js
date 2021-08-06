@@ -7,28 +7,32 @@ import { PbMenuItemPlugin } from "../../../../../types";
 
 const MenuItemForm = props => {
     const { onCancel, onSubmit } = useHandlers(props, {
-        onCancel: ({ editItem, currentMenuItem, deleteItem }) => () => {
-            if (currentMenuItem.__new) {
-                deleteItem(currentMenuItem);
-            } else {
+        onCancel:
+            ({ editItem, currentMenuItem, deleteItem }) =>
+            () => {
+                if (currentMenuItem.__new) {
+                    deleteItem(currentMenuItem);
+                } else {
+                    editItem(null);
+                }
+            },
+        onSubmit:
+            ({ items, onChange, editItem }) =>
+            data => {
+                const item = omit(omitBy(data, isNull), ["__new"]);
+                if (item.id) {
+                    const target = findObject(items, item.id);
+                    if (target) {
+                        target.source[target.index] = item;
+                        onChange([...items]);
+                    }
+                } else {
+                    item.id = uniqid();
+                    onChange([...items, item]);
+                }
+
                 editItem(null);
             }
-        },
-        onSubmit: ({ items, onChange, editItem }) => data => {
-            const item = omit(omitBy(data, isNull), ["__new"]);
-            if (item.id) {
-                const target = findObject(items, item.id);
-                if (target) {
-                    target.source[target.index] = item;
-                    onChange([...items]);
-                }
-            } else {
-                item.id = uniqid();
-                onChange([...items, item]);
-            }
-
-            editItem(null);
-        }
     });
 
     const { currentMenuItem } = props;

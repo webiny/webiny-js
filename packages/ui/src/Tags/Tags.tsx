@@ -90,14 +90,8 @@ export class Tags extends React.Component<Props, State> {
     };
 
     render() {
-        const {
-            validation,
-            value,
-            disabled,
-            onChange,
-            description,
-            ...otherInputProps
-        } = this.props;
+        const { validation, value, disabled, onChange, description, ...otherInputProps } =
+            this.props;
 
         const inputProps = {
             ...otherInputProps,

@@ -183,6 +183,15 @@ jobs:
             .verdaccio/
             .verdaccio.yaml
 
+      - name: Create verdaccio-files artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: verdaccio-files
+          retention-days: 1
+          path: |
+            .verdaccio/
+            .verdaccio.yaml
+
   test-create-webiny-project:
     needs: [cache-keys, verdaccio-publish]
     name: Test "create-webiny-project" (different operating systems)
@@ -299,6 +308,17 @@ jobs:
             !test-project/**/node_modules/**/*
             !test-project/.yarn/cache/**/*
 
+      - name: Create project-files artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: project-files
+          retention-days: 1
+          path: |
+            test-project/
+            !test-project/node_modules/**/*
+            !test-project/**/node_modules/**/*
+            !test-project/.yarn/cache/**/*
+
       - name: Print CLI version
         working-directory: test-project
         run: yarn webiny --version
@@ -311,9 +331,13 @@ jobs:
         working-directory: test-project
         run: yarn webiny deploy api --env dev --debug
 
-      - name: Concurrently deploy Admin Area and Website
+      - name: Deploy Admin Area
         working-directory: test-project
-        run: npx concurrently "yarn webiny deploy apps/admin --env dev --debug" "yarn webiny deploy apps/website --env dev --debug"
+        run: yarn webiny deploy apps/admin --env dev --debug
+
+      - name: Deploy Website
+        working-directory: test-project
+        run: yarn webiny deploy apps/website --env dev --debug
 
       - uses: actions/checkout@v2
         with:

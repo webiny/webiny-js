@@ -1,8 +1,8 @@
 import * as React from "react";
 import SearchBar from "./SearchBar";
-import { GenericElement } from "@webiny/ui-composer/elements/GenericElement";
-import { UIViewPlugin } from "@webiny/ui-composer/UIView";
-import { AdminView } from "~/views/AdminView";
+import { GenericElement } from "~/ui/elements/GenericElement";
+import { UIViewPlugin } from "~/ui/UIView";
+import { AdminView } from "~/ui/views/AdminView";
 
 // !EXAMPLE!
 // This demonstrates how you can create view-specific plugin classes.

@@ -81,10 +81,7 @@ const createElasticsearchQuery = (
     /**
      * Be aware that, if having more registered operator plugins of same type, the last one will be used.
      */
-    const operatorPlugins: Record<
-        string,
-        ElasticsearchQueryBuilderOperatorPlugin
-    > = context.plugins
+    const operatorPlugins: Record<string, ElasticsearchQueryBuilderOperatorPlugin> = context.plugins
         .byType<ElasticsearchQueryBuilderOperatorPlugin>(
             ElasticsearchQueryBuilderOperatorPlugin.type
         )

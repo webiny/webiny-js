@@ -102,8 +102,7 @@ export const notFoundPageData = {
                                                 color: "rgba(17, 17, 17, 1)"
                                             },
                                             data: {
-                                                text:
-                                                    "<p>Sorry, but the page you were looking for could not be found.</p>"
+                                                text: "<p>Sorry, but the page you were looking for could not be found.</p>"
                                             }
                                         },
                                         settings: {

@@ -55,15 +55,13 @@ describe("page full URL test", () => {
     test("full URL must be returned correctly", async () => {
         await updateSettings({ data: { websiteUrl: "https://domain.com" } });
 
-        await until(
-            listPages,
-            ([res]) => res.data.pageBuilder.listPages.data.length === 3
-        ).then(([res]) =>
-            expect(res.data.pageBuilder.listPages.data).toMatchObject([
-                { url: expect.stringMatching(/^https:\/\/domain.com\/some-url\/untitled-/) },
-                { url: expect.stringMatching(/^https:\/\/domain.com\/some-url\/untitled-/) },
-                { url: expect.stringMatching(/^https:\/\/domain.com\/some-url\/untitled-/) }
-            ])
+        await until(listPages, ([res]) => res.data.pageBuilder.listPages.data.length === 3).then(
+            ([res]) =>
+                expect(res.data.pageBuilder.listPages.data).toMatchObject([
+                    { url: expect.stringMatching(/^https:\/\/domain.com\/some-url\/untitled-/) },
+                    { url: expect.stringMatching(/^https:\/\/domain.com\/some-url\/untitled-/) },
+                    { url: expect.stringMatching(/^https:\/\/domain.com\/some-url\/untitled-/) }
+                ])
         );
 
         for (let i = 0; i < ids.length; i++) {
@@ -102,15 +100,13 @@ describe("page full URL test", () => {
             }
         });
 
-        await until(
-            listPages,
-            ([res]) => res.data.pageBuilder.listPages.data.length === 3
-        ).then(([res]) =>
-            expect(res.data.pageBuilder.listPages.data).toMatchObject([
-                { url: expect.stringMatching(/^https:\/\/www.test.com\/some-url\/untitled-/) },
-                { url: expect.stringMatching(/^https:\/\/www.test.com\/some-url\/untitled-/) },
-                { url: expect.stringMatching(/^https:\/\/www.test.com\/some-url\/untitled-/) }
-            ])
+        await until(listPages, ([res]) => res.data.pageBuilder.listPages.data.length === 3).then(
+            ([res]) =>
+                expect(res.data.pageBuilder.listPages.data).toMatchObject([
+                    { url: expect.stringMatching(/^https:\/\/www.test.com\/some-url\/untitled-/) },
+                    { url: expect.stringMatching(/^https:\/\/www.test.com\/some-url\/untitled-/) },
+                    { url: expect.stringMatching(/^https:\/\/www.test.com\/some-url\/untitled-/) }
+                ])
         );
 
         await updateSettings({ data: { websiteUrl: "https://updated-domain.com" } });
@@ -134,15 +130,13 @@ describe("page full URL test", () => {
         // Ensure that a settings entry exists in the database.
         await updateSettings({ data: {} });
 
-        await until(
-            listPages,
-            ([res]) => res.data.pageBuilder.listPages.data.length === 3
-        ).then(([res]) =>
-            expect(res.data.pageBuilder.listPages.data).toMatchObject([
-                { url: expect.stringMatching(/^\/some-url\/untitled-/) },
-                { url: expect.stringMatching(/^\/some-url\/untitled-/) },
-                { url: expect.stringMatching(/^\/some-url\/untitled-/) }
-            ])
+        await until(listPages, ([res]) => res.data.pageBuilder.listPages.data.length === 3).then(
+            ([res]) =>
+                expect(res.data.pageBuilder.listPages.data).toMatchObject([
+                    { url: expect.stringMatching(/^\/some-url\/untitled-/) },
+                    { url: expect.stringMatching(/^\/some-url\/untitled-/) },
+                    { url: expect.stringMatching(/^\/some-url\/untitled-/) }
+                ])
         );
 
         for (let i = 0; i < ids.length; i++) {

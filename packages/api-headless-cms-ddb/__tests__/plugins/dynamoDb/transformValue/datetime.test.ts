@@ -2,14 +2,14 @@ import datetimeTransform from "../../../../src/dynamoDb/transformValue/datetime"
 import { CmsContentModelField } from "@webiny/api-headless-cms/types";
 
 const createField = (fieldType: string): CmsContentModelField => {
-    return ({
+    return {
         id: "fieldId",
         fieldId: "fieldId",
         type: "datetime",
         settings: {
             type: fieldType
         }
-    } as unknown) as CmsContentModelField;
+    } as unknown as CmsContentModelField;
 };
 
 describe("dynamodb transform datetime", () => {
@@ -40,7 +40,7 @@ describe("dynamodb transform datetime", () => {
         [{}],
         [[]],
         [
-            function() {
+            function () {
                 return 1;
             }
         ],

@@ -5,10 +5,10 @@ import { SecureRoute } from "@webiny/app-security/components";
 import {
     NavigationMenuElement,
     NavigationMenuElementConfig
-} from "@webiny/app-admin/elements/NavigationMenuElement";
-import { NavigationView } from "@webiny/app-admin/views/NavigationView";
+} from "@webiny/app-admin/ui/elements/NavigationMenuElement";
+import { NavigationView } from "@webiny/app-admin/ui/views/NavigationView";
 import { RoutePlugin } from "@webiny/app/plugins/RoutePlugin";
-import { UIViewPlugin } from "@webiny/ui-composer/UIView";
+import { UIViewPlugin } from "@webiny/app-admin/ui/UIView";
 import FileManagerSettings from "../views/FileManagerSettings";
 
 const PERMISSION_FM_SETTINGS = "fm.settings";

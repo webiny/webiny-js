@@ -4,12 +4,12 @@ import { Route } from "@webiny/react-router";
 import { AdminLayout } from "@webiny/app-admin/components/AdminLayout";
 import { SecureRoute } from "@webiny/app-security/components";
 import { RoutePlugin } from "@webiny/app/types";
-import { UIViewComponent } from "@webiny/ui-composer/UIView";
-import { Groups } from "../views/Groups";
-import { ApiKeys } from "../views/ApiKeys";
-import { Account } from "../views/Account";
+import { UIViewComponent } from "@webiny/app-admin/ui/UIView";
+import { Groups } from "../ui/views/Groups";
+import { ApiKeys } from "../ui/views/ApiKeys";
+import { Account } from "../ui/views/Account";
 import { Permission } from "./constants";
-import { UsersView } from "~/views/Users/UsersView";
+import { UsersView } from "~/ui/views/Users/UsersView";
 
 const plugins: RoutePlugin[] = [
     {

@@ -16,8 +16,8 @@ import Title from "./components/Title";
 import BackButton from "./components/BackButton";
 import Revisions from "./components/Revisions";
 import EditorResponsiveBar from "./components/EditorResponsiveBar";
-import { UIViewComponent } from "@webiny/ui-composer/UIView";
-import { PageSettingsView } from "~/editor/views/PageSettingsView";
+import { UIViewComponent } from "@webiny/app-admin/ui/UIView";
+import { PageSettingsView } from "~/editor/ui/views/PageSettingsView";
 
 export default [
     {

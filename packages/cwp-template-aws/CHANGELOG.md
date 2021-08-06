@@ -3,6 +3,56 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.12.0](https://github.com/webiny/webiny-js/compare/v5.12.0-beta.1...v5.12.0) (2021-08-05)
+
+**Note:** Version bump only for package @webiny/cwp-template-aws
+
+
+
+
+
+# [5.12.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.12.0-beta.0...v5.12.0-beta.1) (2021-08-05)
+
+**Note:** Version bump only for package @webiny/cwp-template-aws
+
+
+
+
+
+# [5.12.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.11.1...v5.12.0-beta.0) (2021-08-04)
+
+
+### Bug Fixes
+
+* add dependsOn argument ([84f74a0](https://github.com/webiny/webiny-js/commit/84f74a0722afbb491f360ccf3b540b57ec3905ca))
+
+
+### Features
+
+* compress the data that goes into es ddb table ([#1821](https://github.com/webiny/webiny-js/issues/1821)) ([53b2b86](https://github.com/webiny/webiny-js/commit/53b2b8641ce7f0814ab9d6d07d67ab731828e46c))
+* introduce UI composer ([#1800](https://github.com/webiny/webiny-js/issues/1800)) ([35d1f85](https://github.com/webiny/webiny-js/commit/35d1f85531f615c0d1a0a333bc9cdb8167e4f51d))
+* **api-security-admin-users:** storage operations ([#1818](https://github.com/webiny/webiny-js/issues/1818)) ([d0c47f5](https://github.com/webiny/webiny-js/commit/d0c47f53cc99d02a77e5b1a04730b814acb83ab9))
+
+
+
+
+
+## [5.11.1](https://github.com/webiny/webiny-js/compare/v5.11.1-beta.0...v5.11.1) (2021-07-31)
+
+**Note:** Version bump only for package @webiny/cwp-template-aws
+
+
+
+
+
+## [5.11.1-beta.0](https://github.com/webiny/webiny-js/compare/v5.11.0...v5.11.1-beta.0) (2021-07-31)
+
+**Note:** Version bump only for package @webiny/cwp-template-aws
+
+
+
+
+
 # [5.11.0](https://github.com/webiny/webiny-js/compare/v5.11.0-beta.2...v5.11.0) (2021-07-22)
 
 **Note:** Version bump only for package @webiny/cwp-template-aws

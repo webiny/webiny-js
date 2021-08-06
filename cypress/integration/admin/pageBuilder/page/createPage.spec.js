@@ -7,18 +7,13 @@ context("Pages Creation", () => {
         const newPageTitle = `Test page ${uniqid()}`;
 
         cy.visit("/page-builder/pages");
-        cy.findAllByTestId("new-record-button")
-            .first()
-            .click();
+        cy.findAllByTestId("new-record-button").first().click();
 
         cy.findByTestId("pb-new-page-category-modal").within(() => {
             cy.findByText("Static").click();
         });
         cy.findByTestId("pb-editor-page-title").click();
-        cy.get(`input[value="Untitled"]`)
-            .clear()
-            .type(newPageTitle)
-            .blur();
+        cy.get(`input[value="Untitled"]`).clear().type(newPageTitle).blur();
         cy.findByText("Page title updated successfully!");
 
         cy.findByText("Publish").click();
@@ -28,9 +23,7 @@ context("Pages Creation", () => {
         });
 
         // Wait till the "/pages" route
-        cy.findAllByTestId("new-record-button")
-            .first()
-            .should("exist");
+        cy.findAllByTestId("new-record-button").first().should("exist");
 
         cy.findByTestId("default-data-list").within(() => {
             cy.get(".mdc-list-item")
@@ -50,9 +43,7 @@ context("Pages Creation", () => {
         cy.findByTestId("pb-editor-back-button").click();
 
         // Wait till the "/pages" route
-        cy.findAllByTestId("new-record-button")
-            .first()
-            .should("exist");
+        cy.findAllByTestId("new-record-button").first().should("exist");
 
         cy.findByTestId("default-data-list").within(() => {
             cy.get(".mdc-list-item")

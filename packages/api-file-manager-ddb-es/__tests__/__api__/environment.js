@@ -7,8 +7,8 @@ const dynamoToElastic = require("@webiny/api-dynamodb-to-elasticsearch/handler")
 const { Client } = require("@elastic/elasticsearch");
 const { simulateStream } = require("@webiny/project-utils/testing/dynamodb");
 const NodeEnvironment = require("jest-environment-node");
-const elasticsearchDataGzipCompression = require("@webiny/api-elasticsearch/plugins/GzipCompression")
-    .default;
+const elasticsearchDataGzipCompression =
+    require("@webiny/api-elasticsearch/plugins/GzipCompression").default;
 const { ContextPlugin } = require("@webiny/handler/plugins/ContextPlugin");
 /**
  * For this to work it must load plugins that have already been built

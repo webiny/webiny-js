@@ -36,8 +36,14 @@ class Fieldset extends React.Component<FieldsetProps> {
     empty: React.ReactNode = null;
 
     actions = {
-        add: (index = -1) => () => this.addData(index),
-        remove: (index = -1) => () => this.removeData(index)
+        add:
+            (index = -1) =>
+            () =>
+                this.addData(index),
+        remove:
+            (index = -1) =>
+            () =>
+                this.removeData(index)
     };
 
     removeData = (index: number) => {
