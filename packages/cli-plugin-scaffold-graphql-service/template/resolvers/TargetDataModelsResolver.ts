@@ -1,9 +1,9 @@
-import { TargetDataModelsContext } from "../types";
+import { Context } from "~/types";
 
 export default class TargetDataModelsResolver {
-    protected readonly context: TargetDataModelsContext;
+    protected readonly context: Context;
 
-    constructor(context: TargetDataModelsContext) {
+    constructor(context: Context) {
         this.context = context;
     }
 
