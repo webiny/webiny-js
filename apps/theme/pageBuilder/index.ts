@@ -63,7 +63,10 @@ export default [
                     ]
                 },
                 quote: {
-                    types: [{ className: "webiny-pb-typography-quote", label: "Default" }]
+                    types: [
+                        { className: "webiny-pb-typography-quote", label: "Default" },
+                        { className: "webiny-pb-typography-quote--big-purple", label: "Big Purple" }
+                    ]
                 }
             }
         }
