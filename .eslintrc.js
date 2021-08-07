@@ -28,7 +28,6 @@ module.exports = {
         "@typescript-eslint/no-use-before-define": 0,
         "@typescript-eslint/no-var-requires": 0,
         "@typescript-eslint/no-explicit-any": 0,
-        "@typescript-eslint/no-empty-interface": "off",
         curly: ["error"],
         "jest/expect-expect": 0
     },
