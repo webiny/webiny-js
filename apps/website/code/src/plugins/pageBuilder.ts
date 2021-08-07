@@ -56,11 +56,14 @@ import visibility from "@webiny/app-page-builder/render/plugins/elementSettings/
  */
 import responsiveMode from "@webiny/app-page-builder/render/plugins/responsiveMode";
 
+import carousel from "@custom-components/carousel-pb-element/render";
+
 export default [
     linkPreload(),
     apolloCacheObjectId,
 
     // Page elements
+    carousel(),
     document(),
     block(),
     grid(),

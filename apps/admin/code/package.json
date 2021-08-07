@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@apollo/react-components": "^3.1.5",
+    "@custom-components/carousel-pb-element": "1.0.0",
     "@editorjs/delimiter": "^1.2.0",
     "@editorjs/list": "^1.6.0",
     "@editorjs/quote": "^2.4.0",
@@ -39,6 +40,7 @@
     "apollo-utilities": "^1.3.4",
     "core-js": "^3.0.1",
     "cross-fetch": "^3.0.4",
+    "dot-prop-immutable": "^2.1.0",
     "invariant": "^2.2.4",
     "prop-types": "^15.7.2",
     "react": "^16.14.0",

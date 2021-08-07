@@ -72,12 +72,34 @@ import { gridPresets } from "@webiny/app-page-builder/editor/plugins/gridPresets
 // event actions
 import actionPlugins from "@webiny/app-page-builder/editor/recoil/actions/plugins";
 
+import dotProp from "dot-prop-immutable";
+import { createInitialPerDeviceSettingValue } from "@webiny/app-page-builder/editor/plugins/elementSettings/elementSettingsUtils";
+import { DisplayMode } from "@webiny/app-page-builder/types";
+
+// Custom elements
+import carousel from "@custom-components/carousel-pb-element/admin";
+import carouselSettings from "@custom-components/carousel-pb-element/admin/settings";
+
 export default [
     contentBackground,
     blockEditing,
     // Elements
+    carousel(),
     document(),
-    grid(),
+    grid({
+        create(defaultValue) {
+            const value = dotProp.set(
+                defaultValue,
+                "data.settings.padding",
+                createInitialPerDeviceSettingValue({ all: "0px" }, DisplayMode.DESKTOP)
+            );
+            return dotProp.set(
+                value,
+                "data.settings.width",
+                createInitialPerDeviceSettingValue({ value: "1200px" }, DisplayMode.DESKTOP)
+            );
+        }
+    }),
     block(),
     gridBlock,
     cell(),
@@ -136,6 +158,7 @@ export default [
     gridSettings,
     textSettings,
     visibility,
+    carouselSettings,
     // Default bar
     defaultBarPlugins,
     // Responsive editor mode

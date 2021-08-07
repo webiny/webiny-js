@@ -35,7 +35,10 @@ import visibility from "@webiny/app-page-builder/render/plugins/elementSettings/
 // Responsive mode
 import responsiveMode from "@webiny/app-page-builder/render/plugins/responsiveMode";
 
+import carousel from "@custom-components/carousel-pb-element/render";
+
 export default [
+    carousel(),
     // Elements
     document(),
     grid(),

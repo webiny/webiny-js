@@ -6,7 +6,10 @@
     "allowSyntheticDefaultImports": true,
     "moduleResolution": "node",
     "module": "esnext",
-    "lib": ["dom", "dom.iterable"],
+    "lib": [
+      "dom",
+      "dom.iterable"
+    ],
     "esModuleInterop": true,
     "declaration": true,
     "composite": true,
@@ -14,9 +17,25 @@
     "jsx": "preserve",
     "emitDeclarationOnly": true,
     "baseUrl": ".",
-    "paths": {},
-    "typeRoots": ["./typings", "./node_modules/@types", "@types/testing-library__cypress"],
-    "plugins": [{ "transform": "typescript-transform-paths", "afterDeclarations": true }]
+    "paths": {
+      "@custom-components/carousel-pb-element": [
+        "./packages/carousel-pb-element/src"
+      ],
+      "@custom-components/carousel-pb-element/*": [
+        "./packages/carousel-pb-element/src/*"
+      ]
+    },
+    "typeRoots": [
+      "./typings",
+      "./node_modules/@types",
+      "@types/testing-library__cypress"
+    ],
+    "plugins": [
+      {
+        "transform": "typescript-transform-paths",
+        "afterDeclarations": true
+      }
+    ]
   },
   "exclude": [
     "node_modules",
