@@ -1,0 +1,18 @@
+{
+	"extends": "../../tsconfig.json",
+	"include": [
+		"src",
+		"__tests__/**/*.ts"
+	],
+	"references": [],
+	"compilerOptions": {
+		"jsx": "preserve",
+		"noEmit": false,
+		"baseUrl": ".",
+		"paths": {
+			"~/*": [
+				"./src/*"
+			]
+		}
+	}
+}
