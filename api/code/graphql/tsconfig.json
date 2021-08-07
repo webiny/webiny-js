@@ -63,6 +63,15 @@
       "path": "../../../packages/handler"
     },
     {
+      "path": "../../../packages/handler-http"
+    },
+    {
+      "path": "../../../packages/handler-args"
+    },
+    {
+      "path": "../../../packages/handler-client"
+    },
+    {
       "path": "../../../packages/handler-aws"
     },
     {
@@ -90,6 +99,12 @@
       "@webiny/api-i18n-content": ["../../../packages/api-i18n-content/src"],
       "@webiny/handler/*": ["../../../packages/handler/src/*"],
       "@webiny/handler": ["../../../packages/handler/src"],
+      "@webiny/handler-http/*": ["../../../packages/handler-http/src/*"],
+      "@webiny/handler-http": ["../../../packages/handler-http/src"],
+      "@webiny/handler-args/*": ["../../../packages/handler-args/src/*"],
+      "@webiny/handler-args": ["../../../packages/handler-args/src"],
+      "@webiny/handler-client/*": ["../../../packages/handler-client/src/*"],
+      "@webiny/handler-client": ["../../../packages/handler-client/src"],
       "@webiny/handler-aws/*": ["../../../packages/handler-aws/src/*"],
       "@webiny/handler-aws": ["../../../packages/handler-aws/src"],
       "@webiny/handler-graphql/*": ["../../../packages/handler-graphql/src/*"],
