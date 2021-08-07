@@ -110,8 +110,25 @@ h6 {
 }
 
 // Blockquote default typography styles
-.webiny-pb-typography-quote {
+%webiny-pb-typography-quote-base {
   color: var(--desktop-color, var(--webiny-theme-color-text-primary, rgb(10, 10, 10)));
+
+  & .webiny-pb-media-query--tablet {
+    color: var(--tablet-color, var(--webiny-theme-color-text-primary, rgb(10, 10, 10)));
+  }
+
+  & .webiny-pb-media-query--mobile-landscape .webiny-pb-typography-quote {
+    color: var(--mobile-landscape-color, var(--webiny-theme-color-text-primary, rgb(10, 10, 10)));
+  }
+
+  & .webiny-pb-media-query--mobile-portrait .webiny-pb-typography-quote {
+    color: var(--mobile-portrait-color, var(--webiny-theme-color-text-primary, rgb(10, 10, 10)));
+  }
+}
+
+.webiny-pb-typography-quote {
+  @extend %webiny-pb-typography-quote-base;
+
   blockquote {
     quotes: "“" "”";
 
@@ -124,14 +141,18 @@ h6 {
     }
   }
 }
-.webiny-pb-media-query--tablet .webiny-pb-typography-quote {
-  color: var(--tablet-color, var(--webiny-theme-color-text-primary, rgb(10, 10, 10)));
-}
-.webiny-pb-media-query--mobile-landscape .webiny-pb-typography-quote {
-  color: var(--mobile-landscape-color, var(--webiny-theme-color-text-primary, rgb(10, 10, 10)));
-}
-.webiny-pb-media-query--mobile-portrait .webiny-pb-typography-quote {
-  color: var(--mobile-portrait-color, var(--webiny-theme-color-text-primary, rgb(10, 10, 10)));
+
+.webiny-pb-typography-quote--big-purple {
+  @extend %webiny-pb-typography-quote-base;
+
+  background-repeat: no-repeat;
+  background-image: url("data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB3aWR0aD0iNTU1cHgiIGhlaWdodD0iMTIzcHgiIHZpZXdCb3g9IjAgMCA1NTUgMTIzIiB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiPgogICAgPCEtLSBHZW5lcmF0b3I6IFNrZXRjaCA1NS4yICg3ODE4MSkgLSBodHRwczovL3NrZXRjaGFwcC5jb20gLS0+CiAgICA8dGl0bGU+cXVvdGU8L3RpdGxlPgogICAgPGRlc2M+Q3JlYXRlZCB3aXRoIFNrZXRjaC48L2Rlc2M+CiAgICA8ZGVmcz4KICAgICAgICA8cGF0aCBkPSJNMjYuODIsNjIuMTYgQzE1LjY2LDYyLjE2IDkuOSw1My4zNCA5LjksMzguNTggQzkuOSwyMS42NiAxOC4xOCw4LjUyIDM1LjQ2LDAuMDYgTDQxLjIyLDExLjU4IEMzMC40MiwxNi45OCAyNS4wMiwyMy44MiAyNS4wMiwzNC40NCBDMjUuNTYsMzQuMjYgMjYuMjgsMzQuMjYgMjYuODIsMzQuMjYgQzM0LjM4LDM0LjI2IDQwLjY4LDM5LjMgNDAuNjgsNDcuNCBDNDAuNjgsNTYuNCAzNC43NCw2Mi4xNiAyNi44Miw2Mi4xNiBaIE02OS40OCw2Mi4xNiBDNTguMzIsNjIuMTYgNTIuNTYsNTMuMzQgNTIuNTYsMzguNTggQzUyLjU2LDIxLjY2IDYwLjg0LDguNTIgNzguMTIsMC4wNiBMODMuODgsMTEuNTggQzczLjA4LDE2Ljk4IDY3LjY4LDIzLjgyIDY3LjY4LDM0LjQ0IEM2OC4yMiwzNC4yNiA2OC45NCwzNC4yNiA2OS40OCwzNC4yNiBDNzcuMDQsMzQuMjYgODMuMzQsMzkuMyA4My4zNCw0Ny40IEM4My4zNCw1Ni40IDc3LjQsNjIuMTYgNjkuNDgsNjIuMTYgWiIgaWQ9InBhdGgtMSI+PC9wYXRoPgogICAgPC9kZWZzPgogICAgPGcgaWQ9IkxhbmRpbmctcGFnZS1XZWJpbnkiIHN0cm9rZT0ibm9uZSIgc3Ryb2tlLXdpZHRoPSIxIiBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPgogICAgICAgIDxnIGlkPSJEZXNrdG9wLUhEIiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgtNzQ1LjAwMDAwMCwgLTExMzk0LjAwMDAwMCkiPgogICAgICAgICAgICA8ZyBpZD0iY2FzZS1zdHVkeSIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMy4wMDAwMDAsIDEwOTcyLjAwMDAwMCkiPgogICAgICAgICAgICAgICAgPGcgaWQ9ImNhc2Utc3R1ZHlzIiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgxMzEuMDAwMDAwLCAyNjQuMDAwMDAwKSI+CiAgICAgICAgICAgICAgICAgICAgPGcgaWQ9IjEwIiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgwLjAwMDAwMCwgMi4wMDAwMDApIj4KICAgICAgICAgICAgICAgICAgICAgICAgPGcgaWQ9ImtleS1udW1iZXJzIiB0cmFuc2Zvcm09InRyYW5zbGF0ZSg2MDkuMDAwMDAwLCAxNTYuMDAwMDAwKSI+CiAgICAgICAgICAgICAgICAgICAgICAgICAgICA8ZyBpZD0icXVvdGUiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDIuMDAwMDAwLCAwLjAwMDAwMCkiPgogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIDxwYXRoIGQ9Ik00LDE0IEw1NTEsMTQgQzU1My4yMDkxMzksMTQgNTU1LDE1Ljc5MDg2MSA1NTUsMTggTDU1NSwxMTkgQzU1NSwxMjEuMjA5MTM5IDU1My4yMDkxMzksMTIzIDU1MSwxMjMgTDQsMTIzIEMxLjc5MDg2MSwxMjMgMi43MDU0MTVlLTE2LDEyMS4yMDkxMzkgMCwxMTkgTDAsMTggQy0yLjcwNTQxNWUtMTYsMTUuNzkwODYxIDEuNzkwODYxLDE0IDQsMTQgWiIgaWQ9IlJlY3RhbmdsZS0yNyIgZmlsbD0iI0Y5RjdGQyI+PC9wYXRoPgogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIDxnIGlkPSLigJwiIG9wYWNpdHk9IjAuMTUwMDAwMDA2IiBmaWxsLXJ1bGU9Im5vbnplcm8iIGZpbGw9IiM3QjM5RDkiPgogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA8dXNlIHhsaW5rOmhyZWY9IiNwYXRoLTEiPjwvdXNlPgogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA8dXNlIHhsaW5rOmhyZWY9IiNwYXRoLTEiPjwvdXNlPgogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIDwvZz4KICAgICAgICAgICAgICAgICAgICAgICAgICAgIDwvZz4KICAgICAgICAgICAgICAgICAgICAgICAgPC9nPgogICAgICAgICAgICAgICAgICAgIDwvZz4KICAgICAgICAgICAgICAgIDwvZz4KICAgICAgICAgICAgPC9nPgogICAgICAgIDwvZz4KICAgIDwvZz4KPC9zdmc+");
+  padding: 25px 15px 15px 100px ;
+
+  blockquote {
+    font-size: $webiny-pb-text-xl;
+    line-height: $webiny-pb-text-3xl;
+  }
 }
 
 // Heading default typography styles
@@ -156,8 +177,8 @@ h6 {
 }
 
 // Start text sizing
-@mixin fontSize($fontSize, $lineHeight : 1)  {
-  & h1,h2,h3,h4,h5,h6 {
+@mixin fontSize($fontSize, $lineHeight : 1) {
+  & h1, h2, h3, h4, h5, h6 {
     font-size: $fontSize;
     line-height: $lineHeight;
   }
@@ -173,7 +194,7 @@ h6 {
   @extend %webiny-pb-typography-heading-base;
 }
 
-.webiny-pb-typography-heading--2{
+.webiny-pb-typography-heading--2 {
   @include fontSize($webiny-pb-text-5xl);
   @extend %webiny-pb-typography-heading-base;
 }
@@ -281,9 +302,11 @@ h6 {
   letter-spacing: 0.03125em;
   text-decoration: inherit;
   text-transform: inherit;
+
   li {
     line-height: $leading;
   }
+
   ul,
   ol {
     margin-top: 0;
