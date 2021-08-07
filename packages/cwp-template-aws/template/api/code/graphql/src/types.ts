@@ -1,24 +1,28 @@
 import { HandlerContext } from "@webiny/handler/types";
+import { HttpContext } from "@webiny/handler-http/types";
+import { ArgsContext } from "@webiny/handler-args/types";
+import { ClientContext } from "@webiny/handler-client/types";
 import { ElasticsearchContext } from "@webiny/api-elasticsearch/types";
+import { TenancyContext } from "@webiny/api-tenancy/types";
 import { SecurityContext } from "@webiny/api-security/types";
-import { PrerenderingServiceClientContext } from "@webiny/api-prerendering-service/client/types";
 import { I18NContext } from "@webiny/api-i18n/types";
 import { BaseI18NContentContext as I18NContentContext } from "@webiny/api-i18n-content/types";
 import { PbContext } from "@webiny/api-page-builder/graphql/types";
+import { PrerenderingServiceClientContext } from "@webiny/api-prerendering-service/client/types";
 import { FileManagerContext } from "@webiny/api-file-manager/types";
 import { FormBuilderContext } from "@webiny/api-form-builder/types";
-import { HttpContext } from "@webiny/handler-http/types";
-import { TenancyContext } from "@webiny/api-tenancy/types";
 
 export interface Context
     extends HandlerContext,
         HttpContext,
-        TenancyContext,
+        ArgsContext,
+        ClientContext,
         ElasticsearchContext,
-        PrerenderingServiceClientContext,
+        TenancyContext,
         SecurityContext,
         I18NContext,
         I18NContentContext,
         PbContext,
+        PrerenderingServiceClientContext,
         FileManagerContext,
         FormBuilderContext {}
