@@ -9,19 +9,27 @@ import writeJson from "write-json-file";
 import { replaceInPath } from "replace-in-path";
 import chalk from "chalk";
 import link from "terminal-link";
-import { formatCode, addWorkspaceToRootPackageJson } from "@webiny/cli-plugin-scaffold/utils";
+import {
+    formatCode,
+    addWorkspaceToRootPackageJson,
+    LAST_USED_GQL_API_PLUGINS_PATH
+} from "@webiny/cli-plugin-scaffold/utils";
 import execa from "execa";
 import Error from "@webiny/error";
-
 import { TsConfigJson } from "@webiny/cli-plugin-scaffold/types";
-
-const ncp = util.promisify(ncpBase.ncp);
 
 interface Input {
     name: string;
     description: string;
     path: string;
 }
+
+export const deployGraphQLAPI = (stack, env, inputs) =>
+    execa("yarn", ["webiny", "deploy", stack, "--env", env, "--debug", Boolean(inputs.debug)], {
+        stdio: "inherit"
+    });
+
+const ncp = util.promisify(ncpBase.ncp);
 
 const SCAFFOLD_DOCS_LINK =
     "https://www.webiny.com/docs/how-to-guides/webiny-cli/scaffolding/new-graphql-api";
@@ -135,7 +143,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
             const tsConfigJsonPath = path.join(input.path, "code", "graphql", "tsconfig.json");
             const tsConfigJson = await readJson<TsConfigJson>(tsConfigJsonPath);
             tsConfigJson.extends = path.join(
-                path.relative(path.join(input.path, "code"), context.project.root),
+                path.relative(path.join(input.path, "code", "graphql"), context.project.root),
                 "tsconfig.json"
             );
             await writeJson(tsConfigJsonPath, tsConfigJson);
@@ -152,7 +160,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
 
             // Add package to workspaces.
             const rootPackageJsonPath = path.join(context.project.root, "package.json");
-            const pathToAdd = `${input.path}/code`;
+            const pathToAdd = `${input.path}/code/graphql`;
             await addWorkspaceToRootPackageJson(rootPackageJsonPath, pathToAdd);
 
             ora.stopAndPersist({
@@ -181,17 +189,64 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 symbol: chalk.green("✔"),
                 text: `Finalized.`
             });
+
+            // Used in the Extend GraphQL API scaffold (auto filling the plugins folder path).
+            context.localStorage.set(
+                LAST_USED_GQL_API_PLUGINS_PATH,
+                path.join(input.path, "code", "graphql", "src", "plugins")
+            );
+
+            await wait(500);
         },
-        onSuccess: async ({ input }) => {
+        onSuccess: async ({ input, inquirer }) => {
+            const prompt = inquirer.createPromptModule();
+
+            // TODO app ?
+
             console.log();
+            console.log(chalk.bold("Initial Deployment"));
+            console.log(`To begin developing, the new GraphQL API needs to be deployed.`);
+
+            const { deploy } = await prompt({
+                name: "deploy",
+                message: `Do you want to deploy it now?`,
+                type: "confirm",
+                default: true
+            });
+
+            console.log();
+
+            if (deploy) {
+                console.log(
+                    `Running ${chalk.green(`yarn webiny deploy ${input.path}`)} command...`
+                );
+                console.log();
+                await deployGraphQLAPI(input.path, "dev", input);
+            }
+
             console.log(`${chalk.green("✔")} New GraphQL API created successfully.`);
             console.log();
+
             console.log(chalk.bold("Next Steps"));
 
+            if (!deploy) {
+                console.log(
+                    `‣ deploy the new GraphQL API by running the ${chalk.green(
+                        `yarn webiny deploy ${input.path} --env dev`
+                    )} command`
+                );
+            }
+
             console.log(
-                `‣ start the application locally by running the ${chalk.green(
+                `‣ continue developing by running the ${chalk.green(
                     `yarn webiny watch ${input.path} --env dev`
                 )} command`
+            );
+
+            console.log(
+                `‣ start expanding your GraphQL API by running the ${chalk.green(
+                    `yarn webiny scaffold`
+                )} command again and selecting the Extend GraphQL API scaffold`
             );
 
             console.log();
@@ -200,6 +255,10 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
             const links = [
                 ["Create Custom Application Tutorial", SCAFFOLD_DOCS_LINK],
                 ["New GraphQL API Scaffold", SCAFFOLD_DOCS_LINK],
+                [
+                    "Extend GraphQL API Scaffold",
+                    "https://www.webiny.com/docs/how-to-guides/webiny-cli/scaffolding/extend-graphql-api"
+                ],
                 [
                     "Use the Watch Command",
                     "https://www.webiny.com/docs/how-to-guides/webiny-cli/use-watch-command"
