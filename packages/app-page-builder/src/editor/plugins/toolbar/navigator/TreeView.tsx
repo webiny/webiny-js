@@ -98,7 +98,7 @@ const TreeViewItem = ({ element, level, children, index }) => {
     }, [elementId]);
 
     if (!elementAtomValue) {
-        return;
+        return null;
     }
 
     const hidden = get(elementAtomValue, `data.settings.visibility.${displayMode}.hidden`, false);
