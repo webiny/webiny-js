@@ -15,7 +15,8 @@ import link from "terminal-link";
 import {
     createScaffoldsIndexFile,
     updateScaffoldsIndexFile,
-    formatCode
+    formatCode,
+    LAST_USED_GQL_API_PLUGINS_PATH
 } from "@webiny/cli-plugin-scaffold/utils";
 
 const ncp = util.promisify(ncpBase.ncp);
@@ -42,7 +43,12 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 {
                     name: "pluginsFolderPath",
                     message: "Enter plugins folder path:",
-                    default: `api/code/graphql/src/plugins`,
+                    default: () => {
+                        return (
+                            context.localStorage.get(LAST_USED_GQL_API_PLUGINS_PATH) ||
+                            `api/code/graphql/src/plugins`
+                        );
+                    },
                     validate: pluginsFolderPath => {
                         if (pluginsFolderPath.length < 2) {
                             return `Please enter GraphQL API ${chalk.cyan("plugins")} folder path.`;
@@ -85,6 +91,9 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
             ];
         },
         generate: async ({ input, ora, inquirer, wait, context }) => {
+            context.localStorage.set(LAST_USED_GQL_API_PLUGINS_PATH, input.pluginsFolderPath);
+
+            // Store used input, so that maybe some of
             const dataModelName = {
                 plural: pluralize(Case.camel(input.dataModelName)),
                 singular: pluralize.singular(Case.camel(input.dataModelName))
@@ -228,7 +237,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
             await formatCode("**/*.ts", { cwd: newCodePath });
             await formatCode("package.json", { cwd: path.dirname(packageJsonPath) });
         },
-        onSuccess: async () => {
+        onSuccess: async input => {
             console.log();
             console.log(
                 `${chalk.green("✔")} New GraphQL API plugins created and imported successfully.`
