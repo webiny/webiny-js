@@ -10,7 +10,7 @@
   "dependencies": {
     "@emotion/styled": "^10.0.17",
     "@webiny/app-page-builder": "5.11.0",
-    "@webiny/ui": "5.11.0",
+    "@webiny/ui": "^5.11.0",
     "classnames": "^2.3.1",
     "dot-prop-immutable": "^2.1.1",
     "emotion": "^10.0.17",
