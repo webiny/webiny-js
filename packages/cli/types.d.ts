@@ -101,6 +101,15 @@ export interface CliContext {
      * Resolve given dir or dirs against project root path.
      */
     resolve: (dir) => string;
+
+    /**
+     * Provides a way to store some meta data in the project's local ".webiny/cli.json" file.
+     * Only trivial data should be passed here, specific to the current project.
+     */
+    localStorage: {
+        set: (key: string, value: string) => Record<string, any>;
+        get: (key: string) => any;
+    };
 }
 
 /**
