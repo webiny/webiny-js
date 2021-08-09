@@ -12,8 +12,9 @@ export default class TargetDataModelsResolver {
      * @param base
      */
     getPK(base = "TargetDataModel") {
-        // By default, Webiny Admin Area supports content creation in multiple locales.
-        // The prepended "L#${locale}" designates to which locale our data belongs to.
+        // If our GraphQL API uses the Webiny I18N application, we can use
+        // the current locale code as the prefix for our primary keys (PKs).
+        // https://github.com/webiny/webiny-js/tree/v5.12.0/packages/api-i18n
         const locale = this.context.i18nContent.getLocale().code;
         base = `L#${locale}#${base}`;
 
