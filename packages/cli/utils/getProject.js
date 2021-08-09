@@ -7,13 +7,13 @@ const projectConfigs = ["webiny.project.js", "webiny.project.ts"];
 function getRoot({ cwd } = {}) {
     let root = findUp.sync(projectConfigs, { cwd });
     if (root) {
-        return dirname(root);
+        return dirname(root).replace(/\\/g, "/");
     }
 
     // For backwards compatibility
     root = findUp.sync("webiny.root.js", { cwd });
     if (root) {
-        return dirname(root);
+        return dirname(root).replace(/\\/g, "/");
     }
 
     throw new Error("Couldn't detect Webiny project.");
