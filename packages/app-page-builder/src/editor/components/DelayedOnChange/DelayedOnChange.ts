@@ -22,6 +22,12 @@ type Props = {
 export const DelayedOnChange: React.FunctionComponent<Props> = ({ children, ...other }) => {
     const { onChange, delay = 400, value: initialValue } = other;
     const [value, setValue] = useState<string>(initialValue);
+    // Sync state and props
+    useEffect(() => {
+        if (initialValue !== value) {
+            setValue(initialValue);
+        }
+    }, [initialValue]);
 
     const localTimeout = React.useRef<number>(undefined);
 
