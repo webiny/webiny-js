@@ -18,6 +18,7 @@ import {
     formatCode,
     LAST_USED_GQL_API_PLUGINS_PATH
 } from "@webiny/cli-plugin-scaffold/utils";
+import getContextMeta from "./getContextMeta";
 
 const ncp = util.promisify(ncpBase.ncp);
 
@@ -153,6 +154,68 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
             fs.mkdirSync(newCodePath, { recursive: true });
             await ncp(templateFolderPath, newCodePath);
 
+            // Remove I18N and Security-related code if the GraphQL API doesn't support those.
+            // Support is being detected via `Context` type, defined withing the root types.ts file.
+            const typesTsPath = findUp.sync("types.ts", { cwd: input.pluginsFolderPath });
+            if (typesTsPath) {
+                const meta = getContextMeta(typesTsPath);
+                if (!meta.i18n) {
+                    // If I18NContext was not detected, comment out relevant I18N code.
+                    const codeReplacements = [
+                        {
+                            find: `const locale = this\\.context\\.i18nContent`,
+                            replaceWith: `// const locale = this.context.i18nContent`
+                        },
+                        {
+                            find: "base = `L#",
+                            replaceWith: "// base = `L#;"
+                        }
+                    ];
+
+                    replaceInPath(
+                        path.join(newCodePath, "/resolvers/TargetDataModelsResolver.ts"),
+                        codeReplacements
+                    );
+                }
+
+                if (!meta.security) {
+                    // If I18NContext was not detected, comment out relevant I18N code.
+                    let codeReplacements = [
+                        {
+                            find: `import { SecurityIdentity } from`,
+                            replaceWith: `// import { SecurityIdentity } from`
+                        },
+                        {
+                            find: "createdBy: Pick<SecurityIdentity",
+                            replaceWith: "// createdBy: Pick<SecurityIdentity"
+                        }
+                    ];
+
+                    replaceInPath(path.join(newCodePath, "/types.ts"), codeReplacements);
+
+                    // If I18NContext was not detected, comment out relevant I18N code.
+                    codeReplacements = [
+                        {
+                            find: `const { security } = this.context;`,
+                            replaceWith: `// const { security } = this.context;`
+                        },
+                        {
+                            find: "const identity = await security.getIdentity",
+                            replaceWith: "// const identity = await security.getIdentity"
+                        },
+                        {
+                            find: new RegExp("createdBy: identity.*},", "gms"),
+                            replaceWith: "/* $& */"
+                        }
+                    ];
+
+                    replaceInPath(
+                        path.join(newCodePath, "/resolvers/TargetDataModelsMutation.ts"),
+                        codeReplacements
+                    );
+                }
+            }
+
             // Replace generic "TargetDataModel" with received "dataModelName" argument.
             const codeReplacements = [
                 { find: "targetDataModels", replaceWith: Case.camel(dataModelName.plural) },
@@ -237,7 +300,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
             await formatCode("**/*.ts", { cwd: newCodePath });
             await formatCode("package.json", { cwd: path.dirname(packageJsonPath) });
         },
-        onSuccess: async input => {
+        onSuccess: async () => {
             console.log();
             console.log(
                 `${chalk.green("✔")} New GraphQL API plugins created and imported successfully.`
