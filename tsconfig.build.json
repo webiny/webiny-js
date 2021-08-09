@@ -23,6 +23,12 @@
       ],
       "@custom-components/carousel-pb-element/*": [
         "./packages/carousel-pb-element/src/*"
+      ],
+      "@custom-components/pb-element-stepper": [
+        "./packages/pb-element-stepper/src"
+      ],
+      "@custom-components/pb-element-stepper/*": [
+        "./packages/pb-element-stepper/src/*"
       ]
     },
     "typeRoots": [

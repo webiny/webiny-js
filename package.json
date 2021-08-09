@@ -15,7 +15,8 @@
       "api/code/prerenderingService/render",
       "api/code/prerenderingService/flush",
       "api/code/prerenderingService/queue/*",
-      "packages/carousel-pb-element"
+      "packages/carousel-pb-element",
+      "packages/pb-element-stepper"
     ]
   },
   "author": "Webiny Ltd.",
