@@ -1,1 +1,1 @@
-module.exports = require("../../../.babel.node")({ path: __dirname });
+module.exports = require("PATH/.babel.node")({ path: __dirname });

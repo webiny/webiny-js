@@ -1,4 +1,4 @@
-const base = require("../../../jest.config.base");
+const base = require("JEST_CONFIG_BASE_PATH/jest.config.base");
 const { log } = require("@webiny/cli/utils");
 const { getStackOutput } = require("@webiny/cli-plugin-deploy-pulumi/utils");
 
@@ -13,8 +13,8 @@ const TEST_TYPE = process.env.TEST_TYPE;
 const DEPLOY_ENVIRONMENT = "dev";
 
 if (TEST_TYPE !== "unit") {
-    log.info(`${log.info.hl("api/code/graphql")}: Assigning environment variables...`);
-    const stackOutput = getStackOutput({ folder: "api", env: DEPLOY_ENVIRONMENT });
+    log.info(`${log.info.hl("GRAPHQL_API_CODE_FOLDER_PATH")}: Assigning environment variables...`);
+    const stackOutput = getStackOutput({ folder: "PROJECT_APPLICATION_FOLDER_PATH", env: DEPLOY_ENVIRONMENT });
 
     if (stackOutput) {
         // Assign received values as environment variables.

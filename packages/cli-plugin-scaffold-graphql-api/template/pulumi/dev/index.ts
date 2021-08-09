@@ -36,7 +36,7 @@ export default () => {
 
     return {
         region: process.env.AWS_REGION,
-        graphqlApiUrl: cloudfront.cloudfront.domainName.apply(value => `https://${value}/graphql`),
+        apiUrl: cloudfront.cloudfront.domainName.apply(value => `https://${value}/graphql`),
         dynamoDbTable: dynamoDb.table.name
     };
 };

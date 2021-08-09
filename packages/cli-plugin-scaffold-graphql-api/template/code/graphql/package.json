@@ -6,17 +6,17 @@
     "watch": "yarn webiny run watch"
   },
   "dependencies": {
-    "@webiny/handler": "^5.11.0",
-    "@webiny/handler-http": "^5.11.0",
-    "@webiny/handler-args": "^5.11.0",
-    "@webiny/handler-client": "^5.11.0",
-    "@webiny/handler-aws": "^5.11.0",
-    "@webiny/handler-graphql": "^5.11.0",
-    "@webiny/handler-logs": "^5.11.0"
+    "@webiny/handler": "^WEBINY_VERSION",
+    "@webiny/handler-args": "^WEBINY_VERSION",
+    "@webiny/handler-aws": "^WEBINY_VERSION",
+    "@webiny/handler-client": "^WEBINY_VERSION",
+    "@webiny/handler-graphql": "^WEBINY_VERSION",
+    "@webiny/handler-http": "^WEBINY_VERSION",
+    "@webiny/handler-logs": "^WEBINY_VERSION"
   },
   "devDependencies": {
-    "@webiny/cli": "^5.11.0",
-    "@webiny/project-utils": "^5.11.0",
-    "@webiny/cli-plugin-deploy-pulumi": "^5.11.0"
+    "@webiny/cli": "^WEBINY_VERSION",
+    "@webiny/project-utils": "^WEBINY_VERSION",
+    "@webiny/cli-plugin-deploy-pulumi": "^WEBINY_VERSION"
   }
 }
