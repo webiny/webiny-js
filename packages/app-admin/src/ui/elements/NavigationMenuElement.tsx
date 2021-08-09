@@ -18,11 +18,13 @@ export enum TAGS {
     APP = "app"
 }
 
-export class NavigationMenuElement extends UIElement<NavigationMenuElementConfig> {
+export class NavigationMenuElement<
+    TConfig extends NavigationMenuElementConfig = NavigationMenuElementConfig
+> extends UIElement<TConfig> {
     private _isExpanded = false;
     private _sorters = [];
 
-    constructor(id: string, config: NavigationMenuElementConfig) {
+    constructor(id: string, config: TConfig) {
         super(id, config);
 
         this.useGrid(false);

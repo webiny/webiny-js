@@ -16,15 +16,6 @@ export interface UIElementConfig<TProps = any> {
     tags?: string[];
 }
 
-export interface UIElementWrapperProps {
-    children: React.ReactNode;
-    [key: string]: any;
-}
-
-export interface UIElementWrapper {
-    (props: UIElementWrapperProps): React.ReactElement;
-}
-
 function defaultShouldRender() {
     return true;
 }
@@ -34,7 +25,6 @@ export class UIElement<TConfig extends UIElementConfig = UIElementConfig> {
     protected _layout: UILayout;
     private _config: TConfig;
     private _tags = new Set();
-    private _wrappers: UIElementWrapper[] = [];
     private _id: string;
     private _parent: UIElement;
     private _renderers: UIRenderer<any>[] = [];
@@ -128,10 +118,10 @@ export class UIElement<TConfig extends UIElementConfig = UIElementConfig> {
         return this._parent;
     }
 
-    getParentOfType<TParent extends UIElement = UIElement>(type: any): TParent {
+    getParentOfType<TParent extends UIElement = UIElement>(type: Class<TParent>): TParent {
         let parent = this.getParent();
         while (parent) {
-            if (parent instanceof type) {
+            if (parent instanceof (type as any)) {
                 break;
             }
 
@@ -139,6 +129,24 @@ export class UIElement<TConfig extends UIElementConfig = UIElementConfig> {
         }
 
         return parent as TParent;
+    }
+
+    getDescendentsOfType<TElement extends UIElement = UIElement>(
+        type: Class<TElement>
+    ): TElement[] {
+        const elements = Array.from(this._elements.values());
+
+        // Search child elements recursively
+        for (const element of elements) {
+            const children = element.getChildren();
+            for (const child of children) {
+                child.getDescendentsOfType(type).forEach(el => {
+                    elements.push(el);
+                });
+            }
+        }
+
+        return elements.filter(el => el instanceof type) as TElement[];
     }
 
     addTag(tag: string) {
@@ -199,26 +207,26 @@ export class UIElement<TConfig extends UIElementConfig = UIElementConfig> {
         return null;
     }
 
-    getElements(): UIElement[] {
+    getChildren(): UIElement[] {
         return Array.from(this._elements.values());
     }
 
-    getElementsByTag(tag: string): UIElement[] {
+    getDescendentsByTag(tag: string): UIElement[] {
         const elements = Array.from(this._elements.values());
 
         // Search child elements recursively
         for (const element of elements) {
             if (element instanceof UIElement) {
-                const descendants = element.getElements();
-                for (const descendant of descendants) {
-                    descendant.getElementsByTag(tag).forEach(el => elements.push(el));
+                const children = element.getChildren();
+                for (const child of children) {
+                    child.getDescendentsByTag(tag).forEach(el => elements.push(el));
                 }
             }
         }
         return elements.filter(el => el.hasTag(tag));
     }
 
-    moveTo(targetElement: UIElement) {
+    moveInto(targetElement: UIElement) {
         const parent = this.getParent();
         if (parent) {
             parent.remove(this);
@@ -293,11 +301,7 @@ export class UIElement<TConfig extends UIElementConfig = UIElementConfig> {
 
     render(props?: any): React.ReactNode {
         const layoutRenderer = props => {
-            const content = this._layout.render(props, this.hasParentGrid);
-
-            return this._wrappers.reduce((el, wrapper) => {
-                return wrapper({ ...props, children: el });
-            }, content);
+            return this._layout.render(props, this.hasParentGrid);
         };
 
         const renderers: UIRenderer<any>[] = [...this._renderers].filter(pl =>
@@ -306,7 +310,12 @@ export class UIElement<TConfig extends UIElementConfig = UIElementConfig> {
 
         const next = (props: any) => {
             if (renderers.length > 0) {
-                return renderers.pop().render({ element: this, props, next: () => next(props) });
+                return renderers.pop().render({
+                    element: this,
+                    props,
+                    next: () => next(props),
+                    children: () => layoutRenderer(props)
+                });
             }
             return layoutRenderer(props);
         };
@@ -331,11 +340,6 @@ export class UIElement<TConfig extends UIElementConfig = UIElementConfig> {
         };
 
         return next(props);
-    }
-
-    wrapWith(wrapper: UIElementWrapper) {
-        // TODO: see if we want to wrap with an instance of an Element, or is a React component enough.
-        this._wrappers.push(wrapper);
     }
 
     protected insertElementAbove(lookFor: UIElement<any>, element: UIElement<any>) {

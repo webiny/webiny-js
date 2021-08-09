@@ -7,12 +7,22 @@ const UIViewID = ({ children }) => {
     return children;
 };
 
+export interface UIElementWrapperProps {
+    children: React.ReactNode;
+    [key: string]: any;
+}
+
+export interface UIElementWrapper {
+    (props: UIElementWrapperProps): React.ReactElement;
+}
+
 export class UIView<TConfig = UIElementConfig> extends UIElement<TConfig> {
     private _events = new Map();
     private _hookDefinitions: Record<string, Function> = {};
     private _hookValues: Record<string, any> = {};
     private _props: { render: Function; [key: string]: any };
     private _isRendered = false;
+    private _wrappers: UIElementWrapper[] = [];
 
     constructor(id, config?: TConfig) {
         super(id, config);
@@ -56,6 +66,15 @@ export class UIView<TConfig = UIElementConfig> extends UIElement<TConfig> {
 
     getHook<THook = any>(key: string): THook {
         return this._hookValues[key];
+    }
+
+    getWrappers() {
+        return this._wrappers;
+    }
+
+    wrapWith(wrapper: UIElementWrapper) {
+        // TODO: see if we want to wrap with an instance of an Element, or is a React component enough.
+        this._wrappers.push(wrapper);
     }
 
     dispatchEvent(name: string, params = {}) {
@@ -126,13 +145,7 @@ interface UIViewComponentProps {
     [key: string]: any;
 }
 
-export const UIViewComponent = ({ view, ...props }: UIViewComponentProps): React.ReactElement => {
-    const [, setCount] = useState(0);
-
-    const render = useCallback(() => {
-        setCount(count => count + 1);
-    }, []);
-
+const UIViewHooks = ({ view, props, render }) => {
     const hooks = view.getHookDefinitions();
     if (hooks) {
         view.setHookValues(
@@ -140,5 +153,19 @@ export const UIViewComponent = ({ view, ...props }: UIViewComponentProps): React
         );
     }
 
-    return <>{view.render({ ...props, render })}</>;
+    return view.render({ ...props, render });
+};
+
+export const UIViewComponent = ({ view, ...props }: UIViewComponentProps): React.ReactElement => {
+    const [, setCount] = useState(0);
+
+    const wrappers = view.getWrappers();
+
+    const render = useCallback(() => {
+        setCount(count => count + 1);
+    }, []);
+
+    return wrappers.reduce((el, wrapper) => {
+        return wrapper({ ...props, children: el });
+    }, <UIViewHooks view={view} render={render} props={props} />);
 };

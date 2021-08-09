@@ -42,7 +42,7 @@ export class AdminView extends UIView {
         const content = this.getContentElement();
 
         // Remove previous content
-        content.getElements().forEach(el => el.remove());
+        content.getChildren().forEach(el => el.remove());
 
         // Add new content
         content.addElement(element);

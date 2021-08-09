@@ -12,6 +12,14 @@ export class ViewElement extends UIElement<ViewElementConfig> {
         config.view.setParent(this);
     }
 
+    getChildren(): UIElement[] {
+        return this.config.view.getChildren();
+    }
+
+    getDescendentsOfType<TElement extends UIElement = UIElement>(type: any): TElement[] {
+        return this.config.view.getDescendentsOfType(type) as TElement[];
+    }
+
     render(props?: any): React.ReactNode {
         if (!this.config.view) {
             return null;
