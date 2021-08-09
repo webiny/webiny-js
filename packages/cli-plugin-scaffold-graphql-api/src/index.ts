@@ -1,4 +1,5 @@
 import { CliCommandScaffoldTemplate } from "@webiny/cli-plugin-scaffold/types";
+const { getStackOutput } = require("@webiny/cli-plugin-deploy-pulumi/utils");
 import fs from "fs";
 import path from "path";
 import util from "util";
@@ -251,10 +252,49 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
 
             await wait(500);
         },
-        onSuccess: async ({ input, inquirer }) => {
+        onSuccess: async options => {
+            const { input, context, inquirer } = options;
             const prompt = inquirer.createPromptModule();
 
-            // TODO app ?
+            console.log();
+            console.log(chalk.bold("Extend GraphQL API"));
+            console.log(
+                `At the moment, the new GraphQL API is empty. It does not contain any GraphQL types or resolvers.`
+            );
+
+            const { extendGraphQLAPI } = await prompt({
+                name: "extendGraphQLAPI",
+                message: `Do you want to create initial GraphQL types and resolvers now?`,
+                type: "confirm",
+                default: true
+            });
+
+            if (extendGraphQLAPI) {
+                const { dataModelName } = await prompt({
+                    name: "dataModelName",
+                    message: `Enter initial entity name:`,
+                    default: "Book"
+                });
+
+                const cliPluginScaffoldGraphQl = context.plugins.byName<CliCommandScaffoldTemplate>(
+                    "cli-plugin-scaffold-graphql"
+                );
+
+                await cliPluginScaffoldGraphQl.scaffold.generate({
+                    ...options,
+                    input: {
+                        showConfirmation: false,
+                        dataModelName,
+                        pluginsFolderPath: path.join(
+                            input.path,
+                            "code",
+                            "graphql",
+                            "src",
+                            "plugins"
+                        )
+                    }
+                });
+            }
 
             console.log();
             console.log(chalk.bold("Initial Deployment"));
@@ -280,13 +320,24 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
             console.log(`${chalk.green("✔")} New GraphQL API created successfully.`);
             console.log();
 
-            console.log(chalk.bold("Next Steps"));
-
             if (!deploy) {
+                console.log(chalk.bold("Next Steps"));
                 console.log(
                     `‣ deploy the new GraphQL API by running the ${chalk.green(
                         `yarn webiny deploy ${input.path} --env dev`
                     )} command`
+                );
+            } else {
+                const stackOutput = getStackOutput({
+                    folder: input.path,
+                    env: "dev"
+                });
+
+                console.log(chalk.bold("Next Steps"));
+                console.log(
+                    `‣ open your GraphQL API with a GraphQL client, via the following URL:\n  ${chalk.green(
+                        `[POST] ${stackOutput.apiUrl}`
+                    )}`
                 );
             }
 
@@ -297,9 +348,9 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
             );
 
             console.log(
-                `‣ start expanding your GraphQL API by running the ${chalk.green(
-                    `yarn webiny scaffold`
-                )} command again and selecting the Extend GraphQL API scaffold`
+                `‣ continue extending your GraphQL API via the ${chalk.green(
+                    `Extend GraphQL API`
+                )} scaffold`
             );
 
             console.log();
