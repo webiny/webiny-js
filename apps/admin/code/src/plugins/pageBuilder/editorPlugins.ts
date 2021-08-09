@@ -79,11 +79,13 @@ import { DisplayMode } from "@webiny/app-page-builder/types";
 // Custom elements
 import carousel from "@custom-components/carousel-pb-element/admin";
 import carouselSettings from "@custom-components/carousel-pb-element/admin/settings";
+import stepper from "@custom-components/pb-element-stepper/admin";
 
 export default [
     contentBackground,
     blockEditing,
     // Elements
+    stepper(),
     carousel(),
     document(),
     grid({

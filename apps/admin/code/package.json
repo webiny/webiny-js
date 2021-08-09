@@ -5,6 +5,7 @@
   "dependencies": {
     "@apollo/react-components": "^3.1.5",
     "@custom-components/carousel-pb-element": "1.0.0",
+    "@custom-components/pb-element-stepper": "^1.0.0",
     "@editorjs/delimiter": "^1.2.0",
     "@editorjs/list": "^1.6.0",
     "@editorjs/quote": "^2.4.0",

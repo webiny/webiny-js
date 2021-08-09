@@ -36,8 +36,10 @@ import visibility from "@webiny/app-page-builder/render/plugins/elementSettings/
 import responsiveMode from "@webiny/app-page-builder/render/plugins/responsiveMode";
 
 import carousel from "@custom-components/carousel-pb-element/render";
+import stepper from "@custom-components/pb-element-stepper/render";
 
 export default [
+    stepper(),
     carousel(),
     // Elements
     document(),
