@@ -198,8 +198,8 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
             console.log(chalk.bold("Useful Links"));
 
             const links = [
-                ["Create Custom Application Tutorial", SCAFFOLD_DOCS_LINK],
                 ["New React Application Scaffold", SCAFFOLD_DOCS_LINK],
+                ["Create Custom Application Tutorial", SCAFFOLD_DOCS_LINK],
                 [
                     "Use the Watch Command",
                     "https://www.webiny.com/docs/how-to-guides/webiny-cli/use-watch-command"
