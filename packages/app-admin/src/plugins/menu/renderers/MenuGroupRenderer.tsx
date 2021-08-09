@@ -52,7 +52,7 @@ export class MenuGroupRenderer extends UIRenderer<NavigationMenuElement> {
     }
 
     render({ element, props, next }: UIRenderParams<NavigationMenuElement>): React.ReactNode {
-        const hasChildren = element.getElements().length > 0;
+        const hasChildren = element.getChildren().length > 0;
 
         if (!hasChildren) {
             return null;

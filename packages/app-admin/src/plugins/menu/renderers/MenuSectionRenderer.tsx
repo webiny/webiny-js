@@ -28,7 +28,7 @@ export class MenuSectionRenderer extends UIRenderer<NavigationMenuElement> {
                     <div className={iconWrapper}>{element.config.icon}</div>
                     <Typography use="overline">{element.config.label}</Typography>
                 </div>
-                {next(props)}
+                {next()}
             </Fragment>
         );
     }

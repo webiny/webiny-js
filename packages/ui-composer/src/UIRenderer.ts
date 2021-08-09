@@ -2,10 +2,15 @@ export interface UIRenderParams<TElement, TProps = any> {
     element: TElement;
     props: TProps;
     next: RenderNext;
+    children: RenderChildren;
 }
 
 export interface RenderNext {
-    (props?: any): React.ReactNode;
+    (): React.ReactNode;
+}
+
+export interface RenderChildren {
+    (): React.ReactNode;
 }
 
 export abstract class UIRenderer<TElement, TProps = any> {
