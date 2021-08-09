@@ -140,6 +140,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
 
             replaceInPath(path.join(input.path, "/**/*.*"), replacements);
 
+            // Update path to the root tsconfig.json file.
             const tsConfigJsonPath = path.join(input.path, "code", "graphql", "tsconfig.json");
             const tsConfigJson = await readJson<TsConfigJson>(tsConfigJsonPath);
             tsConfigJson.extends = path.join(
@@ -147,6 +148,58 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 "tsconfig.json"
             );
             await writeJson(tsConfigJsonPath, tsConfigJson);
+
+            // Multiple replacements follow...
+
+            {
+                // Update path to the root .babel.node file.
+                const p = path.join(input.path, "code", "graphql", ".babelrc.js");
+                const replacements = [
+                    {
+                        find: "PATH",
+                        replaceWith: path.relative(
+                            path.join(context.project.root, input.path, "code", "graphql"),
+                            context.project.root
+                        )
+                    }
+                ];
+                replaceInPath(p, replacements);
+            }
+
+            {
+                // Update path to the root jest.config.base file.
+                const p = path.join(input.path, "code", "graphql", "jest.config.js");
+                const replacements = [
+                    {
+                        find: "JEST_CONFIG_BASE_PATH",
+                        replaceWith: path.relative(
+                            path.join(context.project.root, input.path, "code", "graphql"),
+                            context.project.root
+                        )
+                    },
+                    {
+                        find: "GRAPHQL_API_CODE_FOLDER_PATH",
+                        replaceWith: path.join(input.path, "code", "graphql")
+                    },
+                    {
+                        find: "PROJECT_APPLICATION_FOLDER_PATH",
+                        replaceWith: input.path
+                    }
+                ];
+                replaceInPath(p, replacements);
+            }
+
+            {
+                // Set correct `@webiny/*` package versions in the package.json file.
+                const p = path.join(input.path, "code", "graphql", "package.json");
+                const replacements = [
+                    {
+                        find: "WEBINY_VERSION",
+                        replaceWith: context.version
+                    }
+                ];
+                replaceInPath(p, replacements);
+            }
 
             ora.stopAndPersist({
                 symbol: chalk.green("✔"),
