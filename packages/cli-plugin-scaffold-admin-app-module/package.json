@@ -25,7 +25,7 @@
     "load-json-file": "^6.2.0",
     "ncp": "^2.0.0",
     "pluralize": "^8.0.0",
-    "replace-in-path": "^1.0.4",
+    "replace-in-path": "^1.1.0",
     "terminal-link": "^2.1.1"
   },
   "devDependencies": {
