@@ -179,40 +179,43 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 }
 
                 if (!meta.security) {
-                    // If I18NContext was not detected, comment out relevant I18N code.
-                    let codeReplacements = [
-                        {
-                            find: `import { SecurityIdentity } from`,
-                            replaceWith: `// import { SecurityIdentity } from`
-                        },
-                        {
-                            find: "createdBy: Pick<SecurityIdentity",
-                            replaceWith: "// createdBy: Pick<SecurityIdentity"
-                        }
-                    ];
+                    {
+                        // If I18NContext was not detected, comment out relevant I18N code.
+                        const codeReplacements = [
+                            {
+                                find: `import { SecurityIdentity } from`,
+                                replaceWith: `// import { SecurityIdentity } from`
+                            },
+                            {
+                                find: "createdBy: Pick<SecurityIdentity",
+                                replaceWith: "// createdBy: Pick<SecurityIdentity"
+                            }
+                        ];
+                        replaceInPath(path.join(newCodePath, "/types.ts"), codeReplacements);
+                    }
 
-                    replaceInPath(path.join(newCodePath, "/types.ts"), codeReplacements);
+                    {
+                        // If I18NContext was not detected, comment out relevant I18N code.
+                        const codeReplacements = [
+                            {
+                                find: `const { security } = this.context;`,
+                                replaceWith: `// const { security } = this.context;`
+                            },
+                            {
+                                find: "const identity = await security.getIdentity",
+                                replaceWith: "// const identity = await security.getIdentity"
+                            },
+                            {
+                                find: new RegExp("createdBy: identity.*},", "gms"),
+                                replaceWith: "/* $& */"
+                            }
+                        ];
 
-                    // If I18NContext was not detected, comment out relevant I18N code.
-                    codeReplacements = [
-                        {
-                            find: `const { security } = this.context;`,
-                            replaceWith: `// const { security } = this.context;`
-                        },
-                        {
-                            find: "const identity = await security.getIdentity",
-                            replaceWith: "// const identity = await security.getIdentity"
-                        },
-                        {
-                            find: new RegExp("createdBy: identity.*},", "gms"),
-                            replaceWith: "/* $& */"
-                        }
-                    ];
-
-                    replaceInPath(
-                        path.join(newCodePath, "/resolvers/TargetDataModelsMutation.ts"),
-                        codeReplacements
-                    );
+                        replaceInPath(
+                            path.join(newCodePath, "/resolvers/TargetDataModelsMutation.ts"),
+                            codeReplacements
+                        );
+                    }
                 }
             }
 
