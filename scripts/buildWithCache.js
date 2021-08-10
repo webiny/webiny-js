@@ -138,6 +138,10 @@ async function build() {
     }
 
     writeJson.sync(META_FILE_PATH, metaJson);
+
+    if (error) {
+        throw error;
+    }
 }
 
 // Utility functions.
