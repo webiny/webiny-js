@@ -1,5 +1,5 @@
 import { CliCommandScaffoldTemplate } from "@webiny/cli-plugin-scaffold/types";
-const { getStackOutput } = require("@webiny/cli-plugin-deploy-pulumi/utils");
+import { getStackOutput } from "@webiny/cli-plugin-deploy-pulumi/utils";
 import fs from "fs";
 import path from "path";
 import util from "util";
@@ -20,6 +20,7 @@ import Error from "@webiny/error";
 import { TsConfigJson } from "@webiny/cli-plugin-scaffold/types";
 
 interface Input {
+    showConfirmation?: boolean;
     name: string;
     description: string;
     path: string;
@@ -99,30 +100,33 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
 
             const templateFolderPath = path.join(__dirname, "template");
 
-            console.log();
-            console.log(
-                `${chalk.bold("The following operations will be performed on your behalf:")}`
-            );
+            if (input.showConfirmation !== false) {
+                console.log();
+                console.log(
+                    `${chalk.bold("The following operations will be performed on your behalf:")}`
+                );
 
-            console.log(`- a new GraphQL API will be created in ${chalk.green(input.path)}`);
-            console.log(
-                `- the list of workspaces will be updated in the root ${chalk.green(
-                    "package.json"
-                )} file`
-            );
+                console.log(`- a new GraphQL API will be created in ${chalk.green(input.path)}`);
+                console.log(
+                    `- the list of workspaces will be updated in the root ${chalk.green(
+                        "package.json"
+                    )} file`
+                );
 
-            const prompt = inquirer.createPromptModule();
+                const prompt = inquirer.createPromptModule();
 
-            const { proceed } = await prompt({
-                name: "proceed",
-                message: `Are you sure you want to continue?`,
-                type: "confirm",
-                default: false
-            });
+                const { proceed } = await prompt({
+                    name: "proceed",
+                    message: `Are you sure you want to continue?`,
+                    type: "confirm",
+                    default: false
+                });
 
-            if (!proceed) {
-                process.exit(0);
+                if (!proceed) {
+                    process.exit(0);
+                }
             }
+
             console.log();
 
             ora.start(`Creating a new GraphQL API in ${chalk.green(input.path)}...`);
@@ -136,7 +140,10 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 { find: "Project application name", replaceWith: input.name },
                 { find: "Project application description", replaceWith: input.description },
                 { find: "projectApplicationId", replaceWith: Case.camel(input.name) },
-                { find: "project-application-id", replaceWith: Case.kebab(input.name) }
+                {
+                    find: "project-application-path-id",
+                    replaceWith: `${input.path}/graphql-api`.replace(/\//g, "-")
+                }
             ];
 
             replaceInPath(path.join(input.path, "/**/*.*"), replacements);
@@ -297,7 +304,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
             }
 
             console.log();
-            console.log(chalk.bold("Initial Deployment"));
+            console.log(chalk.bold("Initial GraphQL API Deployment"));
             console.log(`To begin developing, the new GraphQL API needs to be deployed.`);
 
             const { deploy } = await prompt({
@@ -323,9 +330,9 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
             if (!deploy) {
                 console.log(chalk.bold("Next Steps"));
                 console.log(
-                    `‣ deploy the new GraphQL API by running the ${chalk.green(
+                    `‣ deploy the new GraphQL API by running ${chalk.green(
                         `yarn webiny deploy ${input.path} --env dev`
-                    )} command`
+                    )}`
                 );
             } else {
                 const stackOutput = getStackOutput({
@@ -342,13 +349,13 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
             }
 
             console.log(
-                `‣ continue developing by running the ${chalk.green(
+                `‣ continue GraphQL API development by running ${chalk.green(
                     `yarn webiny watch ${input.path} --env dev`
-                )} command`
+                )}`
             );
 
             console.log(
-                `‣ continue extending your GraphQL API via the ${chalk.green(
+                `‣ to speed up your GraphQL API development, use the ${chalk.green(
                     `Extend GraphQL API`
                 )} scaffold`
             );
@@ -365,7 +372,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 ],
                 [
                     "Need a GraphQL Client? Check Out GraphQL Playground",
-                    "https://www.webiny.com/docs/how-to-guides/webiny-cli/scaffolding/extend-graphql-api"
+                    "https://github.com/graphql/graphql-playground"
                 ],
                 [
                     "Use the Watch Command",

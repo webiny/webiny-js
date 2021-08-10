@@ -1,5 +1,5 @@
 {
-  "name": "project-application-id",
+  "name": "project-application-path-id",
   "version": "0.1.0",
   "scripts": {
     "build": "yarn webiny run build",
