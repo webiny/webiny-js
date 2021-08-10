@@ -3,7 +3,7 @@ import * as aws from "@pulumi/aws";
 class Cloudfront {
     distribution: aws.cloudfront.Distribution;
     constructor({ appS3Bucket }: { appS3Bucket: aws.s3.Bucket }) {
-        this.distribution = new aws.cloudfront.Distribution("project-application-id-cdn", {
+        this.distribution = new aws.cloudfront.Distribution("project-application-path-id-cdn", {
             enabled: true,
             waitForDeployment: false,
             origins: [

@@ -21,6 +21,7 @@ interface Input {
     name: string;
     description: string;
     path: string;
+    showConfirmation?: boolean;
 }
 
 const SCAFFOLD_DOCS_LINK =
@@ -90,30 +91,35 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
 
             const templateFolderPath = path.join(__dirname, "template");
 
-            console.log();
-            console.log(
-                `${chalk.bold("The following operations will be performed on your behalf:")}`
-            );
+            if (input.showConfirmation !== false) {
+                console.log();
+                console.log(
+                    `${chalk.bold("The following operations will be performed on your behalf:")}`
+                );
 
-            console.log(`- a new React application will be created in ${chalk.green(input.path)}`);
-            console.log(
-                `- the list of workspaces will be updated in the root ${chalk.green(
-                    "package.json"
-                )} file`
-            );
+                console.log(
+                    `- a new React application will be created in ${chalk.green(input.path)}`
+                );
+                console.log(
+                    `- the list of workspaces will be updated in the root ${chalk.green(
+                        "package.json"
+                    )} file`
+                );
 
-            const prompt = inquirer.createPromptModule();
+                const prompt = inquirer.createPromptModule();
 
-            const { proceed } = await prompt({
-                name: "proceed",
-                message: `Are you sure you want to continue?`,
-                type: "confirm",
-                default: false
-            });
+                const { proceed } = await prompt({
+                    name: "proceed",
+                    message: `Are you sure you want to continue?`,
+                    type: "confirm",
+                    default: false
+                });
 
-            if (!proceed) {
-                process.exit(0);
+                if (!proceed) {
+                    process.exit(0);
+                }
             }
+
             console.log();
 
             ora.start(`Creating a new React application in ${chalk.green(input.path)}...`);
@@ -127,7 +133,10 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 { find: "Project application name", replaceWith: input.name },
                 { find: "Project application description", replaceWith: input.description },
                 { find: "projectApplicationId", replaceWith: Case.camel(input.name) },
-                { find: "project-application-id", replaceWith: Case.kebab(input.name) }
+                {
+                    find: "project-application-path-id",
+                    replaceWith: `${input.path}/react-app`.replace(/\//g, "-")
+                }
             ];
 
             replaceInPath(path.join(input.path, "/**/*.*"), replacements);
@@ -189,9 +198,9 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
             console.log(chalk.bold("Next Steps"));
 
             console.log(
-                `‣ start the application locally by running the ${chalk.green(
+                `‣ start the application locally and continue development by running ${chalk.green(
                     `yarn webiny watch ${input.path} --env dev`
-                )} command`
+                )}`
             );
 
             console.log();
