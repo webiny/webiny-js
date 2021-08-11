@@ -3,18 +3,12 @@ import apolloLinkPlugins from "./apollo";
 import home from "./routes/home";
 import notFound from "./routes/notFound";
 
-/**
- * Imports and registers all defined plugins.
- */
+// Imports and registers all defined plugins.
 plugins.register([
-    /**
-     * Various Apollo client plugins.
-     */
+    // Various Apollo client plugins.
     apolloLinkPlugins,
 
-    /**
-     * Application routes.
-     */
+    // Application routes.
     home,
     notFound
 ]);
