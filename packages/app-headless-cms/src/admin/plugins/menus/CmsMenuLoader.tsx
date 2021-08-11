@@ -54,14 +54,14 @@ export const CmsMenuLoader = React.memo(({ view }: Props) => {
          * Add "Content Models" section if the user can create either models or groups.
          */
         if (canCreateContentModels || canCreateContentModelGroups) {
-            const contentModelsMenu = mainMenu.addElement(
+            const contentModelsMenu = mainMenu.addElement<NavigationMenuElement>(
                 new NavigationMenuElement("headlessCms.contentModels", {
                     label: "Content Models"
                 })
             );
 
             if (canCreateContentModels) {
-                contentModelsMenu.addElement(
+                contentModelsMenu.addElement<NavigationMenuElement>(
                     new NavigationMenuElement("headlessCms.contentModels.models", {
                         label: "Models",
                         path: "/cms/content-models"
@@ -70,7 +70,7 @@ export const CmsMenuLoader = React.memo(({ view }: Props) => {
             }
 
             if (canCreateContentModelGroups) {
-                contentModelsMenu.addElement(
+                contentModelsMenu.addElement<NavigationMenuElement>(
                     new NavigationMenuElement("headlessCms.contentModels.groups", {
                         label: "Groups",
                         path: "/cms/content-model-groups"
