@@ -1,12 +1,12 @@
 import { startApp, buildApp } from "@webiny/project-utils";
 
-// Exports basic start (watch) and build commands.
+// Exports fundamental watch and build commands.
 // Need to inject environment variables, for example an HTTP API URL or maybe a token?
 // See https://github.com/webiny/webiny-js
 export default {
     commands: {
-        async start(options, context) {
-            // Starts local development.
+        async watch(options, context) {
+            // Starts local application development.
             await startApp(options, context);
         },
         async build(options, context) {
