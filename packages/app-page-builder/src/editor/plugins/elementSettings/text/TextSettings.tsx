@@ -122,7 +122,7 @@ const TextSettings: React.FunctionComponent<
             applyFallbackDisplayMode(displayMode, mode =>
                 get(element, `${DATA_NAMESPACE}.${mode}`)
             ),
-        [displayMode]
+        [displayMode, element]
     );
 
     const text = get(element, `${DATA_NAMESPACE}.${displayMode}`, fallbackValue);
