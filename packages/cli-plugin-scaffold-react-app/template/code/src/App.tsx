@@ -4,7 +4,7 @@ import { Routes } from "@webiny/app/components/Routes";
 import { BrowserRouter } from "@webiny/react-router";
 import { createApolloClient } from "./apollo";
 
-// Global (or specific) SCSS styles can be defined here.
+// An entrypoint for all SCSS styles your application might have.
 import "./App.scss";
 
 // The beginning of our React application, where we mount a couple of useful providers.
