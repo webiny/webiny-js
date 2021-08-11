@@ -47,7 +47,7 @@ const menuTitleActive = css({
 
 export class MenuGroupRenderer extends UIRenderer<NavigationMenuElement> {
     canRender(element: NavigationMenuElement): boolean {
-        const isInContent = Boolean(element.getParentOfType(ContentElement));
+        const isInContent = Boolean(element.getParentByType(ContentElement));
         return element.depth === 1 && isInContent && !element.config.path;
     }
 
