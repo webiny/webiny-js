@@ -5,7 +5,12 @@ import Case from "case";
 import chalk from "chalk";
 import link from "terminal-link";
 import { deployGraphQLAPI } from "@webiny/cli-plugin-scaffold-graphql-api";
-import { getStackOutput } from "@webiny/cli-plugin-deploy-pulumi/utils";
+import pluralize from "pluralize";
+import { replaceInPath } from "replace-in-path";
+
+import util from "util";
+import ncpBase from "ncp";
+const ncp = util.promisify(ncpBase.ncp);
 
 interface Input {
     name: string;
@@ -86,8 +91,8 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 `${chalk.bold("The following operations will be performed on your behalf:")}`
             );
 
-            console.log(`- a new React application will be created in ${chalk.green(appPath)}`);
             console.log(`- a new GraphQL API will be created in ${chalk.green(apiPath)}`);
+            console.log(`- a new React application will be created in ${chalk.green(appPath)}`);
             console.log(
                 `- the list of workspaces will be updated in the root ${chalk.green(
                     "package.json"
@@ -132,9 +137,12 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                     showConfirmation: false
                 }
             });
+
+            const templateFolderPath = path.join(__dirname, "templates", "essentials");
+            await ncp(templateFolderPath, appPath);
         },
-        onSuccess: async (options) => {
-            const { input, inquirer, context } = options;
+        onSuccess: async options => {
+            const { input, inquirer, context, wait } = options;
             const appPath = path.join(input.path, "/app");
             const apiPath = path.join(input.path, "/api");
 
@@ -153,7 +161,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
             });
 
             if (graphqlApiExample) {
-                const { dataModelName } = await prompt({
+                const answers = await prompt({
                     name: "dataModelName",
                     message: `Enter initial entity name:`,
                     default: "Book"
@@ -167,16 +175,47 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                     ...options,
                     input: {
                         showConfirmation: false,
-                        dataModelName,
-                        pluginsFolderPath: path.join(
-                            apiPath,
-                            "code",
-                            "graphql",
-                            "src",
-                            "plugins"
-                        )
+                        dataModelName: answers.dataModelName,
+                        pluginsFolderPath: path.join(apiPath, "code", "graphql", "src", "plugins")
                     }
                 });
+
+                const templateFolderPath = path.join(__dirname, "templates", "graphqlApiExample");
+                await ncp(templateFolderPath, appPath);
+
+                // Store used input, so that maybe some of
+                const dataModelName = {
+                    plural: pluralize(Case.camel(answers.dataModelName)),
+                    singular: pluralize.singular(Case.camel(answers.dataModelName))
+                };
+
+                // Wait a bit, since otherwise, replaceInPath might fail. Too soon making operations?
+                await wait(500);
+
+                // Replace generic "TargetDataModel" with received "dataModelName" argument.
+                const codeReplacements = [
+                    { find: "targetDataModels", replaceWith: Case.camel(dataModelName.plural) },
+                    { find: "TargetDataModels", replaceWith: Case.pascal(dataModelName.plural) },
+                    {
+                        find: "TARGET_DATA_MODELS",
+                        replaceWith: Case.constant(dataModelName.plural)
+                    },
+                    { find: "target-data-models", replaceWith: Case.kebab(dataModelName.plural) },
+                    { find: "Target Data Models", replaceWith: Case.title(dataModelName.plural) },
+
+                    { find: "targetDataModel", replaceWith: Case.camel(dataModelName.singular) },
+                    { find: "TargetDataModel", replaceWith: Case.pascal(dataModelName.singular) },
+                    {
+                        find: "TARGET_DATA_MODEL",
+                        replaceWith: Case.constant(dataModelName.singular)
+                    },
+                    { find: "target-data-model", replaceWith: Case.kebab(dataModelName.singular) },
+                    { find: "Target Data Model", replaceWith: Case.title(dataModelName.singular) },
+                    { find: "project-applications-path", replaceWith: input.path }
+                ];
+
+                replaceInPath(path.join(appPath, "code", "**/*.ts"), codeReplacements);
+                replaceInPath(path.join(appPath, "code", "**/*.tsx"), codeReplacements);
             }
 
             console.log();
@@ -190,14 +229,14 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 default: true
             });
 
-            console.log();
-
             if (deploy) {
+                console.log();
                 console.log(`Running ${chalk.green(`yarn webiny deploy ${apiPath}`)} command...`);
                 console.log();
                 await deployGraphQLAPI(apiPath, "dev", input);
             }
 
+            console.log();
             console.log(`${chalk.green("✔")} New full stack application created successfully.`);
             console.log();
 
