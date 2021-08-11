@@ -67,7 +67,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                     name: "path",
                     message: "Enter application path:",
                     default: input => {
-                        return `apps/${Case.kebab(input.name)}`;
+                        return Case.kebab(input.name)
                     },
                     validate: appPath => {
                         if (!appPath || appPath.length < 2) {
