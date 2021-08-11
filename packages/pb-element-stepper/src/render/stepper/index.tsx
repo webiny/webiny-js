@@ -10,32 +10,20 @@ import stepDivider from "./assets/step-divider.svg";
 // @ts-ignore
 import enjoyVideo from "./assets/webiny-install-enjoy-step.mp4";
 
-const Wrapper = styled("div")(
-    {
-        display: "flex",
-        flexDirection: "column"
-    }
-    // mq({
-    //     width: ["auto", "calc(100% - 100px)"],
-    //     marginLeft: [0, 100],
-    //     maxWidth: ["100vw", "100%"],
-    // }),
-);
+const Wrapper = styled("div")({
+    display: "flex",
+    flexDirection: "column"
+});
 
-const Content = styled("div")(
-    {
-        width: "100%",
-        height: 368,
-        marginTop: 25,
-        position: "relative",
-        "& .Terminal-control-btn": {
-            display: "none"
-        }
+const Content = styled("div")({
+    width: "100%",
+    height: 368,
+    marginTop: 25,
+    position: "relative",
+    "& .Terminal-control-btn": {
+        display: "none"
     }
-    // mq({
-    //     marginLeft: [0, 10],
-    // }),
-);
+});
 
 const Spinner = styled("div")({
     position: "absolute",
@@ -66,6 +54,9 @@ const Step = styled("div")({
     "&.active": {
         color: "#DBD346",
         borderColor: "#DBD346"
+    },
+    ".webiny-pb-media-query--mobile-portrait &": {
+        padding: "0 0 5px 0"
     }
 });
 
@@ -78,23 +69,20 @@ const StepDivider = styled("div")({
     backgroundRepeat: "no-repeat",
     backgroundPosition: "center",
     marginBottom: 9,
-    opacity: 0.7
+    opacity: 0.7,
+    ".webiny-pb-media-query--mobile-portrait &": {
+        margin: "0 10px"
+    }
 });
 
-const Video = styled("video")(
-    {
-        borderRadius: 5,
-        boxShadow: "0 2px 4px 0 rgba(0,0,0,0.25)",
-        // height: "363px",
-        height: "auto",
-        width: "100%"
-    }
-    // mq({
-    //     height: ["auto", 363],
-    //     width: ["100%", 567],
-    //     marginRight: -5
-    // })
-);
+const Video = styled("video")({
+    borderRadius: 5,
+    boxShadow: "0 2px 4px 0 rgba(0,0,0,0.25)",
+    height: "auto",
+    maxHeight: 363,
+    width: "100%",
+    maxWidth: 567
+});
 
 const LOOP_ANIMATION = true;
 const LOOP_DELAY = 0;
