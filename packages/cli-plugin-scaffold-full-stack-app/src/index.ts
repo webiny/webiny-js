@@ -20,7 +20,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
     name: "cli-plugin-scaffold-template-full-stack-app",
     type: "cli-plugin-scaffold-template",
     scaffold: {
-        name: "Full Stack Application",
+        name: "New Full Stack Application",
         description:
             "Creates a new React application and the supporting GraphQL API." +
             (link.isSupported ? " " + link("Learn more.", SCAFFOLD_DOCS_LINK) : ""),
@@ -212,7 +212,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
             }
 
             console.log(
-                `‣ start the application locally and continue development by running ${chalk.green(
+                `‣ start the React application locally and continue development by running ${chalk.green(
                     `yarn webiny watch ${appPath} --env dev`
                 )}`
             );

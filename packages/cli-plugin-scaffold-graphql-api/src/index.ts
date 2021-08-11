@@ -74,7 +74,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 },
                 {
                     name: "path",
-                    message: "Enter application path:",
+                    message: "Enter GraphQL API path:",
                     default: input => {
                         return `${Case.kebab(input.name)}`;
                     },

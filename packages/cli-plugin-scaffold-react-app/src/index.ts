@@ -198,7 +198,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
             console.log(chalk.bold("Next Steps"));
 
             console.log(
-                `‣ start the application locally and continue development by running ${chalk.green(
+                `‣ start the React application locally and continue development by running ${chalk.green(
                     `yarn webiny watch ${input.path} --env dev`
                 )}`
             );
