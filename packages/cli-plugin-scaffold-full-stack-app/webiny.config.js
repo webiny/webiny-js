@@ -23,7 +23,7 @@ module.exports = {
                         fs.copyFileSync("LICENSE", "./dist/LICENSE");
                         fs.copyFileSync("README.md", "./dist/README.md");
 
-                        return ncp("template", "./dist/template");
+                        return ncp("templates", "./dist/templates");
                     }
                 },
                 context
