@@ -140,9 +140,10 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 { find: "Project application name", replaceWith: input.name },
                 { find: "Project application description", replaceWith: input.description },
                 { find: "projectApplicationId", replaceWith: Case.camel(input.name) },
+                { find: "project-application-name", replaceWith: Case.kebab(input.name) },
                 {
-                    find: "project-application-path-id",
-                    replaceWith: `${input.path}/graphql-api`.replace(/\//g, "-")
+                    find: "project-application-path",
+                    replaceWith: Case.kebab(input.path)
                 }
             ];
 
@@ -280,7 +281,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 const { dataModelName } = await prompt({
                     name: "dataModelName",
                     message: `Enter initial entity name:`,
-                    default: "Book"
+                    default: "ToDo"
                 });
 
                 const cliPluginScaffoldGraphQl = context.plugins.byName<CliCommandScaffoldTemplate>(
