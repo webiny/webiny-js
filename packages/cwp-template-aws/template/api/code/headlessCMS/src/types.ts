@@ -9,6 +9,9 @@ import { BaseI18NContentContext as I18NContentContext } from "@webiny/api-i18n-c
 import { TenancyContext } from "@webiny/api-tenancy/types";
 import { CmsContext } from "@webiny/api-headless-cms/types";
 
+// The context object that is passed to your GraphQL resolver functions.
+// Feel free to extend it with additional context interfaces, if needed.
+// Note: do not rename it, as existing scaffolding utilities may rely on it.
 export interface Context
     extends HandlerContext,
         HttpContext,
