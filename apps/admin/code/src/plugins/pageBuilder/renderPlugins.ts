@@ -34,9 +34,9 @@ import textSetting from "@webiny/app-page-builder/render/plugins/elementSettings
 import visibility from "@webiny/app-page-builder/render/plugins/elementSettings/visibility";
 // Responsive mode
 import responsiveMode from "@webiny/app-page-builder/render/plugins/responsiveMode";
-
-import carousel from "@custom-components/carousel-pb-element/render";
-import stepper from "@custom-components/pb-element-stepper/render";
+// Extensions
+import carousel from "@extensions/pb-element-carousel/render";
+import stepper from "@extensions/pb-element-stepper/render";
 
 export default [
     stepper(),

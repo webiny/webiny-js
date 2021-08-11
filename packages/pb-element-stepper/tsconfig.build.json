@@ -1,12 +1,7 @@
 {
   "extends": "../../tsconfig.build.json",
-  "include": [
-    "src"
-  ],
-  "exclude": [
-    "node_modules",
-    "../app-page-builder"
-  ],
+  "include": ["src"],
+  "exclude": ["node_modules", "../app-page-builder"],
   "compilerOptions": {
     "outDir": "dist",
     "rootDir": "src",
@@ -14,9 +9,7 @@
     "noEmit": false,
     "baseUrl": ".",
     "paths": {
-      "~/*": [
-        "./src/*"
-      ]
+      "~/*": ["./src/*"]
     }
   },
   "references": [

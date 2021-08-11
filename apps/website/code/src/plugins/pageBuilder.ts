@@ -57,8 +57,8 @@ import visibility from "@webiny/app-page-builder/render/plugins/elementSettings/
 import responsiveMode from "@webiny/app-page-builder/render/plugins/responsiveMode";
 
 // Custom elements
-import carousel from "@custom-components/carousel-pb-element/render";
-import stepper from "@custom-components/pb-element-stepper/render";
+import carousel from "@extensions/pb-element-carousel/render";
+import stepper from "@extensions/pb-element-stepper/render";
 
 export default [
     linkPreload(),

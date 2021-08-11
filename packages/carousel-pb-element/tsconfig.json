@@ -1,9 +1,6 @@
 {
   "extends": "../../tsconfig.json",
-  "include": [
-    "src",
-    "__tests__/**/*.ts"
-  ],
+  "include": ["src", "__tests__/**/*.ts"],
   "references": [
     {
       "path": "../app-page-builder"
@@ -17,12 +14,8 @@
     "noEmit": false,
     "baseUrl": ".",
     "paths": {
-      "~/*": [
-        "./src/*"
-      ],
-      "@webiny/app-page-builder/*": [
-        "../app-page-builder/src/*"
-      ]
+      "~/*": ["./src/*"],
+      "@webiny/app-page-builder/*": ["../app-page-builder/src/*"]
     }
   }
 }

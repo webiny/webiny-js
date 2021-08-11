@@ -77,9 +77,8 @@ import { createInitialPerDeviceSettingValue } from "@webiny/app-page-builder/edi
 import { DisplayMode } from "@webiny/app-page-builder/types";
 
 // Custom elements
-import carousel from "@custom-components/carousel-pb-element/admin";
-import carouselSettings from "@custom-components/carousel-pb-element/admin/settings";
-import stepper from "@custom-components/pb-element-stepper/admin";
+import carousel, { carouselSettings } from "@extensions/pb-element-carousel/admin";
+import stepper from "@extensions/pb-element-stepper/admin";
 
 export default [
     contentBackground,
@@ -112,7 +111,41 @@ export default [
     icon(),
     image(),
     imagesList(),
-    button(),
+    button({
+        create: defaultValue => {
+            // Set default value for the padding property
+            let elementData = dotProp.set(
+                defaultValue,
+                "data.settings.padding",
+                createInitialPerDeviceSettingValue(
+                    { advanced: true, top: "14px", right: "20px", bottom: "14px", left: "20px" },
+                    DisplayMode.DESKTOP
+                )
+            );
+
+            // Set default value for the width property
+            elementData = dotProp.set(
+                elementData,
+                "data.settings.width",
+                createInitialPerDeviceSettingValue({ value: "150px" }, DisplayMode.DESKTOP)
+            );
+
+            // Set default value for the height property
+            elementData = dotProp.set(
+                elementData,
+                "data.settings.height",
+                createInitialPerDeviceSettingValue({ value: "40px" }, DisplayMode.DESKTOP)
+            );
+
+            return elementData;
+        },
+        settings: defaultValue => [
+            ...defaultValue,
+            "pb-editor-page-element-style-settings-padding",
+            "pb-editor-page-element-style-settings-width",
+            "pb-editor-page-element-style-settings-height"
+        ]
+    }),
     soundcloud(),
     vimeo(),
     youtube(),

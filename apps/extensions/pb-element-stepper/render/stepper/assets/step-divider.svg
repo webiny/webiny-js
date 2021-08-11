@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="10px" height="16px" viewBox="0 0 10 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 55.2 (78181) - https://sketchapp.com -->
+    <title>Path</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Landing-page-Webiny" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Desktop-HD" transform="translate(-878.000000, -183.000000)" fill="#292929" fill-rule="nonzero">
+            <g id="Header" transform="translate(-384.000000, -316.000000)">
+                <g id="hero-section" transform="translate(503.000061, 429.000000)">
+                    <g id="tabs" transform="translate(645.999939, 62.000000)">
+                        <g id="keyboard_arrow_right-24px" transform="translate(113.000000, 8.000000)">
+                            <path d="M0.444191344,13.5480984 L6.33637054,7.99284116 L0.444191344,2.43758389 C-0.148063781,1.87919463 -0.148063781,0.977181208 0.444191344,0.418791946 L0.444191344,0.418791946 C1.03644647,-0.139597315 1.99316629,-0.139597315 2.58542141,0.418791946 L9.55580866,6.99060403 C10.1480638,7.54899329 10.1480638,8.45100671 9.55580866,9.00939597 L2.58542141,15.5812081 C1.99316629,16.1395973 1.03644647,16.1395973 0.444191344,15.5812081 L0.444191344,15.5812081 C-0.132877752,15.0228188 -0.148063781,14.1064877 0.444191344,13.5480984 Z" id="Path"></path>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

@@ -1,0 +1,18 @@
+{
+  "name": "@extensions/pb-element-carousel",
+  "version": "1.0.0",
+  "description": "A simple React component that can be imported into the application.",
+  "license": "MIT",
+  "dependencies": {
+    "@emotion/styled": "^10.0.17",
+    "@webiny/app-page-builder": "5.11.0",
+    "@webiny/ui": "^5.11.0",
+    "classnames": "^2.3.1",
+    "dot-prop-immutable": "^2.1.1",
+    "emotion": "^10.0.17",
+    "lodash": "^4.17.21",
+    "react": "^16.14.0",
+    "react-responsive-carousel": "^3.2.20",
+    "recoil": "^0.1.2"
+  }
+}

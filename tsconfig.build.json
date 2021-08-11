@@ -6,10 +6,7 @@
     "allowSyntheticDefaultImports": true,
     "moduleResolution": "node",
     "module": "esnext",
-    "lib": [
-      "dom",
-      "dom.iterable"
-    ],
+    "lib": ["dom", "dom.iterable"],
     "esModuleInterop": true,
     "declaration": true,
     "composite": true,
@@ -18,24 +15,12 @@
     "emitDeclarationOnly": true,
     "baseUrl": ".",
     "paths": {
-      "@custom-components/carousel-pb-element": [
-        "./packages/carousel-pb-element/src"
-      ],
-      "@custom-components/carousel-pb-element/*": [
-        "./packages/carousel-pb-element/src/*"
-      ],
-      "@custom-components/pb-element-stepper": [
-        "./packages/pb-element-stepper/src"
-      ],
-      "@custom-components/pb-element-stepper/*": [
-        "./packages/pb-element-stepper/src/*"
-      ]
+      "@custom-components/carousel-pb-element": ["./packages/carousel-pb-element/src"],
+      "@custom-components/carousel-pb-element/*": ["./packages/carousel-pb-element/src/*"],
+      "@custom-components/pb-element-stepper": ["./packages/pb-element-stepper/src"],
+      "@custom-components/pb-element-stepper/*": ["./packages/pb-element-stepper/src/*"]
     },
-    "typeRoots": [
-      "./typings",
-      "./node_modules/@types",
-      "@types/testing-library__cypress"
-    ],
+    "typeRoots": ["./typings", "./node_modules/@types", "@types/testing-library__cypress"],
     "plugins": [
       {
         "transform": "typescript-transform-paths",
