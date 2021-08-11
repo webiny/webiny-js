@@ -61,7 +61,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 {
                     name: "dataModelName",
                     message: "Enter initial entity name:",
-                    default: "Book",
+                    default: "Todo",
                     validate: (dataModelName, answers) => {
                         if (!dataModelName.match(/^([a-zA-Z]+)$/)) {
                             return "A valid name must consist of letters only.";
