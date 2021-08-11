@@ -120,7 +120,7 @@ const TextSettings: React.FunctionComponent<PbEditorPageElementSettingsRenderCom
             applyFallbackDisplayMode(displayMode, mode =>
                 get(element, `${DATA_NAMESPACE}.${mode}`)
             ),
-        [displayMode]
+        [displayMode, element]
     );
 
     const text = get(element, `${DATA_NAMESPACE}.${displayMode}`, fallbackValue);
