@@ -1,8 +1,9 @@
 import { buildFunction, watchFunction } from "@webiny/project-utils";
 
+// Exports fundamental watch and build commands.
 export default {
     commands: {
-        build: buildFunction,
-        watch: watchFunction
+        watch: watchFunction,
+        build: buildFunction
     }
 };
