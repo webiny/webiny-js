@@ -2,7 +2,6 @@ import React from "react";
 import UsefulLink from "./UsefulLink";
 
 interface Props {
-    // children: Array<ReactElement<UsefulLinkProps>>;
     children: Array<React.ReactComponentElement<typeof UsefulLink>>;
 }
 

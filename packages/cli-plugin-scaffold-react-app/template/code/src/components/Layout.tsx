@@ -19,9 +19,6 @@ export default function Layout(props: Props) {
                     <li>
                         <Link to={"/"}>Home</Link>
                     </li>
-                    <li>
-                        <Link to={"/target-data-models"}>Target Data Models</Link>
-                    </li>
                 </ul>
                 <ul>
                     <li>
