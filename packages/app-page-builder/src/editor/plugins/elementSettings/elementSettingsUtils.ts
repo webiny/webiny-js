@@ -1,11 +1,7 @@
 import { plugins } from "@webiny/plugins";
 import orderBy from "lodash/orderBy";
 import merge from "lodash/merge";
-import {
-    PbEditorResponsiveModePlugin,
-    PbRenderResponsiveModePlugin,
-    DisplayMode
-} from "../../../types";
+import { PbEditorResponsiveModePlugin, PbRenderResponsiveModePlugin, DisplayMode } from "~/types";
 
 export const WIDTH_UNIT_OPTIONS = [
     {
@@ -87,6 +83,10 @@ export const applyFallbackDisplayMode = (mode: DisplayMode, getValue: any) => {
     let output = undefined;
     for (let i = 0; i < index; i++) {
         const currentValue = getValue(orderedConfigs[i].displayMode);
+        // In case of "string", we don't need to merge all values
+        if (currentValue && typeof currentValue === "string") {
+            return currentValue;
+        }
         if (currentValue) {
             output = merge(output, currentValue);
         }
