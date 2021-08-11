@@ -6,6 +6,7 @@ interface Props {
     url: string;
 }
 
+// A simple component used to render useful links, within the `UsefulLinks` component.
 export default function UsefulLink({ title, children: description, url }: Props) {
     return (
         <li>
