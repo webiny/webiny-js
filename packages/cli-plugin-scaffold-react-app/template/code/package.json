@@ -1,5 +1,5 @@
 {
-  "name": "project-application-path-id",
+  "name": "project-application-path",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -28,9 +28,7 @@
     "invariant": "^2.2.4"
   },
   "scripts": {
-    "analyze": "source-map-explorer build/static/js/main.*",
-    "start": "cross-env PORT=3001 yarn webiny run start",
-    "watch": "cross-env PORT=3001 yarn webiny run start",
+    "watch": "cross-env PORT=3001 yarn webiny run watch",
     "build": "yarn webiny run build"
   },
   "browserslist": {
