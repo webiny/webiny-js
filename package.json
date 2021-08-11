@@ -7,6 +7,7 @@
       "apps/admin/code",
       "apps/website/code",
       "apps/theme",
+      "apps/extensions/*",
       "api/code/dynamoToElastic",
       "api/code/fileManager/*",
       "api/code/graphql",
@@ -14,9 +15,7 @@
       "api/code/pageBuilder/*",
       "api/code/prerenderingService/render",
       "api/code/prerenderingService/flush",
-      "api/code/prerenderingService/queue/*",
-      "packages/carousel-pb-element",
-      "packages/pb-element-stepper"
+      "api/code/prerenderingService/queue/*"
     ]
   },
   "author": "Webiny Ltd.",
