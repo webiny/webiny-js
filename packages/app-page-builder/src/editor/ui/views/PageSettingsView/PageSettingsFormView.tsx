@@ -18,7 +18,7 @@ export class PageSettingsFormView extends FormView {
     }
 
     getPageSettingsHook() {
-        const parent = this.getParentOfType<PageSettingsView>(PageSettingsView);
+        const parent = this.getParentByType<PageSettingsView>(PageSettingsView);
         return parent.getPageSettingsHook();
     }
 }

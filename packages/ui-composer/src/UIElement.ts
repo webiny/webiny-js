@@ -118,7 +118,7 @@ export class UIElement<TConfig extends UIElementConfig = UIElementConfig> {
         return this._parent;
     }
 
-    getParentOfType<TParent extends UIElement = UIElement>(type: Class<TParent>): TParent {
+    getParentByType<TParent extends UIElement = UIElement>(type: Class<TParent>): TParent {
         let parent = this.getParent();
         while (parent) {
             if (parent instanceof (type as any)) {
@@ -131,7 +131,22 @@ export class UIElement<TConfig extends UIElementConfig = UIElementConfig> {
         return parent as TParent;
     }
 
-    getDescendentsOfType<TElement extends UIElement = UIElement>(
+    getDescendentsByTag(tag: string): UIElement[] {
+        const elements = Array.from(this._elements.values());
+
+        // Search child elements recursively
+        for (const element of elements) {
+            if (element instanceof UIElement) {
+                const children = element.getChildren();
+                for (const child of children) {
+                    child.getDescendentsByTag(tag).forEach(el => elements.push(el));
+                }
+            }
+        }
+        return elements.filter(el => el.hasTag(tag));
+    }
+
+    getDescendentsByType<TElement extends UIElement = UIElement>(
         type: Class<TElement>
     ): TElement[] {
         const elements = Array.from(this._elements.values());
@@ -140,7 +155,7 @@ export class UIElement<TConfig extends UIElementConfig = UIElementConfig> {
         for (const element of elements) {
             const children = element.getChildren();
             for (const child of children) {
-                child.getDescendentsOfType(type).forEach(el => {
+                child.getDescendentsByType(type).forEach(el => {
                     elements.push(el);
                 });
             }
@@ -209,21 +224,6 @@ export class UIElement<TConfig extends UIElementConfig = UIElementConfig> {
 
     getChildren(): UIElement[] {
         return Array.from(this._elements.values());
-    }
-
-    getDescendentsByTag(tag: string): UIElement[] {
-        const elements = Array.from(this._elements.values());
-
-        // Search child elements recursively
-        for (const element of elements) {
-            if (element instanceof UIElement) {
-                const children = element.getChildren();
-                for (const child of children) {
-                    child.getDescendentsByTag(tag).forEach(el => elements.push(el));
-                }
-            }
-        }
-        return elements.filter(el => el.hasTag(tag));
     }
 
     moveInto(targetElement: UIElement) {

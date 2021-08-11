@@ -16,8 +16,8 @@ export class ViewElement extends UIElement<ViewElementConfig> {
         return this.config.view.getChildren();
     }
 
-    getDescendentsOfType<TElement extends UIElement = UIElement>(type: any): TElement[] {
-        return this.config.view.getDescendentsOfType(type) as TElement[];
+    getDescendentsByType<TElement extends UIElement = UIElement>(type: any): TElement[] {
+        return this.config.view.getDescendentsByType(type) as TElement[];
     }
 
     render(props?: any): React.ReactNode {
