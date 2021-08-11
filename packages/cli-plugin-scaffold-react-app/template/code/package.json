@@ -22,11 +22,11 @@
     "regenerator-runtime": "^0.13.5"
   },
   "devDependencies": {
-    "cross-env": "^5.0.2",
-    "invariant": "^2.2.4",
     "@webiny/cli": "^5.11.0",
+    "@webiny/cli-plugin-deploy-pulumi": "^5.11.0",
     "@webiny/project-utils": "^5.11.0",
-    "@webiny/cli-plugin-deploy-pulumi": "^5.11.0"
+    "cross-env": "^5.0.2",
+    "invariant": "^2.2.4"
   },
   "scripts": {
     "analyze": "source-map-explorer build/static/js/main.*",
