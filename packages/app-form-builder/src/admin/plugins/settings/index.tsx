@@ -37,7 +37,7 @@ const plugins = [
             })
         );
 
-        formBuilder.addElement(
+        formBuilder.addElement<NavigationMenuElement>(
             new NavigationMenuElement("menu.settings.formBuilder.recaptcha", {
                 label: "reCAPTCHA",
                 path: "/settings/form-builder/recaptcha"
