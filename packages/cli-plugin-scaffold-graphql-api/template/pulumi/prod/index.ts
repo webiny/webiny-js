@@ -44,7 +44,7 @@ export default () => {
 
     return {
         region: process.env.AWS_REGION,
-        apiUrl: pulumi.interpolate`https://${cloudfront.cloudfront.domainName}`,
+        graphqlApiUrl: pulumi.interpolate`https://${cloudfront.cloudfront.domainName}/graphql`,
         dynamoDbTable: dynamoDb.table.name
     };
 };

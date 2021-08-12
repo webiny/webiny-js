@@ -11,7 +11,7 @@ import { getStackOutput } from "@webiny/cli-plugin-deploy-pulumi/utils";
 // - `project-applications-path/api/pulumi/prod/index.ts`
 
 const MAP = {
-    REACT_APP_GRAPHQL_API_URL: "${apiUrl}"
+    REACT_APP_GRAPHQL_API_URL: "${graphqlApiUrl}"
 };
 
 const NO_ENV_MESSAGE = `Please specify the environment via the "--env" argument, for example: "--env dev".`;
