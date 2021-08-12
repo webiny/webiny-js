@@ -27,6 +27,7 @@
     "pluralize": "^8.0.0",
     "replace-in-path": "^1.1.0",
     "terminal-link": "^2.1.1",
+    "ts-morph": "^11.0.0",
     "write-json-file": "^4.3.0"
   },
   "devDependencies": {
