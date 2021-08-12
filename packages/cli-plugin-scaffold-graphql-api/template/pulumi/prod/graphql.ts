@@ -17,9 +17,7 @@ class Graphql {
         env,
         dbTable,
     }: GraphqlParams) {
-        const roleName = "api-lambda-role";
-
-        this.role = new aws.iam.Role(roleName, {
+        this.role = new aws.iam.Role('project-application-name', {
             assumeRolePolicy: {
                 Version: "2012-10-17",
                 Statement: [
@@ -34,28 +32,48 @@ class Graphql {
             }
         });
 
-        const policy = policies.getApiGraphqlLambdaPolicy({
-            dbTable,
-            elasticsearchDynamodbTable,
-            bucket,
-            elasticsearchDomain,
-            cognitoUserPool
+        const policy = new aws.iam.Policy("project-application-name", {
+            description: "Enables the Project Application Name GraphQL API Lambda function to access AWS DynamoDB.",
+            policy: {
+                Version: "2012-10-17",
+                Statement: [
+                    {
+                        Sid: "PermissionForDynamodb",
+                        Effect: "Allow",
+                        Action: [
+                            "dynamodb:BatchGetItem",
+                            "dynamodb:BatchWriteItem",
+                            "dynamodb:DeleteItem",
+                            "dynamodb:GetItem",
+                            "dynamodb:PutItem",
+                            "dynamodb:Query",
+                            "dynamodb:Scan",
+                            "dynamodb:UpdateItem"
+                        ],
+                        Resource: [
+                            pulumi.interpolate`${dbTable.arn}`,
+                            pulumi.interpolate`${dbTable.arn}/*`
+                        ]
+                    }
+                ]
+            }
         });
 
-        new aws.iam.RolePolicyAttachment(`${roleName}-ApiGraphqlLambdaPolicy`, {
+        new aws.iam.RolePolicyAttachment(`project-application-name`, {
             role: this.role,
             policyArn: policy.arn.apply(arn => arn)
         });
 
-        new aws.iam.RolePolicyAttachment(`${roleName}-AWSLambdaVPCAccessExecutionRole`, {
+        new aws.iam.RolePolicyAttachment(`project-application-name-execution`, {
             role: this.role,
             policyArn: aws.iam.ManagedPolicy.AWSLambdaVPCAccessExecutionRole
         });
 
         this.functions = {
-            api: new aws.lambda.Function("graphql", {
+            api: new aws.lambda.Function("project-application-name", {
                 runtime: "nodejs12.x",
                 handler: "handler.handler",
+                description: "Project Application Name GraphQL API Lambda function.",
                 role: this.role.arn,
                 timeout: 30,
                 memorySize: 512,

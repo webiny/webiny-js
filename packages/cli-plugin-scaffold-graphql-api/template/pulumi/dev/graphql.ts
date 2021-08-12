@@ -12,8 +12,7 @@ class Graphql {
     };
 
     constructor({ env, dbTable }: GraphqlParams) {
-        const roleName = "api-lambda-role";
-        const role = new aws.iam.Role(roleName, {
+        const role = new aws.iam.Role('project-application-name', {
             assumeRolePolicy: {
                 Version: "2012-10-17",
                 Statement: [
@@ -28,8 +27,8 @@ class Graphql {
             }
         });
 
-        const policy = new aws.iam.Policy("ApiGraphqlLambdaPolicy", {
-            description: "Enables the GraphQL API Lambda function to access AWS DynamoDB.",
+        const policy = new aws.iam.Policy("project-application-name", {
+            description: "Enables the Project Application Name GraphQL API Lambda function to access AWS DynamoDB.",
             policy: {
                 Version: "2012-10-17",
                 Statement: [
@@ -55,20 +54,21 @@ class Graphql {
             }
         });
 
-        new aws.iam.RolePolicyAttachment(`${roleName}-ApiGraphqlLambdaPolicy`, {
+        new aws.iam.RolePolicyAttachment(`project-application-name`, {
             role,
             policyArn: policy.arn.apply(arn => arn)
         });
 
-        new aws.iam.RolePolicyAttachment(`${roleName}-AWSLambdaBasicExecutionRole`, {
+        new aws.iam.RolePolicyAttachment(`project-application-name-execution`, {
             role,
             policyArn: aws.iam.ManagedPolicy.AWSLambdaBasicExecutionRole
         });
 
         this.functions = {
-            api: new aws.lambda.Function("graphql", {
+            api: new aws.lambda.Function("project-application-name", {
                 runtime: "nodejs14.x",
                 handler: "handler.handler",
+                description: "Project Application Name GraphQL API Lambda function.",
                 role: role.arn,
                 timeout: 30,
                 memorySize: 512,

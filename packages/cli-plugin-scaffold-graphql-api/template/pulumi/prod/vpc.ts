@@ -8,7 +8,7 @@ class Vpc {
     };
     constructor() {
         // Create VPC.
-        const vpc = new aws.ec2.Vpc("webiny", {
+        const vpc = new aws.ec2.Vpc("project-application-name", {
             cidrBlock: "10.0.0.0/16"
         });
 

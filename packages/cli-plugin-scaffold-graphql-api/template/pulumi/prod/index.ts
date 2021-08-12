@@ -1,3 +1,4 @@
+import * as pulumi from '@pulumi/pulumi';
 import DynamoDB from "./dynamoDb";
 import Graphql from "./graphql";
 import ApiGateway from "./apiGateway";
@@ -9,10 +10,17 @@ export default () => {
     const api = new Graphql({
         dbTable: dynamoDb.table,
         env: {
+            // The single DynamoDB table in which data can be stored and queried.
             DB_TABLE: dynamoDb.table.name,
+
+            // Among other things, this determines the amount of information we reveal on runtime errors.
+            // https://www.webiny.com/docs/how-to-guides/development/environment-variables
             DEBUG: String(process.env.DEBUG),
+
+            // Enables logs forwarding.
+            // https://www.webiny.com/docs/how-to-guides/webiny-cli/use-watch-command#enabling-logs-forwarding
             WEBINY_LOGS_FORWARD_URL: String(process.env.WEBINY_LOGS_FORWARD_URL)
-        },
+        }
     });
 
     const apiGateway = new ApiGateway({
@@ -36,7 +44,7 @@ export default () => {
 
     return {
         region: process.env.AWS_REGION,
-        apiUrl: cloudfront.cloudfront.domainName.apply(value => `https://${value}`),
+        apiUrl: pulumi.interpolate`https://${cloudfront.cloudfront.domainName}`,
         dynamoDbTable: dynamoDb.table.name
     };
 };
