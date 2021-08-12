@@ -60,7 +60,9 @@ export default {
                     await executeCallbacks<InstallationPlugin["beforeInstall"]>(
                         hookPlugins,
                         "beforeInstall",
-                        { context }
+                        {
+                            context
+                        }
                     );
 
                     // Check whether the PB app is already installed
@@ -186,7 +188,9 @@ export default {
                     await executeCallbacks<InstallationPlugin["afterInstall"]>(
                         hookPlugins,
                         "afterInstall",
-                        { context }
+                        {
+                            context
+                        }
                     );
                 },
                 async upgrade(version) {

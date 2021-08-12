@@ -123,6 +123,7 @@ export class UIViewPlugin<TView extends any> extends Plugin {
 
 interface UIViewComponentProps {
     view: UIView;
+
     [key: string]: any;
 }
 

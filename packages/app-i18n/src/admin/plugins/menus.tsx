@@ -1,6 +1,6 @@
-import { NavigationMenuElement } from "@webiny/app-admin/elements/NavigationMenuElement";
-import { UIViewPlugin } from "@webiny/ui-composer/UIView";
-import { NavigationView } from "@webiny/app-admin/views/NavigationView";
+import { NavigationMenuElement } from "@webiny/app-admin/ui/elements/NavigationMenuElement";
+import { UIViewPlugin } from "@webiny/app-admin/ui/UIView";
+import { NavigationView } from "@webiny/app-admin/ui/views/NavigationView";
 
 export default [
     new UIViewPlugin<NavigationView>(NavigationView, async view => {

@@ -30,9 +30,12 @@ context("Headless CMS - Content Models CRUD", () => {
         ).should("exist");
         // 3.2 Edit tab -> add text field and number field -> Save button
         cy.findByTestId("cms.editor.tab.edit").click();
-        cy.get(
-            `[data-testid="cms-editor-fields-field-text"]`
-        ).drag(`[data-testid="cms-editor-first-field-area"]`, { force: true });
+        cy.get(`[data-testid="cms-editor-fields-field-text"]`).drag(
+            `[data-testid="cms-editor-first-field-area"]`,
+            {
+                force: true
+            }
+        );
         cy.findByTestId("cms-editor-edit-fields-dialog").within(() => {
             cy.findByLabelText("Label").type("Title");
             cy.findByText("Save").click();

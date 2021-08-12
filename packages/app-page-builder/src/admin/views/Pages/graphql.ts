@@ -50,7 +50,7 @@ export const CREATE_PAGE_FROM = gql`
 `;
 
 export const GET_PAGE = gql`
-    query GetPage($id: ID!) {
+    query PbGetPage($id: ID!) {
         pageBuilder {
             getPage(id: $id) {
                 data ${DATA_FIELD}

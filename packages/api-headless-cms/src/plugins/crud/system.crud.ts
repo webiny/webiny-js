@@ -105,7 +105,9 @@ export default new ContextPlugin<CmsContext>(async context => {
                 await executeCallbacks<InstallationPlugin["beforeInstall"]>(
                     installationPlugins,
                     "beforeInstall",
-                    { context }
+                    {
+                        context
+                    }
                 );
 
                 // Add default content model group.
@@ -124,7 +126,9 @@ export default new ContextPlugin<CmsContext>(async context => {
                 await executeCallbacks<InstallationPlugin["afterInstall"]>(
                     installationPlugins,
                     "afterInstall",
-                    { context }
+                    {
+                        context
+                    }
                 );
 
                 // Set app version

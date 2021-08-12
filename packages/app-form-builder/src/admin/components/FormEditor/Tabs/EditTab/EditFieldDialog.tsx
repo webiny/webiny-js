@@ -99,9 +99,9 @@ const EditFieldDialog = ({ field, onSubmit, ...props }: EditFieldDialogProps) =>
                                     }}
                                 >
                                     {isNewField && (
-                                        <DialogButton onClick={() => setScreen("fieldType")}>
-                                            {t`Go back`}
-                                        </DialogButton>
+                                        <DialogButton
+                                            onClick={() => setScreen("fieldType")}
+                                        >{t`Go back`}</DialogButton>
                                     )}
                                     <div>
                                         <DialogButton onClick={onClose}>{t`Cancel`}</DialogButton>

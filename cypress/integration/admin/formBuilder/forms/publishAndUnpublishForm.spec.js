@@ -18,9 +18,12 @@ context("Forms Creation", () => {
 
         // 2. Add "Email" field to the form
         cy.findByTestId("form-editor-field-group-contact").click();
-        cy.get(
-            `[data-testid="fb.editor.fields.field.email"]`
-        ).drag(`[data-testid="fb.editor.dropzone.center"]`, { force: true });
+        cy.get(`[data-testid="fb.editor.fields.field.email"]`).drag(
+            `[data-testid="fb.editor.dropzone.center"]`,
+            {
+                force: true
+            }
+        );
         cy.wait(1000);
 
         // 3. Publish form from inside the editor

@@ -9,6 +9,9 @@ import { PluginCollection } from "@webiny/plugins/types";
 import { ViewPlugin } from "@webiny/app/plugins/ViewPlugin";
 import { createCognitoPasswordValidator } from "./cognitoPasswordValidator";
 import { Authentication, Props } from "./Authentication";
+import { UIViewPlugin } from "@webiny/app-admin/ui/UIView";
+import { UsersFormView } from "@webiny/app-security-admin-users/ui/views/Users/UsersFormView";
+import { PasswordElement } from "@webiny/app-admin/ui/elements/form/PasswordElement";
 
 const defaultPasswordPolicy = {
     minimumLength: 8,
@@ -31,86 +34,87 @@ export interface Options extends CognitOptions {
     getIdentityData: Props["getIdentityData"];
 }
 
-export default (options: Options): PluginCollection => [
-    // Configure Amplify and register ApolloLinkPlugin to attach Authorization header on each GraphQL request.
-    cognitoAuthentication(options),
+export default (options: Options): PluginCollection => {
+    const policy = Object.assign({}, defaultPasswordPolicy, options.passwordPolicy || {});
+    const passwordValidators = [createCognitoPasswordValidator(policy)];
 
-    // Add password input to admin user installation
-    new ViewPlugin({
-        name: "security.installation.fields",
-        render({ children, Bind }) {
-            return (
-                <Fragment>
-                    {children}
-                    <Cell span={12}>
-                        <Bind name="password" validators={validation.create("required")}>
-                            <Input autoComplete="off" type="password" label={"Password"} />
-                        </Bind>
-                    </Cell>
-                </Fragment>
-            );
-        }
-    }),
+    return [
+        // Configure Amplify and register ApolloLinkPlugin to attach Authorization header on each GraphQL request.
+        cognitoAuthentication(options),
 
-    // Add password input to admin user form
-    new ViewPlugin({
-        name: "adminUsers.account.form.fields",
-        render({ children, Bind, data }) {
-            return (
-                <Fragment>
-                    {children}
-                    <Cell span={12}>
-                        <Bind name="password">
-                            <Input
-                                autoComplete="off"
-                                description={data.id && "Type a new password to reset it."}
-                                type="password"
-                                label={"Password"}
-                            />
-                        </Bind>
-                    </Cell>
-                </Fragment>
-            );
-        }
-    }),
-
-    // Add password input to admin user account form
-    new ViewPlugin({
-        name: "adminUsers.user.form.fields",
-        render({ children, Bind, data }) {
-            const policy = Object.assign({}, defaultPasswordPolicy, options.passwordPolicy || {});
-
-            const passwordValidators = [createCognitoPasswordValidator(policy)];
-
-            if (!data.createdOn) {
-                passwordValidators.push(validation.create("required"));
+        // Add password input to admin user installation
+        new ViewPlugin({
+            name: "security.installation.fields",
+            render({ children, Bind }) {
+                return (
+                    <Fragment>
+                        {children}
+                        <Cell span={12}>
+                            <Bind
+                                name="password"
+                                validators={[...passwordValidators, validation.create("required")]}
+                            >
+                                <Input autoComplete="off" type="password" label={"Password"} />
+                            </Bind>
+                        </Cell>
+                    </Fragment>
+                );
             }
+        }),
 
-            return (
-                <Fragment>
-                    {children}
-                    <Cell span={12}>
-                        <Bind name="password" validators={passwordValidators}>
-                            <Input
-                                autoComplete="off"
-                                description={data.id && "Type a new password to reset it."}
-                                type="password"
-                                label={"Password"}
-                            />
-                        </Bind>
-                    </Cell>
-                </Fragment>
+        // Add password input to admin user form
+        new ViewPlugin({
+            name: "adminUsers.account.form.fields",
+            render({ children, Bind, data }) {
+                return (
+                    <Fragment>
+                        {children}
+                        <Cell span={12}>
+                            <Bind name="password" validators={passwordValidators}>
+                                <Input
+                                    autoComplete="off"
+                                    description={data.id && "Type a new password to reset it."}
+                                    type="password"
+                                    label={"Password"}
+                                />
+                            </Bind>
+                        </Cell>
+                    </Fragment>
+                );
+            }
+        }),
+
+        // Add password input to admin user form
+        new UIViewPlugin<UsersFormView>(UsersFormView, view => {
+            const bioSection = view.getElement("bio");
+            bioSection.addElement(
+                new PasswordElement("password", {
+                    name: "password",
+                    label: "Password",
+                    description: props => {
+                        const { data } = props.formProps;
+                        return data.createdOn && "Type a new password to reset it.";
+                    },
+                    validators: props => {
+                        if (!props.formProps.data.createdOn) {
+                            return [...passwordValidators, validation.create("required")];
+                        }
+                        return passwordValidators;
+                    }
+                })
             );
-        }
-    }),
-    new ViewPlugin({
-        name: "admin.installation.secureInstaller",
-        render({ children }) {
-            return (
-                <Authentication getIdentityData={options.getIdentityData}>
-                    {children}
-                </Authentication>
-            );
-        }
-    })
-];
+        }),
+
+        // Add password input to admin user account form
+        new ViewPlugin({
+            name: "admin.installation.secureInstaller",
+            render({ children }) {
+                return (
+                    <Authentication getIdentityData={options.getIdentityData}>
+                        {children}
+                    </Authentication>
+                );
+            }
+        })
+    ];
+};

@@ -179,7 +179,9 @@ export const validateModelAccess = async (
     const modelPermission: CmsContentModelPermission = await checkPermissions(
         context,
         "cms.contentModel",
-        { rwd: "r" }
+        {
+            rwd: "r"
+        }
     );
     const { models } = modelPermission;
     // when no models or groups defined on permission

@@ -90,7 +90,9 @@ const RevisionListItem = ({ revision }: Props) => {
             message={
                 <span>
                     {t`You are about to delete revision {revision}. Are you sure you want to continue?`(
-                        { revision: <strong>#{revision.meta.version}</strong> }
+                        {
+                            revision: <strong>#{revision.meta.version}</strong>
+                        }
                     )}
                 </span>
             }

@@ -12,7 +12,6 @@ env:
 
 jobs:
   npm-release-latest:
-    needs: cache-dependencies-packages
     name: NPM release ("latest" tag)
     runs-on: ubuntu-latest
     environment: release

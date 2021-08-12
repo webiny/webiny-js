@@ -23,9 +23,12 @@ context("Forms Creation", () => {
         cy.wait(333);
         // Add "Email" field to the form
         cy.findByTestId("form-editor-field-group-contact").click();
-        cy.get(
-            `[data-testid="fb.editor.fields.field.email"]`
-        ).drag(`[data-testid="fb.editor.dropzone.center"]`, { force: true });
+        cy.get(`[data-testid="fb.editor.fields.field.email"]`).drag(
+            `[data-testid="fb.editor.dropzone.center"]`,
+            {
+                force: true
+            }
+        );
         cy.wait(1000);
 
         cy.findByTestId("fb-editor-back-button").click();

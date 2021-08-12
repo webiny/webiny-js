@@ -119,7 +119,9 @@ export default {
                         throw new Error(
                             "Form builder failed to install!",
                             "FORM_BUILDER_INSTALL_ABORTED",
-                            { reason: err.message }
+                            {
+                                reason: err.message
+                            }
                         );
                     }
 

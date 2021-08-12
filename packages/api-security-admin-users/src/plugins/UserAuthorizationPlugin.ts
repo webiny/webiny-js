@@ -1,7 +1,6 @@
-import { SecurityIdentity, SecurityPermission } from "@webiny/api-security/types";
+import { SecurityPermission } from "@webiny/api-security/types";
 import { AdminUsersContext, TenantAccess } from "~/types";
 import { AuthorizationPlugin } from "@webiny/api-security/plugins/AuthorizationPlugin";
-import { Tenant } from "@webiny/api-tenancy/types";
 import WebinyError from "@webiny/error";
 
 export interface Config {
@@ -15,18 +14,7 @@ const extractPermissions = (tenantAccess?: TenantAccess): SecurityPermission[] |
     return tenantAccess.group.permissions;
 };
 
-const createCacheKey = ({
-    tenant,
-    identity
-}: {
-    identity: SecurityIdentity;
-    tenant: Tenant;
-}): string => {
-    return `T#${tenant.id}#I#${identity.id}`;
-};
-
 export class UserAuthorizationPlugin extends AuthorizationPlugin<AdminUsersContext> {
-    private _permissionCache = new Map<string, SecurityPermission[] | null>();
     private readonly _config: Config;
 
     constructor(config?: Config) {
@@ -40,11 +28,6 @@ export class UserAuthorizationPlugin extends AuthorizationPlugin<AdminUsersConte
             return null;
         }
         const tenant = tenancy.getCurrentTenant();
-        const cacheKey = createCacheKey({ tenant, identity });
-
-        if (this._permissionCache.has(cacheKey)) {
-            return this._permissionCache.get(cacheKey);
-        }
 
         const user = await security.users.getUser(identity.id, { auth: false });
 
@@ -56,10 +39,6 @@ export class UserAuthorizationPlugin extends AuthorizationPlugin<AdminUsersConte
 
         const permissions = await security.users.getUserAccess(user.login);
         const tenantAccess = permissions.find(set => set.tenant.id === tenant.id);
-        const value = extractPermissions(tenantAccess);
-
-        this._permissionCache.set(cacheKey, value);
-
-        return value;
+        return extractPermissions(tenantAccess);
     }
 }

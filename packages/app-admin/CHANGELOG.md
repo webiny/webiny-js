@@ -3,6 +3,59 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.12.0](https://github.com/webiny/webiny-js/compare/v5.12.0-beta.1...v5.12.0) (2021-08-05)
+
+**Note:** Version bump only for package @webiny/app-admin
+
+
+
+
+
+# [5.12.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.12.0-beta.0...v5.12.0-beta.1) (2021-08-05)
+
+
+### Bug Fixes
+
+* **app-admin:** always return a validation function ([7ba6480](https://github.com/webiny/webiny-js/commit/7ba64804db173c65f0122d916140493d6e34d523))
+
+
+
+
+
+# [5.12.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.11.1...v5.12.0-beta.0) (2021-08-04)
+
+
+### Bug Fixes
+
+* resolve eslint errors ([57f5d18](https://github.com/webiny/webiny-js/commit/57f5d1857ea6a35b92b496b5bd8dd43fc0583df8))
+* restore SplitView component and fix cypress tests ([304a7b3](https://github.com/webiny/webiny-js/commit/304a7b3614e621e9b33fcce54f6ddb1018887b34))
+
+
+### Features
+
+* **app-admin:** add support for dynamic button labels ([58c6a93](https://github.com/webiny/webiny-js/commit/58c6a93b4f2a8546fbf63dbf7a3ca44f9ddd8472))
+* introduce UI composer ([#1800](https://github.com/webiny/webiny-js/issues/1800)) ([35d1f85](https://github.com/webiny/webiny-js/commit/35d1f85531f615c0d1a0a333bc9cdb8167e4f51d))
+
+
+
+
+
+## [5.11.1](https://github.com/webiny/webiny-js/compare/v5.11.1-beta.0...v5.11.1) (2021-07-31)
+
+**Note:** Version bump only for package @webiny/app-admin
+
+
+
+
+
+## [5.11.1-beta.0](https://github.com/webiny/webiny-js/compare/v5.11.0...v5.11.1-beta.0) (2021-07-31)
+
+**Note:** Version bump only for package @webiny/app-admin
+
+
+
+
+
 # [5.11.0](https://github.com/webiny/webiny-js/compare/v5.11.0-beta.2...v5.11.0) (2021-07-22)
 
 **Note:** Version bump only for package @webiny/app-admin
