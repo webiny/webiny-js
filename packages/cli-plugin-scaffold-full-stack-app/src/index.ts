@@ -164,7 +164,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 const answers = await prompt({
                     name: "dataModelName",
                     message: `Enter initial entity name:`,
-                    default: "Book"
+                    default: "Todo"
                 });
 
                 const cliPluginScaffoldGraphQl = context.plugins.byName<CliCommandScaffoldTemplate>(
