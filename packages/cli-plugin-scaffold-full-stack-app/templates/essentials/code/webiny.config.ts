@@ -18,7 +18,7 @@ const NO_ENV_MESSAGE = `Please specify the environment via the "--env" argument,
 
 export default {
     commands: {
-        async start(options, context) {
+        async watch(options, context) {
             invariant(options.env, NO_ENV_MESSAGE);
             Object.assign(
                 process.env,
