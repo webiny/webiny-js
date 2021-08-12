@@ -9763,7 +9763,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/cli-plugin-deploy-pulumi@^5.12.0, @webiny/cli-plugin-deploy-pulumi@workspace:packages/cli-plugin-deploy-pulumi":
+"@webiny/cli-plugin-deploy-pulumi@^5.11.0, @webiny/cli-plugin-deploy-pulumi@^5.12.0, @webiny/cli-plugin-deploy-pulumi@workspace:packages/cli-plugin-deploy-pulumi":
   version: 0.0.0-use.local
   resolution: "@webiny/cli-plugin-deploy-pulumi@workspace:packages/cli-plugin-deploy-pulumi"
   dependencies:
@@ -9861,16 +9861,14 @@ __metadata:
     "@types/pluralize": ^0.0.29
     "@webiny/cli": ^5.11.0
     "@webiny/cli-plugin-scaffold": ^5.11.0
+    "@webiny/cli-plugin-scaffold-graphql-api": ^5.11.0
     "@webiny/handler": ^5.11.0
     "@webiny/plugins": ^5.11.0
     "@webiny/project-utils": ^5.11.0
     case: ^1.6.3
     chalk: ^4.1.0
     execa: ^5.0.0
-    find-up: ^5.0.0
-    load-json-file: ^6.2.0
     ncp: ^2.0.0
-    pluralize: ^8.0.0
     replace-in-path: ^1.1.0
     rimraf: ^3.0.2
     terminal-link: ^2.1.1
@@ -9878,7 +9876,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/cli-plugin-scaffold-graphql-api@workspace:packages/cli-plugin-scaffold-graphql-api":
+"@webiny/cli-plugin-scaffold-graphql-api@^5.11.0, @webiny/cli-plugin-scaffold-graphql-api@workspace:packages/cli-plugin-scaffold-graphql-api":
   version: 0.0.0-use.local
   resolution: "@webiny/cli-plugin-scaffold-graphql-api@workspace:packages/cli-plugin-scaffold-graphql-api"
   dependencies:
@@ -9890,21 +9888,22 @@ __metadata:
     "@types/ncp": ^2.0.4
     "@types/pluralize": ^0.0.29
     "@webiny/cli": ^5.11.0
+    "@webiny/cli-plugin-deploy-pulumi": ^5.11.0
     "@webiny/cli-plugin-scaffold": ^5.11.0
+    "@webiny/error": ^5.11.0
     "@webiny/handler": ^5.11.0
     "@webiny/plugins": ^5.11.0
     "@webiny/project-utils": ^5.11.0
     case: ^1.6.3
     chalk: ^4.1.0
     execa: ^5.0.0
-    find-up: ^5.0.0
     load-json-file: ^6.2.0
     ncp: ^2.0.0
-    pluralize: ^8.0.0
     replace-in-path: ^1.1.0
     rimraf: ^3.0.2
     terminal-link: ^2.1.1
     typescript: ^4.1.3
+    write-json-file: ^4.3.0
   languageName: unknown
   linkType: soft
 
@@ -9934,6 +9933,7 @@ __metadata:
     replace-in-path: ^1.1.0
     rimraf: ^3.0.2
     terminal-link: ^2.1.1
+    ts-morph: ^11.0.0
     typescript: ^4.1.3
     write-json-file: ^4.3.0
   languageName: unknown
@@ -9952,20 +9952,20 @@ __metadata:
     "@types/pluralize": ^0.0.29
     "@webiny/cli": ^5.11.0
     "@webiny/cli-plugin-scaffold": ^5.11.0
+    "@webiny/error": ^5.11.0
     "@webiny/handler": ^5.11.0
     "@webiny/plugins": ^5.11.0
     "@webiny/project-utils": ^5.11.0
     case: ^1.6.3
     chalk: ^4.1.0
     execa: ^5.0.0
-    find-up: ^5.0.0
     load-json-file: ^6.2.0
     ncp: ^2.0.0
-    pluralize: ^8.0.0
     replace-in-path: ^1.1.0
     rimraf: ^3.0.2
     terminal-link: ^2.1.1
     typescript: ^4.1.3
+    write-json-file: ^4.3.0
   languageName: unknown
   linkType: soft
 
@@ -10016,11 +10016,13 @@ __metadata:
     fast-glob: ^3.2.5
     find-up: ^5.0.0
     inquirer: ^7.3.3
+    load-json-file: ^6.2.0
     ora: 4.1.1
     prettier: ^2.3.2
     rimraf: ^3.0.2
     ts-morph: ^11.0.0
     typescript: ^4.1.3
+    write-json-file: ^4.3.0
   languageName: unknown
   linkType: soft
 
@@ -10152,7 +10154,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/error@^5.12.0, @webiny/error@workspace:packages/error":
+"@webiny/error@^5.11.0, @webiny/error@^5.12.0, @webiny/error@workspace:packages/error":
   version: 0.0.0-use.local
   resolution: "@webiny/error@workspace:packages/error"
   dependencies:
