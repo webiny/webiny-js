@@ -5838,8 +5838,8 @@ __metadata:
   linkType: hard
 
 "@pulumi/pulumi@npm:^3.0.0, @pulumi/pulumi@npm:^3.6.0":
-  version: 3.10.0
-  resolution: "@pulumi/pulumi@npm:3.10.0"
+  version: 3.10.1
+  resolution: "@pulumi/pulumi@npm:3.10.1"
   dependencies:
     "@grpc/grpc-js": ^1.2.7
     "@logdna/tail-file": ^2.0.6
@@ -5856,7 +5856,7 @@ __metadata:
     ts-node: ^7.0.1
     typescript: ~3.7.3
     upath: ^1.1.0
-  checksum: e0295278f0a7622bb180c8235e7db3bc382a8cf1c796b0accd5bd6c8afdcc5d57824b5106cbccfd570f5bbd03a3d85340abb071bcce0a33b543b4cdf56abc58e
+  checksum: 6ef6c1c441daed54ed86e94ad106f657bdef73728fc6f5ce245972d06b5fcf180032cb1159927b0d2ab66af99c03bc74478c3af4d3fddfda2c7d67cbe8f72e2d
   languageName: node
   linkType: hard
 
@@ -7410,9 +7410,9 @@ __metadata:
   linkType: hard
 
 "@types/node@npm:*, @types/node@npm:>= 8, @types/node@npm:>=12.12.47, @types/node@npm:>=13.7.0, @types/node@npm:>=6":
-  version: 16.6.0
-  resolution: "@types/node@npm:16.6.0"
-  checksum: 72ab4b9fb47a64657d83336093867aba5bcf2f36facf3c18e9aeff802c078e44fa9f54025b02f2837eb0f2b19c1f551a5201fb4222766454c439de481dbf83d0
+  version: 16.6.1
+  resolution: "@types/node@npm:16.6.1"
+  checksum: c13aa0da0c2bf9070e521d1b537ba38f64b213dd1b8aeec66c279fc21f8c0ccaf380364f6dc2ec8f84440c4cd1460b67dfe47de2cafcb6eaf4b648817cb27dc4
   languageName: node
   linkType: hard
 
@@ -12187,8 +12187,8 @@ __metadata:
   linkType: hard
 
 "aws-sdk@npm:^2.0.0, aws-sdk@npm:^2.539.0":
-  version: 2.966.0
-  resolution: "aws-sdk@npm:2.966.0"
+  version: 2.967.0
+  resolution: "aws-sdk@npm:2.967.0"
   dependencies:
     buffer: 4.9.2
     events: 1.1.1
@@ -12199,7 +12199,7 @@ __metadata:
     url: 0.10.3
     uuid: 3.3.2
     xml2js: 0.4.19
-  checksum: 48fb96c727d501382ed6a2871f82a31d95bc8c4c9f866daeecb7932b4ae2e50c2d75d885027f033dd52092d11f5f95de687984113bf42bdc673feaded02b99ac
+  checksum: 05ccc9fcdece56c19520ff9ef048e4cd6653ede85a05e90415a50c22045083bde7a04df465b96036990613deb700bf7fb1d0832a8a3b678dad2ca915452d48b6
   languageName: node
   linkType: hard
 
