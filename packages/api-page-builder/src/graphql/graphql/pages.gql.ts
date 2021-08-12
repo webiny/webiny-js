@@ -322,7 +322,6 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                         const [data, meta] = await context.pageBuilder.pages.listLatest(args);
                         return new ListResponse(data, meta);
                     } catch (e) {
-                        console.log("listPages", e);
                         return new ErrorResponse(e);
                     }
                 },
