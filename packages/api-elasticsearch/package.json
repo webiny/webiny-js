@@ -12,7 +12,7 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@elastic/elasticsearch": "^7.9.1",
+    "@elastic/elasticsearch": "7.12.0",
     "@webiny/error": "^5.12.0",
     "@webiny/handler": "^5.12.0",
     "@webiny/plugins": "^5.12.0",

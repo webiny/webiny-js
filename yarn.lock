@@ -3059,15 +3059,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@elastic/elasticsearch@npm:^7.9.1":
-  version: 7.13.0
-  resolution: "@elastic/elasticsearch@npm:7.13.0"
+"@elastic/elasticsearch@npm:7.12.0":
+  version: 7.12.0
+  resolution: "@elastic/elasticsearch@npm:7.12.0"
   dependencies:
     debug: ^4.3.1
     hpagent: ^0.1.1
     ms: ^2.1.3
-    secure-json-parse: ^2.4.0
-  checksum: 9881b32643540512947ed55253005fb2c42ad41a4f4cb304c643a2ffa58fef3f23eb4eacd3c35e2a7bb16c4ce6837fff7668b974bed088a4f734507514cdaa1f
+    pump: ^3.0.0
+    secure-json-parse: ^2.3.1
+  checksum: ec823ea4f237b10d7c2ac09b0213702c0f92cbf410103bb1a7b007a9ff3daee6759888bf045204596e2533335e777e7bc4ea112d1ec24a246e3a61e45798612f
   languageName: node
   linkType: hard
 
@@ -8321,7 +8322,7 @@ __metadata:
     "@babel/preset-env": ^7.5.5
     "@babel/preset-typescript": ^7.0.0
     "@babel/runtime": ^7.5.5
-    "@elastic/elasticsearch": ^7.9.1
+    "@elastic/elasticsearch": 7.12.0
     "@elastic/elasticsearch-mock": 0.3.0
     "@shelf/jest-elasticsearch": ^1.0.0
     "@webiny/api-page-builder": ^5.12.0
@@ -8366,7 +8367,7 @@ __metadata:
   dependencies:
     "@babel/cli": ^7.5.5
     "@babel/core": ^7.5.5
-    "@elastic/elasticsearch": ^7.9.1
+    "@elastic/elasticsearch": 7.12.0
     "@webiny/cli": ^5.12.0
     "@webiny/error": ^5.12.0
     "@webiny/handler": ^5.12.0
@@ -8392,7 +8393,7 @@ __metadata:
     "@babel/preset-env": ^7.5.5
     "@babel/preset-typescript": ^7.0.0
     "@babel/runtime": ^7.5.5
-    "@elastic/elasticsearch": ^7.9.1
+    "@elastic/elasticsearch": 7.12.0
     "@elastic/elasticsearch-mock": 0.3.0
     "@shelf/jest-elasticsearch": ^1.0.0
     "@webiny/api-dynamodb-to-elasticsearch": ^5.12.0
@@ -8516,7 +8517,7 @@ __metadata:
     "@babel/preset-typescript": ^7.8.3
     "@babel/runtime": ^7.5.5
     "@commodo/fields": 1.1.2-beta.20
-    "@elastic/elasticsearch": ^7.9.1
+    "@elastic/elasticsearch": 7.12.0
     "@shelf/jest-elasticsearch": ^1.0.0
     "@webiny/api-dynamodb-to-elasticsearch": ^5.12.0
     "@webiny/api-elasticsearch": ^5.12.0
@@ -8562,7 +8563,7 @@ __metadata:
     "@babel/preset-env": ^7.5.5
     "@babel/preset-flow": ^7.0.0
     "@babel/runtime": ^7.5.5
-    "@elastic/elasticsearch": ^7.9.1
+    "@elastic/elasticsearch": 7.12.0
     "@shelf/jest-elasticsearch": ^1.0.0
     "@types/jsonpack": ^1.1.0
     "@webiny/api-dynamodb-to-elasticsearch": ^5.12.0
@@ -8786,7 +8787,7 @@ __metadata:
     "@babel/preset-typescript": ^7.8.3
     "@babel/runtime": ^7.5.5
     "@commodo/fields": beta
-    "@elastic/elasticsearch": ^7.9.1
+    "@elastic/elasticsearch": 7.12.0
     "@shelf/jest-elasticsearch": ^1.0.0
     "@types/puppeteer": ^5.4.2
     "@webiny/api-dynamodb-to-elasticsearch": ^5.12.0
@@ -32342,7 +32343,7 @@ resolve@^2.0.0-next.3:
   languageName: node
   linkType: hard
 
-"secure-json-parse@npm:^2.4.0":
+"secure-json-parse@npm:^2.3.1":
   version: 2.4.0
   resolution: "secure-json-parse@npm:2.4.0"
   checksum: bbf325b52d3eb399b23a337ef7185380424600b4d6c07e62e8d1ab9e9cc657258b897841e4da1ecca9c9d4a83e426756f74fff1685640b3fbe4f481f577517d4
