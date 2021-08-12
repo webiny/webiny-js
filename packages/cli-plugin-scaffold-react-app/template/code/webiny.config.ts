@@ -1,8 +1,8 @@
 import { startApp, buildApp } from "@webiny/project-utils";
 
 // Exports fundamental watch and build commands.
-// Need to inject environment variables, for example an HTTP API URL or maybe a token?
-// See https://github.com/webiny/webiny-js
+// Need to inject environment variables or link your application with an existing GraphQL API?
+// See https://www.webiny.com/docs/how-to-guides/webiny-cli/scaffolding/new-react-application/webiny-config.
 export default {
     commands: {
         async watch(options, context) {

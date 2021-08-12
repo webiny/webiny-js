@@ -366,7 +366,10 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
 
             const links = [
                 ["New GraphQL API Scaffold", SCAFFOLD_DOCS_LINK],
-                ["Create Custom Application Tutorial", SCAFFOLD_DOCS_LINK],
+                [
+                    "Create Custom Application Tutorial",
+                    "https://www.webiny.com/docs/tutorials/create-custom-application/introduction"
+                ],
                 [
                     "Extend GraphQL API Scaffold",
                     "https://www.webiny.com/docs/how-to-guides/webiny-cli/scaffolding/extend-graphql-api"

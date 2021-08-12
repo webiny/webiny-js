@@ -221,7 +221,10 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
 
             const links = [
                 ["New React Application Scaffold", SCAFFOLD_DOCS_LINK],
-                ["Create Custom Application Tutorial", SCAFFOLD_DOCS_LINK],
+                [
+                    "Create Custom Application Tutorial",
+                    "https://www.webiny.com/docs/tutorials/create-custom-application/introduction"
+                ],
                 [
                     "Use the Watch Command",
                     "https://www.webiny.com/docs/how-to-guides/webiny-cli/use-watch-command"

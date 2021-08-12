@@ -5,7 +5,6 @@ import Case from "case";
 import chalk from "chalk";
 import link from "terminal-link";
 import { deployGraphQLAPI } from "@webiny/cli-plugin-scaffold-graphql-api";
-import pluralize from "pluralize";
 import { replaceInPath } from "replace-in-path";
 
 import util from "util";
@@ -273,7 +272,10 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
 
             const links = [
                 ["Full Stack Application Scaffold", SCAFFOLD_DOCS_LINK],
-                ["Create Custom Application Tutorial", SCAFFOLD_DOCS_LINK],
+                [
+                    "Create Custom Application Tutorial",
+                    "https://www.webiny.com/docs/tutorials/create-custom-application/introduction"
+                ],
                 [
                     "Extend GraphQL API Scaffold",
                     "https://www.webiny.com/docs/how-to-guides/webiny-cli/scaffolding/extend-graphql-api"
