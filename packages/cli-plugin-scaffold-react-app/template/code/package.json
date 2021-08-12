@@ -5,9 +5,9 @@
   "dependencies": {
     "@apollo/react-components": "^3.1.5",
     "@types/react": "^16.14.2",
-    "@webiny/app": "^5.11.0",
-    "@webiny/plugins": "^5.11.0",
-    "@webiny/react-router": "^5.11.0",
+    "@webiny/app": "^WEBINY_VERSION",
+    "@webiny/plugins": "^WEBINY_VERSION",
+    "@webiny/react-router": "^WEBINY_VERSION",
     "apollo-cache": "^1.3.5",
     "apollo-cache-inmemory": "^1.6.6",
     "apollo-client": "^2.2.8",
@@ -22,9 +22,9 @@
     "regenerator-runtime": "^0.13.5"
   },
   "devDependencies": {
-    "@webiny/cli": "^5.11.0",
-    "@webiny/cli-plugin-deploy-pulumi": "^5.11.0",
-    "@webiny/project-utils": "^5.11.0",
+    "@webiny/cli": "^WEBINY_VERSION",
+    "@webiny/cli-plugin-deploy-pulumi": "^WEBINY_VERSION",
+    "@webiny/project-utils": "^WEBINY_VERSION",
     "cross-env": "^5.0.2",
     "invariant": "^2.2.4"
   },

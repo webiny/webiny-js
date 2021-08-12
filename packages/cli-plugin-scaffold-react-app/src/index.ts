@@ -150,6 +150,18 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
             );
             await writeJson(tsConfigJsonPath, tsConfigJson);
 
+            {
+                // Set correct `@webiny/*` package versions in the package.json file.
+                const p = path.join(input.path, "code", "package.json");
+                const replacements = [
+                    {
+                        find: "WEBINY_VERSION",
+                        replaceWith: context.version
+                    }
+                ];
+                replaceInPath(p, replacements);
+            }
+
             ora.stopAndPersist({
                 symbol: chalk.green("✔"),
                 text: `New React Application created in ${chalk.green(input.path)}.`
