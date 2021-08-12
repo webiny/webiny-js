@@ -21,7 +21,7 @@ export class MenuSectionRenderer extends UIRenderer<NavigationMenuElement> {
         return element.depth === 2;
     }
 
-    render({ element, props, next }: UIRenderParams<NavigationMenuElement>): React.ReactNode {
+    render({ element, next }: UIRenderParams<NavigationMenuElement>): React.ReactNode {
         return (
             <Fragment>
                 <div className={menuSectionTitle}>
