@@ -34,7 +34,7 @@ const submenuList = css({
 
 export class MenuSectionItemRenderer extends UIRenderer<NavigationMenuElement> {
     canRender(element: NavigationMenuElement): boolean {
-        return element.depth === 3;
+        return [2, 3].includes(element.depth) && Boolean(element.config.path);
     }
 
     render({ element, props }: UIRenderParams<NavigationMenuElement>): React.ReactNode {
