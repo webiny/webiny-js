@@ -29,6 +29,10 @@ export default ({ region, userPoolId }) => {
             `
         }),
         new UserPlugin({
+            async beforeUpdate({ updateData }) {
+                // Immediately delete password from `updateData`, as that object will be merged with the `user` data.
+                delete updateData["password"];
+            },
             async beforeCreate({ inputData, user, context }) {
                 // Immediately delete password from `user`, as that object will be stored to the database.
                 // Password field is attached by Cognito plugin, so we only want this plugin to handle it.
@@ -98,10 +102,6 @@ export default ({ region, userPoolId }) => {
                 }
             },
             async afterUpdate({ inputData, user }) {
-                // Immediately delete password from `user`, as that object will be stored to the database.
-                // Password field is attached by Cognito plugin, so we only want this plugin to handle it.
-                delete user["password"];
-
                 const params = {
                     UserAttributes: Object.keys(updateAttributes).map(attr => {
                         return { Name: attr, Value: user[updateAttributes[attr]] };
