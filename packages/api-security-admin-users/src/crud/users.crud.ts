@@ -153,8 +153,9 @@ export default new ContextPlugin<AdminUsersContext>(async context => {
             }
         },
 
-        async createUser(data, options): Promise<User> {
+        async createUser(userData, options): Promise<User> {
             const { security, tenancy } = context;
+            const { group: groupSlug, ...data } = userData;
 
             await checkPermission(options);
 
@@ -216,7 +217,7 @@ export default new ContextPlugin<AdminUsersContext>(async context => {
                     inputData: data
                 });
                 const tenant = tenancy.getCurrentTenant();
-                const group = await security.groups.getGroup(data.group, options);
+                const group = await security.groups.getGroup(groupSlug, options);
                 await security.users.linkUserToTenant(result.login, tenant, group);
                 return result;
             } catch (ex) {
@@ -522,33 +523,30 @@ export default new ContextPlugin<AdminUsersContext>(async context => {
                 throw new NotAuthorizedError();
             }
 
-            const original = await security.users.getUser(login);
-            if (!original) {
+            const originalUser = await security.users.getUser(login);
+            if (!originalUser) {
                 throw new NotFoundError(`User "${login}" was not found!`);
             }
 
-            const updateData = cloneDeep(data);
+            // Group doesn't go into the user record.
+            // A user can belong to different groups on different tenants, so we don't store it into the main user record.
+            const { group: groupSlug, ...updateData } = cloneDeep(data);
 
-            const user: User = {
-                ...original,
-                ...updateData
-            };
-            user.id = user.id || user.login;
-
-            /**
-             * Always delete the password from the user data, just in case something passed it into the input.
-             */
-            delete user["password"];
+            // Make sure "group" is not sent to the storage layer.
+            delete originalUser["group"];
 
             try {
                 await executeCallback<UserPlugin["beforeUpdate"]>(userPlugins, "beforeUpdate", {
                     context,
-                    user,
+                    user: originalUser,
                     updateData,
                     inputData: data
                 });
+
+                const user = { ...originalUser, ...updateData };
+
                 const result = await storageOperations.updateUser({
-                    original,
+                    original: originalUser,
                     user
                 });
                 await executeCallback<UserPlugin["afterUpdate"]>(userPlugins, "afterUpdate", {
@@ -564,12 +562,10 @@ export default new ContextPlugin<AdminUsersContext>(async context => {
                 /**
                  * If there is a group defined, remove the existing one and add the new one.
                  */
-                if (data.group) {
+                if (groupSlug) {
                     const tenant = tenancy.getCurrentTenant();
+                    const group = await security.groups.getGroup(groupSlug);
                     await security.users.unlinkUserFromTenant(result.login, tenant);
-
-                    const group = await security.groups.getGroup(data.group);
-
                     await security.users.linkUserToTenant(result.login, tenant, group);
                 }
                 return result;
@@ -577,11 +573,7 @@ export default new ContextPlugin<AdminUsersContext>(async context => {
                 throw new WebinyError(
                     ex.messsage || "Cannot update user.",
                     ex.code || "UPDATE_USER_ERROR",
-                    {
-                        ...(ex.data || {}),
-                        original,
-                        user
-                    }
+                    ex.data || {}
                 );
             }
         }
