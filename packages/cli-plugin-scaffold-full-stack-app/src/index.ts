@@ -149,24 +149,18 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
             console.log();
             console.log(chalk.bold("A Simple GraphQL API Example"));
             console.log(
-                `By default, the new React application doesn't create an example of interacting with GraphQL API.`
+                `An example of interacting with the created GraphQL API can be included in the React application code.`
             );
 
             const prompt = inquirer.createPromptModule();
             const { graphqlApiExample } = await prompt({
                 name: "graphqlApiExample",
-                message: `Would you like to create it?`,
+                message: `Would you like to include it?`,
                 type: "confirm",
                 default: true
             });
 
             if (graphqlApiExample) {
-                const answers = await prompt({
-                    name: "dataModelName",
-                    message: `Enter initial entity name:`,
-                    default: "Todo"
-                });
-
                 const cliPluginScaffoldGraphQl = context.plugins.byName<CliCommandScaffoldTemplate>(
                     "cli-plugin-scaffold-graphql"
                 );
@@ -175,7 +169,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                     ...options,
                     input: {
                         showConfirmation: false,
-                        dataModelName: answers.dataModelName,
+                        dataModelName: "Todo",
                         pluginsFolderPath: path.join(apiPath, "code", "graphql", "src", "plugins")
                     }
                 });
@@ -185,8 +179,8 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
 
                 // Store used input, so that maybe some of
                 const dataModelName = {
-                    plural: pluralize(Case.camel(answers.dataModelName)),
-                    singular: pluralize.singular(Case.camel(answers.dataModelName))
+                    plural: "Todos",
+                    singular: "Todo"
                 };
 
                 // Wait a bit, since otherwise, replaceInPath might fail. Too soon making operations?
@@ -251,16 +245,24 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
             }
 
             console.log(
+                `‣ continue GraphQL API development by running ${chalk.green(
+                    `yarn webiny watch ${apiPath} --env dev`
+                )}`
+            );
+
+            console.log(
                 `‣ start the React application locally and continue development by running ${chalk.green(
                     `yarn webiny watch ${appPath} --env dev`
                 )}`
             );
 
-            console.log(
-                `‣ continue GraphQL API development by running ${chalk.green(
-                    `yarn webiny watch ${apiPath} --env dev`
-                )}`
-            );
+            if (graphqlApiExample) {
+                console.log(
+                    `‣ ${chalk.green(
+                        "✔"
+                    )} check out the included GraphQL API interaction example via the link in the top left menu`
+                );
+            }
 
             console.log(
                 `‣ to speed up your GraphQL API development, use the ${chalk.green(
