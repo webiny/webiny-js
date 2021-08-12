@@ -150,12 +150,14 @@ export default {
                             {
                                 title: "Welcome to Webiny",
                                 path: "/welcome-to-webiny",
-                                content: welcomeToWebinyPageContent
+                                content: welcomeToWebinyPageContent,
+                                settings: {}
                             },
                             {
                                 title: "Not Found",
                                 path: "/not-found",
                                 content: notFoundPageData,
+                                settings: {},
                                 // Do not show the page in page lists, only direct get is possible.
                                 visibility: {
                                     get: { latest: true, published: true },

@@ -13,7 +13,7 @@ const verifyConfig = require("./utils/verifyConfig");
             chalk.red(
                 [
                     `You are running Node.js ${nodeVersion}, but Webiny requires version 12 or 14.`,
-                    `Please switch to one of the two and try again.`,
+                    `Please switch to one of the two versions and try again.`,
                     "For more information, please visit https://docs.webiny.com/docs/tutorials/install-webiny#prerequisites."
                 ].join(" ")
             )
@@ -23,10 +23,13 @@ const verifyConfig = require("./utils/verifyConfig");
 
     try {
         const yarnVersion = await getYarnVersion();
-        if (!semver.satisfies(yarnVersion, "^1.22.0 || ^2")) {
+        if (!semver.satisfies(yarnVersion, "^1.22.0 || ^2 || ^3")) {
             console.error(
                 chalk.red(
-                    `Webiny requires yarn@^1.22.0. Please run "npm install -g yarn" to update.`
+                    [
+                        `Webiny requires yarn@^1.22.0 or higher.`,
+                        `Please visit https://yarnpkg.com/ to install ${chalk.green("yarn")}.`
+                    ].join("\n")
                 )
             );
             process.exit(1);
