@@ -258,9 +258,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
 
             if (graphqlApiExample) {
                 console.log(
-                    `‣ ${chalk.green(
-                        "✔"
-                    )} check out the included GraphQL API interaction example via the link in the top left menu`
+                    `‣ start the React application locally and check out the included GraphQL API interaction example`
                 );
             }
 
