@@ -1,5 +1,5 @@
 export default {
-    id: "projectApplicationId",
+    id: "projectApplicationName",
     name: "Project application name",
     description: "Project application description",
     cli: {
