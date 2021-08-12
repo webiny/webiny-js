@@ -33,7 +33,7 @@ class Graphql {
         });
 
         const policy = new aws.iam.Policy("project-application-name", {
-            description: "Enables the Project Application Name GraphQL API Lambda function to access AWS DynamoDB.",
+            description: "Project application name - enables the GraphQL API Lambda function to access AWS DynamoDB.",
             policy: {
                 Version: "2012-10-17",
                 Statement: [
@@ -73,7 +73,7 @@ class Graphql {
             api: new aws.lambda.Function("project-application-name", {
                 runtime: "nodejs12.x",
                 handler: "handler.handler",
-                description: "Project Application Name GraphQL API Lambda function.",
+                description: "Project application name - GraphQL API Lambda function.",
                 role: this.role.arn,
                 timeout: 30,
                 memorySize: 512,

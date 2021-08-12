@@ -6,7 +6,7 @@ class ApiGateway {
     constructor({ routes }: { routes: Array<any> }) {
         this.api = new aws.apigatewayv2.Api("project-application-name", {
             protocolType: "HTTP",
-            description: "Project Application Name - API Gateway"
+            description: "Project application name - API Gateway"
         });
 
         this.defaultStage = new aws.apigatewayv2.Stage("default", {
@@ -17,7 +17,7 @@ class ApiGateway {
         for (let i = 0; i < routes.length; i++) {
             const route = routes[i];
             const integration = new aws.apigatewayv2.Integration(route.name, {
-                description: "Project Application Name - GraphQL API Integration",
+                description: "Project application name - GraphQL API Integration",
                 apiId: this.api.id,
                 integrationType: "AWS_PROXY",
                 integrationMethod: route.method,
