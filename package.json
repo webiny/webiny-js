@@ -13,10 +13,7 @@
 			"api/code/pageBuilder/*",
 			"api/code/prerenderingService/render",
 			"api/code/prerenderingService/flush",
-			"xyz/api/code/graphql",
-			"xyz/app/code",
-			"xyz2/api/code/graphql",
-			"xyz2/app/code"
+			"api/code/prerenderingService/queue/*"
 		]
 	},
 	"author": "Webiny Ltd.",
