@@ -3,6 +3,8 @@ import styled from "@emotion/styled";
 import { Link } from "@webiny/react-router";
 import Newsletter from "./Neswletter";
 import { FooterProps } from "./index";
+import { CustomLink, FooterMenuProps } from "./FooterMenu";
+import Menu from "../Menu";
 
 const FooterContainer = styled.div`
     box-sizing: border-box;
@@ -96,6 +98,18 @@ const WebsiteCopyRight = styled.p`
     margin-bottom: 12px;
 `;
 
+const FooterSocialMenu: React.FunctionComponent<FooterMenuProps> = ({ data }) => {
+    const socialMenuData = data.items.find(item => item.title === "Social");
+    return (
+        <Links>
+            {socialMenuData &&
+                socialMenuData.children.map(({ id, url, title }) => (
+                    <CustomLink key={id} url={url} title={title} />
+                ))}
+        </Links>
+    );
+};
+
 const MainFooter = ({ settings }: FooterProps) => {
     const { name, logo } = settings;
     return (
@@ -108,13 +122,7 @@ const MainFooter = ({ settings }: FooterProps) => {
                     <WebsiteDescription className={"webiny-pb-typography-description"}>
                         Webiny free to use and released under the MIT open source license.
                     </WebsiteDescription>
-                    <Links>
-                        <a href="">Github</a>
-                        <a href="">Twitter</a>
-                        <a href="">YouTube</a>
-                        <a href="">Slack</a>
-                        <a href="">Blog</a>
-                    </Links>
+                    <Menu slug={"footer-main"} component={FooterSocialMenu} />
                     <WebsiteCopyRight className={"webiny-pb-typography-description"}>
                         {name} © {new Date().getFullYear()}
                     </WebsiteCopyRight>

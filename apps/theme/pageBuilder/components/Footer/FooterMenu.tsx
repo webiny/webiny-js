@@ -59,87 +59,59 @@ const footerMenu = css`
         display: none;
     }
 `;
+const externalProtocols = ["https:", "http:", "mailto:"];
 
-const FooterMenu = () => (
-    <ContentContainer className={footerMenu}>
-        <MenuBlock>
-            <SectionTitle>Developers</SectionTitle>
-            <a href="/docs/webiny/introduction/">Documentation</a>
-            <a
-                onClick={() => {
-                    trackGoToGithub({ placement: "footer-menu" });
-                }}
-                href="https://github.com/webiny/webiny-js/blob/master/LICENSE"
-            >
-                License
+interface CustomLinkProps {
+    url: string;
+    title: string;
+}
+
+export const CustomLink: React.FunctionComponent<CustomLinkProps> = ({ url, title }) => {
+    const isExternal = externalProtocols.some(p => url.startsWith(p));
+
+    let onClick = null;
+    if (url.includes("github.com")) {
+        onClick = () => trackGoToGithub({ placement: "footer-menu" });
+    }
+
+    if (isExternal) {
+        return (
+            <a onClick={onClick} href={url} rel={"noreferrer noopener"} target={"_blank"}>
+                {title}
             </a>
-            <a
-                onClick={() => {
-                    trackGoToGithub({ placement: "footer-menu" });
-                }}
-                href="https://github.com/webiny/webiny-js"
-            >
-                GitHub repository
-            </a>
-            <a
-                onClick={() => {
-                    trackGoToGithub({ placement: "footer-menu" });
-                }}
-                href="https://github.com/webiny/webiny-js/blob/master/docs/CONTRIBUTING.md"
-            >
-                Contribute
-            </a>
-        </MenuBlock>
-        <MenuBlock>
-            <SectionTitle>Webiny</SectionTitle>
-            <Link to="/serverless-application-framework">
-                Serverless Application
-                <br />
-                Framework
-            </Link>
-            <Link to="/serverless-cms">Serverless CMS</Link>
-            <Link to="/enterprise">For Enterprise</Link>
-            <Link to="/why-webiny">Why Webiny?</Link>
-            <Link to="/partners">Webiny Partners</Link>
-            <Link to="/roadmap">Roadmap</Link>
-        </MenuBlock>
-        <MenuBlock>
-            <SectionTitle>Community</SectionTitle>
-            <a href="https://www.webiny.com/slack">Slack Chat</a>
-            <Link to="/blog">Blog</Link>
-            <Link to="/swag">SWAG</Link>
-            <Link to="/events">Events</Link>
-        </MenuBlock>
-        <MenuBlock>
-            <SectionTitle>Use Cases & Guides</SectionTitle>
-            <Link rel="prerender" to="/use-case/serverless-websites">
-                Build Serverless Websites
-            </Link>
-            <Link rel="prerender" to="/use-case/serverless-web-applications">
-                Build Serverless Apps
-            </Link>
-            <Link rel="prerender" to="/use-case/serverless-graphql-api">
-                Build Serverless APIs
-            </Link>
-            <Link rel="prerender" to="/use-case/microservices">
-                Build Microservices
-            </Link>
-            <Link rel="prerender" to="/guides/serverless-guide">
-                Guide to Serverless
-            </Link>
-        </MenuBlock>
-        <MenuBlock>
-            <SectionTitle>Company</SectionTitle>
-            <Link rel="prerender" to="/about-us">
-                About Us
-            </Link>
-            <a href="https://careers.webiny.com">Careers</a>
-            <Link rel="prerender" to="/privacy-policy">
-                Privacy Policy
-            </Link>
-            <a href="mailto:sven@webiny.com">Contact Us</a>
-        </MenuBlock>
-    </ContentContainer>
-);
+        );
+    }
+
+    return (
+        <Link to={url} rel="prerender">
+            {title}
+        </Link>
+    );
+};
+
+export interface FooterMenuProps {
+    data: {
+        items: any[];
+        title: string | null;
+        slug: string | null;
+    };
+}
+
+const FooterMenu: React.FunctionComponent<FooterMenuProps> = ({ data }) => {
+    return (
+        <ContentContainer className={footerMenu}>
+            {data.items.map(item => {
+                return (
+                    <MenuBlock key={item.id}>
+                        <SectionTitle>{item.title}</SectionTitle>
+                        {item.children.map(menuItem => (
+                            <CustomLink key={menuItem.id} {...menuItem} />
+                        ))}
+                    </MenuBlock>
+                );
+            })}
+        </ContentContainer>
+    );
+};
 
 export default FooterMenu;
