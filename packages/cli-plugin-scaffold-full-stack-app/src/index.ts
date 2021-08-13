@@ -26,7 +26,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
     scaffold: {
         name: "New Full Stack Application",
         description:
-            "Creates a new React application and the supporting GraphQL API." +
+            "Creates a new React application and a supporting GraphQL API." +
             (link.isSupported ? " " + link("Learn more.", SCAFFOLD_DOCS_LINK) : ""),
         questions: () => {
             return [
