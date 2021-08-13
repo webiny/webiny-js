@@ -184,20 +184,12 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 const p = path.join(input.path, "code", "graphql", "jest.config.js");
                 const replacements = [
                     {
-                        find: "JEST_CONFIG_BASE_PATH",
+                        find: "PATH",
                         replaceWith: path.relative(
                             path.join(context.project.root, input.path, "code", "graphql"),
                             context.project.root
                         )
                     },
-                    {
-                        find: "GRAPHQL_API_CODE_FOLDER_PATH",
-                        replaceWith: path.join(input.path, "code", "graphql")
-                    },
-                    {
-                        find: "PROJECT_APPLICATION_FOLDER_PATH",
-                        replaceWith: input.path
-                    }
                 ];
                 replaceInPath(p, replacements);
             }
