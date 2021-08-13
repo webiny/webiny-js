@@ -1,4 +1,4 @@
-import * as pulumi from '@pulumi/pulumi';
+import * as pulumi from "@pulumi/pulumi";
 import DynamoDB from "./dynamoDb";
 import Graphql from "./graphql";
 import ApiGateway from "./apiGateway";

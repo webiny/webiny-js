@@ -13,11 +13,8 @@ class Graphql {
     };
     role: aws.iam.Role;
 
-    constructor({
-        env,
-        dbTable,
-    }: GraphqlParams) {
-        this.role = new aws.iam.Role('project-application-name', {
+    constructor({ env, dbTable }: GraphqlParams) {
+        this.role = new aws.iam.Role("project-application-name", {
             assumeRolePolicy: {
                 Version: "2012-10-17",
                 Statement: [
@@ -33,7 +30,8 @@ class Graphql {
         });
 
         const policy = new aws.iam.Policy("project-application-name", {
-            description: "Project application name - enables the GraphQL API Lambda function to access AWS DynamoDB.",
+            description:
+                "Project application name - enables the GraphQL API Lambda function to access AWS DynamoDB.",
             policy: {
                 Version: "2012-10-17",
                 Statement: [

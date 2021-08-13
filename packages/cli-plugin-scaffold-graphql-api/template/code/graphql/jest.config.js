@@ -14,7 +14,10 @@ const DEPLOY_ENVIRONMENT = "dev";
 
 if (TEST_TYPE !== "unit") {
     log.info(`${log.info.hl("GRAPHQL_API_CODE_FOLDER_PATH")}: Assigning environment variables...`);
-    const stackOutput = getStackOutput({ folder: "PROJECT_APPLICATION_FOLDER_PATH", env: DEPLOY_ENVIRONMENT });
+    const stackOutput = getStackOutput({
+        folder: "PROJECT_APPLICATION_FOLDER_PATH",
+        env: DEPLOY_ENVIRONMENT
+    });
 
     if (stackOutput) {
         // Assign received values as environment variables.

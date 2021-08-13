@@ -15,7 +15,7 @@ function NotFound(props: RouteChildrenProps) {
             <h2>
                 Unfortunately, nothing was found at <code>{props.match.url}</code>.
             </h2>
-                <Link to={"/"}> &larr; Back</Link>
+            <Link to={"/"}> &larr; Back</Link>
         </Layout>
     );
 }
