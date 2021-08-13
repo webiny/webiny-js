@@ -17,7 +17,7 @@ export default [
             })
         );
 
-        localesMenu.addElement(
+        localesMenu.addElement<NavigationMenuElement>(
             new NavigationMenuElement("locales.crud", {
                 label: "Locales",
                 path: "/i18n/locales"

@@ -15,7 +15,7 @@ export default new UIViewPlugin<NavigationView>(NavigationView, async view => {
         return;
     }
 
-    const mainMenu = view.getSettingsMenuElement().addElement(
+    const mainMenu = view.getSettingsMenuElement().addElement<NavigationMenuElement>(
         new NavigationMenuElement("security", {
             label: "Security",
             tags: [TAGS.UTILS]
@@ -23,7 +23,7 @@ export default new UIViewPlugin<NavigationView>(NavigationView, async view => {
     );
 
     if (users) {
-        mainMenu.addElement(
+        mainMenu.addElement<NavigationMenuElement>(
             new NavigationMenuElement("users", {
                 label: "Users",
                 path: "/security/users"
@@ -32,7 +32,7 @@ export default new UIViewPlugin<NavigationView>(NavigationView, async view => {
     }
 
     if (groups) {
-        mainMenu.addElement(
+        mainMenu.addElement<NavigationMenuElement>(
             new NavigationMenuElement("groups", {
                 label: "Groups",
                 path: "/security/groups"
@@ -41,7 +41,7 @@ export default new UIViewPlugin<NavigationView>(NavigationView, async view => {
     }
 
     if (apiKeys) {
-        mainMenu.addElement(
+        mainMenu.addElement<NavigationMenuElement>(
             new NavigationMenuElement("apiKeys", {
                 label: "API Keys",
                 path: "/security/api-keys"

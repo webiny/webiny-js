@@ -21,14 +21,14 @@ export class MenuSectionRenderer extends UIRenderer<NavigationMenuElement> {
         return element.depth === 2;
     }
 
-    render({ element, props, next }: UIRenderParams<NavigationMenuElement>): React.ReactNode {
+    render({ element, next }: UIRenderParams<NavigationMenuElement>): React.ReactNode {
         return (
             <Fragment>
                 <div className={menuSectionTitle}>
                     <div className={iconWrapper}>{element.config.icon}</div>
                     <Typography use="overline">{element.config.label}</Typography>
                 </div>
-                {next(props)}
+                {next()}
             </Fragment>
         );
     }

@@ -11,9 +11,6 @@ export type SecurityContextValue = {
 export const SecurityProvider = props => {
     const [identity, setIdentity] = useState(null);
 
-    // @ts-ignore
-    window.SecurityIdentity = identity;
-
     const value = useMemo(
         () => ({
             identity,
