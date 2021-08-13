@@ -1,3 +1,4 @@
+const os = require("os");
 const execa = require("execa");
 const chalk = require("chalk");
 const localtunnel = require("localtunnel");
@@ -162,10 +163,12 @@ module.exports = async (inputs, context) => {
                 inputs.folder,
                 "**/build"
             ].join("/");
+
             const buildFolders = glob.sync(buildFoldersGlob, { onlyFiles: false });
 
             // The final array of values that will be sent to Pulumi CLI's "--path" argument.
-            const pathArg = [pulumiFolder, ...buildFolders];
+            // NOTE: for Windows, there's a bug in Pulumi preventing us to use path filtering.
+            const pathArg = os.platform() === "win32" ? undefined : [pulumiFolder, ...buildFolders];
 
             // Log used values if debugging has been enabled.
             if (inputs.debug) {

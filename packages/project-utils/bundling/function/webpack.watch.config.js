@@ -38,6 +38,11 @@ module.exports = ({ entry, output, debug = false, babelOptions, define }) => {
             exprContextCritical: false,
             rules: [
                 {
+                    test: /\.mjs$/,
+                    include: /node_modules/,
+                    type: "javascript/auto"
+                },
+                {
                     test: /\.(js|ts)$/,
                     loader: require.resolve("babel-loader"),
                     exclude: /node_modules/,
