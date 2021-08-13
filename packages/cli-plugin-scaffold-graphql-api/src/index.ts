@@ -142,6 +142,10 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 { find: "projectApplicationName", replaceWith: Case.camel(input.name) },
                 { find: "project-application-name", replaceWith: Case.kebab(input.name) },
                 {
+                    find: "project/application/path",
+                    replaceWith: input.path
+                },
+                {
                     find: "project-application-path",
                     replaceWith: Case.kebab(input.path)
                 }
