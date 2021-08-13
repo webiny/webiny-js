@@ -9,11 +9,17 @@ import FileManager from "./fileManager";
 import PageBuilder from "./pageBuilder";
 import PrerenderingService from "./prerenderingService";
 
-/**
- * We protect mission critical cloud infrastructure resource against accidental deletion. We do this
- * only for the "prod" environment, but, if needed, feel free to additional environments.
- * @see https://www.pulumi.com/docs/intro/concepts/resources/#protect
- */
+// Among other things, this determines the amount of information we reveal on runtime errors.
+// https://www.webiny.com/docs/how-to-guides/development/environment-variables/#debug-environment-variable
+const DEBUG = String(process.env.DEBUG);
+
+// Enables logs forwarding.
+// https://www.webiny.com/docs/how-to-guides/webiny-cli/use-watch-command#enabling-logs-forwarding
+const WEBINY_LOGS_FORWARD_URL = String(process.env.WEBINY_LOGS_FORWARD_URL);
+
+// We protect mission critical cloud infrastructure resource against accidental deletion. We do this
+// only for the "prod" environment, but, if needed, feel free to additional environments.
+// https://www.pulumi.com/docs/intro/concepts/resources/#protect
 const protectedEnvironment = process.env.WEBINY_ENV === "prod";
 
 export default () => {
@@ -27,7 +33,7 @@ export default () => {
         env: {
             DB_TABLE: dynamoDb.table.name,
             DB_TABLE_ELASTICSEARCH: elasticsearch.table.name,
-            DEBUG: String(process.env.DEBUG)
+            DEBUG
         },
         primaryDynamodbTable: dynamoDb.table,
         elasticsearchDynamodbTable: elasticsearch.table,
@@ -38,7 +44,7 @@ export default () => {
         env: {
             DB_TABLE: dynamoDb.table.name,
             DB_TABLE_ELASTICSEARCH: elasticsearch.table.name,
-            DEBUG: String(process.env.DEBUG)
+            DEBUG
         },
         bucket: fileManager.bucket,
         primaryDynamodbTable: dynamoDb.table
@@ -50,7 +56,6 @@ export default () => {
             COGNITO_USER_POOL_ID: cognito.userPool.id,
             DB_TABLE: dynamoDb.table.name,
             DB_TABLE_ELASTICSEARCH: elasticsearch.table.name,
-            DEBUG: String(process.env.DEBUG),
             ELASTIC_SEARCH_ENDPOINT: elasticsearch.domain.endpoint,
 
             // Not required. Useful for testing purposes / ephemeral environments.
@@ -62,7 +67,8 @@ export default () => {
             PRERENDERING_QUEUE_ADD_HANDLER: prerenderingService.functions.queue.add.arn,
             PRERENDERING_QUEUE_PROCESS_HANDLER: prerenderingService.functions.queue.process.arn,
             S3_BUCKET: fileManager.bucket.id,
-            WEBINY_LOGS_FORWARD_URL: String(process.env.WEBINY_LOGS_FORWARD_URL)
+            DEBUG,
+            WEBINY_LOGS_FORWARD_URL
         },
         primaryDynamodbTable: dynamoDb.table,
         elasticsearchDynamodbTable: elasticsearch.table,
@@ -77,10 +83,10 @@ export default () => {
             COGNITO_USER_POOL_ID: cognito.userPool.id,
             DB_TABLE: dynamoDb.table.name,
             DB_TABLE_ELASTICSEARCH: elasticsearch.table.name,
-            DEBUG: String(process.env.DEBUG),
             ELASTIC_SEARCH_ENDPOINT: elasticsearch.domain.endpoint,
             S3_BUCKET: fileManager.bucket.id,
-            WEBINY_LOGS_FORWARD_URL: String(process.env.WEBINY_LOGS_FORWARD_URL)
+            DEBUG,
+            WEBINY_LOGS_FORWARD_URL
         },
         primaryDynamodbTable: dynamoDb.table,
         elasticsearchDynamodbTable: elasticsearch.table,
