@@ -6,6 +6,9 @@
       "path": "../cli-plugin-scaffold"
     },
     {
+      "path": "../cli-plugin-scaffold-graphql-api"
+    },
+    {
       "path": "../handler"
     },
     {
@@ -16,6 +19,8 @@
     "paths": {
       "@webiny/cli-plugin-scaffold/*": ["../cli-plugin-scaffold/src/*"],
       "@webiny/cli-plugin-scaffold": ["../cli-plugin-scaffold/src"],
+      "@webiny/cli-plugin-scaffold-graphql-api/*": ["../cli-plugin-scaffold-graphql-api/src/*"],
+      "@webiny/cli-plugin-scaffold-graphql-api": ["../cli-plugin-scaffold-graphql-api/src"],
       "@webiny/handler/*": ["../handler/src/*"],
       "@webiny/handler": ["../handler/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],

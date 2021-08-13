@@ -1,7 +1,13 @@
 {
   "extends": "../../tsconfig.build.json",
   "include": ["src"],
-  "exclude": ["node_modules", "../plugins", "../handler", "../cli-plugin-scaffold"],
+  "exclude": [
+    "node_modules",
+    "../plugins",
+    "../handler",
+    "../cli-plugin-scaffold",
+    "../cli-plugin-scaffold-graphql-api"
+  ],
   "compilerOptions": {
     "outDir": "dist",
     "rootDir": "src",
