@@ -22,15 +22,12 @@ body:
       description: Enter details about your bug.
   - type: textarea
     attributes:
-      label: How often does it reproduce? Is there a required condition?
-  - type: textarea
-    attributes:
       label: What is the expected behavior?
-      description: If possible please provide textual output instead of screenshots.
+      description: If possible please provide textual output and/or screenshots.
   - type: textarea
     attributes:
       label: What do you see instead?
-      description: If possible please provide textual output instead of screenshots.
+      description: If possible please provide textual output and/or screenshots.
   - type: textarea
     attributes:
       label: Additional information
