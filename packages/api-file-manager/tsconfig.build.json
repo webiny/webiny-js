@@ -4,17 +4,18 @@
   "exclude": [
     "node_modules",
     "./dist",
+    "../api-i18n",
+    "../api-i18n-ddb",
+    "../api-i18n-content",
     "../api-security",
+    "../api-tenancy",
     "../api-upgrade",
     "../error",
-    "../api-security-tenancy",
-    "../handler-graphql",
     "../handler",
     "../handler-client",
-    "../validation",
-    "../api-i18n-content",
-    "../api-plugin-elastic-search-client",
-    "../api-dynamodb-to-elasticsearch"
+    "../handler-graphql",
+    "../plugins",
+    "../validation"
   ],
   "compilerOptions": {
     "rootDir": "./src",

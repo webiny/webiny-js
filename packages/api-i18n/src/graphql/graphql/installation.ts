@@ -1,9 +1,8 @@
 import { ErrorResponse, Response } from "@webiny/handler-graphql";
-import { SecurityContext } from "@webiny/api-security/types";
 import { I18NContext } from "~/types";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
 
-const plugin: GraphQLSchemaPlugin<I18NContext & SecurityContext> = {
+const plugin: GraphQLSchemaPlugin<I18NContext> = {
     type: "graphql-schema",
     name: "graphql-schema-i18n-installation",
     schema: {
@@ -25,8 +24,8 @@ const plugin: GraphQLSchemaPlugin<I18NContext & SecurityContext> = {
         resolvers: {
             I18NQuery: {
                 version: async (_, __, context) => {
-                    const { security, i18n } = context;
-                    if (!security.getTenant()) {
+                    const { tenancy, i18n } = context;
+                    if (!tenancy.getCurrentTenant()) {
                         return null;
                     }
 

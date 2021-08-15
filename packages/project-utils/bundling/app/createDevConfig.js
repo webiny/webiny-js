@@ -115,8 +115,8 @@ module.exports = async (options = {}) => {
             }
         });
 
-        ["SIGINT", "SIGTERM"].forEach(function(sig) {
-            process.on(sig, function() {
+        ["SIGINT", "SIGTERM"].forEach(function (sig) {
+            process.on(sig, function () {
                 devServer.close();
                 process.exit();
             });

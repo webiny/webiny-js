@@ -1,7 +1,7 @@
 import { ContextPlugin } from "@webiny/handler/types";
 import defaults from "./utils/defaults";
 import getPKPrefix from "./utils/getPKPrefix";
-import { MenuHookPlugin, PbContext } from "../types";
+import { PbContext } from "../types";
 import { Menu } from "../../types";
 import { NotFoundError } from "@webiny/handler-graphql";
 import checkBasePermissions from "./utils/checkBasePermissions";
@@ -10,8 +10,9 @@ import Error from "@webiny/error";
 import { validation } from "@webiny/validation";
 import { withFields, string } from "@commodo/fields";
 import { object } from "commodo-fields-object";
-import executeHookCallbacks from "./utils/executeHookCallbacks";
+import executeCallbacks from "./utils/executeCallbacks";
 import prepareMenuItems from "./menus/prepareMenuItems";
+import { MenuPlugin } from "~/plugins/MenuPlugin";
 
 const CreateDataModel = withFields({
     title: string({ validation: validation.create("required,minLength:1,maxLength:100") }),
@@ -35,7 +36,7 @@ const plugin: ContextPlugin<PbContext> = {
         const { db } = context;
         const PK = () => `${getPKPrefix(context)}M`;
 
-        const hookPlugins = context.plugins.byType<MenuHookPlugin>("pb-menu-hook");
+        const hookPlugins = context.plugins.byType<MenuPlugin>(MenuPlugin.type);
 
         context.pageBuilder = {
             ...context.pageBuilder,
@@ -105,7 +106,7 @@ const plugin: ContextPlugin<PbContext> = {
                     await createDataModel.validate();
 
                     const identity = context.security.getIdentity();
-                    const createData = Object.assign(await createDataModel.toJSON(), {
+                    const menu: Menu = Object.assign(await createDataModel.toJSON(), {
                         createdOn: new Date().toISOString(),
                         createdBy: {
                             id: identity.id,
@@ -116,31 +117,41 @@ const plugin: ContextPlugin<PbContext> = {
 
                     const [[menuWithSameSlug]] = await db.read<Menu>({
                         ...defaults.db,
-                        query: { PK: PK(), SK: createData.slug },
+                        query: { PK: PK(), SK: menu.slug },
                         limit: 1
                     });
 
                     if (menuWithSameSlug) {
-                        throw new Error(`Menu "${createData.slug}" already exists.`);
+                        throw new Error(`Menu "${menu.slug}" already exists.`);
                     }
 
-                    await executeHookCallbacks(hookPlugins, "beforeCreate", context, createData);
+                    await executeCallbacks<MenuPlugin["beforeCreate"]>(
+                        hookPlugins,
+                        "beforeCreate",
+                        {
+                            context,
+                            menu
+                        }
+                    );
 
                     await db.create({
                         ...defaults.db,
                         data: {
-                            ...createData,
+                            ...menu,
                             PK: PK(),
                             SK: createDataModel.slug,
                             TYPE,
-                            tenant: context.security.getTenant().id,
+                            tenant: context.tenancy.getCurrentTenant().id,
                             locale: context.i18nContent.getLocale().code
                         }
                     });
 
-                    await executeHookCallbacks(hookPlugins, "afterCreate", context, createData);
+                    await executeCallbacks<MenuPlugin["afterCreate"]>(hookPlugins, "afterCreate", {
+                        context,
+                        menu
+                    });
 
-                    return createData;
+                    return menu;
                 },
 
                 async update(slug, data) {
@@ -161,7 +172,14 @@ const plugin: ContextPlugin<PbContext> = {
 
                     const updateData = await updateDataModel.toJSON({ onlyDirty: true });
 
-                    await executeHookCallbacks(hookPlugins, "beforeUpdate", context, menu);
+                    await executeCallbacks<MenuPlugin["beforeUpdate"]>(
+                        hookPlugins,
+                        "beforeUpdate",
+                        {
+                            context,
+                            menu
+                        }
+                    );
 
                     await db.update({
                         ...defaults.db,
@@ -169,7 +187,10 @@ const plugin: ContextPlugin<PbContext> = {
                         data: updateData
                     });
 
-                    await executeHookCallbacks(hookPlugins, "afterUpdate", context, menu);
+                    await executeCallbacks<MenuPlugin["afterUpdate"]>(hookPlugins, "afterUpdate", {
+                        context,
+                        menu
+                    });
 
                     return { ...menu, ...updateData };
                 },
@@ -186,14 +207,24 @@ const plugin: ContextPlugin<PbContext> = {
                     const identity = context.security.getIdentity();
                     checkOwnPermissions(identity, permission, menu);
 
-                    await executeHookCallbacks(hookPlugins, "beforeDelete", context, menu);
+                    await executeCallbacks<MenuPlugin["beforeDelete"]>(
+                        hookPlugins,
+                        "beforeDelete",
+                        {
+                            context,
+                            menu
+                        }
+                    );
 
                     await db.delete({
                         ...defaults.db,
                         query: { PK: PK(), SK: slug }
                     });
 
-                    await executeHookCallbacks(hookPlugins, "beforeDelete", context, menu);
+                    await executeCallbacks<MenuPlugin["afterDelete"]>(hookPlugins, "afterDelete", {
+                        context,
+                        menu
+                    });
 
                     return menu;
                 }

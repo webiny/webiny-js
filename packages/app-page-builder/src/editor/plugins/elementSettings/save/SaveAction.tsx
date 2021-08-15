@@ -43,7 +43,7 @@ type ImageDimensionsType = {
 function getDataURLImageDimensions(dataURL: string): Promise<ImageDimensionsType> {
     return new Promise(resolve => {
         const image = new window.Image();
-        image.onload = function() {
+        image.onload = function () {
             resolve({ width: image.width, height: image.height });
         };
         image.src = dataURL;

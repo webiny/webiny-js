@@ -91,6 +91,10 @@ export class Form extends React.Component<FormProps, State> {
         return !_.isEqual(validation, state.validation) ? { validation } : null;
     }
 
+    get data() {
+        return this.state.data;
+    }
+
     static executeValidators = async (
         value: any,
         validators: Function | Array<Function>,
@@ -142,7 +146,7 @@ export class Form extends React.Component<FormProps, State> {
     /**
      * MAIN FORM ACTION METHODS
      */
-    submit = (event?: React.SyntheticEvent<any, any>): Promise<void> => {
+    submit = (event?: React.SyntheticEvent<any, any>): Promise<any> => {
         // If event is present - prevent default behaviour
         if (event && event.preventDefault) {
             event.preventDefault();
@@ -174,28 +178,26 @@ export class Form extends React.Component<FormProps, State> {
 
     validate = async () => {
         const { data = {}, validation = {} } = this.state;
-        const promises = Object.keys(this.inputs).map(
-            async (name): Promise<boolean> => {
-                const { validators } = this.inputs[name];
-                if (!validators || validators.length === 0) {
-                    return true;
-                }
-                const hasValue = !!data[name];
-                const isInputValid = validation[name] ? validation[name].isValid : undefined;
-                const shouldValidate = !hasValue || (hasValue && isInputValid !== true);
-                if (!shouldValidate) {
-                    return true;
-                }
-                if (isInputValid) {
-                    return true;
-                }
-                const result = await this.validateInput(name);
-                if (result === false) {
-                    return false;
-                }
+        const promises = Object.keys(this.inputs).map(async (name): Promise<boolean> => {
+            const { validators } = this.inputs[name];
+            if (!validators || validators.length === 0) {
                 return true;
             }
-        );
+            const hasValue = !!data[name];
+            const isInputValid = validation[name] ? validation[name].isValid : undefined;
+            const shouldValidate = !hasValue || (hasValue && isInputValid !== true);
+            if (!shouldValidate) {
+                return true;
+            }
+            if (isInputValid) {
+                return true;
+            }
+            const result = await this.validateInput(name);
+            if (result === false) {
+                return false;
+            }
+            return true;
+        });
 
         const results = await Promise.all(promises);
         // all values must be true to pass the validation
@@ -292,7 +294,7 @@ export class Form extends React.Component<FormProps, State> {
                     }
 
                     // Execute onAfterChange
-                    afterChange && afterChange(value);
+                    afterChange && afterChange(value, this);
 
                     return value;
                 });
@@ -316,7 +318,7 @@ export class Form extends React.Component<FormProps, State> {
         return this.validateFns[name];
     };
 
-    __setValue = (name: string, value: any) => {
+    setValue = (name: string, value: any) => {
         this.onChangeFns[name](value);
     };
 
@@ -351,7 +353,7 @@ export class Form extends React.Component<FormProps, State> {
             { onKeyDown: this.__onKeyDown },
             children({
                 data: _.cloneDeep(this.state.data),
-                setValue: this.__setValue,
+                setValue: this.setValue,
                 form: this,
                 submit: this.submit,
                 Bind: this.Bind

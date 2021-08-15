@@ -53,7 +53,7 @@ export default () =>
                 const xhr = new window.XMLHttpRequest(); // eslint-disable-line
                 xhr.open("POST", getPreSignedPostPayload.data.data.url, true);
                 xhr.send(formData);
-                xhr.onload = function() {
+                xhr.onload = function () {
                     if (this.status === 204) {
                         resolve(getPreSignedPostPayload.data.file);
                         return;

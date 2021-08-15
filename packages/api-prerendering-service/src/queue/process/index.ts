@@ -43,9 +43,8 @@ export default (configuration: Configuration): HandlerPlugin => ({
         };
 
         try {
-            const handlerHookPlugins = context.plugins.byType<ProcessHookPlugin>(
-                "ps-queue-process-hook"
-            );
+            const handlerHookPlugins =
+                context.plugins.byType<ProcessHookPlugin>("ps-queue-process-hook");
 
             for (let j = 0; j < handlerHookPlugins.length; j++) {
                 const plugin = handlerHookPlugins[j];
@@ -207,9 +206,8 @@ export default (configuration: Configuration): HandlerPlugin => ({
                             for (let j = 0; j < renderData.length; j++) {
                                 const { url, args } = renderData[j];
                                 // We just need the `args` of the `renderData`.
-                                uniqueJobsPerOperationPerDbNamespace.render[dbNamespace][
-                                    url
-                                ] = args;
+                                uniqueJobsPerOperationPerDbNamespace.render[dbNamespace][url] =
+                                    args;
                             }
                         } else if (path.endsWith("*")) {
                             // Future feature - ability to search by prefix, e.g. "/en/*" or "/categories/books/*".

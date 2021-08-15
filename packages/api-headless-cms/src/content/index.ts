@@ -6,24 +6,28 @@ import { graphQLHandlerFactory } from "./graphQLHandlerFactory";
 import contextSetup from "./contextSetup";
 import modelManager from "./plugins/modelManager";
 import fieldTypePlugins from "./plugins/graphqlFields";
+import defaultStoragePlugin from "./plugins/storage/default";
+import objectStoragePlugin from "./plugins/storage/object";
 import validatorsPlugins from "./plugins/validators";
-import elasticSearchPlugins from "./plugins/es";
-import fieldsStoragePlugins from "./plugins/fieldsStorage";
+import { InternalAuthenticationPlugin } from "./plugins/internalSecurity/InternalAuthenticationPlugin";
+import { InternalAuthorizationPlugin } from "./plugins/internalSecurity/InternalAuthorizationPlugin";
 
 interface CmsContentPluginsIndexArgs {
     debug?: boolean;
 }
 
 export default (options: CmsContentPluginsIndexArgs = {}) => [
+    contextSetup(),
     modelManager(),
     pluginsCrudSetup(),
-    contextSetup(options),
     contentModelGroupCrud(),
     contentModelCrud(),
     contentEntry(),
     graphQLHandlerFactory(options),
     fieldTypePlugins(),
-    fieldsStoragePlugins(),
     validatorsPlugins(),
-    elasticSearchPlugins()
+    defaultStoragePlugin(),
+    objectStoragePlugin(),
+    new InternalAuthenticationPlugin("read-api-key"),
+    new InternalAuthorizationPlugin("read-api-key")
 ];

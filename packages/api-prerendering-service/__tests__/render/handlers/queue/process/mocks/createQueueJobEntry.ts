@@ -14,7 +14,7 @@ type Args = {
     };
 };
 
-export default function(args: Args) {
+export default function (args: Args) {
     return {
         SK: mdbid(),
         PK: "PS#Q#JOB",

@@ -199,7 +199,11 @@ function Tags({ file, canEdit }) {
                                 />
                             </Bind>
                             <div className={actionWrapperStyle}>
-                                <ButtonPrimary small onClick={submit}>
+                                <ButtonPrimary
+                                    small
+                                    onClick={submit}
+                                    data-testid={"fm.tags.submit"}
+                                >
                                     Submit
                                 </ButtonPrimary>
                                 <ButtonSecondary

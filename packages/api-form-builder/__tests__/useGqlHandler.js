@@ -1,17 +1,20 @@
 import path from "path";
 import fs from "fs";
 import { createHandler } from "@webiny/handler-aws";
-import apolloServerPlugins from "@webiny/handler-graphql";
-import securityPlugins from "@webiny/api-security/authenticator";
+import graphqlHandlerPlugins from "@webiny/handler-graphql";
+import tenancyPlugins from "@webiny/api-tenancy";
+import securityPlugins from "@webiny/api-security";
 import fileManagerPlugins from "@webiny/api-file-manager/plugins";
+import fileManagerDynamoDbElasticPlugins from "@webiny/api-file-manager-ddb-es";
 import dbPlugins from "@webiny/handler-db";
 import i18nContext from "@webiny/api-i18n/graphql/context";
+import i18nDynamoDbStorageOperations from "@webiny/api-i18n-ddb";
 import i18nContentPlugins from "@webiny/api-i18n-content/plugins";
 import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { SecurityIdentity } from "@webiny/api-security";
-import elasticSearch from "@webiny/api-plugin-elastic-search-client";
+import elasticsearchClientContextPlugin from "@webiny/api-elasticsearch";
 import { simulateStream } from "@webiny/project-utils/testing/dynamodb";
 import dynamoToElastic from "@webiny/api-dynamodb-to-elasticsearch/handler";
 import { Client } from "@elastic/elasticsearch";
@@ -48,7 +51,7 @@ const defaultTenant = { id: "root", name: "Root", parent: null };
 
 const until = async (execute, until, options = {}) => {
     const tries = options.tries ?? 5;
-    const wait = options.wait ?? 333;
+    const wait = options.wait ?? 1000;
 
     let result;
     let triesCount = 0;
@@ -95,33 +98,36 @@ export default ({ permissions, identity, tenant } = {}) => {
         region: "local"
     });
 
-    const elasticSearchContext = elasticSearch({
+    const elasticsearchClientContext = elasticsearchClientContextPlugin({
         endpoint: `http://localhost:${ELASTICSEARCH_PORT}`
     });
 
     // Intercept DocumentClient operations and trigger dynamoToElastic function (almost like a DynamoDB Stream trigger)
-    simulateStream(documentClient, createHandler(elasticSearchContext, dynamoToElastic()));
+    simulateStream(documentClient, createHandler(elasticsearchClientContext, dynamoToElastic()));
 
     const handler = createHandler(
         dbPlugins({
             table: "FormBuilder",
             driver: new DynamoDbDriver({ documentClient })
         }),
-        elasticSearchContext,
-        apolloServerPlugins(),
+        elasticsearchClientContext,
+        graphqlHandlerPlugins(),
+        tenancyPlugins(),
         securityPlugins(),
         {
             type: "context",
             apply(context) {
-                context.security.getTenant = () => {
+                context.tenancy.getCurrentTenant = () => {
                     return tenant || defaultTenant;
                 };
             }
         },
         i18nContext(),
+        i18nDynamoDbStorageOperations(),
         i18nContentPlugins(),
         mockLocalesPlugins(),
         fileManagerPlugins(),
+        fileManagerDynamoDbElasticPlugins(),
         formBuilderPlugins(),
         {
             type: "security-authorization",
@@ -176,7 +182,7 @@ export default ({ permissions, identity, tenant } = {}) => {
 
     return {
         until,
-        elasticSearch: new Client({
+        elasticsearch: new Client({
             hosts: [`http://localhost:${ELASTICSEARCH_PORT}`],
             node: `http://localhost:${ELASTICSEARCH_PORT}`
         }),

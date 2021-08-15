@@ -3,6 +3,239 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.12.0](https://github.com/webiny/webiny-js/compare/v5.12.0-beta.1...v5.12.0) (2021-08-05)
+
+**Note:** Version bump only for package @webiny/api-page-builder
+
+
+
+
+
+# [5.12.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.12.0-beta.0...v5.12.0-beta.1) (2021-08-05)
+
+
+### Bug Fixes
+
+* **api-page-builder:** don't overwrite settings after validation ([59ff4be](https://github.com/webiny/webiny-js/commit/59ff4bee46215b7ccb1d3ada16d0db1c8c2f9172))
+* **api-page-builder:** explicitly enforce settings meta array ([fc26130](https://github.com/webiny/webiny-js/commit/fc2613088d5d68d4da1b8a6ef39fac65ad87d030))
+* **api-page-builder:** restore settings validation data assignment ([f500a8c](https://github.com/webiny/webiny-js/commit/f500a8cba9d1ed60691e836ba9ef7fc1f9455854))
+
+
+
+
+
+# [5.12.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.11.1...v5.12.0-beta.0) (2021-08-04)
+
+**Note:** Version bump only for package @webiny/api-page-builder
+
+
+
+
+
+## [5.11.1](https://github.com/webiny/webiny-js/compare/v5.11.1-beta.0...v5.11.1) (2021-07-31)
+
+**Note:** Version bump only for package @webiny/api-page-builder
+
+
+
+
+
+## [5.11.1-beta.0](https://github.com/webiny/webiny-js/compare/v5.11.0...v5.11.1-beta.0) (2021-07-31)
+
+**Note:** Version bump only for package @webiny/api-page-builder
+
+
+
+
+
+# [5.11.0](https://github.com/webiny/webiny-js/compare/v5.11.0-beta.2...v5.11.0) (2021-07-22)
+
+**Note:** Version bump only for package @webiny/api-page-builder
+
+
+
+
+
+# [5.11.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.11.0-beta.1...v5.11.0-beta.2) (2021-07-21)
+
+**Note:** Version bump only for package @webiny/api-page-builder
+
+
+
+
+
+# [5.11.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.11.0-beta.0...v5.11.0-beta.1) (2021-07-21)
+
+**Note:** Version bump only for package @webiny/api-page-builder
+
+
+
+
+
+# [5.11.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.10.0...v5.11.0-beta.0) (2021-07-21)
+
+
+### Bug Fixes
+
+* remove checks for 5.0.0-beta.4 installations ([c9e0676](https://github.com/webiny/webiny-js/commit/c9e06765e87cf2e333e722261c7d5174140dc55a))
+
+
+### Features
+
+* **api-i18n:** storage operations ([#1758](https://github.com/webiny/webiny-js/issues/1758)) ([a488eee](https://github.com/webiny/webiny-js/commit/a488eee18ac4f674cb0dcd53d88a88b6659a802a))
+
+
+
+
+
+# [5.10.0](https://github.com/webiny/webiny-js/compare/v5.10.0-beta.2...v5.10.0) (2021-07-06)
+
+**Note:** Version bump only for package @webiny/api-page-builder
+
+
+
+
+
+# [5.10.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.10.0-beta.1...v5.10.0-beta.2) (2021-07-06)
+
+**Note:** Version bump only for package @webiny/api-page-builder
+
+
+
+
+
+# [5.10.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.10.0-beta.0...v5.10.0-beta.1) (2021-07-06)
+
+
+### Bug Fixes
+
+* **api-page-builder:** remove unnecessary logs ([a3b2549](https://github.com/webiny/webiny-js/commit/a3b25499fe53701f161f81683ad236dddca7021a))
+
+
+
+
+
+# [5.10.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.9.0...v5.10.0-beta.0) (2021-07-02)
+
+
+### Bug Fixes
+
+* allow sending settings without special pages set (only if none was already set) ([6c23195](https://github.com/webiny/webiny-js/commit/6c231950e6fd1c7745aa78e4446c9c8358076125))
+* correct merging of default and current settings ([0c9e78c](https://github.com/webiny/webiny-js/commit/0c9e78c8b1cc6743f326e69a932b7fa9464b227e))
+* ensure 'null' is not prepended in the page URL ([74df5fc](https://github.com/webiny/webiny-js/commit/74df5fc1dd978678d902c9201a45caabb9402408))
+* trim trailing forward slash ([3ed7a88](https://github.com/webiny/webiny-js/commit/3ed7a881efed0d27c780710f80bd3a6ba10830c3))
+* use new `getCurrentSettings` ([1f5c466](https://github.com/webiny/webiny-js/commit/1f5c466570eb7cafffabd4fdaf14e74de9b55241))
+* when getting PB settings, ensure default are loaded first ([d9fdd28](https://github.com/webiny/webiny-js/commit/d9fdd289abd9adc61b68424cbf77c22cbab3a9e2))
+
+
+### Features
+
+* add `getCurrentSettings` ([00c1480](https://github.com/webiny/webiny-js/commit/00c148028b9933d1bd1e8df1332be5c61a6cb651))
+* **api-file-manager:** storage operations ([#1716](https://github.com/webiny/webiny-js/issues/1716)) ([7b81e0b](https://github.com/webiny/webiny-js/commit/7b81e0b7c2ddf396cad09334e10c39e588d8643b))
+
+
+
+
+
+# [5.9.0](https://github.com/webiny/webiny-js/compare/v5.9.0-beta.2...v5.9.0) (2021-06-21)
+
+**Note:** Version bump only for package @webiny/api-page-builder
+
+
+
+
+
+# [5.9.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.9.0-beta.1...v5.9.0-beta.2) (2021-06-20)
+
+**Note:** Version bump only for package @webiny/api-page-builder
+
+
+
+
+
+# [5.9.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.9.0-beta.0...v5.9.0-beta.1) (2021-06-20)
+
+**Note:** Version bump only for package @webiny/api-page-builder
+
+
+
+
+
+# [5.9.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.8.0...v5.9.0-beta.0) (2021-06-18)
+
+
+### Bug Fixes
+
+* **api-page-builder:** remove unnecessary Partial type ([e3b161c](https://github.com/webiny/webiny-js/commit/e3b161cdde6e78e9e357829df497aa71639041cf))
+* **api-page-builder:** update plugin usage ([e18ade7](https://github.com/webiny/webiny-js/commit/e18ade7fc2592f98d468be122e16a723a344469a))
+
+
+### Features
+
+* **api-page-builder:** introduce new plugin classes ([b1c2f6c](https://github.com/webiny/webiny-js/commit/b1c2f6c43838e5abe76bc4ad4a1561a72bb8a374))
+
+
+
+
+
+# [5.8.0](https://github.com/webiny/webiny-js/compare/v5.8.0-beta.1...v5.8.0) (2021-06-07)
+
+**Note:** Version bump only for package @webiny/api-page-builder
+
+
+
+
+
+# [5.8.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.8.0-beta.0...v5.8.0-beta.1) (2021-06-05)
+
+**Note:** Version bump only for package @webiny/api-page-builder
+
+
+
+
+
+# [5.8.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.7.0...v5.8.0-beta.0) (2021-06-03)
+
+
+### Bug Fixes
+
+* bring back build check ([ef3d061](https://github.com/webiny/webiny-js/commit/ef3d061632010c281fc0e396722136f7ddd63807))
+* remove unnecessary code ([cb781d1](https://github.com/webiny/webiny-js/commit/cb781d16ac90b1eac542a24f9744687167f92fb7))
+* update dependencies ([3a9813c](https://github.com/webiny/webiny-js/commit/3a9813cb7899f2e09a8f5282e5c701c9bcc8e349))
+* use newly added uploadFolderToS3 utility function ([8efb4e5](https://github.com/webiny/webiny-js/commit/8efb4e5c554bf108f05063ee368be6c764bec894))
+
+
+
+
+
+# [5.7.0](https://github.com/webiny/webiny-js/compare/v5.7.0-beta.0...v5.7.0) (2021-05-24)
+
+**Note:** Version bump only for package @webiny/api-page-builder
+
+
+
+
+
+# [5.7.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.6.0...v5.7.0-beta.0) (2021-05-23)
+
+
+### Bug Fixes
+
+* **api-page-builder:** assign into a new target object ([7e326ca](https://github.com/webiny/webiny-js/commit/7e326cafe0014aa2adc2c51504a70e1254658a2a))
+* **api-page-builder:** refactor ES plugins ([037d0e5](https://github.com/webiny/webiny-js/commit/037d0e568db63e1a257f3cdd3f337dbebc5ecfd3))
+* **api-page-builder:** remove unused type imports ([072f2e3](https://github.com/webiny/webiny-js/commit/072f2e3e024a25acfc34ac432ce6e7ef6bd6d07d))
+
+
+### Features
+
+* **api-page-builder:** add a plugin to modify page data for ES ([373a639](https://github.com/webiny/webiny-js/commit/373a639c3c93f89c7dea25144c6a3878e24d70ef))
+* **api-page-builder:** add ES hooks to listLatest and listPublished methods ([4b8b292](https://github.com/webiny/webiny-js/commit/4b8b292526f9aa3ed32053e898e9c92182b9383a))
+* **api-page-builder:** add notFound callback to PbPage plugin ([356cb46](https://github.com/webiny/webiny-js/commit/356cb469905c2f206aec4cb326e40c53896cd745))
+
+
+
+
+
 # [5.6.0](https://github.com/webiny/webiny-js/compare/v5.6.0-beta.2...v5.6.0) (2021-05-10)
 
 **Note:** Version bump only for package @webiny/api-page-builder

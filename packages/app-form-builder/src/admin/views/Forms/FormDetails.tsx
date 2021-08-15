@@ -12,6 +12,7 @@ import { useSecurity } from "@webiny/app-security";
 import EmptyView from "@webiny/app-admin/components/EmptyView";
 import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
 import { i18n } from "@webiny/app/i18n";
+import { useForms } from "./useForms";
 
 const t = i18n.ns("app-form-builder/admin/views/forms/form-details");
 
@@ -46,17 +47,19 @@ const EmptyFormDetails = ({ canCreate, onCreateForm }: EmptyFormDetailsProps) =>
 };
 
 export type FormDetailsProps = {
-    refreshForms: () => void;
     onCreateForm: () => void;
-    canCreate: boolean;
 };
 
-const FormDetails = ({ refreshForms, onCreateForm, canCreate }: FormDetailsProps) => {
+const FormDetails = ({ onCreateForm }: FormDetailsProps) => {
     const { location, history } = useRouter();
     const { showSnackbar } = useSnackbar();
     const security = useSecurity();
     const query = new URLSearchParams(location.search + location.hash);
     const formId = query.get("id");
+
+    const { listQuery, canCreate } = useForms();
+
+    const refreshForms = listQuery.refetch;
 
     const getForm = useQuery(GET_FORM, {
         variables: {

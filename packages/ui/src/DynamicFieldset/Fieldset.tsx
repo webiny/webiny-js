@@ -1,6 +1,7 @@
 import * as React from "react";
 import dotProp from "dot-prop-immutable";
 import { FormElementMessage } from "../FormElementMessage";
+import styled from "@emotion/styled";
 
 interface ChildrenRenderProp {
     actions: { add: Function; remove: Function };
@@ -17,6 +18,13 @@ type FieldsetProps = {
     children: (props: ChildrenRenderProp) => React.ReactNode;
 };
 
+const DynamicFieldsetRow = styled("div")({
+    paddingBottom: 10,
+    "> .mdc-layout-grid": {
+        padding: 0
+    }
+});
+
 class Fieldset extends React.Component<FieldsetProps> {
     static defaultProps = {
         value: [],
@@ -28,8 +36,14 @@ class Fieldset extends React.Component<FieldsetProps> {
     empty: React.ReactNode = null;
 
     actions = {
-        add: (index = -1) => () => this.addData(index),
-        remove: (index = -1) => () => this.removeData(index)
+        add:
+            (index = -1) =>
+            () =>
+                this.addData(index),
+        remove:
+            (index = -1) =>
+            () =>
+                this.removeData(index)
     };
 
     removeData = (index: number) => {
@@ -53,10 +67,8 @@ class Fieldset extends React.Component<FieldsetProps> {
     renderRow = (cb: (params: Object) => React.ReactNode) => {
         const { value } = this.props;
         this.rows = value.map((record, index) => {
-            return React.createElement(
-                "webiny-dynamic-fieldset-row",
-                { key: index },
-                cb({ data: record, index })
+            return (
+                <DynamicFieldsetRow key={index}>{cb({ data: record, index })}</DynamicFieldsetRow>
             );
         });
     };

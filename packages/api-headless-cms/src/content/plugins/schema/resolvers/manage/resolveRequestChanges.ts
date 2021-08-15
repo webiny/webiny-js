@@ -3,16 +3,14 @@ import { CmsContentEntryResolverFactory as ResolverFactory } from "../../../../.
 
 type ResolveRequestChanges = ResolverFactory<any, { revision: string }>;
 
-export const resolveRequestChanges: ResolveRequestChanges = ({ model }) => async (
-    root,
-    args,
-    { cms }
-) => {
-    try {
-        const entry = await cms.entries.requestChanges(model, args.revision);
+export const resolveRequestChanges: ResolveRequestChanges =
+    ({ model }) =>
+    async (root, args, { cms }) => {
+        try {
+            const entry = await cms.entries.requestChanges(model, args.revision);
 
-        return new Response(entry);
-    } catch (e) {
-        return new ErrorResponse(e);
-    }
-};
+            return new Response(entry);
+        } catch (e) {
+            return new ErrorResponse(e);
+        }
+    };

@@ -10,22 +10,29 @@ const usePermission = () => {
 
     const canEdit = useCallback(
         item => {
+            if (hasFullAccess) {
+                return true;
+            }
+            const creatorId = get(item, "createdBy.id");
             if (!pbPagePermission) {
                 return false;
             }
-            if (pbPagePermission.own) {
-                return get(item, "createdBy.id") === identity.login;
+            if (pbPagePermission.own && creatorId) {
+                return creatorId === identity.login;
             }
             if (typeof pbPagePermission.rwd === "string") {
                 return pbPagePermission.rwd.includes("w");
             }
             return true;
         },
-        [pbPagePermission]
+        [pbPagePermission, hasFullAccess]
     );
 
     const canDelete = useCallback(
         item => {
+            if (hasFullAccess) {
+                return true;
+            }
             if (!pbPagePermission) {
                 return false;
             }
@@ -37,7 +44,7 @@ const usePermission = () => {
             }
             return true;
         },
-        [pbPagePermission]
+        [pbPagePermission, hasFullAccess]
     );
 
     const canPublish = useCallback(() => {

@@ -1,22 +1,14 @@
-import { Context, ContextPlugin } from "@webiny/handler/types";
-import { CmsContext } from "../types";
+import { CmsContext } from "~/types";
+import WebinyError from "@webiny/error";
+import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
 
-interface CmsHttpParameters {
-    type: string;
-    locale: string;
-}
-
-const throwPlainError = (type: string): void => {
-    throw new Error(`Missing context.http.request.path parameter "${type}".`);
-};
-
-export const extractHandlerHttpParameters = (context: Context): CmsHttpParameters => {
-    const { key = "" } = context.http.request.path.parameters || {};
+const extractHandlerHttpParameters = (context: CmsContext) => {
+    const { key = "" } = context.http?.request?.path?.parameters || {};
     const [type, locale] = key.split("/");
     if (!type) {
-        throwPlainError("type");
+        throw new WebinyError(`Missing context.http.request.path parameter "type".`);
     } else if (!locale) {
-        throwPlainError("locale");
+        throw new WebinyError(`Missing context.http.request.path parameter "locale".`);
     }
 
     return {
@@ -25,32 +17,31 @@ export const extractHandlerHttpParameters = (context: Context): CmsHttpParameter
     };
 };
 
-const setContextCmsVariables = async (context: CmsContext): Promise<void> => {
-    const locale = await context.i18n.getLocale(context.cms.locale);
-    if (!locale) {
-        throw new Error(`There is no locale "${context.cms.locale}" in the system.`);
-    }
-    context.cms.getLocale = () => locale;
-};
-// eslint-disable-next-line
-export default (options: any = {}): ContextPlugin<CmsContext> => ({
-    type: "context",
-    apply: async context => {
-        if (context.http.request.method === "OPTIONS") {
+export default () => {
+    return new ContextPlugin<CmsContext>(async context => {
+        if (context.http?.request?.method === "OPTIONS") {
             return;
+        } else if (context.cms) {
+            throw new WebinyError(
+                "Context setup plugin must be first to be registered. Cannot have anything before it.",
+                "CMS_CONTEXT_INITIALIZED_ERROR"
+            );
         }
 
         const { type, locale } = extractHandlerHttpParameters(context);
 
+        const systemLocale = context.i18n.getLocale(locale);
+        if (!systemLocale) {
+            throw new WebinyError(`There is no locale "${locale}" in the system.`);
+        }
+
         context.cms = {
-            ...(context.cms || ({} as any)),
             type,
             locale,
+            getLocale: () => systemLocale,
             READ: type === "read",
             PREVIEW: type === "preview",
             MANAGE: type === "manage"
-        };
-
-        await setContextCmsVariables(context);
-    }
-});
+        } as any;
+    });
+};

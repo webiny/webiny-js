@@ -56,9 +56,11 @@ const classes = {
 const TEXT_SETTINGS_COUNT = 4;
 const DATA_NAMESPACE = "data.text";
 
-const TextSettings: React.FunctionComponent<PbEditorPageElementSettingsRenderComponentProps & {
-    options: any;
-}> = ({ defaultAccordionValue, options }) => {
+const TextSettings: React.FunctionComponent<
+    PbEditorPageElementSettingsRenderComponentProps & {
+        options: any;
+    }
+> = ({ defaultAccordionValue, options }) => {
     const { displayMode } = useRecoilValue(uiAtom);
     const activeElementId = useRecoilValue(activeElementAtom);
     const element = useRecoilValue(elementWithChildrenByIdSelector(activeElementId));
@@ -110,10 +112,10 @@ const TextSettings: React.FunctionComponent<PbEditorPageElementSettingsRenderCom
         [getUpdateValue, displayMode]
     );
 
-    const updateTag = useCallback((value: string) => getUpdateValue(`${displayMode}.tag`)(value), [
-        getUpdateValue,
-        displayMode
-    ]);
+    const updateTag = useCallback(
+        (value: string) => getUpdateValue(`${displayMode}.tag`)(value),
+        [getUpdateValue, displayMode]
+    );
 
     const fallbackValue = useMemo(
         () =>

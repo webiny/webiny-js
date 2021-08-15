@@ -3,26 +3,23 @@ import { Route } from "@webiny/react-router";
 import { AdminLayout } from "@webiny/app-admin/components/AdminLayout";
 import PrerenderingSettings from "./components/prerenderingSettings/PrerenderingSettings";
 import WebsiteSettings from "./components/websiteSettings/WebsiteSettings";
-import { SecureRoute, SecureView } from "@webiny/app-security/components";
+import { SecureRoute } from "@webiny/app-security/components";
 import { i18n } from "@webiny/app/i18n";
-import { plugins } from "@webiny/plugins";
 import Helmet from "react-helmet";
-import { PbMenuSettingsItemPlugin } from "../../../types";
-import { RoutePlugin } from "@webiny/app/types";
-import { AdminMenuSettingsPlugin } from "@webiny/app-admin/types";
+import { RoutePlugin } from "@webiny/app/plugins/RoutePlugin";
+import { NavigationMenuElement } from "@webiny/app-admin/ui/elements/NavigationMenuElement";
+import { UIViewPlugin } from "@webiny/app-admin/ui/UIView";
+import { NavigationView } from "@webiny/app-admin/ui/views/NavigationView";
 
 const t = i18n.ns("app-page-builder/admin/menus");
 
 const allPlugins = [
-    {
-        type: "route",
-        name: "route-settings-website",
+    new RoutePlugin({
         route: (
             <Route
                 path="/settings/page-builder/website"
                 render={() => (
-                    <AdminLayout>
-                        <Helmet title={t`Page Builder - Website Settings`} />
+                    <AdminLayout title={"Page Builder - Website Settings"}>
                         <SecureRoute permission={"pb.settings"}>
                             <WebsiteSettings />
                         </SecureRoute>
@@ -30,10 +27,8 @@ const allPlugins = [
                 )}
             />
         )
-    } as RoutePlugin,
-    {
-        type: "route",
-        name: "route-settings-prerendering",
+    }),
+    new RoutePlugin({
         route: (
             <Route
                 path="/settings/page-builder/prerendering"
@@ -47,40 +42,35 @@ const allPlugins = [
                 )}
             />
         )
-    } as RoutePlugin,
-    {
-        type: "admin-menu-settings",
-        name: "menu-settings-page-builder",
-        render({ Section, Item }) {
-            return (
-                <SecureView permission={"pb.settings"}>
-                    <Section label={t`Page Builder`}>
-                        {plugins
-                            .byType<PbMenuSettingsItemPlugin>("menu-settings-page-builder")
-                            .map(plugin => (
-                                <React.Fragment key={plugin.name + new Date()}>
-                                    {plugin.render({ Item })}
-                                </React.Fragment>
-                            ))}
-                    </Section>
-                </SecureView>
-            );
+    }),
+    new UIViewPlugin<NavigationView>(NavigationView, async view => {
+        await view.isRendered();
+
+        const { identity } = view.getSecurityHook();
+        if (!identity.getPermission("pb.settings")) {
+            return;
         }
-    } as AdminMenuSettingsPlugin,
-    {
-        type: "menu-settings-page-builder",
-        name: "menu-settings-general",
-        render({ Item }) {
-            return <Item label={t`Website`} path={"/settings/page-builder/website"} />;
-        }
-    } as PbMenuSettingsItemPlugin,
-    {
-        type: "menu-settings-page-builder",
-        name: "menu-settings-prerendering",
-        render({ Item }) {
-            return <Item label={t`Prerendering`} path={"/settings/page-builder/prerendering"} />;
-        }
-    } as PbMenuSettingsItemPlugin
+
+        const pageBuilderMenu = view.addSettingsMenuElement(
+            new NavigationMenuElement("menu.settings.pageBuilder", {
+                label: "Page Builder"
+            })
+        );
+
+        pageBuilderMenu.addElement<NavigationMenuElement>(
+            new NavigationMenuElement("menu.settings.pageBuilder.website", {
+                label: "Website",
+                path: "/settings/page-builder/website"
+            })
+        );
+
+        pageBuilderMenu.addElement<NavigationMenuElement>(
+            new NavigationMenuElement("menu.settings.pageBuilder.prerendering", {
+                label: "Prerendering",
+                path: "/settings/page-builder/prerendering"
+            })
+        );
+    })
 ];
 
 export default allPlugins;

@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { sendEvent } from "@webiny/tracking/react";
+import { sendEvent } from "@webiny/telemetry/react";
 
 export const Telemetry = () => {
     useEffect(() => {

@@ -1,3 +1,4 @@
+const os = require("os");
 const execa = require("execa");
 const chalk = require("chalk");
 const localtunnel = require("localtunnel");
@@ -11,19 +12,27 @@ const merge = require("lodash/merge");
 const browserOutput = require("./watch/output/browserOutput");
 const terminalOutput = require("./watch/output/terminalOutput");
 const minimatch = require("minimatch");
-
-const SECRETS_PROVIDER = process.env.PULUMI_SECRETS_PROVIDER;
+const glob = require("fast-glob");
 
 module.exports = async (inputs, context) => {
+    // 1. Initial checks for deploy and build commands.
+    if (!inputs.folder && !inputs.package) {
+        throw new Error(
+            `Either "folder" or "package" arguments must be passed. Cannot have both undefined.`
+        );
+    }
+
     let projectApplication;
     if (inputs.folder) {
-        // Get project application metadata.
+        // Get project application metadata. Will throw an error if invalid folder specified.
         projectApplication = getProjectApplication({
             cwd: path.join(process.cwd(), inputs.folder)
         });
 
         // If exists - read default inputs from "webiny.application.js" file.
         inputs = merge({}, get(projectApplication, "config.cli.watch"), inputs);
+
+        await loadEnvVariables(inputs, context);
     }
 
     inputs.build = inputs.build !== false;
@@ -33,27 +42,21 @@ module.exports = async (inputs, context) => {
         throw new Error(`Please specify environment, for example "dev".`);
     }
 
+    if (!inputs.build && !inputs.deploy) {
+        throw new Error(`Both re-build and re-deploy actions were disabled, can't continue.`);
+    }
+
     if (inputs.deploy) {
         if (typeof inputs.logs === "string" && inputs.logs === "") {
             inputs.logs = "*";
         }
     }
 
-    // 1. Initial checks for deploy and build commands.
-    if (!inputs.build && !inputs.deploy) {
-        throw new Error(`Both re-build and re-deploy actions were disabled, can't continue.`);
-    }
-
-    if (!inputs.folder && !inputs.package) {
-        throw new Error(
-            `Either "folder" or "package" arguments must be passed. Cannot have both undefined.`
-        );
-    }
-
     // 1.1. Check if the project application and Pulumi stack exist.
-    if (inputs.deploy) {
-        await loadEnvVariables(inputs, context);
+    let PULUMI_SECRETS_PROVIDER = process.env.PULUMI_SECRETS_PROVIDER;
+    let PULUMI_CONFIG_PASSPHRASE = process.env.PULUMI_CONFIG_PASSPHRASE;
 
+    if (inputs.deploy && projectApplication) {
         const { env } = inputs;
 
         await login(projectApplication);
@@ -66,14 +69,17 @@ module.exports = async (inputs, context) => {
 
         let stackExists = true;
         try {
-            await pulumi.run(
-                { command: ["stack", "select", env] },
-                {
-                    args: {
-                        secretsProvider: SECRETS_PROVIDER
+            await pulumi.run({
+                command: ["stack", "select", env],
+                args: {
+                    secretsProvider: PULUMI_SECRETS_PROVIDER
+                },
+                execa: {
+                    env: {
+                        PULUMI_CONFIG_PASSPHRASE
                     }
                 }
-            );
+            });
         } catch (e) {
             stackExists = false;
         }
@@ -86,13 +92,13 @@ module.exports = async (inputs, context) => {
     let output = inputs.output === "browser" ? browserOutput : terminalOutput;
     await output.initialize(inputs);
 
-    try {
-        const logging = {
-            url: null
-        };
+    const logging = {
+        url: null
+    };
 
-        // Forward logs from the cloud to here, using the "localtunnel" library.
-        if (inputs.logs) {
+    // Forward logs from the cloud to here, using the "localtunnel" library.
+    if (inputs.logs) {
+        try {
             const tunnel = await localtunnel({ port: 3010 });
 
             logging.url = tunnel.url;
@@ -134,14 +140,46 @@ module.exports = async (inputs, context) => {
                     )
                 });
             }
+        } catch (e) {
+            output.log({
+                type: "logs",
+                message: chalk.red(e.message)
+            });
         }
+    }
 
-        // Add deploy logs.
-        if (inputs.deploy) {
+    // Add deploy logs.
+    if (inputs.deploy && projectApplication) {
+        try {
             output.log({
                 type: "deploy",
                 message: chalk.green("Watching cloud infrastructure resources...")
             });
+
+            const pulumiFolder = path.join(projectApplication.root, "pulumi");
+
+            const buildFoldersGlob = [
+                projectApplication.project.root,
+                inputs.folder,
+                "**/build"
+            ].join("/");
+
+            const buildFolders = glob.sync(buildFoldersGlob, { onlyFiles: false });
+
+            // The final array of values that will be sent to Pulumi CLI's "--path" argument.
+            // NOTE: for Windows, there's a bug in Pulumi preventing us to use path filtering.
+            const pathArg = os.platform() === "win32" ? undefined : [pulumiFolder, ...buildFolders];
+
+            // Log used values if debugging has been enabled.
+            if (inputs.debug) {
+                output.log({
+                    type: "deploy",
+                    message: [
+                        "The following files and folders are being watched:",
+                        ...pathArg.map(p => "‣ " + p)
+                    ].join("\n")
+                });
+            }
 
             const pulumi = await getPulumi({
                 execa: {
@@ -149,11 +187,14 @@ module.exports = async (inputs, context) => {
                 }
             });
 
+            // We only watch "code/**/build" and "pulumi" folders.
             const watchCloudInfrastructure = pulumi.run({
                 command: "watch",
                 args: {
-                    secretsProvider: SECRETS_PROVIDER,
-                    color: "always"
+                    secretsProvider: PULUMI_SECRETS_PROVIDER,
+                    color: "always",
+                    path: pathArg,
+                    debug: inputs.debug
                 },
                 execa: {
                     env: {
@@ -189,10 +230,17 @@ module.exports = async (inputs, context) => {
                     });
                 }, 3000);
             }
+        } catch (e) {
+            output.log({
+                type: "deploy",
+                message: chalk.red(e.message)
+            });
         }
+    }
 
-        // Add build logs.
-        if (inputs.build) {
+    // Add build logs.
+    if (inputs.build) {
+        try {
             output.log({
                 type: "build",
                 message: chalk.green("Watching packages...")
@@ -254,10 +302,12 @@ module.exports = async (inputs, context) => {
                     });
                 });
             });
+        } catch (e) {
+            output.log({
+                type: "build",
+                message: chalk.red(e.message)
+            });
         }
-    } catch (e) {
-        output.error(e);
-        throw e;
     }
 };
 

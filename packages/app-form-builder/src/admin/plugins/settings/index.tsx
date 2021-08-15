@@ -2,24 +2,19 @@ import * as React from "react";
 import { Route } from "@webiny/react-router";
 import { AdminLayout } from "@webiny/app-admin/components/AdminLayout";
 import FormsSettings from "./components/FormsSettings";
-import { SecureRoute, SecureView } from "@webiny/app-security/components";
-import Helmet from "react-helmet";
-import { RoutePlugin } from "@webiny/app/types";
-import { AdminMenuSettingsPlugin } from "@webiny/app-admin/types";
-
-import { i18n } from "@webiny/app/i18n";
-const t = i18n.ns("app-form-builder/admin/menus");
+import { SecureRoute } from "@webiny/app-security/components";
+import { RoutePlugin } from "@webiny/app/plugins/RoutePlugin";
+import { NavigationMenuElement } from "@webiny/app-admin/ui/elements/NavigationMenuElement";
+import { UIViewPlugin } from "@webiny/app-admin/ui/UIView";
+import { NavigationView } from "@webiny/app-admin/ui/views/NavigationView";
 
 const plugins = [
-    {
-        type: "route",
-        name: "route-settings-form-builder",
+    new RoutePlugin({
         route: (
             <Route
                 path="/settings/form-builder/recaptcha"
                 render={() => (
-                    <AdminLayout>
-                        <Helmet title={t`Form Builder - reCAPTCHA Settings`} />
+                    <AdminLayout title={"Form Builder - reCAPTCHA Settings"}>
                         <SecureRoute permission={"fb.settings"}>
                             <FormsSettings />
                         </SecureRoute>
@@ -27,20 +22,28 @@ const plugins = [
                 )}
             />
         )
-    } as RoutePlugin,
-    {
-        type: "admin-menu-settings",
-        name: "menu-settings-form-builder",
-        render({ Item, Section }) {
-            return (
-                <SecureView permission={"fb.settings"}>
-                    <Section label={t`Form Builder`}>
-                        <Item label={t`reCAPTCHA`} path={"/settings/form-builder/recaptcha"} />
-                    </Section>
-                </SecureView>
-            );
+    }),
+    new UIViewPlugin<NavigationView>(NavigationView, async view => {
+        await view.isRendered();
+
+        const { identity } = view.getSecurityHook();
+        if (!identity.getPermission("fb.settings")) {
+            return;
         }
-    } as AdminMenuSettingsPlugin
+
+        const formBuilder = view.addSettingsMenuElement(
+            new NavigationMenuElement("menu.settings.formBuilder", {
+                label: "Form Builder"
+            })
+        );
+
+        formBuilder.addElement<NavigationMenuElement>(
+            new NavigationMenuElement("menu.settings.formBuilder.recaptcha", {
+                label: "reCAPTCHA",
+                path: "/settings/form-builder/recaptcha"
+            })
+        );
+    })
 ];
 
 export default plugins;

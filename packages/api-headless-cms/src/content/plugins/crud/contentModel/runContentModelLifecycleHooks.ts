@@ -1,12 +1,18 @@
 import {
+    CmsContentModelCreateHookPluginArgs,
     CmsContentModelHookPlugin,
     CmsContentModelHookPluginArgs,
     CmsContentModelUpdateHookPluginArgs
 } from "../../../../types";
 
-export const runContentModelLifecycleHooks = async (
+export const runContentModelLifecycleHooks = async <
+    T extends
+        | CmsContentModelHookPluginArgs
+        | CmsContentModelCreateHookPluginArgs
+        | CmsContentModelUpdateHookPluginArgs
+>(
     hookName: string,
-    args: CmsContentModelHookPluginArgs | CmsContentModelUpdateHookPluginArgs
+    args: T
 ): Promise<void> => {
     const { context } = args;
     const hookPlugins = context.plugins.byType<CmsContentModelHookPlugin>("cms-content-model-hook");

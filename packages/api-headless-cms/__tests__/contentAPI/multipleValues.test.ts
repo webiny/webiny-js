@@ -1,4 +1,4 @@
-import { CmsContentEntry, CmsContentModelGroup, CmsContentModel } from "../../src/types";
+import { CmsContentEntry, CmsContentModelGroup, CmsContentModel } from "~/types";
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
 import models from "./mocks/contentModels";
 import { useProductManageHandler } from "../utils/useProductManageHandler";
@@ -8,7 +8,6 @@ describe("multiple values in field", () => {
     const manageOpts = { path: "manage/en-US" };
 
     const {
-        clearAllIndex,
         createContentModelMutation,
         updateContentModelMutation,
         createContentModelGroupMutation
@@ -53,18 +52,6 @@ describe("multiple values in field", () => {
         });
         return update.data.updateContentModel.data;
     };
-
-    beforeEach(async () => {
-        try {
-            await clearAllIndex();
-        } catch {}
-    });
-
-    afterEach(async () => {
-        try {
-            await clearAllIndex();
-        } catch {}
-    });
 
     test("multiple value field is correctly created", async () => {
         const contentModelGroup = await setupContentModelGroup();
@@ -268,6 +255,7 @@ describe("multiple values in field", () => {
                         availableSizes: ["s", "m"],
                         inStock: null,
                         itemsInStock: null,
+                        variant: null,
                         richText: [
                             {
                                 tag: "p",

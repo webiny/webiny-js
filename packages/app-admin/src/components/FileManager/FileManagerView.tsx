@@ -131,15 +131,8 @@ const renderEmpty = ({ hasPreviouslyUploadedFiles, browseFiles, fmFilePermission
 };
 
 function FileManagerView(props: FileManagerViewProps) {
-    const {
-        onClose,
-        onChange,
-        accept,
-        multiple,
-        maxSize,
-        multipleMaxCount,
-        multipleMaxSize
-    } = props;
+    const { onClose, onChange, accept, multiple, maxSize, multipleMaxCount, multipleMaxSize } =
+        props;
 
     const {
         selected,
@@ -181,9 +174,10 @@ function FileManagerView(props: FileManagerViewProps) {
             if (!fmFilePermission) {
                 return false;
             }
+            const creatorId = get(item, "createdBy.id");
 
-            if (fmFilePermission.own) {
-                return get(item, "createdBy.id") === identity.login;
+            if (fmFilePermission.own && creatorId) {
+                return creatorId === identity.login;
             }
 
             if (typeof fmFilePermission.rwd === "string") {
@@ -391,6 +385,7 @@ function FileManagerView(props: FileManagerViewProps) {
                                 onChange={e => searchOnChange(e.target.value)}
                                 placeholder={t`Search by filename or tags`}
                                 disabled={!fmFilePermission}
+                                data-testid={"file-manager.search-input"}
                             />
                         </InputSearch>
                     }

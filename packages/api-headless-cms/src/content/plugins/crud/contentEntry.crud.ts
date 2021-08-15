@@ -1,6 +1,4 @@
 import mdbid from "mdbid";
-import omit from "lodash/omit";
-import cloneDeep from "lodash/cloneDeep";
 import { ContextPlugin } from "@webiny/handler/types";
 import { NotFoundError } from "@webiny/handler-graphql";
 import {
@@ -8,18 +6,12 @@ import {
     CmsContentEntryPermission,
     CmsContentEntry,
     CmsContentModel,
-    CmsContext
-} from "../../../types";
-import * as utils from "../../../utils";
+    CmsContext,
+    CmsContentEntryStorageOperationsProvider,
+    CmsStorageContentEntry
+} from "~/types";
+import * as utils from "~/utils";
 import { validateModelEntryData } from "./contentEntry/entryDataValidation";
-import {
-    createElasticsearchQueryBody,
-    createElasticsearchLimit,
-    prepareEntryToIndex,
-    extractEntriesFromIndex
-} from "./contentEntry/es";
-import * as dataLoaders from "./contentEntry/dataLoaders";
-import { createCmsPK } from "../../../utils";
 import {
     afterCreateHook,
     afterDeleteHook,
@@ -43,39 +35,81 @@ import {
 import WebinyError from "@webiny/error";
 import { entryFromStorageTransform, entryToStorageTransform } from "../utils/entryStorage";
 
-const TYPE_ENTRY = "cms.entry";
-const TYPE_ENTRY_LATEST = TYPE_ENTRY + ".l";
-const TYPE_ENTRY_PUBLISHED = TYPE_ENTRY + ".p";
+export const STATUS_DRAFT = "draft";
+export const STATUS_PUBLISHED = "published";
+export const STATUS_UNPUBLISHED = "unpublished";
+export const STATUS_CHANGES_REQUESTED = "changesRequested";
+export const STATUS_REVIEW_REQUESTED = "reviewRequested";
 
-const STATUS_DRAFT = "draft";
-const STATUS_PUBLISHED = "published";
-const STATUS_UNPUBLISHED = "unpublished";
-const STATUS_CHANGES_REQUESTED = "changesRequested";
-const STATUS_REVIEW_REQUESTED = "reviewRequested";
-
-type DbItem<T> = T & {
-    PK: string;
-    SK: string;
-    TYPE: string;
+const cleanInputData = (
+    model: CmsContentModel,
+    inputData: Record<string, any>
+): Record<string, any> => {
+    return model.fields.reduce((acc, field) => {
+        acc[field.fieldId] = inputData[field.fieldId];
+        return acc;
+    }, {});
 };
 
-const getESLatestEntryData = (context: CmsContext, entry: CmsContentEntry) => {
+const cleanUpdatedInputData = (
+    model: CmsContentModel,
+    input: Record<string, any>
+): Record<string, any> => {
+    return model.fields.reduce((acc, field) => {
+        if (input[field.fieldId] === undefined) {
+            return acc;
+        }
+        acc[field.fieldId] = input[field.fieldId];
+        return acc;
+    }, {});
+};
+
+interface DeleteEntryParams {
+    model: CmsContentModel;
+    entry: CmsContentEntry;
+    storageEntry: CmsStorageContentEntry;
+}
+
+interface EntryIdResult {
+    /**
+     * A generated id that will connect all the entry records.
+     */
+    entryId: string;
+    /**
+     * Version of the entry.
+     */
+    version: number;
+    /**
+     * Combination of entryId and version.
+     */
+    id: string;
+}
+
+const createEntryId = (version: number): EntryIdResult => {
+    const entryId = mdbid();
     return {
-        ...entry,
-        __type: TYPE_ENTRY_LATEST,
-        tenant: context.security.getTenant().id,
-        latest: true,
-        webinyVersion: context.WEBINY_VERSION
+        entryId,
+        version,
+        id: `${entryId}#${utils.zeroPad(version)}`
     };
 };
 
-const getESPublishedEntryData = (context: CmsContext, entry: CmsContentEntry) => {
+const increaseEntryIdVersion = (id: string): EntryIdResult => {
+    if (id.includes("#") === false) {
+        throw new WebinyError(
+            "Cannot increase version on the ID without the version part.",
+            "WRONG_ID",
+            {
+                id
+            }
+        );
+    }
+    const [entryId, version] = id.split("#");
+    const ver = parseInt(version) + 1;
     return {
-        ...entry,
-        __type: TYPE_ENTRY_PUBLISHED,
-        tenant: context.security.getTenant().id,
-        published: true,
-        webinyVersion: context.WEBINY_VERSION
+        entryId,
+        version: ver,
+        id: `${entryId}#${utils.zeroPad(ver)}`
     };
 };
 
@@ -83,27 +117,31 @@ export default (): ContextPlugin<CmsContext> => ({
     type: "context",
     name: "context-content-model-entry",
     async apply(context) {
-        const { db, elasticSearch, security } = context;
+        /**
+         * If cms is not defined on the context, do not continue, but log it.
+         */
+        if (!context.cms) {
+            console.log("Missing cms on context. Skipping ContentEntry crud.");
+            return;
+        }
 
-        const PK_ENTRY = entryId => `${createCmsPK(context)}#CME#${entryId}`;
-        const SK_REVISION = version => {
-            return typeof version === "string" ? `REV#${version}` : `REV#${utils.zeroPad(version)}`;
-        };
-        const SK_LATEST = () => "L";
-        const SK_PUBLISHED = () => "P";
+        const pluginType = "cms-content-entry-storage-operations-provider";
+        const providerPlugins =
+            context.plugins.byType<CmsContentEntryStorageOperationsProvider>(pluginType);
+        /**
+         * Storage operations for the content entry.
+         * Contains logic to save the data into the specific storage.
+         */
+        const providerPlugin = providerPlugins[providerPlugins.length - 1];
+        if (!providerPlugin) {
+            throw new WebinyError(`Missing "${pluginType}" plugin.`, "PLUGIN_NOT_FOUND", {
+                type: pluginType
+            });
+        }
 
-        const loaders = {
-            getAllEntryRevisions: dataLoaders.getAllEntryRevisions(context, { PK_ENTRY }),
-            getRevisionById: dataLoaders.getRevisionById(context, { PK_ENTRY }),
-            getPublishedRevisionByEntryId: dataLoaders.getPublishedRevisionByEntryId(context, {
-                PK_ENTRY,
-                SK_PUBLISHED
-            }),
-            getLatestRevisionByEntryId: dataLoaders.getLatestRevisionByEntryId(context, {
-                PK_ENTRY,
-                SK_LATEST
-            })
-        };
+        const storageOperations = await providerPlugin.provide({
+            context
+        });
 
         const checkEntryPermissions = (check: {
             rwd?: string;
@@ -112,19 +150,67 @@ export default (): ContextPlugin<CmsContext> => ({
             return utils.checkPermissions(context, "cms.contentEntry", check);
         };
 
+        /**
+         * A helper to delete the entire entry.
+         */
+        const deleteEntry = async (params: DeleteEntryParams): Promise<void> => {
+            const { model, entry, storageEntry } = params;
+            try {
+                await beforeDeleteHook({
+                    context,
+                    model,
+                    entry,
+                    storageEntry,
+                    storageOperations
+                });
+                await storageOperations.delete(model, {
+                    entry,
+                    storageEntry
+                });
+                await afterDeleteHook({
+                    context,
+                    model,
+                    entry,
+                    storageEntry,
+                    storageOperations
+                });
+            } catch (ex) {
+                throw new WebinyError(
+                    ex.message || "Could not delete entry.",
+                    ex.code || "DELETE_ERROR",
+                    {
+                        entry
+                    }
+                );
+            }
+        };
+        /**
+         * A helper to get entries by revision IDs
+         */
+        const getEntriesByIds = async (model: CmsContentModel, ids: string[]) => {
+            const permission = await checkEntryPermissions({ rwd: "r" });
+            await utils.checkModelAccess(context, model);
+
+            const entries = await storageOperations.getByIds(model, ids);
+
+            return entries.filter(entry => utils.validateOwnership(context, permission, entry));
+        };
+
         const entries: CmsContentEntryContext = {
+            operations: storageOperations,
             /**
              * Get entries by exact revision IDs from the database.
              */
-            getByIds: async (model: CmsContentModel, ids: string[]) => {
-                const permission = await checkEntryPermissions({ rwd: "r" });
-                await utils.checkModelAccess(context, model);
-
-                const { getRevisionById } = loaders;
-
-                const entries = (await getRevisionById.loadMany(ids)) as CmsContentEntry[];
-
-                return entries.filter(entry => utils.validateOwnership(context, permission, entry));
+            getByIds: getEntriesByIds,
+            /**
+             * Get a single entry by revision ID from the database.
+             */
+            getById: async (model, id) => {
+                const [entry] = await getEntriesByIds(model, [id]);
+                if (!entry) {
+                    throw new NotFoundError(`Entry by ID "${id}" not found.`);
+                }
+                return entry;
             },
             /**
              * Get latest published revisions by entry IDs.
@@ -132,14 +218,8 @@ export default (): ContextPlugin<CmsContext> => ({
             getPublishedByIds: async (model: CmsContentModel, ids: string[]) => {
                 const permission = await checkEntryPermissions({ rwd: "r" });
                 await utils.checkModelAccess(context, model);
-                const { getPublishedRevisionByEntryId } = loaders;
 
-                // We only need entry ID (not revision ID) to get published revision for that entry.
-                const entryIds = ids.map(id => id.split("#")[0]);
-
-                const entries = (await getPublishedRevisionByEntryId.loadMany(
-                    entryIds
-                )) as CmsContentEntry[];
+                const entries = await storageOperations.getPublishedByIds(model, ids);
 
                 return entries.filter(entry => utils.validateOwnership(context, permission, entry));
             },
@@ -149,133 +229,98 @@ export default (): ContextPlugin<CmsContext> => ({
             getLatestByIds: async (model: CmsContentModel, ids: string[]) => {
                 const permission = await checkEntryPermissions({ rwd: "r" });
                 await utils.checkModelAccess(context, model);
-                const { getLatestRevisionByEntryId } = loaders;
 
-                // We only need entry ID (not revision ID) to get the latest revision for that entry.
-                const entryIds = ids.map(id => id.split("#")[0]);
-
-                const entries = (await getLatestRevisionByEntryId.loadMany(
-                    entryIds
-                )) as CmsContentEntry[];
+                const entries = await storageOperations.getLatestByIds(model, ids);
 
                 return entries.filter(entry => utils.validateOwnership(context, permission, entry));
             },
-            getEntryRevisions: async entryId => {
-                return loaders.getAllEntryRevisions.load(entryId);
+
+            getEntryRevisions: async (model, entryId) => {
+                return storageOperations.getRevisions(model, entryId);
             },
             get: async (model, args) => {
                 await checkEntryPermissions({ rwd: "r" });
-                const [[item]] = await context.cms.entries.list(model, {
+
+                const [items] = await context.cms.entries.list(model, {
                     ...args,
                     limit: 1
                 });
 
-                if (!item) {
+                if (items.length === 0) {
                     throw new NotFoundError(`Entry not found!`);
                 }
-                return item;
+                return items[0];
             },
-            list: async (model: CmsContentModel, args = {}, options = {}) => {
+            list: async (model: CmsContentModel, args) => {
                 const permission = await checkEntryPermissions({ rwd: "r" });
                 await utils.checkModelAccess(context, model);
 
-                const limit = createElasticsearchLimit(args.limit, 50);
+                const { where = {} } = args || {};
+                /**
+                 * Possibly only get records which are owned by current user.
+                 * Or if searching for the owner set that value - in the case that user can see other entries than their own.
+                 */
+                const ownedBy = permission.own ? context.security.getIdentity().id : where.ownedBy;
+                const listWhere = {
+                    ...where
+                };
+                if (ownedBy !== undefined) {
+                    listWhere.ownedBy = ownedBy;
+                }
 
-                // Possibly only get records which are owned by current user
-                const ownedBy = permission.own ? context.security.getIdentity().id : undefined;
-
-                const body = createElasticsearchQueryBody({
+                const { hasMoreItems, totalCount, cursor, items } = await storageOperations.list(
                     model,
-                    args: {
+                    {
                         ...args,
-                        limit
-                    },
-                    context,
-                    ownedBy,
-                    parentObject: "values",
-                    options
-                });
+                        where: listWhere
+                    }
+                );
 
-                let response;
-                try {
-                    response = await elasticSearch.search({
-                        ...utils.defaults.es(context, model),
-                        body
-                    });
-                } catch (ex) {
-                    throw new WebinyError(ex.message, ex.code, ex.meta);
-                }
-
-                const { hits, total } = response.body.hits;
-                const items = extractEntriesFromIndex({
-                    context,
-                    model,
-                    entries: hits.map(item => item._source)
-                });
-
-                const hasMoreItems = items.length > limit;
-                if (hasMoreItems) {
-                    // Remove the last item from results, we don't want to include it.
-                    items.pop();
-                }
-
-                // Cursor is the `sort` value of the last item in the array.
-                // https://www.elastic.co/guide/en/elasticsearch/reference/current/paginate-search-results.html#search-after
                 const meta = {
                     hasMoreItems,
-                    totalCount: total.value,
-                    cursor:
-                        items.length > 0
-                            ? utils.encodeElasticsearchCursor(hits[items.length - 1].sort)
-                            : null
+                    totalCount,
+                    /**
+                     * Cursor should be null if there are no more items to load.
+                     * Just make sure of that, disregarding what is returned from the storageOperations.list method.
+                     */
+                    cursor: hasMoreItems ? cursor : null
                 };
 
                 return [items, meta];
             },
-            listLatest: async function(model, args) {
-                return context.cms.entries.list(
-                    model,
-                    {
-                        sort: ["savedOn_DESC"],
-                        ...args
-                    },
-                    {
-                        type: TYPE_ENTRY_LATEST
+            listLatest: async function (model, args = {}) {
+                return context.cms.entries.list(model, {
+                    sort: ["createdOn_DESC"],
+                    ...args,
+                    where: {
+                        ...(args.where || {}),
+                        latest: true
                     }
-                );
+                });
             },
-            listPublished: async function(model, args) {
-                return context.cms.entries.list(
-                    model,
-                    {
-                        sort: ["savedOn_DESC"],
-                        ...args
-                    },
-                    {
-                        type: TYPE_ENTRY_PUBLISHED
+            listPublished: async function (model, args = {}) {
+                return context.cms.entries.list(model, {
+                    sort: ["createdOn_DESC"],
+                    ...args,
+                    where: {
+                        ...(args.where || {}),
+                        published: true
                     }
-                );
+                });
             },
             create: async (model, inputData) => {
                 await checkEntryPermissions({ rwd: "w" });
                 await utils.checkModelAccess(context, model);
 
-                // Make sure we only work with fields that are defined in the model.
-                const data = model.fields.reduce((acc, field) => {
-                    if (field.fieldId in inputData) {
-                        acc[field.fieldId] = inputData[field.fieldId];
-                    }
+                /**
+                 * Make sure we only work with fields that are defined in the model.
+                 */
+                const input = cleanInputData(model, inputData);
 
-                    return acc;
-                }, {});
+                await validateModelEntryData(context, model, input);
 
-                await validateModelEntryData(context, model, data);
-
-                const identity = security.getIdentity();
+                const identity = context.security.getIdentity();
                 const locale = context.cms.getLocale();
-
-                const [uniqueId, version] = [mdbid(), 1];
-                const id = `${uniqueId}#${utils.zeroPad(version)}`;
 
                 const owner = {
                     id: identity.id,
@@ -283,7 +328,12 @@ export default (): ContextPlugin<CmsContext> => ({
                     type: identity.type
                 };
 
+                const { id, entryId, version } = createEntryId(1);
+
                 const entry: CmsContentEntry = {
+                    webinyVersion: context.WEBINY_VERSION,
+                    tenant: context.tenancy.getCurrentTenant().id,
+                    entryId,
                     id,
                     modelId: model.modelId,
                     locale: locale.code,
@@ -294,95 +344,105 @@ export default (): ContextPlugin<CmsContext> => ({
                     version,
                     locked: false,
                     status: STATUS_DRAFT,
-                    values: data
+                    values: input
                 };
 
-                const storageEntry = await entryToStorageTransform(context, model, entry);
-                const esEntry = prepareEntryToIndex({
-                    context,
-                    model,
-                    storageEntry: cloneDeep(storageEntry),
-                    originalEntry: cloneDeep(entry)
-                });
-                await beforeCreateHook({ model, entry, context });
-
-                const { index: esIndex } = utils.defaults.es(context, model);
-
-                const batch = db
-                    .batch()
-                    // Create main entry item
-                    .create({
-                        ...utils.defaults.db(),
-                        data: {
-                            PK: PK_ENTRY(uniqueId),
-                            SK: SK_REVISION(version),
-                            TYPE: TYPE_ENTRY,
-                            ...storageEntry
-                        }
-                    })
-                    // Create "latest" entry item
-                    .create({
-                        ...utils.defaults.db(),
-                        data: {
-                            PK: PK_ENTRY(uniqueId),
-                            SK: SK_LATEST(),
-                            TYPE: TYPE_ENTRY_LATEST,
-                            ...storageEntry
-                        }
-                    })
-                    .create({
-                        ...utils.defaults.esDb(),
-                        data: {
-                            PK: PK_ENTRY(uniqueId),
-                            SK: SK_LATEST(),
-                            index: esIndex,
-                            data: getESLatestEntryData(context, esEntry)
-                        }
+                let storageEntry: CmsStorageContentEntry = null;
+                try {
+                    await beforeCreateHook({ model, input, entry, context, storageOperations });
+                    storageEntry = await entryToStorageTransform(context, model, entry);
+                    const result = await storageOperations.create(model, {
+                        input,
+                        entry,
+                        storageEntry
                     });
-
-                await batch.execute();
-                await afterCreateHook({ model, entry, context });
-
-                return storageEntry;
+                    await afterCreateHook({
+                        model,
+                        input,
+                        entry,
+                        /**
+                         * Pass the result because storage operations might have changed something (saved date, etc...)
+                         */
+                        storageEntry: result,
+                        context,
+                        storageOperations
+                    });
+                    return result;
+                } catch (ex) {
+                    throw new WebinyError(
+                        ex.message || "Could not create content entry.",
+                        ex.code || "CREATE_ENTRY_ERROR",
+                        ex.data || {
+                            error: ex,
+                            input,
+                            entry,
+                            storageEntry
+                        }
+                    );
+                }
             },
-            createRevisionFrom: async (model, sourceId, data = {}) => {
-                await checkEntryPermissions({ rwd: "w" });
+            createRevisionFrom: async (model, sourceId, inputData = {}) => {
+                const permission = await checkEntryPermissions({ rwd: "w" });
                 await utils.checkModelAccess(context, model);
 
-                // Entries are identified by a common parent ID + Revision number
-                const [uniqueId, version] = sourceId.split("#");
+                /**
+                 * Make sure we only work with fields that are defined in the model.
+                 */
+                const input = cleanUpdatedInputData(model, inputData);
 
-                const [[[entry]], [[latestEntry]]] = await db
-                    .batch()
-                    .read({
-                        ...utils.defaults.db(),
-                        query: { PK: PK_ENTRY(uniqueId), SK: SK_REVISION(version) }
-                    })
-                    .read({
-                        ...utils.defaults.db(),
-                        query: { PK: PK_ENTRY(uniqueId), SK: SK_LATEST() }
-                    })
-                    .execute();
+                /**
+                 * Entries are identified by a common parent ID + Revision number.
+                 */
+                const [uniqueId] = sourceId.split("#");
 
-                if (!entry) {
+                const originalStorageEntry = await storageOperations.getRevisionById(
+                    model,
+                    sourceId
+                );
+                const latestStorageEntry = await storageOperations.getLatestRevisionByEntryId(
+                    model,
+                    uniqueId
+                );
+
+                if (!originalStorageEntry) {
                     throw new NotFoundError(
                         `Entry "${sourceId}" of model "${model.modelId}" was not found.`
                     );
                 }
 
-                const identity = security.getIdentity();
-                const nextVersion = parseInt(latestEntry.id.split("#")[1]) + 1;
-                const id = `${uniqueId}#${utils.zeroPad(nextVersion)}`;
+                /**
+                 * We need to convert data from DB to its original form before using it further.
+                 */
+                const originalEntry = await entryFromStorageTransform(
+                    context,
+                    model,
+                    originalStorageEntry
+                );
 
-                const storageEntry = await entryToStorageTransform(context, model, ({
-                    values: data || {}
-                } as unknown) as CmsContentEntry);
+                const values = {
+                    ...originalEntry.values,
+                    ...input
+                };
 
-                const newEntry: CmsContentEntry = {
+                await validateModelEntryData(context, model, values);
+
+                utils.checkOwnership(context, permission, originalEntry);
+
+                const latestEntry = await entryFromStorageTransform(
+                    context,
+                    model,
+                    latestStorageEntry
+                );
+
+                const identity = context.security.getIdentity();
+
+                const latestId = latestStorageEntry ? latestStorageEntry.id : sourceId;
+                const { id, version: nextVersion } = increaseEntryIdVersion(latestId);
+
+                const entry: CmsContentEntry = {
+                    ...originalEntry,
                     id,
                     version: nextVersion,
-                    modelId: entry.modelId,
-                    locale: entry.locale,
                     savedOn: new Date().toISOString(),
                     createdOn: new Date().toISOString(),
                     createdBy: {
@@ -390,627 +450,375 @@ export default (): ContextPlugin<CmsContext> => ({
                         displayName: identity.displayName,
                         type: identity.type
                     },
-                    ownedBy: entry.ownedBy,
                     locked: false,
                     publishedOn: null,
                     status: STATUS_DRAFT,
-                    values: { ...entry.values, ...data, ...storageEntry.values }
+                    values
                 };
 
-                await beforeCreateRevisionFromHook({
-                    context,
-                    model,
-                    entry
-                });
+                let storageEntry: CmsStorageContentEntry = undefined;
 
-                // We need to convert data from DB to its original form before constructing ES index data.
-                const originalEntry = await entryFromStorageTransform(context, model, newEntry);
+                try {
+                    await beforeCreateRevisionFromHook({
+                        context,
+                        model,
+                        entry,
+                        storageEntry,
+                        originalEntry,
+                        originalStorageEntry,
+                        latestEntry,
+                        latestStorageEntry,
+                        storageOperations
+                    });
 
-                const esEntry = prepareEntryToIndex({
-                    context,
-                    model,
-                    originalEntry: cloneDeep(originalEntry),
-                    storageEntry: cloneDeep(newEntry)
-                });
+                    storageEntry = await entryToStorageTransform(context, model, entry);
 
-                const { index: esIndex } = utils.defaults.es(context, model);
-
-                await db
-                    .batch()
-                    // Create main entry item
-                    .create({
-                        ...utils.defaults.db(),
-                        data: {
-                            PK: PK_ENTRY(uniqueId),
-                            SK: SK_REVISION(utils.zeroPad(nextVersion)),
-                            TYPE: TYPE_ENTRY,
-                            ...newEntry
+                    const result = await storageOperations.createRevisionFrom(model, {
+                        entry,
+                        storageEntry,
+                        originalEntry,
+                        originalStorageEntry,
+                        latestEntry,
+                        latestStorageEntry
+                    });
+                    await afterCreateRevisionFromHook({
+                        context,
+                        model,
+                        originalEntry,
+                        originalStorageEntry,
+                        latestEntry,
+                        latestStorageEntry,
+                        entry,
+                        /**
+                         * Passing result due to storage operations might have changed something on the entry.
+                         */
+                        storageEntry: result,
+                        storageOperations
+                    });
+                    return result;
+                } catch (ex) {
+                    throw new WebinyError(
+                        ex.message || "Could not create entry from existing one.",
+                        ex.code || "CREATE_FROM_REVISION_ERROR",
+                        {
+                            error: ex,
+                            entry,
+                            storageEntry,
+                            originalEntry,
+                            originalStorageEntry
                         }
-                    })
-                    // Update "latest" entry item
-                    .update({
-                        ...utils.defaults.db(),
-                        query: {
-                            PK: PK_ENTRY(uniqueId),
-                            SK: SK_LATEST()
-                        },
-                        data: {
-                            PK: PK_ENTRY(uniqueId),
-                            SK: SK_LATEST(),
-                            TYPE: TYPE_ENTRY_LATEST,
-                            ...newEntry
-                        }
-                    })
-                    .update({
-                        ...utils.defaults.esDb(),
-                        query: {
-                            PK: PK_ENTRY(uniqueId),
-                            SK: SK_LATEST()
-                        },
-                        data: {
-                            PK: PK_ENTRY(uniqueId),
-                            SK: SK_LATEST(),
-                            index: esIndex,
-                            data: getESLatestEntryData(context, esEntry)
-                        }
-                    })
-                    .execute();
-
-                await afterCreateRevisionFromHook({
-                    context,
-                    model,
-                    entry
-                });
-
-                return newEntry;
+                    );
+                }
             },
             update: async (model, id, inputData) => {
                 const permission = await checkEntryPermissions({ rwd: "w" });
                 await utils.checkModelAccess(context, model);
 
-                // Make sure we only work with fields that are defined in the model.
-                const data = model.fields.reduce((acc, field) => {
-                    acc[field.fieldId] = inputData[field.fieldId];
-                    return acc;
-                }, {});
+                /**
+                 * Make sure we only work with fields that are defined in the model.
+                 */
+                const input = cleanInputData(model, inputData);
 
-                // Validate data early. We don't want to query DB if input data is invalid.
-                await validateModelEntryData(context, model, data);
+                /**
+                 * Validate data early. We don't want to query DB if input data is invalid.
+                 */
+                await validateModelEntryData(context, model, input);
+                /**
+                 * The entry we are going to update.
+                 */
+                const originalStorageEntry = await storageOperations.getRevisionById(model, id);
 
-                // Now we know the data is valid, proceed with DB calls.
-                const [uniqueId, version] = id.split("#");
-
-                const [[[entry]], [[latestEntry]]] = await db
-                    .batch()
-                    .read({
-                        ...utils.defaults.db(),
-                        query: { PK: PK_ENTRY(uniqueId), SK: SK_REVISION(version) }
-                    })
-                    .read({
-                        ...utils.defaults.db(),
-                        query: { PK: PK_ENTRY(uniqueId), SK: SK_LATEST() }
-                    })
-                    .execute();
-
-                if (!entry) {
+                if (!originalStorageEntry) {
                     throw new NotFoundError(
                         `Entry "${id}" of model "${model.modelId}" was not found.`
                     );
                 }
 
-                if (entry.locked) {
+                if (originalStorageEntry.locked) {
                     throw new WebinyError(
                         `Cannot update entry because it's locked.`,
                         "CONTENT_ENTRY_UPDATE_ERROR"
                     );
                 }
 
-                utils.checkOwnership(context, permission, entry, "ownedBy");
+                const originalEntry = await entryFromStorageTransform(
+                    context,
+                    model,
+                    originalStorageEntry
+                );
 
-                const preparedForStorageEntry = await entryToStorageTransform(context, model, ({
-                    values: data || {}
-                } as unknown) as CmsContentEntry);
+                utils.checkOwnership(context, permission, originalEntry);
 
-                // we need full entry because of "before/after save" hooks
-                const updatedEntry: CmsContentEntry = {
-                    ...entry,
+                /**
+                 * We always send the full entry to the hooks and storage operations update.
+                 */
+                const entry: CmsContentEntry = {
+                    ...originalEntry,
                     savedOn: new Date().toISOString(),
                     values: {
-                        // Values from DB
-                        ...entry.values,
-                        // New values
-                        ...data
+                        /**
+                         * Existing values from the database, transformed back to original, of course.
+                         */
+                        ...originalEntry.values,
+                        /**
+                         * Add new values.
+                         */
+                        ...input
                     }
                 };
 
-                const updatedStorageEntry = {
-                    ...updatedEntry,
-                    values: {
-                        ...updatedEntry.values,
-                        // Transformed values
-                        ...preparedForStorageEntry.values
-                    }
-                };
+                let storageEntry: CmsStorageContentEntry = undefined;
 
-                await beforeUpdateHook({ model, entry: updatedEntry, context });
-
-                const batch = db.batch();
-                batch.update({
-                    ...utils.defaults.db(),
-                    query: { PK: PK_ENTRY(uniqueId), SK: SK_REVISION(version) },
-                    data: updatedStorageEntry
-                });
-
-                if (latestEntry.id === id) {
-                    // We need to convert data from DB to its original form before constructing ES index data.
-                    const originalEntry = await entryFromStorageTransform(context, model, entry);
-                    // and then prepare the entry for indexing
-                    const esEntry = prepareEntryToIndex({
+                try {
+                    await beforeUpdateHook({
                         context,
                         model,
-                        originalEntry: cloneDeep(originalEntry),
-                        storageEntry: cloneDeep(updatedStorageEntry)
+                        input,
+                        entry,
+                        originalEntry,
+                        originalStorageEntry,
+                        storageOperations
                     });
-                    const esDoc = {
-                        ...esEntry,
-                        savedOn: updatedStorageEntry.savedOn
-                    };
+                    storageEntry = await entryToStorageTransform(context, model, entry);
 
-                    const { index: esIndex } = utils.defaults.es(context, model);
-
-                    batch.update({
-                        ...utils.defaults.esDb(),
-                        query: {
-                            PK: PK_ENTRY(uniqueId),
-                            SK: SK_LATEST()
-                        },
-                        data: {
-                            PK: PK_ENTRY(uniqueId),
-                            SK: SK_LATEST(),
-                            index: esIndex,
-                            data: omit(getESLatestEntryData(context, esDoc), ["PK", "SK", "TYPE"])
+                    const result = await storageOperations.update(model, {
+                        originalEntry,
+                        originalStorageEntry,
+                        entry,
+                        storageEntry,
+                        input
+                    });
+                    await afterUpdateHook({
+                        context,
+                        model,
+                        input,
+                        entry,
+                        storageEntry: result,
+                        originalEntry,
+                        originalStorageEntry,
+                        storageOperations
+                    });
+                    return result;
+                } catch (ex) {
+                    throw new WebinyError(
+                        ex.message || "Could not update existing entry.",
+                        ex.code || "UPDATE_ERROR",
+                        {
+                            error: ex,
+                            entry,
+                            storageEntry,
+                            originalEntry,
+                            input
                         }
-                    });
+                    );
                 }
-
-                await batch.execute();
-
-                await afterUpdateHook({ model, entry: updatedEntry, context });
-
-                return updatedStorageEntry;
             },
             deleteRevision: async (model, revisionId) => {
                 const permission = await checkEntryPermissions({ rwd: "d" });
                 await utils.checkModelAccess(context, model);
 
-                const [uniqueId, version] = revisionId.split("#");
+                const [entryId, version] = revisionId.split("#");
 
-                const [[[entry]], [[latestEntryData]], [[publishedEntryData]]] = await db
-                    .batch()
-                    .read({
-                        ...utils.defaults.db(),
-                        query: {
-                            PK: PK_ENTRY(uniqueId),
-                            SK: SK_REVISION(version)
-                        }
-                    })
-                    .read({
-                        ...utils.defaults.db(),
-                        query: {
-                            PK: PK_ENTRY(uniqueId),
-                            SK: SK_LATEST()
-                        }
-                    })
-                    .read({
-                        ...utils.defaults.db(),
-                        query: {
-                            PK: PK_ENTRY(uniqueId),
-                            SK: SK_PUBLISHED()
-                        }
-                    })
-                    .execute();
+                const storageEntryToDelete = await storageOperations.getRevisionById(
+                    model,
+                    revisionId
+                );
+                const latestStorageEntry = await storageOperations.getLatestRevisionByEntryId(
+                    model,
+                    entryId
+                );
+                const previousStorageEntry = await storageOperations.getPreviousRevision(
+                    model,
+                    entryId,
+                    parseInt(version)
+                );
 
-                if (!entry) {
+                if (!storageEntryToDelete) {
                     throw new NotFoundError(`Entry "${revisionId}" was not found!`);
                 }
 
-                utils.checkOwnership(context, permission, entry, "ownedBy");
+                utils.checkOwnership(context, permission, storageEntryToDelete);
 
-                await beforeDeleteRevisionHook({
+                const latestEntryRevisionId = latestStorageEntry ? latestStorageEntry.id : null;
+
+                const entryToDelete = await entryFromStorageTransform(
                     context,
                     model,
-                    entry
-                });
-
-                // Delete revision from DB
-                const batch = db.batch().delete({
-                    ...utils.defaults.db(),
-                    query: {
-                        PK: PK_ENTRY(uniqueId),
-                        SK: SK_REVISION(version)
-                    }
-                });
-
-                const es = utils.defaults.es(context, model);
-
-                const isLatest = latestEntryData ? latestEntryData.id === revisionId : false;
-                const isPublished = publishedEntryData
-                    ? publishedEntryData.id === revisionId
-                    : false;
-
-                // If the entry is published, remove published data, both from DB and ES.
-                if (isPublished) {
-                    batch.delete(
-                        {
-                            ...utils.defaults.db(),
-                            query: {
-                                PK: PK_ENTRY(uniqueId),
-                                SK: SK_PUBLISHED()
-                            }
-                        },
-                        {
-                            ...utils.defaults.esDb(),
-                            query: {
-                                PK: PK_ENTRY(uniqueId),
-                                SK: SK_PUBLISHED()
-                            }
-                        }
+                    storageEntryToDelete
+                );
+                /**
+                 * If targeted record is the latest entry record and there is no previous one, we need to run full delete with hooks.
+                 * At this point deleteEntry hooks are not fired.
+                 * TODO determine if not running the deleteRevision hooks is ok.
+                 */
+                if (entryToDelete.id === latestEntryRevisionId && !previousStorageEntry) {
+                    return await deleteEntry({
+                        model,
+                        entry: entryToDelete,
+                        storageEntry: storageEntryToDelete
+                    });
+                }
+                /**
+                 * If targeted record is latest entry revision, set the previous one as the new latest
+                 */
+                let entryToSetAsLatest: CmsContentEntry = null;
+                let storageEntryToSetAsLatest: CmsStorageContentEntry = null;
+                if (entryToDelete.id === latestEntryRevisionId) {
+                    entryToSetAsLatest = await entryFromStorageTransform(
+                        context,
+                        model,
+                        previousStorageEntry
                     );
+                    storageEntryToSetAsLatest = previousStorageEntry;
                 }
 
-                // If the entry is "latest", set the previous entry as the new latest.
-                // Updates must be made on both DB and ES side.
-                if (isLatest) {
-                    const [[prevLatestEntry]] = await db.read<DbItem<CmsContentEntry>>({
-                        ...utils.defaults.db(),
-                        query: {
-                            PK: PK_ENTRY(uniqueId),
-                            SK: { $lt: SK_REVISION(version) }
-                        },
-                        // Sorting in descending order will also make sure we only get items starting with REV#
-                        sort: { SK: -1 },
-                        limit: 1
+                try {
+                    await beforeDeleteRevisionHook({
+                        context,
+                        model,
+                        storageOperations,
+                        entryToDelete,
+                        storageEntryToDelete,
+                        entryToSetAsLatest,
+                        storageEntryToSetAsLatest
+                    });
+                    await storageOperations.deleteRevision(model, {
+                        entryToDelete,
+                        storageEntryToDelete,
+                        entryToSetAsLatest,
+                        storageEntryToSetAsLatest
                     });
 
-                    if (!prevLatestEntry) {
-                        // If we haven't found the previous revision, this must must be the last revision.
-                        // We can safely call `deleteEntry` to remove the whole entry and all of the related data.
-                        const result = entries.deleteEntry(model, uniqueId);
-                        // need to call lifecycle hook because we are ending the execution of this fn here
-                        await afterDeleteRevisionHook({
-                            context,
-                            model,
-                            entry
-                        });
-                        //
-                        return result;
-                    }
-
-                    // Update latest entry data.
-                    batch
-                        .update({
-                            ...utils.defaults.db(),
-                            query: {
-                                PK: PK_ENTRY(uniqueId),
-                                SK: SK_LATEST()
-                            },
-                            data: {
-                                ...latestEntryData,
-                                ...omit(prevLatestEntry, ["PK", "SK", "TYPE"])
-                            }
-                        })
-                        .update({
-                            ...utils.defaults.esDb(),
-                            query: {
-                                PK: PK_ENTRY(uniqueId),
-                                SK: SK_LATEST()
-                            },
-                            data: {
-                                PK: PK_ENTRY(uniqueId),
-                                SK: SK_LATEST(),
-                                index: es.index,
-                                data: getESLatestEntryData(context, prevLatestEntry)
-                            }
-                        });
+                    await afterDeleteRevisionHook({
+                        context,
+                        model,
+                        storageOperations,
+                        entryToDelete,
+                        storageEntryToDelete,
+                        entryToSetAsLatest,
+                        storageEntryToSetAsLatest
+                    });
+                } catch (ex) {
+                    throw new WebinyError(ex.message, ex.code || "DELETE_REVISION_ERROR", {
+                        error: ex,
+                        entryToDelete,
+                        storageEntryToDelete,
+                        entryToSetAsLatest,
+                        storageEntryToSetAsLatest
+                    });
                 }
-
-                // Execute DB operations
-                await batch.execute();
-
-                await afterDeleteRevisionHook({
-                    context,
-                    model,
-                    entry
-                });
             },
             deleteEntry: async (model, entryId) => {
                 const permission = await checkEntryPermissions({ rwd: "d" });
                 await utils.checkModelAccess(context, model);
 
-                const [dbItems] = await db.read<CmsContentEntry>({
-                    ...utils.defaults.db(),
-                    query: {
-                        PK: PK_ENTRY(entryId),
-                        SK: { $gte: " " }
-                    }
-                });
+                const storageEntry = await storageOperations.getLatestRevisionByEntryId(
+                    model,
+                    entryId
+                );
 
-                if (!dbItems.length) {
+                if (!storageEntry) {
                     throw new NotFoundError(`Entry "${entryId}" was not found!`);
                 }
 
-                utils.checkOwnership(context, permission, entries[0], "ownedBy");
+                utils.checkOwnership(context, permission, storageEntry);
 
-                // need last entry from the items for hooks
-                const entry = dbItems[dbItems.length - 1];
+                const entry = await entryFromStorageTransform(context, model, storageEntry);
 
-                await beforeDeleteHook({
-                    context,
+                return await deleteEntry({
                     model,
-                    entry
-                });
-
-                // Load ES entries to delete
-                const [esDbItems] = await db.read({
-                    ...utils.defaults.esDb(),
-                    query: {
-                        PK: PK_ENTRY(entryId),
-                        SK: { $gte: " " }
-                    }
-                });
-
-                // Delete all items from DB and ES DB
-                await Promise.all([
-                    utils.paginateBatch(dbItems, 25, async items => {
-                        await db
-                            .batch()
-                            .delete(
-                                ...items.map((item: any) => ({
-                                    ...utils.defaults.db(),
-                                    query: {
-                                        PK: item.PK,
-                                        SK: item.SK
-                                    }
-                                }))
-                            )
-                            .execute();
-                    }),
-                    utils.paginateBatch(esDbItems, 25, async items => {
-                        await db
-                            .batch()
-                            .delete(
-                                ...items.map((item: any) => ({
-                                    ...utils.defaults.esDb(),
-                                    query: {
-                                        PK: item.PK,
-                                        SK: item.SK
-                                    }
-                                }))
-                            )
-                            .execute();
-                    })
-                ]);
-
-                await afterDeleteHook({
-                    context,
-                    model,
-                    entry
+                    entry,
+                    storageEntry
                 });
             },
             publish: async (model, id) => {
                 const permission = await checkEntryPermissions({ pw: "p" });
                 await utils.checkModelAccess(context, model);
 
-                const [uniqueId, version] = id.split("#");
-                const ENTRY_PK = PK_ENTRY(uniqueId);
-                const LATEST_SK = SK_LATEST();
-                const PUBLISHED_SK = SK_PUBLISHED();
+                const originalStorageEntry = await storageOperations.getRevisionById(model, id);
 
-                const [
-                    [[entry]],
-                    [[latestEntryData]],
-                    [[publishedEntryData]],
-                    [[latestESData]],
-                    [[publishedESData]]
-                ] = await db
-                    .batch()
-                    .read({
-                        ...utils.defaults.db(),
-                        query: { PK: ENTRY_PK, SK: SK_REVISION(version) }
-                    })
-                    .read({
-                        ...utils.defaults.db(),
-                        query: { PK: ENTRY_PK, SK: LATEST_SK }
-                    })
-                    .read({
-                        ...utils.defaults.db(),
-                        query: { PK: ENTRY_PK, SK: PUBLISHED_SK }
-                    })
-                    .read({
-                        ...utils.defaults.esDb(),
-                        query: { PK: ENTRY_PK, SK: LATEST_SK }
-                    })
-                    .read({
-                        ...utils.defaults.esDb(),
-                        query: { PK: ENTRY_PK, SK: PUBLISHED_SK }
-                    })
-                    .execute();
-
-                if (!entry) {
+                if (!originalStorageEntry) {
                     throw new NotFoundError(
-                        `Entry "${id}" of model "${model.modelId}" was not found.`
+                        `Entry "${id}" in the model "${model.modelId}" was not found.`
                     );
                 }
 
-                utils.checkOwnership(context, permission, entry, "ownedBy");
+                utils.checkOwnership(context, permission, originalStorageEntry);
 
-                // Change entry to "published"
-                entry.status = STATUS_PUBLISHED;
-                entry.locked = true;
-                entry.publishedOn = new Date().toISOString();
-
-                await beforePublishHook({
+                const originalEntry = await entryFromStorageTransform(
                     context,
                     model,
-                    entry
-                });
+                    originalStorageEntry
+                );
 
-                const batch = db.batch();
-
-                batch.update({
-                    ...utils.defaults.db(),
-                    query: {
-                        PK: ENTRY_PK,
-                        SK: SK_REVISION(version)
-                    },
-                    data: entry
-                });
-
-                const es = utils.defaults.es(context, model);
-
-                if (publishedEntryData) {
-                    // If there is a `published` entry already, we need to set it to `unpublished`. We need to
-                    // execute two updates: update the previously published entry's status and the published
-                    // entry record (PK_ENTRY_PUBLISHED()).
-
-                    // DynamoDB does not support `batchUpdate` - so here we load the previously published
-                    // entry's data to update its status within a batch operation. If, hopefully,
-                    // they introduce a true update batch operation, remove this `read` call.
-
-                    const [[previouslyPublishedEntry]] = await db.read<CmsContentEntry>({
-                        ...utils.defaults.db(),
-                        query: {
-                            PK: ENTRY_PK,
-                            SK: SK_REVISION(utils.zeroPad(publishedEntryData.version))
-                        }
-                    });
-
-                    previouslyPublishedEntry.status = STATUS_UNPUBLISHED;
-
-                    batch
-                        .update({
-                            // Update currently published entry (unpublish it)
-                            ...utils.defaults.db(),
-                            query: {
-                                PK: ENTRY_PK,
-                                SK: SK_REVISION(utils.zeroPad(publishedEntryData.version))
-                            },
-                            data: previouslyPublishedEntry
-                        })
-                        .update({
-                            // Update the helper item in DB with the new published entry ID
-                            ...utils.defaults.db(),
-                            query: {
-                                PK: ENTRY_PK,
-                                SK: PUBLISHED_SK
-                            },
-                            data: {
-                                PK: ENTRY_PK,
-                                SK: PUBLISHED_SK,
-                                ...publishedEntryData,
-                                ...omit(entry, ["PK", "SK", "TYPE"])
-                            }
-                        });
-                } else {
-                    batch.create({
-                        ...utils.defaults.db(),
-                        data: {
-                            PK: ENTRY_PK,
-                            SK: PUBLISHED_SK,
-                            TYPE: TYPE_ENTRY_PUBLISHED,
-                            ...omit(entry, ["PK", "SK", "TYPE"])
-                        }
-                    });
-                }
-
-                // If we are publishing the latest revision, let's also update the latest revision's status in ES.
-                if (latestEntryData && latestEntryData.id === id) {
-                    batch.update({
-                        ...utils.defaults.esDb(),
-                        query: {
-                            PK: ENTRY_PK,
-                            SK: LATEST_SK
-                        },
-                        data: {
-                            ...latestESData,
-                            data: {
-                                ...latestESData.data,
-                                status: STATUS_PUBLISHED,
-                                locked: true,
-                                publishedOn: entry.publishedOn
-                            }
-                        }
-                    });
-                }
-                const originalEntry = await entryFromStorageTransform(context, model, entry);
-                const preparedEntry = prepareEntryToIndex({
-                    context,
-                    model,
-                    originalEntry: cloneDeep(originalEntry),
-                    storageEntry: cloneDeep(entry)
-                });
-
-                // Update the published revision entry in ES.
-                const esData = {
-                    PK: ENTRY_PK,
-                    SK: PUBLISHED_SK,
-                    index: es.index,
-                    data: getESPublishedEntryData(context, preparedEntry)
+                const currentDate = new Date().toISOString();
+                const entry: CmsContentEntry = {
+                    ...originalEntry,
+                    status: STATUS_PUBLISHED,
+                    locked: true,
+                    savedOn: currentDate,
+                    publishedOn: currentDate
                 };
 
-                if (publishedESData) {
-                    batch.update({
-                        ...utils.defaults.esDb(),
-                        query: {
-                            PK: ENTRY_PK,
-                            SK: PUBLISHED_SK
-                        },
-                        data: esData
+                let storageEntry: CmsStorageContentEntry = undefined;
+
+                try {
+                    await beforePublishHook({
+                        context,
+                        storageOperations,
+                        model,
+                        entry,
+                        originalEntry,
+                        originalStorageEntry
                     });
-                } else {
-                    batch.create({
-                        ...utils.defaults.esDb(),
-                        data: esData
+                    storageEntry = await entryToStorageTransform(context, model, entry);
+                    const result = await storageOperations.publish(model, {
+                        entry,
+                        storageEntry,
+                        originalEntry,
+                        originalStorageEntry
                     });
+                    await afterPublishHook({
+                        context,
+                        storageOperations,
+                        model,
+                        originalEntry,
+                        originalStorageEntry,
+                        entry,
+                        storageEntry: result
+                    });
+                    return result;
+                } catch (ex) {
+                    throw new WebinyError(
+                        ex.message || "Could not publish entry.",
+                        ex.code || "PUBLISH_ERROR",
+                        {
+                            entry,
+                            storageEntry,
+                            originalEntry,
+                            originalStorageEntry
+                        }
+                    );
                 }
-
-                // Finally, execute batch
-                await batch.execute();
-
-                // Clear DataLoader cache for this entry.
-                loaders.getAllEntryRevisions.clear(uniqueId);
-
-                await afterPublishHook({
-                    context,
-                    model,
-                    entry
-                });
-
-                return entry;
             },
             requestChanges: async (model, id) => {
                 const permission = await checkEntryPermissions({ pw: "c" });
-                const [uniqueId, version] = id.split("#");
 
-                const [[[entry]], [[latestEntryData]]] = await db
-                    .batch<[[CmsContentEntry]], [[{ id: string }]]>()
-                    .read({
-                        ...utils.defaults.db(),
-                        query: { PK: PK_ENTRY(uniqueId), SK: SK_REVISION(version) }
-                    })
-                    .read({
-                        ...utils.defaults.db(),
-                        query: { PK: PK_ENTRY(uniqueId), SK: SK_LATEST() }
-                    })
-                    .execute();
+                const originalStorageEntry = await storageOperations.getRevisionById(model, id);
 
-                if (!entry) {
+                if (!originalStorageEntry) {
                     throw new NotFoundError(
                         `Entry "${id}" of model "${model.modelId}" was not found.`
                     );
                 }
 
-                if (entry.status !== STATUS_REVIEW_REQUESTED) {
+                const originalEntry = await entryFromStorageTransform(
+                    context,
+                    model,
+                    originalStorageEntry
+                );
+
+                if (originalEntry.status !== STATUS_REVIEW_REQUESTED) {
                     throw new WebinyError(
                         "Cannot request changes on an entry that's not under review.",
                         "ENTRY_NOT_UNDER_REVIEW"
@@ -1018,238 +826,221 @@ export default (): ContextPlugin<CmsContext> => ({
                 }
 
                 const identity = context.security.getIdentity();
-                if (entry.ownedBy.id === identity.id) {
+                if (originalEntry.ownedBy.id === identity.id) {
                     throw new WebinyError(
                         "You cannot request changes on your own entry.",
                         "CANNOT_REQUEST_CHANGES_ON_OWN_ENTRY"
                     );
                 }
 
-                utils.checkOwnership(context, permission, entry, "ownedBy");
+                utils.checkOwnership(context, permission, originalEntry);
 
-                await beforeRequestChangesHook({
-                    context,
-                    model,
-                    entry
-                });
+                const entry: CmsContentEntry = {
+                    ...originalEntry,
+                    status: STATUS_CHANGES_REQUESTED
+                };
 
-                const updatedEntry: CmsContentEntry = Object.assign(entry, {
-                    status: STATUS_CHANGES_REQUESTED,
-                    locked: false
-                });
+                let storageEntry: CmsStorageContentEntry = undefined;
 
-                const batch = db.batch().update({
-                    ...utils.defaults.db(),
-                    query: {
-                        PK: PK_ENTRY(uniqueId),
-                        SK: SK_REVISION(version)
-                    },
-                    data: updatedEntry
-                });
-
-                // If we updated the latest version, then make sure the changes are propagated to ES too.
-                if (latestEntryData.id === id) {
-                    // Index file in "Elastic Search"
-                    const es = utils.defaults.es(context, model);
-                    batch.update({
-                        ...utils.defaults.esDb(),
-                        query: {
-                            PK: PK_ENTRY(uniqueId),
-                            SK: SK_LATEST()
-                        },
-                        data: {
-                            PK: PK_ENTRY(uniqueId),
-                            SK: SK_LATEST(),
-                            index: es.index,
-                            data: getESLatestEntryData(context, updatedEntry)
-                        }
+                try {
+                    await beforeRequestChangesHook({
+                        context,
+                        model,
+                        originalEntry,
+                        originalStorageEntry,
+                        entry,
+                        storageOperations
                     });
+
+                    storageEntry = await entryToStorageTransform(context, model, entry);
+
+                    const result = await storageOperations.requestChanges(model, {
+                        originalEntry,
+                        originalStorageEntry,
+                        entry,
+                        storageEntry
+                    });
+                    await afterRequestChangesHook({
+                        context,
+                        model,
+                        originalEntry,
+                        originalStorageEntry,
+                        entry,
+                        storageEntry: result,
+                        storageOperations
+                    });
+                    return result;
+                } catch (ex) {
+                    throw new WebinyError(
+                        ex.message || "Could not request changes for the entry.",
+                        ex.code || "REQUEST_CHANGES_ERROR",
+                        {
+                            entry,
+                            originalEntry
+                        }
+                    );
                 }
-
-                await batch.execute();
-
-                await afterRequestChangesHook({
-                    context,
-                    model,
-                    entry: updatedEntry
-                });
-
-                return updatedEntry;
             },
             requestReview: async (model, id) => {
                 const permission = await checkEntryPermissions({ pw: "r" });
-                const [uniqueId, version] = id.split("#");
+                const [entryId] = id.split("#");
 
-                const [[[entry]], [[latestEntryData]]] = await db
-                    .batch<[[CmsContentEntry]], [[{ id: string }]]>()
-                    .read({
-                        ...utils.defaults.db(),
-                        query: { PK: PK_ENTRY(uniqueId), SK: SK_REVISION(version) }
-                    })
-                    .read({
-                        ...utils.defaults.db(),
-                        query: { PK: PK_ENTRY(uniqueId), SK: SK_LATEST() }
-                    })
-                    .execute();
+                const originalStorageEntry = await storageOperations.getRevisionById(model, id);
+                const latestEntryRevision = await storageOperations.getLatestRevisionByEntryId(
+                    model,
+                    entryId
+                );
 
-                if (!entry) {
+                if (!originalStorageEntry) {
                     throw new NotFoundError(
                         `Entry "${id}" of model "${model.modelId}" was not found.`
                     );
+                } else if (!latestEntryRevision) {
+                    throw new NotFoundError(`Entry "${id}" does not have latest record`);
                 }
 
+                const originalEntry = await entryFromStorageTransform(
+                    context,
+                    model,
+                    originalStorageEntry
+                );
+
                 const allowedStatuses = [STATUS_DRAFT, STATUS_CHANGES_REQUESTED];
-                if (!allowedStatuses.includes(entry.status)) {
-                    throw new Error(
-                        "Cannot request review - entry is not a draft nor was a change request issued."
+                if (!allowedStatuses.includes(originalEntry.status)) {
+                    throw new WebinyError(
+                        "Cannot request review - entry is not a draft nor was a change request issued.",
+                        "REQUEST_REVIEW_ERROR",
+                        {
+                            entry: originalEntry
+                        }
                     );
                 }
 
-                utils.checkOwnership(context, permission, entry, "ownedBy");
+                utils.checkOwnership(context, permission, originalEntry);
 
-                // Change entry's status.
-                const updatedEntry: CmsContentEntry = Object.assign(entry, {
-                    status: STATUS_REVIEW_REQUESTED,
-                    locked: true
-                });
+                const entry: CmsContentEntry = {
+                    ...originalEntry,
+                    status: STATUS_REVIEW_REQUESTED
+                };
 
-                await beforeRequestReviewHook({
-                    context,
-                    model,
-                    entry
-                });
+                let storageEntry: CmsStorageContentEntry = undefined;
 
-                const batch = db.batch().update({
-                    ...utils.defaults.db(),
-                    query: {
-                        PK: PK_ENTRY(uniqueId),
-                        SK: SK_REVISION(version)
-                    },
-                    data: updatedEntry
-                });
-
-                await afterRequestReviewHook({
-                    context,
-                    model,
-                    entry: updatedEntry
-                });
-
-                // If we updated the latest version, then make sure the changes are propagated to ES too.
-                if (latestEntryData.id === id) {
-                    // Index file in "Elastic Search"
-                    const es = utils.defaults.es(context, model);
-                    batch.update({
-                        query: {
-                            PK: PK_ENTRY(uniqueId),
-                            SK: SK_LATEST()
-                        },
-                        data: {
-                            PK: PK_ENTRY(uniqueId),
-                            SK: SK_LATEST(),
-                            index: es.index,
-                            data: getESLatestEntryData(context, updatedEntry)
-                        }
+                try {
+                    await beforeRequestReviewHook({
+                        context,
+                        model,
+                        originalEntry,
+                        originalStorageEntry,
+                        entry,
+                        storageOperations
                     });
+
+                    storageEntry = await entryToStorageTransform(context, model, entry);
+
+                    const result = await storageOperations.requestReview(model, {
+                        originalEntry,
+                        originalStorageEntry,
+                        entry,
+                        storageEntry
+                    });
+                    await afterRequestReviewHook({
+                        context,
+                        model,
+                        originalEntry,
+                        originalStorageEntry,
+                        entry,
+                        storageEntry: result,
+                        storageOperations
+                    });
+                    return result;
+                } catch (ex) {
+                    throw new WebinyError(
+                        ex.message || "Could not request review on the entry.",
+                        ex.code || "REQUEST_REVIEW_ERROR",
+                        {
+                            originalEntry,
+                            entry
+                        }
+                    );
                 }
-
-                await batch.execute();
-
-                return updatedEntry;
             },
             unpublish: async (model, id) => {
                 const permission = await checkEntryPermissions({ pw: "u" });
 
-                const [uniqueId, version] = id.split("#");
+                const [entryId] = id.split("#");
 
-                const [[[entry]], [[latestEntryData]], [[publishedEntryData]]] = await db
-                    .batch()
-                    .read({
-                        ...utils.defaults.db(),
-                        query: { PK: PK_ENTRY(uniqueId), SK: SK_REVISION(version) }
-                    })
-                    .read({
-                        ...utils.defaults.db(),
-                        query: { PK: PK_ENTRY(uniqueId), SK: SK_LATEST() }
-                    })
-                    .read({
-                        ...utils.defaults.db(),
-                        query: { PK: PK_ENTRY(uniqueId), SK: SK_PUBLISHED() }
-                    })
-                    .execute();
+                const originalStorageEntry = await storageOperations.getPublishedRevisionByEntryId(
+                    model,
+                    entryId
+                );
 
-                if (!entry) {
+                if (!originalStorageEntry) {
                     throw new NotFoundError(
                         `Entry "${id}" of model "${model.modelId}" was not found.`
                     );
                 }
 
-                utils.checkOwnership(context, permission, entry, "ownedBy");
-
-                if (!publishedEntryData || publishedEntryData.id !== id) {
-                    throw new Error(`Entry "${id}" is not published.`);
-                }
-
-                entry.status = STATUS_UNPUBLISHED;
-
-                await beforeUnpublishHook({
-                    context,
-                    model,
-                    entry
-                });
-
-                const batch = db
-                    .batch()
-                    .delete({
-                        ...utils.defaults.db(),
-                        query: {
-                            PK: PK_ENTRY(uniqueId),
-                            SK: SK_PUBLISHED()
-                        }
-                    })
-                    .delete({
-                        ...utils.defaults.esDb(),
-                        query: {
-                            PK: PK_ENTRY(uniqueId),
-                            SK: SK_PUBLISHED()
-                        }
-                    })
-                    .update({
-                        ...utils.defaults.db(),
-                        query: {
-                            PK: PK_ENTRY(uniqueId),
-                            SK: SK_REVISION(version)
-                        },
-                        data: entry
-                    });
-
-                await afterUnpublishHook({
-                    context,
-                    model,
-                    entry
-                });
-
-                // If we are unpublishing the latest revision, let's also update the latest revision entry's status in ES.
-                if (latestEntryData.id === id) {
-                    const es = utils.defaults.es(context, model);
-
-                    batch.update({
-                        ...utils.defaults.esDb(),
-                        query: {
-                            PK: PK_ENTRY(uniqueId),
-                            SK: SK_LATEST()
-                        },
-                        data: {
-                            PK: PK_ENTRY(uniqueId),
-                            SK: SK_LATEST(),
-                            index: es.index,
-                            data: getESLatestEntryData(context, entry)
-                        }
+                if (originalStorageEntry.id !== id) {
+                    throw new WebinyError(`Entry is not published.`, "UNPUBLISH_ERROR", {
+                        entry: originalStorageEntry
                     });
                 }
 
-                await batch.execute();
+                utils.checkOwnership(context, permission, originalStorageEntry);
 
-                return entry;
+                const originalEntry = await entryFromStorageTransform(
+                    context,
+                    model,
+                    originalStorageEntry
+                );
+
+                const entry: CmsContentEntry = {
+                    ...originalEntry,
+                    status: STATUS_UNPUBLISHED
+                };
+
+                let storageEntry: CmsStorageContentEntry = undefined;
+
+                try {
+                    await beforeUnpublishHook({
+                        context,
+                        model,
+                        originalEntry,
+                        originalStorageEntry,
+                        entry,
+                        storageOperations
+                    });
+
+                    storageEntry = await entryToStorageTransform(context, model, entry);
+
+                    const result = await storageOperations.unpublish(model, {
+                        originalEntry,
+                        originalStorageEntry,
+                        entry,
+                        storageEntry
+                    });
+                    await afterUnpublishHook({
+                        context,
+                        model,
+                        originalEntry,
+                        originalStorageEntry,
+                        entry,
+                        storageEntry: result,
+                        storageOperations
+                    });
+                    return result;
+                } catch (ex) {
+                    throw new WebinyError(
+                        ex.message || "Could not unpublish entry.",
+                        ex.code || "UNPUBLISH_ERROR",
+                        {
+                            originalEntry,
+                            originalStorageEntry,
+                            entry,
+                            storageEntry
+                        }
+                    );
+                }
             }
         };
 

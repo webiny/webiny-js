@@ -1,372 +1,341 @@
-import {
-    CliCommandScaffoldTemplate,
-    TsConfigJson,
-    PackageJson
-} from "@webiny/cli-plugin-scaffold/types";
+import { CliCommandScaffoldTemplate } from "@webiny/cli-plugin-scaffold/types";
 import fs from "fs";
 import path from "path";
 import util from "util";
 import ncpBase from "ncp";
-import readJson from "load-json-file";
-import writeJson from "write-json-file";
 import pluralize from "pluralize";
 import Case from "case";
+import loadJsonFile from "load-json-file";
 import { replaceInPath } from "replace-in-path";
 import chalk from "chalk";
-import indentString from "indent-string";
-import WebinyError from "@webiny/error";
-import execa from "execa";
-import validateNpmPackageName from "validate-npm-package-name";
-import { getProject } from "@webiny/cli/utils";
+import findUp from "find-up";
+import link from "terminal-link";
+import {
+    createScaffoldsIndexFile,
+    updateScaffoldsIndexFile,
+    formatCode
+} from "@webiny/cli-plugin-scaffold/utils";
 
 const ncp = util.promisify(ncpBase.ncp);
 
 interface Input {
-    location: string;
-    entityName: string;
-    packageName?: string;
+    dataModelName: string;
+    graphqlPluginsFolderPath: string;
+    adminPluginsFolderPath: string;
+    showConfirmation?: boolean;
 }
 
-const adminAppCodePath = "apps/admin/code";
-const adminAppPluginsIndexFile = `${adminAppCodePath}/src/plugins/index.ts`;
-
-const createPackageName = ({
-    initial,
-    location
-}: {
-    initial?: string;
-    location: string;
-}): string => {
-    if (initial) {
-        return initial;
-    }
-    return Case.kebab(location);
-};
+const SCAFFOLD_DOCS_LINK =
+    "https://www.webiny.com/docs/how-to-guides/webiny-cli/scaffolding/extend-admin-area";
 
 export default (): CliCommandScaffoldTemplate<Input> => ({
     name: "cli-plugin-scaffold-template-graphql-app",
     type: "cli-plugin-scaffold-template",
     scaffold: {
-        name: "Admin Area package",
-        questions: () => {
+        name: "Extend Admin Area",
+        description:
+            "Creates a new Admin Area module and extends your GraphQL API with\n  supporting CRUD query and mutation operations." +
+            (link.isSupported ? " " + link("Learn more.", SCAFFOLD_DOCS_LINK) : ""),
+        questions: ({ context }) => {
             return [
                 {
-                    name: "entityName",
-                    message: "Enter the name of the initial data model",
-                    default: "Book",
-                    validate: name => {
-                        if (!name.match(/^([a-zA-Z]+)$/)) {
-                            return "A valid entity name must consist of letters only.";
-                        }
-
-                        return true;
-                    }
-                },
-                {
-                    name: "location",
-                    message: `Enter the package location`,
-                    default: answers => {
-                        const entityNamePlural = pluralize(Case.kebab(answers.entityName));
-                        return `packages/${entityNamePlural}/admin-app`;
-                    },
+                    name: "graphqlPluginsFolderPath",
+                    message: "Enter GraphQL API plugins folder path:",
+                    default: `api/code/graphql/src/plugins`,
                     validate: location => {
-                        if (!location) {
-                            return "Please enter the package location.";
-                        }
-
-                        const locationPath = path.resolve(location);
-                        if (fs.existsSync(locationPath)) {
-                            return `The target location already exists "${location}".`;
+                        if (location.length < 2) {
+                            return `Please enter GraphQL API ${chalk.cyan("plugins")} folder path.`;
                         }
 
                         return true;
                     }
                 },
                 {
-                    name: "packageName",
-                    message: "Enter the package name",
-                    default: answers => {
-                        const entityNamePlural = pluralize(Case.kebab(answers.entityName));
-                        return `@${entityNamePlural}/admin-app`;
-                    },
-                    validate: packageName => {
-                        if (!packageName) {
-                            return true;
-                        } else if (validateNpmPackageName(packageName)) {
-                            return true;
+                    name: "adminPluginsFolderPath",
+                    message: "Enter Admin Area plugins folder path:",
+                    default: `apps/admin/code/src/plugins`,
+                    validate: location => {
+                        if (location.length < 2) {
+                            return `Please enter Admin Area ${chalk.cyan("plugins")} folder path.`;
                         }
-                        return `Package name must look something like "@package/my-generated-package".`;
+
+                        return true;
+                    }
+                },
+                {
+                    name: "dataModelName",
+                    message: "Enter initial entity name:",
+                    default: "Book",
+                    validate: (dataModelName, answers) => {
+                        if (!dataModelName.match(/^([a-zA-Z]+)$/)) {
+                            return "A valid name must consist of letters only.";
+                        }
+
+                        const pluralizedCamelCasedDataModelName = pluralize(
+                            Case.camel(dataModelName)
+                        );
+
+                        const graphqlPluginsFolderPath = path.resolve(
+                            path.join(
+                                answers.graphqlPluginsFolderPath,
+                                "scaffolds",
+                                pluralizedCamelCasedDataModelName
+                            )
+                        );
+
+                        if (fs.existsSync(graphqlPluginsFolderPath)) {
+                            const relativePath = path.relative(
+                                context.project.root,
+                                graphqlPluginsFolderPath
+                            );
+                            return `Cannot continue - the ${chalk.red(
+                                relativePath
+                            )} folder already exists.`;
+                        }
+
+                        const adminPluginsFolderPath = path.resolve(
+                            path.join(
+                                answers.adminPluginsFolderPath,
+                                "scaffolds",
+                                pluralizedCamelCasedDataModelName
+                            )
+                        );
+
+                        if (fs.existsSync(adminPluginsFolderPath)) {
+                            const relativePath = path.relative(
+                                context.project.root,
+                                adminPluginsFolderPath
+                            );
+                            return `Cannot continue - the ${chalk.red(
+                                relativePath
+                            )} folder already exists.`;
+                        }
+
+                        return true;
                     }
                 }
             ];
         },
-        generate: async ({ input, oraSpinner }) => {
-            const { entityName, location, packageName: initialPackageName } = input;
+        generate: async options => {
+            const { input, context, inquirer, wait, ora } = options;
 
-            const fullLocation = path.resolve(location);
-            const packageName = createPackageName({
-                initial: initialPackageName,
-                location
-            });
-
-            // Then we also copy the template folder
-            const sourcePath = path.join(__dirname, "template");
-
-            if (fs.existsSync(fullLocation)) {
-                throw new WebinyError(`Destination folder ${fullLocation} already exists.`);
-            }
-
-            const project = getProject({
-                cwd: fullLocation
-            });
-
-            const locationRelative = path.relative(project.root, fullLocation);
-
-            const relativeRootPath = path.relative(fullLocation, project.root);
-
-            const baseTsConfigFullPath = path.resolve(project.root, "tsconfig.json");
-            const baseTsConfigRelativePath = path.relative(fullLocation, baseTsConfigFullPath);
-
-            const baseTsConfigBuildJsonPath = baseTsConfigFullPath.replace(
-                "tsconfig.json",
-                "tsconfig.build.json"
-            );
-            const baseTsConfigBuildRelativePath = path.relative(
-                fullLocation,
-                baseTsConfigBuildJsonPath
-            );
-            const baseTsConfigBuildJson = await readJson<TsConfigJson>(baseTsConfigBuildJsonPath);
-
-            oraSpinner.start(
-                `Creating new Admin app module files in ${chalk.green(fullLocation)}...`
-            );
-
-            await fs.mkdirSync(fullLocation, { recursive: true });
-
-            // Copy template files
-            await ncp(sourcePath, fullLocation);
-
-            // Replace generic "Entity" with received "input.entityName" or "input.newEntityName" argument.
-            const entity = {
-                plural: pluralize(Case.camel(entityName)),
-                singular: pluralize.singular(Case.camel(entityName))
+            const dataModelName = {
+                plural: pluralize(Case.camel(input.dataModelName)),
+                singular: pluralize.singular(Case.camel(input.dataModelName))
             };
 
+            // Admin Area paths.
+            const adminScaffoldsPath = path.join(input.adminPluginsFolderPath, "scaffolds");
+            const adminScaffoldsIndexPath = path.join(adminScaffoldsPath, "index.ts");
+            const adminNewCodePath = path.join(
+                adminScaffoldsPath,
+                Case.camel(dataModelName.plural)
+            );
+            const adminPackageJsonPath = path.relative(
+                context.project.root,
+                findUp.sync("package.json", { cwd: input.graphqlPluginsFolderPath })
+            );
+
+            const adminDependenciesUpdates = [];
+
+            // GraphQL API paths.
+            const graphqlScaffoldsPath = path.join(input.graphqlPluginsFolderPath, "scaffolds");
+            const graphqlScaffoldsIndexPath = path.join(graphqlScaffoldsPath, "index.ts");
+            const graphqlNewCodePath = path.join(
+                graphqlScaffoldsPath,
+                Case.camel(dataModelName.plural)
+            );
+            const graphqlPackageJsonPath = path.relative(
+                context.project.root,
+                findUp.sync("package.json", { cwd: input.graphqlPluginsFolderPath })
+            );
+
+            // Get needed dependencies updates.
+            const graphqlDependenciesUpdates = [];
+            const packageJson = await loadJsonFile<Record<string, any>>(graphqlPackageJsonPath);
+            if (!packageJson?.devDependencies?.["graphql-request"]) {
+                graphqlDependenciesUpdates.push(["devDependencies", "graphql-request", "^3.4.0"]);
+            }
+
+            const templateFolderPath = path.join(__dirname, "template");
+
+            if (input.showConfirmation !== false) {
+                console.log();
+                console.log(
+                    `${chalk.bold("The following operations will be performed on your behalf:")}`
+                );
+
+                console.log("- GraphQL API");
+                console.log(
+                    `  - new plugins will be created in ${chalk.green(graphqlNewCodePath)}`
+                );
+                console.log(
+                    `  - created plugins will be imported in ${chalk.green(
+                        graphqlScaffoldsIndexPath
+                    )}`
+                );
+
+                if (graphqlDependenciesUpdates.length) {
+                    console.log(
+                        `  - dependencies in ${chalk.green(
+                            graphqlPackageJsonPath
+                        )} will be updated `
+                    );
+                }
+
+                console.log("- Admin Area");
+                console.log(`  - new plugins will be created in ${chalk.green(adminNewCodePath)}`);
+                console.log(
+                    `  - created plugins will be imported in ${chalk.green(
+                        adminScaffoldsIndexPath
+                    )}`
+                );
+
+                if (adminDependenciesUpdates.length) {
+                    console.log(
+                        `  - dependencies in ${chalk.green(adminPackageJsonPath)} will be updated `
+                    );
+                }
+
+                const prompt = inquirer.createPromptModule();
+
+                const { proceed } = await prompt({
+                    name: "proceed",
+                    message: `Are you sure you want to continue?`,
+                    type: "confirm",
+                    default: false
+                });
+
+                if (!proceed) {
+                    process.exit(0);
+                }
+                console.log();
+            }
+
+            const cliPluginScaffoldGraphQl = context.plugins.byName<CliCommandScaffoldTemplate>(
+                "cli-plugin-scaffold-graphql"
+            );
+
+            await cliPluginScaffoldGraphQl.scaffold.generate({
+                ...options,
+                input: {
+                    showConfirmation: false,
+                    dataModelName: input.dataModelName,
+                    pluginsFolderPath: input.graphqlPluginsFolderPath
+                }
+            });
+
+            ora.start(`Creating new plugins in ${chalk.green(adminNewCodePath)}...`);
+            await wait(1000);
+
+            fs.mkdirSync(adminNewCodePath, { recursive: true });
+
+            await ncp(templateFolderPath, adminNewCodePath);
+
+            // Replace generic "Target" with received "dataModelName" argument.
             const codeReplacements = [
-                { find: "targets", replaceWith: Case.camel(entity.plural) },
-                { find: "Targets", replaceWith: Case.pascal(entity.plural) },
-                { find: "TARGETS", replaceWith: Case.constant(entity.plural) },
-                { find: "target", replaceWith: Case.camel(entity.singular) },
-                { find: "Target", replaceWith: Case.pascal(entity.singular) },
-                { find: "TARGET", replaceWith: Case.constant(entity.singular) },
-                { find: "RELATIVE_ROOT_PATH", replaceWith: relativeRootPath.replace(/\\/g, "/") }
+                { find: "targetDataModels", replaceWith: Case.camel(dataModelName.plural) },
+                { find: "TargetDataModels", replaceWith: Case.pascal(dataModelName.plural) },
+                { find: "TARGET_DATA_MODELS", replaceWith: Case.constant(dataModelName.plural) },
+                { find: "target-data-models", replaceWith: Case.kebab(dataModelName.plural) },
+                { find: "Target Data Models", replaceWith: Case.title(dataModelName.plural) },
+
+                { find: "targetDataModel", replaceWith: Case.camel(dataModelName.singular) },
+                { find: "TargetDataModel", replaceWith: Case.pascal(dataModelName.singular) },
+                { find: "TARGET_DATA_MODEL", replaceWith: Case.constant(dataModelName.singular) },
+                { find: "target-data-model", replaceWith: Case.kebab(dataModelName.singular) },
+                { find: "Target Data Model", replaceWith: Case.title(dataModelName.singular) }
             ];
 
-            replaceInPath(path.join(fullLocation, ".babelrc.js"), codeReplacements);
-            replaceInPath(path.join(fullLocation, "**/*.ts"), codeReplacements);
-            replaceInPath(path.join(fullLocation, "**/*.tsx"), codeReplacements);
+            replaceInPath(path.join(adminNewCodePath, "/**/*.ts"), codeReplacements);
+            replaceInPath(path.join(adminNewCodePath, "/**/*.tsx"), codeReplacements);
 
-            // Make sure to also rename base file names.
             const fileNameReplacements = [
                 {
-                    find: "src/views/TargetsDataList.tsx",
-                    replaceWith: `src/views/${Case.pascal(entity.plural)}DataList.tsx`
+                    find: "views/TargetDataModelsDataList.tsx",
+                    replaceWith: `views/${Case.pascal(dataModelName.plural)}DataList.tsx`
                 },
                 {
-                    find: "src/views/Targets.tsx",
-                    replaceWith: `src/views/${Case.pascal(entity.plural)}.tsx`
+                    find: "views/TargetDataModelsForm.tsx",
+                    replaceWith: `views/${Case.pascal(dataModelName.plural)}Form.tsx`
+                },
+
+                {
+                    find: "views/hooks/useTargetDataModelsForm.ts",
+                    replaceWith: `views/hooks/use${Case.pascal(dataModelName.plural)}Form.ts`
                 },
                 {
-                    find: "src/views/TargetForm.tsx",
-                    replaceWith: `src/views/${Case.pascal(entity.singular)}Form.tsx`
+                    find: "views/hooks/useTargetDataModelsDataList.ts",
+                    replaceWith: `views/hooks/use${Case.pascal(dataModelName.plural)}DataList.ts`
                 }
             ];
 
-            for (const key in fileNameReplacements) {
-                if (!fileNameReplacements.hasOwnProperty(key)) {
-                    continue;
-                }
-                const fileNameReplacement = fileNameReplacements[key];
+            for (const fileNameReplacement of fileNameReplacements) {
                 fs.renameSync(
-                    path.join(fullLocation, fileNameReplacement.find),
-                    path.join(fullLocation, fileNameReplacement.replaceWith)
+                    path.join(adminNewCodePath, fileNameReplacement.find),
+                    path.join(adminNewCodePath, fileNameReplacement.replaceWith)
                 );
             }
 
-            // Generated package file changes
-            oraSpinner.start(`Setting package name...`);
-            const packageJsonFile = path.resolve(fullLocation, "package.json");
-            const packageJson = readJson.sync<PackageJson>(packageJsonFile);
-            packageJson.name = packageName;
-
-            const { version } = require("@webiny/cli-plugin-scaffold/package.json");
-
-            // Inject Webiny packages version
-            Object.keys(packageJson.dependencies).forEach(name => {
-                if (name.startsWith("@webiny")) {
-                    packageJson.dependencies[name] = version;
-                }
-            });
-
-            Object.keys(packageJson.devDependencies).forEach(name => {
-                if (name.startsWith("@webiny")) {
-                    packageJson.devDependencies[name] = version;
-                }
-            });
-
-            await writeJson(packageJsonFile, packageJson);
-            oraSpinner.stopAndPersist({
+            ora.stopAndPersist({
                 symbol: chalk.green("✔"),
-                text: "Package name set."
+                text: `New plugins created in ${chalk.green(adminNewCodePath)}.`
             });
-            oraSpinner.start(`Setting tsconfig.json extends path...`);
-            const packageTsConfigFilePath = path.resolve(fullLocation, "tsconfig.json");
-            const packageTsConfig = readJson.sync<TsConfigJson>(packageTsConfigFilePath);
-            packageTsConfig.extends = baseTsConfigRelativePath;
-            await writeJson(packageTsConfigFilePath, packageTsConfig);
-            oraSpinner.stopAndPersist({
+
+            ora.start(`Importing created plugins in ${chalk.green(adminScaffoldsIndexPath)}.`);
+            await wait(1000);
+
+            createScaffoldsIndexFile(adminScaffoldsPath);
+            await updateScaffoldsIndexFile({
+                scaffoldsIndexPath: adminScaffoldsIndexPath,
+                importName: dataModelName.plural,
+                importPath: `./${dataModelName.plural}`
+            });
+
+            ora.stopAndPersist({
                 symbol: chalk.green("✔"),
-                text: "tsconfig.json extends set."
-            });
-            oraSpinner.start(`Setting tsconfig.build.json extends path...`);
-            const packageTsConfigBuildFilePath = path.resolve(fullLocation, "tsconfig.build.json");
-            const packageTsConfigBuild = readJson.sync<TsConfigJson>(packageTsConfigBuildFilePath);
-            packageTsConfigBuild.extends = baseTsConfigBuildRelativePath;
-            await writeJson(packageTsConfigBuildFilePath, packageTsConfigBuild);
-            oraSpinner.stopAndPersist({
-                symbol: chalk.green("✔"),
-                text: "tsconfig.build.json extends set."
+                text: `Imported created plugins in ${chalk.green(adminScaffoldsIndexPath)}.`
             });
 
-            // Add package to workspaces
-            const rootPackageJsonPath = path.join(project.root, "package.json");
-            const rootPackageJson = await readJson<PackageJson>(rootPackageJsonPath);
-            if (!rootPackageJson.workspaces.packages.includes(location)) {
-                rootPackageJson.workspaces.packages.push(location);
-                await writeJson(rootPackageJsonPath, rootPackageJson);
-            }
-
-            // Update root tsconfig.build.json file paths
-            oraSpinner.start(
-                `Updating base tsconfig compilerOptions.paths to contain the package...`
-            );
-            if (!baseTsConfigBuildJson.compilerOptions) {
-                baseTsConfigBuildJson.compilerOptions = {};
-            }
-            baseTsConfigBuildJson.compilerOptions.paths[`${packageName}`] = [
-                `./${locationRelative}/src`
-            ];
-            baseTsConfigBuildJson.compilerOptions.paths[`${packageName}/*`] = [
-                `./${locationRelative}/src/*`
-            ];
-            await writeJson(baseTsConfigBuildJsonPath, baseTsConfigBuildJson);
-            oraSpinner.stopAndPersist({
-                symbol: chalk.green("✔"),
-                text: `Updated base tsconfig compilerOptions.paths.`
-            });
-
-            const adminAppPackageJsonPath = path.resolve(adminAppCodePath, "package.json");
-            const adminAppPackageJson = await readJson<PackageJson>(adminAppPackageJsonPath);
-            adminAppPackageJson.dependencies[packageName] = "^1.0.0";
-            await writeJson(adminAppPackageJsonPath, adminAppPackageJson);
-
-            oraSpinner.stopAndPersist({
-                symbol: chalk.green("✔"),
-                text: `Added ${chalk.green(packageName)} to api package.json.`
-            });
-
-            oraSpinner.stopAndPersist({
-                symbol: chalk.green("✔"),
-                text: `Admin app module files created in ${chalk.green(fullLocation)}.`
-            });
-
-            // Once everything is done, run `yarn` so the new packages are automatically installed.
-            try {
-                oraSpinner.start(`Installing dependencies...`);
-                await execa("yarn");
-                oraSpinner.stopAndPersist({
-                    symbol: chalk.green("✔"),
-                    text: "Dependencies installed."
-                });
-                oraSpinner.start(`Building generated package...`);
-                const cwd = process.cwd();
-                process.chdir(fullLocation);
-                await execa("yarn", ["build"]);
-                process.chdir(cwd);
-                oraSpinner.stopAndPersist({
-                    symbol: chalk.green("✔"),
-                    text: "Package built."
-                });
-                oraSpinner.start(`Linking package...`);
-                await execa("yarn", ["postinstall"]);
-                oraSpinner.stopAndPersist({
-                    symbol: chalk.green("✔"),
-                    text: "Package linked."
-                });
-            } catch (err) {
-                throw new WebinyError(
-                    `Unable to install dependencies. Try running "yarn" in project root manually.`,
-                    err.message
-                );
-            }
+            await formatCode(["**/*.ts", "**/*.tsx"], { cwd: adminNewCodePath });
         },
-        onSuccess: async ({ input }) => {
-            const { entityName, location, packageName: initialPackageName } = input;
+        onSuccess: async () => {
+            console.log();
+            console.log(
+                `${chalk.green(
+                    "✔"
+                )} New GraphQL API and Admin Area plugins created and imported successfully.`
+            );
+            console.log();
+            console.log(chalk.bold("Next Steps"));
 
-            const entity = {
-                singular: Case.camel(entityName),
-                plural: pluralize(Case.camel(entityName))
-            };
-            const packageName = createPackageName({
-                initial: initialPackageName,
-                location
-            });
-
-            const adminAppPluginsIndexFileRelativePath = path.relative(
-                process.cwd(),
-                adminAppPluginsIndexFile
+            console.log(
+                `‣ deploy the extended GraphQL API and continue developing by running the ${chalk.green(
+                    "yarn webiny watch api/code/graphql --env dev"
+                )} command`
             );
 
             console.log(
-                "Note: in order to see your new module in the Admin app, you must register the generated plugins:"
+                `‣ after you've deployed the extended GraphQL API, continue developing your Admin Area React application locally by running the ${chalk.green(
+                    "yarn webiny watch apps/admin --env dev"
+                )} command`
             );
 
-            console.log(
-                indentString(
-                    `1. Open ${chalk.green(adminAppPluginsIndexFileRelativePath)} file.`,
-                    2
+            console.log();
+            console.log(chalk.bold("Useful Links"));
+
+            const links = [
+                ["Extend Admin Area", SCAFFOLD_DOCS_LINK],
+                [
+                    "Use the Watch Command",
+                    "https://www.webiny.com/docs/how-to-guides/webiny-cli/use-watch-command"
+                ]
+            ];
+
+            links.forEach(([text, url]) =>
+                console.log(
+                    link("‣ " + text, url, { fallback: (text, link) => text + " - " + link })
                 )
-            );
-            console.log(
-                indentString(
-                    `2. Import and pass the generated plugin to the registration array.`,
-                    2
-                )
-            );
-            console.log(
-                indentString(
-                    chalk.green(`
-// at the top of the file
-import ${entity.singular}Plugin from "${packageName}";
-
-// in the end of the registration array
-${entity.singular}Plugin()
-`),
-                    2
-                )
-            );
-
-            console.log(
-                indentString(
-                    `3. Deploy the ${chalk.green(packageName)} by running ${chalk.green(
-                        `yarn webiny deploy apps/admin --env=dev`
-                    )}.`,
-                    2
-                )
-            );
-
-            console.log(
-                "Learn more about app development at https://www.webiny.com/docs/tutorials/create-an-application/admin-area-package."
             );
         }
     }

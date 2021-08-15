@@ -1,6 +1,8 @@
-import { CmsContentEntryHookPluginArgs } from "../../../../types";
 import { runContentEntryLifecycleHooks } from "./runContentEntryLifecycleHooks";
+import { CmsContentEntryBeforeUnpublishHookArgs } from "../../../../types";
 
-export const beforeUnpublishHook = async (args: CmsContentEntryHookPluginArgs): Promise<void> => {
+export const beforeUnpublishHook = async (
+    args: CmsContentEntryBeforeUnpublishHookArgs
+): Promise<void> => {
     await runContentEntryLifecycleHooks("beforeUnpublish", args);
 };

@@ -198,7 +198,10 @@ describe("Content model group crud test", () => {
     test("error when trying to update non-existing content model group", async () => {
         const [response] = await updateContentModelGroupMutation({
             id: "nonExistingIdUpdate",
-            data: {}
+            data: {
+                name: "test",
+                icon: "test"
+            }
         });
         expect(response).toEqual({
             data: {
@@ -235,6 +238,7 @@ describe("Content model group crud test", () => {
     test("error when trying to create a content model group with incomplete data", async () => {
         const [nameResponse] = await createContentModelGroupMutation({
             data: {
+                name: "",
                 slug: "slug",
                 description: `description`,
                 icon: `icon`
@@ -257,7 +261,8 @@ describe("Content model group crud test", () => {
             data: {
                 name: "name",
                 slug: "slug",
-                description: `description`
+                description: `description`,
+                icon: ""
             }
         });
 
@@ -278,7 +283,9 @@ describe("Content model group crud test", () => {
     test("error when trying to create a new content model group with no name or slug", async () => {
         const [response] = await createContentModelGroupMutation({
             data: {
-                description: "description"
+                name: "",
+                description: "description",
+                icon: ""
             }
         });
         expect(response).toEqual({
@@ -320,7 +327,7 @@ describe("Content model group crud test", () => {
                     error: {
                         message: `Content model group with the slug "content-model-group" already exists.`,
                         code: "SLUG_ALREADY_EXISTS",
-                        data: null
+                        data: expect.any(Object)
                     }
                 }
             }

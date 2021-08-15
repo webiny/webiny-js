@@ -1,8 +1,8 @@
 import { Plugin } from "@webiny/plugins/types";
 import { Context } from "@webiny/handler/types";
-import { TenancyContext } from "@webiny/api-security-tenancy/types";
+import { TenancyContext } from "@webiny/api-tenancy/types";
 import { I18NContentContext } from "@webiny/api-i18n-content/types";
-import { ElasticSearchClientContext } from "@webiny/api-plugin-elastic-search-client/types";
+import { ElasticsearchContext } from "@webiny/api-elasticsearch/types";
 import { SecurityPermission } from "@webiny/api-security/types";
 import { FileManagerContext } from "@webiny/api-file-manager/types";
 import { I18NContext } from "@webiny/api-i18n/types";
@@ -210,7 +210,7 @@ export type FormBuilderContext = Context<
     I18NContext,
     I18NContentContext,
     FileManagerContext,
-    ElasticSearchClientContext,
+    ElasticsearchContext,
     {
         formBuilder: {
             forms: FormsCRUD;

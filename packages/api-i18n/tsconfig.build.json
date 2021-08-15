@@ -4,14 +4,13 @@
   "exclude": [
     "node_modules",
     "../api-security",
-    "../api-security-tenancy",
+    "../api-tenancy",
     "../plugins",
+    "../error",
     "../handler",
     "../handler-aws",
     "../handler-graphql",
-    "../handler-client",
-    "../handler-db",
-    "../db-dynamodb"
+    "../handler-client"
   ],
   "compilerOptions": {
     "outDir": "dist",

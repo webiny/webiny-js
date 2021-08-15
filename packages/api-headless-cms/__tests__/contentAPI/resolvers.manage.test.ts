@@ -1,13 +1,14 @@
 /* eslint-disable */
 import Error from "@webiny/error";
-import { CmsContentEntry, CmsContentModelGroup } from "../../src/types";
+import { CmsContentEntry, CmsContentModelGroup } from "~/types";
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
 import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
 import { useCategoryReadHandler } from "../utils/useCategoryReadHandler";
 import models from "./mocks/contentModels";
 import modelsWithoutValidation from "./mocks/contentModels.noValidation";
+import { useProductManageHandler } from "../utils/useProductManageHandler";
 
-jest.setTimeout(10000);
+jest.setTimeout(15000);
 
 interface CreateCategoriesResult {
     fruits: CmsContentEntry;
@@ -51,7 +52,6 @@ describe("MANAGE - Resolvers", () => {
 
     const {
         until,
-        clearAllIndex,
         createContentModelMutation,
         updateContentModelMutation,
         createContentModelGroupMutation
@@ -71,7 +71,13 @@ describe("MANAGE - Resolvers", () => {
                 description: "description"
             }
         });
-        contentModelGroup = createCMG.data.createContentModelGroup.data;
+
+        const { data, error } = createCMG.data.createContentModelGroup;
+        if (data) {
+            contentModelGroup = data;
+        } else if (error.code !== "SLUG_ALREADY_EXISTS") {
+            throw new Error(error.message, error.code);
+        }
 
         // Create initial record
         const [create] = await createContentModelMutation({
@@ -123,7 +129,7 @@ describe("MANAGE - Resolvers", () => {
             });
             categories[slug] = response.data.createCategory.data;
         }
-        // Wait until the previous revision is indexed in Elastic as "latest"
+        // Wait until the previous revision is indexed
         await until(
             () => listCategories().then(([data]) => data),
             ({ data }) => data.listCategories.data.length === Object.keys(values).length,
@@ -133,29 +139,16 @@ describe("MANAGE - Resolvers", () => {
         return categories;
     };
 
-    beforeEach(async () => {
-        try {
-            await clearAllIndex();
-        } catch {}
-    });
-
-    afterEach(async () => {
-        try {
-            await clearAllIndex();
-        } catch {}
-    });
-
     test(`get category`, async () => {
         await setupContentModel();
-        const { createCategory, getCategory, listCategories } = useCategoryManageHandler(
-            manageOpts
-        );
+        const { createCategory, getCategory, listCategories } =
+            useCategoryManageHandler(manageOpts);
 
         const [create] = await createCategory({ data: { title: "Hardware", slug: "hardware" } });
 
-        const { id } = create.data.createCategory.data;
+        const { id, entryId } = create.data.createCategory.data;
 
-        // Need to wait until the new entry is propagated to Elastic Search index
+        // Need to wait until the new entry is propagated
         await until(
             () => listCategories().then(([data]) => data),
             ({ data }) => data.listCategories.data[0].id === id
@@ -165,6 +158,7 @@ describe("MANAGE - Resolvers", () => {
 
         expect(response.data.getCategory.data).toEqual({
             id,
+            entryId,
             createdOn: expect.stringMatching(/^20/),
             createdBy: {
                 id: "123",
@@ -206,14 +200,13 @@ describe("MANAGE - Resolvers", () => {
             ({ data }) => data.listCategories.data[0].id === id
         );
 
-        const { getCategory } = useCategoryManageHandler(
-            Object.assign({}, manageOpts, {
-                permissions: createPermissions({
-                    groups: [contentModelGroup.id],
-                    models: ["someOtherModelId"]
-                })
+        const { getCategory } = useCategoryManageHandler({
+            ...manageOpts,
+            permissions: createPermissions({
+                groups: [contentModelGroup.id],
+                models: ["someOtherModelId"]
             })
-        );
+        });
 
         const [response] = await getCategory({ revision: id });
 
@@ -233,7 +226,7 @@ describe("MANAGE - Resolvers", () => {
 
         const [create] = await createCategory({ data: { title: "Hardware", slug: "hardware" } });
 
-        const { id } = create.data.createCategory.data;
+        const { id, entryId } = create.data.createCategory.data;
 
         // Need to wait until the new entry is propagated to Elastic Search index
         await until(
@@ -241,19 +234,19 @@ describe("MANAGE - Resolvers", () => {
             ({ data }) => data.listCategories.data[0].id === id
         );
 
-        const { getCategory } = useCategoryManageHandler(
-            Object.assign({}, manageOpts, {
-                permissions: createPermissions({
-                    groups: [contentModelGroup.id],
-                    models: ["category"]
-                })
+        const { getCategory } = useCategoryManageHandler({
+            ...manageOpts,
+            permissions: createPermissions({
+                groups: [contentModelGroup.id],
+                models: ["category"]
             })
-        );
+        });
 
         const [response] = await getCategory({ revision: id });
 
         expect(response.data.getCategory.data).toEqual({
             id,
+            entryId,
             createdOn: expect.stringMatching(/^20/),
             createdBy: {
                 id: "123",
@@ -285,9 +278,8 @@ describe("MANAGE - Resolvers", () => {
     test(`list categories (no parameters)`, async () => {
         await setupContentModel();
         // Use "manage" API to create and publish entries
-        const { until, createCategory, publishCategory, listCategories } = useCategoryManageHandler(
-            manageOpts
-        );
+        const { until, createCategory, publishCategory, listCategories } =
+            useCategoryManageHandler(manageOpts);
 
         // Create an entry
         const [create] = await createCategory({ data: { title: "Title 1", slug: "slug-1" } });
@@ -297,7 +289,7 @@ describe("MANAGE - Resolvers", () => {
         // Publish it so it becomes available in the "read" API
         const [publish] = await publishCategory({ revision: id });
 
-        const { error } = publish.data.publishCategory;
+        const { data: publishedCategory, error } = publish.data.publishCategory;
         if (error) {
             throw new Error(error);
         }
@@ -317,6 +309,7 @@ describe("MANAGE - Resolvers", () => {
                     data: [
                         {
                             id: category.id,
+                            entryId: category.entryId,
                             title: category.title,
                             slug: category.slug,
                             createdOn: category.createdOn,
@@ -325,7 +318,7 @@ describe("MANAGE - Resolvers", () => {
                                 displayName: "User 123",
                                 type: "admin"
                             },
-                            savedOn: category.savedOn,
+                            savedOn: publishedCategory.savedOn,
                             meta: {
                                 locked: true,
                                 modelId: "category",
@@ -347,7 +340,7 @@ describe("MANAGE - Resolvers", () => {
                     meta: {
                         hasMoreItems: false,
                         totalCount: 1,
-                        cursor: expect.any(String)
+                        cursor: null
                     }
                 }
             }
@@ -401,47 +394,6 @@ describe("MANAGE - Resolvers", () => {
         });
     });
 
-    test(`list entries (limit)`, async () => {
-        await setupContentModel();
-        const query = /* GraphQL */ `
-            {
-                listCategories(limit: 1) {
-                    data {
-                        id
-                    }
-                }
-            }
-        `;
-    });
-
-    test(`list categories (sort ASC)`, async () => {
-        await setupContentModel();
-        // Test resolvers
-        const query = /* GraphQL */ `
-            query ListCategories($sort: [CategoryListSorter]) {
-                listCategories(sort: $sort) {
-                    data {
-                        title
-                    }
-                }
-            }
-        `;
-    });
-
-    test(`list categories (sort DESC)`, async () => {
-        await setupContentModel();
-        // Test resolvers
-        const query = /* GraphQL */ `
-            query ListCategories($sort: [CategoryListSorter]) {
-                listCategories(sort: $sort) {
-                    data {
-                        title
-                    }
-                }
-            }
-        `;
-    });
-
     test(`should create category`, async () => {
         await setupContentModel();
         const { until, createCategory, listCategories } = useCategoryManageHandler(manageOpts);
@@ -451,6 +403,7 @@ describe("MANAGE - Resolvers", () => {
 
         expect(category1).toEqual({
             id: expect.any(String),
+            entryId: expect.any(String),
             createdOn: expect.stringMatching(/^20/),
             createdBy: {
                 id: "123",
@@ -519,6 +472,7 @@ describe("MANAGE - Resolvers", () => {
 
         expect(category).toEqual({
             id: expect.any(String),
+            entryId: expect.any(String),
             createdOn: expect.stringMatching(/^20/),
             createdBy: {
                 id: "123",
@@ -554,12 +508,8 @@ describe("MANAGE - Resolvers", () => {
     test(`create category revision`, async () => {
         await setupContentModel();
 
-        const {
-            until,
-            createCategory,
-            createCategoryFrom,
-            listCategories
-        } = useCategoryManageHandler(manageOpts);
+        const { until, createCategory, createCategoryFrom, listCategories } =
+            useCategoryManageHandler(manageOpts);
 
         const [create] = await createCategory({ data: { title: "Hardware", slug: "hardware" } });
         const { id } = create.data.createCategory.data;
@@ -578,6 +528,7 @@ describe("MANAGE - Resolvers", () => {
                 createCategoryFrom: {
                     data: {
                         id: expect.any(String),
+                        entryId: expect.any(String),
                         savedOn: expect.stringMatching(/^20/),
                         createdOn: expect.stringMatching(/^20/),
                         createdBy: {
@@ -616,7 +567,14 @@ describe("MANAGE - Resolvers", () => {
         // Wait until the new category revision is propagated to ES index
         const response = await until(
             () => listCategories().then(([data]) => data),
-            ({ data }) => data.listCategories.data[0].id === newEntry.id
+            ({ data }) => {
+                const entry = data.listCategories.data[0];
+                if (!entry) {
+                    return false;
+                }
+                return entry.id === newEntry.id && entry.savedOn === newEntry.savedOn;
+            },
+            { name: "list after create revision", wait: 500, tries: 10 }
         );
 
         expect(response).toEqual({
@@ -626,7 +584,7 @@ describe("MANAGE - Resolvers", () => {
                     meta: {
                         hasMoreItems: false,
                         totalCount: 1,
-                        cursor: expect.any(String)
+                        cursor: null
                     },
                     error: null
                 }
@@ -636,9 +594,8 @@ describe("MANAGE - Resolvers", () => {
 
     test(`update category`, async () => {
         await setupContentModel();
-        const { until, createCategory, updateCategory, listCategories } = useCategoryManageHandler(
-            manageOpts
-        );
+        const { until, createCategory, updateCategory, listCategories } =
+            useCategoryManageHandler(manageOpts);
         const [create] = await createCategory({ data: { title: "Hardware", slug: "hardware" } });
 
         const createdCategory = create.data.createCategory.data;
@@ -653,6 +610,7 @@ describe("MANAGE - Resolvers", () => {
                 updateCategory: {
                     data: {
                         id: expect.any(String),
+                        entryId: expect.any(String),
                         createdOn: expect.stringMatching(/^20/),
                         createdBy: {
                             id: "123",
@@ -690,7 +648,7 @@ describe("MANAGE - Resolvers", () => {
         expect(createdOn).toBeLessThan(updatedOn);
 
         // If this `until` resolves successfully, we know entry is accessible via the "read" API
-        const listCategoriesResponse = await until(
+        await until(
             () => listCategories({}).then(([data]) => data),
             ({ data }) => data.listCategories.data[0].id === updatedCategory.id,
             { name: "create category" }
@@ -725,21 +683,30 @@ describe("MANAGE - Resolvers", () => {
         const [revision3] = await createCategoryFrom({ revision: id });
         const { id: id3 } = revision3.data.createCategoryFrom.data;
 
-        // Wait until the new revision is indexed in Elastic as "latest"
+        // Wait until the new revision is indexed
         await until(
             () => listCategories().then(([data]) => data),
             ({ data }) => data.listCategories.data[0].id === id3,
-            { name: "create 2 more revisions" }
+            { name: "after create 2 more revisions" }
         );
 
         // Delete latest revision
-        await deleteCategory({ revision: id3 });
+        const [deleteId3Response] = await deleteCategory({ revision: id3 });
 
-        // Wait until the previous revision is indexed in Elastic as "latest"
+        expect(deleteId3Response).toEqual({
+            data: {
+                deleteCategory: {
+                    data: true,
+                    error: null
+                }
+            }
+        });
+
+        // Wait until the previous revision is indexed
         await until(
             () => listCategories().then(([data]) => data),
             ({ data }) => data.listCategories.data[0].id === id2,
-            { name: "delete latest revision" }
+            { name: "delete latest revision", wait: 500, tries: 10 }
         );
 
         // Make sure revision #2 is now "latest"
@@ -747,9 +714,19 @@ describe("MANAGE - Resolvers", () => {
         const { data: data2 } = list2.data.listCategories;
         expect(data2.length).toBe(1);
         expect(data2[0].id).toEqual(id2);
+        expect(data2[0].meta.version).toEqual(2);
 
         // Delete revision #1; Revision #2 should still be "latest"
-        await deleteCategory({ revision: id });
+        const [deleteIdResponse] = await deleteCategory({ revision: id });
+
+        expect(deleteIdResponse).toEqual({
+            data: {
+                deleteCategory: {
+                    data: true,
+                    error: null
+                }
+            }
+        });
 
         // Get revision #2 and verify it's the only remaining revision of this form
         const [get] = await getCategory({ revision: id2 });
@@ -784,12 +761,30 @@ describe("MANAGE - Resolvers", () => {
 
         // Create 2 more revisions
         const [revision2] = await createCategoryFrom({ revision: id });
-        const { id: id2 } = revision2.data.createCategoryFrom.data;
+
+        expect(revision2).toEqual({
+            data: {
+                createCategoryFrom: {
+                    data: expect.any(Object),
+                    error: null
+                }
+            }
+        });
 
         const [revision3] = await createCategoryFrom({ revision: id });
+
+        expect(revision3).toEqual({
+            data: {
+                createCategoryFrom: {
+                    data: expect.any(Object),
+                    error: null
+                }
+            }
+        });
+
         const { id: id3 } = revision3.data.createCategoryFrom.data;
 
-        // Wait until the new revision is indexed in Elastic as "latest"
+        // Wait until the new revision is indexed
         await until(
             () => listLatestCategories().then(([data]) => data),
             ({ data }) => data.listCategories.data[0].id === id3,
@@ -799,7 +794,16 @@ describe("MANAGE - Resolvers", () => {
         // Publish latest revision
         const [res] = await publishCategory({ revision: id3 });
 
-        // Wait until the previous revision is indexed in Elastic as "published"
+        expect(res).toEqual({
+            data: {
+                publishCategory: {
+                    data: expect.any(Object),
+                    error: null
+                }
+            }
+        });
+
+        // Wait until the previous revision is indexed
         await until(
             () => listPublishedCategories().then(([data]) => data),
             ({ data }) => data.listCategories.data[0].id === id3,
@@ -808,10 +812,14 @@ describe("MANAGE - Resolvers", () => {
 
         const [unpublish] = await unpublishCategory({ revision: id3 });
 
-        if (unpublish.data.unpublishCategory.error) {
-            console.log(unpublish.data.unpublishCategory.error);
-            process.exit(1);
-        }
+        expect(unpublish).toEqual({
+            data: {
+                unpublishCategory: {
+                    data: expect.any(Object),
+                    error: null
+                }
+            }
+        });
 
         expect(unpublish.data.unpublishCategory.data.meta.status).toBe("unpublished");
 
@@ -825,7 +833,16 @@ describe("MANAGE - Resolvers", () => {
         // Publish the latest revision again
         const [publish2] = await publishCategory({ revision: id3 });
 
-        // Wait until the previous revision is indexed in Elastic as "published"
+        expect(publish2).toEqual({
+            data: {
+                publishCategory: {
+                    data: expect.any(Object),
+                    error: null
+                }
+            }
+        });
+
+        // Wait until the previous revision is indexed
         await until(
             () => listPublishedCategories().then(([data]) => data),
             ({ data }) => data.listCategories.data[0].id === id3,
@@ -850,7 +867,7 @@ describe("MANAGE - Resolvers", () => {
                     meta: {
                         hasMoreItems: false,
                         totalCount: 4,
-                        cursor: expect.any(String)
+                        cursor: null
                     },
                     error: null
                 }
@@ -871,7 +888,7 @@ describe("MANAGE - Resolvers", () => {
                     meta: {
                         hasMoreItems: false,
                         totalCount: 1,
-                        cursor: expect.any(String)
+                        cursor: null
                     },
                     error: null
                 }
@@ -891,7 +908,7 @@ describe("MANAGE - Resolvers", () => {
                     meta: {
                         hasMoreItems: false,
                         totalCount: 3,
-                        cursor: expect.any(String)
+                        cursor: null
                     },
                     error: null
                 }
@@ -911,7 +928,7 @@ describe("MANAGE - Resolvers", () => {
                     meta: {
                         hasMoreItems: false,
                         totalCount: 2,
-                        cursor: expect.any(String)
+                        cursor: null
                     },
                     error: null
                 }
@@ -922,7 +939,8 @@ describe("MANAGE - Resolvers", () => {
             ...defaultQueryVars,
             where: {
                 id_in: [animals.id, vegetables.id]
-            }
+            },
+            sort: ["savedOn_ASC"]
         });
 
         expect(listInResponse).toEqual({
@@ -932,7 +950,7 @@ describe("MANAGE - Resolvers", () => {
                     meta: {
                         hasMoreItems: false,
                         totalCount: 2,
-                        cursor: expect.any(String)
+                        cursor: null
                     },
                     error: null
                 }
@@ -953,10 +971,106 @@ describe("MANAGE - Resolvers", () => {
                     meta: {
                         hasMoreItems: false,
                         totalCount: 2,
-                        cursor: expect.any(String)
+                        cursor: null
                     },
                     error: null
                 }
+            }
+        });
+    });
+
+    test("should store and retrieve nested objects", async () => {
+        const model = models.find(model => model.modelId === "product");
+        await setupContentModel(model);
+
+        const { vegetables } = await createCategories();
+
+        const { createProduct } = useProductManageHandler({
+            ...manageOpts
+        });
+
+        // const [introspection] = await introspect();
+        // console.log(printSchema(buildClientSchema(introspection.data)));
+
+        const [potatoResponse] = await createProduct({
+            data: {
+                title: "Potato",
+                price: 99.9,
+                availableOn: "2020-12-25",
+                color: "white",
+                image: "image.png",
+                availableSizes: ["s", "m"],
+                category: {
+                    modelId: "category",
+                    entryId: vegetables.id
+                },
+                variant: {
+                    name: "Variant 1",
+                    price: 100,
+                    category: {
+                        modelId: "category",
+                        entryId: vegetables.id
+                    },
+                    options: [
+                        {
+                            name: "Option 1",
+                            price: 10,
+                            category: {
+                                modelId: "category",
+                                entryId: vegetables.id
+                            }
+                        },
+                        {
+                            name: "Option 2",
+                            price: 20,
+                            category: {
+                                modelId: "category",
+                                entryId: vegetables.id
+                            }
+                        }
+                    ]
+                }
+            }
+        });
+
+        const potato = potatoResponse.data.createProduct.data;
+
+        expect(potato).toMatchObject({
+            id: potato.id,
+            title: "Potato",
+            price: 99.9,
+            availableOn: "2020-12-25",
+            color: "white",
+            availableSizes: ["s", "m"],
+            category: {
+                modelId: "category",
+                entryId: vegetables.id
+            },
+            variant: {
+                name: "Variant 1",
+                price: 100,
+                category: {
+                    modelId: "category",
+                    entryId: vegetables.id
+                },
+                options: [
+                    {
+                        name: "Option 1",
+                        price: 10,
+                        category: {
+                            modelId: "category",
+                            entryId: vegetables.id
+                        }
+                    },
+                    {
+                        name: "Option 2",
+                        price: 20,
+                        category: {
+                            modelId: "category",
+                            entryId: vegetables.id
+                        }
+                    }
+                ]
             }
         });
     });

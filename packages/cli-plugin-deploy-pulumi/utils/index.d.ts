@@ -2,7 +2,14 @@ type StackOutput = Record<string, any>;
 
 export function tagResources(tags: Record<string, string>): void;
 export function getStackOutput(
-    app: String,
-    env: String,
+    folder: string,
+    env: string,
     map?: Record<string, string>
-): Promise<StackOutput>;
+): StackOutput;
+
+export function getStackOutput(options: {
+    folder: string;
+    env: string;
+    map?: Record<string, string>;
+    cwd?: string;
+}): Promise<StackOutput>;

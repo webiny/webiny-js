@@ -3,6 +3,7 @@ import { CmsContentModelGroup } from "../../src/types";
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
 import models from "./mocks/contentModels";
 import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
+import { useCategoryReadHandler } from "../utils/useCategoryReadHandler";
 
 const createIdentity = (permissions: any[] = []): SecurityIdentity => {
     return {
@@ -20,6 +21,9 @@ const createIdentity = (permissions: any[] = []): SecurityIdentity => {
             },
             {
                 name: "cms.endpoint.manage"
+            },
+            {
+                name: "cms.endpoint.read"
             },
             {
                 name: "cms.contentModelGroup",
@@ -42,20 +46,17 @@ describe("MANAGE - resolvers - api key", () => {
     };
 
     const manageOpts = { path: "manage/en-US" };
+    const readOpts = { path: "read/en-US" };
 
     const {
-        clearAllIndex,
         createContentModelMutation,
         updateContentModelMutation,
-        createContentModelGroupMutation
+        createContentModelGroupMutation,
+        installMutation
     } = useContentGqlHandler(manageOpts);
 
     beforeEach(async () => {
-        try {
-            await clearAllIndex();
-        } catch {
-            // Ignore errors
-        }
+        await installMutation();
 
         const [createCMG] = await createContentModelGroupMutation({
             data: {
@@ -97,13 +98,13 @@ describe("MANAGE - resolvers - api key", () => {
         }
     });
 
-    afterEach(async () => {
-        try {
-            await clearAllIndex();
-        } catch (e) {}
-    });
-
     test("create, get, list, update and delete entry", async () => {
+        const identity = createIdentity([
+            {
+                name: "cms.contentEntry",
+                rwd: "rwd"
+            }
+        ]);
         const {
             until,
             createCategory,
@@ -113,12 +114,12 @@ describe("MANAGE - resolvers - api key", () => {
             deleteCategory
         } = await useCategoryManageHandler({
             ...manageOpts,
-            identity: createIdentity([
-                {
-                    name: "cms.contentEntry",
-                    rwd: "rwd"
-                }
-            ])
+            identity
+        });
+
+        const { listCategories: listCategoriesRead } = useCategoryReadHandler({
+            ...readOpts,
+            identity
         });
 
         const [createResponse] = await createCategory(
@@ -136,6 +137,7 @@ describe("MANAGE - resolvers - api key", () => {
                 createCategory: {
                     data: {
                         id: expect.any(String),
+                        entryId: expect.any(String),
                         title: "Vegetables",
                         slug: "vegetables",
                         createdOn: expect.stringMatching(/^20/),
@@ -187,6 +189,7 @@ describe("MANAGE - resolvers - api key", () => {
                 getCategory: {
                     data: {
                         id: category.id,
+                        entryId: category.entryId,
                         title: category.title,
                         slug: category.slug,
                         createdOn: category.createdOn,
@@ -233,6 +236,7 @@ describe("MANAGE - resolvers - api key", () => {
                 updateCategory: {
                     data: {
                         id: expect.any(String),
+                        entryId: expect.any(String),
                         title: "Green vegetables",
                         slug: "green-vegetables",
                         createdOn: expect.stringMatching(/^20/),
@@ -269,7 +273,7 @@ describe("MANAGE - resolvers - api key", () => {
         const listResponse = await until(
             () => listCategories({}, headers).then(([data]) => data),
             ({ data }) => data.listCategories.data[0].slug === updatedCategory.slug,
-            { name: `waiting for ${updatedCategory.slug}` }
+            { name: `waiting for green-vegetables slug on list categories` }
         );
 
         expect(listResponse).toEqual({
@@ -278,6 +282,7 @@ describe("MANAGE - resolvers - api key", () => {
                     data: [
                         {
                             id: expect.any(String),
+                            entryId: expect.any(String),
                             title: updatedCategory.title,
                             slug: updatedCategory.slug,
                             createdOn: updatedCategory.createdOn,
@@ -305,9 +310,9 @@ describe("MANAGE - resolvers - api key", () => {
                         }
                     ],
                     meta: {
+                        cursor: null,
                         hasMoreItems: false,
-                        totalCount: 1,
-                        cursor: expect.any(String)
+                        totalCount: 1
                     },
                     error: null
                 }
@@ -326,6 +331,54 @@ describe("MANAGE - resolvers - api key", () => {
                 deleteCategory: {
                     data: true,
                     error: null
+                }
+            }
+        });
+        /**
+         * There should be no categories in the manage API.
+         */
+        await until(
+            () => listCategories({}, headers).then(([data]) => data),
+            ({ data }) => data.listCategories.data.length === 0,
+            { name: "after delete list categories" }
+        );
+
+        const [listAfterDelete] = await listCategories({}, headers);
+
+        expect(listAfterDelete).toEqual({
+            data: {
+                listCategories: {
+                    data: [],
+                    error: null,
+                    meta: {
+                        hasMoreItems: false,
+                        totalCount: 0,
+                        cursor: null
+                    }
+                }
+            }
+        });
+        /**
+         * There should be no categories in the read API.
+         */
+        await until(
+            () => listCategoriesRead({}, headers).then(([data]) => data),
+            ({ data }) => data.listCategories.data.length === 0,
+            { name: "after delete list read categories" }
+        );
+
+        const [listReadAfterDelete] = await listCategoriesRead({}, headers);
+
+        expect(listReadAfterDelete).toEqual({
+            data: {
+                listCategories: {
+                    data: [],
+                    error: null,
+                    meta: {
+                        hasMoreItems: false,
+                        totalCount: 0,
+                        cursor: null
+                    }
                 }
             }
         });

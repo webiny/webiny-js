@@ -6,14 +6,14 @@ import { Tooltip } from "@webiny/ui/Tooltip";
 import { IconButton } from "@webiny/ui/Button";
 import outputFileSelectionError from "../../../components/FileManager/outputFileSelectionError";
 import { useSnackbar } from "../../../hooks/useSnackbar";
-import { ReactComponent as EditIcon } from "./../icons/edit.svg";
+import { ReactComponent as EditIcon } from "../icons/edit.svg";
 
 function toDataUrl(url) {
     return new Promise(resolve => {
         const xhr = new window.XMLHttpRequest();
-        xhr.onload = function() {
+        xhr.onload = function () {
             const reader = new window.FileReader();
-            reader.onloadend = function() {
+            reader.onloadend = function () {
                 resolve(reader.result);
             };
             reader.readAsDataURL(xhr.response);

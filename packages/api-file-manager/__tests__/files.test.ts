@@ -24,37 +24,20 @@ const fileBData = {
     type: "image/png",
     tags: ["art"]
 };
+const fileCData = {
+    key: "/files/filenameC.png",
+    name: "filenameC.png",
+    size: 123456,
+    type: "image/png",
+    tags: ["art", "sketch", "webiny"]
+};
 
 describe("Files CRUD test", () => {
-    const {
-        tenant,
-        elasticSearch,
-        sleep,
-        createFile,
-        updateFile,
-        createFiles,
-        getFile,
-        listFiles
-    } = useGqlHandler({
-        permissions: [{ name: "*" }],
-        identity: identityA
-    });
-
-    beforeEach(async () => {
-        try {
-            await elasticSearch.indices.create({
-                index: tenant.id + "-file-manager"
-            });
-        } catch (e) {}
-    });
-
-    afterEach(async () => {
-        try {
-            await elasticSearch.indices.delete({
-                index: tenant.id + "-file-manager"
-            });
-        } catch (e) {}
-    });
+    const { createFile, updateFile, createFiles, getFile, listFiles, listTags, until } =
+        useGqlHandler({
+            permissions: [{ name: "*" }],
+            identity: identityA
+        });
 
     test("should create, read, update and delete files", async () => {
         const [create] = await createFile({ data: fileAData });
@@ -62,7 +45,10 @@ describe("Files CRUD test", () => {
             data: {
                 fileManager: {
                     createFile: {
-                        data: { ...fileAData, id: create.data.fileManager.createFile.data.id },
+                        data: {
+                            ...fileAData,
+                            id: expect.any(String)
+                        },
                         error: null
                     }
                 }
@@ -93,7 +79,9 @@ describe("Files CRUD test", () => {
                                         data: null,
                                         message: `Tag ${LONG_STRING} is more than 50 characters long.`
                                     }
-                                }
+                                },
+                                original: expect.any(Object),
+                                file: expect.any(Object)
                             }
                         }
                     }
@@ -134,6 +122,18 @@ describe("Files CRUD test", () => {
             }
         });
 
+        await until(
+            () => listFiles().then(([data]) => data),
+            ({ data }) =>
+                Array.isArray(data.fileManager.listFiles.data) &&
+                data.fileManager.listFiles.data.length === 1 &&
+                data.fileManager.listFiles.data[0].tags.length === 1,
+            {
+                tries: 10,
+                name: "list files after update tags"
+            }
+        );
+
         // Let's create multiple files
         const [create2] = await createFiles({
             data: [fileBData]
@@ -167,14 +167,13 @@ describe("Files CRUD test", () => {
             }
         });
 
-        // TODO: replace with the `until` utility we have in api-form-builder and api-page-builder
-        while (true) {
-            await sleep(1000);
-            const [list1] = await listFiles({});
-            if (Array.isArray(list1.data.fileManager.listFiles.data)) {
-                break;
-            }
-        }
+        await until(
+            () => listFiles({}).then(([data]) => data),
+            ({ data }) => {
+                return data.fileManager.listFiles.data.length === 2;
+            },
+            { name: "list all files", tries: 10 }
+        );
 
         // Let's get a all files
         const [list2] = await listFiles();
@@ -189,7 +188,8 @@ describe("Files CRUD test", () => {
                         ],
                         meta: {
                             cursor: expect.any(String),
-                            totalCount: expect.any(Number)
+                            totalCount: expect.any(Number),
+                            hasMoreItems: false
                         },
                         error: null
                     }
@@ -210,7 +210,16 @@ describe("Files CRUD test", () => {
             }
         }
 
-        await sleep(1000);
+        await until(
+            () =>
+                listFiles({
+                    limit: 1000
+                }).then(([data]) => data),
+            ({ data }) => {
+                return data.fileManager.listFiles.data.length === testFiles.length;
+            },
+            { name: "bulk list all files", tries: 10 }
+        );
 
         const inElastic = testFiles.reverse();
 
@@ -235,5 +244,91 @@ describe("Files CRUD test", () => {
         const [page4] = await listFiles({ limit: 60, after: meta3.cursor });
         expect(page4.data.fileManager.listFiles.data.length).toBe(0);
         expect(page4.data.fileManager.listFiles.meta.cursor).toBe(null);
+    });
+
+    it("should find files by tags", async () => {
+        const [createResponse] = await createFiles({
+            data: [fileAData, fileBData, fileCData]
+        });
+        expect(createResponse).toEqual({
+            data: {
+                fileManager: {
+                    createFiles: {
+                        data: expect.any(Array),
+                        error: null
+                    }
+                }
+            }
+        });
+        await until(
+            () => listFiles().then(([data]) => data),
+            ({ data }) => {
+                return data.fileManager.listFiles.data.length === 3;
+            },
+            { name: "bulk list tags", tries: 10 }
+        );
+
+        const [response] = await listFiles({
+            tags: ["art"]
+        });
+
+        expect(response).toEqual({
+            data: {
+                fileManager: {
+                    listFiles: {
+                        data: [
+                            {
+                                ...fileCData,
+                                id: expect.any(String)
+                            },
+                            {
+                                ...fileBData,
+                                id: expect.any(String)
+                            }
+                        ],
+                        error: null,
+                        meta: {
+                            hasMoreItems: false,
+                            cursor: expect.any(String),
+                            totalCount: 2
+                        }
+                    }
+                }
+            }
+        });
+    });
+
+    it("should list all the tags from files", async () => {
+        const [createResponse] = await createFiles({
+            data: [fileAData, fileBData, fileCData]
+        });
+        expect(createResponse).toEqual({
+            data: {
+                fileManager: {
+                    createFiles: {
+                        data: expect.any(Array),
+                        error: null
+                    }
+                }
+            }
+        });
+
+        await until(
+            () => listTags().then(([data]) => data),
+            ({ data }) => {
+                return data.fileManager.listTags.length === 3;
+            },
+            { name: "bulk list all tags", tries: 10 }
+        );
+
+        const [response] = await listTags();
+
+        expect(response).toEqual({
+            data: {
+                fileManager: {
+                    listTags: ["art", "sketch", "webiny"]
+                }
+            }
+        });
     });
 });

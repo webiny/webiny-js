@@ -60,7 +60,11 @@ export type PageSpecialType = "home" | "notFound";
 export type Page = {
     id: string;
     pid: string;
+    locale: string;
+    tenant: string;
     title: string;
+    editor: string;
+    createdFrom: string;
     path: string;
     category: string;
     content: Record<string, any>;

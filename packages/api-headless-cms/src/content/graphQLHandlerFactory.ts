@@ -4,11 +4,11 @@ import { makeExecutableSchema } from "@graphql-tools/schema";
 import { CmsContext } from "../types";
 import { I18NLocale } from "@webiny/api-i18n/types";
 import { NotAuthorizedError, NotAuthorizedResponse } from "@webiny/api-security";
-import { ErrorResponse } from "@webiny/handler-graphql";
 import { PluginCollection } from "@webiny/plugins/types";
 import debugPlugins from "@webiny/handler-graphql/debugPlugins";
 import processRequestBody from "@webiny/handler-graphql/processRequestBody";
 import buildSchemaPlugins from "./plugins/buildSchemaPlugins";
+import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins";
 
 interface CreateGraphQLHandlerOptions {
     debug?: boolean;
@@ -53,12 +53,13 @@ const generateCacheKey = async (args: Args): Promise<string> => {
 const generateSchema = async (args: Args): Promise<GraphQLSchema> => {
     const { context } = args;
 
-    const schemaPlugins = await buildSchemaPlugins(context);
+    context.plugins.register(await buildSchemaPlugins(context));
 
     const typeDefs = [];
     const resolvers = [];
 
     // Get schema definitions from plugins
+    const schemaPlugins = context.plugins.byType<GraphQLSchemaPlugin>(GraphQLSchemaPlugin.type);
     for (const pl of schemaPlugins) {
         typeDefs.push(pl.schema.typeDefs);
         resolvers.push(pl.schema.resolvers);
@@ -69,11 +70,12 @@ const generateSchema = async (args: Args): Promise<GraphQLSchema> => {
         resolvers
     });
 };
+
 // gets an existing schema or rewrites existing one or creates a completely new one
 // depending on the schemaId created from type and locale parameters
 const getSchema = async (args: Args): Promise<GraphQLSchema> => {
     const { context, type, locale } = args;
-    const tenantId = context.security.getTenant().id;
+    const tenantId = context.tenancy.getCurrentTenant().id;
     const id = `${tenantId}#${type}#${locale.code}`;
 
     const cacheKey = await generateCacheKey(args);
@@ -143,49 +145,16 @@ export const graphQLHandlerFactory = (
                     return respond(http, new NotAuthorizedResponse(ex));
                 }
 
-                try {
-                    const schema = await getSchema({
-                        context,
-                        locale: context.cms.getLocale(),
-                        type: context.cms.type
-                    });
+                const schema = await getSchema({
+                    context,
+                    locale: context.cms.getLocale(),
+                    type: context.cms.type
+                });
 
-                    const body: ParsedBody | ParsedBody[] = JSON.parse(http.request.body);
+                const body: ParsedBody | ParsedBody[] = JSON.parse(http.request.body);
 
-                    const result = await processRequestBody(body, schema, context);
-                    return respond(http, result);
-                } catch (ex) {
-                    const report = {
-                        error: {
-                            name: ex.constructor.name,
-                            message: ex.message,
-                            data: ex.data || {},
-                            stack: ex.stack
-                        }
-                    };
-                    const body = JSON.stringify(report);
-                    console.log("[@webiny/api-headless-cms] An error occurred: ", body);
-
-                    if (boolean(options.debug)) {
-                        return context.http.response({
-                            statusCode: 500,
-                            body,
-                            headers: {
-                                ...DEFAULT_HEADERS,
-                                "Cache-Control": "no-store"
-                            }
-                        });
-                    }
-
-                    return respond(
-                        http,
-                        new ErrorResponse({
-                            message: ex.message,
-                            code: ex.code || "GENERAL_ERROR",
-                            data: ex.data || {}
-                        })
-                    );
-                }
+                const result = await processRequestBody(body, schema, context);
+                return respond(http, result);
             }
         }
     ];

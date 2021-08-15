@@ -44,8 +44,9 @@ type HorizontalAlignActionPropsType = {
     value: any;
     onChange: any;
 };
-const TextAlignment: React.FunctionComponent<HorizontalAlignActionPropsType &
-    PbEditorPageElementSettingsRenderComponentProps> = ({ value, onChange }) => {
+const TextAlignment: React.FunctionComponent<
+    HorizontalAlignActionPropsType & PbEditorPageElementSettingsRenderComponentProps
+> = ({ value, onChange }) => {
     return (
         <ContentWrapper>
             {alignments.map(type => (

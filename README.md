@@ -5,7 +5,7 @@
 </p>
 <p align="center">
   <a href="https://www.webiny.com">Official Website</a> |
-  <a href="https://docs.webiny.com">Docs</a>
+  <a href="https://www.webiny.com/docs/webiny/introduction/">Docs</a>
 </p>
 
 #
@@ -18,14 +18,13 @@
 ![](https://img.shields.io/npm/types/scrub-js.svg)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
 [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-v1.4%20adopted-ff69b4.svg)](/docs/CODE_OF_CONDUCT.md)
-[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2FWebiny%2Fwebiny-js.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2FWebiny%2Fwebiny-js?ref=badge_shield)
 [![Join our Slack community https://www.webiny.com/slack](https://img.shields.io/badge/Slack-Join%20our%20community!-orange)](https://www.webiny.com/slack)
 
 </p>
 
 ## Getting started
 
-To get started with Webiny, simply [follow this link](https://docs.webiny.com) 🚀
+To get started with Webiny, simply [follow this link](https://www.webiny.com/docs/webiny/introduction/) 🚀
 
 ## Webiny is the easiest way to adopt serverless!
 
@@ -60,9 +59,7 @@ Please see our [Contributing Guidelines](/docs/CONTRIBUTING.md) which explain re
 
 ## License
 
-This project is licensed under the terms of the [MIT license](/LICENSE). Some packages are under Apache license since they are actually forks of other projects.
-
-[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2FWebiny%2Fwebiny-js.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2FWebiny%2Fwebiny-js?ref=badge_large)
+This project is licensed under the terms of the [MIT license](/LICENSE).
 
 <!-- CONTREEBUTORS:START - Do not remove or modify this section -->
 <!-- prettier-ignore-start -->
@@ -357,6 +354,27 @@ Thanks goes to these wonderful people:
                         <img src="https://avatars2.githubusercontent.com/u/25670841?v=4" width="100px;" alt="Darsh Shah"/>
                         <br />
                         <sub><b>Darsh Shah</b></sub>
+                    </a>
+                    <br />
+                </td><td align="center">
+                    <a href="https://github.com/ankurvr">
+                        <img src="https://avatars.githubusercontent.com/u/3338156?v=4" width="100px;" alt="Ankur Raiyani"/>
+                        <br />
+                        <sub><b>Ankur Raiyani</b></sub>
+                    </a>
+                    <br />
+                </td></tr><tr><td align="center">
+                    <a href="https://github.com/karthick3018">
+                        <img src="https://avatars.githubusercontent.com/u/47154512?v=4" width="100px;" alt="Karthick Raja"/>
+                        <br />
+                        <sub><b>Karthick Raja</b></sub>
+                    </a>
+                    <br />
+                </td><td align="center">
+                    <a href="https://github.com/facorread">
+                        <img src="https://avatars.githubusercontent.com/u/127711?v=4" width="100px;" alt="Fabio A. Correa"/>
+                        <br />
+                        <sub><b>Fabio A. Correa</b></sub>
                     </a>
                     <br />
                 </td></tr>

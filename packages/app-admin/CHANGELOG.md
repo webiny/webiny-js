@@ -3,6 +3,213 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.12.0](https://github.com/webiny/webiny-js/compare/v5.12.0-beta.1...v5.12.0) (2021-08-05)
+
+**Note:** Version bump only for package @webiny/app-admin
+
+
+
+
+
+# [5.12.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.12.0-beta.0...v5.12.0-beta.1) (2021-08-05)
+
+
+### Bug Fixes
+
+* **app-admin:** always return a validation function ([7ba6480](https://github.com/webiny/webiny-js/commit/7ba64804db173c65f0122d916140493d6e34d523))
+
+
+
+
+
+# [5.12.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.11.1...v5.12.0-beta.0) (2021-08-04)
+
+
+### Bug Fixes
+
+* resolve eslint errors ([57f5d18](https://github.com/webiny/webiny-js/commit/57f5d1857ea6a35b92b496b5bd8dd43fc0583df8))
+* restore SplitView component and fix cypress tests ([304a7b3](https://github.com/webiny/webiny-js/commit/304a7b3614e621e9b33fcce54f6ddb1018887b34))
+
+
+### Features
+
+* **app-admin:** add support for dynamic button labels ([58c6a93](https://github.com/webiny/webiny-js/commit/58c6a93b4f2a8546fbf63dbf7a3ca44f9ddd8472))
+* introduce UI composer ([#1800](https://github.com/webiny/webiny-js/issues/1800)) ([35d1f85](https://github.com/webiny/webiny-js/commit/35d1f85531f615c0d1a0a333bc9cdb8167e4f51d))
+
+
+
+
+
+## [5.11.1](https://github.com/webiny/webiny-js/compare/v5.11.1-beta.0...v5.11.1) (2021-07-31)
+
+**Note:** Version bump only for package @webiny/app-admin
+
+
+
+
+
+## [5.11.1-beta.0](https://github.com/webiny/webiny-js/compare/v5.11.0...v5.11.1-beta.0) (2021-07-31)
+
+**Note:** Version bump only for package @webiny/app-admin
+
+
+
+
+
+# [5.11.0](https://github.com/webiny/webiny-js/compare/v5.11.0-beta.2...v5.11.0) (2021-07-22)
+
+**Note:** Version bump only for package @webiny/app-admin
+
+
+
+
+
+# [5.11.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.11.0-beta.1...v5.11.0-beta.2) (2021-07-21)
+
+**Note:** Version bump only for package @webiny/app-admin
+
+
+
+
+
+# [5.11.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.11.0-beta.0...v5.11.0-beta.1) (2021-07-21)
+
+**Note:** Version bump only for package @webiny/app-admin
+
+
+
+
+
+# [5.11.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.10.0...v5.11.0-beta.0) (2021-07-21)
+
+**Note:** Version bump only for package @webiny/app-admin
+
+
+
+
+
+# [5.10.0](https://github.com/webiny/webiny-js/compare/v5.10.0-beta.2...v5.10.0) (2021-07-06)
+
+**Note:** Version bump only for package @webiny/app-admin
+
+
+
+
+
+# [5.10.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.10.0-beta.1...v5.10.0-beta.2) (2021-07-06)
+
+**Note:** Version bump only for package @webiny/app-admin
+
+
+
+
+
+# [5.10.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.10.0-beta.0...v5.10.0-beta.1) (2021-07-06)
+
+**Note:** Version bump only for package @webiny/app-admin
+
+
+
+
+
+# [5.10.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.9.0...v5.10.0-beta.0) (2021-07-02)
+
+**Note:** Version bump only for package @webiny/app-admin
+
+
+
+
+
+# [5.9.0](https://github.com/webiny/webiny-js/compare/v5.9.0-beta.2...v5.9.0) (2021-06-21)
+
+**Note:** Version bump only for package @webiny/app-admin
+
+
+
+
+
+# [5.9.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.9.0-beta.1...v5.9.0-beta.2) (2021-06-20)
+
+**Note:** Version bump only for package @webiny/app-admin
+
+
+
+
+
+# [5.9.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.9.0-beta.0...v5.9.0-beta.1) (2021-06-20)
+
+**Note:** Version bump only for package @webiny/app-admin
+
+
+
+
+
+# [5.9.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.8.0...v5.9.0-beta.0) (2021-06-18)
+
+
+### Bug Fixes
+
+* **app-admin:** improve MenuPlugin types ([cc949be](https://github.com/webiny/webiny-js/commit/cc949bec0c89668f8ec78196af303ab168dd4a47))
+
+
+
+
+
+# [5.8.0](https://github.com/webiny/webiny-js/compare/v5.8.0-beta.1...v5.8.0) (2021-06-07)
+
+**Note:** Version bump only for package @webiny/app-admin
+
+
+
+
+
+# [5.8.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.8.0-beta.0...v5.8.0-beta.1) (2021-06-05)
+
+**Note:** Version bump only for package @webiny/app-admin
+
+
+
+
+
+# [5.8.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.7.0...v5.8.0-beta.0) (2021-06-03)
+
+
+### Bug Fixes
+
+* **app-admin:** add missing dependency ([7845e15](https://github.com/webiny/webiny-js/commit/7845e15c14687f737ab2d15e0e9091f9499d0092))
+* **app-admin:** improve type handling with minimatch ([a9a3aab](https://github.com/webiny/webiny-js/commit/a9a3aab566cabe96c7e7f98a51e090794914c576))
+* **app-admin:** tooltip hover type of file ([#1634](https://github.com/webiny/webiny-js/issues/1634)) ([ee5733e](https://github.com/webiny/webiny-js/commit/ee5733e3bb9dca066600141516a3607a07eb38b5))
+
+
+### Features
+
+* **app-admin:** introduce FileManagerFileTypePlugin ([9ba618b](https://github.com/webiny/webiny-js/commit/9ba618b8dd2d4ee9b145629b4bfdd033ba042ba7))
+* **app-admin:** introduce MenuPlugin and PermissionRendererPlugin class ([567df61](https://github.com/webiny/webiny-js/commit/567df61cd0d8070458295f47fcee55b88a15cc3d))
+* **app-admin:** use FileManagerFileTypePlugin in file type detection ([67a86cf](https://github.com/webiny/webiny-js/commit/67a86cf2e8f7346f15197eee2d8e859bac6fd415))
+
+
+
+
+
+# [5.7.0](https://github.com/webiny/webiny-js/compare/v5.7.0-beta.0...v5.7.0) (2021-05-24)
+
+**Note:** Version bump only for package @webiny/app-admin
+
+
+
+
+
+# [5.7.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.6.0...v5.7.0-beta.0) (2021-05-23)
+
+
+### Bug Fixes
+
+* prevent opening the search bar while typing inside of a textarea ([17748a5](https://github.com/webiny/webiny-js/commit/17748a5e89b5a18424aeaa4fef98b470d13e20b4))
+
+
+
+
+
 # [5.6.0](https://github.com/webiny/webiny-js/compare/v5.6.0-beta.2...v5.6.0) (2021-05-10)
 
 **Note:** Version bump only for package @webiny/app-admin

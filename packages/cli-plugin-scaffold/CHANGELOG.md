@@ -3,6 +3,204 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.12.0](https://github.com/webiny/webiny-js/compare/v5.12.0-beta.1...v5.12.0) (2021-08-05)
+
+**Note:** Version bump only for package @webiny/cli-plugin-scaffold
+
+
+
+
+
+# [5.12.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.12.0-beta.0...v5.12.0-beta.1) (2021-08-05)
+
+**Note:** Version bump only for package @webiny/cli-plugin-scaffold
+
+
+
+
+
+# [5.12.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.11.1...v5.12.0-beta.0) (2021-08-04)
+
+**Note:** Version bump only for package @webiny/cli-plugin-scaffold
+
+
+
+
+
+## [5.11.1](https://github.com/webiny/webiny-js/compare/v5.11.1-beta.0...v5.11.1) (2021-07-31)
+
+**Note:** Version bump only for package @webiny/cli-plugin-scaffold
+
+
+
+
+
+## [5.11.1-beta.0](https://github.com/webiny/webiny-js/compare/v5.11.0...v5.11.1-beta.0) (2021-07-31)
+
+**Note:** Version bump only for package @webiny/cli-plugin-scaffold
+
+
+
+
+
+# [5.11.0](https://github.com/webiny/webiny-js/compare/v5.11.0-beta.2...v5.11.0) (2021-07-22)
+
+**Note:** Version bump only for package @webiny/cli-plugin-scaffold
+
+
+
+
+
+# [5.11.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.11.0-beta.1...v5.11.0-beta.2) (2021-07-21)
+
+**Note:** Version bump only for package @webiny/cli-plugin-scaffold
+
+
+
+
+
+# [5.11.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.11.0-beta.0...v5.11.0-beta.1) (2021-07-21)
+
+**Note:** Version bump only for package @webiny/cli-plugin-scaffold
+
+
+
+
+
+# [5.11.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.10.0...v5.11.0-beta.0) (2021-07-21)
+
+**Note:** Version bump only for package @webiny/cli-plugin-scaffold
+
+
+
+
+
+# [5.10.0](https://github.com/webiny/webiny-js/compare/v5.10.0-beta.2...v5.10.0) (2021-07-06)
+
+**Note:** Version bump only for package @webiny/cli-plugin-scaffold
+
+
+
+
+
+# [5.10.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.10.0-beta.1...v5.10.0-beta.2) (2021-07-06)
+
+**Note:** Version bump only for package @webiny/cli-plugin-scaffold
+
+
+
+
+
+# [5.10.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.10.0-beta.0...v5.10.0-beta.1) (2021-07-06)
+
+**Note:** Version bump only for package @webiny/cli-plugin-scaffold
+
+
+
+
+
+# [5.10.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.9.0...v5.10.0-beta.0) (2021-07-02)
+
+**Note:** Version bump only for package @webiny/cli-plugin-scaffold
+
+
+
+
+
+# [5.9.0](https://github.com/webiny/webiny-js/compare/v5.9.0-beta.2...v5.9.0) (2021-06-21)
+
+**Note:** Version bump only for package @webiny/cli-plugin-scaffold
+
+
+
+
+
+# [5.9.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.9.0-beta.1...v5.9.0-beta.2) (2021-06-20)
+
+**Note:** Version bump only for package @webiny/cli-plugin-scaffold
+
+
+
+
+
+# [5.9.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.9.0-beta.0...v5.9.0-beta.1) (2021-06-20)
+
+**Note:** Version bump only for package @webiny/cli-plugin-scaffold
+
+
+
+
+
+# [5.9.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.8.0...v5.9.0-beta.0) (2021-06-18)
+
+
+### Bug Fixes
+
+* check if imports exist first ([4661cde](https://github.com/webiny/webiny-js/commit/4661cdec87cfaac6aeedd833d88cf2a230f713b3))
+* improve messaging and visual feedback ([8d5f5aa](https://github.com/webiny/webiny-js/commit/8d5f5aa71e2f7859cce7a86adfe89383e3bab359))
+* improve ts-morph code ([e58b852](https://github.com/webiny/webiny-js/commit/e58b8522b2698e461b480440754baa23065e9e91))
+* unify chalk version ([56e2f73](https://github.com/webiny/webiny-js/commit/56e2f73152ebff0d2501f4d51e4e8f82a5ba15b5))
+* update dependencies ([485deaa](https://github.com/webiny/webiny-js/commit/485deaaf6f16e381a31e6127cb0ed7632404f995))
+* update dependencies ([c99e57f](https://github.com/webiny/webiny-js/commit/c99e57fa6eb7d86fbc0627478599b5cabd95b433))
+* use newly added `CliContext` type ([92a0284](https://github.com/webiny/webiny-js/commit/92a02844db44bb8dc10f87060cf41a4c187a9f54))
+* visually improve scaffolds list ([919346e](https://github.com/webiny/webiny-js/commit/919346ea924488b7dad602dcbf909a16f218906e))
+
+
+### Features
+
+* create formatCode utility function ([43980f4](https://github.com/webiny/webiny-js/commit/43980f48f15f4b8e4a74e0c4fb06e2fe7ac8256e))
+* create updateScaffoldsIndexFile utility function ([b214c02](https://github.com/webiny/webiny-js/commit/b214c022d6210d732a55cf017a81776152d027ac))
+
+
+
+
+
+# [5.8.0](https://github.com/webiny/webiny-js/compare/v5.8.0-beta.1...v5.8.0) (2021-06-07)
+
+**Note:** Version bump only for package @webiny/cli-plugin-scaffold
+
+
+
+
+
+# [5.8.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.8.0-beta.0...v5.8.0-beta.1) (2021-06-05)
+
+**Note:** Version bump only for package @webiny/cli-plugin-scaffold
+
+
+
+
+
+# [5.8.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.7.0...v5.8.0-beta.0) (2021-06-03)
+
+**Note:** Version bump only for package @webiny/cli-plugin-scaffold
+
+
+
+
+
+# [5.7.0](https://github.com/webiny/webiny-js/compare/v5.7.0-beta.0...v5.7.0) (2021-05-24)
+
+**Note:** Version bump only for package @webiny/cli-plugin-scaffold
+
+
+
+
+
+# [5.7.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.6.0...v5.7.0-beta.0) (2021-05-23)
+
+
+### Bug Fixes
+
+* add 'inquirer' to types ([a21c5a6](https://github.com/webiny/webiny-js/commit/a21c5a6803cfb42f07c170d2afc1f9e6ee6fdb51))
+* change verb ([3d72eef](https://github.com/webiny/webiny-js/commit/3d72eef74d0d20404057941cb3ca7a4a781eb76c))
+* export types ([b82d56b](https://github.com/webiny/webiny-js/commit/b82d56b1ce845804fd2e92223e2e15bbc30119d4))
+* send 'inquirer' and add onGenerate hook ([082095e](https://github.com/webiny/webiny-js/commit/082095e90a76591ffc15945eb29e306f2cb92ed8))
+
+
+
+
+
 # [5.6.0](https://github.com/webiny/webiny-js/compare/v5.6.0-beta.2...v5.6.0) (2021-05-10)
 
 **Note:** Version bump only for package @webiny/cli-plugin-scaffold

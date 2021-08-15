@@ -1,7 +1,8 @@
 module.exports = {
     printWidth: 100,
-    trailingComma: "none",
     tabWidth: 2,
+    arrowParens: "avoid",
+    trailingComma: "none",
     overrides: [
         {
             files: ["*.js", "*.ts", "*.tsx"],

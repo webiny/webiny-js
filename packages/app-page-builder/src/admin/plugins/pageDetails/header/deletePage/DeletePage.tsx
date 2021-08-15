@@ -7,10 +7,10 @@ import { useDialog } from "@webiny/app-admin/hooks/useDialog";
 import { IconButton } from "@webiny/ui/Button";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { ReactComponent as DeleteIcon } from "../../../../assets/delete.svg";
-import { DELETE_PAGE, LIST_PAGES } from "../../../../graphql/pages";
+import { DELETE_PAGE } from "~/admin/graphql/pages";
 import { i18n } from "@webiny/app/i18n";
-import cloneDeep from "lodash/cloneDeep";
-import usePermission from "../../../../../hooks/usePermission";
+import usePermission from "~/hooks/usePermission";
+import * as GQLCache from "~/admin/views/Pages/cache";
 
 const t = i18n.ns("app-headless-cms/app-page-builder/page-details/header/delete-page");
 
@@ -32,7 +32,8 @@ const DeletePage = props => {
                     title: <strong>{page.title}</strong>
                 })}
             </p>
-        )
+        ),
+        dataTestId: "pb-page-details-header-delete-dialog"
     });
 
     const confirmDelete = useCallback(
@@ -43,36 +44,12 @@ const DeletePage = props => {
                 const { data: res } = await client.mutate({
                     mutation: DELETE_PAGE,
                     variables: { id },
-                    update(cache, response) {
-                        if (response.data.pageBuilder.deletePage.error) {
+                    update(cache, { data }) {
+                        if (data.pageBuilder.deletePage.error) {
                             return;
                         }
-
-                        let variables;
-
-                        try {
-                            variables = JSON.parse(
-                                localStorage.getItem("wby_pb_pages_list_latest_variables")
-                            );
-                        } catch {}
-
-                        if (!variables) {
-                            return;
-                        }
-
-                        const data = cloneDeep(
-                            cache.readQuery<Record<string, any>>({ query: LIST_PAGES, variables })
-                        );
-
-                        data.pageBuilder.listPages.data = data.pageBuilder.listPages.data.filter(
-                            item => item.id !== page.id
-                        );
-
-                        cache.writeQuery({
-                            query: LIST_PAGES,
-                            variables,
-                            data
-                        });
+                        // Also, delete the page from "LIST_PAGES_ cache
+                        GQLCache.removePageFromListCache(cache, page);
                     }
                 });
 
@@ -105,7 +82,11 @@ const DeletePage = props => {
 
     return (
         <Tooltip content={"Delete"} placement={"top"}>
-            <IconButton icon={<DeleteIcon />} onClick={confirmDelete} />
+            <IconButton
+                icon={<DeleteIcon />}
+                onClick={confirmDelete}
+                data-testid={"pb-page-details-header-delete-button"}
+            />
         </Tooltip>
     );
 };

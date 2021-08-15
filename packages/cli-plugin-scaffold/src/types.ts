@@ -1,7 +1,8 @@
 import { QuestionCollection } from "inquirer";
-import { ContextInterface } from "@webiny/handler/types";
+import { CliContext } from "@webiny/cli/types";
 import { Plugin } from "@webiny/plugins/types";
 import { Ora } from "ora";
+import inquirer from "inquirer";
 
 /**
  * Arguments for CliPlugin.create
@@ -10,7 +11,7 @@ import { Ora } from "ora";
  */
 export interface CliCommandPluginArgs {
     yargs: any;
-    context: ContextInterface;
+    context: CliContext;
 }
 
 /**
@@ -32,8 +33,8 @@ export interface CliCommandPlugin extends Plugin {
  * @category ScaffoldQuestions
  * @category Template
  */
-interface CliCommandScaffoldQuestionsCallableArgs {
-    context: ContextInterface;
+export interface CliCommandScaffoldQuestionsCallableArgs {
+    context: CliContext;
 }
 
 /**
@@ -43,7 +44,7 @@ interface CliCommandScaffoldQuestionsCallableArgs {
  * @category ScaffoldQuestions
  * @category Template
  */
-type CliCommandScaffoldQuestionsCallable = (
+export type CliCommandScaffoldQuestionsCallable = (
     args: CliCommandScaffoldQuestionsCallableArgs
 ) => QuestionCollection;
 
@@ -53,11 +54,12 @@ type CliCommandScaffoldQuestionsCallable = (
  * @category Scaffold
  * @category Template
  */
-interface CliCommandScaffoldCallableArgs<T extends Record<string, any>> {
+export interface CliCommandScaffoldCallableArgs<T extends Record<string, any>> {
     input: T;
-    context: ContextInterface;
+    context: CliContext;
     wait: (ms?: number) => Promise<void>;
-    oraSpinner: Ora;
+    inquirer: typeof inquirer;
+    ora: Ora;
 }
 
 /**
@@ -66,7 +68,7 @@ interface CliCommandScaffoldCallableArgs<T extends Record<string, any>> {
  * @category Scaffold
  * @category Template
  */
-interface CliCommandScaffoldCallableWithErrorArgs<T extends Record<string, any>>
+export interface CliCommandScaffoldCallableWithErrorArgs<T extends Record<string, any>>
     extends CliCommandScaffoldCallableArgs<T> {
     error: Error;
 }
@@ -83,6 +85,10 @@ interface CliCommandScaffold<T extends Record<string, any>> {
      */
     name: string;
     /**
+     * A short description of the scaffold.
+     */
+    description: string;
+    /**
      * Definition of questions for users to go through when they run the scaffold.
      */
     questions: QuestionCollection | CliCommandScaffoldQuestionsCallable;
@@ -91,9 +97,13 @@ interface CliCommandScaffold<T extends Record<string, any>> {
      */
     generate: (args: CliCommandScaffoldCallableArgs<T>) => Promise<any>;
     /**
+     * Trigger when generator is about to be executed (before its execution).
+     */
+    onGenerate?: (args: CliCommandScaffoldCallableArgs<T>) => Promise<void>;
+    /**
      * Trigger when generator completes.
      */
-    onSuccess: (args: CliCommandScaffoldCallableArgs<T>) => Promise<void>;
+    onSuccess?: (args: CliCommandScaffoldCallableArgs<T>) => Promise<void>;
     /**
      * Trigger when there is a generator error.
      */

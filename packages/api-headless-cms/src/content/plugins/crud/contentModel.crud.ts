@@ -4,9 +4,11 @@ import {
     CmsContentModel,
     CmsContentModelContext,
     CmsContentModelManager,
-    CmsContentModelPermission
-} from "../../../types";
-import * as utils from "../../../utils";
+    CmsContentModelPermission,
+    CmsContentModelStorageOperationsProvider,
+    CmsContentModelUpdateInput
+} from "~/types";
+import * as utils from "~/utils";
 import DataLoader from "dataloader";
 import { NotFoundError } from "@webiny/handler-graphql";
 import { contentModelManagerFactory } from "./contentModel/contentModelManagerFactory";
@@ -23,22 +25,41 @@ import {
 } from "./contentModel/hooks";
 import { NotAuthorizedError } from "@webiny/api-security";
 import WebinyError from "@webiny/error";
+import { ContentModelPlugin } from "@webiny/api-headless-cms/content/plugins/ContentModelPlugin";
 
 export default (): ContextPlugin<CmsContext> => ({
     type: "context",
-    name: "context-content-model-crud",
+    name: "context-content-model-storageOperations",
     async apply(context) {
-        const { db, elasticSearch } = context;
+        /**
+         * If cms is not defined on the context, do not continue, but log it.
+         */
+        if (!context.cms) {
+            console.log("Missing cms on context. Skipping ContentModel crud.");
+            return;
+        }
 
-        const PK_CONTENT_MODEL = () => `${utils.createCmsPK(context)}#CM`;
+        const pluginType = "cms-content-model-storage-operations-provider";
+        const providerPlugins =
+            context.plugins.byType<CmsContentModelStorageOperationsProvider>(pluginType);
+        /**
+         * Storage operations for the content model.
+         * Contains logic to save the data into the specific storage.
+         */
+        const providerPlugin = providerPlugins[providerPlugins.length - 1];
+        if (!providerPlugin) {
+            throw new WebinyError(`Missing "${pluginType}" plugin.`, "PLUGIN_NOT_FOUND", {
+                type: pluginType
+            });
+        }
+
+        const storageOperations = await providerPlugin.provide({
+            context
+        });
 
         const loaders = {
             listModels: new DataLoader(async () => {
-                const [models] = await db.read<CmsContentModel>({
-                    ...utils.defaults.db(),
-                    query: { PK: PK_CONTENT_MODEL(), SK: { $gt: " " } }
-                });
-
+                const models = await storageOperations.list();
                 return [models];
             })
         };
@@ -58,23 +79,37 @@ export default (): ContextPlugin<CmsContext> => ({
         };
 
         const modelsGet = async (modelId: string) => {
-            const [[model]] = await db.read<CmsContentModel>({
-                ...utils.defaults.db(),
-                query: { PK: PK_CONTENT_MODEL(), SK: modelId }
+            const pluginModel: ContentModelPlugin = context.plugins
+                .byType<ContentModelPlugin>(ContentModelPlugin.type)
+                .find(plugin => plugin.contentModel.modelId === modelId);
+
+            if (pluginModel) {
+                return pluginModel.contentModel;
+            }
+
+            const databaseModel = await storageOperations.get({
+                id: modelId
             });
 
-            if (!model) {
+            if (!databaseModel) {
                 throw new NotFoundError(`Content model "${modelId}" was not found!`);
             }
 
-            return model;
+            return databaseModel;
         };
 
-        const modelsList = async () => {
-            return await loaders.listModels.load("listModels");
+        const modelsList = async (): Promise<CmsContentModel[]> => {
+            const databaseModels = await loaders.listModels.load("listModels");
+
+            const pluginsModels: CmsContentModel[] = context.plugins
+                .byType<ContentModelPlugin>(ContentModelPlugin.type)
+                .map<CmsContentModel>(plugin => plugin.contentModel);
+
+            return [...databaseModels, ...pluginsModels];
         };
 
         const models: CmsContentModelContext = {
+            operations: storageOperations,
             noAuth: () => {
                 return {
                     get: modelsGet,
@@ -108,7 +143,6 @@ export default (): ContextPlugin<CmsContext> => ({
             async list() {
                 const permission = await checkModelPermissions("r");
                 const models = await modelsList();
-
                 return utils.filterAsync(models, async model => {
                     if (!utils.validateOwnership(context, permission, model)) {
                         return false;
@@ -116,21 +150,21 @@ export default (): ContextPlugin<CmsContext> => ({
                     return utils.validateModelAccess(context, model);
                 });
             },
-            async create(data) {
+            async create(inputData) {
                 await checkModelPermissions("w");
 
-                const createdData = new CreateContentModelModel().populate(data);
+                const createdData = new CreateContentModelModel().populate(inputData);
                 await createdData.validate();
-                const createdDataJson = await createdData.toJSON();
+                const input = await createdData.toJSON();
 
-                const group = await context.cms.groups.noAuth().get(createdDataJson.group);
+                const group = await context.cms.groups.noAuth().get(input.group);
                 if (!group) {
-                    throw new NotFoundError(`There is no group "${createdDataJson.group}".`);
+                    throw new NotFoundError(`There is no group "${input.group}".`);
                 }
 
                 const identity = context.security.getIdentity();
-                const model: CmsContentModel = {
-                    ...createdDataJson,
+                const data: CmsContentModel = {
+                    ...input,
                     titleFieldId: "id",
                     locale: context.cms.getLocale().code,
                     group: {
@@ -149,143 +183,133 @@ export default (): ContextPlugin<CmsContext> => ({
                     layout: []
                 };
 
-                await beforeCreateHook({ context, model });
+                await beforeCreateHook({ context, storageOperations, input, data });
 
-                await db.create({
-                    ...utils.defaults.db(),
-                    data: {
-                        PK: PK_CONTENT_MODEL(),
-                        SK: model.modelId,
-                        TYPE: "cms.model",
-                        webinyVersion: context.WEBINY_VERSION,
-                        ...model
-                    }
+                const model = await storageOperations.create({
+                    input,
+                    data
                 });
-
-                try {
-                    const esIndex = utils.defaults.es(context, model);
-                    const { body: exists } = await elasticSearch.indices.exists(esIndex);
-                    if (!exists) {
-                        await elasticSearch.indices.create(esIndex);
-                    }
-                } catch (ex) {
-                    throw new WebinyError(
-                        "Could not create Elasticsearch index.",
-                        "ELASTICSEARCH_INDEX",
-                        ex
-                    );
-                }
 
                 await updateManager(context, model);
 
-                await afterCreateHook({ context, model });
+                await afterCreateHook({ context, storageOperations, input, model });
 
                 return model;
             },
             /**
+             * Method does not check for permissions or ownership.
              * @internal
              */
-            async updateModel(model, data: Partial<CmsContentModel>) {
-                await beforeUpdateHook({ context, model, data });
-                await db.update({
-                    ...utils.defaults.db(),
-                    query: {
-                        PK: PK_CONTENT_MODEL(),
-                        SK: model.modelId
-                    },
-                    data: {
-                        ...data,
-                        webinyVersion: context.WEBINY_VERSION
-                    }
+            async updateModel(model, data) {
+                const input = data as unknown as CmsContentModelUpdateInput;
+                await beforeUpdateHook({
+                    context,
+                    storageOperations,
+                    model,
+                    data,
+                    input
                 });
 
-                const combinedModel: CmsContentModel = {
-                    ...model,
-                    ...data
-                };
-                await updateManager(context, combinedModel);
-                await afterUpdateHook({ context, model: combinedModel });
+                const resultModel = await storageOperations.update({
+                    data,
+                    model,
+                    input
+                });
+
+                await updateManager(context, resultModel);
+
+                await afterUpdateHook({
+                    context,
+                    storageOperations,
+                    model: resultModel,
+                    data,
+                    input
+                });
+
+                return resultModel;
             },
-            async update(modelId, data) {
+            async update(modelId, inputData) {
                 await checkModelPermissions("w");
 
                 // Get a model record; this will also perform ownership validation.
                 const model = await context.cms.models.get(modelId);
 
-                const updatedData = new UpdateContentModelModel().populate(data);
+                const updatedData = new UpdateContentModelModel().populate(inputData);
                 await updatedData.validate();
 
-                const updatedDataJson = await updatedData.toJSON({ onlyDirty: true });
-                if (Object.keys(updatedDataJson).length === 0) {
+                const input = await updatedData.toJSON({ onlyDirty: true });
+                if (Object.keys(input).length === 0) {
                     return {} as any;
                 }
-                if (updatedDataJson.group) {
-                    const group = await context.cms.groups.noAuth().get(updatedDataJson.group);
+                if (input.group) {
+                    const group = await context.cms.groups.noAuth().get(input.group);
                     if (!group) {
-                        throw new NotFoundError(`There is no group "${updatedDataJson.group}".`);
+                        throw new NotFoundError(`There is no group "${input.group}".`);
                     }
-                    updatedDataJson.group = {
+                    input.group = {
                         id: group.id,
                         name: group.name
                     };
                 }
-                const modelFields = await createFieldModels(model, data);
-                validateLayout(updatedDataJson, modelFields);
-                const modelData: Partial<CmsContentModel> = {
-                    ...updatedDataJson,
+                const modelFields = await createFieldModels(model, inputData);
+                validateLayout(input, modelFields);
+                const data: Partial<CmsContentModel> = {
+                    ...input,
                     fields: modelFields,
                     savedOn: new Date().toISOString()
                 };
 
-                await beforeUpdateHook({ context, model, data: modelData });
-
-                await db.update({
-                    ...utils.defaults.db(),
-                    query: { PK: PK_CONTENT_MODEL(), SK: modelId },
-                    data: {
-                        ...modelData,
-                        webinyVersion: context.WEBINY_VERSION
-                    }
+                await beforeUpdateHook({
+                    context,
+                    storageOperations,
+                    model,
+                    data,
+                    input
                 });
 
-                const fullModel: CmsContentModel = {
-                    ...model,
-                    ...modelData
-                };
+                const resultModel = await storageOperations.update({
+                    data,
+                    model,
+                    input
+                });
 
-                await updateManager(context, fullModel);
+                await updateManager(context, resultModel);
 
-                await afterUpdateHook({ context, model: fullModel });
+                await afterUpdateHook({
+                    context,
+                    storageOperations,
+                    model: resultModel,
+                    data,
+                    input
+                });
 
-                return fullModel;
+                return resultModel;
             },
             async delete(modelId) {
                 await checkModelPermissions("d");
 
                 const model = await context.cms.models.get(modelId);
 
-                await beforeDeleteHook({ context, model });
-
-                await db.delete({
-                    ...utils.defaults.db(),
-                    query: {
-                        PK: PK_CONTENT_MODEL(),
-                        SK: modelId
-                    }
+                await beforeDeleteHook({
+                    context,
+                    storageOperations,
+                    model
                 });
 
-                const esIndex = utils.defaults.es(context, model);
-                try {
-                    await elasticSearch.indices.delete(esIndex);
-                } catch (ex) {
+                const result = await storageOperations.delete({
+                    model
+                });
+                if (!result) {
                     throw new WebinyError(
-                        "Could not delete Elasticsearch index.",
-                        "ELASTICSEARCH_INDEX",
-                        esIndex
+                        "Could not delete the content model",
+                        "CONTENT_MODEL_DELETE_ERROR",
+                        {
+                            modelId: model.modelId
+                        }
                     );
                 }
 
-                await afterDeleteHook({ context, model });
+                await afterDeleteHook({ context, storageOperations, model });
 
                 managers.delete(model.modelId);
             },

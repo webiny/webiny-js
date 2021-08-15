@@ -13,16 +13,14 @@ const Loader = ({ children, ...props }) => (
 );
 
 export const useInstaller = () => {
-    const [
-        { loading, installers, installerIndex, showLogin, skippingVersions },
-        setState
-    ] = useReducer((prev, next) => ({ ...prev, ...next }), {
-        loading: true,
-        installers: [],
-        installerIndex: -1,
-        showLogin: false,
-        skippingVersions: false
-    });
+    const [{ loading, installers, installerIndex, showLogin, skippingVersions }, setState] =
+        useReducer((prev, next) => ({ ...prev, ...next }), {
+            loading: true,
+            installers: [],
+            installerIndex: -1,
+            showLogin: false,
+            skippingVersions: false
+        });
 
     const client = useApolloClient();
 

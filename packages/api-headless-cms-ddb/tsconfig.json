@@ -1,0 +1,37 @@
+{
+  "extends": "../../tsconfig",
+  "include": ["src", "__tests__/**/*.ts"],
+  "references": [
+    {
+      "path": "../api-headless-cms"
+    },
+    {
+      "path": "../error"
+    },
+    {
+      "path": "../handler-db"
+    },
+    {
+      "path": "../db-dynamodb"
+    },
+    {
+      "path": "../plugins"
+    }
+  ],
+  "compilerOptions": {
+    "paths": {
+      "~/*": ["./src/*"],
+      "@webiny/api-headless-cms/*": ["../api-headless-cms/src/*"],
+      "@webiny/api-headless-cms": ["../api-headless-cms/src"],
+      "@webiny/error/*": ["../error/src/*"],
+      "@webiny/error": ["../error/src"],
+      "@webiny/handler-db/*": ["../handler-db/src/*"],
+      "@webiny/handler-aws": ["../handler-aws/src"],
+      "@webiny/db-dynamodb/*": ["../db-dynamodb/src/*"],
+      "@webiny/db-dynamodb": ["../db-dynamodb/src"],
+      "@webiny/plugins/*": ["../plugins/src/*"],
+      "@webiny/plugins": ["../plugins/src"]
+    },
+    "baseUrl": "."
+  }
+}

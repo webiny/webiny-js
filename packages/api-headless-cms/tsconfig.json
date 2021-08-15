@@ -6,22 +6,25 @@
       "path": "../api-i18n"
     },
     {
+      "path": "../api-i18n-ddb"
+    },
+    {
       "path": "../api-i18n-content"
     },
     {
       "path": "../api-security"
     },
     {
-      "path": "../api-security-tenancy"
+      "path": "../api-tenancy"
+    },
+    {
+      "path": "../api-security-admin-users"
     },
     {
       "path": "../api-file-manager"
     },
     {
       "path": "../api-upgrade"
-    },
-    {
-      "path": "../db-dynamodb"
     },
     {
       "path": "../error"
@@ -33,10 +36,10 @@
       "path": "../handler-aws"
     },
     {
-      "path": "../handler-db"
+      "path": "../handler-graphql"
     },
     {
-      "path": "../handler-graphql"
+      "path": "../handler-db"
     },
     {
       "path": "../handler-http"
@@ -46,30 +49,27 @@
     },
     {
       "path": "../validation"
-    },
-    {
-      "path": "../api-dynamodb-to-elasticsearch"
-    },
-    {
-      "path": "../api-plugin-elastic-search-client"
     }
   ],
   "compilerOptions": {
     "paths": {
+      "~/*": ["./src/*"],
       "@webiny/api-i18n/*": ["../api-i18n/src/*"],
       "@webiny/api-i18n": ["../api-i18n/src"],
+      "@webiny/api-i18n-ddb/*": ["../api-i18n-ddb/src/*"],
+      "@webiny/api-i18n-ddb": ["../api-i18n-ddb/src"],
       "@webiny/api-i18n-content/*": ["../api-i18n-content/src/*"],
       "@webiny/api-i18n-content": ["../api-i18n-content/src"],
       "@webiny/api-security/*": ["../api-security/src/*"],
       "@webiny/api-security": ["../api-security/src"],
-      "@webiny/api-security-tenancy/*": ["../api-security-tenancy/src/*"],
-      "@webiny/api-security-tenancy": ["../api-security-tenancy/src"],
+      "@webiny/api-security-admin-users/*": ["../api-security-admin-users/src/*"],
+      "@webiny/api-security-admin-users": ["../api-security-admin-users/src"],
+      "@webiny/api-tenancy/*": ["../api-tenancy/src/*"],
+      "@webiny/api-tenancy": ["../api-tenancy/src"],
       "@webiny/api-file-manager/*": ["../api-file-manager/src/*"],
       "@webiny/api-file-manager": ["../api-file-manager/src"],
       "@webiny/api-upgrade/*": ["../api-upgrade/src/*"],
       "@webiny/api-upgrade": ["../api-upgrade/src"],
-      "@webiny/db-dynamodb/*": ["../db-dynamodb/src/*"],
-      "@webiny/db-dynamodb": ["../db-dynamodb/src"],
       "@webiny/error/*": ["../error/src/*"],
       "@webiny/error": ["../error/src"],
       "@webiny/handler/*": ["../handler/src/*"],
@@ -85,11 +85,7 @@
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"],
       "@webiny/validation/*": ["../validation/src/*"],
-      "@webiny/validation": ["../validation/src"],
-      "@webiny/api-dynamodb-to-elasticsearch/*": ["../api-dynamodb-to-elasticsearch/src/*"],
-      "@webiny/api-dynamodb-to-elasticsearch": ["../api-dynamodb-to-elasticsearch/src"],
-      "@webiny/api-plugin-elastic-search-client/*": ["../api-plugin-elastic-search-client/src/*"],
-      "@webiny/api-plugin-elastic-search-client": ["../api-plugin-elastic-search-client/src"]
+      "@webiny/validation": ["../validation/src"]
     },
     "baseUrl": "."
   }

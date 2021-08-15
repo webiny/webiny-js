@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useSecurity } from "@webiny/app-security";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { ButtonPrimary } from "@webiny/ui/Button";
@@ -6,7 +6,7 @@ import { SplitView, LeftPanel, RightPanel } from "../SplitView";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Typography } from "@webiny/ui/Typography";
 import { Elevation } from "@webiny/ui/Elevation";
-import { plugins } from "@webiny/plugins";
+import { View } from "@webiny/app/components/View";
 import { useInstaller } from "./useInstaller";
 import Sidebar from "./Sidebar";
 import {
@@ -47,14 +47,6 @@ export const AppInstaller = ({ children }) => {
         }
     }, [identity]);
 
-    const renderSecurity = useCallback(content => {
-        const [plugin] = plugins.byType("app-installer-security");
-        if (!plugin) {
-            throw Error(`You must register an "app-installer-security" plugin!`);
-        }
-        return plugin.render(content);
-    }, []);
-
     const renderLayout = (content, secure = false) => {
         return (
             <SplitView className={installerSplitView}>
@@ -67,7 +59,9 @@ export const AppInstaller = ({ children }) => {
                 </LeftPanel>
                 <RightPanel span={10}>
                     {!showLogin && !secure && content}
-                    {(showLogin || secure) && renderSecurity(content)}
+                    {(showLogin || secure) && (
+                        <View name={"admin.installation.secureInstaller"}>{content}</View>
+                    )}
                 </RightPanel>
             </SplitView>
         );

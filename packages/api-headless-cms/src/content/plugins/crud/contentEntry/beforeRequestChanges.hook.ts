@@ -1,8 +1,8 @@
-import { CmsContentEntryHookPluginArgs } from "../../../../types";
 import { runContentEntryLifecycleHooks } from "./runContentEntryLifecycleHooks";
+import { CmsContentEntryBeforeRequestChangesHookArgs } from "../../../../types";
 
 export const beforeRequestChangesHook = async (
-    args: CmsContentEntryHookPluginArgs
+    args: CmsContentEntryBeforeRequestChangesHookArgs
 ): Promise<void> => {
     await runContentEntryLifecycleHooks("beforeRequestChanges", args);
 };

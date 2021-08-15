@@ -8,7 +8,7 @@ const ERROR_FIELD = /* GraphQL */ `
     }
 `;
 
-const DATA_FIELD = /* GraphQL */ `
+const DATA_FIELD = `
     {
         id
         pid
@@ -30,37 +30,6 @@ const DATA_FIELD = /* GraphQL */ `
             version
             savedOn
         }
-        settings {
-            general {
-                snippet
-                tags
-                layout
-                image {
-                    id
-                    src
-                }
-            }
-            social {
-                meta {
-                    property
-                    content
-                }
-                title
-                description
-                image {
-                    id
-                    src
-                }
-            }
-            seo {
-                title
-                description
-                meta {
-                    name
-                    content
-                }
-            }
-        }
         createdBy {
             id
         }
@@ -81,7 +50,7 @@ export const CREATE_PAGE_FROM = gql`
 `;
 
 export const GET_PAGE = gql`
-    query GetPage($id: ID!) {
+    query PbGetPage($id: ID!) {
         pageBuilder {
             getPage(id: $id) {
                 data ${DATA_FIELD}

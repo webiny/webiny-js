@@ -6,7 +6,7 @@ const Listr = require("listr");
 const path = require("path");
 const writeJson = require("write-json-file");
 const rimraf = require("rimraf");
-const { sendEvent } = require("@webiny/tracking");
+const { sendEvent } = require("@webiny/telemetry");
 const getPackageJson = require("./getPackageJson");
 const checkProjectName = require("./checkProjectName");
 const yaml = require("js-yaml");
@@ -108,8 +108,8 @@ module.exports = async function createProject({
                 }
             },
             {
-                // Setup yarn@2
-                title: "Setup yarn@^2",
+                // Setup yarn
+                title: "Setup yarn",
                 task: async () => {
                     await execa("yarn", ["set", "version", "berry"], { cwd: projectRoot });
 

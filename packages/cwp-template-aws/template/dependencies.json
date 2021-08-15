@@ -7,6 +7,7 @@
     "@webiny/cli-plugin-scaffold-admin-app-module": "latest",
     "@webiny/cli-plugin-scaffold-graphql-service": "latest",
     "@webiny/cli-plugin-scaffold-react-component": "latest",
+    "@webiny/cli-plugin-scaffold-ci": "latest",
     "@webiny/cli-plugin-workspaces": "latest",
     "@webiny/cli-plugin-deploy-pulumi": "latest",
     "@webiny/project-utils": "latest"
@@ -31,6 +32,7 @@
     "babel-plugin-module-resolver": "^4.1.0",
     "babel-plugin-named-asset-import": "^1.0.0-next.154",
     "chalk": "^4.1.0",
+    "cross-env": "^5.0.2",
     "eslint": "^7.18.0",
     "eslint-config-standard": "^16.0.2",
     "eslint-import-resolver-babel-module": "^5.2.0",
@@ -43,7 +45,7 @@
     "execa": "4.1.0",
     "jest": "^26.1.0",
     "merge": "^1.2.1",
-    "prettier": "^1.14.2",
+    "prettier": "^2.3.2",
     "ts-jest": "^26.4.4",
     "typescript": "4.1.3"
   },
@@ -63,15 +65,24 @@
     ]
   },
   "scripts": {
+    "test": "jest --config jest.config.js --passWithNoTests",
+    "test:unit": "cross-env TEST_TYPE=unit yarn test",
+    "test:integration": "cross-env TEST_TYPE=integration yarn test",
+    "test:e2e": "cross-env TEST_TYPE=e2e yarn test",
+    "eslint": "eslint \"**/*.{js,jsx,ts,tsx}\" --max-warnings=0",
+    "eslint:fix": "yarn eslint --fix",
+    "prettier": "prettier \"**/**/*.{js,jsx,ts,tsx,json}\" --config .prettierrc.js",
+    "prettier:check": "yarn prettier --check",
+    "prettier:fix": "yarn prettier --write",
     "setup-project": "node ./scripts/setupProject.js",
     "setup-env-files": "node ./scripts/setupEnvFiles.js",
     "link-workspaces": "node ./scripts/linkWorkspaces.js",
-    "postinstall": "yarn link-workspaces",
-    "test": "jest --config jest.config.js"
+    "postinstall": "yarn link-workspaces"
   },
   "resolutions": {
     "@types/react": "16.14.4",
     "react": "16.14.0",
+    "typescript": "4.1.3",
     "react-dom": "16.14.0"
   }
 }

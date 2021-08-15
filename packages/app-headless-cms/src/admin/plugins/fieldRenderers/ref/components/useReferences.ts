@@ -53,7 +53,11 @@ export const useReferences = ({ bind, field }) => {
         client
             .query({
                 query: GQL.SEARCH_CONTENT_ENTRIES,
-                variables: { modelIds: models.map(m => m.modelId), query: "__latest__", limit: 10 }
+                variables: {
+                    modelIds: models.map(m => m.modelId),
+                    query: "__latest__",
+                    limit: 10
+                }
             })
             .then(({ data }) => {
                 setLatestEntries(data.content.data);

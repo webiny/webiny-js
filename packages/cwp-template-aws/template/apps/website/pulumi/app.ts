@@ -15,7 +15,7 @@ class App {
 
         this.cloudfront = new aws.cloudfront.Distribution("app", {
             enabled: true,
-            waitForDeployment: true,
+            waitForDeployment: false,
             origins: [
                 {
                     originId: this.bucket.arn,

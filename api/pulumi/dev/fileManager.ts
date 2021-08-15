@@ -1,5 +1,6 @@
 import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
+import policies from "./policies";
 
 // @ts-ignore
 import { getLayerArn } from "@webiny/aws-layers";
@@ -9,12 +10,12 @@ class FileManager {
     manageS3LambdaPermission?: aws.lambda.Permission;
     bucketNotification?: aws.s3.BucketNotification;
     role: aws.iam.Role;
-    policy: aws.iam.RolePolicyAttachment;
     functions: {
         manage: aws.lambda.Function;
         transform: aws.lambda.Function;
         download: aws.lambda.Function;
     };
+
     constructor() {
         this.bucket = new aws.s3.Bucket("fm-bucket", {
             acl: "private",
@@ -28,8 +29,8 @@ class FileManager {
                 }
             ]
         });
-
-        this.role = new aws.iam.Role("fm-lambda-role", {
+        const roleName = "fm-lambda-role";
+        this.role = new aws.iam.Role(roleName, {
             assumeRolePolicy: {
                 Version: "2012-10-17",
                 Statement: [
@@ -44,26 +45,31 @@ class FileManager {
             }
         });
 
-        this.policy = new aws.iam.RolePolicyAttachment("fm-lambda-role-policy", {
+        const policy = policies.getFileManagerLambdaPolicy(this.bucket);
+
+        new aws.iam.RolePolicyAttachment(`${roleName}-FileManagerLambdaPolicy`, {
             role: this.role,
-            policyArn: "arn:aws:iam::aws:policy/AdministratorAccess"
+            policyArn: policy.arn.apply(arn => arn)
+        });
+
+        new aws.iam.RolePolicyAttachment(`${roleName}-AWSLambdaBasicExecutionRole`, {
+            role: this.role,
+            policyArn: aws.iam.ManagedPolicy.AWSLambdaBasicExecutionRole
         });
 
         const transform = new aws.lambda.Function("fm-image-transformer", {
             handler: "handler.handler",
             timeout: 30,
-            runtime: "nodejs10.x", // Because of the "sharp" library (built for Node10).
+            runtime: "nodejs12.x",
             memorySize: 1600,
             role: this.role.arn,
             description: "Performs image optimization, resizing, etc.",
             code: new pulumi.asset.AssetArchive({
                 ".": new pulumi.asset.FileArchive("../code/fileManager/transform/build")
             }),
-            layers: [getLayerArn("webiny-v4-sharp", String(process.env.AWS_REGION))],
+            layers: [getLayerArn("sharp")],
             environment: {
-                variables: {
-                    S3_BUCKET: this.bucket.id
-                }
+                variables: { S3_BUCKET: this.bucket.id }
             }
         });
 
@@ -78,9 +84,7 @@ class FileManager {
                 ".": new pulumi.asset.FileArchive("../code/fileManager/manage/build")
             }),
             environment: {
-                variables: {
-                    S3_BUCKET: this.bucket.id
-                }
+                variables: { S3_BUCKET: this.bucket.id }
             }
         });
 
@@ -115,18 +119,27 @@ class FileManager {
                 function: this.functions.manage.arn,
                 principal: "s3.amazonaws.com",
                 sourceArn: this.bucket.arn
+            },
+            {
+                dependsOn: [this.bucket, this.functions.manage]
             }
         );
 
-        this.bucketNotification = new aws.s3.BucketNotification("bucketNotification", {
-            bucket: this.bucket.id,
-            lambdaFunctions: [
-                {
-                    lambdaFunctionArn: this.functions.manage.arn,
-                    events: ["s3:ObjectRemoved:*"]
-                }
-            ]
-        });
+        this.bucketNotification = new aws.s3.BucketNotification(
+            "bucketNotification",
+            {
+                bucket: this.bucket.id,
+                lambdaFunctions: [
+                    {
+                        lambdaFunctionArn: this.functions.manage.arn,
+                        events: ["s3:ObjectRemoved:*"]
+                    }
+                ]
+            },
+            {
+                dependsOn: [this.bucket, this.functions.manage, this.manageS3LambdaPermission]
+            }
+        );
     }
 }
 

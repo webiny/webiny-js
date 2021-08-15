@@ -29,7 +29,7 @@ type Entry = Record<string, any> & {
     files: File[];
 };
 
-export default function(args): Entry {
+export default function (args): Entry {
     return {
         PK: "T#root#PS#RENDER",
         SK: args.url,

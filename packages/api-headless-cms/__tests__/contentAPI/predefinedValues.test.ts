@@ -7,7 +7,6 @@ describe("predefined values", () => {
     const manageOpts = { path: "manage/en-US" };
 
     const {
-        clearAllIndex,
         createContentModelMutation,
         updateContentModelMutation,
         createContentModelGroupMutation
@@ -54,18 +53,6 @@ describe("predefined values", () => {
         });
         return update.data.updateContentModel.data;
     };
-
-    beforeEach(async () => {
-        try {
-            await clearAllIndex();
-        } catch {}
-    });
-
-    afterEach(async () => {
-        try {
-            await clearAllIndex();
-        } catch {}
-    });
 
     test("should create an entry with predefined values selected", async () => {
         const contentModelGroup = await setupContentModelGroup();
@@ -142,8 +129,7 @@ describe("predefined values", () => {
                         data: [
                             {
                                 fieldId: "bugType",
-                                error:
-                                    "Value sent does not match any of the available predefined values."
+                                error: "Value sent does not match any of the available predefined values."
                             }
                         ]
                     }
@@ -179,8 +165,7 @@ describe("predefined values", () => {
                         data: [
                             {
                                 fieldId: "bugValue",
-                                error:
-                                    "Value sent does not match any of the available predefined values."
+                                error: "Value sent does not match any of the available predefined values."
                             }
                         ]
                     }
@@ -216,13 +201,11 @@ describe("predefined values", () => {
                         data: [
                             {
                                 fieldId: "bugType",
-                                error:
-                                    "Value sent does not match any of the available predefined values."
+                                error: "Value sent does not match any of the available predefined values."
                             },
                             {
                                 fieldId: "bugValue",
-                                error:
-                                    "Value sent does not match any of the available predefined values."
+                                error: "Value sent does not match any of the available predefined values."
                             }
                         ]
                     }

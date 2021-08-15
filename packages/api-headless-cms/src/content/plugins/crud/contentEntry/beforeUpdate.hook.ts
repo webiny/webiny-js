@@ -1,8 +1,10 @@
-import { CmsContentEntryHookPluginArgs } from "../../../../types";
 import { markLockedFields } from "./markLockedFields";
 import { runContentEntryLifecycleHooks } from "./runContentEntryLifecycleHooks";
+import { CmsContentEntryBeforeUpdateHookArgs } from "../../../../types";
 
-export const beforeUpdateHook = async (args: CmsContentEntryHookPluginArgs): Promise<void> => {
+export const beforeUpdateHook = async (
+    args: CmsContentEntryBeforeUpdateHookArgs
+): Promise<void> => {
     await markLockedFields(args);
     await runContentEntryLifecycleHooks("beforeUpdate", args);
 };

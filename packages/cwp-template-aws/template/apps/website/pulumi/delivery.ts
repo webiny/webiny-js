@@ -15,7 +15,7 @@ class Delivery {
 
         this.cloudfront = new aws.cloudfront.Distribution("delivery", {
             enabled: true,
-            waitForDeployment: true,
+            waitForDeployment: false,
             origins: [
                 {
                     originId: this.bucket.arn,
@@ -50,7 +50,7 @@ class Delivery {
                         headers: [],
                         queryString: false
                     },
-                    pathPattern: "/static-*",
+                    pathPattern: "/static/*",
                     viewerProtocolPolicy: "allow-all",
                     targetOriginId: appS3Bucket.arn,
                     // MinTTL <= DefaultTTL <= MaxTTL

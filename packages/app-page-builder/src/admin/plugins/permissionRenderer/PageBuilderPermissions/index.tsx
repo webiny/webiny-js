@@ -16,6 +16,7 @@ export default {
                 icon={<Icon />}
                 title={t`Page Builder`}
                 description={t`Manage Page Builder app access permissions.`}
+                data-testid={"permission.pb"}
             >
                 <PageBuilderPermissions {...props} />
             </AccordionItem>

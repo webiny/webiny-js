@@ -85,9 +85,9 @@ const FormSettings = ({ onExited }: FormSettingsProps) => {
                                         : null}
                                 </SimpleFormContent>
                                 <SimpleFormFooter>
-                                    <ButtonPrimary onClick={submit}>
-                                        {t`Save settings`}
-                                    </ButtonPrimary>
+                                    <ButtonPrimary
+                                        onClick={submit}
+                                    >{t`Save settings`}</ButtonPrimary>
                                 </SimpleFormFooter>
                             </SimpleForm>
                         )}

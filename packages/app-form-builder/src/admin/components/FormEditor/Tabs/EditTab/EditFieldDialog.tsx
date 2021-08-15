@@ -99,9 +99,9 @@ const EditFieldDialog = ({ field, onSubmit, ...props }: EditFieldDialogProps) =>
                                     }}
                                 >
                                     {isNewField && (
-                                        <DialogButton onClick={() => setScreen("fieldType")}>
-                                            {t`Go back`}
-                                        </DialogButton>
+                                        <DialogButton
+                                            onClick={() => setScreen("fieldType")}
+                                        >{t`Go back`}</DialogButton>
                                     )}
                                     <div>
                                         <DialogButton onClick={onClose}>{t`Cancel`}</DialogButton>
@@ -131,12 +131,8 @@ const EditFieldDialog = ({ field, onSubmit, ...props }: EditFieldDialogProps) =>
                                                 if (current) {
                                                     // User edited existing field, that's why we still want to
                                                     // keep a couple of previous values.
-                                                    const {
-                                                        _id,
-                                                        label,
-                                                        fieldId,
-                                                        helpText
-                                                    } = current;
+                                                    const { _id, label, fieldId, helpText } =
+                                                        current;
                                                     newCurrent._id = _id;
                                                     newCurrent.label = label;
                                                     newCurrent.fieldId = fieldId;

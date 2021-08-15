@@ -3,6 +3,13 @@ const get = require("lodash.get");
 const fs = require("fs-extra");
 const loadJson = require("load-json-file");
 const writeJson = require("write-json-file");
+const resolvePackageVersion = require("./utils/resolvePackageVersion");
+
+// For some packages, we might not want to apply version lock. A good example is @pulumi/pulumi package.
+// There were cases where our @webiny/pulumi-sdk package requested @pulumi/pulumi version 3.6.0, but the
+// @pulumi/aws requested ^3.0.0, which made it possible for a Webiny project to contain two different
+// versions of the @pulumi/aws package - 3.6.0 and 3.7.0.
+const IGNORED_PACKAGES = ["@pulumi/pulumi", "@pulumi/aws"];
 
 (async () => {
     // Copy package.json files
@@ -50,6 +57,10 @@ const writeJson = require("write-json-file");
             }
 
             Object.keys(lockPackageJson.dependencies).forEach(key => {
+                if (IGNORED_PACKAGES.includes(key)) {
+                    return;
+                }
+
                 if (key.startsWith("@webiny/")) {
                     lockPackageJson.dependencies[key] = pkg.version;
                     return;
@@ -60,11 +71,9 @@ const writeJson = require("write-json-file");
                     return;
                 }
 
-                const pkgJsonPath = require.resolve(`${key}/package.json`, {
-                    paths: [distDirectory]
+                lockPackageJson.dependencies[key] = resolvePackageVersion(key, {
+                    cwd: distDirectory
                 });
-                const { version } = require(pkgJsonPath);
-                lockPackageJson.dependencies[key] = version;
             });
 
             await writeJson(distPackageJson, lockPackageJson);

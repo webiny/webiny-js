@@ -1,8 +1,8 @@
 import * as React from "react";
-import { AdminFileManagerFileTypePlugin } from "../../types";
 import { ReactComponent as FileIcon } from "./icons/round-description-24px.svg";
-
 import { css } from "emotion";
+import { FileManagerFileTypePlugin } from "~/plugins/FileManagerFileTypePlugin";
+
 const style = {
     centering: css({
         display: "flex",
@@ -12,9 +12,8 @@ const style = {
     })
 };
 
-const plugin: AdminFileManagerFileTypePlugin = {
-    name: "file-manager-file-type-default",
-    type: "admin-file-manager-file-type",
+export default new FileManagerFileTypePlugin({
+    types: ["*/*"],
     render() {
         return (
             <div className={style.centering}>
@@ -22,6 +21,4 @@ const plugin: AdminFileManagerFileTypePlugin = {
             </div>
         );
     }
-};
-
-export default plugin;
+});

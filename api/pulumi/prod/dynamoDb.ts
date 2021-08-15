@@ -2,6 +2,7 @@ import * as aws from "@pulumi/aws";
 
 class DynamoDB {
     table: aws.dynamodb.Table;
+
     constructor() {
         this.table = new aws.dynamodb.Table("webiny", {
             attributes: [

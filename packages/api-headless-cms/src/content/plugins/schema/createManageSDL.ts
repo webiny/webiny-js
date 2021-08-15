@@ -1,4 +1,4 @@
-import { CmsFieldTypePlugins, CmsContentModel } from "../../../types";
+import { CmsFieldTypePlugins, CmsContentModel } from "~/types";
 import { createManageTypeName, createTypeName } from "../utils/createTypeName";
 import { renderInputFields } from "../utils/renderInputFields";
 import { renderSortEnum } from "../utils/renderSortEnum";
@@ -23,7 +23,7 @@ export const createManageSDL: CreateManageSDL = ({ model, fieldTypePlugins }): s
 
     const sortEnumRender = renderSortEnum({ model, fieldTypePlugins });
     const getFilterFieldsRender = renderGetFilterFields({ model, fieldTypePlugins });
-    const inputFieldsRender = renderInputFields({ model, fieldTypePlugins });
+    const inputFields = renderInputFields({ model, fieldTypePlugins });
     const fields = renderFields({ model, type: "manage", fieldTypePlugins });
 
     return /* GraphQL */ `
@@ -32,11 +32,14 @@ export const createManageSDL: CreateManageSDL = ({ model, fieldTypePlugins }): s
             .map(f => f.typeDefs)
             .filter(Boolean)
             .join("\n")}
+
         type ${mTypeName} {
-            id: ID
-            createdOn: DateTime
-            createdBy: CmsCreatedBy
-            savedOn: DateTime
+            id: ID!
+            entryId: String!
+            createdOn: DateTime!
+            savedOn: DateTime!
+            createdBy: CmsCreatedBy!
+            ownedBy: CmsOwnedBy!
             meta: ${mTypeName}Meta
             ${fields.map(f => f.fields).join("\n")}
         }
@@ -54,22 +57,34 @@ export const createManageSDL: CreateManageSDL = ({ model, fieldTypePlugins }): s
             revisions: [${mTypeName}]
             title: String
         }
+        
+                    
+        ${inputFields
+            .map(f => f.typeDefs)
+            .filter(Boolean)
+            .join("\n")}
 
-        ${inputFieldsRender &&
+        ${
+            inputFields &&
             `input ${mTypeName}Input {
-            ${inputFieldsRender}
-        }`}
+            ${inputFields.map(f => f.fields).join("\n")}
+        }`
+        }
 
-        ${getFilterFieldsRender &&
+        ${
+            getFilterFieldsRender &&
             `input ${mTypeName}GetWhereInput {
             ${getFilterFieldsRender}
-        }`}
+        }`
+        }
 
 
-        ${listFilterFieldsRender &&
+        ${
+            listFilterFieldsRender &&
             `input ${mTypeName}ListWhereInput {
             ${listFilterFieldsRender}
-        }`}
+        }`
+        }
 
         type ${mTypeName}Response {
             data: ${mTypeName}
@@ -87,10 +102,12 @@ export const createManageSDL: CreateManageSDL = ({ model, fieldTypePlugins }): s
             error: CmsError
         }
 
-        ${sortEnumRender &&
+        ${
+            sortEnumRender &&
             `enum ${mTypeName}ListSorter {
             ${sortEnumRender}
-        }`}
+        }`
+        }
 
         extend type Query {
             get${typeName}(revision: ID!): ${mTypeName}Response

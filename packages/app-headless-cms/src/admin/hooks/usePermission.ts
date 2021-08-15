@@ -14,6 +14,19 @@ const usePermission = () => {
 
     const hasFullAccess = useMemo(() => identity.getPermission("cms.*"), []);
 
+    const canRead = useCallback((permissionName: string) => {
+        const permission = identity.getPermission(permissionName);
+        if (!permission) {
+            return false;
+        }
+
+        if (typeof permission.rwd !== "string") {
+            return true;
+        }
+
+        return permission.rwd.includes("r");
+    }, []);
+
     const canReadEntries = useCallback(
         ({
             contentModelGroup,
@@ -62,6 +75,12 @@ const usePermission = () => {
                 return false;
             }
             if (permission.own) {
+                /**
+                 * There will be no "createdBy" field for a new entry therefore we enable the access.
+                 */
+                if (!item.createdBy) {
+                    return true;
+                }
                 return get(item, "createdBy.id") === identity.login;
             }
             if (typeof permission.rwd === "string") {
@@ -184,6 +203,14 @@ const usePermission = () => {
         [identity, hasFullAccess]
     );
 
+    const canReadContentModels = canRead("cms.contentModel");
+    const canReadContentModelGroups = canRead("cms.contentModelGroup");
+    const canCreateContentModels = canCreate("cms.contentModel");
+    const canCreateContentModelGroups = canCreate("cms.contentModelGroup");
+    const canAccessManageEndpoint = useMemo(() => {
+        return identity.getPermission("cms.endpoint.manage") !== undefined;
+    }, [identity]);
+
     return {
         canReadEntries,
         canEdit,
@@ -192,7 +219,12 @@ const usePermission = () => {
         canPublish,
         canUnpublish,
         canRequestReview,
-        canRequestChange
+        canRequestChange,
+        canReadContentModels,
+        canReadContentModelGroups,
+        canCreateContentModels,
+        canCreateContentModelGroups,
+        canAccessManageEndpoint
     };
 };
 

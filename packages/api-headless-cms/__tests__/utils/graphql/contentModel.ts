@@ -39,9 +39,14 @@ const DATA_FIELD = /* GraphQL*/ `
             }
             settings
         }
+        plugin
         createdOn
         savedOn
-        createdBy
+        createdBy {
+            id
+            displayName
+            type
+        }
     }
 `;
 const ERROR_FIELD = /* GraphQL */ `

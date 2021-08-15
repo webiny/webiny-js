@@ -1,13 +1,14 @@
 import { ContextPlugin } from "@webiny/handler/types";
 import defaults from "./utils/defaults";
 import getPKPrefix from "./utils/getPKPrefix";
-import { PbContext, DefaultSettings, SettingsHookPlugin } from "../../types";
+import { PbContext, DefaultSettings } from "../../types";
 import { NotAuthorizedError } from "@webiny/api-security";
 import DataLoader from "dataloader";
-import executeHookCallbacks from "./utils/executeHookCallbacks";
+import executeCallbacks from "./utils/executeCallbacks";
 import { DefaultSettingsModel } from "../../utils/models";
-import merge from "lodash/merge";
+import mergeWith from "lodash/mergeWith";
 import Error from "@webiny/error";
+import { SettingsPlugin } from "~/plugins/SettingsPlugin";
 
 const TYPE = "pb.settings";
 
@@ -22,9 +23,9 @@ const checkBasePermissions = async (context: PbContext) => {
 const plugin: ContextPlugin<PbContext> = {
     type: "context",
     async apply(context) {
-        const { db, security, i18nContent } = context;
+        const { db, tenancy, i18nContent } = context;
 
-        const hookPlugins = context.plugins.byType<SettingsHookPlugin>("pb-settings-hook");
+        const settingsPlugins = context.plugins.byType<SettingsPlugin>(SettingsPlugin.type);
 
         context.pageBuilder = {
             ...context.pageBuilder,
@@ -60,6 +61,23 @@ const plugin: ContextPlugin<PbContext> = {
                     getSettingsCacheKey(options) {
                         return this.PK(options);
                     },
+
+                    async getCurrent() {
+                        // With this line commented, we made this endpoint public.
+                        // We did this because of the public website pages which need to access the settings.
+                        // It's possible we'll create another GraphQL field, made for this exact purpose.
+                        // auth !== false && (await checkBasePermissions(context));
+
+                        const current = await context.pageBuilder.settings.default.get({});
+                        const defaults = await context.pageBuilder.settings.default.getDefault();
+
+                        return mergeWith({}, defaults, current, (prev, next) => {
+                            // No need to use falsy value if we have it set in the default settings.
+                            if (prev && !next) {
+                                return prev;
+                            }
+                        });
+                    },
                     async get(options) {
                         // With this line commented, we made this endpoint public.
                         // We did this because of the public website pages which need to access the settings.
@@ -69,7 +87,7 @@ const plugin: ContextPlugin<PbContext> = {
                         return context.pageBuilder.settings.dataLoaders.get.load({
                             PK: this.PK(options),
                             SK: this.SK
-                        }) as Promise<DefaultSettings>;
+                        });
                     },
                     async getDefault(options) {
                         const allTenants = await this.get({ tenant: false, locale: false });
@@ -81,7 +99,12 @@ const plugin: ContextPlugin<PbContext> = {
                             return null;
                         }
 
-                        return merge({}, allTenants, tenantAllLocales);
+                        return mergeWith({}, allTenants, tenantAllLocales, (next, prev) => {
+                            // No need to use falsy value if we have it set in the default settings.
+                            if (prev && !next) {
+                                return prev;
+                            }
+                        });
                     },
                     async update(rawData, options) {
                         options?.auth !== false && (await checkBasePermissions(context));
@@ -93,7 +116,7 @@ const plugin: ContextPlugin<PbContext> = {
                             let tenant = undefined,
                                 locale = undefined;
                             if (options?.tenant !== false) {
-                                tenant = options?.tenant || security.getTenant().id;
+                                tenant = options?.tenant || tenancy.getCurrentTenant().id;
                             }
                             if (options?.locale !== false) {
                                 locale = options?.locale || i18nContent.getLocale().code;
@@ -132,31 +155,40 @@ const plugin: ContextPlugin<PbContext> = {
                             const specialType = specialTypes[i];
                             const p = previous?.pages?.[specialType];
                             const n = next?.pages?.[specialType];
+
                             if (p !== n) {
-                                if (!n) {
+                                // Only throw if previously we had a page (p), and now all of a sudden
+                                // we don't (!n). Allows updating settings without sending these.
+                                if (p && !n) {
                                     throw new Error(
                                         `Cannot unset "${specialType}" page. Please provide a new page if you want to unset current one.`,
                                         "CANNOT_UNSET_SPECIAL_PAGE"
                                     );
                                 }
 
-                                const page = await context.pageBuilder.pages.getPublishedById({
-                                    id: n
-                                });
+                                // Only load if the next page (n) has been sent, which is always a
+                                // must if previously a page was defined (p).
+                                if (n) {
+                                    const page = await context.pageBuilder.pages.getPublishedById({
+                                        id: n
+                                    });
 
-                                changedPages.push([specialType, p, n, page]);
+                                    changedPages.push([specialType, p, n, page]);
+                                }
                             }
                         }
 
-                        await executeHookCallbacks(
-                            hookPlugins,
+                        await executeCallbacks<SettingsPlugin["beforeUpdate"]>(
+                            settingsPlugins,
                             "beforeUpdate",
-                            context,
-                            previous,
-                            next,
                             {
-                                diff: {
-                                    pages: changedPages
+                                context,
+                                previousSettings: previous,
+                                nextSettings: next,
+                                meta: {
+                                    diff: {
+                                        pages: changedPages
+                                    }
                                 }
                             }
                         );
@@ -167,15 +199,17 @@ const plugin: ContextPlugin<PbContext> = {
                             data: next
                         });
 
-                        await executeHookCallbacks(
-                            hookPlugins,
+                        await executeCallbacks<SettingsPlugin["afterUpdate"]>(
+                            settingsPlugins,
                             "afterUpdate",
-                            context,
-                            previous,
-                            next,
                             {
-                                diff: {
-                                    pages: changedPages
+                                context,
+                                previousSettings: previous,
+                                nextSettings: next,
+                                meta: {
+                                    diff: {
+                                        pages: changedPages
+                                    }
                                 }
                             }
                         );

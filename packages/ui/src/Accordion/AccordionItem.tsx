@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { ListItem, ListItemGraphic, ListItemMeta } from "../List";
 import Transition from "react-transition-group/Transition";
 import { Icon } from "../Icon";
@@ -108,6 +108,10 @@ export type AccordionItemProps = {
      * Render item opened by default
      */
     open?: boolean;
+    /**
+     * For testing purpose
+     */
+    "data-testid"?: string;
 };
 
 const AccordionItem = (props: AccordionItemProps) => {
@@ -116,6 +120,10 @@ const AccordionItem = (props: AccordionItemProps) => {
     const toggleState = useCallback(() => {
         setState(!open);
     }, [open]);
+
+    useEffect(() => {
+        setState(props.open);
+    }, [props.open]);
 
     return (
         <div className={classNames("webiny-ui-accordion-item", props.className)}>
@@ -126,6 +134,7 @@ const AccordionItem = (props: AccordionItemProps) => {
                     "webiny-ui-accordion-item__list-item"
                 )}
                 onClick={toggleState}
+                data-testid={props["data-testid"]}
             >
                 {props.icon && (
                     <ListItemGraphic>

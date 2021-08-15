@@ -1,13 +1,5 @@
-import React, { useState, useCallback, useEffect } from "react";
-import { useEventActionHandler } from "../../../hooks/useEventActionHandler";
-import {
-    DeactivatePluginActionEvent,
-    UpdatePageRevisionActionEvent
-} from "../../../recoil/actions";
-import { pageAtom } from "../../../recoil/modules";
+import React, { useState } from "react";
 import { plugins } from "@webiny/plugins";
-import { useKeyHandler } from "../../../hooks/useKeyHandler";
-import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { OverlayLayout } from "@webiny/app-admin/components/OverlayLayout";
 import { SplitView, LeftPanel, RightPanel } from "@webiny/app-admin/components/SplitView";
 import { Typography } from "@webiny/ui/Typography";
@@ -21,16 +13,16 @@ import {
     SimpleFormContent,
     SimpleFormHeader
 } from "@webiny/app-admin/components/SimpleForm";
-import { useRecoilValue } from "recoil";
 import { Title, listItem, ListItemTitle, listStyle, TitleContent } from "./PageSettingsStyled";
-import { PbEditorPageSettingsPlugin } from "../../../../types";
+import { PbEditorPageSettingsPlugin } from "~/types";
+import { usePageSettings } from "~/editor/hooks/usePageSettings";
 
 type PageSettingsPropsType = {
     [key: string]: any;
 };
 const PageSettings: React.FunctionComponent<PageSettingsPropsType> = (props = {}) => {
     const pluginsByType = plugins.byType<PbEditorPageSettingsPlugin>("pb-editor-page-settings");
-    const [active, setActive] = useState("pb-editor-page-settings-general");
+    const [active, setActive] = useState(pluginsByType[0].name);
     const activePlugin = pluginsByType.find(pl => pl.name === active);
     if (!activePlugin) {
         return null;
@@ -56,44 +48,9 @@ const PageSettingsContent: React.FunctionComponent<PageSettingsContentPropsType>
     setActive,
     activePlugin
 }) => {
-    const eventActionHandler = useEventActionHandler();
-    const pageAtomValue = useRecoilValue(pageAtom);
-
-    const { showSnackbar } = useSnackbar();
-    const { removeKeyHandler, addKeyHandler } = useKeyHandler();
-
-    const deactivatePlugin = useCallback(() => {
-        eventActionHandler.trigger(
-            new DeactivatePluginActionEvent({
-                name: "pb-editor-page-settings-bar"
-            })
-        );
-    }, []);
-
-    const savePage = useCallback(pageValue => {
-        eventActionHandler.trigger(
-            new UpdatePageRevisionActionEvent({
-                debounce: false,
-                page: pageValue,
-                onFinish: () => {
-                    showSnackbar("Settings saved");
-                    deactivatePlugin();
-                }
-            })
-        );
-    }, []);
-
-    useEffect(() => {
-        addKeyHandler("escape", e => {
-            e.preventDefault();
-            deactivatePlugin();
-        });
-
-        return () => removeKeyHandler("escape");
-    });
-
+    const { pageData, closeSettings, savePage } = usePageSettings();
     return (
-        <OverlayLayout barMiddle={Title} onExited={deactivatePlugin}>
+        <OverlayLayout barMiddle={Title} onExited={closeSettings}>
             <SplitView>
                 <LeftPanel span={5}>
                     <List twoLine className={listStyle}>
@@ -115,7 +72,7 @@ const PageSettingsContent: React.FunctionComponent<PageSettingsContentPropsType>
                     </List>
                 </LeftPanel>
                 <RightPanel span={7}>
-                    <Form data={pageAtomValue} onSubmit={savePage}>
+                    <Form data={pageData} onSubmit={savePage}>
                         {({ Bind, submit, form, data, setValue }) => (
                             <SimpleForm>
                                 <SimpleFormHeader title={activePlugin.title} />

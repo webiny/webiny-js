@@ -50,9 +50,7 @@ describe("content model test", () => {
     const readHandlerOpts = { path: "read/en-US" };
     const manageHandlerOpts = { path: "manage/en-US" };
 
-    const { clearAllIndex, createContentModelGroupMutation } = useContentGqlHandler(
-        manageHandlerOpts
-    );
+    const { createContentModelGroupMutation } = useContentGqlHandler(manageHandlerOpts);
 
     let contentModelGroup: CmsContentModelGroup;
 
@@ -66,19 +64,8 @@ describe("content model test", () => {
             }
         });
         contentModelGroup = createCMG.data.createContentModelGroup.data;
-        try {
-            await clearAllIndex();
-        } catch {
-            // Ignore errors
-        }
         // we need to reset this since we are using a singleton
         hooksTracker.reset();
-    });
-
-    afterEach(async () => {
-        try {
-            await clearAllIndex();
-        } catch {}
     });
 
     test("base schema should only contain relevant queries and mutations", async () => {
@@ -148,6 +135,7 @@ describe("content model test", () => {
                         savedOn: expect.stringMatching(/^20/),
                         fields: [],
                         layout: [],
+                        plugin: false,
                         group: {
                             id: contentModelGroup.id,
                             name: contentModelGroup.name
@@ -246,9 +234,8 @@ describe("content model test", () => {
     });
 
     test("delete existing content model", async () => {
-        const { createContentModelMutation, deleteContentModelMutation } = useContentGqlHandler(
-            manageHandlerOpts
-        );
+        const { createContentModelMutation, deleteContentModelMutation } =
+            useContentGqlHandler(manageHandlerOpts);
 
         const [createResponse] = await createContentModelMutation({
             data: {
@@ -280,9 +267,8 @@ describe("content model test", () => {
             updateContentModelMutation,
             deleteContentModelMutation
         } = useContentGqlHandler(manageHandlerOpts);
-        const { createCategory, until, listCategories } = useCategoryManageHandler(
-            manageHandlerOpts
-        );
+        const { createCategory, until, listCategories } =
+            useCategoryManageHandler(manageHandlerOpts);
         const category = models.find(m => m.modelId === "category");
 
         // Create initial record
@@ -314,8 +300,8 @@ describe("content model test", () => {
         // If this `until` resolves successfully, we know entry is accessible via the "read" API
         await until(
             () => listCategories().then(([data]) => data),
-            ({ data }) => data.listCategories.data.length === 1,
-            { name: "list categories to check ES has indexed newly created" }
+            ({ data }) => data.listCategories.data.length > 0,
+            { name: "list categories to check that categories are available" }
         );
 
         const [response] = await deleteContentModelMutation({
@@ -337,9 +323,8 @@ describe("content model test", () => {
     });
 
     test("get existing content model", async () => {
-        const { createContentModelMutation, getContentModelQuery } = useContentGqlHandler(
-            manageHandlerOpts
-        );
+        const { createContentModelMutation, getContentModelQuery } =
+            useContentGqlHandler(manageHandlerOpts);
 
         const [createResponse] = await createContentModelMutation({
             data: {
@@ -437,9 +422,8 @@ describe("content model test", () => {
     });
 
     test("update content model with new fields", async () => {
-        const { createContentModelMutation, updateContentModelMutation } = useContentGqlHandler(
-            manageHandlerOpts
-        );
+        const { createContentModelMutation, updateContentModelMutation } =
+            useContentGqlHandler(manageHandlerOpts);
         const [createResponse] = await createContentModelMutation({
             data: {
                 name: "Test Content model",
@@ -517,7 +501,8 @@ describe("content model test", () => {
                         },
                         modelId: contentModel.modelId,
                         layout: [[textField.id], [numberField.id]],
-                        name: "new name"
+                        name: "new name",
+                        plugin: false
                     },
                     error: null
                 }
@@ -526,9 +511,8 @@ describe("content model test", () => {
     });
 
     test("error when assigning titleFieldId on non existing field", async () => {
-        const { createContentModelMutation, updateContentModelMutation } = useContentGqlHandler(
-            manageHandlerOpts
-        );
+        const { createContentModelMutation, updateContentModelMutation } =
+            useContentGqlHandler(manageHandlerOpts);
         const [createResponse] = await createContentModelMutation({
             data: {
                 name: "Test Content model",
@@ -614,10 +598,10 @@ describe("content model test", () => {
     });
 
     test("should execute hooks on update", async () => {
-        const {
-            createContentModelMutation,
-            updateContentModelMutation
-        } = useContentGqlHandler(manageHandlerOpts, [contentModelHooks()]);
+        const { createContentModelMutation, updateContentModelMutation } = useContentGqlHandler(
+            manageHandlerOpts,
+            [contentModelHooks()]
+        );
 
         const [createResponse] = await createContentModelMutation({
             data: {
@@ -657,10 +641,10 @@ describe("content model test", () => {
     });
 
     test("should execute hooks on delete", async () => {
-        const {
-            createContentModelMutation,
-            deleteContentModelMutation
-        } = useContentGqlHandler(manageHandlerOpts, [contentModelHooks()]);
+        const { createContentModelMutation, deleteContentModelMutation } = useContentGqlHandler(
+            manageHandlerOpts,
+            [contentModelHooks()]
+        );
 
         const [createResponse] = await createContentModelMutation({
             data: {
@@ -695,9 +679,8 @@ describe("content model test", () => {
     });
 
     test("should refresh the schema when added new field", async () => {
-        const { createContentModelMutation, updateContentModelMutation } = useContentGqlHandler(
-            manageHandlerOpts
-        );
+        const { createContentModelMutation, updateContentModelMutation } =
+            useContentGqlHandler(manageHandlerOpts);
         const { listBugs } = useBugManageHandler(manageHandlerOpts);
 
         const bugModel = models.find(m => m.modelId === "bug");

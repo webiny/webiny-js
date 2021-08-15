@@ -56,13 +56,13 @@ describe("Forms Security Test", () => {
 
     beforeEach(async () => {
         try {
-            await defaultHandler.elasticSearch.indices.create({ index: esFbIndex });
+            await defaultHandler.elasticsearch.indices.create({ index: esFbIndex });
         } catch (e) {}
     });
 
     afterEach(async () => {
         try {
-            await defaultHandler.elasticSearch.indices.delete({ index: esFbIndex });
+            await defaultHandler.elasticsearch.indices.delete({ index: esFbIndex });
         } catch (e) {}
     });
 
@@ -115,6 +115,13 @@ describe("Forms Security Test", () => {
         for (let i = 0; i < sufficientPermissionsAll.length; i++) {
             const [permissions, identity] = sufficientPermissionsAll[i];
             const { listForms } = useGqlHandler({ permissions, identity });
+
+            await until(
+                () => listForms().then(([data]) => data),
+                ({ data }) =>
+                    data.formBuilder.listForms.data[0].id === formB2Id &&
+                    data.formBuilder.listForms.data[3].id === formA1Id
+            );
 
             const [response] = await listForms();
             expect(response).toMatchObject({

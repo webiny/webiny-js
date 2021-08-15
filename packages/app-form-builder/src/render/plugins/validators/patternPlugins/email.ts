@@ -1,3 +1,5 @@
+import { FbFormFieldPatternValidatorPlugin } from "~/types";
+
 export default {
     type: "fb-form-field-validator-pattern",
     name: "form-field-validator-pattern-email",
@@ -6,4 +8,4 @@ export default {
         regex: `^\\w[\\w.-]*@([\\w-]+\\.)+[\\w-]+$`,
         flags: "i"
     }
-};
+} as FbFormFieldPatternValidatorPlugin;

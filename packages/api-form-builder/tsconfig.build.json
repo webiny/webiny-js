@@ -5,7 +5,9 @@
     "node_modules",
     "../plugins",
     "../api-i18n",
+    "../api-i18n-ddb",
     "../api-file-manager",
+    "../api-file-manager-ddb-es",
     "../api-security",
     "../api-upgrade",
     "../error",
@@ -15,10 +17,10 @@
     "../api-i18n-content",
     "../handler-aws",
     "../handler-db",
-    "../api-plugin-elastic-search-client",
+    "../api-elasticsearch",
     "../api-dynamodb-to-elasticsearch",
     "../db-dynamodb",
-    "../api-security-tenancy"
+    "../api-tenancy"
   ],
   "compilerOptions": {
     "rootDir": "./src",

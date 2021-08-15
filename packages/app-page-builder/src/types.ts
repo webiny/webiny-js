@@ -7,12 +7,6 @@ import { Plugin } from "@webiny/app/types";
 import { BindComponent } from "@webiny/form/Bind";
 import { IconPrefix, IconName } from "@fortawesome/fontawesome-svg-core";
 import { Form, FormSetValue } from "@webiny/form/Form";
-import { Item } from "@webiny/app-admin/plugins/menu/Navigation/components";
-
-export type PbMenuSettingsItemPlugin = Plugin & {
-    type: "menu-settings-page-builder";
-    render(props: { Item: typeof Item }): React.ReactNode;
-};
 
 export type PbElementDataSettingsSpacingValueType = {
     all?: string;
@@ -391,8 +385,6 @@ export type PbEditorPageSettingsPlugin = Plugin & {
     description: string;
     /* Settings group icon */
     icon: ReactNode;
-    /* GraphQL query fields to include in the `settings` subselect */
-    fields: string;
     /* Render function that handles the specified `fields` */
     render: (params: {
         data: Record<string, any>;
@@ -401,6 +393,11 @@ export type PbEditorPageSettingsPlugin = Plugin & {
         Bind: BindComponent;
     }) => ReactNode;
 };
+
+export interface PbEditorPageQueryFieldsPlugin extends Plugin {
+    type: "pb-editor-page-query-fields";
+    fields: string;
+}
 
 export type PbIcon = {
     /**

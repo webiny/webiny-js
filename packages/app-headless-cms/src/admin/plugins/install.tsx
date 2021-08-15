@@ -43,20 +43,24 @@ const CMSInstaller = ({ onInstalled }) => {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        client
-            .mutate({
-                mutation: INSTALL
-            })
-            .then(({ data }) => {
-                const { error } = data.cms.install;
-                if (error) {
-                    setError(error.message);
-                    return;
-                }
+        // Temporary fix for the ES index creation failure.
+        // Let's try waiting a bit before running the installation.
+        setTimeout(() => {
+            client
+                .mutate({
+                    mutation: INSTALL
+                })
+                .then(({ data }) => {
+                    const { error } = data.cms.install;
+                    if (error) {
+                        setError(error.message);
+                        return;
+                    }
 
-                // Just so the user sees the actual message.
-                setTimeout(onInstalled, 3000);
-            });
+                    // Just so the user sees the actual message.
+                    setTimeout(onInstalled, 3000);
+                });
+        }, 10000);
     }, []);
 
     const label = error ? (
@@ -101,6 +105,12 @@ const plugin: AdminInstallationPlugin = {
             version: "5.5.0",
             getComponent() {
                 return lazy(() => import("./upgrades/v5.5.0"));
+            }
+        },
+        {
+            version: "5.8.0",
+            getComponent() {
+                return lazy(() => import("./upgrades/v5.8.0"));
             }
         }
     ]

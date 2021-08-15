@@ -2,20 +2,20 @@
 "use strict";
 var __extends =
     (this && this.__extends) ||
-    (function() {
-        var extendStatics = function(d, b) {
+    (function () {
+        var extendStatics = function (d, b) {
             extendStatics =
                 Object.setPrototypeOf ||
                 ({ __proto__: [] } instanceof Array &&
-                    function(d, b) {
+                    function (d, b) {
                         d.__proto__ = b;
                     }) ||
-                function(d, b) {
+                function (d, b) {
                     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
                 };
             return extendStatics(d, b);
         };
-        return function(d, b) {
+        return function (d, b) {
             extendStatics(d, b);
             function __() {
                 this.constructor = d;
@@ -25,10 +25,10 @@ var __extends =
     })();
 var __assign =
     (this && this.__assign) ||
-    function() {
+    function () {
         __assign =
             Object.assign ||
-            function(t) {
+            function (t) {
                 for (var s, i = 1, n = arguments.length; i < n; i++) {
                     s = arguments[i];
                     for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p)) t[p] = s[p];
@@ -39,7 +39,7 @@ var __assign =
     };
 var __rest =
     (this && this.__rest) ||
-    function(s, e) {
+    function (s, e) {
         var t = {};
         for (var p in s)
             if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0) t[p] = s[p];
@@ -52,7 +52,7 @@ var __rest =
     };
 var __importStar =
     (this && this.__importStar) ||
-    function(mod) {
+    function (mod) {
         if (mod && mod.__esModule) return mod;
         var result = {};
         if (mod != null)
@@ -75,7 +75,7 @@ var TextFieldRoot = ripple_1.withRipple()(
         deprecate: {
             box: ""
         },
-        classNames: function(props) {
+        classNames: function (props) {
             return [
                 "mdc-text-field",
                 "mdc-text-field--upgraded",
@@ -119,7 +119,7 @@ var TextFieldTextarea = base_1.componentFactory({
     classNames: ["mdc-text-field__input"]
 });
 /** A TextField component for accepting text input from a user. */
-var TextField = /** @class */ (function(_super) {
+var TextField = /** @class */ (function (_super) {
     __extends(TextField, _super);
     function TextField(props) {
         var _this = _super.call(this, props) || this;
@@ -135,34 +135,34 @@ var TextField = /** @class */ (function(_super) {
         _this.handleOnChange = _this.handleOnChange.bind(_this);
         return _this;
     }
-    TextField.prototype.getDefaultFoundation = function() {
+    TextField.prototype.getDefaultFoundation = function () {
         var _this = this;
         return new textfield_1.MDCTextFieldFoundation(
             __assign(
                 {
-                    addClass: function(className) {
+                    addClass: function (className) {
                         return _this.root.addClass(className);
                     },
-                    removeClass: function(className) {
+                    removeClass: function (className) {
                         return _this.root.removeClass(className);
                     },
-                    hasClass: function(className) {
+                    hasClass: function (className) {
                         return _this.root.hasClass(className);
                     },
-                    registerTextFieldInteractionHandler: function(evtType, handler) {
+                    registerTextFieldInteractionHandler: function (evtType, handler) {
                         return _this.root.addEventListener(evtType, handler);
                     },
-                    deregisterTextFieldInteractionHandler: function(evtType, handler) {
+                    deregisterTextFieldInteractionHandler: function (evtType, handler) {
                         return _this.root.removeEventListener(evtType, handler);
                     },
-                    registerValidationAttributeChangeHandler: function(handler) {
-                        var getAttributesList = function(mutationsList) {
-                            return mutationsList.map(function(mutation) {
+                    registerValidationAttributeChangeHandler: function (handler) {
+                        var getAttributesList = function (mutationsList) {
+                            return mutationsList.map(function (mutation) {
                                 return mutation.attributeName;
                             });
                         };
                         if (_this.input.ref) {
-                            var observer = new MutationObserver(function(mutationsList) {
+                            var observer = new MutationObserver(function (mutationsList) {
                                 return handler(getAttributesList(mutationsList));
                             });
                             var targetNode = _this.input.ref;
@@ -172,10 +172,10 @@ var TextField = /** @class */ (function(_super) {
                         }
                         return {};
                     },
-                    deregisterValidationAttributeChangeHandler: function(observer) {
+                    deregisterValidationAttributeChangeHandler: function (observer) {
                         observer && observer.disconnect();
                     },
-                    isFocused: function() {
+                    isFocused: function () {
                         return document.activeElement === _this.input.ref;
                     }
                 },
@@ -187,72 +187,72 @@ var TextField = /** @class */ (function(_super) {
             this.getFoundationMap()
         );
     };
-    TextField.prototype.getLabelAdapterMethods = function() {
+    TextField.prototype.getLabelAdapterMethods = function () {
         var _this = this;
         return {
-            shakeLabel: function(shouldShake) {
+            shakeLabel: function (shouldShake) {
                 return _this.label.setProp("shake", shouldShake);
             },
-            floatLabel: function(shouldFloat) {
+            floatLabel: function (shouldFloat) {
                 return _this.label.setProp("float", shouldFloat);
             },
-            hasLabel: function() {
+            hasLabel: function () {
                 return !!_this.props.label;
             },
-            getLabelWidth: function() {
+            getLabelWidth: function () {
                 return _this.label.ref ? _this.label.ref.getWidth() : 0;
             }
         };
     };
-    TextField.prototype.getLineRippleAdapterMethods = function() {
+    TextField.prototype.getLineRippleAdapterMethods = function () {
         var _this = this;
         return {
-            activateLineRipple: function() {
+            activateLineRipple: function () {
                 if (_this.lineRipple) {
                     _this.lineRipple.setProp("active", true);
                 }
             },
-            deactivateLineRipple: function() {
+            deactivateLineRipple: function () {
                 if (_this.lineRipple) {
                     _this.lineRipple.setProp("active", false);
                 }
             },
-            setLineRippleTransformOrigin: function(normalizedX) {
+            setLineRippleTransformOrigin: function (normalizedX) {
                 if (_this.lineRipple) {
                     _this.lineRipple.setProp("center", normalizedX);
                 }
             }
         };
     };
-    TextField.prototype.getOutlineAdapterMethods = function() {
+    TextField.prototype.getOutlineAdapterMethods = function () {
         var _this = this;
         return {
-            notchOutline: function(labelWidth) {
+            notchOutline: function (labelWidth) {
                 !!_this.outline && _this.outline.notch(labelWidth);
             },
-            closeOutline: function() {
+            closeOutline: function () {
                 return _this.outline && _this.outline.closeNotch();
             },
-            hasOutline: function() {
+            hasOutline: function () {
                 return !!_this.outline;
             }
         };
     };
-    TextField.prototype.getInputAdapterMethods = function() {
+    TextField.prototype.getInputAdapterMethods = function () {
         var _this = this;
         return {
-            registerInputInteractionHandler: function(evtType, handler) {
+            registerInputInteractionHandler: function (evtType, handler) {
                 return _this.input.addEventListener(evtType, handler);
             },
-            deregisterInputInteractionHandler: function(evtType, handler) {
+            deregisterInputInteractionHandler: function (evtType, handler) {
                 return _this.input.removeEventListener(evtType, handler);
             },
-            getNativeInput: function() {
+            getNativeInput: function () {
                 return _this.input.ref;
             }
         };
     };
-    TextField.prototype.getFoundationMap = function() {
+    TextField.prototype.getFoundationMap = function () {
         return {
             characterCounter: this.characterCounter ? this.characterCounter.foundation : undefined,
             helperText: undefined,
@@ -261,10 +261,10 @@ var TextField = /** @class */ (function(_super) {
         };
     };
     // handle leading and trailing icons
-    TextField.prototype.renderIcon = function(icon, leadOrTrail) {
+    TextField.prototype.renderIcon = function (icon, leadOrTrail) {
         var _this = this;
         return React.createElement(TextFieldIcon, {
-            ref: function(ref) {
+            ref: function (ref) {
                 if (leadOrTrail === "leadingIcon") {
                     _this.leadingIcon = ref;
                 } else {
@@ -275,7 +275,7 @@ var TextField = /** @class */ (function(_super) {
             icon: icon
         });
     };
-    TextField.prototype.sync = function(props) {
+    TextField.prototype.sync = function (props) {
         // Bug #362
         // see comments below in render function
         if (this.valueNeedsUpdate) {
@@ -283,11 +283,11 @@ var TextField = /** @class */ (function(_super) {
             this.valueNeedsUpdate = false;
         }
     };
-    TextField.prototype.handleOnChange = function(evt) {
+    TextField.prototype.handleOnChange = function (evt) {
         // this.props.onChange && this.props.onChange(evt);
         // this.setState({});
     };
-    TextField.prototype.renderHelpText = function(renderedCharacterCounter) {
+    TextField.prototype.renderHelpText = function (renderedCharacterCounter) {
         var _a = this.props,
             helpText = _a.helpText,
             characterCount = _a.characterCount,
@@ -306,7 +306,7 @@ var TextField = /** @class */ (function(_super) {
             !textarea && renderedCharacterCounter
         );
     };
-    TextField.prototype.render = function() {
+    TextField.prototype.render = function () {
         var _this = this;
         var _a = this.props,
             label = _a.label,
@@ -381,7 +381,7 @@ var TextField = /** @class */ (function(_super) {
         }
         var tagProps = __assign({}, this.input.props(rest), {
             disabled: disabled,
-            ref: function(ref) {
+            ref: function (ref) {
                 _this.input.setRef(ref);
                 if (typeof inputRef === "function") {
                     inputRef && inputRef(ref);
@@ -408,7 +408,7 @@ var TextField = /** @class */ (function(_super) {
             ? React.createElement(
                   TextFieldCharacterCount,
                   {
-                      ref: function(el) {
+                      ref: function (el) {
                           _this.characterCounter = el;
                       }
                   },
@@ -449,7 +449,7 @@ var TextField = /** @class */ (function(_super) {
                           React.createElement(
                               notched_outline_1.NotchedOutline,
                               {
-                                  ref: function(ref) {
+                                  ref: function (ref) {
                                       return (_this.outline = ref && ref.foundation);
                                   }
                               },
@@ -475,7 +475,7 @@ var TextField = /** @class */ (function(_super) {
     return TextField;
 })(base_1.FoundationComponent);
 exports.TextField = TextField;
-var TextFieldCharacterCount = /** @class */ (function(_super) {
+var TextFieldCharacterCount = /** @class */ (function (_super) {
     __extends(TextFieldCharacterCount, _super);
     function TextFieldCharacterCount() {
         var _this = (_super !== null && _super.apply(this, arguments)) || this;
@@ -484,15 +484,15 @@ var TextFieldCharacterCount = /** @class */ (function(_super) {
         };
         return _this;
     }
-    TextFieldCharacterCount.prototype.getDefaultFoundation = function() {
+    TextFieldCharacterCount.prototype.getDefaultFoundation = function () {
         var _this = this;
         return new textfield_1.MDCTextFieldCharacterCounterFoundation({
-            setContent: function(content) {
+            setContent: function (content) {
                 _this.setState({ content: content });
             }
         });
     };
-    TextFieldCharacterCount.prototype.render = function() {
+    TextFieldCharacterCount.prototype.render = function () {
         return React.createElement(
             "div",
             { className: "mdc-text-field-character-counter" },
@@ -505,7 +505,7 @@ var TextFieldCharacterCount = /** @class */ (function(_super) {
 /** A help text component */
 exports.TextFieldHelperText = base_1.componentFactory({
     displayName: "TextFieldHelperText",
-    classNames: function(props) {
+    classNames: function (props) {
         return [
             "mdc-text-field-helper-text",
             {
@@ -522,41 +522,41 @@ exports.TextFieldHelperText = base_1.componentFactory({
 /**
  * An Icon in a TextField
  */
-var TextFieldIcon = /** @class */ (function(_super) {
+var TextFieldIcon = /** @class */ (function (_super) {
     __extends(TextFieldIcon, _super);
     function TextFieldIcon() {
         var _this = (_super !== null && _super.apply(this, arguments)) || this;
         _this.root = _this.createElement("root");
         return _this;
     }
-    TextFieldIcon.prototype.getDefaultFoundation = function() {
+    TextFieldIcon.prototype.getDefaultFoundation = function () {
         var _this = this;
         return new textfield_1.MDCTextFieldIconFoundation({
-            getAttr: function(attr) {
+            getAttr: function (attr) {
                 return _this.root.getProp(attr);
             },
-            setAttr: function(attr, value) {
+            setAttr: function (attr, value) {
                 return _this.root.setProp(attr, value);
             },
-            removeAttr: function(attr) {
+            removeAttr: function (attr) {
                 return _this.root.removeProp(attr);
             },
-            setContent: function(content) {
+            setContent: function (content) {
                 // @ts-ignore
                 _this.root.setProp("icon", content);
             },
-            registerInteractionHandler: function(evtType, handler) {
+            registerInteractionHandler: function (evtType, handler) {
                 return _this.root.addEventListener(evtType, handler);
             },
-            deregisterInteractionHandler: function(evtType, handler) {
+            deregisterInteractionHandler: function (evtType, handler) {
                 return _this.root.removeEventListener(evtType, handler);
             },
-            notifyIconAction: function() {
+            notifyIconAction: function () {
                 return _this.emit("onClick", {}, true);
             }
         });
     };
-    TextFieldIcon.prototype.render = function() {
+    TextFieldIcon.prototype.render = function () {
         return React.createElement(
             icon_1.Icon,
             __assign(

@@ -1,24 +1,42 @@
-import { CmsContentModelGroup, CmsContext } from "../../../../types";
+import {
+    CmsContentModelGroupStorageOperations,
+    CmsContentModelGroupStorageOperationsBeforeCreateArgs,
+    CmsContext
+} from "../../../../types";
 import { toSlug } from "../../../../utils";
-import Error from "@webiny/error";
+import WebinyError from "@webiny/error";
 import shortid from "shortid";
+import { ContentModelGroupPlugin } from "~/content/plugins/ContentModelGroupPlugin";
 
-export const beforeCreateHook = async (
-    context: CmsContext,
-    model: CmsContentModelGroup
-): Promise<void> => {
-    const { name, slug = "" } = model;
+interface Args extends CmsContentModelGroupStorageOperationsBeforeCreateArgs {
+    context: CmsContext;
+    storageOperations: CmsContentModelGroupStorageOperations;
+}
+
+const createGroupSlug = async ({ data, storageOperations, context }: Args): Promise<string> => {
+    const { name, slug = "" } = data;
+
+    const groupPlugin: ContentModelGroupPlugin = context.plugins
+        .byType<ContentModelGroupPlugin>(ContentModelGroupPlugin.type)
+        .find((item: ContentModelGroupPlugin) => item.contentModelGroup.slug === slug);
+
+    if (groupPlugin) {
+        throw new Error(
+            `Cannot create "${slug}" content model group because one is already registered via a plugin.`
+        );
+    }
+
     // If there is a slug assigned, check if it's unique ...
-    if (slug.trim()) {
-        const groups = await context.cms.groups.noAuth().list({
+    if (slug && slug.trim()) {
+        const groups = await storageOperations.list({
             where: {
                 slug
             }
         });
         if (groups.length === 0) {
-            return;
+            return slug;
         }
-        throw new Error(
+        throw new WebinyError(
             `Content model group with the slug "${slug}" already exists.`,
             "SLUG_ALREADY_EXISTS"
         );
@@ -26,16 +44,36 @@ export const beforeCreateHook = async (
 
     // ... otherwise, assign a unique slug automatically.
     const newSlug = toSlug(name);
-    const groups = await context.cms.groups.noAuth().list({
+    const groups = await storageOperations.list({
         where: {
             slug: newSlug
         }
     });
 
     if (groups.length === 0) {
-        model.slug = newSlug;
+        return newSlug;
+    }
+    return `${newSlug}-${shortid.generate()}`;
+};
+
+export const beforeCreateHook = async ({
+    context,
+    input,
+    data,
+    storageOperations
+}: Args): Promise<void> => {
+    data.slug = await createGroupSlug({
+        context,
+        data,
+        input,
+        storageOperations
+    });
+
+    if (!storageOperations.beforeCreate) {
         return;
     }
-
-    model.slug = `${newSlug}-${shortid.generate()}`;
+    await storageOperations.beforeCreate({
+        input,
+        data
+    });
 };

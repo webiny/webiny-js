@@ -1,6 +1,8 @@
 import { ErrorResponse, Response } from "@webiny/handler-graphql";
-import { GraphQLSchemaPlugin, Resolvers } from "@webiny/handler-graphql/types";
 import { CmsContentModelCreateInput, CmsContentModelUpdateInput, CmsContext } from "../../../types";
+import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSchemaPlugin";
+import { Resolvers } from "@webiny/handler-graphql/types";
+import { ContentModelPlugin } from "~/content/plugins/ContentModelPlugin";
 
 interface CreateContentModelArgs {
     data: CmsContentModelCreateInput;
@@ -36,6 +38,17 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
                 } catch (e) {
                     return new ErrorResponse(e);
                 }
+            }
+        },
+        CmsContentModel: {
+            plugin: async (model, args, context) => {
+                const modelPlugin: ContentModelPlugin = context.plugins
+                    .byType<ContentModelPlugin>(ContentModelPlugin.type)
+                    .find(
+                        (item: ContentModelPlugin) => item.contentModel.modelId === model.modelId
+                    );
+
+                return Boolean(modelPlugin);
             }
         }
     };
@@ -135,85 +148,81 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
         `;
     }
 
-    return {
-        type: "graphql-schema",
-        schema: {
-            typeDefs: /* GraphQL */ `
-                type CmsFieldValidation {
-                    name: String!
-                    message: String
-                    settings: JSON
-                }
+    return new GraphQLSchemaPlugin<CmsContext>({
+        typeDefs: /* GraphQL */ `
+            type CmsFieldValidation {
+                name: String!
+                message: String
+                settings: JSON
+            }
 
-                type CmsFieldRenderer {
-                    name: String
-                }
+            type CmsFieldRenderer {
+                name: String
+            }
 
-                type CmsPredefinedValue {
-                    label: String
-                    value: String
-                }
+            type CmsPredefinedValue {
+                label: String
+                value: String
+            }
 
-                type CmsPredefinedValues {
-                    enabled: Boolean
-                    values: [CmsPredefinedValue]
-                }
+            type CmsPredefinedValues {
+                enabled: Boolean
+                values: [CmsPredefinedValue]
+            }
 
-                type CmsContentModelField {
-                    id: ID!
-                    fieldId: String!
-                    label: String!
-                    helpText: String
-                    placeholderText: String
-                    type: String!
-                    multipleValues: Boolean
-                    predefinedValues: CmsPredefinedValues
-                    renderer: CmsFieldRenderer
-                    validation: [CmsFieldValidation!]
-                    listValidation: [CmsFieldValidation!]
-                    settings: JSON
-                }
+            type CmsContentModelField {
+                id: ID!
+                fieldId: String!
+                label: String!
+                helpText: String
+                placeholderText: String
+                type: String!
+                multipleValues: Boolean
+                predefinedValues: CmsPredefinedValues
+                renderer: CmsFieldRenderer
+                validation: [CmsFieldValidation!]
+                listValidation: [CmsFieldValidation!]
+                settings: JSON
+            }
 
-                type CmsContentModel {
-                    name: String!
-                    modelId: String!
-                    description: String
-                    group: CmsContentModelGroup!
-                    createdOn: DateTime!
-                    savedOn: DateTime
-                    createdBy: JSON!
-                    fields: [CmsContentModelField!]!
-                    lockedFields: [JSON]
-                    layout: [[String!]!]!
-                    titleFieldId: String
-                }
+            type CmsContentModel {
+                name: String!
+                modelId: String!
+                description: String
+                group: CmsContentModelGroup!
+                createdOn: DateTime
+                savedOn: DateTime
+                createdBy: CmsCreatedBy
+                fields: [CmsContentModelField!]!
+                lockedFields: [JSON]
+                layout: [[String!]!]!
+                titleFieldId: String
 
-                type CmsContentModelResponse {
-                    data: CmsContentModel
-                    error: CmsError
-                }
+                # Returns true if the content model is registered via a plugin.
+                plugin: Boolean!
+            }
 
-                type CmsContentModelListResponse {
-                    data: [CmsContentModel]
-                    meta: CmsListMeta
-                    error: CmsError
-                }
+            type CmsContentModelResponse {
+                data: CmsContentModel
+                error: CmsError
+            }
 
-                extend type Query {
-                    getContentModel(
-                        modelId: ID!
-                        where: JSON
-                        sort: String
-                    ): CmsContentModelResponse
+            type CmsContentModelListResponse {
+                data: [CmsContentModel]
+                meta: CmsListMeta
+                error: CmsError
+            }
 
-                    listContentModels: CmsContentModelListResponse
-                }
+            extend type Query {
+                getContentModel(modelId: ID!, where: JSON, sort: String): CmsContentModelResponse
 
-                ${manageSchema}
-            `,
-            resolvers
-        }
-    };
+                listContentModels: CmsContentModelListResponse
+            }
+
+            ${manageSchema}
+        `,
+        resolvers
+    });
 };
 
 export default plugin;

@@ -6,7 +6,7 @@
     "../plugins",
     "../db",
     "../api-i18n-content",
-    "../api-plugin-elastic-search-client",
+    "../api-elasticsearch",
     "../api-dynamodb-to-elasticsearch",
     "../api-security",
     "../api-upgrade",
@@ -16,19 +16,23 @@
     "../handler-db",
     "../validation",
     "../api-i18n",
+    "../api-i18n-ddb",
     "../handler-graphql",
     "../handler-aws",
     "../db-dynamodb",
     "../error",
     "../api-file-manager",
-    "../api-security-tenancy",
+    "../api-file-manager-ddb-es",
+    "../api-tenancy",
     "../api-prerendering-service"
   ],
   "compilerOptions": {
     "rootDir": "./src",
     "outDir": "./dist",
     "declarationDir": "./dist",
-    "paths": {},
+    "paths": {
+      "~/*": ["./src/*"]
+    },
     "baseUrl": "."
   },
   "references": []

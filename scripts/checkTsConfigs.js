@@ -270,9 +270,8 @@ const TSCONFIG = {
     }
 
     for (const workspacePackageName in errors) {
-        const { package: workspacePackageObject, errors: workspacePackageErrors } = errors[
-            workspacePackageName
-        ];
+        const { package: workspacePackageObject, errors: workspacePackageErrors } =
+            errors[workspacePackageName];
 
         console.log(
             cyan(

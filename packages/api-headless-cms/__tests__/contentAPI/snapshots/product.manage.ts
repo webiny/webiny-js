@@ -4,11 +4,26 @@ export default /* GraphQL */ `
     """
     Products being sold in our webshop
     """
+    type Product_Variant_Options {
+        name: String
+        price: Number
+        category: RefField
+    }
+    
+    type Product_Variant {
+        name: String
+        price: Number
+        category: RefField
+        options: [Product_Variant_Options!]
+    }
+    
     type Product {
-        id: ID
-        createdOn: DateTime
-        createdBy: CmsCreatedBy
-        savedOn: DateTime
+        id: ID!
+        entryId: String!
+        createdOn: DateTime!
+        savedOn: DateTime!
+        createdBy: CmsCreatedBy!
+        ownedBy: CmsOwnedBy!
         meta: ProductMeta
         title: String
         category: RefField
@@ -20,6 +35,7 @@ export default /* GraphQL */ `
         availableSizes: [String]
         image: String
         richText: JSON
+        variant: Product_Variant
     }
 
     type ProductMeta {
@@ -31,6 +47,19 @@ export default /* GraphQL */ `
         ${revisionsComment}
         revisions: [Product]
         title: String
+    }
+    
+    input Product_Variant_OptionsInput {
+        name: String
+        price: Number
+        category: RefFieldInput
+    }
+    
+    input Product_VariantInput {
+        name: String
+        price: Number
+        category: RefFieldInput
+        options: [Product_Variant_OptionsInput!]
     }
 
     input ProductInput {
@@ -44,10 +73,12 @@ export default /* GraphQL */ `
         availableSizes: [String]
         image: String
         richText: JSON
+        variant: Product_VariantInput
     }
 
     input ProductGetWhereInput {
         id: ID
+        entryId: String
         title: String
         price: Number
         inStock: Boolean
@@ -56,26 +87,38 @@ export default /* GraphQL */ `
         color: String
         availableSizes: String
     }
-
+    
     input ProductListWhereInput {
         id: ID
         id_not: ID
-        id_in: [ID]
-        id_not_in: [ID]
+        id_in: [ID!]
+        id_not_in: [ID!]
+        entryId: String
+        entryId_not: String
+        entryId_in: [String!]
+        entryId_not_in: [String!]
         createdOn: DateTime
         createdOn_gt: DateTime
         createdOn_gte: DateTime
         createdOn_lt: DateTime
         createdOn_lte: DateTime
-        createdOn_between: [DateTime]
-        createdOn_not_between: [DateTime]
+        createdOn_between: [DateTime!]
+        createdOn_not_between: [DateTime!]
         savedOn: DateTime
         savedOn_gt: DateTime
         savedOn_gte: DateTime
         savedOn_lt: DateTime
         savedOn_lte: DateTime
-        savedOn_between: [DateTime]
-        savedOn_not_between: [DateTime]
+        savedOn_between: [DateTime!]
+        savedOn_not_between: [DateTime!]
+        createdBy: String
+        createdBy_not: String
+        createdBy_in: [String!]
+        createdBy_not_in: [String!]
+        ownedBy: String
+        ownedBy_not: String
+        ownedBy_in: [String!]
+        ownedBy_not_in: [String!]
 
         title: String
         title_not: String

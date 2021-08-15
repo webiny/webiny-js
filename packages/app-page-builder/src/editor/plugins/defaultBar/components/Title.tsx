@@ -3,6 +3,7 @@ import { useEventActionHandler } from "../../../hooks/useEventActionHandler";
 import { UpdatePageRevisionActionEvent } from "../../../recoil/actions";
 import { pageAtom, PageAtomType } from "../../../recoil/modules";
 import { useRecoilValue } from "recoil";
+import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { Input } from "@webiny/ui/Input";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { Typography } from "@webiny/ui/Typography";
@@ -35,6 +36,7 @@ const extractPageInfo = (page: PageAtomType): any => {
 const Title: React.FunctionComponent = () => {
     const handler = useEventActionHandler();
     const page = useRecoilValue(pageAtom);
+    const { showSnackbar } = useSnackbar();
     const { pageTitle, pageVersion, pageLocked, pageCategory } = extractPageInfo(page);
     const [editTitle, setEdit] = useState<boolean>(false);
     const [stateTitle, setTitle] = useState<string>(null);
@@ -43,7 +45,10 @@ const Title: React.FunctionComponent = () => {
     const updatePage = data => {
         handler.trigger(
             new UpdatePageRevisionActionEvent({
-                page: data
+                page: data,
+                onFinish: () => {
+                    showSnackbar(`Page title updated successfully!`);
+                }
             })
         );
     };

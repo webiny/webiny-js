@@ -2,18 +2,19 @@ import Error from "@webiny/error";
 import { NotAuthorizedError } from "@webiny/api-security";
 import { UpgradePlugin } from "@webiny/api-upgrade/types";
 import { getApplicablePlugin } from "@webiny/api-upgrade";
-import executeHookCallbacks from "./utils/executeHookCallbacks";
+import executeCallbacks from "./utils/executeCallbacks";
 import { preparePageData } from "./install/welcome-to-webiny-page-data";
 import { notFoundPageData } from "./install/notFoundPageData";
 import savePageAssets from "./install/utils/savePageAssets";
 import defaults from "./utils/defaults";
-import { InstallHookPlugin, PbContext } from "../../types";
+import { PbContext } from "~/types";
+import { InstallationPlugin } from "~/plugins/InstallationPlugin";
 
 export default {
     type: "context",
     apply(context: PbContext) {
-        const { security, db } = context;
-        const keys = () => ({ PK: `T#${security.getTenant().id}#SYSTEM`, SK: "PB" });
+        const { tenancy, db } = context;
+        const keys = () => ({ PK: `T#${tenancy.getCurrentTenant().id}#SYSTEM`, SK: "PB" });
 
         context.pageBuilder = {
             ...context.pageBuilder,
@@ -24,22 +25,7 @@ export default {
                         query: keys()
                     });
 
-                    // Backwards compatibility check
-                    if (!system) {
-                        // Check for the old "install" item; it means this system was installed before versioning was introduced.
-                        // 5.0.0-beta.4 is the last version before versioning was introduced.
-                        const [[oldInstall]] = await db.read({
-                            ...defaults.db,
-                            query: {
-                                PK: `T#${security.getTenant().id}#PB#SETTINGS`,
-                                SK: "install"
-                            }
-                        });
-
-                        return oldInstall ? "5.0.0-beta.4" : null;
-                    }
-
-                    return system.version;
+                    return system ? system.version : null;
                 },
                 async setVersion(version: string) {
                     const [[system]] = await db.read({
@@ -66,10 +52,18 @@ export default {
                     }
                 },
                 async install({ name, insertDemoData }) {
-                    const { pageBuilder, fileManager, elasticSearch } = context;
+                    const { pageBuilder, fileManager, elasticsearch } = context;
 
-                    const hookPlugins = context.plugins.byType<InstallHookPlugin>("pb-page-hooks");
-                    await executeHookCallbacks(hookPlugins, "beforeInstall", context);
+                    const hookPlugins = context.plugins.byType<InstallationPlugin>(
+                        InstallationPlugin.type
+                    );
+                    await executeCallbacks<InstallationPlugin["beforeInstall"]>(
+                        hookPlugins,
+                        "beforeInstall",
+                        {
+                            context
+                        }
+                    );
 
                     // Check whether the PB app is already installed
                     const version = await pageBuilder.system.getVersion();
@@ -79,9 +73,9 @@ export default {
 
                     // 1. Create ES index if it doesn't already exist.
                     const { index } = defaults.es(context);
-                    const { body: exists } = await elasticSearch.indices.exists({ index });
+                    const { body: exists } = await elasticsearch.indices.exists({ index });
                     if (!exists) {
-                        await elasticSearch.indices.create({
+                        await elasticsearch.indices.create({
                             index,
                             body: {
                                 // need this part for sorting to work on text fields
@@ -156,12 +150,14 @@ export default {
                             {
                                 title: "Welcome to Webiny",
                                 path: "/welcome-to-webiny",
-                                content: welcomeToWebinyPageContent
+                                content: welcomeToWebinyPageContent,
+                                settings: {}
                             },
                             {
                                 title: "Not Found",
                                 path: "/not-found",
                                 content: notFoundPageData,
+                                settings: {},
                                 // Do not show the page in page lists, only direct get is possible.
                                 visibility: {
                                     get: { latest: true, published: true },
@@ -191,7 +187,13 @@ export default {
                     // 6. Mark the Page Builder app as installed.
                     await this.setVersion(context.WEBINY_VERSION);
 
-                    await executeHookCallbacks(hookPlugins, "afterInstall", context);
+                    await executeCallbacks<InstallationPlugin["afterInstall"]>(
+                        hookPlugins,
+                        "afterInstall",
+                        {
+                            context
+                        }
+                    );
                 },
                 async upgrade(version) {
                     const identity = context.security.getIdentity();

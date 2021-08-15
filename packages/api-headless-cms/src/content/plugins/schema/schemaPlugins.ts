@@ -1,5 +1,5 @@
-import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
-import { CmsModelFieldToGraphQLPlugin, CmsFieldTypePlugins, CmsContext } from "../../../types";
+import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSchemaPlugin";
+import { CmsModelFieldToGraphQLPlugin, CmsFieldTypePlugins, CmsContext } from "~/types";
 import { createManageSDL } from "./createManageSDL";
 import { createReadSDL } from "./createReadSDL";
 import { createManageResolvers } from "./createManageResolvers";
@@ -21,29 +21,22 @@ export const generateSchemaPlugins = async (
         }, {});
 
     // Load model data
-
     const models = await cms.models.noAuth().list();
 
     const schemas = getSchemaFromFieldPlugins({ models, fieldTypePlugins, type: cms.type });
 
-    const newPlugins: GraphQLSchemaPlugin<CmsContext>[] = schemas.map((s, i) => ({
-        name: "graphql-schema-cms-field-types-" + i,
-        type: "graphql-schema",
-        schema: {
-            typeDefs: s.typeDefs,
-            resolvers: s.resolvers || {}
-        }
-    }));
+    const newPlugins: GraphQLSchemaPlugin<CmsContext>[] = [];
+    for (const schema of schemas) {
+        newPlugins.push(new GraphQLSchemaPlugin(schema));
+    }
 
     models
         .filter(model => model.fields.length > 0)
         .forEach(model => {
             switch (cms.type) {
                 case "manage":
-                    newPlugins.push({
-                        name: "graphql-schema-" + model.modelId + "-manage",
-                        type: "graphql-schema",
-                        schema: {
+                    newPlugins.push(
+                        new GraphQLSchemaPlugin({
                             typeDefs: createManageSDL({ model, fieldTypePlugins }),
                             resolvers: createManageResolvers({
                                 models,
@@ -51,16 +44,14 @@ export const generateSchemaPlugins = async (
                                 fieldTypePlugins,
                                 context
                             })
-                        }
-                    });
+                        })
+                    );
 
                     break;
                 case "preview":
                 case "read":
-                    newPlugins.push({
-                        name: "graphql-schema-" + model.modelId + "-read",
-                        type: "graphql-schema",
-                        schema: {
+                    newPlugins.push(
+                        new GraphQLSchemaPlugin({
                             typeDefs: createReadSDL({ model, fieldTypePlugins }),
                             resolvers: cms.READ
                                 ? createReadResolvers({
@@ -75,8 +66,8 @@ export const generateSchemaPlugins = async (
                                       fieldTypePlugins,
                                       context
                                   })
-                        }
-                    });
+                        })
+                    );
                     break;
                 default:
                     return;

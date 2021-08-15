@@ -105,7 +105,7 @@ class RenderForm extends React.Component<Props, State> {
         const component = this;
 
         // @ts-ignore
-        Caman(canvas.current, function() {
+        Caman(canvas.current, function () {
             this.revert(false);
             Object.keys(values).forEach(
                 key => values[key] !== 0 && this[key] && this[key](values[key])
@@ -183,7 +183,7 @@ const tool: ImageEditorTool = {
     },
     cancel: ({ canvas }) => {
         // @ts-ignore
-        Caman(canvas.current, function() {
+        Caman(canvas.current, function () {
             this.revert(false);
             this.render();
         });

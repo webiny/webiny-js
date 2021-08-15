@@ -7,6 +7,7 @@ import { IconButton } from "@webiny/ui/Button";
 import noop from "lodash/noop";
 
 import { ReactComponent as CloseIcon } from "./icons/close.svg";
+import { OverlayView } from "~/ui/views/OverlayView";
 
 const OverlayLayoutWrapper = styled("div")({
     position: "fixed",
@@ -67,13 +68,17 @@ export class OverlayLayout extends React.Component<OverlayLayoutProps, State> {
 
     state = { isVisible: true };
 
-    hideComponent = () => {
+    hideComponent() {
         this.setState({ isVisible: false });
-        document.body.classList.remove(noScroll);
-    };
+        if (OverlayView.openedViews === 0) {
+            document.body.classList.remove(noScroll);
+        }
+    }
 
     componentWillUnmount() {
-        document.body.classList.remove(noScroll);
+        if (OverlayView.openedViews === 0) {
+            document.body.classList.remove(noScroll);
+        }
     }
 
     render() {
@@ -97,7 +102,7 @@ export class OverlayLayout extends React.Component<OverlayLayoutProps, State> {
                                 {barRight}
                                 <IconButton
                                     ripple={false}
-                                    onClick={this.hideComponent}
+                                    onClick={() => this.hideComponent()}
                                     icon={<CloseIcon style={{ width: 24, height: 24 }} />}
                                 />
                             </TopAppBarSection>

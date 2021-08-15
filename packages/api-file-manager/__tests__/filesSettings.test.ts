@@ -50,8 +50,19 @@ describe("Files settings test", () => {
 
     test('should able to get and update "File manager" settings', async () => {
         // Let's first install the app.
-        await install({
+        const [installResponse] = await install({
             srcPrefix: "https://0c6fb883-webiny-latest-files.s3.amazonaws.com/"
+        });
+
+        expect(installResponse).toEqual({
+            data: {
+                fileManager: {
+                    install: {
+                        data: true,
+                        error: null
+                    }
+                }
+            }
         });
 
         let [response] = await getSettings();

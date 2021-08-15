@@ -5,15 +5,14 @@
     "node_modules",
     "./backup",
     "../api-i18n",
+    "../api-i18n-ddb",
     "../api-i18n-content",
-    "../api-plugin-elastic-search-client",
-    "../api-dynamodb-to-elasticsearch",
     "../api-security",
-    "../api-security-tenancy",
+    "../api-security-admin-users",
+    "../api-tenancy",
     "../api-file-manager",
     "../api-upgrade",
     "../error",
-    "../db-dynamodb",
     "../handler",
     "../handler-aws",
     "../handler-db",
@@ -27,7 +26,9 @@
     "outDir": "dist",
     "rootDir": "src",
     "declarationDir": "dist",
-    "paths": {},
+    "paths": {
+      "~/*": ["./src/*"]
+    },
     "baseUrl": "."
   },
   "references": []

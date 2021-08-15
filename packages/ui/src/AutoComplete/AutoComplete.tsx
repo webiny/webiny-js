@@ -241,7 +241,7 @@ class AutoComplete extends React.Component<Props, State> {
                                         otherInputProps.onFocus && otherInputProps.onFocus(ev);
                                     },
                                     onKeyDown: (ev: React.KeyboardEvent<HTMLInputElement>) => {
-                                        const keyCode: string = keycode((ev as unknown) as Event);
+                                        const keyCode: string = keycode(ev as unknown as Event);
 
                                         if (keyCode === "backspace") {
                                             onChange(null);
@@ -249,7 +249,7 @@ class AutoComplete extends React.Component<Props, State> {
                                         }
                                     },
                                     onKeyUp: (ev: React.KeyboardEvent<HTMLInputElement>) => {
-                                        const keyCode: string = keycode((ev as unknown) as Event);
+                                        const keyCode: string = keycode(ev as unknown as Event);
 
                                         const target = ev.currentTarget;
                                         const inputValue = target.value || "";

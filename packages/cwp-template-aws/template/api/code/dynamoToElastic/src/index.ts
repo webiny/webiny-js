@@ -1,8 +1,14 @@
 import { createHandler } from "@webiny/handler-aws";
-import elasticSearch from "@webiny/api-plugin-elastic-search-client";
+import elasticsearchClientContextPlugin from "@webiny/api-elasticsearch";
+import elasticsearchDataGzipCompression from "@webiny/api-elasticsearch/plugins/GzipCompression";
 import dynamoDBToElastic from "@webiny/api-dynamodb-to-elasticsearch/handler";
 
-export const handler = createHandler(
-    elasticSearch({ endpoint: `https://${process.env.ELASTIC_SEARCH_ENDPOINT}` }),
-    dynamoDBToElastic()
-);
+export const handler = createHandler({
+    plugins: [
+        elasticsearchClientContextPlugin({
+            endpoint: `https://${process.env.ELASTIC_SEARCH_ENDPOINT}`
+        }),
+        elasticsearchDataGzipCompression(),
+        dynamoDBToElastic()
+    ]
+});

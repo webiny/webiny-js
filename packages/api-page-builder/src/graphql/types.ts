@@ -1,25 +1,25 @@
-import { Plugin } from "@webiny/plugins/types";
 import { Context } from "@webiny/handler/types";
 import { I18NContentContext } from "@webiny/api-i18n-content/types";
 import { DbContext } from "@webiny/handler-db/types";
 import { SecurityContext, SecurityPermission } from "@webiny/api-security/types";
-import { TenancyContext } from "@webiny/api-security-tenancy/types";
+import { TenancyContext } from "@webiny/api-tenancy/types";
 import { I18NContext } from "@webiny/api-i18n/types";
-import { ElasticSearchClientContext } from "@webiny/api-plugin-elastic-search-client/types";
+import { ElasticsearchContext } from "@webiny/api-elasticsearch/types";
 import DataLoader from "dataloader";
 import { ClientContext } from "@webiny/handler-client/types";
-import { Category, DefaultSettings, Menu, Page, PageElement, PageSpecialType } from "../types";
+import { Category, DefaultSettings, Menu, Page, PageElement } from "../types";
 import { PrerenderingServiceClientContext } from "@webiny/api-prerendering-service/client/types";
 
 // CRUD types.
 export type SortOrder = "asc" | "desc";
-export type ListPagesArgs = {
+export type ListPagesParams = {
     limit?: number;
     page?: number;
     where?: {
         category?: string;
         status?: string;
         tags?: { query: string[]; rule?: "any" | "all" };
+        [key: string]: any;
     };
     exclude?: string[];
     search?: { query?: string };
@@ -50,11 +50,11 @@ export type PathItem = {
     configuration?: { meta?: Record<string, any>; storage?: { folder?: string; name?: string } };
 };
 
-export type RenderArgs = {
+export type RenderParams = {
     tags?: TagItem[];
     paths?: PathItem[];
 };
-export type FlushArgs = {
+export type FlushParams = {
     tags?: TagItem[];
     paths?: PathItem[];
 };
@@ -63,24 +63,27 @@ export type PagesCrud = {
     dataLoaders: {
         getPublishedById: DataLoader<{ id: string; preview?: boolean }, Page>;
     };
-    get(id: string): Promise<Page>;
-    listLatest(args: ListPagesArgs): Promise<[Page[], ListMeta]>;
-    listPublished(args: ListPagesArgs): Promise<[Page[], ListMeta]>;
+    get<TPage extends Page = Page>(id: string): Promise<TPage>;
+    listLatest<TPage extends Page = Page>(args: ListPagesParams): Promise<[TPage[], ListMeta]>;
+    listPublished<TPage extends Page = Page>(args: ListPagesParams): Promise<[TPage[], ListMeta]>;
     listTags(args: { search: { query: string } }): Promise<string[]>;
-    getPublishedById(args: { id: string; preview?: boolean }): Promise<Page>;
-    getPublishedByPath(args: { path: string }): Promise<Page>;
-    listPageRevisions(id: string): Promise<Page[]>;
-    create(category: string): Promise<Page>;
-    createFrom(page: string): Promise<Page>;
-    update(id: string, data: Record<string, any>): Promise<Page>;
-    delete(id: string): Promise<[Page, Page]>;
-    publish(id: string): Promise<Page>;
-    unpublish(id: string): Promise<Page>;
-    requestReview(id: string): Promise<Page>;
-    requestChanges(id: string): Promise<Page>;
+    getPublishedById<TPage extends Page = Page>(args: {
+        id: string;
+        preview?: boolean;
+    }): Promise<TPage>;
+    getPublishedByPath<TPage extends Page = Page>(args: { path: string }): Promise<TPage>;
+    listPageRevisions<TPage extends Page = Page>(id: string): Promise<TPage[]>;
+    create<TPage extends Page = Page>(category: string): Promise<TPage>;
+    createFrom<TPage extends Page = Page>(page: string): Promise<TPage>;
+    update<TPage extends Page = Page>(id: string, data: Record<string, any>): Promise<TPage>;
+    delete<TPage extends Page = Page>(id: string): Promise<[TPage, TPage]>;
+    publish<TPage extends Page = Page>(id: string): Promise<TPage>;
+    unpublish<TPage extends Page = Page>(id: string): Promise<TPage>;
+    requestReview<TPage extends Page = Page>(id: string): Promise<TPage>;
+    requestChanges<TPage extends Page = Page>(id: string): Promise<TPage>;
     prerendering: {
-        render(args: RenderArgs): Promise<void>;
-        flush(args: FlushArgs): Promise<void>;
+        render(args: RenderParams): Promise<void>;
+        flush(args: FlushParams): Promise<void>;
     };
 };
 
@@ -121,6 +124,7 @@ export type SettingsCrud = {
     default: {
         PK: (options: Record<string, any>) => string;
         SK: "default";
+        getCurrent: () => Promise<DefaultSettings>;
         get: (options?: DefaultSettingsCrudOptions) => Promise<DefaultSettings>;
         getDefault: (options?: { tenant?: string }) => Promise<DefaultSettings>;
         update: (
@@ -144,7 +148,7 @@ export type PbContext = Context<
     I18NContext,
     ClientContext,
     DbContext,
-    ElasticSearchClientContext,
+    ElasticsearchContext,
     SecurityContext,
     TenancyContext,
     PrerenderingServiceClientContext,
@@ -190,82 +194,3 @@ export interface PageSecurityPermission extends PbSecurityPermission {
     // "u" - unpublish
     pw: string;
 }
-
-// Hook plugins.
-export type HookCallbackFunction<A1 = any, A2 = any, A3 = any> = (
-    context: PbContext,
-    arg1: A1,
-    arg2: A2,
-    arg3: A3
-) => void | Promise<void>;
-
-export type PageHookPlugin = Plugin<{
-    type: "pb-page-hook";
-    beforeCreate?: HookCallbackFunction<Page>;
-    afterCreate?: HookCallbackFunction<Page>;
-    beforeUpdate?: HookCallbackFunction<Page>;
-    afterUpdate?: HookCallbackFunction<Page>;
-    beforeDelete?: HookCallbackFunction<{
-        page: Page;
-        latestPage: Page;
-        publishedPage?: Page;
-    }>;
-    afterDelete?: HookCallbackFunction<{
-        page: Page;
-        latestPage: Page;
-        publishedPage?: Page;
-    }>;
-    beforePublish?: HookCallbackFunction<{
-        page: Page;
-        latestPage: Page;
-        publishedPage?: Page;
-    }>;
-    afterPublish?: HookCallbackFunction<{
-        page: Page;
-        latestPage: Page;
-        publishedPage?: Page;
-    }>;
-    beforeUnpublish?: HookCallbackFunction<Page>;
-    afterUnpublish?: HookCallbackFunction<Page>;
-}>;
-
-export type MenuHookPlugin = Plugin<{
-    type: "pb-menu-hook";
-    beforeCreate?: HookCallbackFunction<Menu>;
-    afterCreate?: HookCallbackFunction<Menu>;
-    beforeUpdate?: HookCallbackFunction<Menu>;
-    afterUpdate?: HookCallbackFunction<Menu>;
-    beforeDelete?: HookCallbackFunction<Menu>;
-    afterDelete?: HookCallbackFunction<Menu>;
-}>;
-
-type SettingsHookPluginPreviousSettings = DefaultSettings;
-type SettingsHookPluginNextSettings = DefaultSettings;
-
-export type SettingsHookPlugin = Plugin<{
-    type: "pb-settings-hook";
-    beforeUpdate?: HookCallbackFunction<
-        SettingsHookPluginPreviousSettings,
-        SettingsHookPluginNextSettings,
-        {
-            diff: {
-                pages: Array<[PageSpecialType, string, string, Page]>;
-            };
-        }
-    >;
-    afterUpdate?: HookCallbackFunction<
-        SettingsHookPluginPreviousSettings,
-        SettingsHookPluginNextSettings,
-        {
-            diff: {
-                pages: Array<[PageSpecialType, string, string, Page]>;
-            };
-        }
-    >;
-}>;
-
-export type InstallHookPlugin = Plugin<{
-    name: "pb-install-hook";
-    beforeInstall: (context: PbContext) => void;
-    afterInstall: (context: PbContext) => void;
-}>;

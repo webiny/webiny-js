@@ -12,7 +12,7 @@ import SingleImageUpload from "@webiny/app-admin/components/SingleImageUpload";
 import {
     PbEditorPageElementSettingsRenderComponentProps,
     PbEditorResponsiveModePlugin
-} from "../../../../types";
+} from "~/types";
 import {
     activeElementAtom,
     elementWithChildrenByIdSelector,
@@ -51,8 +51,9 @@ type SettingsPropsType = {
         [key: string]: any;
     };
 };
-const BackgroundSettings: React.FunctionComponent<SettingsPropsType &
-    PbEditorPageElementSettingsRenderComponentProps> = ({ options, defaultAccordionValue }) => {
+const BackgroundSettings: React.FunctionComponent<
+    SettingsPropsType & PbEditorPageElementSettingsRenderComponentProps
+> = ({ options, defaultAccordionValue }) => {
     const { displayMode } = useRecoilValue(uiAtom);
     const activeElementId = useRecoilValue(activeElementAtom);
     const element = useRecoilValue(elementWithChildrenByIdSelector(activeElementId));
@@ -74,33 +75,33 @@ const BackgroundSettings: React.FunctionComponent<SettingsPropsType &
             .find(pl => pl.config.displayMode === displayMode);
     }, [displayMode]);
 
-    const setImage = useCallback(value => getUpdateValue(`${displayMode}.image.file`)(value), [
-        getUpdateValue,
-        displayMode
-    ]);
-    const setScaling = useCallback(value => getUpdateValue(`${displayMode}.image.scaling`)(value), [
-        getUpdateValue,
-        displayMode
-    ]);
+    const setImage = useCallback(
+        value => getUpdateValue(`${displayMode}.image.file`)(value),
+        [getUpdateValue, displayMode]
+    );
+    const setScaling = useCallback(
+        value => getUpdateValue(`${displayMode}.image.scaling`)(value),
+        [getUpdateValue, displayMode]
+    );
     const setPosition = useCallback(
         value => getUpdateValue(`${displayMode}.image.position`)(value),
-        [getUpdateValue]
+        [getUpdateValue, displayMode]
     );
-    const setColor = useCallback(value => getUpdateValue(`${displayMode}.color`)(value), [
-        getUpdateValue,
-        displayMode
-    ]);
-    const onColorChange = useCallback(value => getUpdatePreview(`${displayMode}.color`)(value), [
-        getUpdatePreview,
-        displayMode
-    ]);
+    const setColor = useCallback(
+        value => getUpdateValue(`${displayMode}.color`)(value),
+        [getUpdateValue, displayMode]
+    );
+    const onColorChange = useCallback(
+        value => getUpdatePreview(`${displayMode}.color`)(value),
+        [getUpdatePreview, displayMode]
+    );
 
     const fallbackValue = useMemo(
         () =>
             applyFallbackDisplayMode(displayMode, mode =>
                 get(element, `${DATA_NAMESPACE}.${mode}`)
             ),
-        [displayMode]
+        [displayMode, element]
     );
 
     const background = get(element, `${DATA_NAMESPACE}.${displayMode}`, fallbackValue || {});

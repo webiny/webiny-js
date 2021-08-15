@@ -7,13 +7,19 @@ import {
     CmsContentModelGroupListArgs,
     CmsContentModelGroupPermission,
     CmsContentModelGroup,
-    CmsContext
+    CmsContext,
+    CmsContentModelGroupStorageOperationsProvider
 } from "../../../types";
 import * as utils from "../../../utils";
 import { beforeDeleteHook } from "./contentModelGroup/beforeDelete.hook";
 import { beforeCreateHook } from "./contentModelGroup/beforeCreate.hook";
+import { afterDeleteHook } from "./contentModelGroup/afterDelete.hook";
 import { NotFoundError } from "@webiny/handler-graphql";
 import WebinyError from "@webiny/error";
+import { afterUpdateHook } from "./contentModelGroup/afterUpdate.hook";
+import { beforeUpdateHook } from "./contentModelGroup/beforeUpdate.hook";
+import { afterCreateHook } from "./contentModelGroup/afterCreate.hook";
+import { ContentModelGroupPlugin } from "~/content/plugins/ContentModelGroupPlugin";
 
 const CreateContentModelGroupModel = withFields({
     name: string({ validation: validation.create("required,maxLength:100") }),
@@ -28,82 +34,56 @@ const UpdateContentModelGroupModel = withFields({
     icon: string({ validation: validation.create("maxLength:255") })
 })();
 
-const whereKeySuffix = [
-    "_not",
-    "_not_in",
-    "_in",
-    "_gt",
-    "_gte",
-    "_lt",
-    "_lte",
-    "_not_between",
-    "_between"
-].join("|");
-
-const removeWhereKeySuffix = (key: string): string => {
-    return key.replace(new RegExp(`${whereKeySuffix}$`), "");
-};
-
-const compare = (key: string, compareValue: any, value: any): boolean => {
-    if (key.endsWith("_not")) {
-        return String(value) !== compareValue;
-    } else if (key.endsWith("_not_in")) {
-        return !compareValue.includes(value);
-    } else if (key.endsWith("_in")) {
-        return compareValue.includes(value);
-    } else if (key.endsWith("_gt")) {
-        return value > compareValue;
-    } else if (key.endsWith("_gte")) {
-        return value >= compareValue;
-    } else if (key.endsWith("_lt")) {
-        return value < compareValue;
-    } else if (key.endsWith("_lte")) {
-        return value <= compareValue;
-    } else if (key.endsWith("_not_between")) {
-        if (!Array.isArray(compareValue) || compareValue.length === 0) {
-            throw new WebinyError(`Wrong compareValue for "${key}".`);
-        }
-        return value < compareValue[0] && value > compareValue[1];
-    } else if (key.endsWith("_between")) {
-        if (!Array.isArray(compareValue) || compareValue.length === 0) {
-            throw new WebinyError(`Wrong compareValue for "${key}".`);
-        }
-        return value >= compareValue[0] && value <= compareValue[1];
-    }
-    return compareValue === value;
-};
-
-const whereFilterFactory = (where: Record<string, any> = {}) => {
-    return model => {
-        if (!where) {
-            return true;
-        }
-        for (const key in where) {
-            const whereValue = where[key];
-            const value = model[removeWhereKeySuffix(key)];
-            return compare(key, whereValue, value);
-        }
-        return true;
-    };
-};
-
 export default (): ContextPlugin<CmsContext> => ({
     type: "context",
     async apply(context) {
-        const { db } = context;
+        /**
+         * If cms is not defined on the context, do not continue, but log it.
+         */
+        if (!context.cms) {
+            console.log("Missing cms on context. Skipping ContentModelGroup crud.");
+            return;
+        }
+        const pluginType = "cms-content-model-group-storage-operations-provider";
+        const providerPlugins =
+            context.plugins.byType<CmsContentModelGroupStorageOperationsProvider>(pluginType);
+        /**
+         * Storage operations operations for the content model group.
+         * Contains logic to save the data into the specific storage.
+         */
+        const providerPlugin = providerPlugins[providerPlugins.length - 1];
+        if (!providerPlugin) {
+            throw new WebinyError(`Missing "${pluginType}" plugin.`, "PLUGIN_NOT_FOUND", {
+                type: pluginType
+            });
+        }
 
-        const PK_GROUP = () => `${utils.createCmsPK(context)}#CMG`;
+        const storageOperations = await providerPlugin.provide({
+            context
+        });
 
         const checkPermissions = (check: string): Promise<CmsContentModelGroupPermission> => {
             return utils.checkPermissions(context, "cms.contentModelGroup", { rwd: check });
         };
 
         const groupsGet = async (id: string) => {
-            const [[group]] = await db.read<CmsContentModelGroup>({
-                ...utils.defaults.db(),
-                query: { PK: PK_GROUP(), SK: id }
-            });
+            const groupPlugin: ContentModelGroupPlugin = context.plugins
+                .byType<ContentModelGroupPlugin>(ContentModelGroupPlugin.type)
+                .find((item: ContentModelGroupPlugin) => item.contentModelGroup.id === id);
 
+            if (groupPlugin) {
+                return groupPlugin.contentModelGroup;
+            }
+
+            let group: CmsContentModelGroup | null = null;
+            try {
+                group = await storageOperations.get({ id });
+            } catch (ex) {
+                throw new WebinyError(ex.message, ex.code || "GET_ERROR", {
+                    ...(ex.data || {}),
+                    id
+                });
+            }
             if (!group) {
                 throw new NotFoundError(`Content model group "${id}" was not found!`);
             }
@@ -113,22 +93,25 @@ export default (): ContextPlugin<CmsContext> => ({
 
         const groupsList = async (args?: CmsContentModelGroupListArgs) => {
             const { where, limit } = args || {};
-            const [groups] = await db.read<CmsContentModelGroup>({
-                ...utils.defaults.db(),
-                query: { PK: PK_GROUP(), SK: { $gt: " " } }
-            });
+            try {
+                const pluginsGroups: CmsContentModelGroup[] = context.plugins
+                    .byType<ContentModelGroupPlugin>(ContentModelGroupPlugin.type)
+                    .map<CmsContentModelGroup>(plugin => plugin.contentModelGroup);
 
-            const whereKeys = Object.keys(where || {});
-            if (whereKeys.length === 0) {
-                return groups;
+                const databaseGroups = await storageOperations.list({ where, limit });
+
+                return [...databaseGroups, ...pluginsGroups];
+            } catch (ex) {
+                throw new WebinyError(ex.message, ex.code || "LIST_ERROR", {
+                    ...(ex.data || {}),
+                    where,
+                    limit
+                });
             }
-
-            const filteredGroups = groups.filter(whereFilterFactory(where));
-
-            return typeof limit !== "undefined" ? filteredGroups.slice(0, limit) : filteredGroups;
         };
 
         const groups: CmsContentModelGroupContext = {
+            operations: storageOperations,
             noAuth: () => {
                 return {
                     get: groupsGet,
@@ -156,23 +139,21 @@ export default (): ContextPlugin<CmsContext> => ({
                     return utils.validateGroupAccess(context, permission, group);
                 });
             },
-            create: async data => {
+            create: async inputData => {
                 await checkPermissions("w");
 
                 const createdData = new CreateContentModelGroupModel().populate({
-                    ...data,
-                    slug: data.slug ? utils.toSlug(data.slug) : ""
+                    ...inputData,
+                    slug: inputData.slug ? utils.toSlug(inputData.slug) : ""
                 });
                 await createdData.validate();
-                const createdDataJson = await createdData.toJSON();
-
-                await beforeCreateHook(context, createdDataJson);
+                const input = await createdData.toJSON();
 
                 const identity = context.security.getIdentity();
 
                 const id = mdbid();
-                const model: CmsContentModelGroup = {
-                    ...createdDataJson,
+                const data: CmsContentModelGroup = {
+                    ...input,
                     id,
                     locale: context.cms.getLocale().code,
                     createdOn: new Date().toISOString(),
@@ -183,69 +164,117 @@ export default (): ContextPlugin<CmsContext> => ({
                         type: identity.type
                     }
                 };
-
-                const dbData = {
-                    PK: PK_GROUP(),
-                    SK: id,
-                    TYPE: "cms.group",
-                    ...model
-                };
-
-                await db.create({
-                    ...utils.defaults.db(),
-                    data: dbData
-                });
-                return model;
+                try {
+                    await beforeCreateHook({
+                        context,
+                        storageOperations,
+                        input,
+                        data
+                    });
+                    const group = await storageOperations.create({
+                        input,
+                        data
+                    });
+                    await afterCreateHook({
+                        context,
+                        storageOperations,
+                        input,
+                        group
+                    });
+                    return group;
+                } catch (ex) {
+                    throw new WebinyError(
+                        ex.message || "Could not save data model group.",
+                        ex.code || "ERROR_ON_CREATE",
+                        {
+                            ...(ex.data || {}),
+                            data,
+                            input
+                        }
+                    );
+                }
             },
-            update: async (id, data) => {
+            update: async (id, inputData) => {
                 const permission = await checkPermissions("w");
 
-                const group = await context.cms.groups.noAuth().get(id);
+                const group = await groupsGet(id);
 
                 utils.checkOwnership(context, permission, group);
 
-                const updateData = new UpdateContentModelGroupModel().populate(data);
-                await updateData.validate();
+                const input = new UpdateContentModelGroupModel().populate(inputData);
+                await input.validate();
 
-                const updatedDataJson = await updateData.toJSON({ onlyDirty: true });
+                const updatedDataJson = await input.toJSON({ onlyDirty: true });
 
                 // no need to continue if no values were changed
                 if (Object.keys(updatedDataJson).length === 0) {
-                    return {} as any;
+                    return group;
                 }
 
-                const modelData = Object.assign(updatedDataJson, {
+                const data: CmsContentModelGroup = Object.assign(updatedDataJson, {
                     savedOn: new Date().toISOString()
                 });
 
-                await db.update({
-                    ...utils.defaults.db(),
-                    query: { PK: PK_GROUP(), SK: id },
-                    data: modelData
-                });
-
-                return { ...group, ...modelData };
+                try {
+                    await beforeUpdateHook({
+                        context,
+                        storageOperations,
+                        group,
+                        input,
+                        data
+                    });
+                    const updatedGroup = await storageOperations.update({
+                        group,
+                        data,
+                        input
+                    });
+                    await afterUpdateHook({
+                        context,
+                        storageOperations,
+                        group: updatedGroup,
+                        data,
+                        input
+                    });
+                    return updatedGroup;
+                } catch (ex) {
+                    throw new WebinyError(ex.message, ex.code || "UPDATE_ERROR", {
+                        ...(ex.data || {}),
+                        group,
+                        data,
+                        input
+                    });
+                }
             },
             delete: async id => {
                 const permission = await checkPermissions("d");
 
-                const group = await context.cms.groups.noAuth().get(id);
+                const group = await groupsGet(id);
 
                 utils.checkOwnership(context, permission, group);
 
-                await beforeDeleteHook(context, id);
-
-                await db.delete({
-                    ...utils.defaults.db(),
-                    query: {
-                        PK: PK_GROUP(),
-                        SK: id
-                    }
-                });
+                try {
+                    await beforeDeleteHook({
+                        context,
+                        storageOperations,
+                        group
+                    });
+                    await storageOperations.delete({ group });
+                    await afterDeleteHook({
+                        context,
+                        storageOperations,
+                        group
+                    });
+                } catch (ex) {
+                    throw new WebinyError(ex.message, ex.code || "DELETE_ERROR", {
+                        ...(ex.data || {}),
+                        id
+                    });
+                }
 
                 return true;
             }
         };
+
         context.cms = {
             ...(context.cms || ({} as any)),
             groups

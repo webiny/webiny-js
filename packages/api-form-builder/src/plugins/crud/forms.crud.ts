@@ -5,12 +5,12 @@ import pick from "lodash/pick";
 import fetch from "node-fetch";
 import { NotFoundError } from "@webiny/handler-graphql";
 import { NotAuthorizedError } from "@webiny/api-security";
-import { encodeCursor } from "@webiny/api-file-manager/plugins/crud/utils/cursors";
 import * as utils from "./utils";
-import { checkOwnership } from "./utils";
+import { checkOwnership, encodeCursor } from "./utils";
 import defaults from "./defaults";
 import * as models from "./forms.models";
 import { FbForm, FbSubmission, FormBuilderContext } from "../../types";
+import WebinyError from "@webiny/error";
 
 const TYPE_FORM = "fb.form";
 const TYPE_FORM_LATEST = "fb.form.latest";
@@ -19,7 +19,7 @@ const TYPE_FORM_SUBMISSION = "fb.formSubmission";
 
 const getESDataForLatestRevision = (form: FbForm, context: FormBuilderContext) => ({
     __type: "fb.form",
-    tenant: context.security.getTenant().id,
+    tenant: context.tenancy.getCurrentTenant().id,
     webinyVersion: context.WEBINY_VERSION,
     id: form.id,
     createdOn: form.createdOn,
@@ -46,8 +46,8 @@ type DbItem<T = unknown> = T & {
 
 export default {
     type: "context",
-    apply(context) {
-        const { db, i18nContent, elasticSearch, security } = context;
+    apply(context: FormBuilderContext) {
+        const { db, i18nContent, elasticsearch, tenancy } = context;
 
         const PK_FORM = formId => `${utils.getPKPrefix(context)}F#${formId}`;
         const SK_FORM_REVISION = version => {
@@ -127,7 +127,7 @@ export default {
                     // When ES index is shared between tenants, we need to filter records by tenant ID
                     const sharedIndex = process.env.ELASTICSEARCH_SHARED_INDEXES === "true";
                     if (sharedIndex) {
-                        const tenant = security.getTenant();
+                        const tenant = tenancy.getCurrentTenant();
                         must.push({ term: { "tenant.keyword": tenant.id } });
                     }
 
@@ -150,12 +150,22 @@ export default {
                     };
 
                     // Get "latest" form revisions from Elasticsearch.
-                    const response = await elasticSearch.search({
-                        ...defaults.es(context),
-                        body
-                    });
+                    try {
+                        const response = await elasticsearch.search({
+                            ...defaults.es(context),
+                            body
+                        });
 
-                    return response.body.hits.hits.map(item => item._source);
+                        return response.body.hits.hits.map(item => item._source);
+                    } catch (ex) {
+                        throw new WebinyError(
+                            ex.message || "Could not perform search.",
+                            ex.code || "ELASTICSEARCH_ERROR",
+                            {
+                                body
+                            }
+                        );
+                    }
                 },
                 async getFormRevisions(id) {
                     const permission = await utils.checkBaseFormPermissions(context, { rwd: "r" });
@@ -230,7 +240,7 @@ export default {
                     const form: FbForm = {
                         id,
                         locale: i18nContent.locale.code,
-                        tenant: security.getTenant().id,
+                        tenant: tenancy.getCurrentTenant().id,
                         savedOn: new Date().toISOString(),
                         createdOn: new Date().toISOString(),
                         createdBy: {
@@ -994,7 +1004,7 @@ export default {
                     // When ES index is shared between tenants, we need to filter records by tenant ID
                     const sharedIndex = process.env.ELASTICSEARCH_SHARED_INDEXES === "true";
                     if (sharedIndex) {
-                        const tenant = security.getTenant();
+                        const tenant = tenancy.getCurrentTenant();
                         filter.push({ term: { "tenant.keyword": tenant.id } });
                     }
 
@@ -1010,7 +1020,7 @@ export default {
                         body["search_after"] = utils.decodeCursor(after);
                     }
 
-                    const response = await elasticSearch.search({
+                    const response = await elasticsearch.search({
                         ...defaults.es(context),
                         body
                     });
@@ -1184,7 +1194,7 @@ export default {
                                     __type: "fb.submission",
                                     webinyVersion: context.WEBINY_VERSION,
                                     createdOn: new Date().toISOString(),
-                                    tenant: context.security.getTenant().id,
+                                    tenant: context.tenancy.getCurrentTenant().id,
                                     ...submission
                                 }
                             }

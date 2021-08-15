@@ -1,19 +1,19 @@
 import {
-    CmsContentModel,
+    CmsContentModelStorageOperations,
+    CmsContentModelStorageOperationsBeforeUpdateArgs,
     CmsContentModelField,
+    CmsContentModelUpdateHookPluginArgs,
     CmsContext,
     CmsModelFieldToGraphQLPlugin,
     CmsModelLockedFieldPlugin
 } from "../../../../types";
 import WebinyError from "@webiny/error";
 import { runContentModelLifecycleHooks } from "./runContentModelLifecycleHooks";
+import { ContentModelPlugin } from "~/content/plugins/ContentModelPlugin";
 
-interface Args {
+interface Args extends CmsContentModelStorageOperationsBeforeUpdateArgs {
     context: CmsContext;
-    model: CmsContentModel;
-    // data that is being updated in the database
-    // modify it, not the model
-    data: Partial<CmsContentModel>;
+    storageOperations: CmsContentModelStorageOperations;
 }
 
 const defaultTitleFieldId = "id";
@@ -72,6 +72,21 @@ const getContentModelTitleFieldId = (
 
 export const beforeUpdateHook = async (args: Args) => {
     const { context, model, data } = args;
+
+    const modelPlugin: ContentModelPlugin = context.plugins
+        .byType<ContentModelPlugin>(ContentModelPlugin.type)
+        .find((item: ContentModelPlugin) => item.contentModel.modelId === model.modelId);
+
+    if (modelPlugin) {
+        throw new WebinyError(
+            "Content models defined via plugins cannot be updated.",
+            "CONTENT_MODEL_UPDATE_ERROR",
+            {
+                modelId: model.modelId
+            }
+        );
+    }
+
     const combinedModel = {
         ...model,
         ...data
@@ -99,9 +114,8 @@ export const beforeUpdateHook = async (args: Args) => {
 
     data.titleFieldId = getContentModelTitleFieldId(fields, titleFieldId);
 
-    const cmsLockedFieldPlugins = context.plugins.byType<CmsModelLockedFieldPlugin>(
-        "cms-model-locked-field"
-    );
+    const cmsLockedFieldPlugins =
+        context.plugins.byType<CmsModelLockedFieldPlugin>("cms-model-locked-field");
 
     // We must not allow removal or changes in fields that are already in use in content entries.
     for (const lockedField of lockedFields) {
@@ -141,5 +155,8 @@ export const beforeUpdateHook = async (args: Args) => {
             });
         }
     }
-    await runContentModelLifecycleHooks("beforeUpdate", args);
+    if (args.storageOperations.beforeUpdate) {
+        await args.storageOperations.beforeUpdate(args);
+    }
+    await runContentModelLifecycleHooks<CmsContentModelUpdateHookPluginArgs>("beforeUpdate", args);
 };

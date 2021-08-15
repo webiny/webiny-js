@@ -3,6 +3,227 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.12.0](https://github.com/webiny/webiny-js/compare/v5.12.0-beta.1...v5.12.0) (2021-08-05)
+
+**Note:** Version bump only for package @webiny/app-page-builder
+
+
+
+
+
+# [5.12.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.12.0-beta.0...v5.12.0-beta.1) (2021-08-05)
+
+
+### Bug Fixes
+
+* **app-page-builder:** rename GetPage operation to PbGetPage ([95f1665](https://github.com/webiny/webiny-js/commit/95f16650126fed2d23e5eeda361def0f856e490a))
+
+
+
+
+
+# [5.12.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.11.1...v5.12.0-beta.0) (2021-08-04)
+
+
+### Bug Fixes
+
+* restore SplitView component and fix cypress tests ([304a7b3](https://github.com/webiny/webiny-js/commit/304a7b3614e621e9b33fcce54f6ddb1018887b34))
+* set validators as functions ([da73651](https://github.com/webiny/webiny-js/commit/da73651cf2540468aa0792bf2db43fa0e521f403))
+* **app-page-builder:** restore missing FormView config ([cec19bb](https://github.com/webiny/webiny-js/commit/cec19bb1c99ade4a889cf4eaf47d16b8fab17bf0))
+* **app-page-builder:** update right panel reference in BlocksList ([8b79ecb](https://github.com/webiny/webiny-js/commit/8b79ecbe79c26cb264ee769c9ce218a1b78e5185))
+* resolve eslint errors ([57f5d18](https://github.com/webiny/webiny-js/commit/57f5d1857ea6a35b92b496b5bd8dd43fc0583df8))
+
+
+### Features
+
+* introduce UI composer ([#1800](https://github.com/webiny/webiny-js/issues/1800)) ([35d1f85](https://github.com/webiny/webiny-js/commit/35d1f85531f615c0d1a0a333bc9cdb8167e4f51d))
+
+
+
+
+
+## [5.11.1](https://github.com/webiny/webiny-js/compare/v5.11.1-beta.0...v5.11.1) (2021-07-31)
+
+**Note:** Version bump only for package @webiny/app-page-builder
+
+
+
+
+
+## [5.11.1-beta.0](https://github.com/webiny/webiny-js/compare/v5.11.0...v5.11.1-beta.0) (2021-07-31)
+
+**Note:** Version bump only for package @webiny/app-page-builder
+
+
+
+
+
+# [5.11.0](https://github.com/webiny/webiny-js/compare/v5.11.0-beta.2...v5.11.0) (2021-07-22)
+
+**Note:** Version bump only for package @webiny/app-page-builder
+
+
+
+
+
+# [5.11.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.11.0-beta.1...v5.11.0-beta.2) (2021-07-21)
+
+**Note:** Version bump only for package @webiny/app-page-builder
+
+
+
+
+
+# [5.11.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.11.0-beta.0...v5.11.0-beta.1) (2021-07-21)
+
+**Note:** Version bump only for package @webiny/app-page-builder
+
+
+
+
+
+# [5.11.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.10.0...v5.11.0-beta.0) (2021-07-21)
+
+
+### Bug Fixes
+
+* wait a bit before executing installation ([a4e1cac](https://github.com/webiny/webiny-js/commit/a4e1cac0988cceacf4956207d581af4730aff519))
+
+
+
+
+
+# [5.10.0](https://github.com/webiny/webiny-js/compare/v5.10.0-beta.2...v5.10.0) (2021-07-06)
+
+**Note:** Version bump only for package @webiny/app-page-builder
+
+
+
+
+
+# [5.10.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.10.0-beta.1...v5.10.0-beta.2) (2021-07-06)
+
+
+### Bug Fixes
+
+* **app-page-builder:** export PageBuilderObject interface ([f7fa109](https://github.com/webiny/webiny-js/commit/f7fa10966642fe20f0396ececc394a5e66a95e72))
+
+
+
+
+
+# [5.10.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.10.0-beta.0...v5.10.0-beta.1) (2021-07-06)
+
+**Note:** Version bump only for package @webiny/app-page-builder
+
+
+
+
+
+# [5.10.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.9.0...v5.10.0-beta.0) (2021-07-02)
+
+
+### Bug Fixes
+
+* correct if statement ([3f9d278](https://github.com/webiny/webiny-js/commit/3f9d2782d76ae799ef00748e3fd02e87d9783dcd))
+* remove `fetchPolicy: "network-only"` ([d2a0bd7](https://github.com/webiny/webiny-js/commit/d2a0bd7cc5cdb8683ee16ef4102dec75d7cdc1e1))
+* trim trailing forward slash ([3ed7a88](https://github.com/webiny/webiny-js/commit/3ed7a881efed0d27c780710f80bd3a6ba10830c3))
+
+
+### Features
+
+* create a new ApolloCacheObjectIdPlugin plugin ([0179ecc](https://github.com/webiny/webiny-js/commit/0179ecc6c88263e72dc5a0bb81fdbda52d9fcf14))
+
+
+
+
+
+# [5.9.0](https://github.com/webiny/webiny-js/compare/v5.9.0-beta.2...v5.9.0) (2021-06-21)
+
+**Note:** Version bump only for package @webiny/app-page-builder
+
+
+
+
+
+# [5.9.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.9.0-beta.1...v5.9.0-beta.2) (2021-06-20)
+
+**Note:** Version bump only for package @webiny/app-page-builder
+
+
+
+
+
+# [5.9.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.9.0-beta.0...v5.9.0-beta.1) (2021-06-20)
+
+**Note:** Version bump only for package @webiny/app-page-builder
+
+
+
+
+
+# [5.9.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.8.0...v5.9.0-beta.0) (2021-06-18)
+
+
+### Bug Fixes
+
+* **app-page-builder:** extend Plugin class in PbEditorPageSettingsPlugin ([9933e3b](https://github.com/webiny/webiny-js/commit/9933e3bfbfba86b2c1b5a082c8ee2a32f6c7d31c))
+* **app-page-builder:** update imports ([2d41057](https://github.com/webiny/webiny-js/commit/2d4105762eaf3bccce28c16d72f10d306ceefc6c))
+* **telemetry:** rename package and upgrade configs and env vars loading ([4791937](https://github.com/webiny/webiny-js/commit/4791937de3ec1431c82fca1dc2e91da9c7ac49d3))
+
+
+### Features
+
+* **app-page-builder:** add view regions to website settings ([e49d5c8](https://github.com/webiny/webiny-js/commit/e49d5c8d1add14a482ae4a4a40ac33f2d46e98e2))
+
+
+
+
+
+# [5.8.0](https://github.com/webiny/webiny-js/compare/v5.8.0-beta.1...v5.8.0) (2021-06-07)
+
+**Note:** Version bump only for package @webiny/app-page-builder
+
+
+
+
+
+# [5.8.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.8.0-beta.0...v5.8.0-beta.1) (2021-06-05)
+
+**Note:** Version bump only for package @webiny/app-page-builder
+
+
+
+
+
+# [5.8.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.7.0...v5.8.0-beta.0) (2021-06-03)
+
+**Note:** Version bump only for package @webiny/app-page-builder
+
+
+
+
+
+# [5.7.0](https://github.com/webiny/webiny-js/compare/v5.7.0-beta.0...v5.7.0) (2021-05-24)
+
+**Note:** Version bump only for package @webiny/app-page-builder
+
+
+
+
+
+# [5.7.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.6.0...v5.7.0-beta.0) (2021-05-23)
+
+
+### Features
+
+* **app-page-builder:** introduce PbEditorPageQueryFieldsPlugin ([3f3584f](https://github.com/webiny/webiny-js/commit/3f3584f4bd2eeddd9de95797fd84f6240809f54b))
+* improve drag & drop UX in the Page Builder navigator ([#1599](https://github.com/webiny/webiny-js/issues/1599)) ([e08fa06](https://github.com/webiny/webiny-js/commit/e08fa06ec0cd4154e97c89068b51c84e407a5b92))
+
+
+
+
+
 # [5.6.0](https://github.com/webiny/webiny-js/compare/v5.6.0-beta.2...v5.6.0) (2021-05-10)
 
 **Note:** Version bump only for package @webiny/app-page-builder

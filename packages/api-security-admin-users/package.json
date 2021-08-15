@@ -1,0 +1,58 @@
+{
+  "name": "@webiny/api-security-admin-users",
+  "version": "5.12.0",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git"
+  },
+  "keywords": [
+    "sau:base"
+  ],
+  "description": "Admin user management (users, groups, API keys).",
+  "author": "Webiny Ltd.",
+  "license": "MIT",
+  "dependencies": {
+    "@commodo/fields": "1.1.2-beta.20",
+    "@webiny/api-security": "^5.12.0",
+    "@webiny/api-tenancy": "^5.12.0",
+    "@webiny/error": "^5.12.0",
+    "@webiny/handler": "^5.12.0",
+    "@webiny/handler-aws": "^5.12.0",
+    "@webiny/handler-graphql": "^5.12.0",
+    "@webiny/handler-http": "^5.12.0",
+    "@webiny/plugins": "^5.12.0",
+    "@webiny/validation": "^5.12.0",
+    "commodo-fields-object": "^1.0.6",
+    "dataloader": "^2.0.0",
+    "deep-equal": "^2.0.4",
+    "lodash.clonedeep": "^4.5.0",
+    "md5": "^2.3.0",
+    "mdbid": "^1.0.0"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.5.5",
+    "@babel/core": "^7.5.5",
+    "@webiny/cli": "^5.12.0",
+    "@webiny/project-utils": "^5.12.0",
+    "jest": "^26.6.3",
+    "rimraf": "^3.0.2",
+    "ttypescript": "^1.5.12",
+    "typescript": "^4.1.3"
+  },
+  "publishConfig": {
+    "access": "public",
+    "directory": "dist"
+  },
+  "scripts": {
+    "build": "yarn webiny run build",
+    "watch": "yarn webiny run watch"
+  },
+  "adio": {
+    "ignore": {
+      "src": [
+        "aws-sdk"
+      ]
+    }
+  }
+}

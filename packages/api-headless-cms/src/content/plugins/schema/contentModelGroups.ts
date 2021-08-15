@@ -1,11 +1,13 @@
-import { GraphQLSchemaPlugin, Resolvers } from "@webiny/handler-graphql/types";
 import { ErrorResponse, Response } from "@webiny/handler-graphql";
 
 import {
     CmsContentModelGroupCreateInput,
     CmsContentModelGroupUpdateInput,
     CmsContext
-} from "../../../types";
+} from "~/types";
+import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSchemaPlugin";
+import { Resolvers } from "@webiny/handler-graphql/types";
+import { ContentModelGroupPlugin } from "~/content/plugins/ContentModelGroupPlugin";
 
 interface CreateContentModelGroupArgs {
     data: CmsContentModelGroupCreateInput;
@@ -28,10 +30,10 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
     if (context.cms.MANAGE) {
         manageSchema = /* GraphQL */ `
             input CmsContentModelGroupInput {
-                name: String
+                name: String!
                 slug: String
                 description: String
-                icon: String
+                icon: String!
             }
 
             type CmsContentModelGroupResponse {
@@ -77,6 +79,16 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
                 totalContentModels: async (group, args, context) => {
                     const models = await context.cms.models.silentAuth().list();
                     return models.filter(m => m.group === group.id).length;
+                },
+                plugin: async (group, args, context: CmsContext) => {
+                    const groupPlugin: ContentModelGroupPlugin = context.plugins
+                        .byType<ContentModelGroupPlugin>(ContentModelGroupPlugin.type)
+                        .find(
+                            (item: ContentModelGroupPlugin) =>
+                                item.contentModelGroup.id === group.id
+                        );
+
+                    return Boolean(groupPlugin);
                 }
             },
             Query: {
@@ -127,27 +139,27 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
         };
     }
 
-    return {
-        type: "graphql-schema",
-        schema: {
-            typeDefs: /* GraphQL */ `
-                type CmsContentModelGroup {
-                    id: ID
-                    createdOn: DateTime
-                    savedOn: DateTime
-                    name: String
-                    contentModels: [CmsContentModel]
-                    totalContentModels: Int
-                    slug: String
-                    description: String
-                    icon: String
-                    createdBy: JSON
-                }
-                ${manageSchema}
-            `,
-            resolvers
-        }
-    };
+    return new GraphQLSchemaPlugin<CmsContext>({
+        typeDefs: /* GraphQL */ `
+            type CmsContentModelGroup {
+                id: ID!
+                createdOn: DateTime
+                savedOn: DateTime
+                name: String!
+                contentModels: [CmsContentModel!]
+                totalContentModels: Int!
+                slug: String!
+                description: String
+                icon: String
+                createdBy: CmsCreatedBy
+
+                # Returns true if the content model group is registered via a plugin.
+                plugin: Boolean!
+            }
+            ${manageSchema}
+        `,
+        resolvers
+    });
 };
 
 export default plugin;

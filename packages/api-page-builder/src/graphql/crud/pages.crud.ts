@@ -1,30 +1,30 @@
-import { ContextPlugin } from "@webiny/handler/types";
 import mdbid from "mdbid";
-import defaults from "./utils/defaults";
 import uniqid from "uniqid";
-import { NotAuthorizedError } from "@webiny/api-security";
-import Error from "@webiny/error";
-import { NotFoundError } from "@webiny/handler-graphql";
-import getNormalizedListPagesArgs from "./utils/getNormalizedListPagesArgs";
 import trimStart from "lodash/trimStart";
 import omit from "lodash/omit";
 import get from "lodash/get";
 import merge from "lodash/merge";
-import getPKPrefix from "./utils/getPKPrefix";
 import DataLoader from "dataloader";
-
-import { Page, PageHookPlugin, PageSecurityPermission, PbContext, TYPE } from "../../types";
+import { NotAuthorizedError } from "@webiny/api-security";
+import Error from "@webiny/error";
+import { NotFoundError } from "@webiny/handler-graphql";
+import { Args as FlushArgs } from "@webiny/api-prerendering-service/flush/types";
+import { ContextPlugin } from "@webiny/handler/types";
+import getPKPrefix from "./utils/getPKPrefix";
+import defaults from "./utils/defaults";
+import { Page, PagesCrud, PageSecurityPermission, PbContext, TYPE } from "~/types";
+import { SearchPublishedPagesPlugin } from "~/plugins/SearchPublishedPagesPlugin";
+import { SearchLatestPagesPlugin } from "~/plugins/SearchLatestPagesPlugin";
 import createListMeta from "./utils/createListMeta";
 import checkBasePermissions from "./utils/checkBasePermissions";
 import checkOwnPermissions from "./utils/checkOwnPermissions";
-import executeHookCallbacks from "./utils/executeHookCallbacks";
-import path from "path";
+import getNormalizedListPagesArgs from "./utils/getNormalizedListPagesArgs";
+import executeCallbacks from "./utils/executeCallbacks";
 import normalizePath from "./pages/normalizePath";
 import { compressContent, extractContent } from "./pages/contentCompression";
-import { CreateDataModel, UpdateDataModel, UpdateSettingsModel } from "./pages/models";
+import { CreateDataModel, UpdateSettingsModel } from "./pages/models";
 import { getESLatestPageData, getESPublishedPageData } from "./pages/esPageData";
-
-import { Args as FlushArgs } from "@webiny/api-prerendering-service/flush/types";
+import { PagePlugin } from "~/plugins/PagePlugin";
 
 const STATUS_CHANGES_REQUESTED = "changesRequested";
 const STATUS_REVIEW_REQUESTED = "reviewRequested";
@@ -40,14 +40,14 @@ const PERMISSION_NAME = "pb.page";
 const plugin: ContextPlugin<PbContext> = {
     type: "context",
     async apply(context) {
-        const { db, i18nContent, elasticSearch } = context;
+        const { db, i18nContent, elasticsearch } = context;
 
         const PK_PAGE = pid => `${getPKPrefix(context)}P#${pid}`;
         const PK_PAGE_PUBLISHED_PATH = () => `${getPKPrefix(context)}PATH`;
         const ES_DEFAULTS = () => defaults.es(context);
 
         // Used in a couple of key events - (un)publishing and pages deletion.
-        const hookPlugins = context.plugins.byType<PageHookPlugin>("pb-page-hook");
+        const pagePlugins = context.plugins.byType<PagePlugin>(PagePlugin.type);
 
         context.pageBuilder = {
             ...context.pageBuilder,
@@ -177,7 +177,7 @@ const plugin: ContextPlugin<PbContext> = {
 
                     const normalizedPath = normalizePath(args.path);
                     if (normalizedPath === "/") {
-                        const settings = await context.pageBuilder.settings.default.get();
+                        const settings = await context.pageBuilder.settings.default.getCurrent();
                         if (!settings?.pages?.home) {
                             throw notFoundError;
                         }
@@ -187,13 +187,21 @@ const plugin: ContextPlugin<PbContext> = {
                         });
                     }
 
-                    const [[page]] = await db.read<Page>({
+                    let [[page]] = await db.read<Page>({
                         ...defaults.db,
                         query: { PK: PK_PAGE_PUBLISHED_PATH(), SK: normalizedPath }
                     });
 
                     if (!page) {
-                        throw notFoundError;
+                        // Try loading dynamic pages
+                        for (const plugin of pagePlugins) {
+                            if (typeof plugin.notFound === "function") {
+                                page = await plugin.notFound({ args, context });
+                                if (page) {
+                                    break;
+                                }
+                            }
+                        }
                     }
 
                     if (page) {
@@ -214,7 +222,7 @@ const plugin: ContextPlugin<PbContext> = {
                         context
                     );
 
-                    query.bool.filter.push(
+                    query.filter.push(
                         {
                             term: { "locale.keyword": i18nContent.getLocale().code }
                         },
@@ -224,15 +232,34 @@ const plugin: ContextPlugin<PbContext> = {
                     // If users can only manage own records, let's add the special filter.
                     if (permission.own === true) {
                         const identity = context.security.getIdentity();
-                        query.bool.filter.push({
+                        query.filter.push({
                             term: { "createdBy.id.keyword": identity.id }
                         });
                     }
 
-                    const response = await elasticSearch.search({
+                    const listLatestPlugins = context.plugins.byType<SearchLatestPagesPlugin>(
+                        SearchLatestPagesPlugin.type
+                    );
+
+                    for (const plugin of listLatestPlugins) {
+                        // Apply query modifications
+                        plugin.modifyQuery({ query, args, context });
+
+                        // Apply sort modifications
+                        plugin.modifySort({ sort, args, context });
+                    }
+
+                    const response = await elasticsearch.search({
                         ...ES_DEFAULTS(),
                         body: {
-                            query,
+                            query: {
+                                bool: {
+                                    must: query.must.length > 0 ? query.must : undefined,
+                                    must_not:
+                                        query.must_not.length > 0 ? query.must_not : undefined,
+                                    filter: query.filter.length > 0 ? query.filter : undefined
+                                }
+                            },
                             from,
                             size,
                             sort
@@ -253,17 +280,36 @@ const plugin: ContextPlugin<PbContext> = {
                         context
                     );
 
-                    query.bool.filter.push(
+                    query.filter.push(
                         {
                             term: { "locale.keyword": i18nContent.getLocale().code }
                         },
                         { term: { published: true } }
                     );
 
-                    const response = await elasticSearch.search({
+                    const listPublishedPlugins = context.plugins.byType<SearchPublishedPagesPlugin>(
+                        SearchPublishedPagesPlugin.type
+                    );
+
+                    for (const plugin of listPublishedPlugins) {
+                        // Apply query modifications
+                        plugin.modifyQuery({ query, args, context });
+
+                        // Apply sort modifications
+                        plugin.modifySort({ sort, args, context });
+                    }
+
+                    const response = await elasticsearch.search({
                         ...ES_DEFAULTS(),
                         body: {
-                            query,
+                            query: {
+                                bool: {
+                                    must: query.must.length > 0 ? query.must : undefined,
+                                    must_not:
+                                        query.must_not.length > 0 ? query.must_not : undefined,
+                                    filter: query.filter.length > 0 ? query.filter : undefined
+                                }
+                            },
                             from,
                             size,
                             sort
@@ -287,7 +333,7 @@ const plugin: ContextPlugin<PbContext> = {
                     // When ES index is shared between tenants, we need to filter records by tenant ID
                     const sharedIndex = process.env.ELASTICSEARCH_SHARED_INDEXES === "true";
                     if (sharedIndex) {
-                        const tenant = context.security.getTenant();
+                        const tenant = context.tenancy.getCurrentTenant();
                         query = {
                             bool: {
                                 filter: [{ term: { "tenant.keyword": tenant.id } }]
@@ -295,7 +341,7 @@ const plugin: ContextPlugin<PbContext> = {
                         };
                     }
 
-                    const response = await elasticSearch.search({
+                    const response = await elasticsearch.search({
                         ...ES_DEFAULTS(),
                         body: {
                             query,
@@ -348,7 +394,9 @@ const plugin: ContextPlugin<PbContext> = {
                         pagePath = normalizePath("untitled-" + uniqid.time());
                     } else {
                         pagePath = normalizePath(
-                            path.join(category.url, "untitled-" + uniqid.time())
+                            [category.url, "untitled-" + uniqid.time()]
+                                .join("/")
+                                .replace(/\/\//g, "/")
                         );
                     }
 
@@ -372,14 +420,11 @@ const plugin: ContextPlugin<PbContext> = {
                         type: identity.type
                     };
 
-                    const data = {
-                        PK: PK_PAGE(pid),
-                        SK: `REV#${zeroPaddedVersion}`,
-                        TYPE: TYPE.PAGE,
+                    const page: Page = {
                         id,
                         pid,
                         locale: context.i18nContent.getLocale().code,
-                        tenant: context.security.getTenant().id,
+                        tenant: context.tenancy.getCurrentTenant().id,
                         editor: DEFAULT_EDITOR,
                         category: category.slug,
                         title,
@@ -390,6 +435,8 @@ const plugin: ContextPlugin<PbContext> = {
                             list: { latest: true, published: true },
                             get: { latest: true, published: true }
                         },
+                        home: false,
+                        notFound: false,
                         locked: false,
                         publishedOn: null,
                         createdFrom: null,
@@ -401,30 +448,47 @@ const plugin: ContextPlugin<PbContext> = {
                         content: compressContent() // Just create the initial { compression, content } object.
                     };
 
-                    await executeHookCallbacks(hookPlugins, "beforeCreate", context, data);
+                    await executeCallbacks<PagePlugin["beforeCreate"]>(
+                        pagePlugins,
+                        "beforeCreate",
+                        { context, page }
+                    );
+
+                    const ddbData = {
+                        PK: PK_PAGE(pid),
+                        SK: `REV#${zeroPaddedVersion}`,
+                        TYPE: TYPE.PAGE,
+                        ...page
+                    };
 
                     const latestPageKeys = { PK: PK_PAGE(pid), SK: "L" };
 
                     await db
                         .batch()
-                        .create({ ...defaults.db, data })
+                        .create({ ...defaults.db, data: ddbData })
                         .create({
                             ...defaults.db,
-                            data: { ...data, ...latestPageKeys }
+                            data: { ...ddbData, ...latestPageKeys }
                         })
                         .create({
                             ...defaults.esDb,
                             data: {
                                 ...latestPageKeys,
                                 index: ES_DEFAULTS().index,
-                                data: getESLatestPageData(context, { ...data, ...latestPageKeys })
+                                data: getESLatestPageData(context, {
+                                    ...ddbData,
+                                    ...latestPageKeys
+                                })
                             }
                         })
                         .execute();
 
-                    await executeHookCallbacks(hookPlugins, "afterCreate", context, data);
+                    await executeCallbacks<PagePlugin["afterCreate"]>(pagePlugins, "afterCreate", {
+                        context,
+                        page
+                    });
 
-                    return omit(data, ["PK", "SK", "content"]) as any;
+                    return omit(ddbData, ["PK", "SK", "content"]) as any;
                 },
 
                 async createFrom(from) {
@@ -487,7 +551,14 @@ const plugin: ContextPlugin<PbContext> = {
                         }
                     };
 
-                    await executeHookCallbacks(hookPlugins, "beforeCreate", context, data);
+                    await executeCallbacks<PagePlugin["beforeCreate"]>(
+                        pagePlugins,
+                        "beforeCreate",
+                        {
+                            context,
+                            page: data as Page
+                        }
+                    );
 
                     const latestPageKeys = {
                         PK: PK_PAGE(fromPid),
@@ -514,14 +585,17 @@ const plugin: ContextPlugin<PbContext> = {
                             data: {
                                 ...latestPageKeys,
                                 index: ES_DEFAULTS().index,
-                                data: getESLatestPageData(context, data)
+                                data: getESLatestPageData(context, data as Page)
                             }
                         });
                     }
 
                     await batch.execute();
 
-                    await executeHookCallbacks(hookPlugins, "afterCreate", context, data);
+                    await executeCallbacks<PagePlugin["afterCreate"]>(pagePlugins, "afterCreate", {
+                        page: data as Page,
+                        context
+                    });
 
                     // Extract compressed page content.
                     data.content = await extractContent(data.content);
@@ -561,29 +635,29 @@ const plugin: ContextPlugin<PbContext> = {
                     const identity = context.security.getIdentity();
                     checkOwnPermissions(identity, permission, existingPage, "ownedBy");
 
-                    const updateDataModel = new UpdateDataModel().populate(data);
-                    await updateDataModel.validate();
+                    const updateData: Partial<Page> = {
+                        ...data,
+                        savedOn: new Date().toISOString()
+                    };
 
-                    const updateData = await updateDataModel.toJSON({ onlyDirty: true });
-
-                    const updateSettingsModel = new UpdateSettingsModel()
-                        .populate(existingPage.settings)
-                        .populate(data.settings);
-
-                    await updateSettingsModel.validate();
-
-                    updateData.settings = await updateSettingsModel.toJSON();
-                    updateData.savedOn = new Date().toISOString();
+                    await executeCallbacks<PagePlugin["beforeUpdate"]>(
+                        pagePlugins,
+                        "beforeUpdate",
+                        {
+                            context,
+                            existingPage,
+                            inputData: data,
+                            updateData
+                        }
+                    );
 
                     const newContent = updateData.content;
                     if (newContent) {
                         updateData.content = compressContent(newContent);
                     }
 
-                    await executeHookCallbacks(hookPlugins, "beforeUpdate", context, existingPage);
-
                     const newPageData = { ...existingPage, ...updateData };
-                    const newLatestPageData = { ...existingLatestPage, ...updateData };
+                    const newLatestPage = { ...existingLatestPage, ...updateData };
 
                     const batch = db.batch().update({
                         ...defaults.db,
@@ -592,13 +666,13 @@ const plugin: ContextPlugin<PbContext> = {
                     });
 
                     // If we updated the latest rev, make sure the changes are propagated to "L" record and ES.
-                    if (newLatestPageData.id === id) {
+                    if (newLatestPage.id === id) {
                         const latestPageKeys = { PK: PK_PAGE(pid), SK: "L" };
 
                         batch.update({
                             ...defaults.db,
                             query: latestPageKeys,
-                            data: newLatestPageData
+                            data: newLatestPage
                         });
 
                         // Update the ES index according to the value of the "latest pages lists" visibility setting.
@@ -622,7 +696,11 @@ const plugin: ContextPlugin<PbContext> = {
 
                     await batch.execute();
 
-                    await executeHookCallbacks(hookPlugins, "afterUpdate", context, newPageData);
+                    await executeCallbacks<PagePlugin["afterUpdate"]>(pagePlugins, "afterUpdate", {
+                        context,
+                        page: newPageData as Page,
+                        inputData: data
+                    });
 
                     return {
                         ...newPageData,
@@ -663,7 +741,7 @@ const plugin: ContextPlugin<PbContext> = {
                     const identity = context.security.getIdentity();
                     checkOwnPermissions(identity, permission, page, "ownedBy");
 
-                    const settings = await context.pageBuilder.settings.default.get();
+                    const settings = await context.pageBuilder.settings.default.getCurrent();
                     const pages = settings?.pages || {};
                     for (const key in pages) {
                         if (pages[key] === page.pid) {
@@ -672,11 +750,16 @@ const plugin: ContextPlugin<PbContext> = {
                     }
 
                     // 3. Let's start updating. But first, let's trigger before-delete hook callbacks.
-                    await executeHookCallbacks(hookPlugins, "beforeDelete", context, {
-                        page,
-                        latestPage,
-                        publishedPage
-                    });
+                    await executeCallbacks<PagePlugin["beforeDelete"]>(
+                        pagePlugins,
+                        "beforeDelete",
+                        {
+                            context,
+                            page,
+                            latestPage,
+                            publishedPage
+                        }
+                    );
 
                     // Before we continue, note that if `publishedPageData` exists, then `publishedPagePathData`
                     // also exists. And to delete it, we can read `publishedPageData.path` to get its SK.
@@ -736,11 +819,16 @@ const plugin: ContextPlugin<PbContext> = {
                             })
                             .execute();
 
-                        await executeHookCallbacks(hookPlugins, "afterDelete", context, {
-                            page,
-                            latestPage,
-                            publishedPage
-                        });
+                        await executeCallbacks<PagePlugin["afterDelete"]>(
+                            pagePlugins,
+                            "afterDelete",
+                            {
+                                context,
+                                page,
+                                latestPage,
+                                publishedPage
+                            }
+                        );
 
                         return [page, null];
                     }
@@ -821,7 +909,8 @@ const plugin: ContextPlugin<PbContext> = {
 
                     await batch.execute();
 
-                    await executeHookCallbacks(hookPlugins, "afterDelete", context, {
+                    await executeCallbacks<PagePlugin["afterDelete"]>(pagePlugins, "afterDelete", {
+                        context,
                         page,
                         latestPage,
                         publishedPage
@@ -886,11 +975,16 @@ const plugin: ContextPlugin<PbContext> = {
                         }
                     });
 
-                    await executeHookCallbacks(hookPlugins, "beforePublish", context, {
-                        page,
-                        latestPage,
-                        publishedPage
-                    });
+                    await executeCallbacks<PagePlugin["beforePublish"]>(
+                        pagePlugins,
+                        "beforePublish",
+                        {
+                            context,
+                            page,
+                            latestPage,
+                            publishedPage
+                        }
+                    );
 
                     const pathTakenByAnotherPage =
                         publishedPageOnPath && publishedPageOnPath.pid !== page.pid;
@@ -1068,11 +1162,16 @@ const plugin: ContextPlugin<PbContext> = {
 
                     await batch.execute();
 
-                    await executeHookCallbacks(hookPlugins, "afterPublish", context, {
-                        page,
-                        latestPage,
-                        publishedPage
-                    });
+                    await executeCallbacks<PagePlugin["afterPublish"]>(
+                        pagePlugins,
+                        "afterPublish",
+                        {
+                            context,
+                            page,
+                            latestPage,
+                            publishedPage
+                        }
+                    );
 
                     return page;
                 },
@@ -1125,7 +1224,7 @@ const plugin: ContextPlugin<PbContext> = {
                         throw new Error(`Page "${pageId}" is not published.`);
                     }
 
-                    const settings = await context.pageBuilder.settings.default.get();
+                    const settings = await context.pageBuilder.settings.default.getCurrent();
                     const pages = settings?.pages || {};
                     for (const key in pages) {
                         if (pages[key] === page.pid) {
@@ -1133,7 +1232,14 @@ const plugin: ContextPlugin<PbContext> = {
                         }
                     }
 
-                    await executeHookCallbacks(hookPlugins, "beforeUnpublish", context, page);
+                    await executeCallbacks<PagePlugin["beforeUnpublish"]>(
+                        pagePlugins,
+                        "beforeUnpublish",
+                        {
+                            context,
+                            page
+                        }
+                    );
 
                     page.status = STATUS_UNPUBLISHED;
 
@@ -1194,7 +1300,14 @@ const plugin: ContextPlugin<PbContext> = {
 
                     await batch.execute();
 
-                    await executeHookCallbacks(hookPlugins, "afterUnpublish", context, page);
+                    await executeCallbacks<PagePlugin["afterUnpublish"]>(
+                        pagePlugins,
+                        "afterUnpublish",
+                        {
+                            context,
+                            page
+                        }
+                    );
 
                     return page;
                 },
@@ -1358,32 +1471,22 @@ const plugin: ContextPlugin<PbContext> = {
 
                 prerendering: {
                     async render(args) {
-                        const current = await context.pageBuilder.settings.default.get();
-                        const defaults = await context.pageBuilder.settings.default.getDefault();
-
-                        const appUrl =
-                            current?.prerendering?.app?.url || defaults?.prerendering?.app?.url;
-
-                        const storageName =
-                            current?.prerendering?.storage?.name ||
-                            defaults?.prerendering?.storage?.name;
+                        const current = await context.pageBuilder.settings.default.getCurrent();
+                        const appUrl = get(current, "prerendering.app.url");
+                        const storageName = get(current, "prerendering.storage.name");
 
                         if (!appUrl || !storageName) {
                             return;
                         }
 
-                        const meta = merge(
-                            defaults?.prerendering?.meta,
-                            current?.prerendering?.meta,
-                            {
-                                tenant: context.security.getTenant().id,
-                                locale: i18nContent.getLocale().code
-                            }
-                        );
+                        const meta = merge(current?.prerendering?.meta, {
+                            tenant: context.tenancy.getCurrentTenant().id,
+                            locale: i18nContent.getLocale().code
+                        });
 
                         const { paths, tags } = args;
 
-                        const dbNamespace = "T#" + context.security.getTenant().id;
+                        const dbNamespace = "T#" + context.tenancy.getCurrentTenant().id;
 
                         if (Array.isArray(paths)) {
                             await context.prerenderingServiceClient.render(
@@ -1425,15 +1528,9 @@ const plugin: ContextPlugin<PbContext> = {
                         }
                     },
                     async flush(args) {
-                        const current = await context.pageBuilder.settings.default.get();
-                        const defaults = await context.pageBuilder.settings.default.getDefault();
-
-                        const appUrl =
-                            current?.prerendering?.app?.url || defaults?.prerendering?.app?.url;
-
-                        const storageName =
-                            current?.prerendering?.storage?.name ||
-                            defaults?.prerendering?.storage?.name;
+                        const current = await context.pageBuilder.settings.default.getCurrent();
+                        const appUrl = get(current, "prerendering.app.url");
+                        const storageName = get(current, "prerendering.storage.name");
 
                         if (!storageName) {
                             return;
@@ -1441,7 +1538,7 @@ const plugin: ContextPlugin<PbContext> = {
 
                         const { paths, tags } = args;
 
-                        const dbNamespace = "T#" + context.security.getTenant().id;
+                        const dbNamespace = "T#" + context.tenancy.getCurrentTenant().id;
 
                         if (Array.isArray(paths)) {
                             await context.prerenderingServiceClient.flush(
@@ -1480,7 +1577,7 @@ const plugin: ContextPlugin<PbContext> = {
                         }
                     }
                 }
-            }
+            } as PagesCrud
         };
     }
 };

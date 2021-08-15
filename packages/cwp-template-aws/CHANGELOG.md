@@ -3,6 +3,283 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.12.0](https://github.com/webiny/webiny-js/compare/v5.12.0-beta.1...v5.12.0) (2021-08-05)
+
+**Note:** Version bump only for package @webiny/cwp-template-aws
+
+
+
+
+
+# [5.12.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.12.0-beta.0...v5.12.0-beta.1) (2021-08-05)
+
+**Note:** Version bump only for package @webiny/cwp-template-aws
+
+
+
+
+
+# [5.12.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.11.1...v5.12.0-beta.0) (2021-08-04)
+
+
+### Bug Fixes
+
+* add dependsOn argument ([84f74a0](https://github.com/webiny/webiny-js/commit/84f74a0722afbb491f360ccf3b540b57ec3905ca))
+
+
+### Features
+
+* compress the data that goes into es ddb table ([#1821](https://github.com/webiny/webiny-js/issues/1821)) ([53b2b86](https://github.com/webiny/webiny-js/commit/53b2b8641ce7f0814ab9d6d07d67ab731828e46c))
+* introduce UI composer ([#1800](https://github.com/webiny/webiny-js/issues/1800)) ([35d1f85](https://github.com/webiny/webiny-js/commit/35d1f85531f615c0d1a0a333bc9cdb8167e4f51d))
+* **api-security-admin-users:** storage operations ([#1818](https://github.com/webiny/webiny-js/issues/1818)) ([d0c47f5](https://github.com/webiny/webiny-js/commit/d0c47f53cc99d02a77e5b1a04730b814acb83ab9))
+
+
+
+
+
+## [5.11.1](https://github.com/webiny/webiny-js/compare/v5.11.1-beta.0...v5.11.1) (2021-07-31)
+
+**Note:** Version bump only for package @webiny/cwp-template-aws
+
+
+
+
+
+## [5.11.1-beta.0](https://github.com/webiny/webiny-js/compare/v5.11.0...v5.11.1-beta.0) (2021-07-31)
+
+**Note:** Version bump only for package @webiny/cwp-template-aws
+
+
+
+
+
+# [5.11.0](https://github.com/webiny/webiny-js/compare/v5.11.0-beta.2...v5.11.0) (2021-07-22)
+
+**Note:** Version bump only for package @webiny/cwp-template-aws
+
+
+
+
+
+# [5.11.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.11.0-beta.1...v5.11.0-beta.2) (2021-07-21)
+
+
+### Bug Fixes
+
+* **cwp-template-aws:** enable form field validators ([38342bc](https://github.com/webiny/webiny-js/commit/38342bc77467a3a48d4b5cda22a8b9099d795bfb))
+
+
+
+
+
+# [5.11.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.11.0-beta.0...v5.11.0-beta.1) (2021-07-21)
+
+
+### Bug Fixes
+
+* **cwp-template-aws:** add object field plugins to user project ([7832e57](https://github.com/webiny/webiny-js/commit/7832e579491495928f01996f3006b08a7d4ec40a))
+
+
+
+
+
+# [5.11.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.10.0...v5.11.0-beta.0) (2021-07-21)
+
+
+### Bug Fixes
+
+* decrease "graphql" function's timeout back to 30s ([0c5806e](https://github.com/webiny/webiny-js/commit/0c5806e1272b341d1a5f513faae9da371dc32e9c))
+* increase timeout ([9183c30](https://github.com/webiny/webiny-js/commit/9183c30ca29243008ccac65095ccb04de8483b39))
+* remove ES-related configs ([81d82af](https://github.com/webiny/webiny-js/commit/81d82afb3f3bf0de2d1f8886798d89248c14967a))
+
+
+### Features
+
+* **api-i18n:** storage operations ([#1758](https://github.com/webiny/webiny-js/issues/1758)) ([a488eee](https://github.com/webiny/webiny-js/commit/a488eee18ac4f674cb0dcd53d88a88b6659a802a))
+
+
+
+
+
+# [5.10.0](https://github.com/webiny/webiny-js/compare/v5.10.0-beta.2...v5.10.0) (2021-07-06)
+
+**Note:** Version bump only for package @webiny/cwp-template-aws
+
+
+
+
+
+# [5.10.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.10.0-beta.1...v5.10.0-beta.2) (2021-07-06)
+
+**Note:** Version bump only for package @webiny/cwp-template-aws
+
+
+
+
+
+# [5.10.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.10.0-beta.0...v5.10.0-beta.1) (2021-07-06)
+
+**Note:** Version bump only for package @webiny/cwp-template-aws
+
+
+
+
+
+# [5.10.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.9.0...v5.10.0-beta.0) (2021-07-02)
+
+
+### Bug Fixes
+
+* adjust link-preloading activation logic ([23ef79d](https://github.com/webiny/webiny-js/commit/23ef79da8f619cb48a3afdb0e3d306f9e86b5c2e))
+* adjust link-preloading activation logic ([f03b8e6](https://github.com/webiny/webiny-js/commit/f03b8e651e8aba282132d06e6552631282c51bbe))
+* remove "**/__tests__/**" ([fbd643b](https://github.com/webiny/webiny-js/commit/fbd643ba8dac8fe929414bf79c5e56e19d8118c8))
+* remove redundant if statement ([6b99e31](https://github.com/webiny/webiny-js/commit/6b99e317e12fa01538d740e09be5ffb649ec67a4))
+* update template ([437daff](https://github.com/webiny/webiny-js/commit/437daff453b11d6a6b99e17757504d992cfe62e8))
+* update template ([c201900](https://github.com/webiny/webiny-js/commit/c2019001ce182b23de1624973f0349849146b5ab))
+* use __PS_RENDER__ window property to check if the page is being pre-rendered ([7c4b65f](https://github.com/webiny/webiny-js/commit/7c4b65f0087d40117ef01851007f7d0de311cef6))
+
+
+### Features
+
+* import and register new ApolloCacheObjectIdPlugin plugin ([a8d57d3](https://github.com/webiny/webiny-js/commit/a8d57d373eb7621b1c02f656d12f013c072e62f3))
+* update Lambda runtime and sharp layer ([#1738](https://github.com/webiny/webiny-js/issues/1738)) ([c03af0a](https://github.com/webiny/webiny-js/commit/c03af0aba0a315c3823251d9fecd888cc191250c))
+* **api-file-manager:** storage operations ([#1716](https://github.com/webiny/webiny-js/issues/1716)) ([7b81e0b](https://github.com/webiny/webiny-js/commit/7b81e0b7c2ddf396cad09334e10c39e588d8643b))
+
+
+
+
+
+# [5.9.0](https://github.com/webiny/webiny-js/compare/v5.9.0-beta.2...v5.9.0) (2021-06-21)
+
+
+### Bug Fixes
+
+* add missing config args ([67bc05a](https://github.com/webiny/webiny-js/commit/67bc05ab21bb0137bb902511e51f2c3c74bfb4ca))
+
+
+
+
+
+# [5.9.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.9.0-beta.1...v5.9.0-beta.2) (2021-06-20)
+
+
+### Bug Fixes
+
+* downgrade cross-env (use same as apps) ([f7c96f4](https://github.com/webiny/webiny-js/commit/f7c96f4a0dd1fe1ec5a14e141c7805d4e3bc7d7a))
+* simplify output ([116e6a5](https://github.com/webiny/webiny-js/commit/116e6a556c85c8e3440001b57867203419946ce7))
+
+
+
+
+
+# [5.9.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.9.0-beta.0...v5.9.0-beta.1) (2021-06-20)
+
+
+### Bug Fixes
+
+* add cross-env dev dependency ([7149188](https://github.com/webiny/webiny-js/commit/71491887aa9fc88c76943ef5330c4c98ad8bfc2e))
+* improve messaging ([0e50005](https://github.com/webiny/webiny-js/commit/0e500052d0b4321fd7bc79d9c9abe631afa62187))
+
+
+
+
+
+# [5.9.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.8.0...v5.9.0-beta.0) (2021-06-18)
+
+
+### Bug Fixes
+
+* add dynamoDbTable export ([0ab8217](https://github.com/webiny/webiny-js/commit/0ab8217d4519cd5f0aa071635ae49f77afed8c43))
+* add missing `ELASTIC_SEARCH_INDEX_PREFIX` env variable ([f74e48d](https://github.com/webiny/webiny-js/commit/f74e48d93b43162e93a2270cf9a34963734f03da))
+* add support for importing via "~" ([6abc66b](https://github.com/webiny/webiny-js/commit/6abc66bcd85b5da449040a38b3712ffa7e1d3d68))
+* check if stackOutput empty ([08ca161](https://github.com/webiny/webiny-js/commit/08ca1616abc68b04a754c40284ad8cdf5ca63345))
+* correct link ([7b929f7](https://github.com/webiny/webiny-js/commit/7b929f710d9ef086c30dca8568c95f376cf27000))
+* export `dynamoDbTable` ([0980e2c](https://github.com/webiny/webiny-js/commit/0980e2c98ffe25439552cbc4e932f787965af407))
+* format code ([6ca4e6e](https://github.com/webiny/webiny-js/commit/6ca4e6ee110a72b9437905f3ad5c1f7c3f1c733e))
+* remove "~" entry ([02fa8dd](https://github.com/webiny/webiny-js/commit/02fa8dd30ef49775362788a60eea6632ff041417))
+* reorder registration ([ca2eaf2](https://github.com/webiny/webiny-js/commit/ca2eaf2c8871c32a691ac85bf2ee385be7efaa3f))
+* **telemetry:** rename package and upgrade configs and env vars loading ([4791937](https://github.com/webiny/webiny-js/commit/4791937de3ec1431c82fca1dc2e91da9c7ac49d3))
+* correct package name ([afc5acf](https://github.com/webiny/webiny-js/commit/afc5acf20ef26054ebfe05791686c81a26b58df5))
+* remove `cache.restore(window.__APOLLO_STATE__);` (old code) ([112bd59](https://github.com/webiny/webiny-js/commit/112bd59263bf1b88aa98633178befec2099bd678))
+* update comments ([6f4c5c4](https://github.com/webiny/webiny-js/commit/6f4c5c43b2e2991cbd427fc402d58a878d12061a))
+* update tests configuration ([de5b421](https://github.com/webiny/webiny-js/commit/de5b421fa7b621467da6908b5209c709ad9c7d3a))
+
+
+### Features
+
+* add .babelrc and jest.config.js files ([89c1985](https://github.com/webiny/webiny-js/commit/89c19855e43f8105e766bba0604f4f7bf2ec7542))
+* add babelrc / jest.config.js ([185535e](https://github.com/webiny/webiny-js/commit/185535ec28c2abd620af9a32b7f981d6d9fe5cb6))
+* add scaffolds index file ([5e84825](https://github.com/webiny/webiny-js/commit/5e84825a0a76dab43afe3e78b41e78a1586f59bd))
+* add scaffolds index file ([321cef3](https://github.com/webiny/webiny-js/commit/321cef3da43757a2bec4f2b4df5d1880ff220fe1))
+
+
+
+
+
+# [5.8.0](https://github.com/webiny/webiny-js/compare/v5.8.0-beta.1...v5.8.0) (2021-06-07)
+
+**Note:** Version bump only for package @webiny/cwp-template-aws
+
+
+
+
+
+# [5.8.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.8.0-beta.0...v5.8.0-beta.1) (2021-06-05)
+
+**Note:** Version bump only for package @webiny/cwp-template-aws
+
+
+
+
+
+# [5.8.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.7.0...v5.8.0-beta.0) (2021-06-03)
+
+
+### Bug Fixes
+
+* add "typescript" to resolutions ([5f8dea8](https://github.com/webiny/webiny-js/commit/5f8dea882b2bbc00efed5b20e4029f74d12deb62))
+* add comment about the "staging" environment ([2d9e11a](https://github.com/webiny/webiny-js/commit/2d9e11a661952b59d0b72c3b308b184e744a74ef))
+* add comment about the "staging" environment ([68f9a2b](https://github.com/webiny/webiny-js/commit/68f9a2b07fbebb9300a3c7bdfa9e3880503ca120))
+* **cwp-template-aws:** remove "eu-south-1" AWS region ([49d1ab2](https://github.com/webiny/webiny-js/commit/49d1ab2d22f5331519172fa626536092e2ed9ac7))
+* **pulumi:** update ES policy pattern ([ad3b13c](https://github.com/webiny/webiny-js/commit/ad3b13ce5ec29b45d931bb9e8baf58b95d877ff7))
+* set waitForDeployment: true, ([1e07580](https://github.com/webiny/webiny-js/commit/1e07580bf2cc6375aa2f12f4f4aa935bac5f4e3f))
+* set waitForDeployments: false ([b981fd8](https://github.com/webiny/webiny-js/commit/b981fd87c16467301483aba755aaeb2ba246991c))
+
+
+### Features
+
+* **api-headless-cms:** pluginable crud operations ([#1544](https://github.com/webiny/webiny-js/issues/1544)) ([#1570](https://github.com/webiny/webiny-js/issues/1570)) ([c9cd4b7](https://github.com/webiny/webiny-js/commit/c9cd4b76665f4e96ccb8997ff9ba4288e344b905))
+* **cli:** upgrade to 5.8.0 ([#1680](https://github.com/webiny/webiny-js/issues/1680)) ([06cbf4a](https://github.com/webiny/webiny-js/commit/06cbf4a8dfa9f44a6f19102b3152d4aaf7bb889b))
+* introduce AWS_ELASTIC_SEARCH_DOMAIN_NAME env variable ([923af4c](https://github.com/webiny/webiny-js/commit/923af4c8594a4b04432cd3f129bb39d3178c9c04))
+
+
+
+
+
+# [5.7.0](https://github.com/webiny/webiny-js/compare/v5.7.0-beta.0...v5.7.0) (2021-05-24)
+
+**Note:** Version bump only for package @webiny/cwp-template-aws
+
+
+
+
+
+# [5.7.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.6.0...v5.7.0-beta.0) (2021-05-23)
+
+
+### Bug Fixes
+
+* **cwp-template-aws:** use new plugins ([8c90477](https://github.com/webiny/webiny-js/commit/8c904778820a232048743c4cf32dfc16b0fb3c40))
+* add .prettierignore file ([432b705](https://github.com/webiny/webiny-js/commit/432b70515b092865f94468f4059be359c6282297))
+* add development scripts ([325d6df](https://github.com/webiny/webiny-js/commit/325d6dfdbdcc99f7d41fdcc5848c2f32e32e5bfd))
+* add new CI/CD scaffold to template ([c82072b](https://github.com/webiny/webiny-js/commit/c82072bdfdb197bb6e8469328d95db4c4c23fb6c))
+* update configs ([010a3f4](https://github.com/webiny/webiny-js/commit/010a3f41791e1016101b20e80e8d7cf7d4de1777))
+* update template ([54dd8ec](https://github.com/webiny/webiny-js/commit/54dd8ecf538c728b8de34f0cad23428072978e40))
+
+
+
+
+
 # [5.6.0](https://github.com/webiny/webiny-js/compare/v5.6.0-beta.2...v5.6.0) (2021-05-10)
 
 

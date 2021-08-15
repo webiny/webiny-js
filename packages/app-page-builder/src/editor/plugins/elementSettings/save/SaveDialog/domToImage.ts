@@ -32,13 +32,13 @@ function toSvg(node, options) {
     options = options || {};
     copyOptions(options);
     return Promise.resolve(node)
-        .then(function(node) {
+        .then(function (node) {
             return cloneNode(node, options.filter, true);
         })
         .then(embedFonts)
         .then(inlineImages)
         .then(applyOptions)
-        .then(function(clone) {
+        .then(function (clone) {
             if (typeof options.onDocument === "function") {
                 clone = options.onDocument(clone);
             }
@@ -59,7 +59,7 @@ function toSvg(node, options) {
  * @return {Promise} - A promise that is fulfilled with a PNG image data URL
  * */
 function toPng(node, options) {
-    return draw(node, options || {}).then(function(canvas) {
+    return draw(node, options || {}).then(function (canvas) {
         return canvas.toDataURL();
     });
 }
@@ -83,7 +83,7 @@ function draw(domNode, options) {
     return toSvg(domNode, options)
         .then(util.makeImage)
         .then(util.delay(100))
-        .then(function(image) {
+        .then(function (image) {
             const canvas = document.createElement("canvas");
             const { width } = options;
             const aspect = image.width / image.height;
@@ -105,10 +105,10 @@ function cloneNode(node, filter, root) {
 
     return Promise.resolve(node)
         .then(makeNodeCopy)
-        .then(function(clone) {
+        .then(function (clone) {
             return cloneChildren(node, clone, filter);
         })
-        .then(function(clone) {
+        .then(function (clone) {
             return processClone(node, clone);
         });
 
@@ -121,16 +121,16 @@ function cloneNode(node, filter, root) {
         var children = original.childNodes;
         if (children.length === 0) return Promise.resolve(clone);
 
-        return cloneChildrenInOrder(clone, util.asArray(children), filter).then(function() {
+        return cloneChildrenInOrder(clone, util.asArray(children), filter).then(function () {
             return clone;
         });
 
         function cloneChildrenInOrder(parent, children, filter) {
             var done = Promise.resolve();
-            children.forEach(function(child) {
+            children.forEach(function (child) {
                 done = done
                     .then(() => cloneNode(child, filter))
-                    .then(function(childClone) {
+                    .then(function (childClone) {
                         if (childClone) parent.appendChild(childClone);
                     });
             });
@@ -146,7 +146,7 @@ function cloneNode(node, filter, root) {
             .then(clonePseudoElements)
             .then(copyUserInput)
             .then(fixSvg)
-            .then(function() {
+            .then(function () {
                 return clone;
             });
 
@@ -158,7 +158,7 @@ function cloneNode(node, filter, root) {
                 else copyProperties(source, target);
 
                 function copyProperties(source, target) {
-                    util.asArray(source).forEach(function(name) {
+                    util.asArray(source).forEach(function (name) {
                         target.setProperty(
                             name,
                             source.getPropertyValue(name),
@@ -170,7 +170,7 @@ function cloneNode(node, filter, root) {
         }
 
         function clonePseudoElements() {
-            [":before", ":after"].forEach(function(element) {
+            [":before", ":after"].forEach(function (element) {
                 clonePseudoElement(element);
             });
 
@@ -197,12 +197,7 @@ function cloneNode(node, filter, root) {
                     }
 
                     function formatCssProperties(style) {
-                        return (
-                            util
-                                .asArray(style)
-                                .map(formatProperty)
-                                .join("; ") + ";"
-                        );
+                        return util.asArray(style).map(formatProperty).join("; ") + ";";
 
                         function formatProperty(name) {
                             return (
@@ -227,7 +222,7 @@ function cloneNode(node, filter, root) {
             clone.setAttribute("xmlns", "http://www.w3.org/2000/svg");
 
             if (!(clone instanceof SVGRectElement)) return;
-            ["width", "height"].forEach(function(attribute) {
+            ["width", "height"].forEach(function (attribute) {
                 var value = clone.getAttribute(attribute);
                 if (!value) return;
 
@@ -238,7 +233,7 @@ function cloneNode(node, filter, root) {
 }
 
 function embedFonts(node) {
-    return fontFaces.resolveAll().then(function(cssText) {
+    return fontFaces.resolveAll().then(function (cssText) {
         const styleNode = document.createElement("style");
         node.appendChild(styleNode);
         styleNode.appendChild(document.createTextNode(cssText));
@@ -247,26 +242,26 @@ function embedFonts(node) {
 }
 
 function inlineImages(node) {
-    return images.inlineAll(node).then(function() {
+    return images.inlineAll(node).then(function () {
         return node;
     });
 }
 
 function makeSvgDataUri(node, width, height) {
     return Promise.resolve(node)
-        .then(function(node) {
+        .then(function (node) {
             node.setAttribute("xmlns", "http://www.w3.org/1999/xhtml");
             return new XMLSerializer().serializeToString(node);
         })
         .then(util.escapeXhtml)
-        .then(function(xhtml) {
+        .then(function (xhtml) {
             return (
                 '<foreignObject x="0" y="0" width="100%" height="100%">' +
                 encodeURIComponent(xhtml) +
                 "</foreignObject>"
             );
         })
-        .then(function(foreignObject) {
+        .then(function (foreignObject) {
             return (
                 '<svg xmlns="http://www.w3.org/2000/svg" width="' +
                 width +
@@ -277,7 +272,7 @@ function makeSvgDataUri(node, width, height) {
                 "</svg>"
             );
         })
-        .then(function(svg) {
+        .then(function (svg) {
             return "data:image/svg+xml;charset=utf-8," + svg;
         });
 }
@@ -327,9 +322,7 @@ function newUtil() {
     }
 
     function mimeType(url) {
-        const extension = parseExtension(url)
-            .toLowerCase()
-            .split("?")[0];
+        const extension = parseExtension(url).toLowerCase().split("?")[0];
         return mimes()[extension] || "";
     }
 
@@ -338,7 +331,7 @@ function newUtil() {
     }
 
     function toBlob(canvas) {
-        return new Promise(function(resolve) {
+        return new Promise(function (resolve) {
             var binaryString = window.atob(canvas.toDataURL().split(",")[1]);
             var length = binaryString.length;
             var binaryArray = new Uint8Array(length);
@@ -355,7 +348,7 @@ function newUtil() {
 
     function canvasToBlob(canvas) {
         if (canvas.toBlob)
-            return new Promise(function(resolve) {
+            return new Promise(function (resolve) {
                 canvas.toBlob(resolve);
             });
 
@@ -376,7 +369,7 @@ function newUtil() {
     function uid() {
         let index = 0;
 
-        return function() {
+        return function () {
             return "u" + fourRandomChars() + index++;
 
             function fourRandomChars() {
@@ -387,9 +380,9 @@ function newUtil() {
     }
 
     function makeImage(uri) {
-        return new Promise(function(resolve, reject) {
+        return new Promise(function (resolve, reject) {
             var image = new Image();
-            image.onload = function() {
+            image.onload = function () {
                 resolve(image);
             };
             image.onerror = reject;
@@ -405,7 +398,7 @@ function newUtil() {
             url += (/\?/.test(url) ? "&" : "?") + new Date().getTime();
         }
 
-        return new Promise(function(resolve) {
+        return new Promise(function (resolve) {
             var request = new XMLHttpRequest();
 
             request.onreadystatechange = done;
@@ -437,7 +430,7 @@ function newUtil() {
                 }
 
                 var encoder = new FileReader();
-                encoder.onloadend = function() {
+                encoder.onloadend = function () {
                     var content = encoder.result.split(/,/)[1];
                     resolve(content);
                 };
@@ -468,9 +461,9 @@ function newUtil() {
     }
 
     function delay(ms) {
-        return function(arg) {
-            return new Promise(function(resolve) {
-                setTimeout(function() {
+        return function (arg) {
+            return new Promise(function (resolve) {
+                setTimeout(function () {
                     resolve(arg);
                 }, ms);
             });
@@ -525,21 +518,21 @@ function newInliner() {
         while ((match = URL_REGEX.exec(string)) !== null) {
             result.push(match[1]);
         }
-        return result.filter(function(url) {
+        return result.filter(function (url) {
             return !util.isDataUrl(url);
         });
     }
 
     function inline(string, url, baseUrl, get) {
         return Promise.resolve(url)
-            .then(function(url) {
+            .then(function (url) {
                 return baseUrl ? util.resolveUrl(url, baseUrl) : url;
             })
             .then(get || util.getAndEncode)
-            .then(function(data) {
+            .then(function (data) {
                 return util.dataAsUrl(data, util.mimeType(url));
             })
-            .then(function(dataUrl) {
+            .then(function (dataUrl) {
                 return string.replace(urlAsRegex(url), "$1" + dataUrl + "$3");
             });
 
@@ -553,10 +546,10 @@ function newInliner() {
 
         return Promise.resolve(string)
             .then(readUrls)
-            .then(function(urls) {
+            .then(function (urls) {
                 var done = Promise.resolve(string);
-                urls.forEach(function(url) {
-                    done = done.then(function(string) {
+                urls.forEach(function (url) {
+                    done = done.then(function (string) {
                         return inline(string, url, baseUrl, get);
                     });
                 });
@@ -579,14 +572,14 @@ function newFontFaces() {
 
     function resolveAll() {
         return readAll(document)
-            .then(function(webFonts) {
+            .then(function (webFonts) {
                 return Promise.all(
-                    webFonts.map(function(webFont) {
+                    webFonts.map(function (webFont) {
                         return webFont.resolve();
                     })
                 );
             })
-            .then(function(cssStrings) {
+            .then(function (cssStrings) {
                 return cssStrings.join("\n");
             });
     }
@@ -595,23 +588,23 @@ function newFontFaces() {
         return Promise.resolve(util.asArray(document.styleSheets))
             .then(getCssRules)
             .then(selectWebFontRules)
-            .then(function(rules) {
+            .then(function (rules) {
                 return rules.map(newWebFont);
             });
 
         function selectWebFontRules(cssRules) {
             return cssRules
-                .filter(function(rule) {
+                .filter(function (rule) {
                     return rule.type === CSSRule.FONT_FACE_RULE;
                 })
-                .filter(function(rule) {
+                .filter(function (rule) {
                     return inliner.shouldProcess(rule.style.getPropertyValue("src"));
                 });
         }
 
         function getCssRules(styleSheets) {
             var cssRules = [];
-            styleSheets.forEach(function(sheet) {
+            styleSheets.forEach(function (sheet) {
                 if (sheet.hasOwnProperty("cssRules")) {
                     try {
                         util.asArray(sheet.cssRules || []).forEach(cssRules.push.bind(cssRules));
@@ -632,7 +625,7 @@ function newFontFaces() {
                     var baseUrl = (webFontRule.parentStyleSheet || {}).href;
                     return inliner.inlineAll(webFontRule.cssText, baseUrl);
                 },
-                src: function() {
+                src: function () {
                     return webFontRule.style.getPropertyValue("src");
                 }
             };
@@ -656,13 +649,13 @@ function newImages() {
 
             return Promise.resolve(element.src)
                 .then(get || util.getAndEncode)
-                .then(function(data) {
+                .then(function (data) {
                     return util.dataAsUrl(data, util.mimeType(element.src));
                 })
-                .then(function(dataUrl) {
+                .then(function (dataUrl) {
                     element.removeAttribute("srcset");
 
-                    return new Promise(function(resolve, reject) {
+                    return new Promise(function (resolve, reject) {
                         element.onload = resolve;
                         element.onerror = reject;
                         element.src = dataUrl;
@@ -674,11 +667,11 @@ function newImages() {
     function inlineAll(node) {
         if (!(node instanceof Element)) return Promise.resolve(node);
 
-        return inlineBackground(node).then(function() {
+        return inlineBackground(node).then(function () {
             if (node instanceof HTMLImageElement) return newImage(node).inline();
             else
                 return Promise.all(
-                    util.asArray(node.childNodes).map(function(child) {
+                    util.asArray(node.childNodes).map(function (child) {
                         return inlineAll(child);
                     })
                 );
@@ -691,14 +684,14 @@ function newImages() {
 
             return inliner
                 .inlineAll(background)
-                .then(function(inlined) {
+                .then(function (inlined) {
                     node.style.setProperty(
                         "background",
                         inlined,
                         node.style.getPropertyPriority("background")
                     );
                 })
-                .then(function() {
+                .then(function () {
                     return node;
                 });
         }

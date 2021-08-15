@@ -157,7 +157,7 @@ const plugin: ContextPlugin<PbContext> = {
                             PK: PK(),
                             SK: createDataModel.slug,
                             TYPE,
-                            tenant: context.security.getTenant().id,
+                            tenant: context.tenancy.getCurrentTenant().id,
                             locale: context.i18nContent.getLocale().code
                         }
                     });
@@ -215,11 +215,11 @@ const plugin: ContextPlugin<PbContext> = {
                         // When ES index is shared between tenants, we need to filter records by tenant ID
                         const sharedIndex = process.env.ELASTICSEARCH_SHARED_INDEXES === "true";
                         if (sharedIndex) {
-                            const tenant = context.security.getTenant();
+                            const tenant = context.tenancy.getCurrentTenant();
                             filter.push({ term: { "tenant.keyword": tenant.id } });
                         }
 
-                        const response = await context.elasticSearch.search({
+                        const response = await context.elasticsearch.search({
                             ...ES_DEFAULTS(),
                             body: {
                                 size: 1,

@@ -5,7 +5,19 @@
       "path": "../../../packages/api-i18n"
     },
     {
+      "path": "../../../packages/api-i18n-ddb"
+    },
+    {
       "path": "../../../packages/api-security"
+    },
+    {
+      "path": "../../../packages/api-security-admin-users"
+    },
+    {
+      "path": "../../../packages/api-security-admin-users-so-ddb"
+    },
+    {
+      "path": "../../../packages/api-security-cognito-authentication"
     },
     {
       "path": "../../../packages/api-i18n-content"
@@ -14,10 +26,13 @@
       "path": "../../../packages/api-page-builder"
     },
     {
-      "path": "../../../packages/api-security-tenancy"
+      "path": "../../../packages/api-tenancy"
     },
     {
       "path": "../../../packages/api-headless-cms"
+    },
+    {
+      "path": "../../../packages/api-headless-cms-ddb-es"
     },
     {
       "path": "../../../packages/api-file-manager"
@@ -29,10 +44,7 @@
       "path": "../../../packages/api-form-builder"
     },
     {
-      "path": "../../../packages/api-plugin-elastic-search-client"
-    },
-    {
-      "path": "../../../packages/api-plugin-security-cognito"
+      "path": "../../../packages/api-elasticsearch"
     },
     {
       "path": "../../../packages/db-dynamodb"
@@ -52,5 +64,28 @@
     {
       "path": "../../../packages/handler-graphql"
     }
-  ]
+  ],
+  "compilerOptions": {
+    "paths": {
+      "~/*": ["./src/*"],
+      "@webiny/handler-aws/*": ["../../../packages/handler-aws/src/*"],
+      "@webiny/handler-aws": ["../../../packages/handler-aws/src"],
+      "@webiny/api-security/*": ["../../../packages/api-security/src/*"],
+      "@webiny/api-security": ["../../../packages/api-security/src"],
+      "@webiny/api-tenancy/*": ["../../../packages/api-tenancy/src/*"],
+      "@webiny/api-tenancy": ["../../../packages/api-tenancy/src"],
+      "@webiny/db-dynamodb/*": ["../../../packages/db-dynamodb/src/*"],
+      "@webiny/db-dynamodb": ["../../../packages/db-dynamodb/src"],
+      "@webiny/api-headless-cms/*": ["../../../packages/api-headless-cms/src/*"],
+      "@webiny/api-headless-cms": ["../../../packages/api-headless-cms/src"],
+      "@webiny/api-headless-cms-ddb-es/*": ["../../../packages/api-headless-cms-ddb-es/src/*"],
+      "@webiny/api-headless-cms-ddb-es": ["../../../packages/api-headless-cms-ddb-es/src"],
+      "@webiny/api-security-admin-users/*": ["../../../packages/api-security-admin-users/src/*"],
+      "@webiny/api-security-admin-users": ["../../../packages/api-security-admin-users/src"],
+      "@webiny/api-security-cognito-authentication": [
+        "../../../packages/api-security-cognito-authentication/src"
+      ]
+    },
+    "baseUrl": "."
+  }
 }

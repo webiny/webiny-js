@@ -7,7 +7,7 @@
   },
   "dependencies": {
     "@webiny/api-dynamodb-to-elasticsearch": "latest",
-    "@webiny/api-plugin-elastic-search-client": "latest",
+    "@webiny/api-elasticsearch": "latest",
     "@webiny/cli": "latest",
     "@webiny/handler-aws": "latest",
     "@webiny/project-utils": "latest"

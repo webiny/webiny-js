@@ -6,7 +6,6 @@ import { Form } from "@webiny/form";
 import { Alert } from "@webiny/ui/Alert";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { ButtonPrimary } from "@webiny/ui/Button";
-import LocaleCodesAutoComplete from "../views/I18NLocales/LocaleCodesAutoComplete";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { validation } from "@webiny/validation";
 import {
@@ -15,6 +14,7 @@ import {
     SimpleFormFooter,
     SimpleFormContent
 } from "@webiny/app-admin/components/SimpleForm";
+import LocaleCodesAutoComplete from "../components/LocaleCodesAutoComplete";
 
 const t = i18n.ns("app-i18n/admin/installation");
 

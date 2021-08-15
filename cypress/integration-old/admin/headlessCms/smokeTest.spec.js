@@ -99,17 +99,13 @@ context("Headless CMS - Smoke Test", () => {
         // Saving the "Book" model should complete successfully.
         cy.findByTestId("cms-editor-top-bar")
             .within(() => {
-                cy.findByText("Save")
-                    .click()
-                    .wait(1000);
+                cy.findByText("Save").click().wait(1000);
             })
             .findByText(`Your content model was saved successfully!`)
             .should("exist");
 
         // Now let's go back to the "Author" model and try to repeat the same process, now it should work.
-        cy.findByTestId("cms-editor-back-button")
-            .click()
-            .wait(1000);
+        cy.findByTestId("cms-editor-back-button").click().wait(1000);
 
         cy.findByTestId("default-data-list").within(() => {
             cy.get("div")
@@ -148,9 +144,7 @@ context("Headless CMS - Smoke Test", () => {
         cy.findByText(`Your content model was saved successfully!`).should("exist");
 
         // Great, it works! Let's go back to the list of content models, and try creating content entries.
-        cy.findByTestId("cms-editor-back-button")
-            .click()
-            .wait(1000);
+        cy.findByTestId("cms-editor-back-button").click().wait(1000);
 
         // Return to the list of all content models and navigate to entries view. We first create a book.
         cy.findByTestId("default-data-list").within(() => {

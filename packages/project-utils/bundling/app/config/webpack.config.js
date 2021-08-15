@@ -35,11 +35,7 @@ if (typeof process.env["GENERATE_SOURCEMAP"] === "undefined") {
 }
 
 // Generates a unique static folder name, for example "static-mi7aan0cqpo".
-const STATIC_FOLDER =
-    "static-" +
-    Math.random()
-        .toString(36)
-        .replace("0.", "");
+const STATIC_FOLDER = "static";
 
 // Source maps are resource heavy and can cause out of memory issue for large source files.
 const shouldUseSourceMap = process.env.GENERATE_SOURCEMAP !== "false";
@@ -64,7 +60,7 @@ const sassLoader = {
 
 // This is the production and development configuration.
 // It is focused on developer experience, fast rebuilds, and a minimal bundle.
-module.exports = function(webpackEnv, { paths, babelCustomizer }) {
+module.exports = function (webpackEnv, { paths, babelCustomizer }) {
     const isEnvDevelopment = webpackEnv === "development";
     const isEnvProduction = webpackEnv === "production";
 

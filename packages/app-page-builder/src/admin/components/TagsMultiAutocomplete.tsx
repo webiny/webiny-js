@@ -25,7 +25,7 @@ export function TagsMultiAutocomplete(props) {
         <UiMultiAutoComplete
             {...props}
             {...autoComplete}
-            label="Tags"
+            label={props.label || "Tags"}
             useSimpleValues
             allowFreeInput
         />

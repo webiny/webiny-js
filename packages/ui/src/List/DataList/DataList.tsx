@@ -249,7 +249,7 @@ const Sorters = (props: Props) => {
                         key={sorter.label}
                         onClick={() => {
                             if (sorters && props.setSorters) {
-                                props.setSorters(sorter.sorters);
+                                props.setSorters(sorter.value);
                             }
                         }}
                     >
@@ -355,7 +355,7 @@ export const DataList = (props: Props) => {
 
     return (
         <DataListModalOverlayProvider>
-            <ListContainer className={"webiny-data-list"}>
+            <ListContainer className={"webiny-data-list"} data-testid={"ui.list.data-list"}>
                 {(props.title || props.actions) && (
                     <Grid className={listHeader}>
                         <Cell span={6} className={listTitle}>

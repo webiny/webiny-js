@@ -33,12 +33,21 @@ export type FbBuilderFormFieldValidatorPlugin = Plugin & {
     };
 };
 
-export type FbFormFieldPatternValidatorPlugin = Plugin & {
-    type: "fb-form-field-validator-pattern";
+export type FbBuilderFormFieldPatternValidatorPlugin = Plugin & {
+    type: "form-editor-field-validator-pattern";
     pattern: {
         name: string;
         message: string;
         label: string;
+    };
+};
+
+export type FbFormFieldPatternValidatorPlugin = Plugin & {
+    type: "fb-form-field-validator-pattern";
+    pattern: {
+        name: string;
+        regex: string;
+        flags: string;
     };
 };
 

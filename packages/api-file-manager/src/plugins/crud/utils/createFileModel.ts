@@ -4,10 +4,12 @@ import { validation } from "@webiny/validation";
 
 export default (create = true) => {
     return withFields({
-        key: string({ validation: validation.create(`${create ? "required," : ""}maxLength:200`) }),
-        name: string({ validation: validation.create("maxLength:100") }),
+        key: string({
+            validation: validation.create(`${create ? "required," : ""}maxLength:1000`)
+        }),
+        name: string({ validation: validation.create("maxLength:1000") }),
         size: number(),
-        type: string({ validation: validation.create("maxLength:50") }),
+        type: string({ validation: validation.create("maxLength:255") }),
         meta: object({ value: { private: false } }),
         tags: onSet(value => {
             if (!Array.isArray(value)) {

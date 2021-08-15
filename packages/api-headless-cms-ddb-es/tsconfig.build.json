@@ -1,0 +1,28 @@
+{
+  "extends": "../../tsconfig.build.json",
+  "include": ["src"],
+  "exclude": [
+    "node_modules",
+    "../api-headless-cms",
+    "../api-dynamodb-to-elasticsearch",
+    "../api-elasticsearch",
+    "../api-upgrade",
+    "../handler",
+    "../handler-db",
+    "../handler-aws",
+    "../db-dynamodb",
+    "../error",
+    "../plugins",
+    "./jest.config.js"
+  ],
+  "compilerOptions": {
+    "outDir": "dist",
+    "rootDir": "src",
+    "declarationDir": "dist",
+    "paths": {
+      "~/*": ["./src/*"]
+    },
+    "baseUrl": "."
+  },
+  "references": []
+}

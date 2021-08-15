@@ -1,0 +1,228 @@
+name: Pull Requests
+
+on:
+  pull_request:
+    branches: [next, v5]
+
+env:
+  NODE_OPTIONS: --max_old_space_size=4096
+
+jobs:
+  validate-commits:
+    name: Validate commit messages
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: webiny/action-conventional-commits@v1.0.3
+
+  cache-dependencies-packages:
+    name: Cache dependencies and packages
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 12
+
+      - uses: actions/checkout@v2
+
+      - uses: actions/cache@v2
+        id: yarn-cache
+        with:
+          path: .yarn/cache
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+
+      - uses: actions/cache@v2
+        id: cached-packages
+        with:
+          path: .webiny/cached-packages
+          key: cached-packages-${{ runner.os }}-${{ github.ref }}-v2
+
+      - name: Install dependencies
+        if: steps.yarn-cache.outputs.cache-hit != 'true' || steps.cached-packages.outputs.cache-hit != 'true'
+        run: yarn --immutable
+
+      - name: Build packages
+        if: steps.cached-packages.outputs.cache-hit != 'true'
+        run: node scripts/buildWithCache.js
+
+  code-analysis:
+    needs: cache-dependencies-packages
+    name: Static code analysis
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 12
+
+      - uses: actions/checkout@v2
+
+      - uses: actions/cache@v2
+        with:
+          path: .yarn/cache
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+
+      - uses: actions/cache@v2
+        with:
+          path: .webiny/cached-packages
+          key: cached-packages-${{ runner.os }}-${{ github.ref }}-v2
+
+      - name: Install dependencies
+        run: yarn --immutable
+
+      - name: Check code formatting
+        run: yarn prettier:check
+
+      - name: Check dependencies
+        run: yarn adio
+
+      - name: Check TS configs
+        run: yarn check-ts-configs
+
+      - name: ESLint
+        run: yarn eslint
+
+  jest-tests:
+    needs: cache-dependencies-packages
+    name: Jest tests
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        node: [12, 14]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node }}
+
+      - uses: actions/checkout@v2
+
+      - uses: actions/cache@v2
+        with:
+          path: .yarn/cache
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+
+      - uses: actions/cache@v2
+        with:
+          path: .webiny/cached-packages
+          key: cached-packages-${{ runner.os }}-${{ github.ref }}-v2
+
+      - name: Install dependencies
+        run: yarn --immutable
+
+      - name: Build packages
+        run: node scripts/buildWithCache.js
+
+      - name: Run tests
+        run: yarn test
+
+  verdaccio-publish:
+    needs: cache-dependencies-packages
+    name: Publish to Verdaccio
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 12
+
+      - uses: actions/checkout@v2
+        # Prevents the detached HEAD problem (https://github.com/actions/checkout/issues/124)
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.ref }}
+
+      - uses: actions/cache@v2
+        with:
+          path: .yarn/cache
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+
+      - uses: actions/cache@v2
+        with:
+          path: .webiny/cached-packages
+          key: cached-packages-${{ runner.os }}-${{ github.ref }}-v2
+
+      - name: Install dependencies
+        run: yarn --immutable
+
+      - name: Build packages
+        run: node scripts/buildWithCache.js
+
+      - name: Start Verdaccio local server
+        run: npx pm2 start verdaccio -- -c .verdaccio.yaml
+
+      - name: Create ".npmrc" file in the project root, with a dummy auth token
+        run: echo '//localhost:4873/:_authToken="dummy-auth-token"' > .npmrc
+
+      - name: Configure NPM to use local registry
+        run: npm config set registry http://localhost:4873
+
+      - name: Set git email
+        run: git config --global user.email "webiny-bot@webiny.com"
+
+      - name: Set git username
+        run: git config --global user.name "webiny-bot"
+
+      - name: Version packages (no push, no changelog)
+        run: yarn lerna:version:verdaccio
+
+      - name: Release to Verdaccio
+        run: yarn lerna:publish:verdaccio
+
+      - name: Upload verdaccio files
+        uses: actions/upload-artifact@v2
+        with:
+          name: verdaccio-files
+          retention-days: 1
+          path: |
+            .verdaccio/
+            .verdaccio.yaml
+
+  test-create-webiny-project:
+    needs: verdaccio-publish
+    name: Test "create-webiny-project"
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        node: [12, 14]
+    runs-on: ${{ matrix.os }}
+    env:
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    steps:
+      - uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node }}
+
+      - uses: actions/download-artifact@v2
+        with:
+          name: verdaccio-files
+          path: verdaccio-files
+
+      - name: Start Verdaccio local server
+        working-directory: verdaccio-files
+        run: yarn add pm2 verdaccio && npx pm2 start verdaccio -- -c .verdaccio.yaml
+
+      - name: Configure NPM to use local registry
+        run: npm config set registry http://localhost:4873
+
+      - name: Set git email (needed for create-webiny-project)
+        run: git config --global user.email "webiny-bot@webiny.com"
+
+      - name: Set git username (needed for create-webiny-project)
+        run: git config --global user.name "webiny-bot"
+
+      - name: Disable Webiny telemetry
+        run: >
+          mkdir ~/.webiny &&
+          echo '{ "id": "ci", "telemetry": false }' > ~/.webiny/config
+
+      - name: Create a new Webiny project
+        run: >
+          npx create-webiny-project@next test-project
+          --tag next --no-interactive
+          --assign-to-yarnrc '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
+          --template-options '{"region":"eu-central-1"}'
+
+      - name: Build "api" project application
+        working-directory: test-project
+        run: yarn webiny ws run build --folder api --env dev

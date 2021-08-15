@@ -1,17 +1,13 @@
-import dbPlugins from "@webiny/handler-db";
-import elasticSearch from "@webiny/api-plugin-elastic-search-client";
-import dynamoToElastic from "@webiny/api-dynamodb-to-elasticsearch/handler";
+import { introspectionQuery } from "graphql";
 import i18nContext from "@webiny/api-i18n/graphql/context";
 import i18nContentPlugins from "@webiny/api-i18n-content/plugins";
-import securityPlugins from "@webiny/api-security/authenticator";
-import apiKeyAuthentication from "@webiny/api-security-tenancy/authentication/apiKey";
-import apiKeyAuthorization from "@webiny/api-security-tenancy/authorization/apiKey";
+import tenancyPlugins from "@webiny/api-tenancy";
+import securityPlugins from "@webiny/api-security";
+import apiKeyAuthentication from "@webiny/api-security-admin-users/authentication/apiKey";
+import apiKeyAuthorization from "@webiny/api-security-admin-users/authorization/apiKey";
 import { createHandler } from "@webiny/handler-aws";
-import { DynamoDbDriver } from "@webiny/db-dynamodb";
-import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
 import { SecurityIdentity } from "@webiny/api-security/types";
-import { Client } from "@elastic/elasticsearch";
 import { createIdentity, createPermissions, until, PermissionsArg } from "./helpers";
 import { INSTALL_MUTATION, IS_INSTALLED_QUERY } from "./graphql/settings";
 import {
@@ -29,13 +25,12 @@ import {
     UPDATE_CONTENT_MODEL_MUTATION
 } from "./graphql/contentModel";
 
-import { simulateStream } from "@webiny/project-utils/testing/dynamodb";
+import { ApiKey } from "@webiny/api-security-admin-users/types";
 
-import { INTROSPECTION } from "./graphql/schema";
-import { ApiKey } from "@webiny/api-security-tenancy/types";
-
-import elasticSearchPlugins from "../../src/content/plugins/es";
-import fieldsStoragePlugins from "../../src/content/plugins/fieldsStorage";
+/**
+ * Unfortunately at we need to import the api-i18n-ddb package manually
+ */
+import i18nDynamoDbStorageOperations from "@webiny/api-i18n-ddb";
 
 export interface GQLHandlerCallableArgs {
     permissions?: PermissionsArg[];
@@ -44,178 +39,114 @@ export interface GQLHandlerCallableArgs {
     path: string;
 }
 
-const ELASTICSEARCH_PORT = process.env.ELASTICSEARCH_PORT || "9200";
-
 export const useGqlHandler = (args?: GQLHandlerCallableArgs) => {
+    // @ts-ignore
+    const storageOperationsPlugins = __getStorageOperationsPlugins();
+    if (typeof storageOperationsPlugins !== "function") {
+        throw new Error(`There is no global "storageOperationsPlugins" function.`);
+    }
     const tenant = { id: "root", name: "Root", parent: null };
     const { permissions, identity, plugins = [], path } = args || {};
 
-    const documentClient = new DocumentClient({
-        convertEmptyValues: true,
-        endpoint: process.env.MOCK_DYNAMODB_ENDPOINT,
-        sslEnabled: false,
-        region: "local"
-    });
-
-    const elasticSearchContext = elasticSearch({
-        endpoint: `http://localhost:${ELASTICSEARCH_PORT}`
-    });
-
-    // Intercept DocumentClient operations and trigger dynamoToElastic function (almost like a DynamoDB Stream trigger)
-    simulateStream(documentClient, createHandler(elasticSearchContext, dynamoToElastic()));
-
-    const handler = createHandler(
-        dbPlugins({
-            table: "HeadlessCms",
-            driver: new DynamoDbDriver({
-                documentClient
-            })
-        }),
-        elasticSearchContext,
-        {
-            type: "context",
-            async apply(context) {
-                await context.elasticSearch.indices.putTemplate({
-                    name: "headless-cms-entries-index",
-                    body: {
-                        index_patterns: ["*headless-cms*"],
-                        settings: {
-                            analysis: {
-                                analyzer: {
-                                    lowercase_analyzer: {
-                                        type: "custom",
-                                        filter: ["lowercase", "trim"],
-                                        tokenizer: "keyword"
-                                    }
-                                }
-                            }
-                        },
-                        mappings: {
-                            properties: {
-                                property: {
-                                    type: "text",
-                                    fields: {
-                                        keyword: {
-                                            type: "keyword",
-                                            ignore_above: 256
-                                        }
-                                    },
-                                    analyzer: "lowercase_analyzer"
-                                },
-                                rawValues: {
-                                    type: "object",
-                                    enabled: false
-                                }
-                            }
-                        }
+    const handler = createHandler({
+        plugins: [
+            storageOperationsPlugins(),
+            tenancyPlugins(),
+            {
+                type: "context",
+                name: "context-security-tenant",
+                apply(context) {
+                    if (!context.security) {
+                        context.security = {};
                     }
-                });
-            }
-        },
-        {
-            type: "context",
-            name: "context-security-tenant",
-            apply(context) {
-                if (!context.security) {
-                    context.security = {};
-                }
-                context.security.getTenant = () => {
-                    return tenant;
-                };
-                context.security.apiKeys = {
-                    getApiKeyByToken: async (token: string): Promise<ApiKey | null> => {
-                        if (!token || token !== "aToken") {
-                            return null;
+                    context.tenancy.getCurrentTenant = () => {
+                        return tenant;
+                    };
+                    context.security.apiKeys = {
+                        getApiKeyByToken: async (token: string): Promise<ApiKey | null> => {
+                            if (!token || token !== "aToken") {
+                                return null;
+                            }
+                            const apiKey = "a1234567890";
+                            return {
+                                id: apiKey,
+                                name: apiKey,
+                                tenant: tenant.id,
+                                permissions: identity.permissions || [],
+                                token,
+                                createdBy: {
+                                    id: "test",
+                                    displayName: "test",
+                                    type: "admin"
+                                },
+                                description: "test",
+                                createdOn: new Date().toISOString()
+                            };
                         }
-                        const apiKey = "a1234567890";
-                        return {
-                            id: apiKey,
-                            name: apiKey,
-                            permissions: identity.permissions || [],
-                            token,
-                            createdBy: {
-                                id: "test",
-                                displayName: "test",
-                                type: "admin"
-                            },
-                            description: "test",
-                            createdOn: new Date().toISOString()
+                    };
+                }
+            },
+            {
+                type: "context",
+                name: "context-path-parameters",
+                apply(context) {
+                    if (!context.http) {
+                        context.http = {
+                            request: {
+                                path: {
+                                    parameters: null
+                                }
+                            }
+                        };
+                    } else if (!context.http.request.path) {
+                        context.http.request.path = {
+                            parameters: null
                         };
                     }
-                };
-            }
-        },
-        {
-            type: "context",
-            name: "context-path-parameters",
-            apply(context) {
-                if (!context.http) {
-                    context.http = {
-                        request: {
-                            path: {
-                                parameters: null
-                            }
-                        }
-                    };
-                } else if (!context.http.request.path) {
-                    context.http.request.path = {
-                        parameters: null
-                    };
+                    context.http.request.path.parameters = { key: path };
                 }
-                context.http.request.path.parameters = { key: path };
-            }
-        },
-        securityPlugins(),
-        apiKeyAuthentication({ identityType: "api-key" }),
-        apiKeyAuthorization({ identityType: "api-key" }),
-        i18nContext(),
-        i18nContentPlugins(),
-        mockLocalesPlugins(),
-        elasticSearchPlugins(),
-        fieldsStoragePlugins(),
-        {
-            type: "security-authorization",
-            name: "security-authorization",
-            getPermissions: context => {
-                const { headers = {} } = context.http || {};
-                if (
-                    headers["Authorization"] ||
-                    headers["authorization"] ||
-                    (identity && identity.type === "api-key")
-                ) {
-                    return;
+            },
+            securityPlugins(),
+            apiKeyAuthentication({ identityType: "api-key" }),
+            apiKeyAuthorization({ identityType: "api-key" }),
+            i18nContext(),
+            i18nDynamoDbStorageOperations(),
+            i18nContentPlugins(),
+            mockLocalesPlugins(),
+            {
+                type: "security-authorization",
+                name: "security-authorization",
+                getPermissions: context => {
+                    const { headers = {} } = context.http || {};
+                    if (
+                        headers["Authorization"] ||
+                        headers["authorization"] ||
+                        (identity && identity.type === "api-key")
+                    ) {
+                        return;
+                    }
+                    return createPermissions(permissions);
                 }
-                return createPermissions(permissions);
-            }
-        },
-        {
-            type: "security-authentication",
-            authenticate: async context => {
-                const { headers = {} } = context.http || {};
-                if (
-                    headers["Authorization"] ||
-                    headers["authorization"] ||
-                    (identity && identity.type === "api-key")
-                ) {
-                    return;
+            },
+            {
+                type: "security-authentication",
+                authenticate: async context => {
+                    const { headers = {} } = context.http || {};
+                    if (
+                        headers["Authorization"] ||
+                        headers["authorization"] ||
+                        (identity && identity.type === "api-key")
+                    ) {
+                        return;
+                    }
+                    return createIdentity(identity);
                 }
-                return createIdentity(identity);
-            }
-        },
-        {
-            type: "context",
-            apply(context) {
-                context.cms = {
-                    ...(context.cms || {}),
-                    getLocale: () => ({
-                        code: "en-US"
-                    }),
-                    locale: "en-US"
-                };
-            }
-        },
-        plugins
-    );
+            },
+            //
+            plugins
+        ],
+        http: { debug: true }
+    });
 
     const invoke = async ({ httpMethod = "POST", body, headers = {}, ...rest }) => {
         const response = await handler({
@@ -224,23 +155,15 @@ export const useGqlHandler = (args?: GQLHandlerCallableArgs) => {
             body: JSON.stringify(body),
             ...rest
         });
+        if (httpMethod === "OPTIONS" && !response.body) {
+            return [null, response];
+        }
         // The first element is the response body, and the second is the raw response.
         return [JSON.parse(response.body), response];
     };
 
-    const elasticSearchClient = new Client({
-        node: `http://localhost:${ELASTICSEARCH_PORT}`
-    });
-
     return {
         until,
-        elasticSearch: elasticSearchClient,
-        clearAllIndex: async () => {
-            await elasticSearchClient.indices.delete({
-                index: "_all"
-            });
-        },
-        documentClient,
         sleep: (ms = 333) => {
             return new Promise(resolve => {
                 setTimeout(resolve, ms);
@@ -249,7 +172,7 @@ export const useGqlHandler = (args?: GQLHandlerCallableArgs) => {
         handler,
         invoke,
         async introspect() {
-            return invoke({ body: { query: INTROSPECTION } });
+            return invoke({ body: { query: introspectionQuery } });
         },
         // settings
         async isInstalledQuery() {

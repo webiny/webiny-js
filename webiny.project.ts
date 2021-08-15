@@ -14,9 +14,10 @@ export default {
                     import("@webiny/api-page-builder/cli"),
                     import("@webiny/cwp-template-aws/cli"),
                     import("@webiny/cli-plugin-scaffold"),
-                    import("@webiny/cli-plugin-scaffold-graphql-service"),
                     import("@webiny/cli-plugin-scaffold-admin-app-module"),
-                    import("@webiny/cli-plugin-scaffold-react-component")
+                    import("@webiny/cli-plugin-scaffold-graphql-service"),
+                    import("@webiny/cli-plugin-scaffold-react-component"),
+                    import("@webiny/cli-plugin-scaffold-ci")
                 ]);
 
                 return modules
@@ -26,7 +27,7 @@ export default {
                             try {
                                 return m.value.default();
                             } catch {
-                                // This one is most like not built yet.
+                                // This one is most likely not built yet.
                                 return null;
                             }
                         }

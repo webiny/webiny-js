@@ -438,8 +438,7 @@ export class MultiAutoComplete extends React.Component<MultiAutoCompleteProps, S
                                         </ListItemGraphic>
                                         <div
                                             style={{
-                                                color:
-                                                    "var(--mdc-theme-text-secondary-on-background)",
+                                                color: "var(--mdc-theme-text-secondary-on-background)",
                                                 marginRight: 8,
                                                 minWidth: 32
                                             }}

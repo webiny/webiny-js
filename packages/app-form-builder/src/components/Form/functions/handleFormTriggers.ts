@@ -19,9 +19,8 @@ export default async (args: HandleFormTriggersArgs) => {
 
     const { data, props } = args;
 
-    const formTriggerHandlerPlugins = plugins.byType<FbFormTriggerHandlerPlugin>(
-        "form-trigger-handler"
-    );
+    const formTriggerHandlerPlugins =
+        plugins.byType<FbFormTriggerHandlerPlugin>("form-trigger-handler");
     for (let i = 0; i < formTriggerHandlerPlugins.length; i++) {
         const plugin = formTriggerHandlerPlugins[i];
         await plugin.trigger.handle({

@@ -33,9 +33,14 @@ const DeleteRevision = ({ revisions, form, revision, selectRevision }) => {
 
     return (
         <Tooltip content={"Delete"} placement={"top"}>
-            <ConfirmationDialog title={"Confirmation required!"} message={message}>
+            <ConfirmationDialog
+                title={"Confirmation required!"}
+                message={message}
+                data-testid={"fb.form-preview.header.delete-dialog"}
+            >
                 {({ showConfirmation }) => (
                     <IconButton
+                        data-testid={"fb.form-preview.header.delete"}
                         icon={<DeleteIcon />}
                         onClick={() =>
                             showConfirmation(async () => {

@@ -20,14 +20,14 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                 name: String
                 slug: String
                 url: String
-                layout: JSON
+                layout: String
             }
 
             input PbCategoryInput {
-                name: String
-                slug: String
-                url: String
-                layout: JSON
+                name: String!
+                slug: String!
+                url: String!
+                layout: String!
             }
 
             # Response types

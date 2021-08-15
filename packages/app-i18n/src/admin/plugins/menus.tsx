@@ -1,24 +1,42 @@
-import React from "react";
-import { i18n } from "@webiny/app/i18n";
-import { AdminMenuPlugin } from "@webiny/app-admin/types";
-import { ReactComponent as I18NIcon } from "./../assets/icons/round-translate-24px.svg";
-import { SecureView } from "@webiny/app-security";
+import { NavigationMenuElement } from "@webiny/app-admin/ui/elements/NavigationMenuElement";
+import { UIViewPlugin } from "@webiny/app-admin/ui/UIView";
+import { NavigationView } from "@webiny/app-admin/ui/views/NavigationView";
 
-const t = i18n.ns("app-form-builder/admin/menus");
+export default [
+    new UIViewPlugin<NavigationView>(NavigationView, async view => {
+        await view.isRendered();
 
-const plugin: AdminMenuPlugin = {
-    type: "admin-menu",
-    render({ Menu, Section, Item }) {
-        return (
-            <SecureView permission={"i18n.locale"}>
-                <Menu name="languages" label={t`Languages`} icon={<I18NIcon />}>
-                    <Section label={t`Locales`}>
-                        <Item label={t`Locales`} path="/i18n/locales" />
-                    </Section>
-                </Menu>
-            </SecureView>
+        const { identity } = view.getSecurityHook();
+        if (!identity.getPermission("i18n.locale")) {
+            return;
+        }
+
+        const localesMenu = view.addSettingsMenuElement(
+            new NavigationMenuElement("languages", {
+                label: "Languages"
+            })
         );
-    }
-};
 
-export default plugin;
+        localesMenu.addElement<NavigationMenuElement>(
+            new NavigationMenuElement("locales.crud", {
+                label: "Locales",
+                path: "/i18n/locales"
+            })
+        );
+
+        // !EXAMPLE!
+        // This shows how you can attach your own logic and conditionally show/hide element.
+        //
+        // localesMenu.addShouldRender(({ next }) => {
+        //     // WARNING! Nonsense example :)
+        //     // If label matches, continue with other checks in the chain.
+
+        //     if (localesMenu.config.label === "Locales") {
+        //         return next();
+        //     }
+        //
+        //     // Hide otherwise.
+        //     return false;
+        // });
+    })
+];

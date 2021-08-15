@@ -194,28 +194,30 @@ describe("listing latest pages", () => {
         }
 
         // Just in case, ensure all ten pages are present.
-        await until(listPages, ([res]) => res.data.pageBuilder.listPages.data.length === 10).then(
-            ([res]) =>
-                expect(res).toMatchObject({
-                    data: {
-                        pageBuilder: {
-                            listPages: {
-                                data: [
-                                    { title: "page-a" },
-                                    { title: "page-z" },
-                                    { title: "page-b" },
-                                    { title: "page-x" },
-                                    { title: "page-c" },
-                                    { title: "page-j" },
-                                    { title: "page-n" },
-                                    { title: "page-k" },
-                                    { title: "page-m" },
-                                    { title: "page-l" }
-                                ]
-                            }
+        await until(listPages, ([res]) => {
+            const list = res.data.pageBuilder.listPages.data;
+            return list.length === 10 && list[0].title === "page-a" && list[9].title === "page-l";
+        }).then(([res]) =>
+            expect(res).toMatchObject({
+                data: {
+                    pageBuilder: {
+                        listPages: {
+                            data: [
+                                { title: "page-a" },
+                                { title: "page-z" },
+                                { title: "page-b" },
+                                { title: "page-x" },
+                                { title: "page-c" },
+                                { title: "page-j" },
+                                { title: "page-n" },
+                                { title: "page-k" },
+                                { title: "page-m" },
+                                { title: "page-l" }
+                            ]
                         }
                     }
-                })
+                }
+            })
         );
 
         // 1. Check if `category: custom` were returned and sorted `createdOn: desc`.

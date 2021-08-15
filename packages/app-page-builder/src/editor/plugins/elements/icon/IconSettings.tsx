@@ -41,15 +41,18 @@ const IconSettings: React.FunctionComponent<PbEditorPageElementSettingsRenderCom
     });
 
     const updateIcon = useCallback(value => getUpdateValue("id")(value?.id), [getUpdateValue]);
-    const updateColor = useCallback((value: string) => getUpdateValue("color")(value), [
-        getUpdateValue
-    ]);
-    const updateColorPreview = useCallback((value: string) => getUpdatePreview("color")(value), [
-        getUpdatePreview
-    ]);
-    const updateWidth = useCallback((value: string) => getUpdateValue("width")(value), [
-        getUpdateValue
-    ]);
+    const updateColor = useCallback(
+        (value: string) => getUpdateValue("color")(value),
+        [getUpdateValue]
+    );
+    const updateColorPreview = useCallback(
+        (value: string) => getUpdatePreview("color")(value),
+        [getUpdatePreview]
+    );
+    const updateWidth = useCallback(
+        (value: string) => getUpdateValue("width")(value),
+        [getUpdateValue]
+    );
 
     return (
         <Accordion title={"Icon"} defaultValue={defaultAccordionValue}>

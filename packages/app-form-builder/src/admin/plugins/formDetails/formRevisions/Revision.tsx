@@ -63,13 +63,11 @@ type RevisionProps = {
 const Revision = (props: RevisionProps) => {
     const { revision: rev, form } = props;
     const { icon, text: tooltipText } = getIcon(rev);
-    const {
-        publishRevision,
-        createRevision,
-        deleteRevision,
-        editRevision,
-        unpublishRevision
-    } = useRevision({ revision: rev, form });
+    const { publishRevision, createRevision, deleteRevision, editRevision, unpublishRevision } =
+        useRevision({
+            revision: rev,
+            form
+        });
     const { canPublish, canUnpublish, canDelete, canEdit } = usePermission();
 
     const showMenu = canEdit(form) || canDelete(form) || canPublish() || canUnpublish();
@@ -93,9 +91,13 @@ const Revision = (props: RevisionProps) => {
                     <Menu
                         handle={<IconButton icon={<MoreVerticalIcon />} />}
                         className={revisionsMenu}
+                        data-testid={"fb.form-revisions.action-menu"}
                     >
                         {canEdit(form) && (
-                            <MenuItem onClick={createRevision}>
+                            <MenuItem
+                                onClick={createRevision}
+                                data-testid={"fb.form-revisions.action-menu.create-revision"}
+                            >
                                 <ListItemGraphic>
                                     <Icon icon={<AddIcon />} />
                                 </ListItemGraphic>
@@ -103,7 +105,10 @@ const Revision = (props: RevisionProps) => {
                             </MenuItem>
                         )}
                         {rev.status === "draft" && canEdit(form) && (
-                            <MenuItem onClick={editRevision}>
+                            <MenuItem
+                                onClick={editRevision}
+                                data-testid={"fb.form-revisions.action-menu.edit"}
+                            >
                                 <ListItemGraphic>
                                     <Icon icon={<EditIcon />} />
                                 </ListItemGraphic>
@@ -112,7 +117,10 @@ const Revision = (props: RevisionProps) => {
                         )}
 
                         {rev.status !== "published" && canPublish() && (
-                            <MenuItem onClick={() => publishRevision(rev)}>
+                            <MenuItem
+                                onClick={() => publishRevision(rev)}
+                                data-testid={"fb.form-revisions.action-menu.publish"}
+                            >
                                 <ListItemGraphic>
                                     <Icon icon={<PublishIcon />} />
                                 </ListItemGraphic>
@@ -132,6 +140,7 @@ const Revision = (props: RevisionProps) => {
                                         onClick={() =>
                                             showConfirmation(() => unpublishRevision(rev))
                                         }
+                                        data-testid={"fb.form-revisions.action-menu.unpublish"}
                                     >
                                         <ListItemGraphic>
                                             <Icon icon={<UnpublishIcon />} />
@@ -152,7 +161,10 @@ const Revision = (props: RevisionProps) => {
                                 }
                             >
                                 {({ showConfirmation }) => (
-                                    <MenuItem onClick={() => showConfirmation(deleteRevision)}>
+                                    <MenuItem
+                                        onClick={() => showConfirmation(deleteRevision)}
+                                        data-testid={"fb.form-revisions.action-menu.delete"}
+                                    >
                                         <ListItemGraphic>
                                             <Icon icon={<DeleteIcon />} />
                                         </ListItemGraphic>

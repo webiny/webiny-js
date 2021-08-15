@@ -17,7 +17,7 @@ export const renderGetFilterFields: RenderGetFilterFields = ({ model, fieldTypeP
         })
         .map(f => f.fieldId);
 
-    const filters = ["id: ID"];
+    const filters = ["id: ID", "entryId: String"];
 
     for (let i = 0; i < fieldIds.length; i++) {
         const field = model.fields.find(item => item.fieldId === fieldIds[i]);

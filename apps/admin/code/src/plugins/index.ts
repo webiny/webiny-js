@@ -3,6 +3,7 @@ import { WebinyInitPlugin } from "@webiny/app/types";
 import welcomeScreenPlugins from "@webiny/app-plugin-admin-welcome-screen";
 import routeNotFound from "./routeNotFound";
 import basePlugins from "./base";
+import apolloLinkPlugins from "./apolloLinks";
 import adminPlugins from "./admin";
 import i18nPlugins from "./i18n";
 import i18nContentPlugins from "./i18nContent";
@@ -12,11 +13,18 @@ import formBuilderPlugins from "./formBuilder";
 import headlessCmsPlugins from "./headlessCms";
 import theme from "theme";
 
+// Imports plugins created via scaffolding utilities.
+import scaffoldsPlugins from "./scaffolds";
+
 plugins.register([
     /**
      * Base app plugins (files, images).
      */
     basePlugins,
+    /**
+     * ApolloClient link plugins.
+     */
+    apolloLinkPlugins,
     /**
      * Complete admin app UI.
      */
@@ -56,7 +64,11 @@ plugins.register([
     /**
      * App theme controls page builder and form builder layouts, styles, etc.
      */
-    theme()
+    theme(),
+    /**
+     * Plugins created via scaffolding utilities.
+     */
+    scaffoldsPlugins()
 ]);
 
 /**

@@ -22,35 +22,47 @@ export const createReadSDL: CreateManageSDL = ({ model, fieldTypePlugins }): str
 
     const sortEnumRender = renderSortEnum({ model, fieldTypePlugins });
     const getFilterFieldsRender = renderGetFilterFields({ model, fieldTypePlugins });
-
     const fieldsRender = renderFields({ model, type: "read", fieldTypePlugins });
 
     return `
         """${model.description || ""}"""
+        ${fieldsRender
+            .map(f => f.typeDefs)
+            .filter(Boolean)
+            .join("\n")}
+        
         type ${rTypeName} {
-            id: ID
-            createdOn: DateTime
-            createdBy: CmsCreatedBy
-            savedOn: DateTime
+            id: ID!
+            entryId: String!
+            createdOn: DateTime!
+            savedOn: DateTime!
+            createdBy: CmsCreatedBy!
+            ownedBy: CmsOwnedBy!
             ${fieldsRender.map(f => f.fields).join("\n")}
         }
         
-        ${getFilterFieldsRender &&
+        ${
+            getFilterFieldsRender &&
             `input ${rTypeName}GetWhereInput {
             ${getFilterFieldsRender}
-        }`}
+        }`
+        }
         
         
-        ${listFilterFieldsRender &&
+        ${
+            listFilterFieldsRender &&
             `input ${rTypeName}ListWhereInput {
             ${listFilterFieldsRender}
-        }`}
+        }`
+        }
         
         
-        ${sortEnumRender &&
+        ${
+            sortEnumRender &&
             `enum ${rTypeName}ListSorter {
             ${sortEnumRender}
-        }`}
+        }`
+        }
         
         type ${rTypeName}Response {
             data: ${rTypeName}

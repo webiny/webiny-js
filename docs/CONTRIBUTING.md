@@ -85,7 +85,7 @@ The setup of our Github repo is identical to the one created by `create-webiny-p
 
 3. Prepare the repository:
    ```
-   yarn setup-repo
+   yarn setup-project
    ```
 
 4. Deploy your API to use with local React apps: 
