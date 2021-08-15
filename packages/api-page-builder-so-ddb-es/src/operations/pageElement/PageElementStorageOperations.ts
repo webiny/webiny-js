@@ -1,29 +1,28 @@
 import {
-    Menu,
-    MenuStorageOperations,
-    MenuStorageOperationsCreateParams,
-    MenuStorageOperationsDeleteParams,
-    MenuStorageOperationsGetParams,
-    MenuStorageOperationsListParams,
-    MenuStorageOperationsListResponse,
-    MenuStorageOperationsUpdateParams,
+    PageElement,
+    PageElementStorageOperations,
+    PageElementStorageOperationsCreateParams,
+    PageElementStorageOperationsDeleteParams,
+    PageElementStorageOperationsGetParams,
+    PageElementStorageOperationsListParams,
+    PageElementStorageOperationsUpdateParams,
     PbContext
 } from "@webiny/api-page-builder/types";
 import { Entity, Table } from "dynamodb-toolbox";
-import WebinyError from "@webiny/error";
 import { cleanupItem } from "@webiny/db-dynamodb/utils/cleanup";
+import WebinyError from "@webiny/error";
 import { queryAll, QueryAllParams } from "@webiny/db-dynamodb/utils/query";
 import { filterItems } from "@webiny/db-dynamodb/utils/filter";
 import { sortItems } from "@webiny/db-dynamodb/utils/sort";
 import { createListResponse } from "@webiny/db-dynamodb/utils/listResponse";
+import Promise = JQuery.Promise;
 
-const TYPE = "pb.menu";
+const TYPE = "pb.pageElement";
 
 interface Params {
     context: PbContext;
 }
-
-export class MenuStorageOperationsDdbEs implements MenuStorageOperations {
+export class PageElementStorageOperationsDdbEs implements PageElementStorageOperations {
     private readonly context: PbContext;
     public readonly table: Table;
     public readonly entity: Entity<any>;
@@ -34,26 +33,26 @@ export class MenuStorageOperationsDdbEs implements MenuStorageOperations {
             context
         });
 
-        this.entity = defineMenuEntity({
+        this.entity = definePageElementEntity({
             context,
             table: this.table
         });
     }
 
-    public async get(params: MenuStorageOperationsGetParams): Promise<Menu | null> {
+    public async get(params: PageElementStorageOperationsGetParams): Promise<PageElement | null> {
         const { where } = params;
+
         const keys = {
             PK: this.createPartitionKey(where),
-            SK: where.slug
+            SK: where.id
         };
-
         try {
             const item = await this.entity.get(keys);
             return cleanupItem(this.entity, item);
         } catch (ex) {
             throw new WebinyError(
-                ex.message || "Could not load menu by given parameters.",
-                ex.code || "MENU_GET_ERROR",
+                ex.message || "Could not load page element by given parameters.",
+                ex.code || "PAGE_ELEMENT_GET_ERROR",
                 {
                     where
                 }
@@ -62,8 +61,8 @@ export class MenuStorageOperationsDdbEs implements MenuStorageOperations {
     }
 
     public async list(
-        params: MenuStorageOperationsListParams
-    ): Promise<MenuStorageOperationsListResponse> {
+        params: PageElementStorageOperationsListParams
+    ): Promise<PageElementStorageOperationsListResponse> {
         const { where, sort, limit } = params;
 
         const { tenant, locale, ...restWhere } = where;
@@ -79,14 +78,14 @@ export class MenuStorageOperationsDdbEs implements MenuStorageOperations {
             }
         };
 
-        let items: Menu[] = [];
+        let results: PageElement[] = [];
 
         try {
-            items = await queryAll<Menu>(queryAllParams);
+            results = await queryAll<PageElement>(queryAllParams);
         } catch (ex) {
             throw new WebinyError(
-                ex.message || "Could not list menus by given parameters.",
-                ex.code || "MENUS_LIST_ERROR",
+                ex.message || "Could not list page elements by given parameters.",
+                ex.code || "PAGE_ELEMENTS_LIST_ERROR",
                 {
                     partitionKey: queryAllParams.partitionKey,
                     options: queryAllParams.options
@@ -94,15 +93,15 @@ export class MenuStorageOperationsDdbEs implements MenuStorageOperations {
             );
         }
 
-        const filteredItems = filterItems<Menu>({
+        const filteredItems = filterItems<PageElement>({
             context: this.context,
             where: restWhere,
-            items
+            items: results
         }).map(item => {
-            return cleanupItem<Menu>(this.entity, item);
+            return cleanupItem<PageElement>(this.entity, item);
         });
 
-        const sortedItems = sortItems<Menu>({
+        const sortedItems = sortItems<PageElement>({
             context: this.context,
             items: filteredItems,
             sort,
@@ -117,93 +116,90 @@ export class MenuStorageOperationsDdbEs implements MenuStorageOperations {
         });
     }
 
-    public async create(params: MenuStorageOperationsCreateParams): Promise<Menu> {
-        const { menu } = params;
+    public async create(params: PageElementStorageOperationsCreateParams): Promise<PageElement> {
+        const { pageElement } = params;
         const keys = {
             PK: this.createPartitionKey({
-                tenant: menu.tenant,
-                locale: menu.locale
+                tenant: pageElement.tenant,
+                locale: pageElement.locale
             }),
-            SK: menu.slug
+            SK: pageElement.id
         };
 
         try {
             await this.entity.put({
-                ...menu,
+                ...pageElement,
                 TYPE,
                 ...keys
             });
-            return menu;
+            return pageElement;
         } catch (ex) {
             throw new WebinyError(
-                ex.message || "Could not create menu.",
-                ex.code || "MENU_CREATE_ERROR",
+                ex.message || "Could not create pageElement.",
+                ex.code || "PAGE_ELEMENT_CREATE_ERROR",
                 {
                     keys,
-                    menu
+                    pageElement
                 }
             );
         }
     }
 
-    public async update(params: MenuStorageOperationsUpdateParams): Promise<Menu> {
-        const { menu, original } = params;
+    public async update(params: PageElementStorageOperationsUpdateParams): Promise<PageElement> {
+        const { pageElement, original } = params;
         const keys = {
             PK: this.createPartitionKey({
-                tenant: menu.tenant,
-                locale: menu.locale
+                tenant: pageElement.tenant,
+                locale: pageElement.locale
             }),
-            SK: menu.slug
+            SK: pageElement.id
         };
 
         try {
             await this.entity.put({
-                ...menu,
+                ...pageElement,
                 ...keys
             });
-            return menu;
+            return pageElement;
         } catch (ex) {
             throw new WebinyError(
-                ex.message || "Could not update menu.",
-                ex.code || "MENU_UPDATE_ERROR",
+                ex.message || "Could not update pageElement.",
+                ex.code || "PAGE_ELEMENT_UPDATE_ERROR",
                 {
                     keys,
                     original,
-                    menu
+                    pageElement
                 }
             );
         }
     }
 
-    public async delete(params: MenuStorageOperationsDeleteParams): Promise<Menu> {
-        const { menu } = params;
+    public async delete(params: PageElementStorageOperationsDeleteParams): Promise<PageElement> {
+        const { pageElement } = params;
         const keys = {
             PK: this.createPartitionKey({
-                tenant: menu.tenant,
-                locale: menu.locale
+                tenant: pageElement.tenant,
+                locale: pageElement.locale
             }),
-            SK: menu.slug
+            SK: pageElement.id
         };
 
         try {
-            await this.entity.delete({
-                ...menu,
-                ...keys
-            });
-            return menu;
+            await this.entity.delete(keys);
+            return pageElement;
         } catch (ex) {
             throw new WebinyError(
-                ex.message || "Could not delete menu.",
-                ex.code || "MENU_DELETE_ERROR",
+                ex.message || "Could not delete pageElement.",
+                ex.code || "PAGE_ELEMENT_DELETE_ERROR",
                 {
                     keys,
-                    menu
+                    pageElement
                 }
             );
         }
     }
 
     private createPartitionKey({ tenant, locale }): string {
-        return `T#${tenant}#L${locale}#PB#M`;
+        return `T#${tenant}#L${locale}#PB#PE`;
     }
 }

@@ -10,6 +10,7 @@ export enum TYPE {
 
 // Entities.
 export interface PageElement {
+    id: string;
     name: string;
     type: "element" | "block";
     category: string;
@@ -21,6 +22,12 @@ export interface PageElement {
         id: string;
         displayName: string;
     };
+    /**
+     * Added with storage operations.
+     * TODO: add via upgrade script.
+     */
+    tenant: string;
+    locale: string;
 }
 
 export interface Menu {
@@ -155,6 +162,12 @@ export interface DefaultSettings {
     };
 }
 
+export interface MetaResponse {
+    cursor: string | null;
+    totalCount: number;
+    hasMoreItems: boolean;
+}
+
 /**
  * @category StorageOperations
  * @category CategoryStorageOperations
@@ -181,6 +194,12 @@ export interface CategoryStorageOperationsListParams {
     limit?: number;
     after?: string | null;
 }
+
+/**
+ * @category StorageOperations
+ * @category CategoryStorageOperations
+ */
+export type CategoryStorageOperationsListResponse = [Category[], MetaResponse];
 
 /**
  * @category StorageOperations
@@ -221,7 +240,9 @@ export interface CategoryStorageOperations {
     /**
      * List all the categories.
      */
-    list(params: CategoryStorageOperationsListParams): Promise<Category[]>;
+    list(
+        params: CategoryStorageOperationsListParams
+    ): Promise<CategoryStorageOperationsListResponse>;
     create(params: CategoryStorageOperationsCreateParams): Promise<Category>;
     update(params: CategoryStorageOperationsUpdateParams): Promise<Category>;
     delete(params: CategoryStorageOperationsDeleteParams): Promise<Category>;
@@ -253,6 +274,12 @@ export interface MenuStorageOperationsListParams {
     limit?: number;
     after?: string | null;
 }
+
+/**
+ * @category StorageOperations
+ * @category MenuStorageOperations
+ */
+export type MenuStorageOperationsListResponse = [Menu[], MetaResponse];
 
 /**
  * @category StorageOperations
@@ -293,8 +320,87 @@ export interface MenuStorageOperations {
     /**
      * Get all menu items by given params.
      */
-    list(params: MenuStorageOperationsListParams): Promise<Menu[]>;
+    list(params: MenuStorageOperationsListParams): Promise<MenuStorageOperationsListResponse>;
     create(params: MenuStorageOperationsCreateParams): Promise<Menu>;
     update(params: MenuStorageOperationsUpdateParams): Promise<Menu>;
     delete(params: MenuStorageOperationsDeleteParams): Promise<Menu>;
+}
+
+/**
+ * @category StorageOperations
+ * @category PageElementStorageOperations
+ */
+export interface PageElementStorageOperationsGetParams {
+    where: {
+        id: string;
+        tenant: string;
+        locale: string;
+    };
+}
+
+/**
+ * @category StorageOperations
+ * @category PageElementStorageOperations
+ */
+export interface PageElementStorageOperationsListParams {
+    where: {
+        tenant: string;
+        locale: string;
+        createdBy?: string;
+    };
+    sort?: string[];
+    limit?: number;
+    after?: string | null;
+}
+/**
+ * @category StorageOperations
+ * @category PageElementStorageOperations
+ */
+export type PageElementStorageOperationsListResponse = [PageElement[], MetaResponse];
+
+/**
+ * @category StorageOperations
+ * @category PageElementStorageOperations
+ */
+export interface PageElementStorageOperationsCreateParams {
+    input: Record<string, any>;
+    pageElement: PageElement;
+}
+
+/**
+ * @category StorageOperations
+ * @category PageElementStorageOperations
+ */
+export interface PageElementStorageOperationsUpdateParams {
+    input: Record<string, any>;
+    original: PageElement;
+    pageElement: PageElement;
+}
+
+/**
+ * @category StorageOperations
+ * @category PageElementStorageOperations
+ */
+export interface PageElementStorageOperationsDeleteParams {
+    pageElement: PageElement;
+}
+
+/**
+ * @category StorageOperations
+ * @category PageElementStorageOperations
+ */
+export interface PageElementStorageOperations {
+    /**
+     * Get a single page element item by given params.
+     */
+    get(params: PageElementStorageOperationsGetParams): Promise<PageElement>;
+    /**
+     * Get all page element items by given params.
+     */
+    list(
+        params: PageElementStorageOperationsListParams
+    ): Promise<PageElementStorageOperationsListResponse>;
+    create(params: PageElementStorageOperationsCreateParams): Promise<PageElement>;
+    update(params: PageElementStorageOperationsUpdateParams): Promise<PageElement>;
+    delete(params: PageElementStorageOperationsDeleteParams): Promise<PageElement>;
 }

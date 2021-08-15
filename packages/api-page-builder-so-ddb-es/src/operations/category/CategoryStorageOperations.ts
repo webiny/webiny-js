@@ -5,6 +5,7 @@ import {
     CategoryStorageOperationsDeleteParams,
     CategoryStorageOperationsGetParams,
     CategoryStorageOperationsListParams,
+    CategoryStorageOperationsListResponse,
     CategoryStorageOperationsUpdateParams
 } from "@webiny/api-page-builder/types";
 import { PbContext } from "@webiny/api-page-builder/types";
@@ -16,6 +17,7 @@ import { sortItems } from "@webiny/db-dynamodb/utils/sort";
 import { filterItems } from "@webiny/db-dynamodb/utils/filter";
 import WebinyError from "@webiny/error";
 import { CategoryDataLoader } from "./CategoryDataLoader";
+import { createListResponse } from "@webiny/db-dynamodb/utils/listResponse";
 
 const TYPE = "pb.category";
 
@@ -61,7 +63,9 @@ export class CategoryStorageOperationsDdbEs implements CategoryStorageOperations
         }
     }
 
-    public async list(params: CategoryStorageOperationsListParams): Promise<Category[]> {
+    public async list(
+        params: CategoryStorageOperationsListParams
+    ): Promise<CategoryStorageOperationsListResponse> {
         const { where, sort, limit } = params;
 
         const { tenant, locale, ...restWhere } = where;
@@ -95,11 +99,18 @@ export class CategoryStorageOperationsDdbEs implements CategoryStorageOperations
             items
         });
 
-        return sortItems<Category>({
+        const sortedItems = sortItems<Category>({
             context: this.context,
             items: filteredItems,
             sort,
             fields: ["createdOn"]
+        });
+
+        return createListResponse({
+            items: sortedItems,
+            limit,
+            totalCount: filteredItems.count,
+            after: null
         });
     }
 

@@ -153,7 +153,8 @@ export default new ContextPlugin<PbContext>(async context => {
             }
 
             try {
-                return await storageOperations.list(params);
+                const [items] = await storageOperations.list(params);
+                return items;
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not list categories by given params.",
