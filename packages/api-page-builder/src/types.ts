@@ -9,7 +9,7 @@ export enum TYPE {
 }
 
 // Entities.
-export type PageElement = {
+export interface PageElement {
     name: string;
     type: "element" | "block";
     category: string;
@@ -21,9 +21,9 @@ export type PageElement = {
         id: string;
         displayName: string;
     };
-};
+}
 
-export type Menu = {
+export interface Menu {
     title: string;
     slug: string;
     description: string;
@@ -34,9 +34,15 @@ export type Menu = {
         id: string;
         displayName: string;
     };
-};
+    /**
+     * Added with storage operations.
+     * TODO: add via upgrade script.
+     */
+    tenant: string;
+    locale: string;
+}
 
-export type Category = {
+export interface Category {
     name: string;
     slug: string;
     url: string;
@@ -53,7 +59,7 @@ export type Category = {
      */
     tenant: string;
     locale: string;
-};
+}
 
 export type PageStatus =
     | "published"
@@ -63,7 +69,7 @@ export type PageStatus =
     | "draft";
 export type PageSpecialType = "home" | "notFound";
 
-export type Page = {
+export interface Page {
     id: string;
     pid: string;
     locale: string;
@@ -115,14 +121,14 @@ export type Page = {
         id: string;
         displayName: string;
     };
-};
+}
 
-export type File = {
+export interface File {
     id: string;
     src: string;
-};
+}
 
-export type DefaultSettings = {
+export interface DefaultSettings {
     name: string;
     websiteUrl: string;
     websitePreviewUrl: string;
@@ -147,7 +153,7 @@ export type DefaultSettings = {
         home: string;
         notFound: string;
     };
-};
+}
 
 /**
  * @category StorageOperations
