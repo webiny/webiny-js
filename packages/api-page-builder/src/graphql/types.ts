@@ -96,9 +96,6 @@ export type PageElementsCrud = {
 };
 
 export type CategoriesCrud = {
-    dataLoaders: {
-        get: DataLoader<string, Category>;
-    };
     get(slug: string, options?: { auth: boolean }): Promise<Category>;
     list(): Promise<Category[]>;
     create(data: Record<string, any>): Promise<Category>;
@@ -142,27 +139,24 @@ export type SystemCrud = {
     upgrade(version: string, data?: Record<string, any>): Promise<boolean>;
 };
 
-// PBContext types.
-export type PbContext = Context<
-    I18NContentContext,
-    I18NContext,
-    ClientContext,
-    DbContext,
-    ElasticsearchContext,
-    SecurityContext,
-    TenancyContext,
-    PrerenderingServiceClientContext,
-    {
-        pageBuilder: Record<string, any> & {
-            pages: PagesCrud;
-            pageElements: PageElementsCrud;
-            categories: CategoriesCrud;
-            menus: MenusCrud;
-            settings: SettingsCrud;
-            system: SystemCrud;
-        };
-    }
->;
+export interface PbContext
+    extends I18NContentContext,
+        I18NContext,
+        ClientContext,
+        DbContext,
+        ElasticsearchContext,
+        SecurityContext,
+        TenancyContext,
+        PrerenderingServiceClientContext {
+    pageBuilder: Record<string, any> & {
+        pages: PagesCrud;
+        pageElements: PageElementsCrud;
+        categories: CategoriesCrud;
+        menus: MenusCrud;
+        settings: SettingsCrud;
+        system: SystemCrud;
+    };
+}
 
 // Permissions.
 export interface PbSecurityPermission extends SecurityPermission {

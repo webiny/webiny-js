@@ -47,6 +47,12 @@ export type Category = {
         id: string;
         displayName: string;
     };
+    /**
+     * Added with storage operations.
+     * TODO: add via upgrade script.
+     */
+    tenant: string;
+    locale: string;
 };
 
 export type PageStatus =
@@ -142,3 +148,147 @@ export type DefaultSettings = {
         notFound: string;
     };
 };
+
+/**
+ * @category StorageOperations
+ * @category CategoryStorageOperations
+ */
+export interface CategoryStorageOperationsGetParams {
+    where: {
+        tenant: string;
+        locale: string;
+        slug: string;
+    };
+}
+
+/**
+ * @category StorageOperations
+ * @category CategoryStorageOperations
+ */
+export interface CategoryStorageOperationsListParams {
+    where: {
+        tenant: string;
+        locale: string;
+        createdBy?: string;
+    };
+    sort?: string[];
+    limit?: number;
+    after?: string | null;
+}
+
+/**
+ * @category StorageOperations
+ * @category CategoryStorageOperations
+ */
+export interface CategoryStorageOperationsCreateParams {
+    input: Record<string, any>;
+    category: Category;
+}
+
+/**
+ * @category StorageOperations
+ * @category CategoryStorageOperations
+ */
+export interface CategoryStorageOperationsUpdateParams {
+    input: Record<string, any>;
+    original: Category;
+    category: Category;
+}
+
+/**
+ * @category StorageOperations
+ * @category CategoryStorageOperations
+ */
+export interface CategoryStorageOperationsDeleteParams {
+    category: Category;
+}
+
+/**
+ * @category StorageOperations
+ * @category CategoryStorageOperations
+ */
+export interface CategoryStorageOperations {
+    /**
+     * Get the category by given slug.
+     */
+    get(params: CategoryStorageOperationsGetParams): Promise<Category | null>;
+    /**
+     * List all the categories.
+     */
+    list(params: CategoryStorageOperationsListParams): Promise<Category[]>;
+    create(params: CategoryStorageOperationsCreateParams): Promise<Category>;
+    update(params: CategoryStorageOperationsUpdateParams): Promise<Category>;
+    delete(params: CategoryStorageOperationsDeleteParams): Promise<Category>;
+}
+
+/**
+ * @category StorageOperations
+ * @category MenuStorageOperations
+ */
+export interface MenuStorageOperationsGetParams {
+    where: {
+        slug: string;
+        tenant: string;
+        locale: string;
+    };
+}
+
+/**
+ * @category StorageOperations
+ * @category MenuStorageOperations
+ */
+export interface MenuStorageOperationsListParams {
+    where: {
+        tenant: string;
+        locale: string;
+        createdBy?: string;
+    };
+    sort?: string[];
+    limit?: number;
+    after?: string | null;
+}
+
+/**
+ * @category StorageOperations
+ * @category MenuStorageOperations
+ */
+export interface MenuStorageOperationsCreateParams {
+    input: Record<string, any>;
+    menu: Menu;
+}
+
+/**
+ * @category StorageOperations
+ * @category MenuStorageOperations
+ */
+export interface MenuStorageOperationsUpdateParams {
+    input: Record<string, any>;
+    original: Menu;
+    menu: Menu;
+}
+
+/**
+ * @category StorageOperations
+ * @category MenuStorageOperations
+ */
+export interface MenuStorageOperationsDeleteParams {
+    menu: Menu;
+}
+
+/**
+ * @category StorageOperations
+ * @category MenuStorageOperations
+ */
+export interface MenuStorageOperations {
+    /**
+     * Get a single menu item by given params.
+     */
+    get(params: MenuStorageOperationsGetParams): Promise<Menu>;
+    /**
+     * Get all menu items by given params.
+     */
+    list(params: MenuStorageOperationsListParams): Promise<Menu[]>;
+    create(params: MenuStorageOperationsCreateParams): Promise<Menu>;
+    update(params: MenuStorageOperationsUpdateParams): Promise<Menu>;
+    delete(params: MenuStorageOperationsDeleteParams): Promise<Menu>;
+}
