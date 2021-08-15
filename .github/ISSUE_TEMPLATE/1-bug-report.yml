@@ -12,14 +12,10 @@ body:
       description: Output of `yarn webiny --version`
   - type: input
     attributes:
-      label: Platform
-      description: |
-        UNIX: output of `uname -a`
-        Windows: output of `"$([Environment]::OSVersion | ForEach-Object VersionString) $(if ([Environment]::Is64BitOperatingSystem) { "x64" } else { "x86" })"` in PowerShell console
+      label: Operating System
   - type: input
     attributes:
       label: Browser
-      description: Please specify the Web Browser.
   - type: textarea
     attributes:
       label: What steps will reproduce the bug?
