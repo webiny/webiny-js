@@ -340,7 +340,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 console.log(chalk.bold("Next Steps"));
                 console.log(
                     `‣ open your GraphQL API with a GraphQL client, via the following URL:\n  ${chalk.green(
-                        `[POST] ${stackOutput.apiUrl}`
+                        `[POST] ${stackOutput.graphqlApiUrl}`
                     )}`
                 );
             }
