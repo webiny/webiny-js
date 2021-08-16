@@ -89,7 +89,7 @@ export const LIST_PAGES = gql`
 `;
 
 export const GET_PAGE = gql`
-    query PbGetPage($id: ID!) {
+    query PbGetPagePreview($id: ID!) {
         pageBuilder {
             getPage(id: $id) {
                 data {
