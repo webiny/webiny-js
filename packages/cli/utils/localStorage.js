@@ -6,9 +6,14 @@
 const fs = require("fs");
 const path = require("path");
 
-module.exports = function (filename = "cli.json") {
-    const jsonPath = path.join(".webiny", filename);
+const DOT_WEBINY = '.webiny';
 
+module.exports = function (filename = "cli.json") {
+    if (!fs.existsSync(DOT_WEBINY)) {
+        fs.mkdirSync(DOT_WEBINY);
+    }
+
+    const jsonPath = path.join(DOT_WEBINY, filename);
     let data = {};
     if (fs.existsSync(jsonPath)) {
         data = JSON.parse(fs.readFileSync(jsonPath));
