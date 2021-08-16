@@ -54,7 +54,19 @@
       "src": [
         "@webiny/project-utils",
         "@webiny/api-file-manager",
-        "@webiny/cli-plugin-deploy-pulumi"
+        "@webiny/cli-plugin-deploy-pulumi",
+        "@webiny/handler-http",
+        "@webiny/handler-args",
+        "@webiny/handler-client",
+        "@webiny/api-elasticsearch",
+        "@webiny/api-tenancy",
+        "@webiny/api-security",
+        "@webiny/api-i18n",
+        "@webiny/api-i18n-content",
+        "@webiny/api-page-builder",
+        "@webiny/api-prerendering-service",
+        "@webiny/api-form-builder",
+        "@webiny/api-headless-cms"
       ]
     }
   },
