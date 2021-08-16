@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.13.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.12.0...v5.13.0-beta.0) (2021-08-16)
+
+
+### Bug Fixes
+
+* add constant ([286be8c](https://github.com/webiny/webiny-js/commit/286be8c46516a14eb775b0f33f4d4a6601daba89))
+* update dependencies ([37e9431](https://github.com/webiny/webiny-js/commit/37e9431732929e9528b2e4edb55d676832551ef3))
+
+
+### Features
+
+* add `addWorkspaceToRootPackageJson` ([7d3c3ed](https://github.com/webiny/webiny-js/commit/7d3c3ed7d75c2830f1d7b6786aa04af2e197b9a7))
+
+
+
+
+
 # [5.12.0](https://github.com/webiny/webiny-js/compare/v5.12.0-beta.1...v5.12.0) (2021-08-05)
 
 **Note:** Version bump only for package @webiny/cli-plugin-scaffold

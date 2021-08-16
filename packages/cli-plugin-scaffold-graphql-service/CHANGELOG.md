@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.13.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.12.0...v5.13.0-beta.0) (2021-08-16)
+
+
+### Bug Fixes
+
+* resolve TS issue ([0871c4b](https://github.com/webiny/webiny-js/commit/0871c4b393ceffeb519bd3e45530d69723abc3b9))
+* update dependencies ([37e9431](https://github.com/webiny/webiny-js/commit/37e9431732929e9528b2e4edb55d676832551ef3))
+* update dependency ([985e76a](https://github.com/webiny/webiny-js/commit/985e76a80359b7b413a51fa3c3bba382eaa9806f))
+* use Todo as the default data model name ([6138bd1](https://github.com/webiny/webiny-js/commit/6138bd1fd74ac2039f42e80292bee7945d40d512))
+
+
+### Features
+
+* add additional comments ([3992b7c](https://github.com/webiny/webiny-js/commit/3992b7c30166f33d5a346f5417b1e3f5328c229b))
+* detect if security and i18n are used and disable scaffolded code accordingly ([1f12fc4](https://github.com/webiny/webiny-js/commit/1f12fc4e075906c82812077a44428d4064adaf41))
+* read plugins folder from local storage first ([988a743](https://github.com/webiny/webiny-js/commit/988a7430923d33b3e5c3e50885ac46b01b630337))
+* use central Context interface instead of creating own ([0484fc8](https://github.com/webiny/webiny-js/commit/0484fc85a26d60d2a8fc17a2eadbc9a3eccd1b9f))
+
+
+
+
+
 # [5.12.0](https://github.com/webiny/webiny-js/compare/v5.12.0-beta.1...v5.12.0) (2021-08-05)
 
 **Note:** Version bump only for package @webiny/cli-plugin-scaffold-graphql-service

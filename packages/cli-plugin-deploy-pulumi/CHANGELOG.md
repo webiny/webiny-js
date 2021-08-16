@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.13.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.12.0...v5.13.0-beta.0) (2021-08-16)
+
+
+### Bug Fixes
+
+* ensure env vars are loaded immediately as the CLI starts ([50b1e31](https://github.com/webiny/webiny-js/commit/50b1e31585a55094276e7d2ebbc3cdbd5c69cdba))
+* **cli:** use forward slash and disable path filtering on Windows ([6346ef9](https://github.com/webiny/webiny-js/commit/6346ef9867b8c9746bc523b011917519ff3f1779))
+* getStackOutput is a sync function ([5fdcb61](https://github.com/webiny/webiny-js/commit/5fdcb61e66ad3459e8108d95613f8af13361c852))
+* remove async ([f552c3a](https://github.com/webiny/webiny-js/commit/f552c3ad1ce9636c389f4f157cea0f4be22e0e25))
+
+
+
+
+
 # [5.12.0](https://github.com/webiny/webiny-js/compare/v5.12.0-beta.1...v5.12.0) (2021-08-05)
 
 **Note:** Version bump only for package @webiny/cli-plugin-deploy-pulumi
