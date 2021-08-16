@@ -9,7 +9,7 @@ import { FooterElement } from "~/ui/views/NavigationView/FooterElement";
 
 export class MenuLinkRenderer extends UIRenderer<NavigationMenuElement> {
     canRender(element: NavigationMenuElement): boolean {
-        const isInFooter = Boolean(element.getParentOfType(FooterElement));
+        const isInFooter = Boolean(element.getParentByType(FooterElement));
         return element.depth === 1 && isInFooter;
     }
 

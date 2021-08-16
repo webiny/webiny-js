@@ -13,11 +13,12 @@ module.exports = args => {
         throw new Error(`Could not detect project application in given directory (${args.cwd}).`);
     }
 
-    const applicationRoot = dirname(applicationRootFile);
+    const rootFile = applicationRootFile.replace(/\\/g, "/");
+    const applicationRoot = dirname(rootFile);
 
     let applicationConfig;
-    if (appConfigs.includes(basename(applicationRootFile))) {
-        applicationConfig = importModule(applicationRootFile);
+    if (appConfigs.includes(basename(rootFile))) {
+        applicationConfig = importModule(rootFile);
     }
 
     let name, id;

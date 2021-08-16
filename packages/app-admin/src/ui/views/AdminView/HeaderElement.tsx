@@ -7,10 +7,17 @@ import { HeaderSectionLeftElement } from "./HeaderSectionLeftElement";
 import { HeaderSectionCenterElement } from "./HeaderSectionCenterElement";
 import { HeaderSectionRightElement } from "./HeaderSectionRightElement";
 import Hamburger from "./components/Hamburger";
+import { UIRenderer } from "~/ui/UIRenderer";
 
 enum ElementID {
     MenuButton = "headerMenuButton",
     Logo = "headerLogo"
+}
+
+class HeaderElementRenderer extends UIRenderer<HeaderElement> {
+    render({ next }): React.ReactNode {
+        return <TopAppBarPrimary fixed>{next()}</TopAppBarPrimary>;
+    }
 }
 
 export class HeaderElement extends UIElement {
@@ -26,7 +33,10 @@ export class HeaderElement extends UIElement {
         this.addElement(new HeaderSectionCenterElement("headerCenter"));
         this.addElement(new HeaderSectionRightElement("headerRight"));
 
+        this.addRenderer(new HeaderElementRenderer());
+
         this.setMenuButton(<Hamburger />);
+        this.applyPlugins(HeaderElement);
     }
 
     getLeftSection(): HeaderSectionLeftElement {
@@ -56,9 +66,5 @@ export class HeaderElement extends UIElement {
                 return menuButton;
             })
         );
-    }
-
-    render(props): React.ReactNode {
-        return <TopAppBarPrimary fixed>{super.render(props)}</TopAppBarPrimary>;
     }
 }

@@ -1,7 +1,6 @@
 import React, { Fragment } from "react";
 import sortBy from "lodash/sortBy";
 import { nanoid } from "nanoid";
-import { Drawer } from "@webiny/ui/Drawer";
 import { UIView } from "~/ui/UIView";
 import { plugins } from "@webiny/plugins";
 import { GenericElement } from "~/ui/elements/GenericElement";
@@ -14,6 +13,7 @@ import { AdminMenuPlugin } from "~/types";
 import { NavigationMenuElement, TAGS } from "~/ui/elements/NavigationMenuElement";
 import { ItemProps, MenuProps, SectionProps } from "./NavigationView/legacyMenu";
 import { ReactComponent as SettingsIcon } from "~/assets/icons/round-settings-24px.svg";
+import { NavigationViewRenderer } from "./NavigationView/NavigationViewRenderer";
 
 export enum ElementID {
     Header = "navigationHeader",
@@ -47,6 +47,8 @@ export class NavigationView extends UIView {
 
         // Load legacy plugins and convert them into elements
         this.setupLegacyMenuPlugins();
+
+        this.addRenderer(new NavigationViewRenderer());
 
         this.applyPlugins(NavigationView);
     }
@@ -89,16 +91,6 @@ export class NavigationView extends UIView {
         return this.getElement(ElementID.SettingsMenu);
     }
 
-    render(props?: any): React.ReactNode {
-        const { menuIsShown, hideMenu } = this.getNavigationHook();
-
-        return (
-            <Drawer modal open={menuIsShown()} onClose={hideMenu}>
-                {super.render(props)}
-            </Drawer>
-        );
-    }
-
     private setupLegacyMenuPlugins() {
         // IMPORTANT! The following piece of code is for BACKWARDS COMPATIBILITY purposes only!
         const menuPlugins = plugins.byType<AdminMenuPlugin>("admin-menu");
@@ -129,7 +121,7 @@ export class NavigationView extends UIView {
         };
 
         const Section = ({ parent, ...props }: SectionProps) => {
-            const sectionMenu = parent.addElement(
+            const sectionMenu = parent.addElement<NavigationMenuElement>(
                 new NavigationMenuElement(nanoid(), {
                     label: props.label
                 })
@@ -148,7 +140,7 @@ export class NavigationView extends UIView {
         };
 
         const Item = ({ parent, ...props }: ItemProps) => {
-            parent.addElement(
+            parent.addElement<NavigationMenuElement>(
                 new NavigationMenuElement(nanoid(), {
                     label: props.label,
                     path: props.path
