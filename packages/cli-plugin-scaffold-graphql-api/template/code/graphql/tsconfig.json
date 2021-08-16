@@ -1,0 +1,10 @@
+{
+  "extends": "",
+  "include": ["./src"],
+  "compilerOptions": {
+    "paths": {
+      "~/*": ["./src/*"]
+    },
+    "baseUrl": "."
+  }
+}

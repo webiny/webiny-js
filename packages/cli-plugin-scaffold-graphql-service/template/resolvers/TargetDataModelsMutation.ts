@@ -48,6 +48,9 @@ export default class TargetDataModelsMutationResolver
      * @param data
      */
     async createTargetDataModel({ data }: CreateTargetDataModelParams) {
+        // If our GraphQL API uses Webiny Security Framework, we can retrieve the
+        // currently logged in identity and assign it to the `createdBy` property.
+        // https://www.webiny.com/docs/key-topics/security-framework/introduction
         const { security } = this.context;
 
         // We use `mdbid` (https://www.npmjs.com/package/mdbid) library to generate

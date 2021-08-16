@@ -1,5 +1,22 @@
 #!/usr/bin/env node
 const yargs = require("yargs");
+const { log } = require("./utils");
+
+// Immediately load .env.{--env} and .env files.
+// This way we ensure all of the environment variables are not loaded too late.
+const paths = yargs.argv.env ? [".env", `.env.${yargs.argv.env}`] : [".env"];
+for (let i = 0; i < paths.length; i++) {
+    const path = paths[i];
+    const { error } = require("dotenv").config({ path });
+    if (yargs.argv.debug) {
+        if (error) {
+            log.info(`Could not load environment variables from ${log.info.hl(path)}.`);
+        } else {
+            log.success(`Successfully loaded environment variables from ${log.success.hl(path)}.`);
+        }
+    }
+}
+
 const { blue, red } = require("chalk");
 const context = require("./context");
 const { createCommands } = require("./commands");

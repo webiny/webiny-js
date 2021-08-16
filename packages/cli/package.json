@@ -24,7 +24,7 @@
     "ncp": "^2.0.0",
     "pirates": "^4.0.1",
     "prettier": "^2.3.2",
-    "replace-in-path": "^1.0.4",
+    "replace-in-path": "^1.1.0",
     "rimraf": "^3.0.2",
     "semver": "7.3.4",
     "ts-morph": "^11.0.0",
@@ -54,7 +54,19 @@
       "src": [
         "@webiny/project-utils",
         "@webiny/api-file-manager",
-        "@webiny/cli-plugin-deploy-pulumi"
+        "@webiny/cli-plugin-deploy-pulumi",
+        "@webiny/handler-http",
+        "@webiny/handler-args",
+        "@webiny/handler-client",
+        "@webiny/api-elasticsearch",
+        "@webiny/api-tenancy",
+        "@webiny/api-security",
+        "@webiny/api-i18n",
+        "@webiny/api-i18n-content",
+        "@webiny/api-page-builder",
+        "@webiny/api-prerendering-service",
+        "@webiny/api-form-builder",
+        "@webiny/api-headless-cms"
       ]
     }
   },

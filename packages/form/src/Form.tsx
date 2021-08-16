@@ -38,6 +38,29 @@ export type FormProps = {
     children: FormRenderProp;
 };
 
+/**
+ * Use when creating standalone form components which receives props from the parent Bind component.
+ */
+export interface FormComponentProps {
+    validation?: {
+        /* Is form element's value valid? */
+        isValid: boolean;
+        /* Error message if value is not valid. */
+        message: string;
+        /* Any validation result returned by the validator. */
+        results?: { [key: string]: any };
+    };
+
+    /* Provided by <Form> component to perform validation when value has changed. */
+    validate?: () => Promise<boolean | any>;
+
+    /* Form component's value. */
+    value?: any;
+
+    /* A callback that is executed each time a value is changed. */
+    onChange?: (value: any) => void;
+}
+
 type State = {
     data: FormData;
     originalData: FormData;
@@ -320,6 +343,10 @@ export class Form extends React.Component<FormProps, State> {
 
     setValue = (name: string, value: any) => {
         this.onChangeFns[name](value);
+    };
+
+    reset = () => {
+        this.setState({ data: _.cloneDeep(this.state.originalData) });
     };
 
     __onKeyDown = (e: React.KeyboardEvent<any>) => {
