@@ -13,7 +13,11 @@ const TEST_TYPE = process.env.TEST_TYPE;
 const DEPLOY_ENVIRONMENT = "dev";
 
 if (TEST_TYPE !== "unit") {
-    log.info(`${log.info.hl("project/application/path/code/graphql")}: Assigning environment variables...`);
+    log.info(
+        `${log.info.hl(
+            "project/application/path/code/graphql"
+        )}: Assigning environment variables...`
+    );
     const stackOutput = getStackOutput({
         folder: "project/application/path",
         env: DEPLOY_ENVIRONMENT

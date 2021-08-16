@@ -7,9 +7,7 @@ const addNewScaffolds = async context => {
     const { addPackagesToDependencies, createMorphProject, insertImport } = require("../utils");
 
     info(
-        `Adding new scaffolds as ${info.hl("dependencies")} in ${info.hl(
-            "package.json"
-        )} file...`
+        `Adding new scaffolds as ${info.hl("dependencies")} in ${info.hl("package.json")} file...`
     );
 
     addPackagesToDependencies(project.root, {
@@ -18,14 +16,10 @@ const addNewScaffolds = async context => {
         "@webiny/cli-plugin-scaffold-full-stack-app": version
     });
 
-    info(
-        `Added new scaffolds as ${info.hl("dependencies")} in ${info.hl(
-            "package.json"
-        )} file.`
-    );
+    info(`Added new scaffolds as ${info.hl("dependencies")} in ${info.hl("package.json")} file.`);
 
     const webinyProjectTsPath = "webiny.project.ts";
-    info(`Adding new scaffolds in the ${info.hl(webinyProjectTsPath)} file...`)
+    info(`Adding new scaffolds in the ${info.hl(webinyProjectTsPath)} file...`);
     if (!fs.existsSync(webinyProjectTsPath)) {
         info(`Skipping - could not find ${info.hl(webinyProjectTsPath)} file.`);
         return;
@@ -41,11 +35,7 @@ const addNewScaffolds = async context => {
         "@webiny/cli-plugin-scaffold-graphql-api"
     );
 
-    insertImport(
-        webinyProjectTs,
-        "cliScaffoldReactApp",
-        "@webiny/cli-plugin-scaffold-react-app"
-    );
+    insertImport(webinyProjectTs, "cliScaffoldReactApp", "@webiny/cli-plugin-scaffold-react-app");
 
     insertImport(
         webinyProjectTs,

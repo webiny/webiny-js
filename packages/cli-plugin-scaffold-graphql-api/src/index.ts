@@ -189,7 +189,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                             path.join(context.project.root, input.path, "code", "graphql"),
                             context.project.root
                         )
-                    },
+                    }
                 ];
                 replaceInPath(p, replacements);
             }
