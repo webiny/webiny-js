@@ -1,5 +1,13 @@
 #!/usr/bin/env node
 const yargs = require("yargs");
+
+// Immediately load .env.{passed-env} and .env files.
+// This way we ensure all of the environment variables are not loaded too late.
+if (yargs.argv.env) {
+    require("dotenv").config({ path: `.env.${yargs.argv.env}` });
+}
+require("dotenv").config();
+
 const { blue, red } = require("chalk");
 const context = require("./context");
 const { createCommands } = require("./commands");
