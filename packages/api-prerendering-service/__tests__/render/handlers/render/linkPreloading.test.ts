@@ -59,17 +59,17 @@ describe(`Link Preloading Test`, () => {
       href="/static/css/main.30bba61e.chunk.css"
       rel="stylesheet"
     />
-  </head>
-  <body>
     <script>
-      window.__APOLLO_STATE__ = undefined;
+      window.__PS_RENDER_ID__ = "${meta.id}";
     </script>
     <script>
       window.__PS_RENDER_TS__ = "${meta.ts}";
     </script>
     <script>
-      window.__PS_RENDER_ID__ = "${meta.id}";
+      window.__APOLLO_STATE__ = undefined;
     </script>
+  </head>
+  <body>
     <script
       data-link-preload=""
       data-link-preload-type="markup"
