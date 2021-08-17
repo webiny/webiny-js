@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.13.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.13.0-beta.1...v5.13.0-beta.2) (2021-08-17)
+
+
+### Bug Fixes
+
+* update links ([bf82905](https://github.com/webiny/webiny-js/commit/bf829052497363c15f28058c2ef4a1bb15ed8245))
+
+
+
+
+
 # [5.13.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.13.0-beta.0...v5.13.0-beta.1) (2021-08-16)
 
 **Note:** Version bump only for package @webiny/cli-plugin-scaffold-react-app

@@ -3,6 +3,21 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.13.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.13.0-beta.1...v5.13.0-beta.2) (2021-08-17)
+
+
+### Bug Fixes
+
+* create .webiny only when needed ([1eb010d](https://github.com/webiny/webiny-js/commit/1eb010d562d56f42a976b6fb5b2032c6614d07cc))
+* ensure .webiny folder exists ([91afd5a](https://github.com/webiny/webiny-js/commit/91afd5a5045156bf01281bde838585958e8fcc0d))
+* reword message ([dc8e753](https://github.com/webiny/webiny-js/commit/dc8e75319af9e26ada1884c7c0cd412e2e27b043))
+* update links ([bf82905](https://github.com/webiny/webiny-js/commit/bf829052497363c15f28058c2ef4a1bb15ed8245))
+* use `graphqlApiUrl` ([1a9ea9f](https://github.com/webiny/webiny-js/commit/1a9ea9f4215a4192cee3df4b66b43fc64010df34))
+
+
+
+
+
 # [5.13.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.13.0-beta.0...v5.13.0-beta.1) (2021-08-16)
 
 
