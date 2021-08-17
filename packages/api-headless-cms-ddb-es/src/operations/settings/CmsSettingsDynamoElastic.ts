@@ -42,17 +42,13 @@ const SETTINGS_SECONDARY_KEY = "settings";
 
 export default class CmsSettingsDynamoElastic implements CmsSettingsStorageOperations {
     private readonly _context: CmsContext;
-    private _partitionKey: string;
 
     private get context(): CmsContext {
         return this._context;
     }
 
     private get partitionKey(): string {
-        if (!this._partitionKey) {
-            this._partitionKey = `${createBasePartitionKey(this.context)}#SETTINGS`;
-        }
-        return this._partitionKey;
+        return `${createBasePartitionKey(this.context)}#SETTINGS`;
     }
 
     public constructor({ context }: ConstructorArgs) {

@@ -19,7 +19,6 @@ interface ConstructorArgs {
 
 export default class CmsContentModelGroupDynamo implements CmsContentModelGroupStorageOperations {
     private readonly _context: CmsContext;
-    private _partitionKey: string;
     private readonly _table: Table;
     private readonly _entity: Entity<any>;
 
@@ -28,10 +27,7 @@ export default class CmsContentModelGroupDynamo implements CmsContentModelGroupS
     }
 
     private get partitionKey(): string {
-        if (!this._partitionKey) {
-            this._partitionKey = `${createBasePartitionKey(this.context)}#CMG`;
-        }
-        return this._partitionKey;
+        return `${createBasePartitionKey(this.context)}#CMG`;
     }
 
     public constructor({ context }: ConstructorArgs) {

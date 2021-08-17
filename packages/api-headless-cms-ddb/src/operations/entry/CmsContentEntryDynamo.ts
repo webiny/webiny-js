@@ -67,7 +67,6 @@ const configurationDefaults: CmsContentEntryConfiguration = {
 export class CmsContentEntryDynamo implements CmsContentEntryStorageOperations {
     private readonly _context: CmsContext;
     private readonly _configuration: CmsContentEntryConfiguration;
-    private readonly _partitionKey: string;
     private readonly _modelPartitionKey: string;
     private readonly _dataLoaders: DataLoadersHandler;
     private readonly _table: Table;
@@ -95,8 +94,7 @@ export class CmsContentEntryDynamo implements CmsContentEntryStorageOperations {
             ...configurationDefaults,
             ...(configuration || {})
         };
-        this._partitionKey = `${createBasePartitionKey(this.context)}#CME`;
-        this._modelPartitionKey = `${this._partitionKey}#M`;
+        this._modelPartitionKey = `${this.partitionKey}#M`;
         this._dataLoaders = new DataLoadersHandler(context, this);
 
         this._table = createTable({
@@ -900,11 +898,15 @@ export class CmsContentEntryDynamo implements CmsContentEntryStorageOperations {
         if (id.match("#") !== null) {
             id = id.split("#").shift();
         }
-        return `${this._partitionKey}#${id}`;
+        return `${this.partitionKey}#${id}`;
+    }
+
+    private get partitionKey(): string {
+        return `${createBasePartitionKey(this.context)}#CME`;
     }
 
     private getGSIPartitionKey(type: "L" | "P" | "A", model: CmsContentModel) {
-        return `${this._partitionKey}#M#${model.modelId}#${type}`;
+        return `${this.partitionKey}#M#${model.modelId}#${type}`;
     }
 
     private getGSIEntryPartitionKey(model: CmsContentModel): string {
