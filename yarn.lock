@@ -9016,6 +9016,7 @@ __metadata:
     "@webiny/handler-http": ^5.13.0-beta.2
     "@webiny/plugins": ^5.13.0-beta.2
     "@webiny/project-utils": ^5.13.0-beta.2
+    dataloader: ^2.0.0
     jest: ^26.6.3
     jest-dynalite: ^3.2.0
     mdbid: ^1.0.0
