@@ -1,7 +1,8 @@
-import React, { useState, useCallback } from "react";
+import React from "react";
+import { PbPageData } from "@webiny/app-page-builder/types";
 import DesktopHeader from "./DesktopHeader";
 import MobileHeader from "./MobileHeader";
-import { PbPageData } from "@webiny/app-page-builder/types";
+import { HeaderContextProvider } from "./useMobileHeader";
 
 const menuName = "main-menu";
 
@@ -13,26 +14,14 @@ type HeaderProps = {
 const Header = ({ settings }: HeaderProps) => {
     const { name, logo } = settings;
 
-    const [mobileMenu, showMobileMenu] = useState(false);
-
-    const toggleMobileMenu = useCallback(() => {
-        showMobileMenu(!mobileMenu);
-    }, [mobileMenu]);
-
     return (
-        <React.Fragment>
+        <HeaderContextProvider>
             <div className={"webiny-pb-section-header"} data-testid={"pb-desktop-mobile-headers"}>
                 <DesktopHeader menuName={menuName} name={name} logo={logo} />
-                <MobileHeader
-                    menuName={menuName}
-                    name={name}
-                    logo={logo}
-                    active={mobileMenu}
-                    toggleMenu={toggleMobileMenu}
-                />
+                <MobileHeader menuName={menuName} name={name} logo={logo} />
             </div>
             <div className={"webiny-pb-section-header-spacer"} />
-        </React.Fragment>
+        </HeaderContextProvider>
     );
 };
 
