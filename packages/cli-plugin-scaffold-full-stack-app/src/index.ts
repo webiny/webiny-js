@@ -148,7 +148,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
             console.log();
             console.log(chalk.bold("A Simple GraphQL API Example"));
             console.log(
-                `An example of interacting with the created GraphQL API can be included in the React application code.`
+                `An example GraphQL API interaction can be included in the created React application code.`
             );
 
             const prompt = inquirer.createPromptModule();
