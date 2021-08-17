@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.13.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.13.0-beta.2...v5.13.0-beta.3) (2021-08-17)
+
+
+### Bug Fixes
+
+* update link [skip-ci] ([d3c5260](https://github.com/webiny/webiny-js/commit/d3c5260f2fcfaf1270a4817035885f1b980ce42d))
+
+
+
+
+
 # [5.13.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.13.0-beta.1...v5.13.0-beta.2) (2021-08-17)
 
 

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.13.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.13.0-beta.2...v5.13.0-beta.3) (2021-08-17)
+
+
+### Bug Fixes
+
+* remove partition key caching from storage operations ([6bf61d6](https://github.com/webiny/webiny-js/commit/6bf61d6d999ff3d44caf868b70bcb39f4e9f139f))
+
+
+
+
+
 # [5.13.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.13.0-beta.1...v5.13.0-beta.2) (2021-08-17)
 
 **Note:** Version bump only for package @webiny/api-headless-cms-ddb
