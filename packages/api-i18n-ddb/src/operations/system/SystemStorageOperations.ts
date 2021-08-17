@@ -40,7 +40,7 @@ export class SystemStorageOperations implements I18NSystemStorageOperations {
             PK: this.partitionKey,
             SK: SORT_KEY
         };
-        console.log("i18n SO Keys", keys);
+
         try {
             const result = await this._entity.get(keys);
 
