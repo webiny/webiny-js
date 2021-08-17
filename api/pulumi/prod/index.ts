@@ -9,6 +9,14 @@ import FileManager from "./fileManager";
 import PageBuilder from "./pageBuilder";
 import PrerenderingService from "./prerenderingService";
 
+// Among other things, this determines the amount of information we reveal on runtime errors.
+// https://www.webiny.com/docs/how-to-guides/development/environment-variables/#debug-environment-variable
+const DEBUG = String(process.env.DEBUG);
+
+// Enables logs forwarding.
+// https://www.webiny.com/docs/how-to-guides/webiny-cli/use-watch-command#enabling-logs-forwarding
+const WEBINY_LOGS_FORWARD_URL = String(process.env.WEBINY_LOGS_FORWARD_URL);
+
 export default () => {
     const dynamoDb = new DynamoDB();
     const cognito = new Cognito();
@@ -19,7 +27,7 @@ export default () => {
         env: {
             DB_TABLE: dynamoDb.table.name,
             DB_TABLE_ELASTICSEARCH: elasticSearch.table.name,
-            DEBUG: String(process.env.DEBUG)
+            DEBUG
         },
         primaryDynamodbTable: dynamoDb.table,
         elasticsearchDynamodbTable: elasticSearch.table,
@@ -30,7 +38,7 @@ export default () => {
         env: {
             DB_TABLE: dynamoDb.table.name,
             DB_TABLE_ELASTICSEARCH: elasticSearch.table.name,
-            DEBUG: String(process.env.DEBUG)
+            DEBUG
         },
         bucket: fileManager.bucket,
         primaryDynamodbTable: dynamoDb.table
@@ -42,14 +50,14 @@ export default () => {
             COGNITO_USER_POOL_ID: cognito.userPool.id,
             DB_TABLE: dynamoDb.table.name,
             DB_TABLE_ELASTICSEARCH: elasticSearch.table.name,
-            DEBUG: String(process.env.DEBUG),
             ELASTIC_SEARCH_ENDPOINT: elasticSearch.domain.endpoint,
             PRERENDERING_RENDER_HANDLER: prerenderingService.functions.render.arn,
             PRERENDERING_FLUSH_HANDLER: prerenderingService.functions.flush.arn,
             PRERENDERING_QUEUE_ADD_HANDLER: prerenderingService.functions.queue.add.arn,
             PRERENDERING_QUEUE_PROCESS_HANDLER: prerenderingService.functions.queue.process.arn,
             S3_BUCKET: fileManager.bucket.id,
-            WEBINY_LOGS_FORWARD_URL: String(process.env.WEBINY_LOGS_FORWARD_URL)
+            DEBUG,
+            WEBINY_LOGS_FORWARD_URL
         },
         primaryDynamodbTable: dynamoDb.table,
         elasticsearchDynamodbTable: elasticSearch.table,
@@ -64,10 +72,10 @@ export default () => {
             COGNITO_USER_POOL_ID: cognito.userPool.id,
             DB_TABLE: dynamoDb.table.name,
             DB_TABLE_ELASTICSEARCH: elasticSearch.table.name,
-            DEBUG: String(process.env.DEBUG),
             ELASTIC_SEARCH_ENDPOINT: elasticSearch.domain.endpoint,
             S3_BUCKET: fileManager.bucket.id,
-            WEBINY_LOGS_FORWARD_URL: String(process.env.WEBINY_LOGS_FORWARD_URL)
+            DEBUG,
+            WEBINY_LOGS_FORWARD_URL
         },
         primaryDynamodbTable: dynamoDb.table,
         elasticsearchDynamodbTable: elasticSearch.table,
@@ -118,6 +126,7 @@ export default () => {
         cognitoAppClientId: cognito.userPoolClient.id,
         updatePbSettingsFunction: pageBuilder.functions.updateSettings.arn,
         psQueueAdd: prerenderingService.functions.queue.add.arn,
-        psQueueProcess: prerenderingService.functions.queue.process.arn
+        psQueueProcess: prerenderingService.functions.queue.process.arn,
+        dynamoDbTable: dynamoDb.table.name
     };
 };

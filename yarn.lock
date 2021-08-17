@@ -80,29 +80,29 @@ __metadata:
   linkType: hard
 
 "@aws-amplify/auth@npm:^4.0.2":
-  version: 4.2.0
-  resolution: "@aws-amplify/auth@npm:4.2.0"
+  version: 4.2.1
+  resolution: "@aws-amplify/auth@npm:4.2.1"
   dependencies:
-    "@aws-amplify/cache": 4.0.10
-    "@aws-amplify/core": 4.2.2
+    "@aws-amplify/cache": 4.0.11
+    "@aws-amplify/core": 4.2.3
     amazon-cognito-identity-js: 5.0.6
     crypto-js: ^4.1.1
-  checksum: 2e0bb47c30c2a719266afac1688652ac6c0698716ce8dacab1dc4a1f9a0df327f7135d0f11b92afa679eabaa1c4751ca2915e352a3675838739cc609f415ca2f
+  checksum: a2dea317248f81a463607c000bd4cdcd1a2c2dd52b2622b44f28b572df7d0130d0bc1cfa47d4a13861da052458e8177189038b04e94926a319d5c7b3b82fb161
   languageName: node
   linkType: hard
 
-"@aws-amplify/cache@npm:4.0.10":
-  version: 4.0.10
-  resolution: "@aws-amplify/cache@npm:4.0.10"
+"@aws-amplify/cache@npm:4.0.11":
+  version: 4.0.11
+  resolution: "@aws-amplify/cache@npm:4.0.11"
   dependencies:
-    "@aws-amplify/core": 4.2.2
-  checksum: 0ea7eeca9972015282f6dfdd0334b3ac288895c3f089fcc3b68089ee3dbf728add63d9abd98cc4348626f9e62f74252a6680fd5741d128963ba58b4384e4e3dd
+    "@aws-amplify/core": 4.2.3
+  checksum: 151ece65c6fc63f1d67b0fa8939f1f023f2add02e8aae09252509f965dccbc542530424e0a1305a42a383dbaf36646b96160da8b4d12328492069b9f8ebcd950
   languageName: node
   linkType: hard
 
-"@aws-amplify/core@npm:4.2.2":
-  version: 4.2.2
-  resolution: "@aws-amplify/core@npm:4.2.2"
+"@aws-amplify/core@npm:4.2.3":
+  version: 4.2.3
+  resolution: "@aws-amplify/core@npm:4.2.3"
   dependencies:
     "@aws-crypto/sha256-js": 1.0.0-alpha.0
     "@aws-sdk/client-cloudwatch-logs": 3.6.1
@@ -112,7 +112,7 @@ __metadata:
     "@aws-sdk/util-hex-encoding": 3.6.1
     universal-cookie: ^4.0.4
     zen-observable-ts: 0.8.19
-  checksum: f622bfa5bb0ba0f1aef40c6f87d143c760b62a011e99ff84c255c61be5b425753eec8cf961d6a46b7a950937b6ff0257824b6f4121ca8b6bc20833714868fc75
+  checksum: 18a3ff67c7564228b742d24327f39890fe78f9d1e3c1ddcf2161574a4fc4c00e4a5b3fa86f1a87bfb6dd6f78b056f11f6498313d0990cfa60a15777d39acc174
   languageName: node
   linkType: hard
 
@@ -5838,8 +5838,8 @@ __metadata:
   linkType: hard
 
 "@pulumi/pulumi@npm:^3.0.0, @pulumi/pulumi@npm:^3.6.0":
-  version: 3.10.0
-  resolution: "@pulumi/pulumi@npm:3.10.0"
+  version: 3.10.1
+  resolution: "@pulumi/pulumi@npm:3.10.1"
   dependencies:
     "@grpc/grpc-js": ^1.2.7
     "@logdna/tail-file": ^2.0.6
@@ -5856,7 +5856,7 @@ __metadata:
     ts-node: ^7.0.1
     typescript: ~3.7.3
     upath: ^1.1.0
-  checksum: e0295278f0a7622bb180c8235e7db3bc382a8cf1c796b0accd5bd6c8afdcc5d57824b5106cbccfd570f5bbd03a3d85340abb071bcce0a33b543b4cdf56abc58e
+  checksum: 6ef6c1c441daed54ed86e94ad106f657bdef73728fc6f5ce245972d06b5fcf180032cb1159927b0d2ab66af99c03bc74478c3af4d3fddfda2c7d67cbe8f72e2d
   languageName: node
   linkType: hard
 
@@ -7410,9 +7410,9 @@ __metadata:
   linkType: hard
 
 "@types/node@npm:*, @types/node@npm:>= 8, @types/node@npm:>=12.12.47, @types/node@npm:>=13.7.0, @types/node@npm:>=6":
-  version: 16.6.0
-  resolution: "@types/node@npm:16.6.0"
-  checksum: 72ab4b9fb47a64657d83336093867aba5bcf2f36facf3c18e9aeff802c078e44fa9f54025b02f2837eb0f2b19c1f551a5201fb4222766454c439de481dbf83d0
+  version: 16.6.1
+  resolution: "@types/node@npm:16.6.1"
+  checksum: c13aa0da0c2bf9070e521d1b537ba38f64b213dd1b8aeec66c279fc21f8c0ccaf380364f6dc2ec8f84440c4cd1460b67dfe47de2cafcb6eaf4b648817cb27dc4
   languageName: node
   linkType: hard
 
@@ -9794,7 +9794,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/cli-plugin-deploy-pulumi@^5.12.0, @webiny/cli-plugin-deploy-pulumi@workspace:packages/cli-plugin-deploy-pulumi":
+"@webiny/cli-plugin-deploy-pulumi@^5.11.0, @webiny/cli-plugin-deploy-pulumi@^5.12.0, @webiny/cli-plugin-deploy-pulumi@workspace:packages/cli-plugin-deploy-pulumi":
   version: 0.0.0-use.local
   resolution: "@webiny/cli-plugin-deploy-pulumi@workspace:packages/cli-plugin-deploy-pulumi"
   dependencies:
@@ -9847,7 +9847,7 @@ __metadata:
     load-json-file: ^6.2.0
     ncp: ^2.0.0
     pluralize: ^8.0.0
-    replace-in-path: ^1.0.4
+    replace-in-path: ^1.1.0
     rimraf: ^3.0.2
     terminal-link: ^2.1.1
     typescript: ^4.1.3
@@ -9879,6 +9879,65 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@webiny/cli-plugin-scaffold-full-stack-app@workspace:packages/cli-plugin-scaffold-full-stack-app":
+  version: 0.0.0-use.local
+  resolution: "@webiny/cli-plugin-scaffold-full-stack-app@workspace:packages/cli-plugin-scaffold-full-stack-app"
+  dependencies:
+    "@babel/cli": ^7.5.5
+    "@babel/core": ^7.5.5
+    "@babel/preset-env": ^7.5.5
+    "@babel/preset-flow": ^7.0.0
+    "@types/inquirer": ^7.3.1
+    "@types/ncp": ^2.0.4
+    "@types/pluralize": ^0.0.29
+    "@webiny/cli": ^5.11.0
+    "@webiny/cli-plugin-scaffold": ^5.11.0
+    "@webiny/cli-plugin-scaffold-graphql-api": ^5.11.0
+    "@webiny/handler": ^5.11.0
+    "@webiny/plugins": ^5.11.0
+    "@webiny/project-utils": ^5.11.0
+    case: ^1.6.3
+    chalk: ^4.1.0
+    execa: ^5.0.0
+    ncp: ^2.0.0
+    replace-in-path: ^1.1.0
+    rimraf: ^3.0.2
+    terminal-link: ^2.1.1
+    typescript: ^4.1.3
+  languageName: unknown
+  linkType: soft
+
+"@webiny/cli-plugin-scaffold-graphql-api@^5.11.0, @webiny/cli-plugin-scaffold-graphql-api@workspace:packages/cli-plugin-scaffold-graphql-api":
+  version: 0.0.0-use.local
+  resolution: "@webiny/cli-plugin-scaffold-graphql-api@workspace:packages/cli-plugin-scaffold-graphql-api"
+  dependencies:
+    "@babel/cli": ^7.5.5
+    "@babel/core": ^7.5.5
+    "@babel/preset-env": ^7.5.5
+    "@babel/preset-flow": ^7.0.0
+    "@types/inquirer": ^7.3.1
+    "@types/ncp": ^2.0.4
+    "@types/pluralize": ^0.0.29
+    "@webiny/cli": ^5.11.0
+    "@webiny/cli-plugin-deploy-pulumi": ^5.11.0
+    "@webiny/cli-plugin-scaffold": ^5.11.0
+    "@webiny/error": ^5.11.0
+    "@webiny/handler": ^5.11.0
+    "@webiny/plugins": ^5.11.0
+    "@webiny/project-utils": ^5.11.0
+    case: ^1.6.3
+    chalk: ^4.1.0
+    execa: ^5.0.0
+    load-json-file: ^6.2.0
+    ncp: ^2.0.0
+    replace-in-path: ^1.1.0
+    rimraf: ^3.0.2
+    terminal-link: ^2.1.1
+    typescript: ^4.1.3
+    write-json-file: ^4.3.0
+  languageName: unknown
+  linkType: soft
+
 "@webiny/cli-plugin-scaffold-graphql-service@workspace:packages/cli-plugin-scaffold-graphql-service":
   version: 0.0.0-use.local
   resolution: "@webiny/cli-plugin-scaffold-graphql-service@workspace:packages/cli-plugin-scaffold-graphql-service"
@@ -9902,7 +9961,38 @@ __metadata:
     load-json-file: ^6.2.0
     ncp: ^2.0.0
     pluralize: ^8.0.0
-    replace-in-path: ^1.0.4
+    replace-in-path: ^1.1.0
+    rimraf: ^3.0.2
+    terminal-link: ^2.1.1
+    ts-morph: ^11.0.0
+    typescript: ^4.1.3
+    write-json-file: ^4.3.0
+  languageName: unknown
+  linkType: soft
+
+"@webiny/cli-plugin-scaffold-react-app@workspace:packages/cli-plugin-scaffold-react-app":
+  version: 0.0.0-use.local
+  resolution: "@webiny/cli-plugin-scaffold-react-app@workspace:packages/cli-plugin-scaffold-react-app"
+  dependencies:
+    "@babel/cli": ^7.5.5
+    "@babel/core": ^7.5.5
+    "@babel/preset-env": ^7.5.5
+    "@babel/preset-flow": ^7.0.0
+    "@types/inquirer": ^7.3.1
+    "@types/ncp": ^2.0.4
+    "@types/pluralize": ^0.0.29
+    "@webiny/cli": ^5.11.0
+    "@webiny/cli-plugin-scaffold": ^5.11.0
+    "@webiny/error": ^5.11.0
+    "@webiny/handler": ^5.11.0
+    "@webiny/plugins": ^5.11.0
+    "@webiny/project-utils": ^5.11.0
+    case: ^1.6.3
+    chalk: ^4.1.0
+    execa: ^5.0.0
+    load-json-file: ^6.2.0
+    ncp: ^2.0.0
+    replace-in-path: ^1.1.0
     rimraf: ^3.0.2
     terminal-link: ^2.1.1
     typescript: ^4.1.3
@@ -9931,7 +10021,7 @@ __metadata:
     load-json-file: ^6.2.0
     ncp: ^2.0.0
     pluralize: ^8.0.0
-    replace-in-path: ^1.0.4
+    replace-in-path: ^1.1.0
     rimraf: ^3.0.2
     typescript: ^4.1.3
     validate-npm-package-name: ^3.0.0
@@ -9939,7 +10029,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/cli-plugin-scaffold@^5.12.0, @webiny/cli-plugin-scaffold@workspace:packages/cli-plugin-scaffold":
+"@webiny/cli-plugin-scaffold@^5.11.0, @webiny/cli-plugin-scaffold@^5.12.0, @webiny/cli-plugin-scaffold@workspace:packages/cli-plugin-scaffold":
   version: 0.0.0-use.local
   resolution: "@webiny/cli-plugin-scaffold@workspace:packages/cli-plugin-scaffold"
   dependencies:
@@ -9957,11 +10047,13 @@ __metadata:
     fast-glob: ^3.2.5
     find-up: ^5.0.0
     inquirer: ^7.3.3
+    load-json-file: ^6.2.0
     ora: 4.1.1
     prettier: ^2.3.2
     rimraf: ^3.0.2
     ts-morph: ^11.0.0
     typescript: ^4.1.3
+    write-json-file: ^4.3.0
   languageName: unknown
   linkType: soft
 
@@ -9980,7 +10072,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/cli@^5.12.0, @webiny/cli@workspace:packages/cli":
+"@webiny/cli@^5.11.0, @webiny/cli@^5.12.0, @webiny/cli@workspace:packages/cli":
   version: 0.0.0-use.local
   resolution: "@webiny/cli@workspace:packages/cli"
   dependencies:
@@ -9997,7 +10089,7 @@ __metadata:
     ncp: ^2.0.0
     pirates: ^4.0.1
     prettier: ^2.3.2
-    replace-in-path: ^1.0.4
+    replace-in-path: ^1.1.0
     rimraf: ^3.0.2
     semver: 7.3.4
     ts-morph: ^11.0.0
@@ -10093,7 +10185,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/error@^5.12.0, @webiny/error@workspace:packages/error":
+"@webiny/error@^5.11.0, @webiny/error@^5.12.0, @webiny/error@workspace:packages/error":
   version: 0.0.0-use.local
   resolution: "@webiny/error@workspace:packages/error"
   dependencies:
@@ -10267,7 +10359,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/handler@^5.12.0, @webiny/handler@workspace:packages/handler":
+"@webiny/handler@^5.11.0, @webiny/handler@^5.12.0, @webiny/handler@workspace:packages/handler":
   version: 0.0.0-use.local
   resolution: "@webiny/handler@workspace:packages/handler"
   dependencies:
@@ -10331,7 +10423,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/plugins@^5.12.0, @webiny/plugins@workspace:packages/plugins":
+"@webiny/plugins@^5.11.0, @webiny/plugins@^5.12.0, @webiny/plugins@workspace:packages/plugins":
   version: 0.0.0-use.local
   resolution: "@webiny/plugins@workspace:packages/plugins"
   dependencies:
@@ -10346,7 +10438,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/project-utils@^5.12.0, @webiny/project-utils@workspace:packages/project-utils":
+"@webiny/project-utils@^5.11.0, @webiny/project-utils@^5.12.0, @webiny/project-utils@workspace:packages/project-utils":
   version: 0.0.0-use.local
   resolution: "@webiny/project-utils@workspace:packages/project-utils"
   dependencies:
@@ -11453,9 +11545,13 @@ __metadata:
     "@webiny/cli": ^5.12.0
     "@webiny/cli-plugin-deploy-pulumi": ^5.12.0
     "@webiny/db-dynamodb": ^5.12.0
+    "@webiny/handler": ^5.12.0
+    "@webiny/handler-args": ^5.12.0
     "@webiny/handler-aws": ^5.12.0
+    "@webiny/handler-client": ^5.12.0
     "@webiny/handler-db": ^5.12.0
     "@webiny/handler-graphql": ^5.12.0
+    "@webiny/handler-http": ^5.12.0
     "@webiny/handler-logs": ^5.12.0
     "@webiny/project-utils": ^5.12.0
   languageName: unknown
@@ -11479,8 +11575,12 @@ __metadata:
     "@webiny/cli": ^5.12.0
     "@webiny/cli-plugin-deploy-pulumi": ^5.12.0
     "@webiny/db-dynamodb": ^5.12.0
+    "@webiny/handler": ^5.12.0
+    "@webiny/handler-args": ^5.12.0
     "@webiny/handler-aws": ^5.12.0
+    "@webiny/handler-client": ^5.12.0
     "@webiny/handler-db": ^5.12.0
+    "@webiny/handler-http": ^5.12.0
     "@webiny/handler-logs": ^5.12.0
     "@webiny/project-utils": ^5.12.0
   languageName: unknown
@@ -12217,8 +12317,8 @@ __metadata:
   linkType: hard
 
 "aws-sdk@npm:^2.0.0, aws-sdk@npm:^2.539.0":
-  version: 2.966.0
-  resolution: "aws-sdk@npm:2.966.0"
+  version: 2.968.0
+  resolution: "aws-sdk@npm:2.968.0"
   dependencies:
     buffer: 4.9.2
     events: 1.1.1
@@ -12229,7 +12329,7 @@ __metadata:
     url: 0.10.3
     uuid: 3.3.2
     xml2js: 0.4.19
-  checksum: 48fb96c727d501382ed6a2871f82a31d95bc8c4c9f866daeecb7932b4ae2e50c2d75d885027f033dd52092d11f5f95de687984113bf42bdc673feaded02b99ac
+  checksum: 81975ec5461da7de36195253b0221612b1ce5fe80e555efcddd5e803d80b8e6987a9af8a0dd56769b23098a46f6080e1e7aaec35de894e0f227a34bff42f2261
   languageName: node
   linkType: hard
 
@@ -17044,9 +17144,9 @@ __metadata:
   linkType: hard
 
 "dompurify@npm:^2.2.6":
-  version: 2.3.0
-  resolution: "dompurify@npm:2.3.0"
-  checksum: d6c6826db07e69346620b38329331f7172e23ba86033c3788757120a5a8d8feef84be40af3c75e250798df643ecbbafabbc4a3c02373a8504ccc88b3ad36b1c2
+  version: 2.3.1
+  resolution: "dompurify@npm:2.3.1"
+  checksum: 9c93cfaa9d1d0b31aa2e926ebfa0621287a63ebb16277c94ad4aad2bcf3ad12e609e699fc10f2eaf69e4698e29a31dec87a69f3c6725ce3f4c7a69ee93123d0c
   languageName: node
   linkType: hard
 
@@ -17372,9 +17472,9 @@ __metadata:
   linkType: hard
 
 "electron-to-chromium@npm:^1.3.247, electron-to-chromium@npm:^1.3.378, electron-to-chromium@npm:^1.3.793":
-  version: 1.3.803
-  resolution: "electron-to-chromium@npm:1.3.803"
-  checksum: 9a10b5cd155be6eeea8f34607fd2dc1b9bbc00964e5b6d9d1717b47c96f2104c95f01f05322a490a08583c1b6f096c686f23449e853862d3a4080843f1708bd2
+  version: 1.3.806
+  resolution: "electron-to-chromium@npm:1.3.806"
+  checksum: cba7104935f8fe9d5d466a7ade478021a7ede8d8c8ad5a13bf11022ebbc316270065bb2ed7ecd3fb450bbf1351628d123d4efadd600001f97c05e6628f0de59d
   languageName: node
   linkType: hard
 
@@ -20338,11 +20438,11 @@ fsevents@^1.2.7:
   linkType: hard
 
 "globals@npm:^13.6.0, globals@npm:^13.9.0":
-  version: 13.10.0
-  resolution: "globals@npm:13.10.0"
+  version: 13.11.0
+  resolution: "globals@npm:13.11.0"
   dependencies:
     type-fest: ^0.20.2
-  checksum: 64e45d96d634d2b047385eb5925de3abb5964cf4f3564eba493694f5ab1a8818b333f89d34b0f71f9b1d87391e6e25c5ca1a87094dd80a657d1d99b9321e1f4e
+  checksum: e9e5624154261a3e5344d2105a94886c5f2ca48028fa8258cd7b9119c5f00cf2909392817bb2d162c9a1a31b55d9b2c14e8f2271c45a22f77806f5b9322541cf
   languageName: node
   linkType: hard
 
@@ -31501,7 +31601,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"replace-in-path@npm:^1.0.4":
+"replace-in-path@npm:^1.1.0":
   version: 1.1.0
   resolution: "replace-in-path@npm:1.1.0"
   dependencies:

@@ -3,6 +3,12 @@
   "include": ["./src"],
   "references": [
     {
+      "path": "../../../packages/api-elasticsearch"
+    },
+    {
+      "path": "../../../packages/api-prerendering-service"
+    },
+    {
       "path": "../../../packages/api-i18n"
     },
     {
@@ -57,6 +63,15 @@
       "path": "../../../packages/handler"
     },
     {
+      "path": "../../../packages/handler-http"
+    },
+    {
+      "path": "../../../packages/handler-args"
+    },
+    {
+      "path": "../../../packages/handler-client"
+    },
+    {
       "path": "../../../packages/handler-aws"
     },
     {
@@ -72,18 +87,32 @@
   "compilerOptions": {
     "paths": {
       "~/*": ["./src/*"],
+      "@webiny/api-elasticsearch/*": ["../../../packages/api-elasticsearch/src/*"],
+      "@webiny/api-elasticsearch": ["../../../packages/api-elasticsearch/src"],
+      "@webiny/api-prerendering-service/*": ["../../../packages/api-prerendering-service/src/*"],
+      "@webiny/api-prerendering-service": ["../../../packages/api-prerendering-service/src"],
       "@webiny/api-i18n/*": ["../../../packages/api-i18n/src/*"],
       "@webiny/api-i18n": ["../../../packages/api-i18n/src"],
       "@webiny/api-i18n-ddb/*": ["../../../packages/api-i18n-ddb/src/*"],
       "@webiny/api-i18n-ddb": ["../../../packages/api-i18n-ddb/src"],
       "@webiny/api-i18n-content/*": ["../../../packages/api-i18n-content/src/*"],
       "@webiny/api-i18n-content": ["../../../packages/api-i18n-content/src"],
+      "@webiny/handler/*": ["../../../packages/handler/src/*"],
+      "@webiny/handler": ["../../../packages/handler/src"],
+      "@webiny/handler-http/*": ["../../../packages/handler-http/src/*"],
+      "@webiny/handler-http": ["../../../packages/handler-http/src"],
+      "@webiny/handler-args/*": ["../../../packages/handler-args/src/*"],
+      "@webiny/handler-args": ["../../../packages/handler-args/src"],
+      "@webiny/handler-client/*": ["../../../packages/handler-client/src/*"],
+      "@webiny/handler-client": ["../../../packages/handler-client/src"],
       "@webiny/handler-aws/*": ["../../../packages/handler-aws/src/*"],
       "@webiny/handler-aws": ["../../../packages/handler-aws/src"],
       "@webiny/handler-graphql/*": ["../../../packages/handler-graphql/src/*"],
       "@webiny/handler-graphql": ["../../../packages/handler-graphql/src"],
       "@webiny/api-page-builder/*": ["../../../packages/api-page-builder/src/*"],
       "@webiny/api-page-builder": ["../../../packages/api-page-builder/src"],
+      "@webiny/api-form-builder/*": ["../../../packages/api-form-builder/src/*"],
+      "@webiny/api-form-builder": ["../../../packages/api-form-builder/src"],
       "@webiny/api-security/*": ["../../../packages/api-security/src/*"],
       "@webiny/api-security": ["../../../packages/api-security/src"],
       "@webiny/api-tenancy/*": ["../../../packages/api-tenancy/src/*"],

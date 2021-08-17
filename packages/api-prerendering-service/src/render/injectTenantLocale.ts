@@ -5,16 +5,13 @@ export default args => async tree => {
         return;
     }
 
-    tree.match({ tag: "body" }, node => {
-        const index = node.content.findIndex(n => n.tag === "div" && n.attrs.id === "root");
+    tree.match({ tag: "head" }, node => {
         if (meta.tenant) {
-            const tenant = `<script>window.__PS_RENDER_TENANT__ = "${meta.tenant}";</script>`;
-            node.content.splice(index + 1, 0, tenant);
+            node.content.push(`<script>window.__PS_RENDER_TENANT__ = "${meta.tenant}";</script>`);
         }
 
         if (meta.locale) {
-            const locale = `<script>window.__PS_RENDER_LOCALE__ = "${meta.locale}";</script>`;
-            node.content.splice(index + 1, 0, locale);
+            node.content.push(`<script>window.__PS_RENDER_LOCALE__ = "${meta.locale}";</script>`);
         }
 
         return node;

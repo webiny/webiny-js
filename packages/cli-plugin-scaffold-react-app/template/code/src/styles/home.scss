@@ -1,0 +1,20 @@
+// Home page styles.
+.home {
+  ul {
+    max-width: 960px;
+    margin: 35px auto;
+    li {
+      width: 380px;
+      padding: 15px 40px;
+      display: inline-block;
+      text-align: left;
+      vertical-align: top;
+      a {
+        display: inline-block;
+        h1 {
+          font-size: 24px;
+        }
+      }
+    }
+  }
+}

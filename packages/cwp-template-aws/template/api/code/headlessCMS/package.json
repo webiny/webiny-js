@@ -19,8 +19,12 @@
     "@webiny/api-tenancy": "latest",
     "@webiny/cli": "latest",
     "@webiny/db-dynamodb": "latest",
+    "@webiny/handler": "latest",
     "@webiny/handler-aws": "latest",
+    "@webiny/handler-args": "latest",
+    "@webiny/handler-client": "latest",
     "@webiny/handler-db": "latest",
+    "@webiny/handler-http": "latest",
     "@webiny/handler-logs": "latest",
     "@webiny/project-utils": "latest"
   }

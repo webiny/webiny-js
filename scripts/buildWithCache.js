@@ -104,23 +104,44 @@ async function build() {
     }
 
     const isFullBuild = packagesNoCache.length === workspacesPackages.length;
-    if (isFullBuild) {
-        fullBuild(packagesNoCache);
-    } else {
-        partialBuild(packagesNoCache);
+    let error;
+    try {
+        if (isFullBuild) {
+            fullBuild(packagesNoCache);
+        } else {
+            partialBuild(packagesNoCache);
+        }
+    } catch (e) {
+        // Don't do anything.
+        error = e;
     }
 
-    console.log("Packages built, updating cache...");
+    if (error) {
+        console.log("Packages partially built, updating cache where possible...");
+    } else {
+        console.log("Packages built, updating cache...");
+    }
+
     for (let i = 0; i < packagesNoCache.length; i++) {
         const workspacePackage = packagesNoCache[i];
-        const cacheFolderPath = path.join(CACHE_FOLDER_PATH, workspacePackage.packageJson.name);
-        fs.copySync(path.join(workspacePackage.packageFolder, "dist"), cacheFolderPath);
+        const success = fs.existsSync(
+            path.join(workspacePackage.packageFolder, "dist", "package.json")
+        );
 
-        const sourceHash = await getPackageSourceHash(workspacePackage);
-        metaJson.packages[workspacePackage.packageJson.name] = { sourceHash };
+        if (success) {
+            const cacheFolderPath = path.join(CACHE_FOLDER_PATH, workspacePackage.packageJson.name);
+            fs.copySync(path.join(workspacePackage.packageFolder, "dist"), cacheFolderPath);
+
+            const sourceHash = await getPackageSourceHash(workspacePackage);
+            metaJson.packages[workspacePackage.packageJson.name] = { sourceHash };
+        }
     }
 
     writeJson.sync(META_FILE_PATH, metaJson);
+
+    if (error) {
+        throw error;
+    }
 }
 
 // Utility functions.

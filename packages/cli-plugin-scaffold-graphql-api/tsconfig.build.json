@@ -1,0 +1,13 @@
+{
+  "extends": "../../tsconfig.build.json",
+  "include": ["src"],
+  "exclude": ["node_modules", "../error", "../plugins", "../handler", "../cli-plugin-scaffold"],
+  "compilerOptions": {
+    "outDir": "dist",
+    "rootDir": "src",
+    "declarationDir": "dist",
+    "paths": {},
+    "baseUrl": "."
+  },
+  "references": []
+}

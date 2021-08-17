@@ -1,7 +1,7 @@
 const get = require("lodash/get");
 const { yellow } = require("chalk");
 
-module.exports = async (output, map) => {
+module.exports = (output, map) => {
     const values = {};
     const regex = /\${(.*)}/;
 

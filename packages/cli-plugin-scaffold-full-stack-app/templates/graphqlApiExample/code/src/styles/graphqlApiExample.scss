@@ -1,0 +1,36 @@
+// Styles for the "A Simple GraphQL API Example" page.
+.graphql-api-example {
+  .form {
+    display: flex;
+    justify-content: center;
+    padding: 10px;
+    margin: 10px;
+    border: 1px solid #ffffff9e;
+    > * {
+      width: 200px;
+      margin: 5px;
+      padding: 10px;
+    }
+    > input.error::placeholder {
+      color: red;
+    }
+  }
+  ul {
+    margin: 50px 0;
+    li {
+      border-bottom: 1px solid #ffffff9e;
+      padding: 15px 40px;
+      display: flex;
+      justify-content: space-between;
+      &.empty {
+        justify-content: center;
+      }
+      .delete {
+        cursor: pointer;
+      }
+      &:last-child {
+        border-bottom: none;
+      }
+    }
+  }
+}

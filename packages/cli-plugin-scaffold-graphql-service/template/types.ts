@@ -1,7 +1,7 @@
-import { ContextInterface as Context } from "@webiny/handler/types";
-import { I18NContext } from "@webiny/api-i18n/types";
-import { BaseI18NContentContext as I18NContentContext } from "@webiny/api-i18n-content/types";
-import { SecurityContext, SecurityIdentity } from "@webiny/api-security/types";
+// If our GraphQL API uses Webiny Security Framework, we can retrieve the
+// currently logged in identity and assign it to the `createdBy` property.
+// https://www.webiny.com/docs/key-topics/security-framework/introduction
+import { SecurityIdentity } from "@webiny/api-security/types";
 
 export interface TargetDataModelEntity {
     PK: string;
@@ -14,9 +14,3 @@ export interface TargetDataModelEntity {
     createdBy: Pick<SecurityIdentity, "id" | "displayName" | "type">;
     webinyVersion: string;
 }
-
-export interface TargetDataModelsContext
-    extends Context,
-        I18NContext,
-        I18NContentContext,
-        SecurityContext {}

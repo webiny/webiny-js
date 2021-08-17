@@ -12,4 +12,4 @@ export function getStackOutput(options: {
     env: string;
     map?: Record<string, string>;
     cwd?: string;
-}): Promise<StackOutput>;
+}): StackOutput;

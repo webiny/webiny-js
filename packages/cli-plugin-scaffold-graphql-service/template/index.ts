@@ -1,5 +1,5 @@
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSchemaPlugin";
-import { TargetDataModelsContext } from "./types";
+import { Context } from "~/types";
 import typeDefs from "./typeDefs";
 import resolvers from "./resolvers";
 
@@ -9,7 +9,7 @@ import resolvers from "./resolvers";
  * define how we want to expand the existing GraphQL schema and the resolver functions.
  * To learn more, open the imported `typeDefs` and `resolvers` files.
  */
-export default new GraphQLSchemaPlugin<TargetDataModelsContext>({
+export default new GraphQLSchemaPlugin<Context>({
     typeDefs,
     resolvers: {
         Query: {
