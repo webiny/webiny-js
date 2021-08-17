@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.13.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.13.0-beta.0...v5.13.0-beta.1) (2021-08-16)
+
+
+### Bug Fixes
+
+* **api-headless-cms:** pass field and content model to validator plugins ([aa0b7ce](https://github.com/webiny/webiny-js/commit/aa0b7cee76aaa1cc395edb7f3033605d1dacfd14))
+* **api-headless-cms:** remove unnecessary console logs ([f8c9fea](https://github.com/webiny/webiny-js/commit/f8c9fea248163e99c135b26f92f8b89e410522c9))
+
+
+
+
+
 # [5.13.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.12.0...v5.13.0-beta.0) (2021-08-16)
 
 **Note:** Version bump only for package @webiny/api-headless-cms
