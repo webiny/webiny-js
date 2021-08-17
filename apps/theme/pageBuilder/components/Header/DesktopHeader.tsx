@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "@webiny/react-router";
-import Menu from "./Menu";
-import Navigation from "./Navigation";
+import Menu from "../Menu";
+import NavigationDesktop from "./NavigationDesktop";
 
 type DesktopHeaderProps = {
     menuName: string;
@@ -25,9 +25,7 @@ const DesktopHeader = ({ menuName, logo, name }: DesktopHeaderProps) => {
                     )}
                 </Link>
             </div>
-            <nav className={"webiny-pb-section-header__navigation"}>
-                <Menu slug={menuName} component={Navigation} />
-            </nav>
+            <Menu slug={menuName} component={NavigationDesktop} />
         </div>
     );
 };
