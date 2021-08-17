@@ -16,6 +16,8 @@ import { queryAll, QueryAllParams } from "@webiny/db-dynamodb/utils/query";
 import { filterItems } from "@webiny/db-dynamodb/utils/filter";
 import { sortItems } from "@webiny/db-dynamodb/utils/sort";
 import { createListResponse } from "@webiny/db-dynamodb/utils/listResponse";
+import { defineTable } from "~/definitions/table";
+import { defineMenuEntity } from "~/definitions/menuEntity";
 
 const TYPE = "pb.menu";
 
@@ -112,7 +114,7 @@ export class MenuStorageOperationsDdbEs implements MenuStorageOperations {
         return createListResponse({
             items: sortedItems,
             limit,
-            totalCount: filteredItems.count,
+            totalCount: filteredItems.length,
             after: null
         });
     }

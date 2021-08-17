@@ -9,8 +9,6 @@ import {
     CategoryStorageOperationsUpdateParams
 } from "@webiny/api-page-builder/types";
 import { PbContext } from "@webiny/api-page-builder/types";
-import defineTable from "../../definitions/table";
-import defineCategoryEntity from "../../definitions/categoryEntity";
 import { Entity, Table } from "dynamodb-toolbox";
 import { queryAll, QueryAllParams } from "@webiny/db-dynamodb/utils/query";
 import { sortItems } from "@webiny/db-dynamodb/utils/sort";
@@ -18,6 +16,8 @@ import { filterItems } from "@webiny/db-dynamodb/utils/filter";
 import WebinyError from "@webiny/error";
 import { CategoryDataLoader } from "./CategoryDataLoader";
 import { createListResponse } from "@webiny/db-dynamodb/utils/listResponse";
+import { defineTable } from "~/definitions/table";
+import { defineCategoryEntity } from "~/definitions/categoryEntity";
 
 const TYPE = "pb.category";
 
@@ -109,7 +109,7 @@ export class CategoryStorageOperationsDdbEs implements CategoryStorageOperations
         return createListResponse({
             items: sortedItems,
             limit,
-            totalCount: filteredItems.count,
+            totalCount: filteredItems.length,
             after: null
         });
     }
@@ -131,6 +131,11 @@ export class CategoryStorageOperationsDdbEs implements CategoryStorageOperations
                 TYPE,
                 ...keys
             });
+            /**
+             * Always clear data loader cache when modifying the records.
+             */
+            this.dataLoader.clear();
+
             return category;
         } catch (ex) {
             throw new WebinyError(
@@ -158,6 +163,11 @@ export class CategoryStorageOperationsDdbEs implements CategoryStorageOperations
                 ...category,
                 ...keys
             });
+            /**
+             * Always clear data loader cache when modifying the records.
+             */
+            this.dataLoader.clear();
+
             return category;
         } catch (ex) {
             throw new WebinyError(
@@ -187,6 +197,11 @@ export class CategoryStorageOperationsDdbEs implements CategoryStorageOperations
                 ...category,
                 ...keys
             });
+            /**
+             * Always clear data loader cache when modifying the records.
+             */
+            this.dataLoader.clear();
+
             return category;
         } catch (ex) {
             throw new WebinyError(

@@ -14,9 +14,11 @@ beforeAll(async () => {
 
 beforeEach(async () => {
     await jestDynalite.createTables();
+	await __beforeEach();
 });
 afterEach(async () => {
     await jestDynalite.deleteTables();
+	await __afterEach();
 });
 
 afterAll(async () => {

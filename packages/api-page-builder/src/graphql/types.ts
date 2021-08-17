@@ -1,4 +1,3 @@
-import { Context } from "@webiny/handler/types";
 import { I18NContentContext } from "@webiny/api-i18n-content/types";
 import { DbContext } from "@webiny/handler-db/types";
 import { SecurityContext, SecurityPermission } from "@webiny/api-security/types";
@@ -7,7 +6,7 @@ import { I18NContext } from "@webiny/api-i18n/types";
 import { ElasticsearchContext } from "@webiny/api-elasticsearch/types";
 import DataLoader from "dataloader";
 import { ClientContext } from "@webiny/handler-client/types";
-import { Category, DefaultSettings, Menu, Page, PageElement } from "../types";
+import { Category, DefaultSettings, Menu, Page, PageElement, System } from "~/types";
 import { PrerenderingServiceClientContext } from "@webiny/api-prerendering-service/client/types";
 
 // CRUD types.
@@ -133,6 +132,7 @@ export type SettingsCrud = {
 };
 
 export type SystemCrud = {
+    get: () => Promise<System>;
     getVersion(): Promise<string>;
     setVersion(version: string): Promise<void>;
     install(args: { name: string; insertDemoData: boolean }): Promise<void>;

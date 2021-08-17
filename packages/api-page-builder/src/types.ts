@@ -393,7 +393,7 @@ export interface PageElementStorageOperations {
     /**
      * Get a single page element item by given params.
      */
-    get(params: PageElementStorageOperationsGetParams): Promise<PageElement>;
+    get(params: PageElementStorageOperationsGetParams): Promise<PageElement | null>;
     /**
      * Get all page element items by given params.
      */
@@ -403,4 +403,32 @@ export interface PageElementStorageOperations {
     create(params: PageElementStorageOperationsCreateParams): Promise<PageElement>;
     update(params: PageElementStorageOperationsUpdateParams): Promise<PageElement>;
     delete(params: PageElementStorageOperationsDeleteParams): Promise<PageElement>;
+}
+
+export interface System {
+    version: string;
+}
+/**
+ * @category StorageOperations
+ * @category SystemStorageOperations
+ */
+export interface SystemStorageOperationsCreateParams {
+    system: System;
+}
+/**
+ * @category StorageOperations
+ * @category SystemStorageOperations
+ */
+export interface SystemStorageOperationsUpdateParams {
+    original: System;
+    system: System;
+}
+/**
+ * @category StorageOperations
+ * @category SystemStorageOperations
+ */
+export interface SystemStorageOperations {
+    get: () => Promise<System | null>;
+    create(params: SystemStorageOperationsCreateParams): Promise<System>;
+    update(params: SystemStorageOperationsUpdateParams): Promise<System>;
 }

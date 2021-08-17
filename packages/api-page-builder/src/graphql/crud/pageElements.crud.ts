@@ -33,7 +33,7 @@ export default new ContextPlugin<PbContext>(async context => {
      * If pageBuilder is not defined on the context, do not continue, but log it.
      */
     if (!context.pageBuilder) {
-        console.log("Missing pageBuilder on context. Skipping Categories crud.");
+        console.log("Missing pageBuilder on context. Skipping Page Elements crud.");
         return;
     }
     const pluginType = PageElementStorageOperationsProviderPlugin.type;
@@ -179,7 +179,7 @@ export default new ContextPlugin<PbContext>(async context => {
             const identity = context.security.getIdentity();
             checkOwnPermissions(identity, permission, original);
 
-            const updateDataModel = new UpdateDataModel().populate(data);
+            const updateDataModel = new UpdateDataModel().populate(input);
             await updateDataModel.validate();
 
             const data = await updateDataModel.toJSON({ onlyDirty: true });

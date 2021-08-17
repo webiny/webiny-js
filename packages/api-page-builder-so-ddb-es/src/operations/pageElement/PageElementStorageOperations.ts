@@ -5,6 +5,7 @@ import {
     PageElementStorageOperationsDeleteParams,
     PageElementStorageOperationsGetParams,
     PageElementStorageOperationsListParams,
+    PageElementStorageOperationsListResponse,
     PageElementStorageOperationsUpdateParams,
     PbContext
 } from "@webiny/api-page-builder/types";
@@ -15,7 +16,8 @@ import { queryAll, QueryAllParams } from "@webiny/db-dynamodb/utils/query";
 import { filterItems } from "@webiny/db-dynamodb/utils/filter";
 import { sortItems } from "@webiny/db-dynamodb/utils/sort";
 import { createListResponse } from "@webiny/db-dynamodb/utils/listResponse";
-import Promise = JQuery.Promise;
+import { defineTable } from "~/definitions/table";
+import { definePageElementEntity } from "~/definitions/pageElementEntity";
 
 const TYPE = "pb.pageElement";
 
@@ -111,7 +113,7 @@ export class PageElementStorageOperationsDdbEs implements PageElementStorageOper
         return createListResponse({
             items: sortedItems,
             limit,
-            totalCount: filteredItems.count,
+            totalCount: filteredItems.length,
             after: null
         });
     }
