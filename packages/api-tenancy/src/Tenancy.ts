@@ -1,14 +1,8 @@
 import mdbid from "mdbid";
 import { TenancyContext, Tenant } from "./types";
 import { TenantPlugin } from "./plugins/TenantPlugin";
-
-const dbArgs = {
-    table: process.env.DB_TABLE_SECURITY,
-    keys: [
-        { primary: true, unique: true, name: "primary", fields: [{ name: "PK" }, { name: "SK" }] },
-        { unique: true, name: "GSI1", fields: [{ name: "GSI1_PK" }, { name: "GSI1_SK" }] }
-    ]
-};
+import { TenancyLoaders } from "./TenancyLoaders";
+import { dbArgs } from "./dbArgs";
 
 const tenantCache = {};
 
@@ -25,11 +19,11 @@ interface UpdateTenantInput {
 interface ITenancy {
     init(): Promise<void>;
     getRootTenant(): Promise<Tenant>;
-    getCurrentTenant(): Tenant;
-    getTenantById(id: string): Promise<Tenant>;
+    getCurrentTenant<TTenant extends Tenant = Tenant>(): TTenant;
+    getTenantById<TTenant extends Tenant = Tenant>(id: string): Promise<TTenant>;
     setCurrentTenant(tenant: Tenant): void;
-    listTenants(params: { parent?: string }): Promise<Tenant[]>;
-    createTenant(data: CreateTenantInput): Promise<Tenant>;
+    listTenants<TTenant extends Tenant = Tenant>(params: { parent: string }): Promise<TTenant[]>;
+    createTenant<TTenant extends Tenant = Tenant>(data: CreateTenantInput): Promise<TTenant>;
     updateTenant(id: string, data: UpdateTenantInput): Promise<boolean>;
     deleteTenant(id: string): Promise<boolean>;
 }
@@ -37,9 +31,11 @@ interface ITenancy {
 export class Tenancy implements ITenancy {
     private _context: TenancyContext;
     private _currentTenant: Tenant;
+    private _loaders: TenancyLoaders;
 
     constructor(context: TenancyContext) {
         this._context = context;
+        this._loaders = new TenancyLoaders(context);
     }
 
     get plugins() {
@@ -51,60 +47,34 @@ export class Tenancy implements ITenancy {
     }
 
     async getRootTenant() {
-        const [[tenant]] = await this._context.db.read<Tenant>({
-            ...dbArgs,
-            query: { PK: `T#root`, SK: "A" }
-        });
-
-        if (tenant) {
-            return {
-                id: tenant.id,
-                name: tenant.name,
-                parent: tenant.parent
-            };
-        }
-
-        return null;
+        return this._loaders.getTenant.load("root");
     }
 
-    getCurrentTenant() {
-        return this._currentTenant;
+    getCurrentTenant<TTenant extends Tenant = Tenant>(): TTenant {
+        return this._currentTenant as TTenant;
     }
 
     /**
      * Get tenant by ID
      * @param id
      */
-    async getTenantById(id: string) {
-        const [[tenant]] = await this._context.db.read<Tenant>({
-            ...dbArgs,
-            query: { PK: `T#${id}`, SK: "A" }
-        });
-
-        if (tenant) {
-            return {
-                id: tenant.id,
-                name: tenant.name,
-                parent: tenant.parent
-            };
-        }
-
-        return null;
+    getTenantById<TTenant extends Tenant = Tenant>(id: string): Promise<TTenant> {
+        return this._loaders.getTenant.load(id);
     }
     setCurrentTenant(tenant: Tenant) {
-        if (!this._currentTenant) {
-            this._currentTenant = tenant;
-        }
+        this._currentTenant = tenant;
     }
-    async listTenants({ parent }) {
-        const [tenants] = await this._context.db.read<Tenant>({
+
+    async listTenants<TTenant extends Tenant = Tenant>({ parent }): Promise<TTenant[]> {
+        const [tenants] = await this._context.db.read<TTenant>({
             ...dbArgs,
             query: { GSI1_PK: `T#${parent}`, GSI1_SK: { $beginsWith: "T#" } },
             sort: { SK: -1 }
         });
 
-        return tenants.map(t => ({ id: t.id, name: t.name, parent: t.parent }));
+        return tenants;
     }
+
     async createTenant(data) {
         const tenant = {
             ...data,

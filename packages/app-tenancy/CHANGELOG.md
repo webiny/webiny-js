@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.13.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.13.0-beta.2...v5.13.0-beta.3) (2021-08-17)
+
+
+### Bug Fixes
+
+* **app-tenancy:** add missing dependency to useMemo ([05f26ad](https://github.com/webiny/webiny-js/commit/05f26adb2af4f4600370bdc36d1861be6fd203b5))
+
+
+
+
+
 # [5.13.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.13.0-beta.1...v5.13.0-beta.2) (2021-08-17)
 
 **Note:** Version bump only for package @webiny/app-tenancy
