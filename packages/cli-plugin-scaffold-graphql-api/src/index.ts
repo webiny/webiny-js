@@ -33,8 +33,7 @@ export const deployGraphQLAPI = (stack, env, inputs) =>
 
 const ncp = util.promisify(ncpBase.ncp);
 
-const SCAFFOLD_DOCS_LINK =
-    "https://www.webiny.com/docs/how-to-guides/scaffolding/graphql-api";
+const SCAFFOLD_DOCS_LINK = "https://www.webiny.com/docs/how-to-guides/scaffolding/graphql-api";
 
 export default (): CliCommandScaffoldTemplate<Input> => ({
     name: "cli-plugin-scaffold-template-graphql-api",
