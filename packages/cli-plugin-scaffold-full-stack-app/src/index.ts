@@ -18,13 +18,13 @@ interface Input {
 }
 
 const SCAFFOLD_DOCS_LINK =
-    "https://www.webiny.com/docs/how-to-guides/webiny-cli/scaffolding/new-full-stack-application";
+    "https://www.webiny.com/docs/how-to-guides/webiny-cli/scaffolding/full-stack-application";
 
 export default (): CliCommandScaffoldTemplate<Input> => ({
     name: "cli-plugin-scaffold-template-full-stack-app",
     type: "cli-plugin-scaffold-template",
     scaffold: {
-        name: "New Full Stack Application",
+        name: "Full Stack Application",
         description:
             "Creates a new React application and a supporting GraphQL API." +
             (link.isSupported ? " " + link("Learn more.", SCAFFOLD_DOCS_LINK) : ""),

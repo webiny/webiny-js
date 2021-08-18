@@ -25,10 +25,10 @@ function Home() {
                     a standalone GraphQL API.
                 </UsefulLink>
                 <UsefulLink
-                    url={"/docs/how-to-guides/webiny-cli/scaffolding/new-react-application"}
-                    title={"The New React Application Scaffold"}
+                    url={"/docs/how-to-guides/webiny-cli/scaffolding/react-application"}
+                    title={"React Application Scaffold"}
                 >
-                    Learn more about the New React Application scaffold that was used to create this
+                    Learn more about the React Application scaffold that was used to create this
                     React application.
                 </UsefulLink>
                 <UsefulLink

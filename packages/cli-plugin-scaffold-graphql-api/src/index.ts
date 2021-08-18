@@ -34,13 +34,13 @@ export const deployGraphQLAPI = (stack, env, inputs) =>
 const ncp = util.promisify(ncpBase.ncp);
 
 const SCAFFOLD_DOCS_LINK =
-    "https://www.webiny.com/docs/how-to-guides/webiny-cli/scaffolding/new-graphql-api";
+    "https://www.webiny.com/docs/how-to-guides/webiny-cli/scaffolding/graphql-api";
 
 export default (): CliCommandScaffoldTemplate<Input> => ({
     name: "cli-plugin-scaffold-template-graphql-api",
     type: "cli-plugin-scaffold-template",
     scaffold: {
-        name: "New GraphQL API",
+        name: "GraphQL API",
         description:
             "Creates a GraphQL API powered by AWS Lambda and Amazon DynamoDB." +
             (link.isSupported ? " " + link("Learn more.", SCAFFOLD_DOCS_LINK) : ""),
@@ -361,7 +361,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
             console.log(chalk.bold("Useful Links"));
 
             const links = [
-                ["New GraphQL API Scaffold", SCAFFOLD_DOCS_LINK],
+                ["GraphQL API Scaffold", SCAFFOLD_DOCS_LINK],
                 [
                     "Create Custom Application Tutorial",
                     "https://www.webiny.com/docs/tutorials/create-custom-application/introduction"
