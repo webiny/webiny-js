@@ -7270,7 +7270,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
-* 'storybook' script runs succesfully now: Webpack now correctly fetches the aliases ([fd98bac](https://github.com/webiny/webiny-js/commit/fd98bac2385e63f139a0a64db4be8c36612e314d))
+* 'storybook' script runs successfully now: Webpack now correctly fetches the aliases ([fd98bac](https://github.com/webiny/webiny-js/commit/fd98bac2385e63f139a0a64db4be8c36612e314d))
 * 'TokensElement' moved into AccountTokens.tsx & its state works correctly now, separated from UserAccountForm ([51b52f2](https://github.com/webiny/webiny-js/commit/51b52f2aa14e176868b6f85c6bf4df43ec576e12))
 * "onChange" callback passed to "renderDialog" must save data as well ([e17d3ff](https://github.com/webiny/webiny-js/commit/e17d3ff7d563d72f32992f2d96be568859c2233a))
 * 🐛  Add [@webiny](https://github.com/webiny) to template. Fix run template-specific actions ([7c639a9](https://github.com/webiny/webiny-js/commit/7c639a92c2d882f9a3a39bb62daa686a85d59e70))
@@ -7285,7 +7285,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 * 🐛  Pipe stdout and stderr to execa instance ([61d350b](https://github.com/webiny/webiny-js/commit/61d350b5a23f7255f4adf1d4d9ac4dfdf8224418))
 * 🐛  Reduce grid height in case of no results ([c74dfd0](https://github.com/webiny/webiny-js/commit/c74dfd08b373ba5c9af5c786e0a41fcb4562977c))
 * 🐛  remove `pb-resolver-list-pages` from listPages resolver ([0a78701](https://github.com/webiny/webiny-js/commit/0a787011f0764d2be6e3cb770e90182f0bd7755d))
-* 🐛  Remove unecessary webpack dependency from cli ([e0c0084](https://github.com/webiny/webiny-js/commit/e0c0084ceda66058c1897f16035690b0357ebfaa))
+* 🐛  Remove unnecessary webpack dependency from cli ([e0c0084](https://github.com/webiny/webiny-js/commit/e0c0084ceda66058c1897f16035690b0357ebfaa))
 * 🐛  Rename context.js to be capital case ([5c162b9](https://github.com/webiny/webiny-js/commit/5c162b956eddc8d5b4679e98f80961abc756b9ab))
 * 🐛  Run eslint --fix ([cc6117c](https://github.com/webiny/webiny-js/commit/cc6117c335c6821c6ad271a8a652de626535b551))
 * 🐛  Update infoIcon styles ([acf0b7c](https://github.com/webiny/webiny-js/commit/acf0b7ca873de790b3b15254d27db14c08d09dff))

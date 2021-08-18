@@ -1481,7 +1481,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
-* 🐛  Remove unecessary webpack dependency from cli ([e0c0084](https://github.com/webiny/webiny-js/commit/e0c0084ceda66058c1897f16035690b0357ebfaa))
+* 🐛  Remove unnecessary webpack dependency from cli ([e0c0084](https://github.com/webiny/webiny-js/commit/e0c0084ceda66058c1897f16035690b0357ebfaa))
 * 🐛  Rename context.js to be capital case ([5c162b9](https://github.com/webiny/webiny-js/commit/5c162b956eddc8d5b4679e98f80961abc756b9ab))
 * abort process gracefully for yarn v2. ([b269d90](https://github.com/webiny/webiny-js/commit/b269d90716a64c07b7310993806d2fa2234001ca))
 * add formBuilder to the list of services ([222d8e2](https://github.com/webiny/webiny-js/commit/222d8e24658042af7ffe122d307f7cd7b838f982))

@@ -1459,7 +1459,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
-* 'storybook' script runs succesfully now: Webpack now correctly fetches the aliases ([fd98bac](https://github.com/webiny/webiny-js/commit/fd98bac2385e63f139a0a64db4be8c36612e314d))
+* 'storybook' script runs successfully now: Webpack now correctly fetches the aliases ([fd98bac](https://github.com/webiny/webiny-js/commit/fd98bac2385e63f139a0a64db4be8c36612e314d))
 * add "style" to the list of available props ([1e379c2](https://github.com/webiny/webiny-js/commit/1e379c2cf87ea8d49dcfc4f10d4685428829dc2d))
 * add default loading overlay when onAccept is triggered. ([e6ae6f6](https://github.com/webiny/webiny-js/commit/e6ae6f690ec9600b465c34e5c7510c849411a0e4))
 * add support for maxLength and characterCount ([cd556b9](https://github.com/webiny/webiny-js/commit/cd556b9874455175e0b6e8407469d97548cac601))
