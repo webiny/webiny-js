@@ -111,24 +111,25 @@ export type MenusCrud = {
     delete(slug: string): Promise<Menu>;
 };
 
-type DefaultSettingsCrudOptions = { tenant?: string | false; locale?: string | false };
+/**
+ * The options passed into the crud methods
+ */
+export interface DefaultSettingsCrudOptions {
+    tenant?: string | false;
+    locale?: string | false;
+}
 
 export type SettingsCrud = {
-    dataLoaders: {
-        get: DataLoader<{ PK: string; SK: string }, DefaultSettings, string>;
-    };
-    default: {
-        PK: (options: Record<string, any>) => string;
-        SK: "default";
-        getCurrent: () => Promise<DefaultSettings>;
-        get: (options?: DefaultSettingsCrudOptions) => Promise<DefaultSettings>;
-        getDefault: (options?: { tenant?: string }) => Promise<DefaultSettings>;
-        update: (
-            data: Record<string, any>,
-            options?: { auth?: boolean } & DefaultSettingsCrudOptions
-        ) => Promise<DefaultSettings>;
-        getSettingsCacheKey: (options?: DefaultSettingsCrudOptions) => string;
-    };
+    // PK: (options: Record<string, any>) => string;
+    // SK: "default";
+    getCurrent: () => Promise<DefaultSettings>;
+    get: (options?: DefaultSettingsCrudOptions) => Promise<DefaultSettings>;
+    getDefault: (options?: Pick<DefaultSettingsCrudOptions, "tenant">) => Promise<DefaultSettings>;
+    update: (
+        data: Record<string, any>,
+        options?: { auth?: boolean } & DefaultSettingsCrudOptions
+    ) => Promise<DefaultSettings>;
+    getSettingsCacheKey: (options?: DefaultSettingsCrudOptions) => string;
 };
 
 export type SystemCrud = {

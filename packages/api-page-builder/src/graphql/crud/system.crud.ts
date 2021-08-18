@@ -215,7 +215,7 @@ export default new ContextPlugin<PbContext>(async context => {
                     )
                 );
 
-                await pageBuilder.settings.default.update({
+                await pageBuilder.settings.update({
                     name: name,
                     pages: {
                         home: homePage.pid,

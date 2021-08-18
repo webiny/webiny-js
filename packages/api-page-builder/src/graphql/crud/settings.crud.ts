@@ -1,16 +1,24 @@
-import { ContextPlugin } from "@webiny/handler/types";
-import defaults from "./utils/defaults";
-import getPKPrefix from "./utils/getPKPrefix";
-import { PbContext, DefaultSettings } from "../../types";
+import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
+import {
+    PbContext,
+    SettingsStorageOperationsCreateParams,
+    SettingsStorageOperationsGetParams
+} from "~/types";
 import { NotAuthorizedError } from "@webiny/api-security";
-import DataLoader from "dataloader";
 import executeCallbacks from "./utils/executeCallbacks";
 import { DefaultSettingsModel } from "../../utils/models";
 import mergeWith from "lodash/mergeWith";
 import Error from "@webiny/error";
 import { SettingsPlugin } from "~/plugins/SettingsPlugin";
-
-const TYPE = "pb.settings";
+import { SettingsStorageOperationsProviderPlugin } from "~/plugins/SettingsStorageOperationsProviderPlugin";
+import WebinyError from "@webiny/error";
+/**
+ * Possible types of settings.
+ * If a lot of types should be added maybe we can do it via the plugin.
+ */
+enum SETTINGS_TYPE {
+    DEFAULT = "default"
+}
 
 const checkBasePermissions = async (context: PbContext) => {
     await context.i18nContent.checkI18NContentPermission();
@@ -20,206 +28,230 @@ const checkBasePermissions = async (context: PbContext) => {
     }
 };
 
-const plugin: ContextPlugin<PbContext> = {
-    type: "context",
-    async apply(context) {
-        const { db, tenancy, i18nContent } = context;
+export default new ContextPlugin<PbContext>(async context => {
+    /**
+     * If pageBuilder is not defined on the context, do not continue, but log it.
+     */
+    if (!context.pageBuilder) {
+        console.log("Missing pageBuilder on context. Skipping Settings crud.");
+        return;
+    }
+    const pluginType = SettingsStorageOperationsProviderPlugin.type;
 
-        const settingsPlugins = context.plugins.byType<SettingsPlugin>(SettingsPlugin.type);
+    const providerPlugin: SettingsStorageOperationsProviderPlugin = context.plugins
+        .byType<SettingsStorageOperationsProviderPlugin>(pluginType)
+        .find(() => true);
 
-        context.pageBuilder = {
-            ...context.pageBuilder,
-            settings: {
-                dataLoaders: {
-                    get: new DataLoader<{ PK: string; SK: string }, DefaultSettings, string>(
-                        async keys => {
-                            const results = [];
-                            for (let i = 0; i < keys.length; i++) {
-                                const { PK, SK } = keys[i];
-                                const [[data]] = await db.read<DefaultSettings>({
-                                    ...defaults.db,
-                                    query: { PK, SK },
-                                    limit: 1
-                                });
-                                results.push(data);
-                            }
+    if (!providerPlugin) {
+        throw new WebinyError(`Missing "${pluginType}" plugin.`, "PLUGIN_NOT_FOUND", {
+            type: pluginType
+        });
+    }
 
-                            return results;
-                        },
-                        {
-                            cacheKeyFn: key => key.PK + key.SK
-                        }
-                    )
-                },
-                // Default settings - contain website, social media, and prerendering settings.
-                default: {
-                    PK: options => {
-                        const prefix = getPKPrefix(context, options);
-                        return `${prefix}SETTINGS`;
-                    },
-                    SK: "default",
-                    getSettingsCacheKey(options) {
-                        return this.PK(options);
-                    },
+    const storageOperations = await providerPlugin.provide({
+        context
+    });
 
-                    async getCurrent() {
-                        // With this line commented, we made this endpoint public.
-                        // We did this because of the public website pages which need to access the settings.
-                        // It's possible we'll create another GraphQL field, made for this exact purpose.
-                        // auth !== false && (await checkBasePermissions(context));
+    const settingsPlugins = context.plugins.byType<SettingsPlugin>(SettingsPlugin.type);
 
-                        const current = await context.pageBuilder.settings.default.get({});
-                        const defaults = await context.pageBuilder.settings.default.getDefault();
+    context.pageBuilder.settings = {
+        /**
+         * For the cache key we use the identifier created by the storage operations.
+         * Initial, in the DynamoDB, it was PK + SK. It can be what ever
+         */
+        getSettingsCacheKey(options) {
+            return storageOperations.createCacheKey(options);
+        },
+        async getCurrent() {
+            // With this line commented, we made this endpoint public.
+            // We did this because of the public website pages which need to access the settings.
+            // It's possible we'll create another GraphQL field, made for this exact purpose.
+            // auth !== false && (await checkBasePermissions(context));
 
-                        return mergeWith({}, defaults, current, (prev, next) => {
-                            // No need to use falsy value if we have it set in the default settings.
-                            if (prev && !next) {
-                                return prev;
-                            }
-                        });
-                    },
-                    async get(options) {
-                        // With this line commented, we made this endpoint public.
-                        // We did this because of the public website pages which need to access the settings.
-                        // It's possible we'll create another GraphQL field, made for this exact purpose.
-                        // auth !== false && (await checkBasePermissions(context));
+            const current = await context.pageBuilder.settings.get({});
+            const defaults = await context.pageBuilder.settings.getDefault();
 
-                        return context.pageBuilder.settings.dataLoaders.get.load({
-                            PK: this.PK(options),
-                            SK: this.SK
-                        });
-                    },
-                    async getDefault(options) {
-                        const allTenants = await this.get({ tenant: false, locale: false });
-                        const tenantAllLocales = await this.get({
-                            tenant: options?.tenant,
-                            locale: false
-                        });
-                        if (!allTenants && !tenantAllLocales) {
-                            return null;
-                        }
+            return mergeWith({}, defaults, current, (prev, next) => {
+                // No need to use falsy value if we have it set in the default settings.
+                if (prev && !next) {
+                    return prev;
+                }
+            });
+        },
+        async get(options) {
+            // With this line commented, we made this endpoint public.
+            // We did this because of the public website pages which need to access the settings.
+            // It's possible we'll create another GraphQL field, made for this exact purpose.
+            // auth !== false && (await checkBasePermissions(context));
 
-                        return mergeWith({}, allTenants, tenantAllLocales, (next, prev) => {
-                            // No need to use falsy value if we have it set in the default settings.
-                            if (prev && !next) {
-                                return prev;
-                            }
-                        });
-                    },
-                    async update(rawData, options) {
-                        options?.auth !== false && (await checkBasePermissions(context));
+            const { locale: initialLocale, tenant: initialTenant } = options || {};
+            const tenant =
+                initialTenant === false
+                    ? false
+                    : initialTenant || context.tenancy.getCurrentTenant().id;
+            const locale =
+                initialLocale === false
+                    ? false
+                    : initialLocale || context.i18nContent.getLocale().code;
+            const params: SettingsStorageOperationsGetParams = {
+                tenant,
+                locale,
+                where: {
+                    type: SETTINGS_TYPE.DEFAULT,
+                    tenant: tenant || undefined,
+                    locale: locale || undefined
+                }
+            };
+            try {
+                return storageOperations.get(params);
+            } catch (ex) {
+                throw new WebinyError(
+                    ex.message || "Could not get settings by given parameters.",
+                    ex.code || "GET_SETTINGS_ERROR",
+                    params
+                );
+            }
+        },
+        async getDefault(options) {
+            const allTenants = await this.get({ tenant: false, locale: false });
+            const tenantAllLocales = await this.get({
+                tenant: options?.tenant,
+                locale: false
+            });
+            if (!allTenants && !tenantAllLocales) {
+                return null;
+            }
 
-                        let previous = await this.get(options);
-                        if (!previous) {
-                            previous = await new DefaultSettingsModel().populate({}).toJSON();
+            return mergeWith({}, allTenants, tenantAllLocales, (next, prev) => {
+                // No need to use falsy value if we have it set in the default settings.
+                if (prev && !next) {
+                    return prev;
+                }
+            });
+        },
+        async update(rawData, options) {
+            options?.auth !== false && (await checkBasePermissions(context));
 
-                            let tenant = undefined,
-                                locale = undefined;
-                            if (options?.tenant !== false) {
-                                tenant = options?.tenant || tenancy.getCurrentTenant().id;
-                            }
-                            if (options?.locale !== false) {
-                                locale = options?.locale || i18nContent.getLocale().code;
-                            }
+            const targetTenant = options?.tenant === false ? false : options?.tenant;
+            const targetLocale = options?.locale === false ? false : options?.locale;
 
-                            await db.create({
-                                ...defaults.db,
-                                data: {
-                                    ...previous,
-                                    PK: this.PK(options),
-                                    SK: this.SK,
-                                    TYPE,
-                                    type: "default",
-                                    tenant,
-                                    locale
-                                }
-                            });
-                        }
+            let original = await this.get(options);
+            if (!original) {
+                original = await new DefaultSettingsModel().populate({}).toJSON();
 
-                        const settingsModel = new DefaultSettingsModel()
-                            .populate(previous)
-                            .populate(rawData);
-                        await settingsModel.validate();
+                let tenant = undefined;
+                let locale = undefined;
+                /**
+                 * We check for the tenant and locale being false because in that case this is some global settings data.
+                 */
+                if (targetTenant !== false) {
+                    tenant = targetTenant || context.tenancy.getCurrentTenant().id;
+                }
+                if (targetLocale !== false) {
+                    locale = targetLocale || context.i18nContent.getLocale().code;
+                }
 
-                        const next = await settingsModel.toJSON();
+                const data: SettingsStorageOperationsCreateParams = {
+                    tenant: targetTenant,
+                    locale: targetLocale,
+                    input: rawData,
+                    settings: {
+                        ...original,
+                        type: "default",
+                        tenant,
+                        locale
+                    }
+                };
+                try {
+                    await storageOperations.create(data);
+                } catch (ex) {
+                    throw new WebinyError(
+                        ex.message || "Could not create settings record.",
+                        ex.code || "CREATE_SETTINGS_ERROR",
+                        data
+                    );
+                }
+            }
 
-                        // Before continuing, let's check for differences that matter.
+            const settingsModel = new DefaultSettingsModel().populate(original).populate(rawData);
+            await settingsModel.validate();
 
-                        // 1. Check differences in `pages` property (`home`, `notFound`). If there are
-                        // differences, check if the pages can be set as the new `specialType` page, and then,
-                        // after save, make sure to trigger events, on which other plugins can do their tasks.
-                        const specialTypes = ["home", "notFound"];
+            const settings = await settingsModel.toJSON();
 
-                        const changedPages = [];
-                        for (let i = 0; i < specialTypes.length; i++) {
-                            const specialType = specialTypes[i];
-                            const p = previous?.pages?.[specialType];
-                            const n = next?.pages?.[specialType];
+            // Before continuing, let's check for differences that matter.
 
-                            if (p !== n) {
-                                // Only throw if previously we had a page (p), and now all of a sudden
-                                // we don't (!n). Allows updating settings without sending these.
-                                if (p && !n) {
-                                    throw new Error(
-                                        `Cannot unset "${specialType}" page. Please provide a new page if you want to unset current one.`,
-                                        "CANNOT_UNSET_SPECIAL_PAGE"
-                                    );
-                                }
+            // 1. Check differences in `pages` property (`home`, `notFound`). If there are
+            // differences, check if the pages can be set as the new `specialType` page, and then,
+            // after save, make sure to trigger events, on which other plugins can do their tasks.
+            const specialTypes = ["home", "notFound"];
 
-                                // Only load if the next page (n) has been sent, which is always a
-                                // must if previously a page was defined (p).
-                                if (n) {
-                                    const page = await context.pageBuilder.pages.getPublishedById({
-                                        id: n
-                                    });
+            const changedPages = [];
+            for (let i = 0; i < specialTypes.length; i++) {
+                const specialType = specialTypes[i];
+                const p = original?.pages?.[specialType];
+                const n = settings?.pages?.[specialType];
 
-                                    changedPages.push([specialType, p, n, page]);
-                                }
-                            }
-                        }
-
-                        await executeCallbacks<SettingsPlugin["beforeUpdate"]>(
-                            settingsPlugins,
-                            "beforeUpdate",
-                            {
-                                context,
-                                previousSettings: previous,
-                                nextSettings: next,
-                                meta: {
-                                    diff: {
-                                        pages: changedPages
-                                    }
-                                }
-                            }
+                if (p !== n) {
+                    // Only throw if previously we had a page (p), and now all of a sudden
+                    // we don't (!n). Allows updating settings without sending these.
+                    if (p && !n) {
+                        throw new Error(
+                            `Cannot unset "${specialType}" page. Please provide a new page if you want to unset current one.`,
+                            "CANNOT_UNSET_SPECIAL_PAGE"
                         );
+                    }
 
-                        await db.update({
-                            ...defaults.db,
-                            query: { PK: this.PK(options), SK: this.SK },
-                            data: next
+                    // Only load if the next page (n) has been sent, which is always a
+                    // must if previously a page was defined (p).
+                    if (n) {
+                        const page = await context.pageBuilder.pages.getPublishedById({
+                            id: n
                         });
 
-                        await executeCallbacks<SettingsPlugin["afterUpdate"]>(
-                            settingsPlugins,
-                            "afterUpdate",
-                            {
-                                context,
-                                previousSettings: previous,
-                                nextSettings: next,
-                                meta: {
-                                    diff: {
-                                        pages: changedPages
-                                    }
-                                }
-                            }
-                        );
-
-                        return next;
+                        changedPages.push([specialType, p, n, page]);
                     }
                 }
             }
-        };
-    }
-};
 
-export default plugin;
+            const callbackParams = {
+                context,
+                previousSettings: original,
+                nextSettings: settings,
+                meta: {
+                    diff: {
+                        pages: changedPages
+                    }
+                }
+            };
+            try {
+                await executeCallbacks<SettingsPlugin["beforeUpdate"]>(
+                    settingsPlugins,
+                    "beforeUpdate",
+                    callbackParams
+                );
+                const result = await storageOperations.update({
+                    tenant: targetTenant,
+                    locale: targetLocale,
+                    input: rawData,
+                    original,
+                    settings
+                });
+                await executeCallbacks<SettingsPlugin["afterUpdate"]>(
+                    settingsPlugins,
+                    "afterUpdate",
+                    callbackParams
+                );
+                return result;
+            } catch (ex) {
+                throw new WebinyError(
+                    ex.message || "Could not update existing settings record.",
+                    ex.code || "UPDATE_SETTINGS_ERROR",
+                    {
+                        original,
+                        settings
+                    }
+                );
+            }
+        }
+    };
+});

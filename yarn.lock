@@ -8776,9 +8776,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-page-builder-so-ddb@workspace:packages/api-page-builder-so-ddb-es":
+"@webiny/api-page-builder-so-ddb-es@workspace:packages/api-page-builder-so-ddb-es":
   version: 0.0.0-use.local
-  resolution: "@webiny/api-page-builder-so-ddb@workspace:packages/api-page-builder-so-ddb-es"
+  resolution: "@webiny/api-page-builder-so-ddb-es@workspace:packages/api-page-builder-so-ddb-es"
   dependencies:
     "@babel/cli": ^7.5.5
     "@babel/core": ^7.5.5

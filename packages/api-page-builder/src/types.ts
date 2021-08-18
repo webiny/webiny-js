@@ -1,3 +1,5 @@
+import { DefaultSettingsCrudOptions } from "~/graphql/types";
+
 export * from "./graphql/types";
 
 // DB types.
@@ -8,7 +10,9 @@ export enum TYPE {
     PAGE_PUBLISHED_PATH = "pb.page.p.path"
 }
 
-// Entities.
+/**
+ * @category RecordModel
+ */
 export interface PageElement {
     id: string;
     name: string;
@@ -29,7 +33,9 @@ export interface PageElement {
     tenant: string;
     locale: string;
 }
-
+/**
+ * @category RecordModel
+ */
 export interface Menu {
     title: string;
     slug: string;
@@ -48,7 +54,9 @@ export interface Menu {
     tenant: string;
     locale: string;
 }
-
+/**
+ * @category RecordModel
+ */
 export interface Category {
     name: string;
     slug: string;
@@ -405,6 +413,9 @@ export interface PageElementStorageOperations {
     delete(params: PageElementStorageOperationsDeleteParams): Promise<PageElement>;
 }
 
+/**
+ * @category RecordModel
+ */
 export interface System {
     version: string;
 }
@@ -431,4 +442,86 @@ export interface SystemStorageOperations {
     get: () => Promise<System | null>;
     create(params: SystemStorageOperationsCreateParams): Promise<System>;
     update(params: SystemStorageOperationsUpdateParams): Promise<System>;
+}
+
+/**
+ * @category RecordModel
+ */
+export interface Settings {
+    name: string;
+    websiteUrl: string;
+    websitePreviewUrl: string;
+    favicon: File;
+    logo: File;
+    prerendering: {
+        app: {
+            url: string;
+        };
+        storage: {
+            name: string;
+        };
+        meta: Record<string, any>;
+    };
+    social: {
+        facebook: string;
+        twitter: string;
+        instagram: string;
+        image: File;
+    };
+    pages: {
+        home: string;
+        notFound: string;
+    };
+    type: string;
+    tenant: string;
+    locale: string;
+}
+/**
+ * @category StorageOperations
+ * @category SettingsStorageOperations
+ */
+export interface SettingsStorageOperationsGetParams {
+    tenant?: string | boolean;
+    locale?: string | boolean;
+    where: {
+        type: string;
+        tenant?: string;
+        locale?: string;
+    };
+}
+/**
+ * @category StorageOperations
+ * @category SettingsStorageOperations
+ */
+export interface SettingsStorageOperationsCreateParams {
+    tenant?: string | boolean;
+    locale?: string | boolean;
+    input: Record<string, any>;
+    settings: Settings;
+}
+/**
+ * @category StorageOperations
+ * @category SettingsStorageOperations
+ */
+export interface SettingsStorageOperationsUpdateParams {
+    tenant?: string | boolean;
+    locale?: string | boolean;
+    input: Record<string, any>;
+    original: Settings;
+    settings: Settings;
+}
+/**
+ * @category StorageOperations
+ * @category SettingsStorageOperations
+ */
+export interface SettingsStorageOperations {
+    /**
+     * To identify different settings (global, default, per tenant, per locale) we must have some kind of identifier.
+     * In our initial code it was the partition key and sort key combined.
+     * Different storage operations can have what ever suits those storages.
+     */
+    createCacheKey: (params: DefaultSettingsCrudOptions) => string;
+    get: (params: SettingsStorageOperationsGetParams) => Promise<Settings>;
+    create: (params: SettingsStorageOperationsCreateParams) => Promise<Settings>;
+    update: (params: SettingsStorageOperationsUpdateParams) => Promise<Settings>;
 }

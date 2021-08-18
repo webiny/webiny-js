@@ -55,7 +55,7 @@ export default [
                 context.pageBuilder.pages.prerendering.render({ paths: [{ path: page.path }] })
             );
 
-            const settings = await context.pageBuilder.settings.default.getCurrent();
+            const settings = await context.pageBuilder.settings.getCurrent();
 
             // If we just published a page that is set as current homepage, let's rerender the "/" path as well.
             if (settings?.pages?.home === page.pid) {

@@ -92,8 +92,8 @@ export class SystemStorageOperationsDdbEs implements SystemStorageOperations {
             return system;
         } catch (ex) {
             throw new WebinyError(
-                ex.message || "Could not create system record.",
-                ex.code || "SYSTEM_CREATE_ERROR",
+                ex.message || "Could not update system record.",
+                ex.code || "SYSTEM_UPDATE_ERROR",
                 {
                     original,
                     system,

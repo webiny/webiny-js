@@ -2,7 +2,7 @@ import { PageElementStorageOperationsProviderPlugin } from "@webiny/api-page-bui
 import { PageElementStorageOperations } from "@webiny/api-page-builder/types";
 import { PageElementStorageOperationsDdbEs } from "./PageElementStorageOperations";
 
-export class PageElementStorageOperationsDdbEsProvider extends PageElementStorageOperationsProviderPlugin {
+export class PageElementStorageOperationsDdbEsProviderPlugin extends PageElementStorageOperationsProviderPlugin {
     public async provide({ context }): Promise<PageElementStorageOperations> {
         return new PageElementStorageOperationsDdbEs({
             context

@@ -1,5 +1,5 @@
 {
-  "name": "@webiny/api-page-builder-so-ddb",
+  "name": "@webiny/api-page-builder-so-ddb-es",
   "version": "5.14.0",
   "main": "index.js",
   "keywords": [
@@ -14,7 +14,7 @@
     "directory": "packages/api-page-builder-so-ddb"
   },
   "author": "Webiny Ltd",
-  "description": "The DynamoDB storage operations Webiny Page Builder API.",
+  "description": "The DynamoDB + Elasticsearch storage operations Webiny Page Builder API.",
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.5.5",

@@ -2,7 +2,7 @@ import { SystemStorageOperationsProviderPlugin } from "@webiny/api-page-builder/
 import { SystemStorageOperations } from "@webiny/api-page-builder/types";
 import { SystemStorageOperationsDdbEs } from "./SystemStorageOperations";
 
-export class SystemStorageOperationsDdbEsProvider extends SystemStorageOperationsProviderPlugin {
+export class SystemStorageOperationsDdbEsProviderPlugin extends SystemStorageOperationsProviderPlugin {
     public async provide({ context }): Promise<SystemStorageOperations> {
         return new SystemStorageOperationsDdbEs({
             context

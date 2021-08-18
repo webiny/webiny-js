@@ -1,25 +1,24 @@
 import { PbContext } from "@webiny/api-page-builder/graphql/types";
+import { SettingsStorageOperationsDdbEs } from "./SettingsStorageOperations";
 import DataLoader from "dataloader";
-import { CategoryStorageOperationsDdbEs } from "./CategoryStorageOperations";
-import { batchReadAll } from "@webiny/db-dynamodb/utils/batchRead";
-import { Category } from "@webiny/api-page-builder/types";
+import { Settings } from "@webiny/api-page-builder/types";
 import WebinyError from "@webiny/error";
+import { batchReadAll } from "@webiny/db-dynamodb/utils/batchRead";
 import { cleanupItem } from "@webiny/db-dynamodb/utils/cleanup";
 
 interface Params {
     context: PbContext;
-    storageOperations: CategoryStorageOperationsDdbEs;
+    storageOperations: SettingsStorageOperationsDdbEs;
 }
 
 interface DataLoaderGetItem {
-    slug: string;
-    tenant: string;
-    locale: string;
+    PK: string;
+    SK: string;
 }
 
-export class CategoryDataLoader {
+export class SettingsDataLoader {
     private readonly context: PbContext;
-    private readonly storageOperations: CategoryStorageOperationsDdbEs;
+    private readonly storageOperations: SettingsStorageOperationsDdbEs;
 
     private readonly dataLoaders: Map<string, DataLoader<any, any>> = new Map();
 
@@ -28,11 +27,11 @@ export class CategoryDataLoader {
         this.storageOperations = params.storageOperations;
     }
 
-    public async getOne(item: DataLoaderGetItem): Promise<Category> {
+    public async getOne(item: DataLoaderGetItem): Promise<Settings> {
         return await this.getDataLoader("get").load(item);
     }
 
-    public async getAll(items: DataLoaderGetItem[]): Promise<Category[]> {
+    public async getAll(items: DataLoaderGetItem[]): Promise<Settings[]> {
         return await this.getDataLoader("get").loadMany(items);
     }
 
@@ -61,21 +60,22 @@ export class CategoryDataLoader {
         return loader;
     }
 
-    private _dataLoaderGet() {
-        return new DataLoader(async (items: DataLoaderGetItem[]) => {
+    private _get() {
+        const fn = async (items: DataLoaderGetItem[]) => {
             const batched = items.map(item => {
-                return this.storageOperations.entity.getBatch({
-                    PK: this.storageOperations.createPartitionKey(item),
-                    SK: item.slug
-                });
+                return this.storageOperations.entity.getBatch(item);
             });
 
-            const results = await batchReadAll<Category>({
+            const results = await batchReadAll<Settings>({
                 table: this.storageOperations.table,
                 items: batched
             });
-
             return results.map(result => cleanupItem(this.storageOperations.entity, result));
-        });
+        };
+
+        const options = {
+            cacheKeyFn: key => `${key.PK}#${key.SK}`
+        };
+        return new DataLoader(fn, options);
     }
 }

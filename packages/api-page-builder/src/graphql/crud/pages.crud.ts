@@ -177,7 +177,7 @@ const plugin: ContextPlugin<PbContext> = {
 
                     const normalizedPath = normalizePath(args.path);
                     if (normalizedPath === "/") {
-                        const settings = await context.pageBuilder.settings.default.getCurrent();
+                        const settings = await context.pageBuilder.settings.getCurrent();
                         if (!settings?.pages?.home) {
                             throw notFoundError;
                         }
@@ -741,7 +741,7 @@ const plugin: ContextPlugin<PbContext> = {
                     const identity = context.security.getIdentity();
                     checkOwnPermissions(identity, permission, page, "ownedBy");
 
-                    const settings = await context.pageBuilder.settings.default.getCurrent();
+                    const settings = await context.pageBuilder.settings.getCurrent();
                     const pages = settings?.pages || {};
                     for (const key in pages) {
                         if (pages[key] === page.pid) {
@@ -1224,7 +1224,7 @@ const plugin: ContextPlugin<PbContext> = {
                         throw new Error(`Page "${pageId}" is not published.`);
                     }
 
-                    const settings = await context.pageBuilder.settings.default.getCurrent();
+                    const settings = await context.pageBuilder.settings.getCurrent();
                     const pages = settings?.pages || {};
                     for (const key in pages) {
                         if (pages[key] === page.pid) {
@@ -1471,7 +1471,7 @@ const plugin: ContextPlugin<PbContext> = {
 
                 prerendering: {
                     async render(args) {
-                        const current = await context.pageBuilder.settings.default.getCurrent();
+                        const current = await context.pageBuilder.settings.getCurrent();
                         const appUrl = get(current, "prerendering.app.url");
                         const storageName = get(current, "prerendering.storage.name");
 
@@ -1528,7 +1528,7 @@ const plugin: ContextPlugin<PbContext> = {
                         }
                     },
                     async flush(args) {
-                        const current = await context.pageBuilder.settings.default.getCurrent();
+                        const current = await context.pageBuilder.settings.getCurrent();
                         const appUrl = get(current, "prerendering.app.url");
                         const storageName = get(current, "prerendering.storage.name");
 
