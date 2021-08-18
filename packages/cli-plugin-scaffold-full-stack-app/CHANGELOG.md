@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.13.0-beta.4](https://github.com/webiny/webiny-js/compare/v5.13.0-beta.3...v5.13.0-beta.4) (2021-08-18)
+
+
+### Bug Fixes
+
+* remove "new" word [no-ci] ([96aa43e](https://github.com/webiny/webiny-js/commit/96aa43e45f8188e45fdb2c9e3249b5404b5a79e4))
+
+
+
+
+
 # [5.13.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.13.0-beta.2...v5.13.0-beta.3) (2021-08-17)
 
 **Note:** Version bump only for package @webiny/cli-plugin-scaffold-full-stack-app
