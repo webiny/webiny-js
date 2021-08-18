@@ -25,14 +25,14 @@ function Home() {
                     a standalone GraphQL API.
                 </UsefulLink>
                 <UsefulLink
-                    url={"/docs/how-to-guides/webiny-cli/scaffolding/react-application"}
+                    url={"/docs/how-to-guides/scaffolding/react-application"}
                     title={"React Application Scaffold"}
                 >
                     Learn more about the React Application scaffold that was used to create this
                     React application.
                 </UsefulLink>
                 <UsefulLink
-                    url={"/docs/how-to-guides/development/environment-variables"}
+                    url={"/docs/how-to-guides/environment-variables"}
                     title={"Environment Variables"}
                 >
                     Learn what are environment variables and how you can assign them.
@@ -45,7 +45,7 @@ function Home() {
                     Webiny CLI.
                 </UsefulLink>
                 <UsefulLink
-                    url={"/docs/how-to-guides/webiny-cli/use-watch-command"}
+                    url={"/docs/how-to-guides/use-watch-command"}
                     title={"Use the Watch Command"}
                 >
                     Learn how to continuously rebuild and redeploy your code using the{" "}

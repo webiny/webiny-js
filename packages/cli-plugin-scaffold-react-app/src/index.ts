@@ -25,7 +25,7 @@ interface Input {
 }
 
 const SCAFFOLD_DOCS_LINK =
-    "https://www.webiny.com/docs/how-to-guides/webiny-cli/scaffolding/react-application";
+    "https://www.webiny.com/docs/how-to-guides/scaffolding/react-application";
 
 export default (): CliCommandScaffoldTemplate<Input> => ({
     name: "cli-plugin-scaffold-template-react-app",
@@ -227,7 +227,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 ],
                 [
                     "Use the Watch Command",
-                    "https://www.webiny.com/docs/how-to-guides/webiny-cli/use-watch-command"
+                    "https://www.webiny.com/docs/how-to-guides/use-watch-command"
                 ]
             ];
 

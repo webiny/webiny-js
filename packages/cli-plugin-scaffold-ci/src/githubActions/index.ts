@@ -439,7 +439,7 @@ const plugin: CliPluginsScaffoldCi<Input> = {
         console.log();
 
         const url =
-            "https://www.webiny.com/docs/how-to-guides/webiny-cli/scaffolding/ci-cd#next-steps";
+            "https://www.webiny.com/docs/how-to-guides/scaffolding/ci-cd#next-steps";
         console.log(`For next steps, please open the following link:`);
         console.log(url);
         console.log();

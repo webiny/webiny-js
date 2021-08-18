@@ -127,7 +127,7 @@ module.exports = async (inputs, context) => {
                 `Note: everything you log in your code will be forwarded here ${chalk.underline(
                     "over public internet"
                 )}.`,
-                `To learn more, please visit https://www.webiny.com/docs/how-to-guides/development/use-watch-command#enabling-logs-forwarding.`
+                `To learn more, please visit https://www.webiny.com/docs/how-to-guides/use-watch-command#enabling-logs-forwarding.`
             ].forEach(message => output.log({ type: "logs", message }));
 
             output.log({ type: "logs", message: "" });
