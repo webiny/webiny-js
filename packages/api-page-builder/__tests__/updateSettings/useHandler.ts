@@ -1,25 +1,28 @@
 import { createHandler } from "@webiny/handler-aws";
 import graphqlHandler from "@webiny/handler-graphql";
-import dbPlugins from "@webiny/handler-db";
-import { DynamoDbDriver } from "@webiny/db-dynamodb";
-import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import pageBuilderPlugins from "../../src/updateSettings";
 
-export default () => {
+interface Params {
+    plugins?: any;
+}
+export default (params: Params) => {
+    const { plugins: extraPlugins = [] } = params;
+    // @ts-ignore
+    if (typeof __getStorageOperationsPlugins !== "function") {
+        throw new Error(`There is no global "__getStorageOperationsPlugins" function.`);
+    }
+    // @ts-ignore
+    const storageOperations = __getStorageOperationsPlugins();
+    if (typeof storageOperations !== "function") {
+        throw new Error(
+            `A product of "__getStorageOperationsPlugins" must be a function to initialize storage operations.`
+        );
+    }
     const handler = createHandler(
-        dbPlugins({
-            table: "PageBuilder",
-            driver: new DynamoDbDriver({
-                documentClient: new DocumentClient({
-                    convertEmptyValues: true,
-                    endpoint: process.env.MOCK_DYNAMODB_ENDPOINT,
-                    sslEnabled: false,
-                    region: "local"
-                })
-            })
-        }),
+        storageOperations(),
         graphqlHandler(),
-        pageBuilderPlugins()
+        pageBuilderPlugins(),
+        extraPlugins || []
     );
 
     return {

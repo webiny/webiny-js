@@ -297,7 +297,7 @@ describe("CRUD Test", () => {
             }
         });
 
-        let page = await createPage({ category: "slug" }).then(([res]) => {
+        const page = await createPage({ category: "slug" }).then(([res]) => {
             return res.data.pageBuilder.createPage.data;
         });
 

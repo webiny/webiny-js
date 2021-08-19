@@ -14,7 +14,7 @@ describe("PageElements Test", () => {
         const ids = [];
         for (let i = 0; i < 3; i++) {
             const prefix = `pageElement-${i}-`;
-            let data = {
+            const data = {
                 name: `${prefix}name`,
                 type: `element`,
                 category: `${prefix}category`,
@@ -55,20 +55,20 @@ describe("PageElements Test", () => {
                 }
             });
 
-            data = {
+            const updateData = {
                 name: `${prefix}name-UPDATED`,
                 category: `${prefix}category-UPDATED`,
                 preview: { src: `https://test.com/${prefix}/src-UPDATED.jpg` },
                 content: { some: `${prefix}content-UPDATED` }
             };
 
-            [response] = await updatePageElement({ id: ids[i], data });
+            [response] = await updatePageElement({ id: ids[i], data: updateData });
             expect(response).toMatchObject({
                 data: {
                     pageBuilder: {
                         updatePageElement: {
                             data: {
-                                ...data,
+                                ...updateData,
                                 createdBy: {
                                     displayName: "m",
                                     id: "mocked"

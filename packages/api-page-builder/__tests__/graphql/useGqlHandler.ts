@@ -13,7 +13,7 @@ import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import elasticsearchClientContextPlugin from "@webiny/api-elasticsearch";
 import { simulateStream } from "@webiny/project-utils/testing/dynamodb";
 import dynamoToElastic from "@webiny/api-dynamodb-to-elasticsearch/handler";
-import { Client } from "@elastic/elasticsearch";
+
 import fileManagerPlugins from "@webiny/api-file-manager/plugins";
 import fileManagerDdbEsPlugins from "@webiny/api-file-manager-ddb-es";
 import prerenderingServicePlugins from "@webiny/api-prerendering-service/client";
@@ -63,12 +63,19 @@ import { GET_SETTINGS, GET_DEFAULT_SETTINGS, UPDATE_SETTINGS } from "./graphql/s
 import { Db } from "@webiny/db";
 import path from "path";
 import fs from "fs";
+import { Tenant } from "@webiny/api-tenancy/types";
 
 const defaultTenant = { id: "root", name: "Root", parent: null };
 
 const ELASTICSEARCH_PORT = process.env.ELASTICSEARCH_PORT || "9200";
 
-export default ({ permissions, identity, tenant } = {}) => {
+interface Params {
+    permissions?: any;
+    identity?: SecurityIdentity;
+    tenant?: Tenant;
+}
+
+export default ({ permissions, identity, tenant }: Params = {}) => {
     const logsDb = new Db({
         logTable: "PageBuilderLogs",
         driver: new DynamoDbDriver({
@@ -147,7 +154,8 @@ export default ({ permissions, identity, tenant } = {}) => {
                 identity ||
                 new SecurityIdentity({
                     id: "mocked",
-                    displayName: "m"
+                    displayName: "m",
+                    type: "a"
                 })
         },
         {
@@ -188,14 +196,9 @@ export default ({ permissions, identity, tenant } = {}) => {
 
     const sleep = (ms = 333) => {
         return new Promise(resolve => {
-            setTimeout(() => resolve(), ms);
+            setTimeout(() => resolve(undefined), ms);
         });
     };
-
-    const elasticsearchClient = new Client({
-        hosts: [`http://localhost:${ELASTICSEARCH_PORT}`],
-        node: `http://localhost:${ELASTICSEARCH_PORT}`
-    });
 
     return {
         handler,
@@ -214,23 +217,9 @@ export default ({ permissions, identity, tenant } = {}) => {
                 ]
             }
         },
-        elasticsearchClient,
         logsDb,
-        createElasticSearchIndex: async () => {
-            try {
-                const tenantId = tenant ? tenant.id : defaultTenant.id;
-                await elasticsearchClient.indices.create({ index: tenantId + "-page-builder" });
-            } catch {}
-        },
-        deleteElasticSearchIndex: async () => {
-            try {
-                const tenantId = tenant ? tenant.id : defaultTenant.id;
-                await sleep();
-                await elasticsearchClient.indices.delete({ index: tenantId + "-page-builder" });
-            } catch {}
-        },
         sleep,
-        until: async (execute, until, options = {}) => {
+        until: async (execute, until, options: any = {}) => {
             const tries = options.tries ?? 10;
             const wait = options.wait ?? 333;
 
@@ -256,7 +245,7 @@ export default ({ permissions, identity, tenant } = {}) => {
 
                 // Wait.
                 await new Promise(resolve => {
-                    setTimeout(() => resolve(), wait);
+                    setTimeout(() => resolve(undefined), wait);
                 });
             }
 
@@ -367,7 +356,7 @@ export default ({ permissions, identity, tenant } = {}) => {
         async deletePageElement(variables) {
             return invoke({ body: { query: DELETE_PAGE_ELEMENT, variables } });
         },
-        async listPageElements(variables) {
+        async listPageElements(variables: any = {}) {
             return invoke({ body: { query: LIST_PAGE_ELEMENTS, variables } });
         },
         async getPageElement(variables) {
