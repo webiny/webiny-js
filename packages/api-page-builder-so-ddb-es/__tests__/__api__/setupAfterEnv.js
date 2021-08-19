@@ -10,17 +10,19 @@ jestDynalite.setup(path.resolve(__dirname, "../../"));
  */
 beforeAll(async () => {
     await jestDynalite.startDb();
+    //await __beforeAll();
 });
 
 beforeEach(async () => {
     await jestDynalite.createTables();
-	await __beforeEach();
+    await __beforeEach();
 });
 afterEach(async () => {
     await jestDynalite.deleteTables();
-	await __afterEach();
+    await __afterEach();
 });
 
 afterAll(async () => {
     await jestDynalite.stopDb();
+    //await __afterAll();
 });

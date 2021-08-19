@@ -6,7 +6,6 @@ import executeCallbacks from "./utils/executeCallbacks";
 import { preparePageData } from "./install/welcome-to-webiny-page-data";
 import { notFoundPageData } from "./install/notFoundPageData";
 import savePageAssets from "./install/utils/savePageAssets";
-import defaults from "./utils/defaults";
 import { PbContext, System } from "~/types";
 import { InstallationPlugin } from "~/plugins/InstallationPlugin";
 import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
@@ -95,16 +94,7 @@ export default new ContextPlugin<PbContext>(async context => {
             }
         },
         async install({ name, insertDemoData }) {
-            const { pageBuilder, fileManager, elasticsearch } = context;
-
-            const hookPlugins = context.plugins.byType<InstallationPlugin>(InstallationPlugin.type);
-            await executeCallbacks<InstallationPlugin["beforeInstall"]>(
-                hookPlugins,
-                "beforeInstall",
-                {
-                    context
-                }
-            );
+            const { pageBuilder, fileManager } = context;
 
             // Check whether the PB app is already installed
             const version = await pageBuilder.system.getVersion();
@@ -112,42 +102,19 @@ export default new ContextPlugin<PbContext>(async context => {
                 throw new WebinyError("Page builder is already installed.", "PB_INSTALL_ABORTED");
             }
 
-            // 1. Create ES index if it doesn't already exist.
-            const { index } = defaults.es(context);
-            const { body: exists } = await elasticsearch.indices.exists({ index });
-            if (!exists) {
-                await elasticsearch.indices.create({
-                    index,
-                    body: {
-                        // need this part for sorting to work on text fields
-                        settings: {
-                            analysis: {
-                                analyzer: {
-                                    lowercase_analyzer: {
-                                        type: "custom",
-                                        filter: ["lowercase", "trim"],
-                                        tokenizer: "keyword"
-                                    }
-                                }
-                            }
-                        },
-                        mappings: {
-                            properties: {
-                                property: {
-                                    type: "text",
-                                    fields: {
-                                        keyword: {
-                                            type: "keyword",
-                                            ignore_above: 256
-                                        }
-                                    },
-                                    analyzer: "lowercase_analyzer"
-                                }
-                            }
-                        }
-                    }
-                });
-            }
+            const hookPlugins = context.plugins.byType<InstallationPlugin>(InstallationPlugin.type);
+            /**
+             * 1. Execute all beforeInstall installation hooks.
+             * In old code there was Elasticsearch index creation here and it was moved to the plugin because
+             * different storage operations need different things done.
+             */
+            await executeCallbacks<InstallationPlugin["beforeInstall"]>(
+                hookPlugins,
+                "beforeInstall",
+                {
+                    context
+                }
+            );
 
             if (insertDemoData) {
                 // 2. Create initial page category.
@@ -225,7 +192,7 @@ export default new ContextPlugin<PbContext>(async context => {
             }
 
             // 6. Mark the Page Builder app as installed.
-            await this.setVersion(context.WEBINY_VERSION);
+            await context.pageBuilder.system.setVersion(context.WEBINY_VERSION);
 
             await executeCallbacks<InstallationPlugin["afterInstall"]>(
                 hookPlugins,
@@ -247,7 +214,7 @@ export default new ContextPlugin<PbContext>(async context => {
 
             const plugin = getApplicablePlugin({
                 deployedVersion: context.WEBINY_VERSION,
-                installedAppVersion: await this.getVersion(),
+                installedAppVersion: await context.pageBuilder.system.getVersion(),
                 upgradePlugins,
                 upgradeToVersion: version
             });
@@ -255,7 +222,7 @@ export default new ContextPlugin<PbContext>(async context => {
             await plugin.apply(context);
 
             // Store new app version
-            await this.setVersion(version);
+            await context.pageBuilder.system.setVersion(version);
 
             return true;
         }
