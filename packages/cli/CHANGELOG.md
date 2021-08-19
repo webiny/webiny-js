@@ -3,6 +3,73 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.13.0](https://github.com/webiny/webiny-js/compare/v5.13.0-beta.4...v5.13.0) (2021-08-18)
+
+**Note:** Version bump only for package @webiny/cli
+
+
+
+
+
+# [5.13.0-beta.4](https://github.com/webiny/webiny-js/compare/v5.13.0-beta.3...v5.13.0-beta.4) (2021-08-18)
+
+**Note:** Version bump only for package @webiny/cli
+
+
+
+
+
+# [5.13.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.13.0-beta.2...v5.13.0-beta.3) (2021-08-17)
+
+**Note:** Version bump only for package @webiny/cli
+
+
+
+
+
+# [5.13.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.13.0-beta.1...v5.13.0-beta.2) (2021-08-17)
+
+
+### Bug Fixes
+
+* create .webiny only when needed ([1eb010d](https://github.com/webiny/webiny-js/commit/1eb010d562d56f42a976b6fb5b2032c6614d07cc))
+* ensure .webiny folder exists ([91afd5a](https://github.com/webiny/webiny-js/commit/91afd5a5045156bf01281bde838585958e8fcc0d))
+
+
+
+
+
+# [5.13.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.13.0-beta.0...v5.13.0-beta.1) (2021-08-16)
+
+**Note:** Version bump only for package @webiny/cli
+
+
+
+
+
+# [5.13.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.12.0...v5.13.0-beta.0) (2021-08-16)
+
+
+### Bug Fixes
+
+* add `localStorage` ([84568c3](https://github.com/webiny/webiny-js/commit/84568c3eaf07aec761732a3ec1f6b42875ac8ac4))
+* ensure env vars are loaded immediately as the CLI starts ([50b1e31](https://github.com/webiny/webiny-js/commit/50b1e31585a55094276e7d2ebbc3cdbd5c69cdba))
+* immediately load env variables ([2c91234](https://github.com/webiny/webiny-js/commit/2c91234ba96eb7ca87568d4700f147bc88f52619))
+* only import the latest upgrade script ([a0b1165](https://github.com/webiny/webiny-js/commit/a0b116586d154100357e6f9427c792d430e15d91))
+* remove index file ([e426cd7](https://github.com/webiny/webiny-js/commit/e426cd711b58aac3dd4a4178be84b838c24ed529))
+* remove version argument ([28ca806](https://github.com/webiny/webiny-js/commit/28ca8061a52be84b316c6033377008f247e326b3))
+* **cli:** use forward slash and disable path filtering on Windows ([6346ef9](https://github.com/webiny/webiny-js/commit/6346ef9867b8c9746bc523b011917519ff3f1779))
+* upgrade replace-in-path dependency ([5a42e54](https://github.com/webiny/webiny-js/commit/5a42e543781378dab57cb5ae1a0c7828d49d42c8))
+
+
+### Features
+
+* add support for Yarn 3 ([#1862](https://github.com/webiny/webiny-js/issues/1862)) ([0e57fd3](https://github.com/webiny/webiny-js/commit/0e57fd3249320e009532efd0c5eac31e749f9afb))
+
+
+
+
+
 # [5.12.0](https://github.com/webiny/webiny-js/compare/v5.12.0-beta.1...v5.12.0) (2021-08-05)
 
 **Note:** Version bump only for package @webiny/cli

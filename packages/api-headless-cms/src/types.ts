@@ -190,6 +190,14 @@ export interface CmsModelFieldValidatorValidateArgs {
      * An instance of the current context.
      */
     context: CmsContext;
+    /**
+     * Field being validated.
+     */
+    field: CmsContentModelField;
+    /**
+     * An instance of the content model being validated.
+     */
+    contentModel: CmsContentModel;
 }
 
 /**

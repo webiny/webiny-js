@@ -18,18 +18,14 @@ const SORT_KEY = "default";
 
 export class SettingsStorageOperations implements FileManagerSettingsStorageOperations {
     private readonly _context: FileManagerContext;
-    private _partitionKey: string;
     private readonly _entity: Entity<any>;
 
     private get partitionKey(): string {
-        if (!this._partitionKey) {
-            const tenant = this._context.tenancy.getCurrentTenant();
-            if (!tenant) {
-                throw new WebinyError("Tenant missing.", "TENANT_NOT_FOUND");
-            }
-            this._partitionKey = `T#${tenant.id}#FM#SETTINGS`;
+        const tenant = this._context.tenancy.getCurrentTenant();
+        if (!tenant) {
+            throw new WebinyError("Tenant missing.", "TENANT_NOT_FOUND");
         }
-        return this._partitionKey;
+        return `T#${tenant.id}#FM#SETTINGS`;
     }
 
     public constructor({ context }: ConstructorParams) {

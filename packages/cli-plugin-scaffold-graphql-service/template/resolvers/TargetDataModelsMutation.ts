@@ -7,7 +7,7 @@ import TargetDataModelsResolver from "./TargetDataModelsResolver";
  * Contains base `createTargetDataModel`, `updateTargetDataModel`, and `deleteTargetDataModel` GraphQL resolver functions.
  * Feel free to adjust the code to your needs. Also, note that at some point in time, you will
  * most probably want to implement custom data validation and security-related checks.
- * https://www.webiny.com/docs/how-to-guides/webiny-cli/scaffolding/extend-graphql-api#essential-files
+ * https://www.webiny.com/docs/how-to-guides/scaffolding/extend-graphql-api#essential-files
  */
 
 interface CreateTargetDataModelParams {

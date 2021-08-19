@@ -1,0 +1,55 @@
+# This ensures build/yarn caches are rebuilt and that we don't experience cache miss
+# when pushing our own code (which makes the whole job last significantly longer).
+name: Rebuild Cache (Next)
+
+on:
+  schedule:
+    - cron: "0 2 * * *" # Every day at 2AM.
+
+env:
+  NODE_OPTIONS: --max_old_space_size=4096
+  GH_TOKEN: ${{ secrets.GH_TOKEN }}
+  NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+  YARN_ENABLE_IMMUTABLE_INSTALLS: false
+
+jobs:
+  npm-release-next:
+    name: NPM release ("next" tag)
+    runs-on: ubuntu-latest
+    environment: release
+    steps:
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 12
+
+      - uses: actions/checkout@v2
+        with:
+          ref: next
+          fetch-depth: 0
+
+      - name: Install dependencies
+        run: yarn --immutable
+
+      - name: Build packages
+        run: yarn build
+
+      - name: Create ".npmrc" file in the project root
+        run: echo "//registry.npmjs.org/:_authToken=\${NPM_TOKEN}" > .npmrc
+
+      - name: Set git email
+        run: git config --global user.email "webiny-bot@webiny.com"
+
+      - name: Set git username
+        run: git config --global user.name "webiny-bot"
+
+      - name: Create a release on GitHub
+        run: yarn lerna:version:next
+
+      - name: Release packages to NPM
+        run: yarn lerna:publish:next
+
+      - name: Update package versions in the sample project applications' packages
+        run: 'yarn webiny-versions && yarn prettier:fix && git add . && git commit --m "chore: update package versions (webiny-versions)" --no-verify && git push'
+
+      - name: Update and commit "yarn.lock" file
+        run: 'yarn && git add yarn.lock && git commit --m "chore: update yarn.lock" --no-verify && git push'

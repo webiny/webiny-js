@@ -22,7 +22,7 @@ const runHookCallback = async (hookName: string, args: CliCommandScaffoldCallabl
     }
 };
 
-const SCAFFOLD_DOCS_LINK = "https://www.webiny.com/docs/how-to-guides/webiny-cli/scaffolding/ci-cd";
+const SCAFFOLD_DOCS_LINK = "https://www.webiny.com/docs/how-to-guides/scaffolding/ci-cd";
 
 export default (): [CliCommandScaffoldTemplate<Input>, CliPluginsScaffoldCi<Input>] => [
     {

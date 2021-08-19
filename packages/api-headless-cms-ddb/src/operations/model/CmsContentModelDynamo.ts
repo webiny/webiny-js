@@ -33,7 +33,6 @@ interface ConstructorArgs {
 
 export default class CmsContentModelDynamo implements CmsContentModelStorageOperations {
     private readonly _context: CmsContext;
-    private _partitionKey: string;
     private readonly _table: Table;
     private readonly _entity: Entity<any>;
 
@@ -42,10 +41,7 @@ export default class CmsContentModelDynamo implements CmsContentModelStorageOper
     }
 
     private get partitionKey(): string {
-        if (!this._partitionKey) {
-            this._partitionKey = `${createBasePartitionKey(this.context)}#CM`;
-        }
-        return this._partitionKey;
+        return `${createBasePartitionKey(this.context)}#CM`;
     }
 
     public constructor(args: ConstructorArgs) {

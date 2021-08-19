@@ -27,19 +27,15 @@ const DEFAULT_SORT_KEY = "default";
 
 export class LocalesStorageOperations implements I18NLocalesStorageOperations {
     private readonly _context: I18NContext;
-    private _partitionKey: string;
     private readonly _table: Table;
     private readonly _entity: Entity<any>;
 
     private get partitionKey(): string {
-        if (!this._partitionKey) {
-            const tenant = this._context.tenancy.getCurrentTenant();
-            if (!tenant) {
-                throw new WebinyError("Tenant missing.", "TENANT_NOT_FOUND");
-            }
-            this._partitionKey = `T#${tenant.id}#I18N#L`;
+        const tenant = this._context.tenancy.getCurrentTenant();
+        if (!tenant) {
+            throw new WebinyError("Tenant missing.", "TENANT_NOT_FOUND");
         }
-        return this._partitionKey;
+        return `T#${tenant.id}#I18N#L`;
     }
 
     private get defaultPartitionKey(): string {
