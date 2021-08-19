@@ -5,11 +5,11 @@ import ApiGateway from "./apiGateway";
 import Cloudfront from "./cloudfront";
 
 // Among other things, this determines the amount of information we reveal on runtime errors.
-// https://www.webiny.com/docs/how-to-guides/development/environment-variables/#debug-environment-variable
+// https://www.webiny.com/docs/how-to-guides/environment-variables/#debug-environment-variable
 const DEBUG = String(process.env.DEBUG);
 
 // Enables logs forwarding.
-// https://www.webiny.com/docs/how-to-guides/webiny-cli/use-watch-command#enabling-logs-forwarding
+// https://www.webiny.com/docs/how-to-guides/use-watch-command#enabling-logs-forwarding
 const WEBINY_LOGS_FORWARD_URL = String(process.env.WEBINY_LOGS_FORWARD_URL);
 
 export default () => {

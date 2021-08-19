@@ -9,7 +9,7 @@ import { ReactComponent as CloseIcon } from "./assets/close_24px.svg";
 const t = i18n.ns("app/graphql/error-overlay");
 
 const ENVIRONMENT_VARIABLES_ARTICLE_LINK =
-    "https://www.webiny.com/docs/how-to-guides/development/environment-variables";
+    "https://www.webiny.com/docs/how-to-guides/environment-variables";
 
 const ErrorOverlay = ({ query, networkError }) => {
     const [open, setOpen] = useState(true);

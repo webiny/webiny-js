@@ -9,7 +9,7 @@ const PROD_STACK_ENVIRONMENTS = ["prod" /*"staging"*/];
 
 export = async () => {
     // Add tags to all resources that support tagging. Read more about the default environment variables:
-    // https://www.webiny.com/docs/how-to-guides/development/environment-variables#webiny-environment-variables
+    // https://www.webiny.com/docs/how-to-guides/environment-variables#webiny-environment-variables
     tagResources({
         WbyProjectName: process.env.WEBINY_PROJECT_NAME as string,
         WbyEnvironment: process.env.WEBINY_ENV as string

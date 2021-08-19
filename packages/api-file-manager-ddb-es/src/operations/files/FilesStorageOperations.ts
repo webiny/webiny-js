@@ -54,7 +54,6 @@ const cleanStorageFile = (file: File & Record<string, any>): File => {
 
 export class FilesStorageOperations implements FileManagerFilesStorageOperations {
     private readonly context: FileManagerContext;
-    private _partitionKeyPrefix: string;
     private readonly _table: Table;
     private readonly _esTable: Table;
     private readonly _entity: Entity<any>;
@@ -81,18 +80,15 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
     }
 
     private get partitionKeyPrefix(): string {
-        if (!this._partitionKeyPrefix) {
-            const tenant = this.context.tenancy.getCurrentTenant();
-            const locale = this.context.i18nContent.getLocale();
-            if (!tenant) {
-                throw new WebinyError("Tenant missing.", "TENANT_NOT_FOUND");
-            }
-            if (!locale) {
-                throw new Error("Locale missing.");
-            }
-            this._partitionKeyPrefix = `T#${tenant.id}#L#${locale.code}#FM`;
+        const tenant = this.context.tenancy.getCurrentTenant();
+        const locale = this.context.i18nContent.getLocale();
+        if (!tenant) {
+            throw new WebinyError("Tenant missing.", "TENANT_NOT_FOUND");
         }
-        return this._partitionKeyPrefix;
+        if (!locale) {
+            throw new Error("Locale missing.");
+        }
+        return `T#${tenant.id}#L#${locale.code}#FM`;
     }
 
     public constructor({ context }: ConstructorParams) {

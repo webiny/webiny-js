@@ -10,21 +10,17 @@ const SYSTEM_SECONDARY_KEY = "CMS";
 
 export default class CmsSystemDynamoElastic implements CmsSystemStorageOperations {
     private readonly _context: CmsContext;
-    private _partitionKey: string;
 
     private get context(): CmsContext {
         return this._context;
     }
 
     private get partitionKey(): string {
-        if (!this._partitionKey) {
-            const tenant = this._context.tenancy.getCurrentTenant();
-            if (!tenant) {
-                throw new WebinyError("Tenant missing.", "TENANT_NOT_FOUND");
-            }
-            this._partitionKey = `T#${tenant.id}#SYSTEM`;
+        const tenant = this._context.tenancy.getCurrentTenant();
+        if (!tenant) {
+            throw new WebinyError("Tenant missing.", "TENANT_NOT_FOUND");
         }
-        return this._partitionKey;
+        return `T#${tenant.id}#SYSTEM`;
     }
 
     public constructor({ context }: ConstructorArgs) {

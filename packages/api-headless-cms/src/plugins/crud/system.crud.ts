@@ -20,7 +20,6 @@ export default new ContextPlugin<CmsContext>(async context => {
      * If cms is not defined on the context, do not continue, but log it.
      */
     if (!context.cms) {
-        console.log("Missing cms on context. Skipping System crud.");
         return;
     }
 

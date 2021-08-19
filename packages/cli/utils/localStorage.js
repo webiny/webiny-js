@@ -5,19 +5,33 @@
 // the same paths over and over.
 const fs = require("fs");
 const path = require("path");
+const getProject = require("./getProject");
 
 module.exports = function (filename = "cli.json") {
-    const jsonPath = path.join(".webiny", filename);
+    const project = getProject();
+    const DOT_WEBINY = path.join(project.root, ".webiny");
+    const dataFilePath = path.join(DOT_WEBINY, filename);
 
     let data = {};
-    if (fs.existsSync(jsonPath)) {
-        data = JSON.parse(fs.readFileSync(jsonPath));
+    if (fs.existsSync(dataFilePath)) {
+        try {
+            data = JSON.parse(fs.readFileSync(dataFilePath));
+        } catch (e) {
+            throw new Error(
+                `Could not parse Webiny CLI's locale storage data file located at ${dataFilePath}.`
+            );
+        }
     }
 
     return {
         set(key, value) {
             data[key] = value;
-            fs.writeFileSync(jsonPath, JSON.stringify(data));
+
+            if (!fs.existsSync(DOT_WEBINY)) {
+                fs.mkdirSync(DOT_WEBINY);
+            }
+
+            fs.writeFileSync(dataFilePath, JSON.stringify(data));
             return data;
         },
         get(key) {

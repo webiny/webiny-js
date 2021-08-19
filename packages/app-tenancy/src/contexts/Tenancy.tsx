@@ -52,7 +52,7 @@ export const TenancyProvider = props => {
                 return () => onChangeCallbacks.current.delete(cb);
             }
         }),
-        [identity]
+        [identity, currentTenant]
     );
 
     return (

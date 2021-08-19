@@ -18,13 +18,13 @@ interface Input {
 }
 
 const SCAFFOLD_DOCS_LINK =
-    "https://www.webiny.com/docs/how-to-guides/webiny-cli/scaffolding/new-full-stack-application";
+    "https://www.webiny.com/docs/how-to-guides/scaffolding/full-stack-application";
 
 export default (): CliCommandScaffoldTemplate<Input> => ({
     name: "cli-plugin-scaffold-template-full-stack-app",
     type: "cli-plugin-scaffold-template",
     scaffold: {
-        name: "New Full Stack Application",
+        name: "Full Stack Application",
         description:
             "Creates a new React application and a supporting GraphQL API." +
             (link.isSupported ? " " + link("Learn more.", SCAFFOLD_DOCS_LINK) : ""),
@@ -148,7 +148,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
             console.log();
             console.log(chalk.bold("A Simple GraphQL API Example"));
             console.log(
-                `An example of interacting with the created GraphQL API can be included in the React application code.`
+                `An example GraphQL API interaction can be included in the created React application code.`
             );
 
             const prompt = inquirer.createPromptModule();
@@ -278,7 +278,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 ],
                 [
                     "Extend GraphQL API Scaffold",
-                    "https://www.webiny.com/docs/how-to-guides/webiny-cli/scaffolding/extend-graphql-api"
+                    "https://www.webiny.com/docs/how-to-guides/scaffolding/extend-graphql-api"
                 ],
                 [
                     "Need a GraphQL Client? Check Out GraphQL Playground",
@@ -286,7 +286,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 ],
                 [
                     "Use the Watch Command",
-                    "https://www.webiny.com/docs/how-to-guides/webiny-cli/use-watch-command"
+                    "https://www.webiny.com/docs/how-to-guides/use-watch-command"
                 ]
             ];
 
