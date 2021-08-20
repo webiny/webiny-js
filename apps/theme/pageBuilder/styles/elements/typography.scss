@@ -1,5 +1,6 @@
 /*! Based on Typebase.scss v0.1.0 | MIT License https://github.com/devinhunt/typebase.css */
-@import "../mixins/pb-list-element";
+@use "sass:math";
+@use "../mixins/pb-list-element";
 // Typesetting variables. Edit here or override in main file prior to import of this.
 $baseFontSize: 22 !default; // in pixels. This would result in 22px on desktop
 $baseLineHeight: 1.5 !default; // how large the line height is as a multiple of font size
@@ -40,7 +41,7 @@ body,
 .webiny-pb-page-document {
   /* Change default typefaces here */
   font-family: var(--webiny-theme-typography-primary-font-family, "Lato, sans-serif");
-  font-size: $baseFontSize / 16 * 100%;
+  font-size: math.div($baseFontSize, 16) * 100%;
   // Make everything look a little nicer in webkit
   -webkit-font-smoothing: antialiased;
 }
@@ -343,18 +344,18 @@ h6 {
 
 // Additional "list" element styles
 .webiny-pb-typography-list--primary {
-  @include pb-lis-element($leading, #fa5a28, #ffffff);
+  @include pb-list-element.pb-lis-element($leading, #fa5a28, #ffffff);
 }
 .webiny-pb-typography-list--secondary {
-  @include pb-lis-element($leading, #90c418, #ffffff);
+  @include pb-list-element.pb-lis-element($leading, #90c418, #ffffff);
 }
 
 .webiny-pb-typography-list--checkbox {
-  @include pb-list-with-checkbox($leading);
+  @include pb-list-element.pb-list-with-checkbox($leading);
 }
 
 .webiny-pb-typography-list--big-numbers {
-  @include pb-list-with-big-numbers($leading);
+  @include pb-list-element.pb-list-with-big-numbers($leading);
 }
 
 .webiny-pb-typography-code {

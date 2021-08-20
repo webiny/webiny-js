@@ -1,3 +1,4 @@
+@use "sass:meta";
 // typography
 @import url("https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;600;700&display=swap");
 $webiny-pb-theme-typography-primary-font-family: "Source Sans Pro, sans-serif" !default;
@@ -29,8 +30,8 @@ $webiny-pb-theme-desktop-width: 1200px;
 $webiny-pb-theme-border-radius: 2px;
 
 body {
-  --webiny-theme-typography-primary-font-family: #{$webiny-pb-theme-typography-primary-font-family};
-  --webiny-theme-typography-secondary-font-family: #{$webiny-pb-theme-typography-secondary-font-family};
+  --webiny-theme-typography-primary-font-family: #{meta.inspect($webiny-pb-theme-typography-primary-font-family)};
+  --webiny-theme-typography-secondary-font-family: #{meta.inspect($webiny-pb-theme-typography-secondary-font-family)};
   --webiny-theme-color-primary: #{$webiny-pb-theme-primary};
   --webiny-theme-color-secondary: #{$webiny-pb-theme-secondary};
   --webiny-theme-color-background: #{$webiny-pb-theme-background};
@@ -43,11 +44,11 @@ body {
   --webiny-theme-color-text-secondary: #{$webiny-pb-theme-text-secondary};
   --webiny-theme-color-border: #{$webiny-pb-theme-color-border};
   --webiny-theme-border-radius: #{$webiny-pb-theme-border-radius};
-  --webiny-theme-color-purple: hsl(265, 68%, 54%);
-  --webiny-theme-color-thanos: hsl(265, 78%, 46%);
-  --webiny-theme-color-yellow: hsl(57, 94%, 45%);
-  --webiny-theme-color-dark-gray: hsl(234, 23%, 35%);
-  --webiny-theme-color-dark: hsl(217, 14%, 13%);
+  --webiny-theme-color-purple: hsl(265deg, 68%, 54%);
+  --webiny-theme-color-thanos: hsl(265deg, 78%, 46%);
+  --webiny-theme-color-yellow: hsl(57deg, 94%, 45%);
+  --webiny-theme-color-dark-gray: hsl(234deg, 23%, 35%);
+  --webiny-theme-color-dark: hsl(217deg, 14%, 13%);
 }
 
 body.dark-theme {

@@ -1,5 +1,5 @@
-@import "./mixins/border";
-@import "./mixins/background";
+@use "./mixins/border";
+@use "./mixins/background";
 
 .webiny-pb-page {
   min-height: 100vh;
@@ -65,8 +65,8 @@
   margin: var(--desktop-margin-top) var(--desktop-margin-right) var(--desktop-margin-bottom)
     var(--desktop-margin-left);
 
-  @include border(--desktop);
-  @include background(--desktop);
+  @include border.border(--desktop);
+  @include background.background(--desktop);
 
   color: var(--desktop-color);
   text-align: var(--desktop-text-align);
@@ -87,8 +87,8 @@
   margin: var(--tablet-margin-top) var(--tablet-margin-right) var(--tablet-margin-bottom)
     var(--tablet-margin-left);
 
-  @include border(--tablet);
-  @include background(--tablet);
+  @include border.border(--tablet);
+  @include background.background(--tablet);
 
   color: var(--tablet-color);
   text-align: var(--tablet-text-align);
@@ -105,8 +105,8 @@
   margin: var(--mobile-landscape-margin-top) var(--mobile-landscape-margin-right)
     var(--mobile-landscape-margin-bottom) var(--mobile-landscape-margin-left);
 
-  @include border(--mobile-landscape);
-  @include background(--mobile-landscape);
+  @include border.border(--mobile-landscape);
+  @include background.background(--mobile-landscape);
 
   color: var(--mobile-landscape-color);
   text-align: var(--mobile-landscape-text-align);
@@ -123,8 +123,8 @@
   margin: var(--mobile-portrait-margin-top) var(--mobile-portrait-margin-right)
     var(--mobile-portrait-margin-bottom) var(--mobile-portrait-margin-left);
 
-  @include border(--mobile-portrait);
-  @include background(--mobile-portrait);
+  @include border.border(--mobile-portrait);
+  @include background.background(--mobile-portrait);
 
   color: var(--mobile-portrait-color);
   text-align: var(--mobile-portrait-text-align);
