@@ -139,7 +139,7 @@
         display: inline-block;
         line-height: 100%;
         margin: 0 0 5px 1px;
-        @include mobile {
+        @include media-queries.mobile {
           text-align: left !important;
         }
       }
@@ -149,7 +149,7 @@
       margin-left: 2px;
       margin-top: 5px;
       color: var(--webiny-theme-color-text-secondary, #616161);
-      @include mobile {
+      @include media-queries.mobile {
         text-align: left !important;
       }
       &--error {
