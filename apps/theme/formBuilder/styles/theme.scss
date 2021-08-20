@@ -1,3 +1,5 @@
+@use "media-queries";
+
 .webiny-fb-form {
   width: 100%;
   padding: 0 5px 5px 5px;
@@ -14,7 +16,7 @@
   .webiny-fb-form-layout-column {
     padding: 15px;
 
-    @include desktop {
+    @include media-queries.desktop {
       &:first-child {
         padding-left: 0;
       }
@@ -32,14 +34,14 @@
   &-recaptcha {
     margin: 0 0 20px 0;
     padding: 0 15px;
-    @include desktop {
+    @include media-queries.desktop {
       padding: 0;
     }
   }
 
   &-submit-button {
     padding: 0 15px;
-    @include desktop {
+    @include media-queries.desktop {
       padding: 0;
     }
   }
