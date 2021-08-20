@@ -27,7 +27,7 @@ export type Menu = {
     title: string;
     slug: string;
     description: string;
-    items: Record<string, any>;
+    items: MenuItem[];
     createdOn: string;
     createdBy: {
         type: string;
@@ -35,6 +35,14 @@ export type Menu = {
         displayName: string;
     };
 };
+
+export interface MenuItem {
+    id: string;
+    title: string;
+    type: string;
+    children?: MenuItem[];
+    url?: string;
+}
 
 export type Category = {
     name: string;

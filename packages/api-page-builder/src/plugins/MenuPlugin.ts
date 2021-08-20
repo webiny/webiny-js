@@ -1,27 +1,34 @@
 import { Plugin } from "@webiny/plugins";
-import { Menu, PbContext } from "~/types";
+import { Menu, MenuItem, PbContext } from "~/types";
 
 export type CallbackFunction<TParams> = (params: TParams) => void | Promise<void>;
 
-interface MenuParams {
+interface MenuParams<TMenu = Menu> {
     context: PbContext;
-    menu: Menu;
+    menu: TMenu;
 }
 
-interface Config {
-    beforeCreate?: CallbackFunction<MenuParams>;
-    afterCreate?: CallbackFunction<MenuParams>;
-    beforeUpdate?: CallbackFunction<MenuParams>;
-    afterUpdate?: CallbackFunction<MenuParams>;
-    beforeDelete?: CallbackFunction<MenuParams>;
-    afterDelete?: CallbackFunction<MenuParams>;
+interface MenuPluginConfigParams<TMenu, TMenuItem> extends MenuParams<TMenu> {
+    items: TMenuItem[];
+    index: number;
+    originalValue: TMenuItem;
 }
 
-export class MenuPlugin extends Plugin {
+interface Config<TParams> {
+    beforeCreate?: CallbackFunction<TParams>;
+    afterCreate?: CallbackFunction<TParams>;
+    beforeUpdate?: CallbackFunction<TParams>;
+    afterUpdate?: CallbackFunction<TParams>;
+    beforeDelete?: CallbackFunction<TParams>;
+    afterDelete?: CallbackFunction<TParams>;
+    modifyMenuItemProperties?: CallbackFunction<TParams>;
+}
+
+export class MenuPlugin<TMenu = Menu, TMenuItem = MenuItem> extends Plugin {
     public static readonly type = "pb.menu";
-    private _config: Partial<Config>;
+    private _config: Partial<Config<MenuPluginConfigParams<TMenu, TMenuItem>>>;
 
-    constructor(config?: Config) {
+    constructor(config?: Config<MenuPluginConfigParams<TMenu, TMenuItem>>) {
         super();
         this._config = config || {};
     }
@@ -48,6 +55,12 @@ export class MenuPlugin extends Plugin {
 
     afterDelete(params: MenuParams): void | Promise<void> {
         return this._execute("afterDelete", params);
+    }
+
+    modifyMenuItemProperties(
+        params: MenuPluginConfigParams<TMenu, TMenuItem>
+    ): void | Promise<void> {
+        return this._execute("modifyMenuItemProperties", params);
     }
 
     private _execute(callback, params) {
