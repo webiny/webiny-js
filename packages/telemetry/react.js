@@ -1,33 +1,32 @@
 /* eslint-disable */
-const { API_KEY, API_URL } = require("./api");
+const { sendEvent: baseSendEvent } = require("./index");
 
 const setProperties = data => {
     sendEvent("$identify", {}, data);
 };
 
 const sendEvent = (event, data = {}) => {
-    if (process.env.REACT_APP_WEBINY_TELEMETRY !== "false") {
-        data.version = process.env.REACT_APP_WEBINY_VERSION;
-
-        const payload = {
-            api_key: API_KEY,
-            distinct_id: process.env.REACT_APP_USER_ID,
-            event,
-            properties: event === "$identify" ? {} : data,
-            $set: event === "$identify" ? data : {},
-            timestamp: new Date().toISOString()
-        };
-
-        const formData = new FormData();
-        formData.append("data", btoa(JSON.stringify(payload)));
-
-        return fetch(API_URL + "/capture/", {
-            method: "POST",
-            body: formData
-        }).catch(() => {
-            // Ignore errors
-        });
+    if (process.env.REACT_APP_WEBINY_TELEMETRY === "false") {
+        return;
     }
+
+    let properties = {};
+    let extraPayloadProperties = {};
+    if (event !== "$identify") {
+        properties = data;
+    } else {
+        extraPayloadProperties = {
+            $set: data
+        };
+    }
+
+    return baseSendEvent({
+        event,
+        properties,
+        extraPayloadProperties,
+        user: process.env.REACT_APP_USER_ID,
+        version: process.env.REACT_APP_WEBINY_VERSION
+    });
 };
 
 module.exports = { setProperties, sendEvent };
