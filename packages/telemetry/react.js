@@ -2,7 +2,7 @@
 const { sendEvent: baseSendEvent } = require("./index");
 
 const setProperties = data => {
-    sendEvent("$identify", {}, data);
+    return sendEvent("$identify", data);
 };
 
 const sendEvent = (event, data = {}) => {
