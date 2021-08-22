@@ -1,18 +1,18 @@
 import WebinyError from "@webiny/error";
 import { Plugin } from "@webiny/plugins";
-import { ElasticsearchBoolQueryConfig } from "~/types";
 import { ContextInterface } from "@webiny/handler/types";
+import { Sort } from "elastic-ts";
 
-export interface ModifyQueryParams<T extends ContextInterface> {
+export interface ModifySortParams<T extends ContextInterface> {
     context: T;
-    query: ElasticsearchBoolQueryConfig;
+    sort: Sort;
 }
 
 interface Callable<T extends ContextInterface> {
-    (params: ModifyQueryParams<T>): void;
+    (params: ModifySortParams<T>): void;
 }
 
-export abstract class ElasticsearchQueryModifierPlugin<
+export abstract class ElasticsearchSortModifierPlugin<
     C extends ContextInterface = ContextInterface
 > extends Plugin {
     private readonly callable?: Callable<C>;
@@ -22,8 +22,8 @@ export abstract class ElasticsearchQueryModifierPlugin<
         this.callable = callable;
     }
 
-    public modifyQuery<T extends ContextInterface = ContextInterface>(
-        params: ModifyQueryParams<T>
+    public modifySort<T extends ContextInterface = ContextInterface>(
+        params: ModifySortParams<T>
     ): void {
         this.exec(params);
     }
@@ -31,8 +31,8 @@ export abstract class ElasticsearchQueryModifierPlugin<
     private exec(params: any): void {
         if (typeof this.callable !== "function") {
             throw new WebinyError(
-                `Missing modification for the query.`,
-                "QUERY_MODIFICATION_MISSING",
+                `Missing modification for the sort.`,
+                "SORT_MODIFICATION_MISSING",
                 {
                     params
                 }

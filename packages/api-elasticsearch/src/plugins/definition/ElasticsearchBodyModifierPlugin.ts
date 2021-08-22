@@ -1,18 +1,18 @@
 import WebinyError from "@webiny/error";
 import { Plugin } from "@webiny/plugins";
-import { ElasticsearchBoolQueryConfig } from "~/types";
 import { ContextInterface } from "@webiny/handler/types";
+import { SearchBody } from "elastic-ts";
 
-export interface ModifyQueryParams<T extends ContextInterface> {
+export interface ModifyBodyParams<T extends ContextInterface> {
     context: T;
-    query: ElasticsearchBoolQueryConfig;
+    body: SearchBody;
 }
 
 interface Callable<T extends ContextInterface> {
-    (params: ModifyQueryParams<T>): void;
+    (params: ModifyBodyParams<T>): void;
 }
 
-export abstract class ElasticsearchQueryModifierPlugin<
+export abstract class ElasticsearchBodyModifierPlugin<
     C extends ContextInterface = ContextInterface
 > extends Plugin {
     private readonly callable?: Callable<C>;
@@ -22,8 +22,8 @@ export abstract class ElasticsearchQueryModifierPlugin<
         this.callable = callable;
     }
 
-    public modifyQuery<T extends ContextInterface = ContextInterface>(
-        params: ModifyQueryParams<T>
+    public modifyBody<T extends ContextInterface = ContextInterface>(
+        params: ModifyBodyParams<T>
     ): void {
         this.exec(params);
     }
@@ -31,8 +31,8 @@ export abstract class ElasticsearchQueryModifierPlugin<
     private exec(params: any): void {
         if (typeof this.callable !== "function") {
             throw new WebinyError(
-                `Missing modification for the query.`,
-                "QUERY_MODIFICATION_MISSING",
+                `Missing modification for the body.`,
+                "BODY_MODIFICATION_MISSING",
                 {
                     params
                 }
