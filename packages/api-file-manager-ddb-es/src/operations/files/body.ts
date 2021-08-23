@@ -1,3 +1,4 @@
+import WebinyError from "@webiny/error";
 import {
     FileManagerContext,
     FileManagerFilesStorageOperationsListParamsWhere
@@ -7,13 +8,14 @@ import {
     ElasticsearchBoolQueryConfig,
     SearchBody as ElasticTsSearchBody
 } from "@webiny/api-elasticsearch/types";
-import { ElasticsearchQueryModifierPlugin } from "@webiny/api-elasticsearch/plugins/definition/ElasticsearchQueryModifierPlugin";
-import { ElasticsearchFieldPlugin } from "@webiny/api-elasticsearch/plugins/definition/ElasticsearchFieldPlugin";
 import { ElasticsearchQueryBuilderOperatorPlugin } from "@webiny/api-elasticsearch/plugins/definition/ElasticsearchQueryBuilderOperatorPlugin";
 import { createLimit } from "@webiny/api-elasticsearch/limit";
 import { createSort } from "@webiny/api-elasticsearch/sort";
 import { normalizeValue } from "@webiny/api-elasticsearch/normalize";
-import WebinyError from "@webiny/error";
+import { FileElasticsearchFieldPlugin } from "~/plugins/FileElasticsearchFieldPlugin";
+import { FileElasticsearchSortModifierPlugin } from "~/plugins/FileElasticsearchSortModifierPlugin";
+import { FileElasticsearchBodyModifierPlugin } from "~/plugins/FileElasticsearchBodyModifierPlugin";
+import { FileElasticsearchQueryModifierPlugin } from "~/plugins/FileElasticsearchQueryModifierPlugin";
 
 interface CreateElasticsearchBodyParams {
     context: FileManagerContext;
@@ -43,9 +45,9 @@ const parseWhereKey = (key: string) => {
 };
 
 const findFieldPlugin = (
-    plugins: Record<string, ElasticsearchFieldPlugin>,
+    plugins: Record<string, FileElasticsearchFieldPlugin>,
     field: string
-): ElasticsearchFieldPlugin => {
+): FileElasticsearchFieldPlugin => {
     const fieldPlugin = plugins[field] || plugins["*"];
     if (fieldPlugin) {
         return fieldPlugin;
@@ -69,7 +71,9 @@ const findOperatorPlugin = (
 };
 
 const createElasticsearchQuery = (
-    params: CreateElasticsearchBodyParams & { plugins: Record<string, ElasticsearchFieldPlugin> }
+    params: CreateElasticsearchBodyParams & {
+        plugins: Record<string, FileElasticsearchFieldPlugin>;
+    }
 ) => {
     const { context, where: initialWhere, plugins: fieldPlugins } = params;
     const query: ElasticsearchBoolQueryConfig = {
@@ -186,13 +190,10 @@ const createElasticsearchQuery = (
 export const createElasticsearchBody = (
     params: CreateElasticsearchBodyParams
 ): ElasticTsSearchBody => {
-    const { context, where, sort, limit: initialLimit, after } = params;
+    const { context, sort: initialSort, limit: initialLimit, after, where } = params;
 
-    const fieldPlugins: Record<string, ElasticsearchFieldPlugin> = context.plugins
-        .byType<ElasticsearchFieldPlugin>(ElasticsearchFieldPlugin.type)
-        .filter(plugin => {
-            return plugin.entity === "FilesElasticsearch";
-        })
+    const fieldPlugins: Record<string, FileElasticsearchFieldPlugin> = context.plugins
+        .byType<FileElasticsearchFieldPlugin>(FileElasticsearchFieldPlugin.type)
         .reduce((acc, plugin) => {
             acc[plugin.field] = plugin;
             return acc;
@@ -205,22 +206,34 @@ export const createElasticsearchBody = (
         plugins: fieldPlugins
     });
 
-    const queryModifierPlugins = context.plugins.byType<ElasticsearchQueryModifierPlugin>(
-        ElasticsearchQueryModifierPlugin.type
+    const sort = createSort({
+        context,
+        sort: initialSort,
+        plugins: fieldPlugins
+    });
+
+    const queryModifiers = context.plugins.byType<FileElasticsearchQueryModifierPlugin>(
+        FileElasticsearchQueryModifierPlugin.type
     );
-    for (const pl of queryModifierPlugins) {
-        pl.apply({
+    for (const plugin of queryModifiers) {
+        plugin.modifyQuery({
             context,
             query,
-            where,
-            sort,
-            limit,
-            after
+            where
         });
     }
 
-    const searchAfter = decodeCursor(after);
-    return {
+    const sortModifiers = context.plugins.byType<FileElasticsearchSortModifierPlugin>(
+        FileElasticsearchSortModifierPlugin.type
+    );
+    for (const plugin of sortModifiers) {
+        plugin.modifySort({
+            context,
+            sort
+        });
+    }
+
+    const body = {
         query: {
             constant_score: {
                 filter: {
@@ -236,11 +249,19 @@ export const createElasticsearchBody = (
          * Which is correct in some cases. In our case, it is not.
          * https://www.elastic.co/guide/en/elasticsearch/reference/7.13/paginate-search-results.html
          */
-        search_after: searchAfter as any,
-        sort: createSort({
-            context,
-            sort,
-            plugins: fieldPlugins
-        })
+        search_after: decodeCursor(after) as any,
+        sort
     };
+
+    const bodyModifiers = context.plugins.byType<FileElasticsearchBodyModifierPlugin>(
+        FileElasticsearchBodyModifierPlugin.type
+    );
+    for (const plugin of bodyModifiers) {
+        plugin.modifyBody({
+            context,
+            body
+        });
+    }
+
+    return body;
 };

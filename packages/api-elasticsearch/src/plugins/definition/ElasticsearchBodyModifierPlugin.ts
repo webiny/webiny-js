@@ -13,22 +13,16 @@ interface Callable<T extends ContextInterface> {
 }
 
 export abstract class ElasticsearchBodyModifierPlugin<
-    C extends ContextInterface = ContextInterface
+    T extends ContextInterface = ContextInterface
 > extends Plugin {
-    private readonly callable?: Callable<C>;
+    private readonly callable?: Callable<T>;
 
-    public constructor(callable?: Callable<C>) {
+    public constructor(callable?: Callable<T>) {
         super();
         this.callable = callable;
     }
 
-    public modifyBody<T extends ContextInterface = ContextInterface>(
-        params: ModifyBodyParams<T>
-    ): void {
-        this.exec(params);
-    }
-
-    private exec(params: any): void {
+    public modifyBody(params: ModifyBodyParams<T>): void {
         if (typeof this.callable !== "function") {
             throw new WebinyError(
                 `Missing modification for the body.`,

@@ -6,6 +6,7 @@ import { ContextInterface } from "@webiny/handler/types";
 export interface ModifyQueryParams<T extends ContextInterface> {
     context: T;
     query: ElasticsearchBoolQueryConfig;
+    where: Record<string, any>;
 }
 
 interface Callable<T extends ContextInterface> {
@@ -13,22 +14,16 @@ interface Callable<T extends ContextInterface> {
 }
 
 export abstract class ElasticsearchQueryModifierPlugin<
-    C extends ContextInterface = ContextInterface
+    T extends ContextInterface = ContextInterface
 > extends Plugin {
-    private readonly callable?: Callable<C>;
+    private readonly callable?: Callable<T>;
 
-    public constructor(callable?: Callable<C>) {
+    public constructor(callable?: Callable<T>) {
         super();
         this.callable = callable;
     }
 
-    public modifyQuery<T extends ContextInterface = ContextInterface>(
-        params: ModifyQueryParams<T>
-    ): void {
-        this.exec(params);
-    }
-
-    private exec(params: any): void {
+    public modifyQuery(params: ModifyQueryParams<T>): void {
         if (typeof this.callable !== "function") {
             throw new WebinyError(
                 `Missing modification for the query.`,

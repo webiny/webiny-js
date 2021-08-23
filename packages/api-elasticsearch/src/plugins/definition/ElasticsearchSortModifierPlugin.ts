@@ -13,22 +13,16 @@ interface Callable<T extends ContextInterface> {
 }
 
 export abstract class ElasticsearchSortModifierPlugin<
-    C extends ContextInterface = ContextInterface
+    T extends ContextInterface = ContextInterface
 > extends Plugin {
-    private readonly callable?: Callable<C>;
+    private readonly callable?: Callable<T>;
 
-    public constructor(callable?: Callable<C>) {
+    public constructor(callable?: Callable<T>) {
         super();
         this.callable = callable;
     }
 
-    public modifySort<T extends ContextInterface = ContextInterface>(
-        params: ModifySortParams<T>
-    ): void {
-        this.exec(params);
-    }
-
-    private exec(params: any): void {
+    public modifySort(params: ModifySortParams<T>): void {
         if (typeof this.callable !== "function") {
             throw new WebinyError(
                 `Missing modification for the sort.`,
