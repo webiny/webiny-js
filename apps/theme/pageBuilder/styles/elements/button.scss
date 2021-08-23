@@ -63,7 +63,6 @@
   display: flex;
   align-items: center !important;
   justify-content: center;
-  padding: 14px 20px !important;
   vertical-align: top;
   text-align: center;
   font-size: 14px;
@@ -79,8 +78,10 @@
   box-sizing: border-box;
   outline: none;
   border: none;
-  min-width: 260px;
-  width: auto;
+  // For the "width" settings in editor sidebar to work
+  // The element needs to have "width: 100%"
+  width: 100%;
+
   background-color: var(--webiny-theme-color-background, #fafbfb);
   font-family: var(--webiny-theme-typography-primary-font-family, "IBM Plex Sans, sans-serif");
   color: var(--webiny-theme-color-on-background, #131313);
@@ -88,7 +89,6 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   margin: 0;
-  height: 40px;
   > span {
     display: block;
     font-size: 1px;
@@ -107,10 +107,11 @@
     box-shadow: none;
     cursor: wait;
   }
+
   &--loading {
     background-image: linear-gradient(
-      var(--webiny-theme-color-primary, #ee896b) 0%,
-      var(--webiny-theme-color-primary, #ee896b) 100%
+                    var(--webiny-theme-color-primary, #ee896b) 0%,
+                    var(--webiny-theme-color-primary, #ee896b) 100%
     ) !important;
     color: transparent;
     position: relative;
@@ -162,6 +163,7 @@
   &--dark {
     @include button-dark();
   }
+
   &__icon {
     &--left {
       flex-direction: row;
@@ -194,14 +196,179 @@
     word-break: keep-all !important;
     overflow: hidden !important;
   }
+}
 
-  & .webiny-pb-media-query--tablet {
-    // device specific styles
+.webiny-pb-media-query--tablet .webiny-pb-page-element-button {
+  &--loading {
+    background-image: linear-gradient(
+                    var(--webiny-theme-color-primary, #ee896b) 0%,
+                    var(--webiny-theme-color-primary, #ee896b) 100%
+    ) !important;
+    color: transparent;
+    position: relative;
+    text-transform: uppercase;
+    font-size: 0;
+    height: 42px;
+    transition: all 350ms ease;
+
+    &:before {
+      margin: -13px 0 0 -13px;
+      width: 24px;
+      height: 24px;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      color: #fff;
+      content: "";
+      border-radius: 24px;
+      background-clip: padding-box;
+      border: rgba(255, 255, 255, 0.25) 2px solid;
+      border-top-color: #fff;
+      animation: webiny-pb-page-element-button-animation-rotate 750ms linear infinite;
+      span {
+        color: transparent;
+      }
+    }
   }
-  & .webiny-pb-media-query--mobile-landscape {
-    // device specific styles
+  &--primary {
+    @include button-primary();
   }
-  & .webiny-pb-media-query--mobile-portrait {
-    // device specific styles
+  &--secondary {
+    @include button-secondary();
   }
+  &--outline-primary {
+    @include button-outline-primary();
+  }
+  &--outline-secondary {
+    @include button-outline-secondary();
+  }
+  &--simple {
+    @include button-simple();
+  }
+  &--purple {
+    @include button-purple();
+  }
+  &--yellow {
+    @include button-yellow();
+  }
+  &--dark {
+    @include button-dark();
+  }
+  // device specific styles
+}
+.webiny-pb-media-query--mobile-landscape .webiny-pb-page-element-button {
+  &--loading {
+    background-image: linear-gradient(
+                    var(--webiny-theme-color-primary, #ee896b) 0%,
+                    var(--webiny-theme-color-primary, #ee896b) 100%
+    ) !important;
+    color: transparent;
+    position: relative;
+    text-transform: uppercase;
+    font-size: 0;
+    height: 42px;
+    transition: all 350ms ease;
+
+    &:before {
+      margin: -13px 0 0 -13px;
+      width: 24px;
+      height: 24px;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      color: #fff;
+      content: "";
+      border-radius: 24px;
+      background-clip: padding-box;
+      border: rgba(255, 255, 255, 0.25) 2px solid;
+      border-top-color: #fff;
+      animation: webiny-pb-page-element-button-animation-rotate 750ms linear infinite;
+      span {
+        color: transparent;
+      }
+    }
+  }
+  &--primary {
+    @include button-primary();
+  }
+  &--secondary {
+    @include button-secondary();
+  }
+  &--outline-primary {
+    @include button-outline-primary();
+  }
+  &--outline-secondary {
+    @include button-outline-secondary();
+  }
+  &--simple {
+    @include button-simple();
+  }
+  &--purple {
+    @include button-purple();
+  }
+  &--yellow {
+    @include button-yellow();
+  }
+  &--dark {
+    @include button-dark();
+  }
+  // device specific styles
+}
+.webiny-pb-media-query--mobile-portrait .webiny-pb-page-element-button {
+  &--loading {
+    background-image: linear-gradient(
+                    var(--webiny-theme-color-primary, #ee896b) 0%,
+                    var(--webiny-theme-color-primary, #ee896b) 100%
+    ) !important;
+    color: transparent;
+    position: relative;
+    text-transform: uppercase;
+    font-size: 0;
+    height: 42px;
+    transition: all 350ms ease;
+
+    &:before {
+      margin: -13px 0 0 -13px;
+      width: 24px;
+      height: 24px;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      color: #fff;
+      content: "";
+      border-radius: 24px;
+      background-clip: padding-box;
+      border: rgba(255, 255, 255, 0.25) 2px solid;
+      border-top-color: #fff;
+      animation: webiny-pb-page-element-button-animation-rotate 750ms linear infinite;
+      span {
+        color: transparent;
+      }
+    }
+  }
+  &--primary {
+    @include button-primary();
+  }
+  &--secondary {
+    @include button-secondary();
+  }
+  &--outline-primary {
+    @include button-outline-primary();
+  }
+  &--outline-secondary {
+    @include button-outline-secondary();
+  }
+  &--simple {
+    @include button-simple();
+  }
+  &--purple {
+    @include button-purple();
+  }
+  &--yellow {
+    @include button-yellow();
+  }
+  &--dark {
+    @include button-dark();
+  }
+  // device specific styles
 }
