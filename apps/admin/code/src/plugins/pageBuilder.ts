@@ -7,6 +7,9 @@ import pageBuilderConfig from "@webiny/app-page-builder/editor/plugins/pageBuild
 /* Welcome screen widget for Page Builder */
 import welcomeScreenWidget from "@webiny/app-page-builder/admin/plugins/welcomeScreenWidget";
 
+/* Custom menu item for Page Builder */
+import menuItemCard from "./pageBuilder/menuCard";
+
 export default [
     pageBuilderConfig({
         maxEventActionsNesting: 10
@@ -27,5 +30,6 @@ export default [
         async loadRenderPlugins() {
             return (await import("./pageBuilder/renderPlugins")).default;
         }
-    }
+    },
+    menuItemCard
 ];
