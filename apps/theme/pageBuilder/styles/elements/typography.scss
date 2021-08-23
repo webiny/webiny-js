@@ -1,6 +1,7 @@
 /*! Based on Typebase.scss v0.1.0 | MIT License https://github.com/devinhunt/typebase.css */
 @use "sass:math";
 @use "../mixins/pb-list-element";
+@use "./typography-vriables" as variables;
 // Typesetting variables. Edit here or override in main file prior to import of this.
 $baseFontSize: 22 !default; // in pixels. This would result in 22px on desktop
 $baseLineHeight: 1.5 !default; // how large the line height is as a multiple of font size
@@ -8,34 +9,6 @@ $leading: $baseLineHeight * 1rem !default;
 // Rate of growth for headings
 // I actually like this to be slightly smaller then the leading. Makes for tight headings.
 $scale: 1.414 !default;
-
-// font-sizes
-$webiny-pb-text-xs: 0.75rem;
-// line-height: 1rem;
-$webiny-pb-text-sm: 0.875rem;
-// line-height: 1.25rem;
-$webiny-pb-text-base: 1rem;
-// line-height: 1.5rem;
-$webiny-pb-text-lg: 1.125rem;
-// line-height: 1.75rem;
-$webiny-pb-text-xl: 1.25rem;
-// line-height: 1.75rem;
-$webiny-pb-text-2xl: 1.5rem;
-// line-height: 2rem;
-$webiny-pb-text-3xl: 1.875rem;
-// line-height: 2.25rem;
-$webiny-pb-text-4xl: 2.25rem;
-// line-height: 2.5rem;
-$webiny-pb-text-5xl: 3rem;
-// line-height: 1;
-$webiny-pb-text-6xl: 3.75rem;
-// line-height: 1;
-$webiny-pb-text-7xl: 4.5rem;
-// line-height: 1;
-$webiny-pb-text-8xl: 6rem;
-// line-height: 1;
-$webiny-pb-text-9xl: 8rem;
-// line-height: 1;
 
 body,
 .webiny-pb-page-document {
@@ -152,8 +125,8 @@ h6 {
   background-color: hsl(264deg, 45%, 98%);
 
   blockquote {
-    font-size: $webiny-pb-text-xl;
-    line-height: $webiny-pb-text-3xl;
+    font-size: variables.$webiny-pb-text-xl;
+    line-height: variables.$webiny-pb-text-3xl;
   }
 }
 
@@ -187,37 +160,37 @@ h6 {
 }
 
 .webiny-pb-typography-heading {
-  @include fontSize($webiny-pb-text-lg, 2rem);
+  @include fontSize(variables.$webiny-pb-text-lg, 2rem);
   @extend %webiny-pb-typography-heading-base;
 }
 
 .webiny-pb-typography-heading--1 {
-  @include fontSize($webiny-pb-text-7xl);
+  @include fontSize(variables.$webiny-pb-text-7xl);
   @extend %webiny-pb-typography-heading-base;
 }
 
 .webiny-pb-typography-heading--2 {
-  @include fontSize($webiny-pb-text-5xl);
+  @include fontSize(variables.$webiny-pb-text-5xl);
   @extend %webiny-pb-typography-heading-base;
 }
 
 .webiny-pb-typography-heading--3 {
-  @include fontSize($webiny-pb-text-4xl);
+  @include fontSize(variables.$webiny-pb-text-4xl);
   @extend %webiny-pb-typography-heading-base;
 }
 
 .webiny-pb-typography-heading--4 {
-  @include fontSize($webiny-pb-text-3xl, 2rem);
+  @include fontSize(variables.$webiny-pb-text-3xl, 2rem);
   @extend %webiny-pb-typography-heading-base;
 }
 
 .webiny-pb-typography-heading--5 {
-  @include fontSize($webiny-pb-text-2xl, 2rem);
+  @include fontSize(variables.$webiny-pb-text-2xl, 2rem);
   @extend %webiny-pb-typography-heading-base;
 }
 
 .webiny-pb-typography-heading--6 {
-  @include fontSize($webiny-pb-text-xl, 1.75rem);
+  @include fontSize(variables.$webiny-pb-text-xl, 1.75rem);
   @extend %webiny-pb-typography-heading-base;
 }
 
@@ -268,19 +241,19 @@ h6 {
 .webiny-pb-typography-title {
   @extend %webiny-pb-typography-paragraph-base;
 
-  font-size: $webiny-pb-text-lg;
+  font-size: variables.$webiny-pb-text-lg;
   font-weight: 600;
 }
 
 .webiny-pb-typography-subtitle {
   @extend %webiny-pb-typography-paragraph-base;
-  font-size: $webiny-pb-text-base;
+  font-size: variables.$webiny-pb-text-base;
   font-weight: 600;
 }
 
 .webiny-pb-typography-body-xl {
   @extend %webiny-pb-typography-paragraph-base;
-  font-size: $webiny-pb-text-xl;
+  font-size: variables.$webiny-pb-text-xl;
   font-weight: normal;
 }
 

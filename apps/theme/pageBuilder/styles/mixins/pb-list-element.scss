@@ -1,3 +1,5 @@
+@use "../elements/typography-vriables" as variables;
+
 @mixin pb-lis-element($leading, $marker-outer-color, $marker-inner-color) {
   $list-marker-outer-size: 1.25rem !default;
   $list-marker-inner-size: 0.5rem !default;
@@ -68,7 +70,7 @@
     margin: unset;
     padding: unset;
     & li {
-      font-size: $webiny-pb-text-xl;
+      font-size: variables.$webiny-pb-text-xl;
       position: relative;
       margin-bottom: 12px;
       list-style-image: url("https://d2zogan2b78dvz.cloudfront.net/files/7krubw7ey-checked.svg");
@@ -92,15 +94,15 @@
     margin: unset;
     padding: unset;
     & li {
-      font-size: $webiny-pb-text-2xl;
-      line-height: $webiny-pb-text-5xl;
+      font-size: variables.$webiny-pb-text-2xl;
+      line-height: variables.$webiny-pb-text-5xl;
       position: relative;
       margin-bottom: 12px;
       list-style-position: inside;
       list-style-type: decimal-leading-zero;
 
       &::marker {
-        font-size: $webiny-pb-text-3xl;
+        font-size: variables.$webiny-pb-text-3xl;
       }
 
       & a {
