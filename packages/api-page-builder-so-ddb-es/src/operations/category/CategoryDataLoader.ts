@@ -1,13 +1,10 @@
-import { PbContext } from "@webiny/api-page-builder/graphql/types";
 import DataLoader from "dataloader";
 import { CategoryStorageOperationsDdbEs } from "./CategoryStorageOperations";
 import { batchReadAll } from "@webiny/db-dynamodb/utils/batchRead";
 import { Category } from "@webiny/api-page-builder/types";
-import WebinyError from "@webiny/error";
 import { cleanupItem } from "@webiny/db-dynamodb/utils/cleanup";
 
 interface Params {
-    context: PbContext;
     storageOperations: CategoryStorageOperationsDdbEs;
 }
 
@@ -18,64 +15,43 @@ interface DataLoaderGetItem {
 }
 
 export class CategoryDataLoader {
-    private readonly context: PbContext;
     private readonly storageOperations: CategoryStorageOperationsDdbEs;
-
-    private readonly dataLoaders: Map<string, DataLoader<any, any>> = new Map();
+    private _getDataLoader: DataLoader<any, any>;
 
     constructor(params: Params) {
-        this.context = params.context;
         this.storageOperations = params.storageOperations;
     }
 
     public async getOne(item: DataLoaderGetItem): Promise<Category> {
-        return await this.getDataLoader("get").load(item);
+        return await this.getDataLoader().load(item);
     }
 
     public async getAll(items: DataLoaderGetItem[]): Promise<Category[]> {
-        return await this.getDataLoader("get").loadMany(items);
+        return await this.getDataLoader().loadMany(items);
     }
 
     public clear(): void {
-        for (const loader of this.dataLoaders.values()) {
-            loader.clearAll();
-        }
+        this.getDataLoader().clearAll();
     }
 
-    private getDataLoader(name: string): DataLoader<any, any> {
-        const fn = `_${name}`;
-        if (this.dataLoaders.has(fn)) {
-            return this.dataLoaders.get(fn);
-        } else if (typeof this[fn] !== "function") {
-            throw new WebinyError(
-                `Missing data loader "${name}" definition.`,
-                "MISSING_DATA_LOADER",
-                {
-                    fn,
-                    name
-                }
-            );
-        }
-        const loader = this[fn]();
-        this.dataLoaders.set(name, loader);
-        return loader;
-    }
-
-    private _dataLoaderGet() {
-        return new DataLoader(async (items: DataLoaderGetItem[]) => {
-            const batched = items.map(item => {
-                return this.storageOperations.entity.getBatch({
-                    PK: this.storageOperations.createPartitionKey(item),
-                    SK: item.slug
+    private getDataLoader() {
+        if (!this._getDataLoader) {
+            this._getDataLoader = new DataLoader(async (items: DataLoaderGetItem[]) => {
+                const batched = items.map(item => {
+                    return this.storageOperations.entity.getBatch({
+                        PK: this.storageOperations.createPartitionKey(item),
+                        SK: item.slug
+                    });
                 });
-            });
 
-            const results = await batchReadAll<Category>({
-                table: this.storageOperations.table,
-                items: batched
-            });
+                const results = await batchReadAll<Category>({
+                    table: this.storageOperations.table,
+                    items: batched
+                });
 
-            return results.map(result => cleanupItem(this.storageOperations.entity, result));
-        });
+                return results.map(result => cleanupItem(this.storageOperations.entity, result));
+            });
+        }
+        return this._getDataLoader;
     }
 }

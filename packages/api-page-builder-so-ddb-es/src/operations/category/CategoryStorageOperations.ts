@@ -42,7 +42,6 @@ export class CategoryStorageOperationsDdbEs implements CategoryStorageOperations
         });
 
         this.dataLoader = new CategoryDataLoader({
-            context,
             storageOperations: this
         });
     }

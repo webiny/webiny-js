@@ -521,7 +521,91 @@ export interface SettingsStorageOperations {
      * Different storage operations can have what ever suits those storages.
      */
     createCacheKey: (params: DefaultSettingsCrudOptions) => string;
-    get: (params: SettingsStorageOperationsGetParams) => Promise<Settings>;
+    get: (params: SettingsStorageOperationsGetParams) => Promise<Settings | null>;
     create: (params: SettingsStorageOperationsCreateParams) => Promise<Settings>;
     update: (params: SettingsStorageOperationsUpdateParams) => Promise<Settings>;
+}
+
+/**
+ * @category StorageOperations
+ * @category PageStorageOperations
+ */
+export type PageStorageOperationsListResponse = [Page[], MetaResponse];
+/**
+ * @category StorageOperations
+ * @category PageStorageOperations
+ */
+export interface PageStorageOperationsGetParams {
+    where: {
+        /**
+         * pid + version
+         */
+        id?: string;
+        /**
+         * TODO: check if required to rename to pageId
+         */
+        pid?: string;
+        version?: string;
+    };
+}
+
+export interface PageStorageOperationsListWhere {
+    /**
+     * pid + version
+     */
+    id?: string;
+    /**
+     * TODO: check if required to rename to pageId
+     */
+    pid?: string;
+    version?: string;
+    published?: boolean;
+    latest?: boolean;
+    tenant?: string;
+}
+
+/**
+ * @category StorageOperations
+ * @category PageStorageOperations
+ */
+export interface PageStorageOperationsListParams {
+    where: PageStorageOperationsListWhere;
+    sort: string[];
+    limit: number;
+    after?: string;
+}
+/**
+ * @category StorageOperations
+ * @category PageStorageOperations
+ */
+export interface PageStorageOperationsCreateParams {
+    input: Record<string, any>;
+    page: Page;
+}
+/**
+ * @category StorageOperations
+ * @category PageStorageOperations
+ */
+export interface PageStorageOperationsUpdateParams {
+    input: Record<string, any>;
+    original: Page;
+    page: Page;
+}
+/**
+ * @category StorageOperations
+ * @category PageStorageOperations
+ */
+export interface PageStorageOperationsDeleteParams {
+    page: Page;
+}
+/**
+ * @category StorageOperations
+ * @category PageStorageOperations
+ */
+export interface PageStorageOperations {
+    get: (params: PageStorageOperationsGetParams) => Promise<Page | null>;
+    list: (params: PageStorageOperationsListParams) => Promise<PageStorageOperationsListResponse>;
+    create: (params: PageStorageOperationsCreateParams) => Promise<Page>;
+    update: (params: PageStorageOperationsUpdateParams) => Promise<Page>;
+    delete: (params: PageStorageOperationsDeleteParams) => Promise<Page>;
 }

@@ -44,7 +44,6 @@ export class SettingsStorageOperationsDdbEs implements SettingsStorageOperations
         });
 
         this.dataLoader = new SettingsDataLoader({
-            context: this.context,
             storageOperations: this
         });
     }

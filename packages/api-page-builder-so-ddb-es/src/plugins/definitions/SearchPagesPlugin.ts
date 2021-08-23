@@ -1,6 +1,6 @@
 import { Plugin } from "@webiny/plugins";
 import { ElasticsearchBoolQueryConfig, Sort as esSort } from "@webiny/api-elasticsearch/types";
-import { PbContext } from "~/graphql/types";
+import { PbContext } from "@webiny/api-page-builder/graphql/types";
 
 interface ModifyQueryArgs {
     query: ElasticsearchBoolQueryConfig;
@@ -20,22 +20,24 @@ interface Config {
 }
 
 export abstract class SearchPagesPlugin extends Plugin {
-    private config: Config;
+    private readonly config: Config;
 
-    constructor(config: Config) {
+    public constructor(config: Config) {
         super();
         this.config = config;
     }
 
-    modifyQuery(args: ModifyQueryArgs) {
-        if (typeof this.config.modifyQuery === "function") {
-            this.config.modifyQuery(args);
+    public modifyQuery(args: ModifyQueryArgs): void {
+        if (typeof this.config.modifyQuery !== "function") {
+            return;
         }
+        this.config.modifyQuery(args);
     }
 
-    modifySort(args: ModifySortArgs) {
-        if (typeof this.config.modifySort === "function") {
-            this.config.modifySort(args);
+    public modifySort(args: ModifySortArgs): void {
+        if (typeof this.config.modifySort !== "function") {
+            return;
         }
+        this.config.modifySort(args);
     }
 }
