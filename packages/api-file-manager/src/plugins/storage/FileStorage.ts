@@ -7,6 +7,8 @@ export type Args = {
     size: number;
     buffer: Buffer;
     keyPrefix?: string;
+    hideInFileManager?: boolean;
+    tags?: string[];
 };
 
 export type Result = Record<string, any>;
@@ -21,6 +23,7 @@ const storagePluginType = "api-file-manager-storage";
 export class FileStorage {
     storagePlugin: FileStoragePlugin;
     context: FileManagerContext;
+
     constructor({ context }) {
         this.storagePlugin = context.plugins.byType(storagePluginType).pop();
         if (!this.storagePlugin) {
@@ -45,7 +48,8 @@ export class FileStorage {
         // Save file in DB.
         return await fileManager.files.createFile({
             ...fileData,
-            meta: { private: Boolean(args.hideInFileManager) }
+            meta: { private: Boolean(args.hideInFileManager) },
+            tags: Array.isArray(args.tags) ? args.tags : []
         });
     }
 
