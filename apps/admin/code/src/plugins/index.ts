@@ -11,6 +11,7 @@ import securityPlugins from "./security";
 import pageBuilderPlugins from "./pageBuilder";
 import formBuilderPlugins from "./formBuilder";
 import headlessCmsPlugins from "./headlessCms";
+import fileManagerPlugins from "./fileManager";
 import theme from "theme";
 
 // Imports plugins created via scaffolding utilities.
@@ -68,7 +69,11 @@ plugins.register([
     /**
      * Plugins created via scaffolding utilities.
      */
-    scaffoldsPlugins()
+    scaffoldsPlugins(),
+    /**
+     * File Manager app.
+     */
+    fileManagerPlugins
 ]);
 
 /**
