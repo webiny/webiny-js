@@ -9,6 +9,7 @@ import DataLoader from "dataloader";
 import { ClientContext } from "@webiny/handler-client/types";
 import { Category, DefaultSettings, Menu, Page, PageElement } from "../types";
 import { PrerenderingServiceClientContext } from "@webiny/api-prerendering-service/client/types";
+import { FileManagerContext } from "@webiny/api-file-manager/types";
 
 // CRUD types.
 export type SortOrder = "asc" | "desc";
@@ -81,6 +82,11 @@ export type PagesCrud = {
     unpublish<TPage extends Page = Page>(id: string): Promise<TPage>;
     requestReview<TPage extends Page = Page>(id: string): Promise<TPage>;
     requestChanges<TPage extends Page = Page>(id: string): Promise<TPage>;
+    exportPage(id: string): Promise<{
+        pageZipUrl: string;
+        pageZipFile: Record<string, any>;
+    }>;
+    importPage<TPage extends Page = Page>(id: string, data: Record<string, any>): Promise<TPage>;
     prerendering: {
         render(args: RenderParams): Promise<void>;
         flush(args: FlushParams): Promise<void>;
@@ -152,6 +158,7 @@ export type PbContext = Context<
     SecurityContext,
     TenancyContext,
     PrerenderingServiceClientContext,
+    FileManagerContext,
     {
         pageBuilder: Record<string, any> & {
             pages: PagesCrud;
