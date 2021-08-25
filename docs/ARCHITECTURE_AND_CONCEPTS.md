@@ -45,7 +45,7 @@ So how do we solve this?
 Each package written with TS has a `build` script defined in its `package.json`. The script will transpile the code from `src` using `babel` and run `tsc` compiler to generate type declarations (`*.d.ts` files) and check that your types are in order. The output folder of the build script is `dist`. This folder is important.
 
 Remember how `yarn` links workspaces? Can you already see the problem? Let's go step by step to make this very, very clear:
-So, you ran `yarn` in your monorepo, it did its magic and linked your packages. Then you built your TS packages to turn them into usable JS packages, by doing `lerna run build --stream` (this ran the `build` command on all your packages taking inter-package dependencies into consideration).
+So, you ran `yarn` in your monorepo, it did its magic and linked your packages. Then you built your TS packages to turn them into usable JS packages, by doing `yarn webiny ws run build` (this runs the `build` command on all your workspaces taking inter-package dependencies into consideration).
 
 Now you want to import one of your packages. Here's a sample code:
 
