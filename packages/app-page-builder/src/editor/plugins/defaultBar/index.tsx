@@ -18,6 +18,8 @@ import Revisions from "./components/Revisions";
 import EditorResponsiveBar from "./components/EditorResponsiveBar";
 import { UIViewComponent } from "@webiny/app-admin/ui/UIView";
 import { PageSettingsView } from "~/editor/ui/views/PageSettingsView";
+import ExportPageButton from "./components/ExportPageButton";
+import ImportPageButton from "./components/ImportPageButton";
 
 export default [
     {
@@ -113,5 +115,19 @@ export default [
         render() {
             return <EditorResponsiveBar />;
         }
-    } as PbEditorDefaultBarCenterPlugin
+    } as PbEditorDefaultBarCenterPlugin,
+    {
+        name: "pb-editor-default-bar-right-page-options-export",
+        type: "pb-editor-default-bar-right-page-options",
+        render() {
+            return <ExportPageButton />;
+        }
+    } as PbEditorDefaultBarRightPageOptionsPlugin,
+    {
+        name: "pb-editor-default-bar-right-page-options-import",
+        type: "pb-editor-default-bar-right-page-options",
+        render() {
+            return <ImportPageButton />;
+        }
+    } as PbEditorDefaultBarRightPageOptionsPlugin
 ];
