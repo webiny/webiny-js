@@ -42,6 +42,8 @@ const ImportPageButton: React.FunctionComponent = () => {
                 // TODO: Handle it more gracefully.
                 window.location.reload();
             }}
+            // TODO: Implement custom extension "wpbx" Webiny Page Builder export
+            accept={["zip", "application/zip", "application/x-zip", "application/x-zip-compressed"]}
         >
             {({ showFileManager }) => (
                 <MenuItem
