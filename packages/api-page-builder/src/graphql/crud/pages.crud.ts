@@ -4,6 +4,7 @@ import trimStart from "lodash/trimStart";
 import omit from "lodash/omit";
 import get from "lodash/get";
 import merge from "lodash/merge";
+import kebabCase from "lodash/kebabCase";
 import DataLoader from "dataloader";
 import { NotAuthorizedError } from "@webiny/api-security";
 import Error from "@webiny/error";
@@ -25,6 +26,8 @@ import { compressContent, extractContent } from "./pages/contentCompression";
 import { CreateDataModel, UpdateSettingsModel } from "./pages/models";
 import { getESLatestPageData, getESPublishedPageData } from "./pages/esPageData";
 import { PagePlugin } from "~/plugins/PagePlugin";
+import { extractFilesFromPageData, ZipHandler } from "~/graphql/crud/pages/exportPage";
+import importPage from "~/graphql/crud/pages/importPage";
 
 const STATUS_CHANGES_REQUESTED = "changesRequested";
 const STATUS_REVIEW_REQUESTED = "reviewRequested";
@@ -40,7 +43,7 @@ const PERMISSION_NAME = "pb.page";
 const plugin: ContextPlugin<PbContext> = {
     type: "context",
     async apply(context) {
-        const { db, i18nContent, elasticsearch } = context;
+        const { db, i18nContent, elasticsearch, fileManager } = context;
 
         const PK_PAGE = pid => `${getPKPrefix(context)}P#${pid}`;
         const PK_PAGE_PUBLISHED_PATH = () => `${getPKPrefix(context)}PATH`;
@@ -1465,6 +1468,96 @@ const plugin: ContextPlugin<PbContext> = {
                     }
 
                     await batch.execute();
+
+                    return page;
+                },
+
+                async exportPage(pageId: string) {
+                    const permission = await checkBasePermissions(context, PERMISSION_NAME, {
+                        rwd: "w"
+                    });
+
+                    const [pid, rev] = pageId.split("#");
+                    const PAGE_PK = PK_PAGE(pid);
+
+                    const [[page]] = await db.read<Page>({
+                        ...defaults.db,
+                        query: { PK: PAGE_PK, SK: `REV#${rev}` }
+                    });
+
+                    if (!page) {
+                        throw new NotFoundError(`Page "${pageId}" not found.`);
+                    }
+
+                    const identity = context.security.getIdentity();
+
+                    checkOwnPermissions(identity, permission, page, "ownedBy");
+
+                    // Extract compressed page content.
+                    page.content = await extractContent(page.content);
+
+                    // Extract all files
+                    const files = extractFilesFromPageData(page.content, []);
+
+                    // Extract the page data in a json file and upload it to S3
+                    const file = {
+                        page: {
+                            content: page.content
+                        },
+                        files
+                    };
+                    const fileBuffer = Buffer.from(JSON.stringify(file));
+                    // FIXME: Maybe this doesn't have to be in File Manager.
+                    const pageDataUpload = await fileManager.storage.upload({
+                        name: `${kebabCase(page.title)}.json`,
+                        type: "application/json",
+                        size: fileBuffer.length,
+                        buffer: fileBuffer,
+                        // TODO: Check with team
+                        hideInFileManager: true
+                    });
+                    // TODO: Improve signature
+                    // Prepare zip and upload it to S3
+                    const zipHandler = new ZipHandler({
+                        files,
+                        archiveFileName: `export-${kebabCase(page.title)}.zip`,
+                        archiveFormat: "zip",
+                        s3FileKey: pageDataUpload.key,
+                        filesDirName: "assets"
+                    });
+                    const pageZipUrl = await zipHandler.process();
+
+                    return {
+                        pageZipFile: null,
+                        pageZipUrl
+                    };
+                },
+
+                async importPage(
+                    id: string,
+                    data: {
+                        zipFileKey: string;
+                    }
+                ) {
+                    await checkBasePermissions(context, PERMISSION_NAME, {
+                        rwd: "w"
+                    });
+
+                    let page = await context.pageBuilder.pages.get(id);
+
+                    // Download the zip and upload the assets
+                    const { content } = await importPage({
+                        context,
+                        pageDataZipKey: data.zipFileKey,
+                        pageTitle: page.title
+                    });
+
+                    /**
+                     * We assume that in current workflow, a Page ID is given to which we add the content of the uploaded ZIP.
+                     */
+
+                    // Update page
+                    page = await context.pageBuilder.pages.update(id, { content });
 
                     return page;
                 },

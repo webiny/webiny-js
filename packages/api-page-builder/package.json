@@ -32,6 +32,7 @@
     "@webiny/handler-graphql": "^5.14.0",
     "@webiny/plugins": "^5.14.0",
     "@webiny/validation": "^5.14.0",
+    "archiver": "^5.3.0",
     "commodo-fields-object": "^1.0.6",
     "dataloader": "^2.0.0",
     "extract-zip": "^1.6.7",

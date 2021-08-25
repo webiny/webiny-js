@@ -1,6 +1,6 @@
 import { ListResponse, Response, ErrorResponse } from "@webiny/handler-graphql/responses";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
-import { Page, PbContext } from "../../types";
+import { Page, PbContext } from "~/types";
 import Error from "@webiny/error";
 import resolve from "./utils/resolve";
 import pageSettings from "./pages/pageSettings";
@@ -164,6 +164,16 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                 error: PbError
             }
 
+            type PbExportPageData {
+                pageZipFile: File
+                pageZipUrl: String
+            }
+
+            type PbExportPageResponse {
+                data: PbExportPageData
+                error: PbError
+            }
+
             enum PbListPagesSortOrders {
                 desc
                 asc
@@ -211,6 +221,10 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
 
             input PbListPageTagsSearchInput {
                 query: String!
+            }
+
+            input PbImportPageInput {
+                zipFileKey: String!
             }
 
             extend type PbQuery {
@@ -274,6 +288,14 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                 deleteRevision(id: ID!): PbDeleteResponse
 
                 updateImageSize: PbDeleteResponse
+
+                # Export page
+                exportPage(id: ID!): PbExportPageResponse
+
+                # Import page
+                importPage(id: ID!, data: PbImportPageInput!): PbPageResponse
+
+                # TODO: Upload page data
             }
         `,
         resolvers: {
@@ -426,6 +448,14 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
 
                 requestChanges: async (_, args: { id: string }, context) => {
                     return resolve(() => context.pageBuilder.pages.requestChanges(args.id));
+                },
+
+                exportPage: async (_, args: { id: string }, context) => {
+                    return resolve(() => context.pageBuilder.pages.exportPage(args.id));
+                },
+
+                importPage: async (_, args: { id: string; data: Record<string, any> }, context) => {
+                    return resolve(() => context.pageBuilder.pages.importPage(args.id, args.data));
                 }
             },
             PbPageSettings: {

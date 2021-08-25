@@ -21,7 +21,7 @@ function extractZip(zipPath, dir) {
     });
 }
 
-function deleteFile(path) {
+export function deleteFile(path) {
     return new Promise((resolve, reject) => {
         rimraf(path, e => {
             if (e) {
@@ -52,4 +52,34 @@ export default async () => {
     await deleteFile(INSTALL_ZIP_PATH);
 
     return INSTALL_EXTRACT_DIR;
+};
+
+export interface DownloadAndExtractZipParams {
+    zipFileKey: string;
+    downloadZipAs: string;
+    extractZipInDir: string;
+}
+
+export const downloadAndExtractZip = async ({
+    zipFileKey,
+    downloadZipAs,
+    extractZipInDir
+}: DownloadAndExtractZipParams) => {
+    const s3 = new S3({ region: process.env.AWS_REGION });
+    const installationFilesUrl = await s3.getSignedUrlPromise("getObject", {
+        Bucket: PAGE_BUILDER_S3_BUCKET,
+        Key: zipFileKey
+    });
+
+    fs.ensureDirSync(INSTALL_DIR);
+
+    const zipPath = path.join(INSTALL_DIR, downloadZipAs);
+    const extractDir = path.join(INSTALL_DIR, extractZipInDir);
+
+    await download(installationFilesUrl, zipPath);
+
+    await extractZip(zipPath, extractDir);
+    await deleteFile(zipPath);
+
+    return extractDir;
 };
