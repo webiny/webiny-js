@@ -24,7 +24,7 @@ Packages written in TS always extend the base `tsconfig.json` (for IDE) and `tsc
 
 ### Tooling
 
-The basic tools used to run and manage our monorepo are [yarn](https://yarnpkg.com/) and [lerna](https://lerna.js.org/). There is an [in-depth article about managing a monorepo](https://doppelmutzi.github.io/monorepo-lerna-yarn-workspaces/) with Lerna and different package managers, so take a look at it if you're interested.
+The main tool used to run and manage our monorepo is [yarn](https://yarnpkg.com/). There is an [in-depth article about managing a monorepo](https://doppelmutzi.github.io/monorepo-lerna-yarn-workspaces/) with Lerna and different package managers, so take a look at it if you're interested.
 
 We let `yarn` manage the workspaces and we use `lerna` to publish packages and run commands across workspaces. In `monorepo` lingo, a `workspace` is a single package.
 
