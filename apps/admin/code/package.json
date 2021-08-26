@@ -32,7 +32,6 @@
     "@webiny/telemetry": "^5.13.0",
     "@webiny/ui": "^5.13.0",
     "apollo-cache": "^1.3.5",
-    "apollo-cache-inmemory": "^1.6.6",
     "apollo-client": "^2.2.8",
     "apollo-link": "^1.2.14",
     "apollo-link-batch-http": "^1.2.14",
