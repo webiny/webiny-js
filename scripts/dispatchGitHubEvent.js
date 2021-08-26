@@ -21,7 +21,7 @@ const { Octokit } = require("@octokit/rest");
             auth: token
         });
 
-        console.log(cyan(`Triggering ${green(argv.event)} worfklow...`));
+        console.log(cyan(`Triggering ${green(argv.event)} workflow...`));
 
         await octokit.repos.createDispatchEvent({
             owner,

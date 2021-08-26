@@ -389,7 +389,7 @@ jobs:
           token: ${{ secrets.SLACK_TOKEN }}
           channels: C027VQG8080
           workdir: webiny-js/cypress
-          message-text: Cypress tests failed! Scrennshots have been placed in this thread, good luck.
+          message-text: Cypress tests failed! Screenshots have been placed in this thread, good luck.
 
       - name: Trigger cleanup
         if: always()
