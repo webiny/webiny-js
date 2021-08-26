@@ -11,6 +11,7 @@
     "declaration": true,
     "composite": true,
     "noEmit": false,
+    "pretty": true,
     "jsx": "preserve",
     "emitDeclarationOnly": true,
     "baseUrl": ".",
