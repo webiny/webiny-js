@@ -3,6 +3,61 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.13.0](https://github.com/webiny/webiny-js/compare/v5.13.0-beta.4...v5.13.0) (2021-08-18)
+
+
+### Bug Fixes
+
+* correct links ([1daaaad](https://github.com/webiny/webiny-js/commit/1daaaadb2ff4daa13aa559a9e3115772ac91e8c8))
+
+
+
+
+
+# [5.13.0-beta.4](https://github.com/webiny/webiny-js/compare/v5.13.0-beta.3...v5.13.0-beta.4) (2021-08-18)
+
+**Note:** Version bump only for package @webiny/cli-plugin-scaffold-admin-app-module
+
+
+
+
+
+# [5.13.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.13.0-beta.2...v5.13.0-beta.3) (2021-08-17)
+
+**Note:** Version bump only for package @webiny/cli-plugin-scaffold-admin-app-module
+
+
+
+
+
+# [5.13.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.13.0-beta.1...v5.13.0-beta.2) (2021-08-17)
+
+**Note:** Version bump only for package @webiny/cli-plugin-scaffold-admin-app-module
+
+
+
+
+
+# [5.13.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.13.0-beta.0...v5.13.0-beta.1) (2021-08-16)
+
+**Note:** Version bump only for package @webiny/cli-plugin-scaffold-admin-app-module
+
+
+
+
+
+# [5.13.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.12.0...v5.13.0-beta.0) (2021-08-16)
+
+
+### Bug Fixes
+
+* upgrade replace-in-path dependency ([5a42e54](https://github.com/webiny/webiny-js/commit/5a42e543781378dab57cb5ae1a0c7828d49d42c8))
+* use Todo instead of Book ([e8b52a2](https://github.com/webiny/webiny-js/commit/e8b52a29b5ab5b6e7142ff753c4613444ad459fa))
+
+
+
+
+
 # [5.12.0](https://github.com/webiny/webiny-js/compare/v5.12.0-beta.1...v5.12.0) (2021-08-05)
 
 **Note:** Version bump only for package @webiny/cli-plugin-scaffold-admin-app-module

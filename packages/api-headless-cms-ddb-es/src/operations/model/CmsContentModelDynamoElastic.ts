@@ -18,7 +18,6 @@ interface ConstructorArgs {
 }
 export default class CmsContentModelDynamoElastic implements CmsContentModelStorageOperations {
     private readonly _context: CmsContext;
-    private _partitionKey: string;
     private _esClient: Client;
 
     private get esClient(): Client {
@@ -38,11 +37,9 @@ export default class CmsContentModelDynamoElastic implements CmsContentModelStor
     }
 
     private get partitionKey(): string {
-        if (!this._partitionKey) {
-            this._partitionKey = `${createBasePartitionKey(this.context)}#CM`;
-        }
-        return this._partitionKey;
+        return `${createBasePartitionKey(this.context)}#CM`;
     }
+
     public constructor({ context }: ConstructorArgs) {
         this._context = context;
     }

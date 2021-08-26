@@ -25,13 +25,13 @@ interface Input {
 }
 
 const SCAFFOLD_DOCS_LINK =
-    "https://www.webiny.com/docs/how-to-guides/webiny-cli/scaffolding/new-react-application";
+    "https://www.webiny.com/docs/how-to-guides/scaffolding/react-application";
 
 export default (): CliCommandScaffoldTemplate<Input> => ({
     name: "cli-plugin-scaffold-template-react-app",
     type: "cli-plugin-scaffold-template",
     scaffold: {
-        name: "New React Application",
+        name: "React Application",
         description:
             "Creates a new React application, inside of a new project application." +
             (link.isSupported ? " " + link("Learn more.", SCAFFOLD_DOCS_LINK) : ""),
@@ -220,14 +220,14 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
             console.log(chalk.bold("Useful Links"));
 
             const links = [
-                ["New React Application Scaffold", SCAFFOLD_DOCS_LINK],
+                ["React Application Scaffold", SCAFFOLD_DOCS_LINK],
                 [
                     "Create Custom Application Tutorial",
                     "https://www.webiny.com/docs/tutorials/create-custom-application/introduction"
                 ],
                 [
                     "Use the Watch Command",
-                    "https://www.webiny.com/docs/how-to-guides/webiny-cli/use-watch-command"
+                    "https://www.webiny.com/docs/how-to-guides/use-watch-command"
                 ]
             ];
 

@@ -24,7 +24,7 @@ Packages written in TS always extend the base `tsconfig.json` (for IDE) and `tsc
 
 ### Tooling
 
-The basic tools used to run and manage our monorepo are [yarn](https://yarnpkg.com/) and [lerna](https://lerna.js.org/). There is an [in-depth article about managing a monorepo](https://doppelmutzi.github.io/monorepo-lerna-yarn-workspaces/) with Lerna and different package managers, so take a look at it if you're interested.
+The main tool used to run and manage our monorepo is [yarn](https://yarnpkg.com/). There is an [in-depth article about managing a monorepo](https://doppelmutzi.github.io/monorepo-lerna-yarn-workspaces/) with Lerna and different package managers, so take a look at it if you're interested.
 
 We let `yarn` manage the workspaces and we use `lerna` to publish packages and run commands across workspaces. In `monorepo` lingo, a `workspace` is a single package.
 
@@ -45,7 +45,7 @@ So how do we solve this?
 Each package written with TS has a `build` script defined in its `package.json`. The script will transpile the code from `src` using `babel` and run `tsc` compiler to generate type declarations (`*.d.ts` files) and check that your types are in order. The output folder of the build script is `dist`. This folder is important.
 
 Remember how `yarn` links workspaces? Can you already see the problem? Let's go step by step to make this very, very clear:
-So, you ran `yarn` in your monorepo, it did its magic and linked your packages. Then you built your TS packages to turn them into usable JS packages, by doing `lerna run build --stream` (this ran the `build` command on all your packages taking inter-package dependencies into consideration).
+So, you ran `yarn` in your monorepo, it did its magic and linked your packages. Then you built your TS packages to turn them into usable JS packages, by doing `yarn webiny ws run build` (this runs the `build` command on all your workspaces taking inter-package dependencies into consideration).
 
 Now you want to import one of your packages. Here's a sample code:
 

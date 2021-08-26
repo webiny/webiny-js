@@ -29,7 +29,7 @@ interface Input {
 }
 
 const SCAFFOLD_DOCS_LINK =
-    "https://www.webiny.com/docs/how-to-guides/webiny-cli/scaffolding/extend-graphql-api";
+    "https://www.webiny.com/docs/how-to-guides/scaffolding/extend-graphql-api";
 
 export default (): CliCommandScaffoldTemplate<Input> => ({
     name: "cli-plugin-scaffold-graphql",
@@ -324,7 +324,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 ["Extend GraphQL API", SCAFFOLD_DOCS_LINK],
                 [
                     "Use the Watch Command",
-                    "https://www.webiny.com/docs/how-to-guides/webiny-cli/use-watch-command"
+                    "https://www.webiny.com/docs/how-to-guides/use-watch-command"
                 ]
             ];
 

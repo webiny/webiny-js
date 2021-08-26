@@ -12,7 +12,7 @@ import {
  * ensure they are correctly interacting with the database and other cloud infrastructure resources
  * and services. These tests provide a good level of confidence that our application is working, and
  * can be reasonably fast to complete.
- * https://www.webiny.com/docs/how-to-guides/webiny-cli/scaffolding/extend-graphql-api#crudintegrationtestts
+ * https://www.webiny.com/docs/how-to-guides/scaffolding/extend-graphql-api#crudintegrationtestts
  */
 
 const query = ({ query = "", variables = {} } = {}) => {
