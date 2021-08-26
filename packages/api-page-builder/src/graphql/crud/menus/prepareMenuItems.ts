@@ -1,23 +1,44 @@
 import cloneDeep from "lodash/cloneDeep";
 import { PbContext } from "../../types";
-import { Menu } from "../../../types";
+import { Menu, MenuItem } from "~/types";
+import executeCallbacks from "~/graphql/crud/utils/executeCallbacks";
+import { MenuPlugin } from "~/plugins/MenuPlugin";
 
-const applyCleanup = async items => {
+const applyCleanup = async ({
+    items,
+    menu,
+    context
+}: {
+    items?: MenuItem[];
+    context: PbContext;
+    menu: Menu;
+}) => {
     if (!Array.isArray(items)) {
         return;
     }
 
     for (let i = 0; i < items.length; i++) {
-        if (items[i].__cleanup__) {
+        if (items[i]["__cleanup__"]) {
             items.splice(i, 1);
             i--;
             continue;
         }
 
-        const { title, children, path, url, id, type } = items[i];
-        items[i] = { title, path, url, children, id, type };
+        const hookPlugins = context.plugins.byType<MenuPlugin>(MenuPlugin.type);
 
-        await applyCleanup(items[i].children);
+        await executeCallbacks<MenuPlugin["modifyMenuItemProperties"]>(
+            hookPlugins,
+            "modifyMenuItemProperties",
+            {
+                context,
+                menu,
+                items,
+                index: i,
+                originalValue: items[i]
+            }
+        );
+
+        await applyCleanup({ items: items[i].children, context, menu });
     }
 };
 
@@ -35,13 +56,15 @@ const applyModifier = async ({ items, modifier, context }) => {
 };
 
 const prepareItems = async ({
+    menu,
     items,
     modifiers,
     context
 }: {
-    items?: Record<string, any>[];
+    items?: MenuItem[];
     modifiers: Array<(args: { item: Record<string, any>; context: PbContext }) => void>;
     context: PbContext;
+    menu: Menu;
 }) => {
     for (let i = 0; i < modifiers.length; i++) {
         const modifier = modifiers[i];
@@ -49,14 +72,14 @@ const prepareItems = async ({
     }
 
     // Cleanup empty items.
-    await applyCleanup(items);
+    await applyCleanup({ items, context, menu });
 };
 
 export default async ({ menu, context }: { menu: Menu; context: PbContext }) => {
-    // TODO determine real type
-    const items: any = cloneDeep(menu.items);
+    const items: MenuItem[] = cloneDeep(menu.items);
     // Each modifier is recursively applied to all items.
     await prepareItems({
+        menu,
         items,
         context,
         modifiers: [

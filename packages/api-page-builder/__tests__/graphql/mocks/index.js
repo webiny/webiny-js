@@ -28,3 +28,78 @@ export const identityB = new SecurityIdentity({
     type: "test",
     displayName: "Bb"
 });
+
+export const menuItemsInput = [
+    {
+        id: "ksedyow8",
+        title: "Products",
+        type: "folder",
+        children: [
+            {
+                id: "ksedyugs",
+                title: "Primary",
+                type: "folder",
+                additional: true,
+                children: [
+                    {
+                        id: "ksee1lpt",
+                        title: "For Enterprises",
+                        type: "link",
+                        url: "/enterprise"
+                    }
+                ]
+            },
+            {
+                id: "ksedzg91",
+                title: "Secondary",
+                type: "folder",
+                primary: false,
+                children: [
+                    {
+                        id: "ksee27tz",
+                        title: "Product Roadmap",
+                        type: "link",
+                        url: "/product-roadmap",
+                        srcPrefix: null
+                    }
+                ]
+            }
+        ]
+    }
+];
+
+export const menuItemsOutput = [
+    {
+        id: "ksedyow8",
+        title: "Products",
+        type: "folder",
+        children: [
+            {
+                id: "ksedyugs",
+                title: "Primary",
+                type: "folder",
+                children: [
+                    {
+                        id: "ksee1lpt",
+                        title: "For Enterprises",
+                        type: "link",
+                        url: "/enterprise"
+                    }
+                ]
+            },
+            {
+                id: "ksedzg91",
+                title: "Secondary",
+                type: "folder",
+                children: [
+                    {
+                        id: "ksee27tz",
+                        title: "Product Roadmap",
+                        type: "link",
+                        url: "/product-roadmap"
+                    }
+                ]
+            }
+        ]
+    }
+];

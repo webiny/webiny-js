@@ -1,7 +1,9 @@
 import useGqlHandler from "./useGqlHandler";
+import { menuItemsInput, menuItemsOutput } from "./mocks";
 
 describe("Menus Test", () => {
-    const { createMenu, deleteMenu, listMenus, getMenu, updateMenu } = useGqlHandler();
+    const { createMenu, deleteMenu, listMenus, getMenu, updateMenu, getPublicMenu } =
+        useGqlHandler();
 
     test("create, read, update and delete menus", async () => {
         // Test creating, getting and updating three menus.
@@ -160,5 +162,68 @@ describe("Menus Test", () => {
                 }
             }
         });
+    });
+
+    test("read public menus with custom menu items", async () => {
+        // Test creating and reading three public menus.
+        for (let i = 0; i < 3; i++) {
+            const prefix = `menu-${i}-`;
+            let data = {
+                slug: `${prefix}slug`,
+                title: `${prefix}title`,
+                description: `${prefix}description`,
+                items: menuItemsInput
+            };
+
+            let [response] = await createMenu({ data });
+            expect(response).toMatchObject({
+                data: {
+                    pageBuilder: {
+                        createMenu: {
+                            data: {
+                                ...data,
+                                createdBy: {
+                                    displayName: "m",
+                                    id: "mocked"
+                                },
+                                createdOn: /^20/
+                            },
+                            error: null
+                        }
+                    }
+                }
+            });
+
+            [response] = await getMenu({ slug: data.slug });
+            expect(response).toMatchObject({
+                data: {
+                    pageBuilder: {
+                        getMenu: {
+                            data,
+                            error: null
+                        }
+                    }
+                }
+            });
+
+            // Test getPublicMenu
+            [response] = await getPublicMenu({ slug: data.slug });
+
+            expect(response).toMatchObject({
+                data: {
+                    pageBuilder: {
+                        getPublicMenu: {
+                            data: {
+                                ...data,
+                                items: menuItemsOutput
+                            },
+                            error: null
+                        }
+                    }
+                }
+            });
+            // Test menu items explicitly
+            expect(response.data.pageBuilder.getPublicMenu.data.items).toEqual(menuItemsOutput);
+        }
     });
 });
