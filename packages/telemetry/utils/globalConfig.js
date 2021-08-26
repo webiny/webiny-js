@@ -32,5 +32,9 @@ module.exports = {
         globalConfig[key] = value;
         writeJson.sync(GLOBAL_CONFIG_PATH, globalConfig);
         return globalConfig;
+    },
+    get telemetry() {
+        const config = getGlobalConfig();
+        return config.telemetry || config.tracking;
     }
 };
