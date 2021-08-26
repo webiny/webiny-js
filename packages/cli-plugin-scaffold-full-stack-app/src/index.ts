@@ -212,7 +212,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                         replaceWith: Case.constant(dataModelName.singular)
                     },
                     { find: "target-data-model", replaceWith: Case.kebab(dataModelName.singular) },
-                    { find: "Target Data Model", replaceWith: Case.title(dataModelName.singular) },
+                    { find: "Target Data Model", replaceWith: Case.title(dataModelName.singular) }
                 ];
 
                 replaceInPath(path.join(appPath, "code", "**/*.ts"), codeReplacements);
