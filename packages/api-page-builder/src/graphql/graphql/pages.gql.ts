@@ -293,9 +293,7 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                 exportPage(id: ID!): PbExportPageResponse
 
                 # Import page
-                importPage(id: ID!, data: PbImportPageInput!): PbPageResponse
-
-                # TODO: Upload page data
+                importPage(category: String!, data: PbImportPageInput!): PbPageResponse
             }
         `,
         resolvers: {
@@ -454,8 +452,14 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                     return resolve(() => context.pageBuilder.pages.exportPage(args.id));
                 },
 
-                importPage: async (_, args: { id: string; data: Record<string, any> }, context) => {
-                    return resolve(() => context.pageBuilder.pages.importPage(args.id, args.data));
+                importPage: async (
+                    _,
+                    args: { category: string; data: Record<string, any> },
+                    context
+                ) => {
+                    return resolve(() =>
+                        context.pageBuilder.pages.importPage(args.category, args.data)
+                    );
                 }
             },
             PbPageSettings: {
