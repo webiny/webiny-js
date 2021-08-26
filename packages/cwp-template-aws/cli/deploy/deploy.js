@@ -1,7 +1,7 @@
 const { green } = require("chalk");
 const { getStackOutput, getPulumi } = require("@webiny/cli-plugin-deploy-pulumi/utils");
+const { sendEvent } = require("@webiny/cli/utils/sendEvent");
 const execa = require("execa");
-const { sendEvent } = require("@webiny/telemetry");
 const sleep = require("../utils/sleep");
 
 const deploy = (stack, env, inputs) =>
@@ -83,7 +83,7 @@ module.exports = async (inputs, context) => {
     } catch (e) {
         await sendEvent({
             event: "project-deploy-error",
-            data: {
+            properties: {
                 errorMessage: e.message,
                 errorStack: e.stack
             }
