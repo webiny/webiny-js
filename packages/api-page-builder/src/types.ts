@@ -136,6 +136,7 @@ export interface Page {
         id: string;
         displayName: string;
     };
+    webinyVersion: string;
 }
 
 export interface File {
@@ -546,6 +547,9 @@ export interface PageStorageOperationsGetParams {
          */
         pid?: string;
         version?: string;
+        path?: string;
+        published?: boolean;
+        latest?: boolean;
     };
 }
 
@@ -558,10 +562,18 @@ export interface PageStorageOperationsListWhere {
      * TODO: check if required to rename to pageId
      */
     pid?: string;
-    version?: string;
-    published?: boolean;
-    latest?: boolean;
+    search?: string;
+    createdBy?: string;
     tenant?: string;
+    locale: string;
+    pid_not_in?: string[];
+    path_not_in?: string[];
+    /**
+     * It should always be either latest or published defined as true.
+     * If both are not defined, storage operations should throw an error.
+     */
+    latest?: boolean;
+    published?: boolean;
 }
 
 /**
@@ -578,8 +590,40 @@ export interface PageStorageOperationsListParams {
  * @category StorageOperations
  * @category PageStorageOperations
  */
+export interface PageStorageOperationsListRevisionsParams {
+    where: {
+        pid: string;
+    };
+    limit: number;
+    after?: string;
+}
+/**
+ * @category StorageOperations
+ * @category PageStorageOperations
+ */
+export interface PageStorageOperationsListTagsParams {
+    where: {
+        search: string;
+        locale: string;
+        tenant?: string;
+    };
+}
+
+/**
+ * @category StorageOperations
+ * @category PageStorageOperations
+ */
 export interface PageStorageOperationsCreateParams {
     input: Record<string, any>;
+    page: Page;
+}
+/**
+ * @category StorageOperations
+ * @category PageStorageOperations
+ */
+export interface PageStorageOperationsCreateFromParams {
+    original: Page;
+    latestPage: Page;
     page: Page;
 }
 /**
@@ -597,7 +641,60 @@ export interface PageStorageOperationsUpdateParams {
  */
 export interface PageStorageOperationsDeleteParams {
     page: Page;
+    latestPage: Page;
+    publishedPage: Page | null;
 }
+/**
+ * @category StorageOperations
+ * @category PageStorageOperations
+ */
+export interface PageStorageOperationsDeleteAllParams {
+    page: Page;
+    latestPage: Page;
+    publishedPage: Page | null;
+}
+/**
+ * @category StorageOperations
+ * @category PageStorageOperations
+ */
+export interface PageStorageOperationsPublishParams {
+    original: Page;
+    page: Page;
+    latestPage: Page;
+    publishedPage: Page | null;
+    publishedPathPage: Page | null;
+}
+/**
+ * @category StorageOperations
+ * @category PageStorageOperations
+ */
+export interface PageStorageOperationsUnpublishParams {
+    original: Page;
+    page: Page;
+    latestPage: Page;
+    publishedPage: Page | null;
+}
+
+/**
+ * @category StorageOperations
+ * @category PageStorageOperations
+ */
+export interface PageStorageOperationsRequestReviewParams {
+    original: Page;
+    page: Page;
+    latestPage: Page;
+}
+
+/**
+ * @category StorageOperations
+ * @category PageStorageOperations
+ */
+export interface PageStorageOperationsRequestChangesParams {
+    original: Page;
+    page: Page;
+    latestPage: Page;
+}
+
 /**
  * @category StorageOperations
  * @category PageStorageOperations
@@ -605,7 +702,24 @@ export interface PageStorageOperationsDeleteParams {
 export interface PageStorageOperations {
     get: (params: PageStorageOperationsGetParams) => Promise<Page | null>;
     list: (params: PageStorageOperationsListParams) => Promise<PageStorageOperationsListResponse>;
+    listRevisions: (params: PageStorageOperationsListRevisionsParams) => Promise<Page[]>;
+    listTags: (params: PageStorageOperationsListTagsParams) => Promise<string[]>;
     create: (params: PageStorageOperationsCreateParams) => Promise<Page>;
+    createFrom: (params: PageStorageOperationsCreateFromParams) => Promise<Page>;
     update: (params: PageStorageOperationsUpdateParams) => Promise<Page>;
-    delete: (params: PageStorageOperationsDeleteParams) => Promise<Page>;
+    /**
+     * Deletes a certain page version.
+     * If required set new latest and published pages.
+     * Second page in the tuple must be new latest page, if any.
+     */
+    delete: (params: PageStorageOperationsDeleteParams) => Promise<[Page, Page | null]>;
+    /**
+     * Deletes ALL of the certain page versions.
+     */
+    deleteAll: (params: PageStorageOperationsDeleteAllParams) => Promise<[Page]>;
+
+    publish: (params: PageStorageOperationsPublishParams) => Promise<Page>;
+    unpublish: (params: PageStorageOperationsUnpublishParams) => Promise<Page>;
+    requestReview: (params: PageStorageOperationsRequestReviewParams) => Promise<Page>;
+    requestChanges: (params: PageStorageOperationsRequestChangesParams) => Promise<Page>;
 }

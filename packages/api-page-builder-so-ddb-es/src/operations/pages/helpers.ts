@@ -1,11 +1,12 @@
-import { Page, PbContext } from "~/types";
-import { IndexPageDataPlugin } from "~/plugins/IndexPageDataPlugin";
+import { IndexPageDataPlugin } from "~/plugins/definitions/IndexPageDataPlugin";
+import { PbContext } from "@webiny/api-page-builder/graphql/types";
+import { Page } from "@webiny/api-page-builder/types";
 
-export const getESPageData = (context: PbContext, page) => {
+export const getESPageData = (page: Page) => {
     return {
         __type: "page",
-        tenant: context.tenancy.getCurrentTenant().id,
-        webinyVersion: context.WEBINY_VERSION,
+        tenant: page.tenant,
+        webinyVersion: page.webinyVersion,
         id: page.id,
         pid: page.pid,
         editor: page.editor,
@@ -35,12 +36,12 @@ export const getESPageData = (context: PbContext, page) => {
 };
 
 export const getESLatestPageData = (context: PbContext, page: Page) => {
-    const data = { ...getESPageData(context, page), latest: true };
+    const data = { ...getESPageData(page), latest: true };
     return modifyData(data, page, context);
 };
 
 export const getESPublishedPageData = (context: PbContext, page: Page) => {
-    const data = { ...getESPageData(context, page), published: true };
+    const data = { ...getESPageData(page), published: true };
     return modifyData(data, page, context);
 };
 

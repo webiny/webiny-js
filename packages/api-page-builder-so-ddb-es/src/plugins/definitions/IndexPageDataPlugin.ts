@@ -1,5 +1,6 @@
 import { Plugin } from "@webiny/plugins";
-import { Page, PbContext } from "../types";
+import { PbContext } from "@webiny/api-page-builder/graphql/types";
+import { Page } from "@webiny/api-page-builder/types";
 
 interface ApplyPageDataParams<TPage> {
     data: Record<string, any>;
@@ -21,8 +22,9 @@ export class IndexPageDataPlugin<TPage extends Page = Page> extends Plugin {
     }
 
     apply(params: ApplyPageDataParams<TPage>) {
-        if (typeof this.callable === "function") {
-            this.callable(params);
+        if (typeof this.callable !== "function") {
+            return;
         }
+        this.callable(params);
     }
 }

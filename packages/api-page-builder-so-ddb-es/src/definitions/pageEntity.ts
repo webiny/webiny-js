@@ -19,10 +19,25 @@ export const definePageEntity = (params: { context: PbContext; table: Table }): 
             id: {
                 type: "string"
             },
-            name: {
+            pid: {
                 type: "string"
             },
-            type: {
+            tenant: {
+                type: "string"
+            },
+            locale: {
+                type: "string"
+            },
+            title: {
+                type: "string"
+            },
+            editor: {
+                type: "string"
+            },
+            createdFrom: {
+                type: "string"
+            },
+            path: {
                 type: "string"
             },
             category: {
@@ -31,19 +46,43 @@ export const definePageEntity = (params: { context: PbContext; table: Table }): 
             content: {
                 type: "map"
             },
-            preview: {
+            publishedOn: {
+                type: "string"
+            },
+            version: {
+                type: "string"
+            },
+            settings: {
                 type: "map"
             },
+            locked: {
+                type: "boolean"
+            },
+            status: {
+                type: "string"
+            },
+            visibility: {
+                type: "map"
+            },
+            home: {
+                type: "boolean"
+            },
+            notFound: {
+                type: "boolean"
+            },
             createdOn: {
+                type: "string"
+            },
+            savedOn: {
                 type: "string"
             },
             createdBy: {
                 type: "map"
             },
-            tenant: {
-                type: "string"
+            ownedBy: {
+                type: "map"
             },
-            locale: {
+            webinyVersion: {
                 type: "string"
             },
             ...attributes

@@ -3,7 +3,6 @@ import { DbContext } from "@webiny/handler-db/types";
 import { SecurityContext, SecurityPermission } from "@webiny/api-security/types";
 import { TenancyContext } from "@webiny/api-tenancy/types";
 import { I18NContext } from "@webiny/api-i18n/types";
-import DataLoader from "dataloader";
 import { ClientContext } from "@webiny/handler-client/types";
 import { Category, DefaultSettings, Menu, Page, PageElement, System } from "~/types";
 import { PrerenderingServiceClientContext } from "@webiny/api-prerendering-service/client/types";
@@ -58,9 +57,10 @@ export type FlushParams = {
 };
 
 export type PagesCrud = {
-    dataLoaders: {
-        getPublishedById: DataLoader<{ id: string; preview?: boolean }, Page>;
-    };
+    // dataLoaders: {
+    // getPublishedById: DataLoader<{ id: string; preview?: boolean }, Page>;
+    // getById: DataLoader<string, Page | null>;
+    // };
     get<TPage extends Page = Page>(id: string): Promise<TPage>;
     listLatest<TPage extends Page = Page>(args: ListPagesParams): Promise<[TPage[], ListMeta]>;
     listPublished<TPage extends Page = Page>(args: ListPagesParams): Promise<[TPage[], ListMeta]>;

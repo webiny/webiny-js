@@ -100,6 +100,32 @@ const createInitialQueryValue = (
     return query;
 };
 
+const findFieldPlugin = (
+    plugins: Record<string, ElasticsearchFieldPlugin>,
+    field: string
+): ElasticsearchFieldPlugin => {
+    const plugin = plugins[field] || plugins["*"];
+    if (plugin) {
+        return plugin;
+    }
+    throw new WebinyError(`Missing plugin for the field "${field}".`, "PLUGIN_ERROR", {
+        field
+    });
+};
+
+const findOperatorPlugin = (
+    plugins: Record<string, ElasticsearchQueryBuilderOperatorPlugin>,
+    operator: string
+): ElasticsearchQueryBuilderOperatorPlugin => {
+    const fieldPlugin = plugins[operator];
+    if (fieldPlugin) {
+        return fieldPlugin;
+    }
+    throw new WebinyError(`Missing plugin for the operator "${operator}"`, "PLUGIN_ERROR", {
+        operator
+    });
+};
+
 interface CreateElasticsearchBodyParams {
     context: PbContext;
     where: PageStorageOperationsListWhere;
