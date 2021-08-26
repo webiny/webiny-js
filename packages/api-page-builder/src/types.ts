@@ -2,14 +2,6 @@ import { DefaultSettingsCrudOptions } from "~/graphql/types";
 
 export * from "./graphql/types";
 
-// DB types.
-export enum TYPE {
-    PAGE = "pb.page",
-    PAGE_LATEST = "pb.page.l",
-    PAGE_PUBLISHED = "pb.page.p",
-    PAGE_PUBLISHED_PATH = "pb.page.p.path"
-}
-
 /**
  * @category RecordModel
  */
