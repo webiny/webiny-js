@@ -86,7 +86,10 @@ export type PagesCrud = {
         pageZipUrl: string;
         pageZipFile: Record<string, any>;
     }>;
-    importPage<TPage extends Page = Page>(id: string, data: Record<string, any>): Promise<TPage>;
+    importPage<TPage extends Page = Page>(
+        category: string,
+        data: Record<string, any>
+    ): Promise<TPage>;
     prerendering: {
         render(args: RenderParams): Promise<void>;
         flush(args: FlushParams): Promise<void>;

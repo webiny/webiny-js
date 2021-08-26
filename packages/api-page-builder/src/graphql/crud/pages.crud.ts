@@ -1534,7 +1534,7 @@ const plugin: ContextPlugin<PbContext> = {
                 },
 
                 async importPage(
-                    id: string,
+                    category: string,
                     data: {
                         zipFileKey: string;
                     }
@@ -1542,8 +1542,8 @@ const plugin: ContextPlugin<PbContext> = {
                     await checkBasePermissions(context, PERMISSION_NAME, {
                         rwd: "w"
                     });
-
-                    let page = await context.pageBuilder.pages.get(id);
+                    // Create an empty page
+                    let page = await context.pageBuilder.pages.create(category);
 
                     // Download the zip and upload the assets
                     const { content } = await importPage({
@@ -1552,12 +1552,8 @@ const plugin: ContextPlugin<PbContext> = {
                         pageTitle: page.title
                     });
 
-                    /**
-                     * We assume that in current workflow, a Page ID is given to which we add the content of the uploaded ZIP.
-                     */
-
                     // Update page
-                    page = await context.pageBuilder.pages.update(id, { content });
+                    page = await context.pageBuilder.pages.update(page.id, { content });
 
                     return page;
                 },

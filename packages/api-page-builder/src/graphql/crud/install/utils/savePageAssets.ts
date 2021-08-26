@@ -164,8 +164,7 @@ export const uploadPageAssets = async ({
                                         keyPrefix,
                                         hideInFileManager: Boolean(
                                             currentFile.meta && currentFile.meta.private
-                                        ),
-                                        tags: [`${keyPrefix}-assets`]
+                                        )
                                     })
                                 );
                             } catch (e) {
