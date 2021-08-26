@@ -19,13 +19,17 @@ import { createListResponse } from "@webiny/db-dynamodb/utils/listResponse";
 import { defineTable } from "~/definitions/table";
 import { definePageElementEntity } from "~/definitions/pageElementEntity";
 
-const TYPE = "pb.pageElement";
-
-interface Params {
+export interface Params {
     context: PbContext;
 }
+
+export interface PartitionKeyOptions {
+    tenant: string;
+    locale: string;
+}
+
 export class PageElementStorageOperationsDdbEs implements PageElementStorageOperations {
-    private readonly context: PbContext;
+    protected readonly context: PbContext;
     public readonly table: Table;
     public readonly entity: Entity<any>;
 
@@ -46,7 +50,7 @@ export class PageElementStorageOperationsDdbEs implements PageElementStorageOper
 
         const keys = {
             PK: this.createPartitionKey(where),
-            SK: where.id
+            SK: this.createSortKey(where)
         };
         try {
             const item = await this.entity.get(keys);
@@ -125,13 +129,13 @@ export class PageElementStorageOperationsDdbEs implements PageElementStorageOper
                 tenant: pageElement.tenant,
                 locale: pageElement.locale
             }),
-            SK: pageElement.id
+            SK: this.createSortKey(pageElement)
         };
 
         try {
             await this.entity.put({
                 ...pageElement,
-                TYPE,
+                TYPE: this.createType(),
                 ...keys
             });
             return pageElement;
@@ -154,12 +158,13 @@ export class PageElementStorageOperationsDdbEs implements PageElementStorageOper
                 tenant: pageElement.tenant,
                 locale: pageElement.locale
             }),
-            SK: pageElement.id
+            SK: this.createSortKey(pageElement)
         };
 
         try {
             await this.entity.put({
                 ...pageElement,
+                TYPE: this.createType(),
                 ...keys
             });
             return pageElement;
@@ -183,7 +188,7 @@ export class PageElementStorageOperationsDdbEs implements PageElementStorageOper
                 tenant: pageElement.tenant,
                 locale: pageElement.locale
             }),
-            SK: pageElement.id
+            SK: this.createSortKey(pageElement)
         };
 
         try {
@@ -201,7 +206,26 @@ export class PageElementStorageOperationsDdbEs implements PageElementStorageOper
         }
     }
 
-    private createPartitionKey({ tenant, locale }): string {
+    protected createPartitionKey({ tenant, locale }: PartitionKeyOptions): string {
         return `T#${tenant}#L${locale}#PB#PE`;
+    }
+
+    protected createSortKey(input: Pick<PageElement, "id"> | string): string {
+        if (typeof input === "string") {
+            return input;
+        } else if (input.id) {
+            return input.id;
+        }
+        throw new WebinyError(
+            "Could not determine the category sort key from the input.",
+            "MALFORMED_SORT_KEY",
+            {
+                input
+            }
+        );
+    }
+
+    protected createType(): string {
+        return "pb.pageElement";
     }
 }

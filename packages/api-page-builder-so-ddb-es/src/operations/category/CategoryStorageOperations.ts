@@ -19,14 +19,18 @@ import { createListResponse } from "@webiny/db-dynamodb/utils/listResponse";
 import { defineTable } from "~/definitions/table";
 import { defineCategoryEntity } from "~/definitions/categoryEntity";
 
-const TYPE = "pb.category";
-
-interface Params {
+export interface Params {
     context: PbContext;
 }
+
+export interface PartitionKeyOptions {
+    tenant: string;
+    locale: string;
+}
+
 export class CategoryStorageOperationsDdbEs implements CategoryStorageOperations {
-    private readonly context: PbContext;
-    private readonly dataLoader: CategoryDataLoader;
+    protected readonly context: PbContext;
+    protected readonly dataLoader: CategoryDataLoader;
     public readonly table: Table;
     public readonly entity: Entity<any>;
 
@@ -121,13 +125,13 @@ export class CategoryStorageOperationsDdbEs implements CategoryStorageOperations
                 tenant: category.tenant,
                 locale: category.locale
             }),
-            SK: category.slug
+            SK: this.createSortKey(category)
         };
 
         try {
             await this.entity.put({
                 ...category,
-                TYPE,
+                TYPE: this.createType(),
                 ...keys
             });
             /**
@@ -154,12 +158,13 @@ export class CategoryStorageOperationsDdbEs implements CategoryStorageOperations
                 tenant: original.tenant,
                 locale: original.locale
             }),
-            SK: category.slug
+            SK: this.createSortKey(category)
         };
 
         try {
             await this.entity.put({
                 ...category,
+                TYPE: this.createType(),
                 ...keys
             });
             /**
@@ -188,7 +193,7 @@ export class CategoryStorageOperationsDdbEs implements CategoryStorageOperations
                 tenant: category.tenant,
                 locale: category.locale
             }),
-            SK: category.slug
+            SK: this.createSortKey(category)
         };
 
         try {
@@ -214,7 +219,28 @@ export class CategoryStorageOperationsDdbEs implements CategoryStorageOperations
         }
     }
 
-    public createPartitionKey({ tenant, locale }): string {
+    public createPartitionKey({ tenant, locale }: PartitionKeyOptions): string {
         return `T#${tenant}#L${locale}PB#C`;
+    }
+    /**
+     * Either string or object with slug property can be passed to get back the sort key.
+     */
+    public createSortKey(input: Pick<Category, "slug"> | string): string {
+        if (typeof input === "string") {
+            return input;
+        } else if (input.slug) {
+            return input.slug;
+        }
+        throw new WebinyError(
+            "Could not determine the category sort key from the input.",
+            "MALFORMED_SORT_KEY",
+            {
+                input
+            }
+        );
+    }
+
+    protected createType(): string {
+        return "pb.category";
     }
 }

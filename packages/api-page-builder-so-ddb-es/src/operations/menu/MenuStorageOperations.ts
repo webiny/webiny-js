@@ -19,14 +19,17 @@ import { createListResponse } from "@webiny/db-dynamodb/utils/listResponse";
 import { defineTable } from "~/definitions/table";
 import { defineMenuEntity } from "~/definitions/menuEntity";
 
-const TYPE = "pb.menu";
-
-interface Params {
+export interface Params {
     context: PbContext;
 }
 
+export interface PartitionKeyOptions {
+    tenant: string;
+    locale: string;
+}
+
 export class MenuStorageOperationsDdbEs implements MenuStorageOperations {
-    private readonly context: PbContext;
+    protected readonly context: PbContext;
     public readonly table: Table;
     public readonly entity: Entity<any>;
 
@@ -46,7 +49,7 @@ export class MenuStorageOperationsDdbEs implements MenuStorageOperations {
         const { where } = params;
         const keys = {
             PK: this.createPartitionKey(where),
-            SK: where.slug
+            SK: this.createSortKey(where)
         };
 
         try {
@@ -126,13 +129,13 @@ export class MenuStorageOperationsDdbEs implements MenuStorageOperations {
                 tenant: menu.tenant,
                 locale: menu.locale
             }),
-            SK: menu.slug
+            SK: this.createSortKey(menu)
         };
 
         try {
             await this.entity.put({
                 ...menu,
-                TYPE,
+                TYPE: this.createType(),
                 ...keys
             });
             return menu;
@@ -155,12 +158,13 @@ export class MenuStorageOperationsDdbEs implements MenuStorageOperations {
                 tenant: menu.tenant,
                 locale: menu.locale
             }),
-            SK: menu.slug
+            SK: this.createSortKey(menu)
         };
 
         try {
             await this.entity.put({
                 ...menu,
+                TYPE: this.createType(),
                 ...keys
             });
             return menu;
@@ -184,7 +188,7 @@ export class MenuStorageOperationsDdbEs implements MenuStorageOperations {
                 tenant: menu.tenant,
                 locale: menu.locale
             }),
-            SK: menu.slug
+            SK: this.createSortKey(menu)
         };
 
         try {
@@ -205,7 +209,26 @@ export class MenuStorageOperationsDdbEs implements MenuStorageOperations {
         }
     }
 
-    private createPartitionKey({ tenant, locale }): string {
+    protected createPartitionKey({ tenant, locale }: PartitionKeyOptions): string {
         return `T#${tenant}#L${locale}#PB#M`;
+    }
+
+    protected createSortKey(input: Pick<Menu, "slug"> | string): string {
+        if (typeof input === "string") {
+            return input;
+        } else if (input.slug) {
+            return input.slug;
+        }
+        throw new WebinyError(
+            "Could not determine the menu sort key from the input.",
+            "MALFORMED_SORT_KEY",
+            {
+                input
+            }
+        );
+    }
+
+    protected createType(): string {
+        return "pb.menu";
     }
 }

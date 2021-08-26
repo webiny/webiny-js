@@ -14,23 +14,21 @@ import { defineSettingsEntity } from "~/definitions/settingsEntity";
 import { defineTable } from "~/definitions/table";
 import { SettingsDataLoader } from "~/operations/settings/SettingsDataLoader";
 
-const TYPE = "pb.settings";
-
-interface Params {
+export interface Params {
     context: PbContext;
 }
 
-interface PartitionKeyOptions {
+export interface PartitionKeyOptions {
     tenant?: string | boolean;
     locale?: string | boolean;
 }
 
 export class SettingsStorageOperationsDdbEs implements SettingsStorageOperations {
-    private readonly context: PbContext;
+    protected readonly context: PbContext;
     public readonly table: Table;
     public readonly entity: Entity<any>;
 
-    private dataLoader: SettingsDataLoader;
+    protected dataLoader: SettingsDataLoader;
 
     public constructor({ context }: Params) {
         this.context = context;
@@ -90,7 +88,7 @@ export class SettingsStorageOperationsDdbEs implements SettingsStorageOperations
         try {
             await this.entity.put({
                 ...settings,
-                TYPE,
+                TYPE: this.createType(),
                 ...keys
             });
 
@@ -131,7 +129,7 @@ export class SettingsStorageOperationsDdbEs implements SettingsStorageOperations
         try {
             await this.entity.put({
                 ...settings,
-                TYPE,
+                TYPE: this.createType(),
                 ...keys
             });
 
@@ -154,7 +152,7 @@ export class SettingsStorageOperationsDdbEs implements SettingsStorageOperations
      * Because it is a possibility that tenant and locale are set as false (for the global settings) we must take
      * it in consideration and create the partition key for the global settings.
      */
-    private createPartitionKey(options: PartitionKeyOptions): string {
+    protected createPartitionKey(options: PartitionKeyOptions): string {
         let { tenant, locale } = options;
         const parts: string[] = [];
         if (tenant !== false) {
@@ -174,7 +172,7 @@ export class SettingsStorageOperationsDdbEs implements SettingsStorageOperations
         return parts.join("#");
     }
 
-    private createSortKey(type: string): string {
+    protected createSortKey(type: string): string {
         switch (type) {
             case "default":
                 return type;
@@ -183,5 +181,9 @@ export class SettingsStorageOperationsDdbEs implements SettingsStorageOperations
                     type
                 });
         }
+    }
+
+    protected createType(): string {
+        return "pb.settings";
     }
 }

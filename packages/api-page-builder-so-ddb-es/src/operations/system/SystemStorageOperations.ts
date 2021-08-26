@@ -11,14 +11,12 @@ import WebinyError from "@webiny/error";
 import { defineSystemEntity } from "~/definitions/systemEntity";
 import { defineTable } from "~/definitions/table";
 
-const SORT_KEY = "PB";
-
-interface Params {
+export interface Params {
     context: PbContext;
 }
 
 export class SystemStorageOperationsDdbEs implements SystemStorageOperations {
-    private readonly context: PbContext;
+    protected readonly context: PbContext;
     public readonly table: Table;
     public readonly entity: Entity<any>;
 
@@ -37,7 +35,7 @@ export class SystemStorageOperationsDdbEs implements SystemStorageOperations {
     public async get(): Promise<System> {
         const keys = {
             PK: this.createPartitionKey(),
-            SK: SORT_KEY
+            SK: this.createSortKey()
         };
         try {
             const item = await this.entity.get(keys);
@@ -58,7 +56,7 @@ export class SystemStorageOperationsDdbEs implements SystemStorageOperations {
         const { system } = params;
         const keys = {
             PK: this.createPartitionKey(),
-            SK: SORT_KEY
+            SK: this.createSortKey()
         };
         try {
             await this.entity.put({
@@ -82,7 +80,7 @@ export class SystemStorageOperationsDdbEs implements SystemStorageOperations {
         const { original, system } = params;
         const keys = {
             PK: this.createPartitionKey(),
-            SK: SORT_KEY
+            SK: this.createSortKey()
         };
         try {
             await this.entity.put({
@@ -103,7 +101,11 @@ export class SystemStorageOperationsDdbEs implements SystemStorageOperations {
         }
     }
 
-    private createPartitionKey(): string {
+    protected createPartitionKey(): string {
         return `T#${this.context.tenancy.getCurrentTenant().id}#SYSTEM`;
+    }
+
+    protected createSortKey(): string {
+        return "PB";
     }
 }

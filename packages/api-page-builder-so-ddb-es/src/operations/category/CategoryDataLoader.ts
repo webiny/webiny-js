@@ -40,7 +40,7 @@ export class CategoryDataLoader {
                 const batched = items.map(item => {
                     return this.storageOperations.entity.getBatch({
                         PK: this.storageOperations.createPartitionKey(item),
-                        SK: item.slug
+                        SK: this.storageOperations.createSortKey(item)
                     });
                 });
 

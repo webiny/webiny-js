@@ -16,6 +16,9 @@ export const defineCategoryEntity = (params: { context: PbContext; table: Table 
             SK: {
                 sortKey: true
             },
+            TYPE: {
+                type: "string"
+            },
             name: {
                 type: "string"
             },

@@ -15,8 +15,7 @@ import {
     PageStorageOperationsRequestReviewParams,
     PageStorageOperationsUnpublishParams,
     PageStorageOperationsUpdateParams,
-    PbContext,
-    TYPE
+    PbContext
 } from "@webiny/api-page-builder/types";
 import { Entity, Table } from "dynamodb-toolbox";
 import { defineTable } from "~/definitions/table";
@@ -107,12 +106,12 @@ export class PageStorageOperationsDdbEs implements PageStorageOperations {
             this.entity.putBatch({
                 ...page,
                 ...versionKeys,
-                TYPE: TYPE.PAGE
+                TYPE: this.createBasicType()
             }),
             this.entity.putBatch({
                 ...page,
                 ...latestKeys,
-                TYPE: TYPE.PAGE_LATEST
+                TYPE: this.createLatestType()
             })
         ];
         const esData = getESLatestPageData(this.context, page);
@@ -155,12 +154,12 @@ export class PageStorageOperationsDdbEs implements PageStorageOperations {
         const items = [
             this.entity.putBatch({
                 ...page,
-                TYPE: TYPE.PAGE,
+                TYPE: this.createBasicType(),
                 ...versionKeys
             }),
             this.entity.putBatch({
                 ...page,
-                TYPE: TYPE.PAGE_LATEST,
+                TYPE: this.createLatestType(),
                 ...latestKeys
             })
         ];
@@ -219,7 +218,7 @@ export class PageStorageOperationsDdbEs implements PageStorageOperations {
         const items = [
             this.entity.putBatch({
                 ...page,
-                TYPE: TYPE.PAGE,
+                TYPE: this.createBasicType(),
                 ...keys
             })
         ];
@@ -243,7 +242,7 @@ export class PageStorageOperationsDdbEs implements PageStorageOperations {
             items.push(
                 this.entity.putBatch({
                     ...page,
-                    TYPE: TYPE.PAGE_LATEST,
+                    TYPE: this.createLatestType(),
                     ...latestKeys
                 })
             );
@@ -313,7 +312,7 @@ export class PageStorageOperationsDdbEs implements PageStorageOperations {
             items.push(
                 this.entity.deleteBatch({
                     PK: this.createPathPartitionKey(),
-                    SK: page.path
+                    SK: this.createPathSortKey(page)
                 })
             );
             esItems.push(
@@ -337,7 +336,7 @@ export class PageStorageOperationsDdbEs implements PageStorageOperations {
                 items.push(
                     this.entity.putBatch({
                         ...previousLatestRecord,
-                        TYPE: TYPE.PAGE_LATEST,
+                        TYPE: this.createLatestType(),
                         PK: partitionKey,
                         SK: this.createLatestSortKey()
                     })
@@ -484,7 +483,7 @@ export class PageStorageOperationsDdbEs implements PageStorageOperations {
         const items = [
             this.entity.putBatch({
                 ...page,
-                TYPE: TYPE.PAGE,
+                TYPE: this.createBasicType(),
                 PK: this.createPartitionKey(page.pid),
                 SK: this.createSortKey(page.version)
             })
@@ -499,7 +498,7 @@ export class PageStorageOperationsDdbEs implements PageStorageOperations {
             items.push(
                 this.entity.putBatch({
                     ...page,
-                    TYPE: TYPE.PAGE_LATEST,
+                    TYPE: this.createLatestType(),
                     PK: this.createPartitionKey(page.pid),
                     SK: this.createLatestSortKey()
                 })
@@ -567,9 +566,9 @@ export class PageStorageOperationsDdbEs implements PageStorageOperations {
         items.push(
             this.entity.putBatch({
                 ...page,
-                TYPE: TYPE.PAGE_PUBLISHED_PATH,
+                TYPE: this.createPublishedPathType(),
                 PK: this.createPathPartitionKey(),
-                SK: page.path
+                SK: this.createPathSortKey(page)
             })
         );
         /**
@@ -578,7 +577,7 @@ export class PageStorageOperationsDdbEs implements PageStorageOperations {
         items.push(
             this.entity.putBatch({
                 ...page,
-                TYPE: TYPE.PAGE_PUBLISHED,
+                TYPE: this.createPublishedType(),
                 PK: this.createPartitionKey(page.pid),
                 SK: this.createPublishedSortKey()
             })
@@ -620,11 +619,11 @@ export class PageStorageOperationsDdbEs implements PageStorageOperations {
             }),
             this.entity.deleteBatch({
                 PK: this.createPathPartitionKey(),
-                SK: page.path
+                SK: this.createPathSortKey(page)
             }),
             this.entity.putBatch({
                 ...page,
-                TYPE: TYPE.PAGE,
+                TYPE: this.createBasicType(),
                 PK: this.createPartitionKey(page.pid),
                 SK: this.createSortKey(page.version)
             })
@@ -639,7 +638,7 @@ export class PageStorageOperationsDdbEs implements PageStorageOperations {
             items.push(
                 this.entity.putBatch({
                     ...page,
-                    TYPE: TYPE.PAGE_LATEST,
+                    TYPE: this.createLatestType(),
                     PK: this.createPartitionKey(page.pid),
                     SK: this.createLatestSortKey()
                 })
@@ -699,7 +698,7 @@ export class PageStorageOperationsDdbEs implements PageStorageOperations {
         const items = [
             this.entity.putBatch({
                 ...page,
-                TYPE: TYPE.PAGE,
+                TYPE: this.createBasicType(),
                 PK: this.createPartitionKey(page.pid),
                 SK: this.createSortKey(page.version)
             })
@@ -709,7 +708,7 @@ export class PageStorageOperationsDdbEs implements PageStorageOperations {
             items.push(
                 this.entity.putBatch({
                     ...page,
-                    TYPE: TYPE.PAGE_LATEST,
+                    TYPE: this.createLatestType(),
                     PK: this.createPartitionKey(page.pid),
                     SK: this.createLatestSortKey()
                 })
@@ -767,7 +766,7 @@ export class PageStorageOperationsDdbEs implements PageStorageOperations {
         const items = [
             this.entity.putBatch({
                 ...page,
-                TYPE: TYPE.PAGE,
+                TYPE: this.createBasicType(),
                 PK: this.createPartitionKey(page.pid),
                 SK: this.createSortKey(page.version)
             })
@@ -777,7 +776,7 @@ export class PageStorageOperationsDdbEs implements PageStorageOperations {
             items.push(
                 this.entity.putBatch({
                     ...page,
-                    TYPE: TYPE.PAGE_LATEST,
+                    TYPE: this.createLatestType(),
                     PK: this.createPartitionKey(page.pid),
                     SK: this.createLatestSortKey()
                 })
@@ -1079,11 +1078,42 @@ export class PageStorageOperationsDdbEs implements PageStorageOperations {
         return `REV#${version};`;
     }
 
+    protected createPathSortKey(input: Pick<Page, "path"> | string): string {
+        if (typeof input === "string") {
+            return input;
+        } else if (input.path) {
+            return input.path;
+        }
+        throw new WebinyError(
+            "Could not determine the page path sort key from the input.",
+            "MALFORMED_SORT_KEY",
+            {
+                input
+            }
+        );
+    }
+
     protected createPublishedSortKey(): string {
         return "P";
     }
 
     protected createLatestSortKey(): string {
         return "L";
+    }
+
+    protected createBasicType(): string {
+        return "pb.page";
+    }
+
+    protected createLatestType(): string {
+        return "pb.page.l";
+    }
+
+    protected createPublishedType(): string {
+        return "pb.page.p";
+    }
+
+    protected createPublishedPathType(): string {
+        return "pb.page.p.path";
     }
 }
