@@ -1,4 +1,4 @@
-import pulumi from "@pulumi/pulumi";
+import * as pulumi from "@pulumi/pulumi";
 import { tagResources } from "@webiny/cli-plugin-deploy-pulumi/utils";
 
 /**

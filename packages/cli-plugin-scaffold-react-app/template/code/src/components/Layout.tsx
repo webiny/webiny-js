@@ -1,5 +1,5 @@
 import React from "react";
-import transparentBackground from "../images/inner-transparent-bg.svg";
+import transparentBackground from "~/images/inner-transparent-bg.svg";
 import { Link } from "@webiny/react-router";
 
 interface Props {
