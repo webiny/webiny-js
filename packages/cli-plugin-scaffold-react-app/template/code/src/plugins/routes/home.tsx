@@ -1,8 +1,8 @@
 import React from "react";
 import { RoutePlugin } from "@webiny/app/plugins/RoutePlugin";
 import { Route } from "@webiny/react-router";
-import { ReactComponent as WebinyLogo } from "../../images/webiny.svg";
-import Layout from "../../components/Layout";
+import { ReactComponent as WebinyLogo } from "~/images/webiny.svg";
+import Layout from "~/components/Layout";
 import UsefulLink from "./home/UsefulLink";
 import UsefulLinks from "./home/UsefulLinks";
 
