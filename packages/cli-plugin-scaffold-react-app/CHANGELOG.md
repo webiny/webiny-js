@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.14.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.13.0...v5.14.0-beta.0) (2021-08-26)
+
+
+### Bug Fixes
+
+* correct `pulumi` import statement ([207a5b0](https://github.com/webiny/webiny-js/commit/207a5b02ca88f6759a20abce9f81b155c496de07))
+* use `Trebuchet MS', sans-serif;` font ([103e666](https://github.com/webiny/webiny-js/commit/103e6666c61a2011661a8daa438069506518c385))
+* use tilde instead of '../../..' ([0094b1d](https://github.com/webiny/webiny-js/commit/0094b1d2eab7db94a6b7d1f22a241cd56fe7e40a))
+
+
+
+
+
 # [5.13.0](https://github.com/webiny/webiny-js/compare/v5.13.0-beta.4...v5.13.0) (2021-08-18)
 
 
