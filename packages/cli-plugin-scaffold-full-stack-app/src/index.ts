@@ -80,7 +80,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
             ];
         },
         generate: async options => {
-            const { input, context, inquirer } = options;
+            const { input, context, inquirer, wait } = options;
 
             const appPath = path.join(input.path, "/app");
             const apiPath = path.join(input.path, "/api");
@@ -139,6 +139,15 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
 
             const templateFolderPath = path.join(__dirname, "templates", "essentials");
             await ncp(templateFolderPath, appPath);
+
+            await wait(500);
+
+            // Replace generic "TargetDataModel" with received "dataModelName" argument.
+            const codeReplacements = [
+                { find: "project-applications-path", replaceWith: input.path }
+            ];
+
+            replaceInPath(path.join(appPath, "code", "webiny.config.ts"), codeReplacements);
         },
         onSuccess: async options => {
             const { input, inquirer, context, wait } = options;
@@ -204,7 +213,6 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                     },
                     { find: "target-data-model", replaceWith: Case.kebab(dataModelName.singular) },
                     { find: "Target Data Model", replaceWith: Case.title(dataModelName.singular) },
-                    { find: "project-applications-path", replaceWith: input.path }
                 ];
 
                 replaceInPath(path.join(appPath, "code", "**/*.ts"), codeReplacements);
