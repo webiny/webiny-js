@@ -6,12 +6,15 @@
     "../api-elasticsearch",
     "../api-page-builder",
     "../error",
+    "../plugins",
+    "../api-dynamodb-to-elasticsearch",
     "../handler-db",
     "../db-dynamodb",
     "../handler-aws",
     "../handler-graphql",
     "../api-security",
-    "../api-tenancy"
+    "../api-tenancy",
+    "../handler"
   ],
   "compilerOptions": {
     "outDir": "dist",
