@@ -56,8 +56,8 @@ export class SettingsStorageOperationsDdbEs implements SettingsStorageOperations
         const { tenant, locale, where } = params;
         const keys = {
             PK: this.createPartitionKey({
-                tenant,
-                locale
+                tenant: tenant || where.tenant || false,
+                locale: locale || where.locale || false
             }),
             SK: this.createSortKey(where.type)
         };

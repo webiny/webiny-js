@@ -10,8 +10,8 @@ import { DefaultSettingsModel } from "../../utils/models";
 import mergeWith from "lodash/mergeWith";
 import Error from "@webiny/error";
 import { SettingsPlugin } from "~/plugins/SettingsPlugin";
-import { SettingsStorageOperationsProviderPlugin } from "~/plugins/SettingsStorageOperationsProviderPlugin";
 import WebinyError from "@webiny/error";
+import { createSettingsStorageOperations } from "~/graphql/crud/settingsStorageOperations";
 /**
  * Possible types of settings.
  * If a lot of types should be added maybe we can do it via the plugin.
@@ -36,21 +36,8 @@ export default new ContextPlugin<PbContext>(async context => {
         console.log("Missing pageBuilder on context. Skipping Settings crud.");
         return;
     }
-    const pluginType = SettingsStorageOperationsProviderPlugin.type;
 
-    const providerPlugin: SettingsStorageOperationsProviderPlugin = context.plugins
-        .byType<SettingsStorageOperationsProviderPlugin>(pluginType)
-        .find(() => true);
-
-    if (!providerPlugin) {
-        throw new WebinyError(`Missing "${pluginType}" plugin.`, "PLUGIN_NOT_FOUND", {
-            type: pluginType
-        });
-    }
-
-    const storageOperations = await providerPlugin.provide({
-        context
-    });
+    const storageOperations = await createSettingsStorageOperations(context);
 
     const settingsPlugins = context.plugins.byType<SettingsPlugin>(SettingsPlugin.type);
 

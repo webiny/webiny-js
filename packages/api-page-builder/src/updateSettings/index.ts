@@ -1,23 +1,22 @@
+import DefaultSettingsModel from "../utils/models/DefaultSettings.model";
 import { HandlerPlugin } from "@webiny/handler/types";
 import { ArgsContext } from "@webiny/handler-args/types";
 import { DbContext } from "@webiny/handler-db/types";
-import DefaultSettingsModel from "../utils/models/DefaultSettings.model";
-import defaults from "../utils/defaults";
-import { DefaultSettings } from "../types";
+import { DefaultSettings } from "~/types";
+import { createSettingsStorageOperations } from "~/graphql/crud/settingsStorageOperations";
 
-export type HandlerArgs = {
+export interface HandlerArgs {
     data: DefaultSettings;
-};
+}
 
-export type HandlerResponse = {
+export interface HandlerResponse {
     data: DefaultSettings;
     error: {
         message: string;
+        code?: string;
+        data?: Record<string, any>;
     };
-};
-
-const PK = "PB#SETTINGS";
-const SK = "default";
+}
 
 /**
  * Updates system default settings, for all tenants and all locales. Of course, these values can later be overridden
@@ -27,35 +26,69 @@ export default (): HandlerPlugin<DbContext, ArgsContext<HandlerArgs>> => ({
     type: "handler",
     async handle(context): Promise<HandlerResponse> {
         try {
-            const { invocationArgs: args, db } = context;
-            let [[existingSettingsData]] = await db.read({
-                ...defaults.db,
-                query: { PK, SK }
+            /**
+             * We need to initialize storage operations for settings to be able to get and store the data.
+             */
+            const storageOperations = await createSettingsStorageOperations(context as any);
+            const { invocationArgs: args } = context;
+            let original = await storageOperations.get({
+                tenant: false,
+                locale: false,
+                where: {
+                    type: "default"
+                }
             });
 
-            if (!existingSettingsData) {
-                await db.create({
-                    ...defaults.db,
-                    data: { PK, SK, TYPE: "default", tenant: null, locale: null }
+            if (!original) {
+                const input: any = {
+                    type: "default",
+                    tenant: null,
+                    locale: null
+                };
+                await storageOperations.create({
+                    input,
+                    settings: {
+                        ...input
+                    }
                 });
-
-                existingSettingsData = {};
+                original = {
+                    ...input
+                };
             }
 
             const defaultSettingModel = new DefaultSettingsModel();
-            defaultSettingModel.populate(existingSettingsData).populate(args.data);
+            defaultSettingModel.populate(original).populate(args.data);
 
             await defaultSettingModel.validate();
 
             const updateSettingsData = await defaultSettingModel.toJSON();
-            await db.update({ ...defaults.db, query: { PK, SK }, data: updateSettingsData });
 
-            return { data: updateSettingsData, error: null };
-        } catch (e) {
+            const settings = {
+                ...original,
+                ...updateSettingsData
+            };
+
+            await storageOperations.update({
+                tenant: false,
+                locale: false,
+                input: updateSettingsData,
+                original,
+                settings
+            });
+
+            return {
+                data: settings,
+                error: null
+            };
+        } catch (ex) {
             return {
                 data: null,
                 error: {
-                    message: e.message
+                    message: ex.message,
+                    code: ex.code || "UNKNOWN",
+                    data: {
+                        ...(ex.data || {})
+                    }
                 }
             };
         }
