@@ -23,7 +23,7 @@ This package must be deployed via the `@webiny/serverless-page-builder` componen
 
 #### page_builder_installation_files.zip
 
-This file contains initial database data and phyiscal files - images, used on initial pages and page elements. Once unzipped, you will get the following folder structure:
+This file contains initial database data and physical files - images, used on initial pages and page elements. Once unzipped, you will get the following folder structure:
 
 ```
 ├── data
