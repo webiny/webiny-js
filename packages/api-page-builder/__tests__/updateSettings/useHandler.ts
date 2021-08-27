@@ -21,6 +21,21 @@ export default (params: Params = {}) => {
     const handler = createHandler(
         storageOperations(),
         graphqlHandler(),
+        {
+            type: "context",
+            apply: context => {
+                if (context.tenancy) {
+                    return;
+                }
+                context.tenancy = {
+                    getCurrentTenant: () => {
+                        return {
+                            id: "root"
+                        };
+                    }
+                };
+            }
+        },
         pageBuilderPlugins(),
         extraPlugins || []
     );

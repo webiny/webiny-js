@@ -38,9 +38,9 @@ export class SystemStorageOperationsDdbEs implements SystemStorageOperations {
             SK: this.createSortKey()
         };
         try {
-            const item = await this.entity.get(keys);
+            const result = await this.entity.get(keys);
 
-            return cleanupItem(this.entity, item);
+            return cleanupItem(this.entity, result?.Item);
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not load system record.",

@@ -6,12 +6,12 @@
     "@webiny/api-page-builder",
     "storage-operations",
     "dynamodb",
-    "pb:ddb"
+    "pb:ddb-es"
   ],
   "repository": {
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git",
-    "directory": "packages/api-page-builder-so-ddb"
+    "directory": "packages/api-page-builder-so-ddb-es"
   },
   "author": "Webiny Ltd",
   "description": "The DynamoDB + Elasticsearch storage operations Webiny Page Builder API.",

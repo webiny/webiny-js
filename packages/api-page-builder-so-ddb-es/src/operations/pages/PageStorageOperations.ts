@@ -213,7 +213,7 @@ export class PageStorageOperationsDdbEs implements PageStorageOperations {
             SK: this.createLatestSortKey()
         };
         const latestPageResult = await this.entity.get(latestKeys);
-        const latestPage = cleanupItem(this.entity, latestPageResult);
+        const latestPage = cleanupItem(this.entity, latestPageResult?.Item);
 
         const items = [
             this.entity.putBatch({
@@ -861,9 +861,9 @@ export class PageStorageOperationsDdbEs implements PageStorageOperations {
             SK: sortKey
         };
         try {
-            const item = await this.entity.get(keys);
+            const result = await this.entity.get(keys);
 
-            return cleanupItem(this.entity, item);
+            return cleanupItem(this.entity, result?.Item);
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not load page by given params.",

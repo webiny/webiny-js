@@ -53,8 +53,8 @@ export class MenuStorageOperationsDdbEs implements MenuStorageOperations {
         };
 
         try {
-            const item = await this.entity.get(keys);
-            return cleanupItem(this.entity, item);
+            const result = await this.entity.get(keys);
+            return cleanupItem(this.entity, result?.Item);
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not load menu by given parameters.",

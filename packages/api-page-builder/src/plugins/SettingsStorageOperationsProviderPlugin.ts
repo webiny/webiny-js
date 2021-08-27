@@ -6,7 +6,7 @@ export interface Params {
 }
 
 export abstract class SettingsStorageOperationsProviderPlugin extends Plugin {
-    public static readonly type = "pb.storageOperationsProvider.system";
+    public static readonly type = "pb.storageOperationsProvider.settings";
 
     public abstract provide(params: Params): Promise<SettingsStorageOperations>;
 }
