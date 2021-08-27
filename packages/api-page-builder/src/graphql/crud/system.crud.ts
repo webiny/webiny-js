@@ -6,10 +6,11 @@ import executeCallbacks from "./utils/executeCallbacks";
 import { preparePageData } from "./install/welcome-to-webiny-page-data";
 import { notFoundPageData } from "./install/notFoundPageData";
 import savePageAssets from "./install/utils/savePageAssets";
-import { PbContext, System } from "~/types";
+import { PbContext, System, SystemStorageOperations } from "~/types";
 import { InstallationPlugin } from "~/plugins/InstallationPlugin";
 import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
 import { SystemStorageOperationsProviderPlugin } from "~/plugins/SystemStorageOperationsProviderPlugin";
+import { createStorageOperations } from "./storageOperations";
 
 export default new ContextPlugin<PbContext>(async context => {
     /**
@@ -19,21 +20,11 @@ export default new ContextPlugin<PbContext>(async context => {
         console.log("Missing pageBuilder on context. Skipping System crud.");
         return;
     }
-    const pluginType = SystemStorageOperationsProviderPlugin.type;
 
-    const providerPlugin: SystemStorageOperationsProviderPlugin = context.plugins
-        .byType<SystemStorageOperationsProviderPlugin>(pluginType)
-        .find(() => true);
-
-    if (!providerPlugin) {
-        throw new WebinyError(`Missing "${pluginType}" plugin.`, "PLUGIN_NOT_FOUND", {
-            type: pluginType
-        });
-    }
-
-    const storageOperations = await providerPlugin.provide({
-        context
-    });
+    const storageOperations = await createStorageOperations<SystemStorageOperations>(
+        context,
+        SystemStorageOperationsProviderPlugin.type
+    );
 
     context.pageBuilder.system = {
         async get() {

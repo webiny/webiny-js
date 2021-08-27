@@ -3,7 +3,8 @@ import {
     MenuStorageOperationsGetParams,
     Menu,
     PbContext,
-    MenuStorageOperationsListParams
+    MenuStorageOperationsListParams,
+    MenuStorageOperations
 } from "~/types";
 import { NotFoundError } from "@webiny/handler-graphql";
 import checkBasePermissions from "./utils/checkBasePermissions";
@@ -17,6 +18,7 @@ import prepareMenuItems from "./menus/prepareMenuItems";
 import { MenuPlugin } from "~/plugins/MenuPlugin";
 import WebinyError from "@webiny/error";
 import { MenuStorageOperationsProviderPlugin } from "~/plugins/MenuStorageOperationsProviderPlugin";
+import { createStorageOperations } from "./storageOperations";
 
 const CreateDataModel = withFields({
     title: string({ validation: validation.create("required,minLength:1,maxLength:100") }),
@@ -41,21 +43,11 @@ export default new ContextPlugin<PbContext>(async context => {
         console.log("Missing pageBuilder on context. Skipping Menus crud.");
         return;
     }
-    const pluginType = MenuStorageOperationsProviderPlugin.type;
 
-    const providerPlugin: MenuStorageOperationsProviderPlugin = context.plugins
-        .byType<MenuStorageOperationsProviderPlugin>(pluginType)
-        .find(() => true);
-
-    if (!providerPlugin) {
-        throw new WebinyError(`Missing "${pluginType}" plugin.`, "PLUGIN_NOT_FOUND", {
-            type: pluginType
-        });
-    }
-
-    const storageOperations = await providerPlugin.provide({
-        context
-    });
+    const storageOperations = await createStorageOperations<MenuStorageOperations>(
+        context,
+        MenuStorageOperationsProviderPlugin.type
+    );
 
     const hookPlugins = context.plugins.byType<MenuPlugin>(MenuPlugin.type);
 

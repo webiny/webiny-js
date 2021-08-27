@@ -11,6 +11,7 @@ import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
 import {
     Page,
     PageSecurityPermission,
+    PageStorageOperations,
     PageStorageOperationsListParams,
     PageStorageOperationsListTagsParams,
     PbContext
@@ -26,6 +27,7 @@ import { PagePlugin } from "~/plugins/PagePlugin";
 import WebinyError from "@webiny/error";
 import { PageStorageOperationsProviderPlugin } from "~/plugins/PageStorageOperationsProviderPlugin";
 import lodashTrimEnd from "lodash/trimEnd";
+import { createStorageOperations } from "./storageOperations";
 
 const STATUS_CHANGES_REQUESTED = "changesRequested";
 const STATUS_REVIEW_REQUESTED = "reviewRequested";
@@ -47,21 +49,10 @@ export default new ContextPlugin<PbContext>(async context => {
         return;
     }
 
-    const pluginType = PageStorageOperationsProviderPlugin.type;
-
-    const providerPlugin = context.plugins
-        .byType<PageStorageOperationsProviderPlugin>(pluginType)
-        .find(() => true);
-
-    if (!providerPlugin) {
-        throw new WebinyError(`Missing "${pluginType}" plugin.`, "PLUGIN_NOT_FOUND", {
-            type: pluginType
-        });
-    }
-
-    const storageOperations = await providerPlugin.provide({
-        context
-    });
+    const storageOperations = await createStorageOperations<PageStorageOperations>(
+        context,
+        PageStorageOperationsProviderPlugin.type
+    );
 
     // Used in a couple of key events - (un)publishing and pages deletion.
     const pagePlugins = context.plugins.byType<PagePlugin>(PagePlugin.type);

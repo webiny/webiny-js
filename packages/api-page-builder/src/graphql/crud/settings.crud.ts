@@ -1,17 +1,19 @@
 import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
 import {
     PbContext,
+    SettingsStorageOperations,
     SettingsStorageOperationsCreateParams,
     SettingsStorageOperationsGetParams
 } from "~/types";
 import { NotAuthorizedError } from "@webiny/api-security";
 import executeCallbacks from "./utils/executeCallbacks";
-import { DefaultSettingsModel } from "../../utils/models";
+import { DefaultSettingsModel } from "~/utils/models";
 import mergeWith from "lodash/mergeWith";
 import Error from "@webiny/error";
 import { SettingsPlugin } from "~/plugins/SettingsPlugin";
 import WebinyError from "@webiny/error";
-import { createSettingsStorageOperations } from "~/graphql/crud/settingsStorageOperations";
+import { createStorageOperations } from "./storageOperations";
+import { SettingsStorageOperationsProviderPlugin } from "~/plugins/SettingsStorageOperationsProviderPlugin";
 /**
  * Possible types of settings.
  * If a lot of types should be added maybe we can do it via the plugin.
@@ -37,7 +39,10 @@ export default new ContextPlugin<PbContext>(async context => {
         return;
     }
 
-    const storageOperations = await createSettingsStorageOperations(context);
+    const storageOperations = await createStorageOperations<SettingsStorageOperations>(
+        context,
+        SettingsStorageOperationsProviderPlugin.type
+    );
 
     const settingsPlugins = context.plugins.byType<SettingsPlugin>(SettingsPlugin.type);
 

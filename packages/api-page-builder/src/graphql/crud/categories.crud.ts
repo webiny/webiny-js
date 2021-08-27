@@ -2,6 +2,7 @@ import { withFields, string } from "@commodo/fields";
 import { validation } from "@webiny/validation";
 import {
     Category,
+    CategoryStorageOperations,
     CategoryStorageOperationsGetParams,
     CategoryStorageOperationsListParams,
     PbContext
@@ -14,6 +15,7 @@ import checkBasePermissions from "./utils/checkBasePermissions";
 import checkOwnPermissions from "./utils/checkOwnPermissions";
 import WebinyError from "@webiny/error";
 import { CategoryStorageOperationsProviderPlugin } from "~/plugins/CategoryStorageOperationsProviderPlugin";
+import { createStorageOperations } from "./storageOperations";
 
 const CreateDataModel = withFields({
     slug: string({ validation: validation.create("required,minLength:1,maxLength:100") }),
@@ -38,21 +40,11 @@ export default new ContextPlugin<PbContext>(async context => {
         console.log("Missing pageBuilder on context. Skipping Categories crud.");
         return;
     }
-    const pluginType = CategoryStorageOperationsProviderPlugin.type;
 
-    const providerPlugin: CategoryStorageOperationsProviderPlugin = context.plugins
-        .byType<CategoryStorageOperationsProviderPlugin>(pluginType)
-        .find(() => true);
-
-    if (!providerPlugin) {
-        throw new WebinyError(`Missing "${pluginType}" plugin.`, "PLUGIN_NOT_FOUND", {
-            type: pluginType
-        });
-    }
-
-    const storageOperations = await providerPlugin.provide({
-        context
-    });
+    const storageOperations = await createStorageOperations<CategoryStorageOperations>(
+        context,
+        CategoryStorageOperationsProviderPlugin.type
+    );
 
     const { getPermission } = context.security;
 

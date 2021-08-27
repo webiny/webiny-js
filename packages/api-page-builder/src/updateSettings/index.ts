@@ -1,9 +1,9 @@
 import DefaultSettingsModel from "../utils/models/DefaultSettings.model";
 import { HandlerPlugin } from "@webiny/handler/types";
 import { ArgsContext } from "@webiny/handler-args/types";
-import { DbContext } from "@webiny/handler-db/types";
-import { DefaultSettings } from "~/types";
-import { createSettingsStorageOperations } from "~/graphql/crud/settingsStorageOperations";
+import { DefaultSettings, PbContext, SettingsStorageOperations } from "~/types";
+import { createStorageOperations } from "~/graphql/crud/storageOperations";
+import { SettingsStorageOperationsProviderPlugin } from "~/plugins/SettingsStorageOperationsProviderPlugin";
 
 export interface HandlerArgs {
     data: DefaultSettings;
@@ -22,14 +22,17 @@ export interface HandlerResponse {
  * Updates system default settings, for all tenants and all locales. Of course, these values can later be overridden
  * via the settings UI in the Admin app. But it's with these settings that every new tenant / locale will start off.
  */
-export default (): HandlerPlugin<DbContext, ArgsContext<HandlerArgs>> => ({
+export default (): HandlerPlugin<PbContext, ArgsContext<HandlerArgs>> => ({
     type: "handler",
     async handle(context): Promise<HandlerResponse> {
         try {
             /**
              * We need to initialize storage operations for settings to be able to get and store the data.
              */
-            const storageOperations = await createSettingsStorageOperations(context as any);
+            const storageOperations = await createStorageOperations<SettingsStorageOperations>(
+                context,
+                SettingsStorageOperationsProviderPlugin.type
+            );
             const { invocationArgs: args } = context;
             let original = await storageOperations.get({
                 tenant: false,
