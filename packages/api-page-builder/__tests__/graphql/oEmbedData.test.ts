@@ -12,7 +12,7 @@ describe("oEmbed test", () => {
                         data: {
                             author_name: "Webiny",
 
-                            author_url: /^https:\/\/www.youtube.com/,
+                            author_url: /^https:\/\/www\.youtube\.com/,
 
                             provider_name: "YouTube",
 

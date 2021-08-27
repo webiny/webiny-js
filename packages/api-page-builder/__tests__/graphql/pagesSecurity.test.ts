@@ -9,18 +9,11 @@ const defaultHandler = useGqlHandler({
 });
 
 describe("Pages Security Test", () => {
-    const { createElasticSearchIndex, deleteElasticSearchIndex, createCategory, until } =
-        useGqlHandler();
+    const { createCategory, until } = useGqlHandler();
 
     let initialCategory;
 
-    beforeAll(async () => {
-        await deleteElasticSearchIndex();
-    });
-
     beforeEach(async () => {
-        await createElasticSearchIndex();
-
         await createCategory({
             data: {
                 slug: `category`,
@@ -29,10 +22,6 @@ describe("Pages Security Test", () => {
                 layout: `layout`
             }
         }).then(([res]) => (initialCategory = res.data.pageBuilder.createCategory.data));
-    });
-
-    afterEach(async () => {
-        await deleteElasticSearchIndex();
     });
 
     test(`"listPages" only returns entries to which the identity has access to`, async () => {
@@ -63,7 +52,7 @@ describe("Pages Security Test", () => {
 
         for (let i = 0; i < insufficientPermissions.length; i++) {
             const [permissions, identity] = insufficientPermissions[i];
-            const { listPages } = useGqlHandler({ permissions, identity });
+            const { listPages } = useGqlHandler({ permissions, identity: identity as any });
             const [response] = await listPages({ sort: { createdOn: "desc" } });
             expect(response).toMatchObject(NOT_AUTHORIZED_RESPONSE("listPages"));
         }
@@ -79,7 +68,7 @@ describe("Pages Security Test", () => {
 
         for (let i = 0; i < sufficientPermissionsAll.length; i++) {
             const [permissions, identity] = sufficientPermissionsAll[i];
-            const { listPages } = useGqlHandler({ permissions, identity });
+            const { listPages } = useGqlHandler({ permissions, identity: identity as any });
             const [response] = await listPages({ sort: { createdOn: "desc" } });
             expect(response).toMatchObject({
                 data: {
@@ -226,7 +215,7 @@ describe("Pages Security Test", () => {
 
         for (let i = 0; i < insufficientPermissions.length; i++) {
             const [permissions, identity] = insufficientPermissions[i];
-            const { createPage } = useGqlHandler({ permissions, identity });
+            const { createPage } = useGqlHandler({ permissions, identity: identity as any });
 
             const [response] = await createPage({ category: initialCategory.slug });
             expect(response).toMatchObject(NOT_AUTHORIZED_RESPONSE("createPage"));
@@ -257,7 +246,7 @@ describe("Pages Security Test", () => {
 
         for (let i = 0; i < sufficientPermissions.length; i++) {
             const [permissions, identity] = sufficientPermissions[i];
-            const { createPage } = useGqlHandler({ permissions, identity });
+            const { createPage } = useGqlHandler({ permissions, identity: identity as any });
 
             const [response] = await createPage({ category: initialCategory.slug });
             expect(response).toMatchObject({
@@ -296,7 +285,7 @@ describe("Pages Security Test", () => {
 
         for (let i = 0; i < insufficientPermissions.length; i++) {
             const [permissions, identity] = insufficientPermissions[i];
-            const { updatePage } = useGqlHandler({ permissions, identity });
+            const { updatePage } = useGqlHandler({ permissions, identity: identity as any });
             const [response] = await updatePage({
                 id: page.id,
                 data: {
@@ -317,7 +306,7 @@ describe("Pages Security Test", () => {
 
         for (let i = 0; i < sufficientPermissions.length; i++) {
             const [permissions, identity] = sufficientPermissions[i];
-            const { updatePage } = useGqlHandler({ permissions, identity });
+            const { updatePage } = useGqlHandler({ permissions, identity: identity as any });
             const [response] = await updatePage({
                 id: page.id,
                 data: { title: `${page.title}-UPDATED-${i}` }
@@ -357,7 +346,7 @@ describe("Pages Security Test", () => {
 
         for (let i = 0; i < insufficientPermissions.length; i++) {
             const [permissions, identity] = insufficientPermissions[i];
-            const { deletePage } = useGqlHandler({ permissions, identity });
+            const { deletePage } = useGqlHandler({ permissions, identity: identity as any });
             const [response] = await deletePage({ id: page.id });
             expect(response).toMatchObject(NOT_AUTHORIZED_RESPONSE("deletePage"));
         }
@@ -387,7 +376,10 @@ describe("Pages Security Test", () => {
 
         for (let i = 0; i < sufficientPermissions.length; i++) {
             const [permissions, identity] = sufficientPermissions[i];
-            const { createPage, deletePage } = useGqlHandler({ permissions, identity });
+            const { createPage, deletePage } = useGqlHandler({
+                permissions,
+                identity: identity as any
+            });
 
             const page = await createPage({ category: initialCategory.slug }).then(
                 ([res]) => res.data.pageBuilder.createPage.data
@@ -433,7 +425,7 @@ describe("Pages Security Test", () => {
 
         for (let i = 0; i < insufficientPermissions.length; i++) {
             const [permissions, identity] = insufficientPermissions[i];
-            const { getPage } = useGqlHandler({ permissions, identity });
+            const { getPage } = useGqlHandler({ permissions, identity: identity as any });
             const [response] = await getPage({ id: page.id });
             expect(response).toMatchObject(NOT_AUTHORIZED_RESPONSE("getPage"));
         }
@@ -456,7 +448,7 @@ describe("Pages Security Test", () => {
 
         for (let i = 0; i < sufficientPermissions.length; i++) {
             const [permissions, identity] = sufficientPermissions[i];
-            const { getPage } = useGqlHandler({ permissions, identity });
+            const { getPage } = useGqlHandler({ permissions, identity: identity as any });
             const [response] = await getPage({ id: page.id });
             expect(response).toMatchObject({
                 data: {

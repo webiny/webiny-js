@@ -5,8 +5,6 @@ jest.setTimeout(25000);
 
 describe("publishing workflow", () => {
     const {
-        createElasticSearchIndex,
-        deleteElasticSearchIndex,
         createCategory,
         createPage,
         getPage,
@@ -20,12 +18,7 @@ describe("publishing workflow", () => {
 
     let initialPageIds, initialCategory;
 
-    beforeAll(async () => {
-        await deleteElasticSearchIndex();
-    });
-
     beforeEach(async () => {
-        await createElasticSearchIndex();
         initialPageIds = [];
         await createCategory({
             data: {
@@ -49,10 +42,6 @@ describe("publishing workflow", () => {
 
             initialPageIds.push(id);
         }
-    });
-
-    afterEach(async () => {
-        await deleteElasticSearchIndex();
     });
 
     test("simple workflow test (check request review and request changes)", async () => {
@@ -239,7 +228,7 @@ describe("publishing workflow", () => {
 
             // Publish page with specific identity and permissions.
             const [permissions, identity] = sufficientPermission[i];
-            const { publishPage } = useGqlHandler({ permissions, identity: identity });
+            const { publishPage } = useGqlHandler({ permissions, identity: identity as any });
 
             await publishPage({ id: page.id }).then(([res]) =>
                 expect(res).toMatchObject({
@@ -288,7 +277,7 @@ describe("publishing workflow", () => {
 
             // Publish page with specific identity and permissions.
             const [permissions, identity] = insufficientPermissions[i];
-            const { publishPage } = useGqlHandler({ permissions, identity });
+            const { publishPage } = useGqlHandler({ permissions, identity: identity as any });
 
             await publishPage({ id: page.id }).then(([res]) =>
                 expect(res).toMatchObject(NOT_AUTHORIZED_RESPONSE("publishPage"))
@@ -323,7 +312,7 @@ describe("publishing workflow", () => {
 
             // Unpublish page with specific identity and permissions.
             const [permissions, identity] = sufficientPermissions[i];
-            const { unpublishPage } = useGqlHandler({ permissions, identity: identity });
+            const { unpublishPage } = useGqlHandler({ permissions, identity: identity as any });
 
             await unpublishPage({ id: page.id }).then(([res]) =>
                 expect(res).toMatchObject({
@@ -388,7 +377,7 @@ describe("publishing workflow", () => {
 
             // Unpublish page with specific identity and permissions.
             const [permissions, identity] = insufficientPermissions[i];
-            const { unpublishPage } = useGqlHandler({ permissions, identity: identity });
+            const { unpublishPage } = useGqlHandler({ permissions, identity: identity as any });
 
             await unpublishPage({ id: page.id }).then(([res]) =>
                 expect(res).toEqual(NOT_AUTHORIZED_RESPONSE("unpublishPage"))
@@ -417,7 +406,7 @@ describe("publishing workflow", () => {
 
             // Publish page with specific identity and permissions.
             const [permissions, identity] = sufficientPermission[i];
-            const { requestReview } = useGqlHandler({ permissions, identity: identity });
+            const { requestReview } = useGqlHandler({ permissions, identity: identity as any });
 
             await requestReview({ id: page.id }).then(([res]) =>
                 expect(res).toMatchObject({
@@ -468,7 +457,7 @@ describe("publishing workflow", () => {
 
             // Publish page with specific identity and permissions.
             const [permissions, identity] = insufficientPermissions[i];
-            const { requestReview } = useGqlHandler({ permissions, identity });
+            const { requestReview } = useGqlHandler({ permissions, identity: identity as any });
 
             await requestReview({ id: page.id }).then(([res]) =>
                 expect(res).toMatchObject(NOT_AUTHORIZED_RESPONSE("requestReview"))
@@ -499,7 +488,7 @@ describe("publishing workflow", () => {
 
             // Unpublish page with specific identity and permissions.
             const [permissions, identity] = sufficientPermissions[i];
-            const { requestChanges } = useGqlHandler({ permissions, identity: identity });
+            const { requestChanges } = useGqlHandler({ permissions, identity: identity as any });
 
             await requestChanges({ id: page.id }).then(([res]) =>
                 expect(res).toMatchObject({
@@ -543,7 +532,7 @@ describe("publishing workflow", () => {
 
             // Unpublish page with specific identity and permissions.
             const [permissions, identity] = insufficientPermissions[i];
-            const { requestChanges } = useGqlHandler({ permissions, identity: identity });
+            const { requestChanges } = useGqlHandler({ permissions, identity: identity as any });
 
             await requestChanges({ id: page.id }).then(([res]) =>
                 expect(res).toEqual(NOT_AUTHORIZED_RESPONSE("requestChanges"))

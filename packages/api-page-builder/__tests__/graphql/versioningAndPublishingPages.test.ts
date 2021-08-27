@@ -4,8 +4,6 @@ jest.setTimeout(15000);
 
 describe("versioning and publishing pages", () => {
     const {
-        createElasticSearchIndex,
-        deleteElasticSearchIndex,
         createCategory,
         createPage,
         publishPage,
@@ -20,18 +18,6 @@ describe("versioning and publishing pages", () => {
         until,
         sleep
     } = useGqlHandler();
-
-    beforeAll(async () => {
-        await deleteElasticSearchIndex();
-    });
-
-    beforeEach(async () => {
-        await createElasticSearchIndex();
-    });
-
-    afterEach(async () => {
-        await deleteElasticSearchIndex();
-    });
 
     test("try publishing and unpublishing pages / revisions", async () => {
         let [response] = await createCategory({

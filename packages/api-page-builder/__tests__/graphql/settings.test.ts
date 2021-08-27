@@ -13,17 +13,10 @@ describe("Settings Test", () => {
         logsDb,
         until,
         listPublishedPages,
-        publishPage,
-        createElasticSearchIndex,
-        deleteElasticSearchIndex
+        publishPage
     } = useGqlHandler();
 
-    beforeAll(async () => {
-        await deleteElasticSearchIndex();
-    });
-
     beforeEach(async () => {
-        await createElasticSearchIndex();
         await createCategory({
             data: {
                 slug: `category`,
@@ -32,10 +25,6 @@ describe("Settings Test", () => {
                 layout: `layout`
             }
         });
-    });
-
-    afterEach(async () => {
-        await deleteElasticSearchIndex();
     });
 
     test("get and update settings", async () => {

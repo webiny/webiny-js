@@ -3,25 +3,12 @@ import useGqlHandler from "./useGqlHandler";
 jest.setTimeout(15000);
 
 describe("listing tags used by pages", () => {
-    const {
-        createElasticSearchIndex,
-        deleteElasticSearchIndex,
-        createCategory,
-        createPage,
-        listPages,
-        updatePage,
-        listPageTags,
-        until
-    } = useGqlHandler();
+    const { createCategory, createPage, listPages, updatePage, listPageTags, until } =
+        useGqlHandler();
 
     let initiallyCreatedPagesIds;
 
-    beforeAll(async () => {
-        await deleteElasticSearchIndex();
-    });
-
     beforeEach(async () => {
-        await createElasticSearchIndex();
         initiallyCreatedPagesIds = [];
         await createCategory({
             data: {
@@ -46,10 +33,6 @@ describe("listing tags used by pages", () => {
 
             initiallyCreatedPagesIds.push(id);
         }
-    });
-
-    afterEach(async () => {
-        await deleteElasticSearchIndex();
     });
 
     test("must return tags accordingly", async () => {

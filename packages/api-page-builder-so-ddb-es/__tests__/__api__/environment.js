@@ -50,8 +50,9 @@ const getStorageOperationsPlugins = ({
                 type: "context",
                 async apply() {
                     await elasticsearchClient.indices.putTemplate({
-                        name: "root-page-builder-index",
+                        name: "page-builder-index-template",
                         body: {
+                            index_patterns: ["*-page-builder*"],
                             // need this part for sorting to work on text fields
                             settings: {
                                 analysis: {

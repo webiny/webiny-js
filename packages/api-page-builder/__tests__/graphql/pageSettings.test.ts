@@ -1,26 +1,8 @@
 import useGqlHandler from "./useGqlHandler";
 
 describe("Page Settings Test", () => {
-    const {
-        createCategory,
-        createPage,
-        getPage,
-        updatePage,
-        createElasticSearchIndex,
-        deleteElasticSearchIndex
-    } = useGqlHandler();
+    const { createCategory, createPage, getPage, updatePage } = useGqlHandler();
 
-    beforeAll(async () => {
-        await deleteElasticSearchIndex();
-    });
-
-    beforeEach(async () => {
-        await createElasticSearchIndex();
-    });
-
-    afterEach(async () => {
-        await deleteElasticSearchIndex();
-    });
     test("update settings must work correctly", async () => {
         const category = await createCategory({
             data: {

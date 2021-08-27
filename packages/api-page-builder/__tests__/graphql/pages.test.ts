@@ -3,30 +3,8 @@ import useGqlHandler from "./useGqlHandler";
 jest.setTimeout(15000);
 
 describe("CRUD Test", () => {
-    const {
-        createElasticSearchIndex,
-        deleteElasticSearchIndex,
-        createCategory,
-        createPage,
-        deletePage,
-        listPages,
-        getPage,
-        updatePage,
-        until,
-        sleep
-    } = useGqlHandler();
-
-    beforeAll(async () => {
-        await deleteElasticSearchIndex();
-    });
-
-    beforeEach(async () => {
-        await createElasticSearchIndex();
-    });
-
-    afterEach(async () => {
-        await deleteElasticSearchIndex();
-    });
+    const { createCategory, createPage, deletePage, listPages, getPage, updatePage, until, sleep } =
+        useGqlHandler();
 
     test("create, read, update and delete pages", async () => {
         let [response] = await createPage({ category: "unknown" });
@@ -57,7 +35,7 @@ describe("CRUD Test", () => {
         const ids = [];
         // Test creating, getting and updating three pages.
         for (let i = 0; i < 3; i++) {
-            let data = {
+            const data = {
                 category: "slug"
             };
 
@@ -110,7 +88,7 @@ describe("CRUD Test", () => {
 
             id = response.data.pageBuilder.getPage.data.id;
 
-            data = {
+            const updatePageData = {
                 title: "title-UPDATED-" + i,
                 path: "/path-UPDATED-" + i,
                 settings: {
@@ -126,7 +104,7 @@ describe("CRUD Test", () => {
 
             [response] = await updatePage({
                 id,
-                data
+                data: updatePageData
             });
 
             expect(response).toMatchObject({

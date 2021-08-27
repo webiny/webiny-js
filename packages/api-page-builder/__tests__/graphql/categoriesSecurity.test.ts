@@ -1,7 +1,7 @@
 import useGqlHandler from "./useGqlHandler";
 import { SecurityIdentity } from "@webiny/api-security";
 
-function Mock(prefix) {
+function Mock(prefix = "") {
     this.slug = `${prefix}slug`;
     this.name = `${prefix}name`;
     this.url = `${prefix}url`;
@@ -37,22 +37,10 @@ const identityB = new SecurityIdentity({
     displayName: "Bb"
 });
 
-const { createCategory, createElasticSearchIndex, deleteElasticSearchIndex } = useGqlHandler({
-    permissions: [{ name: "content.i18n" }, { name: "pb.*" }],
-    identity: identityA
-});
-
 describe("Categories Security Test", () => {
-    beforeAll(async () => {
-        await deleteElasticSearchIndex();
-    });
-
-    beforeEach(async () => {
-        await createElasticSearchIndex();
-    });
-
-    afterEach(async () => {
-        await deleteElasticSearchIndex();
+    const { createCategory } = useGqlHandler({
+        permissions: [{ name: "content.i18n" }, { name: "pb.*" }],
+        identity: identityA
     });
 
     test(`"listCategories" only returns entries to which the identity has access to`, async () => {
@@ -77,7 +65,7 @@ describe("Categories Security Test", () => {
 
         for (let i = 0; i < insufficientPermissions.length; i++) {
             const [permissions, identity] = insufficientPermissions[i];
-            const { listCategories } = useGqlHandler({ permissions, identity });
+            const { listCategories } = useGqlHandler({ permissions, identity: identity as any });
             const [response] = await listCategories();
             expect(response).toMatchObject(NOT_AUTHORIZED_RESPONSE("listCategories"));
         }
@@ -96,7 +84,7 @@ describe("Categories Security Test", () => {
 
         for (let i = 0; i < sufficientPermissionsAll.length; i++) {
             const [permissions, identity] = sufficientPermissionsAll[i];
-            const { listCategories } = useGqlHandler({ permissions, identity });
+            const { listCategories } = useGqlHandler({ permissions, identity: identity as any });
             const [response] = await listCategories();
             expect(response).toMatchObject({
                 data: {
@@ -250,7 +238,7 @@ describe("Categories Security Test", () => {
 
         for (let i = 0; i < insufficientPermissions.length; i++) {
             const [permissions, identity] = insufficientPermissions[i];
-            const { createCategory } = useGqlHandler({ permissions, identity });
+            const { createCategory } = useGqlHandler({ permissions, identity: identity as any });
 
             const [response] = await createCategory({ data: new Mock() });
             expect(response).toMatchObject(NOT_AUTHORIZED_RESPONSE("createCategory"));
@@ -267,7 +255,7 @@ describe("Categories Security Test", () => {
 
         for (let i = 0; i < sufficientPermissions.length; i++) {
             const [permissions, identity] = sufficientPermissions[i];
-            const { createCategory } = useGqlHandler({ permissions, identity });
+            const { createCategory } = useGqlHandler({ permissions, identity: identity as any });
 
             const data = new Mock(`category-create-${i}-`);
             const [response] = await createCategory({ data });
@@ -304,7 +292,7 @@ describe("Categories Security Test", () => {
 
         for (let i = 0; i < insufficientPermissions.length; i++) {
             const [permissions, identity] = insufficientPermissions[i];
-            const { updateCategory } = useGqlHandler({ permissions, identity });
+            const { updateCategory } = useGqlHandler({ permissions, identity: identity as any });
             const [response] = await updateCategory({ slug: mock.slug, data: mock });
             expect(response).toMatchObject(NOT_AUTHORIZED_RESPONSE("updateCategory"));
         }
@@ -320,7 +308,7 @@ describe("Categories Security Test", () => {
 
         for (let i = 0; i < sufficientPermissions.length; i++) {
             const [permissions, identity] = sufficientPermissions[i];
-            const { updateCategory } = useGqlHandler({ permissions, identity });
+            const { updateCategory } = useGqlHandler({ permissions, identity: identity as any });
             const [response] = await updateCategory({ slug: mock.slug, data: mock });
             expect(response).toMatchObject({
                 data: {
@@ -355,7 +343,7 @@ describe("Categories Security Test", () => {
 
         for (let i = 0; i < insufficientPermissions.length; i++) {
             const [permissions, identity] = insufficientPermissions[i];
-            const { deleteCategory } = useGqlHandler({ permissions, identity });
+            const { deleteCategory } = useGqlHandler({ permissions, identity: identity as any });
             const [response] = await deleteCategory({ slug: mock.slug });
             expect(response).toMatchObject(NOT_AUTHORIZED_RESPONSE("deleteCategory"));
         }
@@ -376,7 +364,10 @@ describe("Categories Security Test", () => {
 
         for (let i = 0; i < sufficientPermissions.length; i++) {
             const [permissions, identity] = sufficientPermissions[i];
-            const { createCategory, deleteCategory } = useGqlHandler({ permissions, identity });
+            const { createCategory, deleteCategory } = useGqlHandler({
+                permissions,
+                identity: identity as any
+            });
             const mock = new Mock(`delete-category-${i}-`);
 
             await createCategory({ data: mock });
@@ -415,7 +406,7 @@ describe("Categories Security Test", () => {
 
         for (let i = 0; i < insufficientPermissions.length; i++) {
             const [permissions, identity] = insufficientPermissions[i];
-            const { getCategory } = useGqlHandler({ permissions, identity });
+            const { getCategory } = useGqlHandler({ permissions, identity: identity as any });
             const [response] = await getCategory({ slug: mock.slug, data: mock });
             expect(response).toMatchObject(NOT_AUTHORIZED_RESPONSE("getCategory"));
         }
@@ -438,7 +429,7 @@ describe("Categories Security Test", () => {
 
         for (let i = 0; i < sufficientPermissions.length; i++) {
             const [permissions, identity] = sufficientPermissions[i];
-            const { getCategory } = useGqlHandler({ permissions, identity });
+            const { getCategory } = useGqlHandler({ permissions, identity: identity as any });
             const [response] = await getCategory({ slug: mock.slug, data: mock });
             expect(response).toMatchObject({
                 data: {

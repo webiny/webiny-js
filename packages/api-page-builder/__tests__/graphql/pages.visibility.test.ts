@@ -8,22 +8,8 @@ describe("page visibility test", () => {
         listPages,
         listPublishedPages,
         publishPage,
-        until,
-        createElasticSearchIndex,
-        deleteElasticSearchIndex
+        until
     } = useGqlHandler();
-
-    beforeAll(async () => {
-        await deleteElasticSearchIndex();
-    });
-
-    beforeEach(async () => {
-        await createElasticSearchIndex();
-    });
-
-    afterEach(async () => {
-        await deleteElasticSearchIndex();
-    });
 
     test("changing visiblity of a page should affect results from get and list operations ", async () => {
         const category = await createCategory({

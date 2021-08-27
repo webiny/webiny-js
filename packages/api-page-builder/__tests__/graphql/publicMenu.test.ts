@@ -11,19 +11,12 @@ describe("Prepared Menus Test", () => {
         publishPage,
         listPublishedPages,
         createCategory,
-        until,
-        createElasticSearchIndex,
-        deleteElasticSearchIndex
+        until
     } = useGqlHandler();
 
     let initialPages;
 
-    beforeAll(async () => {
-        await deleteElasticSearchIndex();
-    });
-
     beforeEach(async () => {
-        await createElasticSearchIndex();
         initialPages = [];
         await createCategory({
             data: {
@@ -60,10 +53,6 @@ describe("Prepared Menus Test", () => {
             listPublishedPages,
             ([res]) => res.data.pageBuilder.listPublishedPages.data.length === 3
         );
-    });
-
-    afterEach(async () => {
-        await deleteElasticSearchIndex();
     });
 
     test("let's ensure the menu is built properly when using getPublicMenu", async () => {

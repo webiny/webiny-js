@@ -10,22 +10,8 @@ describe("Categories CRUD Test", () => {
         listPages,
         getCategory,
         updateCategory,
-        until,
-        createElasticSearchIndex,
-        deleteElasticSearchIndex
+        until
     } = useGqlHandler();
-
-    beforeAll(async () => {
-        await deleteElasticSearchIndex();
-    });
-
-    beforeEach(async () => {
-        await createElasticSearchIndex();
-    });
-
-    afterEach(async () => {
-        await deleteElasticSearchIndex();
-    });
 
     test("create, read, update and delete categories", async () => {
         // Test creating, getting and updating three categories.

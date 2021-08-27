@@ -22,22 +22,8 @@ describe("Settings Test", () => {
         updateSettings,
         publishPage,
         unpublishPage,
-        getPublishedPage,
-        createElasticSearchIndex,
-        deleteElasticSearchIndex
+        getPublishedPage
     } = useGqlHandler();
-
-    beforeAll(async () => {
-        await deleteElasticSearchIndex();
-    });
-
-    beforeEach(async () => {
-        await createElasticSearchIndex();
-    });
-
-    afterEach(async () => {
-        await deleteElasticSearchIndex();
-    });
 
     test("setting page as homepage", async () => {
         await createCategory({

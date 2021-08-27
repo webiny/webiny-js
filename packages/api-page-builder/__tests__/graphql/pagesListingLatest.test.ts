@@ -3,8 +3,6 @@ import { identityB } from "./mocks";
 
 describe("listing latest pages", () => {
     const {
-        createElasticSearchIndex,
-        deleteElasticSearchIndex,
         createCategory,
         createPage,
         publishPage,
@@ -17,12 +15,7 @@ describe("listing latest pages", () => {
 
     let initiallyCreatedPagesIds;
 
-    beforeAll(async () => {
-        await deleteElasticSearchIndex();
-    });
-
     beforeEach(async () => {
-        await createElasticSearchIndex();
         initiallyCreatedPagesIds = [];
         await createCategory({
             data: {
@@ -53,10 +46,6 @@ describe("listing latest pages", () => {
             const data = res.data.pageBuilder.listPages.data;
             return data.length === 5 && data[4].title === "page-c";
         });
-    });
-
-    afterEach(async () => {
-        await deleteElasticSearchIndex();
     });
 
     test("sorting", async () => {

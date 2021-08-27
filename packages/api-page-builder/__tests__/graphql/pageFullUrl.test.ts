@@ -4,8 +4,6 @@ import useUpdateSettingsHandler from "../updateSettings/useHandler";
 let ids = [];
 describe("page full URL test", () => {
     const {
-        createElasticSearchIndex,
-        deleteElasticSearchIndex,
         createCategory,
         createPage,
         updateSettings,
@@ -16,13 +14,7 @@ describe("page full URL test", () => {
         until
     } = useGqlHandler();
 
-    beforeAll(async () => {
-        await deleteElasticSearchIndex();
-    });
-
     beforeEach(async () => {
-        await createElasticSearchIndex();
-
         await createCategory({
             data: {
                 slug: `category`,
@@ -47,8 +39,6 @@ describe("page full URL test", () => {
     });
 
     afterEach(async () => {
-        await deleteElasticSearchIndex();
-
         ids = [];
     });
 
@@ -103,9 +93,13 @@ describe("page full URL test", () => {
         await until(listPages, ([res]) => res.data.pageBuilder.listPages.data.length === 3).then(
             ([res]) =>
                 expect(res.data.pageBuilder.listPages.data).toMatchObject([
-                    { url: expect.stringMatching(/^https:\/\/www.test.com\/some-url\/untitled-/) },
-                    { url: expect.stringMatching(/^https:\/\/www.test.com\/some-url\/untitled-/) },
-                    { url: expect.stringMatching(/^https:\/\/www.test.com\/some-url\/untitled-/) }
+                    {
+                        url: expect.stringMatching(/^https:\/\/www\.test\.com\/some-url\/untitled-/)
+                    },
+                    {
+                        url: expect.stringMatching(/^https:\/\/www\.test\.com\/some-url\/untitled-/)
+                    },
+                    { url: expect.stringMatching(/^https:\/\/www\.test\.com\/some-url\/untitled-/) }
                 ])
         );
 
@@ -116,12 +110,20 @@ describe("page full URL test", () => {
         ).then(([res]) =>
             expect(res.data.pageBuilder.listPages.data).toMatchObject([
                 {
-                    url: expect.stringMatching(/^https:\/\/updated-domain.com\/some-url\/untitled-/)
+                    url: expect.stringMatching(
+                        /^https:\/\/updated-domain\.com\/some-url\/untitled-/
+                    )
                 },
                 {
-                    url: expect.stringMatching(/^https:\/\/updated-domain.com\/some-url\/untitled-/)
+                    url: expect.stringMatching(
+                        /^https:\/\/updated-domain\.com\/some-url\/untitled-/
+                    )
                 },
-                { url: expect.stringMatching(/^https:\/\/updated-domain.com\/some-url\/untitled-/) }
+                {
+                    url: expect.stringMatching(
+                        /^https:\/\/updated-domain\.com\/some-url\/untitled-/
+                    )
+                }
             ])
         );
     });

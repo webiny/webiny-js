@@ -4,8 +4,6 @@ jest.setTimeout(15000);
 
 describe("listing published pages", () => {
     const {
-        createElasticSearchIndex,
-        deleteElasticSearchIndex,
         createCategory,
         createPage,
         publishPage,
@@ -17,12 +15,7 @@ describe("listing published pages", () => {
 
     let initiallyCreatedPagesIds;
 
-    beforeAll(async () => {
-        await deleteElasticSearchIndex();
-    });
-
     beforeEach(async () => {
-        await createElasticSearchIndex();
         initiallyCreatedPagesIds = [];
         await createCategory({
             data: {
@@ -54,10 +47,6 @@ describe("listing published pages", () => {
                 });
             }
         }
-    });
-
-    afterEach(async () => {
-        await deleteElasticSearchIndex();
     });
 
     test("sorting", async () => {

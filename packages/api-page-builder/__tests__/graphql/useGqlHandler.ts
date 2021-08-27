@@ -264,7 +264,7 @@ export default ({ permissions, identity, tenant }: Params = {}) => {
             return invoke({ body: { query: INSTALL, variables } });
         },
 
-        async isInstalled(variables) {
+        async isInstalled(variables = {}) {
             return invoke({ body: { query: IS_INSTALLED, variables } });
         },
 
@@ -278,7 +278,7 @@ export default ({ permissions, identity, tenant }: Params = {}) => {
         async deleteMenu(variables) {
             return invoke({ body: { query: DELETE_MENU, variables } });
         },
-        async listMenus(variables) {
+        async listMenus(variables = {}) {
             return invoke({ body: { query: LIST_MENUS, variables } });
         },
         async getMenu(variables) {
@@ -298,7 +298,7 @@ export default ({ permissions, identity, tenant }: Params = {}) => {
         async deleteCategory(variables) {
             return invoke({ body: { query: DELETE_CATEGORY, variables } });
         },
-        async listCategories(variables) {
+        async listCategories(variables = {}) {
             return invoke({ body: { query: LIST_CATEGORIES, variables } });
         },
         async getCategory(variables) {
@@ -330,7 +330,7 @@ export default ({ permissions, identity, tenant }: Params = {}) => {
         async listPages(variables) {
             return invoke({ body: { query: LIST_PAGES, variables } });
         },
-        async listPublishedPages(variables) {
+        async listPublishedPages(variables = {}) {
             return invoke({ body: { query: LIST_PUBLISHED_PAGES, variables } });
         },
         async listPageTags(variables) {
@@ -365,10 +365,10 @@ export default ({ permissions, identity, tenant }: Params = {}) => {
         async updateSettings(variables) {
             return invoke({ body: { query: UPDATE_SETTINGS, variables } });
         },
-        async getSettings(variables) {
+        async getSettings(variables = {}) {
             return invoke({ body: { query: GET_SETTINGS, variables } });
         },
-        async getDefaultSettings(variables) {
+        async getDefaultSettings(variables = {}) {
             return invoke({ body: { query: GET_DEFAULT_SETTINGS, variables } });
         }
     };

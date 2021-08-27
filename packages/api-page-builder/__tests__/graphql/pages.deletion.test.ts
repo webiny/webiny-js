@@ -11,20 +11,12 @@ describe("deleting pages", () => {
         listPages,
         listPublishedPages,
         publishPage,
-        until,
-        createElasticSearchIndex,
-        deleteElasticSearchIndex
+        until
     } = useGqlHandler();
 
     let p1v1, p1v2, p1v3, category;
 
-    beforeAll(async () => {
-        await deleteElasticSearchIndex();
-    });
-
     beforeEach(async () => {
-        await createElasticSearchIndex();
-
         category = await createCategory({
             data: {
                 slug: `slug`,
@@ -45,10 +37,6 @@ describe("deleting pages", () => {
         p1v3 = await createPage({ from: p1v2.id }).then(
             ([res]) => res.data.pageBuilder.createPage.data
         );
-    });
-
-    afterEach(async () => {
-        await deleteElasticSearchIndex();
     });
 
     test("deleting v1 page should delete all related DB / index entries", async () => {

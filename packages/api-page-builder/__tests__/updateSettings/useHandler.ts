@@ -5,7 +5,7 @@ import pageBuilderPlugins from "../../src/updateSettings";
 interface Params {
     plugins?: any;
 }
-export default (params: Params) => {
+export default (params: Params = {}) => {
     const { plugins: extraPlugins = [] } = params;
     // @ts-ignore
     if (typeof __getStorageOperationsPlugins !== "function") {

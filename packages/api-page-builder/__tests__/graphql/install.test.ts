@@ -5,8 +5,6 @@ describe("Install Test", () => {
         isInstalled,
         install,
         listCategories,
-        createElasticSearchIndex,
-        deleteElasticSearchIndex,
         listPages,
         listPublishedPages,
         getPage,
@@ -14,18 +12,6 @@ describe("Install Test", () => {
         until,
         getSettings
     } = useGqlHandler();
-
-    beforeAll(async () => {
-        await deleteElasticSearchIndex();
-    });
-
-    beforeEach(async () => {
-        await createElasticSearchIndex();
-    });
-
-    afterEach(async () => {
-        await deleteElasticSearchIndex();
-    });
 
     test("should be able to get app version anonymously, but not install", async () => {
         const { isInstalled, install } = useGqlHandler({
