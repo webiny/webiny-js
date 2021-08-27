@@ -1,6 +1,10 @@
+/**
+ * Not used so ts-ignore on non-existing import is correct.
+ */
 import { UpgradePlugin } from "@webiny/api-upgrade/types";
 import { PbContext } from "../../../types";
 import { paginateBatch } from "../utils";
+// @ts-ignore
 import defaults from "../../crud/utils/defaults";
 
 const plugin: UpgradePlugin<PbContext> = {

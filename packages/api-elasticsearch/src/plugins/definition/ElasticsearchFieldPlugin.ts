@@ -24,10 +24,6 @@ export interface ToSearchValueParams {
 }
 export interface Params {
     /**
-     * Which entity is this plugin for.
-     */
-    entity: string;
-    /**
      * Which field is this plugin for.
      */
     field: string;
@@ -60,21 +56,15 @@ export interface Params {
     toSearchValue?: (params: ToSearchValueParams) => any;
 }
 
-export class ElasticsearchFieldPlugin extends Plugin {
-    public static readonly type = "elasticsearch.fieldDefinition";
-    public static readonly ALL = "*";
+export abstract class ElasticsearchFieldPlugin extends Plugin {
+    public static readonly ALL: string = "*";
 
-    private readonly _entity: string;
     private readonly _field: string;
     private readonly _path: string;
     private readonly _keyword: boolean;
     private readonly _unmappedType: string;
     private readonly _sortable: boolean;
     private readonly _searchable: boolean;
-
-    public get entity(): string {
-        return this._entity;
-    }
 
     public get field(): string {
         return this._field;
@@ -102,7 +92,6 @@ export class ElasticsearchFieldPlugin extends Plugin {
 
     constructor(params: Params) {
         super();
-        this._entity = params.entity;
         this._field = params.field;
         this._path = params.path || params.field;
         this._keyword = params.keyword === undefined ? true : params.keyword;

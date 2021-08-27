@@ -1,13 +1,10 @@
-import { Context } from "@webiny/handler/types";
 import { I18NContentContext } from "@webiny/api-i18n-content/types";
 import { DbContext } from "@webiny/handler-db/types";
 import { SecurityContext, SecurityPermission } from "@webiny/api-security/types";
 import { TenancyContext } from "@webiny/api-tenancy/types";
 import { I18NContext } from "@webiny/api-i18n/types";
-import { ElasticsearchContext } from "@webiny/api-elasticsearch/types";
-import DataLoader from "dataloader";
 import { ClientContext } from "@webiny/handler-client/types";
-import { Category, DefaultSettings, Menu, Page, PageElement } from "../types";
+import { Category, DefaultSettings, Menu, Page, PageElement, System } from "~/types";
 import { PrerenderingServiceClientContext } from "@webiny/api-prerendering-service/client/types";
 
 // CRUD types.
@@ -60,9 +57,10 @@ export type FlushParams = {
 };
 
 export type PagesCrud = {
-    dataLoaders: {
-        getPublishedById: DataLoader<{ id: string; preview?: boolean }, Page>;
-    };
+    // dataLoaders: {
+    // getPublishedById: DataLoader<{ id: string; preview?: boolean }, Page>;
+    // getById: DataLoader<string, Page | null>;
+    // };
     get<TPage extends Page = Page>(id: string): Promise<TPage>;
     listLatest<TPage extends Page = Page>(args: ListPagesParams): Promise<[TPage[], ListMeta]>;
     listPublished<TPage extends Page = Page>(args: ListPagesParams): Promise<[TPage[], ListMeta]>;
@@ -96,9 +94,6 @@ export type PageElementsCrud = {
 };
 
 export type CategoriesCrud = {
-    dataLoaders: {
-        get: DataLoader<string, Category>;
-    };
     get(slug: string, options?: { auth: boolean }): Promise<Category>;
     list(): Promise<Category[]>;
     create(data: Record<string, any>): Promise<Category>;
@@ -115,54 +110,52 @@ export type MenusCrud = {
     delete(slug: string): Promise<Menu>;
 };
 
-type DefaultSettingsCrudOptions = { tenant?: string | false; locale?: string | false };
+/**
+ * The options passed into the crud methods
+ */
+export interface DefaultSettingsCrudOptions {
+    tenant?: string | false;
+    locale?: string | false;
+}
 
 export type SettingsCrud = {
-    dataLoaders: {
-        get: DataLoader<{ PK: string; SK: string }, DefaultSettings, string>;
-    };
-    default: {
-        PK: (options: Record<string, any>) => string;
-        SK: "default";
-        getCurrent: () => Promise<DefaultSettings>;
-        get: (options?: DefaultSettingsCrudOptions) => Promise<DefaultSettings>;
-        getDefault: (options?: { tenant?: string }) => Promise<DefaultSettings>;
-        update: (
-            data: Record<string, any>,
-            options?: { auth?: boolean } & DefaultSettingsCrudOptions
-        ) => Promise<DefaultSettings>;
-        getSettingsCacheKey: (options?: DefaultSettingsCrudOptions) => string;
-    };
+    // PK: (options: Record<string, any>) => string;
+    // SK: "default";
+    getCurrent: () => Promise<DefaultSettings>;
+    get: (options?: DefaultSettingsCrudOptions) => Promise<DefaultSettings>;
+    getDefault: (options?: Pick<DefaultSettingsCrudOptions, "tenant">) => Promise<DefaultSettings>;
+    update: (
+        data: Record<string, any>,
+        options?: { auth?: boolean } & DefaultSettingsCrudOptions
+    ) => Promise<DefaultSettings>;
+    getSettingsCacheKey: (options?: DefaultSettingsCrudOptions) => string;
 };
 
 export type SystemCrud = {
+    get: () => Promise<System>;
     getVersion(): Promise<string>;
     setVersion(version: string): Promise<void>;
     install(args: { name: string; insertDemoData: boolean }): Promise<void>;
     upgrade(version: string, data?: Record<string, any>): Promise<boolean>;
 };
 
-// PBContext types.
-export type PbContext = Context<
-    I18NContentContext,
-    I18NContext,
-    ClientContext,
-    DbContext,
-    ElasticsearchContext,
-    SecurityContext,
-    TenancyContext,
-    PrerenderingServiceClientContext,
-    {
-        pageBuilder: Record<string, any> & {
-            pages: PagesCrud;
-            pageElements: PageElementsCrud;
-            categories: CategoriesCrud;
-            menus: MenusCrud;
-            settings: SettingsCrud;
-            system: SystemCrud;
-        };
-    }
->;
+export interface PbContext
+    extends I18NContentContext,
+        I18NContext,
+        ClientContext,
+        DbContext,
+        SecurityContext,
+        TenancyContext,
+        PrerenderingServiceClientContext {
+    pageBuilder: Record<string, any> & {
+        pages: PagesCrud;
+        pageElements: PageElementsCrud;
+        categories: CategoriesCrud;
+        menus: MenusCrud;
+        settings: SettingsCrud;
+        system: SystemCrud;
+    };
+}
 
 // Permissions.
 export interface PbSecurityPermission extends SecurityPermission {

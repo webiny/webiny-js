@@ -1,6 +1,13 @@
 import jsonpack from "jsonpack";
 
-export const extractContent = (contentProp: Record<string, any>): Record<string, any> => {
+interface CompressedContent {
+    compression: string;
+    content: string;
+}
+
+export const extractContent = async (
+    contentProp: CompressedContent | string | any
+): Promise<Record<string, any>> => {
     if (!contentProp || !contentProp.compression) {
         return null;
     }
@@ -12,7 +19,9 @@ export const extractContent = (contentProp: Record<string, any>): Record<string,
     }
 };
 
-export const compressContent = (content: Record<string, any> = null): Record<string, any> => {
+export const compressContent = async (
+    content: Record<string, any> = null
+): Promise<CompressedContent> => {
     let compressed = null;
     if (content) {
         try {

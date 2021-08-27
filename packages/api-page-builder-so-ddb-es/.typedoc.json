@@ -1,0 +1,4 @@
+{
+  "name": "API Page Builder DynamoDB",
+  "entryPoints": ["types.ts"]
+}

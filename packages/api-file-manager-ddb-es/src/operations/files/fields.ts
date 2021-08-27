@@ -1,30 +1,24 @@
-import { ElasticsearchFieldPlugin } from "@webiny/api-elasticsearch/plugins/definition/ElasticsearchFieldPlugin";
+import { FileElasticsearchFieldPlugin } from "~/plugins/FileElasticsearchFieldPlugin";
 
-const entityName = "FilesElasticsearch";
 export default () => [
-    new ElasticsearchFieldPlugin({
-        entity: entityName,
-        field: "createdAt",
+    new FileElasticsearchFieldPlugin({
+        field: "createdOn",
         unmappedType: "date"
     }),
-    new ElasticsearchFieldPlugin({
-        entity: entityName,
+    new FileElasticsearchFieldPlugin({
         field: "createdBy",
         path: "createdBy.id"
     }),
-    new ElasticsearchFieldPlugin({
-        entity: entityName,
+    new FileElasticsearchFieldPlugin({
         field: "private",
         path: "meta.private",
         keyword: false
     }),
-    new ElasticsearchFieldPlugin({
-        entity: entityName,
+    new FileElasticsearchFieldPlugin({
         field: "size",
         keyword: false
     }),
-    new ElasticsearchFieldPlugin({
-        entity: entityName,
+    new FileElasticsearchFieldPlugin({
         field: "tag",
         path: "tags",
         keyword: true
@@ -32,8 +26,7 @@ export default () => [
     /**
      * Defines all fields that are not strictly defined.
      */
-    new ElasticsearchFieldPlugin({
-        entity: entityName,
+    new FileElasticsearchFieldPlugin({
         field: "*"
     })
 ];

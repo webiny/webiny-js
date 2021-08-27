@@ -1,6 +1,6 @@
 import { ListResponse, Response, ErrorResponse } from "@webiny/handler-graphql/responses";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
-import { Page, PbContext } from "../../types";
+import { Page, PbContext } from "~/types";
 import Error from "@webiny/error";
 import resolve from "./utils/resolve";
 import pageSettings from "./pages/pageSettings";
@@ -289,7 +289,7 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                     return context.pageBuilder.pages.listPageRevisions(page.id);
                 },
                 url: async (page: Page, args, context) => {
-                    const settings = await context.pageBuilder.settings.default.getCurrent();
+                    const settings = await context.pageBuilder.settings.getCurrent();
                     const websiteUrl = get(settings, "websiteUrl") || "";
                     return websiteUrl + page.path;
                 }
@@ -303,7 +303,7 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                     return context.pageBuilder.categories.get(page.category, { auth: false });
                 },
                 url: async (page: Page, args, context) => {
-                    const settings = await context.pageBuilder.settings.default.getCurrent();
+                    const settings = await context.pageBuilder.settings.getCurrent();
                     const websiteUrl = get(settings, "websiteUrl") || "";
                     return websiteUrl + page.path;
                 }

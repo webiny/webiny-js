@@ -1,6 +1,6 @@
 import { ErrorResponse, Response } from "@webiny/handler-graphql/responses";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
-import { PbContext } from "../../types";
+import { PbContext } from "~/types";
 
 const plugin: GraphQLSchemaPlugin<PbContext> = {
     type: "graphql-schema",
@@ -129,34 +129,35 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
         resolvers: {
             PbSettingsResponse: {
                 id: (settings, args, context) => {
-                    return context.pageBuilder.settings.default.getSettingsCacheKey();
+                    return context.pageBuilder.settings.getSettingsCacheKey();
                 }
             },
             PbDefaultSettingsResponse: {
-                id: () => "PB#SETTINGS"
+                id: (settings, args, context) => {
+                    return context.pageBuilder.settings.getSettingsCacheKey({
+                        tenant: false,
+                        locale: false
+                    });
+                }
             },
             PbQuery: {
                 getCurrentSettings: async (_, args, context) => {
                     try {
-                        return new Response(
-                            await context.pageBuilder.settings.default.getCurrent()
-                        );
+                        return new Response(await context.pageBuilder.settings.getCurrent());
                     } catch (err) {
                         return new ErrorResponse(err);
                     }
                 },
                 getSettings: async (_, args, context) => {
                     try {
-                        return new Response(await context.pageBuilder.settings.default.get());
+                        return new Response(await context.pageBuilder.settings.get());
                     } catch (err) {
                         return new ErrorResponse(err);
                     }
                 },
                 getDefaultSettings: async (_, args, context) => {
                     try {
-                        return new Response(
-                            await context.pageBuilder.settings.default.getDefault()
-                        );
+                        return new Response(await context.pageBuilder.settings.getDefault());
                     } catch (err) {
                         return new ErrorResponse(err);
                     }
@@ -165,9 +166,7 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
             PbMutation: {
                 updateSettings: async (_, args, context) => {
                     try {
-                        return new Response(
-                            await context.pageBuilder.settings.default.update(args.data)
-                        );
+                        return new Response(await context.pageBuilder.settings.update(args.data));
                     } catch (err) {
                         return new ErrorResponse(err);
                     }
