@@ -39,6 +39,8 @@ import { defineTableElasticsearch } from "~/definitions/tableElasticsearch";
 import { definePageElasticsearchEntity } from "~/definitions/pageElasticsearchEntity";
 import { batchWriteAll } from "@webiny/db-dynamodb/utils/batchWrite";
 import { getESLatestPageData, getESPublishedPageData } from "./helpers";
+import lodashGet from "lodash.get";
+import { getZeroPaddedVersionNumber } from "@webiny/api-page-builder/utils/zeroPaddedVersionNumber";
 
 const getElasticsearchClient = (context: any): Client => {
     const ctx = context as Partial<ElasticsearchContext>;
@@ -84,7 +86,7 @@ export class PageStorageOperationsDdbEs implements PageStorageOperations {
 
         this.esEntity = definePageElasticsearchEntity({
             context,
-            table: this.table
+            table: this.esTable
         });
 
         this.elasticsearch = getElasticsearchClient(context);
@@ -121,8 +123,8 @@ export class PageStorageOperationsDdbEs implements PageStorageOperations {
                 items: items
             });
             await this.esEntity.put({
-                data: esData,
                 index: configurations.es(this.context).index,
+                data: esData,
                 ...latestKeys
             });
             return page;
@@ -168,7 +170,7 @@ export class PageStorageOperationsDdbEs implements PageStorageOperations {
          * If visibility on the latest list is not false, push it into the ES.
          */
         let esData: any = undefined;
-        if (page.visibility?.list?.latest !== false) {
+        if (lodashGet(page, "visibility.list.latest") !== false) {
             esData = getESLatestPageData(this.context, page);
         }
 
@@ -179,9 +181,9 @@ export class PageStorageOperationsDdbEs implements PageStorageOperations {
             });
             if (esData) {
                 await this.esEntity.put({
-                    ...latestKeys,
                     index: configurations.es(this.context).index,
-                    data: esData
+                    data: esData,
+                    ...latestKeys
                 });
             }
             return page;
@@ -213,7 +215,10 @@ export class PageStorageOperationsDdbEs implements PageStorageOperations {
             SK: this.createLatestSortKey()
         };
         const latestPageResult = await this.entity.get(latestKeys);
-        const latestPage = cleanupItem(this.entity, latestPageResult?.Item);
+        const latestPage = cleanupItem(
+            this.entity,
+            latestPageResult ? latestPageResult.Item : null
+        );
 
         const items = [
             this.entity.putBatch({
@@ -231,7 +236,7 @@ export class PageStorageOperationsDdbEs implements PageStorageOperations {
         let esData: Record<string, any> = undefined;
         let deleteEsRecord = false;
         if (latestPage && latestPage.id === page.id) {
-            if (page.visibility?.list?.latest === false) {
+            if (lodashGet(page, "visibility.list.latest") === false) {
                 deleteEsRecord = true;
             } else {
                 esData = getESLatestPageData(this.context, page);
@@ -262,9 +267,9 @@ export class PageStorageOperationsDdbEs implements PageStorageOperations {
                 });
             } else if (esData) {
                 await this.esEntity.put({
-                    ...latestKeys,
                     index: configurations.es(this.context).index,
-                    data: esData
+                    data: esData,
+                    ...latestKeys
                 });
             }
 
@@ -503,7 +508,7 @@ export class PageStorageOperationsDdbEs implements PageStorageOperations {
                     SK: this.createLatestSortKey()
                 })
             );
-            if (page.visibility?.list?.latest !== false) {
+            if (lodashGet(page, "visibility.list.latest") !== false) {
                 esItems.push(
                     this.esEntity.putBatch({
                         PK: this.createPartitionKey(page.pid),
@@ -513,7 +518,7 @@ export class PageStorageOperationsDdbEs implements PageStorageOperations {
                     })
                 );
             }
-            if (page.visibility?.list?.published !== false) {
+            if (lodashGet(page, "visibility.list.published") !== false) {
                 esItems.push(
                     this.esEntity.putBatch({
                         PK: this.createPartitionKey(page.pid),
@@ -634,7 +639,7 @@ export class PageStorageOperationsDdbEs implements PageStorageOperations {
          * status in ES. We can only do that if the entry actually exists, or in other words, if the
          * published page's "LATEST pages lists visibility" setting is not set to false.
          */
-        if (latestPage.id === page.id && page.visibility?.list?.latest !== false) {
+        if (latestPage.id === page.id && lodashGet(page, "visibility.list.latest") !== false) {
             items.push(
                 this.entity.putBatch({
                     ...page,
@@ -652,7 +657,7 @@ export class PageStorageOperationsDdbEs implements PageStorageOperations {
                 })
             );
         }
-        if (page.visibility?.list?.published !== false) {
+        if (lodashGet(page, "visibility.list.published") !== false) {
             esItems.push(
                 this.entity.deleteBatch({
                     PK: this.createPartitionKey(page.pid),
@@ -704,7 +709,7 @@ export class PageStorageOperationsDdbEs implements PageStorageOperations {
             })
         ];
         let esData = undefined;
-        if (latestPage.id === page.id && page.visibility?.list?.latest !== false) {
+        if (latestPage.id === page.id && lodashGet(page, "visibility.list.latest") !== false) {
             items.push(
                 this.entity.putBatch({
                     ...page,
@@ -772,7 +777,7 @@ export class PageStorageOperationsDdbEs implements PageStorageOperations {
             })
         ];
         let esData = undefined;
-        if (latestPage.id === page.id && page.visibility?.list?.latest !== false) {
+        if (latestPage.id === page.id && lodashGet(page, "visibility.list.latest") !== false) {
             items.push(
                 this.entity.putBatch({
                     ...page,
@@ -832,7 +837,6 @@ export class PageStorageOperationsDdbEs implements PageStorageOperations {
     /**
      * There are only few options to use when getting the page.
      * For that reason we try to have it as simple as possible when querying.
-     * TODO: introduce the data loader to have everything cached?
      */
     public async get(params: PageStorageOperationsGetParams): Promise<Page | null> {
         const { where } = params;
@@ -862,8 +866,10 @@ export class PageStorageOperationsDdbEs implements PageStorageOperations {
         };
         try {
             const result = await this.entity.get(keys);
-
-            return cleanupItem(this.entity, result?.Item);
+            if (!result || !result.Item) {
+                return null;
+            }
+            return cleanupItem(this.entity, result.Item);
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not load page by given params.",
@@ -1072,10 +1078,10 @@ export class PageStorageOperationsDdbEs implements PageStorageOperations {
     protected createSortKey(version: string | number): string {
         if (typeof version !== "number") {
             if (version.includes("#")) {
-                version = version.split("#").pop();
+                version = Number(version.split("#").pop());
             }
         }
-        return `REV#${version};`;
+        return `REV#${getZeroPaddedVersionNumber(version)}`;
     }
 
     protected createPathSortKey(input: Pick<Page, "path"> | string): string {

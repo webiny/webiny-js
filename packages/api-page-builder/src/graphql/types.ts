@@ -4,7 +4,7 @@ import { SecurityContext, SecurityPermission } from "@webiny/api-security/types"
 import { TenancyContext } from "@webiny/api-tenancy/types";
 import { I18NContext } from "@webiny/api-i18n/types";
 import { ClientContext } from "@webiny/handler-client/types";
-import { Category, DefaultSettings, Menu, Page, PageElement, System } from "~/types";
+import { Category, Menu, Page, PageElement, Settings, System } from "~/types";
 import { PrerenderingServiceClientContext } from "@webiny/api-prerendering-service/client/types";
 
 // CRUD types.
@@ -119,15 +119,13 @@ export interface DefaultSettingsCrudOptions {
 }
 
 export type SettingsCrud = {
-    // PK: (options: Record<string, any>) => string;
-    // SK: "default";
-    getCurrent: () => Promise<DefaultSettings>;
-    get: (options?: DefaultSettingsCrudOptions) => Promise<DefaultSettings>;
-    getDefault: (options?: Pick<DefaultSettingsCrudOptions, "tenant">) => Promise<DefaultSettings>;
+    getCurrent: () => Promise<Settings>;
+    get: (options?: DefaultSettingsCrudOptions) => Promise<Settings>;
+    getDefault: (options?: Pick<DefaultSettingsCrudOptions, "tenant">) => Promise<Settings>;
     update: (
         data: Record<string, any>,
         options?: { auth?: boolean } & DefaultSettingsCrudOptions
-    ) => Promise<DefaultSettings>;
+    ) => Promise<Settings>;
     getSettingsCacheKey: (options?: DefaultSettingsCrudOptions) => string;
 };
 

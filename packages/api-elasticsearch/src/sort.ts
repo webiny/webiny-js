@@ -1,34 +1,31 @@
-import {
-    FieldSortOptions,
-    SortType as ElasticTsSortType,
-    SortOrder as ElasticTsSortOrder
-} from "./types";
+import { FieldSortOptions, SortType, SortOrder } from "./types";
 import WebinyError from "@webiny/error";
 import { ElasticsearchFieldPlugin } from "./plugins/definition/ElasticsearchFieldPlugin";
 import { ContextInterface } from "@webiny/handler/types";
 
 const sortRegExp = new RegExp(/^([a-zA-Z-0-9_]+)_(ASC|DESC)$/);
 
-interface CreateSortParams {
+export interface Params {
     context: ContextInterface;
     sort: string[];
     defaults?: {
         field?: string;
-        order?: ElasticTsSortOrder;
+        order?: SortOrder;
         unmappedType?: string;
     };
     plugins: Record<string, ElasticsearchFieldPlugin>;
 }
-export const createSort = (params: CreateSortParams): ElasticTsSortType => {
+export const createSort = (params: Params): SortType => {
     const { sort, defaults, plugins } = params;
-    if (sort.length === 0) {
+    if (!sort || sort.length === 0) {
+        const { field, order, unmappedType } = defaults || {};
         /**
          * We say that our system defaults is always id since all records we create have some kind of primary ID.
          */
         return {
-            [defaults.field || "id.keyword"]: {
-                order: defaults.order || "desc",
-                unmapped_type: defaults.unmappedType || undefined
+            [field || "id.keyword"]: {
+                order: order || "desc",
+                unmapped_type: unmappedType || undefined
             }
         };
     }
@@ -41,7 +38,7 @@ export const createSort = (params: CreateSortParams): ElasticTsSortType => {
         }
 
         const [, field, initialOrder] = match;
-        const order: ElasticTsSortOrder = initialOrder.toLowerCase() === "asc" ? "asc" : "desc";
+        const order: SortOrder = initialOrder.toLowerCase() === "asc" ? "asc" : "desc";
 
         const plugin: ElasticsearchFieldPlugin = plugins[field] || plugins["*"];
         if (!plugin) {

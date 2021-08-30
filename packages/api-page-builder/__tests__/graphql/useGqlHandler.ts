@@ -1,18 +1,11 @@
 import { createHandler } from "@webiny/handler-aws";
 import graphqlHandler from "@webiny/handler-graphql";
-import pageBuilderPlugins from "@webiny/api-page-builder/graphql";
-import tenancyPlugins from "@webiny/api-tenancy";
+import pageBuilderPlugins from "../../src/graphql";
 import securityPlugins from "@webiny/api-security";
-import dbPlugins from "@webiny/handler-db";
 import i18nContext from "@webiny/api-i18n/graphql/context";
 import i18nDynamoDbStorageOperations from "@webiny/api-i18n-ddb";
 import i18nContentPlugins from "@webiny/api-i18n-content/plugins";
 import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
-import { DynamoDbDriver } from "@webiny/db-dynamodb";
-import { DocumentClient } from "aws-sdk/clients/dynamodb";
-import elasticsearchClientContextPlugin from "@webiny/api-elasticsearch";
-import { simulateStream } from "@webiny/project-utils/testing/dynamodb";
-import dynamoToElastic from "@webiny/api-dynamodb-to-elasticsearch/handler";
 
 import fileManagerPlugins from "@webiny/api-file-manager/plugins";
 import fileManagerDdbEsPlugins from "@webiny/api-file-manager-ddb-es";
@@ -60,14 +53,11 @@ import {
 } from "./graphql/categories";
 
 import { GET_SETTINGS, GET_DEFAULT_SETTINGS, UPDATE_SETTINGS } from "./graphql/settings";
-import { Db } from "@webiny/db";
 import path from "path";
 import fs from "fs";
 import { Tenant } from "@webiny/api-tenancy/types";
 
 const defaultTenant = { id: "root", name: "Root", parent: null };
-
-const ELASTICSEARCH_PORT = process.env.ELASTICSEARCH_PORT || "9200";
 
 interface Params {
     permissions?: any;
@@ -76,57 +66,72 @@ interface Params {
 }
 
 export default ({ permissions, identity, tenant }: Params = {}) => {
-    const logsDb = new Db({
-        logTable: "PageBuilderLogs",
-        driver: new DynamoDbDriver({
-            documentClient: new DocumentClient({
-                convertEmptyValues: true,
-                endpoint: process.env.MOCK_DYNAMODB_ENDPOINT,
-                sslEnabled: false,
-                region: "local"
-            })
-        })
-    });
+    // @ts-ignore
+    if (typeof __getStorageOperationsPlugins !== "function") {
+        throw new Error(`There is no global "__getStorageOperationsPlugins" function.`);
+    }
+    // @ts-ignore
+    const storageOperations = __getStorageOperationsPlugins();
+    if (typeof storageOperations !== "function") {
+        throw new Error(
+            `A product of "__getStorageOperationsPlugins" must be a function to initialize storage operations.`
+        );
+    }
+    // const logsDb = new Db({
+    //     logTable: "PageBuilderLogs",
+    //     driver: new DynamoDbDriver({
+    //         documentClient: new DocumentClient({
+    //             convertEmptyValues: true,
+    //             endpoint: process.env.MOCK_DYNAMODB_ENDPOINT,
+    //             sslEnabled: false,
+    //             region: "local"
+    //         })
+    //     })
+    // });
 
-    const documentClient = new DocumentClient({
-        convertEmptyValues: true,
-        endpoint: process.env.MOCK_DYNAMODB_ENDPOINT,
-        sslEnabled: false,
-        region: "local"
-    });
-
-    const elasticsearchContext = elasticsearchClientContextPlugin({
-        endpoint: `http://localhost:${ELASTICSEARCH_PORT}`
-    });
+    // const elasticsearchContext = elasticsearchClientContextPlugin({
+    //     endpoint: `http://localhost:${ELASTICSEARCH_PORT}`
+    // });
 
     // Intercept DocumentClient operations and trigger dynamoToElastic function (almost like a DynamoDB Stream trigger)
-    simulateStream(documentClient, createHandler(elasticsearchContext, dynamoToElastic()));
-
-    const db = new Db({
-        table: "PageBuilder",
-        driver: new DynamoDbDriver({ documentClient })
-    });
+    // simulateStream(documentClient, createHandler(elasticsearchContext, dynamoToElastic()));
 
     const handler = createHandler(
-        dbPlugins({
-            table: "PageBuilder",
-            logTable: "PageBuilderLogs",
-            driver: new DynamoDbDriver({ documentClient })
-        }),
+        storageOperations(),
         // TODO figure out a way to load these automatically
         fileManagerDdbEsPlugins(),
-        elasticsearchContext,
         graphqlHandler(),
-        tenancyPlugins(),
-        securityPlugins(),
+        // {
+        //     type: "context",
+        //     apply: context => {
+        //         if (context.db) {
+        //             return;
+        //         }
+        //         context.db = db;
+        //     }
+        // },
         {
             type: "context",
-            apply(context) {
-                context.tenancy.getCurrentTenant = () => {
-                    return tenant || defaultTenant;
+            apply: context => {
+                if (context.tenancy) {
+                    return;
+                }
+                context.tenancy = {
+                    getRootTenant: () => defaultTenant,
+                    getTenantById: (id: string) => {
+                        return {
+                            id,
+                            name: id.toUpperCase(),
+                            parent: null
+                        };
+                    },
+                    getCurrentTenant: () => {
+                        return tenant || defaultTenant;
+                    }
                 };
             }
         },
+        securityPlugins(),
         i18nContext(),
         i18nDynamoDbStorageOperations(),
         i18nContentPlugins(),
@@ -204,7 +209,6 @@ export default ({ permissions, identity, tenant }: Params = {}) => {
         handler,
         invoke,
         // Helpers.
-        db,
         defaults: {
             db: {
                 keys: [
@@ -217,7 +221,6 @@ export default ({ permissions, identity, tenant }: Params = {}) => {
                 ]
             }
         },
-        logsDb,
         sleep,
         until: async (execute, until, options: any = {}) => {
             const tries = options.tries ?? 10;

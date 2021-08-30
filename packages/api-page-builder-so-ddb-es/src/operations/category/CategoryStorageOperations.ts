@@ -76,7 +76,6 @@ export class CategoryStorageOperationsDdbEs implements CategoryStorageOperations
             entity: this.entity,
             partitionKey: this.createPartitionKey({ tenant, locale }),
             options: {
-                limit: limit || undefined,
                 gt: " "
             }
         };
@@ -111,7 +110,7 @@ export class CategoryStorageOperationsDdbEs implements CategoryStorageOperations
 
         return createListResponse({
             items: sortedItems,
-            limit,
+            limit: limit || 100000,
             totalCount: filteredItems.length,
             after: null
         });
@@ -220,7 +219,7 @@ export class CategoryStorageOperationsDdbEs implements CategoryStorageOperations
     }
 
     public createPartitionKey({ tenant, locale }: PartitionKeyOptions): string {
-        return `T#${tenant}#L${locale}PB#C`;
+        return `T#${tenant}#L#${locale}#PB#C`;
     }
     /**
      * Either string or object with slug property can be passed to get back the sort key.

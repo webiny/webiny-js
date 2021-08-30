@@ -28,14 +28,13 @@ import WebinyError from "@webiny/error";
 import { PageStorageOperationsProviderPlugin } from "~/plugins/PageStorageOperationsProviderPlugin";
 import lodashTrimEnd from "lodash/trimEnd";
 import { createStorageOperations } from "./storageOperations";
+import { getZeroPaddedVersionNumber } from "~/utils/zeroPaddedVersionNumber";
 
 const STATUS_CHANGES_REQUESTED = "changesRequested";
 const STATUS_REVIEW_REQUESTED = "reviewRequested";
 const STATUS_DRAFT = "draft";
 const STATUS_PUBLISHED = "published";
 const STATUS_UNPUBLISHED = "unpublished";
-
-const getZeroPaddedVersionNumber = number => String(number).padStart(4, "0");
 
 const DEFAULT_EDITOR = "page-builder";
 const PERMISSION_NAME = "pb.page";
@@ -70,11 +69,17 @@ export default new ContextPlugin<PbContext>(async context => {
                 const page = await storageOperations.get({
                     where: {
                         pid,
-                        version
+                        version: version ? Number(version) : undefined,
+                        /**
+                         * If we have the version in the ID take that version,
+                         * otherwise get the published page.
+                         */
+                        published: version ? undefined : true
                     }
                 });
                 if (!page) {
                     pages.push(null);
+                    continue;
                 }
                 page.content = await extractContent(page.content);
                 pages.push(page);
@@ -93,6 +98,9 @@ export default new ContextPlugin<PbContext>(async context => {
     const clearDataLoaderCache = (ids: string[]) => {
         for (const id of ids) {
             dataLoaderGetById.clear(id);
+            if (id.includes("#")) {
+                dataLoaderGetById.clear(id.split("#").shift());
+            }
         }
     };
 
@@ -121,9 +129,8 @@ export default new ContextPlugin<PbContext>(async context => {
 
             const pageId = mdbid();
             const version = 1;
-            const zeroPaddedVersion = getZeroPaddedVersionNumber(version);
 
-            const id = `${pageId}#${zeroPaddedVersion}`;
+            const id = `${pageId}#${getZeroPaddedVersionNumber(version)}`;
 
             const updateSettingsModel = new UpdateSettingsModel().populate({
                 general: {
@@ -147,7 +154,7 @@ export default new ContextPlugin<PbContext>(async context => {
                 category: category.slug,
                 title,
                 path: pagePath,
-                version: 1,
+                version,
                 status: STATUS_DRAFT,
                 visibility: {
                     list: { latest: true, published: true },
@@ -226,13 +233,15 @@ export default new ContextPlugin<PbContext>(async context => {
 
             const version = latestPage.version + 1;
 
+            const id = `${original.pid}#${getZeroPaddedVersionNumber(version)}`;
+
             const page: Page = {
                 ...original,
-                id: `${original.pid}#${getZeroPaddedVersionNumber(version)}`,
+                id,
                 status: STATUS_DRAFT,
                 locked: false,
                 publishedOn: null,
-                version: version,
+                version,
                 savedOn: new Date().toISOString(),
                 createdFrom: uniqueId,
                 createdOn: new Date().toISOString(),
@@ -260,7 +269,7 @@ export default new ContextPlugin<PbContext>(async context => {
                 /**
                  * Clear the dataLoader cache.
                  */
-                clearDataLoaderCache([original.id, latestPage.id]);
+                clearDataLoaderCache([original.id, page.id, latestPage.id]);
                 return result as any;
             } catch (ex) {
                 throw new WebinyError(
@@ -292,6 +301,7 @@ export default new ContextPlugin<PbContext>(async context => {
             const page: Page = {
                 ...original,
                 ...input,
+                version: Number(original.version),
                 savedOn: new Date().toISOString()
             };
             const newContent = input.content;
@@ -321,7 +331,7 @@ export default new ContextPlugin<PbContext>(async context => {
                 /**
                  * Clear the dataLoader cache.
                  */
-                clearDataLoaderCache([original.id]);
+                clearDataLoaderCache([original.id, page.id]);
 
                 return {
                     ...result,
@@ -485,7 +495,7 @@ export default new ContextPlugin<PbContext>(async context => {
                 }
             });
             /**
-             * Latest revision of the this page.
+             * Latest revision of this page.
              */
             const latestPage = await storageOperations.get({
                 where: {
@@ -544,12 +554,14 @@ export default new ContextPlugin<PbContext>(async context => {
                  * Clear the dataLoader cache.
                  * We need to clear cache for original publish, latest and path page.
                  */
-                clearDataLoaderCache([
-                    original.id,
-                    publishedPage.id,
-                    publishedPathPage.id,
-                    latestPage.id
-                ]);
+                const idList = [original.id, result.id, latestPage.id];
+                if (publishedPage) {
+                    idList.push(publishedPage.id);
+                }
+                if (publishedPathPage) {
+                    idList.push(publishedPathPage.id);
+                }
+                clearDataLoaderCache(idList);
                 return result as any;
             } catch (ex) {
                 throw new WebinyError(
@@ -560,7 +572,8 @@ export default new ContextPlugin<PbContext>(async context => {
                         original,
                         page,
                         latestPage,
-                        publishedPage
+                        publishedPage,
+                        publishedPathPage
                     }
                 );
             }
@@ -763,7 +776,7 @@ export default new ContextPlugin<PbContext>(async context => {
                 rwd: "r"
             });
 
-            let page: Page = undefined;
+            let page: Page = null;
 
             try {
                 page = await dataLoaderGetById.load(id);
@@ -777,7 +790,7 @@ export default new ContextPlugin<PbContext>(async context => {
                 );
             }
             if (!page) {
-                throw new NotFoundError("Page not found.");
+                throw new NotFoundError(`Page "${id}" not found.`);
             }
 
             const identity = context.security.getIdentity();
@@ -796,7 +809,7 @@ export default new ContextPlugin<PbContext>(async context => {
 
             try {
                 page = await dataLoaderGetById.load(id);
-                if (preview !== true && page?.status !== STATUS_PUBLISHED) {
+                if (page && preview !== true && page.status !== STATUS_PUBLISHED) {
                     page = null;
                 }
             } catch (ex) {
@@ -810,7 +823,7 @@ export default new ContextPlugin<PbContext>(async context => {
                 );
             }
             if (!page) {
-                throw new NotFoundError("Page not found.");
+                throw new NotFoundError(`Page "${id}" not found.`);
             }
 
             const identity = context.security.getIdentity();
@@ -913,15 +926,15 @@ export default new ContextPlugin<PbContext>(async context => {
 
             const listParams: PageStorageOperationsListParams = {
                 limit,
-                sort: sort as string[],
+                sort: Array.isArray(sort) ? sort : [],
                 where: {
                     ...initialWhere,
                     published: true,
-                    search: search?.query || undefined,
+                    search: search ? search.query : undefined,
                     locale: context.i18nContent.getLocale().code,
                     createdBy,
-                    path_not_in: pathNotIn,
-                    pid_not_in: pidNotIn
+                    path_not_in: pathNotIn.length > 0 ? pathNotIn : undefined,
+                    pid_not_in: pidNotIn.length > 0 ? pidNotIn : undefined
                 },
                 after: (page as unknown as string) || null
             };
@@ -977,15 +990,15 @@ export default new ContextPlugin<PbContext>(async context => {
 
             const listParams: PageStorageOperationsListParams = {
                 limit,
-                sort: sort as string[],
+                sort: Array.isArray(sort) ? sort : [],
                 where: {
                     ...initialWhere,
                     published: true,
                     search: search?.query || undefined,
                     locale: context.i18nContent.getLocale().code,
                     createdBy,
-                    path_not_in: pathNotIn,
-                    pid_not_in: pidNotIn
+                    path_not_in: pathNotIn.length ? pathNotIn : undefined,
+                    pid_not_in: pidNotIn.length ? pidNotIn : undefined
                 },
                 after: (page as unknown as string) || null
             };
@@ -1001,8 +1014,8 @@ export default new ContextPlugin<PbContext>(async context => {
                 return [pages as any, meta];
             } catch (ex) {
                 throw new WebinyError(
-                    ex.message || "Could not list pages.",
-                    ex.code || "LIST_PAGES_ERROR",
+                    ex.message || "Could not list published pages.",
+                    ex.code || "LIST_PUBLISHED_PAGES_ERROR",
                     {
                         ...(ex.data || {}),
                         params: listParams
@@ -1030,7 +1043,7 @@ export default new ContextPlugin<PbContext>(async context => {
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not load all the revisions from requested page.",
-                    ex.code || "LOAD_PAGE_REVISIONS_ERROR",
+                    ex.code || "LIST_PAGE_REVISIONS_ERROR",
                     {
                         ...(ex.data || {}),
                         pageId

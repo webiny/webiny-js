@@ -36,7 +36,7 @@ const parseWhereKey = (key: string) => {
 };
 
 /**
- * Latest and published are specific in Elasticsearch to that extend that they are tagged in the __type property.
+ * Latest and published are specific in Elasticsearch to that extend that they are tagged in the published or latest property.
  * We allow either published or either latest.
  * Latest is used in the manage API and published in the read API.
  */
@@ -66,13 +66,13 @@ const createInitialQueryValue = (
     if (where.published === true) {
         query.must.push({
             term: {
-                "__type.keyword": "P"
+                published: true
             }
         });
     } else if (where.latest === true) {
         query.must.push({
             term: {
-                "__type.keyword": "L"
+                latest: true
             }
         });
     }

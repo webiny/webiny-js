@@ -1,6 +1,7 @@
 import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
 import {
     PbContext,
+    Settings,
     SettingsStorageOperations,
     SettingsStorageOperationsCreateParams,
     SettingsStorageOperationsGetParams
@@ -14,6 +15,7 @@ import { SettingsPlugin } from "~/plugins/SettingsPlugin";
 import WebinyError from "@webiny/error";
 import { createStorageOperations } from "./storageOperations";
 import { SettingsStorageOperationsProviderPlugin } from "~/plugins/SettingsStorageOperationsProviderPlugin";
+import lodashGet from "lodash/get";
 /**
  * Possible types of settings.
  * If a lot of types should be added maybe we can do it via the plugin.
@@ -105,9 +107,12 @@ export default new ContextPlugin<PbContext>(async context => {
             }
         },
         async getDefault(options) {
-            const allTenants = await this.get({ tenant: false, locale: false });
-            const tenantAllLocales = await this.get({
-                tenant: options?.tenant,
+            const allTenants = await context.pageBuilder.settings.get({
+                tenant: false,
+                locale: false
+            });
+            const tenantAllLocales = await context.pageBuilder.settings.get({
+                tenant: options ? options.tenant : undefined,
                 locale: false
             });
             if (!allTenants && !tenantAllLocales) {
@@ -121,13 +126,13 @@ export default new ContextPlugin<PbContext>(async context => {
                 }
             });
         },
-        async update(rawData, options) {
-            options?.auth !== false && (await checkBasePermissions(context));
+        async update(rawData, options = {}) {
+            options.auth !== false && (await checkBasePermissions(context));
 
-            const targetTenant = options?.tenant === false ? false : options?.tenant;
-            const targetLocale = options?.locale === false ? false : options?.locale;
+            const targetTenant = options.tenant === false ? false : options.tenant;
+            const targetLocale = options.locale === false ? false : options.locale;
 
-            let original = await this.get(options);
+            let original = (await context.pageBuilder.settings.get(options)) as Settings;
             if (!original) {
                 original = await new DefaultSettingsModel().populate({}).toJSON();
 
@@ -155,7 +160,7 @@ export default new ContextPlugin<PbContext>(async context => {
                     }
                 };
                 try {
-                    await storageOperations.create(data);
+                    original = await storageOperations.create(data);
                 } catch (ex) {
                     throw new WebinyError(
                         ex.message || "Could not create settings record.",
@@ -168,7 +173,11 @@ export default new ContextPlugin<PbContext>(async context => {
             const settingsModel = new DefaultSettingsModel().populate(original).populate(rawData);
             await settingsModel.validate();
 
-            const settings = await settingsModel.toJSON();
+            const data = await settingsModel.toJSON();
+            const settings: Settings = {
+                ...original,
+                ...data
+            };
 
             // Before continuing, let's check for differences that matter.
 
@@ -180,8 +189,8 @@ export default new ContextPlugin<PbContext>(async context => {
             const changedPages = [];
             for (let i = 0; i < specialTypes.length; i++) {
                 const specialType = specialTypes[i];
-                const p = original?.pages?.[specialType];
-                const n = settings?.pages?.[specialType];
+                const p = lodashGet(original, `pages.${specialType}`);
+                const n = lodashGet(settings, `pages.${specialType}`);
 
                 if (p !== n) {
                     // Only throw if previously we had a page (p), and now all of a sudden

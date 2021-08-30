@@ -36,6 +36,21 @@ export default (params: Params = {}) => {
                 };
             }
         },
+        {
+            type: "context",
+            apply: context => {
+                if (context.i18nContent) {
+                    return;
+                }
+                context.i18nContent = {
+                    getLocale: () => {
+                        return {
+                            code: "en-US"
+                        };
+                    }
+                };
+            }
+        },
         pageBuilderPlugins(),
         extraPlugins || []
     );

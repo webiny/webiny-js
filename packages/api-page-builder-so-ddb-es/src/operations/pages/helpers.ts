@@ -1,6 +1,7 @@
 import { IndexPageDataPlugin } from "~/plugins/definitions/IndexPageDataPlugin";
 import { PbContext } from "@webiny/api-page-builder/graphql/types";
 import { Page } from "@webiny/api-page-builder/types";
+import lodashGet from "lodash.get";
 
 export const getESPageData = (page: Page) => {
     return {
@@ -25,12 +26,12 @@ export const getESPageData = (page: Page) => {
         publishedOn: page.publishedOn,
 
         // Pull tags & snippet from settings.general.
-        tags: page?.settings?.general?.tags || [],
-        snippet: page?.settings?.general?.snippet || null,
+        tags: lodashGet(page, "settings.general.tags") || [],
+        snippet: lodashGet(page, "settings.general.snippet") || null,
 
         // Save some images that could maybe be used on listing pages.
         images: {
-            general: page?.settings?.general?.image
+            general: lodashGet(page, "settings.general.image")
         }
     };
 };

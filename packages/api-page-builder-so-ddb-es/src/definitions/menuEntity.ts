@@ -16,6 +16,9 @@ export const defineMenuEntity = (params: { context: PbContext; table: Table }): 
             SK: {
                 sortKey: true
             },
+            TYPE: {
+                type: "string"
+            },
             title: {
                 type: "string"
             },

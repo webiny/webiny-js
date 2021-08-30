@@ -16,6 +16,9 @@ export const definePageEntity = (params: { context: PbContext; table: Table }): 
             SK: {
                 sortKey: true
             },
+            TYPE: {
+                type: "string"
+            },
             id: {
                 type: "string"
             },

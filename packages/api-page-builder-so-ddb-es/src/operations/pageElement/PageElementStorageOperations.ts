@@ -54,7 +54,10 @@ export class PageElementStorageOperationsDdbEs implements PageElementStorageOper
         };
         try {
             const result = await this.entity.get(keys);
-            return cleanupItem(this.entity, result?.Item);
+            if (!result || !result.Item) {
+                return null;
+            }
+            return cleanupItem(this.entity, result.Item);
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not load page element by given parameters.",

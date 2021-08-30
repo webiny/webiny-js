@@ -1,15 +1,12 @@
 import { Plugin } from "@webiny/plugins";
-import { DefaultSettings, Page, PageSpecialType, PbContext } from "~/types";
+import { Settings, Page, PageSpecialType, PbContext } from "~/types";
 
 export type CallbackFunction<TParams> = (params: TParams) => void | Promise<void>;
 
-type PreviousSettings = DefaultSettings;
-type NextSettings = DefaultSettings;
-
 interface UpdateParams {
     context: PbContext;
-    previousSettings: PreviousSettings;
-    nextSettings: NextSettings;
+    previousSettings: Settings;
+    nextSettings: Settings;
     meta: {
         diff: {
             pages: Array<[PageSpecialType, string, string, Page]>;

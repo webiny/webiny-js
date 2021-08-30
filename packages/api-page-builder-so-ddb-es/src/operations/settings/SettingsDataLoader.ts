@@ -38,22 +38,38 @@ export class SettingsDataLoader {
         if (this._getDataLoader) {
             return this._getDataLoader;
         }
-        const fn = async (items: DataLoaderGetItem[]) => {
-            const batched = items.map(item => {
-                return this.storageOperations.entity.getBatch(item);
-            });
+        const cacheKeyFn = (key: DataLoaderGetItem) => `${key.PK}#${key.SK}`;
 
-            const results = await batchReadAll<Settings>({
-                table: this.storageOperations.table,
-                items: batched
-            });
-            return results.map(result => cleanupItem(this.storageOperations.entity, result));
-        };
+        this._getDataLoader = new DataLoader(
+            async (keys: DataLoaderGetItem[]) => {
+                const batched = keys.map(key => {
+                    return this.storageOperations.entity.getBatch(key);
+                });
 
-        const options = {
-            cacheKeyFn: key => `${key.PK}#${key.SK}`
-        };
-        this._getDataLoader = new DataLoader(fn, options);
+                const records = await batchReadAll<Settings>({
+                    table: this.storageOperations.table,
+                    items: batched
+                });
+                const results = records.reduce(
+                    (collection, result: Settings & DataLoaderGetItem) => {
+                        if (!result) {
+                            return null;
+                        }
+                        const key = cacheKeyFn(result);
+                        collection[key] = cleanupItem(this.storageOperations.entity, result);
+                        return collection;
+                    },
+                    {} as Record<string, Settings>
+                );
+                return keys.map(key => {
+                    const itemKey = cacheKeyFn(key);
+                    return results[itemKey] || null;
+                });
+            },
+            {
+                cacheKeyFn
+            }
+        );
         return this._getDataLoader;
     }
 }

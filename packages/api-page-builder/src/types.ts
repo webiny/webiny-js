@@ -136,33 +136,6 @@ export interface File {
     src: string;
 }
 
-export interface DefaultSettings {
-    name: string;
-    websiteUrl: string;
-    websitePreviewUrl: string;
-    favicon: File;
-    logo: File;
-    prerendering: {
-        app: {
-            url: string;
-        };
-        storage: {
-            name: string;
-        };
-        meta: Record<string, any>;
-    };
-    social: {
-        facebook: string;
-        twitter: string;
-        instagram: string;
-        image: File;
-    };
-    pages: {
-        home: string;
-        notFound: string;
-    };
-}
-
 export interface MetaResponse {
     cursor: string | null;
     totalCount: number;
@@ -538,7 +511,7 @@ export interface PageStorageOperationsGetParams {
          * TODO: check if required to rename to pageId
          */
         pid?: string;
-        version?: string;
+        version?: number;
         path?: string;
         published?: boolean;
         latest?: boolean;

@@ -62,9 +62,12 @@ export class SettingsStorageOperationsDdbEs implements SettingsStorageOperations
             SK: this.createSortKey(where.type)
         };
         try {
-            const result = await this.entity.get(keys);
-
-            return cleanupItem(this.entity, result?.Item);
+            const result = await this.dataLoader.getOne(keys);
+            // const result = await this.entity.get(keys);
+            // if (!result || !result.Item) {
+            //     return null;
+            // }
+            return cleanupItem(this.entity, result);
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not load settings record.",

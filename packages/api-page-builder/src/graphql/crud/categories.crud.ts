@@ -161,7 +161,9 @@ export default new ContextPlugin<PbContext>(async context => {
         async create(input) {
             await checkBasePermissions(context, PERMISSION_NAME, { rwd: "w" });
 
-            const existingCategory = await this.dataLoaders.get.load(input.slug);
+            const existingCategory = await context.pageBuilder.categories.get(input.slug, {
+                auth: false
+            });
             if (existingCategory) {
                 throw new NotFoundError(`Category with slug "${input.slug}" already exists.`);
             }
@@ -209,7 +211,7 @@ export default new ContextPlugin<PbContext>(async context => {
                 rwd: "w"
             });
 
-            const original = await this.get(slug);
+            const original = await context.pageBuilder.categories.get(slug);
             if (!original) {
                 throw new NotFoundError(`Category "${slug}" not found.`);
             }
@@ -249,7 +251,7 @@ export default new ContextPlugin<PbContext>(async context => {
                 rwd: "d"
             });
 
-            const category = await this.get(slug);
+            const category = await context.pageBuilder.categories.get(slug);
             if (!category) {
                 throw new NotFoundError(`Category "${slug}" not found.`);
             }

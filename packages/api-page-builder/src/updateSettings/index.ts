@@ -1,16 +1,16 @@
 import DefaultSettingsModel from "../utils/models/DefaultSettings.model";
 import { HandlerPlugin } from "@webiny/handler/types";
 import { ArgsContext } from "@webiny/handler-args/types";
-import { DefaultSettings, PbContext, SettingsStorageOperations } from "~/types";
+import { PbContext, Settings, SettingsStorageOperations } from "~/types";
 import { createStorageOperations } from "~/graphql/crud/storageOperations";
 import { SettingsStorageOperationsProviderPlugin } from "~/plugins/SettingsStorageOperationsProviderPlugin";
 
 export interface HandlerArgs {
-    data: DefaultSettings;
+    data: Settings;
 }
 
 export interface HandlerResponse {
-    data: DefaultSettings;
+    data: Settings;
     error: {
         message: string;
         code?: string;
@@ -79,8 +79,14 @@ export default (): HandlerPlugin<PbContext, ArgsContext<HandlerArgs>> => ({
                 settings
             });
 
+            const data = {
+                ...settings
+            };
+            delete data.locale;
+            delete data.tenant;
+            delete data.type;
             return {
-                data: settings,
+                data,
                 error: null
             };
         } catch (ex) {
