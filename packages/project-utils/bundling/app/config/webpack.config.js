@@ -399,6 +399,15 @@ module.exports = function (webpackEnv, { paths, babelCustomizer }) {
                                                 }
                                             }
                                         }
+                                    ],
+                                    [
+                                        "babel-plugin-module-resolver",
+                                        {
+                                            cwd: paths.appPath,
+                                            alias: {
+                                                "~": "./src"
+                                            }
+                                        }
                                     ]
                                 ],
                                 // This is a feature of `babel-loader` for webpack (not Babel itself).

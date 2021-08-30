@@ -2,6 +2,7 @@ import { CliPluginsScaffoldCi } from "../types";
 import { Octokit } from "octokit";
 import chalk from "chalk";
 import commitWorkflows from "./commitWorkflows";
+import fetchAllRepositories from "./fetchAllRepositories";
 import validateNpmPackageName from "validate-npm-package-name";
 import open from "open";
 
@@ -113,11 +114,11 @@ const plugin: CliPluginsScaffoldCi<Input> = {
                 required: true,
                 when: answers => answers.newOrExistingRepo === "newRepo",
                 validate: async (answer, answers) => {
-                    const repos = await octokit.rest.repos.listForAuthenticatedUser();
-                    for (let i = 0; i < repos.data.length; i++) {
-                        const repo = repos.data[i];
+                    const repositories = await fetchAllRepositories({ octokit });
+                    for (let i = 0; i < repositories.length; i++) {
+                        const repository = repositories[i];
                         const owner = answers.newRepoOrgName || user.login;
-                        if (repo.name === answer && repo.owner.login === owner) {
+                        if (repository.name === answer && repository.owner.login === owner) {
                             return "A code repository with given name already exists.";
                         }
                     }
@@ -145,15 +146,15 @@ const plugin: CliPluginsScaffoldCi<Input> = {
                 when: answers => answers.newOrExistingRepo === "existingRepo",
                 type: "list",
                 choices: async () => {
-                    return octokit.rest.repos.listForAuthenticatedUser().then(response => {
-                        return response.data.map(data => ({
-                            name: data.full_name,
+                    return fetchAllRepositories({ octokit }).then(repositories =>
+                        repositories.map(repository => ({
+                            name: repository.full_name,
                             value: {
-                                name: data.name,
-                                owner: data.owner.login
+                                name: repository.name,
+                                owner: repository.owner.login
                             }
-                        }));
-                    });
+                        }))
+                    );
                 }
             }
         ];

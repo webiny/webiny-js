@@ -6,12 +6,12 @@
     "watch": "yarn webiny run watch"
   },
   "dependencies": {
-    "@webiny/api-prerendering-service": "^5.13.0",
-    "@webiny/cli": "^5.13.0",
-    "@webiny/db-dynamodb": "^5.13.0",
-    "@webiny/handler-aws": "^5.13.0",
-    "@webiny/handler-db": "^5.13.0",
-    "@webiny/handler-logs": "^5.13.0",
-    "@webiny/project-utils": "^5.13.0"
+    "@webiny/api-prerendering-service": "^5.14.0",
+    "@webiny/cli": "^5.14.0",
+    "@webiny/db-dynamodb": "^5.14.0",
+    "@webiny/handler-aws": "^5.14.0",
+    "@webiny/handler-db": "^5.14.0",
+    "@webiny/handler-logs": "^5.14.0",
+    "@webiny/project-utils": "^5.14.0"
   }
 }
