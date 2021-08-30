@@ -14,7 +14,19 @@ export function EditorPluginsLoader({ children, location }) {
     );
 
     async function loadPlugins() {
-        const [{ loadEditorPlugins, loadRenderPlugins }] = plugins.byType("pb-plugins-loader");
+        const pbPlugins = plugins.byType("pb-plugins-loader");
+        const loadEditorPlugins = async () =>
+            await Promise.all(
+                pbPlugins
+                    .map(plugin => plugin.loadEditorPlugins && plugin.loadEditorPlugins())
+                    .filter(Boolean)
+            );
+        const loadRenderPlugins = async () =>
+            await Promise.all(
+                pbPlugins
+                    .map(plugin => plugin.loadEditorPlugins && plugin.loadRenderPlugins())
+                    .filter(Boolean)
+            );
 
         // If we are on pages list route, import plugins required to render the page content.
         if (location.pathname.startsWith("/page-builder/pages") && !loaded.render) {
@@ -29,12 +41,12 @@ export function EditorPluginsLoader({ children, location }) {
 
         // If we are on the Editor route, import plugins required to render both editor and preview.
         if (location.pathname.startsWith("/page-builder/editor") && !loaded.editor) {
-            const editorPlugins = await Promise.all(
-                [loadEditorPlugins(), !loaded.render ? loadRenderPlugins() : null].filter(Boolean)
-            );
+            const renderPlugins = !loaded.render ? await loadRenderPlugins() : [];
+            const editorAdminPlugins = await loadEditorPlugins();
+            const editorRenderPlugins = [...editorAdminPlugins, ...renderPlugins].filter(Boolean);
 
             // "skipExisting" will ensure existing plugins (with the same name) are not overridden.
-            plugins.register(editorPlugins, { skipExisting: true });
+            plugins.register(editorRenderPlugins, { skipExisting: true });
 
             globalState.editor = true;
             globalState.render = true;
