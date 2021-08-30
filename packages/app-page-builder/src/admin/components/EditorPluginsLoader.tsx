@@ -15,16 +15,18 @@ export function EditorPluginsLoader({ children, location }) {
 
     async function loadPlugins() {
         const pbPlugins = plugins.byType("pb-plugins-loader");
+        // load all editor admin plugins
         const loadEditorPlugins = async () =>
             await Promise.all(
                 pbPlugins
                     .map(plugin => plugin.loadEditorPlugins && plugin.loadEditorPlugins())
                     .filter(Boolean)
             );
+        // load all editor render plugins
         const loadRenderPlugins = async () =>
             await Promise.all(
                 pbPlugins
-                    .map(plugin => plugin.loadEditorPlugins && plugin.loadRenderPlugins())
+                    .map(plugin => plugin.loadRenderPlugins && plugin.loadRenderPlugins())
                     .filter(Boolean)
             );
 
@@ -43,6 +45,7 @@ export function EditorPluginsLoader({ children, location }) {
         if (location.pathname.startsWith("/page-builder/editor") && !loaded.editor) {
             const renderPlugins = !loaded.render ? await loadRenderPlugins() : [];
             const editorAdminPlugins = await loadEditorPlugins();
+            // merge both editor admin and render plugins
             const editorRenderPlugins = [...editorAdminPlugins, ...renderPlugins].filter(Boolean);
 
             // "skipExisting" will ensure existing plugins (with the same name) are not overridden.
