@@ -8738,6 +8738,7 @@ __metadata:
     "@webiny/handler": ^5.13.0
     "@webiny/handler-graphql": ^5.13.0
     "@webiny/project-utils": ^5.13.0
+    lodash.get: ^4.4.2
     rimraf: ^3.0.2
     typescript: ^4.1.3
   languageName: unknown
@@ -8831,6 +8832,7 @@ __metadata:
     jest: ^26.6.3
     jest-dynalite: ^3.2.0
     jest-environment-node: ^27.0.6
+    lodash.get: ^4.4.2
     rimraf: ^3.0.2
     ttypescript: ^1.5.12
     typescript: ^4.1.3
@@ -8849,7 +8851,6 @@ __metadata:
     "@babel/runtime": ^7.5.5
     "@commodo/fields": beta
     "@types/puppeteer": ^5.4.2
-    "@webiny/api-elasticsearch": ^5.13.0
     "@webiny/api-file-manager": ^5.13.0
     "@webiny/api-file-manager-ddb-es": ^5.13.0
     "@webiny/api-i18n": ^5.13.0

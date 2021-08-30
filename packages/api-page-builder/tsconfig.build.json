@@ -4,9 +4,7 @@
   "exclude": [
     "node_modules",
     "../plugins",
-    "../db",
     "../api-i18n-content",
-    "../api-elasticsearch",
     "../api-security",
     "../api-upgrade",
     "../handler",

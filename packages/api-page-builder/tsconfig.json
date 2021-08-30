@@ -57,12 +57,6 @@
     },
     {
       "path": "../api-file-manager-ddb-es"
-    },
-    {
-      "path": "../api-elasticsearch"
-    },
-    {
-      "path": "../db"
     }
   ],
   "compilerOptions": {
@@ -103,11 +97,7 @@
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"],
       "@webiny/validation/*": ["../validation/src/*"],
-      "@webiny/validation": ["../validation/src"],
-      "@webiny/api-elasticsearch/*": ["../api-elasticsearch/src/*"],
-      "@webiny/api-elasticsearch": ["../api-elasticsearch/src"],
-      "@webiny/db/*": ["../db/src/*"],
-      "@webiny/db": ["../db/src"]
+      "@webiny/validation": ["../validation/src"]
     },
     "baseUrl": "."
   }

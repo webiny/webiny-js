@@ -27,7 +27,8 @@
     "@webiny/plugins": "^5.13.0",
     "dataloader": "^2.0.0",
     "dynamodb-toolbox": "^0.3.4",
-    "elastic-ts": "^0.7.0"
+    "elastic-ts": "^0.7.0",
+    "lodash.get": "^4.4.2"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",
