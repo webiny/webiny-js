@@ -32,6 +32,9 @@ import { ReactComponent as FilterIcon } from "@webiny/app-admin/assets/icons/fil
 import SearchUI from "@webiny/app-admin/components/SearchUI";
 import { deserializeSorters, serializeSorters } from "../utils";
 import * as GQLCache from "~/admin/views/Pages/cache";
+import { WrapperWithFileUpload } from "~/editor/plugins/defaultBar/components/ImportPageButton";
+import { ReactComponent as FileUploadIcon } from "~/editor/plugins/defaultBar/components/icons/file_upload.svg";
+import useImportPageDialog from "~/editor/plugins/defaultBar/components/ImportPageButton/useImportPageDialog";
 
 const t = i18n.ns("app-page-builder/admin/pages/data-list");
 const rightAlign = css({
@@ -47,6 +50,10 @@ const InlineLoaderWrapper = styled("div")({
     width: "100%",
     height: 40,
     backgroundColor: "var(--mdc-theme-surface)"
+});
+const Actions = styled("div")({
+    display: "flex",
+    justifyContent: "space-between"
 });
 const sorters = [
     {
@@ -70,8 +77,9 @@ const sorters = [
 type PagesDataListProps = {
     onCreatePage: (event?: React.SyntheticEvent) => void;
     canCreate: boolean;
+    onImportPage?: (key: string) => void;
 };
-const PagesDataList = ({ onCreatePage, canCreate }: PagesDataListProps) => {
+const PagesDataList = ({ onCreatePage, canCreate, onImportPage }: PagesDataListProps) => {
     const [filter, setFilter] = useState("");
     const { history, location } = useRouter();
     const query = new URLSearchParams(location.search);
@@ -231,17 +239,38 @@ const PagesDataList = ({ onCreatePage, canCreate }: PagesDataListProps) => {
         [categoriesData, where, sort]
     );
 
+    const { showImportPageDialog } = useImportPageDialog();
+
+    const listActions = useMemo(() => {
+        if (!canCreate) {
+            return null;
+        }
+        return (
+            <Actions>
+                <WrapperWithFileUpload onSelect={onImportPage}>
+                    {({ showFileManager }) => (
+                        <ButtonSecondary
+                            data-testid="import-page-button"
+                            onClick={() => {
+                                showImportPageDialog(showFileManager, onImportPage);
+                            }}
+                        >
+                            <ButtonIcon icon={<FileUploadIcon />} /> {t`Import Page`}
+                        </ButtonSecondary>
+                    )}
+                </WrapperWithFileUpload>
+                <ButtonSecondary data-testid="new-record-button" onClick={onCreatePage}>
+                    <ButtonIcon icon={<AddIcon />} /> {t`New Page`}
+                </ButtonSecondary>
+            </Actions>
+        );
+    }, [canCreate, showImportPageDialog]);
+
     return (
         <DataList
             title={t`Pages`}
             loading={Boolean(loading)}
-            actions={
-                canCreate ? (
-                    <ButtonSecondary data-testid="new-record-button" onClick={onCreatePage}>
-                        <ButtonIcon icon={<AddIcon />} /> {t`New Page`}
-                    </ButtonSecondary>
-                ) : null
-            }
+            actions={listActions}
             data={listPagesData}
             search={
                 <SearchUI value={filter} onChange={setFilter} inputPlaceholder={t`Search pages`} />
