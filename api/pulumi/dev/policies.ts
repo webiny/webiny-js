@@ -15,7 +15,6 @@ class Policies {
     }
 
     getDynamoDbToElasticLambdaPolicy(domain: EsDomain): aws.iam.Policy {
-        // TODO: Add cache
         return new aws.iam.Policy("DynamoDbToElasticLambdaPolicy-updated", {
             description: "This policy enables access to ES and Dynamodb streams",
             policy: {
@@ -41,7 +40,6 @@ class Policies {
     }
 
     getFileManagerLambdaPolicy(bucket: aws.s3.Bucket): aws.iam.Policy {
-        // TODO: Add cache
         return new aws.iam.Policy("FileManagerLambdaPolicy", {
             description: "This policy enables access to Lambda and S3",
             policy: {
@@ -69,7 +67,6 @@ class Policies {
         elasticsearchDynamodbTable: aws.dynamodb.Table,
         bucket: aws.s3.Bucket
     ): aws.iam.Policy {
-        // TODO: Add cache
         return new aws.iam.Policy("PreRenderingServicePolicy", {
             description: "This policy enables access to Lambda, S3, Cloudfront and Dynamodb",
             policy: {
@@ -133,7 +130,6 @@ class Policies {
     }
 
     getPbUpdateSettingsLambdaPolicy(primaryDynamodbTable: aws.dynamodb.Table): aws.iam.Policy {
-        // TODO: Add cache
         return new aws.iam.Policy("PbUpdateSettingsLambdaPolicy", {
             description: "This policy enables access to Dynamodb",
             policy: {
@@ -161,6 +157,49 @@ class Policies {
         });
     }
 
+    getPbExportPageTaskLambdaPolicy(
+        primaryDynamodbTable: aws.dynamodb.Table,
+        bucket: aws.s3.Bucket
+    ): aws.iam.Policy {
+        return new aws.iam.Policy("PbExportPageTaskLambdaPolicy", {
+            description: "This policy enables access to Dynamodb",
+            policy: {
+                Version: "2012-10-17",
+                Statement: [
+                    {
+                        Sid: "AllowDynamoDBAccess",
+                        Effect: "Allow",
+                        Action: [
+                            "dynamodb:BatchGetItem",
+                            "dynamodb:BatchWriteItem",
+                            "dynamodb:PutItem",
+                            "dynamodb:DeleteItem",
+                            "dynamodb:GetItem",
+                            "dynamodb:Query",
+                            "dynamodb:UpdateItem"
+                        ],
+                        Resource: [
+                            pulumi.interpolate`${primaryDynamodbTable.arn}`,
+                            pulumi.interpolate`${primaryDynamodbTable.arn}/*`
+                        ]
+                    },
+                    {
+                        Sid: "PermissionForS3",
+                        Effect: "Allow",
+                        Action: [
+                            "s3:GetObjectAcl",
+                            "s3:DeleteObject",
+                            "s3:PutObjectAcl",
+                            "s3:PutObject",
+                            "s3:GetObject"
+                        ],
+                        Resource: pulumi.interpolate`arn:aws:s3:::${bucket.id}/*`
+                    }
+                ]
+            }
+        });
+    }
+
     getApiGraphqlLambdaPolicy({
         primaryDynamodbTable,
         elasticsearchDynamodbTable,
@@ -174,7 +213,6 @@ class Policies {
         elasticsearchDomain: EsDomain;
         cognitoUserPool: aws.cognito.UserPool;
     }): aws.iam.Policy {
-        // TODO: Add cache
         return new aws.iam.Policy("ApiGraphqlLambdaPolicy", {
             description: "This policy enables access to ES, Dynamodb, S3, Lambda and Cognito IDP",
             policy: {
@@ -289,7 +327,6 @@ class Policies {
         elasticsearchDynamodbTable: aws.dynamodb.Table;
         elasticsearchDomain: EsDomain;
     }): aws.iam.Policy {
-        // TODO: Add cache
         return new aws.iam.Policy("HeadlessCmsLambdaPolicy", {
             description: "This policy enables access to ES and Dynamodb streams",
             policy: {
