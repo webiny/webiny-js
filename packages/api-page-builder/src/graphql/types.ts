@@ -7,7 +7,7 @@ import { I18NContext } from "@webiny/api-i18n/types";
 import { ElasticsearchContext } from "@webiny/api-elasticsearch/types";
 import DataLoader from "dataloader";
 import { ClientContext } from "@webiny/handler-client/types";
-import { Category, DefaultSettings, Menu, Page, PageElement } from "../types";
+import { Category, DefaultSettings, Menu, Page, PageElement, PageExportTask } from "../types";
 import { PrerenderingServiceClientContext } from "@webiny/api-prerendering-service/client/types";
 import { FileManagerContext } from "@webiny/api-file-manager/types";
 
@@ -83,8 +83,7 @@ export type PagesCrud = {
     requestReview<TPage extends Page = Page>(id: string): Promise<TPage>;
     requestChanges<TPage extends Page = Page>(id: string): Promise<TPage>;
     exportPage(id: string): Promise<{
-        pageZipUrl: string;
-        pageZipFile: Record<string, any>;
+        taskId: string;
     }>;
     importPage<TPage extends Page = Page>(
         category: string,
@@ -102,6 +101,14 @@ export type PageElementsCrud = {
     create(data: Record<string, any>): Promise<PageElement>;
     update(id: string, data: Record<string, any>): Promise<PageElement>;
     delete(id: string): Promise<PageElement>;
+};
+
+export type PageExportTaskCrud = {
+    get(id: string): Promise<PageExportTask>;
+    list(): Promise<PageExportTask[]>;
+    create(data: Record<string, any>): Promise<PageExportTask>;
+    update(id: string, data: Record<string, any>): Promise<PageExportTask>;
+    delete(id: string): Promise<PageExportTask>;
 };
 
 export type CategoriesCrud = {
@@ -170,6 +177,7 @@ export type PbContext = Context<
             menus: MenusCrud;
             settings: SettingsCrud;
             system: SystemCrud;
+            pageExportTask: PageExportTaskCrud;
         };
     }
 >;

@@ -6,6 +6,7 @@ import pageValidation from "./crud/pages.validation";
 import pageElements from "./crud/pageElements.crud";
 import settings from "./crud/settings.crud";
 import system from "./crud/system.crud";
+import pageExportTask from "./crud/pageExportTasks.crud";
 
 export default [
     menus,
@@ -15,5 +16,6 @@ export default [
     pageValidation,
     pageElements,
     settings,
-    system
+    system,
+    pageExportTask
 ];

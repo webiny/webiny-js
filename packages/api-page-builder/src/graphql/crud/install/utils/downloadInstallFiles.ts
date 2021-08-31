@@ -58,18 +58,26 @@ export interface DownloadAndExtractZipParams {
     zipFileKey: string;
     downloadZipAs: string;
     extractZipInDir: string;
+    zipFileUrl: string;
 }
 
 export const downloadAndExtractZip = async ({
     zipFileKey,
     downloadZipAs,
-    extractZipInDir
+    extractZipInDir,
+    zipFileUrl
 }: DownloadAndExtractZipParams) => {
     const s3 = new S3({ region: process.env.AWS_REGION });
-    const installationFilesUrl = await s3.getSignedUrlPromise("getObject", {
-        Bucket: PAGE_BUILDER_S3_BUCKET,
-        Key: zipFileKey
-    });
+    let installationFilesUrl;
+
+    if (zipFileUrl) {
+        installationFilesUrl = zipFileUrl;
+    } else {
+        installationFilesUrl = await s3.getSignedUrlPromise("getObject", {
+            Bucket: PAGE_BUILDER_S3_BUCKET,
+            Key: zipFileKey
+        });
+    }
 
     fs.ensureDirSync(INSTALL_DIR);
 

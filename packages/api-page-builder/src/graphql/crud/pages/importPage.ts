@@ -14,16 +14,23 @@ import {
 interface ImportPageParams {
     context: PbContext;
     pageDataZipKey: string;
+    pageDataZipUrl: string;
     pageTitle: string;
 }
 
-const importPage = async ({ context, pageDataZipKey, pageTitle }: ImportPageParams) => {
+const importPage = async ({
+    context,
+    pageDataZipKey,
+    pageDataZipUrl,
+    pageTitle
+}: ImportPageParams) => {
     const title = kebabCase(pageTitle);
 
     const PAGE_DATA_EXTRACT_DIR = await downloadAndExtractZip({
         zipFileKey: pageDataZipKey,
         downloadZipAs: `${title}.zip`,
-        extractZipInDir: title
+        extractZipInDir: title,
+        zipFileUrl: pageDataZipUrl
     });
 
     // Load the data file

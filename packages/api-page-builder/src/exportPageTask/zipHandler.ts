@@ -1,48 +1,15 @@
 // TODO: Move "archive" in layer
 import Archiver from "archiver/lib/core";
 import vending from "archiver";
-
+import S3 from "aws-sdk/clients/s3";
 import { Readable } from "stream";
-import { File } from "~/types";
-import { s3StreamHandler } from "~/graphql/crud/pages/s3StreamHandler";
+import { s3StreamHandler } from "./s3StreamHandler";
 import * as path from "path";
-
-export function extractFilesFromPageData(data: Record<string, any>, files: any[]): ImageFile[] {
-    // Base case: termination
-    if (!data || typeof data !== "object") {
-        return files;
-    }
-    // Recursively call function for each element
-    if (Array.isArray(data)) {
-        for (let i = 0; i < data.length; i++) {
-            const element = data[i];
-            extractFilesFromPageData(element, files);
-        }
-        return files;
-    }
-
-    // Main
-    const tuple = Object.entries(data);
-    for (let i = 0; i < tuple.length; i++) {
-        const [key, value] = tuple[i];
-        if (key === "file" && value) {
-            files.push(value);
-        } else {
-            extractFilesFromPageData(value, files);
-        }
-    }
-    return files;
-}
-
-// UPLOAD ZIP
+import { ImageFile } from "./utils";
 
 interface S3DownloadStreamDetails {
     stream: Readable;
     filename: string;
-}
-
-interface ImageFile extends File {
-    key: string;
 }
 
 export interface ZipHandlerConfig {
@@ -53,7 +20,7 @@ export interface ZipHandlerConfig {
     s3FileKey: string;
 }
 
-export class ZipHandler {
+export default class ZipHandler {
     config: ZipHandlerConfig;
 
     constructor(config: ZipHandlerConfig) {
@@ -63,25 +30,26 @@ export class ZipHandler {
     s3DownloadStreams(): S3DownloadStreamDetails[] {
         const files = this.config.files.map(({ key }) => {
             return {
-                stream: s3StreamHandler.readStream(process.env.S3_BUCKET, key),
+                stream: s3StreamHandler.readStream(key),
                 filename: `${this.config.filesDirName}\\${path.basename(key)}`
             };
         });
+
         return [
             ...files,
             {
-                stream: s3StreamHandler.readStream(process.env.S3_BUCKET, this.config.s3FileKey),
+                stream: s3StreamHandler.readStream(this.config.s3FileKey),
                 filename: `${path.basename(this.config.s3FileKey)}`
             }
         ];
     }
 
-    async process(): Promise<string> {
-        const { s3StreamUpload, uploaded } = s3StreamHandler.writeStream(
-            process.env.S3_BUCKET,
+    async process(): Promise<S3.ManagedUpload.SendData> {
+        const { s3StreamUpload, streamUploadPromise } = s3StreamHandler.writeStream(
             this.config.archiveFileName
         );
         const s3DownloadStreams = this.s3DownloadStreams();
+
         // TODO: improve this code block
         await new Promise((resolve, reject) => {
             const archive = vending.create(this.config.archiveFormat);
@@ -100,15 +68,19 @@ export class ZipHandler {
 
             archive.pipe(s3StreamUpload);
 
+            // Just debugging
+            archive.on("progress", progress => {
+                console.log("Archiver [progress]");
+                console.log(progress);
+                console.log(JSON.stringify(progress.entries));
+            });
+
             s3DownloadStreams.forEach((streamDetails: S3DownloadStreamDetails) =>
                 archive.append(streamDetails.stream, { name: streamDetails.filename })
             );
             archive.finalize();
-        }).catch((error: { code: string; message: string; data: string }) => {
-            throw new Error(`${error.code} ${error.message} ${error.data}`);
         });
 
-        const zipData = await uploaded.promise();
-        return zipData.Location;
+        return streamUploadPromise;
     }
 }
