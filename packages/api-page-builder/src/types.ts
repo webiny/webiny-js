@@ -23,6 +23,27 @@ export type PageElement = {
     };
 };
 
+export enum ExportTaskStatus {
+    PENDING = "pending",
+    PROCESSING = "processing",
+    COMPLETED = "completed"
+}
+
+export interface PageExportTask {
+    id: string;
+    status: ExportTaskStatus;
+    data: {
+        url: string;
+        key: string;
+    };
+    createdOn: string;
+    createdBy: {
+        type: string;
+        id: string;
+        displayName: string;
+    };
+}
+
 export type Menu = {
     title: string;
     slug: string;

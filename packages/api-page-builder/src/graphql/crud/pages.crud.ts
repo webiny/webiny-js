@@ -4,7 +4,6 @@ import trimStart from "lodash/trimStart";
 import omit from "lodash/omit";
 import get from "lodash/get";
 import merge from "lodash/merge";
-import kebabCase from "lodash/kebabCase";
 import DataLoader from "dataloader";
 import { NotAuthorizedError } from "@webiny/api-security";
 import Error from "@webiny/error";
@@ -13,7 +12,14 @@ import { Args as FlushArgs } from "@webiny/api-prerendering-service/flush/types"
 import { ContextPlugin } from "@webiny/handler/types";
 import getPKPrefix from "./utils/getPKPrefix";
 import defaults from "./utils/defaults";
-import { Page, PagesCrud, PageSecurityPermission, PbContext, TYPE } from "~/types";
+import {
+    ExportTaskStatus,
+    Page,
+    PagesCrud,
+    PageSecurityPermission,
+    PbContext,
+    TYPE
+} from "~/types";
 import { SearchPublishedPagesPlugin } from "~/plugins/SearchPublishedPagesPlugin";
 import { SearchLatestPagesPlugin } from "~/plugins/SearchLatestPagesPlugin";
 import createListMeta from "./utils/createListMeta";
@@ -26,7 +32,6 @@ import { compressContent, extractContent } from "./pages/contentCompression";
 import { CreateDataModel, UpdateSettingsModel } from "./pages/models";
 import { getESLatestPageData, getESPublishedPageData } from "./pages/esPageData";
 import { PagePlugin } from "~/plugins/PagePlugin";
-import { extractFilesFromPageData, ZipHandler } from "~/graphql/crud/pages/exportPage";
 import importPage from "~/graphql/crud/pages/importPage";
 
 const STATUS_CHANGES_REQUESTED = "changesRequested";
@@ -39,11 +44,12 @@ const getZeroPaddedVersionNumber = number => String(number).padStart(4, "0");
 
 const DEFAULT_EDITOR = "page-builder";
 const PERMISSION_NAME = "pb.page";
+const EXPORT_PAGE_TASK_FUNCTION = process.env.EXPORT_PAGE_TASK_FUNCTION;
 
 const plugin: ContextPlugin<PbContext> = {
     type: "context",
     async apply(context) {
-        const { db, i18nContent, elasticsearch, fileManager } = context;
+        const { db, i18nContent, elasticsearch } = context;
 
         const PK_PAGE = pid => `${getPKPrefix(context)}P#${pid}`;
         const PK_PAGE_PUBLISHED_PATH = () => `${getPKPrefix(context)}PATH`;
@@ -1496,40 +1502,26 @@ const plugin: ContextPlugin<PbContext> = {
                     // Extract compressed page content.
                     page.content = await extractContent(page.content);
 
-                    // Extract all files
-                    const files = extractFilesFromPageData(page.content, []);
+                    // Create a page export task
+                    const exportTask = await context.pageBuilder.pageExportTask.create({
+                        status: ExportTaskStatus.PENDING
+                    });
 
-                    // Extract the page data in a json file and upload it to S3
-                    const file = {
-                        page: {
-                            content: page.content
+                    // Invoke handler
+                    await context.handlerClient.invoke({
+                        name: EXPORT_PAGE_TASK_FUNCTION,
+                        payload: {
+                            page,
+                            taskId: exportTask.id,
+                            // TODO: Maybe there is a better way
+                            // @ts-ignore
+                            PK: exportTask.PK
                         },
-                        files
-                    };
-                    const fileBuffer = Buffer.from(JSON.stringify(file));
-                    // FIXME: Maybe this doesn't have to be in File Manager.
-                    const pageDataUpload = await fileManager.storage.upload({
-                        name: `${kebabCase(page.title)}.json`,
-                        type: "application/json",
-                        size: fileBuffer.length,
-                        buffer: fileBuffer,
-                        // TODO: Check with team
-                        hideInFileManager: true
+                        await: false
                     });
-                    // TODO: Improve signature
-                    // Prepare zip and upload it to S3
-                    const zipHandler = new ZipHandler({
-                        files,
-                        archiveFileName: `export-${kebabCase(page.title)}.zip`,
-                        archiveFormat: "zip",
-                        s3FileKey: pageDataUpload.key,
-                        filesDirName: "assets"
-                    });
-                    const pageZipUrl = await zipHandler.process();
 
                     return {
-                        pageZipFile: null,
-                        pageZipUrl
+                        taskId: exportTask.id
                     };
                 },
 
@@ -1537,6 +1529,7 @@ const plugin: ContextPlugin<PbContext> = {
                     category: string,
                     data: {
                         zipFileKey: string;
+                        zipFileUrl: string;
                     }
                 ) {
                     await checkBasePermissions(context, PERMISSION_NAME, {
@@ -1549,6 +1542,7 @@ const plugin: ContextPlugin<PbContext> = {
                     const { content } = await importPage({
                         context,
                         pageDataZipKey: data.zipFileKey,
+                        pageDataZipUrl: data.zipFileUrl,
                         pageTitle: page.title
                     });
 

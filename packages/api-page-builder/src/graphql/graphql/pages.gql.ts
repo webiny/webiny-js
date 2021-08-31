@@ -165,8 +165,8 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
             }
 
             type PbExportPageData {
-                pageZipFile: File
-                pageZipUrl: String
+                # TODO: Make it an object
+                taskId: String
             }
 
             type PbExportPageResponse {
@@ -224,7 +224,8 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
             }
 
             input PbImportPageInput {
-                zipFileKey: String!
+                zipFileKey: String
+                zipFileUrl: String
             }
 
             extend type PbQuery {
