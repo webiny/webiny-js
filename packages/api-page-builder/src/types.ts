@@ -533,6 +533,8 @@ export interface PageStorageOperationsListWhere {
     locale: string;
     pid_not_in?: string[];
     path_not_in?: string[];
+    tags_in?: string[];
+    tags_rule?: "all" | "any";
     /**
      * It should always be either latest or published defined as true.
      * If both are not defined, storage operations should throw an error.

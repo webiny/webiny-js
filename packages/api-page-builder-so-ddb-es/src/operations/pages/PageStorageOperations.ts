@@ -956,7 +956,7 @@ export class PageStorageOperationsDdbEs implements PageStorageOperations {
         } catch (ex) {
             /**
              * Do not throw the error if Elasticsearch index does not exist.
-             * In some cruds we try to get list of pages but index was not created yet.
+             * In some CRUDs we try to get list of pages but index was not created yet.
              */
             if (ex.message === "index_not_found_exception") {
                 return [
@@ -1044,29 +1044,35 @@ export class PageStorageOperationsDdbEs implements PageStorageOperations {
 
         const esConfig = configurations.es(this.context);
 
-        const response = await this.elasticsearch.search({
-            ...esConfig,
-            body: {
-                ...body,
-                sort: undefined,
-                limit: undefined,
-                size: 0,
-                aggs: {
-                    tags: {
-                        terms: {
-                            field: "tags.keyword",
-                            include: `.*${where.search}.*`,
-                            size: 10
+        try {
+            const response = await this.elasticsearch.search({
+                ...esConfig,
+                body: {
+                    ...body,
+                    sort: undefined,
+                    limit: undefined,
+                    size: 0,
+                    aggs: {
+                        tags: {
+                            terms: {
+                                field: "tags.keyword",
+                                include: `.*${where.search}.*`,
+                                size: 10
+                            }
                         }
                     }
                 }
-            }
-        });
-
-        try {
+            });
             return response.body.aggregations.tags.buckets.map(item => item.key);
-        } catch {
-            return [];
+        } catch (ex) {
+            throw new WebinyError(
+                ex.message || "Could not list tags by given parameters.",
+                ex.code || "LIST_TAGS_ERROR",
+                {
+                    body,
+                    where
+                }
+            );
         }
     }
     /**

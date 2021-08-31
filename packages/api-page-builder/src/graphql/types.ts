@@ -123,10 +123,14 @@ export interface CategoriesCrud {
     delete(slug: string): Promise<Category>;
 }
 
+export interface ListMenuParams {
+    sort?: string[];
+}
+
 export interface MenusCrud {
     get(slug: string): Promise<Menu>;
     getPublic(slug: string): Promise<Menu>;
-    list(): Promise<Menu[]>;
+    list(params?: ListMenuParams): Promise<Menu[]>;
     create(data: Record<string, any>): Promise<Menu>;
     update(slug: string, data: Record<string, any>): Promise<Menu>;
     delete(slug: string): Promise<Menu>;

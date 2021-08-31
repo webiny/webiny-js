@@ -158,6 +158,34 @@ const createElasticsearchQuery = (
         ...initialWhere
     };
     /**
+     * Tags are specific so extract them and remove from where.
+     */
+    const { tags_in: tags, tags_rule: tagsRule } = where;
+    delete where["tags_in"];
+    delete where["tags_rule"];
+    if (Array.isArray(tags) === true && tags.length > 0) {
+        if (tagsRule === "any") {
+            query.filter.push({
+                terms: {
+                    "tags.keyword": tags
+                }
+            });
+        } else {
+            query.filter.push({
+                bool: {
+                    must: tags.map(tag => {
+                        return {
+                            term: {
+                                "tags.keyword": tag
+                            }
+                        };
+                    })
+                }
+            });
+        }
+    }
+
+    /**
      * !!! IMPORTANT !!! There are few specific cases where we hardcode the query conditions.
      *
      * When ES index is shared between tenants, we need to filter records by tenant ID.

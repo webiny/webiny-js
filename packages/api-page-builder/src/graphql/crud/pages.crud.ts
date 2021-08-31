@@ -931,6 +931,8 @@ export default new ContextPlugin<PbContext>(async context => {
                     pidNotIn.push(item);
                 }
             }
+            const { tags } = initialWhere;
+            delete initialWhere["tags"];
 
             const listParams: PageStorageOperationsListParams = {
                 limit,
@@ -942,7 +944,9 @@ export default new ContextPlugin<PbContext>(async context => {
                     locale: context.i18nContent.getLocale().code,
                     createdBy,
                     path_not_in: pathNotIn.length > 0 ? pathNotIn : undefined,
-                    pid_not_in: pidNotIn.length > 0 ? pidNotIn : undefined
+                    pid_not_in: pidNotIn.length > 0 ? pidNotIn : undefined,
+                    tags_in: tags && tags.query ? tags.query : undefined,
+                    tags_rule: tags && tags.rule ? tags.rule : undefined
                 },
                 after: (page as unknown as string) || null
             };
