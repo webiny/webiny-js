@@ -49,7 +49,8 @@ export default () => {
             PRERENDERING_QUEUE_ADD_HANDLER: prerenderingService.functions.queue.add.arn,
             PRERENDERING_QUEUE_PROCESS_HANDLER: prerenderingService.functions.queue.process.arn,
             S3_BUCKET: fileManager.bucket.id,
-            WEBINY_LOGS_FORWARD_URL: String(process.env.WEBINY_LOGS_FORWARD_URL)
+            WEBINY_LOGS_FORWARD_URL: String(process.env.WEBINY_LOGS_FORWARD_URL),
+            EXPORT_PAGE_TASK_FUNCTION: pageBuilder.functions.exportPageTask
         },
         primaryDynamodbTable: dynamoDb.table,
         elasticsearchDynamodbTable: elasticSearch.table,
