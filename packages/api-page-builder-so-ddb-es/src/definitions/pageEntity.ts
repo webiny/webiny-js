@@ -53,7 +53,7 @@ export const definePageEntity = (params: { context: PbContext; table: Table }): 
                 type: "string"
             },
             version: {
-                type: "string"
+                type: "number"
             },
             settings: {
                 type: "map"

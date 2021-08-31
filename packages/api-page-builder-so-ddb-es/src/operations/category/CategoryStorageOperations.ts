@@ -105,7 +105,7 @@ export class CategoryStorageOperationsDdbEs implements CategoryStorageOperations
             context: this.context,
             items: filteredItems,
             sort,
-            fields: ["createdOn"]
+            fields: ["id", "createdOn", "savedOn", "publishedOn"]
         });
 
         return createListResponse({

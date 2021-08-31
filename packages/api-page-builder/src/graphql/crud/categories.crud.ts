@@ -135,7 +135,7 @@ export default new ContextPlugin<PbContext>(async context => {
                     tenant: tenant.id,
                     locale: locale.code
                 },
-                sort: ["createdOn_DESC"]
+                sort: ["createdOn_ASC"]
             };
             // If user can only manage own records, add the createdBy to where values.
             if (permission.own) {
@@ -261,65 +261,23 @@ export default new ContextPlugin<PbContext>(async context => {
 
             // Before deleting, let's check if there is a page that's in this category.
             // If so, let's prevent this.
-            const [pages] = await context.pageBuilder.pages.listLatest({
-                where: {
-                    category: category.slug
+            const [pages] = await context.pageBuilder.pages.listLatest(
+                {
+                    where: {
+                        category: category.slug
+                    },
+                    limit: 1
                 },
-                limit: 1
-            });
+                {
+                    auth: false
+                }
+            );
             if (pages.length > 0) {
                 throw new WebinyError(
                     "Cannot delete category because some pages are linked to it.",
                     "CANNOT_DELETE_CATEGORY_PAGE_EXISTING"
                 );
             }
-
-            /*
-            
-            // Note: this try-catch is here because in tests, we have a case where a page is not created yet.
-            // In that case, this is searching over an index that doesn't exist, and throws an error.
-            // So for that case, if the error is `index_not_found_exception`, then let's just ignore it.
-            try {
-                const filter: any = [{ term: { "category.keyword": category.slug } }];
-
-                // When ES index is shared between tenants, we need to filter records by tenant ID
-                const sharedIndex = process.env.ELASTICSEARCH_SHARED_INDEXES === "true";
-                if (sharedIndex) {
-                    const tenant = context.tenancy.getCurrentTenant();
-                    filter.push({ term: { "tenant.keyword": tenant.id } });
-                }
-
-                const response = await context.elasticsearch.search({
-                    ...ES_DEFAULTS(),
-                    body: {
-                        size: 1,
-                        query: {
-                            bool: {
-                                filter
-                            }
-                        }
-                    }
-                });
-
-                const results = response.body.hits;
-                const total = results.total.value;
-
-                if (total) {
-                    throw new WebinyError(
-                        "Cannot delete category because some pages are linked to it.",
-                        "CANNOT_DELETE_CATEGORY_PAGE_EXISTING"
-                    );
-                }
-            } catch (e) {
-                if (process.env.NODE_ENV !== "test") {
-                    throw e;
-                }
-
-                if (e.message !== "index_not_found_exception") {
-                    throw e;
-                }
-            }
-            */
 
             try {
                 return await storageOperations.delete({

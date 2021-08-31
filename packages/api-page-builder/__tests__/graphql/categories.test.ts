@@ -179,7 +179,11 @@ describe("Categories CRUD Test", () => {
             ([res]) => res.data.pageBuilder.createPage.data
         );
 
-        await until(listPages, ([res]) => res.data.pageBuilder.listPages.data.length === 3);
+        await until(listPages, ([res]) => res.data.pageBuilder.listPages.data.length === 3, {
+            wait: 300,
+            tries: 10,
+            name: "list pages before delete"
+        });
 
         const error = {
             code: "CANNOT_DELETE_CATEGORY_PAGE_EXISTING",
@@ -203,9 +207,30 @@ describe("Categories CRUD Test", () => {
             expect(res.data.pageBuilder.deleteCategory.error).toEqual(error)
         );
 
-        await deletePage({ id: p3.id });
+        const [deletePageResponse] = await deletePage({ id: p3.id });
 
-        await until(listPages, ([res]) => res.data.pageBuilder.listPages.data.length === 0);
+        expect(deletePageResponse).toEqual({
+            data: {
+                pageBuilder: {
+                    deletePage: {
+                        data: {
+                            page: {
+                                ...p3,
+                                revisions: []
+                            },
+                            latestPage: null
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+
+        await until(listPages, ([res]) => res.data.pageBuilder.listPages.data.length === 0, {
+            wait: 300,
+            tries: 10,
+            name: "list pages after delete"
+        });
 
         await deleteCategory({ slug: "delete-cat" }).then(([res]) =>
             expect(res.data.pageBuilder.deleteCategory).toMatchObject({

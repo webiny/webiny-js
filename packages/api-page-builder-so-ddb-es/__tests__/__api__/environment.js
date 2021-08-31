@@ -10,6 +10,7 @@ const NodeEnvironment = require("jest-environment-node");
 const elasticsearchDataGzipCompression =
     require("@webiny/api-elasticsearch/plugins/GzipCompression").default;
 const { ContextPlugin } = require("@webiny/handler/plugins/ContextPlugin");
+const dynamoDbPlugins = require("@webiny/db-dynamodb/plugins").default;
 /**
  * For this to work it must load plugins that have already been built
  */
@@ -37,6 +38,7 @@ const getStorageOperationsPlugins = ({
 
     return () => {
         return [
+            ...dynamoDbPlugins(),
             elasticsearchDataGzipCompression(),
             plugins(),
             dbPlugins({

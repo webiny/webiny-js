@@ -95,12 +95,13 @@ export default new ContextPlugin<PbContext>(async context => {
             );
         }
     });
-    const clearDataLoaderCache = (ids: string[]) => {
-        for (const id of ids) {
-            dataLoaderGetById.clear(id);
-            if (id.includes("#")) {
-                dataLoaderGetById.clear(id.split("#").shift());
+    const clearDataLoaderCache = (pages: Page[]) => {
+        for (const page of pages) {
+            if (!page) {
+                continue;
             }
+            dataLoaderGetById.clear(page.id);
+            dataLoaderGetById.clear(page.pid);
         }
     };
 
@@ -269,7 +270,7 @@ export default new ContextPlugin<PbContext>(async context => {
                 /**
                  * Clear the dataLoader cache.
                  */
-                clearDataLoaderCache([original.id, page.id, latestPage.id]);
+                clearDataLoaderCache([original, page, latestPage]);
                 return result as any;
             } catch (ex) {
                 throw new WebinyError(
@@ -331,7 +332,7 @@ export default new ContextPlugin<PbContext>(async context => {
                 /**
                  * Clear the dataLoader cache.
                  */
-                clearDataLoaderCache([original.id, page.id]);
+                clearDataLoaderCache([original, page]);
 
                 return {
                     ...result,
@@ -405,7 +406,7 @@ export default new ContextPlugin<PbContext>(async context => {
                 }
             }
 
-            const latestPage = await storageOperations.get({
+            let latestPage = await storageOperations.get({
                 where: {
                     pid: pageId,
                     latest: true
@@ -420,10 +421,7 @@ export default new ContextPlugin<PbContext>(async context => {
             /**
              * We can either delete all of the records connected to given page or single revision.
              */
-            let deleteMethod: any = storageOperations.delete;
-            if (page.version === 1) {
-                deleteMethod = storageOperations.deleteAll;
-            }
+            const deleteMethod = page.version === 1 ? "deleteAll" : "delete";
 
             try {
                 await executeCallbacks<PagePlugin["beforeDelete"]>(pagePlugins, "beforeDelete", {
@@ -432,25 +430,32 @@ export default new ContextPlugin<PbContext>(async context => {
                     latestPage,
                     publishedPage
                 });
-                const [resultPage, resultLatestPage] = await deleteMethod({
+                const [resultPage, resultLatestPage] = await storageOperations[deleteMethod]({
                     page,
                     publishedPage,
                     latestPage
                 });
+                latestPage = resultLatestPage || latestPage;
                 await executeCallbacks<PagePlugin["afterDelete"]>(pagePlugins, "afterDelete", {
                     context,
                     page: resultPage,
-                    latestPage: resultLatestPage || latestPage,
+                    latestPage: latestPage,
                     publishedPage: publishedPage
                 });
                 /**
                  * Clear the dataLoader cache.
                  */
-                clearDataLoaderCache([page.id, publishedPage.id, latestPage.id]);
+                clearDataLoaderCache([page, publishedPage, latestPage]);
                 /**
                  * 7. Done. We return both the deleted page, and the new latest one (if there is one).
                  */
-                return [resultPage, resultLatestPage];
+                if (page.version === 1) {
+                    return [resultPage, null] as any;
+                }
+                if (latestPage) {
+                    latestPage.content = await extractContent(latestPage.content);
+                }
+                return [resultPage, latestPage] as any;
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not delete page.",
@@ -554,14 +559,13 @@ export default new ContextPlugin<PbContext>(async context => {
                  * Clear the dataLoader cache.
                  * We need to clear cache for original publish, latest and path page.
                  */
-                const idList = [original.id, result.id, latestPage.id];
-                if (publishedPage) {
-                    idList.push(publishedPage.id);
-                }
-                if (publishedPathPage) {
-                    idList.push(publishedPathPage.id);
-                }
-                clearDataLoaderCache(idList);
+                clearDataLoaderCache([
+                    original,
+                    result,
+                    latestPage,
+                    publishedPage,
+                    publishedPathPage
+                ]);
                 return result as any;
             } catch (ex) {
                 throw new WebinyError(
@@ -645,7 +649,7 @@ export default new ContextPlugin<PbContext>(async context => {
                         page: result
                     }
                 );
-                clearDataLoaderCache([original.id, publishedPage.id, latestPage.id]);
+                clearDataLoaderCache([original, publishedPage, latestPage]);
                 return result as any;
             } catch (ex) {
                 throw new WebinyError(
@@ -698,7 +702,7 @@ export default new ContextPlugin<PbContext>(async context => {
                     page,
                     latestPage
                 });
-                clearDataLoaderCache([original.id, latestPage.id]);
+                clearDataLoaderCache([original, latestPage]);
                 return result;
             } catch (ex) {
                 throw new WebinyError(
@@ -754,7 +758,7 @@ export default new ContextPlugin<PbContext>(async context => {
                     page,
                     latestPage
                 });
-                clearDataLoaderCache([original.id, latestPage.id]);
+                clearDataLoaderCache([original, latestPage]);
                 return result;
             } catch (ex) {
                 throw new WebinyError(
@@ -894,10 +898,14 @@ export default new ContextPlugin<PbContext>(async context => {
             throw new NotFoundError("Page not found.");
         },
 
-        async listLatest(params) {
-            const permission = await checkBasePermissions(context, PERMISSION_NAME, {
-                rwd: "r"
-            });
+        async listLatest(params, options = {}) {
+            const { auth } = options;
+            let permission: { own?: boolean } = null;
+            if (auth !== false) {
+                permission = await checkBasePermissions(context, PERMISSION_NAME, {
+                    rwd: "r"
+                });
+            }
 
             const { page, limit, sort, search, exclude, where: initialWhere } = params;
 
@@ -905,7 +913,7 @@ export default new ContextPlugin<PbContext>(async context => {
              * If users can only manage own records, let's add the special filter.
              */
             let createdBy: string = undefined;
-            if (permission.own === true) {
+            if (permission && permission.own === true) {
                 const identity = context.security.getIdentity();
                 createdBy = identity.id;
             }
@@ -929,7 +937,7 @@ export default new ContextPlugin<PbContext>(async context => {
                 sort: Array.isArray(sort) ? sort : [],
                 where: {
                     ...initialWhere,
-                    published: true,
+                    latest: true,
                     search: search ? search.query : undefined,
                     locale: context.i18nContent.getLocale().code,
                     createdBy,
@@ -950,8 +958,8 @@ export default new ContextPlugin<PbContext>(async context => {
                 return [pages as any, meta];
             } catch (ex) {
                 throw new WebinyError(
-                    ex.message || "Could not list pages.",
-                    ex.code || "LIST_PAGES_ERROR",
+                    ex.message || "Could not list latest pages.",
+                    ex.code || "LIST_LATEST_PAGES_ERROR",
                     {
                         ...(ex.data || {}),
                         params: listParams

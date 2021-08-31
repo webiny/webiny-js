@@ -9,7 +9,7 @@ import { PrerenderingServiceClientContext } from "@webiny/api-prerendering-servi
 
 // CRUD types.
 export type SortOrder = "asc" | "desc";
-export type ListPagesParams = {
+export interface ListPagesParams {
     limit?: number;
     page?: number;
     where?: {
@@ -21,9 +21,9 @@ export type ListPagesParams = {
     exclude?: string[];
     search?: { query?: string };
     sort?: { publishedOn?: SortOrder; createdOn?: SortOrder; title?: SortOrder };
-};
+}
 
-export type ListMeta = {
+export interface ListMeta {
     page: number;
     limit: number;
     totalCount: number;
@@ -32,37 +32,59 @@ export type ListMeta = {
     to?: number;
     nextPage?: number;
     previousPage?: number;
-};
+}
 
 // Pages CRUD.
-export type Tag = { key: string; value?: string };
+export interface Tag {
+    key: string;
+    value?: string;
+}
 
-export type TagItem = {
+export interface TagItem {
     tag: Tag;
-    configuration?: { meta?: Record<string, any>; storage?: { folder?: string; name?: string } };
-};
+    configuration?: {
+        meta?: Record<string, any>;
+        storage?: {
+            folder?: string;
+            name?: string;
+        };
+    };
+}
 
-export type PathItem = {
+export interface PathItem {
     path: string;
-    configuration?: { meta?: Record<string, any>; storage?: { folder?: string; name?: string } };
-};
+    configuration?: {
+        meta?: Record<string, any>;
+        storage?: {
+            folder?: string;
+            name?: string;
+        };
+    };
+}
 
-export type RenderParams = {
+export interface RenderParams {
     tags?: TagItem[];
     paths?: PathItem[];
-};
-export type FlushParams = {
+}
+export interface FlushParams {
     tags?: TagItem[];
     paths?: PathItem[];
-};
+}
 
-export type PagesCrud = {
+export interface ListLatestPagesOptions {
+    auth?: boolean;
+}
+
+export interface PagesCrud {
     // dataLoaders: {
     // getPublishedById: DataLoader<{ id: string; preview?: boolean }, Page>;
     // getById: DataLoader<string, Page | null>;
     // };
     get<TPage extends Page = Page>(id: string): Promise<TPage>;
-    listLatest<TPage extends Page = Page>(args: ListPagesParams): Promise<[TPage[], ListMeta]>;
+    listLatest<TPage extends Page = Page>(
+        args: ListPagesParams,
+        options?: ListLatestPagesOptions
+    ): Promise<[TPage[], ListMeta]>;
     listPublished<TPage extends Page = Page>(args: ListPagesParams): Promise<[TPage[], ListMeta]>;
     listTags(args: { search: { query: string } }): Promise<string[]>;
     getPublishedById<TPage extends Page = Page>(args: {
@@ -83,32 +105,32 @@ export type PagesCrud = {
         render(args: RenderParams): Promise<void>;
         flush(args: FlushParams): Promise<void>;
     };
-};
+}
 
-export type PageElementsCrud = {
+export interface PageElementsCrud {
     get(id: string): Promise<PageElement>;
     list(): Promise<PageElement[]>;
     create(data: Record<string, any>): Promise<PageElement>;
     update(id: string, data: Record<string, any>): Promise<PageElement>;
     delete(id: string): Promise<PageElement>;
-};
+}
 
-export type CategoriesCrud = {
+export interface CategoriesCrud {
     get(slug: string, options?: { auth: boolean }): Promise<Category>;
     list(): Promise<Category[]>;
     create(data: Record<string, any>): Promise<Category>;
     update(slug: string, data: Record<string, any>): Promise<Category>;
     delete(slug: string): Promise<Category>;
-};
+}
 
-export type MenusCrud = {
+export interface MenusCrud {
     get(slug: string): Promise<Menu>;
     getPublic(slug: string): Promise<Menu>;
     list(): Promise<Menu[]>;
     create(data: Record<string, any>): Promise<Menu>;
     update(slug: string, data: Record<string, any>): Promise<Menu>;
     delete(slug: string): Promise<Menu>;
-};
+}
 
 /**
  * The options passed into the crud methods
@@ -118,7 +140,7 @@ export interface DefaultSettingsCrudOptions {
     locale?: string | false;
 }
 
-export type SettingsCrud = {
+export interface SettingsCrud {
     getCurrent: () => Promise<Settings>;
     get: (options?: DefaultSettingsCrudOptions) => Promise<Settings>;
     getDefault: (options?: Pick<DefaultSettingsCrudOptions, "tenant">) => Promise<Settings>;
@@ -127,15 +149,15 @@ export type SettingsCrud = {
         options?: { auth?: boolean } & DefaultSettingsCrudOptions
     ) => Promise<Settings>;
     getSettingsCacheKey: (options?: DefaultSettingsCrudOptions) => string;
-};
+}
 
-export type SystemCrud = {
+export interface SystemCrud {
     get: () => Promise<System>;
     getVersion(): Promise<string>;
     setVersion(version: string): Promise<void>;
     install(args: { name: string; insertDemoData: boolean }): Promise<void>;
     upgrade(version: string, data?: Record<string, any>): Promise<boolean>;
-};
+}
 
 export interface PbContext
     extends I18NContentContext,

@@ -954,6 +954,20 @@ export class PageStorageOperationsDdbEs implements PageStorageOperations {
                 body
             });
         } catch (ex) {
+            /**
+             * Do not throw the error if Elasticsearch index does not exist.
+             * In some cruds we try to get list of pages but index was not created yet.
+             */
+            if (ex.message === "index_not_found_exception") {
+                return [
+                    [],
+                    {
+                        hasMoreItems: false,
+                        totalCount: 0,
+                        cursor: null
+                    }
+                ];
+            }
             throw new WebinyError(
                 ex.message || "Could not load pages by given Elasticsearch body.",
                 ex.code || "LIST_PAGES_ERROR",

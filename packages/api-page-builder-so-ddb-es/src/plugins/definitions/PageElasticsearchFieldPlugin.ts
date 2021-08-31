@@ -6,9 +6,7 @@ import {
 export class PageElasticsearchFieldPlugin extends ElasticsearchFieldPlugin {
     public static readonly type: string = "pageBuilder.elasticsearch.fieldDefinition.page";
 
-    public constructor(params: Omit<Params, "entity">) {
-        super({
-            ...params
-        });
+    public constructor(params: Params) {
+        super(params);
     }
 }
