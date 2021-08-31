@@ -56,6 +56,7 @@ export default () => {
             PRERENDERING_QUEUE_ADD_HANDLER: prerenderingService.functions.queue.add.arn,
             PRERENDERING_QUEUE_PROCESS_HANDLER: prerenderingService.functions.queue.process.arn,
             S3_BUCKET: fileManager.bucket.id,
+            EXPORT_PAGE_TASK_FUNCTION: pageBuilder.functions.exportPageTask,
             DEBUG,
             WEBINY_LOGS_FORWARD_URL
         },

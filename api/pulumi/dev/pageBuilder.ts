@@ -14,8 +14,10 @@ interface PageBuilderParams {
 
 class PageBuilder {
     role: aws.iam.Role;
+    exportPageTaskRole: aws.iam.Role;
     functions: {
         updateSettings: aws.lambda.Function;
+        exportPageTask: aws.lambda.Function;
     };
 
     constructor({ env, bucket, primaryDynamodbTable }: PageBuilderParams) {
@@ -86,8 +88,57 @@ class PageBuilder {
             }
         });
 
+        this.exportPageTaskRole = new aws.iam.Role("pb-export-page-task-lambda-role", {
+            assumeRolePolicy: {
+                Version: "2012-10-17",
+                Statement: [
+                    {
+                        Action: "sts:AssumeRole",
+                        Principal: {
+                            Service: "lambda.amazonaws.com"
+                        },
+                        Effect: "Allow"
+                    }
+                ]
+            }
+        });
+
+        const exportPageTaskPolicy = policies.getPbExportPageTaskLambdaPolicy(
+            primaryDynamodbTable,
+            bucket
+        );
+
+        new aws.iam.RolePolicyAttachment(`pb-export-page-task-lambda-role-policy-attachment`, {
+            role: this.exportPageTaskRole,
+            policyArn: exportPageTaskPolicy.arn.apply(arn => arn)
+        });
+
+        new aws.iam.RolePolicyAttachment(`pb-export-page-task-lambda-AWSLambdaBasicExecutionRole`, {
+            role: this.exportPageTaskRole,
+            policyArn: aws.iam.ManagedPolicy.AWSLambdaBasicExecutionRole
+        });
+
+        const exportPageTask = new aws.lambda.Function("pb-export-page-task", {
+            role: this.exportPageTaskRole.arn,
+            runtime: "nodejs12.x",
+            handler: "handler.handler",
+            timeout: 60,
+            memorySize: 128,
+            description: "Handle page export workflow",
+            code: new pulumi.asset.AssetArchive({
+                ".": new pulumi.asset.FileArchive("../code/pageBuilder/exportPageTask/build")
+            }),
+            environment: {
+                variables: {
+                    ...env,
+                    S3_BUCKET: bucket.id
+                }
+            }
+        });
+
         this.functions = {
-            updateSettings
+            updateSettings,
+            exportPageTask
         };
     }
 }
