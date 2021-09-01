@@ -374,7 +374,7 @@ export type PbEditorPageElementActionPlugin = Plugin & {
 };
 
 export type PbPageDetailsPlugin = Plugin & {
-    render: (params: { [key: string]: any }) => ReactNode;
+    render: (params: { page: Record<string, any>; [key: string]: any }) => ReactNode;
 };
 
 export type PbEditorPageSettingsPlugin = Plugin & {
