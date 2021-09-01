@@ -15,6 +15,7 @@ type FileManagerProps = {
     multipleMaxCount?: number;
     multipleMaxSize?: number | string;
     onClose?: Function;
+    onUploadCompletion?: Function;
 };
 
 type FileManagerPortalProps = Omit<FileManagerProps, "children">;
@@ -50,7 +51,8 @@ class FileManagerPortal extends React.Component<FileManagerPortalProps> {
             images,
             maxSize,
             multipleMaxCount,
-            multipleMaxSize
+            multipleMaxSize,
+            onUploadCompletion
         } = this.props;
 
         const container = this.container;
@@ -73,7 +75,8 @@ class FileManagerPortal extends React.Component<FileManagerPortalProps> {
             multiple,
             maxSize,
             multipleMaxCount,
-            multipleMaxSize
+            multipleMaxSize,
+            onUploadCompletion
         };
 
         if (images) {
