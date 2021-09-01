@@ -114,7 +114,7 @@ export class MenuStorageOperationsDdbEs implements MenuStorageOperations {
             context: this.context,
             items: filteredItems,
             sort,
-            fields: ["createdOn"]
+            fields: ["createdOn", "id", "title", "slug"]
         });
 
         return createListResponse({

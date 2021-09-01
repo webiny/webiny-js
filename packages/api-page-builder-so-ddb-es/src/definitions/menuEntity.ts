@@ -29,7 +29,7 @@ export const defineMenuEntity = (params: { context: PbContext; table: Table }): 
                 type: "string"
             },
             items: {
-                type: "map"
+                type: "list"
             },
             createdOn: {
                 type: "string"

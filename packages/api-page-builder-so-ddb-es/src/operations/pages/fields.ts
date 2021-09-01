@@ -3,15 +3,18 @@ import { PageElasticsearchFieldPlugin } from "~/plugins/definitions/PageElastics
 export default () => [
     new PageElasticsearchFieldPlugin({
         field: "createdOn",
-        unmappedType: "date"
+        unmappedType: "date",
+        keyword: false
     }),
     new PageElasticsearchFieldPlugin({
         field: "savedOn",
-        unmappedType: "date"
+        unmappedType: "date",
+        keyword: false
     }),
     new PageElasticsearchFieldPlugin({
         field: "publishedOn",
-        unmappedType: "date"
+        unmappedType: "date",
+        keyword: false
     }),
     new PageElasticsearchFieldPlugin({
         field: "createdBy",

@@ -19,6 +19,9 @@ export const definePageElementEntity = (params: {
             SK: {
                 sortKey: true
             },
+            TYPE: {
+                type: "string"
+            },
             id: {
                 type: "string"
             },

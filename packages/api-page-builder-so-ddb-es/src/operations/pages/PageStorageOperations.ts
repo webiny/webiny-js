@@ -333,7 +333,7 @@ export class PageStorageOperationsDdbEs implements PageStorageOperations {
                 entity: this.entity,
                 partitionKey,
                 options: {
-                    lte: this.createSortKey(latestPage.version),
+                    lt: this.createSortKey(latestPage.version),
                     reverse: true
                 }
             });
@@ -518,26 +518,6 @@ export class PageStorageOperationsDdbEs implements PageStorageOperations {
                     })
                 );
             }
-            if (lodashGet(page, "visibility.list.published") !== false) {
-                esItems.push(
-                    this.esEntity.putBatch({
-                        PK: this.createPartitionKey(page.pid),
-                        SK: this.createPublishedSortKey(),
-                        index: configurations.es(this.context).index,
-                        data: getESPublishedPageData(this.context, page)
-                    })
-                );
-            } else {
-                /**
-                 * Delete published record if not visible
-                 */
-                esItems.push(
-                    this.esEntity.deleteBatch({
-                        PK: this.createPartitionKey(page.pid),
-                        SK: this.createPublishedSortKey()
-                    })
-                );
-            }
         }
         /**
          * If we have already published revision of this page:
@@ -564,6 +544,30 @@ export class PageStorageOperationsDdbEs implements PageStorageOperations {
                     })
                 );
             }
+        }
+        /**
+         * If we need to display the published page in the list.
+         * Check only if it's not false, because only that should stop the propagation.
+         */
+        if (lodashGet(page, "visibility.list.published") !== false) {
+            esItems.push(
+                this.esEntity.putBatch({
+                    PK: this.createPartitionKey(page.pid),
+                    SK: this.createPublishedSortKey(),
+                    index: configurations.es(this.context).index,
+                    data: getESPublishedPageData(this.context, page)
+                })
+            );
+        } else {
+            /**
+             * Delete published record if not visible
+             */
+            esItems.push(
+                this.esEntity.deleteBatch({
+                    PK: this.createPartitionKey(page.pid),
+                    SK: this.createPublishedSortKey()
+                })
+            );
         }
         /**
          * Update or insert published path.
@@ -633,7 +637,12 @@ export class PageStorageOperationsDdbEs implements PageStorageOperations {
                 SK: this.createSortKey(page.version)
             })
         ];
-        const esItems = [];
+        const esItems = [
+            // this.esEntity.deleteBatch({
+            //     PK: this.createPartitionKey(page.pid),
+            //     SK: this.createPublishedSortKey(),
+            // })
+        ];
         /*
          * If we are unpublishing the latest revision, let's also update the latest revision entry's
          * status in ES. We can only do that if the entry actually exists, or in other words, if the
@@ -649,7 +658,7 @@ export class PageStorageOperationsDdbEs implements PageStorageOperations {
                 })
             );
             esItems.push(
-                this.entity.putBatch({
+                this.esEntity.putBatch({
                     PK: this.createPartitionKey(page.pid),
                     SK: this.createLatestSortKey(),
                     index: configurations.es(this.context).index,
@@ -659,7 +668,7 @@ export class PageStorageOperationsDdbEs implements PageStorageOperations {
         }
         if (lodashGet(page, "visibility.list.published") !== false) {
             esItems.push(
-                this.entity.deleteBatch({
+                this.esEntity.deleteBatch({
                     PK: this.createPartitionKey(page.pid),
                     SK: this.createPublishedSortKey()
                 })
@@ -899,7 +908,7 @@ export class PageStorageOperationsDdbEs implements PageStorageOperations {
             );
         }
 
-        const { limit: initialLimit } = params;
+        const { after: previousCursor, limit: initialLimit } = params;
 
         const limit = createLimit(initialLimit, 50);
         const body = createElasticsearchQueryBody({
@@ -908,6 +917,7 @@ export class PageStorageOperationsDdbEs implements PageStorageOperations {
                 ...params.where
             },
             limit,
+            after: previousCursor,
             context: this.context
         });
 
@@ -959,14 +969,14 @@ export class PageStorageOperationsDdbEs implements PageStorageOperations {
              * In some CRUDs we try to get list of pages but index was not created yet.
              */
             if (ex.message === "index_not_found_exception") {
-                return [
-                    [],
-                    {
+                return {
+                    items: [],
+                    meta: {
                         hasMoreItems: false,
                         totalCount: 0,
                         cursor: null
                     }
-                ];
+                };
             }
             throw new WebinyError(
                 ex.message || "Could not load pages by given Elasticsearch body.",
@@ -991,14 +1001,14 @@ export class PageStorageOperationsDdbEs implements PageStorageOperations {
          * https://www.elastic.co/guide/en/elasticsearch/reference/current/paginate-search-results.html#search-after
          */
         const cursor = items.length > 0 ? encodeCursor(hits[items.length - 1].sort) : null;
-        return [
+        return {
             items,
-            {
+            meta: {
                 hasMoreItems,
                 totalCount: total.value,
                 cursor
             }
-        ];
+        };
     }
     /**
      * Listing of the revisions will be done through the DynamoDB since there are no revisions saved in the Elasticsearch.
