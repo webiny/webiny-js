@@ -1,5 +1,5 @@
 import * as React from "react";
-import { PbPageDetailsPlugin } from "../../../../types";
+import { PbPageDetailsPlugin } from "~/types";
 import Header from "./Header";
 import RevisionSelector from "./revisionSelector/RevisionSelector";
 import PublishRevision from "./publishRevision/PublishRevision";
@@ -8,6 +8,7 @@ import RequestChanges from "./requestChanges/RequestChanges";
 import EditRevision from "./editRevision/EditRevision";
 import DeletePage from "./deletePage/DeletePage";
 import PageOptionsMenu from "./pageOptionsMenu/PageOptionsMenu";
+import ExportPageButton from "~/editor/plugins/defaultBar/components/ExportPageButton";
 
 const plugins: PbPageDetailsPlugin[] = [
     {
@@ -64,6 +65,13 @@ const plugins: PbPageDetailsPlugin[] = [
         type: "pb-page-details-header-right",
         render(props) {
             return <PageOptionsMenu {...props} />;
+        }
+    },
+    {
+        name: "pb-page-details-header-right-options-menu-item-export",
+        type: "pb-page-details-header-right-options-menu-item",
+        render(props) {
+            return <ExportPageButton {...props} />;
         }
     }
 ];
