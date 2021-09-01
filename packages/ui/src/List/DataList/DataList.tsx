@@ -358,10 +358,10 @@ export const DataList = (props: Props) => {
             <ListContainer className={"webiny-data-list"} data-testid={"ui.list.data-list"}>
                 {(props.title || props.actions) && (
                     <Grid className={listHeader}>
-                        <Cell span={6} className={listTitle}>
+                        <Cell span={5} className={listTitle}>
                             <Typography use="headline5">{props.title}</Typography>
                         </Cell>
-                        <Cell span={6} className={listActions}>
+                        <Cell span={7} className={listActions}>
                             {props.actions}
                         </Cell>
                     </Grid>
