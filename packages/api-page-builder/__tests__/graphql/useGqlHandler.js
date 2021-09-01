@@ -35,6 +35,13 @@ import {
     GET_PAGE_ELEMENT
 } from "./graphql/pageElements";
 import {
+    CREATE_PAGE_EXPORT_TASK,
+    DELETE_PAGE_EXPORT_TASK,
+    LIST_PAGE_EXPORT_TASKS,
+    UPDATE_PAGE_EXPORT_TASK,
+    GET_PAGE_EXPORT_TASK
+} from "./graphql/pageExportTask";
+import {
     CREATE_PAGE,
     DELETE_PAGE,
     LIST_PAGES,
@@ -373,6 +380,24 @@ export default ({ permissions, identity, tenant } = {}) => {
         async getPageElement(variables) {
             return invoke({ body: { query: GET_PAGE_ELEMENT, variables } });
         },
+
+        // PageExportTasks.
+        async createPageExportTask(variables) {
+            return invoke({ body: { query: CREATE_PAGE_EXPORT_TASK, variables } });
+        },
+        async updatePageExportTask(variables) {
+            return invoke({ body: { query: UPDATE_PAGE_EXPORT_TASK, variables } });
+        },
+        async deletePageExportTask(variables) {
+            return invoke({ body: { query: DELETE_PAGE_EXPORT_TASK, variables } });
+        },
+        async listPageExportTasks(variables) {
+            return invoke({ body: { query: LIST_PAGE_EXPORT_TASKS, variables } });
+        },
+        async getPageExportTask(variables) {
+            return invoke({ body: { query: GET_PAGE_EXPORT_TASK, variables } });
+        },
+        // PageBuilder Settings.
         async updateSettings(variables) {
             return invoke({ body: { query: UPDATE_SETTINGS, variables } });
         },
