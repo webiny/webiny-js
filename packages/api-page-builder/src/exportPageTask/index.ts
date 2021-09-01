@@ -1,3 +1,4 @@
+import uniqueId from "uniqid";
 import { HandlerPlugin } from "@webiny/handler/types";
 import { ArgsContext } from "@webiny/handler-args/types";
 import { DbContext } from "@webiny/handler-db/types";
@@ -7,7 +8,6 @@ import ZipHandler from "./zipHandler";
 import { s3StreamHandler } from "./s3StreamHandler";
 import defaults from "~/graphql/crud/utils/defaults";
 import { ExportTaskStatus } from "~/types";
-import mdbid from "mdbid";
 
 export type HandlerArgs = {
     page: any;
@@ -43,22 +43,22 @@ export default (): HandlerPlugin<DbContext, ArgsContext<HandlerArgs>> => ({
                 files
             };
             const fileBuffer = Buffer.from(JSON.stringify(file));
-            const uniqueId = mdbid();
+            const pageUploadDataKey = uniqueId("", `-${kebabCase(page.title)}.json`);
             /**
-             * FIXME: Maybe this doesn't have to be in File Manager.
-             * Why? Because we'll not access it via the FileManager in either API or APP.
+             * We're not using FileManager storage to upload the file,
+             * because we'll not access it via the FileManager in either API or APP.
              */
             const pageDataUpload = await s3StreamHandler.upload({
-                Key: `${uniqueId}-${kebabCase(page.title)}.json`,
+                Key: pageUploadDataKey,
                 ContentType: "application/json",
                 Body: fileBuffer
             });
-
+            const archiveFileName = uniqueId("", `-${kebabCase(page.title)}-export.zip`);
             // TODO: Improve signature
             // Prepare zip and upload it to S3
             const zipHandler = new ZipHandler({
                 files,
-                archiveFileName: `${uniqueId}-export-${kebabCase(page.title)}.zip`,
+                archiveFileName,
                 archiveFormat: "zip",
                 s3FileKey: pageDataUpload.Key,
                 filesDirName: "assets"
