@@ -11,9 +11,9 @@ export default (params?: Params): ListMeta => {
         page: 0,
         limit: 0,
         totalCount: 0,
-        totalPages: null,
-        from: null,
-        to: null,
+        totalPages: 0,
+        from: 0,
+        to: 0,
         nextPage: null,
         previousPage: null,
         ...params

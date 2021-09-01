@@ -54,7 +54,7 @@ export default new ContextPlugin<PbContext>(async context => {
          * Initial, in the DynamoDB, it was PK + SK. It can be what ever
          */
         getSettingsCacheKey(options) {
-            return storageOperations.createCacheKey(options);
+            return storageOperations.createCacheKey(options || {});
         },
         async getCurrent() {
             // With this line commented, we made this endpoint public.

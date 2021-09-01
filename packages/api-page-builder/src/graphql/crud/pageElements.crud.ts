@@ -91,7 +91,7 @@ export default new ContextPlugin<PbContext>(async context => {
             return pageElement;
         },
 
-        async list() {
+        async list(params) {
             const permission = await checkBasePermissions(context, PERMISSION_NAME, {
                 rwd: "r"
             });
@@ -99,21 +99,24 @@ export default new ContextPlugin<PbContext>(async context => {
             const tenant = context.tenancy.getCurrentTenant();
             const locale = context.i18nContent.getLocale();
 
-            const params: PageElementStorageOperationsListParams = {
+            const { sort } = params || {};
+
+            const listParams: PageElementStorageOperationsListParams = {
                 where: {
                     tenant: tenant.id,
                     locale: locale.code
-                }
+                },
+                sort: Array.isArray(sort) && sort.length > 0 ? sort : ["createdOn_ASC"]
             };
 
             // If user can only manage own records, let's add that to the listing.
             if (permission.own) {
                 const identity = context.security.getIdentity();
-                params.where.createdBy = identity.id;
+                listParams.where.createdBy = identity.id;
             }
 
             try {
-                const [items] = await storageOperations.list(params);
+                const [items] = await storageOperations.list(listParams);
                 return items;
             } catch (ex) {
                 throw new WebinyError(

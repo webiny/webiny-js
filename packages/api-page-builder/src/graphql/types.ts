@@ -107,9 +107,12 @@ export interface PagesCrud {
     };
 }
 
+export interface ListPageElementsParams {
+    sort?: string[];
+}
 export interface PageElementsCrud {
     get(id: string): Promise<PageElement>;
-    list(): Promise<PageElement[]>;
+    list(params?: ListPageElementsParams): Promise<PageElement[]>;
     create(data: Record<string, any>): Promise<PageElement>;
     update(id: string, data: Record<string, any>): Promise<PageElement>;
     delete(id: string): Promise<PageElement>;

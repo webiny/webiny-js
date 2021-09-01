@@ -9,6 +9,7 @@ import { NotFoundError } from "@webiny/handler-graphql";
 import { Args as FlushArgs } from "@webiny/api-prerendering-service/flush/types";
 import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
 import {
+    ListPagesParams,
     Page,
     PageSecurityPermission,
     PageStorageOperations,
@@ -38,6 +39,25 @@ const STATUS_UNPUBLISHED = "unpublished";
 
 const DEFAULT_EDITOR = "page-builder";
 const PERMISSION_NAME = "pb.page";
+/**
+ * We need this function to convert sort from input to the one being accepted by the storage operations.
+ */
+const convertSort = (sort?: ListPagesParams["sort"]): string[] => {
+    if (!sort) {
+        return [];
+    } else if (Array.isArray(sort)) {
+        return sort;
+    }
+    return Object.keys(sort)
+        .map(field => {
+            const order = sort[field];
+            if (!order) {
+                return null;
+            }
+            return `${field}_${order.toUpperCase()}`;
+        })
+        .filter(Boolean);
+};
 
 export default new ContextPlugin<PbContext>(async context => {
     /**
@@ -204,15 +224,15 @@ export default new ContextPlugin<PbContext>(async context => {
             }
         },
 
-        async createFrom(uniqueId) {
+        async createFrom(id) {
             const permission = await checkBasePermissions(context, PERMISSION_NAME, {
                 rwd: "w"
             });
 
-            const original = await context.pageBuilder.pages.get(uniqueId);
+            const original = await context.pageBuilder.pages.get(id);
 
             if (!original) {
-                throw new NotFoundError(`Page "${uniqueId}" not found.`);
+                throw new NotFoundError(`Page "${id}" not found.`);
             }
 
             /**
@@ -234,17 +254,17 @@ export default new ContextPlugin<PbContext>(async context => {
 
             const version = latestPage.version + 1;
 
-            const id = `${original.pid}#${getZeroPaddedVersionNumber(version)}`;
+            const newId = `${original.pid}#${getZeroPaddedVersionNumber(version)}`;
 
             const page: Page = {
                 ...original,
-                id,
+                id: newId,
                 status: STATUS_DRAFT,
                 locked: false,
                 publishedOn: null,
                 version,
                 savedOn: new Date().toISOString(),
-                createdFrom: uniqueId,
+                createdFrom: id,
                 createdOn: new Date().toISOString(),
                 createdBy: {
                     id: identity.id,
@@ -278,7 +298,7 @@ export default new ContextPlugin<PbContext>(async context => {
                     ex.code || "CREATE_FROM_PAGE_ERROR",
                     {
                         ...(ex.data || {}),
-                        uniqueId,
+                        id,
                         latestPage,
                         original,
                         page
@@ -399,7 +419,7 @@ export default new ContextPlugin<PbContext>(async context => {
             checkOwnPermissions(identity, permission, page, "ownedBy");
 
             const settings = await context.pageBuilder.settings.getCurrent();
-            const pages = settings?.pages || {};
+            const pages = settings && settings.pages ? settings.pages : {};
             for (const key in pages) {
                 if (pages[key] === page.pid) {
                     throw new Error(`Cannot delete page because it's set as ${key}.`);
@@ -656,6 +676,7 @@ export default new ContextPlugin<PbContext>(async context => {
                     ex.message || "Could not unpublish page.",
                     ex.code || "UNPUBLISH_PAGE_ERROR",
                     {
+                        ...(ex.data || {}),
                         id,
                         original,
                         page,
@@ -907,7 +928,7 @@ export default new ContextPlugin<PbContext>(async context => {
                 });
             }
 
-            const { page, limit, sort, search, exclude, where: initialWhere } = params;
+            const { page, limit, sort, search, exclude, where: initialWhere = {} } = params;
 
             /**
              * If users can only manage own records, let's add the special filter.
@@ -936,7 +957,7 @@ export default new ContextPlugin<PbContext>(async context => {
 
             const listParams: PageStorageOperationsListParams = {
                 limit,
-                sort: Array.isArray(sort) ? sort : [],
+                sort: convertSort(sort),
                 where: {
                     ...initialWhere,
                     latest: true,
@@ -952,14 +973,14 @@ export default new ContextPlugin<PbContext>(async context => {
             };
 
             try {
-                const [pages, pageMeta] = await storageOperations.list(listParams);
+                const result = await storageOperations.list(listParams);
 
                 const meta = createListMeta({
                     page,
                     limit,
-                    totalCount: pageMeta.totalCount
+                    totalCount: result.meta.totalCount
                 });
-                return [pages as any, meta];
+                return [result.items as any[], meta];
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not list latest pages.",
@@ -977,7 +998,7 @@ export default new ContextPlugin<PbContext>(async context => {
                 rwd: "r"
             });
 
-            const { page, limit, sort, search, exclude, where: initialWhere } = params;
+            const { page, limit, sort, search, exclude, where: initialWhere = {} } = params;
 
             // If users can only manage own records, let's add the special filter.
             let createdBy: string = undefined;
@@ -1000,9 +1021,12 @@ export default new ContextPlugin<PbContext>(async context => {
                 }
             }
 
+            const { tags } = initialWhere;
+            delete initialWhere["tags"];
+
             const listParams: PageStorageOperationsListParams = {
                 limit,
-                sort: Array.isArray(sort) ? sort : [],
+                sort: convertSort(sort),
                 where: {
                     ...initialWhere,
                     published: true,
@@ -1010,20 +1034,22 @@ export default new ContextPlugin<PbContext>(async context => {
                     locale: context.i18nContent.getLocale().code,
                     createdBy,
                     path_not_in: pathNotIn.length ? pathNotIn : undefined,
-                    pid_not_in: pidNotIn.length ? pidNotIn : undefined
+                    pid_not_in: pidNotIn.length ? pidNotIn : undefined,
+                    tags_in: tags && tags.query ? tags.query : undefined,
+                    tags_rule: tags && tags.rule ? tags.rule : undefined
                 },
                 after: (page as unknown as string) || null
             };
 
             try {
-                const [pages, pageMeta] = await storageOperations.list(listParams);
+                const result = await storageOperations.list(listParams);
 
                 const meta = createListMeta({
                     page,
                     limit,
-                    totalCount: pageMeta.totalCount
+                    totalCount: result.meta.totalCount
                 });
-                return [pages as any, meta];
+                return [result.items as any[], meta];
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not list published pages.",
