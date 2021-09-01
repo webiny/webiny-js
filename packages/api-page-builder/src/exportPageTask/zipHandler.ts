@@ -15,12 +15,12 @@ interface S3DownloadStreamDetails {
 export interface ZipHandlerConfig {
     files: ImageFile[];
     archiveFileName: string;
-    archiveFormat: Archiver.Format;
     filesDirName: string;
     s3FileKey: string;
 }
 
 export default class ZipHandler {
+    private readonly archiveFormat = "zip";
     config: ZipHandlerConfig;
 
     constructor(config: ZipHandlerConfig) {
@@ -52,7 +52,7 @@ export default class ZipHandler {
 
         // TODO: improve this code block
         await new Promise((resolve, reject) => {
-            const archive = vending.create(this.config.archiveFormat);
+            const archive = vending.create(this.archiveFormat);
             archive.on("error", (error: Archiver.ArchiverError) => {
                 throw new Error(
                     `${error.name} ${error.code} ${error.message} ${error.path} ${error.stack}`

@@ -59,7 +59,6 @@ export default (): HandlerPlugin<DbContext, ArgsContext<HandlerArgs>> => ({
             const zipHandler = new ZipHandler({
                 files,
                 archiveFileName,
-                archiveFormat: "zip",
                 s3FileKey: pageDataUpload.Key,
                 filesDirName: "assets"
             });
