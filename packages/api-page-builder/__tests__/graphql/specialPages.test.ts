@@ -15,7 +15,7 @@ const CANNOT_UNPUBLISH_RESPONSE = type => ({
     }
 });
 
-describe("Settings Test", () => {
+describe("Special pages", () => {
     const {
         createCategory,
         createPage,

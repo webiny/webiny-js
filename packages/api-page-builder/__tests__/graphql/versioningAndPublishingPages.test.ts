@@ -1,6 +1,6 @@
 import useGqlHandler from "./useGqlHandler";
 
-jest.setTimeout(15000);
+jest.setTimeout(30000);
 
 describe("versioning and publishing pages", () => {
     const {
@@ -13,10 +13,7 @@ describe("versioning and publishing pages", () => {
         listPages,
         listPublishedPages,
         getPublishedPage,
-        db,
-        defaults,
-        until,
-        sleep
+        until
     } = useGqlHandler();
 
     test("try publishing and unpublishing pages / revisions", async () => {
@@ -36,9 +33,8 @@ describe("versioning and publishing pages", () => {
 
         // Now this is the page we're gonna work with in the following lines.
         // 1. Create p1v1.
-        const p1v1 = await createPage({ category }).then(
-            ([res]) => res.data.pageBuilder.createPage.data
-        );
+        const [createP1V1Response] = await createPage({ category });
+        const p1v1 = createP1V1Response.data.pageBuilder.createPage.data;
 
         expect(p1v1).toMatchObject({
             id: /^[a-f0-9]{24}#1$/,
@@ -48,23 +44,49 @@ describe("versioning and publishing pages", () => {
 
         await until(
             () => listPublishedPages({ sort: { createdOn: "desc" } }),
-            ([res]) => res.data.pageBuilder.listPublishedPages.data.length === 0
+            ([res]) => res.data.pageBuilder.listPublishedPages.data.length === 0,
+            {
+                name: "list published pages after create two pages"
+            }
         );
 
         await until(
             () => listPages({ sort: { createdOn: "desc" } }),
-            ([res]) => res.data.pageBuilder.listPages.data.length === 2
-        ).then(([res]) =>
-            expect(res.data.pageBuilder.listPages.data[0]).toMatchObject({
-                id: p1v1.id,
-                status: "draft"
-            })
+            ([res]) => res.data.pageBuilder.listPages.data.length === 2,
+            {
+                name: "list after create two pages"
+            }
         );
 
+        const [listResponse] = await listPages({
+            sort: {
+                createdOn: "desc"
+            }
+        });
+        expect(listResponse).toMatchObject({
+            data: {
+                pageBuilder: {
+                    listPages: {
+                        data: [
+                            {
+                                id: p1v1.id,
+                                status: "draft"
+                            },
+                            {
+                                id: expect.any(String),
+                                status: "draft"
+                            }
+                        ],
+                        error: null
+                    }
+                }
+            }
+        });
+
         // 2. Create p1v2 from p1v1.
-        const p1v2 = await createPage({ from: p1v1.id }).then(
-            ([res]) => res.data.pageBuilder.createPage.data
-        );
+        const [createP1V2Response] = await createPage({ from: p1v1.id });
+
+        const p1v2 = createP1V2Response.data.pageBuilder.createPage.data;
 
         const [p1v1UniqueId] = p1v1.id.split("#");
 
@@ -76,12 +98,18 @@ describe("versioning and publishing pages", () => {
 
         await until(
             () => listPublishedPages({ sort: { createdOn: "desc" } }),
-            ([res]) => res.data.pageBuilder.listPublishedPages.data.length === 0
+            ([res]) => res.data.pageBuilder.listPublishedPages.data.length === 0,
+            {
+                name: "list published pages after create p1v2"
+            }
         ).then(([res]) => expect(res.data.pageBuilder.listPublishedPages.error).toBe(null));
 
         await until(
             () => listPages({ sort: { createdOn: "desc" } }),
-            ([res]) => res.data.pageBuilder.listPages.data[0].id === p1v2.id
+            ([res]) => res.data.pageBuilder.listPages.data[0].id === p1v2.id,
+            {
+                name: `list pages after create p1v2: ${p1v2.id}`
+            }
         ).then(([res]) => {
             expect(res.data.pageBuilder.listPages.data.length).toBe(2);
             expect(res.data.pageBuilder.listPages.data[0]).toMatchObject({
@@ -103,12 +131,18 @@ describe("versioning and publishing pages", () => {
 
         await until(
             () => listPublishedPages({ sort: { createdOn: "desc" } }),
-            ([res]) => res.data.pageBuilder.listPublishedPages.data.length === 0
+            ([res]) => res.data.pageBuilder.listPublishedPages.data.length === 0,
+            {
+                name: "list published pages after create p1v3"
+            }
         ).then(([res]) => expect(res.data.pageBuilder.listPublishedPages.error).toBe(null));
 
         await until(
             () => listPages({ sort: { createdOn: "desc" } }),
-            ([res]) => res.data.pageBuilder.listPages.data[0].id === p1v3.id
+            ([res]) => res.data.pageBuilder.listPages.data[0].id === p1v3.id,
+            {
+                name: "list pages after create create p1v3"
+            }
         ).then(([res]) => {
             expect(res.data.pageBuilder.listPages.data.length).toBe(2);
             expect(res.data.pageBuilder.listPages.data[0]).toMatchObject({
@@ -118,42 +152,65 @@ describe("versioning and publishing pages", () => {
         });
 
         // 4. Let's try publishing the p1v2.
-        await publishPage({ id: p1v2.id }).then(([res]) =>
-            expect(res).toMatchObject({
-                data: {
-                    pageBuilder: {
-                        publishPage: {
-                            data: {
-                                id: p1v2.id,
-                                status: "published",
-                                publishedOn: expect.stringMatching(/^20/),
-                                category: {
-                                    slug: "slug"
-                                },
-                                version: 2,
-                                title: "Untitled"
+        const [p1v2PublishResponse] = await publishPage({ id: p1v2.id });
+
+        expect(p1v2PublishResponse).toMatchObject({
+            data: {
+                pageBuilder: {
+                    publishPage: {
+                        data: {
+                            id: p1v2.id,
+                            status: "published",
+                            publishedOn: expect.stringMatching(/^20/),
+                            category: {
+                                slug: "slug"
                             },
-                            error: null
-                        }
+                            version: 2,
+                            title: "Untitled"
+                        },
+                        error: null
                     }
                 }
-            })
+            }
+        });
+
+        const [listPagesAfterPublishP1V2Response] = await until(
+            () => listPages({ sort: { createdOn: "desc" } }),
+            ([res]) => res.data.pageBuilder.listPages.data.length === 2,
+            {
+                name: "list pages after publish p1v2"
+            }
         );
 
-        await until(
-            () => listPages({ sort: { createdOn: "desc" } }),
-            ([res]) => res.data.pageBuilder.listPages.data.length === 2
-        ).then(([res]) => expect(res.data.pageBuilder.listPages.error).toBe(null));
+        expect(listPagesAfterPublishP1V2Response).toEqual({
+            data: {
+                pageBuilder: {
+                    listPages: {
+                        data: [expect.any(Object), expect.any(Object)],
+                        error: null,
+                        meta: expect.any(Object)
+                    }
+                }
+            }
+        });
 
-        await until(
+        const [listPublishedPagesAfterPublishP1V2Response] = await until(
             () => listPublishedPages({ sort: { createdOn: "desc" } }),
-            ([res]) => res.data.pageBuilder.listPublishedPages.data[0].id === p1v2.id
-        ).then(([res]) => {
-            expect(res.data.pageBuilder.listPublishedPages.data.length).toBe(1);
-            expect(res.data.pageBuilder.listPublishedPages.data[0]).toMatchObject({
-                id: p1v2.id,
-                status: "published"
-            });
+            ([res]) => res.data.pageBuilder.listPublishedPages.data[0].id === p1v2.id,
+            {
+                name: "list published pages after publish p1v2"
+            }
+        );
+
+        expect(
+            listPublishedPagesAfterPublishP1V2Response.data.pageBuilder.listPublishedPages.data
+                .length
+        ).toBe(1);
+        expect(
+            listPublishedPagesAfterPublishP1V2Response.data.pageBuilder.listPublishedPages.data[0]
+        ).toMatchObject({
+            id: p1v2.id,
+            status: "published"
         });
 
         // 5. Let's try creating a new version (v4) from published p1v2 and publish that.
@@ -165,30 +222,40 @@ describe("versioning and publishing pages", () => {
             version: 4
         });
 
-        // 5.1. Make sure pages list includes the new p1v4 page in the list.
-        while (true) {
-            await sleep();
-            [response] = await listPages({ sort: { createdOn: "desc" } });
-            if (response?.data?.pageBuilder?.listPages?.data[0].id === p1v4.id) {
-                break;
+        await until(
+            () => listPages({ sort: { createdOn: "desc" } }),
+            ([res]) => {
+                return res.data.pageBuilder.listPages.data.some(page => {
+                    return page.id === p1v4.id;
+                });
+            },
+            {
+                name: "make sure list includes new p1v4 page"
             }
-        }
+        );
 
         // 5.2. Make sure published pages doesn't include the new p1v4 page in the list.
-        while (true) {
-            await sleep();
-            [response] = await listPublishedPages({ sort: { createdOn: "desc" } });
-            if (response?.data?.pageBuilder?.listPublishedPages?.data?.[0]?.id === p1v2.id) {
-                break;
-            }
-        }
 
-        expect(response.data.pageBuilder.listPublishedPages.data.length).toBe(1);
+        const [listPublishedPagesNoP1V4Response] = await until(
+            () => listPublishedPages({ sort: { createdOn: "desc" } }),
+            ([res]) => {
+                return res.data.pageBuilder.listPublishedPages.data.every(page => {
+                    return page.id !== p1v4.id;
+                });
+            },
+            {
+                name: "make sure published list does not include new p1v4 page"
+            }
+        );
+
+        expect(
+            listPublishedPagesNoP1V4Response.data.pageBuilder.listPublishedPages.data.length
+        ).toBe(1);
 
         // 5.3. Let's publish and check the lists again.
-        [response] = await publishPage({ id: p1v4.id });
+        const [publishP1V4Response] = await publishPage({ id: p1v4.id });
 
-        expect(response).toMatchObject({
+        expect(publishP1V4Response).toMatchObject({
             data: {
                 pageBuilder: {
                     publishPage: {
@@ -208,29 +275,39 @@ describe("versioning and publishing pages", () => {
             }
         });
 
-        while (true) {
-            await sleep();
-            [response] = await listPages({ sort: { createdOn: "desc" } });
-            if (response?.data?.pageBuilder?.listPages?.data[0].id === p1v4.id) {
-                break;
+        await until(
+            () => listPages({ sort: { createdOn: "desc" } }),
+            ([res]) => {
+                return res.data.pageBuilder.listPages.data.some(page => {
+                    return page.id === p1v4.id;
+                });
+            },
+            {
+                name: "make sure list includes new p1v4 page #2 run"
             }
-        }
+        );
 
-        while (true) {
-            await sleep();
-            [response] = await listPublishedPages({ sort: { createdOn: "desc" } });
-            if (response?.data?.pageBuilder?.listPublishedPages?.data?.[0]?.id === p1v4.id) {
-                break;
+        const [listPublishedIncludesP1V4] = await until(
+            () => listPublishedPages({ sort: { createdOn: "desc" } }),
+            ([res]) => {
+                return res.data.pageBuilder.listPublishedPages.data.some(page => {
+                    return page.id === p1v4.id;
+                });
+            },
+            {
+                name: "make sure published list includes new p1v4 page"
             }
-        }
+        );
 
-        expect(response.data.pageBuilder.listPublishedPages.data.length).toBe(1);
-        expect(response.data.pageBuilder.listPublishedPages.data[0].id).toBe(p1v4.id);
+        expect(listPublishedIncludesP1V4.data.pageBuilder.listPublishedPages.data.length).toBe(1);
+        expect(listPublishedIncludesP1V4.data.pageBuilder.listPublishedPages.data[0].id).toBe(
+            p1v4.id
+        );
 
         // 6. Let's try to un-publish the page. First, the wrong one, then the correct one.
-        [response] = await unpublishPage({ id: p1v3.id });
+        const [unpublishP1V3Response] = await unpublishPage({ id: p1v3.id });
 
-        expect(response).toEqual({
+        expect(unpublishP1V3Response).toEqual({
             data: {
                 pageBuilder: {
                     unpublishPage: {
@@ -246,9 +323,9 @@ describe("versioning and publishing pages", () => {
         });
 
         // Now let's try the correct one.
-        [response] = await unpublishPage({ id: p1v4.id });
+        const [unpublishP1V4Response] = await unpublishPage({ id: p1v4.id });
 
-        expect(response).toMatchObject({
+        expect(unpublishP1V4Response).toMatchObject({
             data: {
                 pageBuilder: {
                     unpublishPage: {
@@ -268,14 +345,15 @@ describe("versioning and publishing pages", () => {
             }
         });
 
-        // The list should not return any records.
-        while (true) {
-            await sleep();
-            [response] = await listPublishedPages({ sort: { createdOn: "desc" } });
-            if (response?.data?.pageBuilder?.listPublishedPages?.data.length === 0) {
-                break;
+        await until(
+            () => listPublishedPages({ sort: { createdOn: "desc" } }),
+            ([res]) => {
+                return res.data.pageBuilder.listPublishedPages.data.length === 0;
+            },
+            {
+                name: "make sure published list does not contain any pages"
             }
-        }
+        );
     });
 
     test("must be able to publish a page with the same URL as an already previously-published page", async () => {
@@ -377,26 +455,6 @@ describe("versioning and publishing pages", () => {
                 }
             })
         );
-
-        await db
-            .read({
-                ...defaults.db,
-                query: {
-                    PK: "T#root#L#en-US#PB#PATH",
-                    SK: { $gte: " " }
-                }
-            })
-            .then(([[entry]]) =>
-                expect(entry).toMatchObject({
-                    PK: "T#root#L#en-US#PB#PATH",
-                    SK: "/pages-test-updated",
-                    TYPE: "pb.page",
-                    status: "published",
-                    tenant: "root",
-                    title: "Untitled",
-                    version: 2
-                })
-            );
     });
 
     test("once a page has been deleted, it should not be available via the previous published path", async () => {
@@ -438,17 +496,6 @@ describe("versioning and publishing pages", () => {
                 }
             })
         );
-
-        // Also, the should not exist as well.
-        await db
-            .read({
-                ...defaults.db,
-                query: {
-                    PK: "T#root#L#en-US#PB#P#P#PATH",
-                    SK: { $gte: " " }
-                }
-            })
-            .then(([res]) => expect(res.length).toBe(0));
     });
 
     test("once a page has been unpublished, it should not be available via the previous published path", async () => {
@@ -534,16 +581,5 @@ describe("versioning and publishing pages", () => {
                 }
             })
         );
-
-        // Also, the should not exist as well.
-        await db
-            .read({
-                ...defaults.db,
-                query: {
-                    PK: "T#root#L#en-US#PB#P#P#PATH",
-                    SK: { $gte: " " }
-                }
-            })
-            .then(([res]) => expect(res.length).toBe(0));
     });
 });

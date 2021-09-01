@@ -35,7 +35,7 @@ describe("CRUD Test", () => {
         const ids = [];
         // Test creating, getting and updating three pages.
         for (let i = 0; i < 3; i++) {
-            const data = {
+            let data: any = {
                 category: "slug"
             };
 
@@ -54,7 +54,7 @@ describe("CRUD Test", () => {
                                 locked: false,
                                 version: 1,
                                 editor: "page-builder",
-                                createdOn: expect.stringMatching(/^20.*/),
+                                createdOn: expect.stringMatching(/^20/),
                                 createdBy: { displayName: "m", id: "mocked" }
                             },
                             error: null
@@ -77,7 +77,7 @@ describe("CRUD Test", () => {
                                     slug: "slug"
                                 },
                                 editor: "page-builder",
-                                createdOn: /^20.*/,
+                                createdOn: expect.stringMatching(/^20/),
                                 createdBy: { displayName: "m", id: "mocked" }
                             },
                             error: null
@@ -88,7 +88,7 @@ describe("CRUD Test", () => {
 
             id = response.data.pageBuilder.getPage.data.id;
 
-            const updatePageData = {
+            data = {
                 title: "title-UPDATED-" + i,
                 path: "/path-UPDATED-" + i,
                 settings: {
@@ -104,7 +104,7 @@ describe("CRUD Test", () => {
 
             [response] = await updatePage({
                 id,
-                data: updatePageData
+                data
             });
 
             expect(response).toMatchObject({
@@ -114,7 +114,7 @@ describe("CRUD Test", () => {
                             data: {
                                 ...data,
                                 editor: "page-builder",
-                                createdOn: /^20.*/,
+                                createdOn: expect.stringMatching(/^20/),
                                 createdBy: { displayName: "m", id: "mocked" }
                             },
                             error: null
@@ -127,8 +127,13 @@ describe("CRUD Test", () => {
         [response] = await until(
             () => listPages({ sort: { createdOn: "desc" } }),
             ([res]) => {
-                const { data } = res.data.pageBuilder.listPages;
-                return data.length === 3 && data[0].title === "title-UPDATED-2";
+                const data: any[] = res.data.pageBuilder.listPages.data;
+                return data.length === 3 && data.every(obj => obj.title.match(/title-UPDATED-/));
+            },
+            {
+                name: "list pages after update",
+                wait: 300,
+                tries: 20
             }
         );
 
@@ -146,8 +151,8 @@ describe("CRUD Test", () => {
                                     displayName: "m",
                                     id: "mocked"
                                 },
-                                createdOn: /^20/,
-                                savedOn: /^20/,
+                                createdOn: expect.stringMatching(/^20/),
+                                savedOn: expect.stringMatching(/^20/),
                                 id: ids[2],
                                 status: "draft",
                                 title: "title-UPDATED-2",
@@ -169,8 +174,8 @@ describe("CRUD Test", () => {
                                     displayName: "m",
                                     id: "mocked"
                                 },
-                                createdOn: /^20/,
-                                savedOn: /^20/,
+                                createdOn: expect.stringMatching(/^20/),
+                                savedOn: expect.stringMatching(/^20/),
                                 id: ids[1],
                                 status: "draft",
                                 title: "title-UPDATED-1",
@@ -192,8 +197,8 @@ describe("CRUD Test", () => {
                                     displayName: "m",
                                     id: "mocked"
                                 },
-                                createdOn: /^20/,
-                                savedOn: /^20/,
+                                createdOn: expect.stringMatching(/^20/),
+                                savedOn: expect.stringMatching(/^20/),
                                 id: ids[0],
                                 status: "draft",
                                 title: "title-UPDATED-0",
@@ -226,7 +231,7 @@ describe("CRUD Test", () => {
                                 page: {
                                     id,
                                     editor: "page-builder",
-                                    createdOn: /^20.*/,
+                                    createdOn: expect.stringMatching(/^20/),
                                     createdBy: { displayName: "m", id: "mocked" }
                                 }
                             },
@@ -287,7 +292,7 @@ describe("CRUD Test", () => {
                         data: {
                             id: page.id,
                             editor: "page-builder",
-                            createdOn: /^20.*/,
+                            createdOn: expect.stringMatching(/^20/),
                             createdBy: { displayName: "m", id: "mocked" }
                         },
                         error: null

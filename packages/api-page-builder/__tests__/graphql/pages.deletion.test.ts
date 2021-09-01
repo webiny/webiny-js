@@ -68,10 +68,15 @@ describe("deleting pages", () => {
 
     test("deleting latest published page should update DB / indexes correctly", async () => {
         await publishPage({ id: p1v3.id });
-        await until(listPages, ([res]) => res.data.pageBuilder.listPages.data[0].id === p1v3.id);
+        await until(listPages, ([res]) => res.data.pageBuilder.listPages.data[0].id === p1v3.id, {
+            name: "list latest pages until p1v3 is first"
+        });
         await until(
             listPublishedPages,
-            ([res]) => res.data.pageBuilder.listPublishedPages.data[0].id === p1v3.id
+            ([res]) => res.data.pageBuilder.listPublishedPages.data[0].id === p1v3.id,
+            {
+                name: "list published pages until p1v3 is first"
+            }
         );
 
         await deletePage({ id: p1v3.id }).then(([res]) => {
@@ -88,39 +93,96 @@ describe("deleting pages", () => {
             });
         });
 
-        await until(listPages, ([res]) => res.data.pageBuilder.listPages.data[0].id === p1v2.id);
+        await until(listPages, ([res]) => res.data.pageBuilder.listPages.data[0].id === p1v2.id, {
+            name: "list latest pages until p1v2 is first"
+        });
         await until(
             listPublishedPages,
-            ([res]) => res.data.pageBuilder.listPublishedPages.data.length === 0
+            ([res]) => res.data.pageBuilder.listPublishedPages.data.length === 0,
+            {
+                name: "list published pages until there are no pages"
+            }
         );
     });
 
     test("deleting latest non-published page should update DB / indexes correctly", async () => {
-        await publishPage({ id: p1v2.id });
-        await until(listPages, ([res]) => res.data.pageBuilder.listPages.data[0].id === p1v3.id);
-        await until(
-            listPublishedPages,
-            ([res]) => res.data.pageBuilder.listPublishedPages.data[0].id === p1v2.id
-        );
-
-        await deletePage({ id: p1v3.id }).then(([res]) => {
-            expect(res.data.pageBuilder.deletePage).toMatchObject({
-                error: null,
-                data: {
-                    latestPage: {
-                        version: 2
-                    },
-                    page: {
-                        version: 3
+        const [publishResponse] = await publishPage({ id: p1v2.id });
+        expect(publishResponse).toEqual({
+            data: {
+                pageBuilder: {
+                    publishPage: {
+                        data: {
+                            ...p1v2,
+                            locked: true,
+                            status: "published",
+                            savedOn: expect.stringMatching(/20/),
+                            publishedOn: expect.stringMatching(/20/),
+                            revisions: [
+                                {
+                                    id: p1v1.id,
+                                    locked: false,
+                                    status: "draft",
+                                    version: 1
+                                },
+                                {
+                                    id: p1v2.id,
+                                    locked: true,
+                                    status: "published",
+                                    version: 2
+                                },
+                                {
+                                    id: p1v3.id,
+                                    locked: false,
+                                    status: "draft",
+                                    version: 3
+                                }
+                            ]
+                        },
+                        error: null
                     }
                 }
-            });
+            }
         });
-
-        await until(listPages, ([res]) => res.data.pageBuilder.listPages.data[0].id === p1v2.id);
+        await until(listPages, ([res]) => res.data.pageBuilder.listPages.data[0].id === p1v3.id, {
+            name: "list latest pages until p1v3 is first"
+        });
         await until(
             listPublishedPages,
-            ([res]) => res.data.pageBuilder.listPublishedPages.data[0].id === p1v2.id
+            ([res]) => res.data.pageBuilder.listPublishedPages.data[0].id === p1v2.id,
+            {
+                name: `list published pages until p1v2 is first`
+            }
+        );
+
+        const [deleteResponse] = await deletePage({ id: p1v3.id });
+
+        expect(deleteResponse).toMatchObject({
+            data: {
+                pageBuilder: {
+                    deletePage: {
+                        error: null,
+                        data: {
+                            latestPage: {
+                                version: 2
+                            },
+                            page: {
+                                version: 3
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        await until(listPages, ([res]) => res.data.pageBuilder.listPages.data[0].id === p1v2.id, {
+            name: "list latest pages until p1v2 is first"
+        });
+        await until(
+            listPublishedPages,
+            ([res]) => res.data.pageBuilder.listPublishedPages.data[0].id === p1v2.id,
+            {
+                name: "list published pages until p1v2 is first"
+            }
         );
     });
 

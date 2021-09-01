@@ -56,6 +56,7 @@ import { GET_SETTINGS, GET_DEFAULT_SETTINGS, UPDATE_SETTINGS } from "./graphql/s
 import path from "path";
 import fs from "fs";
 import { Tenant } from "@webiny/api-tenancy/types";
+import { UntilOptions } from "@webiny/project-utils/testing/helpers/until";
 
 const defaultTenant = { id: "root", name: "Root", parent: null };
 
@@ -77,39 +78,12 @@ export default ({ permissions, identity, tenant }: Params = {}) => {
             `A product of "__getStorageOperationsPlugins" must be a function to initialize storage operations.`
         );
     }
-    // const logsDb = new Db({
-    //     logTable: "PageBuilderLogs",
-    //     driver: new DynamoDbDriver({
-    //         documentClient: new DocumentClient({
-    //             convertEmptyValues: true,
-    //             endpoint: process.env.MOCK_DYNAMODB_ENDPOINT,
-    //             sslEnabled: false,
-    //             region: "local"
-    //         })
-    //     })
-    // });
-
-    // const elasticsearchContext = elasticsearchClientContextPlugin({
-    //     endpoint: `http://localhost:${ELASTICSEARCH_PORT}`
-    // });
-
-    // Intercept DocumentClient operations and trigger dynamoToElastic function (almost like a DynamoDB Stream trigger)
-    // simulateStream(documentClient, createHandler(elasticsearchContext, dynamoToElastic()));
 
     const handler = createHandler(
         storageOperations(),
         // TODO figure out a way to load these automatically
         fileManagerDdbEsPlugins(),
         graphqlHandler(),
-        // {
-        //     type: "context",
-        //     apply: context => {
-        //         if (context.db) {
-        //             return;
-        //         }
-        //         context.db = db;
-        //     }
-        // },
         {
             type: "context",
             apply: context => {
@@ -181,8 +155,9 @@ export default ({ permissions, identity, tenant }: Params = {}) => {
                     }
                 };
             },
-            // eslint-disable-next-line
-            async delete(args) {}
+            async delete() {
+                return;
+            }
         }
     );
 
@@ -209,22 +184,9 @@ export default ({ permissions, identity, tenant }: Params = {}) => {
         handler,
         invoke,
         // Helpers.
-        defaults: {
-            db: {
-                keys: [
-                    {
-                        primary: true,
-                        unique: true,
-                        name: "primary",
-                        fields: [{ name: "PK" }, { name: "SK" }]
-                    }
-                ]
-            }
-        },
         sleep,
-        until: async (execute, until, options: any = {}) => {
-            const tries = options.tries ?? 10;
-            const wait = options.wait ?? 333;
+        until: async (execute, until, options: UntilOptions = {}) => {
+            const { name = "NO_NAME", tries = 5, wait = 300 } = options;
 
             let result;
             let triesCount = 0;
@@ -247,13 +209,13 @@ export default ({ permissions, identity, tenant }: Params = {}) => {
                 }
 
                 // Wait.
-                await new Promise(resolve => {
-                    setTimeout(() => resolve(undefined), wait);
+                await new Promise((resolve: any) => {
+                    setTimeout(() => resolve(), wait);
                 });
             }
 
             throw new Error(
-                `Tried ${tries} times but failed. Last result that was received: ${JSON.stringify(
+                `[${name}] Tried ${tries} times but failed. Last result that was received: ${JSON.stringify(
                     result,
                     null,
                     2

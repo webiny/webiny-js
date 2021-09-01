@@ -56,7 +56,7 @@ describe("Prepared Menus Test", () => {
     });
 
     test("let's ensure the menu is built properly when using getPublicMenu", async () => {
-        await createMenu({
+        const [createResponse] = await createMenu({
             data: {
                 slug: "test",
                 title: "test",
@@ -120,6 +120,17 @@ describe("Prepared Menus Test", () => {
                         sortDir: "asc"
                     }
                 ]
+            }
+        });
+
+        expect(createResponse).toEqual({
+            data: {
+                pageBuilder: {
+                    createMenu: {
+                        data: expect.any(Object),
+                        error: null
+                    }
+                }
             }
         });
 
