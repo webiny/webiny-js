@@ -7,6 +7,7 @@ import { Plugin } from "@webiny/app/types";
 import { BindComponent } from "@webiny/form/Bind";
 import { IconPrefix, IconName } from "@fortawesome/fontawesome-svg-core";
 import { Form, FormSetValue } from "@webiny/form/Form";
+import { CoreOptions } from "medium-editor";
 
 export type PbElementDataSettingsSpacingValueType = {
     all?: string;
@@ -590,6 +591,17 @@ export type PbEditorElementPluginArgs = {
     toolbar?: (defaultValue) => Record<string, any>;
     elementType?: string;
 };
+
+export type MediumEditorOptions = (defaultOptions: CoreOptions) => CoreOptions;
+
+export interface PbEditorTextElementPluginsArgs extends PbEditorElementPluginArgs {
+    mediumEditorOptions?: MediumEditorOptions;
+}
+
+export interface PbEditorTextElementProps {
+    elementId: string;
+    mediumEditorOptions?: MediumEditorOptions;
+}
 
 export type PbRenderElementPluginArgs = {
     elementType?: string;
