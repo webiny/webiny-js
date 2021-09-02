@@ -8,7 +8,7 @@ const { log, getProject } = require("./utils");
 const project = getProject();
 let paths = [path.join(project.root, ".env")];
 if (yargs.argv.env) {
-    paths.push(path.join(project.root, `.env.${yargs.argv.env}`))
+    paths.push(path.join(project.root, `.env.${yargs.argv.env}`));
 }
 
 for (let i = 0; i < paths.length; i++) {
