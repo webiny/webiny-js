@@ -2,9 +2,10 @@ import React, { useCallback, useMemo } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 import get from "lodash/get";
 import classNames from "classnames";
-import { PbEditorElement } from "../../types";
+import { CoreOptions } from "medium-editor";
+import { PbEditorElement } from "~/types";
 import { elementWithChildrenByIdSelector, activeElementAtom, uiAtom } from "../recoil/modules";
-import { ElementRoot } from "../../render/components/ElementRoot";
+import { ElementRoot } from "~/render/components/ElementRoot";
 import useUpdateHandlers from "../plugins/elementSettings/useUpdateHandlers";
 import ReactMediumEditor from "../components/MediumEditor";
 import { applyFallbackDisplayMode } from "../plugins/elementSettings/elementSettingsUtils";
@@ -14,12 +15,12 @@ const DATA_NAMESPACE = "data.text";
 
 type TextElementProps = {
     elementId: string;
-    editorOptions: any;
+    mediumEditorOptions: CoreOptions;
     rootClassName?: string;
 };
 const Text: React.FunctionComponent<TextElementProps> = ({
     elementId,
-    editorOptions,
+    mediumEditorOptions,
     rootClassName
 }) => {
     const element: PbEditorElement = useRecoilValue(elementWithChildrenByIdSelector(elementId));
@@ -73,7 +74,7 @@ const Text: React.FunctionComponent<TextElementProps> = ({
                 tag={tag}
                 value={textContent}
                 onChange={onChange}
-                options={editorOptions}
+                options={mediumEditorOptions}
                 onSelect={onSelect}
             />
         </ElementRoot>
