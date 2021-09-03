@@ -27,15 +27,6 @@ const getStorageOperationsPlugins = ({
     documentClient,
     elasticsearchClientContext
 }) => {
-    /**
-     * Intercept DocumentClient operations and trigger dynamoToElastic function (almost like a DynamoDB Stream trigger)
-     */
-    const simulationContext = new ContextPlugin(async context => {
-        context.plugins.register([elasticsearchDataGzipCompression()]);
-        await elasticsearchClientContext.apply(context);
-    });
-    simulateStream(documentClient, createHandler(simulationContext, dynamoToElastic()));
-
     return () => {
         return [
             ...dynamoDbPlugins(),
@@ -113,6 +104,16 @@ class PageBuilderTestEnvironment extends NodeEnvironment {
                 index: "_all"
             });
         };
+
+        /**
+         * Intercept DocumentClient operations and trigger dynamoToElastic function (almost like a DynamoDB Stream trigger)
+         */
+        const simulationContext = new ContextPlugin(async context => {
+            context.plugins.register([elasticsearchDataGzipCompression()]);
+            await elasticsearchClientContext.apply(context);
+        });
+        simulateStream(documentClient, createHandler(simulationContext, dynamoToElastic()));
+
         /**
          * This is a global function that will be called inside the tests to get all relevant plugins, methods and objects.
          */
