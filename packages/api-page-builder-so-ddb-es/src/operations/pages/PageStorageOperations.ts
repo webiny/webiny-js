@@ -849,8 +849,14 @@ export class PageStorageOperationsDdbEs implements PageStorageOperations {
      */
     public async get(params: PageStorageOperationsGetParams): Promise<Page | null> {
         const { where } = params;
-        const { pid, version, id, path, published } = where;
-
+        const { pid, id, path, published } = where;
+        let { version } = where;
+        /**
+         * In case of having full ID and not having version we can take the version from the id.
+         */
+        if (id && id.includes("#") && !version) {
+            version = Number(id.split("#").pop());
+        }
         let partitionKey: string = undefined;
         let sortKey: string;
         if (path) {
@@ -1000,7 +1006,8 @@ export class PageStorageOperationsDdbEs implements PageStorageOperations {
          * Cursor is the `sort` value of the last item in the array.
          * https://www.elastic.co/guide/en/elasticsearch/reference/current/paginate-search-results.html#search-after
          */
-        const cursor = items.length > 0 ? encodeCursor(hits[items.length - 1].sort) : null;
+        const cursor =
+            items.length > 0 && hasMoreItems ? encodeCursor(hits[items.length - 1].sort) : null;
         return {
             items,
             meta: {

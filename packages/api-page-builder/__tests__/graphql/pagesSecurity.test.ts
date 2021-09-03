@@ -1,5 +1,6 @@
 import useGqlHandler from "./useGqlHandler";
 import { identityA, identityB, NOT_AUTHORIZED_RESPONSE } from "./mocks";
+import mdbid from "mdbid";
 
 jest.setTimeout(15000);
 
@@ -46,14 +47,14 @@ describe("Pages Security Test", () => {
         ];
 
         await until(
-            () => useGqlHandler().listPages({ sort: { createdOn: "desc" } }),
+            () => useGqlHandler().listPages({ sort: ["createdOn_DESC"] }),
             ([res]) => res.data.pageBuilder.listPages.data.length === 4
         );
 
         for (let i = 0; i < insufficientPermissions.length; i++) {
             const [permissions, identity] = insufficientPermissions[i];
             const { listPages } = useGqlHandler({ permissions, identity: identity as any });
-            const [response] = await listPages({ sort: { createdOn: "desc" } });
+            const [response] = await listPages({ sort: ["createdOn_DESC"] });
             expect(response).toMatchObject(NOT_AUTHORIZED_RESPONSE("listPages"));
         }
 
@@ -69,7 +70,7 @@ describe("Pages Security Test", () => {
         for (let i = 0; i < sufficientPermissionsAll.length; i++) {
             const [permissions, identity] = sufficientPermissionsAll[i];
             const { listPages } = useGqlHandler({ permissions, identity: identity as any });
-            const [response] = await listPages({ sort: { createdOn: "desc" } });
+            const [response] = await listPages({ sort: ["createdOn_DESC"] });
             expect(response).toMatchObject({
                 data: {
                     pageBuilder: {
@@ -124,7 +125,7 @@ describe("Pages Security Test", () => {
             identity: identityA
         });
 
-        let [response] = await identityAHandler.listPages({ sort: { createdOn: "desc" } });
+        let [response] = await identityAHandler.listPages({ sort: ["createdOn_DESC"] });
         expect(response).toMatchObject({
             data: {
                 pageBuilder: {
@@ -160,7 +161,7 @@ describe("Pages Security Test", () => {
             identity: identityB
         });
 
-        [response] = await identityAHandler.listPages({ sort: { createdOn: "desc" } });
+        [response] = await identityAHandler.listPages({ sort: ["createdOn_DESC"] });
         expect(response).toMatchObject({
             data: {
                 pageBuilder: {
@@ -264,28 +265,24 @@ describe("Pages Security Test", () => {
         }
     });
 
-    test(`allow "updatePage" if identity has sufficient permissions`, async () => {
-        const { createPage } = defaultHandler;
+    const pageUpdateInsufficientPermissions = [
+        [[], null],
+        [[], identityA],
+        [[{ name: "pb.page", rwd: "r" }], identityA],
+        [[{ name: "pb.page", rwd: "rd" }], identityA],
+        [[{ name: "pb.page", own: true }], identityB],
+        [[{ name: "content.i18n", locales: ["de-DE", "it-IT"] }, { name: "pb.page" }], identityA]
+    ];
 
-        const page = await createPage({ category: initialCategory.slug }).then(
-            ([res]) => res.data.pageBuilder.createPage.data
-        );
+    test.each(pageUpdateInsufficientPermissions)(
+        `do not allow "updatePage" if identity has no sufficient permissions`,
+        async (permissions: any, identity: any) => {
+            const { createPage } = defaultHandler;
 
-        const insufficientPermissions = [
-            [[], null],
-            [[], identityA],
-            [[{ name: "pb.page", rwd: "r" }], identityA],
-            [[{ name: "pb.page", rwd: "rd" }], identityA],
-            [[{ name: "pb.page", own: true }], identityB],
-            [
-                [{ name: "content.i18n", locales: ["de-DE", "it-IT"] }, { name: "pb.page" }],
-                identityA
-            ]
-        ];
-
-        for (let i = 0; i < insufficientPermissions.length; i++) {
-            const [permissions, identity] = insufficientPermissions[i];
-            const { updatePage } = useGqlHandler({ permissions, identity: identity as any });
+            const page = await createPage({ category: initialCategory.slug }).then(
+                ([res]) => res.data.pageBuilder.createPage.data
+            );
+            const { updatePage } = useGqlHandler({ permissions, identity });
             const [response] = await updatePage({
                 id: page.id,
                 data: {
@@ -294,29 +291,39 @@ describe("Pages Security Test", () => {
             });
             expect(response).toMatchObject(NOT_AUTHORIZED_RESPONSE("updatePage"));
         }
+    );
 
-        const sufficientPermissions = [
-            [[{ name: "content.i18n" }, { name: "pb.page" }], identityA],
-            [[{ name: "content.i18n" }, { name: "pb.page", own: true }], identityA],
-            [[{ name: "content.i18n" }, { name: "pb.page", rwd: "w" }], identityA],
-            [[{ name: "content.i18n" }, { name: "pb.page", rwd: "rw" }], identityA],
-            [[{ name: "content.i18n" }, { name: "pb.page", rwd: "rwd" }], identityA],
-            [[{ name: "content.i18n", locales: ["en-US"] }, { name: "pb.page" }], identityA]
-        ];
+    const updatePageSufficientPermissions = [
+        [[{ name: "content.i18n" }, { name: "pb.page" }], identityA],
+        [[{ name: "content.i18n" }, { name: "pb.page", own: true }], identityA],
+        [[{ name: "content.i18n" }, { name: "pb.page", rwd: "w" }], identityA],
+        [[{ name: "content.i18n" }, { name: "pb.page", rwd: "rw" }], identityA],
+        [[{ name: "content.i18n" }, { name: "pb.page", rwd: "rwd" }], identityA],
+        [[{ name: "content.i18n", locales: ["en-US"] }, { name: "pb.page" }], identityA]
+    ];
 
-        for (let i = 0; i < sufficientPermissions.length; i++) {
-            const [permissions, identity] = sufficientPermissions[i];
+    test.each(updatePageSufficientPermissions)(
+        `allow "updatePage" if identity has sufficient permissions`,
+        async (permissions: any, identity: any) => {
+            const { createPage } = defaultHandler;
+
+            const page = await createPage({ category: initialCategory.slug }).then(
+                ([res]) => res.data.pageBuilder.createPage.data
+            );
+
+            const id = mdbid();
+
             const { updatePage } = useGqlHandler({ permissions, identity: identity as any });
             const [response] = await updatePage({
                 id: page.id,
-                data: { title: `${page.title}-UPDATED-${i}` }
+                data: { title: `${page.title}-UPDATED-${id}` }
             });
             expect(response).toMatchObject({
                 data: {
                     pageBuilder: {
                         updatePage: {
                             data: {
-                                title: `${page.title}-UPDATED-${i}`
+                                title: `${page.title}-UPDATED-${id}`
                             },
                             error: null
                         }
@@ -324,7 +331,7 @@ describe("Pages Security Test", () => {
                 }
             });
         }
-    });
+    );
 
     test(`allow "deletePage" if identity has sufficient permissions`, async () => {
         const { createPage } = defaultHandler;
@@ -405,50 +412,54 @@ describe("Pages Security Test", () => {
         }
     });
 
-    test(`allow "getPage" if identity has sufficient permissions`, async () => {
-        const { createPage } = defaultHandler;
-        const page = await createPage({ category: initialCategory.slug }).then(
-            ([res]) => res.data.pageBuilder.createPage.data
-        );
+    const getPageInsufficientPermissions = [
+        [[], null],
+        [[], identityA],
+        [[{ name: "content.i18n" }, { name: "pb.page", rwd: "w" }], identityA],
+        [[{ name: "content.i18n" }, { name: "pb.page", rwd: "wd" }], identityA],
+        [[{ name: "content.i18n" }, { name: "pb.page", own: true }], identityB],
+        [[{ name: "content.i18n", locales: ["de-DE", "it-IT"] }, { name: "pb.page" }], identityA]
+    ];
 
-        const insufficientPermissions = [
-            [[], null],
-            [[], identityA],
-            [[{ name: "content.i18n" }, { name: "pb.page", rwd: "w" }], identityA],
-            [[{ name: "content.i18n" }, { name: "pb.page", rwd: "wd" }], identityA],
-            [[{ name: "content.i18n" }, { name: "pb.page", own: true }], identityB],
-            [
-                [{ name: "content.i18n", locales: ["de-DE", "it-IT"] }, { name: "pb.page" }],
-                identityA
-            ]
-        ];
+    test.each(getPageInsufficientPermissions)(
+        `do not allow "getPage" if identity has no sufficient permissions`,
+        async (permissions: any, identity: any) => {
+            const { createPage } = defaultHandler;
+            const page = await createPage({ category: initialCategory.slug }).then(
+                ([res]) => res.data.pageBuilder.createPage.data
+            );
 
-        for (let i = 0; i < insufficientPermissions.length; i++) {
-            const [permissions, identity] = insufficientPermissions[i];
-            const { getPage } = useGqlHandler({ permissions, identity: identity as any });
+            const { getPage } = useGqlHandler({ permissions, identity });
             const [response] = await getPage({ id: page.id });
             expect(response).toMatchObject(NOT_AUTHORIZED_RESPONSE("getPage"));
         }
+    );
 
-        const sufficientPermissions = [
-            [[{ name: "content.i18n" }, { name: "pb.page" }], identityA],
-            [[{ name: "content.i18n" }, { name: "pb.page", own: true }], identityA],
-            [[{ name: "content.i18n" }, { name: "pb.page", rwd: "r" }], identityA],
-            [[{ name: "content.i18n" }, { name: "pb.page", rwd: "rw" }], identityA],
-            [[{ name: "content.i18n" }, { name: "pb.page", rwd: "rwd" }], identityA],
+    const getPageSufficientPermissions = [
+        [[{ name: "content.i18n" }, { name: "pb.page" }], identityA],
+        [[{ name: "content.i18n" }, { name: "pb.page", own: true }], identityA],
+        [[{ name: "content.i18n" }, { name: "pb.page", rwd: "r" }], identityA],
+        [[{ name: "content.i18n" }, { name: "pb.page", rwd: "rw" }], identityA],
+        [[{ name: "content.i18n" }, { name: "pb.page", rwd: "rwd" }], identityA],
+        [
             [
-                [
-                    { name: "content.i18n" },
-                    { name: "content.i18n", locales: ["en-US"] },
-                    { name: "pb.page" }
-                ],
-                identityA
-            ]
-        ];
+                { name: "content.i18n" },
+                { name: "content.i18n", locales: ["en-US"] },
+                { name: "pb.page" }
+            ],
+            identityA
+        ]
+    ];
 
-        for (let i = 0; i < sufficientPermissions.length; i++) {
-            const [permissions, identity] = sufficientPermissions[i];
-            const { getPage } = useGqlHandler({ permissions, identity: identity as any });
+    test.each(getPageSufficientPermissions)(
+        `allow "getPage" if identity has sufficient permissions`,
+        async (permissions: any, identity: any) => {
+            const { createPage } = defaultHandler;
+            const page = await createPage({ category: initialCategory.slug }).then(
+                ([res]) => res.data.pageBuilder.createPage.data
+            );
+
+            const { getPage } = useGqlHandler({ permissions, identity });
             const [response] = await getPage({ id: page.id });
             expect(response).toMatchObject({
                 data: {
@@ -470,5 +481,5 @@ describe("Pages Security Test", () => {
                 }
             });
         }
-    });
+    );
 });

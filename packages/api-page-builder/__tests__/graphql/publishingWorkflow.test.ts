@@ -1,5 +1,6 @@
 import useGqlHandler from "./useGqlHandler";
 import { identityA, identityB, NOT_AUTHORIZED_RESPONSE } from "./mocks";
+import { SecurityIdentity } from "@webiny/api-security";
 
 jest.setTimeout(25000);
 
@@ -13,8 +14,17 @@ describe("publishing workflow", () => {
         requestChanges,
         listPages,
         updatePage,
-        until
+        until,
+        sleep
     } = useGqlHandler();
+
+    const handlerA = useGqlHandler({
+        identity: identityA
+    });
+
+    const handlerB = useGqlHandler({
+        identity: identityB
+    });
 
     let initialPageIds, initialCategory;
 
@@ -44,15 +54,11 @@ describe("publishing workflow", () => {
         }
     });
 
+    afterEach(async () => {
+        await sleep(200);
+    });
+
     test("simple workflow test (check request review and request changes)", async () => {
-        const handlerA = useGqlHandler({
-            identity: identityA
-        });
-
-        const handlerB = useGqlHandler({
-            identity: identityB
-        });
-
         const pageFromA = await handlerA
             .createPage({ category: initialCategory.slug })
             .then(([res]) => res.data.pageBuilder.createPage.data);
@@ -121,7 +127,12 @@ describe("publishing workflow", () => {
 
         await until(
             listPages,
-            ([res]) => res.data.pageBuilder.listPages.data[2].status === "reviewRequested"
+            ([res]) => res.data.pageBuilder.listPages.data[2].status === "reviewRequested",
+            {
+                name: "after request review and get that page was done",
+                wait: 400,
+                tries: 30
+            }
         );
 
         await publishPage({ id: initialPageIds[0] }).then(([res]) =>
@@ -142,7 +153,10 @@ describe("publishing workflow", () => {
 
         await until(
             listPages,
-            ([res]) => res.data.pageBuilder.listPages.data[2].status === "published"
+            ([res]) => res.data.pageBuilder.listPages.data[2].status === "published",
+            {
+                name: "after request review, list pages and get that page was done"
+            }
         );
     });
 
@@ -155,7 +169,7 @@ describe("publishing workflow", () => {
                         requestReview: {
                             data: null,
                             error: {
-                                code: "",
+                                code: "REQUEST_REVIEW_ERROR",
                                 data: null,
                                 message:
                                     "Cannot request review - page is not a draft nor a change request has been issued."
@@ -207,28 +221,27 @@ describe("publishing workflow", () => {
         );
     });
 
-    test("should not be able to publish if no permission", async () => {
-        const sufficientPermission = [
-            [[{ name: "content.i18n" }, { name: "pb.page" }], identityA],
-            [[{ name: "content.i18n" }, { name: "pb.page" }], identityB],
-            [[{ name: "content.i18n", locales: ["en-US"] }, { name: "pb.page" }], identityA],
-            [[{ name: "content.i18n", locales: ["en-US"] }, { name: "pb.page" }], identityB],
-            [[{ name: "content.i18n" }, { name: "pb.page", pw: "p" }], identityA],
-            [[{ name: "content.i18n" }, { name: "pb.page", pw: "p" }], identityB],
-            [[{ name: "content.i18n" }, { name: "pb.page", own: true, pw: "p" }], identityA]
-        ];
+    const publishSufficientPermission = [
+        [[{ name: "content.i18n" }, { name: "pb.page" }], identityA],
+        [[{ name: "content.i18n" }, { name: "pb.page" }], identityB],
+        [[{ name: "content.i18n", locales: ["en-US"] }, { name: "pb.page" }], identityA],
+        [[{ name: "content.i18n", locales: ["en-US"] }, { name: "pb.page" }], identityB],
+        [[{ name: "content.i18n" }, { name: "pb.page", pw: "p" }], identityA],
+        [[{ name: "content.i18n" }, { name: "pb.page", pw: "p" }], identityB],
+        [[{ name: "content.i18n" }, { name: "pb.page", own: true, pw: "p" }], identityA]
+    ];
 
-        for (let i = 0; i < sufficientPermission.length; i++) {
+    test.each(publishSufficientPermission)(
+        "should be able to publish if has permission",
+        async (permissions: any, identity: SecurityIdentity) => {
             // Create page with identityA.
-            const page = await useGqlHandler({
-                identity: identityA
-            })
+            const page = await handlerA
                 .createPage({ category: initialCategory.slug })
                 .then(([res]) => res.data.pageBuilder.createPage.data);
 
             // Publish page with specific identity and permissions.
-            const [permissions, identity] = sufficientPermission[i];
-            const { publishPage } = useGqlHandler({ permissions, identity: identity as any });
+
+            const { publishPage } = useGqlHandler({ permissions, identity });
 
             await publishPage({ id: page.id }).then(([res]) =>
                 expect(res).toMatchObject({
@@ -238,81 +251,78 @@ describe("publishing workflow", () => {
                 })
             );
         }
+    );
 
-        const insufficientPermissions = [
-            [[], null],
-            [[], identityA],
-            [[{ name: "content.i18n" }, { name: "pb.page", pw: "rcu" }], identityA],
+    const publishInsufficientPermissions = [
+        [[], null],
+        [[], identityA],
+        [[{ name: "content.i18n" }, { name: "pb.page", pw: "rcu" }], identityA],
+        [
             [
-                [
-                    { name: "content.i18n", locales: ["en-US"] },
-                    { name: "pb.page", pw: "rcu" }
-                ],
-                identityA
+                { name: "content.i18n", locales: ["en-US"] },
+                { name: "pb.page", pw: "rcu" }
             ],
+            identityA
+        ],
+        [
             [
-                [
-                    { name: "content.i18n", locales: ["en-US"] },
-                    { name: "pb.page", pw: "rcu" }
-                ],
-                identityB
+                { name: "content.i18n", locales: ["en-US"] },
+                { name: "pb.page", pw: "rcu" }
             ],
-            // Although the user has all of the `rcpu`, he can only perform these on own records.
+            identityB
+        ],
+        // Although the user has all of the `rcpu`, he can only perform these on own records.
+        [
             [
-                [
-                    { name: "content.i18n", locales: ["en-US"] },
-                    { name: "pb.page", own: true, pw: "rpcu" }
-                ],
-                identityB
-            ]
-        ];
+                { name: "content.i18n", locales: ["en-US"] },
+                { name: "pb.page", own: true, pw: "rpcu" }
+            ],
+            identityB
+        ]
+    ];
 
-        for (let i = 0; i < insufficientPermissions.length; i++) {
+    test.each(publishInsufficientPermissions)(
+        "should not be able to publish if no permission",
+        async (permissions: any, identity: SecurityIdentity) => {
             // Create page with identityA.
-            const page = await useGqlHandler({
-                identity: identityA
-            })
+            const page = await handlerA
                 .createPage({ category: initialCategory.slug })
                 .then(([res]) => res.data.pageBuilder.createPage.data);
 
             // Publish page with specific identity and permissions.
-            const [permissions, identity] = insufficientPermissions[i];
-            const { publishPage } = useGqlHandler({ permissions, identity: identity as any });
+
+            const { publishPage } = useGqlHandler({ permissions, identity });
 
             await publishPage({ id: page.id }).then(([res]) =>
                 expect(res).toMatchObject(NOT_AUTHORIZED_RESPONSE("publishPage"))
             );
         }
-    });
+    );
 
-    test("should not be able to unpublish if no permission", async () => {
-        const sufficientPermissions = [
-            [[{ name: "content.i18n" }, { name: "pb.page" }], identityA],
-            [[{ name: "content.i18n" }, { name: "pb.page" }], identityB],
-            [[{ name: "content.i18n", locales: ["en-US"] }, { name: "pb.page" }], identityA],
-            [[{ name: "content.i18n", locales: ["en-US"] }, { name: "pb.page" }], identityB],
-            [[{ name: "content.i18n" }, { name: "pb.page", pw: "u" }], identityA],
-            [[{ name: "content.i18n" }, { name: "pb.page", pw: "u" }], identityB],
-            [[{ name: "content.i18n" }, { name: "pb.page", own: true, pw: "u" }], identityA]
-        ];
+    const unpublishSufficientPermissions = [
+        [[{ name: "content.i18n" }, { name: "pb.page" }], identityA],
+        [[{ name: "content.i18n" }, { name: "pb.page" }], identityB],
+        [[{ name: "content.i18n", locales: ["en-US"] }, { name: "pb.page" }], identityA],
+        [[{ name: "content.i18n", locales: ["en-US"] }, { name: "pb.page" }], identityB],
+        [[{ name: "content.i18n" }, { name: "pb.page", pw: "u" }], identityA],
+        [[{ name: "content.i18n" }, { name: "pb.page", pw: "u" }], identityB],
+        [[{ name: "content.i18n" }, { name: "pb.page", own: true, pw: "u" }], identityA]
+    ];
 
-        for (let i = 0; i < sufficientPermissions.length; i++) {
+    test.each(unpublishSufficientPermissions)(
+        "should be able to unpublish if has permission",
+        async (permissions: any, identity: SecurityIdentity) => {
             // Create page with identityA.
-            const page = await useGqlHandler({
-                identity: identityA
-            })
+            const page = await handlerA
                 .createPage({ category: initialCategory.slug })
                 .then(async ([res]) => {
                     const { data } = res.data.pageBuilder.createPage;
-                    await useGqlHandler({
-                        identity: identityA
-                    }).publishPage({ id: data.id });
+                    await handlerA.publishPage({ id: data.id });
                     return data;
                 });
 
             // Unpublish page with specific identity and permissions.
-            const [permissions, identity] = sufficientPermissions[i];
-            const { unpublishPage } = useGqlHandler({ permissions, identity: identity as any });
+            const { unpublishPage } = useGqlHandler({ permissions, identity });
 
             await unpublishPage({ id: page.id }).then(([res]) =>
                 expect(res).toMatchObject({
@@ -324,89 +334,86 @@ describe("publishing workflow", () => {
                 })
             );
         }
+    );
+    const unpublishInsufficientPermissions = [
+        [[], null],
+        [[], identityA],
+        // Has all, except access to `en-EN` (has `de-DE`).
+        [
+            [
+                { name: "content.i18n", locales: ["de-DE"] },
+                { name: "pb.page", pw: "rcpu" }
+            ],
+            identityA
+        ],
+        [[{ name: "content.i18n" }, { name: "pb.page", pw: "rcp" }], identityA],
+        [
+            [
+                { name: "content.i18n", locales: ["en-US"] },
+                { name: "pb.page", pw: "rcp" }
+            ],
+            identityA
+        ],
+        [
+            [
+                { name: "content.i18n", locales: ["en-US"] },
+                { name: "pb.page", pw: "rcp" }
+            ],
+            identityB
+        ],
+        // Although the user has all of the `rcpu`, he can only perform these on own records.
+        [
+            [
+                { name: "content.i18n", locales: ["en-US"] },
+                { name: "pb.page", own: true, pw: "rpcu" }
+            ],
+            identityB
+        ]
+    ];
 
-        const insufficientPermissions = [
-            [[], null],
-            [[], identityA],
-            // Has all, except access to `en-EN` (has `de-DE`).
-            [
-                [
-                    { name: "content.i18n", locales: ["de-DE"] },
-                    { name: "pb.page", pw: "rcpu" }
-                ],
-                identityA
-            ],
-            [[{ name: "content.i18n" }, { name: "pb.page", pw: "rcp" }], identityA],
-            [
-                [
-                    { name: "content.i18n", locales: ["en-US"] },
-                    { name: "pb.page", pw: "rcp" }
-                ],
-                identityA
-            ],
-            [
-                [
-                    { name: "content.i18n", locales: ["en-US"] },
-                    { name: "pb.page", pw: "rcp" }
-                ],
-                identityB
-            ],
-            // Although the user has all of the `rcpu`, he can only perform these on own records.
-            [
-                [
-                    { name: "content.i18n", locales: ["en-US"] },
-                    { name: "pb.page", own: true, pw: "rpcu" }
-                ],
-                identityB
-            ]
-        ];
-
-        for (let i = 0; i < insufficientPermissions.length; i++) {
+    test.each(unpublishInsufficientPermissions)(
+        "should not be able to unpublish if no permission",
+        async (permissions, identity: SecurityIdentity) => {
             // Create page with identityA.
-            const page = await useGqlHandler({
-                identity: identityA
-            })
+            const page = await handlerA
                 .createPage({ category: initialCategory.slug })
                 .then(async ([res]) => {
                     const { data } = res.data.pageBuilder.createPage;
-                    await useGqlHandler({
-                        identity: identityA
-                    }).publishPage({ id: data.id });
+                    await handlerA.publishPage({ id: data.id });
                     return data;
                 });
 
             // Unpublish page with specific identity and permissions.
-            const [permissions, identity] = insufficientPermissions[i];
-            const { unpublishPage } = useGqlHandler({ permissions, identity: identity as any });
+
+            const { unpublishPage } = useGqlHandler({ permissions, identity });
 
             await unpublishPage({ id: page.id }).then(([res]) =>
                 expect(res).toEqual(NOT_AUTHORIZED_RESPONSE("unpublishPage"))
             );
         }
-    });
+    );
 
-    test("should not be able to request review if no permission", async () => {
-        const sufficientPermission = [
-            [[{ name: "content.i18n" }, { name: "pb.page" }], identityA],
-            [[{ name: "content.i18n" }, { name: "pb.page" }], identityB],
-            [[{ name: "content.i18n", locales: ["en-US"] }, { name: "pb.page" }], identityA],
-            [[{ name: "content.i18n", locales: ["en-US"] }, { name: "pb.page" }], identityB],
-            [[{ name: "content.i18n" }, { name: "pb.page", pw: "r" }], identityA],
-            [[{ name: "content.i18n" }, { name: "pb.page", pw: "r" }], identityB],
-            [[{ name: "content.i18n" }, { name: "pb.page", own: true, pw: "r" }], identityA]
-        ];
+    const requestReviewSufficientPermission = [
+        [[{ name: "content.i18n" }, { name: "pb.page" }], identityA],
+        [[{ name: "content.i18n" }, { name: "pb.page" }], identityB],
+        [[{ name: "content.i18n", locales: ["en-US"] }, { name: "pb.page" }], identityA],
+        [[{ name: "content.i18n", locales: ["en-US"] }, { name: "pb.page" }], identityB],
+        [[{ name: "content.i18n" }, { name: "pb.page", pw: "r" }], identityA],
+        [[{ name: "content.i18n" }, { name: "pb.page", pw: "r" }], identityB],
+        [[{ name: "content.i18n" }, { name: "pb.page", own: true, pw: "r" }], identityA]
+    ];
 
-        for (let i = 0; i < sufficientPermission.length; i++) {
+    test.each(requestReviewSufficientPermission)(
+        "should be able to request review if has permission",
+        async (permissions, identity: SecurityIdentity) => {
             // Create page with identityA.
-            const page = await useGqlHandler({
-                identity: identityA
-            })
+            const page = await handlerA
                 .createPage({ category: initialCategory.slug })
                 .then(([res]) => res.data.pageBuilder.createPage.data);
 
             // Publish page with specific identity and permissions.
-            const [permissions, identity] = sufficientPermission[i];
-            const { requestReview } = useGqlHandler({ permissions, identity: identity as any });
+
+            const { requestReview } = useGqlHandler({ permissions, identity });
 
             await requestReview({ id: page.id }).then(([res]) =>
                 expect(res).toMatchObject({
@@ -418,77 +425,73 @@ describe("publishing workflow", () => {
                 })
             );
         }
+    );
 
-        const insufficientPermissions = [
-            [[], null],
-            [[], identityA],
-            [[{ name: "content.i18n" }, { name: "pb.page", pw: "cpu" }], identityA],
+    const requestReviewInsufficientPermissions = [
+        [[], null],
+        [[], identityA],
+        [[{ name: "content.i18n" }, { name: "pb.page", pw: "cpu" }], identityA],
+        [
             [
-                [
-                    { name: "content.i18n", locales: ["en-US"] },
-                    { name: "pb.page", pw: "cpu" }
-                ],
-                identityA
+                { name: "content.i18n", locales: ["en-US"] },
+                { name: "pb.page", pw: "cpu" }
             ],
+            identityA
+        ],
+        [
             [
-                [
-                    { name: "content.i18n", locales: ["en-US"] },
-                    { name: "pb.page", pw: "cpu" }
-                ],
-                identityB
+                { name: "content.i18n", locales: ["en-US"] },
+                { name: "pb.page", pw: "cpu" }
             ],
-            // Although the user has all of the `rcpu`, he can only perform these on own records.
+            identityB
+        ],
+        // Although the user has all of the `rcpu`, he can only perform these on own records.
+        [
             [
-                [
-                    { name: "content.i18n", locales: ["en-US"] },
-                    { name: "pb.page", own: true, pw: "rpcu" }
-                ],
-                identityB
-            ]
-        ];
+                { name: "content.i18n", locales: ["en-US"] },
+                { name: "pb.page", own: true, pw: "rpcu" }
+            ],
+            identityB
+        ]
+    ];
 
-        for (let i = 0; i < insufficientPermissions.length; i++) {
+    test.each(requestReviewInsufficientPermissions)(
+        "should not be able to request review if no permission",
+        async (permissions, identity: SecurityIdentity) => {
             // Create page with identityA.
-            const page = await useGqlHandler({
-                identity: identityA
-            })
+            const page = await handlerA
                 .createPage({ category: initialCategory.slug })
                 .then(([res]) => res.data.pageBuilder.createPage.data);
 
             // Publish page with specific identity and permissions.
-            const [permissions, identity] = insufficientPermissions[i];
-            const { requestReview } = useGqlHandler({ permissions, identity: identity as any });
+            const { requestReview } = useGqlHandler({ permissions, identity });
 
             await requestReview({ id: page.id }).then(([res]) =>
                 expect(res).toMatchObject(NOT_AUTHORIZED_RESPONSE("requestReview"))
             );
         }
-    });
+    );
 
-    test("should not be able to request changes if no permission", async () => {
-        const sufficientPermissions = [
-            [[{ name: "content.i18n" }, { name: "pb.page" }], identityB],
-            [[{ name: "content.i18n", locales: ["en-US"] }, { name: "pb.page" }], identityB],
-            [[{ name: "content.i18n" }, { name: "pb.page", pw: "c" }], identityB]
-        ];
+    const requestChangesSufficientPermissions = [
+        [[{ name: "content.i18n" }, { name: "pb.page" }], identityB],
+        [[{ name: "content.i18n", locales: ["en-US"] }, { name: "pb.page" }], identityB],
+        [[{ name: "content.i18n" }, { name: "pb.page", pw: "c" }], identityB]
+    ];
 
-        for (let i = 0; i < sufficientPermissions.length; i++) {
+    test.each(requestChangesSufficientPermissions)(
+        "should be able to request changes if has permission",
+        async (permissions, identity: SecurityIdentity) => {
             // Create page with identityA.
-            const page = await useGqlHandler({
-                identity: identityA
-            })
+            const page = await handlerA
                 .createPage({ category: initialCategory.slug })
                 .then(async ([res]) => {
                     const { data } = res.data.pageBuilder.createPage;
-                    await useGqlHandler({
-                        identity: identityA
-                    }).requestReview({ id: data.id });
+                    await handlerA.requestReview({ id: data.id });
                     return data;
                 });
 
             // Unpublish page with specific identity and permissions.
-            const [permissions, identity] = sufficientPermissions[i];
-            const { requestChanges } = useGqlHandler({ permissions, identity: identity as any });
+            const { requestChanges } = useGqlHandler({ permissions, identity });
 
             await requestChanges({ id: page.id }).then(([res]) =>
                 expect(res).toMatchObject({
@@ -500,43 +503,41 @@ describe("publishing workflow", () => {
                 })
             );
         }
+    );
 
-        const insufficientPermissions = [
-            [[], null],
-            [[], identityA],
-            [[{ name: "content.i18n", locales: ["de-DE"] }, { name: "pb.page" }], identityB],
+    const requestChangesInsufficientPermissions = [
+        [[], null],
+        [[], identityA],
+        [[{ name: "content.i18n", locales: ["de-DE"] }, { name: "pb.page" }], identityB],
+        [
             [
-                [
-                    { name: "content.i18n", locales: ["de-DE"] },
-                    { name: "pb.page", pw: "rcpu" }
-                ],
-                identityB
+                { name: "content.i18n", locales: ["de-DE"] },
+                { name: "pb.page", pw: "rcpu" }
             ],
-            [[{ name: "content.i18n" }, { name: "pb.page", pw: "rpu" }], identityB],
-            [[{ name: "content.i18n" }, { name: "pb.page", pw: "rcpu", own: true }], identityB]
-        ];
+            identityB
+        ],
+        [[{ name: "content.i18n" }, { name: "pb.page", pw: "rpu" }], identityB],
+        [[{ name: "content.i18n" }, { name: "pb.page", pw: "rcpu", own: true }], identityB]
+    ];
 
-        for (let i = 0; i < insufficientPermissions.length; i++) {
+    test.each(requestChangesInsufficientPermissions)(
+        "should not be able to request changes if no permission",
+        async (permissions, identity: SecurityIdentity) => {
             // Create page with identityA.
-            const page = await useGqlHandler({
-                identity: identityA
-            })
+            const page = await handlerA
                 .createPage({ category: initialCategory.slug })
                 .then(async ([res]) => {
                     const { data } = res.data.pageBuilder.createPage;
-                    await useGqlHandler({
-                        identity: identityA
-                    }).requestReview({ id: data.id });
+                    await handlerA.requestReview({ id: data.id });
                     return data;
                 });
 
             // Unpublish page with specific identity and permissions.
-            const [permissions, identity] = insufficientPermissions[i];
-            const { requestChanges } = useGqlHandler({ permissions, identity: identity as any });
+            const { requestChanges } = useGqlHandler({ permissions, identity });
 
             await requestChanges({ id: page.id }).then(([res]) =>
                 expect(res).toEqual(NOT_AUTHORIZED_RESPONSE("requestChanges"))
             );
         }
-    });
+    );
 });

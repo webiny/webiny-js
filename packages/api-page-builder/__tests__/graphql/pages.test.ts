@@ -3,7 +3,7 @@ import useGqlHandler from "./useGqlHandler";
 jest.setTimeout(15000);
 
 describe("CRUD Test", () => {
-    const { createCategory, createPage, deletePage, listPages, getPage, updatePage, until, sleep } =
+    const { createCategory, createPage, deletePage, listPages, getPage, updatePage, until } =
         useGqlHandler();
 
     test("create, read, update and delete pages", async () => {
@@ -125,14 +125,13 @@ describe("CRUD Test", () => {
         }
 
         [response] = await until(
-            () => listPages({ sort: { createdOn: "desc" } }),
+            () => listPages({ sort: ["createdOn_DESC"] }),
             ([res]) => {
                 const data: any[] = res.data.pageBuilder.listPages.data;
                 return data.length === 3 && data.every(obj => obj.title.match(/title-UPDATED-/));
             },
             {
                 name: "list pages after update",
-                wait: 300,
                 tries: 20
             }
         );
@@ -242,11 +241,16 @@ describe("CRUD Test", () => {
             });
         }
 
-        // List should show zero pages.
-        while (response.data.pageBuilder.listPages.data.length !== 0) {
-            await sleep();
-            [response] = await listPages({ sort: { createdOn: "desc" } });
-        }
+        [response] = await until(
+            () => listPages({ sort: ["createdOn_DESC"] }),
+            ([res]) => {
+                return res.data.pageBuilder.listPages.data.length !== 0;
+            },
+            {
+                name: "list pages after delete",
+                tries: 20
+            }
+        );
 
         expect(response).toEqual({
             data: {
@@ -255,14 +259,9 @@ describe("CRUD Test", () => {
                         data: [],
                         error: null,
                         meta: {
-                            from: 0,
-                            limit: 10,
-                            nextPage: null,
-                            page: 1,
-                            previousPage: null,
-                            to: 0,
-                            totalCount: 0,
-                            totalPages: 0
+                            cursor: null,
+                            hasMoreItems: false,
+                            totalCount: 0
                         }
                     }
                 }

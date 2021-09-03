@@ -184,19 +184,14 @@ export const OEMBED_DATA = /* GraphQL */ `
 `;
 
 export const LIST_PAGES = /* GraphQL */ `
-    query ListPages($where: PbListPagesWhereInput, $limit: Int, $page: Int, $sort: PbListPagesSortInput, $search: PbListPagesSearchInput) {
+    query ListPages($where: PbListPagesWhereInput, $limit: Int, $after: String, $sort: [PbListPagesSort!], $search: PbListPagesSearchInput) {
         pageBuilder {
-            listPages(where: $where, limit: $limit, page: $page, sort: $sort, search: $search) {
+            listPages(where: $where, limit: $limit, after: $after, sort: $sort, search: $search) {
                 data ${LIST_DATA_FIELD}
                 meta {
-                    page
-                    limit
+                    cursor
+                    hasMoreItems
                     totalCount
-                    totalPages
-                    from
-                    to
-                    nextPage
-                    previousPage
                 }
                 error ${ERROR_FIELD}
             }
@@ -205,20 +200,15 @@ export const LIST_PAGES = /* GraphQL */ `
 `;
 
 export const LIST_PUBLISHED_PAGES = /* GraphQL */ `
-    query ListPublishedPages($where: PbListPublishedPagesWhereInput, $limit: Int, $page: Int, $sort: PbListPagesSortInput, $exclude: [String]) {
+    query ListPublishedPages($where: PbListPublishedPagesWhereInput, $limit: Int, $after: String, $sort: [PbListPagesSort!], $exclude: [String]) {
         pageBuilder {
-            listPublishedPages(where: $where, limit: $limit, page: $page, sort: $sort, exclude: $exclude) {
+            listPublishedPages(where: $where, limit: $limit, after: $after, sort: $sort, exclude: $exclude) {
                 data ${LIST_DATA_FIELD}
                 error ${ERROR_FIELD}
                 meta {
-                    page
-                    limit
+                    cursor
+                    hasMoreItems
                     totalCount
-                    totalPages
-                    from
-                    to
-                    nextPage
-                    previousPage
                 }
             }
         }

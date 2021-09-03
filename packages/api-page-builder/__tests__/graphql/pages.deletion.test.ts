@@ -1,6 +1,6 @@
 import useGqlHandler from "./useGqlHandler";
 
-jest.setTimeout(10000);
+jest.setTimeout(25000);
 
 describe("deleting pages", () => {
     const {
@@ -41,10 +41,17 @@ describe("deleting pages", () => {
 
     test("deleting v1 page should delete all related DB / index entries", async () => {
         await publishPage({ id: p1v3.id });
-        await until(listPages, ([res]) => res.data.pageBuilder.listPages.data[0].id === p1v3.id);
+        await until(listPages, ([res]) => res.data.pageBuilder.listPages.data[0].id === p1v3.id, {
+            name: "list all pages after publishing p1v3",
+            tries: 20
+        });
         await until(
             listPublishedPages,
-            ([res]) => res.data.pageBuilder.listPublishedPages.data[0].id === p1v3.id
+            ([res]) => res.data.pageBuilder.listPublishedPages.data[0].id === p1v3.id,
+            {
+                name: "list published pages after publishing p1v3",
+                tries: 20
+            }
         );
 
         await deletePage({ id: p1v1.id }).then(([res]) => {
@@ -59,10 +66,15 @@ describe("deleting pages", () => {
             });
         });
 
-        await until(listPages, ([res]) => res.data.pageBuilder.listPages.data.length === 0);
+        await until(listPages, ([res]) => res.data.pageBuilder.listPages.data.length === 0, {
+            name: "list all pages after deleting p1v1"
+        });
         await until(
             listPublishedPages,
-            ([res]) => res.data.pageBuilder.listPublishedPages.data.length === 0
+            ([res]) => res.data.pageBuilder.listPublishedPages.data.length === 0,
+            {
+                name: "list published pages after deleting p1v1"
+            }
         );
     });
 

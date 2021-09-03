@@ -11,7 +11,7 @@ import { PrerenderingServiceClientContext } from "@webiny/api-prerendering-servi
 export type SortOrder = "asc" | "desc";
 export interface ListPagesParams {
     limit?: number;
-    page?: number;
+    after?: string | null;
     where?: {
         category?: string;
         status?: string;
@@ -20,18 +20,22 @@ export interface ListPagesParams {
     };
     exclude?: string[];
     search?: { query?: string };
-    sort?: { publishedOn?: SortOrder; createdOn?: SortOrder; title?: SortOrder };
+    sort?: string[];
 }
 
 export interface ListMeta {
-    page: number;
-    limit: number;
+    /**
+     * A cursor for pagination.
+     */
+    cursor: string;
+    /**
+     * Is there more items to load?
+     */
+    hasMoreItems: boolean;
+    /**
+     * Total count of the items in the storage.
+     */
     totalCount: number;
-    totalPages?: number;
-    from?: number;
-    to?: number;
-    nextPage?: number;
-    previousPage?: number;
 }
 
 // Pages CRUD.

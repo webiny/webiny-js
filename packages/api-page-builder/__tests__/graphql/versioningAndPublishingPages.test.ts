@@ -43,7 +43,7 @@ describe("versioning and publishing pages", () => {
         });
 
         await until(
-            () => listPublishedPages({ sort: { createdOn: "desc" } }),
+            () => listPublishedPages({ sort: ["createdOn_DESC"] }),
             ([res]) => res.data.pageBuilder.listPublishedPages.data.length === 0,
             {
                 name: "list published pages after create two pages"
@@ -51,7 +51,7 @@ describe("versioning and publishing pages", () => {
         );
 
         await until(
-            () => listPages({ sort: { createdOn: "desc" } }),
+            () => listPages({ sort: ["createdOn_DESC"] }),
             ([res]) => res.data.pageBuilder.listPages.data.length === 2,
             {
                 name: "list after create two pages"
@@ -59,9 +59,7 @@ describe("versioning and publishing pages", () => {
         );
 
         const [listResponse] = await listPages({
-            sort: {
-                createdOn: "desc"
-            }
+            sort: ["createdOn_DESC"]
         });
         expect(listResponse).toMatchObject({
             data: {
@@ -97,7 +95,7 @@ describe("versioning and publishing pages", () => {
         });
 
         await until(
-            () => listPublishedPages({ sort: { createdOn: "desc" } }),
+            () => listPublishedPages({ sort: ["createdOn_DESC"] }),
             ([res]) => res.data.pageBuilder.listPublishedPages.data.length === 0,
             {
                 name: "list published pages after create p1v2"
@@ -105,7 +103,7 @@ describe("versioning and publishing pages", () => {
         ).then(([res]) => expect(res.data.pageBuilder.listPublishedPages.error).toBe(null));
 
         await until(
-            () => listPages({ sort: { createdOn: "desc" } }),
+            () => listPages({ sort: ["createdOn_DESC"] }),
             ([res]) => res.data.pageBuilder.listPages.data[0].id === p1v2.id,
             {
                 name: `list pages after create p1v2: ${p1v2.id}`
@@ -130,7 +128,7 @@ describe("versioning and publishing pages", () => {
         });
 
         await until(
-            () => listPublishedPages({ sort: { createdOn: "desc" } }),
+            () => listPublishedPages({ sort: ["createdOn_DESC"] }),
             ([res]) => res.data.pageBuilder.listPublishedPages.data.length === 0,
             {
                 name: "list published pages after create p1v3"
@@ -138,7 +136,7 @@ describe("versioning and publishing pages", () => {
         ).then(([res]) => expect(res.data.pageBuilder.listPublishedPages.error).toBe(null));
 
         await until(
-            () => listPages({ sort: { createdOn: "desc" } }),
+            () => listPages({ sort: ["createdOn_DESC"] }),
             ([res]) => res.data.pageBuilder.listPages.data[0].id === p1v3.id,
             {
                 name: "list pages after create create p1v3"
@@ -175,7 +173,7 @@ describe("versioning and publishing pages", () => {
         });
 
         const [listPagesAfterPublishP1V2Response] = await until(
-            () => listPages({ sort: { createdOn: "desc" } }),
+            () => listPages({ sort: ["createdOn_DESC"] }),
             ([res]) => res.data.pageBuilder.listPages.data.length === 2,
             {
                 name: "list pages after publish p1v2"
@@ -195,7 +193,7 @@ describe("versioning and publishing pages", () => {
         });
 
         const [listPublishedPagesAfterPublishP1V2Response] = await until(
-            () => listPublishedPages({ sort: { createdOn: "desc" } }),
+            () => listPublishedPages({ sort: ["createdOn_DESC"] }),
             ([res]) => res.data.pageBuilder.listPublishedPages.data[0].id === p1v2.id,
             {
                 name: "list published pages after publish p1v2"
@@ -223,7 +221,7 @@ describe("versioning and publishing pages", () => {
         });
 
         await until(
-            () => listPages({ sort: { createdOn: "desc" } }),
+            () => listPages({ sort: ["createdOn_DESC"] }),
             ([res]) => {
                 return res.data.pageBuilder.listPages.data.some(page => {
                     return page.id === p1v4.id;
@@ -237,7 +235,7 @@ describe("versioning and publishing pages", () => {
         // 5.2. Make sure published pages doesn't include the new p1v4 page in the list.
 
         const [listPublishedPagesNoP1V4Response] = await until(
-            () => listPublishedPages({ sort: { createdOn: "desc" } }),
+            () => listPublishedPages({ sort: ["createdOn_DESC"] }),
             ([res]) => {
                 return res.data.pageBuilder.listPublishedPages.data.every(page => {
                     return page.id !== p1v4.id;
@@ -276,7 +274,7 @@ describe("versioning and publishing pages", () => {
         });
 
         await until(
-            () => listPages({ sort: { createdOn: "desc" } }),
+            () => listPages({ sort: ["createdOn_DESC"] }),
             ([res]) => {
                 return res.data.pageBuilder.listPages.data.some(page => {
                     return page.id === p1v4.id;
@@ -288,7 +286,7 @@ describe("versioning and publishing pages", () => {
         );
 
         const [listPublishedIncludesP1V4] = await until(
-            () => listPublishedPages({ sort: { createdOn: "desc" } }),
+            () => listPublishedPages({ sort: ["createdOn_DESC"] }),
             ([res]) => {
                 return res.data.pageBuilder.listPublishedPages.data.some(page => {
                     return page.id === p1v4.id;
@@ -346,7 +344,7 @@ describe("versioning and publishing pages", () => {
         });
 
         await until(
-            () => listPublishedPages({ sort: { createdOn: "desc" } }),
+            () => listPublishedPages({ sort: ["createdOn_DESC"] }),
             ([res]) => {
                 return res.data.pageBuilder.listPublishedPages.data.length === 0;
             },

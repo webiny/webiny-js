@@ -1,6 +1,6 @@
 import cloneDeep from "lodash/cloneDeep";
 import { PbContext } from "../../types";
-import { Menu } from "../../../types";
+import { Menu } from "~/types";
 
 const applyCleanup = async items => {
     if (!Array.isArray(items)) {
@@ -90,7 +90,7 @@ export default async ({ menu, context }: { menu: Menu; context: PbContext }) => 
                     const [children] = await context.pageBuilder.pages.listPublished({
                         limit: 200,
                         where,
-                        sort: { [sortBy]: sortDir }
+                        sort: [`${sortBy}_${sortDir.toUpperCase()}`]
                     });
 
                     item.children = children.map(item => ({

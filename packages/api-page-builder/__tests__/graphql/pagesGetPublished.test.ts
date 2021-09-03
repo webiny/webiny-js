@@ -50,7 +50,7 @@ describe("getting published pages", () => {
         }
 
         await until(
-            () => listPublishedPages({ sort: { createdOn: "desc" } }),
+            () => listPublishedPages({ sort: ["createdOn_DESC"] }),
             ([res]) => res.data.pageBuilder.listPublishedPages.data[0].title === "page-c"
         );
     });

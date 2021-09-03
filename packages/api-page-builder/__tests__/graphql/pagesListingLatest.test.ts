@@ -29,30 +29,58 @@ describe("listing latest pages", () => {
         const letters = ["a", "z", "b", "x", "c"];
         for (let i = 0; i < 5; i++) {
             const [response] = await createPage({ category: "category" });
-            const { id } = response.data.pageBuilder.createPage.data;
+            const page = response.data.pageBuilder.createPage.data;
 
-            await updatePage({
-                id,
+            if (response.data.pageBuilder.createPage.error) {
+                throw new Error(response.data.pageBuilder.createPage.error);
+            }
+
+            const title = `page-${letters[i]}`;
+            const [updateResponse] = await updatePage({
+                id: page.id,
                 data: {
-                    title: `page-${letters[i]}`
+                    title
                 }
             });
 
-            initiallyCreatedPagesIds.push(id);
+            if (updateResponse.data.pageBuilder.createPage.error) {
+                throw new Error(updateResponse.data.pageBuilder.updatePage.error);
+            }
+
+            initiallyCreatedPagesIds.push(page.id);
         }
 
         // List should show all five pages - all updated.
-        await until(listPages, ([res]) => {
-            const data = res.data.pageBuilder.listPages.data;
-            return data.length === 5 && data[4].title === "page-c";
-        });
+        await until(
+            () => listPages({ sort: "createdOn_ASC" }),
+            ([res]) => {
+                const data = res.data.pageBuilder.listPages.data;
+                return (
+                    data.length === 5 &&
+                    letters.every((letter: string, index: number) => {
+                        return data[index].title === `page-${letter}`;
+                    })
+                );
+            },
+            {
+                name: "list pages in before each",
+                tries: 20,
+                wait: 400
+            }
+        );
     });
 
     test("sorting", async () => {
         // 1. Check if all were returned and sorted `createdOn: asc`.
         await until(
-            () => listPages({ createdOn: "asc" }),
-            ([res]) => res.data.pageBuilder.listPages.data[4].title === "page-c"
+            () =>
+                listPages({
+                    sort: "createdOn_ASC"
+                }),
+            ([res]) => res.data.pageBuilder.listPages.data[4].title === "page-c",
+            {
+                name: "list pages createdOn ASC"
+            }
         ).then(([res]) =>
             expect(res).toMatchObject({
                 data: {
@@ -72,7 +100,7 @@ describe("listing latest pages", () => {
         );
 
         // 2. Check if all were returned and sorted `title: asc`.
-        await listPages({ sort: { title: "asc" } }).then(([res]) =>
+        await listPages({ sort: ["title_ASC"] }).then(([res]) =>
             expect(res).toMatchObject({
                 data: {
                     pageBuilder: {
@@ -91,7 +119,7 @@ describe("listing latest pages", () => {
         );
 
         // 3. Check if all were returned and sorted `title: desc`.
-        await listPages({ sort: { title: "desc" } }).then(([res]) =>
+        await listPages({ sort: ["title_DESC"] }).then(([res]) =>
             expect(res).toMatchObject({
                 data: {
                     pageBuilder: {
@@ -126,7 +154,7 @@ describe("listing latest pages", () => {
 
         // List should show all five pages.
         await until(
-            () => listPages({ sort: { title: "asc" } }),
+            () => listPages({ sort: ["title_ASC"] }),
             ([res]) => {
                 const { data } = res.data.pageBuilder.listPages;
                 return data[0].title === "page-a" && data[9].title === "page-Z";
@@ -233,7 +261,7 @@ describe("listing latest pages", () => {
 
         // 2. Check if `category: custom` were returned and sorted `title: asc`.
         await until(
-            () => listPages({ where: { category: "custom" }, sort: { title: "asc" } }),
+            () => listPages({ where: { category: "custom" }, sort: ["title_ASC"] }),
             ([res]) => res.data.pageBuilder.listPages.data.length === 5
         ).then(([res]) =>
             expect(res).toMatchObject({
@@ -262,7 +290,7 @@ describe("listing latest pages", () => {
         // We should still get all results when no filters are applied.
         // 1. Check if all were returned and sorted `createdOn: desc`.
         await until(
-            () => listPages({ sort: { createdOn: "desc" } }),
+            () => listPages({ sort: ["createdOn_DESC"] }),
             ([res]) => res.data.pageBuilder.listPages.data.length
         ).then(([res]) =>
             expect(res).toMatchObject({
@@ -284,7 +312,7 @@ describe("listing latest pages", () => {
 
         // 2. We should only get two results here because we published two pages.
         await until(
-            () => listPages({ where: { status: "published" }, sort: { createdOn: "desc" } }),
+            () => listPages({ where: { status: "published" }, sort: ["createdOn_DESC"] }),
             ([res]) => res.data.pageBuilder.listPages.data.length === 2
         ).then(([res]) =>
             expect(res).toMatchObject({
@@ -301,7 +329,7 @@ describe("listing latest pages", () => {
         await until(
             () =>
                 listPages({
-                    sort: { title: "asc" },
+                    sort: ["title_ASC"],
                     where: { status: "published" }
                 }),
             ([res]) => res.data.pageBuilder.listPages.data[0].title === "page-a"
@@ -324,7 +352,7 @@ describe("listing latest pages", () => {
         await until(
             () =>
                 listPages({
-                    sort: { title: "asc" },
+                    sort: ["title_ASC"],
                     where: { status: "published" }
                 }),
             ([res]) => res.data.pageBuilder.listPages.data.length === 0
@@ -348,7 +376,7 @@ describe("listing latest pages", () => {
             () =>
                 listPages({
                     where: { status: "reviewRequested" },
-                    sort: { createdOn: "desc" }
+                    sort: ["createdOn_DESC"]
                 }),
             ([res]) => res.data.pageBuilder.listPages.data.length === 2
         ).then(([res]) =>
@@ -385,7 +413,7 @@ describe("listing latest pages", () => {
             () =>
                 listPages({
                     where: { status: "changesRequested" },
-                    sort: { createdOn: "desc" }
+                    sort: ["createdOn_DESC"]
                 }),
             ([res]) => res.data.pageBuilder.listPages.data.length === 2
         ).then(([res]) =>
@@ -406,74 +434,54 @@ describe("listing latest pages", () => {
 
     test("pagination", async () => {
         await until(
-            () => listPages({ sort: { createdOn: "desc" } }),
+            () => listPages({ sort: ["createdOn_DESC"] }),
             ([res]) => res.data.pageBuilder.listPages.data.length === 5
         ).then(([res]) =>
             expect(res.data.pageBuilder.listPages.meta).toEqual({
-                from: 1,
-                limit: 10,
-                nextPage: null,
-                page: 1,
-                previousPage: null,
-                to: 5,
-                totalCount: 5,
-                totalPages: 1
+                cursor: null,
+                hasMoreItems: false,
+                totalCount: 5
             })
         );
 
         await until(
-            () => listPages({ limit: 1, sort: { createdOn: "desc" } }),
+            () => listPages({ limit: 1, sort: ["createdOn_DESC"] }),
             ([res]) => res.data.pageBuilder.listPages.data.length === 1
         ).then(([res]) => {
             expect(res.data.pageBuilder.listPages.data[0].title).toBe("page-c");
             expect(res.data.pageBuilder.listPages.meta).toEqual({
-                from: 1,
-                limit: 1,
-                nextPage: 2,
-                page: 1,
-                previousPage: null,
-                to: 1,
+                hasMoreItems: true,
                 totalCount: 5,
-                totalPages: 5
+                cursor: expect.any(String)
             });
         });
 
         await until(
-            () => listPages({ page: 3, limit: 1, sort: { createdOn: "desc" } }),
+            () => listPages({ page: 3, limit: 1, sort: ["createdOn_DESC"] }),
             ([res]) => res.data.pageBuilder.listPages.data.length === 1
         ).then(([res]) => {
             expect(res.data.pageBuilder.listPages.data[0].title).toBe("page-b");
             expect(res.data.pageBuilder.listPages.meta).toEqual({
-                from: 3,
-                limit: 1,
-                nextPage: 4,
-                page: 3,
-                previousPage: 2,
-                to: 3,
+                hasMoreItems: true,
                 totalCount: 5,
-                totalPages: 5
+                cursor: expect.any(String)
             });
         });
 
         await until(
-            () => listPages({ page: 5, limit: 1, sort: { createdOn: "desc" } }),
+            () => listPages({ page: 5, limit: 1, sort: ["createdOn_DESC"] }),
             ([res]) => res.data.pageBuilder.listPages.data.length === 1
         ).then(([res]) => {
             expect(res.data.pageBuilder.listPages.data[0].title).toBe("page-a");
             expect(res.data.pageBuilder.listPages.meta).toEqual({
-                from: 5,
-                limit: 1,
-                nextPage: null,
-                page: 5,
-                previousPage: 4,
-                to: 5,
-                totalCount: 5,
-                totalPages: 5
+                hasMoreItems: false,
+                cursor: null,
+                totalCount: 5
             });
         });
 
         await until(
-            () => listPages({ page: 2, limit: 2, sort: { title: "asc" } }),
+            () => listPages({ page: 2, limit: 2, sort: ["title_ASC"] }),
             ([res]) => res.data.pageBuilder.listPages.data.length === 2
         ).then(([res]) => {
             expect(res).toMatchObject({
@@ -486,19 +494,14 @@ describe("listing latest pages", () => {
                 }
             });
             expect(res.data.pageBuilder.listPages.meta).toEqual({
-                from: 3,
-                limit: 2,
-                nextPage: 3,
-                page: 2,
-                previousPage: 1,
-                to: 4,
                 totalCount: 5,
-                totalPages: 3
+                hasMoreItems: false,
+                cursor: null
             });
         });
 
         await until(
-            () => listPages({ page: 3, limit: 2, sort: { title: "desc" } }),
+            () => listPages({ page: 3, limit: 2, sort: ["title_DESC"] }),
             ([res]) => res.data.pageBuilder.listPages.data.length === 1
         ).then(([res]) => {
             {
@@ -512,14 +515,9 @@ describe("listing latest pages", () => {
                     }
                 });
                 expect(res.data.pageBuilder.listPages.meta).toEqual({
-                    from: 5,
-                    limit: 2,
-                    nextPage: null,
-                    page: 3,
-                    previousPage: 2,
-                    to: 5,
                     totalCount: 5,
-                    totalPages: 3
+                    cursor: null,
+                    hasMoreItems: false
                 });
             }
         });

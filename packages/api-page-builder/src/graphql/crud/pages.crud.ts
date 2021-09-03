@@ -4,12 +4,10 @@ import trimStart from "lodash/trimStart";
 import get from "lodash/get";
 import merge from "lodash/merge";
 import DataLoader from "dataloader";
-import Error from "@webiny/error";
 import { NotFoundError } from "@webiny/handler-graphql";
 import { Args as FlushArgs } from "@webiny/api-prerendering-service/flush/types";
 import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
 import {
-    ListPagesParams,
     Page,
     PageSecurityPermission,
     PageStorageOperations,
@@ -17,7 +15,6 @@ import {
     PageStorageOperationsListTagsParams,
     PbContext
 } from "~/types";
-import createListMeta from "./utils/createListMeta";
 import checkBasePermissions from "./utils/checkBasePermissions";
 import checkOwnPermissions from "./utils/checkOwnPermissions";
 import executeCallbacks from "./utils/executeCallbacks";
@@ -39,24 +36,25 @@ const STATUS_UNPUBLISHED = "unpublished";
 
 const DEFAULT_EDITOR = "page-builder";
 const PERMISSION_NAME = "pb.page";
-/**
- * We need this function to convert sort from input to the one being accepted by the storage operations.
- */
-const convertSort = (sort?: ListPagesParams["sort"]): string[] => {
-    if (!sort) {
-        return [];
-    } else if (Array.isArray(sort)) {
-        return sort;
-    }
-    return Object.keys(sort)
-        .map(field => {
-            const order = sort[field];
-            if (!order) {
-                return null;
+
+const createNotIn = (exclude?: string[]): { paths: string[]; ids: string[] } => {
+    const paths: string[] = [];
+    const ids: string[] = [];
+    if (Array.isArray(exclude)) {
+        for (const item of exclude) {
+            // Page "path" will always starts with a slash.
+            if (item.includes("/")) {
+                // Let's also ensure the trailing slash is removed.
+                paths.push(lodashTrimEnd(item, "/"));
+                continue;
             }
-            return `${field}_${order.toUpperCase()}`;
-        })
-        .filter(Boolean);
+            ids.push(item);
+        }
+    }
+    return {
+        paths: paths.length > 0 ? paths : undefined,
+        ids: ids.length > 0 ? ids : undefined
+    };
 };
 
 export default new ContextPlugin<PbContext>(async context => {
@@ -311,7 +309,14 @@ export default new ContextPlugin<PbContext>(async context => {
             const permission = await checkBasePermissions(context, PERMISSION_NAME, {
                 rwd: "w"
             });
-            const original = await context.pageBuilder.pages.get(id);
+            const original = await storageOperations.get({
+                where: {
+                    id
+                }
+            });
+            if (!original) {
+                throw new NotFoundError("Non-existing-page.");
+            }
             if (original.locked) {
                 throw new WebinyError(`Cannot update page because it's locked.`);
             }
@@ -354,12 +359,13 @@ export default new ContextPlugin<PbContext>(async context => {
                  */
                 clearDataLoaderCache([original, page]);
 
+                const content = extractContent(newContent || original.content);
                 return {
                     ...result,
                     /**
                      * We need to return either new content or original content.
                      */
-                    content: newContent || original.content
+                    content
                 } as any;
             } catch (ex) {
                 throw new WebinyError(
@@ -411,7 +417,14 @@ export default new ContextPlugin<PbContext>(async context => {
                 
             */
 
-            const page = await context.pageBuilder.pages.get(id);
+            const page = await storageOperations.get({
+                where: {
+                    id
+                }
+            });
+            if (!page) {
+                throw new NotFoundError("Non-existing page.");
+            }
 
             const [pageId] = id.split("#");
 
@@ -422,7 +435,10 @@ export default new ContextPlugin<PbContext>(async context => {
             const pages = settings && settings.pages ? settings.pages : {};
             for (const key in pages) {
                 if (pages[key] === page.pid) {
-                    throw new Error(`Cannot delete page because it's set as ${key}.`);
+                    throw new WebinyError(
+                        `Cannot delete page because it's set as ${key}.`,
+                        "DELETE_PAGE_ERROR"
+                    );
                 }
             }
 
@@ -636,7 +652,10 @@ export default new ContextPlugin<PbContext>(async context => {
             const pages = settings?.pages || {};
             for (const key in pages) {
                 if (pages[key] === original.pid) {
-                    throw new Error(`Cannot unpublish page because it's set as ${key}.`);
+                    throw new WebinyError(
+                        `Cannot unpublish page because it's set as ${key}.`,
+                        "UNPUBLISH_PAGE_ERROR"
+                    );
                 }
             }
 
@@ -696,8 +715,9 @@ export default new ContextPlugin<PbContext>(async context => {
 
             const allowedStatuses = [STATUS_DRAFT, STATUS_CHANGES_REQUESTED];
             if (!allowedStatuses.includes(original.status)) {
-                throw new Error(
-                    `Cannot request review - page is not a draft nor a change request has been issued.`
+                throw new WebinyError(
+                    `Cannot request review - page is not a draft nor a change request has been issued.`,
+                    "REQUEST_REVIEW_ERROR"
                 );
             }
             /**
@@ -859,7 +879,10 @@ export default new ContextPlugin<PbContext>(async context => {
 
         async getPublishedByPath(params) {
             if (!params.path) {
-                throw new Error('Cannot get published page - "path" not provided.');
+                throw new WebinyError(
+                    'Cannot get published page - "path" not provided.',
+                    "GET_PUBLISHED_PATH_ERROR"
+                );
             }
 
             const normalizedPath = normalizePath(params.path);
@@ -928,7 +951,7 @@ export default new ContextPlugin<PbContext>(async context => {
                 });
             }
 
-            const { page, limit, sort, search, exclude, where: initialWhere = {} } = params;
+            const { after, limit, sort, search, exclude, where: initialWhere = {} } = params;
 
             /**
              * If users can only manage own records, let's add the special filter.
@@ -939,48 +962,31 @@ export default new ContextPlugin<PbContext>(async context => {
                 createdBy = identity.id;
             }
 
-            const pathNotIn: string[] = [];
-            const pidNotIn: string[] = [];
-            if (Array.isArray(exclude)) {
-                for (const item of exclude) {
-                    // Page "path" will always starts with a slash.
-                    if (item.includes("/")) {
-                        // Let's also ensure the trailing slash is removed.
-                        pathNotIn.push(lodashTrimEnd(item, "/"));
-                        continue;
-                    }
-                    pidNotIn.push(item);
-                }
-            }
+            const { paths: pathNotIn, ids: pidNotIn } = createNotIn(exclude);
             const { tags } = initialWhere;
             delete initialWhere["tags"];
 
             const listParams: PageStorageOperationsListParams = {
                 limit,
-                sort: convertSort(sort),
+                sort,
                 where: {
                     ...initialWhere,
                     latest: true,
                     search: search ? search.query : undefined,
                     locale: context.i18nContent.getLocale().code,
                     createdBy,
-                    path_not_in: pathNotIn.length > 0 ? pathNotIn : undefined,
-                    pid_not_in: pidNotIn.length > 0 ? pidNotIn : undefined,
+                    path_not_in: pathNotIn,
+                    pid_not_in: pidNotIn,
                     tags_in: tags && tags.query ? tags.query : undefined,
                     tags_rule: tags && tags.rule ? tags.rule : undefined
                 },
-                after: (page as unknown as string) || null
+                after
             };
 
             try {
-                const result = await storageOperations.list(listParams);
+                const { items, meta } = await storageOperations.list(listParams);
 
-                const meta = createListMeta({
-                    page,
-                    limit,
-                    totalCount: result.meta.totalCount
-                });
-                return [result.items as any[], meta];
+                return [items as any[], meta];
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not list latest pages.",
@@ -998,7 +1004,7 @@ export default new ContextPlugin<PbContext>(async context => {
                 rwd: "r"
             });
 
-            const { page, limit, sort, search, exclude, where: initialWhere = {} } = params;
+            const { after, limit, sort, search, exclude, where: initialWhere = {} } = params;
 
             // If users can only manage own records, let's add the special filter.
             let createdBy: string = undefined;
@@ -1007,49 +1013,32 @@ export default new ContextPlugin<PbContext>(async context => {
                 createdBy = identity.id;
             }
 
-            const pathNotIn: string[] = [];
-            const pidNotIn: string[] = [];
-            if (Array.isArray(exclude)) {
-                for (const item of exclude) {
-                    // Page "path" will always starts with a slash.
-                    if (item.includes("/")) {
-                        // Let's also ensure the trailing slash is removed.
-                        pathNotIn.push(lodashTrimEnd(item, "/"));
-                        continue;
-                    }
-                    pidNotIn.push(item);
-                }
-            }
+            const { paths: pathNotIn, ids: pidNotIn } = createNotIn(exclude);
 
             const { tags } = initialWhere;
             delete initialWhere["tags"];
 
             const listParams: PageStorageOperationsListParams = {
                 limit,
-                sort: convertSort(sort),
+                sort,
                 where: {
                     ...initialWhere,
                     published: true,
                     search: search?.query || undefined,
                     locale: context.i18nContent.getLocale().code,
                     createdBy,
-                    path_not_in: pathNotIn.length ? pathNotIn : undefined,
-                    pid_not_in: pidNotIn.length ? pidNotIn : undefined,
+                    path_not_in: pathNotIn,
+                    pid_not_in: pidNotIn,
                     tags_in: tags && tags.query ? tags.query : undefined,
                     tags_rule: tags && tags.rule ? tags.rule : undefined
                 },
-                after: (page as unknown as string) || null
+                after
             };
 
             try {
-                const result = await storageOperations.list(listParams);
+                const { items, meta } = await storageOperations.list(listParams);
 
-                const meta = createListMeta({
-                    page,
-                    limit,
-                    totalCount: result.meta.totalCount
-                });
-                return [result.items as any[], meta];
+                return [items as any[], meta];
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not list published pages.",
@@ -1092,7 +1081,7 @@ export default new ContextPlugin<PbContext>(async context => {
 
         async listTags(params) {
             if (params.search.query.length < 2) {
-                throw new Error("Please provide at least two characters.");
+                throw new WebinyError("Please provide at least two characters.", "LIST_TAGS_ERROR");
             }
 
             const listTagsParams: PageStorageOperationsListTagsParams = {

@@ -180,7 +180,6 @@ describe("Categories CRUD Test", () => {
         );
 
         await until(listPages, ([res]) => res.data.pageBuilder.listPages.data.length === 3, {
-            wait: 300,
             tries: 10,
             name: "list pages before delete"
         });
@@ -227,7 +226,6 @@ describe("Categories CRUD Test", () => {
         });
 
         await until(listPages, ([res]) => res.data.pageBuilder.listPages.data.length === 0, {
-            wait: 300,
             tries: 10,
             name: "list pages after delete"
         });
