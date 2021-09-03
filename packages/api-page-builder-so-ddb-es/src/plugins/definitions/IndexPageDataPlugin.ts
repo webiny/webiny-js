@@ -14,7 +14,7 @@ interface ApplyPageDataCallable<TPage> {
 
 export class IndexPageDataPlugin<TPage extends Page = Page> extends Plugin {
     public static readonly type = "pb.elasticsearch.index-page-data";
-    private callable: ApplyPageDataCallable<TPage>;
+    private readonly callable: ApplyPageDataCallable<TPage>;
 
     constructor(callable: ApplyPageDataCallable<TPage>) {
         super();
