@@ -313,7 +313,7 @@ describe("versioning and publishing pages", () => {
                         error: {
                             code: "",
                             data: null,
-                            message: `Page "${p1v3.id}" is not published.`
+                            message: `Page is not published.`
                         }
                     }
                 }

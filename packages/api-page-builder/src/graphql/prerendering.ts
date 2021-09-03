@@ -1,6 +1,7 @@
 import { PagePlugin } from "~/plugins/PagePlugin";
 import { SettingsPlugin } from "~/plugins/SettingsPlugin";
 import { MenuPlugin } from "~/plugins/MenuPlugin";
+import lodashGet from "lodash/get";
 
 const NOT_FOUND_FOLDER = "_NOT_FOUND_PAGE_";
 
@@ -57,16 +58,18 @@ export default [
 
             const settings = await context.pageBuilder.settings.getCurrent();
 
+            const homePage = lodashGet(settings, "pages.home");
             // If we just published a page that is set as current homepage, let's rerender the "/" path as well.
-            if (settings?.pages?.home === page.pid) {
+            if (homePage === page.pid) {
                 promises.push(
                     context.pageBuilder.pages.prerendering.render({ paths: [{ path: "/" }] })
                 );
             }
 
+            const notFoundPage = lodashGet(settings, "pages.notFound");
             // Finally, if we just published a page that is set as current not-found page, let's do
             // another rerender and save that into the NOT_FOUND_FOLDER.
-            if (settings?.pages?.notFound === page.pid) {
+            if (notFoundPage === page.pid) {
                 promises.push(
                     context.pageBuilder.pages.prerendering.render({
                         paths: [

@@ -43,7 +43,7 @@ describe("listing latest pages", () => {
                 }
             });
 
-            if (updateResponse.data.pageBuilder.createPage.error) {
+            if (updateResponse.data.pageBuilder.updatePage.error) {
                 throw new Error(updateResponse.data.pageBuilder.updatePage.error);
             }
 
@@ -65,7 +65,7 @@ describe("listing latest pages", () => {
             {
                 name: "list pages in before each",
                 tries: 20,
-                wait: 400
+                wait: 500
             }
         );
     });
@@ -79,7 +79,9 @@ describe("listing latest pages", () => {
                 }),
             ([res]) => res.data.pageBuilder.listPages.data[4].title === "page-c",
             {
-                name: "list pages createdOn ASC"
+                name: "list pages createdOn ASC",
+                wait: 400,
+                tries: 20
             }
         ).then(([res]) =>
             expect(res).toMatchObject({

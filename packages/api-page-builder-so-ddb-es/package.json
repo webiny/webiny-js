@@ -28,7 +28,7 @@
     "dataloader": "^2.0.0",
     "dynamodb-toolbox": "^0.3.4",
     "elastic-ts": "^0.7.0",
-    "lodash.get": "^4.4.2"
+    "lodash": "^4.17.21"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",

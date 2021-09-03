@@ -43,14 +43,16 @@ describe("deleting pages", () => {
         await publishPage({ id: p1v3.id });
         await until(listPages, ([res]) => res.data.pageBuilder.listPages.data[0].id === p1v3.id, {
             name: "list all pages after publishing p1v3",
-            tries: 20
+            tries: 20,
+            wait: 400
         });
         await until(
             listPublishedPages,
             ([res]) => res.data.pageBuilder.listPublishedPages.data[0].id === p1v3.id,
             {
                 name: "list published pages after publishing p1v3",
-                tries: 20
+                tries: 20,
+                wait: 400
             }
         );
 
@@ -156,13 +158,15 @@ describe("deleting pages", () => {
             }
         });
         await until(listPages, ([res]) => res.data.pageBuilder.listPages.data[0].id === p1v3.id, {
-            name: "list latest pages until p1v3 is first"
+            name: "list latest pages until p1v3 is first",
+            wait: 400
         });
         await until(
             listPublishedPages,
             ([res]) => res.data.pageBuilder.listPublishedPages.data[0].id === p1v2.id,
             {
-                name: `list published pages until p1v2 is first`
+                name: `list published pages until p1v2 is first`,
+                wait: 400
             }
         );
 
@@ -187,13 +191,15 @@ describe("deleting pages", () => {
         });
 
         await until(listPages, ([res]) => res.data.pageBuilder.listPages.data[0].id === p1v2.id, {
-            name: "list latest pages until p1v2 is first"
+            name: "list latest pages until p1v2 is first",
+            wait: 400
         });
         await until(
             listPublishedPages,
             ([res]) => res.data.pageBuilder.listPublishedPages.data[0].id === p1v2.id,
             {
-                name: "list published pages until p1v2 is first"
+                name: "list published pages until p1v2 is first",
+                wait: 400
             }
         );
     });
@@ -202,10 +208,17 @@ describe("deleting pages", () => {
         await publishPage({ id: p1v3.id });
         await deletePage({ id: p1v2.id });
 
-        await until(listPages, ([res]) => res.data.pageBuilder.listPages.data[0].id === p1v3.id);
+        await until(listPages, ([res]) => res.data.pageBuilder.listPages.data[0].id === p1v3.id, {
+            name: "list pages after publish and delete page",
+            wait: 400
+        });
         await until(
             listPublishedPages,
-            ([res]) => res.data.pageBuilder.listPublishedPages.data[0].id === p1v3.id
+            ([res]) => res.data.pageBuilder.listPublishedPages.data[0].id === p1v3.id,
+            {
+                name: "list published pages after publish and delete page",
+                wait: 400
+            }
         );
     });
 

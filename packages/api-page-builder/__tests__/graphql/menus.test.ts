@@ -7,11 +7,11 @@ describe("Menus Test", () => {
         // Test creating, getting and updating three menus.
         for (let i = 0; i < 3; i++) {
             const prefix = `menu-${i}-`;
-            let data = {
+            const data = {
                 slug: `${prefix}slug`,
                 title: `${prefix}title`,
                 description: `${prefix}description`,
-                items: { [`${prefix}items`]: "items" }
+                items: [{ [`${prefix}items`]: "items" }]
             };
 
             let [response] = await createMenu({ data });
@@ -25,7 +25,7 @@ describe("Menus Test", () => {
                                     displayName: "m",
                                     id: "mocked"
                                 },
-                                createdOn: /^20/
+                                createdOn: expect.stringMatching(/^20/)
                             },
                             error: null
                         }
@@ -45,25 +45,25 @@ describe("Menus Test", () => {
                 }
             });
 
-            data = {
+            const updatedData = {
                 slug: data.slug, // Slug cannot be changed.
                 title: data.title + "-UPDATED",
                 description: data.description + "-UPDATED",
-                items: { [`${prefix}items`]: "items-UPDATED" }
+                items: [{ [`${prefix}items`]: "items-UPDATED" }]
             };
 
-            [response] = await updateMenu({ slug: data.slug, data });
+            [response] = await updateMenu({ slug: data.slug, data: updatedData });
             expect(response).toMatchObject({
                 data: {
                     pageBuilder: {
                         updateMenu: {
                             data: {
-                                ...data,
+                                ...updatedData,
                                 createdBy: {
                                     displayName: "m",
                                     id: "mocked"
                                 },
-                                createdOn: /^20/
+                                createdOn: expect.stringMatching(/^20/)
                             },
                             error: null
                         }
@@ -81,42 +81,48 @@ describe("Menus Test", () => {
                         data: [
                             {
                                 description: "menu-0-description-UPDATED",
-                                items: {
-                                    "menu-0-items": "items-UPDATED"
-                                },
+                                items: [
+                                    {
+                                        "menu-0-items": "items-UPDATED"
+                                    }
+                                ],
                                 slug: "menu-0-slug",
                                 title: "menu-0-title-UPDATED",
                                 createdBy: {
                                     displayName: "m",
                                     id: "mocked"
                                 },
-                                createdOn: /^20/
+                                createdOn: expect.stringMatching(/^20/)
                             },
                             {
                                 description: "menu-1-description-UPDATED",
-                                items: {
-                                    "menu-1-items": "items-UPDATED"
-                                },
+                                items: [
+                                    {
+                                        "menu-1-items": "items-UPDATED"
+                                    }
+                                ],
                                 slug: "menu-1-slug",
                                 title: "menu-1-title-UPDATED",
                                 createdBy: {
                                     displayName: "m",
                                     id: "mocked"
                                 },
-                                createdOn: /^20/
+                                createdOn: expect.stringMatching(/^20/)
                             },
                             {
                                 description: "menu-2-description-UPDATED",
-                                items: {
-                                    "menu-2-items": "items-UPDATED"
-                                },
+                                items: [
+                                    {
+                                        "menu-2-items": "items-UPDATED"
+                                    }
+                                ],
                                 slug: "menu-2-slug",
                                 title: "menu-2-title-UPDATED",
                                 createdBy: {
                                     displayName: "m",
                                     id: "mocked"
                                 },
-                                createdOn: /^20/
+                                createdOn: expect.stringMatching(/^20/)
                             }
                         ],
                         error: null
@@ -132,7 +138,7 @@ describe("Menus Test", () => {
                 slug: `${prefix}slug`,
                 title: `${prefix}title-UPDATED`,
                 description: `${prefix}description-UPDATED`,
-                items: { [`${prefix}items`]: "items-UPDATED" }
+                items: [{ [`${prefix}items`]: "items-UPDATED" }]
             };
 
             const [response] = await deleteMenu({ slug: data.slug });

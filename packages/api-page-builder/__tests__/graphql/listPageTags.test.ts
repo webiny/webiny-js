@@ -96,7 +96,7 @@ describe("listing tags used by pages", () => {
                         listPageTags: {
                             data: null,
                             error: {
-                                code: "",
+                                code: "LIST_TAGS_ERROR",
                                 data: null,
                                 message: "Please provide at least two characters."
                             }

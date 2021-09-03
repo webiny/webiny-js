@@ -1,7 +1,7 @@
 import mdbid from "mdbid";
 import uniqid from "uniqid";
 import trimStart from "lodash/trimStart";
-import get from "lodash/get";
+import lodashGet from "lodash/get";
 import merge from "lodash/merge";
 import DataLoader from "dataloader";
 import { NotFoundError } from "@webiny/handler-graphql";
@@ -57,6 +57,17 @@ const createNotIn = (exclude?: string[]): { paths: string[]; ids: string[] } => 
     };
 };
 
+const extractPageContent = async (page?: Page): Promise<Page | null> => {
+    if (!page || !page.content) {
+        return page;
+    }
+    const content = await extractContent(page.content);
+    return {
+        ...page,
+        content
+    };
+};
+
 export default new ContextPlugin<PbContext>(async context => {
     /**
      * If pageBuilder is not defined on the context, do not continue, but log it.
@@ -87,20 +98,14 @@ export default new ContextPlugin<PbContext>(async context => {
                 const page = await storageOperations.get({
                     where: {
                         pid,
-                        version: version ? Number(version) : undefined,
-                        /**
-                         * If we have the version in the ID take that version,
-                         * otherwise get the published page.
-                         */
-                        published: version ? undefined : true
+                        version: version ? Number(version) : undefined
                     }
                 });
                 if (!page) {
                     pages.push(null);
                     continue;
                 }
-                page.content = await extractContent(page.content);
-                pages.push(page);
+                pages.push(await extractPageContent(page));
             }
             return pages;
         } catch (ex) {
@@ -230,7 +235,7 @@ export default new ContextPlugin<PbContext>(async context => {
             const original = await context.pageBuilder.pages.get(id);
 
             if (!original) {
-                throw new NotFoundError(`Page "${id}" not found.`);
+                throw new NotFoundError(`Page not found.`);
             }
 
             /**
@@ -486,12 +491,12 @@ export default new ContextPlugin<PbContext>(async context => {
                  * 7. Done. We return both the deleted page, and the new latest one (if there is one).
                  */
                 if (page.version === 1) {
-                    return [resultPage, null] as any;
+                    return [await extractPageContent(resultPage), null] as any;
                 }
-                if (latestPage) {
-                    latestPage.content = await extractContent(latestPage.content);
-                }
-                return [resultPage, latestPage] as any;
+                return [
+                    await extractPageContent(resultPage),
+                    await extractPageContent(latestPage)
+                ] as any;
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not delete page.",
@@ -515,7 +520,7 @@ export default new ContextPlugin<PbContext>(async context => {
             const original = await context.pageBuilder.pages.get(id);
 
             if (original.status === STATUS_PUBLISHED) {
-                throw new NotFoundError(`Page "${id}" is already published.`);
+                throw new NotFoundError(`Page is already published.`);
             }
             /**
              * Already published page revision of this page.
@@ -645,11 +650,11 @@ export default new ContextPlugin<PbContext>(async context => {
             });
 
             if (publishedPage && publishedPage.id !== original.id) {
-                throw new WebinyError(`Page "${id}" is not published.`);
+                throw new WebinyError(`Page is not published.`);
             }
 
             const settings = await context.pageBuilder.settings.getCurrent();
-            const pages = settings?.pages || {};
+            const pages = settings && settings.pages ? settings.pages : {};
             for (const key in pages) {
                 if (pages[key] === original.pid) {
                     throw new WebinyError(
@@ -816,7 +821,6 @@ export default new ContextPlugin<PbContext>(async context => {
         },
 
         async get(id) {
-            // const [pid, rev] = id.split("#");
             const permission = await checkBasePermissions(context, PERMISSION_NAME, {
                 rwd: "r"
             });
@@ -835,7 +839,7 @@ export default new ContextPlugin<PbContext>(async context => {
                 );
             }
             if (!page) {
-                throw new NotFoundError(`Page "${id}" not found.`);
+                throw new NotFoundError(`Page not found.`);
             }
 
             const identity = context.security.getIdentity();
@@ -868,7 +872,7 @@ export default new ContextPlugin<PbContext>(async context => {
                 );
             }
             if (!page) {
-                throw new NotFoundError(`Page "${id}" not found.`);
+                throw new NotFoundError(`Page not found.`);
             }
 
             const identity = context.security.getIdentity();
@@ -888,12 +892,13 @@ export default new ContextPlugin<PbContext>(async context => {
             const normalizedPath = normalizePath(params.path);
             if (normalizedPath === "/") {
                 const settings = await context.pageBuilder.settings.getCurrent();
-                if (!settings?.pages?.home) {
+                const homePage = lodashGet(settings, "pages.home");
+                if (!homePage) {
                     throw new NotFoundError("Page not found.");
                 }
 
                 return await context.pageBuilder.pages.getPublishedById({
-                    id: settings.pages.home
+                    id: homePage
                 });
             }
 
@@ -935,8 +940,7 @@ export default new ContextPlugin<PbContext>(async context => {
                 /**
                  * Extract compressed page content.
                  */
-                page.content = await extractContent(page.content);
-                return page as any;
+                return (await extractPageContent(page)) as any;
             }
 
             throw new NotFoundError("Page not found.");
@@ -1024,7 +1028,7 @@ export default new ContextPlugin<PbContext>(async context => {
                 where: {
                     ...initialWhere,
                     published: true,
-                    search: search?.query || undefined,
+                    search: search && search.query ? search.query : undefined,
                     locale: context.i18nContent.getLocale().code,
                     createdBy,
                     path_not_in: pathNotIn,
@@ -1107,14 +1111,16 @@ export default new ContextPlugin<PbContext>(async context => {
         prerendering: {
             async render(args) {
                 const current = await context.pageBuilder.settings.getCurrent();
-                const appUrl = get(current, "prerendering.app.url");
-                const storageName = get(current, "prerendering.storage.name");
+                const appUrl = lodashGet(current, "prerendering.app.url");
+                const storageName = lodashGet(current, "prerendering.storage.name");
 
                 if (!appUrl || !storageName) {
                     return;
                 }
 
-                const meta = merge(current?.prerendering?.meta, {
+                const currentPrerenderingMeta = lodashGet(current, "prerendering.meta");
+
+                const meta = merge(currentPrerenderingMeta || {}, {
                     tenant: context.tenancy.getCurrentTenant().id,
                     locale: context.i18nContent.getLocale().code
                 });
@@ -1164,8 +1170,8 @@ export default new ContextPlugin<PbContext>(async context => {
             },
             async flush(args) {
                 const current = await context.pageBuilder.settings.getCurrent();
-                const appUrl = get(current, "prerendering.app.url");
-                const storageName = get(current, "prerendering.storage.name");
+                const appUrl = lodashGet(current, "prerendering.app.url");
+                const storageName = lodashGet(current, "prerendering.storage.name");
 
                 if (!storageName) {
                     return;

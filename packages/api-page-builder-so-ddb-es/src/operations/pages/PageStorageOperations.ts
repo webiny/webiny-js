@@ -39,7 +39,7 @@ import { defineTableElasticsearch } from "~/definitions/tableElasticsearch";
 import { definePageElasticsearchEntity } from "~/definitions/pageElasticsearchEntity";
 import { batchWriteAll } from "@webiny/db-dynamodb/utils/batchWrite";
 import { getESLatestPageData, getESPublishedPageData } from "./helpers";
-import lodashGet from "lodash.get";
+import lodashGet from "lodash/get";
 import { getZeroPaddedVersionNumber } from "@webiny/api-page-builder/utils/zeroPaddedVersionNumber";
 
 const getElasticsearchClient = (context: any): Client => {

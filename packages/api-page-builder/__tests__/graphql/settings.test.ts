@@ -336,7 +336,7 @@ describe("Settings Test", () => {
                             error: {
                                 code: "NOT_FOUND",
                                 data: null,
-                                message: expect.stringMatching(/Page "([a-z0-9A-Z]+)" not found./)
+                                message: "Page not found."
                             }
                         }
                     }

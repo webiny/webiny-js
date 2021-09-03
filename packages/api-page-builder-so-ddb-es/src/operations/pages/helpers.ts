@@ -1,7 +1,7 @@
 import { IndexPageDataPlugin } from "~/plugins/definitions/IndexPageDataPlugin";
 import { PbContext } from "@webiny/api-page-builder/graphql/types";
 import { Page } from "@webiny/api-page-builder/types";
-import lodashGet from "lodash.get";
+import lodashGet from "lodash/get";
 
 export const getESPageData = (page: Page) => {
     return {

@@ -21,7 +21,7 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                 title: String!
                 slug: String!
                 description: String
-                items: JSON
+                items: [JSON]
             }
 
             # Response types

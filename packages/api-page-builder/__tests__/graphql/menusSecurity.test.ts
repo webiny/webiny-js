@@ -5,7 +5,11 @@ function Mock(prefix = "") {
     this.slug = `${prefix}slug`;
     this.title = `${prefix}title`;
     this.description = `${prefix}description`;
-    this.items = { [`${prefix}items`]: "items" };
+    this.items = [
+        {
+            [`${prefix}items`]: "items"
+        }
+    ];
 }
 
 const defaultHandler = useGqlHandler({
@@ -67,9 +71,11 @@ describe("Menus Security Test", () => {
                                     },
                                     createdOn: /^20/,
                                     description: "list-menus-1-description",
-                                    items: {
-                                        "list-menus-1-items": "items"
-                                    },
+                                    items: [
+                                        {
+                                            "list-menus-1-items": "items"
+                                        }
+                                    ],
                                     slug: "list-menus-1-slug",
                                     title: "list-menus-1-title"
                                 },
@@ -80,9 +86,11 @@ describe("Menus Security Test", () => {
                                     },
                                     createdOn: /^20/,
                                     description: "list-menus-2-description",
-                                    items: {
-                                        "list-menus-2-items": "items"
-                                    },
+                                    items: [
+                                        {
+                                            "list-menus-2-items": "items"
+                                        }
+                                    ],
                                     slug: "list-menus-2-slug",
                                     title: "list-menus-2-title"
                                 },
@@ -93,9 +101,11 @@ describe("Menus Security Test", () => {
                                     },
                                     createdOn: /^20/,
                                     description: "list-menus-3-description",
-                                    items: {
-                                        "list-menus-3-items": "items"
-                                    },
+                                    items: [
+                                        {
+                                            "list-menus-3-items": "items"
+                                        }
+                                    ],
                                     slug: "list-menus-3-slug",
                                     title: "list-menus-3-title"
                                 },
@@ -106,9 +116,11 @@ describe("Menus Security Test", () => {
                                     },
                                     createdOn: /^20/,
                                     description: "list-menus-4-description",
-                                    items: {
-                                        "list-menus-4-items": "items"
-                                    },
+                                    items: [
+                                        {
+                                            "list-menus-4-items": "items"
+                                        }
+                                    ],
                                     slug: "list-menus-4-slug",
                                     title: "list-menus-4-title"
                                 }
@@ -138,9 +150,11 @@ describe("Menus Security Test", () => {
                                 },
                                 createdOn: /^20/,
                                 description: "list-menus-1-description",
-                                items: {
-                                    "list-menus-1-items": "items"
-                                },
+                                items: [
+                                    {
+                                        "list-menus-1-items": "items"
+                                    }
+                                ],
                                 slug: "list-menus-1-slug",
                                 title: "list-menus-1-title"
                             },
@@ -151,9 +165,11 @@ describe("Menus Security Test", () => {
                                 },
                                 createdOn: /^20/,
                                 description: "list-menus-2-description",
-                                items: {
-                                    "list-menus-2-items": "items"
-                                },
+                                items: [
+                                    {
+                                        "list-menus-2-items": "items"
+                                    }
+                                ],
                                 slug: "list-menus-2-slug",
                                 title: "list-menus-2-title"
                             }
@@ -182,9 +198,11 @@ describe("Menus Security Test", () => {
                                 },
                                 createdOn: /^20/,
                                 description: "list-menus-3-description",
-                                items: {
-                                    "list-menus-3-items": "items"
-                                },
+                                items: [
+                                    {
+                                        "list-menus-3-items": "items"
+                                    }
+                                ],
                                 slug: "list-menus-3-slug",
                                 title: "list-menus-3-title"
                             },
@@ -195,9 +213,11 @@ describe("Menus Security Test", () => {
                                 },
                                 createdOn: /^20/,
                                 description: "list-menus-4-description",
-                                items: {
-                                    "list-menus-4-items": "items"
-                                },
+                                items: [
+                                    {
+                                        "list-menus-4-items": "items"
+                                    }
+                                ],
                                 slug: "list-menus-4-slug",
                                 title: "list-menus-4-title"
                             }
