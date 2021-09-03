@@ -1,5 +1,6 @@
 import useGqlHandler from "./useGqlHandler";
 import { identityB } from "./mocks";
+import { Page } from "../../src/types";
 
 describe("listing latest pages", () => {
     const {
@@ -10,14 +11,12 @@ describe("listing latest pages", () => {
         requestReview,
         listPages,
         updatePage,
-        until
+        until,
+        sleep
     } = useGqlHandler();
 
-    let initiallyCreatedPagesIds;
-
-    beforeEach(async () => {
-        initiallyCreatedPagesIds = [];
-        await createCategory({
+    const createInitialCategory = async () => {
+        const [createCategoryResponse] = await createCategory({
             data: {
                 slug: `category`,
                 name: `name`,
@@ -25,9 +24,20 @@ describe("listing latest pages", () => {
                 layout: `layout`
             }
         });
+        if (createCategoryResponse.data.pageBuilder.createCategory.error) {
+            throw new Error(createCategoryResponse.data.pageBuilder.createCategory.error);
+        }
+        return createCategoryResponse.data.pageBuilder.createCategory.data;
+    };
+
+    const createInitialData = async () => {
+        const pages: Page[] = [];
+        const ids: string[] = [];
+
+        const category = await createInitialCategory();
 
         const letters = ["a", "z", "b", "x", "c"];
-        for (let i = 0; i < 5; i++) {
+        for (const letter of letters) {
             const [response] = await createPage({ category: "category" });
             const page = response.data.pageBuilder.createPage.data;
 
@@ -35,7 +45,8 @@ describe("listing latest pages", () => {
                 throw new Error(response.data.pageBuilder.createPage.error);
             }
 
-            const title = `page-${letters[i]}`;
+            await sleep(150);
+            const title = `page-${letter}`;
             const [updateResponse] = await updatePage({
                 id: page.id,
                 data: {
@@ -47,10 +58,11 @@ describe("listing latest pages", () => {
                 throw new Error(updateResponse.data.pageBuilder.updatePage.error);
             }
 
-            initiallyCreatedPagesIds.push(page.id);
+            pages.push(updateResponse.data.pageBuilder.updatePage.data);
+            ids.push(updateResponse.data.pageBuilder.updatePage.data.id);
         }
 
-        // List should show all five pages - all updated.
+        // List should show all pages - all updated.
         await until(
             () => listPages({ sort: "createdOn_ASC" }),
             ([res]) => {
@@ -63,12 +75,18 @@ describe("listing latest pages", () => {
                 );
             },
             {
-                name: "list pages in before each",
+                name: "list pages in create initial data",
                 tries: 20,
                 wait: 500
             }
         );
-    });
+
+        return {
+            category,
+            pages,
+            ids
+        };
+    };
 
     test("sorting", async () => {
         // 1. Check if all were returned and sorted `createdOn: asc`.
@@ -141,17 +159,21 @@ describe("listing latest pages", () => {
     });
 
     test("sorting by title must work case insensitive", async () => {
+        await createInitialData();
         // 1. Let's create five pages, with all uppercase titles.
         const letters = ["A", "Z", "B", "X", "C"];
-        for (let i = 0; i < 5; i++) {
-            createPage({ category: "category" }).then(([res]) =>
-                updatePage({
-                    id: res.data.pageBuilder.createPage.data.id,
-                    data: {
-                        title: `page-${letters[i]}`
-                    }
-                })
-            );
+        for (const letter of letters) {
+            const [res] = await createPage({ category: "category" });
+            if (res.data.pageBuilder.createPage.error) {
+                throw new Error(res.data.pageBuilder.createPage.error);
+            }
+            await sleep(150);
+            await updatePage({
+                id: res.data.pageBuilder.createPage.data.id,
+                data: {
+                    title: `page-${letter}`
+                }
+            });
         }
 
         // List should show all five pages.
@@ -160,6 +182,9 @@ describe("listing latest pages", () => {
             ([res]) => {
                 const { data } = res.data.pageBuilder.listPages;
                 return data[0].title === "page-a" && data[9].title === "page-Z";
+            },
+            {
+                name: "after creating new pages with uppercase titles"
             }
         ).then(([res]) =>
             // Might not be an ideal order but it's what we knew at the moment of implementation. In the future,
@@ -285,9 +310,10 @@ describe("listing latest pages", () => {
     });
 
     test("filtering by status", async () => {
+        const initialData = await createInitialData();
         // Let's publish first two pages and then only filter by `status: published`
-        await publishPage({ id: initiallyCreatedPagesIds[0] });
-        await publishPage({ id: initiallyCreatedPagesIds[1] });
+        await publishPage({ id: initialData.pages[0].id });
+        await publishPage({ id: initialData.pages[1].id });
 
         // We should still get all results when no filters are applied.
         // 1. Check if all were returned and sorted `createdOn: desc`.
@@ -348,8 +374,8 @@ describe("listing latest pages", () => {
         );
 
         // 4. Let's unpublish first two and then again filter by `status: published`. We should not get any pages.
-        await unpublishPage({ id: initiallyCreatedPagesIds[0] });
-        await unpublishPage({ id: initiallyCreatedPagesIds[1] });
+        await unpublishPage({ id: initialData.pages[0].id });
+        await unpublishPage({ id: initialData.pages[1].id });
 
         await until(
             () =>
@@ -371,8 +397,8 @@ describe("listing latest pages", () => {
         );
 
         // 5. Let's test filtering by `reviewRequested` and `changesNeeded` statuses.
-        await requestReview({ id: initiallyCreatedPagesIds[2] });
-        await requestReview({ id: initiallyCreatedPagesIds[3] });
+        await requestReview({ id: initialData.pages[2].id });
+        await requestReview({ id: initialData.pages[3].id });
 
         await until(
             () =>
@@ -400,8 +426,8 @@ describe("listing latest pages", () => {
             identity: identityB
         });
 
-        await requestChanges({ id: initiallyCreatedPagesIds[2] });
-        await requestChanges({ id: initiallyCreatedPagesIds[3] });
+        await requestChanges({ id: initialData.pages[2].id });
+        await requestChanges({ id: initialData.pages[3].id });
 
         await until(
             () =>
@@ -526,23 +552,24 @@ describe("listing latest pages", () => {
     });
 
     test("filtering by tags", async () => {
+        const initialData = await createInitialData();
         // Just in case, ensure all pages are present.
         await until(listPages, ([res]) => res.data.pageBuilder.listPages.data.length === 5);
 
         const tags = {
-            [initiallyCreatedPagesIds[0]]: ["news", "world"],
-            [initiallyCreatedPagesIds[1]]: ["news", "world"],
-            [initiallyCreatedPagesIds[2]]: ["news", "local"],
-            [initiallyCreatedPagesIds[3]]: ["news", "local"]
+            [initialData.pages[0].id]: ["news", "world"],
+            [initialData.pages[1].id]: ["news", "world"],
+            [initialData.pages[2].id]: ["news", "local"],
+            [initialData.pages[3].id]: ["news", "local"]
         };
 
-        for (let i = 0; i < initiallyCreatedPagesIds.length; i++) {
+        for (const page of initialData.pages) {
             await updatePage({
-                id: initiallyCreatedPagesIds[i],
+                id: page.id,
                 data: {
                     settings: {
                         general: {
-                            tags: tags[initiallyCreatedPagesIds[i]]
+                            tags: tags[page.id]
                         }
                     }
                 }

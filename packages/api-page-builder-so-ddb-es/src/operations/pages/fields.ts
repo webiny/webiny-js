@@ -24,6 +24,13 @@ export default () => [
         field: "ownedBy",
         path: "ownedBy.id"
     }),
+    new PageElasticsearchFieldPlugin({
+        field: "title",
+        path: "titleLC",
+        unmappedType: "text",
+        keyword: true,
+        searchable: true
+    }),
     /**
      * Defines all fields that are not strictly defined.
      */
