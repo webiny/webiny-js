@@ -83,6 +83,29 @@ export default (): HandlerPlugin<DbContext, ArgsContext<HandlerArgs>> => ({
             }
         } catch (e) {
             console.log("Error => ", e);
+
+            /**
+             * In case of error, we'll update the task status to "failed",
+             * so that, client can show notify the user appropriately.
+             */
+            const { invocationArgs: args, db } = context;
+            const { taskId, PK } = args;
+            await db.update({
+                ...defaults.db,
+                query: { PK, SK: taskId },
+                data: {
+                    status: ExportTaskStatus.FAILED,
+                    data: {
+                        error: {
+                            name: e.name,
+                            message: e.message,
+                            stack: e.stack,
+                            code: "EXPORT_FAILED"
+                        }
+                    }
+                }
+            });
+
             return {
                 data: null,
                 error: {
