@@ -17,8 +17,8 @@ class S3StreamHandler {
     }
 
     writeStream(Key: string): {
-        s3StreamUpload: PassThrough;
-        streamUploadPromise: Promise<S3.ManagedUpload.SendData>;
+        streamPassThrough: PassThrough;
+        streamPassThroughUploadPromise: Promise<S3.ManagedUpload.SendData>;
     } {
         const streamPassThrough = new Stream.PassThrough();
 
@@ -31,15 +31,15 @@ class S3StreamHandler {
         };
 
         return {
-            s3StreamUpload: streamPassThrough,
+            streamPassThrough: streamPassThrough,
             /**
              * We're not using the `FileManager` storage plugin here because it currently doesn't support streams.
              */
-            streamUploadPromise: this.s3.upload(params).promise()
+            streamPassThroughUploadPromise: this.s3.upload(params).promise()
         };
     }
 
-    async upload(params: {
+    upload(params: {
         Key: string;
         ContentType: string;
         Body: Buffer;

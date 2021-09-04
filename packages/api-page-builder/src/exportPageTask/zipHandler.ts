@@ -44,43 +44,43 @@ export default class ZipHandler {
         ];
     }
 
-    async process(): Promise<S3.ManagedUpload.SendData> {
-        const { s3StreamUpload, streamUploadPromise } = s3StreamHandler.writeStream(
+    process(): Promise<S3.ManagedUpload.SendData> {
+        const { streamPassThrough, streamPassThroughUploadPromise } = s3StreamHandler.writeStream(
             this.config.archiveFileName
         );
-        const s3DownloadStreams = this.s3DownloadStreams();
 
-        // TODO: improve this code block
-        await new Promise((resolve, reject) => {
-            const archive = vending.create(this.archiveFormat);
-            archive.on("error", (error: Archiver.ArchiverError) => {
-                throw new Error(
-                    `${error.name} ${error.code} ${error.message} ${error.path} ${error.stack}`
-                );
-            });
-
-            console.log("Starting upload");
-
-            s3StreamUpload.on("close", resolve);
-            s3StreamUpload.on("end", resolve);
-
-            s3StreamUpload.on("error", reject);
-
-            archive.pipe(s3StreamUpload);
-
-            // Just debugging
-            archive.on("progress", progress => {
-                console.log("Archiver [progress]");
-                console.log(progress);
-                console.log(JSON.stringify(progress.entries));
-            });
-
-            s3DownloadStreams.forEach((streamDetails: S3DownloadStreamDetails) =>
-                archive.append(streamDetails.stream, { name: streamDetails.filename })
-            );
-            archive.finalize();
+        // handle streamPassThrough events
+        streamPassThrough.on("close", () => console.log(`"streamPassThrough" CLOSE`));
+        streamPassThrough.on("end", () => console.log(`"streamPassThrough" END`));
+        streamPassThrough.on("error", err => {
+            console.log(`"streamPassThrough" ERROR`);
+            console.log(err);
         });
 
-        return streamUploadPromise;
+        // 1. Read all files from S3 using stream
+        const s3FilesStreams = this.s3DownloadStreams();
+
+        // 2. Prepare zip from the file stream
+        const archive = vending.create(this.archiveFormat);
+        // handle archive events
+        archive.on("error", (error: Archiver.ArchiverError) => {
+            throw new Error(
+                `${error.name} ${error.code} ${error.message} ${error.path} ${error.stack}`
+            );
+        });
+
+        // append all file streams to archive
+        s3FilesStreams.forEach((streamDetails: S3DownloadStreamDetails) =>
+            archive.append(streamDetails.stream, { name: streamDetails.filename })
+        );
+
+        // pipe archive output to streamPassThrough (Transform Stream) which will be uploaded to S3
+        archive.pipe(streamPassThrough);
+        // finalize the archive (ie we are done appending files but streams have to finish yet)
+        // 'close', 'end' or 'finish' may be fired right after calling this method so register to them beforehand
+        archive.finalize();
+
+        // 3. Return upload stream promise
+        return streamPassThroughUploadPromise;
     }
 }
