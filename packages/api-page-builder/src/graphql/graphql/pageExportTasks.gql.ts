@@ -10,6 +10,7 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                 pending
                 processing
                 completed
+                failed
             }
             type PbPageExportTask {
                 id: ID
