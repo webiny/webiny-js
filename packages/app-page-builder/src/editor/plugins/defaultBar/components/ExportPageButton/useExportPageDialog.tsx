@@ -103,7 +103,7 @@ const ExportPageDialogMessage: React.FunctionComponent<ExportPageDialogProps> = 
 };
 
 const useExportPageDialog = () => {
-    const { showDialog } = useDialog();
+    const { showDialog, hideDialog } = useDialog();
 
     return {
         showExportPageContentDialog: (props: ExportPageDialogProps) => {
@@ -114,14 +114,15 @@ const useExportPageDialog = () => {
                 }
             });
         },
-        showExportPageLoadingDialog: () => {
+        showExportPageLoadingDialog: (onCancel: Function) => {
             showDialog(<ExportPageLoadingDialogMessage />, {
                 title: t`Export page`,
                 actions: {
-                    cancel: { label: t`Cancel` }
+                    cancel: { label: t`Cancel`, onClick: onCancel }
                 }
             });
-        }
+        },
+        hideDialog
     };
 };
 

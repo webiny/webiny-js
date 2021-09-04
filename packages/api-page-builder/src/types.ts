@@ -26,7 +26,8 @@ export type PageElement = {
 export enum ExportTaskStatus {
     PENDING = "pending",
     PROCESSING = "processing",
-    COMPLETED = "completed"
+    COMPLETED = "completed",
+    FAILED = "failed"
 }
 
 export interface PageExportTask {

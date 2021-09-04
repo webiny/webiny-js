@@ -14,7 +14,8 @@ const INTERVAL = 0.5 * 1000;
 
 const ExportPageButton: React.FunctionComponent<{ page: any }> = ({ page }) => {
     const { showSnackbar } = useSnackbar();
-    const { showExportPageContentDialog, showExportPageLoadingDialog } = useExportPageDialog();
+    const { showExportPageContentDialog, showExportPageLoadingDialog, hideDialog } =
+        useExportPageDialog();
     const [taskId, setTaskId] = useState<string>(null);
 
     const [exportPage, exportPageResponse] = useMutation(EXPORT_PAGE, {
@@ -30,9 +31,9 @@ const ExportPageButton: React.FunctionComponent<{ page: any }> = ({ page }) => {
         variables: {
             id: taskId
         },
-        skip: !taskId,
+        skip: taskId === null,
         fetchPolicy: "network-only",
-        pollInterval: INTERVAL,
+        pollInterval: taskId === null ? 0 : INTERVAL,
         notifyOnNetworkStatusChange: true
     });
 
@@ -40,6 +41,14 @@ const ExportPageButton: React.FunctionComponent<{ page: any }> = ({ page }) => {
         const { error, data } = get(response, "pageBuilder.getPageExportTask", {});
         if (error) {
             return showSnackbar(error.message);
+        }
+
+        // Handler failed task
+        if (data && data.status === "failed") {
+            setTaskId(null);
+            showSnackbar("Error: Failed to export the page!");
+            // TODO: @ashutosh show an informative dialog about error.
+            hideDialog();
         }
 
         if (data && data.status === "completed") {
@@ -61,9 +70,13 @@ const ExportPageButton: React.FunctionComponent<{ page: any }> = ({ page }) => {
     // Handle Export Page Dialog Flow
     useEffect(() => {
         if (exportPageResponse.loading) {
-            showExportPageLoadingDialog();
+            showExportPageLoadingDialog(handleCancelExport);
         }
     }, [exportPageResponse]);
+
+    const handleCancelExport = useCallback(() => {
+        setTaskId(null);
+    }, []);
 
     if (!page) {
         return null;
