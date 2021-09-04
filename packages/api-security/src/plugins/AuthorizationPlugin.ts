@@ -1,8 +1,9 @@
 import { Plugin } from "@webiny/plugins";
-import { SecurityContext, SecurityPermission } from "../types";
+import { SecurityPermission } from "../types";
+import { Security } from "../Security";
 
-export abstract class AuthorizationPlugin<TContext = SecurityContext> extends Plugin {
+export abstract class AuthorizationPlugin extends Plugin {
     public static readonly type = "security-authorization";
 
-    abstract getPermissions(context: TContext): Promise<SecurityPermission[]>;
+    abstract getPermissions(security: Security): Promise<SecurityPermission[]>;
 }

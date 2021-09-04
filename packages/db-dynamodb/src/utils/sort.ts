@@ -1,6 +1,7 @@
 import lodashSortBy from "lodash.sortby";
 import WebinyError from "@webiny/error";
 import { FieldPathPlugin } from "~/plugins/definitions/FieldPathPlugin";
+import { PluginsContainer } from "@webiny/plugins";
 import { ContextInterface } from "@webiny/handler/types";
 
 interface ExtractSortResult {
@@ -40,13 +41,14 @@ const extractSort = (sortBy: string, fields: string[]): ExtractSortResult => {
 };
 
 interface Params<T> {
-    context: ContextInterface;
+    context?: ContextInterface;
+    plugins?: PluginsContainer;
     items: T[];
     sort: string[];
     fields: string[];
 }
 export const sortItems = <T extends any = any>(params: Params<T>): T[] => {
-    const { context, items, sort = [], fields } = params;
+    const { items, sort = [], fields } = params;
     if (items.length <= 1) {
         return items;
     } else if (sort.length === 0) {
@@ -65,9 +67,12 @@ export const sortItems = <T extends any = any>(params: Params<T>): T[] => {
 
     const { field, reverse } = extractSort(firstSort, fields);
 
-    const fieldPathPlugin = context.plugins
+    const plugins = params.plugins || params.context.plugins;
+
+    const fieldPathPlugin = plugins
         .byType<FieldPathPlugin>(FieldPathPlugin.type)
         .find(plugin => plugin.canCreate(field));
+    
     const path = fieldPathPlugin ? fieldPathPlugin.createPath(field) : field;
 
     const sortedItems = lodashSortBy(items, path);

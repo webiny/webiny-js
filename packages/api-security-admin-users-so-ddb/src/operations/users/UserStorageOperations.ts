@@ -26,7 +26,6 @@ import { Entity, Table } from "dynamodb-toolbox";
 import WebinyError from "@webiny/error";
 import { cleanupItem } from "@webiny/db-dynamodb/utils/cleanup";
 import { queryAll, QueryAllParams, queryOne, QueryParams } from "@webiny/db-dynamodb/utils/query";
-import { createLinksEntity } from "~/definitions/linksEntity";
 import { batchReadAll } from "@webiny/db-dynamodb/utils/batchRead";
 import { batchWriteAll } from "@webiny/db-dynamodb/utils/batchWrite";
 import { Tenant } from "@webiny/api-tenancy/types";
@@ -58,11 +57,6 @@ export class UserStorageOperationsDdb implements UserStorageOperations {
         });
 
         this.tokenEntity = createTokenEntity({
-            context,
-            table: this.table
-        });
-
-        this.linksEntity = createLinksEntity({
             context,
             table: this.table
         });

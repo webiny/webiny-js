@@ -1,5 +1,4 @@
 import {
-    AdminUsersContext,
     ApiKey,
     ApiKeyStorageOperations,
     ApiKeyStorageOperationsCreateParams,
@@ -8,35 +7,28 @@ import {
     ApiKeyStorageOperationsGetParams,
     ApiKeyStorageOperationsListParams,
     ApiKeyStorageOperationsUpdateParams
-} from "@webiny/api-security-admin-users/types";
-import WebinyError from "@webiny/error";
+} from "@webiny/api-security/types";
+import Error from "@webiny/error";
 import { Entity, Table } from "dynamodb-toolbox";
 import { createTable } from "~/definitions/table";
 import { createApiKeyEntity } from "~/definitions/apiKeyEntity";
 import { cleanupItem } from "@webiny/db-dynamodb/utils/cleanup";
 import { queryAll, queryOne, QueryOneParams } from "@webiny/db-dynamodb/utils/query";
 import { sortItems } from "@webiny/db-dynamodb/utils/sort";
-
-interface Params {
-    context: AdminUsersContext;
-}
+import { SecurityStorageParams } from "~/types";
+import { PluginsContainer } from "@webiny/plugins";
 
 export class ApiKeyStorageOperationsDdb implements ApiKeyStorageOperations {
-    private readonly context: AdminUsersContext;
-    private readonly table: Table;
-    private readonly entity: Entity<any>;
+    protected readonly tenant: string;
+    protected readonly plugins: PluginsContainer;
+    protected readonly table: Table;
+    protected readonly entity: Entity<any>;
 
-    public constructor({ context }: Params) {
-        this.context = context;
-
-        this.table = createTable({
-            context
-        });
-
-        this.entity = createApiKeyEntity({
-            context,
-            table: this.table
-        });
+    public constructor({ plugins, tenant, table, documentClient }: SecurityStorageParams) {
+        this.tenant = tenant;
+        this.plugins = plugins;
+        this.table = createTable({ table, documentClient });
+        this.entity = createApiKeyEntity({ plugins, table: this.table });
     }
 
     public async get({ id }: ApiKeyStorageOperationsGetParams): Promise<ApiKey> {
@@ -52,7 +44,7 @@ export class ApiKeyStorageOperationsDdb implements ApiKeyStorageOperations {
             }
             return this.cleanupItem(result.Item);
         } catch (ex) {
-            throw new WebinyError(
+            throw new Error(
                 ex.message || "Could not load api key.",
                 ex.code || "GET_API_KEY_ERROR",
                 {
@@ -77,7 +69,7 @@ export class ApiKeyStorageOperationsDdb implements ApiKeyStorageOperations {
             const result = await queryOne<ApiKey>(queryParams);
             return this.cleanupItem(result);
         } catch (ex) {
-            throw new WebinyError(
+            throw new Error(
                 ex.message || "Could not load api key by token.",
                 ex.code || "GET_BY_TOKEN_API_KEY_ERROR",
                 {
@@ -99,7 +91,7 @@ export class ApiKeyStorageOperationsDdb implements ApiKeyStorageOperations {
                 }
             });
         } catch (ex) {
-            throw new WebinyError(
+            throw new Error(
                 ex.message || "Could not list api keys.",
                 ex.code || "LIST_API_KEY_ERROR"
             );
@@ -108,7 +100,7 @@ export class ApiKeyStorageOperationsDdb implements ApiKeyStorageOperations {
         const sortedItems = sortItems({
             items,
             sort,
-            context: this.context,
+            plugins: this.plugins,
             fields: ["createdOn"]
         });
         return sortedItems.map(item => this.cleanupItem(item));
@@ -130,7 +122,7 @@ export class ApiKeyStorageOperationsDdb implements ApiKeyStorageOperations {
             });
             return apiKey;
         } catch (ex) {
-            throw new WebinyError(
+            throw new Error(
                 ex.message || "Could not create api key.",
                 ex.code || "CREATE_API_KEY_ERROR",
                 {
@@ -154,7 +146,7 @@ export class ApiKeyStorageOperationsDdb implements ApiKeyStorageOperations {
             });
             return apiKey;
         } catch (ex) {
-            throw new WebinyError(
+            throw new Error(
                 ex.message || "Could not update api key.",
                 ex.code || "UPDATE_API_KEY_ERROR",
                 {
@@ -174,7 +166,7 @@ export class ApiKeyStorageOperationsDdb implements ApiKeyStorageOperations {
             await this.entity.delete(keys);
             return apiKey;
         } catch (ex) {
-            throw new WebinyError(
+            throw new Error(
                 ex.message || "Could not update api key.",
                 ex.code || "UPDATE_API_KEY_ERROR",
                 {
@@ -184,23 +176,23 @@ export class ApiKeyStorageOperationsDdb implements ApiKeyStorageOperations {
         }
     }
 
-    private cleanupItem(item: ApiKey & Record<string, any>): ApiKey {
-        return cleanupItem(this.entity, item, ["TYPE"]);
+    protected createPartitionKey(): string {
+        return `T#${this.tenant}`;
     }
 
-    private createPartitionKey(): string {
-        return `T#${this.context.tenancy.getCurrentTenant().id}`;
-    }
-
-    private createSortKey(id: string): string {
+    protected createSortKey(id: string): string {
         return `API_KEY#${id}`;
     }
 
-    private createGsiPartitionKey(): string {
-        return `T#${this.context.tenancy.getCurrentTenant().id}`;
+    protected createGsiPartitionKey(): string {
+        return `T#${this.tenant}`;
     }
 
-    private createGsiSortKey(token: string): string {
+    protected createGsiSortKey(token: string): string {
         return `API_KEY#${token}`;
+    }
+
+    private cleanupItem(item: ApiKey & Record<string, any>): ApiKey {
+        return cleanupItem(this.entity, item, ["TYPE"]);
     }
 }

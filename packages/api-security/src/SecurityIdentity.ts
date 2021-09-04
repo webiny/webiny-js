@@ -1,15 +1,3 @@
-type SecurityIdentityData = {
-    id: string;
-    type: string;
-    displayName: string;
-    [key: string]: any;
-};
+import { Identity } from "@webiny/api-authentication/Identity";
 
-export class SecurityIdentity {
-    id: string;
-    type: string;
-    displayName: string;
-    constructor(data: SecurityIdentityData) {
-        Object.assign(this, data);
-    }
-}
+export class SecurityIdentity extends Identity {}

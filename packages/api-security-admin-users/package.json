@@ -7,7 +7,7 @@
     "url": "https://github.com/webiny/webiny-js.git"
   },
   "keywords": [
-    "sau:base"
+    "security:base"
   ],
   "description": "Admin user management (users, groups, API keys).",
   "author": "Webiny Ltd.",

@@ -1,15 +1,15 @@
 import { Entity, Table } from "dynamodb-toolbox";
-import { AdminUsersContext } from "@webiny/api-security-admin-users/types";
 import { getExtraAttributes } from "@webiny/db-dynamodb/utils/attributes";
+import { PluginsContainer } from "@webiny/plugins";
 
 interface Params {
-    context: AdminUsersContext;
+    plugins: PluginsContainer;
     table: Table;
 }
-export const createLinksEntity = (params: Params): Entity<any> => {
-    const { context, table } = params;
-    const entityName = "SecurityUser2Tenant";
-    const attributes = getExtraAttributes(context, entityName);
+export const createLinkEntity = (params: Params): Entity<any> => {
+    const { plugins, table } = params;
+    const entityName = "SecurityIdentity2Tenant";
+    const attributes = getExtraAttributes(plugins, entityName);
     return new Entity({
         table,
         name: entityName,
@@ -29,13 +29,16 @@ export const createLinksEntity = (params: Params): Entity<any> => {
             TYPE: {
                 type: "string"
             },
-            id: {
+            identity: {
                 type: "string"
             },
             tenant: {
-                type: "map"
+                type: "string"
             },
-            group: {
+            type: {
+                type: "string"
+            },
+            data: {
                 type: "map"
             },
             ...attributes

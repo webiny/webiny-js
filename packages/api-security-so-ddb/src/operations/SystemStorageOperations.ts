@@ -1,34 +1,28 @@
+import { Entity, Table } from "dynamodb-toolbox";
+import { cleanupItem } from "@webiny/db-dynamodb/utils/cleanup";
+import Error from "@webiny/error";
 import {
-    AdminUsersContext,
     System,
     SystemStorageOperations,
     SystemStorageOperationsCreateParams,
     SystemStorageOperationsUpdateParams
-} from "@webiny/api-security-admin-users/types";
+} from "@webiny/api-security/types";
 import { createTable } from "~/definitions/table";
-import { Entity, Table } from "dynamodb-toolbox";
 import { createSystemEntity } from "~/definitions/systemEntity";
-import { cleanupItem } from "@webiny/db-dynamodb/utils/cleanup";
-import WebinyError from "@webiny/error";
 
-interface Params {
-    context: AdminUsersContext;
-}
+import { SecurityStorageParams } from "~/types";
 
 export class SystemStorageOperationsDdb implements SystemStorageOperations {
-    private readonly context: AdminUsersContext;
-    private readonly table: Table;
-    private readonly entity: Entity<any>;
+    protected readonly tenant: string;
+    protected readonly table: Table;
+    protected readonly entity: Entity<any>;
 
-    public constructor({ context }: Params) {
-        this.context = context;
-
-        this.table = createTable({
-            context
-        });
+    public constructor({ tenant, plugins, table, documentClient }: SecurityStorageParams) {
+        this.tenant = tenant;
+        this.table = createTable({ table, documentClient });
 
         this.entity = createSystemEntity({
-            context,
+            plugins,
             table: this.table
         });
     }
@@ -45,13 +39,9 @@ export class SystemStorageOperationsDdb implements SystemStorageOperations {
             }
             return cleanupItem(this.entity, result.Item);
         } catch (ex) {
-            throw new WebinyError(
-                ex.message || "Could not load system.",
-                ex.code || "GET_SYSTEM_ERROR",
-                {
-                    keys
-                }
-            );
+            throw new Error(ex.message || "Could not load system.", ex.code || "GET_SYSTEM_ERROR", {
+                keys
+            });
         }
     }
 
@@ -68,7 +58,7 @@ export class SystemStorageOperationsDdb implements SystemStorageOperations {
             });
             return system;
         } catch (ex) {
-            throw new WebinyError(
+            throw new Error(
                 ex.message || "Could not create system.",
                 ex.code || "CREATE_SYSTEM_ERROR",
                 {
@@ -92,7 +82,7 @@ export class SystemStorageOperationsDdb implements SystemStorageOperations {
             });
             return system;
         } catch (ex) {
-            throw new WebinyError(
+            throw new Error(
                 ex.message || "Could not update system.",
                 ex.code || "UPDATE_SYSTEM_ERROR",
                 {
@@ -105,7 +95,7 @@ export class SystemStorageOperationsDdb implements SystemStorageOperations {
     }
 
     private createPartitionKey() {
-        return `T#${this.context.tenancy.getCurrentTenant().id}#SYSTEM`;
+        return `T#${this.tenant}#SYSTEM`;
     }
 
     private createSortKey(): string {

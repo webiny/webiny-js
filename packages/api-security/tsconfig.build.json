@@ -4,10 +4,12 @@
   "exclude": [
     "node_modules",
     "./dist",
+    "../api-authentication",
+    "../api-tenancy",
+    "../error",
     "../handler",
-    "../plugins",
     "../handler-graphql",
-    "../error"
+    "../plugins"
   ],
   "compilerOptions": {
     "rootDir": "./src",

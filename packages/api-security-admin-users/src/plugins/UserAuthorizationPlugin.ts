@@ -1,7 +1,8 @@
 import { SecurityPermission } from "@webiny/api-security/types";
-import { AdminUsersContext, TenantAccess } from "~/types";
+import { TenantAccess } from "~/types";
 import { AuthorizationPlugin } from "@webiny/api-security/plugins/AuthorizationPlugin";
 import WebinyError from "@webiny/error";
+import {Security} from "@webiny/api-security/Security";
 
 export interface Config {
     identityType?: string;
@@ -14,7 +15,7 @@ const extractPermissions = (tenantAccess?: TenantAccess): SecurityPermission[] |
     return tenantAccess.group.permissions;
 };
 
-export class UserAuthorizationPlugin extends AuthorizationPlugin<AdminUsersContext> {
+export class IdentityAuthorizationPlugin extends AuthorizationPlugin {
     private readonly _config: Config;
 
     constructor(config?: Config) {
@@ -22,12 +23,13 @@ export class UserAuthorizationPlugin extends AuthorizationPlugin<AdminUsersConte
         this._config = config || {};
     }
 
-    async getPermissions({ security, tenancy }: AdminUsersContext) {
+    async getPermissions(security: Security) {
         const identity = security.getIdentity();
+        const tenant = security.getTenant();
+        
         if (!identity || identity.type !== this._config.identityType) {
             return null;
         }
-        const tenant = tenancy.getCurrentTenant();
 
         const user = await security.users.getUser(identity.id, { auth: false });
 

@@ -1,15 +1,14 @@
 import { Entity, Table } from "dynamodb-toolbox";
-import { AdminUsersContext } from "@webiny/api-security-admin-users/types";
 import { getExtraAttributes } from "@webiny/db-dynamodb/utils/attributes";
+import { PluginsContainer } from "@webiny/plugins";
 
 interface Params {
-    context: AdminUsersContext;
+    plugins: PluginsContainer;
     table: Table;
 }
-export const createSystemEntity = (params: Params): Entity<any> => {
-    const { context, table } = params;
+export const createSystemEntity = ({ table, plugins }: Params): Entity<any> => {
     const entityName = "SecuritySystem";
-    const attributes = getExtraAttributes(context, entityName);
+    const attributes = getExtraAttributes(plugins, entityName);
     return new Entity({
         table,
         name: entityName,

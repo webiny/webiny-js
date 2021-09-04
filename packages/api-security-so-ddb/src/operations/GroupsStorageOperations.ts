@@ -1,57 +1,37 @@
 import {
-    AdminUsersContext,
     Group,
     GroupsStorageOperations,
     GroupsStorageOperationsCreateParams,
     GroupsStorageOperationsDeleteParams,
     GroupsStorageOperationsGetParams,
     GroupsStorageOperationsListParams,
-    GroupsStorageOperationsUpdateParams,
-    GroupsStorageOperationsUpdateUserLinksParams,
-    TenantAccess
-} from "@webiny/api-security-admin-users/types";
+    GroupsStorageOperationsUpdateParams
+} from "@webiny/api-security/types";
 import { Entity, Table } from "dynamodb-toolbox";
 import { createTable } from "~/definitions/table";
 import { createGroupEntity } from "~/definitions/groupEntity";
-import { createLinksEntity } from "~/definitions/linksEntity";
-import WebinyError from "@webiny/error";
+import Error from "@webiny/error";
 import { cleanupItem } from "@webiny/db-dynamodb/utils/cleanup";
 import { queryAll } from "@webiny/db-dynamodb/utils/query";
 import { sortItems } from "@webiny/db-dynamodb/utils/sort";
-import { batchWriteAll } from "@webiny/db-dynamodb/utils/batchWrite";
-import { Tenant } from "@webiny/api-tenancy/types";
-import { DbItem } from "~/types";
-
-interface Params {
-    context: AdminUsersContext;
-}
+import { SecurityStorageParams } from "~/types";
+import { PluginsContainer } from "@webiny/plugins";
 
 export class GroupsStorageOperationsDdb implements GroupsStorageOperations {
-    private readonly context: AdminUsersContext;
-    private readonly table: Table;
-    private readonly entity: Entity<any>;
-    private readonly linksEntity: Entity<any>;
+    protected readonly tenant: string;
+    protected readonly table: Table;
+    protected readonly entity: Entity<any>;
+    protected readonly plugins: PluginsContainer;
 
-    public constructor({ context }: Params) {
-        this.context = context;
-
-        this.table = createTable({
-            context: this.context
-        });
-
-        this.entity = createGroupEntity({
-            context,
-            table: this.table
-        });
-
-        this.linksEntity = createLinksEntity({
-            context,
-            table: this.table
-        });
+    public constructor({ tenant, plugins, table, documentClient }: SecurityStorageParams) {
+        this.tenant = tenant;
+        this.plugins = plugins;
+        this.table = createTable({ table, documentClient });
+        this.entity = createGroupEntity({ table: this.table, plugins });
     }
 
     public async get(
-        tenant: Tenant,
+        tenant: string,
         { slug }: GroupsStorageOperationsGetParams
     ): Promise<Group | null> {
         const keys = {
@@ -65,19 +45,15 @@ export class GroupsStorageOperationsDdb implements GroupsStorageOperations {
             }
             return this.cleanupItem(result.Item);
         } catch (ex) {
-            throw new WebinyError(
-                ex.message || "Could not load group.",
-                ex.code || "GET_GROUP_ERROR",
-                {
-                    keys,
-                    slug
-                }
-            );
+            throw new Error(ex.message || "Could not load group.", ex.code || "GET_GROUP_ERROR", {
+                keys,
+                slug
+            });
         }
     }
 
     public async list(
-        tenant: Tenant,
+        tenant: string,
         { sort }: GroupsStorageOperationsListParams
     ): Promise<Group[]> {
         let items: Group[] = [];
@@ -90,23 +66,20 @@ export class GroupsStorageOperationsDdb implements GroupsStorageOperations {
                 }
             });
         } catch (ex) {
-            throw new WebinyError(
-                ex.message || "Could not list groups.",
-                ex.code || "LIST_GROUP_ERROR"
-            );
+            throw new Error(ex.message || "Could not list groups.", ex.code || "LIST_GROUP_ERROR");
         }
 
         const sortedItems = sortItems({
+            plugins: this.plugins,
             items,
             sort,
-            context: this.context,
             fields: ["createdOn"]
         });
         return sortedItems.map(item => this.cleanupItem(item));
     }
 
     public async create(
-        tenant: Tenant,
+        tenant: string,
         { group }: GroupsStorageOperationsCreateParams
     ): Promise<Group> {
         const keys = {
@@ -122,7 +95,7 @@ export class GroupsStorageOperationsDdb implements GroupsStorageOperations {
             });
             return group;
         } catch (ex) {
-            throw new WebinyError(
+            throw new Error(
                 ex.message || "Could not create group.",
                 ex.code || "CREATE_GROUP_ERROR",
                 {
@@ -133,7 +106,7 @@ export class GroupsStorageOperationsDdb implements GroupsStorageOperations {
     }
 
     public async update(
-        tenant: Tenant,
+        tenant: string,
         { group }: GroupsStorageOperationsUpdateParams
     ): Promise<Group> {
         const keys = {
@@ -148,7 +121,7 @@ export class GroupsStorageOperationsDdb implements GroupsStorageOperations {
             });
             return group;
         } catch (ex) {
-            throw new WebinyError(
+            throw new Error(
                 ex.message || "Could not update group.",
                 ex.code || "CREATE_UPDATE_ERROR",
                 {
@@ -160,7 +133,7 @@ export class GroupsStorageOperationsDdb implements GroupsStorageOperations {
     }
 
     public async delete(
-        tenant: Tenant,
+        tenant: string,
         { group }: GroupsStorageOperationsDeleteParams
     ): Promise<Group> {
         const keys = {
@@ -174,7 +147,7 @@ export class GroupsStorageOperationsDdb implements GroupsStorageOperations {
             });
             return group;
         } catch (ex) {
-            throw new WebinyError(
+            throw new Error(
                 ex.message || "Could not delete group.",
                 ex.code || "CREATE_DELETE_ERROR",
                 {
@@ -184,62 +157,62 @@ export class GroupsStorageOperationsDdb implements GroupsStorageOperations {
             );
         }
     }
+    //
+    // public async updateUserLinks(
+    //     tenant: string,
+    //     { group }: GroupsStorageOperationsUpdateUserLinksParams
+    // ): Promise<void> {
+    //     let links: DbItem<IdentityToTenantLink>[] = [];
+    //     try {
+    //         links = await queryAll<DbItem<IdentityToTenantLink>>({
+    //             entity: this.entity,
+    //             partitionKey: this.createPartitionKey(tenant),
+    //             options: {
+    //                 index: "GSI1",
+    //                 beginsWith: `${this.createSortKey(group.slug)}#`
+    //             }
+    //         });
+    //     } catch (ex) {
+    //         throw new Error(
+    //             ex.message || "Could not get all the user <-> group links.",
+    //             ex.code || "USER_GROUP_LINKS_LIST_ERROR"
+    //         );
+    //     }
+    //     const items = links.map(link => {
+    //         return this.linksEntity.putBatch({
+    //             ...link,
+    //             group: {
+    //                 slug: group.slug,
+    //                 name: group.name,
+    //                 permissions: group.permissions
+    //             }
+    //         });
+    //     });
+    //     try {
+    //         await batchWriteAll({
+    //             table: this.table,
+    //             items
+    //         });
+    //     } catch (ex) {
+    //         throw new Error(
+    //             ex.message || "Could not update user <-> group links.",
+    //             ex.code || "UPDATE_USER_LINKS_ERROR",
+    //             {
+    //                 group
+    //             }
+    //         );
+    //     }
+    // }
 
-    public async updateUserLinks(
-        tenant: Tenant,
-        { group }: GroupsStorageOperationsUpdateUserLinksParams
-    ): Promise<void> {
-        let links: DbItem<TenantAccess>[] = [];
-        try {
-            links = await queryAll<DbItem<TenantAccess>>({
-                entity: this.entity,
-                partitionKey: this.createPartitionKey(tenant),
-                options: {
-                    index: "GSI1",
-                    beginsWith: `${this.createSortKey(group.slug)}#`
-                }
-            });
-        } catch (ex) {
-            throw new WebinyError(
-                ex.message || "Could not get all the user <-> group links.",
-                ex.code || "USER_GROUP_LINKS_LIST_ERROR"
-            );
-        }
-        const items = links.map(link => {
-            return this.linksEntity.putBatch({
-                ...link,
-                group: {
-                    slug: group.slug,
-                    name: group.name,
-                    permissions: group.permissions
-                }
-            });
-        });
-        try {
-            await batchWriteAll({
-                table: this.table,
-                items
-            });
-        } catch (ex) {
-            throw new WebinyError(
-                ex.message || "Could not update user <-> group links.",
-                ex.code || "UPDATE_USER_LINKS_ERROR",
-                {
-                    group
-                }
-            );
-        }
+    protected createPartitionKey(tenant: string) {
+        return `T#${tenant}`;
+    }
+
+    protected createSortKey(slug: string): string {
+        return `G#${slug}`;
     }
 
     private cleanupItem(item: Group & Record<string, any>): Group {
         return cleanupItem(this.entity, item, ["TYPE"]);
-    }
-
-    private createPartitionKey(tenant: Tenant) {
-        return `T#${tenant.id}`;
-    }
-
-    private createSortKey(slug: string): string {
-        return `G#${slug}`;
     }
 }
