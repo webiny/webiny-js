@@ -5,8 +5,8 @@
   "license": "MIT",
   "dependencies": {
     "load-json-file": "^6.2.0",
-    "write-json-file": "^4.3.0",
-    "uuid": "^8.3.2"
+    "uuid": "^8.3.2",
+    "write-json-file": "^4.3.0"
   },
   "publishConfig": {
     "access": "public",
