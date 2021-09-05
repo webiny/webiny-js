@@ -1,5 +1,6 @@
 const { version } = require("@webiny/project-utils/package.json");
-const { getProject, globalConfig } = require("@webiny/cli/utils");
+const { getProject } = require("@webiny/cli/utils");
+const { isEnabled } = require("@webiny/telemetry");
 
 const applyDefaults = () => {
     let telemetry;
@@ -7,7 +8,7 @@ const applyDefaults = () => {
     if (config.cli && config.cli.telemetry === false) {
         telemetry = false;
     } else {
-        telemetry = globalConfig.get().telemetry;
+        telemetry = isEnabled();
     }
 
     if (!("REACT_APP_USER_ID" in process.env)) {
