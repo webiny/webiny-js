@@ -2,7 +2,6 @@ const { importModule } = require("./importModule");
 const getProject = require("./getProject");
 const getProjectApplication = require("./getProjectApplication");
 const localStorage = require("./localStorage");
-const globalConfig = require("./globalConfig");
 const log = require("./log");
 const PluginsContainer = require("./PluginsContainer");
 
@@ -11,7 +10,6 @@ module.exports = {
     getProject,
     getProjectApplication,
     localStorage,
-    globalConfig,
     log,
     PluginsContainer
 
