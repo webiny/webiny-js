@@ -1,11 +1,9 @@
 const { sendEvent: baseSendEvent } = require("./index");
-const { globalConfig } = require("@webiny/global-config");
+const { isEnabled } = require(".");
 
 module.exports.sendEvent = ({ event, user, version, properties, extraPayload }) => {
-    const config = globalConfig.get();
-
     // Check both `telemetry` and `tracking` for backwards compatibility.
-    if (!globalConfig.telemetry) {
+    if (!isEnabled()) {
         return;
     }
 
