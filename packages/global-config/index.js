@@ -32,11 +32,5 @@ module.exports.globalConfig = {
         globalConfig[key] = value;
         writeJson.sync(GLOBAL_CONFIG_PATH, globalConfig);
         return globalConfig;
-    },
-
-    // Created this getter just for backwards compatibility (we need to check the old "tracking" property too).
-    get telemetry() {
-        const config = this.get();
-        return config.telemetry !== false || config.tracking !== false;
     }
 };
