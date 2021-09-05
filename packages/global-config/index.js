@@ -24,9 +24,6 @@ module.exports.globalConfig = {
 
         return key ? this.__globalConfig[key] : this.__globalConfig;
     },
-    get(key) {
-        return this.get(key);
-    },
     set(key, value) {
         const globalConfig = this.get();
         globalConfig[key] = value;
