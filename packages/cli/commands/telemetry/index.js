@@ -1,5 +1,4 @@
-const { sendEvent } = require("@webiny/cli/utils/sendEvent");
-const telemetry = require("@webiny/telemetry");
+const telemetry = require("@webiny/telemetry/cli");
 
 module.exports = {
     type: "cli-command",
@@ -7,7 +6,7 @@ module.exports = {
     create({ yargs, context }) {
         yargs.command("enable-telemetry", "Enable anonymous telemetry.", async () => {
             telemetry.enable();
-            await sendEvent({ event: "enable-telemetry" });
+            await telemetry.sendEvent({ event: "enable-telemetry" });
             context.info(
                 `Webiny telemetry is now ${context.info.hl(
                     "enabled"
@@ -19,8 +18,8 @@ module.exports = {
         });
 
         yargs.command("disable-telemetry", "Disable anonymous telemetry.", async () => {
+            await telemetry.sendEvent({ event: "disable-telemetry" });
             telemetry.disable();
-            await sendEvent({ event: "disable-telemetry" });
             context.info(`Webiny telemetry is now ${context.info.hl("disabled")}!`);
             context.info(
                 `Note that, in order to complete the process, you will also need to re-deploy your project, using the ${context.info.hl(
