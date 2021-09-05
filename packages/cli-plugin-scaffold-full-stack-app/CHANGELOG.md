@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.14.0](https://github.com/webiny/webiny-js/compare/v5.14.0-beta.0...v5.14.0) (2021-08-30)
+
+**Note:** Version bump only for package @webiny/cli-plugin-scaffold-full-stack-app
+
+
+
+
+
+# [5.14.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.13.0...v5.14.0-beta.0) (2021-08-26)
+
+
+### Bug Fixes
+
+* replace `project-applications-path` correctly ([5dad538](https://github.com/webiny/webiny-js/commit/5dad538793f448613a05c000b4707d2fb806ddd2))
+* run prettier ([75a424c](https://github.com/webiny/webiny-js/commit/75a424c0e6a1d2551a018ec32e9f57168460fafb))
+
+
+
+
+
 # [5.13.0](https://github.com/webiny/webiny-js/compare/v5.13.0-beta.4...v5.13.0) (2021-08-18)
 
 

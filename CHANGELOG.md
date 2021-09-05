@@ -3,6 +3,39 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.14.0](https://github.com/webiny/webiny-js/compare/v5.14.0-beta.0...v5.14.0) (2021-08-30)
+
+**Note:** Version bump only for package webiny-js
+
+
+
+
+
+# [5.14.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.13.0...v5.14.0-beta.0) (2021-08-26)
+
+
+### Bug Fixes
+
+* correct `pulumi` import statement ([207a5b0](https://github.com/webiny/webiny-js/commit/207a5b02ca88f6759a20abce9f81b155c496de07))
+* ensure "~" imports work for React apps ([c412af3](https://github.com/webiny/webiny-js/commit/c412af3085f61609c73fa0a026f643de4819f8c5))
+* replace `project-applications-path` correctly ([5dad538](https://github.com/webiny/webiny-js/commit/5dad538793f448613a05c000b4707d2fb806ddd2))
+* run prettier ([75a424c](https://github.com/webiny/webiny-js/commit/75a424c0e6a1d2551a018ec32e9f57168460fafb))
+* update comment ([66c55fc](https://github.com/webiny/webiny-js/commit/66c55fc04c1ad6bdbab19a094e6af28547d4c9a1))
+* use `tenant.id` ([5eeb235](https://github.com/webiny/webiny-js/commit/5eeb2355afabffcefe087fdd323b460efdb65282))
+* use `Trebuchet MS', sans-serif;` font ([103e666](https://github.com/webiny/webiny-js/commit/103e6666c61a2011661a8daa438069506518c385))
+* use tilde instead of '../../..' ([0094b1d](https://github.com/webiny/webiny-js/commit/0094b1d2eab7db94a6b7d1f22a241cd56fe7e40a))
+* **cli-plugin-scaffold-ci:** repositoies fetched limit ([524e26b](https://github.com/webiny/webiny-js/commit/524e26beeb891efd739c49a0d623e2f58f66153c))
+
+
+### Features
+
+* Added the issue templates and security policy to report vulnerability ([#1867](https://github.com/webiny/webiny-js/issues/1867)) ([b2cc547](https://github.com/webiny/webiny-js/commit/b2cc547ad7f87881121c01f5e25c533319c6606c))
+* custom Apollo InMemoryCache ([#1884](https://github.com/webiny/webiny-js/issues/1884)) ([7d30bd3](https://github.com/webiny/webiny-js/commit/7d30bd317300a03906d3bf34d15357e2615aadde))
+
+
+
+
+
 # [5.13.0](https://github.com/webiny/webiny-js/compare/v5.13.0-beta.4...v5.13.0) (2021-08-18)
 
 

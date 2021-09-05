@@ -13,12 +13,12 @@ import {
     PbEditorPageElementSettingsRenderComponentProps,
     PbEditorResponsiveModePlugin,
     PbThemePlugin
-} from "../../../../types";
+} from "~/types";
 import {
     activeElementAtom,
     elementWithChildrenByIdSelector,
     uiAtom
-} from "../../../recoil/modules";
+} from "~/editor/recoil/modules";
 // Components
 import Accordion from "../../elementSettings/components/Accordion";
 import Wrapper from "../../elementSettings/components/Wrapper";
@@ -79,7 +79,7 @@ const TextSettings: React.FunctionComponent<
                 {el.label}
             </option>
         ));
-    }, [theme]);
+    }, [theme, element]);
 
     const { getUpdateValue, getUpdatePreview } = useUpdateHandlers({
         element,
@@ -122,7 +122,7 @@ const TextSettings: React.FunctionComponent<
             applyFallbackDisplayMode(displayMode, mode =>
                 get(element, `${DATA_NAMESPACE}.${mode}`)
             ),
-        [displayMode]
+        [displayMode, element]
     );
 
     const text = get(element, `${DATA_NAMESPACE}.${displayMode}`, fallbackValue);
