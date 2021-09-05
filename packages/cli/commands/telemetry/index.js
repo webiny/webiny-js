@@ -1,12 +1,12 @@
 const { sendEvent } = require("@webiny/cli/utils/sendEvent");
-const { globalConfig } = require("@webiny/cli/utils");
+const telemetry = require("@webiny/telemetry");
 
 module.exports = {
     type: "cli-command",
     name: "cli-command-telemetry",
     create({ yargs, context }) {
         yargs.command("enable-telemetry", "Enable anonymous telemetry.", async () => {
-            globalConfig.set("telemetry", true);
+            telemetry.enable();
             await sendEvent({ event: "enable-telemetry" });
             context.info(
                 `Webiny telemetry is now ${context.info.hl(
@@ -19,7 +19,7 @@ module.exports = {
         });
 
         yargs.command("disable-telemetry", "Disable anonymous telemetry.", async () => {
-            globalConfig.set("telemetry", false);
+            telemetry.disable();
             await sendEvent({ event: "disable-telemetry" });
             context.info(`Webiny telemetry is now ${context.info.hl("disabled")}!`);
             context.info(
