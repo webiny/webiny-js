@@ -6,7 +6,6 @@
   "dependencies": {
     "@webiny/global-config": "^5.13.0",
     "form-data": "3.0.0",
-    "load-json-file": "6.2.0",
     "node-fetch": "2.6.1"
   },
   "publishConfig": {

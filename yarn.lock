@@ -10191,6 +10191,16 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@webiny/global-config@workspace:packages/global-config":
+  version: 0.0.0-use.local
+  resolution: "@webiny/global-config@workspace:packages/global-config"
+  dependencies:
+    form-data: 3.0.0
+    load-json-file: 6.2.0
+    node-fetch: 2.6.1
+  languageName: unknown
+  linkType: soft
+
 "@webiny/handler-args@^5.13.0, @webiny/handler-args@workspace:packages/handler-args":
   version: 0.0.0-use.local
   resolution: "@webiny/handler-args@workspace:packages/handler-args"
