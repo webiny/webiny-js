@@ -5,7 +5,8 @@ const API_KEY = "ZdDZgkeOt4Z_m-UWmqFsE1d6-kcCK3BH0ypYTUIFty4";
 const API_URL = "https://t.webiny.com";
 
 /**
- * The main sendEvent function
+ * The main `sendEvent` function.
+ * Note: it's recommended the one from `cli.js` and `react.js` files is used instead.
  * @param event
  * @param user
  * @param version
