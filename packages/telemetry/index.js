@@ -1,5 +1,6 @@
 const FormData = require("form-data");
 const fetch = require("node-fetch");
+const { globalConfig } = require("@webiny/global-config");
 
 const API_KEY = "ZdDZgkeOt4Z_m-UWmqFsE1d6-kcCK3BH0ypYTUIFty4";
 const API_URL = "https://t.webiny.com";
@@ -46,4 +47,17 @@ module.exports.sendEvent = async ({ event, user, version, properties, extraPaylo
     }).catch(() => {
         // Ignore errors
     });
+};
+
+module.exports.enable = () => {
+    globalConfig.set("telemetry", true);
+};
+
+module.exports.disable = () => {
+    globalConfig.set("telemetry", false);
+};
+
+module.exports.isEnabled = () => {
+    const config = globalConfig.get();
+    return config.telemetry !== false || config.tracking !== false;
 };
