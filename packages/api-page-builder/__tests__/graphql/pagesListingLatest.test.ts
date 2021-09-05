@@ -11,8 +11,7 @@ describe("listing latest pages", () => {
         requestReview,
         listPages,
         updatePage,
-        until,
-        sleep
+        until
     } = useGqlHandler();
 
     const createInitialCategory = async () => {
@@ -30,6 +29,25 @@ describe("listing latest pages", () => {
         return createCategoryResponse.data.pageBuilder.createCategory.data;
     };
 
+    const waitPage = async (page: Page) => {
+        await until(
+            () =>
+                listPages({
+                    sort: ["createdOn_DESC"]
+                }),
+            ([response]) => {
+                return response.data.pageBuilder.listPages.data.some(item => {
+                    return item.id === page.id && item.title === page.title;
+                });
+            },
+            {
+                name: `waiting for page ${page.title}`,
+                wait: 500,
+                tries: 30
+            }
+        );
+    };
+
     const createInitialData = async () => {
         const pages: Page[] = [];
         const ids: string[] = [];
@@ -45,7 +63,7 @@ describe("listing latest pages", () => {
                 throw new Error(response.data.pageBuilder.createPage.error);
             }
 
-            await sleep(150);
+            await waitPage(page);
             const title = `page-${letter}`;
             const [updateResponse] = await updatePage({
                 id: page.id,
@@ -89,8 +107,9 @@ describe("listing latest pages", () => {
     };
 
     test("sorting", async () => {
+        await createInitialData();
         // 1. Check if all were returned and sorted `createdOn: asc`.
-        await until(
+        const [listPagesResponse] = await until(
             () =>
                 listPages({
                     sort: "createdOn_ASC"
@@ -101,61 +120,59 @@ describe("listing latest pages", () => {
                 wait: 400,
                 tries: 20
             }
-        ).then(([res]) =>
-            expect(res).toMatchObject({
-                data: {
-                    pageBuilder: {
-                        listPages: {
-                            data: [
-                                { title: "page-a" },
-                                { title: "page-z" },
-                                { title: "page-b" },
-                                { title: "page-x" },
-                                { title: "page-c" }
-                            ]
-                        }
+        );
+
+        expect(listPagesResponse).toMatchObject({
+            data: {
+                pageBuilder: {
+                    listPages: {
+                        data: [
+                            { title: "page-a" },
+                            { title: "page-z" },
+                            { title: "page-b" },
+                            { title: "page-x" },
+                            { title: "page-c" }
+                        ]
                     }
                 }
-            })
-        );
+            }
+        });
 
         // 2. Check if all were returned and sorted `title: asc`.
-        await listPages({ sort: ["title_ASC"] }).then(([res]) =>
-            expect(res).toMatchObject({
-                data: {
-                    pageBuilder: {
-                        listPages: {
-                            data: [
-                                { title: "page-a" },
-                                { title: "page-b" },
-                                { title: "page-c" },
-                                { title: "page-x" },
-                                { title: "page-z" }
-                            ]
-                        }
+        const [listPagesTitleAscResponse] = await listPages({ sort: ["title_ASC"] });
+        expect(listPagesTitleAscResponse).toMatchObject({
+            data: {
+                pageBuilder: {
+                    listPages: {
+                        data: [
+                            { title: "page-a" },
+                            { title: "page-b" },
+                            { title: "page-c" },
+                            { title: "page-x" },
+                            { title: "page-z" }
+                        ]
                     }
                 }
-            })
-        );
+            }
+        });
 
         // 3. Check if all were returned and sorted `title: desc`.
-        await listPages({ sort: ["title_DESC"] }).then(([res]) =>
-            expect(res).toMatchObject({
-                data: {
-                    pageBuilder: {
-                        listPages: {
-                            data: [
-                                { title: "page-z" },
-                                { title: "page-x" },
-                                { title: "page-c" },
-                                { title: "page-b" },
-                                { title: "page-a" }
-                            ]
-                        }
+        const [listPagesTitleDescResponse] = await listPages({ sort: ["title_DESC"] });
+        expect(listPagesTitleDescResponse).toMatchObject({
+            data: {
+                pageBuilder: {
+                    listPages: {
+                        data: [
+                            { title: "page-z" },
+                            { title: "page-x" },
+                            { title: "page-c" },
+                            { title: "page-b" },
+                            { title: "page-a" }
+                        ]
                     }
                 }
-            })
-        );
+            }
+        });
     });
 
     test("sorting by title must work case insensitive", async () => {
@@ -167,9 +184,10 @@ describe("listing latest pages", () => {
             if (res.data.pageBuilder.createPage.error) {
                 throw new Error(res.data.pageBuilder.createPage.error);
             }
-            await sleep(150);
+            const page = res.data.pageBuilder.createPage.data;
+            await waitPage(page);
             await updatePage({
-                id: res.data.pageBuilder.createPage.data.id,
+                id: page.id,
                 data: {
                     title: `page-${letter}`
                 }
@@ -177,42 +195,45 @@ describe("listing latest pages", () => {
         }
 
         // List should show all five pages.
-        await until(
-            () => listPages({ sort: ["title_ASC"] }),
+        const [listTitleAscResponse] = await until(
+            () => listPages({ sort: ["title_ASC", "createdOn_ASC"] }),
             ([res]) => {
                 const { data } = res.data.pageBuilder.listPages;
                 return data[0].title === "page-a" && data[9].title === "page-Z";
             },
             {
-                name: "after creating new pages with uppercase titles"
+                name: "after creating new pages with uppercase titles",
+                wait: 400,
+                tries: 20
             }
-        ).then(([res]) =>
-            // Might not be an ideal order but it's what we knew at the moment of implementation. In the future,
-            // if we find out how to do "page-A", "page-a", "page B", "page b", ..., we'll revisit this.
-            expect(res).toMatchObject({
-                data: {
-                    pageBuilder: {
-                        listPages: {
-                            data: [
-                                { title: "page-a" },
-                                { title: "page-A" },
-                                { title: "page-b" },
-                                { title: "page-B" },
-                                { title: "page-c" },
-                                { title: "page-C" },
-                                { title: "page-x" },
-                                { title: "page-X" },
-                                { title: "page-z" },
-                                { title: "page-Z" }
-                            ]
-                        }
+        );
+
+        // Might not be an ideal order but it's what we knew at the moment of implementation. In the future,
+        // if we find out how to do "page-A", "page-a", "page B", "page b", ..., we'll revisit this.
+        expect(listTitleAscResponse).toMatchObject({
+            data: {
+                pageBuilder: {
+                    listPages: {
+                        data: [
+                            { title: "page-a" },
+                            { title: "page-A" },
+                            { title: "page-b" },
+                            { title: "page-B" },
+                            { title: "page-c" },
+                            { title: "page-C" },
+                            { title: "page-x" },
+                            { title: "page-X" },
+                            { title: "page-z" },
+                            { title: "page-Z" }
+                        ]
                     }
                 }
-            })
-        );
+            }
+        });
     });
 
     test("filtering by category", async () => {
+        await createInitialData();
         await createCategory({
             data: {
                 slug: `custom`,
@@ -227,86 +248,99 @@ describe("listing latest pages", () => {
         for (let i = 0; i < letters.length; i++) {
             const letter = letters[i];
             const [response] = await createPage({ category: "custom" });
-            const { id } = response.data.pageBuilder.createPage.data;
 
+            const page = response.data.pageBuilder.createPage.data;
+
+            await waitPage(page);
+            const title = `page-${letter}`;
             await updatePage({
-                id,
+                id: page.id,
                 data: {
-                    title: `page-${letter}`
+                    title
                 }
+            });
+            await waitPage({
+                ...page,
+                title
             });
         }
 
         // Just in case, ensure all ten pages are present.
-        await until(listPages, ([res]) => {
-            const list = res.data.pageBuilder.listPages.data;
-            return list.length === 10 && list[0].title === "page-a" && list[9].title === "page-l";
-        }).then(([res]) =>
-            expect(res).toMatchObject({
-                data: {
-                    pageBuilder: {
-                        listPages: {
-                            data: [
-                                { title: "page-a" },
-                                { title: "page-z" },
-                                { title: "page-b" },
-                                { title: "page-x" },
-                                { title: "page-c" },
-                                { title: "page-j" },
-                                { title: "page-n" },
-                                { title: "page-k" },
-                                { title: "page-m" },
-                                { title: "page-l" }
-                            ]
-                        }
+        const [listPagesResponse] = await until(
+            () =>
+                listPages({
+                    sort: ["createdOn_ASC"]
+                }),
+            ([res]) => {
+                return res.data.pageBuilder.listPages.data.length === 10;
+            },
+            {
+                name: "after create and update page in category filter"
+            }
+        );
+        expect(listPagesResponse).toMatchObject({
+            data: {
+                pageBuilder: {
+                    listPages: {
+                        data: [
+                            { title: "page-a" },
+                            { title: "page-z" },
+                            { title: "page-b" },
+                            { title: "page-x" },
+                            { title: "page-c" },
+                            { title: "page-j" },
+                            { title: "page-n" },
+                            { title: "page-k" },
+                            { title: "page-m" },
+                            { title: "page-l" }
+                        ]
                     }
                 }
-            })
-        );
+            }
+        });
 
         // 1. Check if `category: custom` were returned and sorted `createdOn: desc`.
-        await until(
-            () => listPages({ where: { category: "custom" } }),
+        const [listPagesWhereCustomCategory] = await until(
+            () => listPages({ where: { category: "custom" }, sort: ["createdOn_ASC"] }),
             ([res]) => res.data.pageBuilder.listPages.data.length === 5
-        ).then(([res]) =>
-            expect(res).toMatchObject({
-                data: {
-                    pageBuilder: {
-                        listPages: {
-                            data: [
-                                { title: "page-j" },
-                                { title: "page-n" },
-                                { title: "page-k" },
-                                { title: "page-m" },
-                                { title: "page-l" }
-                            ]
-                        }
-                    }
-                }
-            })
         );
 
-        // 2. Check if `category: custom` were returned and sorted `title: asc`.
-        await until(
-            () => listPages({ where: { category: "custom" }, sort: ["title_ASC"] }),
-            ([res]) => res.data.pageBuilder.listPages.data.length === 5
-        ).then(([res]) =>
-            expect(res).toMatchObject({
-                data: {
-                    pageBuilder: {
-                        listPages: {
-                            data: [
-                                { title: "page-j" },
-                                { title: "page-k" },
-                                { title: "page-l" },
-                                { title: "page-m" },
-                                { title: "page-n" }
-                            ]
-                        }
+        expect(listPagesWhereCustomCategory).toMatchObject({
+            data: {
+                pageBuilder: {
+                    listPages: {
+                        data: [
+                            { title: "page-j" },
+                            { title: "page-n" },
+                            { title: "page-k" },
+                            { title: "page-m" },
+                            { title: "page-l" }
+                        ]
                     }
                 }
-            })
+            }
+        });
+
+        // 2. Check if `category: custom` were returned and sorted `title: desc`.
+        const [listPagesWhereCustomCategoryTitleDescResponse] = await until(
+            () => listPages({ where: { category: "custom" }, sort: ["title_DESC"] }),
+            ([res]) => res.data.pageBuilder.listPages.data.length === 5
         );
+        expect(listPagesWhereCustomCategoryTitleDescResponse).toMatchObject({
+            data: {
+                pageBuilder: {
+                    listPages: {
+                        data: [
+                            { title: "page-n" },
+                            { title: "page-m" },
+                            { title: "page-l" },
+                            { title: "page-k" },
+                            { title: "page-j" }
+                        ]
+                    }
+                }
+            }
+        });
     });
 
     test("filtering by status", async () => {
@@ -317,110 +351,118 @@ describe("listing latest pages", () => {
 
         // We should still get all results when no filters are applied.
         // 1. Check if all were returned and sorted `createdOn: desc`.
-        await until(
+        const [listPagesCreatedOnDesc] = await until(
             () => listPages({ sort: ["createdOn_DESC"] }),
-            ([res]) => res.data.pageBuilder.listPages.data.length
-        ).then(([res]) =>
-            expect(res).toMatchObject({
-                data: {
-                    pageBuilder: {
-                        listPages: {
-                            data: [
-                                { title: "page-c" },
-                                { title: "page-x" },
-                                { title: "page-b" },
-                                { title: "page-z" },
-                                { title: "page-a" }
-                            ]
-                        }
+            ([res]) => res.data.pageBuilder.listPages.data.length,
+            {
+                name: "list pages createdOn desc"
+            }
+        );
+        expect(listPagesCreatedOnDesc).toMatchObject({
+            data: {
+                pageBuilder: {
+                    listPages: {
+                        data: [
+                            { title: "page-c" },
+                            { title: "page-x" },
+                            { title: "page-b" },
+                            { title: "page-z" },
+                            { title: "page-a" }
+                        ]
                     }
                 }
-            })
-        );
+            }
+        });
 
         // 2. We should only get two results here because we published two pages.
-        await until(
+        const [listPagesPublishedCreatedOnDesc] = await until(
             () => listPages({ where: { status: "published" }, sort: ["createdOn_DESC"] }),
-            ([res]) => res.data.pageBuilder.listPages.data.length === 2
-        ).then(([res]) =>
-            expect(res).toMatchObject({
-                data: {
-                    pageBuilder: {
-                        listPages: {
-                            data: [{ title: "page-z" }, { title: "page-a" }]
-                        }
-                    }
-                }
-            })
+            ([res]) => res.data.pageBuilder.listPages.data.length === 2,
+            {
+                name: "list published pages createdOn desc"
+            }
         );
 
-        await until(
+        expect(listPagesPublishedCreatedOnDesc).toMatchObject({
+            data: {
+                pageBuilder: {
+                    listPages: {
+                        data: [{ title: "page-z" }, { title: "page-a" }]
+                    }
+                }
+            }
+        });
+
+        const [listPagesPublishedTitleAsc] = await until(
             () =>
                 listPages({
                     sort: ["title_ASC"],
                     where: { status: "published" }
                 }),
-            ([res]) => res.data.pageBuilder.listPages.data[0].title === "page-a"
-        ).then(([res]) =>
-            expect(res).toMatchObject({
-                data: {
-                    pageBuilder: {
-                        listPages: {
-                            data: [{ title: "page-a" }, { title: "page-z" }]
-                        }
+            ([res]) => res.data.pageBuilder.listPages.data[0].title === "page-a",
+            {
+                name: "list published pages title asc"
+            }
+        );
+        expect(listPagesPublishedTitleAsc).toMatchObject({
+            data: {
+                pageBuilder: {
+                    listPages: {
+                        data: [{ title: "page-a" }, { title: "page-z" }]
                     }
                 }
-            })
-        );
+            }
+        });
 
         // 4. Let's unpublish first two and then again filter by `status: published`. We should not get any pages.
         await unpublishPage({ id: initialData.pages[0].id });
         await unpublishPage({ id: initialData.pages[1].id });
 
-        await until(
+        const [listPagesPublishedTitleAscAfterUnpublish] = await until(
             () =>
                 listPages({
                     sort: ["title_ASC"],
                     where: { status: "published" }
                 }),
             ([res]) => res.data.pageBuilder.listPages.data.length === 0
-        ).then(([res]) =>
-            expect(res).toMatchObject({
-                data: {
-                    pageBuilder: {
-                        listPages: {
-                            data: []
-                        }
+        );
+        expect(listPagesPublishedTitleAscAfterUnpublish).toMatchObject({
+            data: {
+                pageBuilder: {
+                    listPages: {
+                        data: []
                     }
                 }
-            })
-        );
+            }
+        });
 
         // 5. Let's test filtering by `reviewRequested` and `changesNeeded` statuses.
         await requestReview({ id: initialData.pages[2].id });
         await requestReview({ id: initialData.pages[3].id });
 
-        await until(
+        const [listPagesReviewRequestedCreatedOnDesc] = await until(
             () =>
                 listPages({
                     where: { status: "reviewRequested" },
                     sort: ["createdOn_DESC"]
                 }),
-            ([res]) => res.data.pageBuilder.listPages.data.length === 2
-        ).then(([res]) =>
-            expect(res).toMatchObject({
-                data: {
-                    pageBuilder: {
-                        listPages: {
-                            data: [
-                                { title: "page-x", status: "reviewRequested" },
-                                { title: "page-b", status: "reviewRequested" }
-                            ]
-                        }
+            ([res]) => res.data.pageBuilder.listPages.data.length === 2,
+            {
+                name: "list pages review requested createdOn desc"
+            }
+        );
+        expect(listPagesReviewRequestedCreatedOnDesc).toMatchObject({
+            data: {
+                pageBuilder: {
+                    listPages: {
+                        data: [
+                            { title: "page-x", status: "reviewRequested" },
+                            { title: "page-b", status: "reviewRequested" }
+                        ]
                     }
                 }
-            })
-        );
+            }
+        });
 
         const { requestChanges } = useGqlHandler({
             identity: identityB
@@ -434,119 +476,267 @@ describe("listing latest pages", () => {
                 listPages({
                     where: { status: "reviewRequested" }
                 }),
-            ([res]) => res.data.pageBuilder.listPages.data.length === 0
+            ([res]) => res.data.pageBuilder.listPages.data.length === 0,
+            {
+                name: "list pages review requested after request changes"
+            }
         );
 
-        await until(
+        const [listPagesChangesRequestedCreatedOnDesc] = await until(
             () =>
                 listPages({
                     where: { status: "changesRequested" },
                     sort: ["createdOn_DESC"]
                 }),
-            ([res]) => res.data.pageBuilder.listPages.data.length === 2
-        ).then(([res]) =>
-            expect(res).toMatchObject({
-                data: {
-                    pageBuilder: {
-                        listPages: {
-                            data: [
-                                { title: "page-x", status: "changesRequested" },
-                                { title: "page-b", status: "changesRequested" }
-                            ]
-                        }
+            ([res]) => res.data.pageBuilder.listPages.data.length === 2,
+            {
+                name: "list pages changes requested createdOn desc"
+            }
+        );
+
+        expect(listPagesChangesRequestedCreatedOnDesc).toMatchObject({
+            data: {
+                pageBuilder: {
+                    listPages: {
+                        data: [
+                            { title: "page-x", status: "changesRequested" },
+                            { title: "page-b", status: "changesRequested" }
+                        ]
                     }
                 }
-            })
-        );
+            }
+        });
     });
 
     test("pagination", async () => {
+        await createInitialData();
         await until(
             () => listPages({ sort: ["createdOn_DESC"] }),
             ([res]) => res.data.pageBuilder.listPages.data.length === 5
-        ).then(([res]) =>
-            expect(res.data.pageBuilder.listPages.meta).toEqual({
-                cursor: null,
-                hasMoreItems: false,
-                totalCount: 5
-            })
         );
 
-        await until(
-            () => listPages({ limit: 1, sort: ["createdOn_DESC"] }),
-            ([res]) => res.data.pageBuilder.listPages.data.length === 1
-        ).then(([res]) => {
-            expect(res.data.pageBuilder.listPages.data[0].title).toBe("page-c");
-            expect(res.data.pageBuilder.listPages.meta).toEqual({
-                hasMoreItems: true,
-                totalCount: 5,
-                cursor: expect.any(String)
-            });
+        /**
+         * We will paginate through pages from last to first
+         * creation order: a, z, b, x, c
+         */
+
+        /**
+         * We start by going from last page.
+         * "C"
+         */
+        const [responseLimit1C] = await listPages({
+            limit: 1,
+            sort: ["createdOn_DESC"]
         });
 
-        await until(
-            () => listPages({ page: 3, limit: 1, sort: ["createdOn_DESC"] }),
-            ([res]) => res.data.pageBuilder.listPages.data.length === 1
-        ).then(([res]) => {
-            expect(res.data.pageBuilder.listPages.data[0].title).toBe("page-b");
-            expect(res.data.pageBuilder.listPages.meta).toEqual({
-                hasMoreItems: true,
-                totalCount: 5,
-                cursor: expect.any(String)
-            });
-        });
-
-        await until(
-            () => listPages({ page: 5, limit: 1, sort: ["createdOn_DESC"] }),
-            ([res]) => res.data.pageBuilder.listPages.data.length === 1
-        ).then(([res]) => {
-            expect(res.data.pageBuilder.listPages.data[0].title).toBe("page-a");
-            expect(res.data.pageBuilder.listPages.meta).toEqual({
-                hasMoreItems: false,
-                cursor: null,
-                totalCount: 5
-            });
-        });
-
-        await until(
-            () => listPages({ page: 2, limit: 2, sort: ["title_ASC"] }),
-            ([res]) => res.data.pageBuilder.listPages.data.length === 2
-        ).then(([res]) => {
-            expect(res).toMatchObject({
-                data: {
-                    pageBuilder: {
-                        listPages: {
-                            data: [{ title: "page-c" }, { title: "page-x" }]
-                        }
+        expect(responseLimit1C).toMatchObject({
+            data: {
+                pageBuilder: {
+                    listPages: {
+                        data: [
+                            {
+                                title: "page-c"
+                            }
+                        ],
+                        meta: {
+                            hasMoreItems: true,
+                            cursor: expect.any(String),
+                            totalCount: 5
+                        },
+                        error: null
                     }
                 }
-            });
-            expect(res.data.pageBuilder.listPages.meta).toEqual({
-                totalCount: 5,
-                hasMoreItems: false,
-                cursor: null
-            });
+            }
         });
 
-        await until(
-            () => listPages({ page: 3, limit: 2, sort: ["title_DESC"] }),
-            ([res]) => res.data.pageBuilder.listPages.data.length === 1
-        ).then(([res]) => {
-            {
-                expect(res).toMatchObject({
-                    data: {
-                        pageBuilder: {
-                            listPages: {
-                                data: [{ title: "page-a" }]
+        const cursorC = responseLimit1C.data.pageBuilder.listPages.meta.cursor;
+        /**
+         * Then we expect to load "X"
+         */
+        const [responseLimit1X] = await listPages({
+            limit: 1,
+            sort: ["createdOn_DESC"],
+            after: cursorC
+        });
+        expect(responseLimit1X).toMatchObject({
+            data: {
+                pageBuilder: {
+                    listPages: {
+                        data: [
+                            {
+                                title: "page-x"
                             }
-                        }
+                        ],
+                        meta: {
+                            hasMoreItems: true,
+                            cursor: expect.any(String),
+                            totalCount: 5
+                        },
+                        error: null
                     }
-                });
-                expect(res.data.pageBuilder.listPages.meta).toEqual({
-                    totalCount: 5,
-                    cursor: null,
-                    hasMoreItems: false
-                });
+                }
+            }
+        });
+
+        const cursorX = responseLimit1X.data.pageBuilder.listPages.meta.cursor;
+        /**
+         * Then we load page "B"
+         */
+        const [responseLimit1B] = await listPages({
+            limit: 1,
+            sort: ["createdOn_DESC"],
+            after: cursorX
+        });
+        expect(responseLimit1B).toMatchObject({
+            data: {
+                pageBuilder: {
+                    listPages: {
+                        data: [
+                            {
+                                title: "page-b"
+                            }
+                        ],
+                        meta: {
+                            hasMoreItems: true,
+                            cursor: expect.any(String),
+                            totalCount: 5
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+        const cursorB = responseLimit1B.data.pageBuilder.listPages.meta.cursor;
+        /**
+         * Page "Z"
+         */
+        const [responseLimit1Z] = await listPages({
+            limit: 1,
+            sort: ["createdOn_DESC"],
+            after: cursorB
+        });
+
+        const cursorZ = responseLimit1Z.data.pageBuilder.listPages.meta.cursor;
+        /**
+         * Page "A"
+         * We have no pages after that.
+         */
+        const [responseLimit1A] = await listPages({
+            limit: 1,
+            sort: ["createdOn_DESC"],
+            after: cursorZ
+        });
+        expect(responseLimit1A).toMatchObject({
+            data: {
+                pageBuilder: {
+                    listPages: {
+                        data: [
+                            {
+                                title: "page-a"
+                            }
+                        ],
+                        meta: {
+                            hasMoreItems: false,
+                            cursor: null,
+                            totalCount: 5
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+        /**
+         * Now lets try to load pages by 2
+         * We start by going from last page.
+         * "C" and X
+         */
+        const [responseLimit2CX] = await listPages({
+            limit: 2,
+            sort: ["createdOn_DESC"]
+        });
+
+        expect(responseLimit2CX).toMatchObject({
+            data: {
+                pageBuilder: {
+                    listPages: {
+                        data: [
+                            {
+                                title: "page-c"
+                            },
+                            {
+                                title: "page-x"
+                            }
+                        ],
+                        meta: {
+                            hasMoreItems: true,
+                            cursor: expect.any(String),
+                            totalCount: 5
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+
+        const cursorCX = responseLimit2CX.data.pageBuilder.listPages.meta.cursor;
+        /**
+         * "C" and X
+         */
+        const [responseLimit2BZ] = await listPages({
+            limit: 2,
+            sort: ["createdOn_DESC"],
+            after: cursorCX
+        });
+
+        expect(responseLimit2BZ).toMatchObject({
+            data: {
+                pageBuilder: {
+                    listPages: {
+                        data: [
+                            {
+                                title: "page-b"
+                            },
+                            {
+                                title: "page-z"
+                            }
+                        ],
+                        meta: {
+                            hasMoreItems: true,
+                            cursor: expect.any(String),
+                            totalCount: 5
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+        const cursorBZ = responseLimit2BZ.data.pageBuilder.listPages.meta.cursor;
+
+        /**
+         * "C" and X
+         */
+        const [responseLimit2A] = await listPages({
+            limit: 2,
+            sort: ["createdOn_DESC"],
+            after: cursorBZ
+        });
+        expect(responseLimit2A).toMatchObject({
+            data: {
+                pageBuilder: {
+                    listPages: {
+                        data: [
+                            {
+                                title: "page-a"
+                            }
+                        ],
+                        meta: {
+                            hasMoreItems: false,
+                            cursor: null,
+                            totalCount: 5
+                        },
+                        error: null
+                    }
+                }
             }
         });
     });
@@ -576,20 +766,48 @@ describe("listing latest pages", () => {
             });
         }
 
-        await until(
-            () => listPages({ where: { tags: { query: ["news"] } } }),
-            ([res]) => res.data.pageBuilder.listPages.data.length === 4
-        ).then(([res]) =>
-            expect(res.data.pageBuilder.listPages.data).toMatchObject([
-                { title: "page-a" },
-                { title: "page-z" },
-                { title: "page-b" },
-                { title: "page-x" }
-            ])
+        const [listPagesWhereTagNews] = await until(
+            () =>
+                listPages({
+                    where: {
+                        tags: {
+                            query: ["news"]
+                        }
+                    },
+                    sort: ["createdOn_ASC"]
+                }),
+            ([res]) => res.data.pageBuilder.listPages.data.length === 4,
+            {
+                name: "list pages where tag is new"
+            }
         );
 
+        expect(listPagesWhereTagNews).toMatchObject({
+            data: {
+                pageBuilder: {
+                    listPages: {
+                        data: [
+                            { title: "page-a" },
+                            { title: "page-z" },
+                            { title: "page-b" },
+                            { title: "page-x" }
+                        ],
+                        error: null
+                    }
+                }
+            }
+        });
+
         await until(
-            () => listPages({ where: { tags: { query: ["world", "news"] } } }),
+            () =>
+                listPages({
+                    where: {
+                        tags: {
+                            query: ["world", "news"]
+                        }
+                    },
+                    sort: ["createdOn_ASC"]
+                }),
             ([res]) => res.data.pageBuilder.listPages.data.length === 2
         ).then(([res]) =>
             expect(res.data.pageBuilder.listPages.data).toMatchObject([
@@ -599,7 +817,15 @@ describe("listing latest pages", () => {
         );
 
         await until(
-            () => listPages({ where: { tags: { query: ["local", "news"] } } }),
+            () =>
+                listPages({
+                    where: {
+                        tags: {
+                            query: ["local", "news"]
+                        }
+                    },
+                    sort: ["createdOn_ASC"]
+                }),
             ([res]) => res.data.pageBuilder.listPages.data.length === 2
         ).then(([res]) =>
             expect(res.data.pageBuilder.listPages.data).toMatchObject([
@@ -610,6 +836,7 @@ describe("listing latest pages", () => {
     });
 
     test("searching by text", async () => {
+        await createInitialCategory();
         await createCategory({
             data: {
                 slug: `custom`,
@@ -641,13 +868,19 @@ describe("listing latest pages", () => {
         for (let i = 0; i < searchPages.length; i++) {
             const data = searchPages[i];
             const category = customCategoryPages.includes(i) ? "custom" : "category";
-            const page = await createPage({
+            const [createPageResponse] = await createPage({
                 category
-            }).then(([res]) => res.data.pageBuilder.createPage.data);
+            });
 
+            const page = createPageResponse.data.pageBuilder.createPage.data;
+            await waitPage(page);
             await updatePage({
                 id: page.id,
                 data
+            });
+            await waitPage({
+                ...page,
+                title: data.title
             });
         }
 
@@ -658,7 +891,10 @@ describe("listing latest pages", () => {
                         query: "title for seo"
                     }
                 }),
-            ([res]) => res.data.pageBuilder.listPages.data[0].title === TITLE_SEO
+            ([res]) => res.data.pageBuilder.listPages.data[0].title === TITLE_SEO,
+            {
+                name: "list pages title for seo search"
+            }
         );
 
         await until(
@@ -668,43 +904,54 @@ describe("listing latest pages", () => {
                         query: "healthy recipes"
                     }
                 }),
-            ([res]) => res.data.pageBuilder.listPages.data[0].title === TITLE_HEALTHY_RECIPES
+            ([res]) => res.data.pageBuilder.listPages.data[0].title === TITLE_HEALTHY_RECIPES,
+            {
+                name: "list pages title healthy recipes"
+            }
         );
 
-        await until(
+        const [listPagesSearchWhyGoServerless] = await until(
             () =>
                 listPages({
                     search: {
                         query: "why go serverless"
-                    }
+                    },
+                    sort: ["createdOn_ASC"]
                 }),
-            ([res]) => res.data.pageBuilder.listPages.data.length === 3
-        ).then(([res]) =>
-            expect(res.data.pageBuilder.listPages.data).toMatchObject([
-                { title: "Why should you go Serverless today?" },
-                { title: "What is Serverless and is it worth it?" },
-                { title: "Serverless Side Rendering — The Ultimate Guide" }
-            ])
+            ([res]) => res.data.pageBuilder.listPages.data.length === 3,
+            {
+                name: "list pages serverless worth it"
+            }
         );
 
-        await until(
+        expect(listPagesSearchWhyGoServerless.data.pageBuilder.listPages.data).toMatchObject([
+            { title: "What is Serverless and is it worth it?" },
+            { title: "Why should you go Serverless today?" },
+            { title: "Serverless Side Rendering — The Ultimate Guide" }
+        ]);
+
+        const [listPagesSearchServerlessWorthIt] = await until(
             () =>
                 listPages({
                     search: {
                         query: "serverless worth it"
-                    }
+                    },
+                    sort: ["createdOn_ASC"]
                 }),
-            ([res]) => res.data.pageBuilder.listPages.data.length === 3
-        ).then(([res]) =>
-            expect(res.data.pageBuilder.listPages.data).toMatchObject([
-                { title: "What is Serverless and is it worth it?" },
-                { title: "Why should you go Serverless today?" },
-                { title: "Serverless Side Rendering — The Ultimate Guide" }
-            ])
+            ([res]) => res.data.pageBuilder.listPages.data.length === 3,
+            {
+                name: "list pages serverless worth it"
+            }
         );
 
+        expect(listPagesSearchServerlessWorthIt.data.pageBuilder.listPages.data).toMatchObject([
+            { title: "What is Serverless and is it worth it?" },
+            { title: "Why should you go Serverless today?" },
+            { title: "Serverless Side Rendering — The Ultimate Guide" }
+        ]);
+
         // This should return two pages since we're only looking in the "custom" category.
-        await until(
+        const [listPagesCustomCategoryServerlessWorthIt] = await until(
             () =>
                 listPages({
                     where: {
@@ -712,14 +959,17 @@ describe("listing latest pages", () => {
                     },
                     search: {
                         query: "serverless worth it"
-                    }
+                    },
+                    sort: ["createdOn_ASC"]
                 }),
             ([res]) => res.data.pageBuilder.listPages.data.length === 2
-        ).then(([res]) =>
-            expect(res.data.pageBuilder.listPages.data).toMatchObject([
-                { title: "What is Serverless and is it worth it?" },
-                { title: "Serverless Side Rendering — The Ultimate Guide" }
-            ])
         );
+
+        expect(
+            listPagesCustomCategoryServerlessWorthIt.data.pageBuilder.listPages.data
+        ).toMatchObject([
+            { title: "What is Serverless and is it worth it?" },
+            { title: "Serverless Side Rendering — The Ultimate Guide" }
+        ]);
     });
 });

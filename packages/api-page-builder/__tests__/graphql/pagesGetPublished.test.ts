@@ -27,22 +27,22 @@ describe("getting published pages", () => {
         });
 
         const letters = ["a", "z", "b", "x", "c"];
-        for (let i = 0; i < 5; i++) {
+        for (const letter of letters) {
             const [response] = await createPage({ category: "category" });
             const { id } = response.data.pageBuilder.createPage.data;
 
             await updatePage({
                 id,
                 data: {
-                    title: `page-${letters[i]}`,
-                    path: `/path-${letters[i]}`
+                    title: `page-${letter}`,
+                    path: `/path-${letter}`
                 }
             });
 
             initiallyCreatedPagesIds.push(id);
 
             // Publish pages.
-            if (["a", "b", "c"].includes(letters[i])) {
+            if (["a", "b", "c"].includes(letter)) {
                 await publishPage({
                     id
                 });

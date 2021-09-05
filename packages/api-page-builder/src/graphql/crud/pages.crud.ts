@@ -68,6 +68,13 @@ const extractPageContent = async (page?: Page): Promise<Page | null> => {
     };
 };
 
+const createSort = (sort?: string[]): string[] => {
+    if (Array.isArray(sort) === false || sort.length === 0) {
+        return ["createdOn_DESC"];
+    }
+    return sort;
+};
+
 export default new ContextPlugin<PbContext>(async context => {
     /**
      * If pageBuilder is not defined on the context, do not continue, but log it.
@@ -972,7 +979,7 @@ export default new ContextPlugin<PbContext>(async context => {
 
             const listParams: PageStorageOperationsListParams = {
                 limit,
-                sort,
+                sort: createSort(sort),
                 where: {
                     ...initialWhere,
                     latest: true,
@@ -1024,7 +1031,7 @@ export default new ContextPlugin<PbContext>(async context => {
 
             const listParams: PageStorageOperationsListParams = {
                 limit,
-                sort,
+                sort: createSort(sort),
                 where: {
                     ...initialWhere,
                     published: true,

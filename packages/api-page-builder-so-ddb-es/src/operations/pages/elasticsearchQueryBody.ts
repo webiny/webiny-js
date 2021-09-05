@@ -184,6 +184,19 @@ const createElasticsearchQuery = (
             });
         }
     }
+    /**
+     * Specific search parameter
+     */
+    if (where.search) {
+        query.must.push({
+            query_string: {
+                query: `*${where.search}*`,
+                allow_leading_wildcard: true,
+                fields: ["titleLC"]
+            }
+        });
+    }
+    delete where.search;
 
     /**
      * !!! IMPORTANT !!! There are few specific cases where we hardcode the query conditions.
