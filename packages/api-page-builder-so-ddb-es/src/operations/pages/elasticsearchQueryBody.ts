@@ -192,7 +192,7 @@ const createElasticsearchQuery = (
             query_string: {
                 query: `*${where.search}*`,
                 allow_leading_wildcard: true,
-                fields: ["titleLC"]
+                fields: ["titleLC", "snippet"]
             }
         });
     }
