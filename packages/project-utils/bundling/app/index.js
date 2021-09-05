@@ -1,6 +1,6 @@
 const { version } = require("@webiny/project-utils/package.json");
 const { getProject } = require("@webiny/cli/utils");
-const { isEnabled } = require("@webiny/telemetry");
+const { isEnabled } = require("@webiny/telemetry/cli");
 
 const applyDefaults = () => {
     let telemetry;

@@ -1,6 +1,6 @@
 const { green } = require("chalk");
 const { getStackOutput, getPulumi } = require("@webiny/cli-plugin-deploy-pulumi/utils");
-const { sendEvent } = require("@webiny/cli/utils/sendEvent");
+const { sendEvent } = require("@webiny/cli/utils");
 const execa = require("execa");
 const sleep = require("../utils/sleep");
 
