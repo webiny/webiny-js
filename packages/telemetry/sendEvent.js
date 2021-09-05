@@ -57,4 +57,3 @@ module.exports = async ({ event, user, version, properties, extraPayload } = {})
         // Ignore errors
     });
 };
-
