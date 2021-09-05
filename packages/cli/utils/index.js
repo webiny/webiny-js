@@ -3,6 +3,7 @@ const getProject = require("./getProject");
 const getProjectApplication = require("./getProjectApplication");
 const localStorage = require("./localStorage");
 const log = require("./log");
+const sendEvent = require("./sendEvent");
 const PluginsContainer = require("./PluginsContainer");
 
 module.exports = {
@@ -11,8 +12,6 @@ module.exports = {
     getProjectApplication,
     localStorage,
     log,
+    sendEvent,
     PluginsContainer
-
-    // "sendEvent" wasn't exported on purpose. It's an internal helper function, so let's
-    // directly import it in our code, and avoid needlessly exposing it to regular users.
 };
