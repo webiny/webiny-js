@@ -1,5 +1,4 @@
-/* eslint-disable */
-const { sendEvent: baseSendEvent } = require("./index");
+const baseSendEvent = require("./sendEvent");
 
 const setProperties = data => {
     return sendEvent("$identify", data);

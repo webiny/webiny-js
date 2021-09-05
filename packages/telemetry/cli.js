@@ -1,17 +1,33 @@
-const { sendEvent: baseSendEvent } = require("./index");
-const { isEnabled } = require(".");
+const baseSendEvent = require("./sendEvent");
+const { globalConfig } = require("@webiny/global-config");
 
-module.exports.sendEvent = ({ event, user, version, properties, extraPayload }) => {
-    // Check both `telemetry` and `tracking` for backwards compatibility.
+const sendEvent = ({ event, user, version, properties, extraPayload }) => {
     if (!isEnabled()) {
         return;
     }
 
     return baseSendEvent({
         event,
-        user: user || config.id,
+        user: user || globalConfig.get("id"),
         version: version || require("./package.json").version,
         properties,
         extraPayload
     });
 };
+
+const enable = () => {
+    globalConfig.set("telemetry", true);
+};
+
+const disable = () => {
+    globalConfig.set("telemetry", false);
+};
+
+const isEnabled = () => {
+    const config = globalConfig.get();
+
+    // Check both `telemetry` and `tracking` for backwards compatibility.
+    return config.telemetry !== false || config.tracking !== false;
+};
+
+module.exports = { sendEvent, enable, disable, isEnabled };
