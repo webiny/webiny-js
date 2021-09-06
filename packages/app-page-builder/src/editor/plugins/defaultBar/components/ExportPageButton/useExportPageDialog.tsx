@@ -23,18 +23,14 @@ const spinnerWrapper = css`
 `;
 
 const linkWrapper = css`
-    position: relative;
+    display: flex;
     background-color: var(--mdc-theme-background);
 
     & .link-text {
-        display: inline-block;
-        padding: 8px 16px;
+        padding: 8px 0 8px 16px;
     }
 
     & .copy-button__wrapper {
-        position: absolute;
-        top: 4px;
-        right: 18px;
     }
 `;
 
