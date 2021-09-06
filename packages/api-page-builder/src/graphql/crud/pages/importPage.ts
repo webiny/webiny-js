@@ -52,7 +52,10 @@ const importPage = async ({
 
     const { srcPrefix } = await context.fileManager.settings.getSettings();
 
-    updateFilesInPageData({ data: page.content, fileIdToKeyMap, srcPrefix });
+    // Skip if there are no files
+    if (Array.isArray(files) && files.length) {
+        updateFilesInPageData({ data: page.content, fileIdToKeyMap, srcPrefix });
+    }
 
     return page;
 };
