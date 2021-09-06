@@ -1,5 +1,5 @@
 {
-  "name": "api-page-builder-page-export-task",
+  "name": "api-page-builder-export-page-task",
   "version": "0.1.0",
   "scripts": {
     "build": "yarn webiny run build",
