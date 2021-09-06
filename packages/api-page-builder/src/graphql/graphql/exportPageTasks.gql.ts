@@ -6,74 +6,74 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
     type: "graphql-schema",
     schema: {
         typeDefs: /* GraphQL */ `
-            enum PbPageExportTaskStatus {
+            enum PbExportPageTaskStatus {
                 pending
                 processing
                 completed
                 failed
             }
-            type PbPageExportTask {
+            type PbExportPageTask {
                 id: ID
                 createdOn: DateTime
                 createdBy: PbCreatedBy
-                status: PbPageExportTaskStatus
+                status: PbExportPageTaskStatus
                 data: JSON
             }
 
-            input PbPageExportTaskInput {
-                status: PbPageExportTaskStatus
+            input PbExportPageTaskInput {
+                status: PbExportPageTaskStatus
             }
 
-            input PbPageExportTaskUpdateInput {
-                status: PbPageExportTaskStatus
+            input PbExportPageTaskUpdateInput {
+                status: PbExportPageTaskStatus
                 data: JSON
             }
 
             # Response types
-            type PbPageExportTaskResponse {
-                data: PbPageExportTask
+            type PbExportPageTaskResponse {
+                data: PbExportPageTask
                 error: PbError
             }
 
-            type PbPageExportTaskListResponse {
-                data: [PbPageExportTask]
+            type PbExportPageTaskListResponse {
+                data: [PbExportPageTask]
                 error: PbError
             }
 
             extend type PbQuery {
-                listPageExportTasks: PbPageExportTaskListResponse
-                getPageExportTask(id: ID!): PbPageExportTaskResponse
+                listExportPageTasks: PbExportPageTaskListResponse
+                getExportPageTask(id: ID!): PbExportPageTaskResponse
             }
 
             extend type PbMutation {
-                createPageExportTask(data: PbPageExportTaskInput!): PbPageExportTaskResponse
-                updatePageExportTask(
+                createExportPageTask(data: PbExportPageTaskInput!): PbExportPageTaskResponse
+                updateExportPageTask(
                     id: ID!
-                    data: PbPageExportTaskUpdateInput!
-                ): PbPageExportTaskResponse
-                deletePageExportTask(id: ID!): PbPageExportTaskResponse
+                    data: PbExportPageTaskUpdateInput!
+                ): PbExportPageTaskResponse
+                deleteExportPageTask(id: ID!): PbExportPageTaskResponse
             }
         `,
         resolvers: {
             PbQuery: {
-                getPageExportTask: async (_, args: { id: string }, context) => {
+                getExportPageTask: async (_, args: { id: string }, context) => {
                     return resolve(() => {
                         return context.pageBuilder.pageExportTask.get(args.id);
                     });
                 },
-                listPageExportTasks: async (_, args, context) => {
+                listExportPageTasks: async (_, args, context) => {
                     return resolve(() => {
                         return context.pageBuilder.pageExportTask.list();
                     });
                 }
             },
             PbMutation: {
-                createPageExportTask: async (_, args: { data: Record<string, any> }, context) => {
+                createExportPageTask: async (_, args: { data: Record<string, any> }, context) => {
                     return resolve(() => {
                         return context.pageBuilder.pageExportTask.create(args.data);
                     });
                 },
-                updatePageExportTask: async (
+                updateExportPageTask: async (
                     _,
                     args: { id: string; data: Record<string, any> },
                     context
@@ -82,7 +82,7 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                         return context.pageBuilder.pageExportTask.update(args.id, args.data);
                     });
                 },
-                deletePageExportTask: async (_, args: { id: string }, context) => {
+                deleteExportPageTask: async (_, args: { id: string }, context) => {
                     return resolve(() => {
                         return context.pageBuilder.pageExportTask.delete(args.id);
                     });

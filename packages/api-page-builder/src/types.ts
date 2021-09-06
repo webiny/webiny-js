@@ -30,7 +30,7 @@ export enum ExportTaskStatus {
     FAILED = "failed"
 }
 
-export interface PageExportTask {
+export interface ExportPageTask {
     id: string;
     status: ExportTaskStatus;
     data: {

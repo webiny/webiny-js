@@ -7,7 +7,7 @@ import { I18NContext } from "@webiny/api-i18n/types";
 import { ElasticsearchContext } from "@webiny/api-elasticsearch/types";
 import DataLoader from "dataloader";
 import { ClientContext } from "@webiny/handler-client/types";
-import { Category, DefaultSettings, Menu, Page, PageElement, PageExportTask } from "../types";
+import { Category, DefaultSettings, Menu, Page, PageElement, ExportPageTask } from "../types";
 import { PrerenderingServiceClientContext } from "@webiny/api-prerendering-service/client/types";
 import { FileManagerContext } from "@webiny/api-file-manager/types";
 
@@ -104,11 +104,11 @@ export type PageElementsCrud = {
 };
 
 export type PageExportTaskCrud = {
-    get(id: string): Promise<PageExportTask>;
-    list(): Promise<PageExportTask[]>;
-    create(data: Record<string, any>): Promise<PageExportTask>;
-    update(id: string, data: Record<string, any>): Promise<PageExportTask>;
-    delete(id: string): Promise<PageExportTask>;
+    get(id: string): Promise<ExportPageTask>;
+    list(): Promise<ExportPageTask[]>;
+    create(data: Record<string, any>): Promise<ExportPageTask>;
+    update(id: string, data: Record<string, any>): Promise<ExportPageTask>;
+    delete(id: string): Promise<ExportPageTask>;
 };
 
 export type CategoriesCrud = {

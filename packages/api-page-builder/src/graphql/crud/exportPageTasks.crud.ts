@@ -5,30 +5,28 @@ import { object } from "commodo-fields-object";
 import { validation } from "@webiny/validation";
 import defaults from "./utils/defaults";
 import getPKPrefix from "./utils/getPKPrefix";
-import { ExportTaskStatus, PageExportTask, PbContext } from "~/types";
+import { ExportTaskStatus, ExportPageTask, PbContext } from "~/types";
 import checkBasePermissions from "./utils/checkBasePermissions";
 import checkOwnPermissions from "./utils/checkOwnPermissions";
 import { NotFoundError } from "@webiny/handler-graphql";
 
+const validStatus = `${ExportTaskStatus.PENDING}:${ExportTaskStatus.PROCESSING}:${ExportTaskStatus.COMPLETED}:${ExportTaskStatus.FAILED}`;
+
 const CreateDataModel = withFields({
     status: string({
-        validation: validation.create(
-            `required,in:${ExportTaskStatus.PENDING}:${ExportTaskStatus.PROCESSING}:${ExportTaskStatus.COMPLETED}`
-        )
+        validation: validation.create(`required,in:${validStatus}`)
     }),
     data: object()
 })();
 
 const UpdateDataModel = withFields({
     status: string({
-        validation: validation.create(
-            `in:${ExportTaskStatus.PENDING}:${ExportTaskStatus.PROCESSING}:${ExportTaskStatus.COMPLETED}`
-        )
+        validation: validation.create(`in:${validStatus}`)
     }),
     data: object()
 })();
 
-const TYPE = "pb.pageExportTask";
+const TYPE = "pb.exportPageTask";
 const PERMISSION_NAME = "pb.page";
 const PAGE_EXPORT_TASK = "PET";
 
@@ -41,26 +39,26 @@ const plugin: ContextPlugin<PbContext> = {
 
         context.pageBuilder = {
             ...context.pageBuilder,
-            pageExportTask: {
+            exportPageTask: {
                 async get(id) {
                     const permission = await checkBasePermissions(context, PERMISSION_NAME, {
                         rwd: "r"
                     });
 
-                    const [[pageExportTask]] = await db.read<PageExportTask>({
+                    const [[exportPageTask]] = await db.read<ExportPageTask>({
                         ...defaults.db,
                         query: { PK: PK(), SK: id },
                         limit: 1
                     });
 
-                    if (!pageExportTask) {
+                    if (!exportPageTask) {
                         return null;
                     }
 
                     const identity = context.security.getIdentity();
-                    checkOwnPermissions(identity, permission, pageExportTask);
+                    checkOwnPermissions(identity, permission, exportPageTask);
 
-                    return pageExportTask;
+                    return exportPageTask;
                 },
 
                 async list() {
@@ -68,7 +66,7 @@ const plugin: ContextPlugin<PbContext> = {
                         rwd: "r"
                     });
 
-                    const [pageElements] = await db.read<PageExportTask>({
+                    const [exportPageTasks] = await db.read<ExportPageTask>({
                         ...defaults.db,
                         query: { PK: PK(), SK: { $gt: " " } }
                     });
@@ -76,10 +74,10 @@ const plugin: ContextPlugin<PbContext> = {
                     // If user can only manage own records, let's check if he owns the loaded one.
                     if (permission.own) {
                         const identity = context.security.getIdentity();
-                        return pageElements.filter(item => item.createdBy.id === identity.id);
+                        return exportPageTasks.filter(item => item.createdBy.id === identity.id);
                     }
 
-                    return pageElements;
+                    return exportPageTasks;
                 },
 
                 async create(data) {
@@ -115,13 +113,13 @@ const plugin: ContextPlugin<PbContext> = {
                     const permission = await checkBasePermissions(context, PERMISSION_NAME, {
                         rwd: "w"
                     });
-                    const pageExportTask = await this.get(id);
-                    if (!pageExportTask) {
-                        throw new NotFoundError(`PageExportTask "${id}" not found.`);
+                    const exportPageTask = await this.get(id);
+                    if (!exportPageTask) {
+                        throw new NotFoundError(`ExportPageTask "${id}" not found.`);
                     }
 
                     const identity = context.security.getIdentity();
-                    checkOwnPermissions(identity, permission, pageExportTask);
+                    checkOwnPermissions(identity, permission, exportPageTask);
 
                     const updateDataModel = new UpdateDataModel().populate(data);
                     await updateDataModel.validate();
@@ -134,7 +132,7 @@ const plugin: ContextPlugin<PbContext> = {
                         data: updateData
                     });
 
-                    return { ...pageExportTask, ...updateData };
+                    return { ...exportPageTask, ...updateData };
                 },
 
                 async delete(id) {
@@ -142,20 +140,20 @@ const plugin: ContextPlugin<PbContext> = {
                         rwd: "d"
                     });
 
-                    const pageExportTask = await this.get(id);
-                    if (!pageExportTask) {
-                        throw new NotFoundError(`PageExportTask "${id}" not found.`);
+                    const exportPageTask = await this.get(id);
+                    if (!exportPageTask) {
+                        throw new NotFoundError(`ExportPageTask "${id}" not found.`);
                     }
 
                     const identity = context.security.getIdentity();
-                    checkOwnPermissions(identity, permission, pageExportTask);
+                    checkOwnPermissions(identity, permission, exportPageTask);
 
                     await db.delete({
                         ...defaults.db,
                         query: { PK: PK(), SK: id }
                     });
 
-                    return pageExportTask;
+                    return exportPageTask;
                 }
             }
         };

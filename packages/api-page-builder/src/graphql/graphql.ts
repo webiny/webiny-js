@@ -1,7 +1,7 @@
 import menus from "./graphql/menus.gql";
 import pages from "./graphql/pages.gql";
 import pageElements from "./graphql/pageElements.gql";
-import pageExportTask from "./graphql/pageExportTasks.gql";
+import exportPageTask from "./graphql/exportPageTasks.gql";
 import categories from "./graphql/categories.gql";
 import settings from "./graphql/settings.gql";
 import install from "./graphql/install.gql";
@@ -72,5 +72,5 @@ export default [
     pageElements,
     settings,
     install,
-    pageExportTask
+    exportPageTask
 ] as GraphQLSchemaPlugin[];
