@@ -11558,12 +11558,11 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"api-page-builder-flush@workspace:api/code/prerenderingService/flush":
+"api-page-builder-export-page-task@workspace:api/code/pageBuilder/exportPageTask":
   version: 0.0.0-use.local
-  resolution: "api-page-builder-flush@workspace:api/code/prerenderingService/flush"
+  resolution: "api-page-builder-export-page-task@workspace:api/code/pageBuilder/exportPageTask"
   dependencies:
-    "@webiny/api-prerendering-service": ^5.14.0
-    "@webiny/api-prerendering-service-aws": ^5.14.0
+    "@webiny/api-page-builder": ^5.14.0
     "@webiny/cli": ^5.14.0
     "@webiny/db-dynamodb": ^5.14.0
     "@webiny/handler-aws": ^5.14.0
@@ -11573,11 +11572,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"api-page-builder-page-export-task@workspace:api/code/pageBuilder/exportPageTask":
+"api-page-builder-flush@workspace:api/code/prerenderingService/flush":
   version: 0.0.0-use.local
-  resolution: "api-page-builder-page-export-task@workspace:api/code/pageBuilder/exportPageTask"
+  resolution: "api-page-builder-flush@workspace:api/code/prerenderingService/flush"
   dependencies:
-    "@webiny/api-page-builder": ^5.14.0
+    "@webiny/api-prerendering-service": ^5.14.0
+    "@webiny/api-prerendering-service-aws": ^5.14.0
     "@webiny/cli": ^5.14.0
     "@webiny/db-dynamodb": ^5.14.0
     "@webiny/handler-aws": ^5.14.0
