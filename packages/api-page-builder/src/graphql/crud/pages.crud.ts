@@ -1503,7 +1503,7 @@ const plugin: ContextPlugin<PbContext> = {
                     page.content = await extractContent(page.content);
 
                     // Create a page export task
-                    const exportTask = await context.pageBuilder.pageExportTask.create({
+                    const exportTask = await context.pageBuilder.exportPageTask.create({
                         status: ExportTaskStatus.PENDING
                     });
 

@@ -103,7 +103,7 @@ export type PageElementsCrud = {
     delete(id: string): Promise<PageElement>;
 };
 
-export type PageExportTaskCrud = {
+export type ExportPageTaskCrud = {
     get(id: string): Promise<ExportPageTask>;
     list(): Promise<ExportPageTask[]>;
     create(data: Record<string, any>): Promise<ExportPageTask>;
@@ -177,7 +177,7 @@ export type PbContext = Context<
             menus: MenusCrud;
             settings: SettingsCrud;
             system: SystemCrud;
-            pageExportTask: PageExportTaskCrud;
+            exportPageTask: ExportPageTaskCrud;
         };
     }
 >;
