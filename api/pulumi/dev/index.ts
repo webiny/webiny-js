@@ -127,6 +127,7 @@ export default () => {
         updatePbSettingsFunction: pageBuilder.functions.updateSettings.arn,
         psQueueAdd: prerenderingService.functions.queue.add.arn,
         psQueueProcess: prerenderingService.functions.queue.process.arn,
-        dynamoDbTable: dynamoDb.table.name
+        dynamoDbTable: dynamoDb.table.name,
+        dynamoDbElasticsearchTable: elasticSearch.table.name
     };
 };
