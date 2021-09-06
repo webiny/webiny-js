@@ -17,9 +17,9 @@ export const EXPORT_PAGE = gql`
 `;
 
 export const GET_EXPORT_PAGE_TASK = gql`
-    query PbGetPageExportTask($id: ID!) {
+    query PbGetExportPageTask($id: ID!) {
         pageBuilder {
-            getPageExportTask(id: $id) {
+            getExportPageTask(id: $id) {
                 data {
                     status
                     data
