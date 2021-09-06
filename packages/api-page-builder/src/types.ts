@@ -439,20 +439,18 @@ export interface Settings {
         notFound: string;
     };
     type: string;
-    tenant: string;
-    locale: string;
+    tenant: string | undefined | false;
+    locale: string | undefined | false;
 }
 /**
  * @category StorageOperations
  * @category SettingsStorageOperations
  */
 export interface SettingsStorageOperationsGetParams {
-    tenant?: string | boolean;
-    locale?: string | boolean;
     where: {
         type: string;
-        tenant?: string;
-        locale?: string;
+        tenant: string | undefined | false;
+        locale: string | undefined | false;
     };
 }
 /**
@@ -460,8 +458,6 @@ export interface SettingsStorageOperationsGetParams {
  * @category SettingsStorageOperations
  */
 export interface SettingsStorageOperationsCreateParams {
-    tenant?: string | boolean;
-    locale?: string | boolean;
     input: Record<string, any>;
     settings: Settings;
 }
@@ -470,8 +466,6 @@ export interface SettingsStorageOperationsCreateParams {
  * @category SettingsStorageOperations
  */
 export interface SettingsStorageOperationsUpdateParams {
-    tenant?: string | boolean;
-    locale?: string | boolean;
     input: Record<string, any>;
     original: Settings;
     settings: Settings;

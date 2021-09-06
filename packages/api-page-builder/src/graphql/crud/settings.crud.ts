@@ -16,6 +16,17 @@ import WebinyError from "@webiny/error";
 import { createStorageOperations } from "./storageOperations";
 import { SettingsStorageOperationsProviderPlugin } from "~/plugins/SettingsStorageOperationsProviderPlugin";
 import lodashGet from "lodash/get";
+import DataLoader from "dataloader";
+
+interface SettingsParams {
+    tenant: false | string | undefined;
+    locale: false | string | undefined;
+    type: string;
+}
+
+interface SettingsParamsInput extends SettingsParams {
+    context: PbContext;
+}
 /**
  * Possible types of settings.
  * If a lot of types should be added maybe we can do it via the plugin.
@@ -30,6 +41,22 @@ const checkBasePermissions = async (context: PbContext) => {
     if (!pbPagePermission) {
         throw new NotAuthorizedError();
     }
+};
+
+const createSettingsParams = (params: SettingsParamsInput): SettingsParams => {
+    const { tenant: initialTenant, locale: initialLocale, type, context } = params;
+    /**
+     * If tenant or locale are false, it means we want global settings.
+     */
+    const tenant =
+        initialTenant === false ? false : initialTenant || context.tenancy.getCurrentTenant().id;
+    const locale =
+        initialLocale === false ? false : initialLocale || context.i18nContent.getLocale().code;
+    return {
+        type,
+        tenant,
+        locale
+    };
 };
 
 export default new ContextPlugin<PbContext>(async context => {
@@ -47,6 +74,26 @@ export default new ContextPlugin<PbContext>(async context => {
     );
 
     const settingsPlugins = context.plugins.byType<SettingsPlugin>(SettingsPlugin.type);
+
+    const settingsDataLoader = new DataLoader<SettingsParams, Settings, string>(
+        async keys => {
+            const promises = keys.map(key => {
+                const params: SettingsStorageOperationsGetParams = {
+                    where: createSettingsParams({
+                        ...key,
+                        context
+                    })
+                };
+                return storageOperations.get(params);
+            });
+            return Promise.all(promises);
+        },
+        {
+            cacheKeyFn: (key: SettingsParams) => {
+                return [`T#${key.tenant}`, `L#${key.locale}`, `TYPE#${key.type}`].join("#");
+            }
+        }
+    );
 
     context.pageBuilder.settings = {
         /**
@@ -78,31 +125,26 @@ export default new ContextPlugin<PbContext>(async context => {
             // It's possible we'll create another GraphQL field, made for this exact purpose.
             // auth !== false && (await checkBasePermissions(context));
 
-            const { locale: initialLocale, tenant: initialTenant } = options || {};
-            const tenant =
-                initialTenant === false
-                    ? false
-                    : initialTenant || context.tenancy.getCurrentTenant().id;
-            const locale =
-                initialLocale === false
-                    ? false
-                    : initialLocale || context.i18nContent.getLocale().code;
-            const params: SettingsStorageOperationsGetParams = {
-                tenant,
+            const { locale = undefined, tenant = undefined } = options || {};
+
+            const params = createSettingsParams({
                 locale,
-                where: {
-                    type: SETTINGS_TYPE.DEFAULT,
-                    tenant: tenant || undefined,
-                    locale: locale || undefined
-                }
+                tenant,
+                type: SETTINGS_TYPE.DEFAULT,
+                context
+            });
+            const key = {
+                tenant: params.tenant,
+                locale: params.locale,
+                type: params.type
             };
             try {
-                return storageOperations.get(params);
+                return await settingsDataLoader.load(key);
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not get settings by given parameters.",
                     ex.code || "GET_SETTINGS_ERROR",
-                    params
+                    key
                 );
             }
         },
@@ -126,41 +168,39 @@ export default new ContextPlugin<PbContext>(async context => {
                 }
             });
         },
-        async update(rawData, options = {}) {
+        async update(rawData, options) {
+            if (!options) {
+                options = {};
+            }
             options.auth !== false && (await checkBasePermissions(context));
 
-            const targetTenant = options.tenant === false ? false : options.tenant;
-            const targetLocale = options.locale === false ? false : options.locale;
+            // const targetTenant = options.tenant === false ? false : options.tenant;
+            // const targetLocale = options.locale === false ? false : options.locale;
+
+            const params = createSettingsParams({
+                tenant: options.tenant,
+                locale: options.locale,
+                type: SETTINGS_TYPE.DEFAULT,
+                context
+            });
 
             let original = (await context.pageBuilder.settings.get(options)) as Settings;
             if (!original) {
                 original = await new DefaultSettingsModel().populate({}).toJSON();
 
-                let tenant = undefined;
-                let locale = undefined;
-                /**
-                 * We check for the tenant and locale being false because in that case this is some global settings data.
-                 */
-                if (targetTenant !== false) {
-                    tenant = targetTenant || context.tenancy.getCurrentTenant().id;
-                }
-                if (targetLocale !== false) {
-                    locale = targetLocale || context.i18nContent.getLocale().code;
-                }
-
                 const data: SettingsStorageOperationsCreateParams = {
-                    tenant: targetTenant,
-                    locale: targetLocale,
                     input: rawData,
                     settings: {
                         ...original,
-                        type: "default",
-                        tenant,
-                        locale
+                        ...params
                     }
                 };
                 try {
                     original = await storageOperations.create(data);
+                    /**
+                     * Clear the cache of the data loader.
+                     */
+                    settingsDataLoader.clearAll();
                 } catch (ex) {
                     throw new WebinyError(
                         ex.message || "Could not create settings record.",
@@ -176,7 +216,8 @@ export default new ContextPlugin<PbContext>(async context => {
             const data = await settingsModel.toJSON();
             const settings: Settings = {
                 ...original,
-                ...data
+                ...data,
+                ...params
             };
 
             // Before continuing, let's check for differences that matter.
@@ -231,8 +272,6 @@ export default new ContextPlugin<PbContext>(async context => {
                     callbackParams
                 );
                 const result = await storageOperations.update({
-                    tenant: targetTenant,
-                    locale: targetLocale,
                     input: rawData,
                     original,
                     settings
@@ -242,6 +281,11 @@ export default new ContextPlugin<PbContext>(async context => {
                     "afterUpdate",
                     callbackParams
                 );
+                /**
+                 * Clear the cache of the data loader.
+                 */
+                settingsDataLoader.clearAll();
+
                 return result;
             } catch (ex) {
                 throw new WebinyError(

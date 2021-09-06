@@ -143,19 +143,7 @@ describe("Settings Test", () => {
             ([res]) => res.data.pageBuilder.listPublishedPages.data.length === 5
         );
 
-        // Let's use the `id` of the last log as the cursor.
-        // const [logs] = await logsDb.readLogs();
-        // const { id: cursor } = logs.pop();
-
         await listPublishedPages();
-
-        // When listing published pages, settings must have been loaded from the DB only once.
-        //eslint-disable-next-line jest/valid-expect-in-promise
-        // await logsDb
-        //     .readLogs()
-        //     .then(([logs]) => logs.filter(item => item.id > cursor && item.operation === "read"))
-        //     .then(logs => logs.filter(item => item.query.PK === "T#root#L#en-US#PB#SETTINGS"))
-        //     .then(logs => expect(logs.length).toBe(1));
     });
 
     test("must return default settings", async () => {

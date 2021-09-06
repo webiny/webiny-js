@@ -1,11 +1,8 @@
 import mdbid from "mdbid";
 import uniqid from "uniqid";
-import trimStart from "lodash/trimStart";
 import lodashGet from "lodash/get";
-import merge from "lodash/merge";
 import DataLoader from "dataloader";
 import { NotFoundError } from "@webiny/handler-graphql";
-import { Args as FlushArgs } from "@webiny/api-prerendering-service/flush/types";
 import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
 import {
     Page,
@@ -1116,113 +1113,11 @@ export default new ContextPlugin<PbContext>(async context => {
             }
         },
         prerendering: {
-            async render(args) {
-                const current = await context.pageBuilder.settings.getCurrent();
-                const appUrl = lodashGet(current, "prerendering.app.url");
-                const storageName = lodashGet(current, "prerendering.storage.name");
-
-                if (!appUrl || !storageName) {
-                    return;
-                }
-
-                const currentPrerenderingMeta = lodashGet(current, "prerendering.meta");
-
-                const meta = merge(currentPrerenderingMeta || {}, {
-                    tenant: context.tenancy.getCurrentTenant().id,
-                    locale: context.i18nContent.getLocale().code
-                });
-
-                const { paths, tags } = args;
-
-                const dbNamespace = "T#" + context.tenancy.getCurrentTenant().id;
-
-                if (Array.isArray(paths)) {
-                    await context.prerenderingServiceClient.render(
-                        paths.map(item => ({
-                            url: appUrl + item.path,
-                            configuration: merge(
-                                {
-                                    meta,
-                                    storage: {
-                                        folder: trimStart(item.path, "/"),
-                                        name: storageName
-                                    },
-                                    db: {
-                                        namespace: dbNamespace
-                                    }
-                                },
-                                item.configuration
-                            )
-                        }))
-                    );
-                }
-
-                if (Array.isArray(tags)) {
-                    await context.prerenderingServiceClient.queue.add(
-                        tags.map(item => ({
-                            render: {
-                                tag: item.tag,
-                                configuration: merge(
-                                    {
-                                        db: {
-                                            namespace: dbNamespace
-                                        }
-                                    },
-                                    item.configuration
-                                )
-                            }
-                        }))
-                    );
-                }
+            flush: async () => {
+                // placeholder method
             },
-            async flush(args) {
-                const current = await context.pageBuilder.settings.getCurrent();
-                const appUrl = lodashGet(current, "prerendering.app.url");
-                const storageName = lodashGet(current, "prerendering.storage.name");
-
-                if (!storageName) {
-                    return;
-                }
-
-                const { paths, tags } = args;
-
-                const dbNamespace = "T#" + context.tenancy.getCurrentTenant().id;
-
-                if (Array.isArray(paths)) {
-                    await context.prerenderingServiceClient.flush(
-                        paths.map<FlushArgs>(p => ({
-                            url: appUrl + p.path,
-                            // Configuration is mainly static (defined here), but some configuration
-                            // overrides can arrive via the call args, so let's do a merge here.
-                            configuration: merge(
-                                {
-                                    db: {
-                                        namespace: dbNamespace
-                                    }
-                                },
-                                p.configuration
-                            )
-                        }))
-                    );
-                }
-
-                if (Array.isArray(tags)) {
-                    await context.prerenderingServiceClient.queue.add(
-                        tags.map(item => ({
-                            flush: {
-                                tag: item.tag,
-                                configuration: merge(
-                                    {
-                                        db: {
-                                            namespace: dbNamespace
-                                        }
-                                    },
-                                    item.configuration
-                                )
-                            }
-                        }))
-                    );
-                }
+            render: async () => {
+                // placeholder method
             }
         }
     };

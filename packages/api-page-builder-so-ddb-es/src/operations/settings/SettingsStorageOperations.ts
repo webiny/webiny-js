@@ -12,7 +12,6 @@ import { cleanupItem } from "@webiny/db-dynamodb/utils/cleanup";
 import WebinyError from "@webiny/error";
 import { defineSettingsEntity } from "~/definitions/settingsEntity";
 import { defineTable } from "~/definitions/table";
-import { SettingsDataLoader } from "~/operations/settings/SettingsDataLoader";
 
 export interface Params {
     context: PbContext;
@@ -28,7 +27,7 @@ export class SettingsStorageOperationsDdbEs implements SettingsStorageOperations
     public readonly table: Table;
     public readonly entity: Entity<any>;
 
-    protected dataLoader: SettingsDataLoader;
+    // protected dataLoader: SettingsDataLoader;
 
     public constructor({ context }: Params) {
         this.context = context;
@@ -41,9 +40,9 @@ export class SettingsStorageOperationsDdbEs implements SettingsStorageOperations
             table: this.table
         });
 
-        this.dataLoader = new SettingsDataLoader({
-            storageOperations: this
-        });
+        // this.dataLoader = new SettingsDataLoader({
+        //     storageOperations: this
+        // });
     }
     /**
      * We can simply return the partition key for this storage operations.
@@ -53,21 +52,20 @@ export class SettingsStorageOperationsDdbEs implements SettingsStorageOperations
     }
 
     public async get(params: SettingsStorageOperationsGetParams): Promise<Settings> {
-        const { tenant, locale, where } = params;
+        const { where } = params;
         const keys = {
             PK: this.createPartitionKey({
-                tenant: tenant || where.tenant || false,
-                locale: locale || where.locale || false
+                tenant: where.tenant,
+                locale: where.locale
             }),
-            SK: this.createSortKey(where.type)
+            SK: this.createSortKey(where)
         };
         try {
-            const result = await this.dataLoader.getOne(keys);
-            // const result = await this.entity.get(keys);
-            // if (!result || !result.Item) {
-            //     return null;
-            // }
-            return cleanupItem(this.entity, result);
+            const result = await this.entity.get(keys);
+            if (!result || !result.Item) {
+                return null;
+            }
+            return cleanupItem(this.entity, result.Item);
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not load settings record.",
@@ -80,13 +78,13 @@ export class SettingsStorageOperationsDdbEs implements SettingsStorageOperations
     }
 
     public async create(params: SettingsStorageOperationsCreateParams): Promise<Settings> {
-        const { tenant, locale, settings } = params;
+        const { settings } = params;
         const keys = {
             PK: this.createPartitionKey({
-                tenant,
-                locale
+                tenant: settings.tenant,
+                locale: settings.locale
             }),
-            SK: this.createSortKey(settings.type)
+            SK: this.createSortKey(settings)
         };
         try {
             await this.entity.put({
@@ -94,8 +92,6 @@ export class SettingsStorageOperationsDdbEs implements SettingsStorageOperations
                 TYPE: this.createType(),
                 ...keys
             });
-
-            this.dataLoader.clear();
 
             return settings;
         } catch (ex) {
@@ -111,7 +107,7 @@ export class SettingsStorageOperationsDdbEs implements SettingsStorageOperations
     }
 
     public async update(params: SettingsStorageOperationsUpdateParams): Promise<Settings> {
-        const { tenant, locale, original, settings } = params;
+        const { original, settings } = params;
         if (original.type !== settings.type) {
             throw new WebinyError(
                 `A "type" on both original and updated item must be identical.`,
@@ -124,10 +120,10 @@ export class SettingsStorageOperationsDdbEs implements SettingsStorageOperations
         }
         const keys = {
             PK: this.createPartitionKey({
-                tenant,
-                locale
+                tenant: settings.tenant,
+                locale: settings.locale
             }),
-            SK: this.createSortKey(original.type)
+            SK: this.createSortKey(original)
         };
         try {
             await this.entity.put({
@@ -135,8 +131,6 @@ export class SettingsStorageOperationsDdbEs implements SettingsStorageOperations
                 TYPE: this.createType(),
                 ...keys
             });
-
-            this.dataLoader.clear();
 
             return settings;
         } catch (ex) {
@@ -174,8 +168,11 @@ export class SettingsStorageOperationsDdbEs implements SettingsStorageOperations
 
         return parts.join("#");
     }
-
-    protected createSortKey(type: string): string {
+    /**
+     * We expect any object that has type property in it.
+     * This way we can either receive a settings object or where conditions
+     */
+    protected createSortKey({ type }: { type: string }): string {
         switch (type) {
             case "default":
                 return type;

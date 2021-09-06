@@ -34,20 +34,19 @@ export default (): HandlerPlugin<PbContext, ArgsContext<HandlerArgs>> => ({
                 SettingsStorageOperationsProviderPlugin.type
             );
             const { invocationArgs: args } = context;
-            let original = await storageOperations.get({
+
+            const settingsParams: { type: string; tenant: false; locale: false } = {
+                type: "default",
                 tenant: false,
-                locale: false,
-                where: {
-                    type: "default"
-                }
+                locale: false
+            };
+
+            let original = await storageOperations.get({
+                where: settingsParams
             });
 
             if (!original) {
-                const input: any = {
-                    type: "default",
-                    tenant: null,
-                    locale: null
-                };
+                const input: any = settingsParams;
                 await storageOperations.create({
                     input,
                     settings: {
@@ -72,21 +71,16 @@ export default (): HandlerPlugin<PbContext, ArgsContext<HandlerArgs>> => ({
             };
 
             await storageOperations.update({
-                tenant: false,
-                locale: false,
                 input: updateSettingsData,
                 original,
                 settings
             });
 
-            const data = {
-                ...settings
-            };
-            delete data.locale;
-            delete data.tenant;
-            delete data.type;
+            delete settings.locale;
+            delete settings.tenant;
+            delete settings.type;
             return {
-                data,
+                data: settings,
                 error: null
             };
         } catch (ex) {
