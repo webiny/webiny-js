@@ -38,7 +38,8 @@ export default () => {
         env: {
             DB_TABLE: dynamoDb.table.name,
             DB_TABLE_ELASTICSEARCH: elasticSearch.table.name,
-            DEBUG
+            DEBUG,
+            WEBINY_LOGS_FORWARD_URL
         },
         bucket: fileManager.bucket,
         primaryDynamodbTable: dynamoDb.table
