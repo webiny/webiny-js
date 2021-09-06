@@ -27,8 +27,6 @@ export class SettingsStorageOperationsDdbEs implements SettingsStorageOperations
     public readonly table: Table;
     public readonly entity: Entity<any>;
 
-    // protected dataLoader: SettingsDataLoader;
-
     public constructor({ context }: Params) {
         this.context = context;
         this.table = defineTable({
@@ -39,10 +37,6 @@ export class SettingsStorageOperationsDdbEs implements SettingsStorageOperations
             context,
             table: this.table
         });
-
-        // this.dataLoader = new SettingsDataLoader({
-        //     storageOperations: this
-        // });
     }
     /**
      * We can simply return the partition key for this storage operations.
