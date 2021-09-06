@@ -58,19 +58,19 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
             PbQuery: {
                 getExportPageTask: async (_, args: { id: string }, context) => {
                     return resolve(() => {
-                        return context.pageBuilder.pageExportTask.get(args.id);
+                        return context.pageBuilder.exportPageTask.get(args.id);
                     });
                 },
                 listExportPageTasks: async (_, args, context) => {
                     return resolve(() => {
-                        return context.pageBuilder.pageExportTask.list();
+                        return context.pageBuilder.exportPageTask.list();
                     });
                 }
             },
             PbMutation: {
                 createExportPageTask: async (_, args: { data: Record<string, any> }, context) => {
                     return resolve(() => {
-                        return context.pageBuilder.pageExportTask.create(args.data);
+                        return context.pageBuilder.exportPageTask.create(args.data);
                     });
                 },
                 updateExportPageTask: async (
@@ -79,12 +79,12 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                     context
                 ) => {
                     return resolve(() => {
-                        return context.pageBuilder.pageExportTask.update(args.id, args.data);
+                        return context.pageBuilder.exportPageTask.update(args.id, args.data);
                     });
                 },
                 deleteExportPageTask: async (_, args: { id: string }, context) => {
                     return resolve(() => {
-                        return context.pageBuilder.pageExportTask.delete(args.id);
+                        return context.pageBuilder.exportPageTask.delete(args.id);
                     });
                 }
             }

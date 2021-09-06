@@ -2,26 +2,26 @@ import useGqlHandler from "./useGqlHandler";
 
 describe("PageExportTasks Test", () => {
     const {
-        createPageExportTask,
-        deletePageExportTask,
-        listPageExportTasks,
-        getPageExportTask,
-        updatePageExportTask
+        createExportPageTask,
+        deleteExportPageTask,
+        listExportPageTasks,
+        getExportPageTask,
+        updateExportPageTask
     } = useGqlHandler();
 
-    test("create, read, update and delete pageExportTask", async () => {
-        // Test creating, getting and updating three pageExportTask.
+    test("create, read, update and delete ExportPageTask", async () => {
+        // Test creating, getting and updating three ExportPageTask.
         const ids = [];
         for (let i = 0; i < 3; i++) {
             let data = {
                 status: "pending"
             };
 
-            let [response] = await createPageExportTask({ data });
+            let [response] = await createExportPageTask({ data });
             expect(response).toMatchObject({
                 data: {
                     pageBuilder: {
-                        createPageExportTask: {
+                        createExportPageTask: {
                             data: {
                                 ...data,
                                 createdBy: {
@@ -36,13 +36,13 @@ describe("PageExportTasks Test", () => {
                 }
             });
 
-            ids.push(response.data.pageBuilder.createPageExportTask.data.id);
+            ids.push(response.data.pageBuilder.createExportPageTask.data.id);
 
-            [response] = await getPageExportTask({ id: ids[i] });
+            [response] = await getExportPageTask({ id: ids[i] });
             expect(response).toMatchObject({
                 data: {
                     pageBuilder: {
-                        getPageExportTask: {
+                        getExportPageTask: {
                             data,
                             error: null
                         }
@@ -55,11 +55,11 @@ describe("PageExportTasks Test", () => {
                 data: { url: `https://some-bucket/${i}-content-UPDATED`, key: `some-key-${i}` }
             };
 
-            [response] = await updatePageExportTask({ id: ids[i], data });
+            [response] = await updateExportPageTask({ id: ids[i], data });
             expect(response).toMatchObject({
                 data: {
                     pageBuilder: {
-                        updatePageExportTask: {
+                        updateExportPageTask: {
                             data: {
                                 ...data,
                                 createdBy: {
@@ -75,12 +75,12 @@ describe("PageExportTasks Test", () => {
             });
         }
 
-        // List should show three pageExportTask.
-        let [response] = await listPageExportTasks();
+        // List should show three ExportPageTask.
+        let [response] = await listExportPageTasks();
         expect(response).toMatchObject({
             data: {
                 pageBuilder: {
-                    listPageExportTasks: {
+                    listExportPageTasks: {
                         data: [
                             {
                                 data: {
@@ -128,13 +128,13 @@ describe("PageExportTasks Test", () => {
             }
         });
 
-        // After deleting all pageExportTask, list should be empty.
+        // After deleting all ExportPageTask, list should be empty.
         for (let i = 0; i < 3; i++) {
-            const [response] = await deletePageExportTask({ id: ids[i] });
+            const [response] = await deleteExportPageTask({ id: ids[i] });
             expect(response).toMatchObject({
                 data: {
                     pageBuilder: {
-                        deletePageExportTask: {
+                        deleteExportPageTask: {
                             data: {
                                 id: ids[i]
                             },
@@ -145,12 +145,12 @@ describe("PageExportTasks Test", () => {
             });
         }
 
-        // List should show zero pageExportTask.
-        [response] = await listPageExportTasks();
+        // List should show zero ExportPageTask.
+        [response] = await listExportPageTasks();
         expect(response).toMatchObject({
             data: {
                 pageBuilder: {
-                    listPageExportTasks: {
+                    listExportPageTasks: {
                         data: [],
                         error: null
                     }

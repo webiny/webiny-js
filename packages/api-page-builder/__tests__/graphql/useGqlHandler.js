@@ -35,12 +35,12 @@ import {
     GET_PAGE_ELEMENT
 } from "./graphql/pageElements";
 import {
-    CREATE_PAGE_EXPORT_TASK,
-    DELETE_PAGE_EXPORT_TASK,
-    LIST_PAGE_EXPORT_TASKS,
-    UPDATE_PAGE_EXPORT_TASK,
-    GET_PAGE_EXPORT_TASK
-} from "./graphql/pageExportTask";
+    CREATE_EXPORT_PAGE_TASK,
+    DELETE_EXPORT_PAGE_TASK,
+    LIST_EXPORT_PAGE_TASKS,
+    UPDATE_EXPORT_PAGE_TASK,
+    GET_EXPORT_PAGE_TASK
+} from "./graphql/exportPageTask";
 import {
     CREATE_PAGE,
     DELETE_PAGE,
@@ -382,20 +382,20 @@ export default ({ permissions, identity, tenant } = {}) => {
         },
 
         // PageExportTasks.
-        async createPageExportTask(variables) {
-            return invoke({ body: { query: CREATE_PAGE_EXPORT_TASK, variables } });
+        async createExportPageTask(variables) {
+            return invoke({ body: { query: CREATE_EXPORT_PAGE_TASK, variables } });
         },
-        async updatePageExportTask(variables) {
-            return invoke({ body: { query: UPDATE_PAGE_EXPORT_TASK, variables } });
+        async updateExportPageTask(variables) {
+            return invoke({ body: { query: UPDATE_EXPORT_PAGE_TASK, variables } });
         },
-        async deletePageExportTask(variables) {
-            return invoke({ body: { query: DELETE_PAGE_EXPORT_TASK, variables } });
+        async deleteExportPageTask(variables) {
+            return invoke({ body: { query: DELETE_EXPORT_PAGE_TASK, variables } });
         },
-        async listPageExportTasks(variables) {
-            return invoke({ body: { query: LIST_PAGE_EXPORT_TASKS, variables } });
+        async listExportPageTasks(variables) {
+            return invoke({ body: { query: LIST_EXPORT_PAGE_TASKS, variables } });
         },
-        async getPageExportTask(variables) {
-            return invoke({ body: { query: GET_PAGE_EXPORT_TASK, variables } });
+        async getExportPageTask(variables) {
+            return invoke({ body: { query: GET_EXPORT_PAGE_TASK, variables } });
         },
         // PageBuilder Settings.
         async updateSettings(variables) {

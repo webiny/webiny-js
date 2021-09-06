@@ -19,10 +19,10 @@ export const ERROR_FIELD = /* GraphQL */ `
     }
 `;
 
-export const CREATE_PAGE_EXPORT_TASK = /* GraphQL */ `
-    mutation CreatePageExportTask($data: PbPageExportTaskInput!) {
+export const CREATE_EXPORT_PAGE_TASK = /* GraphQL */ `
+    mutation CreateExportPageTask($data: PbExportPageTaskInput!) {
         pageBuilder {
-            createPageExportTask(data: $data) {
+            createExportPageTask(data: $data) {
                 data ${DATA_FIELD}
                 error ${ERROR_FIELD}
             }
@@ -30,10 +30,10 @@ export const CREATE_PAGE_EXPORT_TASK = /* GraphQL */ `
     }
 `;
 
-export const UPDATE_PAGE_EXPORT_TASK = /* GraphQL */ `
-    mutation UpdatePageExportTask($id: ID!, $data: PbPageExportTaskUpdateInput!) {
+export const UPDATE_EXPORT_PAGE_TASK = /* GraphQL */ `
+    mutation UpdateExportPageTask($id: ID!, $data: PbExportPageTaskUpdateInput!) {
         pageBuilder {
-            updatePageExportTask(id: $id, data: $data) {
+            updateExportPageTask(id: $id, data: $data) {
                 data ${DATA_FIELD}
                 error ${ERROR_FIELD}
             }
@@ -41,10 +41,10 @@ export const UPDATE_PAGE_EXPORT_TASK = /* GraphQL */ `
     }
 `;
 
-export const LIST_PAGE_EXPORT_TASKS = /* GraphQL */ `
-    query ListPageExportTasks {
+export const LIST_EXPORT_PAGE_TASKS = /* GraphQL */ `
+    query ListExportPageTasks {
         pageBuilder {
-            listPageExportTasks {
+            listExportPageTasks {
                 data ${DATA_FIELD}
                 error ${ERROR_FIELD}
             }
@@ -52,10 +52,10 @@ export const LIST_PAGE_EXPORT_TASKS = /* GraphQL */ `
     }
 `;
 
-export const GET_PAGE_EXPORT_TASK = /* GraphQL */ `
-    query GetPageExportTask($id: ID!) {
+export const GET_EXPORT_PAGE_TASK = /* GraphQL */ `
+    query GetExportPageTask($id: ID!) {
         pageBuilder {
-            getPageExportTask(id: $id) {
+            getExportPageTask(id: $id) {
                 data ${DATA_FIELD}
                 error ${ERROR_FIELD}
             }
@@ -63,10 +63,10 @@ export const GET_PAGE_EXPORT_TASK = /* GraphQL */ `
     }
 `;
 
-export const DELETE_PAGE_EXPORT_TASK = /* GraphQL */ `
-    mutation DeletePageExportTask($id: ID!) {
+export const DELETE_EXPORT_PAGE_TASK = /* GraphQL */ `
+    mutation DeleteExportPageTask($id: ID!) {
         pageBuilder {
-            deletePageExportTask(id: $id) {
+            deleteExportPageTask(id: $id) {
                 data ${DATA_FIELD}
                 error ${ERROR_FIELD}
             }
