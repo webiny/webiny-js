@@ -12,6 +12,22 @@ class S3StreamHandler {
         this.bucket = process.env.S3_BUCKET;
     }
 
+    /**
+     * We're checking if the file is accessible on S3 by getting object meta data.
+     * It help us to filter files that we need to download as part of export data.
+     * @param Key {string}
+     */
+    async isFileAccessible(Key: string): Promise<boolean> {
+        try {
+            await this.s3.headObject({ Bucket: this.bucket, Key }).promise();
+            return true;
+        } catch (error) {
+            console.warn(`Error while fetching meta data for file "${Key}"`);
+            console.log(error);
+            return false;
+        }
+    }
+
     readStream(Key: string) {
         return this.s3.getObject({ Bucket: this.bucket, Key }).createReadStream();
     }

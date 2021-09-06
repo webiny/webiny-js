@@ -34,13 +34,22 @@ export default (): HandlerPlugin<DbContext, ArgsContext<HandlerArgs>> => ({
 
             // Extract all files
             const files = extractFilesFromPageData(page.content);
+            // Filter files
+            const filesAvailableForDownload = [];
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                // Check file accessibility
+                if (await s3StreamHandler.isFileAccessible(file.key)) {
+                    filesAvailableForDownload.push(file);
+                }
+            }
 
             // Extract the page data in a json file and upload it to S3
             const file = {
                 page: {
                     content: page.content
                 },
-                files
+                files: filesAvailableForDownload
             };
             const fileBuffer = Buffer.from(JSON.stringify(file));
             const pageUploadDataKey = uniqueId("", `-${kebabCase(page.title)}.json`);
@@ -57,7 +66,7 @@ export default (): HandlerPlugin<DbContext, ArgsContext<HandlerArgs>> => ({
             // TODO: Improve signature
             // Prepare zip and upload it to S3
             const zipHandler = new ZipHandler({
-                files,
+                files: filesAvailableForDownload,
                 archiveFileName,
                 s3FileKey: pageDataUpload.Key,
                 filesDirName: "assets"
