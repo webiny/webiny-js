@@ -87,6 +87,7 @@ describe("page full URL test", () => {
     });
 
     test("full URL must be returned correctly when only default settings exist", async () => {
+        await createInitialData();
         const { handler } = useUpdateSettingsHandler();
 
         await handler({
@@ -108,7 +109,12 @@ describe("page full URL test", () => {
                 listPages({
                     sort: ["createdOn_DESC"]
                 }),
-            ([res]) => res.data.pageBuilder.listPages.data.length === 3
+            ([res]) => res.data.pageBuilder.listPages.data.length === 3,
+            {
+                name: "list pages after first settings update",
+                wait: 500,
+                tries: 30
+            }
         );
 
         expect(listPagesAfterFirstSettingsUpdate.data.pageBuilder.listPages.data).toMatchObject([
@@ -129,7 +135,12 @@ describe("page full URL test", () => {
                     sort: ["createdOn_DESC"]
                 }),
             ([res]) =>
-                res.data.pageBuilder.listPages.data[0].url.startsWith("https://updated-domain")
+                res.data.pageBuilder.listPages.data[0].url.startsWith("https://updated-domain"),
+            {
+                name: "list pages after domain change",
+                wait: 500,
+                tries: 30
+            }
         );
 
         expect(listPagesAfterSettingsUpdateResponse.data.pageBuilder.listPages.data).toMatchObject([
@@ -152,7 +163,12 @@ describe("page full URL test", () => {
 
         const [listPagesResponse] = await until(
             listPages,
-            ([res]) => res.data.pageBuilder.listPages.data.length === 3
+            ([res]) => res.data.pageBuilder.listPages.data.length === 3,
+            {
+                name: "List pages after update empty settings",
+                wait: 500,
+                tries: 30
+            }
         );
 
         expect(listPagesResponse.data.pageBuilder.listPages.data).toMatchObject([
@@ -172,7 +188,12 @@ describe("page full URL test", () => {
                 listPublishedPages({
                     sort: ["createdOn_DESC"]
                 }),
-            ([res]) => res.data.pageBuilder.listPublishedPages.data.length === 3
+            ([res]) => res.data.pageBuilder.listPublishedPages.data.length === 3,
+            {
+                name: "list pages after published pages",
+                wait: 500,
+                tries: 30
+            }
         );
 
         expect(listPublishedPagesResponse.data.pageBuilder.listPublishedPages.data).toMatchObject([
