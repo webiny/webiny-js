@@ -3,6 +3,10 @@ import { PbContext } from "@webiny/api-page-builder/graphql/types";
 import { Page } from "@webiny/api-page-builder/types";
 import lodashGet from "lodash/get";
 
+/**
+ * Map our system fields to the Elasticsearch data.
+ * We need to add new fields if we add them into our system.
+ */
 export const getESPageData = (page: Page) => {
     return {
         __type: "page",

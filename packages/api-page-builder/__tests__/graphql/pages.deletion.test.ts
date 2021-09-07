@@ -41,18 +41,25 @@ describe("deleting pages", () => {
 
     test("deleting v1 page should delete all related DB / index entries", async () => {
         await publishPage({ id: p1v3.id });
-        await until(listPages, ([res]) => res.data.pageBuilder.listPages.data[0].id === p1v3.id, {
-            name: "list all pages after publishing p1v3",
-            tries: 20,
-            wait: 400
-        });
+        await until(
+            () =>
+                listPages({
+                    sort: ["createdOn_DESC"]
+                }),
+            ([res]) => res.data.pageBuilder.listPages.data[0].id === p1v3.id,
+            {
+                name: "list all pages after publishing p1v3",
+                tries: 30,
+                wait: 500
+            }
+        );
         await until(
             listPublishedPages,
             ([res]) => res.data.pageBuilder.listPublishedPages.data[0].id === p1v3.id,
             {
                 name: "list published pages after publishing p1v3",
-                tries: 20,
-                wait: 400
+                tries: 30,
+                wait: 500
             }
         );
 
@@ -217,7 +224,8 @@ describe("deleting pages", () => {
             ([res]) => res.data.pageBuilder.listPublishedPages.data[0].id === p1v3.id,
             {
                 name: "list published pages after publish and delete page",
-                wait: 400
+                wait: 400,
+                tries: 30
             }
         );
     });

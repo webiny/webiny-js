@@ -125,8 +125,14 @@ class PageBuilderTestEnvironment extends NodeEnvironment {
             });
         };
         this.global.__beforeEach = clearEsIndices;
-        this.global.__afterEach = clearEsIndices;
-        this.global.__beforeAll = clearEsIndices;
+        //this.global.__afterEach = clearEsIndices;
+        //this.global.__beforeAll = clearEsIndices;
+        this.global.__afterEach = async () => {
+            // dummy
+        };
+        this.global.__beforeAll = async () => {
+            // dummy
+        };
         this.global.__afterAll = clearEsIndices;
     }
 }
