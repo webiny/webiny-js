@@ -19,90 +19,90 @@ describe("Install Test", () => {
             permissions: []
         });
 
-        await isInstalled().then(([res]) =>
-            expect(res).toEqual({
-                data: {
-                    pageBuilder: {
-                        version: null
-                    }
-                }
-            })
-        );
+        const [isInstalledResponse] = await isInstalled();
 
-        await install({
+        expect(isInstalledResponse).toEqual({
+            data: {
+                pageBuilder: {
+                    version: null
+                }
+            }
+        });
+
+        const [installResponse] = await install({
             data: {
                 name: "My Site"
             }
-        }).then(([res]) => {
-            expect(res.data.pageBuilder.install.error.message).toBe("Not authorized!");
         });
+
+        expect(installResponse.data.pageBuilder.install.error.message).toBe("Not authorized!");
     });
 
     test("make sure installation creates initial resources and marks the app as installed", async () => {
-        await isInstalled().then(([res]) =>
-            expect(res).toEqual({
-                data: {
-                    pageBuilder: {
-                        version: null
-                    }
-                }
-            })
-        );
+        const [isInstalledCheckResponse] = await isInstalled();
 
-        await install({
+        expect(isInstalledCheckResponse).toEqual({
+            data: {
+                pageBuilder: {
+                    version: null
+                }
+            }
+        });
+
+        const [installResponse] = await install({
             data: {
                 name: "My Website"
             }
-        }).then(([res]) =>
-            expect(res).toEqual({
-                data: {
-                    pageBuilder: {
-                        install: {
-                            data: true,
-                            error: null
-                        }
-                    }
-                }
-            })
-        );
+        });
 
-        await isInstalled().then(([res]) =>
-            expect(res).toEqual({
-                data: {
-                    pageBuilder: {
-                        version: expect.any(String)
+        expect(installResponse).toEqual({
+            data: {
+                pageBuilder: {
+                    install: {
+                        data: true,
+                        error: null
                     }
                 }
-            })
-        );
+            }
+        });
+
+        const [isInstalledResponse] = await isInstalled();
+
+        expect(isInstalledResponse).toEqual({
+            data: {
+                pageBuilder: {
+                    version: expect.any(String)
+                }
+            }
+        });
 
         // 1. Installation must create the initial Static category.
-        await listCategories().then(([res]) =>
-            expect(res).toMatchObject({
-                data: {
-                    pageBuilder: {
-                        listCategories: {
-                            data: [
-                                {
-                                    slug: "static",
-                                    url: "/static/",
-                                    name: "Static",
-                                    layout: "static",
-                                    createdBy: {
-                                        id: "mocked",
-                                        displayName: "m"
-                                    }
+        const [listCategoriesResponse] = await listCategories();
+
+        expect(listCategoriesResponse).toMatchObject({
+            data: {
+                pageBuilder: {
+                    listCategories: {
+                        data: [
+                            {
+                                slug: "static",
+                                url: "/static/",
+                                name: "Static",
+                                layout: "static",
+                                createdBy: {
+                                    id: "mocked",
+                                    displayName: "m"
                                 }
-                            ],
-                            error: null
-                        }
+                            }
+                        ],
+                        error: null
                     }
                 }
-            })
-        );
+            }
+        });
 
         // 2. Only homepage should be visible in published and latest pages.
-        await until(
+        const [listPagesAfterInstallResponse] = await until(
             listPages,
             ([res]) => {
                 const { data } = res.data.pageBuilder.listPages;
@@ -113,12 +113,15 @@ describe("Install Test", () => {
                 wait: 500,
                 tries: 30
             }
-        ).then(([res]) => {
-            expect(res.data.pageBuilder.listPages.data[0].title).toBe("Welcome to Webiny");
-            expect(res.data.pageBuilder.listPages.data[0].status).toBe("published");
-        });
+        );
+        expect(listPagesAfterInstallResponse.data.pageBuilder.listPages.data[0].title).toBe(
+            "Welcome to Webiny"
+        );
+        expect(listPagesAfterInstallResponse.data.pageBuilder.listPages.data[0].status).toBe(
+            "published"
+        );
 
-        await until(
+        const [listPublishedPagesAfterInstallResponse] = await until(
             listPublishedPages,
             ([res]) => {
                 const { data } = res.data.pageBuilder.listPublishedPages;
@@ -129,37 +132,45 @@ describe("Install Test", () => {
                 wait: 500,
                 tries: 30
             }
-        ).then(([res]) => {
-            expect(res.data.pageBuilder.listPublishedPages.data[0].title).toBe("Welcome to Webiny");
-            expect(res.data.pageBuilder.listPublishedPages.data[0].status).toBe("published");
-        });
+        );
+
+        expect(
+            listPublishedPagesAfterInstallResponse.data.pageBuilder.listPublishedPages.data[0].title
+        ).toBe("Welcome to Webiny");
+        expect(
+            listPublishedPagesAfterInstallResponse.data.pageBuilder.listPublishedPages.data[0]
+                .status
+        ).toBe("published");
 
         // 3. Let's get the ID of the not-found page and try to get it directly.
         const settings = await getSettings().then(([res]) => res.data.pageBuilder.getSettings.data);
 
-        await getPage({ id: settings.pages.notFound }).then(([res]) => {
-            expect(res.data.pageBuilder.getPage.data.title).toBe("Not Found");
-            expect(res.data.pageBuilder.getPage.data.status).toBe("published");
-        });
+        const [getNotFoundPageResponse] = await getPage({ id: settings.pages.notFound });
+        expect(getNotFoundPageResponse.data.pageBuilder.getPage.data.title).toBe("Not Found");
+        expect(getNotFoundPageResponse.data.pageBuilder.getPage.data.status).toBe("published");
 
-        await getPublishedPage({ id: settings.pages.notFound }).then(([res]) => {
-            expect(res.data.pageBuilder.getPublishedPage.data.title).toBe("Not Found");
-            expect(res.data.pageBuilder.getPublishedPage.data.status).toBe("published");
-        });
+        const [getPublishedPageResponse] = await getPublishedPage({ id: settings.pages.notFound });
+
+        expect(getPublishedPageResponse.data.pageBuilder.getPublishedPage.data.title).toBe(
+            "Not Found"
+        );
+        expect(getPublishedPageResponse.data.pageBuilder.getPublishedPage.data.status).toBe(
+            "published"
+        );
 
         // 4. Installation must set the "Website" name.
-        await getSettings().then(([res]) =>
-            expect(res).toMatchObject({
-                data: {
-                    pageBuilder: {
-                        getSettings: {
-                            data: {
-                                name: "My Website"
-                            }
+        const [getSettingsResponse] = await getSettings();
+
+        expect(getSettingsResponse).toMatchObject({
+            data: {
+                pageBuilder: {
+                    getSettings: {
+                        data: {
+                            name: "My Website"
                         }
                     }
                 }
-            })
-        );
+            }
+        });
     });
 });
