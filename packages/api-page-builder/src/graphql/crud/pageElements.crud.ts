@@ -3,12 +3,18 @@ import mdbid from "mdbid";
 import { withFields, string } from "@commodo/fields";
 import { object } from "commodo-fields-object";
 import { validation } from "@webiny/validation";
-import { PageElement, PageElementStorageOperationsListParams, PbContext } from "~/types";
+import {
+    PageElement,
+    PageElementStorageOperations,
+    PageElementStorageOperationsListParams,
+    PbContext
+} from "~/types";
 import checkBasePermissions from "./utils/checkBasePermissions";
 import checkOwnPermissions from "./utils/checkOwnPermissions";
 import { NotFoundError } from "@webiny/handler-graphql";
 import WebinyError from "@webiny/error";
 import { PageElementStorageOperationsProviderPlugin } from "~/plugins/PageElementStorageOperationsProviderPlugin";
+import { createStorageOperations } from "~/graphql/crud/storageOperations";
 
 const CreateDataModel = withFields({
     name: string({ validation: validation.create("required,maxLength:100") }),
@@ -36,21 +42,12 @@ export default new ContextPlugin<PbContext>(async context => {
         console.log("Missing pageBuilder on context. Skipping Page Elements crud.");
         return;
     }
-    const pluginType = PageElementStorageOperationsProviderPlugin.type;
 
-    const providerPlugin: PageElementStorageOperationsProviderPlugin = context.plugins
-        .byType<PageElementStorageOperationsProviderPlugin>(pluginType)
-        .find(() => true);
+    const storageOperations = await createStorageOperations<PageElementStorageOperations>(
+        context,
+        PageElementStorageOperationsProviderPlugin.type
+    );
 
-    if (!providerPlugin) {
-        throw new WebinyError(`Missing "${pluginType}" plugin.`, "PLUGIN_NOT_FOUND", {
-            type: pluginType
-        });
-    }
-
-    const storageOperations = await providerPlugin.provide({
-        context
-    });
     context.pageBuilder.pageElements = {
         async get(id) {
             const permission = await checkBasePermissions(context, PERMISSION_NAME, {

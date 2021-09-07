@@ -368,13 +368,9 @@ export default new ContextPlugin<PbContext>(async context => {
                  */
                 clearDataLoaderCache([original, page]);
 
-                const content = extractContent(newContent || original.content);
                 return {
                     ...result,
-                    /**
-                     * We need to return either new content or original content.
-                     */
-                    content
+                    content: newContent || (await extractContent(original.content))
                 } as any;
             } catch (ex) {
                 throw new WebinyError(
@@ -1074,7 +1070,7 @@ export default new ContextPlugin<PbContext>(async context => {
                     limit: 10000,
                     after: undefined
                 });
-                return pages as any;
+                return pages as any[];
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not load all the revisions from requested page.",

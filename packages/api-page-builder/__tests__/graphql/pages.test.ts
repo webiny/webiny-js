@@ -1,7 +1,7 @@
 import useGqlHandler from "./useGqlHandler";
 import { Page } from "~/types";
 
-jest.setTimeout(15000);
+jest.setTimeout(25000);
 
 describe("CRUD Test", () => {
     const { createCategory, createPage, deletePage, listPages, getPage, updatePage, until } =
