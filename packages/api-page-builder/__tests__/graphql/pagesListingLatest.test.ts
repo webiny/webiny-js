@@ -1,8 +1,11 @@
 import useGqlHandler from "./useGqlHandler";
 import { identityB } from "./mocks";
 import { Page } from "../../src/types";
+import { waitPage } from "./utils/waitPage";
 
 describe("listing latest pages", () => {
+    const handler = useGqlHandler();
+
     const {
         createCategory,
         createPage,
@@ -12,7 +15,7 @@ describe("listing latest pages", () => {
         listPages,
         updatePage,
         until
-    } = useGqlHandler();
+    } = handler;
 
     const createInitialCategory = async () => {
         const [createCategoryResponse] = await createCategory({
@@ -27,25 +30,6 @@ describe("listing latest pages", () => {
             throw new Error(createCategoryResponse.data.pageBuilder.createCategory.error);
         }
         return createCategoryResponse.data.pageBuilder.createCategory.data;
-    };
-
-    const waitPage = async (page: Page) => {
-        await until(
-            () =>
-                listPages({
-                    sort: ["createdOn_DESC"]
-                }),
-            ([response]) => {
-                return response.data.pageBuilder.listPages.data.some(item => {
-                    return item.id === page.id && item.title === page.title;
-                });
-            },
-            {
-                name: `waiting for page ${page.title}`,
-                wait: 500,
-                tries: 30
-            }
-        );
     };
 
     const createInitialData = async () => {
@@ -63,7 +47,7 @@ describe("listing latest pages", () => {
                 throw new Error(response.data.pageBuilder.createPage.error);
             }
 
-            await waitPage(page);
+            await waitPage(handler, page);
             const title = `page-${letter}`;
             const [updateResponse] = await updatePage({
                 id: page.id,
@@ -185,7 +169,7 @@ describe("listing latest pages", () => {
                 throw new Error(res.data.pageBuilder.createPage.error);
             }
             const page = res.data.pageBuilder.createPage.data;
-            await waitPage(page);
+            await waitPage(handler, page);
             await updatePage({
                 id: page.id,
                 data: {
@@ -251,7 +235,7 @@ describe("listing latest pages", () => {
 
             const page = response.data.pageBuilder.createPage.data;
 
-            await waitPage(page);
+            await waitPage(handler, page);
             const title = `page-${letter}`;
             await updatePage({
                 id: page.id,
@@ -259,7 +243,7 @@ describe("listing latest pages", () => {
                     title
                 }
             });
-            await waitPage({
+            await waitPage(handler, {
                 ...page,
                 title
             });
@@ -873,12 +857,12 @@ describe("listing latest pages", () => {
             });
 
             const page = createPageResponse.data.pageBuilder.createPage.data;
-            await waitPage(page);
+            await waitPage(handler, page);
             await updatePage({
                 id: page.id,
                 data
             });
-            await waitPage({
+            await waitPage(handler, {
                 ...page,
                 title: data.title
             });

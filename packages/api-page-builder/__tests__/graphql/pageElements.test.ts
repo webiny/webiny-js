@@ -22,8 +22,8 @@ describe("PageElements Test", () => {
                 content: { some: `${prefix}content` }
             };
 
-            let [response] = await createPageElement({ data });
-            expect(response).toMatchObject({
+            const [createPageElementResponse] = await createPageElement({ data });
+            expect(createPageElementResponse).toMatchObject({
                 data: {
                     pageBuilder: {
                         createPageElement: {
@@ -41,10 +41,10 @@ describe("PageElements Test", () => {
                 }
             });
 
-            ids.push(response.data.pageBuilder.createPageElement.data.id);
+            ids.push(createPageElementResponse.data.pageBuilder.createPageElement.data.id);
 
-            [response] = await getPageElement({ id: ids[i] });
-            expect(response).toMatchObject({
+            const [getPageElementResponse] = await getPageElement({ id: ids[i] });
+            expect(getPageElementResponse).toMatchObject({
                 data: {
                     pageBuilder: {
                         getPageElement: {
@@ -62,8 +62,11 @@ describe("PageElements Test", () => {
                 content: { some: `${prefix}content-UPDATED` }
             };
 
-            [response] = await updatePageElement({ id: ids[i], data: updateData });
-            expect(response).toMatchObject({
+            const [updatePageElementResponse] = await updatePageElement({
+                id: ids[i],
+                data: updateData
+            });
+            expect(updatePageElementResponse).toMatchObject({
                 data: {
                     pageBuilder: {
                         updatePageElement: {
@@ -83,8 +86,8 @@ describe("PageElements Test", () => {
         }
 
         // List should show three pageElements.
-        let [response] = await listPageElements();
-        expect(response).toMatchObject({
+        const [listPageElementsResponse] = await listPageElements();
+        expect(listPageElementsResponse).toMatchObject({
             data: {
                 pageBuilder: {
                     listPageElements: {
@@ -149,8 +152,8 @@ describe("PageElements Test", () => {
 
         // After deleting all pageElements, list should be empty.
         for (let i = 0; i < 3; i++) {
-            const [response] = await deletePageElement({ id: ids[i] });
-            expect(response).toMatchObject({
+            const [deletePageElementResponse] = await deletePageElement({ id: ids[i] });
+            expect(deletePageElementResponse).toMatchObject({
                 data: {
                     pageBuilder: {
                         deletePageElement: {
@@ -165,8 +168,8 @@ describe("PageElements Test", () => {
         }
 
         // List should show zero pageElements.
-        [response] = await listPageElements();
-        expect(response).toMatchObject({
+        const [listPageElementsAfterDeleteResponse] = await listPageElements();
+        expect(listPageElementsAfterDeleteResponse).toMatchObject({
             data: {
                 pageBuilder: {
                     listPageElements: {

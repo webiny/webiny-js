@@ -56,59 +56,59 @@ describe("Page Settings Test", () => {
             }
         });
 
-        await getPage({ id: page.id }).then(([res]) =>
-            expect(res.data.pageBuilder.getPage.data.settings).toEqual({
-                general: {
-                    snippet: "snippet",
-                    image: {
-                        id: "settings.general.image.id",
-                        src: "settings.general.image.src"
-                    },
-                    layout: "some-layout",
-                    tags: ["a", "b", "c"]
+        const [getPageResponse] = await getPage({ id: page.id });
+
+        expect(getPageResponse.data.pageBuilder.getPage.data.settings).toEqual({
+            general: {
+                snippet: "snippet",
+                image: {
+                    id: "settings.general.image.id",
+                    src: "settings.general.image.src"
                 },
-                seo: {
-                    description: "SEO Description",
-                    meta: [
-                        {
-                            content: "c1",
-                            name: "n1"
-                        },
-                        {
-                            content: "c2",
-                            name: "n2"
-                        },
-                        {
-                            content: "c3",
-                            name: "n3"
-                        }
-                    ],
-                    title: "SEO Title"
-                },
-                social: {
-                    description: "Social Description",
-                    image: {
-                        id: "settings.social.image.id",
-                        src: "settings.social.image.src"
+                layout: "some-layout",
+                tags: ["a", "b", "c"]
+            },
+            seo: {
+                description: "SEO Description",
+                meta: [
+                    {
+                        content: "c1",
+                        name: "n1"
                     },
-                    meta: [
-                        {
-                            content: "c1",
-                            property: "p1"
-                        },
-                        {
-                            content: "c2",
-                            property: "p2"
-                        },
-                        {
-                            content: "c3",
-                            property: "p3"
-                        }
-                    ],
-                    title: "Social Title"
-                }
-            })
-        );
+                    {
+                        content: "c2",
+                        name: "n2"
+                    },
+                    {
+                        content: "c3",
+                        name: "n3"
+                    }
+                ],
+                title: "SEO Title"
+            },
+            social: {
+                description: "Social Description",
+                image: {
+                    id: "settings.social.image.id",
+                    src: "settings.social.image.src"
+                },
+                meta: [
+                    {
+                        content: "c1",
+                        property: "p1"
+                    },
+                    {
+                        content: "c2",
+                        property: "p2"
+                    },
+                    {
+                        content: "c3",
+                        property: "p3"
+                    }
+                ],
+                title: "Social Title"
+            }
+        });
 
         // Note that partial updates don't work correctly because of the way how `populate` works.
         // When sending an object to a `fields` Commodo fields, it wont try to merge it with the
@@ -144,45 +144,45 @@ describe("Page Settings Test", () => {
             }
         });
 
-        await getPage({ id: page.id }).then(([res]) =>
-            expect(res.data.pageBuilder.getPage.data.settings).toEqual({
-                general: {
-                    snippet: null,
-                    image: {
-                        id: "settings.general.image.id-UPDATED",
-                        src: "settings.general.image.src-UPDATED"
-                    },
-                    layout: null,
-                    tags: ["a", "b", "c", "d"]
+        const [getPageAfterUpdateResponse] = await getPage({ id: page.id });
+
+        expect(getPageAfterUpdateResponse.data.pageBuilder.getPage.data.settings).toEqual({
+            general: {
+                snippet: null,
+                image: {
+                    id: "settings.general.image.id-UPDATED",
+                    src: "settings.general.image.src-UPDATED"
                 },
-                seo: {
-                    description: "SEO Description-UPDATED",
-                    meta: [],
-                    title: "SEO Title"
+                layout: null,
+                tags: ["a", "b", "c", "d"]
+            },
+            seo: {
+                description: "SEO Description-UPDATED",
+                meta: [],
+                title: "SEO Title"
+            },
+            social: {
+                description: null,
+                image: {
+                    id: "settings.social.image.id-UPDATED",
+                    src: "settings.social.image.src-UPDATED"
                 },
-                social: {
-                    description: null,
-                    image: {
-                        id: "settings.social.image.id-UPDATED",
-                        src: "settings.social.image.src-UPDATED"
+                meta: [
+                    {
+                        content: "c1",
+                        property: "p1"
                     },
-                    meta: [
-                        {
-                            content: "c1",
-                            property: "p1"
-                        },
-                        {
-                            content: "c2",
-                            property: "p2"
-                        },
-                        {
-                            content: "c3-UPDATED",
-                            property: "p3"
-                        }
-                    ],
-                    title: null
-                }
-            })
-        );
+                    {
+                        content: "c2",
+                        property: "p2"
+                    },
+                    {
+                        content: "c3-UPDATED",
+                        property: "p3"
+                    }
+                ],
+                title: null
+            }
+        });
     });
 });

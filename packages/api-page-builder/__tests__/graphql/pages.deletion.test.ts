@@ -1,8 +1,11 @@
 import useGqlHandler from "./useGqlHandler";
+import { waitPage } from "./utils/waitPage";
 
 jest.setTimeout(25000);
 
 describe("deleting pages", () => {
+    const handler = useGqlHandler();
+
     const {
         getPage,
         createCategory,
@@ -12,7 +15,7 @@ describe("deleting pages", () => {
         listPublishedPages,
         publishPage,
         until
-    } = useGqlHandler();
+    } = handler;
 
     let p1v1, p1v2, p1v3, category;
 
@@ -29,14 +32,17 @@ describe("deleting pages", () => {
         p1v1 = await createPage({ category: category.slug }).then(
             ([res]) => res.data.pageBuilder.createPage.data
         );
+        await waitPage(handler, p1v1);
 
         p1v2 = await createPage({ from: p1v1.id }).then(([res]) => {
             return res.data.pageBuilder.createPage.data;
         });
+        await waitPage(handler, p1v2);
 
         p1v3 = await createPage({ from: p1v2.id }).then(
             ([res]) => res.data.pageBuilder.createPage.data
         );
+        await waitPage(handler, p1v3);
     });
 
     test("deleting v1 page should delete all related DB / index entries", async () => {
@@ -92,6 +98,17 @@ describe("deleting pages", () => {
     });
 
     test("deleting latest published page should update DB / indexes correctly", async () => {
+        await until(
+            () => listPages({ sort: ["createdOn_DESC"] }),
+            ([response]) => {
+                return response.data.pageBuilder.listPages.data[0].id === p1v3.id;
+            },
+            {
+                name: "list latest pages until p1v3 is first #1",
+                wait: 500,
+                tries: 30
+            }
+        );
         const [publishP1V3Response] = await publishPage({ id: p1v3.id });
 
         expect(publishP1V3Response).toMatchObject({
@@ -109,11 +126,21 @@ describe("deleting pages", () => {
             }
         });
 
-        await until(listPages, ([res]) => res.data.pageBuilder.listPages.data[0].id === p1v3.id, {
-            name: "list latest pages until p1v3 is first",
-            wait: 500,
-            tries: 30
-        });
+        await until(
+            () =>
+                listPages({
+                    sort: ["createdOn_DESC"]
+                }),
+            ([res]) => {
+                const page = res.data.pageBuilder.listPages.data[0];
+                return page.id === p1v3.id && page.status === "published";
+            },
+            {
+                name: "list latest pages until p1v3 is first",
+                wait: 500,
+                tries: 30
+            }
+        );
         await until(
             listPublishedPages,
             ([res]) => res.data.pageBuilder.listPublishedPages.data[0].id === p1v3.id,

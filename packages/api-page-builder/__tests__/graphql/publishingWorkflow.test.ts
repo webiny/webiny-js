@@ -1,6 +1,7 @@
 import useGqlHandler from "./useGqlHandler";
 import { identityA, identityB, NOT_AUTHORIZED_RESPONSE } from "./mocks";
 import { SecurityIdentity } from "@webiny/api-security";
+import { Page } from "~/types";
 
 jest.setTimeout(25000);
 
@@ -14,8 +15,7 @@ describe("publishing workflow", () => {
         requestChanges,
         listPages,
         updatePage,
-        until,
-        sleep
+        until
     } = useGqlHandler();
 
     const handlerA = useGqlHandler({
@@ -26,41 +26,40 @@ describe("publishing workflow", () => {
         identity: identityB
     });
 
-    let initialPageIds, initialCategory;
-
-    beforeEach(async () => {
-        initialPageIds = [];
-        await createCategory({
+    const createInitialData = async () => {
+        const pages: Page[] = [];
+        const category = await createCategory({
             data: {
                 slug: `category`,
                 name: `name`,
                 url: `/some-url/`,
                 layout: `layout`
             }
-        }).then(([res]) => (initialCategory = res.data.pageBuilder.createCategory.data));
+        }).then(([res]) => res.data.pageBuilder.createCategory.data);
 
         const letters = ["a", "z", "b"];
-        for (let i = 0; i < letters.length; i++) {
+        for (const letter of letters) {
             const [response] = await createPage({ category: "category" });
             const { id } = response.data.pageBuilder.createPage.data;
-            await updatePage({
+            const [updatePageResponse] = await updatePage({
                 id,
                 data: {
-                    title: `page-${letters[i]}`
+                    title: `page-${letter}`
                 }
             });
-
-            initialPageIds.push(id);
+            pages.push(updatePageResponse.data.pageBuilder.updatePage.data);
         }
-    });
 
-    afterEach(async () => {
-        await sleep(200);
-    });
+        return {
+            category,
+            pages
+        };
+    };
 
     test("simple workflow test (check request review and request changes)", async () => {
+        const { category } = await createInitialData();
         const pageFromA = await handlerA
-            .createPage({ category: initialCategory.slug })
+            .createPage({ category: category.slug })
             .then(([res]) => res.data.pageBuilder.createPage.data);
 
         expect(pageFromA.status).toBe("draft");
@@ -97,33 +96,35 @@ describe("publishing workflow", () => {
     });
 
     test("page should change status accordingly", async () => {
-        await requestReview({ id: initialPageIds[0] }).then(([res]) =>
-            expect(res).toMatchObject({
-                data: {
-                    pageBuilder: {
-                        requestReview: {
-                            data: {
-                                status: "reviewRequested"
-                            }
-                        }
-                    }
-                }
-            })
-        );
+        const { pages } = await createInitialData();
 
-        await getPage({ id: initialPageIds[0] }).then(([res]) =>
-            expect(res).toMatchObject({
-                data: {
-                    pageBuilder: {
-                        getPage: {
-                            data: {
-                                status: "reviewRequested"
-                            }
+        const [requestReviewResponse] = await requestReview({ id: pages[0].id });
+
+        expect(requestReviewResponse).toMatchObject({
+            data: {
+                pageBuilder: {
+                    requestReview: {
+                        data: {
+                            status: "reviewRequested"
                         }
                     }
                 }
-            })
-        );
+            }
+        });
+
+        const [getPageResponse] = await getPage({ id: pages[0].id });
+
+        expect(getPageResponse).toMatchObject({
+            data: {
+                pageBuilder: {
+                    getPage: {
+                        data: {
+                            status: "reviewRequested"
+                        }
+                    }
+                }
+            }
+        });
 
         await until(
             listPages,
@@ -135,21 +136,35 @@ describe("publishing workflow", () => {
             }
         );
 
-        await publishPage({ id: initialPageIds[0] }).then(([res]) =>
-            expect(res).toMatchObject({
-                data: {
-                    pageBuilder: {
-                        publishPage: {
-                            data: {
-                                status: "published"
-                            }
+        const [publishPageResponse] = await publishPage({ id: pages[0].id });
+
+        expect(publishPageResponse).toMatchObject({
+            data: {
+                pageBuilder: {
+                    publishPage: {
+                        data: {
+                            status: "published"
                         }
                     }
                 }
-            })
-        );
+            }
+        });
 
-        await getPage({ id: initialPageIds[0] });
+        const [afterPublishGetResponse] = await getPage({ id: pages[0].id });
+
+        expect(afterPublishGetResponse).toMatchObject({
+            data: {
+                pageBuilder: {
+                    getPage: {
+                        data: {
+                            id: pages[0].id,
+                            status: "published"
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
 
         await until(
             listPages,
@@ -161,64 +176,68 @@ describe("publishing workflow", () => {
     });
 
     test("can't request review if it has already been requested", async () => {
-        await requestReview({ id: initialPageIds[0] });
-        await requestReview({ id: initialPageIds[0] }).then(([res]) =>
-            expect(res).toEqual({
-                data: {
-                    pageBuilder: {
-                        requestReview: {
+        const { pages } = await createInitialData();
+
+        await requestReview({ id: pages[0].id });
+        const [response] = await requestReview({ id: pages[0].id });
+        expect(response).toEqual({
+            data: {
+                pageBuilder: {
+                    requestReview: {
+                        data: null,
+                        error: {
+                            code: "REQUEST_REVIEW_ERROR",
                             data: null,
-                            error: {
-                                code: "REQUEST_REVIEW_ERROR",
-                                data: null,
-                                message:
-                                    "Cannot request review - page is not a draft nor a change request has been issued."
-                            }
+                            message:
+                                "Cannot request review - page is not a draft nor a change request has been issued."
                         }
                     }
                 }
-            })
-        );
+            }
+        });
     });
 
     test("can't request changes on own page", async () => {
-        await requestReview({ id: initialPageIds[0] });
-        await requestChanges({ id: initialPageIds[0] }).then(([res]) =>
-            expect(res).toEqual({
-                data: {
-                    pageBuilder: {
-                        requestChanges: {
+        const { pages } = await createInitialData();
+
+        await requestReview({ id: pages[0].id });
+        const [response] = await requestChanges({ id: pages[0].id });
+        expect(response).toEqual({
+            data: {
+                pageBuilder: {
+                    requestChanges: {
+                        data: null,
+                        error: {
+                            code: "REQUESTED_CHANGES_ON_PAGE_REVISION_YOU_CREATED",
                             data: null,
-                            error: {
-                                code: "REQUESTED_CHANGES_ON_PAGE_REVISION_YOU_CREATED",
-                                data: null,
-                                message: "Cannot request changes on page revision you created."
-                            }
+                            message: "Cannot request changes on page revision you created."
                         }
                     }
                 }
-            })
-        );
+            }
+        });
     });
 
     test("can't request changes on page not in review", async () => {
-        await requestReview({ id: initialPageIds[0] });
-        await requestChanges({ id: initialPageIds[0] }).then(([res]) =>
-            expect(res).toEqual({
-                data: {
-                    pageBuilder: {
-                        requestChanges: {
+        const { pages } = await createInitialData();
+
+        await requestReview({ id: pages[0].id });
+        const [response] = await requestChanges({ id: pages[0].id });
+
+        expect(response).toEqual({
+            data: {
+                pageBuilder: {
+                    requestChanges: {
+                        data: null,
+                        error: {
+                            code: "REQUESTED_CHANGES_ON_PAGE_REVISION_YOU_CREATED",
                             data: null,
-                            error: {
-                                code: "REQUESTED_CHANGES_ON_PAGE_REVISION_YOU_CREATED",
-                                data: null,
-                                message: "Cannot request changes on page revision you created."
-                            }
+                            message: "Cannot request changes on page revision you created."
                         }
                     }
                 }
-            })
-        );
+            }
+        });
     });
 
     const publishSufficientPermission = [
@@ -234,22 +253,23 @@ describe("publishing workflow", () => {
     test.each(publishSufficientPermission)(
         "should be able to publish if has permission",
         async (permissions: any, identity: SecurityIdentity) => {
+            const { category } = await createInitialData();
+
             // Create page with identityA.
             const page = await handlerA
-                .createPage({ category: initialCategory.slug })
+                .createPage({ category: category.slug })
                 .then(([res]) => res.data.pageBuilder.createPage.data);
 
             // Publish page with specific identity and permissions.
 
             const { publishPage } = useGqlHandler({ permissions, identity });
 
-            await publishPage({ id: page.id }).then(([res]) =>
-                expect(res).toMatchObject({
-                    data: {
-                        pageBuilder: { publishPage: { data: { id: page.id, status: "published" } } }
-                    }
-                })
-            );
+            const [response] = await publishPage({ id: page.id });
+            expect(response).toMatchObject({
+                data: {
+                    pageBuilder: { publishPage: { data: { id: page.id, status: "published" } } }
+                }
+            });
         }
     );
 
@@ -284,18 +304,19 @@ describe("publishing workflow", () => {
     test.each(publishInsufficientPermissions)(
         "should not be able to publish if no permission",
         async (permissions: any, identity: SecurityIdentity) => {
+            const { category } = await createInitialData();
+
             // Create page with identityA.
             const page = await handlerA
-                .createPage({ category: initialCategory.slug })
+                .createPage({ category: category.slug })
                 .then(([res]) => res.data.pageBuilder.createPage.data);
 
             // Publish page with specific identity and permissions.
 
             const { publishPage } = useGqlHandler({ permissions, identity });
 
-            await publishPage({ id: page.id }).then(([res]) =>
-                expect(res).toMatchObject(NOT_AUTHORIZED_RESPONSE("publishPage"))
-            );
+            const [response] = await publishPage({ id: page.id });
+            expect(response).toMatchObject(NOT_AUTHORIZED_RESPONSE("publishPage"));
         }
     );
 
@@ -312,27 +333,26 @@ describe("publishing workflow", () => {
     test.each(unpublishSufficientPermissions)(
         "should be able to unpublish if has permission",
         async (permissions: any, identity: SecurityIdentity) => {
+            const { category } = await createInitialData();
+
             // Create page with identityA.
-            const page = await handlerA
-                .createPage({ category: initialCategory.slug })
-                .then(async ([res]) => {
-                    const { data } = res.data.pageBuilder.createPage;
-                    await handlerA.publishPage({ id: data.id });
-                    return data;
-                });
+            const [createResponse] = await handlerA.createPage({ category: category.slug });
+
+            const page = createResponse.data.pageBuilder.createPage.data;
+            await handlerA.publishPage({ id: page.id });
 
             // Unpublish page with specific identity and permissions.
             const { unpublishPage } = useGqlHandler({ permissions, identity });
 
-            await unpublishPage({ id: page.id }).then(([res]) =>
-                expect(res).toMatchObject({
-                    data: {
-                        pageBuilder: {
-                            unpublishPage: { data: { id: page.id, status: "unpublished" } }
-                        }
+            const [response] = await unpublishPage({ id: page.id });
+
+            expect(response).toMatchObject({
+                data: {
+                    pageBuilder: {
+                        unpublishPage: { data: { id: page.id, status: "unpublished" } }
                     }
-                })
-            );
+                }
+            });
         }
     );
     const unpublishInsufficientPermissions = [
@@ -374,22 +394,22 @@ describe("publishing workflow", () => {
     test.each(unpublishInsufficientPermissions)(
         "should not be able to unpublish if no permission",
         async (permissions, identity: SecurityIdentity) => {
+            const { category } = await createInitialData();
+
             // Create page with identityA.
-            const page = await handlerA
-                .createPage({ category: initialCategory.slug })
-                .then(async ([res]) => {
-                    const { data } = res.data.pageBuilder.createPage;
-                    await handlerA.publishPage({ id: data.id });
-                    return data;
-                });
+            const [createResponse] = await handlerA.createPage({ category: category.slug });
+
+            const page = createResponse.data.pageBuilder.createPage.data;
+
+            await handlerA.publishPage({ id: page.id });
 
             // Unpublish page with specific identity and permissions.
 
             const { unpublishPage } = useGqlHandler({ permissions, identity });
 
-            await unpublishPage({ id: page.id }).then(([res]) =>
-                expect(res).toEqual(NOT_AUTHORIZED_RESPONSE("unpublishPage"))
-            );
+            const [response] = await unpublishPage({ id: page.id });
+
+            expect(response).toEqual(NOT_AUTHORIZED_RESPONSE("unpublishPage"));
         }
     );
 
@@ -406,24 +426,26 @@ describe("publishing workflow", () => {
     test.each(requestReviewSufficientPermission)(
         "should be able to request review if has permission",
         async (permissions, identity: SecurityIdentity) => {
+            const { category } = await createInitialData();
+
             // Create page with identityA.
             const page = await handlerA
-                .createPage({ category: initialCategory.slug })
+                .createPage({ category: category.slug })
                 .then(([res]) => res.data.pageBuilder.createPage.data);
 
-            // Publish page with specific identity and permissions.
+            // request review on page with specific identity and permissions.
 
             const { requestReview } = useGqlHandler({ permissions, identity });
 
-            await requestReview({ id: page.id }).then(([res]) =>
-                expect(res).toMatchObject({
-                    data: {
-                        pageBuilder: {
-                            requestReview: { data: { id: page.id, status: "reviewRequested" } }
-                        }
+            const [response] = await requestReview({ id: page.id });
+
+            expect(response).toMatchObject({
+                data: {
+                    pageBuilder: {
+                        requestReview: { data: { id: page.id, status: "reviewRequested" } }
                     }
-                })
-            );
+                }
+            });
         }
     );
 
@@ -458,17 +480,19 @@ describe("publishing workflow", () => {
     test.each(requestReviewInsufficientPermissions)(
         "should not be able to request review if no permission",
         async (permissions, identity: SecurityIdentity) => {
+            const { category } = await createInitialData();
+
             // Create page with identityA.
             const page = await handlerA
-                .createPage({ category: initialCategory.slug })
+                .createPage({ category: category.slug })
                 .then(([res]) => res.data.pageBuilder.createPage.data);
 
-            // Publish page with specific identity and permissions.
+            // request review page with specific identity and permissions.
             const { requestReview } = useGqlHandler({ permissions, identity });
 
-            await requestReview({ id: page.id }).then(([res]) =>
-                expect(res).toMatchObject(NOT_AUTHORIZED_RESPONSE("requestReview"))
-            );
+            const [response] = await requestReview({ id: page.id });
+
+            expect(response).toMatchObject(NOT_AUTHORIZED_RESPONSE("requestReview"));
         }
     );
 
@@ -481,27 +505,27 @@ describe("publishing workflow", () => {
     test.each(requestChangesSufficientPermissions)(
         "should be able to request changes if has permission",
         async (permissions, identity: SecurityIdentity) => {
+            const { category } = await createInitialData();
             // Create page with identityA.
             const page = await handlerA
-                .createPage({ category: initialCategory.slug })
+                .createPage({ category: category.slug })
                 .then(async ([res]) => {
-                    const { data } = res.data.pageBuilder.createPage;
-                    await handlerA.requestReview({ id: data.id });
-                    return data;
+                    return res.data.pageBuilder.createPage.data;
                 });
+            await handlerA.requestReview({ id: page.id });
 
-            // Unpublish page with specific identity and permissions.
+            // request changes on page with specific identity and permissions.
             const { requestChanges } = useGqlHandler({ permissions, identity });
 
-            await requestChanges({ id: page.id }).then(([res]) =>
-                expect(res).toMatchObject({
-                    data: {
-                        pageBuilder: {
-                            requestChanges: { data: { id: page.id, status: "changesRequested" } }
-                        }
+            const [response] = await requestChanges({ id: page.id });
+
+            expect(response).toMatchObject({
+                data: {
+                    pageBuilder: {
+                        requestChanges: { data: { id: page.id, status: "changesRequested" } }
                     }
-                })
-            );
+                }
+            });
         }
     );
 
@@ -523,21 +547,21 @@ describe("publishing workflow", () => {
     test.each(requestChangesInsufficientPermissions)(
         "should not be able to request changes if no permission",
         async (permissions, identity: SecurityIdentity) => {
+            const { category } = await createInitialData();
             // Create page with identityA.
             const page = await handlerA
-                .createPage({ category: initialCategory.slug })
+                .createPage({ category: category.slug })
                 .then(async ([res]) => {
-                    const { data } = res.data.pageBuilder.createPage;
-                    await handlerA.requestReview({ id: data.id });
-                    return data;
+                    return res.data.pageBuilder.createPage.data;
                 });
+            await handlerA.requestReview({ id: page.id });
 
-            // Unpublish page with specific identity and permissions.
+            // request changes with specific identity and permissions.
             const { requestChanges } = useGqlHandler({ permissions, identity });
 
-            await requestChanges({ id: page.id }).then(([res]) =>
-                expect(res).toEqual(NOT_AUTHORIZED_RESPONSE("requestChanges"))
-            );
+            const [response] = await requestChanges({ id: page.id });
+
+            expect(response).toEqual(NOT_AUTHORIZED_RESPONSE("requestChanges"));
         }
     );
 });

@@ -1,30 +1,13 @@
 import useGqlHandler from "./useGqlHandler";
-import { Page } from "~/types";
+import { waitPage } from "./utils/waitPage";
 
 jest.setTimeout(25000);
 
 describe("CRUD Test", () => {
-    const { createCategory, createPage, deletePage, listPages, getPage, updatePage, until } =
-        useGqlHandler();
+    const handler = useGqlHandler();
 
-    const waitPage = async (page: Page) => {
-        await until(
-            () =>
-                listPages({
-                    sort: ["createdOn_DESC"]
-                }),
-            ([response]) => {
-                return response.data.pageBuilder.listPages.data.some(item => {
-                    return item.id === page.id && item.title === page.title;
-                });
-            },
-            {
-                name: `waiting for page ${page.title}`,
-                wait: 500,
-                tries: 30
-            }
-        );
-    };
+    const { createCategory, createPage, deletePage, listPages, getPage, updatePage, until } =
+        handler;
 
     test("create, read, update and delete pages", async () => {
         let [response] = await createPage({ category: "unknown" });
@@ -129,7 +112,7 @@ describe("CRUD Test", () => {
 
             const updatedPage = response.data.pageBuilder.updatePage.data;
 
-            await waitPage(updatedPage);
+            await waitPage(handler, updatedPage);
         }
 
         [response] = await until(

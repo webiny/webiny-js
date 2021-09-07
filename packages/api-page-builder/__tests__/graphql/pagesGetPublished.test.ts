@@ -1,8 +1,12 @@
 import useGqlHandler from "./useGqlHandler";
+import { waitPage } from "./utils/waitPage";
+import { Page } from "~/types";
 
-jest.setTimeout(15000);
+jest.setTimeout(30000);
 
 describe("getting published pages", () => {
+    const handler = useGqlHandler();
+
     const {
         createCategory,
         createPage,
@@ -11,12 +15,10 @@ describe("getting published pages", () => {
         getPublishedPage,
         updatePage,
         until
-    } = useGqlHandler();
+    } = handler;
 
-    let initiallyCreatedPagesIds;
-
-    beforeEach(async () => {
-        initiallyCreatedPagesIds = [];
+    const createInitialData = async () => {
+        const pages: Page[] = [];
         await createCategory({
             data: {
                 slug: `category`,
@@ -29,74 +31,104 @@ describe("getting published pages", () => {
         const letters = ["a", "z", "b", "x", "c"];
         for (const letter of letters) {
             const [response] = await createPage({ category: "category" });
-            const { id } = response.data.pageBuilder.createPage.data;
+            const page = response.data.pageBuilder.createPage.data;
+            if (!page) {
+                throw new Error(`Missing page data: ${letter}`);
+            }
 
-            await updatePage({
-                id,
+            await waitPage(handler, page);
+
+            const title = `page-${letter}`;
+            const path = `/path-${letter}`;
+
+            const [updateResponse] = await updatePage({
+                id: page.id,
                 data: {
-                    title: `page-${letter}`,
-                    path: `/path-${letter}`
+                    title,
+                    path
                 }
             });
+            const updatedPage = updateResponse.data.pageBuilder.updatePage.data;
+            if (!updatedPage) {
+                throw new Error(`Missing updated page data: ${letter}`);
+            }
+            await waitPage(handler, updatedPage);
 
-            initiallyCreatedPagesIds.push(id);
+            pages.push(updatedPage);
 
             // Publish pages.
             if (["a", "b", "c"].includes(letter)) {
                 await publishPage({
-                    id
+                    id: updatedPage.id
                 });
             }
         }
 
         await until(
             () => listPublishedPages({ sort: ["createdOn_DESC"] }),
-            ([res]) => res.data.pageBuilder.listPublishedPages.data[0].title === "page-c"
+            ([res]) => {
+                const data = res.data.pageBuilder.listPublishedPages.data;
+                const published = data.every(p => p.status === "published");
+                return published && data[0].title === "page-c";
+            },
+            {
+                name: "list published pages after update and publish",
+                tries: 30,
+                wait: 500
+            }
         );
-    });
+
+        return pages;
+    };
 
     test("getting published pages by full ID", async () => {
-        await getPublishedPage({ id: initiallyCreatedPagesIds[0] });
+        const initialPages = await createInitialData();
 
-        await getPublishedPage({ id: initiallyCreatedPagesIds[0] }).then(([res]) =>
-            expect(res.data.pageBuilder.getPublishedPage.data.id).toBe(initiallyCreatedPagesIds[0])
-        );
+        const [response] = await getPublishedPage({ id: initialPages[0].id });
+
+        expect(response.data.pageBuilder.getPublishedPage.data.id).toBe(initialPages[0].id);
     });
 
     test("getting published pages by page unique ID (ID without version)", async () => {
-        const [pageUniqueId] = initiallyCreatedPagesIds[0].split("#");
-        await getPublishedPage({ id: pageUniqueId }).then(([res]) =>
-            expect(res.data.pageBuilder.getPublishedPage.data.id).toBe(initiallyCreatedPagesIds[0])
-        );
+        const initialPages = await createInitialData();
+
+        const [pageUniqueId] = initialPages[0].id.split("#");
+        const [response] = await getPublishedPage({ id: pageUniqueId });
+
+        expect(response.data.pageBuilder.getPublishedPage.data.id).toBe(initialPages[0].id);
     });
 
     test("getting published pages by URL", async () => {
-        await getPublishedPage({ path: "/path-a" }).then(([res]) =>
-            expect(res.data.pageBuilder.getPublishedPage.data.id).toBe(initiallyCreatedPagesIds[0])
-        );
+        const initialPages = await createInitialData();
 
-        await getPublishedPage({ path: "/path-c" }).then(([res]) =>
-            expect(res.data.pageBuilder.getPublishedPage.data.id).toBe(initiallyCreatedPagesIds[4])
-        );
+        const [pathAResponse] = await getPublishedPage({ path: "/path-a" });
+        expect(pathAResponse.data.pageBuilder.getPublishedPage.data.id).toBe(initialPages[0].id);
+
+        const [pathCResponse] = await getPublishedPage({ path: "/path-c" });
+        expect(pathCResponse.data.pageBuilder.getPublishedPage.data.id).toBe(initialPages[4].id);
     });
 
     test("should be able to get an unpublished page by ID, with preview flag set to true", async () => {
+        const initialPages = await createInitialData();
         // This should fail, we must only be able to get a page for preview if exact ID was specified.
-        await getPublishedPage({ path: "/path-z", preview: true }).then(([res]) =>
-            expect(res.data.pageBuilder.getPublishedPage).toEqual({
+        const [pathZResponse] = await getPublishedPage({ path: "/path-z", preview: true });
+
+        expect(pathZResponse.data.pageBuilder.getPublishedPage).toEqual({
+            data: null,
+            error: {
+                code: "NOT_FOUND",
                 data: null,
-                error: {
-                    code: "NOT_FOUND",
-                    data: null,
-                    message: "Page not found."
-                }
-            })
-        );
+                message: "Page not found."
+            }
+        });
 
         // This should work.
-        await getPublishedPage({ id: initiallyCreatedPagesIds[1], preview: true }).then(([res]) => {
-            expect(res.data.pageBuilder.getPublishedPage.data.id).toBe(initiallyCreatedPagesIds[1]);
-            expect(res.data.pageBuilder.getPublishedPage.data.status).toBe("draft");
+        const [id1Response] = await getPublishedPage({
+            id: initialPages[1].id,
+            preview: true
         });
+
+        expect(id1Response.data.pageBuilder.getPublishedPage.data.id).toBe(initialPages[1].id);
+        expect(id1Response.data.pageBuilder.getPublishedPage.data.status).toBe("draft");
     });
 });
