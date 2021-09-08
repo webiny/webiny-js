@@ -200,6 +200,81 @@ class Policies {
         });
     }
 
+    getImportPageLambdaPolicy({
+        primaryDynamodbTable,
+        elasticsearchDynamodbTable,
+        bucket,
+        elasticsearchDomain,
+        cognitoUserPool
+    }: {
+        primaryDynamodbTable: aws.dynamodb.Table;
+        elasticsearchDynamodbTable: aws.dynamodb.Table;
+        bucket: aws.s3.Bucket;
+        elasticsearchDomain: EsDomain;
+        cognitoUserPool: aws.cognito.UserPool;
+    }): aws.iam.Policy {
+        return new aws.iam.Policy("ImportPageLambdaPolicy", {
+            description: "This policy enables access to ES, Dynamodb, S3, Lambda and Cognito IDP",
+            policy: {
+                Version: "2012-10-17",
+                Statement: [
+                    {
+                        Sid: "PermissionForDynamodb",
+                        Effect: "Allow",
+                        Action: [
+                            "dynamodb:BatchGetItem",
+                            "dynamodb:BatchWriteItem",
+                            "dynamodb:PutItem",
+                            "dynamodb:DeleteItem",
+                            "dynamodb:GetItem",
+                            "dynamodb:Query",
+                            "dynamodb:UpdateItem"
+                        ],
+                        Resource: [
+                            pulumi.interpolate`${primaryDynamodbTable.arn}`,
+                            pulumi.interpolate`${primaryDynamodbTable.arn}/*`,
+                            pulumi.interpolate`${elasticsearchDynamodbTable.arn}`,
+                            pulumi.interpolate`${elasticsearchDynamodbTable.arn}/*`
+                        ]
+                    },
+                    {
+                        Sid: "PermissionForS3",
+                        Effect: "Allow",
+                        Action: [
+                            "s3:GetObjectAcl",
+                            "s3:DeleteObject",
+                            "s3:PutObjectAcl",
+                            "s3:PutObject",
+                            "s3:GetObject"
+                        ],
+                        Resource: pulumi.interpolate`arn:aws:s3:::${bucket.id}/*`
+                    },
+                    {
+                        Sid: "PermissionForLambda",
+                        Effect: "Allow",
+                        Action: ["lambda:InvokeFunction"],
+                        Resource: pulumi.interpolate`arn:aws:lambda:${this.awsRegion}:${this.callerIdentityOutput.accountId}:function:*`
+                    },
+                    {
+                        Sid: "PermissionForCognitoIdp",
+                        Effect: "Allow",
+                        Action: "cognito-idp:*",
+                        Resource: pulumi.interpolate`${cognitoUserPool.arn}`
+                    },
+                    {
+                        Sid: "PermissionForES",
+                        Effect: "Allow",
+                        Action: "es:*",
+                        Resource: [
+                            pulumi.interpolate`${elasticsearchDomain.arn}`,
+                            pulumi.interpolate`${elasticsearchDomain.arn}/*`
+                        ]
+                    }
+                ]
+            }
+        });
+    }
+
     getApiGraphqlLambdaPolicy({
         primaryDynamodbTable,
         elasticsearchDynamodbTable,
