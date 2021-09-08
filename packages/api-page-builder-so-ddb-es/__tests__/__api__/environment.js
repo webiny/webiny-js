@@ -22,60 +22,20 @@ if (typeof plugins !== "function") {
 
 const ELASTICSEARCH_PORT = process.env.ELASTICSEARCH_PORT || "9200";
 
-const getStorageOperationsPlugins = ({
-    elasticsearchClient,
-    documentClient,
-    elasticsearchClientContext
-}) => {
+const getStorageOperationsPlugins = ({ documentClient, elasticsearchClientContext }) => {
     return () => {
+        const dbPluginsValue = dbPlugins({
+            table: "PageBuilder",
+            driver: new DynamoDbDriver({
+                documentClient
+            })
+        });
         return [
-            ...dynamoDbPlugins(),
             elasticsearchDataGzipCompression(),
-            plugins(),
-            dbPlugins({
-                table: "PageBuilder",
-                driver: new DynamoDbDriver({
-                    documentClient
-                })
-            }),
+            ...plugins(),
+            ...dbPluginsValue,
             elasticsearchClientContext,
-            {
-                type: "context",
-                async apply() {
-                    await elasticsearchClient.indices.putTemplate({
-                        name: "page-builder-index-template",
-                        body: {
-                            index_patterns: ["*-page-builder*"],
-                            // need this part for sorting to work on text fields
-                            settings: {
-                                analysis: {
-                                    analyzer: {
-                                        lowercase_analyzer: {
-                                            type: "custom",
-                                            filter: ["lowercase", "trim"],
-                                            tokenizer: "keyword"
-                                        }
-                                    }
-                                }
-                            },
-                            mappings: {
-                                properties: {
-                                    property: {
-                                        type: "text",
-                                        fields: {
-                                            keyword: {
-                                                type: "keyword",
-                                                ignore_above: 256
-                                            }
-                                        },
-                                        analyzer: "lowercase_analyzer"
-                                    }
-                                }
-                            }
-                        }
-                    });
-                }
-            }
+            ...dynamoDbPlugins()
         ];
     };
 };
@@ -99,11 +59,6 @@ class PageBuilderTestEnvironment extends NodeEnvironment {
             endpoint: `http://localhost:${ELASTICSEARCH_PORT}`,
             auth: {}
         });
-        const clearEsIndices = async () => {
-            return elasticsearchClient.indices.delete({
-                index: "_all"
-            });
-        };
 
         /**
          * Intercept DocumentClient operations and trigger dynamoToElastic function (almost like a DynamoDB Stream trigger)
@@ -114,26 +69,28 @@ class PageBuilderTestEnvironment extends NodeEnvironment {
         });
         simulateStream(documentClient, createHandler(simulationContext, dynamoToElastic()));
 
+        const clearElasticsearchIndices = async () => {
+            return elasticsearchClient.indices.delete({
+                index: "_all"
+            });
+        };
         /**
          * This is a global function that will be called inside the tests to get all relevant plugins, methods and objects.
          */
         this.global.__getStorageOperationsPlugins = () => {
             return getStorageOperationsPlugins({
-                elasticsearchClient,
                 elasticsearchClientContext,
                 documentClient
             });
         };
-        this.global.__beforeEach = clearEsIndices;
-        //this.global.__afterEach = clearEsIndices;
-        //this.global.__beforeAll = clearEsIndices;
+        this.global.__beforeEach = clearElasticsearchIndices;
         this.global.__afterEach = async () => {
-            // dummy
+            // dummy method
         };
         this.global.__beforeAll = async () => {
-            // dummy
+            // dummy method
         };
-        this.global.__afterAll = clearEsIndices;
+        this.global.__afterAll = clearElasticsearchIndices;
     }
 }
 
