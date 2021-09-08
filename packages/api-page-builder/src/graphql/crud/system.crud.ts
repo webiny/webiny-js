@@ -144,7 +144,7 @@ export default new ContextPlugin<PbContext>(async context => {
                     fileIdToKeyMap
                 });
 
-                const initialPages = [
+                const initialPagesData = [
                     {
                         title: "Welcome to Webiny",
                         path: "/welcome-to-webiny",
@@ -164,13 +164,16 @@ export default new ContextPlugin<PbContext>(async context => {
                     }
                 ];
 
+                const initialPages = await Promise.all(
+                    initialPagesData.map(() => pages.create(staticCategory.slug))
+                );
+                const updatedPages = await Promise.all(
+                    initialPagesData.map((data, index) => {
+                        return pages.update(initialPages[index].id, data);
+                    })
+                );
                 const [homePage, notFoundPage] = await Promise.all(
-                    initialPages.map(data =>
-                        pages
-                            .create(staticCategory.slug)
-                            .then(page => pages.update(page.id, data))
-                            .then(page => pages.publish(page.id))
-                    )
+                    updatedPages.map(page => pages.publish(page.id))
                 );
 
                 await pageBuilder.settings.update({

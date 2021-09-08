@@ -1,6 +1,8 @@
 import useGqlHandler from "./useGqlHandler";
 
 describe("Install Test", () => {
+    const handler = useGqlHandler();
+
     const {
         isInstalled,
         install,
@@ -11,7 +13,7 @@ describe("Install Test", () => {
         getPublishedPage,
         until,
         getSettings
-    } = useGqlHandler();
+    } = handler;
 
     test("should be able to get app version anonymously, but not install", async () => {
         const { isInstalled, install } = useGqlHandler({
