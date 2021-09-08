@@ -640,7 +640,6 @@ export interface PageStorageOperationsUnpublishParams {
     original: Page;
     page: Page;
     latestPage: Page;
-    publishedPage: Page | null;
 }
 
 /**

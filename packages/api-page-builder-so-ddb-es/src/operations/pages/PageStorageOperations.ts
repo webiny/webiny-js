@@ -637,12 +637,7 @@ export class PageStorageOperationsDdbEs implements PageStorageOperations {
                 SK: this.createSortKey(page.version)
             })
         ];
-        const esItems = [
-            // this.esEntity.deleteBatch({
-            //     PK: this.createPartitionKey(page.pid),
-            //     SK: this.createPublishedSortKey(),
-            // })
-        ];
+        const esItems = [];
         /*
          * If we are unpublishing the latest revision, let's also update the latest revision entry's
          * status in ES. We can only do that if the entry actually exists, or in other words, if the
@@ -685,6 +680,12 @@ export class PageStorageOperationsDdbEs implements PageStorageOperations {
                 ex.message || "Could not update all the page records when unpublishing.",
                 ex.code || "UPDATE_RECORDS_ERROR"
             );
+        }
+        /**
+         * No need to go further if no Elasticsearch items to be applied.
+         */
+        if (esItems.length === 0) {
+            return page;
         }
         try {
             await batchWriteAll({
@@ -947,14 +948,18 @@ export class PageStorageOperationsDdbEs implements PageStorageOperations {
         }
 
         for (const plugin of plugins) {
-            // Apply query modifications
+            /**
+             * Apply query modifications
+             */
             plugin.modifyQuery({
                 query: body.query as unknown as ElasticsearchBoolQueryConfig,
                 args: params,
                 context: this.context
             });
 
-            // Apply sort modifications
+            /**
+             * Apply sort modifications
+             */
             plugin.modifySort({
                 sort: body.sort,
                 args: params,

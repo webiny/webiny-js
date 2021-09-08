@@ -39,9 +39,13 @@ const createNotIn = (exclude?: string[]): { paths: string[]; ids: string[] } => 
     const ids: string[] = [];
     if (Array.isArray(exclude)) {
         for (const item of exclude) {
-            // Page "path" will always starts with a slash.
+            /**
+             * Page "path" will always starts with a slash.
+             */
             if (item.includes("/")) {
-                // Let's also ensure the trailing slash is removed.
+                /**
+                 * Let's also ensure the trailing slash is removed.
+                 */
                 paths.push(lodashTrimEnd(item, "/"));
                 continue;
             }
@@ -86,7 +90,9 @@ export default new ContextPlugin<PbContext>(async context => {
         PageStorageOperationsProviderPlugin.type
     );
 
-    // Used in a couple of key events - (un)publishing and pages deletion.
+    /**
+     * Used in a couple of key events - (un)publishing and pages deletion.
+     */
     const pagePlugins = context.plugins.byType<PagePlugin>(PagePlugin.type);
 
     /**
@@ -171,7 +177,9 @@ export default new ContextPlugin<PbContext>(async context => {
                 displayName: identity.displayName,
                 type: identity.type
             };
-
+            /**
+             * Just create the initial { compression, content } object.
+             */
             const content = await compressContent();
             const page: Page = {
                 id,
@@ -198,7 +206,7 @@ export default new ContextPlugin<PbContext>(async context => {
                 createdOn: new Date().toISOString(),
                 ownedBy: owner,
                 createdBy: owner,
-                content, // Just create the initial { compression, content } object.
+                content,
                 webinyVersion: context.WEBINY_VERSION
             };
 
@@ -392,7 +400,7 @@ export default new ContextPlugin<PbContext>(async context => {
             });
 
             /*
-                // Comments left from the old code. These are the steps that need to happen for delete to work properly
+                ***** Comments left from the old code. These are the steps that need to happen for delete to work properly
                 
                 1. Load the page and latest / published page (rev) data.
                 
@@ -631,15 +639,6 @@ export default new ContextPlugin<PbContext>(async context => {
 
             const original = await context.pageBuilder.pages.get(id);
             /**
-             * Already published page revision of this page.
-             */
-            const publishedPage = await storageOperations.get({
-                where: {
-                    pid: original.pid,
-                    published: true
-                }
-            });
-            /**
              * Latest revision of the this page.
              */
             const latestPage = await storageOperations.get({
@@ -649,7 +648,7 @@ export default new ContextPlugin<PbContext>(async context => {
                 }
             });
 
-            if (publishedPage && publishedPage.id !== original.id) {
+            if (original.status !== "published") {
                 throw new WebinyError(`Page is not published.`);
             }
 
@@ -682,7 +681,6 @@ export default new ContextPlugin<PbContext>(async context => {
                 const result = await storageOperations.unpublish({
                     original,
                     page,
-                    publishedPage,
                     latestPage
                 });
                 await executeCallbacks<PagePlugin["afterUnpublish"]>(
@@ -693,7 +691,7 @@ export default new ContextPlugin<PbContext>(async context => {
                         page: result
                     }
                 );
-                clearDataLoaderCache([original, publishedPage, latestPage]);
+                clearDataLoaderCache([original, latestPage]);
                 return result as any;
             } catch (ex) {
                 throw new WebinyError(
@@ -704,8 +702,7 @@ export default new ContextPlugin<PbContext>(async context => {
                         id,
                         original,
                         page,
-                        latestPage,
-                        publishedPage
+                        latestPage
                     }
                 );
             }
@@ -1010,7 +1007,9 @@ export default new ContextPlugin<PbContext>(async context => {
 
             const { after, limit, sort, search, exclude, where: initialWhere = {} } = params;
 
-            // If users can only manage own records, let's add the special filter.
+            /**
+             * If users can only manage own records, let's add the special filter.
+             */
             let createdBy: string = undefined;
             if (permission.own === true) {
                 const identity = context.security.getIdentity();
@@ -1110,10 +1109,10 @@ export default new ContextPlugin<PbContext>(async context => {
         },
         prerendering: {
             flush: async () => {
-                // placeholder method
+                /** placeholder method */
             },
             render: async () => {
-                // placeholder method
+                /** placeholder method */
             }
         }
     };
