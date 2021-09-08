@@ -31,6 +31,7 @@ describe("page full URL test", () => {
         for (let i = 0; i < 3; i++) {
             const [response] = await createPage({ category: "category" });
             const page = response.data.pageBuilder.createPage.data;
+            await waitPage(handler, page);
             const [updateResponse] = await updatePage({
                 id: page.id,
                 data: {
