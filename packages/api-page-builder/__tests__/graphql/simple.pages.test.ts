@@ -1,5 +1,6 @@
 import useGqlHandler from "./useGqlHandler";
 import { Page } from "~/types";
+import { waitPage } from "./utils/waitPage";
 
 const sort: string[] = ["createdOn_DESC"];
 
@@ -139,19 +140,24 @@ describe("pages simple actions", () => {
         const [createResponse] = await handler.createPage({
             category: category.slug
         });
-        const id = createResponse.data.pageBuilder.createPage.data.id;
+        const page = createResponse.data.pageBuilder.createPage.data;
+        await waitPage(handler, page);
 
         const title = "Page updated title";
 
         await handler.updatePage({
-            id,
+            id: page.id,
             data: {
                 title
             }
         });
+        await waitPage(handler, {
+            ...page,
+            title
+        });
 
         await handler.publishPage({
-            id
+            id: page.id
         });
 
         await handler.until(
@@ -184,7 +190,7 @@ describe("pages simple actions", () => {
                     listPages: {
                         data: [
                             {
-                                id,
+                                id: page.id,
                                 status: "published"
                             }
                         ],
@@ -209,7 +215,7 @@ describe("pages simple actions", () => {
                     listPublishedPages: {
                         data: [
                             {
-                                id,
+                                id: page.id,
                                 status: "published"
                             }
                         ],
@@ -231,23 +237,33 @@ describe("pages simple actions", () => {
         const [createResponse] = await handler.createPage({
             category: category.slug
         });
-        const id = createResponse.data.pageBuilder.createPage.data.id;
+        const page = createResponse.data.pageBuilder.createPage.data;
+        await waitPage(handler, page);
 
         const title = "Page updated title";
 
         await handler.updatePage({
-            id,
+            id: page.id,
             data: {
                 title
             }
         });
+        await waitPage(handler, {
+            ...page,
+            title
+        });
 
         await handler.publishPage({
-            id
+            id: page.id
+        });
+        await waitPage(handler, {
+            ...page,
+            title,
+            status: "published"
         });
 
         const [response] = await handler.unpublishPage({
-            id
+            id: page.id
         });
 
         expect(response).toMatchObject({
@@ -255,7 +271,7 @@ describe("pages simple actions", () => {
                 pageBuilder: {
                     unpublishPage: {
                         data: {
-                            id,
+                            id: page.id,
                             title,
                             status: "unpublished"
                         },
@@ -266,14 +282,14 @@ describe("pages simple actions", () => {
         });
 
         const [checkResponse] = await handler.getPage({
-            id
+            id: page.id
         });
         expect(checkResponse).toMatchObject({
             data: {
                 pageBuilder: {
                     getPage: {
                         data: {
-                            id,
+                            id: page.id,
                             title,
                             status: "unpublished"
                         },
@@ -290,23 +306,33 @@ describe("pages simple actions", () => {
         const [createResponse] = await handler.createPage({
             category: category.slug
         });
-        const id = createResponse.data.pageBuilder.createPage.data.id;
+        const page = createResponse.data.pageBuilder.createPage.data;
+        await waitPage(handler, page);
 
         const title = "Page updated title";
 
         await handler.updatePage({
-            id,
+            id: page.id,
             data: {
                 title
             }
         });
+        await waitPage(handler, {
+            ...page,
+            title
+        });
 
         await handler.publishPage({
-            id
+            id: page.id
+        });
+        await waitPage(handler, {
+            ...page,
+            title,
+            status: "published"
         });
 
         await handler.unpublishPage({
-            id
+            id: page.id
         });
 
         await handler.until(
@@ -354,7 +380,7 @@ describe("pages simple actions", () => {
                     listPages: {
                         data: [
                             {
-                                id,
+                                id: page.id,
                                 status: "unpublished"
                             }
                         ],
