@@ -10,7 +10,6 @@ const NodeEnvironment = require("jest-environment-node");
 const elasticsearchDataGzipCompression =
     require("@webiny/api-elasticsearch/plugins/GzipCompression").default;
 const { ContextPlugin } = require("@webiny/handler/plugins/ContextPlugin");
-const dynamoDbPlugins = require("@webiny/db-dynamodb/plugins").default;
 /**
  * For this to work it must load plugins that have already been built
  */
@@ -24,6 +23,7 @@ const ELASTICSEARCH_PORT = process.env.ELASTICSEARCH_PORT || "9200";
 
 const getStorageOperationsPlugins = ({ documentClient, elasticsearchClientContext }) => {
     return () => {
+        const pluginsValue = plugins();
         const dbPluginsValue = dbPlugins({
             table: "PageBuilder",
             driver: new DynamoDbDriver({
@@ -32,10 +32,9 @@ const getStorageOperationsPlugins = ({ documentClient, elasticsearchClientContex
         });
         return [
             elasticsearchDataGzipCompression(),
-            ...plugins(),
+            ...pluginsValue,
             ...dbPluginsValue,
-            elasticsearchClientContext,
-            ...dynamoDbPlugins()
+            elasticsearchClientContext
         ];
     };
 };
@@ -69,7 +68,7 @@ class PageBuilderTestEnvironment extends NodeEnvironment {
         });
         simulateStream(documentClient, createHandler(simulationContext, dynamoToElastic()));
 
-        const clearElasticsearchIndices = async () => {
+        const clearEsIndices = async () => {
             return elasticsearchClient.indices.delete({
                 index: "_all"
             });
@@ -83,14 +82,10 @@ class PageBuilderTestEnvironment extends NodeEnvironment {
                 documentClient
             });
         };
-        this.global.__beforeEach = clearElasticsearchIndices;
-        this.global.__afterEach = async () => {
-            // dummy method
-        };
-        this.global.__beforeAll = async () => {
-            // dummy method
-        };
-        this.global.__afterAll = clearElasticsearchIndices;
+        this.global.__beforeEach = clearEsIndices;
+        this.global.__afterEach = clearEsIndices;
+        this.global.__beforeAll = clearEsIndices;
+        this.global.__afterAll = clearEsIndices;
     }
 }
 
