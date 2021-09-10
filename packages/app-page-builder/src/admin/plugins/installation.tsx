@@ -133,6 +133,12 @@ export default {
             getComponent() {
                 return lazy(() => import("./upgrades/v5.0.0"));
             }
+        },
+        {
+            version: "5.15.0",
+            getComponent() {
+                return lazy(() => import("./upgrades/v5.15.0"));
+            }
         }
     ]
 };
