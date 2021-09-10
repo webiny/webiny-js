@@ -1,25 +1,35 @@
 import React from "react";
 import classNames from "classnames";
-import Text from "../../../components/Text";
+import { CoreOptions } from "medium-editor";
+import Text from "~/editor/components/Text";
+import { PbEditorTextElementProps } from "~/types";
+import { getMediumEditorOptions } from "../utils/textUtils";
 
 export const headingClassName = classNames(
     "webiny-pb-base-page-element-style webiny-pb-page-element-text"
 );
 
-const DEFAULT_EDITOR_OPTIONS = {
+const DEFAULT_EDITOR_OPTIONS: CoreOptions = {
     toolbar: {
         buttons: ["bold", "italic", "underline", "anchor"]
+    },
+    anchor: {
+        targetCheckbox: true,
+        targetCheckboxText: "Open in a new tab"
     }
 };
 
-type TextType = {
-    elementId: string;
-};
-const Heading: React.FunctionComponent<TextType> = ({ elementId }) => {
+const Heading: React.FunctionComponent<PbEditorTextElementProps> = ({
+    elementId,
+    mediumEditorOptions
+}) => {
     return (
         <Text
             elementId={elementId}
-            editorOptions={DEFAULT_EDITOR_OPTIONS}
+            mediumEditorOptions={getMediumEditorOptions(
+                DEFAULT_EDITOR_OPTIONS,
+                mediumEditorOptions
+            )}
             rootClassName={headingClassName}
         />
     );

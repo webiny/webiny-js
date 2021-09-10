@@ -1,6 +1,8 @@
 import React, { useEffect, createElement } from "react";
-import MediumEditor from "medium-editor";
+import MediumEditor, { CoreOptions } from "medium-editor";
 import { css } from "emotion";
+import merge from "lodash/merge";
+import dotProp from "dot-prop-immutable";
 
 const editorClass = css({
     width: "100%",
@@ -14,7 +16,7 @@ type ReactMediumEditorProps = {
     onChange: (value: string) => void;
     onSelect: () => void;
     tag: string;
-    options?: any;
+    options?: CoreOptions;
     [key: string]: any;
 };
 
@@ -22,7 +24,7 @@ const ReactMediumEditor = ({
     tag = "div",
     value,
     onChange,
-    options,
+    options = {},
     onSelect
 }: ReactMediumEditorProps) => {
     const elementRef = React.useRef();
@@ -46,19 +48,23 @@ const ReactMediumEditor = ({
         if (!elementRef && !elementRef.current) {
             return;
         }
-        // Create "MediumEditor" instance
-        editorRef.current = new MediumEditor(elementRef.current, {
-            extensions: {
-                // https://github.com/yabwe/medium-editor#disable-file-dragging
-                // Disable file dragging by providing a dummy ImageDragging extension.
-                imageDragging: {}
+        let mediumEditorOptions = merge(
+            {
+                extensions: {
+                    // https://github.com/yabwe/medium-editor#disable-file-dragging
+                    // Disable file dragging by providing a dummy ImageDragging extension.
+                    imageDragging: {}
+                }
             },
-            ...options,
-            toolbar: {
-                ...options.toolbar,
-                buttons: [...options.toolbar.buttons, "removeFormat"]
-            }
-        });
+            options
+        );
+        // Add "removeFormat" button to toolbar
+        mediumEditorOptions = dotProp.set(mediumEditorOptions, "toolbar.buttons", buttons => [
+            ...buttons,
+            "removeFormat"
+        ]);
+        // Create "MediumEditor" instance
+        editorRef.current = new MediumEditor(elementRef.current, mediumEditorOptions);
 
         editorRef.current.subscribe("blur", handleChange);
         editorRef.current.subscribe("editableInput", handleSelect);
