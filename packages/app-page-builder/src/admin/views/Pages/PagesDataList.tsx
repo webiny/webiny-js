@@ -30,7 +30,6 @@ import { ButtonIcon, ButtonSecondary } from "@webiny/ui/Button";
 import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
 import { ReactComponent as FilterIcon } from "@webiny/app-admin/assets/icons/filter-24px.svg";
 import SearchUI from "@webiny/app-admin/components/SearchUI";
-import { deserializeSorters, serializeSorters } from "../utils";
 import * as GQLCache from "~/admin/views/Pages/cache";
 
 const t = i18n.ns("app-page-builder/admin/pages/data-list");
@@ -48,22 +47,22 @@ const InlineLoaderWrapper = styled("div")({
     height: 40,
     backgroundColor: "var(--mdc-theme-surface)"
 });
-const sorters = [
+const SORTERS = [
     {
         label: t`Newest to oldest`,
-        sorters: { createdOn: "desc" }
+        sort: "createdOn_DESC"
     },
     {
         label: t`Oldest to newest`,
-        sorters: { createdOn: "asc" }
+        sort: "createdOn_ASC"
     },
     {
-        label: t`Title A-Z`,
-        sorters: { title: "asc" }
+        label: t`Name A-Z`,
+        sort: "name_ASC"
     },
     {
-        label: t`Title Z-A`,
-        sorters: { title: "desc" }
+        label: t`Name Z-A`,
+        sort: "name_DESC"
     }
 ];
 
@@ -78,7 +77,7 @@ const PagesDataList = ({ onCreatePage, canCreate }: PagesDataListProps) => {
 
     const [fetchMoreLoading, setFetchMoreLoading] = useState(false);
     const [where, setWhere] = useState({});
-    const [sort, setSort] = useState({ createdOn: "desc" });
+    const [sort, setSort] = useState<string>(SORTERS[0].sort);
     const search = {
         query: query.get("search") || undefined
     };
@@ -127,10 +126,10 @@ const PagesDataList = ({ onCreatePage, canCreate }: PagesDataListProps) => {
         debounce(({ scrollFrame, fetchMore }) => {
             if (scrollFrame.top > 0.9) {
                 const meta = get(listQuery, "data.pageBuilder.listPages.meta", {});
-                if (meta.nextPage) {
+                if (meta.cursor) {
                     setFetchMoreLoading(true);
                     fetchMore({
-                        variables: { page: meta.page + 1 },
+                        variables: { after: meta.cursor },
                         updateQuery: (prev, { fetchMoreResult }) => {
                             if (!fetchMoreResult) {
                                 return prev;
@@ -156,7 +155,7 @@ const PagesDataList = ({ onCreatePage, canCreate }: PagesDataListProps) => {
         () => (
             <DataListModalOverlay>
                 <Form
-                    data={{ ...where, sort: serializeSorters(sort) }}
+                    data={{ ...where, sort: [sort] }}
                     onChange={({ status, category, sort }) => {
                         // Update "where" filter.
                         const where = { category, status: undefined };
@@ -168,9 +167,7 @@ const PagesDataList = ({ onCreatePage, canCreate }: PagesDataListProps) => {
 
                         // Update "sort".
                         if (typeof sort === "string") {
-                            const newSort = deserializeSorters(sort);
-                            // @ts-ignore
-                            setSort(newSort);
+                            setSort(sort);
                         }
                     }}
                 >
@@ -210,12 +207,9 @@ const PagesDataList = ({ onCreatePage, canCreate }: PagesDataListProps) => {
                             <Cell span={12}>
                                 <Bind name={"sort"}>
                                     <Select label={t`Sort by`} description={"Sort pages by"}>
-                                        {sorters.map(({ label, sorters }) => {
+                                        {SORTERS.map(({ label, sort: value }) => {
                                             return (
-                                                <option
-                                                    key={label}
-                                                    value={serializeSorters(sorters)}
-                                                >
+                                                <option key={label} value={value}>
                                                     {label}
                                                 </option>
                                             );

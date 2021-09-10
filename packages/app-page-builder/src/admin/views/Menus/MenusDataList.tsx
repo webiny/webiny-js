@@ -27,26 +27,25 @@ import { ReactComponent as FilterIcon } from "@webiny/app-admin/assets/icons/fil
 import SearchUI from "@webiny/app-admin/components/SearchUI";
 import { Cell, Grid } from "@webiny/ui/Grid";
 import { Select } from "@webiny/ui/Select";
-import { serializeSorters, deserializeSorters } from "../utils";
 
 const t = i18n.ns("app-page-builder/admin/menus/data-list");
 
 const SORTERS = [
     {
         label: t`Newest to oldest`,
-        sorters: { createdOn: "desc" }
+        sort: "createdOn_DESC"
     },
     {
         label: t`Oldest to newest`,
-        sorters: { createdOn: "asc" }
+        sort: "createdOn_ASC"
     },
     {
-        label: t`Title A-Z`,
-        sorters: { title: "asc" }
+        label: t`Name A-Z`,
+        sort: "name_ASC"
     },
     {
-        label: t`Title Z-A`,
-        sorters: { title: "desc" }
+        label: t`Name Z-A`,
+        sort: "name_DESC"
     }
 ];
 
@@ -55,7 +54,7 @@ type PageBuilderMenusDataListProps = {
 };
 const PageBuilderMenusDataList = ({ canCreate }: PageBuilderMenusDataListProps) => {
     const [filter, setFilter] = useState("");
-    const [sort, setSort] = useState(serializeSorters(SORTERS[0].sorters));
+    const [sort, setSort] = useState<string>(SORTERS[0].sort);
     const { history } = useRouter();
     const { showSnackbar } = useSnackbar();
     const listQuery = useQuery(LIST_MENUS);
@@ -77,12 +76,12 @@ const PageBuilderMenusDataList = ({ canCreate }: PageBuilderMenusDataListProps) 
     );
 
     const sortMenus = useCallback(
-        users => {
+        menus => {
             if (!sort) {
-                return users;
+                return menus;
             }
-            const [[key, value]] = Object.entries(deserializeSorters(sort));
-            return orderBy(users, [key], [value]);
+            const [field, order] = sort.split("_");
+            return orderBy(menus, field, order.toLowerCase());
         },
         [sort]
     );
@@ -140,9 +139,9 @@ const PageBuilderMenusDataList = ({ canCreate }: PageBuilderMenusDataListProps) 
                             label={t`Sort by`}
                             description={"Sort pages by"}
                         >
-                            {SORTERS.map(({ label, sorters }) => {
+                            {SORTERS.map(({ label, sort: value }) => {
                                 return (
-                                    <option key={label} value={serializeSorters(sorters)}>
+                                    <option key={label} value={value}>
                                         {label}
                                     </option>
                                 );

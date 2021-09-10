@@ -27,26 +27,25 @@ import { ButtonIcon, ButtonSecondary } from "@webiny/ui/Button";
 import SearchUI from "@webiny/app-admin/components/SearchUI";
 import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
 import { ReactComponent as FilterIcon } from "@webiny/app-admin/assets/icons/filter-24px.svg";
-import { serializeSorters, deserializeSorters } from "../utils";
 
 const t = i18n.ns("app-page-builder/admin/categories/data-list");
 
 const SORTERS = [
     {
         label: t`Newest to oldest`,
-        sorters: { createdOn: "desc" }
+        sort: "createdOn_DESC"
     },
     {
         label: t`Oldest to newest`,
-        sorters: { createdOn: "asc" }
+        sort: "createdOn_ASC"
     },
     {
         label: t`Name A-Z`,
-        sorters: { name: "asc" }
+        sort: "name_ASC"
     },
     {
         label: t`Name Z-A`,
-        sorters: { name: "desc" }
+        sort: "name_DESC"
     }
 ];
 
@@ -54,8 +53,8 @@ type PageBuilderCategoriesDataListProps = {
     canCreate: boolean;
 };
 const PageBuilderCategoriesDataList = ({ canCreate }: PageBuilderCategoriesDataListProps) => {
-    const [filter, setFilter] = useState("");
-    const [sort, setSort] = useState(serializeSorters(SORTERS[0].sorters));
+    const [filter, setFilter] = useState<string>("");
+    const [sort, setSort] = useState<string>(SORTERS[0].sort);
     const { history } = useRouter();
     const { showSnackbar } = useSnackbar();
     const listQuery = useQuery(LIST_CATEGORIES);
@@ -75,12 +74,12 @@ const PageBuilderCategoriesDataList = ({ canCreate }: PageBuilderCategoriesDataL
     );
 
     const sortData = useCallback(
-        users => {
+        categories => {
             if (!sort) {
-                return users;
+                return categories;
             }
-            const [[key, value]] = Object.entries(deserializeSorters(sort));
-            return orderBy(users, [key], [value]);
+            const [field, order] = sort.split("_");
+            return orderBy(categories, field, order.toLowerCase());
         },
         [sort]
     );
@@ -142,9 +141,9 @@ const PageBuilderCategoriesDataList = ({ canCreate }: PageBuilderCategoriesDataL
                             label={t`Sort by`}
                             description={"Sort pages by"}
                         >
-                            {SORTERS.map(({ label, sorters }) => {
+                            {SORTERS.map(({ label, sort: value }) => {
                                 return (
-                                    <option key={label} value={serializeSorters(sorters)}>
+                                    <option key={label} value={value}>
                                         {label}
                                     </option>
                                 );
