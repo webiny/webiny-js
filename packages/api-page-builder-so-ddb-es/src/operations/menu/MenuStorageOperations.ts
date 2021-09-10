@@ -212,11 +212,11 @@ export class MenuStorageOperationsDdbEs implements MenuStorageOperations {
         }
     }
 
-    protected createPartitionKey({ tenant, locale }: PartitionKeyOptions): string {
+    public createPartitionKey({ tenant, locale }: PartitionKeyOptions): string {
         return `T#${tenant}#L${locale}#PB#M`;
     }
 
-    protected createSortKey(input: Pick<Menu, "slug"> | string): string {
+    public createSortKey(input: Pick<Menu, "slug"> | string): string {
         if (typeof input === "string") {
             return input;
         } else if (input.slug) {
@@ -231,7 +231,7 @@ export class MenuStorageOperationsDdbEs implements MenuStorageOperations {
         );
     }
 
-    protected createType(): string {
+    public createType(): string {
         return "pb.menu";
     }
 }

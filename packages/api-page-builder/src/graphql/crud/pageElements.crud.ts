@@ -49,6 +49,7 @@ export default new ContextPlugin<PbContext>(async context => {
     );
 
     context.pageBuilder.pageElements = {
+        storageOperations,
         async get(id) {
             const permission = await checkBasePermissions(context, PERMISSION_NAME, {
                 rwd: "r"

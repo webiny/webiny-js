@@ -239,7 +239,7 @@ export class CategoryStorageOperationsDdbEs implements CategoryStorageOperations
         );
     }
 
-    protected createType(): string {
+    public createType(): string {
         return "pb.category";
     }
 }

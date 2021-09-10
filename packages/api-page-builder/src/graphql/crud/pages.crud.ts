@@ -139,6 +139,7 @@ export default new ContextPlugin<PbContext>(async context => {
     };
 
     context.pageBuilder.pages = {
+        storageOperations,
         async create(slug) {
             await checkBasePermissions(context, PERMISSION_NAME, { rwd: "w" });
 

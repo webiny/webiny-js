@@ -8795,6 +8795,7 @@ __metadata:
     "@webiny/api-page-builder": ^5.14.0
     "@webiny/api-security": ^5.14.0
     "@webiny/api-tenancy": ^5.14.0
+    "@webiny/api-upgrade": ^5.14.0
     "@webiny/cli": ^5.14.0
     "@webiny/db-dynamodb": ^5.14.0
     "@webiny/error": ^5.14.0
@@ -9120,7 +9121,7 @@ __metadata:
     classnames: ^2.2.6
     dataurl-to-blob: ^0.0.1
     dayjs: ^1.10.4
-    dot-prop-immutable: ^1.4.0
+    dot-prop-immutable: ^2.1.0
     downshift: ^3.1.2
     emotion: ^10.0.17
     graphlib: ^2.1.7
@@ -9492,7 +9493,7 @@ __metadata:
     babel-plugin-named-asset-import: ^1.0.0-next.3e165448
     classnames: ^2.2.6
     dataurl-to-blob: ^0.0.1
-    dot-prop-immutable: ^1.4.0
+    dot-prop-immutable: ^2.1.0
     emotion: ^10.0.17
     execa: ^5.0.0
     graphql: ^14.7.0
@@ -9620,7 +9621,7 @@ __metadata:
     babel-plugin-emotion: ^9.2.8
     babel-plugin-lodash: ^3.3.4
     babel-plugin-named-asset-import: ^1.0.0-next.3e165448
-    dot-prop-immutable: ^1.4.0
+    dot-prop-immutable: ^2.1.0
     emotion: 10.0.17
     graphql: ^14.7.0
     graphql-tag: ^2.10.1
@@ -10695,7 +10696,7 @@ __metadata:
     brace: ^0.11.1
     classnames: ^2.2.6
     cropperjs: ^1.4.3
-    dot-prop-immutable: ^1.4.0
+    dot-prop-immutable: ^2.1.0
     downshift: ^2.1.5
     emotion: 10.0.17
     execa: ^5.0.0
@@ -17195,13 +17196,6 @@ __metadata:
     no-case: ^3.0.4
     tslib: ^2.0.3
   checksum: a65e3519414856df0228b9f645332f974f2bf5433370f544a681122eab59e66038fc3349b4be1cdc47152779dac71a5864f1ccda2f745e767c46e9c6543b1169
-  languageName: node
-  linkType: hard
-
-"dot-prop-immutable@npm:^1.4.0":
-  version: 1.6.0
-  resolution: "dot-prop-immutable@npm:1.6.0"
-  checksum: 6e0154ac39247e4d731da7f05e26e8c324e1ae013fc18d4119ce249fb040b15bef918e857a8255abfec4473fc4abcfb81863a2661b3abe717604935fad0c4d2c
   languageName: node
   linkType: hard
 

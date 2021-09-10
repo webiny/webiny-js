@@ -49,6 +49,7 @@ export default new ContextPlugin<PbContext>(async context => {
     const { getPermission } = context.security;
 
     context.pageBuilder.categories = {
+        storageOperations,
         async get(slug, options = { auth: true }) {
             const { auth } = options;
 

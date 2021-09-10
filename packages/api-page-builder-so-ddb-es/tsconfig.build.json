@@ -5,6 +5,7 @@
     "node_modules",
     "../api-elasticsearch",
     "../api-page-builder",
+    "../api-upgrade",
     "../error",
     "../plugins",
     "../api-dynamodb-to-elasticsearch",

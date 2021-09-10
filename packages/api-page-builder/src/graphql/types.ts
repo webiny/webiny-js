@@ -4,11 +4,21 @@ import { SecurityContext, SecurityPermission } from "@webiny/api-security/types"
 import { TenancyContext } from "@webiny/api-tenancy/types";
 import { I18NContext } from "@webiny/api-i18n/types";
 import { ClientContext } from "@webiny/handler-client/types";
-import { Category, Menu, Page, PageElement, Settings, System } from "~/types";
+import {
+    Category,
+    CategoryStorageOperations,
+    Menu,
+    MenuStorageOperations,
+    Page,
+    PageElement,
+    PageElementStorageOperations,
+    PageStorageOperations,
+    Settings,
+    System
+} from "~/types";
 import { PrerenderingServiceClientContext } from "@webiny/api-prerendering-service/client/types";
 
 // CRUD types.
-export type SortOrder = "asc" | "desc";
 export interface ListPagesParams {
     limit?: number;
     after?: string | null;
@@ -80,10 +90,11 @@ export interface ListLatestPagesOptions {
 }
 
 export interface PagesCrud {
-    // dataLoaders: {
-    // getPublishedById: DataLoader<{ id: string; preview?: boolean }, Page>;
-    // getById: DataLoader<string, Page | null>;
-    // };
+    /**
+     * To be used internally in our code.
+     * @internal
+     */
+    storageOperations: PageStorageOperations;
     get<TPage extends Page = Page>(id: string): Promise<TPage>;
     listLatest<TPage extends Page = Page>(
         args: ListPagesParams,
@@ -115,6 +126,11 @@ export interface ListPageElementsParams {
     sort?: string[];
 }
 export interface PageElementsCrud {
+    /**
+     * To be used internally in our code.
+     * @internal
+     */
+    storageOperations: PageElementStorageOperations;
     get(id: string): Promise<PageElement>;
     list(params?: ListPageElementsParams): Promise<PageElement[]>;
     create(data: Record<string, any>): Promise<PageElement>;
@@ -123,6 +139,11 @@ export interface PageElementsCrud {
 }
 
 export interface CategoriesCrud {
+    /**
+     * To be used internally in our code.
+     * @internal
+     */
+    storageOperations: CategoryStorageOperations;
     get(slug: string, options?: { auth: boolean }): Promise<Category>;
     list(): Promise<Category[]>;
     create(data: Record<string, any>): Promise<Category>;
@@ -135,6 +156,11 @@ export interface ListMenuParams {
 }
 
 export interface MenusCrud {
+    /**
+     * To be used internally in our code.
+     * @internal
+     */
+    storageOperations: MenuStorageOperations;
     get(slug: string): Promise<Menu>;
     getPublic(slug: string): Promise<Menu>;
     list(params?: ListMenuParams): Promise<Menu[]>;

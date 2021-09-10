@@ -209,11 +209,11 @@ export class PageElementStorageOperationsDdbEs implements PageElementStorageOper
         }
     }
 
-    protected createPartitionKey({ tenant, locale }: PartitionKeyOptions): string {
+    public createPartitionKey({ tenant, locale }: PartitionKeyOptions): string {
         return `T#${tenant}#L${locale}#PB#PE`;
     }
 
-    protected createSortKey(input: Pick<PageElement, "id"> | string): string {
+    public createSortKey(input: Pick<PageElement, "id"> | string): string {
         if (typeof input === "string") {
             return input;
         } else if (input.id) {
@@ -228,7 +228,7 @@ export class PageElementStorageOperationsDdbEs implements PageElementStorageOper
         );
     }
 
-    protected createType(): string {
+    public createType(): string {
         return "pb.pageElement";
     }
 }

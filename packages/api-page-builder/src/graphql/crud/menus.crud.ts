@@ -52,6 +52,7 @@ export default new ContextPlugin<PbContext>(async context => {
     const hookPlugins = context.plugins.byType<MenuPlugin>(MenuPlugin.type);
 
     context.pageBuilder.menus = {
+        storageOperations,
         async get(slug) {
             const permission = await checkBasePermissions(context, PERMISSION_NAME, {
                 rwd: "r"

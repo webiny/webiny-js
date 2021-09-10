@@ -20,6 +20,7 @@
     "@babel/runtime": "^7.5.5",
     "@webiny/api-elasticsearch": "^5.14.0",
     "@webiny/api-page-builder": "^5.14.0",
+    "@webiny/api-upgrade": "^5.14.0",
     "@webiny/db-dynamodb": "^5.14.0",
     "@webiny/error": "^5.14.0",
     "@webiny/handler-db": "^5.14.0",

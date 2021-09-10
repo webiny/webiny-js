@@ -4,6 +4,7 @@ import { PageElementStorageOperationsDdbEsProviderPlugin } from "~/operations/pa
 import { PageStorageOperationsDdbEsProviderPlugin } from "~/operations/pages";
 import { SystemStorageOperationsDdbEsProviderPlugin } from "~/operations/system";
 import { SettingsStorageOperationsDdbEsProviderPlugin } from "~/operations/settings";
+import upgrades from "./upgrades";
 
 export default () => [
     new CategoryStorageOperationsDdbEsProviderPlugin(),
@@ -11,5 +12,6 @@ export default () => [
     new PageElementStorageOperationsDdbEsProviderPlugin(),
     new PageStorageOperationsDdbEsProviderPlugin(),
     new SystemStorageOperationsDdbEsProviderPlugin(),
-    new SettingsStorageOperationsDdbEsProviderPlugin()
+    new SettingsStorageOperationsDdbEsProviderPlugin(),
+    upgrades()
 ];

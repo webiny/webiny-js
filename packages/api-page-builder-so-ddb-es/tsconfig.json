@@ -11,6 +11,9 @@
       "path": "../plugins"
     },
     {
+      "path": "../api-upgrade"
+    },
+    {
       "path": "../api-dynamodb-to-elasticsearch"
     },
     {
@@ -43,6 +46,8 @@
       "~/*": ["./src/*"],
       "@webiny/api-elasticsearch/*": ["../api-elasticsearch/src/*"],
       "@webiny/api-elasticsearch": ["../api-elasticsearch/src"],
+      "@webiny/api-upgrade/*": ["../api-upgrade/src/*"],
+      "@webiny/api-upgrade": ["../api-upgrade/src"],
       "@webiny/api-page-builder/*": ["../api-page-builder/src/*"],
       "@webiny/api-page-builder": ["../api-page-builder/src"],
       "@webiny/api-security/*": ["../api-security/src/*"],
