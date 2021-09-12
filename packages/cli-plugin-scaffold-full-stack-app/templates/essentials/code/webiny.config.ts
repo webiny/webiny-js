@@ -11,6 +11,7 @@ import { getStackOutput } from "@webiny/cli-plugin-deploy-pulumi/utils";
 // - `project-applications-path/api/pulumi/prod/index.ts`
 
 const MAP = {
+    REACT_APP_API_URL: "${apiUrl}",
     REACT_APP_GRAPHQL_API_URL: "${apiUrl}/graphql"
 };
 
