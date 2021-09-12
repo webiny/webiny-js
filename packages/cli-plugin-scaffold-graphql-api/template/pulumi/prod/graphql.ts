@@ -81,6 +81,7 @@ class Graphql {
                 environment: {
                     variables: {
                         ...env,
+                        // https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/node-reusing-connections.html
                         AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1"
                     }
                 },
