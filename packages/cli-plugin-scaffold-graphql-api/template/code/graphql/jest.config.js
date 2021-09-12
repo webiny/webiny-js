@@ -31,7 +31,7 @@ if (TEST_TYPE !== "unit") {
             // `api/pulumi/dev/index.ts` file and assign them here.
             AWS_REGION: stackOutput.region,
             DB_TABLE: stackOutput.dynamoDbTable,
-            API_URL: stackOutput.graphqlApiUrl,
+            API_URL: stackOutput.apiUrl,
 
             // Can be of use while writing tests, for example to distinguish test data from non-test data.
             TEST_RUN_ID: new Date().getTime()
