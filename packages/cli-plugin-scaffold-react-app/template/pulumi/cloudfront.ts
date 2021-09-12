@@ -1,4 +1,5 @@
 import * as aws from "@pulumi/aws";
+import * as pulumi from "@pulumi/pulumi";
 
 class Cloudfront {
     distribution: aws.cloudfront.Distribution;
@@ -47,6 +48,10 @@ class Cloudfront {
                 cloudfrontDefaultCertificate: true
             }
         });
+    }
+
+    getDistributionUrl(path = "") {
+        return pulumi.interpolate`https://${this.distribution.domainName}${path}`;
     }
 }
 
