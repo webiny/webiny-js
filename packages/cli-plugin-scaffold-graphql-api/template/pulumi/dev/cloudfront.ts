@@ -3,9 +3,9 @@ import ApiGateway from "./apiGateway";
 import { parse } from "url";
 
 class Cloudfront {
-    cloudfront: aws.cloudfront.Distribution;
+    distribution: aws.cloudfront.Distribution;
     constructor({ apiGateway }: { apiGateway: ApiGateway }) {
-        this.cloudfront = new aws.cloudfront.Distribution("project-application-name", {
+        this.distribution = new aws.cloudfront.Distribution("project-application-name", {
             waitForDeployment: true,
             defaultCacheBehavior: {
                 compress: true,
