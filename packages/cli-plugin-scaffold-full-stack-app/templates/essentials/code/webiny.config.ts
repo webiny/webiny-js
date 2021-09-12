@@ -10,7 +10,7 @@ import { getStackOutput } from "@webiny/cli-plugin-deploy-pulumi/utils";
 // - `project-applications-path/api/pulumi/dev/index.ts`
 // - `project-applications-path/api/pulumi/prod/index.ts`
 
-const MAP = {
+const API_MAP = {
     REACT_APP_API_URL: "${apiUrl}",
     REACT_APP_GRAPHQL_API_URL: "${apiUrl}/graphql"
 };
@@ -23,7 +23,11 @@ export default {
             invariant(options.env, NO_ENV_MESSAGE);
             Object.assign(
                 process.env,
-                getStackOutput("project-applications-path/api", options.env, MAP)
+                getStackOutput({
+                    folder: "project-applications-path/api",
+                    env: options.env,
+                    map: API_MAP
+                })
             );
 
             // Starts local application development.
@@ -33,7 +37,11 @@ export default {
             invariant(options.env, NO_ENV_MESSAGE);
             Object.assign(
                 process.env,
-                getStackOutput("project-applications-path/api", options.env, MAP)
+                getStackOutput({
+                    folder: "project-applications-path/api",
+                    env: options.env,
+                    map: API_MAP
+                })
             );
 
             // Creates a production build of your application, ready to be deployed to
