@@ -35,13 +35,14 @@ function getConfig({ cwd } = {}) {
 
 module.exports = args => {
     const root = getRoot(args);
-    const config = getConfig(args);
     return {
         get name() {
             // Check "projectName" for backwards compatibility.
-            return process.env.WEBINY_PROJECT_NAME || config.projectName || config.name;
+            return process.env.WEBINY_PROJECT_NAME || this.config.projectName || this.config.name;
         },
         root,
-        config
+        get config() {
+            return getConfig(args);
+        }
     };
 };
