@@ -1,6 +1,6 @@
-const fs = require('fs');
+const fs = require("fs");
 
-const crawlDirectory = (dir, callback)  => {
+const crawlDirectory = (dir, callback) => {
     if (!fs.existsSync(dir)) {
         return;
     }
@@ -16,6 +16,6 @@ const crawlDirectory = (dir, callback)  => {
             callback(filePath);
         }
     }
-}
+};
 
 module.exports = crawlDirectory;
