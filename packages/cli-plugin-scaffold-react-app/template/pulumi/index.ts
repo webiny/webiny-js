@@ -22,5 +22,5 @@ export = async () => {
     const app = new App();
     const cloudfront = new Cloudfront({ appS3Bucket: app.bucket });
 
-    return { appUrl: pulumi.interpolate`https://${cloudfront.distribution.domainName}` };
+    return { appUrl: cloudfront.getDistributionUrl() };
 };
