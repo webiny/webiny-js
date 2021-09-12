@@ -2,5 +2,5 @@ import { ElasticsearchQueryModifierPlugin } from "@webiny/api-elasticsearch/plug
 import { FileManagerContext } from "@webiny/api-file-manager/types";
 
 export class FileElasticsearchQueryModifierPlugin extends ElasticsearchQueryModifierPlugin<FileManagerContext> {
-    public static readonly type: string = "elasticsearch.modifier.query.file";
+    public static readonly type: string = "fileManager.elasticsearch.modifier.query.file";
 }

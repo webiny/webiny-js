@@ -2,5 +2,5 @@ import { ElasticsearchSortModifierPlugin } from "@webiny/api-elasticsearch/plugi
 import { FileManagerContext } from "@webiny/api-file-manager/types";
 
 export class FileElasticsearchSortModifierPlugin extends ElasticsearchSortModifierPlugin<FileManagerContext> {
-    public static readonly type: string = "elasticsearch.modifier.sort.file";
+    public static readonly type: string = "fileManager.elasticsearch.modifier.sort.file";
 }
