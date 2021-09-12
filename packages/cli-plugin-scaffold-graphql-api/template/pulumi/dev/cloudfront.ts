@@ -1,4 +1,5 @@
 import * as aws from "@pulumi/aws";
+import * as pulumi from "@pulumi/pulumi";
 import ApiGateway from "./apiGateway";
 import { parse } from "url";
 
@@ -53,6 +54,10 @@ class Cloudfront {
                 cloudfrontDefaultCertificate: true
             }
         });
+    }
+
+    getDistributionUrl(path = "") {
+        return pulumi.interpolate`https://${this.distribution.domainName}${path}`;
     }
 }
 
