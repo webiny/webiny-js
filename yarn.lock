@@ -8326,6 +8326,7 @@ __metadata:
     "@elastic/elasticsearch-mock": 0.3.0
     "@shelf/jest-elasticsearch": ^1.0.0
     "@webiny/api-page-builder": ^5.14.0
+    "@webiny/api-page-builder-so-ddb-es": ^5.14.0
     "@webiny/cli": ^5.14.0
     "@webiny/handler-graphql": ^5.14.0
     "@webiny/plugins": ^5.14.0
@@ -8714,6 +8715,7 @@ __metadata:
     "@webiny/handler": ^5.14.0
     "@webiny/handler-graphql": ^5.14.0
     "@webiny/project-utils": ^5.14.0
+    lodash.get: ^4.4.2
     rimraf: ^3.0.2
     typescript: ^4.1.3
   languageName: unknown
@@ -8776,6 +8778,46 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@webiny/api-page-builder-so-ddb-es@^5.14.0, @webiny/api-page-builder-so-ddb-es@workspace:packages/api-page-builder-so-ddb-es":
+  version: 0.0.0-use.local
+  resolution: "@webiny/api-page-builder-so-ddb-es@workspace:packages/api-page-builder-so-ddb-es"
+  dependencies:
+    "@babel/cli": ^7.5.5
+    "@babel/core": ^7.5.5
+    "@babel/preset-env": ^7.5.5
+    "@babel/preset-typescript": ^7.8.3
+    "@babel/runtime": ^7.5.5
+    "@elastic/elasticsearch": 7.12.0
+    "@elastic/elasticsearch-mock": 0.3.0
+    "@shelf/jest-elasticsearch": ^1.0.0
+    "@webiny/api-dynamodb-to-elasticsearch": ^5.14.0
+    "@webiny/api-elasticsearch": ^5.14.0
+    "@webiny/api-page-builder": ^5.14.0
+    "@webiny/api-security": ^5.14.0
+    "@webiny/api-tenancy": ^5.14.0
+    "@webiny/api-upgrade": ^5.14.0
+    "@webiny/cli": ^5.14.0
+    "@webiny/db-dynamodb": ^5.14.0
+    "@webiny/error": ^5.14.0
+    "@webiny/handler": ^5.14.0
+    "@webiny/handler-aws": ^5.14.0
+    "@webiny/handler-db": ^5.14.0
+    "@webiny/handler-graphql": ^5.14.0
+    "@webiny/plugins": ^5.14.0
+    "@webiny/project-utils": ^5.14.0
+    dataloader: ^2.0.0
+    dynamodb-toolbox: ^0.3.4
+    elastic-ts: ^0.7.0
+    jest: ^26.6.3
+    jest-dynalite: ^3.2.0
+    jest-environment-node: ^27.0.6
+    lodash: ^4.17.21
+    rimraf: ^3.0.2
+    ttypescript: ^1.5.12
+    typescript: ^4.1.3
+  languageName: unknown
+  linkType: soft
+
 "@webiny/api-page-builder@^5.14.0, @webiny/api-page-builder@workspace:packages/api-page-builder":
   version: 0.0.0-use.local
   resolution: "@webiny/api-page-builder@workspace:packages/api-page-builder"
@@ -8787,11 +8829,7 @@ __metadata:
     "@babel/preset-typescript": ^7.8.3
     "@babel/runtime": ^7.5.5
     "@commodo/fields": beta
-    "@elastic/elasticsearch": 7.12.0
-    "@shelf/jest-elasticsearch": ^1.0.0
     "@types/puppeteer": ^5.4.2
-    "@webiny/api-dynamodb-to-elasticsearch": ^5.14.0
-    "@webiny/api-elasticsearch": ^5.14.0
     "@webiny/api-file-manager": ^5.14.0
     "@webiny/api-file-manager-ddb-es": ^5.14.0
     "@webiny/api-i18n": ^5.14.0
@@ -8803,8 +8841,6 @@ __metadata:
     "@webiny/api-upgrade": ^5.14.0
     "@webiny/cli": ^5.14.0
     "@webiny/cli-plugin-deploy-pulumi": ^5.14.0
-    "@webiny/db": ^5.14.0
-    "@webiny/db-dynamodb": ^5.14.0
     "@webiny/error": ^5.14.0
     "@webiny/handler": ^5.14.0
     "@webiny/handler-args": ^5.14.0
@@ -8820,7 +8856,6 @@ __metadata:
     extract-zip: ^1.6.7
     fs-extra: ^7.0.0
     jest: ^26.6.3
-    jest-dynalite: ^3.2.0
     jsonpack: ^1.1.5
     load-json-file: ^6.2.0
     lodash: ^4.17.11
@@ -9086,7 +9121,7 @@ __metadata:
     classnames: ^2.2.6
     dataurl-to-blob: ^0.0.1
     dayjs: ^1.10.4
-    dot-prop-immutable: ^1.4.0
+    dot-prop-immutable: ^2.1.0
     downshift: ^3.1.2
     emotion: ^10.0.17
     graphlib: ^2.1.7
@@ -9458,7 +9493,7 @@ __metadata:
     babel-plugin-named-asset-import: ^1.0.0-next.3e165448
     classnames: ^2.2.6
     dataurl-to-blob: ^0.0.1
-    dot-prop-immutable: ^1.4.0
+    dot-prop-immutable: ^2.1.0
     emotion: ^10.0.17
     execa: ^5.0.0
     graphql: ^14.7.0
@@ -9586,7 +9621,7 @@ __metadata:
     babel-plugin-emotion: ^9.2.8
     babel-plugin-lodash: ^3.3.4
     babel-plugin-named-asset-import: ^1.0.0-next.3e165448
-    dot-prop-immutable: ^1.4.0
+    dot-prop-immutable: ^2.1.0
     emotion: 10.0.17
     graphql: ^14.7.0
     graphql-tag: ^2.10.1
@@ -10127,6 +10162,7 @@ __metadata:
     "@webiny/db": ^5.14.0
     "@webiny/error": ^5.14.0
     "@webiny/handler": ^5.14.0
+    "@webiny/handler-db": ^5.14.0
     "@webiny/plugins": ^5.14.0
     "@webiny/project-utils": ^5.14.0
     date-fns: ^2.22.1
@@ -10671,7 +10707,7 @@ __metadata:
     brace: ^0.11.1
     classnames: ^2.2.6
     cropperjs: ^1.4.3
-    dot-prop-immutable: ^1.4.0
+    dot-prop-immutable: ^2.1.0
     downshift: ^2.1.5
     emotion: 10.0.17
     execa: ^5.0.0
@@ -11517,6 +11553,7 @@ __metadata:
     "@webiny/api-i18n-content": ^5.14.0
     "@webiny/api-i18n-ddb": ^5.14.0
     "@webiny/api-page-builder": ^5.14.0
+    "@webiny/api-page-builder-so-ddb-es": ^5.14.0
     "@webiny/api-prerendering-service": ^5.14.0
     "@webiny/api-security": ^5.14.0
     "@webiny/api-security-admin-users": ^5.14.0
@@ -11603,6 +11640,7 @@ __metadata:
   resolution: "api-page-builder-update-settings@workspace:api/code/pageBuilder/updateSettings"
   dependencies:
     "@webiny/api-page-builder": ^5.14.0
+    "@webiny/api-page-builder-so-ddb-es": ^5.14.0
     "@webiny/cli": ^5.14.0
     "@webiny/db-dynamodb": ^5.14.0
     "@webiny/handler-aws": ^5.14.0
@@ -17170,13 +17208,6 @@ __metadata:
     no-case: ^3.0.4
     tslib: ^2.0.3
   checksum: a65e3519414856df0228b9f645332f974f2bf5433370f544a681122eab59e66038fc3349b4be1cdc47152779dac71a5864f1ccda2f745e767c46e9c6543b1169
-  languageName: node
-  linkType: hard
-
-"dot-prop-immutable@npm:^1.4.0":
-  version: 1.6.0
-  resolution: "dot-prop-immutable@npm:1.6.0"
-  checksum: 6e0154ac39247e4d731da7f05e26e8c324e1ae013fc18d4119ce249fb040b15bef918e857a8255abfec4473fc4abcfb81863a2661b3abe717604935fad0c4d2c
   languageName: node
   linkType: hard
 

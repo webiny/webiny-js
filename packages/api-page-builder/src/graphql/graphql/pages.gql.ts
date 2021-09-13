@@ -1,6 +1,6 @@
 import { ListResponse, Response, ErrorResponse } from "@webiny/handler-graphql/responses";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
-import { Page, PbContext } from "../../types";
+import { Page, PbContext } from "~/types";
 import Error from "@webiny/error";
 import resolve from "./utils/resolve";
 import pageSettings from "./pages/pageSettings";
@@ -87,14 +87,9 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
             }
 
             type PbPageListMeta {
-                page: Int
-                limit: Int
-                totalCount: Int
-                totalPages: Int
-                from: Int
-                to: Int
-                nextPage: Int
-                previousPage: Int
+                cursor: String
+                hasMoreItems: Boolean!
+                totalCount: Number!
             }
 
             type PbPageSettings {
@@ -164,11 +159,6 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                 error: PbError
             }
 
-            enum PbListPagesSortOrders {
-                desc
-                asc
-            }
-
             enum PbPageStatuses {
                 published
                 unpublished
@@ -177,10 +167,17 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                 changesRequested
             }
 
-            input PbListPagesSortInput {
-                title: PbListPagesSortOrders
-                createdOn: PbListPagesSortOrders
-                publishedOn: PbListPagesSortOrders
+            enum PbListPagesSort {
+                id_ASC
+                id_DESC
+                savedOn_ASC
+                savedOn_DESC
+                createdOn_ASC
+                createdOn_DESC
+                publishedOn_ASC
+                publishedOn_DESC
+                title_ASC
+                title_DESC
             }
 
             input PbListPagesWhereInput {
@@ -227,16 +224,16 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                 listPages(
                     where: PbListPagesWhereInput
                     limit: Int
-                    page: Int
-                    sort: PbListPagesSortInput
+                    after: String
+                    sort: [PbListPagesSort!]
                     search: PbListPagesSearchInput
                 ): PbPageListResponse
 
                 listPublishedPages(
                     where: PbListPublishedPagesWhereInput
                     limit: Int
-                    page: Int
-                    sort: PbListPagesSortInput
+                    after: String
+                    sort: [PbListPagesSort!]
                     search: PbListPagesSearchInput
                     exclude: [String]
                 ): PbPageListResponse
@@ -289,7 +286,7 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                     return context.pageBuilder.pages.listPageRevisions(page.id);
                 },
                 url: async (page: Page, args, context) => {
-                    const settings = await context.pageBuilder.settings.default.getCurrent();
+                    const settings = await context.pageBuilder.settings.getCurrent();
                     const websiteUrl = get(settings, "websiteUrl") || "";
                     return websiteUrl + page.path;
                 }
@@ -303,7 +300,7 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                     return context.pageBuilder.categories.get(page.category, { auth: false });
                 },
                 url: async (page: Page, args, context) => {
-                    const settings = await context.pageBuilder.settings.default.getCurrent();
+                    const settings = await context.pageBuilder.settings.getCurrent();
                     const websiteUrl = get(settings, "websiteUrl") || "";
                     return websiteUrl + page.path;
                 }

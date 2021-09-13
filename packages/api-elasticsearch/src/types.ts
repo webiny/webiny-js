@@ -69,15 +69,3 @@ export interface ElasticsearchQueryBuilderArgsPlugin<
      */
     context: T;
 }
-
-/**
- * Definition for the ElasticsearchQueryModifierPlugin parameters.
- */
-export interface ElasticsearchQueryModifierPluginParams<
-    T extends ContextInterface = ContextInterface
-> {
-    /**
-     * Context we are working in.
-     */
-    context: T;
-}

@@ -34,7 +34,7 @@
     "classnames": "^2.2.6",
     "dataurl-to-blob": "^0.0.1",
     "dayjs": "^1.10.4",
-    "dot-prop-immutable": "^1.4.0",
+    "dot-prop-immutable": "^2.1.0",
     "downshift": "^3.1.2",
     "emotion": "^10.0.17",
     "graphlib": "^2.1.7",

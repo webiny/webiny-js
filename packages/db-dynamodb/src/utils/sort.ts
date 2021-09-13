@@ -41,8 +41,17 @@ const extractSort = (sortBy: string, fields: string[]): ExtractSortResult => {
 
 interface Params<T> {
     context: ContextInterface;
+    /**
+     * The items we are sorting.
+     */
     items: T[];
+    /**
+     * Sort options. For example: ["id_ASC"]
+     */
     sort: string[];
+    /**
+     * Fields we can sort by.
+     */
     fields: string[];
 }
 export const sortItems = <T extends any = any>(params: Params<T>): T[] => {

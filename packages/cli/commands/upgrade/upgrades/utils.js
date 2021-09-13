@@ -10,19 +10,24 @@ const execa = require("execa");
  *
  * @param pkg {string}
  * @param version {string}
+ *
+ * @return {boolean}
  */
 const validateVersion = (pkg, version) => {
     if (version === "latest") {
-        return;
+        return true;
     }
     const coerced = semverCoerce(version);
     if (coerced) {
-        return;
+        return true;
     }
-    throw new Error(`Package "${pkg}" version is not a valid semver version: "${version}".`);
+    return false;
 };
-
+/**
+ * @deprecated
+ */
 const insertImport = (source, name, pkg) => {
+    throw new Error("Should not be used anymore.");
     const statements = source.getStatements();
     let importAlreadyExists = false;
     const lastImportStatement = statements.reduce((indexAt, statement, index) => {
@@ -50,46 +55,51 @@ const insertImport = (source, name, pkg) => {
 };
 /**
  *
+ * @param context {ContextInterface}
  * @param targetPath {string}
  * @param packages {object}
  */
-const addPackagesToDependencies = (targetPath, packages) => {
-    addPackagesToDeps("dependencies", targetPath, packages);
+const addPackagesToDependencies = (context, targetPath, packages) => {
+    addPackagesToDeps("dependencies", context, targetPath, packages);
 };
 /**
- *
+ * @param context {ContextInterface}
  * @param targetPath {string}
  * @param packages {object}
  */
-const addPackagesToDevDependencies = (targetPath, packages) => {
-    addPackagesToDeps("devDependencies", targetPath, packages);
+const addPackagesToDevDependencies = (context, targetPath, packages) => {
+    addPackagesToDeps("devDependencies", context, targetPath, packages);
 };
 /**
- *
+ * @param context {ContextInterface}
  * @param targetPath {string}
  * @param packages {object}
  */
-const addPackagesToPeerDependencies = (targetPath, packages) => {
-    addPackagesToDeps("peerDependencies", targetPath, packages);
+const addPackagesToPeerDependencies = (context, targetPath, packages) => {
+    addPackagesToDeps("peerDependencies", context, targetPath, packages);
 };
 /**
  *
  * @param type {string}
+ * @param context {ContextInterface}
  * @param targetPath {string}
  * @param packages {object}
  */
 const allowedPackageDependencyTypes = ["dependencies", "devDependencies", "peerDependencies"];
-const addPackagesToDeps = (type, targetPath, packages) => {
+const addPackagesToDeps = (type, context, targetPath, packages) => {
     if (!allowedPackageDependencyTypes.includes(type)) {
-        throw new Error(`Package dependency type "${type}" is not valid.`);
+        context.error(`Package dependency type "${type}" is not valid.`);
+        return;
     }
     const file = `${targetPath}/package.json`;
     if (!fs.existsSync(file)) {
-        throw new Error(`There is no package.json file at path "${file}".`);
+        context.error(`There is no package.json file at path "${file}".`);
+        return;
     }
     const json = loadJson.sync(file);
     if (!json) {
-        throw new Error(`There is no package.json file "${file}"`);
+        context.error(`There is no package.json file "${file}"`);
+        return;
     }
     const dependencies = json[type] || {};
     for (const pkg in packages) {
@@ -103,7 +113,10 @@ const addPackagesToDeps = (type, targetPath, packages) => {
             delete dependencies[pkg];
             continue;
         }
-        validateVersion(pkg, version);
+        if (!validateVersion(pkg, version)) {
+            context.error(`Package "${pkg}" version is not a valid semver version: "${version}".`);
+            continue;
+        }
         dependencies[pkg] = version;
     }
     json[type] = dependencies;

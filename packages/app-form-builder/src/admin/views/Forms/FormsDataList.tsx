@@ -27,11 +27,11 @@ import { ButtonIcon, ButtonSecondary } from "@webiny/ui/Button";
 import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
 import { ReactComponent as FilterIcon } from "@webiny/app-admin/assets/icons/filter-24px.svg";
 import SearchUI from "@webiny/app-admin/components/SearchUI";
-import { deserializeSorters, serializeSorters } from "@webiny/app-page-builder/admin/views/utils";
 import { Cell, Grid } from "@webiny/ui/Grid";
 import { Select } from "@webiny/ui/Select";
 import usePermission from "../../../hooks/usePermission";
 import { useForms } from "./useForms";
+import { deserializeSorters, serializeSorters } from "~/admin/views/utils";
 
 const t = i18n.namespace("FormsApp.FormsDataList");
 const rightAlign = css({

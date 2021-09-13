@@ -20,9 +20,9 @@ import {
     ElasticsearchBoolQueryConfig
 } from "@webiny/api-elasticsearch/types";
 import { decodeCursor } from "@webiny/api-elasticsearch/cursors";
-import { ElasticsearchFieldPlugin } from "@webiny/api-elasticsearch/plugins/definition/ElasticsearchFieldPlugin";
 import { createSort } from "@webiny/api-elasticsearch/sort";
 import { createModelFields, ModelField, ModelFields } from "./fields";
+import { CmsEntryElasticsearchFieldPlugin } from "~/plugins/CmsEntryElasticsearchFieldPlugin";
 
 interface CreateElasticsearchParams {
     context: CmsContext;
@@ -81,12 +81,11 @@ const createElasticsearchSortParams = (args: CreateElasticsearchSortParams): esS
     const sortPlugins = Object.values(modelFields).reduce((plugins, modelField) => {
         const searchPlugin = searchPlugins[modelField.type];
 
-        plugins[modelField.field.fieldId] = new ElasticsearchFieldPlugin({
+        plugins[modelField.field.fieldId] = new CmsEntryElasticsearchFieldPlugin({
             unmappedType: modelField.unmappedType,
             keyword: hasKeyword(modelField),
             sortable: modelField.isSortable,
             searchable: modelField.isSearchable,
-            entity: "ContentElasticsearchEntry",
             field: modelField.field.fieldId,
             path: createFieldPath({
                 context,
