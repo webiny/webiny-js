@@ -26,8 +26,13 @@ const disable = () => {
 const isEnabled = () => {
     const config = globalConfig.get();
 
-    // Check both `telemetry` and `tracking` for backwards compatibility.
-    return config.telemetry !== false || config.tracking !== false;
+    if (config.telemetry === false) {
+        return false;
+    }
+
+    return config.tracking !== false;
+
+
 };
 
 module.exports = { sendEvent, enable, disable, isEnabled };
