@@ -912,7 +912,7 @@ export default new ContextPlugin<PbContext>(async context => {
             try {
                 page = await dataLoaderGetById.load({
                     id,
-                    published: true
+                    published: preview === true ? undefined : true
                 });
                 if (page && preview !== true && page.status !== STATUS_PUBLISHED) {
                     page = null;
