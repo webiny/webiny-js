@@ -44,6 +44,24 @@ describe("pages simple actions", () => {
                 }
             }
         });
+
+        const page = response.data.pageBuilder.createPage.data;
+
+        const [getResponse] = await handler.getPage({
+            id: page.id
+        });
+        expect(getResponse).toMatchObject({
+            data: {
+                pageBuilder: {
+                    getPage: {
+                        data: {
+                            ...page
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
     });
 
     it("should create new page and update it with new title", async () => {

@@ -34,6 +34,12 @@ const STATUS_UNPUBLISHED = "unpublished";
 const DEFAULT_EDITOR = "page-builder";
 const PERMISSION_NAME = "pb.page";
 
+interface DataLoaderGetByIdKey {
+    id: string;
+    latest?: boolean;
+    published?: boolean;
+}
+
 const createNotIn = (exclude?: string[]): { paths: string[]; ids: string[] } => {
     const paths: string[] = [];
     const ids: string[] = [];
@@ -76,6 +82,34 @@ const createSort = (sort?: string[]): string[] => {
     return sort;
 };
 
+const createDataLoaderKeys = (id: string): DataLoaderGetByIdKey[] => {
+    const [pid] = id.split("#");
+    return [
+        {
+            id
+        },
+        {
+            id,
+            latest: true
+        },
+        {
+            id,
+            published: true
+        },
+        {
+            id: pid
+        },
+        {
+            id: pid,
+            latest: true
+        },
+        {
+            id: pid,
+            published: true
+        }
+    ];
+};
+
 export default new ContextPlugin<PbContext>(async context => {
     /**
      * If pageBuilder is not defined on the context, do not continue, but log it.
@@ -100,41 +134,60 @@ export default new ContextPlugin<PbContext>(async context => {
      * This used to be more complex, with checks if it is preview mode and some others.
      * We do those checks after the page was loaded.
      */
-    const dataLoaderGetById = new DataLoader<string, Page>(async ids => {
-        try {
-            const pages: Page[] = [];
-            for (const id of ids) {
-                const [pid, version] = id.split("#");
-                const page = await storageOperations.get({
-                    where: {
+    const dataLoaderGetById = new DataLoader<DataLoaderGetByIdKey, Page, string>(
+        async keys => {
+            try {
+                const pages: Page[] = [];
+                for (const key of keys) {
+                    const [pid, version] = key.id.split("#");
+                    const where = {
                         pid,
-                        version: version ? Number(version) : undefined
+                        version: version ? Number(version) : undefined,
+                        latest: key.latest,
+                        published: key.published
+                    };
+                    const page = await storageOperations.get({
+                        where
+                    });
+                    if (!page) {
+                        pages.push(null);
+                        continue;
                     }
-                });
-                if (!page) {
-                    pages.push(null);
-                    continue;
+                    const newPage = await extractPageContent(page);
+                    pages.push(newPage);
                 }
-                pages.push(await extractPageContent(page));
+                return pages;
+            } catch (ex) {
+                throw new WebinyError(
+                    ex.message || `Could not load pages.`,
+                    ex.code || "LOAD_PAGE_BY_IDS_ERROR",
+                    {
+                        keys
+                    }
+                );
             }
-            return pages;
-        } catch (ex) {
-            throw new WebinyError(
-                ex.message || `Could not load pages ${ids.join(",")}.`,
-                ex.code || "LOAD_PAGE_BY_IDS_ERROR",
-                {
-                    ids
+        },
+        {
+            cacheKeyFn: (key: DataLoaderGetByIdKey): string => {
+                const values: string[] = [key.id];
+                if (key.latest) {
+                    values.push(`#l`);
+                } else if (key.published) {
+                    values.push("#p");
                 }
-            );
+                return values.join("#");
+            }
         }
-    });
+    );
     const clearDataLoaderCache = (pages: Page[]) => {
         for (const page of pages) {
             if (!page) {
                 continue;
             }
-            dataLoaderGetById.clear(page.id);
-            dataLoaderGetById.clear(page.pid);
+            const keys = createDataLoaderKeys(page.id);
+            for (const key of keys) {
+                dataLoaderGetById.clear(key);
+            }
         }
     };
 
@@ -826,7 +879,9 @@ export default new ContextPlugin<PbContext>(async context => {
             let page: Page = null;
 
             try {
-                page = await dataLoaderGetById.load(id);
+                page = await dataLoaderGetById.load({
+                    id
+                });
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Cannot get requested page.",
@@ -855,7 +910,10 @@ export default new ContextPlugin<PbContext>(async context => {
             let page: Page = null;
 
             try {
-                page = await dataLoaderGetById.load(id);
+                page = await dataLoaderGetById.load({
+                    id,
+                    published: true
+                });
                 if (page && preview !== true && page.status !== STATUS_PUBLISHED) {
                     page = null;
                 }

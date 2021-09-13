@@ -213,7 +213,7 @@ export class MenuStorageOperationsDdbEs implements MenuStorageOperations {
     }
 
     public createPartitionKey({ tenant, locale }: PartitionKeyOptions): string {
-        return `T#${tenant}#L${locale}#PB#M`;
+        return `T#${tenant}#L#${locale}#PB#M`;
     }
 
     public createSortKey(input: Pick<Menu, "slug"> | string): string {

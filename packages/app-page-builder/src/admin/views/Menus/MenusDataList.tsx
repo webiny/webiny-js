@@ -40,12 +40,12 @@ const SORTERS = [
         sort: "createdOn_ASC"
     },
     {
-        label: t`Name A-Z`,
-        sort: "name_ASC"
+        label: t`Title A-Z`,
+        sort: "title_ASC"
     },
     {
-        label: t`Name Z-A`,
-        sort: "name_DESC"
+        label: t`Title Z-A`,
+        sort: "title_DESC"
     }
 ];
 
