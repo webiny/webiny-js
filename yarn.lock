@@ -10051,6 +10051,7 @@ __metadata:
     "@webiny/handler": ^5.14.0
     "@webiny/plugins": ^5.14.0
     "@webiny/telemetry": ^5.14.0
+    boolean: ^3.0.2
     camelcase: 5.3.1
     chalk: ^4.1.0
     dotenv: 8.2.0
