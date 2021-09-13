@@ -14,10 +14,10 @@ module.exports = () => [
             }
 
             // 1. Get exports from `site` stack, for `args.env` environment.
-            const websiteOutput = await getStackOutput("apps/website", args.env);
+            const websiteOutput = getStackOutput({ folder: "apps/website", env: args.env });
 
             // 2. Get exports from `api` stack, again, for `args.env` environment.
-            const apiOutput = await getStackOutput("api", args.env);
+            const apiOutput = getStackOutput({ folder: "api", env: args.env });
 
             // 3. Let's update relevant Page Builder app's URLs, by invoking the `updateSettings` function,
             // which has been exported from the `api` stack for this exact purpose.
@@ -82,7 +82,7 @@ module.exports = () => [
 
             context.info("Uploading React application...");
             // 1. Get exports from `site` stack, for `args.env` environment.
-            const websiteOutput = await getStackOutput("apps/website", args.env);
+            const websiteOutput = getStackOutput({ folder: "apps/website", env: args.env });
 
             let webContentsRootPath = path.join(process.cwd(), "apps", "website", "code", "build");
 
@@ -116,7 +116,7 @@ module.exports = () => [
             );
 
             // 2. Get exports from `site` stack, for `args.env` environment.
-            const apiOutput = await getStackOutput("api", args.env);
+            const apiOutput = getStackOutput({ folder: "api", env: args.env });
 
             context.info("Issuing a complete website re-render job...");
 

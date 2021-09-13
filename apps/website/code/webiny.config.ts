@@ -2,7 +2,7 @@ import invariant from "invariant";
 import { startApp, buildApp } from "@webiny/project-utils";
 import { getStackOutput } from "@webiny/cli-plugin-deploy-pulumi/utils";
 
-const MAP = {
+const API_MAP = {
     REACT_APP_GRAPHQL_API_URL: "${apiUrl}/graphql",
     REACT_APP_API_URL: "${apiUrl}"
 };
@@ -17,7 +17,7 @@ export default {
         async start(options, context) {
             invariant(options.env, NO_ENV_MESSAGE);
 
-            const output = await getStackOutput("api", options.env, MAP);
+            const output = getStackOutput({ folder: "api", env: options.env, map: API_MAP });
             invariant(output, NO_API_MESSAGE(options.env));
 
             Object.assign(process.env, output);
@@ -28,7 +28,7 @@ export default {
         async build(options, context) {
             invariant(options.env, NO_ENV_MESSAGE);
 
-            const output = await getStackOutput("api", options.env, MAP);
+            const output = getStackOutput({ folder: "api", env: options.env, map: API_MAP });
             invariant(output, NO_API_MESSAGE(options.env));
 
             Object.assign(process.env, output);

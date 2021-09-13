@@ -3,6 +3,7 @@ const S3Client = require("aws-sdk/clients/s3");
 const mime = require("mime");
 const chunk = require("lodash/chunk");
 const { relative } = require("path");
+const { crawlDirectory } = require("..");
 
 module.exports = async ({ path: root, bucket, onFileUploadSuccess, onFileUploadError }) => {
     const s3 = new S3Client({ region: process.env.AWS_REGION });
@@ -62,20 +63,5 @@ module.exports = async ({ path: root, bucket, onFileUploadSuccess, onFileUploadE
         }
 
         await Promise.all(promises);
-    }
-};
-
-const crawlDirectory = async (dir, upload) => {
-    const files = fs.readdirSync(dir);
-    for (const file of files) {
-        const filePath = `${dir}/${file}`;
-        const stat = fs.statSync(filePath);
-        if (stat.isDirectory()) {
-            await crawlDirectory(filePath, upload);
-        }
-
-        if (stat.isFile()) {
-            await upload(filePath);
-        }
     }
 };
