@@ -4,7 +4,6 @@
 const chalk = require("chalk");
 const execa = require("execa");
 const semver = require("semver");
-const { verifyConfig } = require("./config");
 const currentNodeVersion = process.versions.node;
 
 (async () => {
@@ -33,6 +32,5 @@ const currentNodeVersion = process.versions.node;
         process.exit(1);
     }
 
-    await verifyConfig();
     require("./cli");
 })();
