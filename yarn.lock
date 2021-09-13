@@ -11640,6 +11640,7 @@ __metadata:
   resolution: "api-page-builder-update-settings@workspace:api/code/pageBuilder/updateSettings"
   dependencies:
     "@webiny/api-page-builder": ^5.14.0
+    "@webiny/api-page-builder-so-ddb-es": ^5.14.0
     "@webiny/cli": ^5.14.0
     "@webiny/db-dynamodb": ^5.14.0
     "@webiny/handler-aws": ^5.14.0

@@ -1,4 +1,13 @@
 const path = require("path");
+const glob = require("fast-glob");
+
+const {
+    createMorphProject,
+    addPackagesToDependencies,
+    yarnInstall,
+    prettierFormat
+} = require("../utils");
+
 const apiPageBuilderUpgrade = require("./upgradeApiPageBuilder");
 
 const targetVersion = "5.15.0";
@@ -42,14 +51,6 @@ module.exports = {
      */
     async upgrade(options, context) {
         const { info } = context;
-        const glob = require("fast-glob");
-
-        const {
-            createMorphProject,
-            addPackagesToDependencies,
-            yarnInstall,
-            prettierFormat
-        } = require("../utils");
 
         const files = await glob([
             // add files here
@@ -62,12 +63,24 @@ module.exports = {
          * Upgrade the graphql with new page builder packages.
          */
         await apiPageBuilderUpgrade.upgradeGraphQLIndex(project, context);
+        /**
+         * Upgrade the page builder lambda with new packages.
+         */
+        await apiPageBuilderUpgrade.upgradePageBuilderIndex(project, context);
 
         info("Adding dependencies...");
 
         addPackagesToDependencies(context, path.resolve(process.cwd(), "api/code/graphql"), {
             "@webiny/api-page-builder-so-ddb-es": context.version
         });
+
+        addPackagesToDependencies(
+            context,
+            path.resolve(process.cwd(), "api/code/pageBuilder/updateSettings"),
+            {
+                "@webiny/api-page-builder-so-ddb-es": context.version
+            }
+        );
 
         info("Writing changes...");
         await project.save();
