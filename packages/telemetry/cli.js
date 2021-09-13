@@ -31,8 +31,6 @@ const isEnabled = () => {
     }
 
     return config.tracking !== false;
-
-
 };
 
 module.exports = { sendEvent, enable, disable, isEnabled };
