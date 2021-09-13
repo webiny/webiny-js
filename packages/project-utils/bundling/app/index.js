@@ -1,13 +1,23 @@
 const { version } = require("@webiny/project-utils/package.json");
+const { getProject } = require("@webiny/cli/utils");
+const { isEnabled } = require("@webiny/telemetry/cli");
+const { globalConfig } = require("@webiny/global-config");
 
 const applyDefaults = () => {
-    const config = require("@webiny/cli/config").getConfig();
+    let telemetry;
+    const config = getProject().config;
+    if (config.cli && config.cli.telemetry === false) {
+        telemetry = false;
+    } else {
+        telemetry = isEnabled();
+    }
+
     if (!("REACT_APP_USER_ID" in process.env)) {
-        process.env.REACT_APP_USER_ID = config.id;
+        process.env.REACT_APP_USER_ID = globalConfig.get("id");
     }
 
     if (!("REACT_APP_WEBINY_TELEMETRY" in process.env)) {
-        process.env.REACT_APP_WEBINY_TELEMETRY = "telemetry" in config ? config.telemetry : "true";
+        process.env.REACT_APP_WEBINY_TELEMETRY = String(telemetry);
     }
 
     if (!("INLINE_RUNTIME_CHUNK" in process.env)) {

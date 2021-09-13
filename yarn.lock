@@ -10103,7 +10103,6 @@ __metadata:
     ts-morph: ^11.0.0
     typescript: 4.1.3
     uniqid: ^5.3.0
-    uuid: ^8.3.2
     write-json-file: 4.3.0
     yargs: 14.2.3
   bin:
@@ -10139,7 +10138,6 @@ __metadata:
   dependencies:
     "@webiny/cli": ^5.14.0
     "@webiny/cli-plugin-deploy-pulumi": ^5.14.0
-    "@webiny/telemetry": ^5.14.0
     chalk: 4.1.0
     dotenv: ^8.2.0
     execa: 4.1.0
@@ -10226,6 +10224,16 @@ __metadata:
     typescript: ^4.1.3
   peerDependencies:
     react: 16.14.0
+  languageName: unknown
+  linkType: soft
+
+"@webiny/global-config@^5.13.0, @webiny/global-config@^5.14.0, @webiny/global-config@workspace:packages/global-config":
+  version: 0.0.0-use.local
+  resolution: "@webiny/global-config@workspace:packages/global-config"
+  dependencies:
+    load-json-file: ^6.2.0
+    uuid: ^8.3.2
+    write-json-file: ^4.3.0
   languageName: unknown
   linkType: soft
 
@@ -10461,6 +10469,8 @@ __metadata:
     "@svgr/webpack": 4.3.3
     "@types/webpack-env": 1.15.2
     "@webiny/cli": ^5.14.0
+    "@webiny/global-config": ^5.14.0
+    "@webiny/telemetry": ^5.14.0
     babel-loader: 8.0.6
     babel-plugin-lodash: 3.3.4
     babel-plugin-named-asset-import: 0.3.7
@@ -10614,8 +10624,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/telemetry@workspace:packages/telemetry"
   dependencies:
+    "@webiny/global-config": ^5.13.0
     form-data: 3.0.0
-    load-json-file: 6.2.0
     node-fetch: 2.6.1
   languageName: unknown
   linkType: soft
