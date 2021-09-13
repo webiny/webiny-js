@@ -210,7 +210,7 @@ export class PageElementStorageOperationsDdbEs implements PageElementStorageOper
     }
 
     public createPartitionKey({ tenant, locale }: PartitionKeyOptions): string {
-        return `T#${tenant}#L${locale}#PB#PE`;
+        return `T#${tenant}#L#${locale}#PB#PE`;
     }
 
     public createSortKey(input: Pick<PageElement, "id"> | string): string {
