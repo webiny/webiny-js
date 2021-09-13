@@ -10,11 +10,11 @@ const sendEvent = (event, data = {}) => {
     }
 
     let properties = {};
-    let extraPayloadProperties = {};
+    let extraPayload = {};
     if (event !== "$identify") {
         properties = data;
     } else {
-        extraPayloadProperties = {
+        extraPayload = {
             $set: data
         };
     }
@@ -22,7 +22,7 @@ const sendEvent = (event, data = {}) => {
     return baseSendEvent({
         event,
         properties,
-        extraPayloadProperties,
+        extraPayload,
         user: process.env.REACT_APP_USER_ID,
         version: process.env.REACT_APP_WEBINY_VERSION
     });
