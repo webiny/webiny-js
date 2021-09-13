@@ -1,5 +1,5 @@
 const { sendEvent } = require("@webiny/telemetry/cli");
-const { getProject } = require("../utils");
+const getProject = require("./getProject");
 
 module.exports = ({ event, properties, extraPayload }) => {
     const project = getProject();
