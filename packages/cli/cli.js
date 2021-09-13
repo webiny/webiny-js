@@ -2,6 +2,7 @@
 const path = require("path");
 const yargs = require("yargs");
 const { log, getProject } = require("./utils");
+const { boolean } = require("boolean");
 
 // Immediately load .env.{PASSED_ENVIRONMENT} and .env files.
 // This way we ensure all of the environment variables are not loaded too late.
@@ -14,7 +15,7 @@ if (yargs.argv.env) {
 for (let i = 0; i < paths.length; i++) {
     const path = paths[i];
     const { error } = require("dotenv").config({ path });
-    if (yargs.argv.debug) {
+    if (boolean(yargs.argv.debug)) {
         if (error) {
             log.info(`Could not load environment variables from ${log.info.hl(path)}.`);
         } else {
