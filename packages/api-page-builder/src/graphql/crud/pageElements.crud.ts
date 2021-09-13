@@ -1,14 +1,20 @@
-import { ContextPlugin } from "@webiny/handler/types";
+import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
 import mdbid from "mdbid";
 import { withFields, string } from "@commodo/fields";
 import { object } from "commodo-fields-object";
 import { validation } from "@webiny/validation";
-import defaults from "./utils/defaults";
-import getPKPrefix from "./utils/getPKPrefix";
-import { PageElement, PbContext } from "../../types";
+import {
+    PageElement,
+    PageElementStorageOperations,
+    PageElementStorageOperationsListParams,
+    PbContext
+} from "~/types";
 import checkBasePermissions from "./utils/checkBasePermissions";
 import checkOwnPermissions from "./utils/checkOwnPermissions";
 import { NotFoundError } from "@webiny/handler-graphql";
+import WebinyError from "@webiny/error";
+import { PageElementStorageOperationsProviderPlugin } from "~/plugins/PageElementStorageOperationsProviderPlugin";
+import { createStorageOperations } from "~/graphql/crud/storageOperations";
 
 const CreateDataModel = withFields({
     name: string({ validation: validation.create("required,maxLength:100") }),
@@ -26,137 +32,210 @@ const UpdateDataModel = withFields({
     preview: object()
 })();
 
-const TYPE = "pb.pageElement";
 const PERMISSION_NAME = "pb.page";
 
-const plugin: ContextPlugin<PbContext> = {
-    type: "context",
-    async apply(context) {
-        const { db } = context;
-
-        const PK = () => `${getPKPrefix(context)}PE`;
-
-        context.pageBuilder = {
-            ...context.pageBuilder,
-            pageElements: {
-                async get(id) {
-                    const permission = await checkBasePermissions(context, PERMISSION_NAME, {
-                        rwd: "r"
-                    });
-
-                    const [[pageElement]] = await db.read<PageElement>({
-                        ...defaults.db,
-                        query: { PK: PK(), SK: id },
-                        limit: 1
-                    });
-
-                    if (!pageElement) {
-                        return null;
-                    }
-
-                    const identity = context.security.getIdentity();
-                    checkOwnPermissions(identity, permission, pageElement);
-
-                    return pageElement;
-                },
-
-                async list() {
-                    const permission = await checkBasePermissions(context, PERMISSION_NAME, {
-                        rwd: "r"
-                    });
-
-                    const [pageElements] = await db.read<PageElement>({
-                        ...defaults.db,
-                        query: { PK: PK(), SK: { $gt: " " } }
-                    });
-
-                    // If user can only manage own records, let's check if he owns the loaded one.
-                    if (permission.own) {
-                        const identity = context.security.getIdentity();
-                        return pageElements.filter(item => item.createdBy.id === identity.id);
-                    }
-
-                    return pageElements;
-                },
-
-                async create(data) {
-                    await checkBasePermissions(context, PERMISSION_NAME, { rwd: "w" });
-
-                    const createDataModel = new CreateDataModel().populate(data);
-                    await createDataModel.validate();
-
-                    const id = mdbid();
-                    const identity = context.security.getIdentity();
-
-                    const createData = Object.assign(await createDataModel.toJSON(), {
-                        PK: PK(),
-                        SK: id,
-                        TYPE,
-                        tenant: context.tenancy.getCurrentTenant().id,
-                        locale: context.i18nContent.getLocale().code,
-                        id,
-                        createdOn: new Date().toISOString(),
-                        createdBy: {
-                            id: identity.id,
-                            type: identity.type,
-                            displayName: identity.displayName
-                        }
-                    });
-
-                    await db.create({ ...defaults.db, data: createData });
-
-                    return createData;
-                },
-
-                async update(id, data) {
-                    const permission = await checkBasePermissions(context, PERMISSION_NAME, {
-                        rwd: "w"
-                    });
-                    const pageElement = await this.get(id);
-                    if (!pageElement) {
-                        throw new NotFoundError(`Page element "${id}" not found.`);
-                    }
-
-                    const identity = context.security.getIdentity();
-                    checkOwnPermissions(identity, permission, pageElement);
-
-                    const updateDataModel = new UpdateDataModel().populate(data);
-                    await updateDataModel.validate();
-
-                    const updateData = await updateDataModel.toJSON({ onlyDirty: true });
-
-                    await db.update({
-                        ...defaults.db,
-                        query: { PK: PK(), SK: id },
-                        data: updateData
-                    });
-
-                    return { ...pageElement, ...updateData };
-                },
-
-                async delete(slug) {
-                    const permission = await checkBasePermissions(context, PERMISSION_NAME, {
-                        rwd: "d"
-                    });
-
-                    const pageElement = await this.get(slug);
-                    if (!pageElement) {
-                        throw new NotFoundError(`PageElement "${slug}" not found.`);
-                    }
-
-                    const identity = context.security.getIdentity();
-                    checkOwnPermissions(identity, permission, pageElement);
-
-                    await db.delete({
-                        ...defaults.db,
-                        query: { PK: PK(), SK: slug }
-                    });
-
-                    return pageElement;
-                }
-            }
-        };
+export default new ContextPlugin<PbContext>(async context => {
+    /**
+     * If pageBuilder is not defined on the context, do not continue, but log it.
+     */
+    if (!context.pageBuilder) {
+        console.log("Missing pageBuilder on context. Skipping Page Elements crud.");
+        return;
     }
-};
 
-export default plugin;
+    const storageOperations = await createStorageOperations<PageElementStorageOperations>(
+        context,
+        PageElementStorageOperationsProviderPlugin.type
+    );
+
+    context.pageBuilder.pageElements = {
+        storageOperations,
+        async get(id) {
+            const permission = await checkBasePermissions(context, PERMISSION_NAME, {
+                rwd: "r"
+            });
+
+            const tenant = context.tenancy.getCurrentTenant();
+            const locale = context.i18nContent.getLocale();
+
+            const params = {
+                where: {
+                    tenant: tenant.id,
+                    locale: locale.code,
+                    id
+                }
+            };
+
+            let pageElement: PageElement | undefined;
+            try {
+                pageElement = await storageOperations.get(params);
+                if (!pageElement) {
+                    return null;
+                }
+            } catch (ex) {
+                throw new WebinyError(
+                    ex.message || "Could not get pageElement by slug.",
+                    ex.code || "GET_PAGE_ELEMENT_ERROR",
+                    {
+                        ...(ex.data || {}),
+                        params
+                    }
+                );
+            }
+
+            const identity = context.security.getIdentity();
+            checkOwnPermissions(identity, permission, pageElement);
+
+            return pageElement;
+        },
+
+        async list(params) {
+            const permission = await checkBasePermissions(context, PERMISSION_NAME, {
+                rwd: "r"
+            });
+
+            const tenant = context.tenancy.getCurrentTenant();
+            const locale = context.i18nContent.getLocale();
+
+            const { sort } = params || {};
+
+            const listParams: PageElementStorageOperationsListParams = {
+                where: {
+                    tenant: tenant.id,
+                    locale: locale.code
+                },
+                sort: Array.isArray(sort) && sort.length > 0 ? sort : ["createdOn_ASC"]
+            };
+
+            // If user can only manage own records, let's add that to the listing.
+            if (permission.own) {
+                const identity = context.security.getIdentity();
+                listParams.where.createdBy = identity.id;
+            }
+
+            try {
+                const [items] = await storageOperations.list(listParams);
+                return items;
+            } catch (ex) {
+                throw new WebinyError(
+                    ex.message || "Could not list all page elements.",
+                    ex.code || "LIST_PAGE_ELEMENTS_ERROR",
+                    {
+                        params
+                    }
+                );
+            }
+        },
+
+        async create(input) {
+            await checkBasePermissions(context, PERMISSION_NAME, { rwd: "w" });
+
+            const createDataModel = new CreateDataModel().populate(input);
+            await createDataModel.validate();
+
+            const id: string = mdbid();
+            const identity = context.security.getIdentity();
+
+            const data: PageElement = await createDataModel.toJSON();
+
+            const pageElement: PageElement = {
+                ...data,
+                tenant: context.tenancy.getCurrentTenant().id,
+                locale: context.i18nContent.getLocale().code,
+                id,
+                createdOn: new Date().toISOString(),
+                createdBy: {
+                    id: identity.id,
+                    type: identity.type,
+                    displayName: identity.displayName
+                }
+            };
+
+            try {
+                return await storageOperations.create({
+                    input: data,
+                    pageElement
+                });
+            } catch (ex) {
+                throw new WebinyError(
+                    ex.message || "Could not create page element.",
+                    ex.code || "CREATE_PAGE_ELEMENT_ERROR",
+                    {
+                        ...(ex.data || {}),
+                        pageElement
+                    }
+                );
+            }
+        },
+
+        async update(id, input) {
+            const permission = await checkBasePermissions(context, PERMISSION_NAME, {
+                rwd: "w"
+            });
+            const original = await context.pageBuilder.pageElements.get(id);
+            if (!original) {
+                throw new NotFoundError(`Page element "${id}" not found.`);
+            }
+
+            const identity = context.security.getIdentity();
+            checkOwnPermissions(identity, permission, original);
+
+            const updateDataModel = new UpdateDataModel().populate(input);
+            await updateDataModel.validate();
+
+            const data = await updateDataModel.toJSON({ onlyDirty: true });
+
+            const pageElement: PageElement = {
+                ...original,
+                ...data
+            };
+
+            try {
+                return await storageOperations.update({
+                    input: data,
+                    original,
+                    pageElement
+                });
+            } catch (ex) {
+                throw new WebinyError(
+                    ex.message || "Could not update page element.",
+                    ex.code || "UPDATE_PAGE_ELEMENT_ERROR",
+                    {
+                        ...(ex.data || {}),
+                        original,
+                        pageElement
+                    }
+                );
+            }
+        },
+
+        async delete(slug) {
+            const permission = await checkBasePermissions(context, PERMISSION_NAME, {
+                rwd: "d"
+            });
+
+            const pageElement = await context.pageBuilder.pageElements.get(slug);
+            if (!pageElement) {
+                throw new NotFoundError(`PageElement "${slug}" not found.`);
+            }
+
+            const identity = context.security.getIdentity();
+            checkOwnPermissions(identity, permission, pageElement);
+
+            try {
+                return await storageOperations.delete({
+                    pageElement
+                });
+            } catch (ex) {
+                throw new WebinyError(
+                    ex.message || "Could not delete page element.",
+                    ex.code || "DELETE_PAGE_ELEMENT_ERROR",
+                    {
+                        ...(ex.data || {}),
+                        pageElement
+                    }
+                );
+            }
+        }
+    };
+});

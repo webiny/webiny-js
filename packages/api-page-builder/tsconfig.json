@@ -26,9 +26,6 @@
       "path": "../api-upgrade"
     },
     {
-      "path": "../db-dynamodb"
-    },
-    {
       "path": "../error"
     },
     {
@@ -56,19 +53,10 @@
       "path": "../validation"
     },
     {
-      "path": "../api-dynamodb-to-elasticsearch"
-    },
-    {
       "path": "../api-file-manager"
     },
     {
       "path": "../api-file-manager-ddb-es"
-    },
-    {
-      "path": "../api-elasticsearch"
-    },
-    {
-      "path": "../db"
     }
   ],
   "compilerOptions": {
@@ -92,8 +80,6 @@
       "@webiny/api-tenancy": ["../api-tenancy/src"],
       "@webiny/api-upgrade/*": ["../api-upgrade/src/*"],
       "@webiny/api-upgrade": ["../api-upgrade/src"],
-      "@webiny/db-dynamodb/*": ["../db-dynamodb/src/*"],
-      "@webiny/db-dynamodb": ["../db-dynamodb/src"],
       "@webiny/error/*": ["../error/src/*"],
       "@webiny/error": ["../error/src"],
       "@webiny/handler/*": ["../handler/src/*"],
@@ -111,13 +97,7 @@
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"],
       "@webiny/validation/*": ["../validation/src/*"],
-      "@webiny/validation": ["../validation/src"],
-      "@webiny/api-dynamodb-to-elasticsearch/*": ["../api-dynamodb-to-elasticsearch/src/*"],
-      "@webiny/api-dynamodb-to-elasticsearch": ["../api-dynamodb-to-elasticsearch/src"],
-      "@webiny/api-elasticsearch/*": ["../api-elasticsearch/src/*"],
-      "@webiny/api-elasticsearch": ["../api-elasticsearch/src"],
-      "@webiny/db/*": ["../db/src/*"],
-      "@webiny/db": ["../db/src"]
+      "@webiny/validation": ["../validation/src"]
     },
     "baseUrl": "."
   }

@@ -1,10 +1,10 @@
 import { PagePlugin } from "@webiny/api-page-builder/plugins/PagePlugin";
-import { IndexPageDataPlugin } from "@webiny/api-page-builder/plugins/IndexPageDataPlugin";
-import { SearchPublishedPagesPlugin } from "@webiny/api-page-builder/plugins/SearchPublishedPagesPlugin";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSchemaPlugin";
 import { loadDynamicPage } from "./loadDynamicPage";
 import { DynamicPage } from "~/types";
 import { interpolateValue } from "~/interpolateValue";
+import { IndexPageDataPlugin } from "@webiny/api-page-builder-so-ddb-es/plugins/definitions/IndexPageDataPlugin";
+import { SearchPublishedPagesPlugin } from "@webiny/api-page-builder-so-ddb-es/plugins/definitions/SearchPublishedPagesPlugin";
 
 export default () => [
     new PagePlugin<DynamicPage>({

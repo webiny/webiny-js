@@ -1,8 +1,11 @@
-import { ContextPlugin } from "@webiny/handler/types";
-import defaults from "./utils/defaults";
-import getPKPrefix from "./utils/getPKPrefix";
-import { PbContext } from "../types";
-import { Menu } from "../../types";
+import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
+import {
+    MenuStorageOperationsGetParams,
+    Menu,
+    PbContext,
+    MenuStorageOperationsListParams,
+    MenuStorageOperations
+} from "~/types";
 import { NotFoundError } from "@webiny/handler-graphql";
 import checkBasePermissions from "./utils/checkBasePermissions";
 import checkOwnPermissions from "./utils/checkOwnPermissions";
@@ -13,6 +16,9 @@ import { object } from "commodo-fields-object";
 import executeCallbacks from "./utils/executeCallbacks";
 import prepareMenuItems from "./menus/prepareMenuItems";
 import { MenuPlugin } from "~/plugins/MenuPlugin";
+import WebinyError from "@webiny/error";
+import { MenuStorageOperationsProviderPlugin } from "~/plugins/MenuStorageOperationsProviderPlugin";
+import { createStorageOperations } from "./storageOperations";
 
 const CreateDataModel = withFields({
     title: string({ validation: validation.create("required,minLength:1,maxLength:100") }),
@@ -27,210 +33,269 @@ const UpdateDataModel = withFields({
     items: object()
 })();
 
-const TYPE = "pb.menu";
-const PERMISSION_NAME = TYPE;
+const PERMISSION_NAME = "pb.menu";
 
-const plugin: ContextPlugin<PbContext> = {
-    type: "context",
-    async apply(context) {
-        const { db } = context;
-        const PK = () => `${getPKPrefix(context)}M`;
-
-        const hookPlugins = context.plugins.byType<MenuPlugin>(MenuPlugin.type);
-
-        context.pageBuilder = {
-            ...context.pageBuilder,
-            menus: {
-                async get(slug) {
-                    const permission = await checkBasePermissions(context, PERMISSION_NAME, {
-                        rwd: "r"
-                    });
-
-                    const [[menu]] = await db.read<Menu>({
-                        ...defaults.db,
-                        query: { PK: PK(), SK: slug },
-                        limit: 1
-                    });
-
-                    if (!menu) {
-                        return null;
-                    }
-
-                    const identity = context.security.getIdentity();
-                    checkOwnPermissions(identity, permission, menu);
-
-                    return menu;
-                },
-
-                /**
-                 * Used to fetch menu data from a public website. Items are prepared for consumption too.
-                 * @param slug
-                 */
-                async getPublic(slug) {
-                    const [[menu]] = await db.read<Menu>({
-                        ...defaults.db,
-                        query: { PK: PK(), SK: slug }
-                    });
-
-                    if (!menu) {
-                        throw new NotFoundError();
-                    }
-
-                    menu.items = await prepareMenuItems({ menu, context });
-                    return menu;
-                },
-
-                async list() {
-                    const permission = await checkBasePermissions(context, PERMISSION_NAME, {
-                        rwd: "r"
-                    });
-
-                    const [menus] = await db.read<Menu>({
-                        ...defaults.db,
-                        query: { PK: PK(), SK: { $gt: " " } }
-                    });
-
-                    // If user can only manage own records, let's check if he owns the loaded one.
-                    if (permission.own) {
-                        const identity = context.security.getIdentity();
-                        return menus.filter(item => item.createdBy.id === identity.id);
-                    }
-
-                    return menus;
-                },
-
-                async create(data) {
-                    await checkBasePermissions(context, PERMISSION_NAME, { rwd: "w" });
-
-                    const createDataModel = new CreateDataModel().populate(data);
-                    await createDataModel.validate();
-
-                    const identity = context.security.getIdentity();
-                    const menu: Menu = Object.assign(await createDataModel.toJSON(), {
-                        createdOn: new Date().toISOString(),
-                        createdBy: {
-                            id: identity.id,
-                            type: identity.type,
-                            displayName: identity.displayName
-                        }
-                    });
-
-                    const [[menuWithSameSlug]] = await db.read<Menu>({
-                        ...defaults.db,
-                        query: { PK: PK(), SK: menu.slug },
-                        limit: 1
-                    });
-
-                    if (menuWithSameSlug) {
-                        throw new Error(`Menu "${menu.slug}" already exists.`);
-                    }
-
-                    await executeCallbacks<MenuPlugin["beforeCreate"]>(
-                        hookPlugins,
-                        "beforeCreate",
-                        {
-                            context,
-                            menu
-                        }
-                    );
-
-                    await db.create({
-                        ...defaults.db,
-                        data: {
-                            ...menu,
-                            PK: PK(),
-                            SK: createDataModel.slug,
-                            TYPE,
-                            tenant: context.tenancy.getCurrentTenant().id,
-                            locale: context.i18nContent.getLocale().code
-                        }
-                    });
-
-                    await executeCallbacks<MenuPlugin["afterCreate"]>(hookPlugins, "afterCreate", {
-                        context,
-                        menu
-                    });
-
-                    return menu;
-                },
-
-                async update(slug, data) {
-                    const permission = await checkBasePermissions(context, PERMISSION_NAME, {
-                        rwd: "w"
-                    });
-
-                    const menu = await this.get(slug);
-                    if (!menu) {
-                        throw new NotFoundError(`Menu "${slug}" not found.`);
-                    }
-
-                    const identity = context.security.getIdentity();
-                    checkOwnPermissions(identity, permission, menu);
-
-                    const updateDataModel = new UpdateDataModel().populate(data);
-                    await updateDataModel.validate();
-
-                    const updateData = await updateDataModel.toJSON({ onlyDirty: true });
-
-                    await executeCallbacks<MenuPlugin["beforeUpdate"]>(
-                        hookPlugins,
-                        "beforeUpdate",
-                        {
-                            context,
-                            menu
-                        }
-                    );
-
-                    await db.update({
-                        ...defaults.db,
-                        query: { PK: PK(), SK: slug },
-                        data: updateData
-                    });
-
-                    await executeCallbacks<MenuPlugin["afterUpdate"]>(hookPlugins, "afterUpdate", {
-                        context,
-                        menu
-                    });
-
-                    return { ...menu, ...updateData };
-                },
-                async delete(slug) {
-                    const permission = await checkBasePermissions(context, PERMISSION_NAME, {
-                        rwd: "d"
-                    });
-
-                    const menu = await this.get(slug);
-                    if (!menu) {
-                        throw new NotFoundError(`Menu "${slug}" not found.`);
-                    }
-
-                    const identity = context.security.getIdentity();
-                    checkOwnPermissions(identity, permission, menu);
-
-                    await executeCallbacks<MenuPlugin["beforeDelete"]>(
-                        hookPlugins,
-                        "beforeDelete",
-                        {
-                            context,
-                            menu
-                        }
-                    );
-
-                    await db.delete({
-                        ...defaults.db,
-                        query: { PK: PK(), SK: slug }
-                    });
-
-                    await executeCallbacks<MenuPlugin["afterDelete"]>(hookPlugins, "afterDelete", {
-                        context,
-                        menu
-                    });
-
-                    return menu;
-                }
-            }
-        };
+export default new ContextPlugin<PbContext>(async context => {
+    /**
+     * If pageBuilder is not defined on the context, do not continue, but log it.
+     */
+    if (!context.pageBuilder) {
+        console.log("Missing pageBuilder on context. Skipping Menus crud.");
+        return;
     }
-};
 
-export default plugin;
+    const storageOperations = await createStorageOperations<MenuStorageOperations>(
+        context,
+        MenuStorageOperationsProviderPlugin.type
+    );
+
+    const hookPlugins = context.plugins.byType<MenuPlugin>(MenuPlugin.type);
+
+    context.pageBuilder.menus = {
+        storageOperations,
+        async get(slug) {
+            const permission = await checkBasePermissions(context, PERMISSION_NAME, {
+                rwd: "r"
+            });
+
+            const tenant = context.tenancy.getCurrentTenant();
+            const locale = context.i18nContent.getLocale();
+            const params: MenuStorageOperationsGetParams = {
+                where: {
+                    slug,
+                    tenant: tenant.id,
+                    locale: locale.code
+                }
+            };
+
+            let menu: Menu;
+
+            try {
+                menu = await storageOperations.get(params);
+                if (!menu) {
+                    return null;
+                }
+            } catch (ex) {
+                throw new WebinyError(
+                    ex.message || "Could not get menu by slug.",
+                    ex.code || "GET_MENU_ERROR",
+                    {
+                        ...(ex.data || {}),
+                        params
+                    }
+                );
+            }
+
+            const identity = context.security.getIdentity();
+            checkOwnPermissions(identity, permission, menu);
+
+            return menu;
+        },
+
+        /**
+         * Used to fetch menu data from a public website. Items are prepared for consumption too.
+         * @param slug
+         */
+        async getPublic(slug) {
+            const menu = await context.pageBuilder.menus.get(slug);
+
+            if (!menu) {
+                throw new NotFoundError();
+            }
+
+            menu.items = await prepareMenuItems({ menu, context });
+            return menu;
+        },
+
+        async list(params) {
+            const permission = await checkBasePermissions(context, PERMISSION_NAME, {
+                rwd: "r"
+            });
+
+            const tenant = context.tenancy.getCurrentTenant();
+            const locale = context.i18nContent.getLocale();
+            const { sort } = params || {};
+
+            const listParams: MenuStorageOperationsListParams = {
+                where: {
+                    tenant: tenant.id,
+                    locale: locale.code
+                },
+                sort: Array.isArray(sort) && sort.length > 0 ? sort : ["createdOn_ASC"]
+            };
+
+            // If user can only manage own records, let's add that to the listing.
+            if (permission.own) {
+                const identity = context.security.getIdentity();
+                listParams.where.createdBy = identity.id;
+            }
+
+            try {
+                const [items] = await storageOperations.list(listParams);
+                return items;
+            } catch (ex) {
+                throw new WebinyError(
+                    ex.message || "Could not list all menus.",
+                    ex.code || "LIST_MENUS_ERROR",
+                    {
+                        params
+                    }
+                );
+            }
+        },
+
+        async create(input) {
+            await checkBasePermissions(context, PERMISSION_NAME, { rwd: "w" });
+
+            const createDataModel = new CreateDataModel().populate(input);
+            await createDataModel.validate();
+
+            const data: Menu = await createDataModel.toJSON();
+
+            const tenant = context.tenancy.getCurrentTenant();
+            const locale = context.i18nContent.getLocale();
+
+            const existing = await storageOperations.get({
+                where: {
+                    slug: data.slug,
+                    tenant: tenant.id,
+                    locale: locale.code
+                }
+            });
+            if (existing) {
+                throw new Error(`Menu "${data.slug}" already exists.`);
+            }
+
+            const identity = context.security.getIdentity();
+
+            const menu: Menu = {
+                ...data,
+                createdOn: new Date().toISOString(),
+                createdBy: {
+                    id: identity.id,
+                    type: identity.type,
+                    displayName: identity.displayName
+                },
+                tenant: tenant.id,
+                locale: locale.code
+            };
+
+            try {
+                await executeCallbacks<MenuPlugin["beforeCreate"]>(hookPlugins, "beforeCreate", {
+                    context,
+                    menu
+                });
+                const result = await storageOperations.create({
+                    input: data,
+                    menu
+                });
+                await executeCallbacks<MenuPlugin["afterCreate"]>(hookPlugins, "afterCreate", {
+                    context,
+                    menu: result
+                });
+                return result;
+            } catch (ex) {
+                throw new WebinyError(
+                    ex.message || "Could not create menu.",
+                    ex.code || "CREATE_MENU_ERROR",
+                    {
+                        ...(ex.data || {}),
+                        menu
+                    }
+                );
+            }
+        },
+
+        async update(slug, input) {
+            const permission = await checkBasePermissions(context, PERMISSION_NAME, {
+                rwd: "w"
+            });
+
+            const original = await context.pageBuilder.menus.get(slug);
+            if (!original) {
+                throw new NotFoundError(`Menu "${slug}" not found.`);
+            }
+
+            const identity = context.security.getIdentity();
+            checkOwnPermissions(identity, permission, original);
+
+            const updateDataModel = new UpdateDataModel().populate(input);
+            await updateDataModel.validate();
+
+            const data: Partial<Menu> = await updateDataModel.toJSON({ onlyDirty: true });
+
+            const menu: Menu = {
+                ...original,
+                ...data
+            };
+
+            try {
+                await executeCallbacks<MenuPlugin["beforeUpdate"]>(hookPlugins, "beforeUpdate", {
+                    context,
+                    menu
+                });
+
+                const result = await storageOperations.update({
+                    input: data,
+                    original,
+                    menu
+                });
+
+                await executeCallbacks<MenuPlugin["afterUpdate"]>(hookPlugins, "afterUpdate", {
+                    context,
+                    menu: result
+                });
+                return result;
+            } catch (ex) {
+                throw new WebinyError(
+                    ex.message || "Could not update menu.",
+                    ex.code || "UPDATE_MENU_ERROR",
+                    {
+                        ...(ex.data || {}),
+                        original,
+                        menu
+                    }
+                );
+            }
+        },
+        async delete(slug) {
+            const permission = await checkBasePermissions(context, PERMISSION_NAME, {
+                rwd: "d"
+            });
+
+            const menu = await context.pageBuilder.menus.get(slug);
+            if (!menu) {
+                throw new NotFoundError(`Menu "${slug}" not found.`);
+            }
+
+            const identity = context.security.getIdentity();
+            checkOwnPermissions(identity, permission, menu);
+
+            try {
+                await executeCallbacks<MenuPlugin["beforeDelete"]>(hookPlugins, "beforeDelete", {
+                    context,
+                    menu
+                });
+
+                const result = await storageOperations.delete({
+                    menu
+                });
+
+                await executeCallbacks<MenuPlugin["afterDelete"]>(hookPlugins, "afterDelete", {
+                    context,
+                    menu: result
+                });
+                return result;
+            } catch (ex) {
+                throw new WebinyError(
+                    ex.message || "Could not delete menu.",
+                    ex.code || "DELETE_MENU_ERROR",
+                    {
+                        ...(ex.data || {}),
+                        menu
+                    }
+                );
+            }
+        }
+    };
+});

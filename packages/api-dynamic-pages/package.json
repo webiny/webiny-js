@@ -18,6 +18,7 @@
   "dependencies": {
     "@babel/runtime": "^7.5.5",
     "@webiny/api-page-builder": "^5.14.0",
+    "@webiny/api-page-builder-so-ddb-es": "^5.14.0",
     "@webiny/handler-graphql": "^5.14.0",
     "@webiny/plugins": "^5.14.0",
     "@webiny/project-utils": "^5.14.0",

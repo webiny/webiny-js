@@ -24,6 +24,9 @@
       "path": "../../../packages/api-page-builder"
     },
     {
+      "path": "../../../packages/api-page-builder-so-ddb-es"
+    },
+    {
       "path": "../../../packages/api-tenancy"
     },
     {

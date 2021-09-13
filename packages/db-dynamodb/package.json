@@ -13,6 +13,7 @@
     "@webiny/db": "^5.14.0",
     "@webiny/error": "^5.14.0",
     "@webiny/handler": "^5.14.0",
+    "@webiny/handler-db": "^5.14.0",
     "@webiny/plugins": "^5.14.0",
     "date-fns": "^2.22.1",
     "dot-prop": "^6.0.1",
