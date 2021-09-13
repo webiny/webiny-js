@@ -10191,7 +10191,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/global-config@^5.13.0, @webiny/global-config@workspace:packages/global-config":
+"@webiny/global-config@^5.13.0, @webiny/global-config@^5.14.0, @webiny/global-config@workspace:packages/global-config":
   version: 0.0.0-use.local
   resolution: "@webiny/global-config@workspace:packages/global-config"
   dependencies:
@@ -10433,6 +10433,7 @@ __metadata:
     "@svgr/webpack": 4.3.3
     "@types/webpack-env": 1.15.2
     "@webiny/cli": ^5.14.0
+    "@webiny/global-config": ^5.14.0
     "@webiny/telemetry": ^5.14.0
     babel-loader: 8.0.6
     babel-plugin-lodash: 3.3.4
