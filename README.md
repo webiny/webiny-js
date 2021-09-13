@@ -377,6 +377,13 @@ Thanks goes to these wonderful people:
                         <sub><b>Fabio A. Correa</b></sub>
                     </a>
                     <br />
+                </td><td align="center">
+                    <a href="https://github.com/IzioDev">
+                        <img src="https://avatars.githubusercontent.com/u/9900846?v=4" width="100px;" alt="Romain Billot"/>
+                        <br />
+                        <sub><b>Romain Billot</b></sub>
+                    </a>
+                    <br />
                 </td></tr>
 </table>
 <!-- markdownlint-enable -->
