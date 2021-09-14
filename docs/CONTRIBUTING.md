@@ -150,7 +150,7 @@ are making assertions related to prerendering and CDN cache invalidations, which
 
 The only problem with this approach is that, if you're in process of creating a new test, and you need to change something in the UI in order to make it easier to test (e.g. adding a "data-testid" attribute to a HTML element), you'll need to redeploy the app, which might get a bit frustrating if your making a lot of changes (since a single deploy can take up to 180s).
 
-But, if your test doesn't involve assertions related to SSR and CDN cache invalidation (e.g. you're testing something in the Admin app), while creating the test, you can actually run it against a locally hosted app (use `--local` when running `yarn setup-cypress`). This way you'll be able to iterate much faster because the code changes are immediately visible in the browser.
+But, if your test doesn't involve assertions related to SSR and CDN cache invalidation (e.g. you're testing something in the Admin app), while creating the test, you can actually run it against a locally hosted app (use `--localhost` when running `yarn setup-cypress`). This way you'll be able to iterate much faster because the code changes are immediately visible in the browser.
 
 #### Where are tests located?
 
