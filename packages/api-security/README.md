@@ -26,17 +26,14 @@ import graphqlPlugins from "@webiny/handler-graphql";
 import logsPlugins from "@webiny/handler-logs";
 import securityPlugins from "@webiny/api-security";
 
-// Imports plugins created via scaffolding utilities.
-import scaffoldsPlugins from "./plugins/scaffolds";
-
 const debug = process.env.DEBUG === "true";
 
 export const handler = createHandler({
     plugins: [
+        // Plugins are registered here.
         securityPlugins(),
         logsPlugins(),
-        graphqlPlugins({ debug }),
-        scaffoldsPlugins()
+        graphqlPlugins({ debug })
     ],
     http: { debug }
 });
@@ -72,25 +69,23 @@ import logsPlugins from "@webiny/handler-logs";
 import securityPlugins, { SecurityIdentity } from "@webiny/api-security";
 import cognitoAuthenticationPlugins from "@webiny/api-security-cognito-authentication";
 
-// Imports plugins created via scaffolding utilities.
-import scaffoldsPlugins from "./plugins/scaffolds";
-
 const debug = process.env.DEBUG === "true";
 
 export const handler = createHandler({
     plugins: [
         securityPlugins(),
+        
+        // Add Amazon Cognito authentication plugins.
         cognitoAuthenticationPlugins({
             region: process.env.COGNITO_REGION,
             userPoolId: process.env.COGNITO_USER_POOL_ID,
             identityType: "user",
         }),
         logsPlugins(),
-        graphqlPlugins({ debug }),
-        scaffoldsPlugins()
+        graphqlPlugins({ debug })
     ],
     http: { debug }
 });
 ```
 
-Check the [`@webiny/api-security-cognito-authentication`](../api-security-cognito-authentication) package for more information.
+For more information on the Amazon Cognito plugins, check the [`@webiny/api-security-cognito-authentication`](../api-security-cognito-authentication) package.
