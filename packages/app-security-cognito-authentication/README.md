@@ -4,11 +4,6 @@
 [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 
-A set of frequently used Commodo higher order functions.
-
-For more information, please visit
-[the official docs](https://github.com/doitadrian/commodo).
-
 ## Install
 ```
 npm install --save @webiny/app-security-cognito-authentication
