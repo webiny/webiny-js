@@ -4,7 +4,7 @@
 [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 
-A collection of plugins that enables Amazon Cognito based authentication in [`@webiny/handler`](../handler) handlers.
+A collection of plugins that enables [Amazon Cognito](https://aws.amazon.com/cognito/) based authentication in [`@webiny/handler`](../handler) handlers.
 
 ## Install
 ```
@@ -48,7 +48,7 @@ export const handler = createHandler({
 });
 ```
 
-With all of the plugins in place, you should be able to retrieve the current identity in your handler code, via the `context.security` object:
+With all of the plugins in place, you should be able to retrieve the current identity in your handler application code, via the `context.security` object:
 
 ```ts
 const identity = context.security.getIdentity()

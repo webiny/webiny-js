@@ -4,7 +4,7 @@
 [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 
-A collection of plugins that set up the [Webiny Security Framework](https://www.webiny.com/docs/key-topics/security-framework/introduction) in [`@webiny/handler`](../handler) handlers.
+A collection of plugins that sets up the [Webiny Security Framework](https://www.webiny.com/docs/key-topics/security-framework/introduction) in [`@webiny/handler`](../handler) handlers.
 
 ## Install
 ```
@@ -30,8 +30,9 @@ const debug = process.env.DEBUG === "true";
 
 export const handler = createHandler({
     plugins: [
-        // Plugins are registered here.
+        // Webiny Security Framework plugins are registered here.
         securityPlugins(),
+        
         logsPlugins(),
         graphqlPlugins({ debug })
     ],
@@ -73,6 +74,7 @@ const debug = process.env.DEBUG === "true";
 
 export const handler = createHandler({
     plugins: [
+        // Webiny Security Framework plugins are registered here.
         securityPlugins(),
         
         // Add Amazon Cognito authentication plugins.
@@ -88,4 +90,4 @@ export const handler = createHandler({
 });
 ```
 
-For more information on the Amazon Cognito plugins, check the [`@webiny/api-security-cognito-authentication`](../api-security-cognito-authentication) package.
+For more information on the Amazon Cognito plugins and all of the available configuration parameters, check the [`@webiny/api-security-cognito-authentication`](../api-security-cognito-authentication) package.
