@@ -86,7 +86,7 @@ const Authenticator: React.FC = props => {
                     }
                 })
             );
-        });
+        }).catch(() => { /* Do nothing. */ });
     }, []);
 
     return <>{props.children}</>;
