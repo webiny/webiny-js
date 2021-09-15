@@ -313,7 +313,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
 
             console.log(
                 `‣ deploy the extended GraphQL API and continue developing by running the ${chalk.green(
-                    "yarn webiny watch api/code/graphql --env {dev}"
+                    "yarn webiny watch api/code/graphql --env dev"
                 )} command`
             );
 
