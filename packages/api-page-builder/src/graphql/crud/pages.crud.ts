@@ -1162,14 +1162,12 @@ export default new ContextPlugin<PbContext>(async context => {
         prerendering: {
             flush: async (args: FlushParams) => {
                 if (!pagePrerenderingPlugin) {
-                    console.log("No prerendering flush function.");
                     return;
                 }
                 return pagePrerenderingPlugin.flush(args);
             },
             render: async (args: RenderParams) => {
                 if (!pagePrerenderingPlugin) {
-                    console.log("No prerendering render function.");
                     return;
                 }
                 return pagePrerenderingPlugin.render(args);
