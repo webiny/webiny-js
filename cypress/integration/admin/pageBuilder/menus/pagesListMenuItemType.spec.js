@@ -148,7 +148,7 @@ describe("Menus Module", () => {
     it(`Step 7: delete all ${totalPages} pages (pseudo "afterAll" hook)`, () => {
         // List pages
         cy.pbListPages({
-            sort: { publishedOn: "desc" }
+            sort: ["publishedOn_DESC"]
         }).then(pages => {
             // Delete first X pages
             for (let i = 0; i < totalPages; i++) {
