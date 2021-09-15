@@ -9,13 +9,13 @@ const ERROR_FIELDS = `
 export const LIST_PAGES = gql`
     query PbListPages(
         $where: PbListPagesWhereInput
-        $sort: PbListPagesSortInput
+        $sort: [PbListPagesSort!]
         $search: PbListPagesSearchInput
         $limit: Int
-        $page: Int
+        $after: String
     ) {
         pageBuilder {
-            listPages(where: $where, sort: $sort, limit: $limit, page: $page, search: $search) {
+            listPages(where: $where, sort: $sort, limit: $limit, after: $after, search: $search) {
                 data {
                     id
                     title
