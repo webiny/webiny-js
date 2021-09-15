@@ -195,10 +195,12 @@ export default new ContextPlugin<PbContext>(async context => {
             }
         }
     };
-
+    /**
+     * We always take the last prerendering plugin.
+     */
     const pagePrerenderingPlugin = context.plugins
         .byType<PrerenderingPagePlugin>(PrerenderingPagePlugin.type)
-        .shift();
+        .pop();
 
     context.pageBuilder.pages = {
         storageOperations,

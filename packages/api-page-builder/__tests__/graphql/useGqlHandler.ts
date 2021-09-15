@@ -11,7 +11,7 @@ import fileManagerPlugins from "@webiny/api-file-manager/plugins";
 import fileManagerDdbEsPlugins from "@webiny/api-file-manager-ddb-es";
 import prerenderingServicePlugins from "@webiny/api-prerendering-service/client";
 
-import prerenderingPlugins from "../../src/prerendering/plugins";
+import prerenderingHookPlugins from "../../src/prerendering/hooks";
 
 import { INSTALL, IS_INSTALLED } from "./graphql/install";
 import {
@@ -115,7 +115,7 @@ export default ({ permissions, identity, tenant, plugins }: Params = {}) => {
         fileManagerPlugins(),
         mockLocalesPlugins(),
         pageBuilderPlugins(),
-        prerenderingPlugins(),
+        prerenderingHookPlugins(),
         prerenderingServicePlugins({
             handlers: {
                 render: "render",
