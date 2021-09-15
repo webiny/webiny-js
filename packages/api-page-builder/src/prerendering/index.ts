@@ -1,157 +1,181 @@
-import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
-import { PbContext } from "~/graphql/types";
-import WebinyError from "@webiny/error";
+import { PrerenderingPagePluginImpl } from "./page";
+import { PagePlugin } from "~/plugins/PagePlugin";
 import lodashGet from "lodash/get";
-import merge from "lodash/merge";
-import trimStart from "lodash/trimStart";
-import { Args as FlushArgs } from "@webiny/api-prerendering-service/flush/types";
-import prerenderingPlugins from "./plugins";
+import { SettingsPlugin } from "~/plugins/SettingsPlugin";
+import { MenuPlugin } from "~/plugins/MenuPlugin";
 
+const NOT_FOUND_FOLDER = "_NOT_FOUND_PAGE_";
 /**
- * We need to hook up the prerendering to our app, so just register this context plugin.
+ * We need to hook up the prerendering to our app.
  */
 export default () => {
-    return new ContextPlugin<PbContext>(async context => {
-        context.plugins.register(prerenderingPlugins());
-        /**
-         * Overwrite the existing prerendering.
-         * We do not need prerendering in all deployments so users can import and register the plugin when required.
-         */
-        context.pageBuilder.pages.prerendering = {
-            async render(args) {
-                const current = await context.pageBuilder.settings.getCurrent();
-                const appUrl = lodashGet(current, "prerendering.app.url");
-                const storageName = lodashGet(current, "prerendering.storage.name");
+    return [
+        new PrerenderingPagePluginImpl(),
+        new PagePlugin({
+            // After a page was unpublished, we need to flush the page.
+            async afterUnpublish({ context, page }) {
+                const promises = [];
+                promises.push(
+                    context.pageBuilder.pages.prerendering.flush({
+                        context,
+                        paths: [{ path: page.path }]
+                    })
+                );
 
-                if (!appUrl || !storageName) {
+                // After a page was unpublished, we need to rerender pages that contain pages list element.
+                promises.push(
+                    context.pageBuilder.pages.prerendering.render({
+                        context,
+                        tags: [{ tag: { key: "pb-pages-list" } }]
+                    })
+                );
+
+                // Note: special pages (404 / home) cannot be unpublished, that's why
+                // there is no special handling in regards to that here.
+                await Promise.all(promises);
+            },
+            // After we deleted a page, we need to clear prerender files / cache as well, if the page was published.
+            async afterDelete({ context, page, publishedPage }) {
+                // Published pages have this record.
+                if (!publishedPage) {
                     return;
                 }
 
-                const currentPrerenderingMeta = lodashGet(current, "prerendering.meta");
+                if (page.version === 1) {
+                    return context.pageBuilder.pages.prerendering.flush({
+                        context,
+                        paths: [{ path: publishedPage.path }]
+                    });
+                }
 
-                const meta = merge(currentPrerenderingMeta || {}, {
-                    tenant: context.tenancy.getCurrentTenant().id,
-                    locale: context.i18nContent.getLocale().code
+                // If the published version was deleted.
+                const isPublished = publishedPage.id === page.id;
+                if (isPublished) {
+                    return context.pageBuilder.pages.prerendering.flush({
+                        context,
+                        paths: [{ path: publishedPage.path }]
+                    });
+                }
+
+                // Note: special pages (404 / home) cannot be deleted, that's why
+                // there is no special handling in regards to that here.
+            },
+            // After a page was published, we need to render the page.
+            async afterPublish({ context, page, publishedPage }) {
+                const promises = [];
+                promises.push(
+                    context.pageBuilder.pages.prerendering.render({
+                        context,
+                        paths: [{ path: page.path }]
+                    })
+                );
+
+                const settings = await context.pageBuilder.settings.getCurrent();
+
+                const homePage = lodashGet(settings, "pages.home");
+                // If we just published a page that is set as current homepage, let's rerender the "/" path as well.
+                if (homePage === page.pid) {
+                    promises.push(
+                        context.pageBuilder.pages.prerendering.render({
+                            context,
+                            paths: [{ path: "/" }]
+                        })
+                    );
+                }
+
+                const notFoundPage = lodashGet(settings, "pages.notFound");
+                // Finally, if we just published a page that is set as current not-found page, let's do
+                // another rerender and save that into the NOT_FOUND_FOLDER.
+                if (notFoundPage === page.pid) {
+                    promises.push(
+                        context.pageBuilder.pages.prerendering.render({
+                            context,
+                            paths: [
+                                {
+                                    path: page.path,
+                                    configuration: {
+                                        meta: {
+                                            notFoundPage: true
+                                        },
+                                        storage: { folder: NOT_FOUND_FOLDER }
+                                    }
+                                }
+                            ]
+                        })
+                    );
+                }
+
+                // After a page was published, we need to rerender pages that contain pages list element.
+                promises.push(
+                    context.pageBuilder.pages.prerendering.render({
+                        context,
+                        tags: [{ tag: { key: "pb-pages-list" } }]
+                    })
+                );
+
+                // If we had a published page and the URL on which it was published is different than
+                // the URL of the just published page, then let's flush the page on old URL.
+                if (publishedPage && publishedPage.path !== page.path) {
+                    promises.push(
+                        context.pageBuilder.pages.prerendering.flush({
+                            context,
+                            paths: [{ path: publishedPage.path }]
+                        })
+                    );
+                }
+
+                await Promise.all(promises);
+            }
+        }),
+        new SettingsPlugin({
+            // After settings were changed, invalidate all pages that contain pb-page tag.
+            async afterUpdate({ context, nextSettings, meta }) {
+                if (!nextSettings) {
+                    return;
+                }
+
+                // TODO: optimize this.
+                // TODO: right now, on each update of settings, we trigger a complete site rebuild.
+                await context.pageBuilder.pages.prerendering.render({
+                    context,
+                    tags: [{ tag: { key: "pb-page" } }]
                 });
 
-                const { paths, tags } = args;
-
-                const dbNamespace = "T#" + context.tenancy.getCurrentTenant().id;
-
-                if (Array.isArray(paths)) {
-                    try {
-                        await context.prerenderingServiceClient.render(
-                            paths.map(item => ({
-                                url: appUrl + item.path,
-                                configuration: merge(
+                // If a change on pages settings (home, notFound) has been made, let's rerender accordingly.
+                for (let i = 0; i < meta.diff.pages.length; i++) {
+                    const [type, , , page] = meta.diff.pages[i];
+                    switch (type) {
+                        case "home":
+                            await context.pageBuilder.pages.prerendering.render({
+                                context,
+                                paths: [{ path: "/" }]
+                            });
+                            break;
+                        case "notFound":
+                            await context.pageBuilder.pages.prerendering.render({
+                                context,
+                                paths: [
                                     {
-                                        meta,
-                                        storage: {
-                                            folder: trimStart(item.path, "/"),
-                                            name: storageName
-                                        },
-                                        db: {
-                                            namespace: dbNamespace
+                                        path: page.path,
+                                        configuration: {
+                                            storage: { folder: NOT_FOUND_FOLDER }
                                         }
-                                    },
-                                    item.configuration
-                                )
-                            }))
-                        );
-                    } catch (ex) {
-                        throw new WebinyError(
-                            ex.message ||
-                                "Could not render given paths via the prerendering service client.",
-                            ex.code || "PRERENDERING_SERVICE_CLIENT_RENDER_ERROR",
-                            {
-                                meta,
-                                dbNamespace,
-                                storageName,
-                                paths
-                            }
-                        );
-                    }
-                }
-
-                if (Array.isArray(tags)) {
-                    try {
-                        await context.prerenderingServiceClient.queue.add(
-                            tags.map(item => ({
-                                render: {
-                                    tag: item.tag,
-                                    configuration: merge(
-                                        {
-                                            db: {
-                                                namespace: dbNamespace
-                                            }
-                                        },
-                                        item.configuration
-                                    )
-                                }
-                            }))
-                        );
-                    } catch (ex) {
-                        throw new WebinyError(
-                            ex.message || "Could not add tags to prerendering service queue.",
-                            ex.code || "PRERENDERING_SERVICE_CLIENT_QUEUE_ERROR",
-                            {
-                                meta,
-                                dbNamespace,
-                                tags
-                            }
-                        );
-                    }
-                }
-            },
-            async flush(args) {
-                const current = await context.pageBuilder.settings.getCurrent();
-                const appUrl = lodashGet(current, "prerendering.app.url");
-                const storageName = lodashGet(current, "prerendering.storage.name");
-
-                if (!storageName) {
-                    return;
-                }
-
-                const { paths, tags } = args;
-
-                const dbNamespace = "T#" + context.tenancy.getCurrentTenant().id;
-
-                if (Array.isArray(paths)) {
-                    await context.prerenderingServiceClient.flush(
-                        paths.map<FlushArgs>(p => ({
-                            url: appUrl + p.path,
-                            // Configuration is mainly static (defined here), but some configuration
-                            // overrides can arrive via the call args, so let's do a merge here.
-                            configuration: merge(
-                                {
-                                    db: {
-                                        namespace: dbNamespace
                                     }
-                                },
-                                p.configuration
-                            )
-                        }))
-                    );
-                }
-
-                if (Array.isArray(tags)) {
-                    await context.prerenderingServiceClient.queue.add(
-                        tags.map(item => ({
-                            flush: {
-                                tag: item.tag,
-                                configuration: merge(
-                                    {
-                                        db: {
-                                            namespace: dbNamespace
-                                        }
-                                    },
-                                    item.configuration
-                                )
-                            }
-                        }))
-                    );
+                                ]
+                            });
+                            break;
+                    }
                 }
             }
-        };
-    });
+        }),
+        new MenuPlugin({
+            // After a menu has changed, invalidate all pages that contain the updated menu.
+            async afterUpdate({ context, menu }) {
+                await context.pageBuilder.pages.prerendering.render({
+                    context,
+                    tags: [{ tag: { key: "pb-menu", value: menu.slug } }]
+                });
+            }
+        })
+    ];
 };

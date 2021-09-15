@@ -11,6 +11,8 @@ import fileManagerPlugins from "@webiny/api-file-manager/plugins";
 import fileManagerDdbEsPlugins from "@webiny/api-file-manager-ddb-es";
 import prerenderingServicePlugins from "@webiny/api-prerendering-service/client";
 
+import prerenderingPlugins from "../../src/prerendering/plugins";
+
 import { INSTALL, IS_INSTALLED } from "./graphql/install";
 import {
     CREATE_MENU,
@@ -64,9 +66,10 @@ interface Params {
     permissions?: any;
     identity?: SecurityIdentity;
     tenant?: Tenant;
+    plugins?: any[];
 }
 
-export default ({ permissions, identity, tenant }: Params = {}) => {
+export default ({ permissions, identity, tenant, plugins }: Params = {}) => {
     // @ts-ignore
     if (typeof __getStorageOperationsPlugins !== "function") {
         throw new Error(`There is no global "__getStorageOperationsPlugins" function.`);
@@ -112,6 +115,7 @@ export default ({ permissions, identity, tenant }: Params = {}) => {
         fileManagerPlugins(),
         mockLocalesPlugins(),
         pageBuilderPlugins(),
+        prerenderingPlugins(),
         prerenderingServicePlugins({
             handlers: {
                 render: "render",
@@ -158,7 +162,8 @@ export default ({ permissions, identity, tenant }: Params = {}) => {
             async delete() {
                 return;
             }
-        }
+        },
+        plugins || []
     );
 
     // Let's also create the "invoke" function. This will make handler invocations in actual tests easier and nicer.

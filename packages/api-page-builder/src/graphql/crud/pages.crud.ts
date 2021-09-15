@@ -24,6 +24,11 @@ import { PageStorageOperationsProviderPlugin } from "~/plugins/PageStorageOperat
 import lodashTrimEnd from "lodash/trimEnd";
 import { createStorageOperations } from "./storageOperations";
 import { getZeroPaddedVersionNumber } from "~/utils/zeroPaddedVersionNumber";
+import {
+    FlushParams,
+    PrerenderingPagePlugin,
+    RenderParams
+} from "~/plugins/PrerenderingPagePlugin";
 
 const STATUS_CHANGES_REQUESTED = "changesRequested";
 const STATUS_REVIEW_REQUESTED = "reviewRequested";
@@ -190,6 +195,10 @@ export default new ContextPlugin<PbContext>(async context => {
             }
         }
     };
+
+    const pagePrerenderingPlugin = context.plugins
+        .byType<PrerenderingPagePlugin>(PrerenderingPagePlugin.type)
+        .shift();
 
     context.pageBuilder.pages = {
         storageOperations,
@@ -903,9 +912,6 @@ export default new ContextPlugin<PbContext>(async context => {
 
         async getPublishedById(params) {
             const { id, preview } = params;
-            const permission = await checkBasePermissions(context, PERMISSION_NAME, {
-                rwd: "r"
-            });
 
             let page: Page = null;
 
@@ -930,9 +936,6 @@ export default new ContextPlugin<PbContext>(async context => {
             if (!page) {
                 throw new NotFoundError(`Page not found.`);
             }
-
-            const identity = context.security.getIdentity();
-            checkOwnPermissions(identity, permission, page, "ownedBy");
 
             return page as any;
         },
@@ -1060,20 +1063,7 @@ export default new ContextPlugin<PbContext>(async context => {
         },
 
         async listPublished(params) {
-            const permission = await checkBasePermissions(context, PERMISSION_NAME, {
-                rwd: "r"
-            });
-
             const { after, limit, sort, search, exclude, where: initialWhere = {} } = params;
-
-            /**
-             * If users can only manage own records, let's add the special filter.
-             */
-            let createdBy: string = undefined;
-            if (permission.own === true) {
-                const identity = context.security.getIdentity();
-                createdBy = identity.id;
-            }
 
             const { paths: pathNotIn, ids: pidNotIn } = createNotIn(exclude);
 
@@ -1088,7 +1078,6 @@ export default new ContextPlugin<PbContext>(async context => {
                     published: true,
                     search: search && search.query ? search.query : undefined,
                     locale: context.i18nContent.getLocale().code,
-                    createdBy,
                     path_not_in: pathNotIn,
                     pid_not_in: pidNotIn,
                     tags_in: tags && tags.query ? tags.query : undefined,
@@ -1142,14 +1131,16 @@ export default new ContextPlugin<PbContext>(async context => {
         },
 
         async listTags(params) {
-            if (params.search.query.length < 2) {
+            const search = params && params.search ? params.search.query : "";
+            if (search.length < 2) {
                 throw new WebinyError("Please provide at least two characters.", "LIST_TAGS_ERROR");
             }
 
             const listTagsParams: PageStorageOperationsListTagsParams = {
                 where: {
+                    tenant: context.tenancy.getCurrentTenant().id,
                     locale: context.i18nContent.getLocale().code,
-                    search: params.search.query
+                    search
                 }
             };
 
@@ -1167,11 +1158,19 @@ export default new ContextPlugin<PbContext>(async context => {
             }
         },
         prerendering: {
-            flush: async () => {
-                /** placeholder method */
+            flush: async (args: FlushParams) => {
+                if (!pagePrerenderingPlugin) {
+                    console.log("No prerendering flush function.");
+                    return;
+                }
+                return pagePrerenderingPlugin.flush(args);
             },
-            render: async () => {
-                /** placeholder method */
+            render: async (args: RenderParams) => {
+                if (!pagePrerenderingPlugin) {
+                    console.log("No prerendering render function.");
+                    return;
+                }
+                return pagePrerenderingPlugin.render(args);
             }
         }
     };
