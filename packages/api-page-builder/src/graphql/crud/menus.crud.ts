@@ -53,10 +53,14 @@ export default new ContextPlugin<PbContext>(async context => {
 
     context.pageBuilder.menus = {
         storageOperations,
-        async get(slug) {
-            const permission = await checkBasePermissions(context, PERMISSION_NAME, {
-                rwd: "r"
-            });
+        async get(slug, options) {
+            let permission = undefined;
+            const auth = options && options.auth === false ? false : true;
+            if (auth) {
+                permission = await checkBasePermissions(context, PERMISSION_NAME, {
+                    rwd: "r"
+                });
+            }
 
             const tenant = context.tenancy.getCurrentTenant();
             const locale = context.i18nContent.getLocale();
@@ -86,6 +90,9 @@ export default new ContextPlugin<PbContext>(async context => {
                 );
             }
 
+            if (!permission) {
+                return menu;
+            }
             const identity = context.security.getIdentity();
             checkOwnPermissions(identity, permission, menu);
 
@@ -97,7 +104,9 @@ export default new ContextPlugin<PbContext>(async context => {
          * @param slug
          */
         async getPublic(slug) {
-            const menu = await context.pageBuilder.menus.get(slug);
+            const menu = await context.pageBuilder.menus.get(slug, {
+                auth: false
+            });
 
             if (!menu) {
                 throw new NotFoundError();

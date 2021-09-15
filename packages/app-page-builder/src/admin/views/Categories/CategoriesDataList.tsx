@@ -153,7 +153,7 @@ const PageBuilderCategoriesDataList = ({ canCreate }: PageBuilderCategoriesDataL
                 </Grid>
             </DataListModalOverlay>
         ),
-        []
+        [sort]
     );
 
     const filteredData = filter === "" ? data : data.filter(filterData);

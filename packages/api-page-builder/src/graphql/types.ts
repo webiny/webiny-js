@@ -17,6 +17,7 @@ import {
     System
 } from "~/types";
 import { PrerenderingServiceClientContext } from "@webiny/api-prerendering-service/client/types";
+import { FlushParams, RenderParams } from "~/plugins/PrerenderingPagePlugin";
 
 // CRUD types.
 export interface ListPagesParams {
@@ -49,41 +50,6 @@ export interface ListMeta {
 }
 
 // Pages CRUD.
-export interface Tag {
-    key: string;
-    value?: string;
-}
-
-export interface TagItem {
-    tag: Tag;
-    configuration?: {
-        meta?: Record<string, any>;
-        storage?: {
-            folder?: string;
-            name?: string;
-        };
-    };
-}
-
-export interface PathItem {
-    path: string;
-    configuration?: {
-        meta?: Record<string, any>;
-        storage?: {
-            folder?: string;
-            name?: string;
-        };
-    };
-}
-
-export interface RenderParams {
-    tags?: TagItem[];
-    paths?: PathItem[];
-}
-export interface FlushParams {
-    tags?: TagItem[];
-    paths?: PathItem[];
-}
 
 export interface ListLatestPagesOptions {
     auth?: boolean;
@@ -151,6 +117,10 @@ export interface CategoriesCrud {
     delete(slug: string): Promise<Category>;
 }
 
+export interface MenuGetOptions {
+    auth?: boolean;
+}
+
 export interface ListMenuParams {
     sort?: string[];
 }
@@ -161,7 +131,7 @@ export interface MenusCrud {
      * @internal
      */
     storageOperations: MenuStorageOperations;
-    get(slug: string): Promise<Menu>;
+    get(slug: string, options?: MenuGetOptions): Promise<Menu>;
     getPublic(slug: string): Promise<Menu>;
     list(params?: ListMenuParams): Promise<Menu[]>;
     create(data: Record<string, any>): Promise<Menu>;
