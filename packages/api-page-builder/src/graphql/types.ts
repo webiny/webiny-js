@@ -7,7 +7,15 @@ import { I18NContext } from "@webiny/api-i18n/types";
 import { ElasticsearchContext } from "@webiny/api-elasticsearch/types";
 import DataLoader from "dataloader";
 import { ClientContext } from "@webiny/handler-client/types";
-import { Category, DefaultSettings, Menu, Page, PageElement, ExportPageTask } from "../types";
+import {
+    Category,
+    DefaultSettings,
+    Menu,
+    Page,
+    PageElement,
+    ExportPageTask,
+    PageTaskStats
+} from "../types";
 import { PrerenderingServiceClientContext } from "@webiny/api-prerendering-service/client/types";
 import { FileManagerContext } from "@webiny/api-file-manager/types";
 
@@ -85,7 +93,12 @@ export type PagesCrud = {
     exportPage(id: string): Promise<{
         taskId: string;
     }>;
+    exportPages(ids: string[]): Promise<ExportPageTask>;
     importPage<TPage extends Page = Page>(
+        category: string,
+        data: Record<string, any>
+    ): Promise<TPage>;
+    importPages<TPage extends Page = Page>(
         category: string,
         data: Record<string, any>
     ): Promise<TPage>;
@@ -109,6 +122,15 @@ export type ExportPageTaskCrud = {
     create(data: Record<string, any>): Promise<ExportPageTask>;
     update(id: string, data: Record<string, any>): Promise<ExportPageTask>;
     delete(id: string): Promise<ExportPageTask>;
+    getSubTask(id: string, subtaskId: string): Promise<ExportPageTask>;
+    getSubTaskByStatus(id: string, status: string): Promise<ExportPageTask>;
+    createSubTask(id: string, data: Record<string, any>): Promise<ExportPageTask>;
+    updateSubTask(
+        id: string,
+        subTaskId: string,
+        data: Record<string, any>
+    ): Promise<ExportPageTask>;
+    getTaskStats(id: string): Promise<{ stats: PageTaskStats }>;
 };
 
 export type CategoriesCrud = {

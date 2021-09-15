@@ -165,12 +165,20 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
             }
 
             type PbExportPageData {
-                # TODO: Make it an object
-                taskId: String
+                task: PbExportPageTask
             }
 
             type PbExportPageResponse {
                 data: PbExportPageData
+                error: PbError
+            }
+
+            type PbImportPageData {
+                task: PbExportPageTask
+            }
+
+            type PbImportPageResponse {
+                data: PbImportPageData
                 error: PbError
             }
 
@@ -295,6 +303,12 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
 
                 # Import page
                 importPage(category: String!, data: PbImportPageInput!): PbPageResponse
+
+                # Bulk export page
+                exportPages(ids: [ID]!): PbExportPageResponse
+
+                # Bulk import page
+                importPages(category: String!, data: PbImportPageInput!): PbImportPageResponse
             }
         `,
         resolvers: {
@@ -460,6 +474,20 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                 ) => {
                     return resolve(() =>
                         context.pageBuilder.pages.importPage(args.category, args.data)
+                    );
+                },
+
+                exportPages: async (_, args: { ids: string[] }, context) => {
+                    return resolve(() => context.pageBuilder.pages.exportPages(args.ids));
+                },
+
+                importPages: async (
+                    _,
+                    args: { category: string; data: Record<string, any> },
+                    context
+                ) => {
+                    return resolve(() =>
+                        context.pageBuilder.pages.importPages(args.category, args.data)
                     );
                 }
             },

@@ -45,6 +45,7 @@ const getZeroPaddedVersionNumber = number => String(number).padStart(4, "0");
 const DEFAULT_EDITOR = "page-builder";
 const PERMISSION_NAME = "pb.page";
 const EXPORT_PAGE_TASK_FUNCTION = process.env.EXPORT_PAGE_TASK_FUNCTION;
+const IMPORT_PAGE_FUNCTION = process.env.IMPORT_PAGE_QUEUE_ADD_HANDLER;
 
 const plugin: ContextPlugin<PbContext> = {
     type: "context",
@@ -1550,6 +1551,171 @@ const plugin: ContextPlugin<PbContext> = {
                     page = await context.pageBuilder.pages.update(page.id, { content });
 
                     return page;
+                },
+
+                async importPages(
+                    categorySlug: string,
+                    data: {
+                        zipFileKey?: string;
+                        zipFileUrl?: string;
+                    }
+                ) {
+                    await checkBasePermissions(context, PERMISSION_NAME, {
+                        rwd: "w"
+                    });
+
+                    // Bail out early if category not found
+                    const category = await context.pageBuilder.categories.get(categorySlug);
+                    if (!category) {
+                        throw new NotFoundError(`Category with slug "${categorySlug}" not found.`);
+                    }
+
+                    // Create a task for import page
+                    const task = await context.pageBuilder.exportPageTask.create({
+                        status: ExportTaskStatus.PENDING
+                    });
+
+                    /*
+                     * Prepare "invocationArgs", we're hacking our wat here.
+                     * They are necessary to setup the "context.pageBuilder" object among other things in IMPORT_PAGE_FUNCTION
+                     */
+                    const { request } = context.http;
+                    const invocationArgs = {
+                        httpMethod: request.method,
+                        body: request.body,
+                        headers: request.headers,
+                        cookies: request.cookies
+                    };
+
+                    // Invoke handler
+                    await context.handlerClient.invoke({
+                        name: IMPORT_PAGE_FUNCTION,
+                        payload: {
+                            // TODO: Move task related data into task itself.
+                            category: categorySlug,
+                            data,
+                            task,
+                            ...invocationArgs
+                        },
+                        await: false
+                    });
+
+                    return {
+                        task
+                    };
+                },
+
+                async exportPages(pageIds: string[]) {
+                    const permission = await checkBasePermissions(context, PERMISSION_NAME, {
+                        rwd: "w"
+                    });
+                    if (pageIds.length === 0) {
+                        throw new Error(
+                            "Cannot export page(s) - no page ID(s) were provided.",
+                            "EMPTY_PAGE_IDS_PROVIDED"
+                        );
+                    }
+
+                    const batch = db.batch();
+                    const idNotProvidedError = new Error('Cannot export page - "id" not provided.');
+
+                    const errorsAndResults = [];
+
+                    let batchResultIndex = 0;
+                    for (let i = 0; i < pageIds.length; i++) {
+                        const pageId = pageIds[i];
+
+                        if (!pageId) {
+                            errorsAndResults.push(idNotProvidedError);
+                            continue;
+                        }
+
+                        // If we have a full ID, then try to load it directly.
+                        const [pid, version] = pageId.split("#");
+
+                        if (version) {
+                            errorsAndResults.push(batchResultIndex++);
+                            batch.read({
+                                ...defaults.db,
+                                query: { PK: PK_PAGE(pid), SK: `REV#${version}` }
+                            });
+                            continue;
+                        }
+
+                        errorsAndResults.push(batchResultIndex++);
+                        batch.read({
+                            ...defaults.db,
+                            query: {
+                                PK: PK_PAGE(pid),
+                                SK: `P`
+                            }
+                        });
+                    }
+
+                    // Replace batch result indexes with actual results.
+                    const batchResults = await batch.execute();
+                    for (let i = 0; i < errorsAndResults.length; i++) {
+                        const errorResult = errorsAndResults[i];
+                        if (typeof errorResult !== "number") {
+                            continue;
+                        }
+
+                        const [[page]] = batchResults[errorResult];
+                        if (!page) {
+                            errorsAndResults[i] = new NotFoundError(
+                                `Page "${pageIds[i]}" not found.`
+                            );
+                            continue;
+                        }
+
+                        // Extract page content.
+                        errorsAndResults[i] = page;
+
+                        // Extract compressed page content.
+                        errorsAndResults[i].content = await extractContent(
+                            errorsAndResults[i].content
+                        );
+                    }
+                    const identity = context.security.getIdentity();
+                    const pages = [];
+                    let hasError = false;
+                    // Prepare export
+                    for (let i = 0; i < errorsAndResults.length; i++) {
+                        const page = errorsAndResults[i];
+
+                        if (page instanceof Error) {
+                            hasError = true;
+                            continue;
+                        }
+
+                        checkOwnPermissions(identity, permission, page, "ownedBy");
+
+                        pages.push(page);
+                    }
+                    // TODO: Figure out how to return multiple errors.
+                    if (hasError) {
+                        return errorsAndResults;
+                    }
+
+                    // Create a page export task
+                    const exportTask = await context.pageBuilder.exportPageTask.create({
+                        status: ExportTaskStatus.PENDING
+                    });
+
+                    // Invoke handler
+                    await context.handlerClient.invoke({
+                        name: EXPORT_PAGE_TASK_FUNCTION,
+                        payload: {
+                            pages,
+                            taskId: exportTask.id,
+                            // TODO: Maybe there is a better way
+                            // @ts-ignore
+                            PK: exportTask.PK
+                        },
+                        await: false
+                    });
+
+                    return exportTask;
                 },
 
                 prerendering: {

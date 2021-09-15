@@ -50,10 +50,9 @@ const importPage = async ({
     // To be sure
     await deleteFile(PAGE_DATA_EXTRACT_DIR);
 
-    const { srcPrefix } = await context.fileManager.settings.getSettings();
-
-    // Skip if there are no files
+    // Only update page data if there are files
     if (Array.isArray(files) && files.length) {
+        const { srcPrefix } = await context.fileManager.settings.getSettings();
         updateFilesInPageData({ data: page.content, fileIdToKeyMap, srcPrefix });
     }
 
@@ -93,7 +92,9 @@ export function updateFilesInPageData({
         if (key === "file" && value && fileIdToKeyMap[value.id]) {
             value.key = fileIdToKeyMap[value.id];
             value.name = fileIdToKeyMap[value.id];
-            value.src = `${srcPrefix}/${fileIdToKeyMap[value.id]}`;
+            value.src = `${srcPrefix}${srcPrefix.endsWith("/") ? "" : "/"}${
+                fileIdToKeyMap[value.id]
+            }`;
         } else {
             updateFilesInPageData({ data: value, srcPrefix, fileIdToKeyMap });
         }
