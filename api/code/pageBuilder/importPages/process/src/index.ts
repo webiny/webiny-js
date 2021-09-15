@@ -6,7 +6,7 @@ import i18nContentPlugins from "@webiny/api-i18n-content/plugins";
 import adminUsersPlugins from "@webiny/api-security-admin-users";
 import securityAdminUsersDynamoDbStorageOperations from "@webiny/api-security-admin-users-so-ddb";
 import pageBuilderPlugins from "@webiny/api-page-builder/graphql";
-import importPagePlugins from "@webiny/api-page-builder/importPage";
+import importPagesProcessPlugins from "@webiny/api-page-builder/importPage/process";
 import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import dynamoDbPlugins from "@webiny/db-dynamodb/plugins";
@@ -44,7 +44,9 @@ export const handler = createHandler({
         adminUsersPlugins(),
         securityAdminUsersDynamoDbStorageOperations(),
         pageBuilderPlugins(),
-        importPagePlugins()
+        importPagesProcessPlugins({
+            handlers: { process: process.env.AWS_LAMBDA_FUNCTION_NAME }
+        })
     ],
     http: { debug }
 });

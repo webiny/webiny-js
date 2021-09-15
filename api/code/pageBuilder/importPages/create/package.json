@@ -1,5 +1,5 @@
 {
-  "name": "api-page-builder-import-page",
+  "name": "api-page-builder-import-pages-create",
   "version": "0.1.0",
   "scripts": {
     "build": "yarn webiny run build",
