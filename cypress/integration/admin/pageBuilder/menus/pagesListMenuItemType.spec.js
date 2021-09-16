@@ -139,11 +139,11 @@ describe("Menus Module", () => {
 
     it(`Step 6: assert that the pages list menu item does not exist`, () => {
         cy.visit(Cypress.env("WEBSITE_URL") + `/page-${id}-${0}/`);
-	
-	    cy.reloadUntil(() => {
-		    // We wait until the document contains the newly added menu.
-		    return Cypress.$(`:contains(added-menu-${idEdited})`).length === 0;
-	    });
+
+        cy.reloadUntil(() => {
+            // We wait until the document contains the newly added menu.
+            return Cypress.$(`:contains(added-menu-${idEdited})`).length === 0;
+        });
 
         cy.findByTestId("pb-desktop-header").within(() => {
             // Let's check the links and the order.
