@@ -18,11 +18,14 @@ interface PageBuilderParams {
 class PageBuilder {
     role: aws.iam.Role;
     exportPageTaskRole: aws.iam.Role;
-    importPageRole: aws.iam.Role;
+    importPagesRole: aws.iam.Role;
     functions: {
         updateSettings: aws.lambda.Function;
         exportPageTask: aws.lambda.Function;
-        importPage: aws.lambda.Function;
+        importPages: {
+            create: aws.lambda.Function;
+            process: aws.lambda.Function;
+        };
     };
 
     constructor({
@@ -148,7 +151,7 @@ class PageBuilder {
             }
         });
 
-        this.importPageRole = new aws.iam.Role("pb-import-page-lambda-role", {
+        this.importPagesRole = new aws.iam.Role("pb-import-page-lambda-role", {
             assumeRolePolicy: {
                 Version: "2012-10-17",
                 Statement: [
@@ -172,24 +175,24 @@ class PageBuilder {
         });
 
         new aws.iam.RolePolicyAttachment(`pb-import-page-lambda-role-policy-attachment`, {
-            role: this.exportPageTaskRole,
+            role: this.importPagesRole,
             policyArn: importPageLambdaPolicy.arn.apply(arn => arn)
         });
 
         new aws.iam.RolePolicyAttachment(`pb-import-page-lambda-AWSLambdaBasicExecutionRole`, {
-            role: this.exportPageTaskRole,
+            role: this.importPagesRole,
             policyArn: aws.iam.ManagedPolicy.AWSLambdaBasicExecutionRole
         });
 
-        const importPage = new aws.lambda.Function("pb-import-page", {
-            role: this.exportPageTaskRole.arn,
+        const importPagesQueueProcess = new aws.lambda.Function("pb-import-page-queue-process", {
+            role: this.importPagesRole.arn,
             runtime: "nodejs12.x",
             handler: "handler.handler",
             timeout: 60,
-            memorySize: 128,
-            description: "Handle import page workflow",
+            memorySize: 512,
+            description: "Handle import page queue process workflow",
             code: new pulumi.asset.AssetArchive({
-                ".": new pulumi.asset.FileArchive("../code/pageBuilder/importPage/build")
+                ".": new pulumi.asset.FileArchive("../code/pageBuilder/importPages/process/build")
             }),
             environment: {
                 variables: {
@@ -199,10 +202,32 @@ class PageBuilder {
             }
         });
 
+        const importPagesQueueCreate = new aws.lambda.Function("pb-import-page-queue-create", {
+            role: this.importPagesRole.arn,
+            runtime: "nodejs12.x",
+            handler: "handler.handler",
+            timeout: 60,
+            memorySize: 512,
+            description: "Handle import page queue create workflow",
+            code: new pulumi.asset.AssetArchive({
+                ".": new pulumi.asset.FileArchive("../code/pageBuilder/importPages/create/build")
+            }),
+            environment: {
+                variables: {
+                    ...env,
+                    S3_BUCKET: bucket.id,
+                    IMPORT_PAGE_QUEUE_PROCESS_HANDLER: importPagesQueueProcess.arn
+                }
+            }
+        });
+
         this.functions = {
             updateSettings,
             exportPageTask,
-            importPage
+            importPages: {
+                create: importPagesQueueCreate,
+                process: importPagesQueueProcess
+            }
         };
     }
 }
