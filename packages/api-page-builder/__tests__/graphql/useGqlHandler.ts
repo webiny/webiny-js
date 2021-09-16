@@ -315,7 +315,6 @@ export default ({ permissions, identity, tenant, plugins }: Params = {}) => {
         async oEmbedData(variables) {
             return invoke({ body: { query: OEMBED_DATA, variables } });
         },
-
         // PageElements.
         async createPageElement(variables) {
             return invoke({ body: { query: CREATE_PAGE_ELEMENT, variables } });
