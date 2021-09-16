@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.15.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.14.0...v5.15.0-beta.0) (2021-09-16)
+
+
+### Bug Fixes
+
+* add `REACT_APP_API_URL` ([61c9e32](https://github.com/webiny/webiny-js/commit/61c9e32c57c32f6e9519dc93b64b074f67b8f138))
+* replace `graphqlApiUrl` with `apiUrl` ([d16f399](https://github.com/webiny/webiny-js/commit/d16f39924e457498b11020720f6640f350e6c559))
+
+
+
+
+
 # [5.14.0](https://github.com/webiny/webiny-js/compare/v5.14.0-beta.0...v5.14.0) (2021-08-30)
 
 **Note:** Version bump only for package @webiny/cli-plugin-scaffold-full-stack-app

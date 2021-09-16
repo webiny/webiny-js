@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.15.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.14.0...v5.15.0-beta.0) (2021-09-16)
+
+
+### Bug Fixes
+
+* update README ([ebd78ff](https://github.com/webiny/webiny-js/commit/ebd78ff3631428a12ea1bfa8cf579118da2aec50))
+* update README ([53a2cdd](https://github.com/webiny/webiny-js/commit/53a2cddfe83770d0df76545903efe0c8a410c82f))
+
+
+
+
+
 # [5.14.0](https://github.com/webiny/webiny-js/compare/v5.14.0-beta.0...v5.14.0) (2021-08-30)
 
 **Note:** Version bump only for package @webiny/app-security

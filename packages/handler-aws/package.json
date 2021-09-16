@@ -1,6 +1,6 @@
 {
   "name": "@webiny/handler-aws",
-  "version": "5.14.0",
+  "version": "5.15.0-beta.0",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -15,19 +15,19 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.5.5",
-    "@webiny/handler": "^5.14.0",
-    "@webiny/handler-args": "^5.14.0",
-    "@webiny/handler-client": "^5.14.0",
-    "@webiny/handler-http": "^5.14.0",
-    "@webiny/plugins": "^5.14.0"
+    "@webiny/handler": "^5.15.0-beta.0",
+    "@webiny/handler-args": "^5.15.0-beta.0",
+    "@webiny/handler-client": "^5.15.0-beta.0",
+    "@webiny/handler-http": "^5.15.0-beta.0",
+    "@webiny/plugins": "^5.15.0-beta.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",
     "@babel/core": "^7.5.5",
     "@babel/preset-env": "^7.5.5",
     "@babel/preset-typescript": "^7.8.3",
-    "@webiny/cli": "^5.14.0",
-    "@webiny/project-utils": "^5.14.0",
+    "@webiny/cli": "^5.15.0-beta.0",
+    "@webiny/project-utils": "^5.15.0-beta.0",
     "babel-plugin-lodash": "^3.3.4",
     "merge": "^1.2.1",
     "rimraf": "^3.0.2",

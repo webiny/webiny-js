@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.15.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.14.0...v5.15.0-beta.0) (2021-09-16)
+
+
+### Bug Fixes
+
+* add missing dependency ([d2278fd](https://github.com/webiny/webiny-js/commit/d2278fd93b702ae1d93a96161d29caa9fc41a996))
+* correct import ([dd304c4](https://github.com/webiny/webiny-js/commit/dd304c449612aa8c1383768dae6034cec757e3bc))
+* retrieve user ID via global config ([7ce1fab](https://github.com/webiny/webiny-js/commit/7ce1fab12baa9ecfd706b69b7a3d7837a2d6cddb))
+* use built-in isEnabled ([4051257](https://github.com/webiny/webiny-js/commit/4051257c58165dbcc9805283d183583ed0bf7d15))
+* use built-in isEnabled ([8efb821](https://github.com/webiny/webiny-js/commit/8efb821762d16af602ec13debfd3e9cbad22749f))
+
+
+### Features
+
+* read telemetry flag from global and project configs ([f89ae7f](https://github.com/webiny/webiny-js/commit/f89ae7f7f9e64e6c5fd591b8df8f181ccc14932e))
+
+
+
+
+
 # [5.14.0](https://github.com/webiny/webiny-js/compare/v5.14.0-beta.0...v5.14.0) (2021-08-30)
 
 **Note:** Version bump only for package @webiny/project-utils

@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.15.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.14.0...v5.15.0-beta.0) (2021-09-16)
+
+
+### Bug Fixes
+
+* create `getDistributionUrl` ([7e8a894](https://github.com/webiny/webiny-js/commit/7e8a894a62d74d1cee0176bb44bfd7447daf764f))
+* remove unnecessary import ([e95f8e9](https://github.com/webiny/webiny-js/commit/e95f8e935e8649b42ff9b5764d74aebaeb6b224f))
+* use `crawlDirectory` util ([ce9769c](https://github.com/webiny/webiny-js/commit/ce9769c4dd7e4a8cc1a8cc15ab579539048999ae))
+
+
+
+
+
 # [5.14.0](https://github.com/webiny/webiny-js/compare/v5.14.0-beta.0...v5.14.0) (2021-08-30)
 
 **Note:** Version bump only for package @webiny/cli-plugin-scaffold-react-app

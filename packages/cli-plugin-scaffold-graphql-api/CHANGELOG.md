@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.15.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.14.0...v5.15.0-beta.0) (2021-09-16)
+
+
+### Bug Fixes
+
+* add `apiUrl` ([70285a2](https://github.com/webiny/webiny-js/commit/70285a2b462884f7f26a0c4a7f4965a6a3d5d307))
+* add `protect: true` ([5be4039](https://github.com/webiny/webiny-js/commit/5be4039ca7328040c6dc5e1f267813b385ff2840))
+* add comment ([05b70c7](https://github.com/webiny/webiny-js/commit/05b70c77122fb02653eaa189e4321978edc94cd0))
+* create `getDistributionUrl` getter ([98582bb](https://github.com/webiny/webiny-js/commit/98582bbbc03230830aab49fe2d0ca71b940f1c25))
+* remove unnecessary import ([e95f8e9](https://github.com/webiny/webiny-js/commit/e95f8e935e8649b42ff9b5764d74aebaeb6b224f))
+* rename property to `distribution` ([fe968a8](https://github.com/webiny/webiny-js/commit/fe968a8a56a8e50516884503e53ae1bce58539d5))
+* replace `graphqlApiUrl` with `apiUrl` ([d16f399](https://github.com/webiny/webiny-js/commit/d16f39924e457498b11020720f6640f350e6c559))
+* use `API_URL` ([803a41c](https://github.com/webiny/webiny-js/commit/803a41c4465af0f20de40ce355e45ed73b281e14))
+
+
+
+
+
 # [5.14.0](https://github.com/webiny/webiny-js/compare/v5.14.0-beta.0...v5.14.0) (2021-08-30)
 
 **Note:** Version bump only for package @webiny/cli-plugin-scaffold-graphql-api

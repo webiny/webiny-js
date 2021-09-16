@@ -3,6 +3,21 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.15.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.14.0...v5.15.0-beta.0) (2021-09-16)
+
+
+### Bug Fixes
+
+* add `crawlDirectory` type ([0e26244](https://github.com/webiny/webiny-js/commit/0e26244c04398236f7be2de79e584d904b3d1806))
+* create `crawlDirectory` function ([a301006](https://github.com/webiny/webiny-js/commit/a30100678df05ce72bc4745ffe9d6160e66d7003))
+* create utils index file ([3bf3352](https://github.com/webiny/webiny-js/commit/3bf3352011842998d998ad2daea178d0766a3464))
+* prevent using the watch command with prod envs ([4aa2074](https://github.com/webiny/webiny-js/commit/4aa20740476a54391f0d8470e24efbe95e181ad2))
+* use newly introduced `crawlDirectory` function ([53cfab5](https://github.com/webiny/webiny-js/commit/53cfab5645e3069ee1d87422c9bf7748dc2207ff))
+
+
+
+
+
 # [5.14.0](https://github.com/webiny/webiny-js/compare/v5.14.0-beta.0...v5.14.0) (2021-08-30)
 
 **Note:** Version bump only for package @webiny/cli-plugin-deploy-pulumi
