@@ -44,11 +44,6 @@ export default (
              * Note: We're not going to DB for getting next sub-task to process,
              * because the data might be out of sync due to GSI eventual consistency.
              */
-            // Get pending task
-            // const currentTask = await pageBuilder.exportPageTask.getSubTaskByStatus(
-            //     taskId,
-            //     ExportTaskStatus.PENDING
-            // );
 
             const currentTask = await pageBuilder.exportPageTask.getSubTask(
                 taskId,
@@ -58,31 +53,46 @@ export default (
             // Base condition!
             if (!currentTask || currentTask.status !== ExportTaskStatus.PENDING) {
                 log(`No pending sub-task for task ${taskId}`);
+
+                await pageBuilder.exportPageTask.update(taskId, {
+                    status: ExportTaskStatus.COMPLETED,
+                    data: {
+                        message: `Finish importing ${subTaskIds.length} pages.`
+                    }
+                });
+
                 return;
             }
             // Save it for error handling
             subTaskId = currentTask.id;
-            console.log(`Fetched task => ${subTaskId}`);
+            console.log(`Fetched sub task => ${subTaskId}`);
 
-            const { pageKey, category, zipFileKey } = currentTask.data;
+            const { pageKey, category, zipFileKey, input } = currentTask.data;
+            const { fileUploadsData } = input;
 
             console.log(`Processing page key "${pageKey}"`);
 
-            // Mark task as processing
+            // Mark task status as PROCESSING
             await pageBuilder.exportPageTask.updateSubTask(taskId, currentTask.id, {
                 status: ExportTaskStatus.PROCESSING
             });
 
-            const createPage: CreatePage = () => context.pageBuilder.pages.create(category);
-
-            const updatePage: UpdatePage = (page, content) =>
-                context.pageBuilder.pages.update(page.id, {
-                    content,
-                    title: `imported-${page.title}`
-                });
-
             // Real job
-            await importPage({ context, createPage, updatePage, pageKey, key: zipFileKey });
+            const pageContent = await importPage({
+                context,
+                pageKey,
+                key: zipFileKey,
+                fileUploadsData
+            });
+
+            // Create a page
+            const pbPage = await context.pageBuilder.pages.create(category);
+
+            // Update page with data
+            await context.pageBuilder.pages.update(pbPage.id, {
+                content: pageContent,
+                title: pbPage.title
+            });
 
             // Update task record in DB
             await pageBuilder.exportPageTask.updateSubTask(taskId, currentTask.id, {

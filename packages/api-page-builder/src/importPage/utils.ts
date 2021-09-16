@@ -22,52 +22,21 @@ const FILES_COUNT_IN_EACH_BATCH = 15;
 
 const s3 = new S3({ region: process.env.AWS_REGION });
 
-export async function openZipFile(Key: string) {
-    // TODO: Replace the Open.s3 with a custom implementation of Open.file
-    return await unzipper.Open.s3(s3, { Bucket: process.env.S3_BUCKET, Key });
-}
-
-const SYSTEM_DIR_NAMES = ["__MACOSX"];
-const ignoreSystemFile = file =>
-    SYSTEM_DIR_NAMES.every(systemDirName => !file.path.startsWith(systemDirName));
-
-//  TODO: we might not need it if we could get this structure while doing the export.
-export function prepareStructure(directory) {
-    let map = {};
-    directory.files.filter(ignoreSystemFile).forEach(file => {
-        const [folder, ...rest] = file.path.split("/");
-        const filePath = rest.join("/");
-
-        const isAsset = filePath.startsWith("assets/");
-
-        if (isAsset) {
-            map = dotProp.set(map, `${folder}.assets`, assets =>
-                Array.isArray(assets) ? [...assets, file] : [file]
-            );
-        } else {
-            map = dotProp.set(map, `${folder}.data`, file);
-        }
-    });
-    return map;
-}
-
 interface UploadPageAssetsParams {
     context: PbContext;
     filesData: Record<string, any>[];
-    zipFileKey: string;
-    pageKey: string;
+    fileUploadsData: FileUploadsData;
 }
 
 interface UploadPageAssetsReturnType {
-    fileIdToKeyMap?: Record<string, string>;
+    fileIdToKeyMap?: Map<string, string>;
 }
 
 // FIXME: We currently only support import page via ZIP file key
 export const uploadPageAssets = async ({
     context,
     filesData,
-    zipFileKey,
-    pageKey
+    fileUploadsData
 }: UploadPageAssetsParams): Promise<UploadPageAssetsReturnType> => {
     /**
      * This function contains logic of file download from S3.
@@ -79,36 +48,34 @@ export const uploadPageAssets = async ({
     }
     console.log("INSIDE uploadPageAssets");
 
-    // TODO: Should we use Map() for this?
     // Save uploaded file key against static id for later use.
-    const fileIdToKeyMap = {};
-
-    // Initialize fileKeyToFileMap
-    const fileKeyToFileMap = {};
+    const fileIdToKeyMap = new Map<string, string>();
+    // Save files meta data against old key for later use.
+    const fileKeyToFileMap = new Map<string, Record<string, any>>();
+    // Initialize maps.
     for (let i = 0; i < filesData.length; i++) {
         const file = filesData[i];
-        fileKeyToFileMap[file.key] = file;
+        fileKeyToFileMap.set(file.key, file);
 
         // Initialize the value
-        fileIdToKeyMap[file.id] = file.type;
+        fileIdToKeyMap.set(file.id, file.type);
     }
 
-    const fileUploadResults = await uploadFilesFromZip({
+    const fileUploadResults = await uploadFilesFromS3({
         fileKeyToFileMap,
-        zipFileKey,
-        pageKey
+        oldKeyToNewKeyMap: fileUploadsData.assets
     });
 
-    // TODO: Remove after testing
-    console.log(JSON.stringify({ fileUploadResults }));
     // Create files in File Manager
     const createFilesInput = fileUploadResults.map(uploadResult => {
-        const key = uploadResult.Key;
+        const newKey = uploadResult.Key;
+        const file = fileKeyToFileMap.get(getOldFileKey(newKey));
 
-        const file = fileKeyToFileMap[getOldFileKey(key)];
+        // Update the file map with newly uploaded file.
+        fileIdToKeyMap.set(file.id, newKey);
 
         return {
-            key: key,
+            key: newKey,
             name: file.name,
             size: file.size,
             type: file.type,
@@ -131,16 +98,7 @@ export const uploadPageAssets = async ({
         );
     }
 
-    const fileCreateResults = await Promise.all(createFilesPromises);
-    // TODO: Remove after testing
-    console.log(JSON.stringify({ fileCreateResults }));
-
-    // Save File key against static ID
-    fileCreateResults.flat().forEach(item => {
-        const file = fileKeyToFileMap[getOldFileKey(item.key)];
-        // Update the file map with newly uploaded file.
-        fileIdToKeyMap[file.id] = item.key;
-    });
+    await Promise.all(createFilesPromises);
 
     return {
         fileIdToKeyMap
@@ -162,125 +120,99 @@ function uploadStream(Key: string, contentType: string) {
     };
 }
 
+interface FileUploadsData {
+    data: string;
+    assets: Record<string, string>;
+}
+
 interface ImportPageParams {
     key: string;
     pageKey: string;
-    createPage: CreatePage;
-    updatePage: UpdatePage;
     context: PbContext;
+    fileUploadsData: FileUploadsData;
 }
 
 export async function importPage({
-    key,
     pageKey,
-    createPage,
-    updatePage,
-    context
-}: ImportPageParams) {
+    context,
+    fileUploadsData
+}: ImportPageParams): Promise<Record<string, any>> {
     const log = console.log;
-    // TODO: Replace the Open.s3 with a custom implementation of Open.file
-    // TODO: Replace it with ParseOne(page)
-    const directory = await unzipper.Open.s3(s3, { Bucket: process.env.S3_BUCKET, Key: key });
-    const pagesDirMap = prepareStructure(directory);
 
-    log(`Page "${pageKey}"`);
-
-    log("Making Directory for page...");
+    // Making Directory for page in which we're going to extract the page data file.
     const PAGE_EXTRACT_DIR = path.join(INSTALL_EXTRACT_DIR, pageKey);
     fs.ensureDirSync(PAGE_EXTRACT_DIR);
-    // Download page data file
-    const pageDataFile = dotProp.get(pagesDirMap, `${pageKey}.data`);
-    log(`Downloading Page data file: ${pageDataFile.path}`);
-    const PAGE_DATA_FILE_PATH = path.join(INSTALL_EXTRACT_DIR, pageDataFile.path);
+
+    const pageDataFileKey = dotProp.get(fileUploadsData, `data`);
+    const PAGE_DATA_FILE_PATH = path.join(PAGE_EXTRACT_DIR, path.basename(pageDataFileKey));
+
+    log(`Downloading Page data file: ${pageDataFileKey} at "${PAGE_DATA_FILE_PATH}"`);
+    // Download and save page data file in disk.
     await new Promise((resolve, reject) => {
-        pageDataFile
-            .stream()
+        getS3FileStream(pageDataFileKey)
             .pipe(fs.createWriteStream(PAGE_DATA_FILE_PATH))
             .on("error", reject)
             .on("finish", resolve);
     });
 
-    // Load the data file
-    const pageDataFilePath = pageDataFile.path;
-    log("File loaded => ", pageDataFilePath);
+    // Load the page data file from disk.
+    log(`Load file ${pageDataFileKey}`);
     const { page, files } = await loadJson<Record<string, any>>(PAGE_DATA_FILE_PATH);
 
-    // Only update page data if there are files
+    // Only update page data if there are files.
     if (Array.isArray(files) && files.length) {
         // Upload page assets
         const { fileIdToKeyMap } = await uploadPageAssets({
             context,
             filesData: files,
-            zipFileKey: key,
-            pageKey
+            fileUploadsData
         });
 
         const { srcPrefix } = await context.fileManager.settings.getSettings();
         updateFilesInPageData({ data: page.content, fileIdToKeyMap, srcPrefix });
     }
 
-    // Create a page
-    const pbPage = await createPage();
-
-    // Update page with data
-    await updatePage(pbPage, page.content);
-
-    // delete the file
-    console.log("Removing Directory for page...");
+    log("Removing Directory for page...");
     await deleteFile(pageKey);
+
+    return page.content;
 }
 
 interface UploadFilesFromZipParams {
-    fileKeyToFileMap: Record<string, any>;
-    zipFileKey: string;
-    pageKey: string;
+    fileKeyToFileMap: Map<string, any>;
+    oldKeyToNewKeyMap: Record<string, string>;
 }
 
-async function uploadFilesFromZip({
+async function uploadFilesFromS3({
     fileKeyToFileMap,
-    zipFileKey,
-    pageKey
+    oldKeyToNewKeyMap
 }: UploadFilesFromZipParams): Promise<S3.ManagedUpload.SendData[]> {
-    // Read file
-    const readStream = getS3FileStream(zipFileKey);
+    const oldKeysForAssets = Object.keys(oldKeyToNewKeyMap);
 
-    const zip = readStream.pipe(unzipper.Parse({ forceStream: true }));
     const promises = [];
-    for await (const entry of zip) {
-        const filePath = entry.path;
+    // Upload all assets.
+    for (let i = 0; i < oldKeysForAssets.length; i++) {
+        const oldKey = oldKeysForAssets[i];
+        const newKey = oldKeyToNewKeyMap[oldKey];
 
-        const tokens = filePath.split("/");
-        const fileName = tokens[tokens.length - 1];
-        const type = entry.type; // 'Directory' or 'File'
-        const fileMetaData = fileKeyToFileMap[fileName];
+        // Read file.
+        const readStream = getS3FileStream(newKey);
+        // Get file meta data.
+        const fileMetaData = fileKeyToFileMap.get(oldKey);
 
-        if (
-            type === "File" &&
-            !isSystemFile(filePath) &&
-            pathIsEqual(filePath, pageKey) &&
-            fileMetaData
-        ) {
-            console.log(`Preparing file "${filePath}" for upload`);
-
+        if (fileMetaData) {
             const { passThrough, promise } = uploadStream(
                 uniqueId("", `-${fileMetaData.key}`),
                 fileMetaData.type
             );
-            entry.pipe(passThrough);
-
+            readStream.pipe(passThrough);
             promises.push(promise);
-            console.log(`Successfully queued file "${filePath}"`);
-        } else {
-            entry.autodrain();
+
+            console.log(`Successfully queued file "${newKey}"`);
         }
     }
 
     return Promise.all(promises);
-}
-
-function pathIsEqual(fullPath: string, pageKey: string) {
-    const [parent] = fullPath.split("/");
-    return parent === pageKey;
 }
 
 // TODO: Move into FileStorage plugins
@@ -308,4 +240,70 @@ function getOldFileKey(key: string) {
     } catch (e) {
         return key;
     }
+}
+
+const FILE_CONTENT_TYPE = "application/octet-stream";
+
+/**
+ * Function will read the given zip file from S3 via stream, extract its content and upload it to S3 bucket.
+ * @param zipFileKey
+ * @return dataMap S3 file keys for all uploaded assets group by page.
+ */
+export async function readExtractAndUploadZipFileContents(
+    zipFileKey: string
+): Promise<Record<string, any>> {
+    let dataMap = {};
+
+    const readStream = getS3FileStream(zipFileKey);
+
+    const zip = readStream.pipe(unzipper.Parse({ forceStream: true }));
+
+    const uniquePath = uniqueId("IMPORT_PAGES/");
+
+    for await (const entry of zip) {
+        const filePath = entry.path;
+
+        const type = entry.type; // 'Directory' or 'File'
+
+        if (type === "File" && !isSystemFile(filePath)) {
+            const newKey = `${uniquePath}/${filePath}`;
+
+            dataMap = prepareMap({ map: dataMap, filePath, newKey });
+
+            // TODO: Use real type instead of dummy FILE_CONTENT_TYPE
+            const { passThrough, promise } = uploadStream(newKey, FILE_CONTENT_TYPE);
+            entry.pipe(passThrough);
+
+            await promise;
+            console.log(`Successfully uploaded file "${filePath}"`);
+        } else {
+            entry.autodrain();
+        }
+    }
+
+    return dataMap;
+}
+
+const ASSETS_DIR_NAME = "/assets";
+
+function prepareMap({ map, filePath, newKey }) {
+    const dirname = path.dirname(filePath);
+    const fileName = path.basename(filePath);
+    const extName = path.extname(filePath);
+    // We want to use dot (.) as part of object key rather than accessing/creating nested object.
+    const oldKey = `${fileName.replace(extName, "")}\\.${extName.replace(".", "")}`;
+
+    const isAsset = dirname.endsWith(ASSETS_DIR_NAME);
+
+    if (isAsset) {
+        const folder = dirname.replace(ASSETS_DIR_NAME, "");
+        map = dotProp.set(map, `${folder}.assets.${oldKey}`, newKey);
+    } else {
+        // map = dotProp.set(map, `${dirname}.data.${oldKey}`, newKey);
+
+        // We only need to know the newKey for data file.
+        map = dotProp.set(map, `${dirname}.data`, newKey);
+    }
+
+    return map;
 }
