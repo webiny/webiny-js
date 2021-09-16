@@ -1,7 +1,7 @@
 import { HandlerPlugin } from "@webiny/handler/types";
 import { ArgsContext } from "@webiny/handler-args/types";
 import { ExportPageTask, ExportTaskStatus, Page, PbContext } from "~/types";
-import { openZipFile, prepareStructure } from "~/importPage/utils";
+import { readExtractAndUploadZipFileContents } from "~/importPage/utils";
 
 export type HandlerArgs = {
     category: string;
@@ -42,10 +42,7 @@ export default (
             const { invocationArgs: args, pageBuilder } = context;
             const { task, category, data } = args;
             // Step 1: Read the zip file
-            const directoryMeta = await openZipFile(data.zipFileKey);
-            // Step 2: Prepare the structure
-            const pagesDirMap = prepareStructure(directoryMeta);
-
+            const pagesDirMap = await readExtractAndUploadZipFileContents(data.zipFileKey);
             // Once we have map we can start processing each page
             const pageKeys = Object.keys(pagesDirMap);
 
@@ -60,9 +57,12 @@ export default (
                     data: {
                         pageKey,
                         category,
-                        zipFileKey: data.zipFileKey
+                        zipFileKey: data.zipFileKey,
+                        // TODO: Maybe have a separate "input" attribute
+                        input: {
+                            fileUploadsData: pagesDirMap[pageKey]
+                        }
                     }
-                    // TODO: Maybe have a separate "input" attribute
                 });
                 console.log(`Added SUB_TASK "${subtask.id}" to queue.`);
                 subTaskIds.push(subtask.id);
