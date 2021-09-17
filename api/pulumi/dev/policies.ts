@@ -245,9 +245,14 @@ class Policies {
                             "s3:DeleteObject",
                             "s3:PutObjectAcl",
                             "s3:PutObject",
-                            "s3:GetObject"
+                            "s3:GetObject",
+                            "s3:ListBucket"
                         ],
-                        Resource: pulumi.interpolate`arn:aws:s3:::${bucket.id}/*`
+                        Resource: [
+                            // For "s3:ListBucket"
+                            pulumi.interpolate`arn:aws:s3:::${bucket.id}`,
+                            pulumi.interpolate`arn:aws:s3:::${bucket.id}/*`
+                        ]
                     },
                     {
                         Sid: "PermissionForLambda",
