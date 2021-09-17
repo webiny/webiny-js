@@ -1,6 +1,7 @@
 import eqFilter from "./eq";
 import betweenFilter from "./between";
 import inFilter from "./in";
+import andInFilter from "./andIn";
 import gtFilter from "./gt";
 import gteFilter from "./gte";
 import ltFilter from "./lt";
@@ -15,5 +16,6 @@ export default () => [
     gteFilter,
     lteFilter,
     betweenFilter,
-    containsFilter
+    containsFilter,
+    andInFilter
 ];

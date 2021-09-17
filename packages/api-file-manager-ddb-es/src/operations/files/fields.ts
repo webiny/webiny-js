@@ -2,6 +2,11 @@ import { FileElasticsearchFieldPlugin } from "~/plugins/FileElasticsearchFieldPl
 
 export default () => [
     new FileElasticsearchFieldPlugin({
+        field: "id",
+        unmappedType: "string",
+        keyword: true
+    }),
+    new FileElasticsearchFieldPlugin({
         field: "createdOn",
         unmappedType: "date"
     }),
