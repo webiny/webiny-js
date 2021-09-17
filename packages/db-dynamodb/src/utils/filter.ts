@@ -5,11 +5,13 @@ import { ValueFilterPlugin } from "~/plugins/definitions/ValueFilterPlugin";
 import { ValueTransformPlugin } from "~/plugins/definitions/ValueTransformPlugin";
 import { FieldPathPlugin } from "~/plugins/definitions/FieldPathPlugin";
 import { ContextInterface } from "@webiny/handler/types";
+import { FieldPlugin } from "~/plugins/definitions/FieldPlugin";
 
 export interface Params<T extends any = any> {
     items: T[];
     where: Record<string, any>;
     context: ContextInterface;
+    fields: FieldPlugin;
 }
 
 interface MappedPluginParams {
@@ -68,7 +70,7 @@ const createFilters = (params: Omit<Params, "items">): Filter[] => {
         type: ValueFilterPlugin.type,
         property: "operation"
     });
-    const fieldPathPlugins = context.plugins.byType<FieldPathPlugin>(FieldPathPlugin.type);
+
     const transformValuePlugins = context.plugins.byType<ValueTransformPlugin>(
         ValueTransformPlugin.type
     );
@@ -118,11 +120,8 @@ const transform = (value: any, transformValuePlugin?: ValueTransformPlugin): any
 /**
  * Creates a filter callable that we can send to the .filter() method of the array.
  */
-const createFilterCallable = ({ where, context }): ((item: any) => boolean) | null => {
-    const filters = createFilters({
-        where,
-        context
-    });
+const createFilterCallable = (params: Omit<Params, "items">): ((item: any) => boolean) | null => {
+    const filters = createFilters(params);
     /**
      * Just return null so there are no filters to be applied.
      * Later in the code we check for null so we do not loop through the items.
@@ -148,10 +147,11 @@ const createFilterCallable = ({ where, context }): ((item: any) => boolean) | nu
 };
 
 export const filterItems = <T extends any = any>(params: Params<T>): T[] => {
-    const { items, where, context } = params;
+    const { items, where, context, fields } = params;
     const filter = createFilterCallable({
         where,
-        context
+        context,
+        fields
     });
     /**
      * No point in going through all the items when there are no filters to be applied.
