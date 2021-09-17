@@ -15,21 +15,21 @@ const fileAData = {
     name: "filenameA.png",
     size: 123456,
     type: "image/png",
-    tags: ["sketch"]
+    tags: ["sketch", "file-a", "webiny"]
 };
 const fileBData = {
     key: "/files/filenameB.png",
     name: "filenameB.png",
     size: 123456,
     type: "image/png",
-    tags: ["art"]
+    tags: ["art", "file-b"]
 };
 const fileCData = {
     key: "/files/filenameC.png",
     name: "filenameC.png",
     size: 123456,
     type: "image/png",
-    tags: ["art", "sketch", "webiny"]
+    tags: ["art", "sketch", "webiny", "file-c"]
 };
 
 describe("Files CRUD test", () => {
@@ -187,7 +187,7 @@ describe("Files CRUD test", () => {
                             { ...fileAData, id: fileAId }
                         ],
                         meta: {
-                            cursor: expect.any(String),
+                            cursor: null,
                             totalCount: expect.any(Number),
                             hasMoreItems: false
                         },
@@ -289,7 +289,7 @@ describe("Files CRUD test", () => {
                         error: null,
                         meta: {
                             hasMoreItems: false,
-                            cursor: expect.any(String),
+                            cursor: null,
                             totalCount: 2
                         }
                     }
@@ -327,6 +327,77 @@ describe("Files CRUD test", () => {
             data: {
                 fileManager: {
                     listTags: ["art", "sketch", "webiny"]
+                }
+            }
+        });
+    });
+
+    it("should find all files with given multiple tags - and operator", async () => {
+        await createFiles({
+            data: [fileAData, fileBData, fileCData]
+        });
+        await until(
+            () => listFiles().then(([data]) => data),
+            ({ data }) => {
+                return data.fileManager.listFiles.data.length === 3;
+            },
+            { name: "list all files", tries: 20 }
+        );
+
+        const [cResponse] = await listFiles({
+            where: {
+                tag_and_in: ["art", "webiny"]
+            }
+        });
+
+        expect(cResponse).toEqual({
+            data: {
+                fileManager: {
+                    listFiles: {
+                        data: [
+                            {
+                                ...fileCData,
+                                id: expect.any(String)
+                            }
+                        ],
+                        error: null,
+                        meta: {
+                            hasMoreItems: false,
+                            totalCount: 1,
+                            cursor: null
+                        }
+                    }
+                }
+            }
+        });
+
+        const [acResponse] = await listFiles({
+            where: {
+                tag_and_in: ["sketch", "webiny"]
+            }
+        });
+
+        expect(acResponse).toEqual({
+            data: {
+                fileManager: {
+                    listFiles: {
+                        data: [
+                            {
+                                ...fileCData,
+                                id: expect.any(String)
+                            },
+                            {
+                                ...fileAData,
+                                id: expect.any(String)
+                            }
+                        ],
+                        error: null,
+                        meta: {
+                            hasMoreItems: false,
+                            totalCount: 2,
+                            cursor: null
+                        }
+                    }
                 }
             }
         });
