@@ -19,6 +19,7 @@ export type UpdatePage = (page: Page, content: Record<string, any>) => Promise<P
 const INSTALL_DIR = "/tmp";
 const INSTALL_EXTRACT_DIR = path.join(INSTALL_DIR, "apiPageBuilderImportPage");
 const FILES_COUNT_IN_EACH_BATCH = 15;
+const FM_BUCKET = process.env.S3_BUCKET;
 
 const s3 = new S3({ region: process.env.AWS_REGION });
 
@@ -161,7 +162,7 @@ export async function importPage({
 
     // Only update page data if there are files.
     if (Array.isArray(files) && files.length) {
-        // Upload page assets
+        // Upload page assets.
         const { fileIdToKeyMap } = await uploadPageAssets({
             context,
             filesData: files,
@@ -174,6 +175,9 @@ export async function importPage({
 
     log("Removing Directory for page...");
     await deleteFile(pageKey);
+
+    log(`Remove page contents from S3...`);
+    await deleteS3Folder(path.dirname(fileUploadsData.data));
 
     return page.content;
 }
@@ -193,18 +197,16 @@ async function uploadFilesFromS3({
     // Upload all assets.
     for (let i = 0; i < oldKeysForAssets.length; i++) {
         const oldKey = oldKeysForAssets[i];
-        const newKey = oldKeyToNewKeyMap[oldKey];
+        const tempNewKey = oldKeyToNewKeyMap[oldKey];
 
         // Read file.
-        const readStream = getS3FileStream(newKey);
+        const readStream = getS3FileStream(tempNewKey);
         // Get file meta data.
         const fileMetaData = fileKeyToFileMap.get(oldKey);
 
         if (fileMetaData) {
-            const { passThrough, promise } = uploadStream(
-                uniqueId("", `-${fileMetaData.key}`),
-                fileMetaData.type
-            );
+            const newKey = uniqueId("", `-${fileMetaData.key}`);
+            const { passThrough, promise } = uploadStream(newKey, fileMetaData.type);
             readStream.pipe(passThrough);
             promises.push(promise);
 
@@ -306,4 +308,29 @@ function prepareMap({ map, filePath, newKey }) {
     }
 
     return map;
+}
+// TODO: Use FileStorage plugins instead
+async function deleteS3Folder(key) {
+    console.log(`deleteS3Folder `, key);
+    const response = await s3
+        .listObjects({
+            Bucket: FM_BUCKET,
+            Prefix: key
+        })
+        .promise();
+
+    const keys = response.Contents.map(c => c.Key);
+    console.log(`Found ${keys.length} files.`);
+
+    const deleteFilePromises = keys.map(key =>
+        s3
+            .deleteObject({
+                Bucket: FM_BUCKET,
+                Key: key
+            })
+            .promise()
+    );
+
+    await Promise.all(deleteFilePromises);
+    console.log(`Successfully deleted ${deleteFilePromises.length} files.`);
 }
