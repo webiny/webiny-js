@@ -357,20 +357,12 @@ const filesContextCrudPlugin = new ContextPlugin<FileManagerContext>(async conte
             const sort =
                 Array.isArray(initialSort) && initialSort.length > 0 ? initialSort : ["id_DESC"];
             try {
-                const [files, meta] = await storageOperations.list({
+                return await storageOperations.list({
                     where,
                     after,
                     limit,
                     sort
                 });
-
-                return [
-                    files,
-                    {
-                        ...meta,
-                        cursor: meta.hasMoreItems ? meta.cursor : null
-                    }
-                ];
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not list files by given parameters.",

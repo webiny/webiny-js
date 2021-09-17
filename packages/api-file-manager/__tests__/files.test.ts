@@ -115,7 +115,10 @@ describe("Files CRUD test", () => {
             data: {
                 fileManager: {
                     updateFile: {
-                        data: fileAData,
+                        data: {
+                            ...fileAData,
+                            tags: ["sketch"]
+                        },
                         error: null
                     }
                 }
@@ -130,6 +133,7 @@ describe("Files CRUD test", () => {
                 data.fileManager.listFiles.data[0].tags.length === 1,
             {
                 tries: 10,
+                wait: 400,
                 name: "list files after update tags"
             }
         );
@@ -160,7 +164,10 @@ describe("Files CRUD test", () => {
             data: {
                 fileManager: {
                     getFile: {
-                        data: fileAData,
+                        data: {
+                            ...fileAData,
+                            tags: ["sketch"]
+                        },
                         error: null
                     }
                 }
@@ -183,11 +190,18 @@ describe("Files CRUD test", () => {
                     listFiles: {
                         data: [
                             // Files are sorted by `id` in descending order
-                            { ...fileBData, id: fileBId },
-                            { ...fileAData, id: fileAId }
+                            {
+                                ...fileBData,
+                                id: fileBId
+                            },
+                            {
+                                ...fileAData,
+                                id: fileAId,
+                                tags: ["sketch"]
+                            }
                         ],
                         meta: {
-                            cursor: null,
+                            cursor: expect.any(String),
                             totalCount: expect.any(Number),
                             hasMoreItems: false
                         },
@@ -289,7 +303,7 @@ describe("Files CRUD test", () => {
                         error: null,
                         meta: {
                             hasMoreItems: false,
-                            cursor: null,
+                            cursor: expect.any(String),
                             totalCount: 2
                         }
                     }
@@ -313,10 +327,12 @@ describe("Files CRUD test", () => {
             }
         });
 
+        const tags = ["art", "file-a", "file-b", "file-c", "sketch", "webiny"];
+
         await until(
             () => listTags().then(([data]) => data),
             ({ data }) => {
-                return data.fileManager.listTags.length === 3;
+                return data.fileManager.listTags.length === tags.length;
             },
             { name: "bulk list all tags", tries: 10 }
         );
@@ -326,7 +342,7 @@ describe("Files CRUD test", () => {
         expect(response).toEqual({
             data: {
                 fileManager: {
-                    listTags: ["art", "sketch", "webiny"]
+                    listTags: tags
                 }
             }
         });
@@ -364,7 +380,7 @@ describe("Files CRUD test", () => {
                         meta: {
                             hasMoreItems: false,
                             totalCount: 1,
-                            cursor: null
+                            cursor: expect.any(String)
                         }
                     }
                 }
@@ -395,7 +411,7 @@ describe("Files CRUD test", () => {
                         meta: {
                             hasMoreItems: false,
                             totalCount: 2,
-                            cursor: null
+                            cursor: expect.any(String)
                         }
                     }
                 }
