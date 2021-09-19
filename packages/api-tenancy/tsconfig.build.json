@@ -6,6 +6,7 @@
     "dist",
     "../handler",
     "../handler-http",
+    "../handler-graphql",
     "../handler-db",
     "../plugins"
   ],
@@ -13,7 +14,9 @@
     "rootDir": "./src",
     "outDir": "./dist",
     "declarationDir": "./dist",
-    "paths": {},
+    "paths": {
+      "~/*": ["./src/*"]
+    },
     "baseUrl": "."
   },
   "references": []

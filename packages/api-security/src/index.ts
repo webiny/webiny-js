@@ -10,8 +10,15 @@ import { Security } from "./Security";
 import { SecurityContext } from "./types";
 import { SecurityPlugin } from "./plugins/SecurityPlugin";
 import { GroupsInstaller } from "./installation/groups";
+import graphqlPlugins from "./graphql";
 
-export default (): PluginCollection => [
+interface SecurityConfig {
+    // Use this function to instantiate your own Security app.
+    // For example, when you want to extend the original app.
+    createSecurity?: (context: SecurityContext) => Security;
+}
+
+export default ({ createSecurity }: SecurityConfig = {}): PluginCollection => [
     new BeforeHandlerPlugin<SecurityContext>(async context => {
         const authenticationPlugins = context.plugins.byType<AuthenticationPlugin>(
             AuthenticationPlugin.type
@@ -26,11 +33,15 @@ export default (): PluginCollection => [
         }
     }),
     new ContextPlugin<SecurityContext & TenancyContext>(async context => {
-        const security = new Security({
-            tenant: context.tenancy.getCurrentTenant().id,
-            plugins: context.plugins,
-            version: context.WEBINY_VERSION
-        });
+        const currentTenant = context.tenancy.getCurrentTenant();
+        const security =
+            typeof createSecurity === "function"
+                ? createSecurity(context)
+                : new Security({
+                      tenant: currentTenant ? currentTenant.id : null,
+                      plugins: context.plugins,
+                      version: context.WEBINY_VERSION
+                  });
 
         await security.init();
 
@@ -38,5 +49,6 @@ export default (): PluginCollection => [
     }),
     new SecurityPlugin(app => {
         app.system.addInstaller(new GroupsInstaller());
-    })
+    }),
+    graphqlPlugins
 ];

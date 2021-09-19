@@ -14,10 +14,8 @@ export type DbItem<T> = T & {
 };
 
 export interface SecurityStorageParams {
-    tenant: string;
     table: string;
     documentClient: DocumentClient;
-    plugins: PluginsContainer;
+    tenant?: string;
+    plugins?: PluginsContainer;
 }
-
-

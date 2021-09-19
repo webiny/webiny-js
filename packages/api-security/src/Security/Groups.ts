@@ -46,7 +46,7 @@ export class Groups {
         });
     }
 
-    async getGroup(slug: string, options: CrudOptions): Promise<Group> {
+    async getGroup(slug: string, options: CrudOptions = {}): Promise<Group> {
         await this.checkPermission(options);
         const tenant = this.security.getTenant();
 
@@ -64,7 +64,7 @@ export class Groups {
         return group;
     }
 
-    async listGroups(options: CrudOptions) {
+    async listGroups(options: CrudOptions = {}) {
         await this.checkPermission(options);
         const tenant = this.security.getTenant();
         try {
@@ -79,7 +79,7 @@ export class Groups {
         }
     }
 
-    async createGroup(input, options: CrudOptions) {
+    async createGroup(input, options: CrudOptions = {}) {
         await this.checkPermission(options);
 
         const identity = this.security.getIdentity();

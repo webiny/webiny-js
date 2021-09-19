@@ -1,6 +1,6 @@
 import { Entity, Table } from "dynamodb-toolbox";
-import { getExtraAttributes } from "@webiny/db-dynamodb/utils/attributes";
-import {PluginsContainer} from "@webiny/plugins";
+import { getExtraAttributesFromPlugins } from "@webiny/db-dynamodb/utils/attributes";
+import { PluginsContainer } from "@webiny/plugins";
 
 interface Params {
     table: Table;
@@ -10,7 +10,7 @@ interface Params {
 export const createApiKeyEntity = (params: Params): Entity<any> => {
     const { plugins, table } = params;
     const entityName = "SecurityApiKey";
-    const attributes = getExtraAttributes(plugins, entityName);
+    const attributes = getExtraAttributesFromPlugins(plugins, entityName);
     return new Entity({
         table,
         name: entityName,

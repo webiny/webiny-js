@@ -5,7 +5,7 @@ interface Callable<TContext> {
 }
 
 export class BeforeHandlerPlugin<TContext> extends Plugin {
-    public static readonly type = "context";
+    public static readonly type = "before-handler";
     private readonly _callable: Callable<TContext>;
 
     constructor(callable?: Callable<TContext>) {

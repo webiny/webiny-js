@@ -2,7 +2,7 @@ import { SecurityPermission } from "@webiny/api-security/types";
 import { TenantAccess } from "~/types";
 import { AuthorizationPlugin } from "@webiny/api-security/plugins/AuthorizationPlugin";
 import WebinyError from "@webiny/error";
-import {Security} from "@webiny/api-security/Security";
+import { Security } from "@webiny/api-security/Security";
 
 export interface Config {
     identityType?: string;
@@ -26,7 +26,7 @@ export class IdentityAuthorizationPlugin extends AuthorizationPlugin {
     async getPermissions(security: Security) {
         const identity = security.getIdentity();
         const tenant = security.getTenant();
-        
+
         if (!identity || identity.type !== this._config.identityType) {
             return null;
         }

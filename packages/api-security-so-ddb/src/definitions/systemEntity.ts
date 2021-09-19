@@ -1,5 +1,5 @@
 import { Entity, Table } from "dynamodb-toolbox";
-import { getExtraAttributes } from "@webiny/db-dynamodb/utils/attributes";
+import { getExtraAttributesFromPlugins } from "@webiny/db-dynamodb/utils/attributes";
 import { PluginsContainer } from "@webiny/plugins";
 
 interface Params {
@@ -8,7 +8,7 @@ interface Params {
 }
 export const createSystemEntity = ({ table, plugins }: Params): Entity<any> => {
     const entityName = "SecuritySystem";
-    const attributes = getExtraAttributes(plugins, entityName);
+    const attributes = getExtraAttributesFromPlugins(plugins, entityName);
     return new Entity({
         table,
         name: entityName,

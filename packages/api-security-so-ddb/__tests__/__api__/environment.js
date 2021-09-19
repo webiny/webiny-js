@@ -15,7 +15,10 @@ if (typeof plugins !== "function") {
 const getStoragePlugins = ({ documentClient }) => {
     return () => {
         return [
-            ...plugins(),
+            plugins({
+                documentClient,
+                table: "Security"
+            }),
             ...dbPlugins({
                 table: "Security",
                 driver: new DynamoDbDriver({
@@ -42,7 +45,7 @@ class ApiSecurityTestEnvironment extends NodeEnvironment {
         /**
          * This is a global function that will be called inside the tests to get all relevant plugins, methods and objects.
          */
-        this.global.__getStoragePlugins = () => {
+        this.global.__getStorageOperationsPlugins = () => {
             return getStoragePlugins({
                 documentClient
             });

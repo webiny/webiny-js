@@ -1,8 +1,8 @@
+import mdbid from "mdbid";
 import crypto from "crypto";
 import { withFields, string } from "@commodo/fields";
 import { object } from "commodo-fields-object";
 import { validation } from "@webiny/validation";
-import mdbid from "mdbid";
 import { NotAuthorizedError } from "@webiny/api-security";
 import { NotFoundError } from "@webiny/handler-graphql";
 import WebinyError from "@webiny/error";
@@ -11,8 +11,8 @@ import {
     ApiKeyPermission,
     ApiKeyStorageOperations,
     ApiKeyStorageOperationsFactory
-} from "../types";
-import { Security } from "../Security";
+} from "~/types";
+import { Security } from "~/Security";
 
 const APIKeyModel = withFields({
     name: string({ validation: validation.create("required") }),

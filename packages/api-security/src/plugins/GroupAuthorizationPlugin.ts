@@ -1,24 +1,24 @@
-import { GroupTenantLink } from "../types";
-import { Security } from "../Security";
+import { GroupTenantLink } from "~/types";
+import { Security } from "~/Security";
 import { AuthorizationPlugin } from "./AuthorizationPlugin";
 
 export interface Config {
     identityType?: string;
 }
 
-export class GroupAuthorizationPlugin extends AuthorizationPlugin {
-    private readonly _config: Config;
+export class GroupAuthorizationPlugin<TConfig extends Config = Config> extends AuthorizationPlugin {
+    protected readonly config: TConfig;
 
-    constructor(config?: Config) {
+    constructor(config?: TConfig) {
         super();
-        this._config = config || {};
+        this.config = (config || {}) as TConfig;
     }
 
     async getPermissions(security: Security) {
         const identity = security.getIdentity();
         const tenant = security.getTenant();
 
-        if (!identity || identity.type !== this._config.identityType) {
+        if (!identity || identity.type !== this.config.identityType) {
             return null;
         }
 

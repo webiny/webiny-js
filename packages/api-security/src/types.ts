@@ -49,6 +49,8 @@ export interface Group {
     permissions: SecurityPermission[];
 }
 
+export type GroupInput = Pick<Group, "name" | "slug" | "description" | "system" | "permissions">;
+
 export interface GroupsStorageOperationsGetParams {
     slug: string;
 }
@@ -153,7 +155,6 @@ export interface UpdateTenantLinkParams<TData = Record<string, any>> {
 export interface DeleteTenantLinkParams<TData = Record<string, any>> {
     identity: string;
     tenant: string;
-    type: string;
 }
 
 export interface ListTenantLinksByTypeParams {

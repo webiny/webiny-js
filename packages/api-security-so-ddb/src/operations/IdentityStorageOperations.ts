@@ -57,7 +57,9 @@ export class IdentityStorageDdb implements IdentityStorageOperations {
         const items = params.map(link => {
             return this.entity.putBatch({
                 PK: `IDENTITY#${link.identity}`,
-                SK: `LINK#T#${link.tenant}#${link.type}`,
+                SK: `LINK#T#${link.tenant}`,
+                GSI1_PK: `T#${link.tenant}`,
+                GSI1_SK: `TYPE#${link.type}#IDENTITY#${link.identity}`,
                 ...link
             });
         });
@@ -69,7 +71,9 @@ export class IdentityStorageDdb implements IdentityStorageOperations {
         const items = params.map(link => {
             return this.entity.putBatch({
                 PK: `IDENTITY#${link.identity}`,
-                SK: `LINK#T#${link.tenant}#${link.type}`,
+                SK: `LINK#T#${link.tenant}`,
+                GSI1_PK: `T#${link.tenant}`,
+                GSI1_SK: `TYPE#${link.type}#IDENTITY#${link.identity}`,
                 ...link
             });
         });
@@ -81,7 +85,7 @@ export class IdentityStorageDdb implements IdentityStorageOperations {
         const items = params.map(link => {
             return this.entity.deleteBatch({
                 PK: `IDENTITY#${link.identity}`,
-                SK: `LINK#T#${link.tenant}#${link.type}`
+                SK: `LINK#T#${link.tenant}`
             });
         });
 
@@ -91,8 +95,8 @@ export class IdentityStorageDdb implements IdentityStorageOperations {
     public async listTenantLinksByTenant({ tenant }: ListTenantLinksParams): Promise<TenantLink[]> {
         const links = await queryAll<TenantLink>({
             entity: this.entity,
-            partitionKey: `T#${tenant}#LINK`,
-            options: { index: "GSI1", beginsWith: " " }
+            partitionKey: `T#${tenant}`,
+            options: { index: "GSI1", beginsWith: "" }
         });
 
         return cleanupItems(this.entity, links);
@@ -105,7 +109,7 @@ export class IdentityStorageDdb implements IdentityStorageOperations {
 
         const links = await queryAll<TLink>({
             entity: this.entity,
-            partitionKey: `T#${tenant}#LINK`,
+            partitionKey: `T#${tenant}`,
             options: { index: "GSI1", beginsWith: `TYPE#${type}#` }
         });
 

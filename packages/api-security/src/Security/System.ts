@@ -71,7 +71,19 @@ export class System {
         }
     }
 
+    async isInstalled() {
+        try {
+            return !!(await this.storage.get());
+        } catch (ex) {
+            return false;
+        }
+    }
+
     async install() {
+        if (await this.isInstalled()) {
+            throw new Error("Security is already installed.", "SECURITY_INSTALL_ABORTED");
+        }
+
         const params = { security: this.security };
 
         try {

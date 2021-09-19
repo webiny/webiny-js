@@ -1,7 +1,7 @@
 import { Context as HandlerContext } from "@webiny/handler/types";
 import { HttpContext } from "@webiny/handler-http/types";
-import { SecurityIdentity } from "@webiny/api-security";
-import { AuthenticationPlugin } from "@webiny/api-security/plugins/AuthenticationPlugin";
+import { SecurityIdentity } from "~/SecurityIdentity";
+import { AuthenticationPlugin } from "./AuthenticationPlugin";
 import { TenancyContext } from "@webiny/api-tenancy/types";
 type Context = HandlerContext<HttpContext, TenancyContext>;
 

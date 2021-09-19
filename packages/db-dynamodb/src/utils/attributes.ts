@@ -3,11 +3,16 @@ import { AttributePlugin, DefinitionParams } from "~/plugins/definitions/Attribu
 import { PluginsContainer } from "@webiny/plugins";
 
 export const getExtraAttributes = (
-    context: ContextInterface | PluginsContainer,
+    context: ContextInterface,
     entity: string
 ): Record<string, DefinitionParams> => {
-    const plugins = context instanceof PluginsContainer ? context : context.plugins;
+    return getExtraAttributesFromPlugins(context.plugins, entity);
+};
 
+export const getExtraAttributesFromPlugins = (
+    plugins: PluginsContainer,
+    entity: string
+): Record<string, DefinitionParams> => {
     return plugins
         .byType<AttributePlugin>(AttributePlugin.type)
         .filter(plugin => plugin.entity === entity)

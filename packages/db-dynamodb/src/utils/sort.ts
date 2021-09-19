@@ -72,7 +72,7 @@ export const sortItems = <T extends any = any>(params: Params<T>): T[] => {
     const fieldPathPlugin = plugins
         .byType<FieldPathPlugin>(FieldPathPlugin.type)
         .find(plugin => plugin.canCreate(field));
-    
+
     const path = fieldPathPlugin ? fieldPathPlugin.createPath(field) : field;
 
     const sortedItems = lodashSortBy(items, path);

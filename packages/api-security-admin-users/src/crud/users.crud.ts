@@ -154,7 +154,7 @@ export default new ContextPlugin<AdminUsersContext>(async context => {
         },
 
         async createUser(userData, options): Promise<User> {
-            const { security, tenancy } = context; 
+            const { security, tenancy } = context;
             const { group: groupSlug, ...data } = userData;
 
             await checkPermission(options);
