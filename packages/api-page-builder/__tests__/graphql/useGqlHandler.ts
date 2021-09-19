@@ -11,6 +11,8 @@ import fileManagerPlugins from "@webiny/api-file-manager/plugins";
 import fileManagerDdbEsPlugins from "@webiny/api-file-manager-ddb-es";
 import prerenderingServicePlugins from "@webiny/api-prerendering-service/client";
 
+import prerenderingHookPlugins from "../../src/prerendering/hooks";
+
 import { INSTALL, IS_INSTALLED } from "./graphql/install";
 import {
     CREATE_MENU,
@@ -64,9 +66,10 @@ interface Params {
     permissions?: any;
     identity?: SecurityIdentity;
     tenant?: Tenant;
+    plugins?: any[];
 }
 
-export default ({ permissions, identity, tenant }: Params = {}) => {
+export default ({ permissions, identity, tenant, plugins }: Params = {}) => {
     // @ts-ignore
     if (typeof __getStorageOperationsPlugins !== "function") {
         throw new Error(`There is no global "__getStorageOperationsPlugins" function.`);
@@ -112,6 +115,7 @@ export default ({ permissions, identity, tenant }: Params = {}) => {
         fileManagerPlugins(),
         mockLocalesPlugins(),
         pageBuilderPlugins(),
+        prerenderingHookPlugins(),
         prerenderingServicePlugins({
             handlers: {
                 render: "render",
@@ -158,7 +162,8 @@ export default ({ permissions, identity, tenant }: Params = {}) => {
             async delete() {
                 return;
             }
-        }
+        },
+        plugins || []
     );
 
     // Let's also create the "invoke" function. This will make handler invocations in actual tests easier and nicer.
@@ -310,7 +315,6 @@ export default ({ permissions, identity, tenant }: Params = {}) => {
         async oEmbedData(variables) {
             return invoke({ body: { query: OEMBED_DATA, variables } });
         },
-
         // PageElements.
         async createPageElement(variables) {
             return invoke({ body: { query: CREATE_PAGE_ELEMENT, variables } });

@@ -16,6 +16,7 @@ const operators = [
     "gt",
     "gte",
     "in",
+    "and_in",
     "lt",
     "lte",
     "not",

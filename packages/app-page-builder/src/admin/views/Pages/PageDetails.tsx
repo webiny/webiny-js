@@ -61,10 +61,6 @@ const PageDetails = ({ onCreatePage, canCreate }: PageDetailsProps) => {
 
     const query = new URLSearchParams(location.search);
     const pageId = query.get("id");
-    console.log(query);
-    console.log(location);
-    console.log(history);
-    console.log(pageId);
 
     const getPageQuery = useQuery(GET_PAGE, {
         variables: { id: pageId },

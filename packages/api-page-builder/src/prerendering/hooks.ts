@@ -1,22 +1,26 @@
 import { PagePlugin } from "~/plugins/PagePlugin";
+import lodashGet from "lodash/get";
 import { SettingsPlugin } from "~/plugins/SettingsPlugin";
 import { MenuPlugin } from "~/plugins/MenuPlugin";
-import lodashGet from "lodash/get";
 
 const NOT_FOUND_FOLDER = "_NOT_FOUND_PAGE_";
 
-export default [
+export default () => [
     new PagePlugin({
         // After a page was unpublished, we need to flush the page.
         async afterUnpublish({ context, page }) {
             const promises = [];
             promises.push(
-                context.pageBuilder.pages.prerendering.flush({ paths: [{ path: page.path }] })
+                context.pageBuilder.pages.prerendering.flush({
+                    context,
+                    paths: [{ path: page.path }]
+                })
             );
 
             // After a page was unpublished, we need to rerender pages that contain pages list element.
             promises.push(
                 context.pageBuilder.pages.prerendering.render({
+                    context,
                     tags: [{ tag: { key: "pb-pages-list" } }]
                 })
             );
@@ -34,6 +38,7 @@ export default [
 
             if (page.version === 1) {
                 return context.pageBuilder.pages.prerendering.flush({
+                    context,
                     paths: [{ path: publishedPage.path }]
                 });
             }
@@ -42,6 +47,7 @@ export default [
             const isPublished = publishedPage.id === page.id;
             if (isPublished) {
                 return context.pageBuilder.pages.prerendering.flush({
+                    context,
                     paths: [{ path: publishedPage.path }]
                 });
             }
@@ -53,7 +59,10 @@ export default [
         async afterPublish({ context, page, publishedPage }) {
             const promises = [];
             promises.push(
-                context.pageBuilder.pages.prerendering.render({ paths: [{ path: page.path }] })
+                context.pageBuilder.pages.prerendering.render({
+                    context,
+                    paths: [{ path: page.path }]
+                })
             );
 
             const settings = await context.pageBuilder.settings.getCurrent();
@@ -62,7 +71,10 @@ export default [
             // If we just published a page that is set as current homepage, let's rerender the "/" path as well.
             if (homePage === page.pid) {
                 promises.push(
-                    context.pageBuilder.pages.prerendering.render({ paths: [{ path: "/" }] })
+                    context.pageBuilder.pages.prerendering.render({
+                        context,
+                        paths: [{ path: "/" }]
+                    })
                 );
             }
 
@@ -72,6 +84,7 @@ export default [
             if (notFoundPage === page.pid) {
                 promises.push(
                     context.pageBuilder.pages.prerendering.render({
+                        context,
                         paths: [
                             {
                                 path: page.path,
@@ -90,6 +103,7 @@ export default [
             // After a page was published, we need to rerender pages that contain pages list element.
             promises.push(
                 context.pageBuilder.pages.prerendering.render({
+                    context,
                     tags: [{ tag: { key: "pb-pages-list" } }]
                 })
             );
@@ -99,6 +113,7 @@ export default [
             if (publishedPage && publishedPage.path !== page.path) {
                 promises.push(
                     context.pageBuilder.pages.prerendering.flush({
+                        context,
                         paths: [{ path: publishedPage.path }]
                     })
                 );
@@ -117,6 +132,7 @@ export default [
             // TODO: optimize this.
             // TODO: right now, on each update of settings, we trigger a complete site rebuild.
             await context.pageBuilder.pages.prerendering.render({
+                context,
                 tags: [{ tag: { key: "pb-page" } }]
             });
 
@@ -126,11 +142,13 @@ export default [
                 switch (type) {
                     case "home":
                         await context.pageBuilder.pages.prerendering.render({
+                            context,
                             paths: [{ path: "/" }]
                         });
                         break;
                     case "notFound":
                         await context.pageBuilder.pages.prerendering.render({
+                            context,
                             paths: [
                                 {
                                     path: page.path,
@@ -149,6 +167,7 @@ export default [
         // After a menu has changed, invalidate all pages that contain the updated menu.
         async afterUpdate({ context, menu }) {
             await context.pageBuilder.pages.prerendering.render({
+                context,
                 tags: [{ tag: { key: "pb-menu", value: menu.slug } }]
             });
         }
