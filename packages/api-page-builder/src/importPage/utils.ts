@@ -11,7 +11,7 @@ import loadJson from "load-json-file";
 import { updateFilesInPageData } from "~/graphql/crud/pages/importPage";
 import { PbContext } from "~/graphql/types";
 import { FileInput } from "@webiny/api-file-manager/types";
-import { Page } from "~/types";
+import { ExportTaskStatus, Page } from "~/types";
 
 export type CreatePage = () => Promise<Page>;
 export type UpdatePage = (page: Page, content: Record<string, any>) => Promise<Page>;
@@ -151,6 +151,7 @@ export async function importPage({
     // Download and save page data file in disk.
     await new Promise((resolve, reject) => {
         getS3FileStream(pageDataFileKey)
+            .on("error", reject)
             .pipe(fs.createWriteStream(PAGE_DATA_FILE_PATH))
             .on("error", reject)
             .on("finish", resolve);
@@ -309,9 +310,14 @@ function prepareMap({ map, filePath, newKey }) {
 
     return map;
 }
+
 // TODO: Use FileStorage plugins instead
 async function deleteS3Folder(key) {
-    console.log(`deleteS3Folder `, key);
+    // Append trailing slash i.e "/" to key to make sure we only delete a specific folder.
+    if (!key.endsWith("/")) {
+        key = `${key}/`;
+    }
+
     const response = await s3
         .listObjects({
             Bucket: FM_BUCKET,
@@ -333,4 +339,40 @@ async function deleteS3Folder(key) {
 
     await Promise.all(deleteFilePromises);
     console.log(`Successfully deleted ${deleteFilePromises.length} files.`);
+}
+
+interface UpdateMainTaskStatsParams {
+    pageBuilder: PbContext["pageBuilder"];
+    taskId: string;
+    subTaskId: string;
+    status: ExportTaskStatus;
+    error?: Record<string, any>;
+}
+
+export async function updateMainTask({
+    pageBuilder,
+    taskId,
+    subTaskId,
+    status,
+    error
+}: UpdateMainTaskStatsParams) {
+    // TODO: @ashutosh use Dynamodb Toolbox
+    /**
+     *  Current implementation make two DB calls to update task `stats` due to DB client limitations.
+     *  After migrating to storage operations, we'll use the update method of Dynamodb Toolbox entity to avoid
+     *  redundant DB call.
+     */
+    const task = await pageBuilder.exportPageTask.get(taskId);
+
+    await pageBuilder.exportPageTask.update(taskId, {
+        status: ExportTaskStatus.PROCESSING,
+        stats: {
+            ...task.stats,
+            [subTaskId]: status
+        },
+        errors: {
+            ...task.errors,
+            [subTaskId]: error
+        }
+    });
 }

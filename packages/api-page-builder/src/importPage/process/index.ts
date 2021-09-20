@@ -1,7 +1,7 @@
 import { HandlerPlugin } from "@webiny/handler/types";
 import { ArgsContext } from "@webiny/handler-args/types";
 import { ExportTaskStatus, Page, PbContext } from "~/types";
-import { importPage } from "~/importPage/utils";
+import { importPage, updateMainTask } from "~/importPage/utils";
 
 export type HandlerArgs = {
     taskId: string;
@@ -76,6 +76,13 @@ export default (
             await pageBuilder.exportPageTask.updateSubTask(taskId, currentTask.id, {
                 status: ExportTaskStatus.PROCESSING
             });
+            // Update stats in main task
+            await updateMainTask({
+                pageBuilder,
+                taskId,
+                subTaskId: currentTask.id,
+                status: ExportTaskStatus.PROCESSING
+            });
 
             // Real job
             const pageContent = await importPage({
@@ -100,6 +107,13 @@ export default (
                 data: {
                     message: "Done"
                 }
+            });
+            // Update stats in main task
+            await updateMainTask({
+                pageBuilder,
+                taskId,
+                subTaskId: currentTask.id,
+                status: ExportTaskStatus.COMPLETED
             });
 
             // TODO: We want to continue with Self invocation no matter if current page error out.
@@ -146,8 +160,20 @@ export default (
                             name: e.name,
                             message: e.message,
                             stack: e.stack,
-                            code: "EXPORT_FAILED"
+                            code: "IMPORT_FAILED"
                         }
+                    }
+                });
+
+                // Update stats in main task
+                await updateMainTask({
+                    pageBuilder,
+                    taskId,
+                    subTaskId: subTaskId,
+                    status: ExportTaskStatus.FAILED,
+                    error: {
+                        name: e.name,
+                        message: e.message
                     }
                 });
             }

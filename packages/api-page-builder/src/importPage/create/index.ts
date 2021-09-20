@@ -67,6 +67,14 @@ export default (
                 console.log(`Added SUB_TASK "${subtask.id}" to queue.`);
                 subTaskIds.push(subtask.id);
             }
+            // Update main task status
+            await pageBuilder.exportPageTask.update(task.id, {
+                status: ExportTaskStatus.PROCESSING,
+                stats: subTaskIds.reduce((previousValue, currentValue) => {
+                    previousValue[currentValue] = ExportTaskStatus.PENDING;
+                    return previousValue;
+                }, {})
+            });
 
             /*
              * Prepare "invocationArgs", we're hacking our wat here.
