@@ -2,6 +2,7 @@ import { HandlerPlugin } from "@webiny/handler/types";
 import { ArgsContext } from "@webiny/handler-args/types";
 import { ExportPageTask, ExportTaskStatus, Page, PbContext } from "~/types";
 import { readExtractAndUploadZipFileContents } from "~/importPage/utils";
+import { invokeHandlerClient } from "~/importPage/client";
 
 export type HandlerArgs = {
     category: string;
@@ -76,28 +77,14 @@ export default (
                 }, {})
             });
 
-            /*
-             * Prepare "invocationArgs", we're hacking our wat here.
-             * They are necessary to setup the "context.pageBuilder" object among other things in IMPORT_PAGE_FUNCTION
-             */
-            const { request } = context.http;
-            const invocationArgs = {
-                httpMethod: request.method,
-                body: request.body,
-                headers: request.headers,
-                cookies: request.cookies
-            };
-
-            // Invoke handler
-            await context.handlerClient.invoke({
+            await invokeHandlerClient({
+                context,
                 name: configuration.handlers.process,
                 payload: {
                     taskId: task.id,
                     subTaskIds,
-                    currentTaskIndex: 0,
-                    ...invocationArgs
-                },
-                await: false
+                    currentTaskIndex: 0
+                }
             });
         } catch (e) {
             console.log("Error => ", e);

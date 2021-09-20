@@ -2,6 +2,7 @@ import { HandlerPlugin } from "@webiny/handler/types";
 import { ArgsContext } from "@webiny/handler-args/types";
 import { ExportTaskStatus, Page, PbContext } from "~/types";
 import { importPage, updateMainTask } from "~/importPage/utils";
+import { invokeHandlerClient } from "~/importPage/client";
 
 export type HandlerArgs = {
     taskId: string;
@@ -117,30 +118,14 @@ export default (
             });
 
             // TODO: We want to continue with Self invocation no matter if current page error out.
-
-            /*
-             * Prepare "invocationArgs", we're hacking our wat here.
-             * They are necessary to setup the "context.pageBuilder" object among other things in IMPORT_PAGE_FUNCTION
-             */
-            const { request } = context.http;
-            const invocationArgs = {
-                httpMethod: request.method,
-                body: request.body,
-                headers: request.headers,
-                cookies: request.cookies
-            };
-            log(`Invoking function "${configuration.handlers.process}"`);
-
-            // Invoke handler
-            await context.handlerClient.invoke({
+            await invokeHandlerClient({
+                context,
                 name: configuration.handlers.process,
                 payload: {
                     taskId,
                     subTaskIds,
-                    currentTaskIndex: currentTaskIndex + 1,
-                    ...invocationArgs
-                },
-                await: false
+                    currentTaskIndex: currentTaskIndex + 1
+                }
             });
         } catch (e) {
             console.log("Error => ", e);

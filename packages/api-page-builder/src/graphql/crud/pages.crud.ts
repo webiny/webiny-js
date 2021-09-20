@@ -33,6 +33,7 @@ import { CreateDataModel, UpdateSettingsModel } from "./pages/models";
 import { getESLatestPageData, getESPublishedPageData } from "./pages/esPageData";
 import { PagePlugin } from "~/plugins/PagePlugin";
 import importPage from "~/graphql/crud/pages/importPage";
+import { invokeHandlerClient } from "~/importPage/client";
 
 const STATUS_CHANGES_REQUESTED = "changesRequested";
 const STATUS_REVIEW_REQUESTED = "reviewRequested";
@@ -45,7 +46,7 @@ const getZeroPaddedVersionNumber = number => String(number).padStart(4, "0");
 const DEFAULT_EDITOR = "page-builder";
 const PERMISSION_NAME = "pb.page";
 const EXPORT_PAGE_TASK_FUNCTION = process.env.EXPORT_PAGE_TASK_FUNCTION;
-const IMPORT_PAGE_FUNCTION = process.env.IMPORT_PAGE_QUEUE_ADD_HANDLER;
+const IMPORT_PAGES_CREATE_HANDLER = process.env.IMPORT_PAGE_QUEUE_ADD_HANDLER;
 
 const plugin: ContextPlugin<PbContext> = {
     type: "context",
@@ -1572,32 +1573,21 @@ const plugin: ContextPlugin<PbContext> = {
 
                     // Create a task for import page
                     const task = await context.pageBuilder.exportPageTask.create({
-                        status: ExportTaskStatus.PENDING
+                        status: ExportTaskStatus.PENDING,
+                        input: {
+                            category: categorySlug,
+                            data
+                        }
                     });
 
-                    /*
-                     * Prepare "invocationArgs", we're hacking our wat here.
-                     * They are necessary to setup the "context.pageBuilder" object among other things in IMPORT_PAGE_FUNCTION
-                     */
-                    const { request } = context.http;
-                    const invocationArgs = {
-                        httpMethod: request.method,
-                        body: request.body,
-                        headers: request.headers,
-                        cookies: request.cookies
-                    };
-
-                    // Invoke handler
-                    await context.handlerClient.invoke({
-                        name: IMPORT_PAGE_FUNCTION,
+                    await invokeHandlerClient({
+                        context,
+                        name: IMPORT_PAGES_CREATE_HANDLER,
                         payload: {
-                            // TODO: Move task related data into task itself.
                             category: categorySlug,
                             data,
-                            task,
-                            ...invocationArgs
-                        },
-                        await: false
+                            task
+                        }
                     });
 
                     return {
