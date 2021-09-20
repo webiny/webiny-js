@@ -3,6 +3,7 @@ import uniqueId from "uniqid";
 import S3 from "aws-sdk/clients/s3";
 import dotProp from "dot-prop-immutable";
 import fs from "fs-extra";
+import fetch from "node-fetch";
 import { PassThrough } from "stream";
 import { deleteFile } from "~/graphql/crud/install/utils/downloadInstallFiles";
 import path from "path";
@@ -271,10 +272,24 @@ export async function readExtractAndUploadZipFileContents(
     zipFileKey: string
 ): Promise<Record<string, any>> {
     let dataMap = {};
-    // We're first retrieving object's meta data, just to check whether the file is available at the given Key
-    await getObjectMetaFromS3(zipFileKey);
+    let readStream;
+    // Check whether it is a URL
+    if (zipFileKey.startsWith("http")) {
+        const response = await fetch(zipFileKey);
+        if (!response.ok) {
+            throw new WebinyError(
+                `Unable to downloading file: "${zipFileKey}"`,
+                response.statusText
+            );
+        }
 
-    const readStream = getS3FileStream(zipFileKey);
+        readStream = response.body;
+    } else {
+        // We're first retrieving object's meta data, just to check whether the file is available at the given Key
+        await getObjectMetaFromS3(zipFileKey);
+
+        readStream = getS3FileStream(zipFileKey);
+    }
 
     const zip = readStream.pipe(unzipper.Parse({ forceStream: true }));
 

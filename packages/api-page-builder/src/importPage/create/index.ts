@@ -43,7 +43,9 @@ export default (
             const { invocationArgs: args, pageBuilder } = context;
             const { task, category, data } = args;
             // Step 1: Read the zip file
-            const pagesDirMap = await readExtractAndUploadZipFileContents(data.zipFileKey);
+            const pagesDirMap = await readExtractAndUploadZipFileContents(
+                data.zipFileKey || data.zipFileUrl
+            );
             // Once we have map we can start processing each page
             const pageKeys = Object.keys(pagesDirMap);
 
