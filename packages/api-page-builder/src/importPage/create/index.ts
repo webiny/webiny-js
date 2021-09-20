@@ -87,7 +87,7 @@ export default (
                 }
             });
         } catch (e) {
-            console.log("Error => ", e);
+            log("[IMPORT_PAGES_CREATE] Error => ", e);
 
             /**
              * In case of error, we'll update the task status to "failed",
@@ -102,8 +102,7 @@ export default (
                     error: {
                         name: e.name,
                         message: e.message,
-                        stack: e.stack,
-                        code: "EXPORT_FAILED"
+                        code: e.code || "EXPORT_FAILED"
                     }
                 }
             });

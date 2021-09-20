@@ -11,6 +11,7 @@ import loadJson from "load-json-file";
 import { updateFilesInPageData } from "~/graphql/crud/pages/importPage";
 import { PbContext } from "~/graphql/types";
 import { FileInput } from "@webiny/api-file-manager/types";
+import WebinyError from "@webiny/error";
 import { ExportTaskStatus, Page } from "~/types";
 
 export type CreatePage = () => Promise<Page>;
@@ -228,6 +229,20 @@ function getS3FileStream(Key) {
         .createReadStream();
 }
 
+// TODO: Move into FileStorage plugins
+async function getObjectMetaFromS3(Key) {
+    const meta = await s3
+        .headObject({
+            Bucket: process.env.S3_BUCKET,
+            Key: Key
+        })
+        .promise();
+
+    if (meta.ContentType !== "application/zip") {
+        throw new WebinyError(`Unsupported file type: "${meta.ContentType}"`, "UNSUPPORTED_FILE");
+    }
+}
+
 const IGNORE_SYSTEM_FILES = ["__MACOSX"];
 const isSystemFile = fileName => {
     return IGNORE_SYSTEM_FILES.some(system => fileName.startsWith(system));
@@ -256,6 +271,8 @@ export async function readExtractAndUploadZipFileContents(
     zipFileKey: string
 ): Promise<Record<string, any>> {
     let dataMap = {};
+    // We're first retrieving object's meta data, just to check whether the file is available at the given Key
+    await getObjectMetaFromS3(zipFileKey);
 
     const readStream = getS3FileStream(zipFileKey);
 

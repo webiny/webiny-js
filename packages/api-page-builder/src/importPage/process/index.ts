@@ -35,43 +35,37 @@ export default (
     type: "handler",
     async handle(context): Promise<HandlerResponse> {
         const log = console.log;
-        let subTaskId;
-        try {
-            log("RUNNING Import Page Queue Process");
-            const { invocationArgs: args, pageBuilder } = context;
-            const { taskId, subTaskIds, currentTaskIndex } = args;
+        let currentTask;
+        let noPendingTask = false;
 
+        log("RUNNING Import Page Queue Process");
+        const { invocationArgs: args, pageBuilder } = context;
+        const { taskId, subTaskIds, currentTaskIndex } = args;
+
+        try {
             /*
              * Note: We're not going to DB for getting next sub-task to process,
              * because the data might be out of sync due to GSI eventual consistency.
              */
 
-            const currentTask = await pageBuilder.exportPageTask.getSubTask(
+            currentTask = await pageBuilder.exportPageTask.getSubTask(
                 taskId,
                 subTaskIds[currentTaskIndex]
             );
 
             // Base condition!
             if (!currentTask || currentTask.status !== ExportTaskStatus.PENDING) {
-                log(`No pending sub-task for task ${taskId}`);
-
-                await pageBuilder.exportPageTask.update(taskId, {
-                    status: ExportTaskStatus.COMPLETED,
-                    data: {
-                        message: `Finish importing ${subTaskIds.length} pages.`
-                    }
-                });
+                noPendingTask = true;
 
                 return;
             }
-            // Save it for error handling
-            subTaskId = currentTask.id;
-            console.log(`Fetched sub task => ${subTaskId}`);
+
+            log(`Fetched sub task => ${currentTask.id}`);
 
             const { pageKey, category, zipFileKey, input } = currentTask.data;
             const { fileUploadsData } = input;
 
-            console.log(`Processing page key "${pageKey}"`);
+            log(`Processing page key "${pageKey}"`);
 
             // Mark task status as PROCESSING
             await pageBuilder.exportPageTask.updateSubTask(taskId, currentTask.id, {
@@ -116,21 +110,10 @@ export default (
                 subTaskId: currentTask.id,
                 status: ExportTaskStatus.COMPLETED
             });
-
-            // TODO: We want to continue with Self invocation no matter if current page error out.
-            await invokeHandlerClient({
-                context,
-                name: configuration.handlers.process,
-                payload: {
-                    taskId,
-                    subTaskIds,
-                    currentTaskIndex: currentTaskIndex + 1
-                }
-            });
         } catch (e) {
-            console.log("Error => ", e);
+            log("[IMPORT_PAGES_PROCESS] Error => ", e);
 
-            if (subTaskId) {
+            if (currentTask && currentTask.id) {
                 /**
                  * In case of error, we'll update the task status to "failed",
                  * so that, client can show notify the user appropriately.
@@ -138,7 +121,7 @@ export default (
                 const { invocationArgs: args, pageBuilder } = context;
                 const { taskId } = args;
 
-                await pageBuilder.exportPageTask.updateSubTask(taskId, subTaskId, {
+                await pageBuilder.exportPageTask.updateSubTask(taskId, currentTask.id, {
                     status: ExportTaskStatus.FAILED,
                     data: {
                         error: {
@@ -154,7 +137,7 @@ export default (
                 await updateMainTask({
                     pageBuilder,
                     taskId,
-                    subTaskId: subTaskId,
+                    subTaskId: currentTask.id,
                     status: ExportTaskStatus.FAILED,
                     error: {
                         name: e.name,
@@ -169,6 +152,30 @@ export default (
                     message: e.message
                 }
             };
+        } finally {
+            // Base condition!
+            if (noPendingTask) {
+                log(`No pending sub-task for task ${taskId}`);
+
+                await pageBuilder.exportPageTask.update(taskId, {
+                    status: ExportTaskStatus.COMPLETED,
+                    data: {
+                        message: `Finish importing ${subTaskIds.length} pages.`
+                    }
+                });
+            } else {
+                console.log(`Invoking PROCESS for task "${subTaskIds[currentTaskIndex + 1]}"`);
+                // We want to continue with Self invocation no matter if current page error out.
+                await invokeHandlerClient({
+                    context,
+                    name: configuration.handlers.process,
+                    payload: {
+                        taskId,
+                        subTaskIds,
+                        currentTaskIndex: currentTaskIndex + 1
+                    }
+                });
+            }
         }
     }
 });
