@@ -34,6 +34,7 @@ import { getESLatestPageData, getESPublishedPageData } from "./pages/esPageData"
 import { PagePlugin } from "~/plugins/PagePlugin";
 import importPage from "~/graphql/crud/pages/importPage";
 import { invokeHandlerClient } from "~/importPage/client";
+import { HandlerArgs as CreateHandlerArgs } from "~/importPage/create";
 
 const STATUS_CHANGES_REQUESTED = "changesRequested";
 const STATUS_REVIEW_REQUESTED = "reviewRequested";
@@ -1580,7 +1581,7 @@ const plugin: ContextPlugin<PbContext> = {
                         }
                     });
 
-                    await invokeHandlerClient({
+                    await invokeHandlerClient<CreateHandlerArgs>({
                         context,
                         name: IMPORT_PAGES_CREATE_HANDLER,
                         payload: {
