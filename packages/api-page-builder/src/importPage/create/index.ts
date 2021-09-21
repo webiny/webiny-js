@@ -1,8 +1,9 @@
 import { HandlerPlugin } from "@webiny/handler/types";
 import { ArgsContext } from "@webiny/handler-args/types";
 import { ExportPageTask, ExportTaskStatus, Page, PbContext } from "~/types";
-import { readExtractAndUploadZipFileContents } from "~/importPage/utils";
+import { initialStats, readExtractAndUploadZipFileContents, zeroPad } from "~/importPage/utils";
 import { invokeHandlerClient } from "~/importPage/client";
+import { HandlerArgs as ProcessHandlerArgs } from "../process";
 
 export type HandlerArgs = {
     category: string;
@@ -49,43 +50,40 @@ export default (
             // Once we have map we can start processing each page
             const pageKeys = Object.keys(pagesDirMap);
 
-            const subTaskIds = [];
-
             // For each page create a sub task and invoke the process handler
             for (let i = 0; i < pageKeys.length; i++) {
                 const pageKey = pageKeys[i];
                 // Create sub task
-                const subtask = await pageBuilder.exportPageTask.createSubTask(task.id, {
-                    status: ExportTaskStatus.PENDING,
-                    data: {
-                        pageKey,
-                        category,
-                        zipFileKey: data.zipFileKey,
-                        // TODO: Maybe have a separate "input" attribute
-                        input: {
-                            fileUploadsData: pagesDirMap[pageKey]
+                const subtask = await pageBuilder.exportPageTask.createSubTask(
+                    task.id,
+                    zeroPad(i + 1),
+                    {
+                        status: ExportTaskStatus.PENDING,
+                        data: {
+                            pageKey,
+                            category,
+                            zipFileKey: data.zipFileKey,
+                            input: {
+                                fileUploadsData: pagesDirMap[pageKey]
+                            }
                         }
                     }
-                });
+                );
                 console.log(`Added SUB_TASK "${subtask.id}" to queue.`);
-                subTaskIds.push(subtask.id);
             }
             // Update main task status
             await pageBuilder.exportPageTask.update(task.id, {
                 status: ExportTaskStatus.PROCESSING,
-                stats: subTaskIds.reduce((previousValue, currentValue) => {
-                    previousValue[currentValue] = ExportTaskStatus.PENDING;
-                    return previousValue;
-                }, {})
+                stats: initialStats(pageKeys.length)
             });
 
-            await invokeHandlerClient({
+            await invokeHandlerClient<ProcessHandlerArgs>({
                 context,
                 name: configuration.handlers.process,
                 payload: {
                     taskId: task.id,
-                    subTaskIds,
-                    currentTaskIndex: 0
+                    // Execute "Process" for the first sub task.
+                    subTaskIndex: 1
                 }
             });
         } catch (e) {

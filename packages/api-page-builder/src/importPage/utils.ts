@@ -376,17 +376,15 @@ async function deleteS3Folder(key) {
 interface UpdateMainTaskStatsParams {
     pageBuilder: PbContext["pageBuilder"];
     taskId: string;
-    subTaskId: string;
-    status: ExportTaskStatus;
-    error?: Record<string, any>;
+    currentStatus: ExportTaskStatus;
+    previousStatus: ExportTaskStatus;
 }
 
 export async function updateMainTask({
     pageBuilder,
     taskId,
-    subTaskId,
-    status,
-    error
+    currentStatus,
+    previousStatus
 }: UpdateMainTaskStatsParams) {
     // TODO: @ashutosh use Dynamodb Toolbox
     /**
@@ -400,11 +398,22 @@ export async function updateMainTask({
         status: ExportTaskStatus.PROCESSING,
         stats: {
             ...task.stats,
-            [subTaskId]: status
-        },
-        errors: {
-            ...task.errors,
-            [subTaskId]: error
+            // Increment current status count.
+            [currentStatus]: task.stats[currentStatus] + 1,
+            // Decrement previous status count.
+            [previousStatus]: task.stats[previousStatus] - 1
         }
     });
+}
+
+export const zeroPad = version => `${version}`.padStart(5, "0");
+
+export function initialStats(total) {
+    return {
+        [ExportTaskStatus.PENDING]: total,
+        [ExportTaskStatus.PROCESSING]: 0,
+        [ExportTaskStatus.COMPLETED]: 0,
+        [ExportTaskStatus.FAILED]: 0,
+        total
+    };
 }

@@ -1,13 +1,12 @@
 import { HandlerPlugin } from "@webiny/handler/types";
 import { ArgsContext } from "@webiny/handler-args/types";
 import { ExportTaskStatus, Page, PbContext } from "~/types";
-import { importPage, updateMainTask } from "~/importPage/utils";
+import { importPage, updateMainTask, zeroPad } from "~/importPage/utils";
 import { invokeHandlerClient } from "~/importPage/client";
 
 export type HandlerArgs = {
     taskId: string;
-    subTaskIds: string[];
-    currentTaskIndex: number;
+    subTaskIndex: number;
 };
 
 export type HandlerResponse = {
@@ -35,12 +34,12 @@ export default (
     type: "handler",
     async handle(context): Promise<HandlerResponse> {
         const log = console.log;
-        let currentTask;
-        let noPendingTask = false;
+        let subTask;
+        let prevStatusOfSubTask = ExportTaskStatus.PENDING;
 
         log("RUNNING Import Page Queue Process");
         const { invocationArgs: args, pageBuilder } = context;
-        const { taskId, subTaskIds, currentTaskIndex } = args;
+        const { taskId, subTaskIndex } = args;
 
         try {
             /*
@@ -48,36 +47,36 @@ export default (
              * because the data might be out of sync due to GSI eventual consistency.
              */
 
-            currentTask = await pageBuilder.exportPageTask.getSubTask(
-                taskId,
-                subTaskIds[currentTaskIndex]
-            );
+            subTask = await pageBuilder.exportPageTask.getSubTask(taskId, zeroPad(subTaskIndex));
+            prevStatusOfSubTask = subTask.status;
 
-            // Base condition!
-            if (!currentTask || currentTask.status !== ExportTaskStatus.PENDING) {
-                noPendingTask = true;
-
+            /**
+             * Base condition!!
+             * Bail out early, if task not found or task's status is not "pending".
+             */
+            if (!subTask || subTask.status !== ExportTaskStatus.PENDING) {
                 return;
             }
 
-            log(`Fetched sub task => ${currentTask.id}`);
+            log(`Fetched sub task => ${subTask.id}`);
 
-            const { pageKey, category, zipFileKey, input } = currentTask.data;
+            const { pageKey, category, zipFileKey, input } = subTask.data;
             const { fileUploadsData } = input;
 
             log(`Processing page key "${pageKey}"`);
 
             // Mark task status as PROCESSING
-            await pageBuilder.exportPageTask.updateSubTask(taskId, currentTask.id, {
+            subTask = await pageBuilder.exportPageTask.updateSubTask(taskId, subTask.id, {
                 status: ExportTaskStatus.PROCESSING
             });
             // Update stats in main task
             await updateMainTask({
                 pageBuilder,
                 taskId,
-                subTaskId: currentTask.id,
-                status: ExportTaskStatus.PROCESSING
+                currentStatus: ExportTaskStatus.PROCESSING,
+                previousStatus: prevStatusOfSubTask
             });
+            prevStatusOfSubTask = subTask.status;
 
             // Real job
             const pageContent = await importPage({
@@ -97,7 +96,7 @@ export default (
             });
 
             // Update task record in DB
-            await pageBuilder.exportPageTask.updateSubTask(taskId, currentTask.id, {
+            subTask = await pageBuilder.exportPageTask.updateSubTask(taskId, subTask.id, {
                 status: ExportTaskStatus.COMPLETED,
                 data: {
                     message: "Done"
@@ -107,13 +106,14 @@ export default (
             await updateMainTask({
                 pageBuilder,
                 taskId,
-                subTaskId: currentTask.id,
-                status: ExportTaskStatus.COMPLETED
+                currentStatus: ExportTaskStatus.COMPLETED,
+                previousStatus: prevStatusOfSubTask
             });
+            prevStatusOfSubTask = subTask.status;
         } catch (e) {
             log("[IMPORT_PAGES_PROCESS] Error => ", e);
 
-            if (currentTask && currentTask.id) {
+            if (subTask && subTask.id) {
                 /**
                  * In case of error, we'll update the task status to "failed",
                  * so that, client can show notify the user appropriately.
@@ -121,7 +121,7 @@ export default (
                 const { invocationArgs: args, pageBuilder } = context;
                 const { taskId } = args;
 
-                await pageBuilder.exportPageTask.updateSubTask(taskId, currentTask.id, {
+                subTask = await pageBuilder.exportPageTask.updateSubTask(taskId, subTask.id, {
                     status: ExportTaskStatus.FAILED,
                     data: {
                         error: {
@@ -137,13 +137,10 @@ export default (
                 await updateMainTask({
                     pageBuilder,
                     taskId,
-                    subTaskId: currentTask.id,
-                    status: ExportTaskStatus.FAILED,
-                    error: {
-                        name: e.name,
-                        message: e.message
-                    }
+                    currentStatus: ExportTaskStatus.FAILED,
+                    previousStatus: prevStatusOfSubTask
                 });
+                prevStatusOfSubTask = subTask.status;
             }
 
             return {
@@ -154,25 +151,24 @@ export default (
             };
         } finally {
             // Base condition!
-            if (noPendingTask) {
+            if (!subTask || subTask.status !== ExportTaskStatus.PENDING) {
                 log(`No pending sub-task for task ${taskId}`);
 
                 await pageBuilder.exportPageTask.update(taskId, {
                     status: ExportTaskStatus.COMPLETED,
                     data: {
-                        message: `Finish importing ${subTaskIds.length} pages.`
+                        message: `Finish importing pages.`
                     }
                 });
             } else {
-                console.log(`Invoking PROCESS for task "${subTaskIds[currentTaskIndex + 1]}"`);
+                console.log(`Invoking PROCESS for task "${subTaskIndex + 1}"`);
                 // We want to continue with Self invocation no matter if current page error out.
-                await invokeHandlerClient({
+                await invokeHandlerClient<HandlerArgs>({
                     context,
                     name: configuration.handlers.process,
                     payload: {
                         taskId,
-                        subTaskIds,
-                        currentTaskIndex: currentTaskIndex + 1
+                        subTaskIndex: subTaskIndex + 1
                     }
                 });
             }
