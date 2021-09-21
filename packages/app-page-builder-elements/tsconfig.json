@@ -1,0 +1,14 @@
+{
+  "extends": "../../tsconfig.json",
+  "references": [{ "path": "../app" }, { "path": "../react-router" }],
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "~/*": ["./src/*"],
+      "@webiny/app/*": ["../app/src/*"],
+      "@webiny/app": ["../app/src"],
+      "@webiny/react-router/*": ["../react-router/src/*"],
+      "@webiny/react-router": ["../react-router/src"]
+    }
+  }
+}
