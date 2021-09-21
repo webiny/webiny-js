@@ -1,12 +1,16 @@
 import { PbContext } from "~/graphql/types";
 
-export interface InvokeHandlerClientParams {
+export interface InvokeHandlerClientParams<TParams> {
     context: PbContext;
     name: string;
-    payload: Record<string, any>;
+    payload: TParams;
 }
 
-export async function invokeHandlerClient({ context, name, payload }: InvokeHandlerClientParams) {
+export async function invokeHandlerClient<TParams>({
+    context,
+    name,
+    payload
+}: InvokeHandlerClientParams<TParams>) {
     /*
      * Prepare "invocationArgs", we're hacking our wat here.
      * They are necessary to setup the "context.pageBuilder" object among other things in IMPORT_PAGE_FUNCTION
@@ -18,9 +22,8 @@ export async function invokeHandlerClient({ context, name, payload }: InvokeHand
         headers: request.headers,
         cookies: request.cookies
     };
-    // TODO: Maybe use a dedicated object? Something similar that we have for "prerenderingServiceClient".
     // Invoke handler
-    await context.handlerClient.invoke({
+    await context.handlerClient.invoke<TParams & any>({
         name: name,
         payload: {
             ...payload,
