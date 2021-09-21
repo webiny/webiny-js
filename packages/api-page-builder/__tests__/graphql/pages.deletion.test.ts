@@ -81,11 +81,17 @@ describe("deleting pages", () => {
             });
         });
 
-        await until(listPages, ([res]) => res.data.pageBuilder.listPages.data.length === 0, {
-            name: "list all pages after deleting p1v1",
-            wait: 500,
-            tries: 30
-        });
+        await until(
+            () => listPages({}),
+            ([res]) => {
+                return res.data.pageBuilder.listPages.data.length === 0;
+            },
+            {
+                name: "list all pages after deleting p1v1",
+                wait: 500,
+                tries: 30
+            }
+        );
         await until(
             listPublishedPages,
             ([res]) => res.data.pageBuilder.listPublishedPages.data.length === 0,

@@ -25,7 +25,6 @@ import { cleanupItem } from "@webiny/db-dynamodb/utils/cleanup";
 import { queryAll, QueryAllParams, queryOne } from "@webiny/db-dynamodb/utils/query";
 import { batchWriteAll } from "@webiny/db-dynamodb/utils/batchWrite";
 import lodashGet from "lodash/get";
-import { getZeroPaddedVersionNumber } from "@webiny/api-page-builder/utils/zeroPaddedVersionNumber";
 import { filterItems } from "@webiny/db-dynamodb/utils/filter";
 import { sortItems } from "@webiny/db-dynamodb/utils/sort";
 import { decodeCursor, encodeCursor } from "@webiny/db-dynamodb/utils/cursor";
@@ -37,13 +36,28 @@ interface Params {
 
 interface EntityKeys {
     PK: string;
-    SK: string;
+    SK: string | number;
 }
 
 type DbRecord<T> = T & { PK: string; SK: string; TYPE: string };
 
 const GSI1_INDEX = "GSI1";
 
+/**
+ * To be able to efficiently query pages we need the following records in the database:
+ * - latest
+ *      PK - fixed string + #L
+ *      SK - pageId
+ * - revision
+ *      PK - fixed string + pageId
+ *      SK - version
+ * - published
+ *      PK - fixed string + #P
+ *      SK - pageId
+ * - path
+ *      PK - fixed string + #PATH
+ *      SK - path
+ */
 export class PageStorageOperationsDdb implements PageStorageOperations {
     protected readonly context: PbContext;
     public readonly table: Table;
@@ -70,25 +84,27 @@ export class PageStorageOperationsDdb implements PageStorageOperations {
     public async create(params: PageStorageOperationsCreateParams): Promise<Page> {
         const { page } = params;
 
-        const versionKeys: EntityKeys = {
-            PK: this.createPagePartitionKey(page.id),
-            SK: this.createSortKey(page.version)
-        };
-        const latestKeys: EntityKeys = {
-            ...versionKeys,
-            SK: this.createLatestSortKey()
-        };
+        const revisionKeys = this.createRevisionKeys(page.id);
+        const latestKeys = this.createLatestKeys(page.id);
 
+        const titleLC = page.title.toLowerCase();
+        /**
+         * We need to create
+         * - latest
+         * - revision
+         */
         const items = [
             this.entity.putBatch({
                 ...page,
-                ...versionKeys,
-                TYPE: this.createBasicType()
+                titleLC,
+                ...latestKeys,
+                TYPE: this.createLatestType()
             }),
             this.entity.putBatch({
                 ...page,
-                ...latestKeys,
-                TYPE: this.createLatestType()
+                titleLC,
+                ...revisionKeys,
+                TYPE: this.createRevisionType()
             })
         ];
         try {
@@ -102,7 +118,7 @@ export class PageStorageOperationsDdb implements PageStorageOperations {
                 ex.message || "Could not create new page.",
                 ex.code || "CREATE_PAGE_ERROR",
                 {
-                    versionKeys,
+                    revisionKeys,
                     latestKeys,
                     page
                 }
@@ -113,25 +129,23 @@ export class PageStorageOperationsDdb implements PageStorageOperations {
     public async createFrom(params: PageStorageOperationsCreateFromParams): Promise<Page> {
         const { page, latestPage, original } = params;
 
-        const versionKeys: EntityKeys = {
-            PK: this.createPagePartitionKey(page.id),
-            SK: this.createSortKey(page.version)
-        };
-        const latestKeys: EntityKeys = {
-            ...versionKeys,
-            SK: this.createLatestSortKey()
-        };
-
+        const revisionKeys = this.createRevisionKeys(page.id);
+        const latestKeys = this.createLatestKeys(page.id);
+        /**
+         * We need to create
+         * - latest
+         * - revision
+         */
         const items = [
             this.entity.putBatch({
                 ...page,
-                TYPE: this.createBasicType(),
-                ...versionKeys
+                ...latestKeys,
+                TYPE: this.createLatestType()
             }),
             this.entity.putBatch({
                 ...page,
-                TYPE: this.createLatestType(),
-                ...latestKeys
+                ...revisionKeys,
+                TYPE: this.createRevisionType()
             })
         ];
 
@@ -146,7 +160,7 @@ export class PageStorageOperationsDdb implements PageStorageOperations {
                 ex.message || "Could not create new page from existing page.",
                 ex.code || "CREATE_PAGE_FROM_ERROR",
                 {
-                    versionKeys,
+                    revisionKeys,
                     latestKeys,
                     latestPage,
                     original,
@@ -159,40 +173,39 @@ export class PageStorageOperationsDdb implements PageStorageOperations {
     public async update(params: PageStorageOperationsUpdateParams): Promise<Page> {
         const { original, page } = params;
 
-        const keys: EntityKeys = {
-            PK: this.createPagePartitionKey(page.id),
-            SK: this.createSortKey(page.version)
-        };
+        const revisionKeys = this.createRevisionKeys(page.id);
+        const latestKeys = this.createLatestKeys(page.id);
 
-        const latestKeys: EntityKeys = {
-            ...keys,
-            SK: this.createLatestSortKey()
-        };
         const latestPageResult = await this.entity.get(latestKeys);
         const latestPage = cleanupItem(
             this.entity,
             latestPageResult ? latestPageResult.Item : null
         );
 
+        const titleLC = page.title.toLowerCase();
+        /**
+         * We need to update
+         * - revision
+         * - latest if this is the latest
+         */
         const items = [
             this.entity.putBatch({
                 ...page,
-                TYPE: this.createBasicType(),
-                ...keys
+                titleLC,
+                ...revisionKeys,
+                TYPE: this.createRevisionType()
             })
         ];
         /**
-         * In the case the latest page is the page we are currently updating
-         * check for the visibility in the list.
-         * If visibility is set to false - delete the record
-         * Otherwise update it.
+         * Latest if it is the one.
          */
         if (latestPage && latestPage.id === page.id) {
             items.push(
                 this.entity.putBatch({
                     ...page,
-                    TYPE: this.createLatestType(),
-                    ...latestKeys
+                    titleLC,
+                    ...latestKeys,
+                    TYPE: this.createLatestType()
                 })
             );
         }
@@ -213,50 +226,37 @@ export class PageStorageOperationsDdb implements PageStorageOperations {
                     page,
                     latestPage,
                     latestKeys,
-                    keys
+                    revisionKeys
                 }
             );
         }
     }
-    /**
-     * In case of delete, we must delete records:
-     *  - revision
-     *  - path if published
-     * Update:
-     *  - latest
-     */
     public async delete(params: PageStorageOperationsDeleteParams): Promise<[Page, Page | null]> {
         const { page, latestPage, publishedPage } = params;
 
-        const partitionKey = this.createPagePartitionKey(page.id);
+        const revisionKeys = this.createRevisionKeys(page.id);
+        const publishedKeys = this.createPublishedKeys(page.id);
+        const latestKeys = this.createLatestKeys(page.id);
 
-        const items = [
-            this.entity.deleteBatch({
-                PK: partitionKey,
-                SK: this.createSortKey(page.version)
-            })
-        ];
+        /**
+         * We need to delete
+         * - revision
+         * - published if is published
+         * We need to update
+         * - latest, if it exists, with previous record
+         */
+        const items = [this.entity.deleteBatch(revisionKeys)];
         if (publishedPage && publishedPage.id === page.id) {
-            items.push(
-                this.entity.deleteBatch({
-                    PK: partitionKey,
-                    SK: this.createPublishedSortKey()
-                })
-            );
-            items.push(
-                this.entity.deleteBatch({
-                    PK: this.createPathPartitionKey(),
-                    SK: this.createPathSortKey(page)
-                })
-            );
+            items.push(this.entity.deleteBatch(publishedKeys));
         }
         let previousLatestPage: Page = null;
         if (latestPage && latestPage.id === page.id) {
+            const partitionKey = this.createRevisionPartitionKey(page.id);
             const previousLatestRecord = await queryOne<DbRecord<Page>>({
                 entity: this.entity,
                 partitionKey,
                 options: {
-                    lt: this.createSortKey(latestPage.version),
+                    lt: String(this.createRevisionSortKey(latestPage.version)),
                     reverse: true
                 }
             });
@@ -264,9 +264,8 @@ export class PageStorageOperationsDdb implements PageStorageOperations {
                 items.push(
                     this.entity.putBatch({
                         ...previousLatestRecord,
-                        TYPE: this.createLatestType(),
-                        PK: partitionKey,
-                        SK: this.createLatestSortKey()
+                        ...latestKeys,
+                        TYPE: this.createLatestType()
                     })
                 );
                 previousLatestPage = cleanupItem(this.entity, previousLatestRecord);
@@ -286,18 +285,16 @@ export class PageStorageOperationsDdb implements PageStorageOperations {
         return [page, previousLatestPage];
     }
     /**
-     * In case of deleteAll, we must delete records:
-     *  - latest
-     *  - published
-     *  - path if published
-     *  - revision
-     *  - es latest
-     *  - es published
+     * We need to delete
+     * - latest
+     * - published
+     * - path
+     * - all revisions
      */
     public async deleteAll(params: PageStorageOperationsDeleteAllParams): Promise<[Page]> {
         const { page } = params;
 
-        const partitionKey = this.createPagePartitionKey(page.id);
+        const partitionKey = this.createRevisionPartitionKey(page.id);
         const queryAllParams = {
             entity: this.entity,
             partitionKey,
@@ -305,6 +302,9 @@ export class PageStorageOperationsDdb implements PageStorageOperations {
                 gte: " "
             }
         };
+
+        const items = [this.entity.deleteBatch(this.createLatestKeys(page.id))];
+
         let revisions: DbRecord<Page>[];
         try {
             revisions = await queryAll(queryAllParams);
@@ -318,28 +318,17 @@ export class PageStorageOperationsDdb implements PageStorageOperations {
             );
         }
 
+        let deletedPublishedRecord = false;
         /**
          * We need to go through all possible entries and delete them.
          * Also, delete the published entry path record.
          */
-        const items = [];
-        let publishedPathEntryDeleted = false;
         for (const revision of revisions) {
-            if (revision.status === "published" && !publishedPathEntryDeleted) {
-                publishedPathEntryDeleted = true;
-                items.push(
-                    this.entity.deleteBatch({
-                        PK: this.createPathPartitionKey(),
-                        SK: revision.path
-                    })
-                );
+            if (!deletedPublishedRecord && revision.status === "published") {
+                items.push(this.entity.deleteBatch(this.createPublishedKeys(revision.id)));
+                deletedPublishedRecord = true;
             }
-            items.push(
-                this.entity.deleteBatch({
-                    PK: revision.PK,
-                    SK: revision.SK
-                })
-            );
+            items.push(this.entity.deleteBatch(this.createRevisionKeys(revision.id)));
         }
 
         try {
@@ -356,87 +345,62 @@ export class PageStorageOperationsDdb implements PageStorageOperations {
         return [page];
     }
     /**
-     * When publishing a page, we need to:
-     *  - update that page record
-     *  - update latest record if we are publishing latest one
-     *  - update published record
-     *  - update publish path to a new one
+     * We need to
+     * - update revision that it is published
+     * - if is latest update record that it is published
+     * - set status of previously published page to unpublished
+     * - create / update published record
+     * - create / update published path
      */
     public async publish(params: PageStorageOperationsPublishParams): Promise<Page> {
         const { page, latestPage, publishedPage } = params;
 
+        const revisionKeys = this.createRevisionKeys(page.id);
+        const latestKeys = this.createLatestKeys(page.id);
+        const publishedKeys = this.createPublishedKeys(page.id);
         /**
          * Update the given revision of the page.
          */
         const items = [
             this.entity.putBatch({
                 ...page,
-                TYPE: this.createBasicType(),
-                PK: this.createPagePartitionKey(page.pid),
-                SK: this.createSortKey(page.version)
+                ...revisionKeys,
+                TYPE: this.createRevisionType()
             })
         ];
-        /**
-         * If we are publishing the latest revision, let's also update the latest revision entry's
-         * status in ES. Also, if we are publishing the latest revision and the "LATEST page lists
-         * visibility" is not false, then we need to update the latest page revision entry in ES.
-         */
+
         if (latestPage.id === page.id) {
             items.push(
                 this.entity.putBatch({
                     ...page,
-                    TYPE: this.createLatestType(),
-                    PK: this.createPagePartitionKey(page.pid),
-                    SK: this.createLatestSortKey()
+                    ...latestKeys,
+                    TYPE: this.createLatestType()
                 })
             );
         }
         /**
          * If we have already published revision of this page:
          *  - set existing published page revision to unpublished
-         *  - remove old published path if paths are different
          */
         if (publishedPage) {
+            const publishedRevisionKeys = this.createRevisionKeys(publishedPage.id);
             items.push(
                 this.entity.putBatch({
                     ...publishedPage,
                     status: "unpublished",
-                    PK: this.createPagePartitionKey(publishedPage.pid),
-                    SK: this.createSortKey(publishedPage.version)
+                    ...publishedRevisionKeys,
+                    TYPE: this.createRevisionType()
                 })
             );
-            /**
-             * Remove old published path if required.
-             */
-            if (publishedPage.path !== page.path) {
-                items.push(
-                    this.entity.deleteBatch({
-                        PK: this.createPathPartitionKey(),
-                        SK: publishedPage.path
-                    })
-                );
-            }
         }
-        /**
-         * Update or insert published path.
-         */
+
         items.push(
             this.entity.putBatch({
                 ...page,
-                TYPE: this.createPublishedPathType(),
-                PK: this.createPathPartitionKey(),
-                SK: this.createPathSortKey(page)
-            })
-        );
-        /**
-         * Update or insert published page.
-         */
-        items.push(
-            this.entity.putBatch({
-                ...page,
-                TYPE: this.createPublishedType(),
-                PK: this.createPagePartitionKey(page.pid),
-                SK: this.createPublishedSortKey()
+                ...publishedKeys,
+                GSI1_PK: this.createPathPartitionKey(),
+                GSI1_SK: page.path,
+                TYPE: this.createPublishedType()
             })
         );
 
@@ -453,38 +417,35 @@ export class PageStorageOperationsDdb implements PageStorageOperations {
         }
         return page;
     }
-
+    /**
+     * We need to
+     * - update revision record with new status
+     * - remove published record
+     * - remove published path record
+     * - update latest record with new status if is the latest
+     */
     public async unpublish(params: PageStorageOperationsUnpublishParams): Promise<Page> {
         const { page, latestPage } = params;
 
+        const revisionKeys = this.createRevisionKeys(page.id);
+        const latestKeys = this.createLatestKeys(page.id);
+        const publishedKeys = this.createPublishedKeys(page.id);
+
         const items = [
-            this.entity.deleteBatch({
-                PK: this.createPagePartitionKey(page.pid),
-                SK: this.createPublishedSortKey()
-            }),
-            this.entity.deleteBatch({
-                PK: this.createPathPartitionKey(),
-                SK: this.createPathSortKey(page)
-            }),
             this.entity.putBatch({
                 ...page,
-                TYPE: this.createBasicType(),
-                PK: this.createPagePartitionKey(page.pid),
-                SK: this.createSortKey(page.version)
-            })
+                ...revisionKeys,
+                TYPE: this.createRevisionType()
+            }),
+            this.entity.deleteBatch(publishedKeys)
         ];
-        /*
-         * If we are unpublishing the latest revision, let's also update the latest revision entry's
-         * status in ES. We can only do that if the entry actually exists, or in other words, if the
-         * published page's "LATEST pages lists visibility" setting is not set to false.
-         */
-        if (latestPage.id === page.id && lodashGet(page, "visibility.list.latest") !== false) {
+
+        if (latestPage.id === page.id) {
             items.push(
                 this.entity.putBatch({
                     ...page,
-                    TYPE: this.createLatestType(),
-                    PK: this.createPagePartitionKey(page.pid),
-                    SK: this.createLatestSortKey()
+                    ...latestKeys,
+                    TYPE: this.createLatestType()
                 })
             );
         }
@@ -503,28 +464,29 @@ export class PageStorageOperationsDdb implements PageStorageOperations {
         return page;
     }
     /**
-     * We need to update:
-     *  - regular record
-     *  - latest record if page is the latest one
+     * We need to
+     * - update revision record
+     * - update latest record if it is the latest record
      */
     public async requestReview(params: PageStorageOperationsRequestReviewParams): Promise<Page> {
         const { original, page, latestPage } = params;
 
+        const revisionKeys = this.createRevisionKeys(page.id);
+        const latestKeys = this.createLatestKeys(page.id);
+
         const items = [
             this.entity.putBatch({
                 ...page,
-                TYPE: this.createBasicType(),
-                PK: this.createPagePartitionKey(page.pid),
-                SK: this.createSortKey(page.version)
+                ...revisionKeys,
+                TYPE: this.createRevisionType()
             })
         ];
-        if (latestPage.id === page.id && lodashGet(page, "visibility.list.latest") !== false) {
+        if (latestPage.id === page.id) {
             items.push(
                 this.entity.putBatch({
                     ...page,
-                    TYPE: this.createLatestType(),
-                    PK: this.createPagePartitionKey(page.pid),
-                    SK: this.createLatestSortKey()
+                    ...latestKeys,
+                    TYPE: this.createLatestType()
                 })
             );
         }
@@ -546,25 +508,30 @@ export class PageStorageOperationsDdb implements PageStorageOperations {
         }
         return page;
     }
-
+    /**
+     * We need to
+     * - update revision record
+     * - update latest record if it is the latest one
+     */
     public async requestChanges(params: PageStorageOperationsRequestChangesParams): Promise<Page> {
         const { original, page, latestPage } = params;
+
+        const revisionKeys = this.createRevisionKeys(page.id);
+        const latestKeys = this.createLatestKeys(page.id);
 
         const items = [
             this.entity.putBatch({
                 ...page,
-                TYPE: this.createBasicType(),
-                PK: this.createPagePartitionKey(page.pid),
-                SK: this.createSortKey(page.version)
+                ...revisionKeys,
+                TYPE: this.createRevisionType()
             })
         ];
-        if (latestPage.id === page.id && lodashGet(page, "visibility.list.latest") !== false) {
+        if (latestPage.id === page.id) {
             items.push(
                 this.entity.putBatch({
                     ...page,
-                    TYPE: this.createLatestType(),
-                    PK: this.createPagePartitionKey(page.pid),
-                    SK: this.createLatestSortKey()
+                    ...latestKeys,
+                    TYPE: this.createLatestType()
                 })
             );
         }
@@ -602,28 +569,23 @@ export class PageStorageOperationsDdb implements PageStorageOperations {
         if (id && id.includes("#") && !version) {
             version = Number(id.split("#").pop());
         }
-        let partitionKey: string = undefined;
-        let sortKey: string;
+        let keys: EntityKeys;
         if (path) {
-            partitionKey = this.createPathPartitionKey();
-            sortKey = path;
+            return this.getByPath(path);
+        } else if (!id && !pid) {
+            throw new WebinyError("There are no ID or pageId.", "MALFORMED_GET_REQUEST", {
+                where
+            });
         } else if (published) {
-            sortKey = this.createPublishedSortKey();
+            keys = this.createPublishedKeys(pid || id);
         } else if (version) {
-            sortKey = this.createSortKey(version);
+            keys = {
+                PK: this.createRevisionPartitionKey(pid || id),
+                SK: this.createRevisionSortKey(version)
+            };
         } else {
-            sortKey = this.createLatestSortKey();
+            keys = this.createLatestKeys(pid || id);
         }
-        /**
-         * If partition key is still undefined, create one with id or pid
-         */
-        if (!partitionKey) {
-            partitionKey = this.createPagePartitionKey(pid || id);
-        }
-        const keys: EntityKeys = {
-            PK: partitionKey,
-            SK: sortKey
-        };
         try {
             const result = await this.entity.get(keys);
             if (!result || !result.Item) {
@@ -642,14 +604,45 @@ export class PageStorageOperationsDdb implements PageStorageOperations {
         }
     }
 
+    private async getByPath(path: string): Promise<Page | null> {
+        const keys = this.createPathKeys(path);
+
+        const queryOptions: QueryAllParams = {
+            entity: this.entity,
+            partitionKey: keys.PK,
+            options: {
+                index: GSI1_INDEX,
+                eq: keys.SK
+            }
+        };
+        try {
+            const result = await queryOne<DbRecord<Page>>(queryOptions);
+            if (!result) {
+                return null;
+            }
+            return cleanupItem(this.entity, result);
+        } catch (ex) {
+            throw new WebinyError(
+                ex.message || "Could not get page by given path.",
+                ex.code || "GET_PAGE_BY_PATH_ERROR",
+                {
+                    keys
+                }
+            );
+        }
+    }
+
     public async list(
         params: PageStorageOperationsListParams
     ): Promise<PageStorageOperationsListResponse> {
+        const { where: initialWhere } = params;
+
+        const { latest, published } = initialWhere;
         /**
          * We do not allow loading both published and latest at the same time.
          * @see PageStorageOperationsListWhere
          */
-        if (params.where.published && params.where.latest) {
+        if (published && latest) {
             throw new WebinyError(
                 "Both published and latest cannot be defined at the same time.",
                 "MALFORMED_WHERE_ERROR",
@@ -664,10 +657,48 @@ export class PageStorageOperationsDdb implements PageStorageOperations {
         const limit = initialLimit || 50;
 
         const options: QueryAllParams["options"] = {
-            index: GSI1_INDEX,
             gte: " "
         };
-        const partitionKey = this.createPartitionKey();
+
+        const { tags_in: tags, tags_rule: tagsRule, search } = initialWhere;
+
+        const where: any = {
+            ...initialWhere
+        };
+        delete where.search;
+        delete where.tags_in;
+        delete where.tags_rule;
+        delete where.tenant;
+        delete where.locale;
+        delete where.latest;
+        delete where.published;
+        if (tags && tags.length > 0) {
+            if (tagsRule === "any") {
+                where.tags_in = tags;
+            } else {
+                where.tags_and_in = tags;
+            }
+        }
+        if (search) {
+            /**
+             * We need to pass fuzzy into where so we need to cast it as where because it does not exist on the original type
+             */
+            where.fuzzy = {
+                fields: ["title", "snippet"],
+                value: search
+            };
+        }
+
+        let partitionKey: string;
+        if (published) {
+            partitionKey = this.createPublishedPartitionKey();
+            //
+            where.listPublished_not = false;
+        } else {
+            partitionKey = this.createLatestPartitionKey();
+            where.listLatest_not = false;
+        }
+
         const queryAllParams: QueryAllParams = {
             entity: this.entity,
             partitionKey,
@@ -695,15 +726,16 @@ export class PageStorageOperationsDdb implements PageStorageOperations {
         const filteredPages = filterItems<Page>({
             items: dbRecords,
             context: this.context,
-            where: params.where,
+            where,
             fields
+        }).map(item => {
+            return cleanupItem<Page>(this.entity, item);
         });
 
         const sortedPages = sortItems<Page>({
             items: filteredPages,
             sort: params.sort,
-            fields,
-            context: this.context
+            fields
         });
 
         const totalCount = sortedPages.length;
@@ -735,9 +767,9 @@ export class PageStorageOperationsDdb implements PageStorageOperations {
     public async listRevisions(params: PageStorageOperationsListRevisionsParams): Promise<Page[]> {
         const queryAllParams: QueryAllParams = {
             entity: this.entity,
-            partitionKey: this.createPagePartitionKey(params.where.pid),
+            partitionKey: this.createRevisionPartitionKey(params.where.pid),
             options: {
-                beginsWith: "REV#",
+                gte: " ",
                 reverse: false
             }
         };
@@ -758,101 +790,154 @@ export class PageStorageOperationsDdb implements PageStorageOperations {
     public async listTags(params: PageStorageOperationsListTagsParams): Promise<string[]> {
         const { where } = params;
 
-        const { items: pages } = await this.list({
-            where: {
-                locale: where.locale,
-                tenant: where.tenant
-            },
-            sort: [],
-            /**
-             * Lets hope nobody comes even close to this limit.
-             */
-            limit: 100000
-        });
+        const options: QueryAllParams["options"] = {
+            gte: " "
+        };
 
-        const search = where.search;
+        const partitionKey = this.createLatestPartitionKey();
 
-        return pages.reduce((collection, page) => {
+        const queryAllParams: QueryAllParams = {
+            entity: this.entity,
+            partitionKey,
+            options
+        };
+
+        let pages: DbRecord<Page>[] = [];
+        try {
+            pages = await queryAll<DbRecord<Page>>(queryAllParams);
+        } catch (ex) {
+            throw new WebinyError(
+                ex.message || "Could not load pages by given query params.",
+                ex.code || "LIST_PAGES_TAGS_ERROR",
+                {
+                    partitionKey,
+                    options
+                }
+            );
+        }
+
+        const tags = pages.reduce((collection, page) => {
             let list = lodashGet(page, "settings.general.tags");
             if (!list || list.length === 0) {
                 return collection;
-            } else if (search) {
-                const re = new RegExp(search, "i");
+            } else if (where.search) {
+                const re = new RegExp(where.search, "i");
                 list = list.filter(t => t.match(re) !== null);
             }
-            collection.push(...list);
+
+            for (const t of list) {
+                collection[t] = undefined;
+            }
             return collection;
-        }, []);
+        }, {});
+
+        return Object.keys(tags);
     }
     /**
      * Used in multiple partition keys.
      */
-    public createBasePartitionKey(): string {
+    private createBasePartitionKey(): string {
         const tenant = this.context.tenancy.getCurrentTenant().id;
         const locale = this.context.i18nContent.getLocale().code;
-        return `T#${tenant}#L#${locale}#PB#`;
+        return `T#${tenant}#L#${locale}#PB`;
     }
 
-    public createPartitionKey(): string {
-        return `${this.createBasePartitionKey()}P`;
+    private createPublishedPartitionKey(): string {
+        return `${this.createBasePartitionKey()}#P`;
     }
 
-    public createPagePartitionKey(id: string): string {
-        if (id.includes("#")) {
+    private createLatestPartitionKey(): string {
+        return `${this.createBasePartitionKey()}#L`;
+    }
+
+    private createPathPartitionKey(): string {
+        return `${this.createBasePartitionKey()}#PATH`;
+    }
+
+    private createRevisionPartitionKey(id: string): string {
+        if (id.includes("#") === true) {
             id = id.split("#").shift();
         }
-        return `${this.createPartitionKey()}#${id}`;
+        return `${this.createBasePartitionKey()}#${id}`;
     }
 
-    public createPathPartitionKey(): string {
-        return `${this.createBasePartitionKey()}PATH`;
+    private createRevisionKeys(id: string): EntityKeys {
+        return {
+            PK: this.createRevisionPartitionKey(id),
+            SK: this.createRevisionSortKey(id)
+        };
     }
 
-    public createSortKey(version: string | number): string {
-        if (typeof version !== "number") {
+    private createRevisionSortKey(version: string | number): number {
+        if (typeof version === "number") {
+            return Number(version);
+        } else if (typeof version === "string") {
             if (version.includes("#")) {
-                version = Number(version.split("#").pop());
+                const v = version.split("#").pop();
+                return Number(v);
             }
+            return Number(version);
         }
-        return `REV#${getZeroPaddedVersionNumber(version)}`;
-    }
 
-    public createPathSortKey(input: Pick<Page, "path"> | string): string {
-        if (typeof input === "string") {
-            return input;
-        } else if (input.path) {
-            return input.path;
-        }
         throw new WebinyError(
-            "Could not determine the page path sort key from the input.",
-            "MALFORMED_SORT_KEY",
+            "You can only pass number or a ID string.",
+            "MALFORMED_VERSION_VALUE",
             {
-                input
+                version
             }
         );
     }
 
-    public createPublishedSortKey(): string {
-        return "P";
+    private createPublishedSortKey(id: string): string {
+        if (id.includes("#") === true) {
+            id = id.split("#").shift();
+        }
+        return id;
     }
 
-    public createLatestSortKey(): string {
-        return "L";
+    private createLatestSortKey(id: string): string {
+        if (id.includes("#") === true) {
+            id = id.split("#").shift();
+        }
+        return id;
     }
-
-    public createBasicType(): string {
+    /**
+     * Type that marks revision page record.
+     */
+    private createRevisionType(): string {
         return "pb.page";
     }
-
-    public createLatestType(): string {
+    /**
+     * Type that marks latest page record.
+     */
+    private createLatestType(): string {
         return "pb.page.l";
     }
-
-    public createPublishedType(): string {
+    /**
+     * Type that marks published page record.
+     */
+    private createPublishedType(): string {
         return "pb.page.p";
     }
 
-    public createPublishedPathType(): string {
-        return "pb.page.p.path";
+    private createLatestKeys(id: string): EntityKeys {
+        return {
+            PK: this.createLatestPartitionKey(),
+            SK: this.createLatestSortKey(id)
+        };
+    }
+
+    private createPublishedKeys(id: string): EntityKeys {
+        return {
+            PK: this.createPublishedPartitionKey(),
+            SK: this.createPublishedSortKey(id)
+        };
+    }
+
+    private createPathKeys(path: string): EntityKeys {
+        return {
+            PK: this.createPathPartitionKey(),
+            SK: path
+        };
     }
 }

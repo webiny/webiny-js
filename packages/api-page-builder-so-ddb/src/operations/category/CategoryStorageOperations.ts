@@ -18,6 +18,7 @@ import { CategoryDataLoader } from "./CategoryDataLoader";
 import { createListResponse } from "@webiny/db-dynamodb/utils/listResponse";
 import { defineTable } from "~/definitions/table";
 import { defineCategoryEntity } from "~/definitions/categoryEntity";
+import { CategoryDynamoDbFieldPlugin } from "~/plugins/definitions/CategoryDynamoDbFieldPlugin";
 
 export interface Params {
     context: PbContext;
@@ -95,17 +96,21 @@ export class CategoryStorageOperationsDdb implements CategoryStorageOperations {
             );
         }
 
+        const fields = this.context.plugins.byType<CategoryDynamoDbFieldPlugin>(
+            CategoryDynamoDbFieldPlugin.type
+        );
+
         const filteredItems = filterItems<Category>({
             context: this.context,
             where: restWhere,
-            items
+            items,
+            fields
         });
 
         const sortedItems = sortItems<Category>({
-            context: this.context,
             items: filteredItems,
             sort,
-            fields: ["id", "createdOn", "savedOn", "publishedOn"]
+            fields
         });
 
         return createListResponse({

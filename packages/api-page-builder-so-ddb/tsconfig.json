@@ -8,12 +8,6 @@
       "path": "../error"
     },
     {
-      "path": "../plugins"
-    },
-    {
-      "path": "../api-upgrade"
-    },
-    {
       "path": "../api-page-builder"
     },
     {
@@ -38,8 +32,6 @@
   "compilerOptions": {
     "paths": {
       "~/*": ["./src/*"],
-      "@webiny/api-upgrade/*": ["../api-upgrade/src/*"],
-      "@webiny/api-upgrade": ["../api-upgrade/src"],
       "@webiny/api-page-builder/*": ["../api-page-builder/src/*"],
       "@webiny/api-page-builder": ["../api-page-builder/src"],
       "@webiny/api-security/*": ["../api-security/src/*"],
@@ -56,8 +48,6 @@
       "@webiny/handler-graphql": ["../handler-graphql/src"],
       "@webiny/error/*": ["../error/src/*"],
       "@webiny/error": ["../error/src"],
-      "@webiny/plugins/*": ["../plugins/src/*"],
-      "@webiny/plugins": ["../plugins/src"],
       "@webiny/handler/*": ["../handler/src/*"],
       "@webiny/handler": ["../handler/src"]
     },

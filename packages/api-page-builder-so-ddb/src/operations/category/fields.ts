@@ -1,12 +1,25 @@
-import { FieldPathPlugin } from "@webiny/db-dynamodb/plugins/definitions/FieldPathPlugin";
-
-const createdBy = new FieldPathPlugin({
-    fields: ["createdBy"],
-    createPath: () => {
-        return "createdBy.id";
-    }
-});
+import { CategoryDynamoDbFieldPlugin } from "~/plugins/definitions/CategoryDynamoDbFieldPlugin";
 
 export default () => {
-    return [createdBy];
+    return [
+        new CategoryDynamoDbFieldPlugin({
+            field: "id"
+        }),
+        new CategoryDynamoDbFieldPlugin({
+            field: "createdOn",
+            type: "date"
+        }),
+        new CategoryDynamoDbFieldPlugin({
+            field: "savedOn",
+            type: "date"
+        }),
+        new CategoryDynamoDbFieldPlugin({
+            field: "publishedOn",
+            type: "date"
+        }),
+        new CategoryDynamoDbFieldPlugin({
+            field: "createdBy",
+            path: "createdBy.id"
+        })
+    ];
 };

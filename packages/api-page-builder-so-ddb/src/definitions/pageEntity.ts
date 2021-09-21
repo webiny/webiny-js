@@ -40,6 +40,9 @@ export const definePageEntity = (params: { context: PbContext; table: Table }): 
             title: {
                 type: "string"
             },
+            titleLC: {
+                type: "string"
+            },
             editor: {
                 type: "string"
             },

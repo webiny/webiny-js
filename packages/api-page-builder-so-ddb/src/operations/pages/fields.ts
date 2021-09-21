@@ -1,29 +1,56 @@
 import { PageDynamoDbFieldPlugin } from "~/plugins/definitions/PageDynamoDbFieldPlugin";
-import { PageDateDynamoDbFieldPlugin } from "~/plugins/definitions/PageDateDynamoDbFieldPlugin";
 
 export default () => [
-    new PageDateDynamoDbFieldPlugin({
-        name: "createdOn"
-    }),
-    new PageDateDynamoDbFieldPlugin({
-        name: "savedOn"
-    }),
-    new PageDateDynamoDbFieldPlugin({
-        name: "publishedOn"
+    new PageDynamoDbFieldPlugin({
+        field: "id"
     }),
     new PageDynamoDbFieldPlugin({
-        name: "createdBy",
+        field: "title",
+        path: "titleLC"
+    }),
+    new PageDynamoDbFieldPlugin({
+        field: "snippet",
+        path: "settings.general.snippet"
+    }),
+    new PageDynamoDbFieldPlugin({
+        field: "category"
+    }),
+    new PageDynamoDbFieldPlugin({
+        field: "status"
+    }),
+    new PageDynamoDbFieldPlugin({
+        field: "createdOn",
+        type: "date"
+    }),
+    new PageDynamoDbFieldPlugin({
+        field: "savedOn",
+        type: "date"
+    }),
+    new PageDynamoDbFieldPlugin({
+        field: "publishedOn",
+        type: "date"
+    }),
+    new PageDynamoDbFieldPlugin({
+        field: "createdBy",
         path: "createdBy.id",
         sortable: false
     }),
     new PageDynamoDbFieldPlugin({
-        name: "ownedBy",
+        field: "ownedBy",
         path: "ownedBy.id",
         sortable: false
     }),
     new PageDynamoDbFieldPlugin({
-        name: "tags",
+        field: "tags",
         path: "settings.general.tags",
         sortable: false
+    }),
+    new PageDynamoDbFieldPlugin({
+        field: "listLatest",
+        path: "visibility.list.latest"
+    }),
+    new PageDynamoDbFieldPlugin({
+        field: "listPublished",
+        path: "visibility.list.published"
     })
 ];

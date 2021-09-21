@@ -4,9 +4,7 @@
   "exclude": [
     "node_modules",
     "../api-page-builder",
-    "../api-upgrade",
     "../error",
-    "../plugins",
     "../handler-db",
     "../db-dynamodb",
     "../handler-aws",

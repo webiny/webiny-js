@@ -1051,7 +1051,13 @@ export default new ContextPlugin<PbContext>(async context => {
             try {
                 const { items, meta } = await storageOperations.list(listParams);
 
-                return [items as any[], meta];
+                return [
+                    items as any[],
+                    {
+                        ...meta,
+                        cursor: meta.hasMoreItems ? meta.cursor : null
+                    }
+                ];
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not list latest pages.",
@@ -1091,7 +1097,13 @@ export default new ContextPlugin<PbContext>(async context => {
             try {
                 const { items, meta } = await storageOperations.list(listParams);
 
-                return [items as any[], meta];
+                return [
+                    items as any[],
+                    {
+                        ...meta,
+                        cursor: meta.hasMoreItems ? meta.cursor : null
+                    }
+                ];
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not list published pages.",

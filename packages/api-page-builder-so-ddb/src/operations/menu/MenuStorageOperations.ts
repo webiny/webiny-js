@@ -18,6 +18,7 @@ import { sortItems } from "@webiny/db-dynamodb/utils/sort";
 import { createListResponse } from "@webiny/db-dynamodb/utils/listResponse";
 import { defineTable } from "~/definitions/table";
 import { defineMenuEntity } from "~/definitions/menuEntity";
+import { MenuDynamoDbFieldPlugin } from "~/plugins/definitions/MenuDynamoDbFieldPlugin";
 
 export interface Params {
     context: PbContext;
@@ -102,19 +103,23 @@ export class MenuStorageOperationsDdb implements MenuStorageOperations {
             );
         }
 
+        const fields = this.context.plugins.byType<MenuDynamoDbFieldPlugin>(
+            MenuDynamoDbFieldPlugin.type
+        );
+
         const filteredItems = filterItems<Menu>({
             context: this.context,
             where: restWhere,
-            items
+            items,
+            fields
         }).map(item => {
             return cleanupItem<Menu>(this.entity, item);
         });
 
         const sortedItems = sortItems<Menu>({
-            context: this.context,
             items: filteredItems,
             sort,
-            fields: ["createdOn", "id", "title", "slug"]
+            fields
         });
 
         return createListResponse({

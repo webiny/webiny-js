@@ -525,12 +525,14 @@ export interface PageStorageOperationsListWhere {
      */
     pid?: string;
     search?: string;
+    title_contains?: string;
     createdBy?: string;
     tenant?: string;
     locale: string;
     pid_not_in?: string[];
     path_not_in?: string[];
     tags_in?: string[];
+    tags_and_in?: string[];
     /**
      * This is special condition which should not be transformed into database query but its used to determine
      * if pages we are trying to load need to have any of given tags or all of them.

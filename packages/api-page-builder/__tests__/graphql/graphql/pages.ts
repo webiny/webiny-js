@@ -92,6 +92,7 @@ const LIST_DATA_FIELD = /* GraphQL */ `
             id
             displayName
         }
+        settings
     }
 `;
 
