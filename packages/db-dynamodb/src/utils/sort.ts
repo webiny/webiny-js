@@ -1,13 +1,17 @@
 import lodashSortBy from "lodash.sortby";
 import WebinyError from "@webiny/error";
-import { FieldPathPlugin } from "~/plugins/definitions/FieldPathPlugin";
-import { ContextInterface } from "@webiny/handler/types";
+import { FieldPlugin } from "~/plugins/definitions/FieldPlugin";
+
+interface Sorters {
+    sorters: string[];
+    orders: string[];
+}
 
 interface ExtractSortResult {
     reverse: boolean;
     field: string;
 }
-const extractSort = (sortBy: string, fields: string[]): ExtractSortResult => {
+const extractSort = (sortBy: string, fields: FieldPlugin[]): ExtractSortResult => {
     const result = sortBy.split("_");
     if (result.length !== 2) {
         throw new WebinyError(
@@ -26,7 +30,9 @@ const extractSort = (sortBy: string, fields: string[]): ExtractSortResult => {
             order,
             fields
         });
-    } else if (fields.includes(field) === false) {
+    }
+    const fieldPlugin = fields.find(f => f.getField() === field);
+    if (!fieldPlugin || fieldPlugin.isSortable() === false) {
         throw new WebinyError(`Cannot sort by given field: "${field}".`, "UNSUPPORTED_SORT_ERROR", {
             fields,
             field
@@ -40,7 +46,6 @@ const extractSort = (sortBy: string, fields: string[]): ExtractSortResult => {
 };
 
 interface Params<T> {
-    context: ContextInterface;
     /**
      * The items we are sorting.
      */
@@ -52,18 +57,14 @@ interface Params<T> {
     /**
      * Fields we can sort by.
      */
-    fields: string[];
+    fields: FieldPlugin[];
 }
 export const sortItems = <T extends any = any>(params: Params<T>): T[] => {
-    const { context, items, sort = [], fields } = params;
+    const { items, sort = [], fields } = params;
     if (items.length <= 1) {
         return items;
     } else if (sort.length === 0) {
         sort.push("createdOn_DESC");
-    } else if (sort.length > 1) {
-        throw new WebinyError("Sorting is limited to a single field", "SORT_ERROR", {
-            sort: sort
-        });
     }
     const [firstSort] = sort;
     if (!firstSort) {
@@ -72,16 +73,19 @@ export const sortItems = <T extends any = any>(params: Params<T>): T[] => {
         });
     }
 
-    const { field, reverse } = extractSort(firstSort, fields);
+    const initialSorters: Sorters = {
+        sorters: [],
+        orders: []
+    };
+    const info = sort.reduce((collection, s) => {
+        const { field, reverse } = extractSort(s, fields);
+        const fieldPlugin = fields.find(f => f.getField() === field);
+        const path = fieldPlugin ? fieldPlugin.getPath() : field;
 
-    const fieldPathPlugin = context.plugins
-        .byType<FieldPathPlugin>(FieldPathPlugin.type)
-        .find(plugin => plugin.canCreate(field));
-    const path = fieldPathPlugin ? fieldPathPlugin.createPath(field) : field;
+        collection.sorters.push(path);
+        collection.orders.push(reverse === true ? "desc" : "asc");
+        return collection;
+    }, initialSorters as Sorters);
 
-    const sortedItems = lodashSortBy(items, path);
-    if (!reverse) {
-        return sortedItems;
-    }
-    return sortedItems.reverse();
+    return lodashSortBy(items, info.sorters, info.orders);
 };

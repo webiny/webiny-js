@@ -12,13 +12,15 @@ describe("filters", () => {
 
     const operations = [
         ["eq"],
+        ["and_in"],
         ["in"],
         ["gt"],
         ["gte"],
         ["lt"],
         ["lte"],
         ["contains"],
-        ["between"]
+        ["between"],
+        ["fuzzy"]
     ];
 
     const findFilterPlugin = (operation: string): ValueFilterPlugin => {
@@ -356,6 +358,49 @@ describe("filters", () => {
             });
 
             expect(result).toBe(false);
+        }
+    );
+
+    test("target value should contain all required values", () => {
+        const plugin = findFilterPlugin("and_in");
+
+        const result = plugin.matches({
+            value: ["news", "webiny", "local", "global"],
+            compareValue: ["local", "webiny"]
+        });
+
+        expect(result).toBe(true);
+    });
+
+    test("target value does not contain all required values and match fails", () => {
+        const plugin = findFilterPlugin("and_in");
+
+        const result = plugin.matches({
+            value: ["news", "local", "global"],
+            compareValue: ["local", "webiny"]
+        });
+
+        expect(result).toBe(false);
+    });
+
+    const fuzzySearchList = [
+        ["Crafting a good page title for SEO", "why go serverless", false],
+        ["What is Serverless and is it worth it?", "why go serverless", true],
+        ["Why should you go Serverless today?", "why go serverless", true],
+        ["Serverless Side Rendering — The Ultimate Guide", "why go serverless", true]
+    ];
+
+    test.each(fuzzySearchList)(
+        `should perform fuzzy search on "%s"`,
+        (value: string, compareValue: string, expected: boolean) => {
+            const plugin = findFilterPlugin("fuzzy");
+
+            const result = plugin.matches({
+                value,
+                compareValue
+            });
+
+            expect(result).toBe(expected);
         }
     );
 });

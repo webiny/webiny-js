@@ -4,7 +4,18 @@ import { Entity } from "dynamodb-toolbox";
  * The attributes defined by us or the dynamodb-toolbox library.
  * Add more attributes if necessary.
  */
-const attributesToRemove = ["PK", "SK", "created", "_ct", "modified", "_mt", "entity", "_et"];
+const attributesToRemove = [
+    "PK",
+    "SK",
+    "created",
+    "_ct",
+    "modified",
+    "_mt",
+    "entity",
+    "_et",
+    "GSI1_PK",
+    "GSI1_SK"
+];
 
 export const cleanupItem = <T>(
     entity: Entity<any>,
