@@ -22,6 +22,7 @@ import { FilterExpressions } from "dynamodb-toolbox/dist/lib/expressionBuilder";
 import { decodeCursor, encodeCursor } from "@webiny/db-dynamodb/utils/cursor";
 import { filterItems } from "@webiny/db-dynamodb/utils/filter";
 import { sortItems } from "@webiny/db-dynamodb/utils/sort";
+import { FileDynamoDbFieldPlugin } from "~/plugins/FileDynamoDbFieldPlugin";
 
 interface FileItem extends File {
     PK: string;
@@ -238,6 +239,10 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
                 }
             );
         }
+
+        const fields = this.context.plugins.byType<FileDynamoDbFieldPlugin>(
+            FileDynamoDbFieldPlugin.type
+        );
         /**
          * Filter the read items via the code.
          * It will build the filters out of the where input and transform the values it is using.
@@ -245,7 +250,8 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
         const filteredFiles = filterItems({
             items,
             where,
-            context: this.context
+            context: this.context,
+            fields
         });
 
         const totalCount = filteredFiles.length;
@@ -257,7 +263,7 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
             context: this.context,
             items: filteredFiles,
             sort,
-            fields: ["id", "createdBy", "createdOn"]
+            fields
         });
 
         const start = decodeCursor(after) || 0;

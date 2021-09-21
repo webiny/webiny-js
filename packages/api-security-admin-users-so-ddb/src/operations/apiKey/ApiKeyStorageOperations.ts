@@ -16,6 +16,7 @@ import { createApiKeyEntity } from "~/definitions/apiKeyEntity";
 import { cleanupItem } from "@webiny/db-dynamodb/utils/cleanup";
 import { queryAll, queryOne, QueryOneParams } from "@webiny/db-dynamodb/utils/query";
 import { sortItems } from "@webiny/db-dynamodb/utils/sort";
+import { ApiKeyDynamoDbFieldPlugin } from "~/plugins/ApiKeyDynamoDbFieldPlugin";
 
 interface Params {
     context: AdminUsersContext;
@@ -105,11 +106,14 @@ export class ApiKeyStorageOperationsDdb implements ApiKeyStorageOperations {
             );
         }
 
-        const sortedItems = sortItems({
+        const fields = this.context.plugins.byType<ApiKeyDynamoDbFieldPlugin>(
+            ApiKeyDynamoDbFieldPlugin.type
+        );
+
+        const sortedItems = sortItems<ApiKey>({
             items,
             sort,
-            context: this.context,
-            fields: ["createdOn"]
+            fields
         });
         return sortedItems.map(item => this.cleanupItem(item));
     }
