@@ -232,7 +232,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
 
             if (deploy) {
                 console.log();
-                console.log(`Running ${chalk.green(`yarn webiny deploy ${apiPath}`)} command...`);
+                console.log(`Running ${chalk.green(`yarn webiny deploy ${apiPath} --env dev`)} command...`);
                 console.log();
                 await deployGraphQLAPI(apiPath, "dev", input);
             }
