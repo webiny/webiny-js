@@ -2,7 +2,7 @@ import React from "react";
 import { Helmet } from "react-helmet";
 import { PbPageData } from "@webiny/app-page-builder/types";
 import Layout from "./Layout";
-import Element from "@webiny/app-page-builder/render/components/Element";
+import Element from "@webiny/app-page-builder-elements/components/Element";
 import useResponsiveClassName from "@webiny/app-page-builder/hooks/useResponsiveClassName";
 import DefaultNotFoundPage from "theme/pageBuilder/components/defaultPages/DefaultNotFoundPage";
 import DefaultErrorPage from "theme/pageBuilder/components/defaultPages/DefaultErrorPage";
