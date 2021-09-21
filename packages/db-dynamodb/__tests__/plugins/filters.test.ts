@@ -403,4 +403,26 @@ describe("filters", () => {
             expect(result).toBe(expected);
         }
     );
+
+    test("must match all the given tags", () => {
+        const plugin = findFilterPlugin("and_in");
+
+        const result = plugin.matches({
+            value: ["tag1", "tag2"],
+            compareValue: ["tag1", "tag2"]
+        });
+
+        expect(result).toBe(true);
+    });
+
+    test("not match because not all tags are present", () => {
+        const plugin = findFilterPlugin("and_in");
+
+        const result = plugin.matches({
+            value: ["tag1", "tag2"],
+            compareValue: ["tag1", "tag2", "tag3"]
+        });
+
+        expect(result).toBe(false);
+    });
 });

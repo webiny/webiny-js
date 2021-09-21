@@ -105,6 +105,7 @@ export const LIST_FILES = (fields: string[]) => {
             $tags: [String],
             $ids: [ID],
             $search: String,
+            $where: FileWhereInput
         ) {
             fileManager {
                 listFiles(
@@ -113,7 +114,8 @@ export const LIST_FILES = (fields: string[]) => {
                     types: $types,
                     tags: $tags,
                     ids: $ids,
-                    search: $search
+                    search: $search,
+                    where: $where
                 ) {
                     data ${DATA_FIELD_WITH_ID(fields)}
                     meta {
