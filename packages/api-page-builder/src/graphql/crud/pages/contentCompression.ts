@@ -47,5 +47,10 @@ export const compressContent = async (
     if (value && value.compression) {
         return value as CompressedValue;
     }
-    return await plugin.compress(value);
+    try {
+        return await plugin.compress(value);
+    } catch (ex) {
+        console.log(`Error while compressing page "${page.id}" content: ${ex.message}`);
+        return null;
+    }
 };

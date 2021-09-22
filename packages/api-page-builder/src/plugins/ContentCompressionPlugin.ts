@@ -6,6 +6,10 @@ export interface CompressedValue {
     content: string;
 }
 
+/**
+ * Functions that are using compress and decompress methods have try/catch around them.
+ * canDecompress only expects boolean, no try/catch around it.
+ */
 export abstract class ContentCompressionPlugin extends Plugin {
     public static readonly type: string = "pageBuilder.page.content.compression";
 
@@ -24,10 +28,20 @@ export abstract class ContentCompressionPlugin extends Plugin {
         }
         this.identifier = identifier;
     }
-
+    /**
+     * Must return if it is possible to decompress the content with given implementation.
+     * This step makes sure no invalid data is passed into decompress method.
+     */
     public abstract canDecompress(value: CompressedValue): boolean;
-
+    /**
+     * Compress the content and return the CompressedValue object.
+     * @throws
+     */
     public abstract compress(value: any): Promise<CompressedValue>;
-
+    /**
+     * Decompress the content if possible. No need to check if given compressed value can be decompressed with given implementation.
+     * It is done in the canDecompress step.
+     * @throws
+     */
     public abstract decompress(value: CompressedValue): Promise<any>;
 }
