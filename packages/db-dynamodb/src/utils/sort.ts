@@ -1,4 +1,4 @@
-import lodashSortBy from "lodash.sortby";
+import lodashOrderBy from "lodash/orderBy";
 import WebinyError from "@webiny/error";
 import { FieldPlugin } from "~/plugins/definitions/FieldPlugin";
 
@@ -41,7 +41,7 @@ const extractSort = (sortBy: string, fields: FieldPlugin[]): ExtractSortResult =
 
     return {
         field,
-        reverse: order === "DESC"
+        reverse: order.toUpperCase() === "DESC"
     };
 };
 
@@ -60,32 +60,29 @@ interface Params<T> {
     fields: FieldPlugin[];
 }
 export const sortItems = <T extends any = any>(params: Params<T>): T[] => {
-    const { items, sort = [], fields } = params;
+    const { items, sort: initialSort = [], fields } = params;
     if (items.length <= 1) {
         return items;
-    } else if (sort.length === 0) {
-        sort.push("createdOn_DESC");
-    }
-    const [firstSort] = sort;
-    if (!firstSort) {
-        throw new WebinyError("Empty sort array item.", "SORT_ERROR", {
-            sort
-        });
+    } else if (initialSort.length === 0) {
+        initialSort.push("createdOn_DESC");
     }
 
-    const initialSorters: Sorters = {
+    const info: Sorters = {
         sorters: [],
         orders: []
     };
-    const info = sort.reduce((collection, s) => {
-        const { field, reverse } = extractSort(s, fields);
+
+    for (const sort of initialSort) {
+        if (!sort) {
+            continue;
+        }
+        const { field, reverse } = extractSort(sort, fields);
         const fieldPlugin = fields.find(f => f.getField() === field);
         const path = fieldPlugin ? fieldPlugin.getPath() : field;
 
-        collection.sorters.push(path);
-        collection.orders.push(reverse === true ? "desc" : "asc");
-        return collection;
-    }, initialSorters as Sorters);
+        info.sorters.push(path);
+        info.orders.push(reverse === true ? "desc" : "asc");
+    }
 
-    return lodashSortBy(items, info.sorters, info.orders);
+    return lodashOrderBy(items, info.sorters, info.orders);
 };
