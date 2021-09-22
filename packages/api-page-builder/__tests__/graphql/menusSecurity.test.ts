@@ -17,46 +17,55 @@ const defaultHandler = useGqlHandler({
     identity: identityA
 });
 
+const createDefaultMenus = async () => {
+    const { createMenu } = defaultHandler;
+    await createMenu({ data: new Mock("list-menus-1-") });
+    await createMenu({ data: new Mock("list-menus-2-") });
+};
+
+const createBMenus = async () => {
+    const handler = useGqlHandler({ identity: identityB });
+    await handler.createMenu({ data: new Mock("list-menus-3-") });
+    await handler.createMenu({ data: new Mock("list-menus-4-") });
+};
+
 describe("Menus Security Test", () => {
-    test(`"listMenus" only returns entries to which the identity has access to`, async () => {
-        const { createMenu } = defaultHandler;
-        await createMenu({ data: new Mock("list-menus-1-") });
-        await createMenu({ data: new Mock("list-menus-2-") });
+    const insufficientPermissions = [
+        [[], null],
+        [[], identityA],
+        [[{ name: "pb.menu", rwd: "wd" }], identityA],
+        [[{ name: "pb.menu", rwd: "d" }], identityA],
+        [[{ name: "pb.menu", rwd: "w" }], identityA],
+        [[{ name: "content.i18n", locales: ["de-DE", "it-IT"] }, { name: "pb.menu" }], identityA]
+    ];
 
-        const identityBHandler = useGqlHandler({ identity: identityB });
-        await identityBHandler.createMenu({ data: new Mock("list-menus-3-") });
-        await identityBHandler.createMenu({ data: new Mock("list-menus-4-") });
+    test.each(insufficientPermissions)(
+        `"listMenus" only returns entries to which the identity has access to - insufficient`,
+        async (permissions: any, identity: any) => {
+            await createDefaultMenus();
+            await createBMenus();
 
-        const insufficientPermissions = [
-            [[], null],
-            [[], identityA],
-            [[{ name: "pb.menu", rwd: "wd" }], identityA],
-            [[{ name: "pb.menu", rwd: "d" }], identityA],
-            [[{ name: "pb.menu", rwd: "w" }], identityA],
-            [
-                [{ name: "content.i18n", locales: ["de-DE", "it-IT"] }, { name: "pb.menu" }],
-                identityA
-            ]
-        ];
-
-        for (let i = 0; i < insufficientPermissions.length; i++) {
-            const [permissions, identity] = insufficientPermissions[i];
-            const { listMenus } = useGqlHandler({ permissions, identity: identity as any });
+            const { listMenus } = useGqlHandler({ permissions, identity });
             const [response] = await listMenus();
             expect(response).toMatchObject(NOT_AUTHORIZED_RESPONSE("listMenus"));
         }
+    );
 
-        const sufficientPermissionsAll = [
-            [[{ name: "content.i18n" }, { name: "content.i18n" }, { name: "pb.menu" }], identityA],
-            [[{ name: "content.i18n" }, { name: "pb.menu", rwd: "r" }], identityA],
-            [[{ name: "content.i18n" }, { name: "pb.menu", rwd: "rw" }], identityA],
-            [[{ name: "content.i18n" }, { name: "pb.menu", rwd: "rwd" }], identityA],
-            [[{ name: "content.i18n" }, { name: "pb.*" }], identityA],
-            [[{ name: "content.i18n", locales: ["en-US"] }, { name: "pb.menu" }], identityA]
-        ];
+    const sufficientPermissionsAll = [
+        [[{ name: "content.i18n" }, { name: "content.i18n" }, { name: "pb.menu" }], identityA],
+        [[{ name: "content.i18n" }, { name: "pb.menu", rwd: "r" }], identityA],
+        [[{ name: "content.i18n" }, { name: "pb.menu", rwd: "rw" }], identityA],
+        [[{ name: "content.i18n" }, { name: "pb.menu", rwd: "rwd" }], identityA],
+        [[{ name: "content.i18n" }, { name: "pb.*" }], identityA],
+        [[{ name: "content.i18n", locales: ["en-US"] }, { name: "pb.menu" }], identityA]
+    ];
 
-        for (let i = 0; i < sufficientPermissionsAll.length; i++) {
-            const [permissions, identity] = sufficientPermissionsAll[i];
+    test.each(sufficientPermissionsAll)(
+        `"listMenus" only returns entries to which the identity has access to - sufficient`,
+        async (permissions: any, identity: any) => {
+            await createDefaultMenus();
+            await createBMenus();
+
             const { listMenus } = useGqlHandler({ permissions, identity: identity as any });
             const [response] = await listMenus();
             expect(response).toMatchObject({
@@ -131,14 +140,19 @@ describe("Menus Security Test", () => {
                 }
             });
         }
+    );
 
-        let identityAHandler = useGqlHandler({
+    test(`"listMenus" only returns entries to which the identity has access to`, async () => {
+        await createDefaultMenus();
+        await createBMenus();
+
+        const identityAHandler = useGqlHandler({
             permissions: [{ name: "content.i18n" }, { name: "pb.menu", own: true }],
             identity: identityA
         });
 
-        let [response] = await identityAHandler.listMenus();
-        expect(response).toMatchObject({
+        const [listMenusAResponse] = await identityAHandler.listMenus();
+        expect(listMenusAResponse).toMatchObject({
             data: {
                 pageBuilder: {
                     listMenus: {
@@ -180,13 +194,13 @@ describe("Menus Security Test", () => {
             }
         });
 
-        identityAHandler = useGqlHandler({
+        const identityBHandler = useGqlHandler({
             permissions: [{ name: "content.i18n" }, { name: "pb.menu", own: true }],
             identity: identityB
         });
 
-        [response] = await identityAHandler.listMenus();
-        expect(response).toMatchObject({
+        const [listMenusBResponse] = await identityBHandler.listMenus();
+        expect(listMenusBResponse).toMatchObject({
             data: {
                 pageBuilder: {
                     listMenus: {

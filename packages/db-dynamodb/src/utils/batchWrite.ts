@@ -1,5 +1,5 @@
 import { Table } from "dynamodb-toolbox";
-import lodashChunk from "lodash.chunk";
+import lodashChunk from "lodash/chunk";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 
 interface Item {

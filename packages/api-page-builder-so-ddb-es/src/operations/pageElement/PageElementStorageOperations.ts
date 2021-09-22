@@ -18,6 +18,7 @@ import { sortItems } from "@webiny/db-dynamodb/utils/sort";
 import { createListResponse } from "@webiny/db-dynamodb/utils/listResponse";
 import { defineTable } from "~/definitions/table";
 import { definePageElementEntity } from "~/definitions/pageElementEntity";
+import { PageElementDynamoDbElasticFieldPlugin } from "~/plugins/definitions/PageElementDynamoDbElasticFieldPlugin";
 
 export interface Params {
     context: PbContext;
@@ -102,19 +103,23 @@ export class PageElementStorageOperationsDdbEs implements PageElementStorageOper
             );
         }
 
+        const fields = this.context.plugins.byType<PageElementDynamoDbElasticFieldPlugin>(
+            PageElementDynamoDbElasticFieldPlugin.type
+        );
+
         const filteredItems = filterItems<PageElement>({
             context: this.context,
             where: restWhere,
-            items: results
+            items: results,
+            fields
         }).map(item => {
             return cleanupItem<PageElement>(this.entity, item);
         });
 
         const sortedItems = sortItems<PageElement>({
-            context: this.context,
             items: filteredItems,
             sort,
-            fields: ["createdOn"]
+            fields
         });
 
         return createListResponse({

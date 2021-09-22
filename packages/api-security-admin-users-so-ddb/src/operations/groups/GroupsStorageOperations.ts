@@ -21,6 +21,7 @@ import { sortItems } from "@webiny/db-dynamodb/utils/sort";
 import { batchWriteAll } from "@webiny/db-dynamodb/utils/batchWrite";
 import { Tenant } from "@webiny/api-tenancy/types";
 import { DbItem } from "~/types";
+import { GroupDynamoDbFieldPlugin } from "~/plugins/GroupDynamoDbFieldPlugin";
 
 interface Params {
     context: AdminUsersContext;
@@ -96,11 +97,14 @@ export class GroupsStorageOperationsDdb implements GroupsStorageOperations {
             );
         }
 
-        const sortedItems = sortItems({
+        const fields = this.context.plugins.byType<GroupDynamoDbFieldPlugin>(
+            GroupDynamoDbFieldPlugin.type
+        );
+
+        const sortedItems = sortItems<Group>({
             items,
             sort,
-            context: this.context,
-            fields: ["createdOn"]
+            fields
         });
         return sortedItems.map(item => this.cleanupItem(item));
     }
