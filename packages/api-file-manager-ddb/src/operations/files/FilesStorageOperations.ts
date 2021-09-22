@@ -260,7 +260,6 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
          * It takes the sort input and sorts by it via the lodash sortBy method.
          */
         const sortedFiles = sortItems({
-            context: this.context,
             items: filteredFiles,
             sort,
             fields
