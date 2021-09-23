@@ -8,6 +8,10 @@ const { boolean } = require("boolean");
 // This way we ensure all of the environment variables are not loaded too late.
 const project = getProject();
 let paths = [path.join(project.root, ".env")];
+
+// Disable help processing until after plugins are imported
+yargs.help(false);
+
 if (yargs.argv.env) {
     paths.push(path.join(project.root, `.env.${yargs.argv.env}`));
 }
@@ -99,5 +103,5 @@ yargs
 (async () => {
     await createCommands(yargs, context);
     // Run
-    yargs.argv;
+    yargs.help().argv;
 })();
