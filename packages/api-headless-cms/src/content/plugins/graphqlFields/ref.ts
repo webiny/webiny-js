@@ -59,28 +59,27 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
                         return [];
                     }
 
-                    const entriesByModel = value.reduce((acc, ref) => {
-                        if (!acc[ref.modelId]) {
-                            acc[ref.modelId] = [];
-                        }
-                        acc[ref.modelId].push(ref.entryId);
-                        return acc;
-                    }, {});
-
-                    const getters = Object.keys(entriesByModel).map(async modelId => {
+                    const entriesByModel = value.map((ref, index) => {
+                        return {
+                            entryId: ref.entryId,
+                            modelId: ref.modelId,
+                            index
+                        };
+                    });
+                    const getters = entriesByModel.map(async ({ modelId, entryId }) => {
                         // Get model manager, to get access to CRUD methods
                         const model = await cms.getModel(modelId);
 
                         const entries: CmsContentEntry[] = cms.READ
                             ? // `read` API works with `published` data
-                              await model.getPublishedByIds(entriesByModel[modelId])
+                              await model.getPublishedByIds([entryId])
                             : // `preview` and `manage` with `latest` data
-                              await model.getLatestByIds(entriesByModel[modelId]);
+                              await model.getLatestByIds([entryId]);
 
                         return appendTypename(entries, modelIdToTypeName.get(modelId));
                     });
 
-                    return await Promise.all(getters).then(results =>
+                    return await Promise.all(getters).then((results: any[]) =>
                         results.reduce((result, item) => result.concat(item), [])
                     );
                 }
