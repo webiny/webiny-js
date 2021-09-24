@@ -22,6 +22,7 @@ const INSTALL_DIR = "/tmp";
 const INSTALL_EXTRACT_DIR = path.join(INSTALL_DIR, "apiPageBuilderImportPage");
 const FILES_COUNT_IN_EACH_BATCH = 15;
 const FM_BUCKET = process.env.S3_BUCKET;
+const ZIP_CONTENT_TYPE = "application/zip";
 
 const s3 = new S3({ region: process.env.AWS_REGION });
 
@@ -239,7 +240,7 @@ async function getObjectMetaFromS3(Key) {
         })
         .promise();
 
-    if (meta.ContentType !== "application/zip") {
+    if (meta.ContentType !== ZIP_CONTENT_TYPE) {
         throw new WebinyError(`Unsupported file type: "${meta.ContentType}"`, "UNSUPPORTED_FILE");
     }
 }
@@ -262,6 +263,7 @@ function getOldFileKey(key: string) {
 }
 
 const FILE_CONTENT_TYPE = "application/octet-stream";
+const ZIP_EXTENSION = ".zip";
 
 /**
  * Function will read the given zip file from S3 via stream, extract its content and upload it to S3 bucket.
@@ -271,6 +273,7 @@ const FILE_CONTENT_TYPE = "application/octet-stream";
 export async function readExtractAndUploadZipFileContents(
     zipFileKey: string
 ): Promise<Record<string, any>> {
+    const log = console.log;
     let dataMap = {};
     let readStream;
     // Check whether it is a URL
@@ -290,31 +293,79 @@ export async function readExtractAndUploadZipFileContents(
 
         readStream = getS3FileStream(zipFileKey);
     }
-
-    const zip = readStream.pipe(unzipper.Parse({ forceStream: true }));
-
+    /**
+     * Note:
+     * The page export file (zip) itself contains one or more zip files that contains the export data for individual pages.
+     * So, we need to perform unzip operation twice, once for top level zip and then for inner zip containing page data.
+     */
     const uniquePath = uniqueId("IMPORT_PAGES/");
-
+    // Extract top level zip file.
+    const zip = readStream.pipe(unzipper.Parse({ forceStream: true }));
+    const pageDataZipUploadPromises = [];
+    // Process each entry in the zip file.
     for await (const entry of zip) {
         const filePath = entry.path;
-
+        log(`Processing zip file "${filePath}" from top level zip.`);
         const type = entry.type; // 'Directory' or 'File'
 
-        if (type === "File" && !isSystemFile(filePath)) {
+        if (type === "File" && !isSystemFile(filePath) && filePath.endsWith(ZIP_EXTENSION)) {
             const newKey = `${uniquePath}/${filePath}`;
 
-            dataMap = prepareMap({ map: dataMap, filePath, newKey });
-
-            // TODO: Use real type instead of dummy FILE_CONTENT_TYPE
-            const { passThrough, promise } = uploadStream(newKey, FILE_CONTENT_TYPE);
+            const { passThrough, promise } = uploadStream(newKey, ZIP_CONTENT_TYPE);
             entry.pipe(passThrough);
-
-            await promise;
-            console.log(`Successfully uploaded file "${filePath}"`);
+            /**
+             * Note: We're not simply awaiting the promise inside async-iterator because
+             * the streams returned by "unzipper.Parse()" doesn't work reliably that way.
+             *
+             * https://github.com/ZJONSSON/node-unzipper/issues/193#issuecomment-654990068
+             */
+            pageDataZipUploadPromises.push(promise);
+            console.log(`Successfully queued file "${filePath}" for upload.`);
         } else {
             entry.autodrain();
         }
     }
+
+    const zipKeys = await Promise.all(pageDataZipUploadPromises).then(results =>
+        results.map(({ Key }) => Key)
+    );
+
+    const pagesDataUploadPromises = [];
+    // Process each zip file.
+    for (let i = 0; i < zipKeys.length; i++) {
+        const zipKey = zipKeys[i];
+        const uniquePageKey = path.basename(zipKey).replace(path.extname(zipKey), "");
+
+        const zip = getS3FileStream(zipKey).pipe(unzipper.Parse({ forceStream: true }));
+        // Process each entry in the zip file.
+        for await (const entry of zip) {
+            const filePath = entry.path;
+
+            console.log(`Processing page file ${filePath}`);
+            const type = entry.type; // 'Directory' or 'File'
+
+            if (type === "File" && !isSystemFile(filePath)) {
+                const newKey = `${uniquePath}/${uniquePageKey}/${filePath}`;
+
+                dataMap = prepareMap({ map: dataMap, filePath, newKey });
+
+                const { passThrough, promise } = uploadStream(newKey, FILE_CONTENT_TYPE);
+                entry.pipe(passThrough);
+                /**
+                 * Note: We're not simply awaiting the promise inside async-iterator because
+                 * the streams returned by "unzipper.Parse()" doesn't work reliably that way.
+                 *
+                 * https://github.com/ZJONSSON/node-unzipper/issues/193#issuecomment-654990068
+                 */
+                pagesDataUploadPromises.push(promise);
+                console.log(`Successfully queued  page file "${filePath}" for upload.`);
+            } else {
+                entry.autodrain();
+            }
+        }
+    }
+
+    await Promise.all(pageDataZipUploadPromises);
 
     return dataMap;
 }
