@@ -3,6 +3,7 @@ import React from "react";
 export interface Element {
     id: string;
     type: string;
+    path: string[];
     data: ElementData;
     elements: Element[];
 }
@@ -18,12 +19,11 @@ export interface Theme {
     [key: string]: any;
 }
 
-export type ElementComponent = React.ComponentType<ElementComponentProps>;
-
 export interface ElementComponentProps {
     element: Element;
-    getStyles: () => {};
 }
+
+export type ElementComponent = React.ComponentType<ElementComponentProps>;
 
 export type ElementStylesHandler = (args: {
     element: Element;
