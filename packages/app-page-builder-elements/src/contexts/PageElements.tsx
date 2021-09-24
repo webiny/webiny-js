@@ -8,13 +8,15 @@ export interface Props {
     elements: Record<string, React.ComponentType>;
     breakpoints: Record<string, Breakpoint>;
     styles: Array<ElementStylesHandler>;
+    theme?: Theme;
     // ---
     attributes?: Array<Function>;
-    theme?: Theme;
 }
 
 export interface PageElementsContextValue extends Props {
     getStyles: (args: { styles?: React.CSSProperties; element: Element }) => string;
+    getThemeStyles: (args: { styles?: React.CSSProperties; element: Element }) => React.CSSProperties;
+    getElementStyles: (args: { styles?: React.CSSProperties; element: Element }) => React.CSSProperties;
 }
 
 export const PageElementsProvider: React.FC<Props> = ({
@@ -25,9 +27,9 @@ export const PageElementsProvider: React.FC<Props> = ({
     attributes = [],
     breakpoints = {}
 }) => {
-    const getStyles = useCallback<PageElementsContextValue["getStyles"]>(
+    const getElementStyles = useCallback<PageElementsContextValue["getStyles"]>(
         ({ element, styles: initialStyles = {} }) => {
-            const finalStyles = { ...initialStyles };
+            const returnStyles = { ...initialStyles };
             for (const styleName in styles) {
                 for (const breakpointName in breakpoints) {
                     const breakpoint = breakpoints[breakpointName];
@@ -39,18 +41,77 @@ export const PageElementsProvider: React.FC<Props> = ({
 
                     if (handlerStyles) {
                         if (breakpoint.mediaQuery) {
-                            if (!finalStyles[breakpoint.mediaQuery]) {
-                                finalStyles[breakpoint.mediaQuery] = {};
+                            if (!returnStyles[breakpoint.mediaQuery]) {
+                                returnStyles[breakpoint.mediaQuery] = {};
                             }
-                            Object.assign(finalStyles[breakpoint.mediaQuery], handlerStyles);
+                            Object.assign(returnStyles[breakpoint.mediaQuery], handlerStyles);
                         } else {
-                            Object.assign(finalStyles, handlerStyles);
+                            Object.assign(returnStyles, handlerStyles);
                         }
                     }
                 }
             }
 
-            return emotionCss(finalStyles);
+            return emotionCss(returnStyles);
+        },
+        []
+    );
+
+    const getThemeStyles = useCallback<PageElementsContextValue["getStyles"]>(
+        ({ theme: , styles: initialStyles = {} }) => {
+            const returnStyles = { ...initialStyles };
+            for (const breakpointName in breakpoints) {
+                const breakpoint = breakpoints[breakpointName];
+                if (theme[])
+                const handlerStyles = styles[styleName]({
+                    breakpoint,
+                    breakpointName,
+                    element
+                });
+
+                if (handlerStyles) {
+                    if (breakpoint.mediaQuery) {
+                        if (!returnStyles[breakpoint.mediaQuery]) {
+                            returnStyles[breakpoint.mediaQuery] = {};
+                        }
+                        Object.assign(returnStyles[breakpoint.mediaQuery], handlerStyles);
+                    } else {
+                        Object.assign(returnStyles, handlerStyles);
+                    }
+                }
+            }
+
+            return emotionCss(returnStyles);
+        },
+        []
+    );
+
+    const getStyles = useCallback<PageElementsContextValue["getStyles"]>(
+        ({ element, styles: initialStyles = {} }) => {
+            const returnStyles = { ...initialStyles };
+            for (const styleName in styles) {
+                for (const breakpointName in breakpoints) {
+                    const breakpoint = breakpoints[breakpointName];
+                    const handlerStyles = styles[styleName]({
+                        breakpoint,
+                        breakpointName,
+                        element
+                    });
+
+                    if (handlerStyles) {
+                        if (breakpoint.mediaQuery) {
+                            if (!returnStyles[breakpoint.mediaQuery]) {
+                                returnStyles[breakpoint.mediaQuery] = {};
+                            }
+                            Object.assign(returnStyles[breakpoint.mediaQuery], handlerStyles);
+                        } else {
+                            Object.assign(returnStyles, handlerStyles);
+                        }
+                    }
+                }
+            }
+
+            return emotionCss(returnStyles);
         },
         []
     );

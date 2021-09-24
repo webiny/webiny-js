@@ -7,7 +7,7 @@ const width: ElementStylesHandler = ({ breakpointName, element }) => {
     }
 
     if (width[breakpointName]) {
-        return { width: width[breakpointName].value };
+        return { maxWidth: width[breakpointName].value };
     }
 };
 
