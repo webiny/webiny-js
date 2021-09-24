@@ -1,8 +1,8 @@
 import { HandlerPlugin } from "@webiny/handler/types";
 import { ArgsContext } from "@webiny/handler-args/types";
 import { ExportTaskStatus, Page, PbContext } from "~/types";
-import { importPage, updateMainTask, zeroPad } from "~/importPage/utils";
-import { invokeHandlerClient } from "~/importPage/client";
+import { importPage, updateMainTask, zeroPad } from "~/importPages/utils";
+import { invokeHandlerClient } from "~/importPages/client";
 
 export type HandlerArgs = {
     taskId: string;

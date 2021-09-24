@@ -1,8 +1,8 @@
 import { HandlerPlugin } from "@webiny/handler/types";
 import { ArgsContext } from "@webiny/handler-args/types";
 import { ExportTaskStatus, PbContext } from "~/types";
-import { updateMainTask, zeroPad } from "~/importPage/utils";
-import { invokeHandlerClient } from "~/importPage/client";
+import { updateMainTask, zeroPad } from "~/importPages/utils";
+import { invokeHandlerClient } from "~/importPages/client";
 import { NotFoundError } from "@webiny/handler-graphql";
 import { exportPage } from "~/exportPages/utils";
 import { HandlerArgs as ExtractHandlerArgs } from "../combine";
