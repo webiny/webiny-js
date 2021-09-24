@@ -1,13 +1,13 @@
 import React from "react";
-import { PageElement } from "~/types";
+import { Element as ElementType } from "~/types";
 import { usePageElements } from "~/hooks/usePageElements";
 import ErrorBoundary from "./ErrorBoundary";
 
 export interface Props {
-    element: PageElement;
+    element: ElementType;
 }
 
-const Element: React.FC<Props> = props => {
+export const Element: React.FC<Props> = props => {
     const { element } = props;
     const { elements } = usePageElements();
 
@@ -26,15 +26,3 @@ const Element: React.FC<Props> = props => {
         </ErrorBoundary>
     );
 };
-
-export const ElementChildren: React.FC<Props> = props => {
-    return (
-        <>
-            {props.element.elements.map(element => (
-                <Element key={element.id} element={element} />
-            ))}
-        </>
-    );
-};
-
-export default Element;

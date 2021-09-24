@@ -1,24 +1,6 @@
-import { DisplayMode } from "~/types";
-
-export default [
-    {
-        displayMode: DisplayMode.DESKTOP,
-        maxWidth: 0,
-        minWidth: 4000
-    },
-    {
-        displayMode: DisplayMode.TABLET,
-        maxWidth: 0,
-        minWidth: 991
-    },
-    {
-        displayMode: DisplayMode.MOBILE_LANDSCAPE,
-        maxWidth: 0,
-        minWidth: 767
-    },
-    {
-        displayMode: DisplayMode.MOBILE_PORTRAIT,
-        maxWidth: 0,
-        minWidth: 478
-    }
-];
+export default {
+    desktop: { maxWidth: 4000 },
+    tablet: { maxWidth: 991 },
+    "mobile-landscape": { maxWidth: 767 },
+    "mobile-portrait": { maxWidth: 478 }
+};

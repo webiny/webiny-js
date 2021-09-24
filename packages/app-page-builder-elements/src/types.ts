@@ -1,24 +1,42 @@
-export type PageElement = {
+import React from "react";
+
+export interface Element {
     id: string;
     type: string;
-    data: PageElementData;
-    elements: PageElement[];
-};
+    data: ElementData;
+    elements: Element[];
+}
 
-export type PageElementData = {
-    type: string;
+export interface ElementData {
     settings?: Record<string, any>;
     [key: string]: any;
-};
-
-export type Theme = {
-    colors?: { [key: string]: string };
-    elements?: { [key: string]: any };
-};
-
-export enum DisplayMode {
-    DESKTOP = "desktop",
-    TABLET = "tablet",
-    MOBILE_LANDSCAPE = "mobile-landscape",
-    MOBILE_PORTRAIT = "mobile-portrait"
 }
+
+export type Content = Element;
+
+export interface Theme {
+    [key: string]: any;
+}
+
+export interface DisplayMode {
+    minWidth?: number;
+    maxWidth?: number;
+}
+
+export type ElementComponent = React.ComponentType<ElementComponentProps>;
+
+export interface ElementComponentProps {
+    element: Element;
+    getStyles: () => {};
+}
+
+export type ElementStylesHandler = (args: {
+    element: Element;
+    displayModeName: string;
+    displayMode: DisplayMode;
+}) => React.CSSProperties;
+
+export type GetMediaQueryHandler = (args: {
+    displayMode: Record<string, any>;
+    displayModeName: string;
+}) => string;

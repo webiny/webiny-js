@@ -12,6 +12,7 @@ class ErrorBoundary extends React.Component<any, { hasError: boolean }> {
     }
 
     componentDidCatch(error, errorInfo) {
+        console.log("An error occurred while rendering a page element:");
         console.log(error, errorInfo);
     }
 
