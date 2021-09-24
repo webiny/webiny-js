@@ -22,7 +22,7 @@ export type HandlerResponse = {
 interface Configuration {
     handlers: {
         process: string;
-        extract: string;
+        combine: string;
     };
 }
 
@@ -166,7 +166,7 @@ export default (
                 // Combine individual page zip files.
                 await invokeHandlerClient<ExtractHandlerArgs>({
                     context,
-                    name: configuration.handlers.extract,
+                    name: configuration.handlers.combine,
                     payload: {
                         taskId
                     }
