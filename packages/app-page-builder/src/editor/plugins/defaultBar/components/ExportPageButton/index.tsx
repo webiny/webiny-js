@@ -7,10 +7,10 @@ import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { Icon } from "@webiny/ui/Icon";
 
 import { ReactComponent as DownloadIcon } from "../icons/file_download.svg";
-import { EXPORT_PAGE, GET_EXPORT_PAGE_TASK } from "./graphql";
+import { EXPORT_PAGES, GET_PAGE_IMPORT_EXPORT_TASK } from "./graphql";
 import useExportPageDialog from "./useExportPageDialog";
 
-const INTERVAL = 0.5 * 1000;
+const INTERVAL = 2 * 1000;
 
 const ExportPageButton: React.FunctionComponent<{ page: any }> = ({ page }) => {
     const { showSnackbar } = useSnackbar();
@@ -18,16 +18,16 @@ const ExportPageButton: React.FunctionComponent<{ page: any }> = ({ page }) => {
         useExportPageDialog();
     const [taskId, setTaskId] = useState<string>(null);
 
-    const [exportPage, exportPageResponse] = useMutation(EXPORT_PAGE, {
+    const [exportPage, exportPageResponse] = useMutation(EXPORT_PAGES, {
         onCompleted: response => {
-            const { error, data } = get(response, "pageBuilder.exportPage", {});
+            const { error, data } = get(response, "pageBuilder.exportPages", {});
             if (error) {
                 return showSnackbar(error.message);
             }
-            setTaskId(data.taskId);
+            setTaskId(data.task.id);
         }
     });
-    const { data } = useQuery(GET_EXPORT_PAGE_TASK, {
+    const { data } = useQuery(GET_PAGE_IMPORT_EXPORT_TASK, {
         variables: {
             id: taskId
         },
@@ -38,7 +38,7 @@ const ExportPageButton: React.FunctionComponent<{ page: any }> = ({ page }) => {
     });
 
     const pollExportPageTaskStatus = useCallback(response => {
-        const { error, data } = get(response, "pageBuilder.getPageExportTask", {});
+        const { error, data } = get(response, "pageBuilder.getPageImportExportTask", {});
         if (error) {
             return showSnackbar(error.message);
         }
@@ -85,7 +85,7 @@ const ExportPageButton: React.FunctionComponent<{ page: any }> = ({ page }) => {
     return (
         <MenuItem
             onClick={async () => {
-                await exportPage({ variables: { id: page.id } });
+                await exportPage({ variables: { ids: [page.id] } });
             }}
             data-testid={"pb-editor-page-options-menu-export"}
         >

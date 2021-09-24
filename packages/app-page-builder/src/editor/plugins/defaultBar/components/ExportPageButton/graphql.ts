@@ -1,11 +1,16 @@
 import gql from "graphql-tag";
 
-export const EXPORT_PAGE = gql`
-    mutation PbExportPage($id: ID!) {
+export const EXPORT_PAGES = gql`
+    mutation PbExportPages($ids: [ID]!) {
         pageBuilder {
-            exportPage(id: $id) {
+            exportPages(ids: $ids) {
                 data {
-                    taskId
+                    task {
+                        id
+                        status
+                        stats
+                        data
+                    }
                 }
                 error {
                     code
@@ -16,13 +21,14 @@ export const EXPORT_PAGE = gql`
     }
 `;
 
-export const GET_EXPORT_PAGE_TASK = gql`
-    query PbGetExportPageTask($id: ID!) {
+export const GET_PAGE_IMPORT_EXPORT_TASK = gql`
+    query PbGetPageImportExportTask($id: ID!) {
         pageBuilder {
-            getExportPageTask(id: $id) {
+            getPageImportExportTask(id: $id) {
                 data {
                     status
                     data
+                    stats
                 }
                 error {
                     code

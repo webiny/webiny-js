@@ -1,17 +1,15 @@
 import { useCallback, useState } from "react";
 import pick from "lodash/pick";
+import get from "lodash/get";
 import { useMutation } from "@apollo/react-hooks";
-import { useRouter } from "@webiny/react-router";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
-import * as GQLCache from "~/admin/views/Pages/cache";
-import { IMPORT_PAGE } from "~/admin/graphql/pages";
+import { IMPORT_PAGES } from "~/admin/graphql/pages";
 
 const useImportPage = ({ setLoadingLabel, clearLoadingLabel, closeDialog }) => {
     const [fileKey, setFileKey] = useState<string | null>(null);
 
-    const [importPage] = useMutation(IMPORT_PAGE);
+    const [importPage] = useMutation(IMPORT_PAGES);
     const { showSnackbar } = useSnackbar();
-    const { history } = useRouter();
 
     const importPageMutation = useCallback(
         async ({ slug: category }) => {
@@ -29,23 +27,26 @@ const useImportPage = ({ setLoadingLabel, clearLoadingLabel, closeDialog }) => {
                         )
                     },
                     update(cache, { data }) {
-                        if (data.pageBuilder.importPage.error) {
+                        const { error } = get(data, "pageBuilder.importPages", {});
+                        if (error) {
                             return;
                         }
 
-                        GQLCache.addPageToListCache(cache, data.pageBuilder.importPage.data);
+                        // We won't have information about the pages, so we can't add them to the cache.
+                        // GQLCache.addPageToListCache(cache, data.pageBuilder.importPage.data);
                     }
                 });
 
                 clearLoadingLabel();
                 closeDialog();
 
-                const { error, data } = res.data.pageBuilder.importPage;
+                const { error, data } = get(res, "pageBuilder.importPages", {});
                 if (error) {
                     showSnackbar(error.message);
-                } else {
-                    history.push(`/page-builder/editor/${encodeURIComponent(data.id)}`);
+                    return;
                 }
+                // TODO: Do the polling
+                console.log(data);
             } catch (e) {
                 showSnackbar(e.message);
             }
