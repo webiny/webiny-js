@@ -1,6 +1,6 @@
 import { HandlerPlugin } from "@webiny/handler/types";
 import { ArgsContext } from "@webiny/handler-args/types";
-import { ExportPageTask, ExportTaskStatus, Page, PbContext } from "~/types";
+import { PageImportExportTask, PageImportExportTaskStatus, Page, PbContext } from "~/types";
 import { initialStats, readExtractAndUploadZipFileContents, zeroPad } from "~/importPages/utils";
 import { invokeHandlerClient } from "~/importPages/client";
 import { HandlerArgs as ProcessHandlerArgs } from "../process";
@@ -11,7 +11,7 @@ export type HandlerArgs = {
         zipFileKey?: string;
         zipFileUrl?: string;
     };
-    task: ExportPageTask;
+    task: PageImportExportTask;
 };
 
 export type HandlerResponse = {
@@ -54,11 +54,11 @@ export default (
             for (let i = 0; i < pageKeys.length; i++) {
                 const pageKey = pageKeys[i];
                 // Create sub task
-                const subtask = await pageBuilder.exportPageTask.createSubTask(
+                const subtask = await pageBuilder.pageImportExportTask.createSubTask(
                     task.id,
                     zeroPad(i + 1),
                     {
-                        status: ExportTaskStatus.PENDING,
+                        status: PageImportExportTaskStatus.PENDING,
                         data: {
                             pageKey,
                             category,
@@ -72,8 +72,8 @@ export default (
                 log(`Added SUB_TASK "${subtask.id}" to queue.`);
             }
             // Update main task status
-            await pageBuilder.exportPageTask.update(task.id, {
-                status: ExportTaskStatus.PROCESSING,
+            await pageBuilder.pageImportExportTask.update(task.id, {
+                status: PageImportExportTaskStatus.PROCESSING,
                 stats: initialStats(pageKeys.length)
             });
 
@@ -96,8 +96,8 @@ export default (
             const { invocationArgs: args, pageBuilder } = context;
             const { task } = args;
 
-            await pageBuilder.exportPageTask.update(task.id, {
-                status: ExportTaskStatus.FAILED,
+            await pageBuilder.pageImportExportTask.update(task.id, {
+                status: PageImportExportTaskStatus.FAILED,
                 data: {
                     error: {
                         name: e.name,

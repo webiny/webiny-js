@@ -1,7 +1,7 @@
 import { HandlerPlugin } from "@webiny/handler/types";
 import { ArgsContext } from "@webiny/handler-args/types";
-import { ExportTaskStatus, PbContext } from "~/types";
-import { s3StreamHandler } from "~/exportPageTask/s3StreamHandler";
+import { PageImportExportTaskStatus, PbContext } from "~/types";
+import { s3Stream } from "../s3Stream";
 import { ZipOfZip } from "~/exportPages/zipper";
 
 export type HandlerArgs = {
@@ -28,12 +28,12 @@ export default (): HandlerPlugin<PbContext, ArgsContext<HandlerArgs>> => ({
         const { taskId } = args;
 
         try {
-            const task = await pageBuilder.exportPageTask.get(taskId);
+            const task = await pageBuilder.pageImportExportTask.get(taskId);
 
             const { exportPagesDataKey } = task.input;
 
             // Get all files (zip) from given key
-            const listObjectResponse = await s3StreamHandler.listObject(exportPagesDataKey);
+            const listObjectResponse = await s3Stream.listObject(exportPagesDataKey);
 
             const zipFileKeys = listObjectResponse.Contents.filter(
                 file => file.Key !== exportPagesDataKey
@@ -47,8 +47,8 @@ export default (): HandlerPlugin<PbContext, ArgsContext<HandlerArgs>> => ({
             log(`Done uploading... File is located at ${pageExportUpload.Location} `);
 
             // Update task status and save export page data key
-            await pageBuilder.exportPageTask.update(taskId, {
-                status: ExportTaskStatus.COMPLETED,
+            await pageBuilder.pageImportExportTask.update(taskId, {
+                status: PageImportExportTaskStatus.COMPLETED,
                 data: {
                     message: `Finish uploading page export.`,
                     key: pageExportUpload.Key,
@@ -62,8 +62,8 @@ export default (): HandlerPlugin<PbContext, ArgsContext<HandlerArgs>> => ({
              * In case of error, we'll update the task status to "failed",
              * so that, client can show notify the user appropriately.
              */
-            await pageBuilder.exportPageTask.update(taskId, {
-                status: ExportTaskStatus.FAILED,
+            await pageBuilder.pageImportExportTask.update(taskId, {
+                status: PageImportExportTaskStatus.FAILED,
                 error: {
                     name: e.name,
                     message: e.message,

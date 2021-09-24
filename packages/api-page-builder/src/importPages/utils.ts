@@ -12,7 +12,7 @@ import loadJson from "load-json-file";
 import { PbContext } from "~/graphql/types";
 import { FileInput } from "@webiny/api-file-manager/types";
 import WebinyError from "@webiny/error";
-import { ExportTaskStatus, Page } from "~/types";
+import { PageImportExportTaskStatus, Page } from "~/types";
 
 export type CreatePage = () => Promise<Page>;
 export type UpdatePage = (page: Page, content: Record<string, any>) => Promise<Page>;
@@ -464,8 +464,8 @@ async function deleteS3Folder(key) {
 interface UpdateMainTaskStatsParams {
     pageBuilder: PbContext["pageBuilder"];
     taskId: string;
-    currentStatus: ExportTaskStatus;
-    previousStatus: ExportTaskStatus;
+    currentStatus: PageImportExportTaskStatus;
+    previousStatus: PageImportExportTaskStatus;
 }
 
 export async function updateMainTask({
@@ -480,10 +480,10 @@ export async function updateMainTask({
      *  After migrating to storage operations, we'll use the update method of Dynamodb Toolbox entity to avoid
      *  redundant DB call.
      */
-    const task = await pageBuilder.exportPageTask.get(taskId);
+    const task = await pageBuilder.pageImportExportTask.get(taskId);
 
-    await pageBuilder.exportPageTask.update(taskId, {
-        status: ExportTaskStatus.PROCESSING,
+    await pageBuilder.pageImportExportTask.update(taskId, {
+        status: PageImportExportTaskStatus.PROCESSING,
         stats: {
             ...task.stats,
             // Increment current status count.
@@ -498,10 +498,10 @@ export const zeroPad = version => `${version}`.padStart(5, "0");
 
 export function initialStats(total) {
     return {
-        [ExportTaskStatus.PENDING]: total,
-        [ExportTaskStatus.PROCESSING]: 0,
-        [ExportTaskStatus.COMPLETED]: 0,
-        [ExportTaskStatus.FAILED]: 0,
+        [PageImportExportTaskStatus.PENDING]: total,
+        [PageImportExportTaskStatus.PROCESSING]: 0,
+        [PageImportExportTaskStatus.COMPLETED]: 0,
+        [PageImportExportTaskStatus.FAILED]: 0,
         total
     };
 }

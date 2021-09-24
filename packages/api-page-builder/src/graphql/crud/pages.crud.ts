@@ -13,7 +13,7 @@ import { ContextPlugin } from "@webiny/handler/types";
 import getPKPrefix from "./utils/getPKPrefix";
 import defaults from "./utils/defaults";
 import {
-    ExportTaskStatus,
+    PageImportExportTaskStatus,
     Page,
     PagesCrud,
     PageSecurityPermission,
@@ -1501,8 +1501,8 @@ const plugin: ContextPlugin<PbContext> = {
                     }
 
                     // Create a task for import page
-                    const task = await context.pageBuilder.exportPageTask.create({
-                        status: ExportTaskStatus.PENDING,
+                    const task = await context.pageBuilder.pageImportExportTask.create({
+                        status: PageImportExportTaskStatus.PENDING,
                         input: {
                             category: categorySlug,
                             data
@@ -1536,19 +1536,19 @@ const plugin: ContextPlugin<PbContext> = {
                     }
 
                     // Create the main task for page export.
-                    const task = await context.pageBuilder.exportPageTask.create({
-                        status: ExportTaskStatus.PENDING
+                    const task = await context.pageBuilder.pageImportExportTask.create({
+                        status: PageImportExportTaskStatus.PENDING
                     });
                     const exportPagesDataKey = `${EXPORT_PAGES_FOLDER_KEY}/${task.id}`;
                     // For each page create a sub task and invoke the process handler.
                     for (let i = 0; i < pageIds.length; i++) {
                         const pageId = pageIds[i];
                         // Create sub task.
-                        await context.pageBuilder.exportPageTask.createSubTask(
+                        await context.pageBuilder.pageImportExportTask.createSubTask(
                             task.id,
                             zeroPad(i + 1),
                             {
-                                status: ExportTaskStatus.PENDING,
+                                status: PageImportExportTaskStatus.PENDING,
                                 input: {
                                     pageId,
                                     exportPagesDataKey
@@ -1557,8 +1557,8 @@ const plugin: ContextPlugin<PbContext> = {
                         );
                     }
                     // Update main task status.
-                    await context.pageBuilder.exportPageTask.update(task.id, {
-                        status: ExportTaskStatus.PROCESSING,
+                    await context.pageBuilder.pageImportExportTask.update(task.id, {
+                        status: PageImportExportTaskStatus.PROCESSING,
                         stats: initialStats(pageIds.length),
                         input: {
                             exportPagesDataKey

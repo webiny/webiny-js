@@ -23,20 +23,28 @@ export type PageElement = {
     };
 };
 
-export enum ExportTaskStatus {
+export enum PageImportExportTaskStatus {
     PENDING = "pending",
     PROCESSING = "processing",
     COMPLETED = "completed",
     FAILED = "failed"
 }
 
-export interface ExportPageTask {
+export interface PageImportExportTaskStats {
+    [PageImportExportTaskStatus.PENDING]: number;
+    [PageImportExportTaskStatus.PROCESSING]: number;
+    [PageImportExportTaskStatus.COMPLETED]: number;
+    [PageImportExportTaskStatus.FAILED]: number;
+    total: number;
+}
+
+export interface PageImportExportTask {
     id: string;
-    status: ExportTaskStatus;
-    data: {
-        url: string;
-        key: string;
-    };
+    status: PageImportExportTaskStatus;
+    data: Record<string, any>;
+    stats: PageImportExportTaskStats;
+    error: Record<string, any>;
+    input: Record<string, any>;
     createdOn: string;
     createdBy: {
         type: string;
