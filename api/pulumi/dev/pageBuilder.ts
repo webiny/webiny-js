@@ -17,14 +17,18 @@ interface PageBuilderParams {
 
 class PageBuilder {
     role: aws.iam.Role;
-    exportPageTaskRole: aws.iam.Role;
-    importPagesRole: aws.iam.Role;
+    exportPagesLambdaRole: aws.iam.Role;
+    importPagesLambdaRole: aws.iam.Role;
     functions: {
         updateSettings: aws.lambda.Function;
         exportPageTask: aws.lambda.Function;
         importPages: {
             create: aws.lambda.Function;
             process: aws.lambda.Function;
+        };
+        exportPages: {
+            process: aws.lambda.Function;
+            combine: aws.lambda.Function;
         };
     };
 
@@ -103,7 +107,7 @@ class PageBuilder {
             }
         });
 
-        this.exportPageTaskRole = new aws.iam.Role("pb-export-page-task-lambda-role", {
+        this.exportPagesLambdaRole = new aws.iam.Role("pb-export-pages-lambda-role", {
             assumeRolePolicy: {
                 Version: "2012-10-17",
                 Statement: [
@@ -118,23 +122,23 @@ class PageBuilder {
             }
         });
 
-        const exportPageTaskPolicy = policies.getPbExportPageTaskLambdaPolicy(
+        const exportPagesLambdaPolicy = policies.getPbExportPagesLambdaPolicy(
             primaryDynamodbTable,
             bucket
         );
 
-        new aws.iam.RolePolicyAttachment(`pb-export-page-task-lambda-role-policy-attachment`, {
-            role: this.exportPageTaskRole,
-            policyArn: exportPageTaskPolicy.arn.apply(arn => arn)
+        new aws.iam.RolePolicyAttachment(`pb-export-pages-lambda-role-policy-attachment`, {
+            role: this.exportPagesLambdaRole,
+            policyArn: exportPagesLambdaPolicy.arn.apply(arn => arn)
         });
 
-        new aws.iam.RolePolicyAttachment(`pb-export-page-task-lambda-AWSLambdaBasicExecutionRole`, {
-            role: this.exportPageTaskRole,
+        new aws.iam.RolePolicyAttachment(`pb-export-pages-lambda-AWSLambdaBasicExecutionRole`, {
+            role: this.exportPagesLambdaRole,
             policyArn: aws.iam.ManagedPolicy.AWSLambdaBasicExecutionRole
         });
 
-        const exportPageTask = new aws.lambda.Function("pb-export-page-task", {
-            role: this.exportPageTaskRole.arn,
+        const exportPageTask = new aws.lambda.Function("pb-export-pages", {
+            role: this.exportPagesLambdaRole.arn,
             runtime: "nodejs12.x",
             handler: "handler.handler",
             timeout: 60,
@@ -151,7 +155,44 @@ class PageBuilder {
             }
         });
 
-        this.importPagesRole = new aws.iam.Role("pb-import-page-lambda-role", {
+        const exportPagesCombineLambda = new aws.lambda.Function("pb-export-pages-combine", {
+            role: this.exportPagesLambdaRole.arn,
+            runtime: "nodejs12.x",
+            handler: "handler.handler",
+            timeout: 60,
+            memorySize: 128,
+            description: "Handle page export's combine workflow",
+            code: new pulumi.asset.AssetArchive({
+                ".": new pulumi.asset.FileArchive("../code/pageBuilder/exportPages/combine/build")
+            }),
+            environment: {
+                variables: {
+                    ...env,
+                    S3_BUCKET: bucket.id
+                }
+            }
+        });
+
+        const exportPagesProcessLambda = new aws.lambda.Function("pb-export-pages-process", {
+            role: this.exportPagesLambdaRole.arn,
+            runtime: "nodejs12.x",
+            handler: "handler.handler",
+            timeout: 60,
+            memorySize: 128,
+            description: "Handle page export's process workflow",
+            code: new pulumi.asset.AssetArchive({
+                ".": new pulumi.asset.FileArchive("../code/pageBuilder/exportPages/process/build")
+            }),
+            environment: {
+                variables: {
+                    ...env,
+                    S3_BUCKET: bucket.id,
+                    EXPORT_PAGE_COMBINE_HANDLER: exportPagesCombineLambda.arn
+                }
+            }
+        });
+
+        this.importPagesLambdaRole = new aws.iam.Role("pb-import-page-lambda-role", {
             assumeRolePolicy: {
                 Version: "2012-10-17",
                 Statement: [
@@ -166,7 +207,7 @@ class PageBuilder {
             }
         });
 
-        const importPageLambdaPolicy = policies.getImportPageLambdaPolicy({
+        const importPageLambdaPolicy = policies.getImportPagesLambdaPolicy({
             primaryDynamodbTable,
             elasticsearchDomain,
             elasticsearchDynamodbTable,
@@ -175,17 +216,17 @@ class PageBuilder {
         });
 
         new aws.iam.RolePolicyAttachment(`pb-import-page-lambda-role-policy-attachment`, {
-            role: this.importPagesRole,
+            role: this.importPagesLambdaRole,
             policyArn: importPageLambdaPolicy.arn.apply(arn => arn)
         });
 
         new aws.iam.RolePolicyAttachment(`pb-import-page-lambda-AWSLambdaBasicExecutionRole`, {
-            role: this.importPagesRole,
+            role: this.importPagesLambdaRole,
             policyArn: aws.iam.ManagedPolicy.AWSLambdaBasicExecutionRole
         });
 
         const importPagesQueueProcess = new aws.lambda.Function("pb-import-page-queue-process", {
-            role: this.importPagesRole.arn,
+            role: this.importPagesLambdaRole.arn,
             runtime: "nodejs12.x",
             handler: "handler.handler",
             timeout: 60,
@@ -203,7 +244,7 @@ class PageBuilder {
         });
 
         const importPagesQueueCreate = new aws.lambda.Function("pb-import-page-queue-create", {
-            role: this.importPagesRole.arn,
+            role: this.importPagesLambdaRole.arn,
             runtime: "nodejs12.x",
             handler: "handler.handler",
             timeout: 60,
@@ -227,6 +268,10 @@ class PageBuilder {
             importPages: {
                 create: importPagesQueueCreate,
                 process: importPagesQueueProcess
+            },
+            exportPages: {
+                process: exportPagesProcessLambda,
+                combine: exportPagesCombineLambda
             }
         };
     }

@@ -47,7 +47,7 @@ export const handler = createHandler({
         exportPagesProcessPlugins({
             handlers: {
                 process: process.env.AWS_LAMBDA_FUNCTION_NAME,
-                extract: process.env.EXPORT_PAGE_EXTRACT_HANDLER
+                combine: process.env.EXPORT_PAGE_COMBINE_HANDLER
             }
         })
     ],
