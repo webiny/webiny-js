@@ -4,7 +4,7 @@ import get from "lodash/get";
 import { usePageElements } from "~/hooks/usePageElements";
 import { Element } from "~/types";
 import { ElementRoot } from "./ElementRoot";
-import { applyFallbackDisplayMode } from "~/utils/applyFallbackDisplayMode";
+import { applyFallbackbreakpoint } from "~/utils/applyFallbackbreakpoint";
 
 const DATA_NAMESPACE = "data.text";
 
@@ -14,21 +14,21 @@ type TextPropsType = {
 };
 const TextElement: React.FunctionComponent<TextPropsType> = ({ element, rootClassName }) => {
     const {
-        displayModes,
-        responsiveDisplayMode: { displayMode }
+        breakpoints,
+        responsivebreakpoint: { breakpoint }
     } = usePageElements();
 
     const fallbackValue = useMemo(
         () =>
-            applyFallbackDisplayMode({
-                displayMode,
-                displayModes,
+            applyFallbackbreakpoint({
+                breakpoint,
+                breakpoints,
                 getValue: mode => get(element, `${DATA_NAMESPACE}.${mode}`)
             }),
-        [displayMode]
+        [breakpoint]
     );
 
-    const value = get(element, `${DATA_NAMESPACE}.${displayMode}`, fallbackValue);
+    const value = get(element, `${DATA_NAMESPACE}.${breakpoint}`, fallbackValue);
     const textContent = get(element, `${DATA_NAMESPACE}.data.text`);
     const tag = get(value, "tag");
     const typography = get(value, "typography");

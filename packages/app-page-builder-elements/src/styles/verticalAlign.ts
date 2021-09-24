@@ -1,12 +1,12 @@
 import { ElementStylesHandler } from "~/types";
 
-const verticalAlign: ElementStylesHandler = ({ element, displayModeName }) => {
+const verticalAlign: ElementStylesHandler = ({ element, breakpointName }) => {
     const { verticalAlign } = element.data.settings;
-    if (!verticalAlign || !verticalAlign[displayModeName]) {
+    if (!verticalAlign || !verticalAlign[breakpointName]) {
         return;
     }
 
-    return { display: "flex", alignItems: verticalAlign[displayModeName] };
+    return { display: "flex", alignItems: verticalAlign[breakpointName] };
 };
 
 export const createVerticalAlign = () => verticalAlign;

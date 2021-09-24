@@ -7,7 +7,7 @@ import { PageBuilderContext, PageBuilderContextValue } from "../../../../context
 
 const Button = ({ element }: { element: Element }) => {
     const {
-        responsiveDisplayMode: { displayMode }
+        responsivebreakpoint: { breakpoint }
     } = React.useContext<PageBuilderContextValue>(PageBuilderContext);
     const { type = "default", icon = {}, link = {} } = element.data || {};
     const { svg = null } = icon;
@@ -31,7 +31,7 @@ const Button = ({ element }: { element: Element }) => {
         <ElementRoot className={"webiny-pb-base-page-element-style"} element={element}>
             {({ getAllClasses, elementStyle, elementAttributes }) => {
                 // Use per-device style
-                const justifyContent = elementStyle[`--${kebabCase(displayMode)}-justify-content`];
+                const justifyContent = elementStyle[`--${kebabCase(breakpoint)}-justify-content`];
 
                 return (
                     <div style={{ display: "flex", justifyContent }}>

@@ -10,20 +10,20 @@ export default {
         const visibility = get(element, "data.settings.visibility");
 
         // Set per-device property value
-        applyPerDeviceStyleWithFallback(({ displayMode, fallbackMode }) => {
-            const hidden = get(visibility, `${displayMode}.hidden`);
+        applyPerDeviceStyleWithFallback(({ breakpoint, fallbackMode }) => {
+            const hidden = get(visibility, `${breakpoint}.hidden`);
             const defaultValue = "visible";
 
             if (hidden === undefined) {
                 // Set visibility
-                style[`--${kebabCase(displayMode)}-visibility`] = get(
+                style[`--${kebabCase(breakpoint)}-visibility`] = get(
                     style,
                     `--${kebabCase(fallbackMode)}-visibility`,
                     defaultValue
                 );
             } else {
                 // Set visibility
-                style[`--${kebabCase(displayMode)}-visibility`] = hidden ? "hidden" : defaultValue;
+                style[`--${kebabCase(breakpoint)}-visibility`] = hidden ? "hidden" : defaultValue;
             }
         });
 

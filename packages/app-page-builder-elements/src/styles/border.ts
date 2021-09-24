@@ -1,13 +1,13 @@
 import { ElementStylesHandler } from "~/types";
 
-const border: ElementStylesHandler = ({ element, displayModeName }) => {
+const border: ElementStylesHandler = ({ element, breakpointName }) => {
     const { border } = element.data.settings;
 
-    if (!border || !border[displayModeName]) {
+    if (!border || !border[breakpointName]) {
         return;
     }
 
-    const values = border[displayModeName];
+    const values = border[breakpointName];
     const styles = {
         borderStyle: values.style,
         borderColor: values.color

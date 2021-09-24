@@ -1,12 +1,12 @@
 import { ElementStylesHandler } from "~/types";
 
-const margin: ElementStylesHandler = ({ element, displayModeName }) => {
+const margin: ElementStylesHandler = ({ element, breakpointName }) => {
     const { margin } = element.data.settings;
-    if (!margin || !margin[displayModeName]) {
+    if (!margin || !margin[breakpointName]) {
         return;
     }
 
-    const values = margin[displayModeName];
+    const values = margin[breakpointName];
     if (values.advanced) {
         return {
             marginTop: values.top,
