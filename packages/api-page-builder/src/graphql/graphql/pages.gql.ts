@@ -165,7 +165,7 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
             }
 
             type PbExportPageData {
-                task: PbExportPageTask
+                task: PbPageImportExportTask
             }
 
             type PbExportPageResponse {
@@ -174,7 +174,7 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
             }
 
             type PbImportPageData {
-                task: PbExportPageTask
+                task: PbPageImportExportTask
             }
 
             type PbImportPageResponse {
