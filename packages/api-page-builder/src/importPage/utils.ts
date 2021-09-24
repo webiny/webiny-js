@@ -9,7 +9,6 @@ import { deleteFile } from "~/graphql/crud/install/utils/downloadInstallFiles";
 import path from "path";
 import chunk from "lodash/chunk";
 import loadJson from "load-json-file";
-import { updateFilesInPageData } from "~/graphql/crud/pages/importPage";
 import { PbContext } from "~/graphql/types";
 import { FileInput } from "@webiny/api-file-manager/types";
 import WebinyError from "@webiny/error";
@@ -25,6 +24,42 @@ const FM_BUCKET = process.env.S3_BUCKET;
 const ZIP_CONTENT_TYPE = "application/zip";
 
 const s3 = new S3({ region: process.env.AWS_REGION });
+
+interface UpdateFilesInPageDataParams {
+    data: Record<string, any>;
+    fileIdToKeyMap: Map<string, string>;
+    srcPrefix: string;
+}
+
+function updateFilesInPageData({ data, fileIdToKeyMap, srcPrefix }: UpdateFilesInPageDataParams) {
+    // BASE CASE: Termination point
+    if (!data || typeof data !== "object") {
+        return;
+    }
+    // Recursively call function if data is array
+    if (Array.isArray(data)) {
+        for (let i = 0; i < data.length; i++) {
+            const element = data[i];
+            updateFilesInPageData({ data: element, fileIdToKeyMap, srcPrefix });
+        }
+        return;
+    }
+    // Main logic
+    const tuple = Object.entries(data);
+    for (let i = 0; i < tuple.length; i++) {
+        const [key, value] = tuple[i];
+
+        if (key === "file" && value && fileIdToKeyMap.has(value.id)) {
+            value.key = fileIdToKeyMap.get(value.id);
+            value.name = fileIdToKeyMap.get(value.id);
+            value.src = `${srcPrefix}${srcPrefix.endsWith("/") ? "" : "/"}${fileIdToKeyMap.get(
+                value.id
+            )}`;
+        } else {
+            updateFilesInPageData({ data: value, srcPrefix, fileIdToKeyMap });
+        }
+    }
+}
 
 interface UploadPageAssetsParams {
     context: PbContext;
@@ -109,6 +144,7 @@ export const uploadPageAssets = async ({
     };
 };
 
+// TODO: Use S3Stream instead
 function uploadStream(Key: string, contentType: string) {
     const passThrough = new PassThrough();
     return {
@@ -221,8 +257,8 @@ async function uploadFilesFromS3({
     return Promise.all(promises);
 }
 
-// TODO: Move into FileStorage plugins
-function getS3FileStream(Key) {
+// TODO: Move into FileStorage plugins | Use S3Stream
+function getS3FileStream(Key: string) {
     return s3
         .getObject({
             Bucket: process.env.S3_BUCKET,
@@ -231,8 +267,8 @@ function getS3FileStream(Key) {
         .createReadStream();
 }
 
-// TODO: Move into FileStorage plugins
-async function getObjectMetaFromS3(Key) {
+// TODO: Move into FileStorage plugins | Use S3Stream
+async function getObjectMetaFromS3(Key: string) {
     const meta = await s3
         .headObject({
             Bucket: process.env.S3_BUCKET,
@@ -246,6 +282,7 @@ async function getObjectMetaFromS3(Key) {
 }
 
 const IGNORE_SYSTEM_FILES = ["__MACOSX"];
+// TODO: Maybe we don't need it anymore?
 const isSystemFile = fileName => {
     return IGNORE_SYSTEM_FILES.some(system => fileName.startsWith(system));
 };
@@ -375,9 +412,11 @@ const ASSETS_DIR_NAME = "/assets";
 function prepareMap({ map, filePath, newKey }) {
     const dirname = path.dirname(filePath);
     const fileName = path.basename(filePath);
-    const extName = path.extname(filePath);
-    // We want to use dot (.) as part of object key rather than accessing/creating nested object.
-    const oldKey = `${fileName.replace(extName, "")}\\.${extName.replace(".", "")}`;
+    /*
+     * We want to use dot (.) as part of object key rather than creating nested object(s).
+     * Also, the file name might contain dots in it beside the extension, so, we are escaping them all.
+     */
+    const oldKey = fileName.replace(/\./g, "\\.");
 
     const isAsset = dirname.endsWith(ASSETS_DIR_NAME);
 
@@ -385,8 +424,6 @@ function prepareMap({ map, filePath, newKey }) {
         const folder = dirname.replace(ASSETS_DIR_NAME, "");
         map = dotProp.set(map, `${folder}.assets.${oldKey}`, newKey);
     } else {
-        // map = dotProp.set(map, `${dirname}.data.${oldKey}`, newKey);
-
         // We only need to know the newKey for data file.
         map = dotProp.set(map, `${dirname}.data`, newKey);
     }
@@ -394,7 +431,7 @@ function prepareMap({ map, filePath, newKey }) {
     return map;
 }
 
-// TODO: Use FileStorage plugins instead
+// TODO: Use FileStorage plugins instead | Use S3Stream
 async function deleteS3Folder(key) {
     // Append trailing slash i.e "/" to key to make sure we only delete a specific folder.
     if (!key.endsWith("/")) {
