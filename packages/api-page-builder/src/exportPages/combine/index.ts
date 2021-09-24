@@ -51,7 +51,8 @@ export default (): HandlerPlugin<PbContext, ArgsContext<HandlerArgs>> => ({
                 status: ExportTaskStatus.COMPLETED,
                 data: {
                     message: `Finish uploading page export.`,
-                    key: pageExportUpload.Key
+                    key: pageExportUpload.Key,
+                    url: pageExportUpload.Location
                 }
             });
         } catch (e) {
