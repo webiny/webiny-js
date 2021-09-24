@@ -32,9 +32,11 @@ import { compressContent, extractContent } from "./pages/contentCompression";
 import { CreateDataModel, UpdateSettingsModel } from "./pages/models";
 import { getESLatestPageData, getESPublishedPageData } from "./pages/esPageData";
 import { PagePlugin } from "~/plugins/PagePlugin";
-import importPage from "~/graphql/crud/pages/importPage";
-import { invokeHandlerClient } from "~/importPage/client";
-import { HandlerArgs as CreateHandlerArgs } from "~/importPage/create";
+import { invokeHandlerClient } from "~/importPages/client";
+import { HandlerArgs as CreateHandlerArgs } from "~/importPages/create";
+import { initialStats, zeroPad } from "~/importPages/utils";
+import { HandlerArgs as ExportPagesProcessHandlerArgs } from "~/exportPages/process";
+import { EXPORT_PAGES_FOLDER_KEY } from "~/exportPages/utils";
 
 const STATUS_CHANGES_REQUESTED = "changesRequested";
 const STATUS_REVIEW_REQUESTED = "reviewRequested";
@@ -46,8 +48,8 @@ const getZeroPaddedVersionNumber = number => String(number).padStart(4, "0");
 
 const DEFAULT_EDITOR = "page-builder";
 const PERMISSION_NAME = "pb.page";
-const EXPORT_PAGE_TASK_FUNCTION = process.env.EXPORT_PAGE_TASK_FUNCTION;
-const IMPORT_PAGES_CREATE_HANDLER = process.env.IMPORT_PAGE_QUEUE_ADD_HANDLER;
+const EXPORT_PAGES_PROCESS_HANDLER = process.env.EXPORT_PAGES_PROCESS_HANDLER;
+const IMPORT_PAGES_CREATE_HANDLER = process.env.IMPORT_PAGES_CREATE_HANDLER;
 
 const plugin: ContextPlugin<PbContext> = {
     type: "context",
@@ -1481,80 +1483,6 @@ const plugin: ContextPlugin<PbContext> = {
                     return page;
                 },
 
-                async exportPage(pageId: string) {
-                    const permission = await checkBasePermissions(context, PERMISSION_NAME, {
-                        rwd: "w"
-                    });
-
-                    const [pid, rev] = pageId.split("#");
-                    const PAGE_PK = PK_PAGE(pid);
-
-                    const [[page]] = await db.read<Page>({
-                        ...defaults.db,
-                        query: { PK: PAGE_PK, SK: `REV#${rev}` }
-                    });
-
-                    if (!page) {
-                        throw new NotFoundError(`Page "${pageId}" not found.`);
-                    }
-
-                    const identity = context.security.getIdentity();
-
-                    checkOwnPermissions(identity, permission, page, "ownedBy");
-
-                    // Extract compressed page content.
-                    page.content = await extractContent(page.content);
-
-                    // Create a page export task
-                    const exportTask = await context.pageBuilder.exportPageTask.create({
-                        status: ExportTaskStatus.PENDING
-                    });
-
-                    // Invoke handler
-                    await context.handlerClient.invoke({
-                        name: EXPORT_PAGE_TASK_FUNCTION,
-                        payload: {
-                            page,
-                            taskId: exportTask.id,
-                            // TODO: Maybe there is a better way
-                            // @ts-ignore
-                            PK: exportTask.PK
-                        },
-                        await: false
-                    });
-
-                    return {
-                        taskId: exportTask.id
-                    };
-                },
-
-                async importPage(
-                    category: string,
-                    data: {
-                        zipFileKey: string;
-                        zipFileUrl: string;
-                    }
-                ) {
-                    await checkBasePermissions(context, PERMISSION_NAME, {
-                        rwd: "w"
-                    });
-                    // Create an empty page
-                    let page = await context.pageBuilder.pages.create(category);
-
-                    // Download the zip and upload the assets
-                    const { content } = await importPage({
-                        context,
-                        pageDataZipKey: data.zipFileKey,
-                        pageDataZipUrl: data.zipFileUrl,
-                        pageTitle: page.title
-                    });
-
-                    // Update page
-                    page = await context.pageBuilder.pages.update(page.id, { content });
-
-                    return page;
-                },
-
                 async importPages(
                     categorySlug: string,
                     data: {
@@ -1597,7 +1525,7 @@ const plugin: ContextPlugin<PbContext> = {
                 },
 
                 async exportPages(pageIds: string[]) {
-                    const permission = await checkBasePermissions(context, PERMISSION_NAME, {
+                    await checkBasePermissions(context, PERMISSION_NAME, {
                         rwd: "w"
                     });
                     if (pageIds.length === 0) {
@@ -1607,106 +1535,47 @@ const plugin: ContextPlugin<PbContext> = {
                         );
                     }
 
-                    const batch = db.batch();
-                    const idNotProvidedError = new Error('Cannot export page - "id" not provided.');
-
-                    const errorsAndResults = [];
-
-                    let batchResultIndex = 0;
-                    for (let i = 0; i < pageIds.length; i++) {
-                        const pageId = pageIds[i];
-
-                        if (!pageId) {
-                            errorsAndResults.push(idNotProvidedError);
-                            continue;
-                        }
-
-                        // If we have a full ID, then try to load it directly.
-                        const [pid, version] = pageId.split("#");
-
-                        if (version) {
-                            errorsAndResults.push(batchResultIndex++);
-                            batch.read({
-                                ...defaults.db,
-                                query: { PK: PK_PAGE(pid), SK: `REV#${version}` }
-                            });
-                            continue;
-                        }
-
-                        errorsAndResults.push(batchResultIndex++);
-                        batch.read({
-                            ...defaults.db,
-                            query: {
-                                PK: PK_PAGE(pid),
-                                SK: `P`
-                            }
-                        });
-                    }
-
-                    // Replace batch result indexes with actual results.
-                    const batchResults = await batch.execute();
-                    for (let i = 0; i < errorsAndResults.length; i++) {
-                        const errorResult = errorsAndResults[i];
-                        if (typeof errorResult !== "number") {
-                            continue;
-                        }
-
-                        const [[page]] = batchResults[errorResult];
-                        if (!page) {
-                            errorsAndResults[i] = new NotFoundError(
-                                `Page "${pageIds[i]}" not found.`
-                            );
-                            continue;
-                        }
-
-                        // Extract page content.
-                        errorsAndResults[i] = page;
-
-                        // Extract compressed page content.
-                        errorsAndResults[i].content = await extractContent(
-                            errorsAndResults[i].content
-                        );
-                    }
-                    const identity = context.security.getIdentity();
-                    const pages = [];
-                    let hasError = false;
-                    // Prepare export
-                    for (let i = 0; i < errorsAndResults.length; i++) {
-                        const page = errorsAndResults[i];
-
-                        if (page instanceof Error) {
-                            hasError = true;
-                            continue;
-                        }
-
-                        checkOwnPermissions(identity, permission, page, "ownedBy");
-
-                        pages.push(page);
-                    }
-                    // TODO: Figure out how to return multiple errors.
-                    if (hasError) {
-                        return errorsAndResults;
-                    }
-
-                    // Create a page export task
-                    const exportTask = await context.pageBuilder.exportPageTask.create({
+                    // Create the main task for page export.
+                    const task = await context.pageBuilder.exportPageTask.create({
                         status: ExportTaskStatus.PENDING
                     });
-
-                    // Invoke handler
-                    await context.handlerClient.invoke({
-                        name: EXPORT_PAGE_TASK_FUNCTION,
-                        payload: {
-                            pages,
-                            taskId: exportTask.id,
-                            // TODO: Maybe there is a better way
-                            // @ts-ignore
-                            PK: exportTask.PK
-                        },
-                        await: false
+                    const exportPagesDataKey = `${EXPORT_PAGES_FOLDER_KEY}/${task.id}`;
+                    // For each page create a sub task and invoke the process handler.
+                    for (let i = 0; i < pageIds.length; i++) {
+                        const pageId = pageIds[i];
+                        // Create sub task.
+                        await context.pageBuilder.exportPageTask.createSubTask(
+                            task.id,
+                            zeroPad(i + 1),
+                            {
+                                status: ExportTaskStatus.PENDING,
+                                input: {
+                                    pageId,
+                                    exportPagesDataKey
+                                }
+                            }
+                        );
+                    }
+                    // Update main task status.
+                    await context.pageBuilder.exportPageTask.update(task.id, {
+                        status: ExportTaskStatus.PROCESSING,
+                        stats: initialStats(pageIds.length),
+                        input: {
+                            exportPagesDataKey
+                        }
                     });
 
-                    return exportTask;
+                    // Invoke handler.
+                    await invokeHandlerClient<ExportPagesProcessHandlerArgs>({
+                        context,
+                        name: EXPORT_PAGES_PROCESS_HANDLER,
+                        payload: {
+                            taskId: task.id,
+                            subTaskIndex: 1
+                        }
+                    });
+
+                    return { task };
                 },
 
                 prerendering: {

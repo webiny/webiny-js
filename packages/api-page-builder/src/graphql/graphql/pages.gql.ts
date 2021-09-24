@@ -298,16 +298,10 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
 
                 updateImageSize: PbDeleteResponse
 
-                # Export page
-                exportPage(id: ID!): PbExportPageResponse
-
-                # Import page
-                importPage(category: String!, data: PbImportPageInput!): PbPageResponse
-
-                # Bulk export page
+                # Export pages
                 exportPages(ids: [ID]!): PbExportPageResponse
 
-                # Bulk import page
+                # Import pages
                 importPages(category: String!, data: PbImportPageInput!): PbImportPageResponse
             }
         `,
@@ -461,20 +455,6 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
 
                 requestChanges: async (_, args: { id: string }, context) => {
                     return resolve(() => context.pageBuilder.pages.requestChanges(args.id));
-                },
-
-                exportPage: async (_, args: { id: string }, context) => {
-                    return resolve(() => context.pageBuilder.pages.exportPage(args.id));
-                },
-
-                importPage: async (
-                    _,
-                    args: { category: string; data: Record<string, any> },
-                    context
-                ) => {
-                    return resolve(() =>
-                        context.pageBuilder.pages.importPage(args.category, args.data)
-                    );
                 },
 
                 exportPages: async (_, args: { ids: string[] }, context) => {
