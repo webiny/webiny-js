@@ -1,12 +1,12 @@
 import { ElementStylesHandler } from "~/types";
 
-const horizontalAlign: ElementStylesHandler = ({ element, displayModeName }) => {
+const horizontalAlign: ElementStylesHandler = ({ element, breakpointName }) => {
     const { horizontalAlignFlex: horizontalAlign } = element.data.settings;
-    if (!horizontalAlign || !horizontalAlign[displayModeName]) {
+    if (!horizontalAlign || !horizontalAlign[breakpointName]) {
         return;
     }
 
-    return { display: "flex", justifyContent: horizontalAlign[displayModeName] };
+    return { display: "flex", justifyContent: horizontalAlign[breakpointName] };
 };
 
 export const createHorizontalAlign = () => horizontalAlign;

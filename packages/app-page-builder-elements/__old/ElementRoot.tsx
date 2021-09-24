@@ -33,8 +33,8 @@ const ElementRootComponent: React.FunctionComponent<ElementRootProps> = ({
     const {
         attributes: attributesHandlers,
         styles: ElementElementStylesHandlers,
-        displayModes,
-        responsiveDisplayMode: { displayMode }
+        breakpoints,
+        responsivebreakpoint: { breakpoint }
     } = usePageElements();
 
     const shallowElement = useMemo(
@@ -50,7 +50,7 @@ const ElementRootComponent: React.FunctionComponent<ElementRootProps> = ({
     const finalStyle = useMemo(() => {
         // Reduce style
         return ElementElementStylesHandlers.reduce((accumulatedStyles, handler) => {
-            return handler({ displayModes, element: shallowElement, style: accumulatedStyles });
+            return handler({ breakpoints, element: shallowElement, style: accumulatedStyles });
         }, style || {});
     }, [style, shallowElement.id, shallowElement.data]);
 
@@ -68,7 +68,7 @@ const ElementRootComponent: React.FunctionComponent<ElementRootProps> = ({
         return null;
     }
     // Handle element visibility.// Use per-device style
-    const visibility = finalStyle[`--${kebabCase(displayMode)}-visibility`];
+    const visibility = finalStyle[`--${kebabCase(breakpoint)}-visibility`];
     if (visibility === "hidden") {
         return null;
     }

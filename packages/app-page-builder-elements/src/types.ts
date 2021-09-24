@@ -18,11 +18,6 @@ export interface Theme {
     [key: string]: any;
 }
 
-export interface DisplayMode {
-    minWidth?: number;
-    maxWidth?: number;
-}
-
 export type ElementComponent = React.ComponentType<ElementComponentProps>;
 
 export interface ElementComponentProps {
@@ -32,11 +27,10 @@ export interface ElementComponentProps {
 
 export type ElementStylesHandler = (args: {
     element: Element;
-    displayModeName: string;
-    displayMode: DisplayMode;
+    breakpointName: string;
+    breakpoint: Breakpoint;
 }) => React.CSSProperties;
 
-export type GetMediaQueryHandler = (args: {
-    displayMode: Record<string, any>;
-    displayModeName: string;
-}) => string;
+export interface Breakpoint {
+    mediaQuery: string;
+}

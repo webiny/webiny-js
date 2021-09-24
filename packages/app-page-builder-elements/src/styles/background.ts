@@ -34,15 +34,13 @@ const DEFAULT_SCALING = {
 
 const DEFAULT_POSITION = "top left";
 
-const background: ElementStylesHandler = ({ element, displayModeName }) => {
+const background: ElementStylesHandler = ({ element, breakpointName }) => {
     const { background } = element.data.settings;
-    if (!background || !background[displayModeName]) {
+    if (!background || !background[breakpointName]) {
         return;
     }
 
-    console.log(background);
-
-    const values = background[displayModeName];
+    const values = background[breakpointName];
     const styles = {
         backgroundColor: values.color
     };
