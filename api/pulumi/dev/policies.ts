@@ -6,7 +6,6 @@ export type EsDomain = aws.elasticsearch.Domain | pulumi.Output<aws.elasticsearc
 class Policies {
     private readonly awsRegion: string;
     private readonly callerIdentityOutput: pulumi.Output<aws.GetCallerIdentityResult>;
-    private cache = new Map();
 
     constructor() {
         const current = aws.getCallerIdentity({});
@@ -157,7 +156,7 @@ class Policies {
         });
     }
 
-    getPbExportPageTaskLambdaPolicy(
+    getPbExportPagesLambdaPolicy(
         primaryDynamodbTable: aws.dynamodb.Table,
         bucket: aws.s3.Bucket
     ): aws.iam.Policy {
@@ -191,16 +190,27 @@ class Policies {
                             "s3:DeleteObject",
                             "s3:PutObjectAcl",
                             "s3:PutObject",
-                            "s3:GetObject"
+                            "s3:GetObject",
+                            "s3:ListBucket"
                         ],
-                        Resource: pulumi.interpolate`arn:aws:s3:::${bucket.id}/*`
+                        Resource: [
+                            pulumi.interpolate`arn:aws:s3:::${bucket.id}/*`,
+                            // We need to explicitly add bucket ARN to "Resource" list for "s3:ListBucket" action.
+                            pulumi.interpolate`arn:aws:s3:::${bucket.id}`
+                        ]
+                    },
+                    {
+                        Sid: "PermissionForLambda",
+                        Effect: "Allow",
+                        Action: ["lambda:InvokeFunction"],
+                        Resource: pulumi.interpolate`arn:aws:lambda:${this.awsRegion}:${this.callerIdentityOutput.accountId}:function:*`
                     }
                 ]
             }
         });
     }
 
-    getImportPageLambdaPolicy({
+    getImportPagesLambdaPolicy({
         primaryDynamodbTable,
         elasticsearchDynamodbTable,
         bucket,
@@ -249,9 +259,9 @@ class Policies {
                             "s3:ListBucket"
                         ],
                         Resource: [
-                            // For "s3:ListBucket"
-                            pulumi.interpolate`arn:aws:s3:::${bucket.id}`,
-                            pulumi.interpolate`arn:aws:s3:::${bucket.id}/*`
+                            pulumi.interpolate`arn:aws:s3:::${bucket.id}/*`,
+                            // We need to explicitly add bucket ARN to "Resource" list for "s3:ListBucket" action.
+                            pulumi.interpolate`arn:aws:s3:::${bucket.id}`
                         ]
                     },
                     {
