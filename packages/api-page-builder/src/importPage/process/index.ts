@@ -35,6 +35,7 @@ export default (
     async handle(context): Promise<HandlerResponse> {
         const log = console.log;
         let subTask;
+        let noPendingTask = true;
         let prevStatusOfSubTask = ExportTaskStatus.PENDING;
 
         log("RUNNING Import Page Queue Process");
@@ -55,7 +56,10 @@ export default (
              * Bail out early, if task not found or task's status is not "pending".
              */
             if (!subTask || subTask.status !== ExportTaskStatus.PENDING) {
+                noPendingTask = true;
                 return;
+            } else {
+                noPendingTask = false;
             }
 
             log(`Fetched sub task => ${subTask.id}`);
@@ -151,7 +155,7 @@ export default (
             };
         } finally {
             // Base condition!
-            if (!subTask || subTask.status !== ExportTaskStatus.PENDING) {
+            if (noPendingTask) {
                 log(`No pending sub-task for task ${taskId}`);
 
                 await pageBuilder.exportPageTask.update(taskId, {
@@ -161,7 +165,7 @@ export default (
                     }
                 });
             } else {
-                console.log(`Invoking PROCESS for task "${subTaskIndex + 1}"`);
+                log(`Invoking PROCESS for task "${subTaskIndex + 1}"`);
                 // We want to continue with Self invocation no matter if current page error out.
                 await invokeHandlerClient<HandlerArgs>({
                     context,

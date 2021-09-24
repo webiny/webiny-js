@@ -69,7 +69,7 @@ export default (
                         }
                     }
                 );
-                console.log(`Added SUB_TASK "${subtask.id}" to queue.`);
+                log(`Added SUB_TASK "${subtask.id}" to queue.`);
             }
             // Update main task status
             await pageBuilder.exportPageTask.update(task.id, {
