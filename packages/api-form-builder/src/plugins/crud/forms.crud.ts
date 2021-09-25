@@ -57,25 +57,53 @@ export default {
         const SK_FORM_LATEST_PUBLISHED = () => "LP";
         const SK_SUBMISSION = submissionId => `FS#${submissionId}`;
 
+        /**
+         * If formsBuilder is not defined on the context, do not continue, but log it.
+         */
+        if (!context.formBuilder) {
+            console.log("Missing formBuilder on context. Skipping Forms crud.");
+            return;
+        }
+        const storageOperations = context.formBuilder.storageOperations;
+
         context.formBuilder = {
             ...context.formBuilder,
             forms: {
                 async getForm(id) {
                     const permission = await utils.checkBaseFormPermissions(context, { rwd: "r" });
 
-                    const [uniqueId, version] = id.split("#");
+                    // const [uniqueId, version] = id.split("#");
+                    //
+                    // const [[form]] = await db.read<FbForm>({
+                    //     ...defaults.db,
+                    //     query: {
+                    //         PK: PK_FORM(uniqueId),
+                    //         SK: SK_FORM_REVISION(version)
+                    //     }
+                    // });
+                    //
+                    // utils.checkOwnership(form, permission, context);
+                    //
+                    // return form;
 
-                    const [[form]] = await db.read<FbForm>({
-                        ...defaults.db,
-                        query: {
-                            PK: PK_FORM(uniqueId),
-                            SK: SK_FORM_REVISION(version)
-                        }
-                    });
+                    try {
+                        const form = await storageOperations.getForm({
+                            where: {
+                                id
+                            }
+                        });
+                        utils.checkOwnership(form, permission, context);
 
-                    utils.checkOwnership(form, permission, context);
-
-                    return form;
+                        return form;
+                    } catch (ex) {
+                        throw new WebinyError(
+                            ex.message || "Could not load form.",
+                            ex.code || "GET_FORM_ERROR",
+                            {
+                                id
+                            }
+                        );
+                    }
                 },
                 async getFormStats(id) {
                     // We don't need to check permissions here, as this method is only called
@@ -169,20 +197,42 @@ export default {
                 },
                 async getFormRevisions(id) {
                     const permission = await utils.checkBaseFormPermissions(context, { rwd: "r" });
-                    const [uniqueId] = id.split("#");
+                    // const [uniqueId] = id.split("#");
+                    //
+                    // const [forms] = await db.read<FbForm>({
+                    //     ...defaults.db,
+                    //     query: {
+                    //         PK: PK_FORM(uniqueId),
+                    //         SK: { $beginsWith: "REV#" },
+                    //         sort: { SK: -1 }
+                    //     }
+                    // });
+                    //
+                    // utils.checkOwnership(forms[0], permission, context);
+                    //
+                    // return forms.sort((a, b) => b.version - a.version);
 
-                    const [forms] = await db.read<FbForm>({
-                        ...defaults.db,
-                        query: {
-                            PK: PK_FORM(uniqueId),
-                            SK: { $beginsWith: "REV#" },
-                            sort: { SK: -1 }
+                    try {
+                        const forms = await storageOperations.listFormRevisions({
+                            where: {
+                                id
+                            }
+                        });
+                        if (forms.length === 0) {
+                            return [];
                         }
-                    });
+                        utils.checkOwnership(forms[0], permission, context);
 
-                    utils.checkOwnership(forms[0], permission, context);
-
-                    return forms.sort((a, b) => b.version - a.version);
+                        return forms;
+                    } catch (ex) {
+                        throw new WebinyError(
+                            ex.message || "Could not list form revisions.",
+                            ex.code || "LIST_FORM_REVISIONS_ERROR",
+                            {
+                                id
+                            }
+                        );
+                    }
                 },
                 async getPublishedFormRevisionById(revisionId) {
                     const [uniqueId, version] = revisionId.split("#");
