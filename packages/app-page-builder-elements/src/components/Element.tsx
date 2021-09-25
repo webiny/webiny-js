@@ -8,21 +8,21 @@ export interface Props {
 }
 
 export const Element: React.FC<Props> = props => {
-    const { element } = props;
-    const { elements } = usePageElements();
+    const { renderers } = usePageElements();
 
+    const { element } = props;
     if (!element) {
         return null;
     }
 
-    const PageElementComponent = elements[element.type];
-    if (!PageElementComponent) {
+    const ElementRenderer = renderers[element.type];
+    if (!ElementRenderer) {
         return null;
     }
 
     return (
         <ErrorBoundary>
-            <PageElementComponent {...props} />
+            <ElementRenderer {...props} />
         </ErrorBoundary>
     );
 };

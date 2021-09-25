@@ -1,6 +1,6 @@
 import React from "react";
 import { usePageElements } from "~/hooks/usePageElements";
-import { ElementComponent } from "~/types";
+import { ElementRenderer } from "~/types";
 
 declare global {
     //eslint-disable-next-line
@@ -13,12 +13,14 @@ declare global {
 
 const defaultStyles = { display: "block" };
 
-const Image: ElementComponent = ({ element }) => {
+const Image: ElementRenderer = ({ element }) => {
+    const { getCustomCss, getCss, css } = usePageElements();
+    const classNames = css.cx(getCustomCss(defaultStyles), getCss(element));
+
     const { src, name } = element.data.image.file;
-    const { getStyles } = usePageElements();
 
     return (
-        <pb-image class={getStyles({ element, styles: defaultStyles })}>
+        <pb-image class={classNames}>
             <img alt={name} src={src} />
         </pb-image>
     );

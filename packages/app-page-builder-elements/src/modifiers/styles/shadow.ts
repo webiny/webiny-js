@@ -1,6 +1,6 @@
-import { ElementStylesHandler } from "~/types";
+import { ElementStylesModifier } from "~/types";
 
-const shadow: ElementStylesHandler = ({ element }) => {
+const shadow: ElementStylesModifier = ({ element }) => {
     const { shadow } = element.data.settings;
     if (!shadow) {
         return;

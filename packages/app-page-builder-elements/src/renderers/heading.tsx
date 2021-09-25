@@ -1,6 +1,6 @@
 import React from "react";
 import { usePageElements } from "~/hooks/usePageElements";
-import { ElementComponent } from "~/types";
+import { ElementRenderer } from "~/types";
 
 declare global {
     //eslint-disable-next-line
@@ -13,12 +13,13 @@ declare global {
 
 const defaultStyles = { display: "block" };
 
-const Heading: ElementComponent = ({ element }) => {
-    const { getStyles } = usePageElements();
+const Heading: ElementRenderer = ({ element }) => {
+    const { getCustomCss, getCss, css } = usePageElements();
+    const classNames = css.cx(getCustomCss(defaultStyles), getCss(element));
 
     const tag = element.data.text.desktop.tag || "h1";
     return (
-        <pb-heading class={getStyles({ element, styles: defaultStyles })}>
+        <pb-heading class={classNames}>
             {React.createElement(tag, {
                 dangerouslySetInnerHTML: { __html: element.data.text.data.text }
             })}

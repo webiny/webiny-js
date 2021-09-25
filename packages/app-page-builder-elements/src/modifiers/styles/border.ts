@@ -1,6 +1,6 @@
-import { ElementStylesHandler } from "~/types";
+import { ElementStylesModifier } from "~/types";
 
-const border: ElementStylesHandler = ({ element, breakpointName }) => {
+const border: ElementStylesModifier = ({ element, breakpointName }) => {
     const { border } = element.data.settings;
 
     if (!border || !border[breakpointName]) {

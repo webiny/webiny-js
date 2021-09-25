@@ -1,6 +1,6 @@
-import { ElementStylesHandler } from "~/types";
+import { ElementStylesModifier } from "~/types";
 
-const text: ElementStylesHandler = ({ element, breakpointName }) => {
+const text: ElementStylesModifier = ({ element, breakpointName }) => {
     const { text } = element.data;
     // Here we have data and display modes in the same object.
     if (!text || !text[breakpointName]) {

@@ -1,27 +1,28 @@
 import React from "react";
 import { usePageElements } from "~/hooks/usePageElements";
-import { ElementComponent } from "~/types";
+import { ElementRenderer } from "~/types";
 
 declare global {
     //eslint-disable-next-line
     namespace JSX {
         interface IntrinsicElements {
-            "pb-list": any;
+            "pb-paragraph": any;
         }
     }
 }
 
 const defaultStyles = { display: "block" };
 
-const List: ElementComponent = ({ element }) => {
-    const { getStyles } = usePageElements();
+const Paragraph: ElementRenderer = ({ element }) => {
+    const { getCustomCss, getCss, css } = usePageElements();
+    const classNames = css.cx(getCustomCss(defaultStyles), getCss(element));
 
     return (
-        <pb-list
-            class={getStyles({ element, styles: defaultStyles })}
+        <pb-paragraph
+            class={classNames}
             dangerouslySetInnerHTML={{ __html: element.data.text.data.text }}
         />
     );
 };
 
-export const createList = () => List;
+export const createParagraph = () => Paragraph;

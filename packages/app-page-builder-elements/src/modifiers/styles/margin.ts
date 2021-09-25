@@ -1,6 +1,6 @@
-import { ElementStylesHandler } from "~/types";
+import { ElementStylesModifier } from "~/types";
 
-const margin: ElementStylesHandler = ({ element, breakpointName }) => {
+const margin: ElementStylesModifier = ({ element, breakpointName }) => {
     const { margin } = element.data.settings;
     if (!margin || !margin[breakpointName]) {
         return;

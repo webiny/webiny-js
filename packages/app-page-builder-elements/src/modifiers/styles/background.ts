@@ -1,4 +1,4 @@
-import { ElementStylesHandler } from "~/types";
+import { ElementStylesModifier } from "~/types";
 
 const SCALING_MAP = {
     cover: {
@@ -34,7 +34,7 @@ const DEFAULT_SCALING = {
 
 const DEFAULT_POSITION = "top left";
 
-const background: ElementStylesHandler = ({ element, breakpointName }) => {
+const background: ElementStylesModifier = ({ element, breakpointName }) => {
     const { background } = element.data.settings;
     if (!background || !background[breakpointName]) {
         return;

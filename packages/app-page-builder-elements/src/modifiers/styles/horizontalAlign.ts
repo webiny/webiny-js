@@ -1,6 +1,6 @@
-import { ElementStylesHandler } from "~/types";
+import { ElementStylesModifier } from "~/types";
 
-const horizontalAlign: ElementStylesHandler = ({ element, breakpointName }) => {
+const horizontalAlign: ElementStylesModifier = ({ element, breakpointName }) => {
     const { horizontalAlignFlex: horizontalAlign } = element.data.settings;
     if (!horizontalAlign || !horizontalAlign[breakpointName]) {
         return;

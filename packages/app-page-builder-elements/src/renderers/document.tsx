@@ -1,6 +1,6 @@
 import React from "react";
 import { Elements } from "~/components/Elements";
-import { ElementComponent } from "~/types";
+import { ElementRenderer } from "~/types";
 
 declare global {
     //eslint-disable-next-line
@@ -11,7 +11,7 @@ declare global {
     }
 }
 
-const Document: ElementComponent = ({ element }) => {
+const Document: ElementRenderer = ({ element }) => {
     return (
         <pb-document>
             <Elements element={element} />
