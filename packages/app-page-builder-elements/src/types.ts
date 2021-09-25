@@ -1,36 +1,33 @@
 import React from "react";
+import { CSSObject } from "@emotion/css";
 
 export interface Element {
     id: string;
     type: string;
     path: string[];
-    data: ElementData;
+    data: Record<string, any>;
     elements: Element[];
-}
-
-export interface ElementData {
-    settings?: Record<string, any>;
-    [key: string]: any;
 }
 
 export type Content = Element;
 
-export interface Theme {
-    [key: string]: any;
-}
-
-export interface ElementComponentProps {
+export interface ElementRendererProps {
     element: Element;
 }
 
-export type ElementComponent = React.ComponentType<ElementComponentProps>;
+export type ElementRenderer = React.ComponentType<ElementRendererProps>;
 
-export type ElementStylesHandler = (args: {
+export type ElementStylesModifier = (args: {
     element: Element;
     breakpointName: string;
     breakpoint: Breakpoint;
-}) => React.CSSProperties;
+}) => CSSObject;
 
 export interface Breakpoint {
     mediaQuery: string;
+}
+
+export interface Theme {
+    breakpoints: Record<string, Breakpoint>;
+    styles: Record<string, any>;
 }

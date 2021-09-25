@@ -1,6 +1,6 @@
-import { ElementStylesHandler } from "~/types";
+import { ElementStylesModifier } from "~/types";
 
-const verticalAlign: ElementStylesHandler = ({ element, breakpointName }) => {
+const verticalAlign: ElementStylesModifier = ({ element, breakpointName }) => {
     const { verticalAlign } = element.data.settings;
     if (!verticalAlign || !verticalAlign[breakpointName]) {
         return;

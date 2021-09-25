@@ -1,6 +1,6 @@
-import { ElementStylesHandler } from "~/types";
+import { ElementStylesModifier } from "~/types";
 
-const height: ElementStylesHandler = ({ breakpointName, element }) => {
+const height: ElementStylesModifier = ({ breakpointName, element }) => {
     const { height } = element.data.settings;
     if (!height) {
         return;

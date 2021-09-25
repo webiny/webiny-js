@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import { usePageElements } from "~/hooks/usePageElements";
 import { Element } from "~/components/Element";
-import { ElementComponent } from "~/types";
+import { ElementRenderer } from "~/types";
 
 declare global {
     //eslint-disable-next-line
@@ -15,12 +15,14 @@ declare global {
 
 const defaultStyles = { display: "block" };
 
-const Grid: ElementComponent = ({ element }) => {
+const Grid: ElementRenderer = ({ element }) => {
+    const { getCustomCss, getCss, css } = usePageElements();
+    const classNames = css.cx(getCustomCss(defaultStyles), getCss(element));
+
     const cellsWidths = useMemo(() => element.data.settings.grid.cellsType.split("-"), []);
-    const { getStyles } = usePageElements();
 
     return (
-        <pb-grid class={getStyles({ element, styles: defaultStyles })}>
+        <pb-grid class={classNames}>
             {cellsWidths.map((width, index) => (
                 <pb-grid-column key={width + index} style={{ width: `${(width / 12) * 100}%` }}>
                     <Element element={element.elements[index]} />

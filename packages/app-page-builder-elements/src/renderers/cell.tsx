@@ -1,7 +1,7 @@
 import React from "react";
 import { Elements } from "~/components/Elements";
 import { usePageElements } from "~/hooks/usePageElements";
-import { ElementComponent } from "~/types";
+import { ElementRenderer } from "~/types";
 
 declare global {
     //eslint-disable-next-line
@@ -14,11 +14,12 @@ declare global {
 
 const defaultStyles = { display: "block" };
 
-const Cell: ElementComponent = ({ element }) => {
-    const { getStyles } = usePageElements();
+const Cell: ElementRenderer = ({ element }) => {
+    const { getCustomCss, getCss, css } = usePageElements();
+    const classNames = css.cx(getCustomCss(defaultStyles), getCss(element));
 
     return (
-        <pb-cell class={getStyles({ element, styles: defaultStyles })}>
+        <pb-cell class={classNames}>
             <Elements element={element} />
         </pb-cell>
     );

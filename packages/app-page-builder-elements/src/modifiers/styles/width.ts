@@ -1,6 +1,6 @@
-import { ElementStylesHandler } from "~/types";
+import { ElementStylesModifier } from "~/types";
 
-const width: ElementStylesHandler = ({ breakpointName, element }) => {
+const width: ElementStylesModifier = ({ breakpointName, element }) => {
     const { width } = element.data.settings;
     if (!width) {
         return;

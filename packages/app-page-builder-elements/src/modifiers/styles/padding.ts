@@ -1,6 +1,6 @@
-import { ElementStylesHandler } from "~/types";
+import { ElementStylesModifier } from "~/types";
 
-const padding: ElementStylesHandler = ({ element, breakpointName }) => {
+const padding: ElementStylesModifier = ({ element, breakpointName }) => {
     const { padding } = element.data.settings;
     if (!padding || !padding[breakpointName]) {
         return;
