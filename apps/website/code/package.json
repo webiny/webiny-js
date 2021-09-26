@@ -24,6 +24,7 @@
     "graphql-tag": "^2.11.0",
     "invariant": "^2.2.4",
     "lodash.trim": "^4.4.2",
+    "page-builder-elements": "*",
     "react": "^16.14.0",
     "react-dom": "^16.14.0",
     "react-helmet": "^6.1.0",
