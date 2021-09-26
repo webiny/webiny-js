@@ -13,24 +13,47 @@ declare global {
     }
 }
 
-const Button: ElementRenderer = ({ element }) => {
-    const { buttonText, link, type, icon } = element.data;
+export interface Params {
+    renderers?: {
+        link?: React.ComponentType<{ href: string; newTab: boolean }>;
+    };
+}
 
-    const { getCss, getThemeCss, css } = usePageElements();
-
-    const themeClassNames = getThemeCss(theme => theme.styles.buttons[type]);
-    const elementClassNames = getCss(element);
-
-    const classNames = css.cx(themeClassNames, elementClassNames);
-
+const DefaultLink = ({ href, newTab, children }) => {
     return (
-        <pb-button class={classNames}>
-            <a href={link.href} target={link.newTab ? "_blank" : "_self"} rel={"noreferrer"}>
-                {icon && <pb-button-icon dangerouslySetInnerHTML={{ __html: icon.svg }} />}
-                <pb-button-text>{buttonText}</pb-button-text>
-            </a>
-        </pb-button>
+        <a href={href} target={newTab ? "_blank" : "_self"} rel={"noreferrer"}>
+            {children}
+        </a>
     );
 };
 
-export const createButton = () => Button;
+export const createButton = (args: Params = {}): ElementRenderer => {
+    const Link = args?.renderers?.link || DefaultLink;
+
+    const Button = ({ element }) => {
+        const { buttonText, link, type, icon } = element.data;
+
+        const { getCss, getThemeCss, css } = usePageElements();
+
+        const themeClassNames = getThemeCss(theme => theme?.styles?.buttons?.[type]);
+        const elementClassNames = getCss(element);
+
+        const classNames = css.cx(themeClassNames, elementClassNames);
+
+        return (
+            <pb-button class={classNames}>
+                <Link {...link}>
+                    {icon && <pb-button-icon dangerouslySetInnerHTML={{ __html: icon.svg }} />}
+                    <pb-button-text>{buttonText}</pb-button-text>
+                </Link>
+            </pb-button>
+        );
+    };
+
+    return Button;
+};
+
+// 0 - REACT UMJESTO ELEMENTS
+// 1 - ISPROBATI LINK
+// 2 - KREIRATI ELEMENT
+// 3 - SSR LOADING IN ELEMENT VIA PLUGIN
