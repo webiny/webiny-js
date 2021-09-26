@@ -16,6 +16,9 @@ import theme from "theme";
 // Imports plugins created via scaffolding utilities.
 import scaffoldsPlugins from "./scaffolds";
 
+// Custom plugins
+import spaceXPageElement from "page-builder-elements/spaceX/admin";
+
 plugins.register([
     /**
      * Base app plugins (files, images).
@@ -68,7 +71,10 @@ plugins.register([
     /**
      * Plugins created via scaffolding utilities.
      */
-    scaffoldsPlugins()
+    scaffoldsPlugins(),
+
+    // Custom plugins
+    spaceXPageElement
 ]);
 
 /**

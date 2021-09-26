@@ -9544,7 +9544,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/app-page-builder-elements@workspace:packages/app-page-builder-elements"
   dependencies:
-    "@apollo/react-hooks": ^3.1.5
     "@babel/cli": ^7.5.5
     "@babel/core": ^7.5.5
     "@babel/plugin-proposal-class-properties": ^7.5.5
@@ -9552,36 +9551,20 @@ __metadata:
     "@babel/preset-react": ^7.0.0
     "@babel/preset-typescript": ^7.8.3
     "@babel/runtime": ^7.5.5
-    "@emotion/core": ^10.0.17
     "@emotion/css": ^11.1.3
-    "@svgr/webpack": ^4.3.2
     "@types/react": ^16.9.56
     "@types/resize-observer-browser": ^0.1.4
-    "@webiny/app": ^5.14.0
     "@webiny/cli": ^5.14.0
-    "@webiny/plugins": ^5.14.0
     "@webiny/project-utils": ^5.14.0
-    "@webiny/react-router": ^5.14.0
-    aos: ^2.3.4
-    apollo-client: ^2.6.10
-    apollo-link: ^1.2.14
-    apollo-utilities: ^1.3.4
     babel-plugin-emotion: ^9.2.8
     babel-plugin-lodash: ^3.3.4
     babel-plugin-named-asset-import: ^1.0.0-next.3e165448
-    classnames: ^2.2.6
-    dot-prop-immutable: ^2.1.0
-    emotion: ^10.0.17
     execa: ^5.0.0
-    graphql: ^14.7.0
-    graphql-tag: ^2.10.1
-    lodash: ^4.17.10
-    prop-types: ^15.7.2
-    react: ^16.14.0
-    react-dom: ^16.14.0
     rimraf: ^3.0.2
     ttypescript: ^1.5.12
     typescript: ^4.1.3
+  peerDependencies:
+    react: 16.14.0
   languageName: unknown
   linkType: soft
 
@@ -28062,6 +28045,14 @@ fsevents@^1.2.7:
   checksum: 090fe065f979e04b251e4b33706caf5817c973f1106e445ffaee3a742e1495b0892db858ee25383f97dd048262ba969559d43f31beb385d780c9a0a24f3063d0
   languageName: node
   linkType: hard
+
+"page-builder-elements@workspace:apps/page-builder-elements":
+  version: 0.0.0-use.local
+  resolution: "page-builder-elements@workspace:apps/page-builder-elements"
+  dependencies:
+    "@webiny/app-page-builder-elements": ^5.14.0
+  languageName: unknown
+  linkType: soft
 
 "pako@npm:^0.2.5, pako@npm:~0.2.0":
   version: 0.2.9

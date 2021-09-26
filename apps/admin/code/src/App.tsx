@@ -14,13 +14,14 @@ import { Authentication } from "@webiny/app-security-admin-users-cognito/Authent
 import { createApolloClient } from "./components/apolloClient";
 import { Telemetry } from "./components/Telemetry";
 import { getIdentityData } from "./components/getIdentityData";
+import { PageElementsProvider } from "page-builder-elements";
 
 // Import styles which include custom theme styles
 import "./App.scss";
 
 export const App = () => (
     <ApolloProvider client={createApolloClient({ uri: process.env.REACT_APP_GRAPHQL_API_URL })}>
-        {/* 
+        {/*
             <SecurityProvider> is a generic provider of identity information. 3rd party identity providers (like Cognito,
             Okta, Auth0) will handle the authentication, and set the information about the user into this provider,
             so other parts of the system have a centralized place to fetch user information from.
@@ -74,18 +75,20 @@ export const App = () => (
                                         then access is using "usePageBuilder()" hook.
                                     */}
                                     <PageBuilderProvider>
-                                        {/*
+                                        <PageElementsProvider>
+                                            {/*
                                             <CmsProvider> handles CMS environments and provides an Apollo Client instance
                                             that points to the /manage GraphQL API.
                                         */}
-                                        <CmsProvider createApolloClient={createApolloClient}>
-                                            {/*
+                                            <CmsProvider createApolloClient={createApolloClient}>
+                                                {/*
                                                 <Routes/> is a helper component that loads all "route" plugins, sorts them
-                                                in the correct "path" order and renders using the <Switch> component, 
-                                                so only the matching route is rendered.   
+                                                in the correct "path" order and renders using the <Switch> component,
+                                                so only the matching route is rendered.
                                             */}
-                                            <Routes />
-                                        </CmsProvider>
+                                                <Routes />
+                                            </CmsProvider>
+                                        </PageElementsProvider>
                                     </PageBuilderProvider>
                                 </I18NProvider>
                             </TenancyProvider>
