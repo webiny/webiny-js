@@ -84,7 +84,6 @@ export const PageElementsProvider: React.FC<Props> = ({
             styles: getStyles(theme)
         });
 
-        console.log("vracvam stylse", styles);
         return [styles];
     }, []);
 
