@@ -1,0 +1,9 @@
+{
+  "name": "page-builder-elements",
+  "version": "0.1.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "@webiny/app-page-builder-elements": "^5.14.0"
+  }
+}

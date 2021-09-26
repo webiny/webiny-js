@@ -2,7 +2,7 @@ import React from "react";
 import { Helmet } from "react-helmet";
 import { PbPageData } from "@webiny/app-page-builder/types";
 import Layout from "./Layout";
-import Element from "@webiny/app-page-builder-elements/components/Element";
+import { Content } from "@webiny/app-page-builder-elements/components/Content";
 import useResponsiveClassName from "@webiny/app-page-builder/hooks/useResponsiveClassName";
 import DefaultNotFoundPage from "theme/pageBuilder/components/defaultPages/DefaultNotFoundPage";
 import DefaultErrorPage from "theme/pageBuilder/components/defaultPages/DefaultErrorPage";
@@ -97,7 +97,7 @@ function Render({
             </Helmet>
             <div className={responsiveClassName} ref={pageElementRef}>
                 <Layout page={page} settings={settings}>
-                    <Element element={page.content} />
+                    <Content content={page.content} />
                 </Layout>
             </div>
         </div>
