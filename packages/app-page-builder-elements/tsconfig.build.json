@@ -1,13 +1,7 @@
 {
   "extends": "../../tsconfig.build.json",
   "include": ["src"],
-  "exclude": [
-    "node_modules",
-    "**/__tests__/**",
-    "./dist",
-    "../app",
-    "../react-router"
-  ],
+  "exclude": ["node_modules", "**/__tests__/**", "./dist"],
   "references": [],
   "compilerOptions": {
     "rootDir": "./src",
