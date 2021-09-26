@@ -39,6 +39,7 @@
     "core-js": "^3.0.1",
     "cross-fetch": "^3.0.4",
     "invariant": "^2.2.4",
+    "page-builder-elements": "*",
     "prop-types": "^15.7.2",
     "react": "^16.14.0",
     "react-dom": "^16.14.0",
