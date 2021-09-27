@@ -14,7 +14,6 @@ import { Authentication } from "@webiny/app-security-admin-users-cognito/Authent
 import { createApolloClient } from "./components/apolloClient";
 import { Telemetry } from "./components/Telemetry";
 import { getIdentityData } from "./components/getIdentityData";
-import { PageElementsProvider } from "page-builder-elements";
 
 // Import styles which include custom theme styles
 import "./App.scss";
@@ -75,20 +74,18 @@ export const App = () => (
                                         then access is using "usePageBuilder()" hook.
                                     */}
                                     <PageBuilderProvider>
-                                        <PageElementsProvider>
-                                            {/*
+                                        {/*
                                             <CmsProvider> handles CMS environments and provides an Apollo Client instance
                                             that points to the /manage GraphQL API.
                                         */}
-                                            <CmsProvider createApolloClient={createApolloClient}>
-                                                {/*
+                                        <CmsProvider createApolloClient={createApolloClient}>
+                                            {/*
                                                 <Routes/> is a helper component that loads all "route" plugins, sorts them
                                                 in the correct "path" order and renders using the <Switch> component,
                                                 so only the matching route is rendered.
                                             */}
-                                                <Routes />
-                                            </CmsProvider>
-                                        </PageElementsProvider>
+                                            <Routes />
+                                        </CmsProvider>
                                     </PageBuilderProvider>
                                 </I18NProvider>
                             </TenancyProvider>
