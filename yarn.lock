@@ -9540,7 +9540,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/app-page-builder-elements@^5.14.0, @webiny/app-page-builder-elements@workspace:packages/app-page-builder-elements":
+"@webiny/app-page-builder-elements@workspace:packages/app-page-builder-elements":
   version: 0.0.0-use.local
   resolution: "@webiny/app-page-builder-elements@workspace:packages/app-page-builder-elements"
   dependencies:
@@ -36339,7 +36339,6 @@ resolve@^2.0.0-next.3:
     "@webiny/app": ^5.14.0
     "@webiny/app-form-builder": ^5.14.0
     "@webiny/app-page-builder": ^5.14.0
-    "@webiny/app-page-builder-elements": ^5.14.0
     "@webiny/cli": ^5.14.0
     "@webiny/cli-plugin-deploy-pulumi": ^5.14.0
     "@webiny/plugins": ^5.14.0
