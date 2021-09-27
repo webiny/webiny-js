@@ -14,12 +14,10 @@ declare global {
 }
 
 export interface Params {
-    renderers?: {
-        link?: React.ComponentType<{ href: string; newTab: boolean }>;
-    };
+    LinkComponent?: React.ComponentType<{ href: string; newTab: boolean }>;
 }
 
-const DefaultLink = ({ href, newTab, children }) => {
+const DefaultLinkComponent = ({ href, newTab, children }) => {
     return (
         <a href={href} target={newTab ? "_blank" : "_self"} rel={"noreferrer"}>
             {children}
@@ -28,7 +26,7 @@ const DefaultLink = ({ href, newTab, children }) => {
 };
 
 export const createButton = (args: Params = {}): ElementRenderer => {
-    const Link = args?.renderers?.link || DefaultLink;
+    const LinkComponent = args?.LinkComponent || DefaultLinkComponent;
 
     const Button = ({ element }) => {
         const { buttonText, link, type, icon } = element.data;
@@ -42,10 +40,10 @@ export const createButton = (args: Params = {}): ElementRenderer => {
 
         return (
             <pb-button class={classNames}>
-                <Link {...link}>
+                <LinkComponent {...link}>
                     {icon && <pb-button-icon dangerouslySetInnerHTML={{ __html: icon.svg }} />}
                     <pb-button-text>{buttonText}</pb-button-text>
-                </Link>
+                </LinkComponent>
             </pb-button>
         );
     };
