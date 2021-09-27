@@ -18,7 +18,7 @@ export class GraphQLSchemaPlugin<TContext = Context> extends Plugin {
 
     get schema(): GraphQLSchemaDefinition<TContext> {
         return {
-            typeDefs: this.config.typeDefs,
+            typeDefs: this.config.typeDefs || "",
             resolvers: this.config.resolvers
         };
     }
