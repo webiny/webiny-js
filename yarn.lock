@@ -28046,14 +28046,6 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"page-builder-elements@workspace:apps/page-builder-elements":
-  version: 0.0.0-use.local
-  resolution: "page-builder-elements@workspace:apps/page-builder-elements"
-  dependencies:
-    "@webiny/app-page-builder-elements": ^5.14.0
-  languageName: unknown
-  linkType: soft
-
 "pako@npm:^0.2.5, pako@npm:~0.2.0":
   version: 0.2.9
   resolution: "pako@npm:0.2.9"
