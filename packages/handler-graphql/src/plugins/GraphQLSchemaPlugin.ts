@@ -3,7 +3,7 @@ import { GraphQLSchemaDefinition, Resolvers, Types } from "../types";
 import { Context } from "@webiny/handler/types";
 
 export interface GraphQLSchemaPluginConfig<TContext> {
-    typeDefs: Types;
+    typeDefs?: Types;
     resolvers?: Resolvers<TContext>;
 }
 
