@@ -1,17 +1,26 @@
 import gql from "graphql-tag";
 
-const fields = /* GraphQL */ `
+const listUserFields = /* GraphQL */ `
     {
         login
         firstName
         lastName
         avatar
         gravatar
+        createdOn
+    }
+`;
+
+const userFormFields = /* GraphQL */ `
+    {
+        login
+        firstName
+        lastName
+        avatar
         group {
             slug
             name
         }
-        createdOn
     }
 `;
 
@@ -36,7 +45,7 @@ export const READ_USER: any = gql`
     query GetUser($login: String!) {
         security {
             user: getUser(login: $login){
-                data ${fields}
+                data ${userFormFields}
                 error {
                     code
                     message
@@ -50,7 +59,7 @@ export const CREATE_USER: any = gql`
     mutation CreateUser($data: SecurityUserCreateInput!){
         security {
             user: createUser(data: $data) {
-                data ${fields}
+                data ${listUserFields}
                 error {
                     code
                     message
@@ -65,7 +74,7 @@ export const UPDATE_USER: any = gql`
     mutation UpdateUser($login: String!, $data: SecurityUserUpdateInput!){
         security {
             user: updateUser(login: $login, data: $data) {
-                data ${fields}
+                data ${userFormFields}
                 error {
                     code
                     message
