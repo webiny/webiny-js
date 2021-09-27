@@ -585,12 +585,6 @@ describe("listing published pages", () => {
             pageIds.push(pid);
         }
 
-        // Just in case, ensure all pages are present.
-        await until(
-            () => listPublishedPages({ sort: ["createdOn_DESC"] }),
-            ([res]) => res.data.pageBuilder.listPublishedPages.data[0].path === "/features"
-        ).then(([res]) => expect(res.data.pageBuilder.listPublishedPages.data.length).toBe(8));
-
         // Now let's check the exclude page by path and pid.
         await until(
             () =>
@@ -598,7 +592,10 @@ describe("listing published pages", () => {
                     exclude: ["/about-us", "/pricing", pageIds[1]],
                     sort: ["createdOn_DESC"]
                 }),
-            ([res]) => res.data.pageBuilder.listPublishedPages.data.length === 5
+            ([res]) => res.data.pageBuilder.listPublishedPages.data.length === 5,
+            {
+                name: "list published pages exclude about-us and pricing"
+            }
         ).then(([res]) => {
             expect(res.data.pageBuilder.listPublishedPages.data).toMatchObject([
                 { path: "/features" },

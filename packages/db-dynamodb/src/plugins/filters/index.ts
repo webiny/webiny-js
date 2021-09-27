@@ -1,15 +1,17 @@
 import eqFilter from "./eq";
 import betweenFilter from "./between";
-import inFilter from "./in";
 import andInFilter from "./andIn";
+import inFilter from "./in";
 import gtFilter from "./gt";
 import gteFilter from "./gte";
 import ltFilter from "./lt";
 import lteFilter from "./lte";
 import containsFilter from "./contains";
+import fuzzyFilter from "./fuzzy";
 
 export default () => [
     eqFilter,
+    andInFilter,
     inFilter,
     gtFilter,
     ltFilter,
@@ -17,5 +19,5 @@ export default () => [
     lteFilter,
     betweenFilter,
     containsFilter,
-    andInFilter
+    fuzzyFilter
 ];
