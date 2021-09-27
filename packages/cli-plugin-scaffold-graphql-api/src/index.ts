@@ -314,7 +314,9 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
 
             if (deploy) {
                 console.log(
-                    `Running ${chalk.green(`yarn webiny deploy ${input.path} --env dev`)} command...`
+                    `Running ${chalk.green(
+                        `yarn webiny deploy ${input.path} --env dev`
+                    )} command...`
                 );
                 console.log();
                 await deployGraphQLAPI(input.path, "dev", input);
