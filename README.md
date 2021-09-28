@@ -391,6 +391,20 @@ Thanks goes to these wonderful people:
                         <sub><b>Romain Billot</b></sub>
                     </a>
                     <br />
+                </td><td align="center">
+                    <a href="https://github.com/snstanton">
+                        <img src="https://avatars.githubusercontent.com/u/209370?v=4" width="100px;" alt="Scott Stanton"/>
+                        <br />
+                        <sub><b>Scott Stanton</b></sub>
+                    </a>
+                    <br />
+                </td><td align="center">
+                    <a href="https://github.com/nelsonchen5">
+                        <img src="https://avatars.githubusercontent.com/u/31781643?v=4" width="100px;" alt="Nelson Chen"/>
+                        <br />
+                        <sub><b>Nelson Chen</b></sub>
+                    </a>
+                    <br />
                 </td></tr>
 </table>
 <!-- markdownlint-enable -->
