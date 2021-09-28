@@ -93,7 +93,7 @@ describe("pages simple actions", () => {
         });
     });
 
-    it("should create new page and update it with new title and content and then publish the page", async () => {
+    it("should create new page and update it with new title and content and then publish the page and unpublish", async () => {
         const category = await createCategory();
 
         const [createResponse] = await handler.createPage({
@@ -158,6 +158,64 @@ describe("pages simple actions", () => {
                             id,
                             title,
                             status: "published",
+                            content
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+
+        const [getAfterPublishResponse] = await handler.getPage({
+            id
+        });
+        expect(getAfterPublishResponse).toMatchObject({
+            data: {
+                pageBuilder: {
+                    getPage: {
+                        data: {
+                            id,
+                            title,
+                            status: "published",
+                            content
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+
+        const [unpublishResponse] = await handler.unpublishPage({
+            id
+        });
+
+        expect(unpublishResponse).toMatchObject({
+            data: {
+                pageBuilder: {
+                    unpublishPage: {
+                        data: {
+                            id,
+                            title,
+                            status: "unpublished",
+                            content
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+
+        const [getAfterUnpublishResponse] = await handler.getPage({
+            id
+        });
+        expect(getAfterUnpublishResponse).toMatchObject({
+            data: {
+                pageBuilder: {
+                    getPage: {
+                        data: {
+                            id,
+                            title,
+                            status: "unpublished",
                             content
                         },
                         error: null
