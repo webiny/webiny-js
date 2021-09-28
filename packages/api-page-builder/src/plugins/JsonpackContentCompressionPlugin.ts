@@ -16,6 +16,12 @@ export class JsonpackContentCompressionPlugin extends ContentCompressionPlugin {
     }
 
     public async compress(value: any): Promise<CompressedValue> {
+        if (!value) {
+            return {
+                compression: JSONPACK_COMPRESSION,
+                content: null
+            };
+        }
         let compressed = null;
         try {
             compressed = jsonpack.pack(value);
@@ -30,7 +36,7 @@ export class JsonpackContentCompressionPlugin extends ContentCompressionPlugin {
     }
 
     public async decompress(value: CompressedValue): Promise<any> {
-        if (!value.content) {
+        if (!value || !value.content) {
             return null;
         }
         try {

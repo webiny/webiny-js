@@ -11,8 +11,11 @@ export const extractContent = async (
     page: Page
 ): Promise<Record<string, any>> => {
     const value = page.content as CompressedValue;
+    /**
+     * Possibly no compression on the content so lets return what ever is inside the content.
+     */
     if (!value || !value.compression) {
-        return null;
+        return value;
     }
     const plugin = plugins.find(pl => pl.canDecompress(value));
     if (!plugin) {

@@ -1,13 +1,42 @@
 import useGqlHandler from "./useGqlHandler";
 import { Page } from "~/types";
 import { waitPage } from "./utils/waitPage";
+import { SecurityIdentity } from "@webiny/api-security";
 
 const sort: string[] = ["createdOn_DESC"];
 
 jest.setTimeout(50000);
 
+const content = [
+    {
+        type: "heading",
+        content: "Heading"
+    },
+    {
+        type: "div",
+        content: [
+            {
+                type: "p",
+                content: "Paragraph"
+            },
+            {
+                type: "span",
+                content: "Span"
+            }
+        ]
+    }
+];
+
 describe("pages simple actions", () => {
     const handler = useGqlHandler();
+
+    const handlerB = useGqlHandler({
+        identity: new SecurityIdentity({
+            id: "mockedB",
+            displayName: "b",
+            type: "b"
+        })
+    });
 
     const createCategory = async () => {
         const [response] = await handler.createCategory({
@@ -64,7 +93,7 @@ describe("pages simple actions", () => {
         });
     });
 
-    it("should create new page and update it with new title", async () => {
+    it("should create new page and update it with new title and content and then publish the page", async () => {
         const category = await createCategory();
 
         const [createResponse] = await handler.createPage({
@@ -74,21 +103,62 @@ describe("pages simple actions", () => {
 
         const title = "Page updated title";
 
-        const [response] = await handler.updatePage({
+        const [updateResponse] = await handler.updatePage({
             id,
             data: {
-                title
+                title,
+                content
             }
         });
 
-        expect(response).toMatchObject({
+        expect(updateResponse).toMatchObject({
             data: {
                 pageBuilder: {
                     updatePage: {
                         data: {
                             id,
                             title,
-                            status: "draft"
+                            status: "draft",
+                            content
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+
+        const [getResponse] = await handler.getPage({
+            id
+        });
+        expect(getResponse).toMatchObject({
+            data: {
+                pageBuilder: {
+                    getPage: {
+                        data: {
+                            id,
+                            title,
+                            status: "draft",
+                            content
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+
+        const [publishResponse] = await handler.publishPage({
+            id
+        });
+
+        expect(publishResponse).toMatchObject({
+            data: {
+                pageBuilder: {
+                    publishPage: {
+                        data: {
+                            id,
+                            title,
+                            status: "published",
+                            content
                         },
                         error: null
                     }
@@ -426,6 +496,250 @@ describe("pages simple actions", () => {
                             hasMoreItems: false,
                             totalCount: 0,
                             cursor: null
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+    });
+
+    it("should request review on the page", async () => {
+        const category = await createCategory();
+
+        const [response] = await handler.createPage({
+            category: category.slug
+        });
+
+        expect(response).toMatchObject({
+            data: {
+                pageBuilder: {
+                    createPage: {
+                        data: {
+                            title: expect.stringMatching(/^Untitled/),
+                            status: "draft"
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+
+        const page = response.data.pageBuilder.createPage.data;
+
+        const [updateResponse] = await handler.updatePage({
+            id: page.id,
+            data: {
+                content
+            }
+        });
+
+        expect(updateResponse).toMatchObject({
+            data: {
+                pageBuilder: {
+                    updatePage: {
+                        data: {
+                            id: page.id,
+                            status: "draft",
+                            content
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+
+        const [getAfterUpdateResponse] = await handler.getPage({
+            id: page.id
+        });
+
+        expect(getAfterUpdateResponse).toMatchObject({
+            data: {
+                pageBuilder: {
+                    getPage: {
+                        data: {
+                            id: page.id,
+                            status: "draft",
+                            content
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+
+        const [requestReviewResponse] = await handlerB.requestReview({
+            id: page.id
+        });
+
+        expect(requestReviewResponse).toMatchObject({
+            data: {
+                pageBuilder: {
+                    requestReview: {
+                        data: {
+                            id: page.id,
+                            status: "reviewRequested",
+                            content
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+
+        const [getAfterRequestReviewResponse] = await handler.getPage({
+            id: page.id
+        });
+
+        expect(getAfterRequestReviewResponse).toMatchObject({
+            data: {
+                pageBuilder: {
+                    getPage: {
+                        data: {
+                            id: page.id,
+                            status: "reviewRequested",
+                            content
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+    });
+
+    it("should request changes on the page", async () => {
+        const category = await createCategory();
+
+        const [response] = await handler.createPage({
+            category: category.slug
+        });
+
+        expect(response).toMatchObject({
+            data: {
+                pageBuilder: {
+                    createPage: {
+                        data: {
+                            title: expect.stringMatching(/^Untitled/),
+                            status: "draft"
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+
+        const page = response.data.pageBuilder.createPage.data;
+
+        const [updateResponse] = await handler.updatePage({
+            id: page.id,
+            data: {
+                content
+            }
+        });
+
+        expect(updateResponse).toMatchObject({
+            data: {
+                pageBuilder: {
+                    updatePage: {
+                        data: {
+                            id: page.id,
+                            status: "draft",
+                            content
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+
+        const [getAfterUpdateResponse] = await handler.getPage({
+            id: page.id
+        });
+
+        expect(getAfterUpdateResponse).toMatchObject({
+            data: {
+                pageBuilder: {
+                    getPage: {
+                        data: {
+                            id: page.id,
+                            status: "draft",
+                            content
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+
+        const [requestReviewResponse] = await handlerB.requestReview({
+            id: page.id
+        });
+
+        expect(requestReviewResponse).toMatchObject({
+            data: {
+                pageBuilder: {
+                    requestReview: {
+                        data: {
+                            id: page.id,
+                            status: "reviewRequested",
+                            content
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+
+        const [getAfterRequestReviewResponse] = await handler.getPage({
+            id: page.id
+        });
+
+        expect(getAfterRequestReviewResponse).toMatchObject({
+            data: {
+                pageBuilder: {
+                    getPage: {
+                        data: {
+                            id: page.id,
+                            status: "reviewRequested",
+                            content
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+
+        const [requestChangesResponse] = await handlerB.requestChanges({
+            id: page.id
+        });
+
+        expect(requestChangesResponse).toMatchObject({
+            data: {
+                pageBuilder: {
+                    requestChanges: {
+                        data: {
+                            id: page.id,
+                            status: "changesRequested",
+                            content
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+
+        const [getAfterRequestChangesResponse] = await handler.getPage({
+            id: page.id
+        });
+
+        expect(getAfterRequestChangesResponse).toMatchObject({
+            data: {
+                pageBuilder: {
+                    getPage: {
+                        data: {
+                            id: page.id,
+                            status: "changesRequested",
+                            content
                         },
                         error: null
                     }
