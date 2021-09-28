@@ -1,9 +1,13 @@
 import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
-import { TenancyContext } from "./types";
-import { Tenancy } from "./Tenancy";
+import { TenancyContext, TenancyStorageOperationsFactory } from "./types";
+import { createTenancy } from "./Tenancy";
 import graphqlPlugins from "./graphql";
 
-export default () => [
+interface TenancyPluginsParams {
+    storageOperationsFactory: TenancyStorageOperationsFactory;
+}
+
+export default ({ storageOperationsFactory }: TenancyPluginsParams) => [
     new ContextPlugin<TenancyContext>(async context => {
         const { headers = {} } = context.http.request;
 
@@ -12,13 +16,10 @@ export default () => [
             tenantId = "root";
         }
 
-        context.tenancy = new Tenancy({
+        context.tenancy = await createTenancy({
             tenant: tenantId,
-            plugins: context.plugins,
-            version: context.WEBINY_VERSION
+            storageOperations: storageOperationsFactory()
         });
-
-        await context.tenancy.init();
     }),
     graphqlPlugins
 ];

@@ -1,5 +1,10 @@
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
-import { PluginsContainer } from "@webiny/plugins";
+import { DynamoDBTypes } from "dynamodb-toolbox/dist/classes/Table";
+import {
+    EntityAttributeConfig,
+    EntityCompositeAttributes
+} from "dynamodb-toolbox/dist/classes/Entity";
+export type AttributeDefinition = DynamoDBTypes | EntityAttributeConfig | EntityCompositeAttributes;
 
 /**
  * @internal
@@ -13,9 +18,17 @@ export type DbItem<T> = T & {
     GSI1_SK?: string;
 };
 
+export type Attributes = Record<string, AttributeDefinition>;
+
+export enum ENTITIES {
+    SYSTEM = "SecuritySystem",
+    TENANT_LINK = "SecurityIdentity2Tenant",
+    API_KEY = "SecurityApiKey",
+    GROUP = "SecurityGroup"
+}
+
 export interface SecurityStorageParams {
-    table: string;
     documentClient: DocumentClient;
-    tenant?: string;
-    plugins?: PluginsContainer;
+    table?: string;
+    attributes?: Record<ENTITIES, Attributes>;
 }

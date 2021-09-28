@@ -1,34 +1,9 @@
-const dbPlugins = require("@webiny/handler-db").default;
-const dynamoDbPlugins = require("@webiny/db-dynamodb/plugins").default;
-const { DynamoDbDriver } = require("@webiny/db-dynamodb");
 const { DocumentClient } = require("aws-sdk/clients/dynamodb");
 const NodeEnvironment = require("jest-environment-node");
 /**
  * For this to work it must load plugins that have already been built
  */
-const plugins = require("../../dist/index").default;
-
-if (typeof plugins !== "function") {
-    throw new Error(`Loaded plugins file must export a function that returns an array of plugins.`);
-}
-
-const getStoragePlugins = ({ documentClient }) => {
-    return () => {
-        return [
-            plugins({
-                documentClient,
-                table: "Tenancy"
-            }),
-            ...dbPlugins({
-                table: "Tenancy",
-                driver: new DynamoDbDriver({
-                    documentClient
-                })
-            }),
-            ...dynamoDbPlugins()
-        ];
-    };
-};
+const { createStorageOperationsFactory } = require("../../dist/index");
 
 class TenancyTestEnvironment extends NodeEnvironment {
     async setup() {
@@ -45,10 +20,14 @@ class TenancyTestEnvironment extends NodeEnvironment {
         /**
          * This is a global function that will be called inside the tests to get all relevant plugins, methods and objects.
          */
-        this.global.__getStorageOperationsPlugins = () => {
-            return getStoragePlugins({
-                documentClient
-            });
+        this.global.__getStorageOperations = () => {
+            return {
+                storageOperationsFactory: createStorageOperationsFactory({
+                    documentClient,
+                    table: "Tenancy"
+                }),
+                plugins: []
+            };
         };
     }
 }

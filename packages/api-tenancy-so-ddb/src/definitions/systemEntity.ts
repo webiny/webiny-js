@@ -1,14 +1,12 @@
 import { Entity, Table } from "dynamodb-toolbox";
-import { getExtraAttributesFromPlugins } from "@webiny/db-dynamodb/utils/attributes";
-import { PluginsContainer } from "@webiny/plugins";
+import { Attributes } from "~/types";
 
 interface Params {
-    plugins: PluginsContainer;
+    entityName: string;
     table: Table;
+    attributes?: Attributes;
 }
-export const createSystemEntity = ({ table, plugins }: Params): Entity<any> => {
-    const entityName = "TenancySystem";
-    const attributes = getExtraAttributesFromPlugins(plugins, entityName);
+export const createSystemEntity = ({ entityName, table, attributes }: Params): Entity<any> => {
     return new Entity({
         table,
         name: entityName,
@@ -28,7 +26,7 @@ export const createSystemEntity = ({ table, plugins }: Params): Entity<any> => {
             version: {
                 type: "string"
             },
-            ...attributes
+            ...(attributes || {})
         }
     });
 };

@@ -1,27 +1,115 @@
-import { Plugin, PluginsContainer } from "@webiny/plugins/types";
+import { Plugin } from "@webiny/plugins/types";
 import { ContextInterface } from "@webiny/handler/types";
-import { Security } from "./Security";
+import { Authentication, Identity } from "@webiny/api-authentication/types";
+import { Topic } from "@webiny/pubsub/types";
+import { GetTenant } from "~/createSecurity";
 
-export type SecurityIdentity = {
-    id: string;
-    displayName: string;
-    type: string;
-    [key: string]: any;
-};
+// Backwards compatibility - START
+export type SecurityIdentity = Identity;
 
 export type SecurityAuthenticationPlugin = Plugin & {
     type: "security-authentication";
     authenticate(context: ContextInterface): Promise<null> | Promise<SecurityIdentity>;
 };
 
-export interface SecurityPermission {
-    name: string;
-    [key: string]: any;
-}
-
 export interface SecurityAuthorizationPlugin extends Plugin {
     type: "security-authorization";
     getPermissions(context: SecurityContext): Promise<SecurityPermission[]>;
+}
+// Backwards compatibility - END
+
+export interface Authorizer {
+    (): Promise<SecurityPermission[]>;
+}
+
+export interface SecurityConfig {
+    getTenant: GetTenant;
+    storageOperations: SecurityStorageOperations;
+}
+
+export interface ErrorEvent extends InstallEvent {
+    error: Error;
+}
+
+export interface InstallEvent {
+    tenant: string;
+}
+
+export interface Security extends Authentication {
+    onBeforeInstall: Topic;
+    onInstall: Topic;
+    onAfterInstall: Topic;
+    onCleanup: Topic<ErrorEvent>;
+    addAuthorizer(authorizer: Authorizer): void;
+    getAuthorizers(): Authorizer[];
+    getPermission<TPermission extends SecurityPermission = SecurityPermission>(
+        permission: string
+    ): Promise<TPermission | null>;
+    getPermissions(): Promise<SecurityPermission[]>;
+    hasFullAccess(): Promise<boolean>;
+    // API Keys
+    getApiKey(id: string): Promise<ApiKey>;
+    getApiKeyByToken(token: string): Promise<ApiKey>;
+    listApiKeys(): Promise<ApiKey[]>;
+    createApiKey(data: ApiKeyInput): Promise<ApiKey>;
+    updateApiKey(id: string, data: ApiKeyInput): Promise<ApiKey>;
+    deleteApiKey(id: string): Promise<boolean>;
+    // Groups
+    getGroup(id: string, options: CrudOptions): Promise<Group>;
+    listGroups(options: CrudOptions): Promise<Group[]>;
+    createGroup(input: Record<string, any>, options: CrudOptions): Promise<Group>;
+    updateGroup(id: string, input: Record<string, any>): Promise<Group>;
+    deleteGroup(id: string): Promise<void>;
+    // Links
+    createTenantLinks(params: CreateTenantLinkParams[]): Promise<void>;
+    updateTenantLinks(params: UpdateTenantLinkParams[]): Promise<void>;
+    deleteTenantLinks(params: DeleteTenantLinkParams[]): Promise<void>;
+    listTenantLinksByType<TLink extends TenantLink = TenantLink>(
+        params: ListTenantLinksByTypeParams
+    ): Promise<TLink[]>;
+    listTenantLinksByTenant(params: ListTenantLinksParams): Promise<TenantLink[]>;
+    listTenantLinksByIdentity(params: ListTenantLinksByIdentityParams): Promise<TenantLink[]>;
+    getTenantLinkByIdentity<TLink = TenantLink>(
+        params: GetTenantLinkByIdentityParams
+    ): Promise<TLink>;
+    // System
+    getVersion(): Promise<string>;
+    setVersion(version: string): Promise<System>;
+    isInstalled(): Promise<boolean>;
+    install(this: Security): Promise<void>;
+}
+
+export interface SecurityStorageOperations {
+    getGroup(params: GetGroupParams): Promise<Group>;
+    listGroups(params: ListGroupsParams): Promise<Group[]>;
+    createGroup(params: CreateGroupParams): Promise<Group>;
+    updateGroup(params: UpdateGroupParams): Promise<Group>;
+    deleteGroup(params: DeleteGroupParams): Promise<Group>;
+    getSystemData(params: GetSystemParams): Promise<System>;
+    createSystemData(params: CreateSystemParams): Promise<System>;
+    updateSystemData(params: UpdateSystemParams): Promise<System>;
+    createTenantLinks(params: CreateTenantLinkParams[]): Promise<void>;
+    updateTenantLinks(params: UpdateTenantLinkParams[]): Promise<void>;
+    deleteTenantLinks(params: DeleteTenantLinkParams[]): Promise<void>;
+    listTenantLinksByType<TLink = TenantLink>(
+        params: ListTenantLinksByTypeParams
+    ): Promise<TLink[]>;
+    listTenantLinksByTenant(params: ListTenantLinksParams): Promise<TenantLink[]>;
+    listTenantLinksByIdentity(params: ListTenantLinksByIdentityParams): Promise<TenantLink[]>;
+    getTenantLinkByIdentity<TLink = TenantLink>(
+        params: GetTenantLinkByIdentityParams
+    ): Promise<TLink>;
+    getApiKey(params: GetApiKeyParams): Promise<ApiKey>;
+    getApiKeyByToken(params: GetApiKeyByTokenParams): Promise<ApiKey>;
+    listApiKeys(params: ListApiKeysParams): Promise<ApiKey[]>;
+    createApiKey(params: CreateApiKeyParams): Promise<ApiKey>;
+    updateApiKey(params: UpdateApiKeyParams): Promise<ApiKey>;
+    deleteApiKey(params: DeleteApiKeyParams): Promise<ApiKey>;
+}
+
+export interface SecurityPermission {
+    name: string;
+    [key: string]: any;
 }
 
 export interface SecurityContext extends ContextInterface {
@@ -42,6 +130,7 @@ export interface Group {
     tenant: string;
     createdOn: string;
     createdBy: CreatedBy;
+    id: string;
     name: string;
     slug: string;
     description: string;
@@ -51,92 +140,57 @@ export interface Group {
 
 export type GroupInput = Pick<Group, "name" | "slug" | "description" | "system" | "permissions">;
 
-export interface GroupsStorageOperationsGetParams {
-    slug: string;
+export interface GetGroupParams {
+    tenant: string;
+    where: {
+        id?: string;
+        slug?: string;
+    };
 }
 
-export interface GroupsStorageOperationsListParams {
+export interface ListGroupsParams {
+    tenant: string;
     sort?: string[];
 }
 
-export interface GroupsStorageOperationsCreateParams {
+export interface GroupsCreateParams {
     group: Group;
 }
 
-export interface GroupsStorageOperationsCreateParams {
+export interface CreateGroupParams {
     group: Group;
 }
 
-export interface GroupsStorageOperationsUpdateParams {
+export interface UpdateGroupParams {
     original: Group;
     group: Group;
 }
 
-export interface GroupsStorageOperationsDeleteParams {
+export interface DeleteGroupParams {
     group: Group;
 }
 
-interface GroupStorageOperationsFactoryParams {
-    plugins: PluginsContainer;
+export interface System {
+    tenant: string;
+    version: string;
+}
+
+export interface GetSystemParams {
     tenant: string;
 }
 
-export interface GroupsStorageOperationsFactory {
-    (params: GroupStorageOperationsFactoryParams): GroupsStorageOperations;
-}
-
-export interface GroupsStorageOperations {
-    get: (tenant: string, params: GroupsStorageOperationsGetParams) => Promise<Group>;
-    list: (tenant: string, params: GroupsStorageOperationsListParams) => Promise<Group[]>;
-    create: (tenant: string, params: GroupsStorageOperationsCreateParams) => Promise<Group>;
-    update: (tenant: string, params: GroupsStorageOperationsUpdateParams) => Promise<Group>;
-    delete: (tenant: string, params: GroupsStorageOperationsDeleteParams) => Promise<Group>;
-}
-
-export interface System {
-    version?: string;
-}
-
-export interface SystemStorageOperationsCreateParams {
+export interface CreateSystemParams {
     system: System;
 }
 
-export interface SystemStorageOperationsUpdateParams {
+export interface UpdateSystemParams {
     original: System;
     system: System;
-}
-
-export interface SystemStorageOperationsFactoryParams {
-    plugins: PluginsContainer;
-    tenant: string;
-}
-
-export interface SystemStorageOperationsFactory {
-    (params: SystemStorageOperationsFactoryParams): SystemStorageOperations;
-}
-
-export interface SystemStorageOperations {
-    get: () => Promise<System>;
-    create: (params: SystemStorageOperationsCreateParams) => Promise<System>;
-    update: (params: SystemStorageOperationsUpdateParams) => Promise<System>;
-}
-
-export interface InstallableParams {
-    security: Security;
-}
-
-export interface Installable {
-    beforeInstall?(params: InstallableParams): Promise<void>;
-    afterInstall?(params: InstallableParams): Promise<void>;
-    install?(params: InstallableParams): Promise<void>;
-    cleanup?(params: InstallableParams): Promise<void>;
 }
 
 export interface CrudOptions {
     auth?: boolean;
 }
-
-//////////////////////////////////////////////////////////////////////////////////////////////////
 
 export interface CreateTenantLinkParams<TData = Record<string, any>> {
     identity: string;
@@ -175,33 +229,6 @@ export interface GetTenantLinkByIdentityParams {
     tenant: string;
 }
 
-export interface IdentityStorageOperationsFactoryParams {
-    plugins: PluginsContainer;
-    tenant: string;
-}
-
-export interface IdentityStorageOperationsFactory {
-    (params: IdentityStorageOperationsFactoryParams): IdentityStorageOperations;
-}
-
-export interface IdentityStorageOperations {
-    createTenantLinks(params: CreateTenantLinkParams[]): Promise<void>;
-    updateTenantLinks(params: UpdateTenantLinkParams[]): Promise<void>;
-    deleteTenantLinks(params: DeleteTenantLinkParams[]): Promise<void>;
-
-    listTenantLinksByType<TLink = TenantLink>(
-        params: ListTenantLinksByTypeParams
-    ): Promise<TLink[]>;
-
-    listTenantLinksByTenant(params: ListTenantLinksParams): Promise<TenantLink[]>;
-
-    listTenantLinksByIdentity(params: ListTenantLinksByIdentityParams): Promise<TenantLink[]>;
-
-    getTenantLinkByIdentity<TLink = TenantLink>(
-        params: GetTenantLinkByIdentityParams
-    ): Promise<TLink>;
-}
-
 export interface TenantLink<TData = Record<string, any>> {
     identity: string;
     tenant: string;
@@ -210,8 +237,6 @@ export interface TenantLink<TData = Record<string, any>> {
 }
 
 export type GroupTenantLink = TenantLink<{ group: string; permissions: SecurityPermission[] }>;
-
-/* ===== API KEYs ===== */
 
 export interface ApiKey {
     id: string;
@@ -230,58 +255,34 @@ export interface ApiKeyInput {
     permissions: SecurityPermission[];
 }
 
-export interface ApiKeysCRUD {
-    getApiKey(id: string): Promise<ApiKey>;
-    getApiKeyByToken(token: string): Promise<ApiKey>;
-    listApiKeys(): Promise<ApiKey[]>;
-    createApiKey(data: ApiKeyInput): Promise<ApiKey>;
-    updateApiKey(id: string, data: ApiKeyInput): Promise<ApiKey>;
-    deleteApiKey(id: string): Promise<boolean>;
-}
-
 export interface ApiKeyPermission extends SecurityPermission {
     name: "security.apiKey";
 }
 
-export interface ApiKeyStorageOperationsGetParams {
+export interface GetApiKeyParams {
+    tenant: string;
     id: string;
 }
 
-export interface ApiKeyStorageOperationsGetByTokenParams {
+export interface GetApiKeyByTokenParams {
+    tenant: string;
     token: string;
 }
 
-export interface ApiKeyStorageOperationsListParams {
+export interface ListApiKeysParams {
+    tenant: string;
     sort?: string[];
 }
 
-export interface ApiKeyStorageOperationsCreateParams {
+export interface CreateApiKeyParams {
     apiKey: ApiKey;
 }
 
-export interface ApiKeyStorageOperationsUpdateParams {
+export interface UpdateApiKeyParams {
     original: ApiKey;
     apiKey: ApiKey;
 }
 
-export interface ApiKeyStorageOperationsDeleteParams {
+export interface DeleteApiKeyParams {
     apiKey: ApiKey;
-}
-
-interface ApiKeyStorageOperationsFactoryParams {
-    plugins: PluginsContainer;
-    tenant: string;
-}
-
-export interface ApiKeyStorageOperationsFactory {
-    (params: ApiKeyStorageOperationsFactoryParams): ApiKeyStorageOperations;
-}
-
-export interface ApiKeyStorageOperations {
-    get: (params: ApiKeyStorageOperationsGetParams) => Promise<ApiKey>;
-    getByToken: (params: ApiKeyStorageOperationsGetByTokenParams) => Promise<ApiKey>;
-    list: (params: ApiKeyStorageOperationsListParams) => Promise<ApiKey[]>;
-    create: (params: ApiKeyStorageOperationsCreateParams) => Promise<ApiKey>;
-    update: (params: ApiKeyStorageOperationsUpdateParams) => Promise<ApiKey>;
-    delete: (params: ApiKeyStorageOperationsDeleteParams) => Promise<ApiKey>;
 }

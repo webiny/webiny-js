@@ -10545,6 +10545,19 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@webiny/pubsub@workspace:packages/pubsub":
+  version: 0.0.0-use.local
+  resolution: "@webiny/pubsub@workspace:packages/pubsub"
+  dependencies:
+    "@babel/cli": ^7.12.10
+    "@babel/core": ^7.5.5
+    "@webiny/cli": ^5.13.0
+    "@webiny/project-utils": ^5.13.0
+    rimraf: ^3.0.2
+    typescript: ^4.1.3
+  languageName: unknown
+  linkType: soft
+
 "@webiny/pulumi-sdk@^5.13.0, @webiny/pulumi-sdk@workspace:packages/pulumi-sdk":
   version: 0.0.0-use.local
   resolution: "@webiny/pulumi-sdk@workspace:packages/pulumi-sdk"

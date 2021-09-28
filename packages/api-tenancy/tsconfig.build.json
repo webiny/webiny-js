@@ -8,7 +8,8 @@
     "../handler-http",
     "../handler-graphql",
     "../handler-db",
-    "../plugins"
+    "../plugins",
+    "../pubsub"
   ],
   "compilerOptions": {
     "rootDir": "./src",

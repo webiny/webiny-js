@@ -1,14 +1,38 @@
 import { Context } from "@webiny/handler/types";
 import { DbContext } from "@webiny/handler-db/types";
 import { HttpContext } from "@webiny/handler-http/types";
-import { PluginsContainer } from "@webiny/plugins";
-import { Tenancy } from "./Tenancy";
+import { Topic } from "@webiny/pubsub/types";
 
 export interface Tenant {
     id: string;
     name: string;
     description?: string;
     parent?: string | null;
+}
+
+export interface Tenancy {
+    onTenantBeforeCreate: Topic<TenantBeforeCreateEvent>;
+    onTenantAfterCreate: Topic<TenantAfterCreateEvent>;
+    onTenantBeforeUpdate: Topic<TenantBeforeUpdateEvent>;
+    onTenantAfterUpdate: Topic<TenantAfterUpdateEvent>;
+    onTenantBeforeDelete: Topic<TenantBeforeDeleteEvent>;
+    onTenantAfterDelete: Topic<TenantAfterDeleteEvent>;
+    getStorageOperations(): TenancyStorageOperations;
+    getCurrentTenant<TTenant extends Tenant = Tenant>(): TTenant;
+    setCurrentTenant(tenant: Tenant): void;
+    getVersion(): Promise<string>;
+    setVersion(version: string): Promise<void>;
+    isInstalled(): Promise<boolean>;
+    install(): Promise<void>;
+    getRootTenant(): Promise<Tenant>;
+    getTenantById<TTenant extends Tenant = Tenant>(id: string): Promise<TTenant>;
+    listTenants<TTenant extends Tenant = Tenant>({ parent }): Promise<TTenant[]>;
+    createTenant<TTenant extends Tenant = Tenant>(data: CreateTenantInput): Promise<TTenant>;
+    updateTenant<TTenant extends Tenant = Tenant>(
+        id: string,
+        data: Partial<TTenant>
+    ): Promise<TTenant>;
+    deleteTenant(id: string): Promise<boolean>;
 }
 
 export interface TenancyContext extends Context, HttpContext, DbContext {
@@ -22,93 +46,53 @@ export interface CreateTenantInput {
     parent?: string | null;
 }
 
-export interface TenantsStorageOperationsFactoryParams {
-    plugins: PluginsContainer;
-}
-
-export interface TenantsStorageOperationsFactory {
-    (params: TenantsStorageOperationsFactoryParams): TenantsStorageOperations;
-}
-
 export interface ListTenantsParams {
     parent: string;
 }
 
-export interface TenantsStorageOperations {
+export interface TenancyStorageOperations {
     getTenantsByIds<TTenant extends Tenant = Tenant>(ids: string[]): Promise<TTenant[]>;
     listTenants<TTenant extends Tenant = Tenant>(params: ListTenantsParams): Promise<TTenant[]>;
     createTenant<TTenant extends Tenant = Tenant>(data: TTenant): Promise<TTenant>;
     updateTenant<TTenant extends Tenant = Tenant>(data: TTenant): Promise<TTenant>;
     deleteTenant(id: string): Promise<void>;
+    getSystemData(): Promise<System>;
+    createSystemData(data: System): Promise<System>;
+    updateSystemData(data: System): Promise<System>;
+}
+
+export interface TenancyStorageOperationsFactory {
+    (): TenancyStorageOperations;
 }
 
 export interface System {
     version?: string;
 }
 
-export interface SystemStorageOperationsFactoryParams {
-    plugins: PluginsContainer;
-}
-
-export interface SystemStorageOperationsFactory {
-    (params: SystemStorageOperationsFactoryParams): SystemStorageOperations;
-}
-
-export interface SystemStorageOperations {
-    get: () => Promise<System>;
-    create: (data: System) => Promise<System>;
-    update: (data: System) => Promise<System>;
-}
-
-// Tenant lifecycle callbacks
-
-export interface TenantBeforeCreateCallbackParams {
+// Tenant lifecycle events
+export interface TenantBeforeCreateEvent {
     tenant: Tenant;
 }
 
-export interface TenantBeforeCreateCallback {
-    (params: TenantBeforeCreateCallbackParams): Promise<void>;
-}
-
-export interface TenantAfterCreateCallbackParams {
+export interface TenantAfterCreateEvent {
     tenant: Tenant;
 }
 
-export interface TenantAfterCreateCallback {
-    (params: TenantAfterCreateCallbackParams): Promise<void>;
-}
-
-export interface TenantBeforeUpdateCallbackParams {
+export interface TenantBeforeUpdateEvent {
     tenant: Tenant;
     inputData: Record<string, any>;
     updateData: Partial<Tenant>;
 }
 
-export interface TenantBeforeUpdateCallback {
-    (params: TenantBeforeUpdateCallbackParams): Promise<void>;
-}
-
-export interface TenantAfterUpdateCallbackParams {
+export interface TenantAfterUpdateEvent {
     tenant: Tenant;
     inputData: Record<string, any>;
 }
 
-export interface TenantAfterUpdateCallback {
-    (params: TenantAfterUpdateCallbackParams): Promise<void>;
-}
-
-export interface TenantBeforeDeleteCallbackParams {
+export interface TenantBeforeDeleteEvent {
     tenant: Tenant;
 }
 
-export interface TenantBeforeDeleteCallback {
-    (params: TenantBeforeDeleteCallbackParams): Promise<void>;
-}
-
-export interface TenantAfterDeleteCallbackParams {
+export interface TenantAfterDeleteEvent {
     tenant: Tenant;
-}
-
-export interface TenantAfterDeleteCallback {
-    (params: TenantAfterDeleteCallbackParams): Promise<void>;
 }

@@ -9,7 +9,8 @@
     "../error",
     "../handler",
     "../handler-graphql",
-    "../plugins"
+    "../plugins",
+    "../pubsub"
   ],
   "compilerOptions": {
     "rootDir": "./src",

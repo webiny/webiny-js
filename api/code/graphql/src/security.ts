@@ -7,6 +7,8 @@ import apiKeyAuthorization from "@webiny/api-security-admin-users/authorization/
 import anonymousAuthorization from "@webiny/api-security-admin-users/authorization/anonymous";
 import cognitoAuthentication from "@webiny/api-security-cognito-authentication";
 import cognitoIdentityProvider from "@webiny/api-security-admin-users-cognito";
+import { authenticateUsingHttpHeader } from "@webiny/api-authentication/authenticateUsingHttpHeader";
+import { createStorageOperations } from "@webiny/api-security-so-ddb";
 
 export default () => [
     /**
@@ -30,11 +32,16 @@ export default () => [
     }),
 
     /**
-     * Adds a context plugin to process `security-authentication` plugins.
-     * NOTE: this has to be registered *after* the "tenancy" plugins
-     * as some of the authentication plugins rely on tenancy context.
+     * Adds a context plugin to setup Security app.
      */
-    security(),
+    security({
+        storageOperations: createStorageOperations({ documentClient }),
+    }),
+
+    /**
+     * Perform authentication using the common "Authorization" HTTP header.
+     */
+    authenticateUsingHttpHeader(),
 
     /**
      * Authentication plugin for Personal Access Tokens.

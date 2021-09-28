@@ -1,54 +1,29 @@
 import { PluginCollection } from "@webiny/plugins/types";
-import { BeforeHandlerPlugin } from "@webiny/handler/plugins/BeforeHandlerPlugin";
 import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
 import { TenancyContext } from "@webiny/api-tenancy/types";
-import { Identity } from "@webiny/api-authentication/Identity";
 export { default as NotAuthorizedResponse } from "./NotAuthorizedResponse";
 export { default as NotAuthorizedError } from "./NotAuthorizedError";
-import { AuthenticationPlugin } from "./plugins/AuthenticationPlugin";
-import { Security } from "./Security";
-import { SecurityContext } from "./types";
-import { SecurityPlugin } from "./plugins/SecurityPlugin";
-import { GroupsInstaller } from "./installation/groups";
+import { SecurityContext, SecurityStorageOperations } from "./types";
 import graphqlPlugins from "./graphql";
+import { createSecurity } from "~/createSecurity";
+import { attachGroupInstaller } from "~/installation/groups";
 
-interface SecurityConfig {
-    // Use this function to instantiate your own Security app.
-    // For example, when you want to extend the original app.
-    createSecurity?: (context: SecurityContext) => Security;
+export interface SecurityConfig {
+    storageOperations: SecurityStorageOperations;
 }
 
-export default ({ createSecurity }: SecurityConfig = {}): PluginCollection => [
-    new BeforeHandlerPlugin<SecurityContext>(async context => {
-        const authenticationPlugins = context.plugins.byType<AuthenticationPlugin>(
-            AuthenticationPlugin.type
-        );
-
-        for (let i = 0; i < authenticationPlugins.length; i++) {
-            const identity = await authenticationPlugins[i].authenticate(context);
-            if (identity instanceof Identity) {
-                context.security.setIdentity(identity);
-                return;
-            }
-        }
-    }),
+export default ({ storageOperations }: SecurityConfig): PluginCollection => [
     new ContextPlugin<SecurityContext & TenancyContext>(async context => {
-        const currentTenant = context.tenancy.getCurrentTenant();
-        const security =
-            typeof createSecurity === "function"
-                ? createSecurity(context)
-                : new Security({
-                      tenant: currentTenant ? currentTenant.id : null,
-                      plugins: context.plugins,
-                      version: context.WEBINY_VERSION
-                  });
+        const getTenant = () => context.tenancy.getCurrentTenant();
 
-        await security.init();
+        context.security = await createSecurity({
+            getTenant: () => getTenant().id,
+            storageOperations
+        });
+        
+        attachGroupInstaller(context.security);
 
-        context.security = security;
-    }),
-    new SecurityPlugin(app => {
-        app.system.addInstaller(new GroupsInstaller());
+        // TODO: register all legacy authentication/authorization plugins
     }),
     graphqlPlugins
 ];

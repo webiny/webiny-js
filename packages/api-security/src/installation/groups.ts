@@ -1,25 +1,14 @@
-import { CrudOptions, Group, Installable, InstallableParams } from "../types";
-import { Security } from "../Security";
+import { Security, CrudOptions, Group } from "~/types";
 
-export class GroupsInstaller implements Installable {
-    private _created: Group[] = [];
+export const attachGroupInstaller = (security: Security) => {
+    const createdGroups: Group[] = [];
 
-    async install({ security }: InstallableParams): Promise<void> {
-        await this.createDefaultGroups(security);
-    }
-
-    async cleanup({ security }: InstallableParams): Promise<void> {
-        for (const group of this._created) {
-            await security.groups.deleteGroup(group.slug);
-        }
-    }
-
-    private async createDefaultGroups(security: Security): Promise<void> {
+    const createDefaultGroups = async () => {
         const options: CrudOptions = { auth: false };
-        const groups = await security.groups.listGroups(options);
+        const groups = await security.listGroups(options);
 
         if (!groups.find(g => g.slug === "full-access")) {
-            const group = await security.groups.createGroup(
+            const group = await security.createGroup(
                 {
                     name: "Full Access",
                     description: "Grants full access to all apps.",
@@ -30,11 +19,11 @@ export class GroupsInstaller implements Installable {
                 options
             );
 
-            this._created.push(group);
+            createdGroups.push(group);
         }
 
         if (!groups.find(g => g.slug === "anonymous")) {
-            const group = await security.groups.createGroup(
+            const group = await security.createGroup(
                 {
                     name: "Anonymous",
                     description: "Permissions for anonymous users (public access).",
@@ -44,7 +33,15 @@ export class GroupsInstaller implements Installable {
                 },
                 options
             );
-            this._created.push(group);
+            createdGroups.push(group);
         }
-    }
-}
+    };
+
+    security.onInstall.subscribe(() => createDefaultGroups());
+
+    security.onCleanup.subscribe(async () => {
+        for (const group of createdGroups) {
+            await security.deleteGroup(group.id);
+        }
+    });
+};

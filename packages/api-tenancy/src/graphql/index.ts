@@ -42,13 +42,13 @@ export default new GraphQLSchemaPlugin<TenancyContext>({
         },
         TenancyQuery: {
             version: async (root, args, context) => {
-                return await context.tenancy.system.getVersion();
+                return await context.tenancy.getVersion();
             }
         },
         TenancyMutation: {
             install: async (root, args, context) => {
                 try {
-                    await context.tenancy.system.install();
+                    await context.tenancy.install();
                     return new Response(true);
                 } catch (e) {
                     return new ErrorResponse(e);

@@ -1,11 +1,11 @@
 import {
     ApiKey,
     ApiKeyStorageOperations,
-    ApiKeyStorageOperationsCreateParams,
+    CreateApiKeyParams,
     ApiKeyStorageOperationsDeleteParams,
-    ApiKeyStorageOperationsGetByTokenParams,
-    ApiKeyStorageOperationsGetParams,
-    ApiKeyStorageOperationsListParams,
+    GetApiKeyByTokenParams,
+    GetApiKeyParams,
+    ListApiKeysParams,
     ApiKeyStorageOperationsUpdateParams
 } from "@webiny/api-security/types";
 import Error from "@webiny/error";
@@ -31,7 +31,7 @@ export class ApiKeyStorageOperationsDdb implements ApiKeyStorageOperations {
         this.entity = createApiKeyEntity({ plugins, table: this.table });
     }
 
-    public async get({ id }: ApiKeyStorageOperationsGetParams): Promise<ApiKey> {
+    public async get({ id }: GetApiKeyParams): Promise<ApiKey> {
         const keys = {
             PK: this.createPartitionKey(),
             SK: this.createSortKey(id)
@@ -55,7 +55,7 @@ export class ApiKeyStorageOperationsDdb implements ApiKeyStorageOperations {
         }
     }
 
-    public async getByToken({ token }: ApiKeyStorageOperationsGetByTokenParams): Promise<ApiKey> {
+    public async getByToken({ token }: GetApiKeyByTokenParams): Promise<ApiKey> {
         const queryParams: QueryOneParams = {
             entity: this.entity,
             partitionKey: this.createGsiPartitionKey(),
@@ -80,7 +80,7 @@ export class ApiKeyStorageOperationsDdb implements ApiKeyStorageOperations {
         }
     }
 
-    public async list({ sort }: ApiKeyStorageOperationsListParams): Promise<ApiKey[]> {
+    public async list({ sort }: ListApiKeysParams): Promise<ApiKey[]> {
         let items: ApiKey[] = [];
         try {
             items = await queryAll<ApiKey>({
@@ -106,7 +106,7 @@ export class ApiKeyStorageOperationsDdb implements ApiKeyStorageOperations {
         return sortedItems.map(item => this.cleanupItem(item));
     }
 
-    public async create({ apiKey }: ApiKeyStorageOperationsCreateParams): Promise<ApiKey> {
+    public async create({ apiKey }: CreateApiKeyParams): Promise<ApiKey> {
         const keys = {
             PK: this.createPartitionKey(),
             SK: this.createSortKey(apiKey.id),
