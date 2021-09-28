@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.15.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.15.0-beta.0...v5.15.0-beta.1) (2021-09-28)
+
+
+### Bug Fixes
+
+* add `graphqlApiUrl: cloudfront.getDistributionUrl("/graphql")` ([f1dd9a4](https://github.com/webiny/webiny-js/commit/f1dd9a4d5a5446a66506bd5d22401c4891ba1340))
+* replace {dev} with dev ([91c53e4](https://github.com/webiny/webiny-js/commit/91c53e43ac74d9fa535caf6fc67eed974b4edfb0))
+
+
+
+
+
 # [5.15.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.14.0...v5.15.0-beta.0) (2021-09-16)
 
 

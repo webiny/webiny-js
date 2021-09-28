@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.15.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.15.0-beta.0...v5.15.0-beta.1) (2021-09-28)
+
+
+### Bug Fixes
+
+* problem with richtexteditor RTL support ([#1902](https://github.com/webiny/webiny-js/issues/1902)) ([dc5329e](https://github.com/webiny/webiny-js/commit/dc5329eb4d5b8a1ba66a3b5ae92cdfad4970fe6a))
+
+
+
+
+
 # [5.15.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.14.0...v5.15.0-beta.0) (2021-09-16)
 
 

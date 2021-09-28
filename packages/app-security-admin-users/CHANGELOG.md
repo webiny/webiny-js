@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.15.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.15.0-beta.0...v5.15.0-beta.1) (2021-09-28)
+
+
+### Bug Fixes
+
+* adjust "creating-new-user" check in the security/users form ([403aae8](https://github.com/webiny/webiny-js/commit/403aae865eaad98403a5672be8cf110ab7709794))
+* **app-security-admin-users:** allow custom form fields ([442aa4b](https://github.com/webiny/webiny-js/commit/442aa4bff8834711d7be6825ff1f1615e4a3eca5))
+
+
+
+
+
 # [5.15.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.14.0...v5.15.0-beta.0) (2021-09-16)
 
 

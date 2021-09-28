@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.15.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.15.0-beta.0...v5.15.0-beta.1) (2021-09-28)
+
+
+### Bug Fixes
+
+* **api-headless-cms-ddb-es:** missing rawValues on elasticsearch entry ([#1930](https://github.com/webiny/webiny-js/issues/1930)) ([9dddf1b](https://github.com/webiny/webiny-js/commit/9dddf1b6f7fdcdf48f8fec6f96383f415348c087))
+
+
+
+
+
 # [5.15.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.14.0...v5.15.0-beta.0) (2021-09-16)
 
 

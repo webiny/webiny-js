@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.15.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.15.0-beta.0...v5.15.0-beta.1) (2021-09-28)
+
+
+### Bug Fixes
+
+* **api-page-builder:** decompress content only on output ([#1935](https://github.com/webiny/webiny-js/issues/1935)) ([9a12da9](https://github.com/webiny/webiny-js/commit/9a12da9e4247e93b6cbae85b764cd9dd6c717f34))
+
+
+### Features
+
+* **api-page-builder:** add content compression plugins and default ([#1921](https://github.com/webiny/webiny-js/issues/1921)) ([6c507bf](https://github.com/webiny/webiny-js/commit/6c507bfc4bb12ca4ebd8ffb4e8913750061bd0ab))
+* **api-page-builder:** dynamodb only storage operations ([#1916](https://github.com/webiny/webiny-js/issues/1916)) ([612f86c](https://github.com/webiny/webiny-js/commit/612f86cde5fb518351cbfbd5e3f8d5fa99f77e7e))
+
+
+
+
+
 # [5.15.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.14.0...v5.15.0-beta.0) (2021-09-16)
 
 

@@ -3,6 +3,47 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.15.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.15.0-beta.0...v5.15.0-beta.1) (2021-09-28)
+
+
+### Bug Fixes
+
+* add `graphqlApiUrl: cloudfront.getDistributionUrl("/graphql")` ([f1dd9a4](https://github.com/webiny/webiny-js/commit/f1dd9a4d5a5446a66506bd5d22401c4891ba1340))
+* add poc files ([76fc182](https://github.com/webiny/webiny-js/commit/76fc182b17b43c5d5314634d83ec924633ab46ef))
+* adjust "creating-new-user" check in the security/users form ([403aae8](https://github.com/webiny/webiny-js/commit/403aae865eaad98403a5672be8cf110ab7709794))
+* check if `headers` exists before using the `in` operator ([ec0b49e](https://github.com/webiny/webiny-js/commit/ec0b49e25ecd3e8de95e70bc273967417052d61c))
+* correct package versions ([4b636c0](https://github.com/webiny/webiny-js/commit/4b636c0054b281488909ed0578ba3036e4a4004a))
+* disable help processing until after plugins are imported ([d69c909](https://github.com/webiny/webiny-js/commit/d69c9098477383157653871891c1b441c0ee4bd1))
+* fix dependencies ([1f8aabc](https://github.com/webiny/webiny-js/commit/1f8aabcce610f583345247c1ca08f7153da2dd89))
+* refactor styles functions ([1e8f85c](https://github.com/webiny/webiny-js/commit/1e8f85ca9d1f63e895217d9e9c1518089b2ae0c9))
+* replace {dev} with dev ([91c53e4](https://github.com/webiny/webiny-js/commit/91c53e43ac74d9fa535caf6fc67eed974b4edfb0))
+* update yarn.lock ([61bed7b](https://github.com/webiny/webiny-js/commit/61bed7baf86000b55a93403813df48abf73bb8b2))
+* **api-headless-cms-ddb-es:** missing rawValues on elasticsearch entry ([#1930](https://github.com/webiny/webiny-js/issues/1930)) ([9dddf1b](https://github.com/webiny/webiny-js/commit/9dddf1b6f7fdcdf48f8fec6f96383f415348c087))
+* **api-page-builder:** decompress content only on output ([#1935](https://github.com/webiny/webiny-js/issues/1935)) ([9a12da9](https://github.com/webiny/webiny-js/commit/9a12da9e4247e93b6cbae85b764cd9dd6c717f34))
+* fix dependencies ([3b8e9f1](https://github.com/webiny/webiny-js/commit/3b8e9f140900172a4ed377b5dd8e69e57bce573e))
+* make typeDefs optional ([6ca09e1](https://github.com/webiny/webiny-js/commit/6ca09e1f377592be91a8ac4a07ec91f47563fafc))
+* problem with richtexteditor RTL support ([#1902](https://github.com/webiny/webiny-js/issues/1902)) ([dc5329e](https://github.com/webiny/webiny-js/commit/dc5329eb4d5b8a1ba66a3b5ae92cdfad4970fe6a))
+* rename back to app-page-builder-elements ([7d647b9](https://github.com/webiny/webiny-js/commit/7d647b9dafd697830963734bd9b8d777b6841d58))
+* set "" as the default value for typeDefs ([a4478cc](https://github.com/webiny/webiny-js/commit/a4478cc7bd03b9334b75a586a9bebfc99425ee1e))
+* simplify link argument ([ab957ed](https://github.com/webiny/webiny-js/commit/ab957ed0a34f9dc4aafab24044db715c6ab21163))
+* use `@webiny/app-page-builder-elements` ([f9f78d4](https://github.com/webiny/webiny-js/commit/f9f78d4a2b554e66b36477a18a82cc572be75f88))
+* use map instead of reduce in order to maintain content model order on the Manage API with array of objects ([1716888](https://github.com/webiny/webiny-js/commit/17168888a556b9f1ca8b067189580457146b03b7))
+* use map instead of reduce in order to maintain content model order on the Read API with array of objects ([e891a3a](https://github.com/webiny/webiny-js/commit/e891a3a5987b7534935ed0686d0ac21687288434))
+* **app:** do not overwrite tenant header ([818fc6e](https://github.com/webiny/webiny-js/commit/818fc6e9034844b91770bbbd472d65f53dc4f4c9))
+* **app-security-admin-users:** allow custom form fields ([442aa4b](https://github.com/webiny/webiny-js/commit/442aa4bff8834711d7be6825ff1f1615e4a3eca5))
+
+
+### Features
+
+* add ability to customize link ([05c8ba1](https://github.com/webiny/webiny-js/commit/05c8ba17caa5de28e95565561eb58fdfe3335f21))
+* **api-file-manager:** add and_in operator for tags querying ([#1912](https://github.com/webiny/webiny-js/issues/1912)) ([2ea6d20](https://github.com/webiny/webiny-js/commit/2ea6d202282ff6e7997b0ded0da5b43918edaa39))
+* **api-page-builder:** add content compression plugins and default ([#1921](https://github.com/webiny/webiny-js/issues/1921)) ([6c507bf](https://github.com/webiny/webiny-js/commit/6c507bfc4bb12ca4ebd8ffb4e8913750061bd0ab))
+* **api-page-builder:** dynamodb only storage operations ([#1916](https://github.com/webiny/webiny-js/issues/1916)) ([612f86c](https://github.com/webiny/webiny-js/commit/612f86cde5fb518351cbfbd5e3f8d5fa99f77e7e))
+
+
+
+
+
 # [5.15.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.14.0...v5.15.0-beta.0) (2021-09-16)
 
 

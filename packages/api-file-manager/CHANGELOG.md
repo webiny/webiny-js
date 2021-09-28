@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.15.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.15.0-beta.0...v5.15.0-beta.1) (2021-09-28)
+
+
+### Features
+
+* **api-file-manager:** add and_in operator for tags querying ([#1912](https://github.com/webiny/webiny-js/issues/1912)) ([2ea6d20](https://github.com/webiny/webiny-js/commit/2ea6d202282ff6e7997b0ded0da5b43918edaa39))
+
+
+
+
+
 # [5.15.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.14.0...v5.15.0-beta.0) (2021-09-16)
 
 **Note:** Version bump only for package @webiny/api-file-manager
