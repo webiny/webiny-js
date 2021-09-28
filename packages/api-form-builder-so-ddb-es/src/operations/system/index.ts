@@ -1,36 +1,35 @@
 import {
     FormBuilderStorageOperationsCreateSystemParams,
+    FormBuilderStorageOperationsGetSystemParams,
     FormBuilderStorageOperationsUpdateSystemParams,
     System
 } from "@webiny/api-form-builder/types";
 import { Entity, Table } from "dynamodb-toolbox";
-import { FormBuilderSystemStorageOperations } from "~/types";
+import { FormBuilderSystemCreateKeysParams, FormBuilderSystemStorageOperations } from "~/types";
 import { cleanupItem } from "@webiny/db-dynamodb/utils/cleanup";
 import WebinyError from "@webiny/error";
-import { Tenant } from "@webiny/api-tenancy/types";
 
 export interface Params {
     entity: Entity<any>;
     table: Table;
-    tenant: Tenant;
 }
 
 export const createSystemStorageOperations = (
     params: Params
 ): FormBuilderSystemStorageOperations => {
-    const { entity, tenant } = params;
+    const { entity } = params;
 
-    const createPartitionKey = (): string => {
-        return `T#${tenant.id}#SYSTEM`;
+    const createPartitionKey = ({ tenant }: FormBuilderSystemCreateKeysParams): string => {
+        return `T#${tenant}#SYSTEM`;
     };
 
     const createSortKey = (): string => {
         return "FB";
     };
 
-    const createKeys = () => {
+    const createKeys = (params: FormBuilderSystemCreateKeysParams) => {
         return {
-            PK: createPartitionKey(),
+            PK: createPartitionKey(params),
             SK: createSortKey()
         };
     };
@@ -39,7 +38,7 @@ export const createSystemStorageOperations = (
         params: FormBuilderStorageOperationsCreateSystemParams
     ): Promise<System> => {
         const { system } = params;
-        const keys = createKeys();
+        const keys = createKeys(system);
 
         try {
             await entity.put({
@@ -59,8 +58,10 @@ export const createSystemStorageOperations = (
         }
     };
 
-    const getSystem = async (): Promise<System> => {
-        const keys = createKeys();
+    const getSystem = async (
+        params: FormBuilderStorageOperationsGetSystemParams
+    ): Promise<System> => {
+        const keys = createKeys(params);
 
         try {
             const result = await entity.get(keys);
@@ -83,7 +84,7 @@ export const createSystemStorageOperations = (
         params: FormBuilderStorageOperationsUpdateSystemParams
     ): Promise<System> => {
         const { system, original } = params;
-        const keys = createKeys();
+        const keys = createKeys(system);
 
         try {
             await entity.put({

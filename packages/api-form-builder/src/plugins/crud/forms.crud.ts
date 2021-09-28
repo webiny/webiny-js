@@ -9,7 +9,7 @@ import * as utils from "./utils";
 import { checkOwnership, encodeCursor } from "./utils";
 import defaults from "./defaults";
 import * as models from "./forms.models";
-import { FbForm, FbSubmission, FormBuilderContext } from "../../types";
+import { FbForm, FbSubmission, FormBuilderContext } from "~/types";
 import WebinyError from "@webiny/error";
 
 const TYPE_FORM = "fb.form";
@@ -281,14 +281,20 @@ export default {
                     await utils.checkBaseFormPermissions(context, { rwd: "w" });
 
                     const identity = context.security.getIdentity();
-                    await new models.FormCreateDataModel().populate(data).validate();
+                    const dataModel = new models.FormCreateDataModel().populate(data);
+                    await dataModel.validate();
+
+                    const input = dataModel.toJSON();
 
                     // Forms are identified by a common parent ID + Revision number
-                    const [uniqueId, version] = [mdbid(), 1];
-                    const id = `${uniqueId}#${zeroPad(version)}`;
+                    const [formId, version] = [mdbid(), 1];
+                    const id = `${formId}#${zeroPad(version)}`;
+
+                    const slug = `${slugify(data.name)}-${formId}`.toLowerCase();
 
                     const form: FbForm = {
                         id,
+                        formId,
                         locale: i18nContent.locale.code,
                         tenant: tenancy.getCurrentTenant().id,
                         savedOn: new Date().toISOString(),
@@ -304,7 +310,7 @@ export default {
                             type: identity.type
                         },
                         name: data.name,
-                        slug: [slugify(data.name), uniqueId].join("-").toLowerCase(),
+                        slug,
                         version,
                         locked: false,
                         published: false,
@@ -318,159 +324,237 @@ export default {
                         fields: [],
                         layout: [],
                         settings: await new models.FormSettingsModel().toJSON(),
-                        triggers: null
+                        triggers: null,
+                        webinyVersion: context.WEBINY_VERSION
                     };
 
-                    const FORM_PK = PK_FORM(uniqueId);
-
-                    await db
-                        .batch()
-                        .create({
-                            ...defaults.db,
-                            data: {
-                                PK: FORM_PK,
-                                SK: SK_FORM_REVISION(version),
-                                TYPE: TYPE_FORM,
-                                ...form
+                    try {
+                        return await storageOperations.createForm({
+                            input,
+                            form
+                        });
+                    } catch (ex) {
+                        throw new WebinyError(
+                            ex.message || "Could not create form.",
+                            ex.code || "CREATE_FORM_ERROR",
+                            {
+                                form
                             }
-                        })
-                        .create({
-                            ...defaults.db,
-                            data: {
-                                PK: FORM_PK,
-                                SK: SK_FORM_LATEST(),
-                                TYPE: TYPE_FORM_LATEST,
-                                id,
-                                version
-                            }
-                        })
-                        .create({
-                            ...defaults.esDb,
-                            data: {
-                                PK: FORM_PK,
-                                SK: SK_FORM_LATEST(),
-                                index: defaults.es(context).index,
-                                data: getESDataForLatestRevision(form, context)
-                            }
-                        })
-                        .execute();
-
-                    return form;
+                        );
+                    }
                 },
                 async updateForm(id, data) {
                     const permission = await utils.checkBaseFormPermissions(context, { rwd: "w" });
                     const updateData = new models.FormUpdateDataModel().populate(data);
                     await updateData.validate();
+                    const input = await updateData.toJSON({ onlyDirty: true });
 
-                    const [uniqueId, version] = id.split("#");
-                    const FORM_PK = PK_FORM(uniqueId);
+                    // const [uniqueId, version] = id.split("#");
+                    // const FORM_PK = PK_FORM(uniqueId);
 
-                    const [[[form]], [[latestForm]]] = await db
-                        .batch()
-                        .read({
-                            ...defaults.db,
-                            query: {
-                                PK: FORM_PK,
-                                SK: SK_FORM_REVISION(version)
-                            }
-                        })
-                        .read({
-                            ...defaults.db,
-                            query: {
-                                PK: FORM_PK,
-                                SK: SK_FORM_LATEST()
-                            }
-                        })
-                        .execute();
+                    const original = await storageOperations.getForm({
+                        where: {
+                            id
+                        }
+                    });
 
-                    if (!form) {
+                    // const [[[form]], [[latestForm]]] = await db
+                    //     .batch()
+                    //     .read({
+                    //         ...defaults.db,
+                    //         query: {
+                    //             PK: FORM_PK,
+                    //             SK: SK_FORM_REVISION(version)
+                    //         }
+                    //     })
+                    //     .read({
+                    //         ...defaults.db,
+                    //         query: {
+                    //             PK: FORM_PK,
+                    //             SK: SK_FORM_LATEST()
+                    //         }
+                    //     })
+                    //     .execute();
+
+                    if (!original) {
                         throw new NotFoundError(`Form "${id}" was not found!`);
                     }
 
-                    checkOwnership(form, permission, context);
+                    checkOwnership(original, permission, context);
 
-                    const newData = Object.assign(await updateData.toJSON({ onlyDirty: true }), {
+                    // const newData = Object.assign(), {
+                    //     savedOn: new Date().toISOString()
+                    // });
+                    const form: FbForm = {
+                        ...original,
+                        ...input,
                         savedOn: new Date().toISOString()
-                    });
-                    Object.assign(form, newData);
+                    };
+                    // Object.assign(form, newData);
 
                     // Finally save it to DB
-                    const batch = db.batch().update({
-                        ...defaults.db,
-                        query: {
-                            PK: FORM_PK,
-                            SK: SK_FORM_REVISION(version)
-                        },
-                        data: form
-                    });
+                    // const batch = db.batch().update({
+                    //     ...defaults.db,
+                    //     query: {
+                    //         PK: FORM_PK,
+                    //         SK: SK_FORM_REVISION(version)
+                    //     },
+                    //     data: form
+                    // });
 
                     // Update form in "Elastic Search"
-                    if (latestForm.id === id) {
-                        batch.update({
-                            ...defaults.esDb,
-                            query: {
-                                PK: FORM_PK,
-                                SK: SK_FORM_LATEST()
-                            },
-                            data: {
-                                PK: FORM_PK,
-                                SK: SK_FORM_LATEST(),
-                                index: defaults.es(context).index,
-                                data: getESDataForLatestRevision(form, context)
-                            }
+                    // if (latestForm.id === id) {
+                    //     batch.update({
+                    //         ...defaults.esDb,
+                    //         query: {
+                    //             PK: FORM_PK,
+                    //             SK: SK_FORM_LATEST()
+                    //         },
+                    //         data: {
+                    //             PK: FORM_PK,
+                    //             SK: SK_FORM_LATEST(),
+                    //             index: defaults.es(context).index,
+                    //             data: getESDataForLatestRevision(form, context)
+                    // }
+                    // });
+                    // }
+
+                    // await batch.execute();
+                    //
+                    // return form;
+
+                    try {
+                        return await storageOperations.updateForm({
+                            input,
+                            form,
+                            original
                         });
+                    } catch (ex) {
+                        throw new WebinyError(
+                            ex.message || "Could not update form.",
+                            ex.code || "UPDATE_FORM_ERROR",
+                            {
+                                input,
+                                form,
+                                original
+                            }
+                        );
                     }
-
-                    await batch.execute();
-
-                    return form;
                 },
                 async deleteForm(id) {
                     const permission = await utils.checkBaseFormPermissions(context, { rwd: "d" });
 
-                    const [uniqueId] = id.split("#");
-
-                    const [items] = await db.read<DbItem<FbForm>>({
-                        ...defaults.db,
-                        query: {
-                            PK: PK_FORM(uniqueId),
-                            SK: { $gt: " " }
+                    const form = await storageOperations.getForm({
+                        where: {
+                            id
                         }
                     });
 
-                    if (!items.length) {
+                    if (!form) {
                         throw new NotFoundError(`Form ${id} was not found!`);
                     }
 
-                    const form = items.find(item => item.TYPE === TYPE_FORM);
                     checkOwnership(form, permission, context);
 
-                    // Delete all items in batches of 25
-                    await utils.paginateBatch<DbItem>(items, 25, async items => {
-                        await db
-                            .batch()
-                            .delete(
-                                ...items.map(item => ({
-                                    ...defaults.db,
-                                    query: { PK: item.PK, SK: item.SK }
-                                }))
-                            )
-                            .execute();
-                    });
+                    try {
+                        await storageOperations.deleteForm({
+                            form
+                        });
+                        return true;
+                    } catch (ex) {
+                        throw new WebinyError(
+                            ex.message || "Could not delete form.",
+                            ex.code || "DELETE_FORM_ERROR",
+                            {
+                                form
+                            }
+                        );
+                    }
 
-                    // Delete items from "Elastic Search"
-                    await db.delete({
-                        ...defaults.esDb,
-                        query: {
-                            PK: PK_FORM(uniqueId),
-                            SK: SK_FORM_LATEST()
-                        }
-                    });
-
-                    return true;
+                    // const [uniqueId] = id.split("#");
+                    //
+                    // const [items] = await db.read<DbItem<FbForm>>({
+                    //     ...defaults.db,
+                    //     query: {
+                    //         PK: PK_FORM(uniqueId),
+                    //         SK: { $gt: " " }
+                    //     }
+                    // });
+                    //
+                    // if (!items.length) {
+                    //     throw new NotFoundError(`Form ${id} was not found!`);
+                    // }
+                    //
+                    // const form = items.find(item => item.TYPE === TYPE_FORM);
+                    // checkOwnership(form, permission, context);
+                    //
+                    // // Delete all items in batches of 25
+                    // await utils.paginateBatch<DbItem>(items, 25, async items => {
+                    //     await db
+                    //         .batch()
+                    //         .delete(
+                    //             ...items.map(item => ({
+                    //                 ...defaults.db,
+                    //                 query: { PK: item.PK, SK: item.SK }
+                    //             }))
+                    //         )
+                    //         .execute();
+                    // });
+                    //
+                    // // Delete items from "Elastic Search"
+                    // await db.delete({
+                    //     ...defaults.esDb,
+                    //     query: {
+                    //         PK: PK_FORM(uniqueId),
+                    //         SK: SK_FORM_LATEST()
+                    //     }
+                    // });
+                    //
+                    // return true;
                 },
                 async deleteRevision(id) {
                     const permission = await utils.checkBaseFormPermissions(context, { rwd: "d" });
+
+                    const form = await storageOperations.getForm({
+                        where: {
+                            id
+                        }
+                    });
+                    if (!form) {
+                        throw new NotFoundError(`Form "${id}" was not found!`);
+                    }
+                    checkOwnership(form, permission, context);
+                    /**
+                     * Find the latest form. This will be used to determine what to update.
+                     */
+                    const latestForm = await storageOperations.getForm({
+                        where: {
+                            id,
+                            latest: true
+                        }
+                    });
+                    /**
+                     * Find the latest published form. This will be used to determine if to delete the publish record or not.
+                     * It is possible that it is same as the revision we are deleting.
+                     */
+                    const latestPublishedForm = await storageOperations.getForm({
+                        where: {
+                            id,
+                            published: true
+                        }
+                    });
+                    /**
+                     * We also need to find revisions that were published, sort by publishedOn_DESC.
+                     * Basically, we need only the last one.
+                     */
+                    const previouslyPublishedRevisions = await storageOperations.listFormRevisions({
+                        where: {
+                            formId: form.formId,
+                            version_not: form.version,
+                            publishedOn_not: null
+                        },
+                        sort: ["publishedOn_DESC"]
+                    });
 
                     const [uniqueId, version] = id.split("#");
                     const FORM_PK = PK_FORM(uniqueId);

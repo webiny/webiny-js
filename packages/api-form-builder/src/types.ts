@@ -1,11 +1,10 @@
-import { Plugin, PluginsContainer } from "@webiny/plugins/types";
-import { Context } from "@webiny/handler/types";
+import { Plugin } from "@webiny/plugins/types";
 import { TenancyContext, Tenant } from "@webiny/api-tenancy/types";
 import { I18NContentContext } from "@webiny/api-i18n-content/types";
 import { ElasticsearchContext } from "@webiny/api-elasticsearch/types";
 import { SecurityPermission } from "@webiny/api-security/types";
 import { FileManagerContext } from "@webiny/api-file-manager/types";
-import { I18NContext, I18NLocale } from "@webiny/api-i18n/types";
+import { I18NContext } from "@webiny/api-i18n/types";
 
 type FbFormTriggerData = Record<string, any>;
 type FbSubmissionData = Record<string, any>;
@@ -70,6 +69,12 @@ export type FbForm = {
     stats: Record<string, any>;
     settings: Record<string, any>;
     triggers: Record<string, any>;
+    /**
+     * The ID that connects all form revisions.
+     * TODO: Add via upgrade for 5.16.0 to both DynamoDB and Elasticsearch. (formId and webinyVersion)
+     */
+    formId: string;
+    webinyVersion: string;
 };
 
 export type CreatedBy = {
@@ -189,6 +194,8 @@ export interface Settings {
         siteKey: string;
         secretKey: string;
     };
+    tenant: string;
+    locale: string;
 }
 
 export type SettingsCRUD = {
@@ -210,28 +217,49 @@ export interface FbFormSettingsPermission extends SecurityPermission {
     name: "fb.settings";
 }
 
-export type FormBuilderContext = Context<
-    TenancyContext,
-    I18NContext,
-    I18NContentContext,
-    FileManagerContext,
-    ElasticsearchContext,
-    {
-        formBuilder: {
-            forms: FormsCRUD;
-            settings: SettingsCRUD;
-            system: SystemCRUD;
-            storageOperations: FormBuilderStorageOperations;
-        };
-    }
->;
+export interface AfterInstallTopic {
+    tenant: Tenant;
+}
+/**
+ * The object representing form builder internals.
+ */
+export interface FormBuilderContextObject {
+    forms: FormsCRUD;
+    settings: SettingsCRUD;
+    system: SystemCRUD;
+    storageOperations: FormBuilderStorageOperations;
+    /**
+     * TODO: use Topic<AfterInstallTopic> as a type when topics package is merged.
+     */
+    onAfterInstall: (params: any) => Promise<any>;
+}
 
+export interface FormBuilderContext
+    extends TenancyContext,
+        I18NContext,
+        I18NContentContext,
+        FileManagerContext,
+        ElasticsearchContext {
+    /**
+     *
+     */
+    formBuilder: FormBuilderContextObject;
+}
 /**
  * @category System
  * @category DataModel
  */
 export interface System {
     version?: string;
+    tenant: string;
+}
+/**
+ * @category StorageOperations
+ * @category StorageOperationsParams
+ * @category System
+ */
+export interface FormBuilderStorageOperationsGetSystemParams {
+    tenant: string;
 }
 /**
  * @category StorageOperations
@@ -257,6 +285,16 @@ export interface FormBuilderStorageOperationsUpdateSystemParams {
  * @category StorageOperationsParams
  * @category Settings
  */
+export interface FormBuilderStorageOperationsGetSettingsParams {
+    tenant: string;
+    locale: string;
+}
+
+/**
+ * @category StorageOperations
+ * @category StorageOperationsParams
+ * @category Settings
+ */
 export interface FormBuilderStorageOperationsCreateSettingsParams {
     settings: Settings;
 }
@@ -274,14 +312,26 @@ export interface FormBuilderStorageOperationsUpdateSettingsParams {
 /**
  * @category StorageOperations
  * @category StorageOperationsParams
+ * @category Settings
+ */
+export interface FormBuilderStorageOperationsDeleteSettingsParams {
+    settings: Settings;
+}
+
+/**
+ * @category StorageOperations
+ * @category StorageOperationsParams
  */
 export interface FormBuilderStorageOperationsGetFormParams {
     where: {
         id?: string;
+        formId?: string;
         version?: number;
-        slug?: string;
+        // slug?: string;
         published?: boolean;
         latest?: boolean;
+        tenant: string;
+        locale: string;
     };
 }
 
@@ -306,7 +356,13 @@ export interface FormBuilderStorageOperationsListFormsParams {
 export interface FormBuilderStorageOperationsListFormRevisionsParams {
     where: {
         id?: string;
+        formId?: string;
+        version_not?: number;
+        publishedOn_not?: string | null;
+        tenant: string;
+        locale: string;
     };
+    sort?: string[];
 }
 
 /**
@@ -420,7 +476,7 @@ export interface FormBuilderStorageOperationsDeleteSubmissionParams {
  * @category StorageOperations
  */
 export interface FormBuilderSystemStorageOperations {
-    getSystem(): Promise<System>;
+    getSystem(params: FormBuilderStorageOperationsGetSystemParams): Promise<System>;
     createSystem(params: FormBuilderStorageOperationsCreateSystemParams): Promise<System>;
     updateSystem(params: FormBuilderStorageOperationsUpdateSystemParams): Promise<System>;
 }
@@ -429,10 +485,10 @@ export interface FormBuilderSystemStorageOperations {
  * @category StorageOperations
  */
 export interface FormBuilderSettingsStorageOperations {
-    getSettings(): Promise<Settings>;
+    getSettings(params: FormBuilderStorageOperationsGetSettingsParams): Promise<Settings>;
     createSettings(params: FormBuilderStorageOperationsCreateSettingsParams): Promise<Settings>;
     updateSettings(params: FormBuilderStorageOperationsUpdateSettingsParams): Promise<Settings>;
-    deleteSettings(): Promise<void>;
+    deleteSettings(params: FormBuilderStorageOperationsDeleteSettingsParams): Promise<void>;
 }
 
 /**
@@ -448,7 +504,14 @@ export interface FormBuilderFormStorageOperations {
     ): Promise<FbForm[]>;
     createForm(params: FormBuilderStorageOperationsCreateFormParams): Promise<FbForm>;
     updateForm(params: FormBuilderStorageOperationsUpdateFormParams): Promise<FbForm>;
+    /**
+     * Delete all form revisions + latest + published.
+     */
     deleteForm(params: FormBuilderStorageOperationsDeleteFormParams): Promise<FbForm>;
+    /**
+     * Delete the single form revision.
+     */
+    deleteFormRevision(params: FormBuilderStorageOperationsDeleteFormParams): Promise<FbForm>;
     publishForm(params: FormBuilderStorageOperationsPublishFormParams): Promise<FbForm>;
     unpublishForm(params: FormBuilderStorageOperationsUnpublishFormParams): Promise<FbForm>;
 }
@@ -480,24 +543,8 @@ export interface FormBuilderStorageOperations
         FormBuilderFormStorageOperations,
         FormBuilderSubmissionStorageOperations {
     /**
-     * Wrapper for all storage operations for the outside world.
+     * We can initialize what ever we require in this method.
+     * Initially it was intended to attach events like afterInstall, beforeInstall, etc...
      */
-}
-
-/**
- * @category StorageOperations
- * @category Factory
- */
-export interface FormBuilderStorageOperationsFactoryParams {
-    tenant: Tenant;
-    locale: I18NLocale;
-    plugins: PluginsContainer;
-}
-
-/**
- * @category StorageOperations
- * @category Factory
- */
-export interface FormBuilderStorageOperationsFactory {
-    (params: FormBuilderStorageOperationsFactoryParams): FormBuilderStorageOperations;
+    init?: (formBuilder: FormBuilderContext) => Promise<void>;
 }

@@ -14,7 +14,6 @@ import { Client } from "@elastic/elasticsearch";
 export interface Params {
     entity: Entity<any>;
     table: Table;
-    tenant: Tenant;
     elasticsearch: Client;
 }
 

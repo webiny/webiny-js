@@ -1,5 +1,7 @@
 import {
     FormBuilderStorageOperationsCreateSettingsParams,
+    FormBuilderStorageOperationsDeleteSettingsParams,
+    FormBuilderStorageOperationsGetSettingsParams,
     FormBuilderStorageOperationsUpdateSettingsParams,
     Settings
 } from "@webiny/api-form-builder/types";
@@ -7,32 +9,33 @@ import { Entity, Table } from "dynamodb-toolbox";
 import { FormBuilderSettingsStorageOperations } from "~/types";
 import WebinyError from "@webiny/error";
 import { cleanupItem } from "@webiny/db-dynamodb/utils/cleanup";
-import { Tenant } from "@webiny/api-tenancy/types";
-import { I18NLocale } from "@webiny/api-i18n/types";
 
 export interface Params {
     entity: Entity<any>;
     table: Table;
-    tenant: Tenant;
-    locale: I18NLocale;
+}
+
+export interface CreateKeysParams {
+    tenant: string;
+    locale: string;
 }
 
 export const createSettingsStorageOperations = (
     params: Params
 ): FormBuilderSettingsStorageOperations => {
-    const { entity, tenant, locale } = params;
+    const { entity } = params;
 
-    const createPartitionKey = (): string => {
-        return `T#${tenant.id}#L#${locale.code}#FB#SETTINGS`;
+    const createPartitionKey = ({ tenant, locale }: CreateKeysParams): string => {
+        return `T#${tenant}#L#${locale}#FB#SETTINGS`;
     };
 
     const createSortKey = (): string => {
         return "default";
     };
 
-    const createKeys = () => {
+    const createKeys = (params: CreateKeysParams) => {
         return {
-            PK: createPartitionKey(),
+            PK: createPartitionKey(params),
             SK: createSortKey()
         };
     };
@@ -41,7 +44,7 @@ export const createSettingsStorageOperations = (
         params: FormBuilderStorageOperationsCreateSettingsParams
     ): Promise<Settings> => {
         const { settings } = params;
-        const keys = createKeys();
+        const keys = createKeys(settings);
 
         try {
             await entity.put({
@@ -61,8 +64,10 @@ export const createSettingsStorageOperations = (
         }
     };
 
-    const getSettings = async (): Promise<Settings> => {
-        const keys = createKeys();
+    const getSettings = async (
+        params: FormBuilderStorageOperationsGetSettingsParams
+    ): Promise<Settings> => {
+        const keys = createKeys(params);
 
         try {
             const result = await entity.get(keys);
@@ -85,7 +90,7 @@ export const createSettingsStorageOperations = (
         params: FormBuilderStorageOperationsUpdateSettingsParams
     ): Promise<Settings> => {
         const { settings, original } = params;
-        const keys = createKeys();
+        const keys = createKeys(settings);
 
         try {
             await entity.put({
@@ -106,8 +111,11 @@ export const createSettingsStorageOperations = (
         }
     };
 
-    const deleteSettings = async (): Promise<void> => {
-        const keys = createKeys();
+    const deleteSettings = async (
+        params: FormBuilderStorageOperationsDeleteSettingsParams
+    ): Promise<void> => {
+        const { settings } = params;
+        const keys = createKeys(settings);
         try {
             await entity.delete();
         } catch (ex) {

@@ -2,7 +2,12 @@ import WebinyError from "@webiny/error";
 import { NotAuthorizedError } from "@webiny/api-security";
 import { UpgradePlugin } from "@webiny/api-upgrade/types";
 import { getApplicablePlugin } from "@webiny/api-upgrade";
-import { FormBuilderContext, Settings, System } from "~/types";
+import {
+    FormBuilderContext,
+    FormBuilderStorageOperationsGetSystemParams,
+    Settings,
+    System
+} from "~/types";
 import { executeCallbacks } from "~/plugins/crud/utils";
 import { FormBuilderSystemPlugin } from "~/plugins/definitions/FormBuilderSystemPlugin";
 import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
@@ -20,9 +25,9 @@ export default new ContextPlugin<FormBuilderContext>(async context => {
 
     const storageOperations = context.formBuilder.storageOperations;
 
-    const getSystem = async () => {
+    const getSystem = async (params: FormBuilderStorageOperationsGetSystemParams) => {
         try {
-            return await storageOperations.getSystem();
+            return await storageOperations.getSystem(params);
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not load system.",
@@ -33,15 +38,20 @@ export default new ContextPlugin<FormBuilderContext>(async context => {
 
     context.formBuilder.system = {
         async getVersion() {
-            const system = await getSystem();
+            const system = await getSystem({
+                tenant: tenant.id
+            });
             return system ? system.version : null;
         },
         async setVersion(version: string) {
-            const original = await getSystem();
+            const original = await getSystem({
+                tenant: tenant.id
+            });
+            const system: System = {
+                version,
+                tenant: tenant.id
+            };
             if (!original) {
-                const system: System = {
-                    version
-                };
                 try {
                     await storageOperations.createSystem({
                         system
@@ -58,9 +68,6 @@ export default new ContextPlugin<FormBuilderContext>(async context => {
                 }
             }
 
-            const system: System = {
-                version
-            };
             try {
                 await storageOperations.updateSystem({
                     original,

@@ -1,5 +1,4 @@
 import {
-    FormBuilderStorageOperationsFactory,
     FormBuilderStorageOperations as BaseFormBuilderStorageOperations,
     FormBuilderSystemStorageOperations as BaseFormBuilderSystemStorageOperations,
     FormBuilderSubmissionStorageOperations as BaseFormBuilderSubmissionStorageOperations,
@@ -20,6 +19,7 @@ export type Attributes = Record<string, AttributeDefinition>;
 
 export enum ENTITIES {
     FORM = "FormBuilderForm",
+    ES_FORM = "FormBuilderFormEs",
     SUBMISSION = "FormBuilderSubmission",
     SYSTEM = "FormBuilderSystem",
     SETTINGS = "FormBuilderSettings"
@@ -32,7 +32,7 @@ export interface CreateStorageOperationsFactoryParams {
     attributes?: Record<ENTITIES, Attributes>;
 }
 
-export type Entities = "form" | "submission" | "system" | "settings";
+export type Entities = "form" | "esForm" | "submission" | "system" | "settings";
 
 export interface FormBuilderStorageOperations extends BaseFormBuilderStorageOperations {
     getTable(): Table;
@@ -40,11 +40,15 @@ export interface FormBuilderStorageOperations extends BaseFormBuilderStorageOper
 }
 
 export interface CreateStorageOperationsFactory {
-    (params: CreateStorageOperationsFactoryParams): FormBuilderStorageOperationsFactory;
+    (params: CreateStorageOperationsFactoryParams): FormBuilderStorageOperations;
+}
+
+export interface FormBuilderSystemCreateKeysParams {
+    tenant: string;
 }
 
 export interface FormBuilderSystemStorageOperations extends BaseFormBuilderSystemStorageOperations {
-    createPartitionKey: () => string;
+    createPartitionKey: (params: FormBuilderSystemCreateKeysParams) => string;
     createSortKey: () => string;
 }
 

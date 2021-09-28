@@ -9,7 +9,8 @@ import { createSystemStorageOperations } from "~/operations/system";
 import { createSubmissionStorageOperations } from "~/operations/submission";
 import { createSettingsStorageOperations } from "~/operations/settings";
 import { createFormStorageOperations } from "~/operations/form";
-import { createSystemPlugin } from "~/operations/system/plugin";
+import { createElasticsearchIndex } from "~/operations/system/createElasticsearchIndex";
+import { createFormElasticsearchEntity } from "~/definitions/formElasticsearch";
 
 const reservedFields = ["PK", "SK", "index", "data"];
 
@@ -42,6 +43,11 @@ export const createStorageOperationsFactory: CreateStorageOperationsFactory = pa
             table,
             attributes: attributes[ENTITIES.FORM]
         }),
+        esForm: createFormElasticsearchEntity({
+            entityName: ENTITIES.ES_FORM,
+            table,
+            attributes: attributes[ENTITIES.ES_FORM]
+        }),
         submission: createSubmissionEntity({
             entityName: ENTITIES.SUBMISSION,
             table,
@@ -59,39 +65,35 @@ export const createStorageOperationsFactory: CreateStorageOperationsFactory = pa
         })
     };
 
-    return ({ tenant, locale, plugins }) => {
-        const systemPlugin = createSystemPlugin({
-            elasticsearch
-        });
-
-        plugins.register(systemPlugin);
-
-        return {
-            getTable: () => table,
-            getEntities: () => entities,
-            ...createSystemStorageOperations({
-                table,
-                entity: entities.system,
-                tenant
-            }),
-            ...createSettingsStorageOperations({
-                table,
-                entity: entities.settings,
-                tenant,
-                locale
-            }),
-            ...createFormStorageOperations({
-                elasticsearch,
-                table,
-                entity: entities.form,
-                tenant
-            }),
-            ...createSubmissionStorageOperations({
-                elasticsearch,
-                table,
-                entity: entities.submission,
-                tenant
-            })
-        };
+    return {
+        init: async formBuilder => {
+            formBuilder.onAfterInstall(async ({ tenant }) => {
+                await createElasticsearchIndex({
+                    elasticsearch,
+                    tenant
+                });
+            });
+        },
+        getTable: () => table,
+        getEntities: () => entities,
+        ...createSystemStorageOperations({
+            table,
+            entity: entities.system
+        }),
+        ...createSettingsStorageOperations({
+            table,
+            entity: entities.settings
+        }),
+        ...createFormStorageOperations({
+            elasticsearch,
+            table,
+            entity: entities.form,
+            esEntity: entities.esForm
+        }),
+        ...createSubmissionStorageOperations({
+            elasticsearch,
+            table,
+            entity: entities.submission
+        })
     };
 };
