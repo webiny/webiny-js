@@ -28,7 +28,7 @@ export class TenantHeaderLinkPlugin extends ApolloLinkPlugin {
     createLink() {
         return setContext((_, { headers }) => {
             // If tenant header is already set, do not overwrite it.
-            if ("x-tenant" in headers) {
+            if (headers && "x-tenant" in headers) {
                 return { headers };
             }
 
