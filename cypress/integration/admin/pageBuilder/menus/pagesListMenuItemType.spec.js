@@ -71,10 +71,12 @@ describe("Menus Module", () => {
 
     it(`Step 2: assert that menu item and pages are shown (descending order)`, () => {
         cy.visit(Cypress.env("WEBSITE_URL") + `/page-${id}-${0}/`);
-        // cy.reloadUntil(() => {
-        //     // We wait until the document contains the newly added menu.
-        //     return Cypress.$(`:contains(added-menu-${id})`).length > 0;
-        // })
+
+        cy.reloadUntil(() => {
+            // We wait until the document contains the newly added menu.
+            return Cypress.$(`:contains(added-menu-${id})`).length > 0;
+        });
+
         cy.findByTestId("pb-desktop-header").within(() => {
             // Let's check the links and the order.
             cy.findByText(`added-menu-${id}`).within(() => {
@@ -105,10 +107,12 @@ describe("Menus Module", () => {
 
     it(`Step 4: assert that menu item and pages are shown (ascending order)`, () => {
         cy.visit(Cypress.env("WEBSITE_URL") + `/page-${id}-${0}/`);
-        // .reloadUntil(() => {
-        //     // We wait until the document contains the newly added menu.
-        //     return Cypress.$(`:contains(added-menu-${idEdited})`).length > 0;
-        // })
+
+        cy.reloadUntil(() => {
+            // We wait until the document contains the newly added menu.
+            return Cypress.$(`:contains(added-menu-${idEdited})`).length > 0;
+        });
+
         cy.findByTestId("pb-desktop-header").within(() => {
             // Let's check the links and the order.
             cy.findByText(`added-menu-${idEdited}`).within(() => {
@@ -135,10 +139,12 @@ describe("Menus Module", () => {
 
     it(`Step 6: assert that the pages list menu item does not exist`, () => {
         cy.visit(Cypress.env("WEBSITE_URL") + `/page-${id}-${0}/`);
-        // .reloadUntil(() => {
-        //     // We wait until the document contains the newly added menu.
-        //     return Cypress.$(`:contains(added-menu-${idEdited})`).length === 0;
-        // })
+
+        cy.reloadUntil(() => {
+            // We wait until the document contains the newly added menu.
+            return Cypress.$(`:contains(added-menu-${idEdited})`).length === 0;
+        });
+
         cy.findByTestId("pb-desktop-header").within(() => {
             // Let's check the links and the order.
             cy.findByText(`added-menu-${idEdited}`).should("not.exist");
@@ -148,7 +154,7 @@ describe("Menus Module", () => {
     it(`Step 7: delete all ${totalPages} pages (pseudo "afterAll" hook)`, () => {
         // List pages
         cy.pbListPages({
-            sort: { publishedOn: "desc" }
+            sort: ["publishedOn_DESC"]
         }).then(pages => {
             // Delete first X pages
             for (let i = 0; i < totalPages; i++) {

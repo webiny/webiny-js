@@ -1,15 +1,11 @@
 import React from "react";
 import kebabCase from "lodash/kebabCase";
-import {
-    DisplayMode,
-    PbEditorPageElementPlugin,
-    PbEditorElementPluginArgs
-} from "../../../../types";
-import Text, { textClassName } from "./Paragraph";
+import { DisplayMode, PbEditorPageElementPlugin, PbEditorTextElementPluginsArgs } from "~/types";
+import Paragraph, { textClassName } from "./Paragraph";
 import { createInitialTextValue } from "../utils/textUtils";
 import { createInitialPerDeviceSettingValue } from "../../elementSettings/elementSettingsUtils";
 
-export default (args: PbEditorElementPluginArgs = {}): PbEditorPageElementPlugin => {
+export default (args: PbEditorTextElementPluginsArgs = {}): PbEditorPageElementPlugin => {
     const defaultText = `Lorem ipsum dolor sit amet, consectetur adipiscing elit.
      Suspendisse varius enim in eros elementum tristique.
      Duis cursus, mi quis viverra ornare, eros dolor interdum nulla, ut commodo diam libero vitae erat.
@@ -54,7 +50,8 @@ export default (args: PbEditorElementPluginArgs = {}): PbEditorPageElementPlugin
                     text: {
                         ...createInitialPerDeviceSettingValue(
                             createInitialTextValue({
-                                type: this.elementType
+                                type: this.elementType,
+                                tag: "p"
                             }),
                             DisplayMode.DESKTOP
                         ),
@@ -79,7 +76,9 @@ export default (args: PbEditorElementPluginArgs = {}): PbEditorPageElementPlugin
             return typeof args.create === "function" ? args.create(defaultValue) : defaultValue;
         },
         render({ element }) {
-            return <Text elementId={element.id} />;
+            return (
+                <Paragraph elementId={element.id} mediumEditorOptions={args.mediumEditorOptions} />
+            );
         }
     };
 };

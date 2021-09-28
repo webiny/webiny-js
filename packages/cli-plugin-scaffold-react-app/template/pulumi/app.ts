@@ -1,6 +1,6 @@
+import { crawlDirectory } from "@webiny/cli-plugin-deploy-pulumi/utils";
 import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
-import * as fs from "fs";
 import * as mime from "mime";
 import * as path from "path";
 
@@ -18,7 +18,7 @@ class App {
 
         // Sync the contents of the source directory with the S3 bucket, which will in-turn show up on the CDN.
         const webContentsRootPath = path.join(__dirname, "..", "code", "build");
-        App.crawlDirectory(webContentsRootPath, (filePath: string) => {
+        crawlDirectory(webContentsRootPath, (filePath: string) => {
             const relativeFilePath = filePath.replace(webContentsRootPath + "/", "");
             new aws.s3.BucketObject(
                 relativeFilePath,
@@ -35,20 +35,6 @@ class App {
                 }
             );
         });
-    }
-
-    static crawlDirectory(dir: string, f: (_: string) => void) {
-        const files = fs.readdirSync(dir);
-        for (const file of files) {
-            const filePath = `${dir}/${file}`;
-            const stat = fs.statSync(filePath);
-            if (stat.isDirectory()) {
-                App.crawlDirectory(filePath, f);
-            }
-            if (stat.isFile()) {
-                f(filePath);
-            }
-        }
     }
 }
 

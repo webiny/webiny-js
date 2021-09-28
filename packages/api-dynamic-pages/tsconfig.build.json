@@ -1,7 +1,14 @@
 {
   "extends": "../../tsconfig.build.json",
   "include": ["./src"],
-  "exclude": ["node_modules", "./dist", "../api-page-builder", "../handler-graphql", "../plugins"],
+  "exclude": [
+    "node_modules",
+    "./dist",
+    "../api-page-builder",
+    "../api-page-builder-so-ddb-es",
+    "../handler-graphql",
+    "../plugins"
+  ],
   "compilerOptions": {
     "rootDir": "./src",
     "outDir": "./dist",

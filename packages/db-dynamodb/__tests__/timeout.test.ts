@@ -1,4 +1,4 @@
-import { DynamoDbDriver } from "@webiny/db-dynamodb";
+import { DynamoDbDriver } from "../src/index";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { Db } from "@webiny/db";
 

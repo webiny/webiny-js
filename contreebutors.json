@@ -42,6 +42,13 @@
     "addedOn": "2020-06-09T06:28:01.430Z"
   },
   {
+    "username": "brunozoric",
+    "name": "Bruno Zorić",
+    "profileUrl": "https://github.com/brunozoric",
+    "avatarUrl": "https://avatars.githubusercontent.com/u/10399339?v=4",
+    "addedOn": "2021-09-13T11:02:29.244Z"
+  },
+  {
     "username": "roman-vabishchevych",
     "name": "Roman Vabishchevych",
     "profileUrl": "https://github.com/roman-vabishchevych",
@@ -306,5 +313,26 @@
     "profileUrl": "https://github.com/facorread",
     "avatarUrl": "https://avatars.githubusercontent.com/u/127711?v=4",
     "addedOn": "2021-08-02T06:32:21.490Z"
+  },
+  {
+    "username": "IzioDev",
+    "name": "Romain Billot",
+    "profileUrl": "https://github.com/IzioDev",
+    "avatarUrl": "https://avatars.githubusercontent.com/u/9900846?v=4",
+    "addedOn": "2021-09-13T09:57:55.069Z"
+  },
+  {
+    "username": "snstanton",
+    "name": "Scott Stanton",
+    "profileUrl": "https://github.com/snstanton",
+    "avatarUrl": "https://avatars.githubusercontent.com/u/209370?v=4",
+    "addedOn": "2021-09-28T14:12:35.976Z"
+  },
+  {
+    "username": "nelsonchen5",
+    "name": "Nelson Chen",
+    "profileUrl": "https://github.com/nelsonchen5",
+    "avatarUrl": "https://avatars.githubusercontent.com/u/31781643?v=4",
+    "addedOn": "2021-09-28T14:12:48.125Z"
   }
 ]

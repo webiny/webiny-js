@@ -15,21 +15,21 @@ const fileAData = {
     name: "filenameA.png",
     size: 123456,
     type: "image/png",
-    tags: ["sketch"]
+    tags: ["sketch", "file-a", "webiny"]
 };
 const fileBData = {
     key: "/files/filenameB.png",
     name: "filenameB.png",
     size: 123456,
     type: "image/png",
-    tags: ["art"]
+    tags: ["art", "file-b"]
 };
 const fileCData = {
     key: "/files/filenameC.png",
     name: "filenameC.png",
     size: 123456,
     type: "image/png",
-    tags: ["art", "sketch", "webiny"]
+    tags: ["art", "sketch", "webiny", "file-c"]
 };
 
 describe("Files CRUD test", () => {
@@ -115,7 +115,10 @@ describe("Files CRUD test", () => {
             data: {
                 fileManager: {
                     updateFile: {
-                        data: fileAData,
+                        data: {
+                            ...fileAData,
+                            tags: ["sketch"]
+                        },
                         error: null
                     }
                 }
@@ -130,6 +133,7 @@ describe("Files CRUD test", () => {
                 data.fileManager.listFiles.data[0].tags.length === 1,
             {
                 tries: 10,
+                wait: 400,
                 name: "list files after update tags"
             }
         );
@@ -160,7 +164,10 @@ describe("Files CRUD test", () => {
             data: {
                 fileManager: {
                     getFile: {
-                        data: fileAData,
+                        data: {
+                            ...fileAData,
+                            tags: ["sketch"]
+                        },
                         error: null
                     }
                 }
@@ -183,8 +190,15 @@ describe("Files CRUD test", () => {
                     listFiles: {
                         data: [
                             // Files are sorted by `id` in descending order
-                            { ...fileBData, id: fileBId },
-                            { ...fileAData, id: fileAId }
+                            {
+                                ...fileBData,
+                                id: fileBId
+                            },
+                            {
+                                ...fileAData,
+                                id: fileAId,
+                                tags: ["sketch"]
+                            }
                         ],
                         meta: {
                             cursor: expect.any(String),
@@ -313,10 +327,12 @@ describe("Files CRUD test", () => {
             }
         });
 
+        const tags = ["art", "file-a", "file-b", "file-c", "sketch", "webiny"];
+
         await until(
             () => listTags().then(([data]) => data),
             ({ data }) => {
-                return data.fileManager.listTags.length === 3;
+                return data.fileManager.listTags.length === tags.length;
             },
             { name: "bulk list all tags", tries: 10 }
         );
@@ -326,7 +342,78 @@ describe("Files CRUD test", () => {
         expect(response).toEqual({
             data: {
                 fileManager: {
-                    listTags: ["art", "sketch", "webiny"]
+                    listTags: tags
+                }
+            }
+        });
+    });
+
+    it("should find all files with given multiple tags - and operator", async () => {
+        await createFiles({
+            data: [fileAData, fileBData, fileCData]
+        });
+        await until(
+            () => listFiles().then(([data]) => data),
+            ({ data }) => {
+                return data.fileManager.listFiles.data.length === 3;
+            },
+            { name: "list all files", tries: 20 }
+        );
+
+        const [cResponse] = await listFiles({
+            where: {
+                tag_and_in: ["art", "webiny"]
+            }
+        });
+
+        expect(cResponse).toEqual({
+            data: {
+                fileManager: {
+                    listFiles: {
+                        data: [
+                            {
+                                ...fileCData,
+                                id: expect.any(String)
+                            }
+                        ],
+                        error: null,
+                        meta: {
+                            hasMoreItems: false,
+                            totalCount: 1,
+                            cursor: expect.any(String)
+                        }
+                    }
+                }
+            }
+        });
+
+        const [acResponse] = await listFiles({
+            where: {
+                tag_and_in: ["sketch", "webiny"]
+            }
+        });
+
+        expect(acResponse).toEqual({
+            data: {
+                fileManager: {
+                    listFiles: {
+                        data: [
+                            {
+                                ...fileCData,
+                                id: expect.any(String)
+                            },
+                            {
+                                ...fileAData,
+                                id: expect.any(String)
+                            }
+                        ],
+                        error: null,
+                        meta: {
+                            hasMoreItems: false,
+                            totalCount: 2,
+                            cursor: expect.any(String)
+                        }
+                    }
                 }
             }
         });

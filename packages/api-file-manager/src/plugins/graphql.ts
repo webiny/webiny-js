@@ -109,7 +109,8 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
                 type: String
                 type_in: [String!]
                 tag: String
-                tags_in: [String!]
+                tag_in: [String!]
+                tag_and_in: [String!]
                 id_in: [ID!]
                 id: ID
             }
@@ -124,6 +125,7 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
                     tags: [String]
                     ids: [ID]
                     search: String
+                    where: FileWhereInput
                 ): FileListResponse
 
                 listTags: [String]

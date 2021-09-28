@@ -1,0 +1,4 @@
+{
+  "name": "API Page Builder DynamoDB Elasticsearch",
+  "entryPoints": ["types.ts"]
+}

@@ -1,5 +1,16 @@
+import { CoreOptions } from "medium-editor";
 import { plugins } from "@webiny/plugins";
-import { PbThemePlugin } from "../../../../types";
+import { MediumEditorOptions, PbThemePlugin } from "~/types";
+
+export const getMediumEditorOptions = (
+    defaultOptions: CoreOptions,
+    mediumEditorOptions: MediumEditorOptions
+) => {
+    if (typeof mediumEditorOptions === "function") {
+        return mediumEditorOptions(defaultOptions);
+    }
+    return defaultOptions;
+};
 
 const getTypographyFromTheme = (type: string) => {
     const [{ theme }] = plugins.byType<PbThemePlugin>("pb-theme");

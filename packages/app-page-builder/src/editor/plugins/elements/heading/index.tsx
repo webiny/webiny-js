@@ -1,15 +1,11 @@
 import React from "react";
 import kebabCase from "lodash/kebabCase";
-import {
-    DisplayMode,
-    PbEditorPageElementPlugin,
-    PbEditorElementPluginArgs
-} from "../../../../types";
+import { DisplayMode, PbEditorPageElementPlugin, PbEditorTextElementPluginsArgs } from "~/types";
 import { createInitialPerDeviceSettingValue } from "../../elementSettings/elementSettingsUtils";
 import Heading, { headingClassName } from "./Heading";
 import { createInitialTextValue } from "../utils/textUtils";
 
-export default (args: PbEditorElementPluginArgs = {}): PbEditorPageElementPlugin => {
+export default (args: PbEditorTextElementPluginsArgs = {}): PbEditorPageElementPlugin => {
     const defaultText = "Heading";
 
     const defaultSettings = [
@@ -84,7 +80,9 @@ export default (args: PbEditorElementPluginArgs = {}): PbEditorPageElementPlugin
             return typeof args.create === "function" ? args.create(defaultValue) : defaultValue;
         },
         render({ element }) {
-            return <Heading elementId={element.id} />;
+            return (
+                <Heading elementId={element.id} mediumEditorOptions={args.mediumEditorOptions} />
+            );
         }
     };
 };

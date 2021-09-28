@@ -3,7 +3,7 @@ import { PbContext } from "~/types";
 
 export type CallbackFunction<TParams> = (params: TParams) => void | Promise<void>;
 
-interface InstallationParams {
+export interface InstallationParams {
     context: PbContext;
 }
 

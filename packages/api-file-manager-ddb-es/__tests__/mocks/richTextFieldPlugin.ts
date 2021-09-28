@@ -8,7 +8,6 @@
  * - FileStorageTransformPlugin - transform the file data to and from the storage engine
  * - FileIndexTransformPlugin - transform the file data to and from index engine
  */
-import { ElasticsearchFieldPlugin } from "@webiny/api-elasticsearch/plugins/definition/ElasticsearchFieldPlugin";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSchemaPlugin";
 import { FileAttributePlugin } from "~/plugins/FileAttributePlugin";
 import WebinyError from "@webiny/error";
@@ -16,10 +15,11 @@ import { FilePlugin } from "@webiny/api-file-manager/plugins/definitions/FilePlu
 import { FileStorageTransformPlugin } from "@webiny/api-file-manager/plugins/definitions/FileStorageTransformPlugin";
 import * as jsonpack from "jsonpack";
 import { FileIndexTransformPlugin } from "~/plugins/FileIndexTransformPlugin";
+import { FileElasticsearchFieldPlugin } from "~/plugins/FileElasticsearchFieldPlugin";
 
 const fieldName = "richText";
 
-export class FileManagerElasticsearchRichTextFieldPlugin extends ElasticsearchFieldPlugin {
+export class FileManagerElasticsearchRichTextFieldPlugin extends FileElasticsearchFieldPlugin {
     getBasePath(field: string): string {
         if (field === "richTextText") {
             return `${fieldName}.text`;
@@ -68,7 +68,6 @@ export default () => [
      * A plugin that is required for Elasticsearch query builder to work.
      */
     new FileManagerElasticsearchRichTextFieldPlugin({
-        entity: "Files",
         field: fieldName,
         sortable: false,
         keyword: true,
