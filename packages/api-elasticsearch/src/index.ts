@@ -15,6 +15,7 @@ import {
     ElasticsearchQueryBuilderOperatorLesserThanPlugin,
     ElasticsearchQueryBuilderOperatorLesserThanOrEqualToPlugin,
     ElasticsearchQueryBuilderOperatorInPlugin,
+    ElasticsearchQueryBuilderOperatorAndInPlugin,
     ElasticsearchQueryBuilderOperatorNotInPlugin
 } from "~/plugins/operator";
 import WebinyError from "@webiny/error";
@@ -60,6 +61,7 @@ export default (options: ElasticsearchClientOptions): ContextPlugin<Elasticsearc
             new ElasticsearchQueryBuilderOperatorLesserThanPlugin(),
             new ElasticsearchQueryBuilderOperatorLesserThanOrEqualToPlugin(),
             new ElasticsearchQueryBuilderOperatorInPlugin(),
+            new ElasticsearchQueryBuilderOperatorAndInPlugin(),
             new ElasticsearchQueryBuilderOperatorNotInPlugin()
         ]);
     });

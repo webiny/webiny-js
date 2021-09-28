@@ -46,6 +46,7 @@ export default () => {
     return {
         region: process.env.AWS_REGION,
         apiUrl: cloudfront.getDistributionUrl(),
+        graphqlApiUrl: cloudfront.getDistributionUrl("/graphql"),
         dynamoDbTable: dynamoDb.table.name
     };
 };

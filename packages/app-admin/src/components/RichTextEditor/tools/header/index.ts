@@ -117,7 +117,7 @@ class Header {
 
         newData.text = data.text || "";
         newData.level = parseInt(data.level) || this.defaultLevel.number;
-        newData.textAlign = data.textAlign || TextAlign.LEFT;
+        newData.textAlign = data.textAlign || TextAlign.START;
 
         return newData;
     }
@@ -329,7 +329,7 @@ class Header {
      * @returns {TextAlign} textAlign
      */
     getTextAlign(className) {
-        let textAlign = TextAlign.LEFT;
+        let textAlign = TextAlign.START;
         // Match className with alignment
         this.alignments.forEach(alignment => {
             if (className.includes(`ce-header-text--${alignment.name}`)) {
@@ -512,7 +512,7 @@ class Header {
         let alignment = this.alignments.find(alignment => alignment.name === this._data.textAlign);
 
         if (!alignment) {
-            alignment = { name: TextAlign.LEFT, svg: ALIGNMENT_ICONS.left };
+            alignment = { name: TextAlign.START, svg: ALIGNMENT_ICONS.start };
         }
 
         return alignment;

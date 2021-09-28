@@ -55,13 +55,17 @@ export interface ListLatestPagesOptions {
     auth?: boolean;
 }
 
+export interface GetPagesOptions {
+    decompress?: boolean;
+}
+
 export interface PagesCrud {
     /**
      * To be used internally in our code.
      * @internal
      */
     storageOperations: PageStorageOperations;
-    get<TPage extends Page = Page>(id: string): Promise<TPage>;
+    get<TPage extends Page = Page>(id: string, options?: GetPagesOptions): Promise<TPage>;
     listLatest<TPage extends Page = Page>(
         args: ListPagesParams,
         options?: ListLatestPagesOptions

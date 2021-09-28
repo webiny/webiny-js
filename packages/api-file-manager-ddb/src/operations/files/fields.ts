@@ -1,45 +1,35 @@
-import { FieldPathPlugin } from "@webiny/db-dynamodb/plugins/definitions/FieldPathPlugin";
-import { DateTimeTransformPlugin } from "@webiny/db-dynamodb/plugins/definitions/DateTimeTransformPlugin";
-import { NumberTransformPlugin } from "@webiny/db-dynamodb/plugins/definitions/NumberTransformPlugin";
+import { FileDynamoDbFieldPlugin } from "~/plugins/FileDynamoDbFieldPlugin";
 
 export default () => [
+    new FileDynamoDbFieldPlugin({
+        field: "id"
+    }),
     /**
-     * Path plugin for the fields that are ddb map type and the value filtered by is the id property in the object.
+     * Path plugin for the field that are ddb map type and the value filtered by is the id property in the object.
      */
-    new FieldPathPlugin({
-        fields: ["createdBy"],
-        createPath: (field: string): string => {
-            return `${field}.id`;
-        }
+    new FileDynamoDbFieldPlugin({
+        field: "createdBy",
+        path: "createdBy.id"
     }),
     /**
      * Path plugin for meta field properties.
      */
-    new FieldPathPlugin({
-        fields: ["private"],
-        createPath: (field: string) => {
-            return `meta.${field}`;
-        }
+    new FileDynamoDbFieldPlugin({
+        field: "private",
+        path: "meta.private"
     }),
     /**
      * Path plugin for tag field.
      */
-    new FieldPathPlugin({
-        fields: ["tag", "tags"],
-        createPath: () => {
-            return `tags`;
-        }
+    new FileDynamoDbFieldPlugin({
+        field: "tag",
+        path: "tags"
     }),
     /**
-     * Value transformation for the dateTime fields.
+     * Value transformation for the dateTime field.
      */
-    new DateTimeTransformPlugin({
-        fields: ["createdOn"]
-    }),
-    /**
-     * Value transformation for the number fields.
-     */
-    new NumberTransformPlugin({
-        fields: ["size"]
+    new FileDynamoDbFieldPlugin({
+        field: "createdOn",
+        type: "date"
     })
 ];

@@ -17,7 +17,7 @@
 [![SemVer](http://img.shields.io/:semver-2.0.0-brightgreen.svg)](http://semver.org)
 ![](https://img.shields.io/npm/types/scrub-js.svg)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
-[![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-v1.4%20adopted-ff69b4.svg)](/docs/CODE_OF_CONDUCT.md)
+[![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg)](/docs/CODE_OF_CONDUCT.md)
 [![Join our Slack community https://www.webiny.com/slack](https://img.shields.io/badge/Slack-Join%20our%20community!-orange)](https://www.webiny.com/slack)
 
 </p>
@@ -389,6 +389,20 @@ Thanks goes to these wonderful people:
                         <img src="https://avatars.githubusercontent.com/u/9900846?v=4" width="100px;" alt="Romain Billot"/>
                         <br />
                         <sub><b>Romain Billot</b></sub>
+                    </a>
+                    <br />
+                </td><td align="center">
+                    <a href="https://github.com/snstanton">
+                        <img src="https://avatars.githubusercontent.com/u/209370?v=4" width="100px;" alt="Scott Stanton"/>
+                        <br />
+                        <sub><b>Scott Stanton</b></sub>
+                    </a>
+                    <br />
+                </td><td align="center">
+                    <a href="https://github.com/nelsonchen5">
+                        <img src="https://avatars.githubusercontent.com/u/31781643?v=4" width="100px;" alt="Nelson Chen"/>
+                        <br />
+                        <sub><b>Nelson Chen</b></sub>
                     </a>
                     <br />
                 </td></tr>

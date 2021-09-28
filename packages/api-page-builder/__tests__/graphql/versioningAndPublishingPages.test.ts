@@ -518,66 +518,68 @@ describe("versioning and publishing pages", () => {
         // Try publishing 2nd page, it should work.
         await publishPage({ id: p1v1.id });
 
-        await getPublishedPage({ path: "/pages-test" }).then(([res]) =>
-            expect(res).toMatchObject({
-                data: {
-                    pageBuilder: {
-                        getPublishedPage: {
-                            data: {
-                                category: {
-                                    slug: "slug"
-                                },
-                                locked: true,
-                                path: "/pages-test",
-                                settings: {
-                                    general: {
-                                        image: null,
-                                        layout: "layout",
-                                        snippet: null,
-                                        tags: null
-                                    },
-                                    seo: {
-                                        description: null,
-                                        meta: [],
-                                        title: null
-                                    },
-                                    social: {
-                                        description: null,
-                                        image: null,
-                                        meta: [],
-                                        title: null
-                                    }
-                                },
-                                status: "published",
-                                title: "Untitled",
-                                url: "/pages-test",
-                                version: 1
+        const [getPublishedResponse] = await getPublishedPage({ path: "/pages-test" });
+
+        expect(getPublishedResponse).toMatchObject({
+            data: {
+                pageBuilder: {
+                    getPublishedPage: {
+                        data: {
+                            category: {
+                                slug: "slug"
                             },
-                            error: null
-                        }
+                            locked: true,
+                            path: "/pages-test",
+                            settings: {
+                                general: {
+                                    image: null,
+                                    layout: "layout",
+                                    snippet: null,
+                                    tags: null
+                                },
+                                seo: {
+                                    description: null,
+                                    meta: [],
+                                    title: null
+                                },
+                                social: {
+                                    description: null,
+                                    image: null,
+                                    meta: [],
+                                    title: null
+                                }
+                            },
+                            status: "published",
+                            title: "Untitled",
+                            url: "/pages-test",
+                            version: 1
+                        },
+                        error: null
                     }
                 }
-            })
-        );
+            }
+        });
 
         await unpublishPage({ id: p1v1.id });
 
         // This one should not return any results - it's an old URL.
-        await getPublishedPage({ path: "/pages-test" }).then(([res]) =>
-            expect(res).toEqual({
-                data: {
-                    pageBuilder: {
-                        getPublishedPage: {
+        const [getPublishedPageAfterUnpublishedResponse] = await getPublishedPage({
+            path: "/pages-test"
+        });
+
+        expect(getPublishedPageAfterUnpublishedResponse).toEqual({
+            data: {
+                pageBuilder: {
+                    getPublishedPage: {
+                        data: null,
+                        error: {
+                            code: "NOT_FOUND",
                             data: null,
-                            error: {
-                                code: "NOT_FOUND",
-                                data: null,
-                                message: "Page not found."
-                            }
+                            message: "Page not found."
                         }
                     }
                 }
-            })
-        );
+            }
+        });
     });
 });
