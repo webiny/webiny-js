@@ -321,10 +321,8 @@ export default new ContextPlugin<PbContext>(async context => {
                 rwd: "w"
             });
 
-            const original = await storageOperations.get({
-                where: {
-                    id
-                }
+            const original = await context.pageBuilder.pages.get(id, {
+                decompress: false
             });
 
             if (!original) {
@@ -613,10 +611,8 @@ export default new ContextPlugin<PbContext>(async context => {
                 pw: "p"
             });
 
-            const original = await storageOperations.get({
-                where: {
-                    id
-                }
+            const original = await context.pageBuilder.pages.get(id, {
+                decompress: false
             });
 
             if (original.status === STATUS_PUBLISHED) {
@@ -729,10 +725,8 @@ export default new ContextPlugin<PbContext>(async context => {
                 pw: "u"
             });
 
-            const original = await storageOperations.get({
-                where: {
-                    id
-                }
+            const original = await context.pageBuilder.pages.get(id, {
+                decompress: false
             });
             /**
              * Latest revision of the this page.
@@ -809,10 +803,8 @@ export default new ContextPlugin<PbContext>(async context => {
                 pw: "r"
             });
 
-            const original = await storageOperations.get({
-                where: {
-                    id
-                }
+            const original = await context.pageBuilder.pages.get(id, {
+                decompress: false
             });
 
             const allowedStatuses = [STATUS_DRAFT, STATUS_CHANGES_REQUESTED];
@@ -866,10 +858,8 @@ export default new ContextPlugin<PbContext>(async context => {
                 pw: "c"
             });
 
-            const original = await storageOperations.get({
-                where: {
-                    id
-                }
+            const original = await context.pageBuilder.pages.get(id, {
+                decompress: false
             });
             if (original.status !== STATUS_REVIEW_REQUESTED) {
                 throw new WebinyError(
@@ -921,7 +911,7 @@ export default new ContextPlugin<PbContext>(async context => {
             }
         },
 
-        async get(id) {
+        async get(id, options) {
             const permission = await checkBasePermissions(context, PERMISSION_NAME, {
                 rwd: "r"
             });
@@ -947,6 +937,10 @@ export default new ContextPlugin<PbContext>(async context => {
 
             const identity = context.security.getIdentity();
             checkOwnPermissions(identity, permission, page, "ownedBy");
+
+            if (options && options.decompress === false) {
+                return page;
+            }
 
             return (await extractPageContent(contentCompressionPlugins, page)) as any;
         },
