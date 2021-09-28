@@ -3,6 +3,10 @@ import { DynamoDBTypes } from "dynamodb-toolbox/dist/classes/Table";
 
 export type FieldType = DynamoDBTypes & "date" & any;
 
+export interface TransformValueCb {
+    (value: any): any;
+}
+
 export interface Params {
     /**
      * Default is string.
@@ -14,6 +18,8 @@ export interface Params {
      * Default is true.
      */
     sortable?: boolean;
+
+    transformValue?: TransformValueCb;
 }
 
 export abstract class FieldPlugin extends Plugin {
@@ -22,6 +28,7 @@ export abstract class FieldPlugin extends Plugin {
     private readonly fieldType: FieldType;
     private readonly dynamoDbType: DynamoDBTypes;
     private readonly sortable: boolean;
+    private readonly _transformValue: TransformValueCb | undefined;
 
     public constructor(params: Params) {
         super();
@@ -30,6 +37,7 @@ export abstract class FieldPlugin extends Plugin {
         this.field = params.field;
         this.path = params.path;
         this.sortable = params.sortable === undefined ? true : params.sortable;
+        this._transformValue = params.transformValue;
     }
 
     public getPath(): string {
@@ -45,10 +53,16 @@ export abstract class FieldPlugin extends Plugin {
     }
 
     public transformValue(value: any): any {
+        if (this._transformValue) {
+            return this.transformValue(value);
+        }
         switch (this.fieldType) {
             case "number":
                 return Number(value);
             case "date":
+                if (!value) {
+                    return null;
+                }
                 return new Date(value);
         }
         return value;
