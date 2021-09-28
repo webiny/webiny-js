@@ -7,14 +7,14 @@ import { Entity } from "dynamodb-toolbox";
 const attributesToRemove = [
     "PK",
     "SK",
-    "GSI1_PK",
-    "GSI1_SK",
     "created",
     "_ct",
     "modified",
     "_mt",
     "entity",
-    "_et"
+    "_et",
+    "GSI1_PK",
+    "GSI1_SK"
 ];
 
 export const cleanupItem = <T>(
