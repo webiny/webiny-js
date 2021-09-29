@@ -7,7 +7,7 @@ import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { Icon } from "@webiny/ui/Icon";
 
 import { ReactComponent as DownloadIcon } from "../icons/file_download.svg";
-import { EXPORT_PAGES, GET_PAGE_IMPORT_EXPORT_TASK } from "./graphql";
+import { EXPORT_PAGES, GET_PAGE_IMPORT_EXPORT_TASK } from "~/admin/graphql/pageImportExport.gql";
 import useExportPageDialog from "./useExportPageDialog";
 
 const INTERVAL = 2 * 1000;
