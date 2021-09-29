@@ -86,7 +86,7 @@ export default (
             prevStatusOfSubTask = subTask.status;
 
             // Real job
-            const pageContent = await importPage({
+            const page = await importPage({
                 context,
                 pageKey,
                 key: zipFileKey,
@@ -94,19 +94,27 @@ export default (
             });
 
             // Create a page
-            const pbPage = await context.pageBuilder.pages.create(category);
+            let pbPage = await context.pageBuilder.pages.create(category);
 
             // Update page with data
-            await context.pageBuilder.pages.update(pbPage.id, {
-                content: pageContent,
-                title: pbPage.title
+            pbPage = await context.pageBuilder.pages.update(pbPage.id, {
+                content: page.content,
+                title: page.title
             });
+
+            // TODO: Publish page
 
             // Update task record in DB
             subTask = await pageBuilder.pageImportExportTask.updateSubTask(taskId, subTask.id, {
                 status: PageImportExportTaskStatus.COMPLETED,
                 data: {
-                    message: "Done"
+                    message: "Done",
+                    page: {
+                        id: pbPage.id,
+                        title: pbPage.title,
+                        version: pbPage.version,
+                        status: pbPage.status
+                    }
                 }
             });
             // Update stats in main task

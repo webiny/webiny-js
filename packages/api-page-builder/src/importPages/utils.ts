@@ -219,7 +219,7 @@ export async function importPage({
     log(`Remove page contents from S3...`);
     await deleteS3Folder(path.dirname(fileUploadsData.data));
 
-    return page.content;
+    return page;
 }
 
 interface UploadFilesFromZipParams {
