@@ -5,7 +5,7 @@ import { withFields, string } from "@commodo/fields";
 import { validation } from "@webiny/validation";
 import Error from "@webiny/error";
 import { NotFoundError } from "@webiny/handler-graphql";
-import { CrudOptions, Group, GroupTenantLink, Security } from "~/types";
+import { CrudOptions, GetGroupWhere, Group, GroupTenantLink, Security } from "~/types";
 import NotAuthorizedError from "../NotAuthorizedError";
 import { SecurityConfig } from "~/types";
 
@@ -30,7 +30,7 @@ async function checkPermission(security: Security, options?: CrudOptions) {
     if (options && options.auth === false) {
         return;
     }
-    const permission = await this.getPermission("security.group");
+    const permission = await security.getPermission("security.group");
 
     if (!permission) {
         throw new NotAuthorizedError();
@@ -52,25 +52,30 @@ async function updateTenantLinks(security: Security, tenant: string, group: Grou
     );
 }
 
-export const createGroupsMethods = ({ getTenant, storageOperations }: SecurityConfig) => {
+export const createGroupsMethods = ({
+    getTenant,
+    storageOperations
+}: SecurityConfig) => {
     return {
-        async getGroup(this: Security, slug: string, options: CrudOptions = {}): Promise<Group> {
+        async getGroup(
+            this: Security,
+            where: GetGroupWhere,
+            options: CrudOptions = {}
+        ): Promise<Group> {
             await checkPermission(this, options);
 
             let group: Group = null;
             try {
-                group = await storageOperations.getGroup({ tenant: getTenant(), where: { slug } });
+                group = await storageOperations.getGroup({ tenant: getTenant(), where });
             } catch (ex) {
                 throw new Error(
                     ex.message || "Could not get group.",
                     ex.code || "GET_GROUP_ERROR",
-                    {
-                        slug
-                    }
+                    where
                 );
             }
             if (!group) {
-                throw new NotFoundError(`Unable to find group with slug: ${slug}`);
+                throw new NotFoundError(`Unable to find group : ${JSON.stringify(where)}`);
             }
             return group;
         },
@@ -90,7 +95,7 @@ export const createGroupsMethods = ({ getTenant, storageOperations }: SecurityCo
             }
         },
 
-        async createGroup(this: Security, input, options: CrudOptions = {}) {
+        async createGroup(this: Security, input, options = {}) {
             await checkPermission(this, options);
 
             const identity = this.getIdentity();
@@ -137,7 +142,7 @@ export const createGroupsMethods = ({ getTenant, storageOperations }: SecurityCo
             }
         },
 
-        async updateGroup(this: Security, slug: string, input: Record<string, any>) {
+        async updateGroup(this: Security, id: string, input: Record<string, any>) {
             await checkPermission(this);
 
             const model = await new UpdateDataModel().populate(input);
@@ -145,10 +150,10 @@ export const createGroupsMethods = ({ getTenant, storageOperations }: SecurityCo
 
             const original = await storageOperations.getGroup({
                 tenant: getTenant(),
-                where: { slug }
+                where: { id }
             });
             if (!original) {
-                throw new NotFoundError(`Group "${slug}" was not found!`);
+                throw new NotFoundError(`Group "${id}" was not found!`);
             }
 
             const data = await model.toJSON({ onlyDirty: true });

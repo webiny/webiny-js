@@ -1,9 +1,10 @@
-const DATA_FIELD = /* GraphQL */ `
+const DATA_FIELD = (extra = "") => /* GraphQL */ `
     {
         name
         description
         slug
         permissions
+        ${extra}
     }
 `;
 
@@ -19,7 +20,7 @@ export const CREATE_SECURITY_GROUP = /* GraphQL */ `
     mutation CreateGroup($data: SecurityGroupCreateInput!) {
         security {
             createGroup(data: $data) {
-                data ${DATA_FIELD}
+                data ${DATA_FIELD("id")}
                 error ${ERROR_FIELD}
             }
         }
@@ -27,10 +28,10 @@ export const CREATE_SECURITY_GROUP = /* GraphQL */ `
 `;
 
 export const UPDATE_SECURITY_GROUP = /* GraphQL */ `
-    mutation UpdateGroup($slug: String!, $data: SecurityGroupUpdateInput!) {
+    mutation UpdateGroup($id: ID!, $data: SecurityGroupUpdateInput!) {
         security {
-            updateGroup(slug: $slug, data: $data) {
-                data ${DATA_FIELD}
+            updateGroup(id: $id, data: $data) {
+                data ${DATA_FIELD()}
                 error ${ERROR_FIELD}
             }
         }
@@ -38,9 +39,9 @@ export const UPDATE_SECURITY_GROUP = /* GraphQL */ `
 `;
 
 export const DELETE_SECURITY_GROUP = /* GraphQL */ `
-    mutation DeleteGroup($slug: String!) {
+    mutation DeleteGroup($id: ID!) {
         security {
-            deleteGroup(slug: $slug) {
+            deleteGroup(id: $id) {
                 data
                 error ${ERROR_FIELD}
             }
@@ -52,7 +53,7 @@ export const LIST_SECURITY_GROUPS = /* GraphQL */ `
     query ListGroups {
         security {
             listGroups {
-                data ${DATA_FIELD}
+                data ${DATA_FIELD()}
                 error ${ERROR_FIELD}
             }
         }
@@ -60,10 +61,10 @@ export const LIST_SECURITY_GROUPS = /* GraphQL */ `
 `;
 
 export const GET_SECURITY_GROUP = /* GraphQL */ `
-    query GetGroup($slug: String) {
+    query GetGroup($id: ID!) {
         security {
-            getGroup(slug: $slug) {
-                data ${DATA_FIELD}
+            getGroup(id: $id) {
+                data ${DATA_FIELD()}
                 error ${ERROR_FIELD}
             }
         }

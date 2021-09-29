@@ -10,6 +10,7 @@ import { GroupInput, SecurityContext } from "~/types";
 export default new GraphQLSchemaPlugin<SecurityContext>({
     typeDefs: /* GraphQL */ `
         type SecurityGroup {
+            id: ID
             name: String
             slug: String
             createdOn: DateTime
@@ -41,21 +42,21 @@ export default new GraphQLSchemaPlugin<SecurityContext>({
         }
 
         extend type SecurityQuery {
-            getGroup(slug: String): SecurityGroupResponse
+            getGroup(id: ID!): SecurityGroupResponse
             listGroups: SecurityGroupListResponse
         }
 
         extend type SecurityMutation {
             createGroup(data: SecurityGroupCreateInput!): SecurityGroupResponse
-            updateGroup(slug: String!, data: SecurityGroupUpdateInput!): SecurityGroupResponse
-            deleteGroup(slug: String!): SecurityBooleanResponse
+            updateGroup(id: ID!, data: SecurityGroupUpdateInput!): SecurityGroupResponse
+            deleteGroup(id: ID!): SecurityBooleanResponse
         }
     `,
     resolvers: {
         SecurityQuery: {
-            getGroup: async (_, { slug }: { slug: string }, context) => {
+            getGroup: async (_, { id }: { id: string }, context) => {
                 try {
-                    const group = await context.security.groups.getGroup(slug);
+                    const group = await context.security.getGroup({ id });
                     return new Response(group);
                 } catch (e) {
                     return new ErrorResponse(e);
@@ -63,7 +64,7 @@ export default new GraphQLSchemaPlugin<SecurityContext>({
             },
             listGroups: async (_, args, context) => {
                 try {
-                    const groupList = await context.security.groups.listGroups();
+                    const groupList = await context.security.listGroups();
 
                     return new ListResponse(groupList);
                 } catch (e) {
@@ -74,7 +75,7 @@ export default new GraphQLSchemaPlugin<SecurityContext>({
         SecurityMutation: {
             createGroup: async (_, { data }: { data: GroupInput }, context) => {
                 try {
-                    const group = await context.security.groups.createGroup(data);
+                    const group = await context.security.createGroup(data);
 
                     return new Response(group);
                 } catch (e) {
@@ -83,19 +84,19 @@ export default new GraphQLSchemaPlugin<SecurityContext>({
             },
             updateGroup: async (
                 _,
-                { slug, data }: { slug: string; data: Omit<GroupInput, "slug" | "system"> },
+                { id, data }: { id: string; data: Omit<GroupInput, "slug" | "system"> },
                 context
             ) => {
                 try {
-                    const group = await context.security.groups.updateGroup(slug, data);
+                    const group = await context.security.updateGroup(id, data);
                     return new Response(group);
                 } catch (e) {
                     return new ErrorResponse(e);
                 }
             },
-            deleteGroup: async (_, { slug }: { slug: string }, context) => {
+            deleteGroup: async (_, { id }: { id: string }, context) => {
                 try {
-                    await context.security.groups.deleteGroup(slug);
+                    await context.security.deleteGroup(id);
 
                     return new Response(true);
                 } catch (e) {

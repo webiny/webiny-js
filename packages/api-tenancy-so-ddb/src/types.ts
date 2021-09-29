@@ -1,6 +1,6 @@
 import {
+    TenancyStorageOperations,
     TenancyStorageOperations as BaseTenantsStorageOperations,
-    TenancyStorageOperationsFactory
 } from "@webiny/api-tenancy/types";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { Table, Entity } from "dynamodb-toolbox";
@@ -30,15 +30,16 @@ export enum ENTITIES {
     TENANT = "TenancyTenant"
 }
 
-export interface CreateTenancyStorageOperationsFactory {
+export interface CreateTenancyStorageOperations {
     (params: {
         documentClient: DocumentClient;
         table?: string;
         attributes?: Record<ENTITIES, Attributes>;
-    }): TenancyStorageOperationsFactory;
+    }): TenancyStorageOperations;
 }
 
 export interface TenancySystem {
+    tenant: string;
     version: string;
 }
 

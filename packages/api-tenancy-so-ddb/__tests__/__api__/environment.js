@@ -3,7 +3,7 @@ const NodeEnvironment = require("jest-environment-node");
 /**
  * For this to work it must load plugins that have already been built
  */
-const { createStorageOperationsFactory } = require("../../dist/index");
+const { createStorageOperations } = require("../../dist/index");
 
 class TenancyTestEnvironment extends NodeEnvironment {
     async setup() {
@@ -22,7 +22,7 @@ class TenancyTestEnvironment extends NodeEnvironment {
          */
         this.global.__getStorageOperations = () => {
             return {
-                storageOperationsFactory: createStorageOperationsFactory({
+                storageOperations: createStorageOperations({
                     documentClient,
                     table: "Tenancy"
                 }),

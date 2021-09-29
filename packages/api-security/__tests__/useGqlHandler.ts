@@ -1,9 +1,12 @@
+import groupAuthorization from "~/plugins/groupAuthorization";
+
 const { DocumentClient } = require("aws-sdk/clients/dynamodb");
 import { createHandler } from "@webiny/handler-aws";
 import graphqlHandlerPlugins from "@webiny/handler-graphql";
 import { PluginCollection } from "@webiny/plugins/types";
 import tenancyPlugins from "@webiny/api-tenancy";
-import tenancySoPlugins from "@webiny/api-tenancy-so-ddb";
+import { createStorageOperations as tenancyStorageOperations } from "@webiny/api-tenancy-so-ddb";
+import { authenticateUsingHttpHeader } from "../src/plugins/authenticateUsingHttpHeader";
 import securityPlugins from "../src/index";
 // Graphql
 import {
@@ -24,8 +27,9 @@ import {
 
 import { INSTALL, INSTALL_TENANCY, IS_INSTALLED } from "./graphql/install";
 import { LOGIN } from "./graphql/login";
-import { CustomGroupAuthorizationPlugin } from "./mocks/CustomGroupAuthorizationPlugin";
-import { CustomAuthenticationPlugin } from "./mocks/CustomAuthenticationPlugin";
+import { customGroupAuthorizer } from "./mocks/customGroupAuthorizer";
+import { customAuthenticator } from "./mocks/customAuthenticator";
+import { triggerAuthentication } from "./mocks/triggerAuthentication";
 
 type UseGqlHandlerParams = {
     fullAccess?: boolean;
@@ -46,31 +50,32 @@ export default (opts: UseGqlHandlerParams = {}) => {
     opts = Object.assign({}, defaults, opts);
 
     // @ts-ignore
-    if (typeof __getStorageOperationsPlugins !== "function") {
-        throw new Error(`There is no global "__getStorageOperationsPlugins" function.`);
+    if (typeof __getStorageOperations !== "function") {
+        throw new Error(`There is no global "__getStorageOperations" function.`);
     }
     // @ts-ignore
-    const storageOperations = __getStorageOperationsPlugins();
-    if (typeof storageOperations !== "function") {
-        throw new Error(
-            `A product of "__getStorageOperationsPlugins" must be a function to initialize storage operations.`
-        );
-    }
+    const { storageOperations } = __getStorageOperations();
 
     // Creates the actual handler. Feel free to add additional plugins if needed.
-    const handler = createHandler(
-        graphqlHandlerPlugins(),
-        tenancyPlugins(),
-        tenancySoPlugins({
-            documentClient,
-            table: "Tenancy"
-        }),
-        securityPlugins(),
-        storageOperations(),
-        new CustomAuthenticationPlugin(),
-        new CustomGroupAuthorizationPlugin({ fullAccess: opts.fullAccess, identityType: "admin" }),
-        ...opts.plugins
-    );
+    const handler = createHandler({
+        plugins: [
+            graphqlHandlerPlugins(),
+            // TODO: tenancy storage operations need to be loaded dynamically, but for now this will do since we only have DDB storage for this app.
+            tenancyPlugins({
+                storageOperations: tenancyStorageOperations({
+                    documentClient,
+                    table: "Tenancy"
+                })
+            }),
+            securityPlugins({ storageOperations }),
+            authenticateUsingHttpHeader(),
+            triggerAuthentication(),
+            customAuthenticator(),
+            opts.fullAccess ? customGroupAuthorizer() : null,
+            groupAuthorization({ identityType: "admin" }),
+            ...opts.plugins
+        ].filter(Boolean)
+    });
 
     // Let's also create the "invoke" function. This will make handler invocations in actual tests easier and nicer.
     const invoke = async ({ httpMethod = "POST", body, headers = {}, ...rest }) => {
@@ -126,8 +131,11 @@ export default (opts: UseGqlHandlerParams = {}) => {
             return invoke({ body: { query: IS_INSTALLED } });
         },
         async install() {
-            await invoke({ body: { query: INSTALL_TENANCY } });
+            await this.installTenancy();
             return invoke({ body: { query: INSTALL } });
+        },
+        async installTenancy() {
+            return await invoke({ body: { query: INSTALL_TENANCY } });
         }
     };
 

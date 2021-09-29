@@ -45,7 +45,7 @@ export default new GraphQLSchemaPlugin<SecurityContext>({
         SecurityQuery: {
             async listApiKeys(_, args, context) {
                 try {
-                    const apiKeys = await context.security.apiKeys.listApiKeys();
+                    const apiKeys = await context.security.listApiKeys();
 
                     return new ListResponse(apiKeys);
                 } catch (error) {
@@ -54,7 +54,7 @@ export default new GraphQLSchemaPlugin<SecurityContext>({
             },
             async getApiKey(_, args: { id: string }, context) {
                 try {
-                    const apiKey = await context.security.apiKeys.getApiKey(args.id);
+                    const apiKey = await context.security.getApiKey(args.id);
 
                     return new Response(apiKey);
                 } catch (error) {
@@ -65,7 +65,7 @@ export default new GraphQLSchemaPlugin<SecurityContext>({
         SecurityMutation: {
             async createApiKey(_, args: { data: ApiKeyInput }, context) {
                 try {
-                    const apiKey = await context.security.apiKeys.createApiKey(args.data);
+                    const apiKey = await context.security.createApiKey(args.data);
 
                     return new Response(apiKey);
                 } catch (error) {
@@ -74,7 +74,7 @@ export default new GraphQLSchemaPlugin<SecurityContext>({
             },
             async updateApiKey(_, args: { id: string; data: ApiKeyInput }, context) {
                 try {
-                    const apiKey = await context.security.apiKeys.updateApiKey(args.id, args.data);
+                    const apiKey = await context.security.updateApiKey(args.id, args.data);
 
                     return new Response(apiKey);
                 } catch (error) {
@@ -83,7 +83,7 @@ export default new GraphQLSchemaPlugin<SecurityContext>({
             },
             async deleteApiKey(_, args: { id: string }, context) {
                 try {
-                    await context.security.apiKeys.deleteApiKey(args.id);
+                    await context.security.deleteApiKey(args.id);
 
                     return new Response(true);
                 } catch (error) {

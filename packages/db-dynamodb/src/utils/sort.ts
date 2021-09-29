@@ -32,7 +32,7 @@ const extractSort = (sortBy: string, fields: FieldPlugin[]): ExtractSortResult =
         });
     }
     const fieldPlugin = fields.find(f => f.getField() === field);
-    if (!fieldPlugin || fieldPlugin.isSortable() === false) {
+    if (fieldPlugin && fieldPlugin.isSortable() === false) {
         throw new WebinyError(`Cannot sort by given field: "${field}".`, "UNSUPPORTED_SORT_ERROR", {
             fields,
             field

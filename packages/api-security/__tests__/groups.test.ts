@@ -2,46 +2,28 @@ import useGqlHandler from "./useGqlHandler";
 import mocks from "./mocks/securityGroup";
 
 describe("Security Group CRUD Test", () => {
-    const { install, securityGroup } = useGqlHandler();
+    const { install, securityGroup } = useGqlHandler({ fullAccess: true });
 
     beforeEach(async () => {
-        await install.install({
-            data: { firstName: "John", lastName: "Doe", login: "admin@webiny.com" }
-        });
+        await install.install();
     });
 
     test("should able to create, read, update and delete `Security Groups`", async () => {
-        let [response] = await securityGroup.create({ data: mocks.groupA });
+        const [responseA] = await securityGroup.create({ data: mocks.groupA });
 
         // Let's create two groups.
-        expect(response).toEqual({
-            data: {
-                security: {
-                    createGroup: {
-                        data: mocks.groupA,
-                        error: null
-                    }
-                }
-            }
-        });
+        const groupA = responseA.data.security.createGroup.data;
+        expect(groupA).toEqual({ id: groupA.id, ...mocks.groupA });
 
-        [response] = await securityGroup.create({ data: mocks.groupB });
+        const [responseB] = await securityGroup.create({ data: mocks.groupB });
 
-        expect(response).toEqual({
-            data: {
-                security: {
-                    createGroup: {
-                        data: mocks.groupB,
-                        error: null
-                    }
-                }
-            }
-        });
+        const groupB = responseB.data.security.createGroup.data;
+        expect(groupB).toEqual({ id: groupB.id, ...mocks.groupB });
 
         // Let's check whether both of the group exists
-        [response] = await securityGroup.list();
+        const [listResponse] = await securityGroup.list();
 
-        expect(response.data.security.listGroups).toEqual(
+        expect(listResponse.data.security.listGroups).toEqual(
             expect.objectContaining({
                 data: expect.arrayContaining([
                     {
@@ -57,15 +39,15 @@ describe("Security Group CRUD Test", () => {
 
         // Let's update the "groupB" name
         const updatedName = "Group B - updated";
-        [response] = await securityGroup.update({
-            slug: mocks.groupB.slug,
+        const [updateB] = await securityGroup.update({
+            id: groupB.id,
             data: {
                 name: updatedName,
                 permissions: mocks.groupB.permissions
             }
         });
 
-        expect(response).toEqual({
+        expect(updateB).toEqual({
             data: {
                 security: {
                     updateGroup: {
@@ -80,11 +62,11 @@ describe("Security Group CRUD Test", () => {
         });
 
         // Let's delete  "groupB"
-        [response] = await securityGroup.delete({
-            slug: mocks.groupB.slug
+        const [deleteB] = await securityGroup.delete({
+            id: groupB.id
         });
 
-        expect(response).toEqual({
+        expect(deleteB).toEqual({
             data: {
                 security: {
                     deleteGroup: {
@@ -96,9 +78,9 @@ describe("Security Group CRUD Test", () => {
         });
 
         // Should not contain "groupB"
-        [response] = await securityGroup.get({ slug: mocks.groupB.slug });
+        const [getB] = await securityGroup.get({ id: groupB.id });
 
-        expect(response).toMatchObject({
+        expect(getB).toMatchObject({
             data: {
                 security: {
                     getGroup: {
@@ -113,9 +95,9 @@ describe("Security Group CRUD Test", () => {
         });
 
         // Should contain "groupA" by slug
-        [response] = await securityGroup.get({ slug: mocks.groupA.slug });
+        const [getA] = await securityGroup.get({ id: groupA.id });
 
-        expect(response).toEqual({
+        expect(getA).toEqual({
             data: {
                 security: {
                     getGroup: {

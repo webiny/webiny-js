@@ -12,8 +12,9 @@ export function useUserForm() {
     const { showSnackbar } = useSnackbar();
 
     const query = new URLSearchParams(location.search);
-    const newUser = query.get("new") === "true";
     const login = query.get("login");
+    const newUser = query.get("new") === "true" || !login;
+
 
     const { data, loading: userLoading } = useQuery(READ_USER, {
         variables: { login },

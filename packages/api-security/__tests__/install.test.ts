@@ -2,6 +2,10 @@ import useGqlHandler from "./useGqlHandler";
 
 describe(`Test "Security" install`, () => {
     const { install, securityGroup } = useGqlHandler({ fullAccess: true });
+    
+    beforeEach(async () => {
+        await install.installTenancy();
+    });
 
     test(`should return null for "version"`, async () => {
         const [response] = await install.isInstalled();

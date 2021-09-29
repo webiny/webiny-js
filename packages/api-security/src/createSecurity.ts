@@ -1,10 +1,10 @@
 import minimatch from "minimatch";
 import { createAuthentication } from "@webiny/api-authentication/createAuthentication";
 import { Authorizer, Security, SecurityPermission, SecurityConfig } from "./types";
-import { createApiKeysMethods } from "~/Security/createApiKeysMethods";
-import { createGroupsMethods } from "~/Security/createGroupsMethods";
-import { createSystemMethods } from "~/Security/createSystemMethods";
-import { createIdentityMethods } from "~/Security/createIdentityMethods";
+import { createApiKeysMethods } from "~/createSecurity/createApiKeysMethods";
+import { createGroupsMethods } from "~/createSecurity/createGroupsMethods";
+import { createSystemMethods } from "~/createSecurity/createSystemMethods";
+import { createIdentityMethods } from "~/createSecurity/createIdentityMethods";
 
 export interface GetTenant {
     (): string;
@@ -69,9 +69,6 @@ export const createSecurity = async (config: SecurityConfig): Promise<Security> 
         ...createApiKeysMethods(config),
         ...createSystemMethods(config)
     };
-
-    // Initialize storage operations. This allows storage operations to hook into application events.
-    await config.storageOperations.init(security);
-
+    
     return security;
 };

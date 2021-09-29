@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Entity, Table } from "dynamodb-toolbox";
 import { cleanupItem, cleanupItems } from "@webiny/db-dynamodb/utils/cleanup";
 import { batchWriteAll } from "@webiny/db-dynamodb/utils/batchWrite";

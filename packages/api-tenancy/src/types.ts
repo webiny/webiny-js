@@ -61,10 +61,6 @@ export interface TenancyStorageOperations {
     updateSystemData(data: System): Promise<System>;
 }
 
-export interface TenancyStorageOperationsFactory {
-    (): TenancyStorageOperations;
-}
-
 export interface System {
     version?: string;
 }

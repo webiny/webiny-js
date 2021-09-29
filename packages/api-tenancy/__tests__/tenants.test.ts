@@ -3,13 +3,13 @@ import { createTenancy } from "~/Tenancy";
 
 describe(`Test "Tenancy" tenants`, () => {
     // @ts-ignore
-    const { storageOperationsFactory } = __getStorageOperations();
+    const { storageOperations } = __getStorageOperations();
     let tenancy: Tenancy = null;
 
     beforeAll(async () => {
         tenancy = await createTenancy({
             tenant: null,
-            storageOperations: storageOperationsFactory()
+            storageOperations
         });
     });
 

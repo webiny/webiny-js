@@ -1,8 +1,8 @@
 import { BeforeHandlerPlugin } from "@webiny/handler/plugins/BeforeHandlerPlugin";
+import { SecurityContext } from "~/types";
 import { HttpContext } from "@webiny/handler-http/types";
-import { AuthenticationContext } from "~/types";
 
-type Context = HttpContext & AuthenticationContext;
+type Context = HttpContext & SecurityContext;
 
 export interface GetHeader {
     (context: Context): string;
@@ -29,6 +29,6 @@ export const authenticateUsingHttpHeader = (getHeader: GetHeader = defaultGetHea
             return;
         }
 
-        await context.authentication.authenticate(token);
+        await context.security.authenticate(token);
     });
 };

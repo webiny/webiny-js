@@ -1,5 +1,5 @@
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins";
-import { SecurityContext } from "../types";
+import { SecurityContext } from "~/types";
 
 const emptyResolver = () => ({});
 

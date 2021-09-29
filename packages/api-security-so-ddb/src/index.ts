@@ -1,31 +1,10 @@
 import { ENTITIES, SecurityStorageParams } from "~/types";
 import {
     ApiKey,
-    CreateApiKeyParams,
-    CreateGroupParams,
-    CreateSystemParams,
-    CreateTenantLinkParams,
-    DeleteApiKeyParams,
-    DeleteGroupParams,
-    DeleteTenantLinkParams,
-    GetApiKeyByTokenParams,
-    GetApiKeyParams,
-    GetGroupParams,
-    GetSystemParams,
-    GetTenantLinkByIdentityParams,
     Group,
-    ListApiKeysParams,
-    ListGroupsParams,
-    ListTenantLinksByIdentityParams,
-    ListTenantLinksByTypeParams,
-    ListTenantLinksParams,
     SecurityStorageOperations,
     System,
-    TenantLink,
-    UpdateApiKeyParams,
-    UpdateGroupParams,
-    UpdateSystemParams,
-    UpdateTenantLinkParams
+    TenantLink
 } from "@webiny/api-security/types";
 import Error from "@webiny/error";
 import { createTable } from "~/definitions/table";
@@ -35,9 +14,10 @@ import {
     createSystemEntity,
     createTenantLinkEntity
 } from "~/definitions/entities";
-import { cleanupItem } from "@webiny/db-dynamodb/utils/cleanup";
+import { cleanupItem, cleanupItems } from "@webiny/db-dynamodb/utils/cleanup";
 import { queryAll, queryOne, QueryOneParams } from "@webiny/db-dynamodb/utils/query";
 import { sortItems } from "@webiny/db-dynamodb/utils/sort";
+import { batchWriteAll } from "@webiny/db-dynamodb/utils/batchWrite";
 
 const reservedFields = ["PK", "SK", "index", "data"];
 
@@ -68,29 +48,135 @@ export const createStorageOperations = (
         tenantLinks: createTenantLinkEntity(table, attributes[ENTITIES.TENANT_LINK])
     };
 
+    const createApiKeyKeys = (apiKey: ApiKey) => ({
+        PK: `T#${apiKey.tenant}`,
+        SK: `API_KEY#${apiKey.id}`
+    });
+
+    const createGroupKeys = (group: Group) => ({
+        PK: `T#${group.tenant}`,
+        SK: `GROUP#${group.id}`
+    });
+
+    const createSystemKeys = tenant => ({
+        PK: `T#${tenant}#SYSTEM`,
+        SK: "SECURITY"
+    });
+
     return {
-        createApiKey(params: CreateApiKeyParams): Promise<ApiKey> {
-            return Promise.resolve(undefined);
+        async createApiKey({ apiKey }): Promise<ApiKey> {
+            const keys = {
+                ...createApiKeyKeys(apiKey),
+                GSI1_PK: `T#${apiKey.tenant}`,
+                GSI1_SK: `API_KEY#${apiKey.token}`
+            };
+
+            try {
+                await entities.apiKeys.put({
+                    ...cleanupItem(entities.apiKeys, apiKey),
+                    TYPE: "security.apiKey",
+                    ...keys
+                });
+                return apiKey;
+            } catch (ex) {
+                throw new Error(
+                    ex.message || "Could not create api key.",
+                    ex.code || "CREATE_API_KEY_ERROR",
+                    { keys }
+                );
+            }
         },
-        createGroup(params: CreateGroupParams): Promise<Group> {
-            return Promise.resolve(undefined);
+        async createGroup({ group }): Promise<Group> {
+            const keys = {
+                ...createGroupKeys(group),
+                GSI1_PK: `T#${group.tenant}#GROUPS`,
+                GSI1_SK: group.slug
+            };
+
+            try {
+                await entities.groups.put({
+                    ...cleanupItem(entities.groups, group),
+                    TYPE: "security.group",
+                    ...keys
+                });
+                return group;
+            } catch (ex) {
+                throw new Error(
+                    ex.message || "Could not create group.",
+                    ex.code || "CREATE_GROUP_ERROR",
+                    { keys }
+                );
+            }
         },
-        createSystemData(params: CreateSystemParams): Promise<System> {
-            return Promise.resolve(undefined);
+        async createSystemData({ system }): Promise<System> {
+            const keys = createSystemKeys(system.tenant);
+            try {
+                await entities.system.put({
+                    ...keys,
+                    ...cleanupItem(entities.system, system)
+                });
+                return system;
+            } catch (ex) {
+                throw new Error(
+                    ex.message || "Could not create system.",
+                    ex.code || "CREATE_SYSTEM_ERROR",
+                    {
+                        keys,
+                        system
+                    }
+                );
+            }
         },
-        createTenantLinks(params: CreateTenantLinkParams[]): Promise<void> {
-            return Promise.resolve(undefined);
+        async createTenantLinks(links): Promise<void> {
+            const items = links.map(link => {
+                return entities.tenantLinks.putBatch({
+                    PK: `IDENTITY#${link.identity}`,
+                    SK: `LINK#T#${link.tenant}`,
+                    GSI1_PK: `T#${link.tenant}`,
+                    GSI1_SK: `TYPE#${link.type}#IDENTITY#${link.identity}`,
+                    ...cleanupItem(entities.tenantLinks, link)
+                });
+            });
+
+            await batchWriteAll({ table, items });
         },
-        deleteApiKey(params: DeleteApiKeyParams): Promise<ApiKey> {
-            return Promise.resolve(undefined);
+        async deleteApiKey({ apiKey }) {
+            const keys = createApiKeyKeys(apiKey);
+
+            try {
+                await entities.apiKeys.delete(keys);
+            } catch (ex) {
+                throw new Error(
+                    ex.message || "Could not update api key.",
+                    ex.code || "UPDATE_API_KEY_ERROR",
+                    { keys }
+                );
+            }
         },
-        deleteGroup(params: DeleteGroupParams): Promise<Group> {
-            return Promise.resolve(undefined);
+        async deleteGroup({ group }) {
+            const keys = createGroupKeys(group);
+
+            try {
+                await entities.groups.delete(keys);
+            } catch (ex) {
+                throw new Error(
+                    ex.message || "Could not delete group.",
+                    ex.code || "CREATE_DELETE_ERROR",
+                    { keys, group }
+                );
+            }
         },
-        deleteTenantLinks(params: DeleteTenantLinkParams[]): Promise<void> {
-            return Promise.resolve(undefined);
+        async deleteTenantLinks(links): Promise<void> {
+            const items = links.map(link => {
+                return entities.tenantLinks.deleteBatch({
+                    PK: `IDENTITY#${link.identity}`,
+                    SK: `LINK#T#${link.tenant}`
+                });
+            });
+
+            await batchWriteAll({ table, items });
         },
-        async getApiKey({ id, tenant }: GetApiKeyParams) {
+        async getApiKey({ id, tenant }) {
             const keys = {
                 PK: `T#${tenant}`,
                 SK: `API_KEY#${id}`
@@ -110,7 +196,7 @@ export const createStorageOperations = (
                 );
             }
         },
-        async getApiKeyByToken({ tenant, token }: GetApiKeyByTokenParams) {
+        async getApiKeyByToken({ tenant, token }) {
             const queryParams: QueryOneParams = {
                 entity: entities.apiKeys,
                 partitionKey: `T#${tenant}`,
@@ -134,18 +220,73 @@ export const createStorageOperations = (
                 );
             }
         },
-        getGroup(params: GetGroupParams): Promise<Group> {
-            return Promise.resolve(undefined);
+        async getGroup({ tenant, where: { id, slug } }): Promise<Group> {
+            try {
+                let result;
+                if (id) {
+                    result = await entities.groups.get({
+                        PK: `T#${tenant}`,
+                        SK: `GROUP#${id}`
+                    });
+                } else if (slug) {
+                    result = await queryOne({
+                        entity: entities.groups,
+                        partitionKey: `T#${tenant}#GROUPS`,
+                        options: {
+                            index: "GSI1",
+                            eq: slug
+                        }
+                    });
+                }
+
+                if (!result || !result.Item) {
+                    return null;
+                }
+                return cleanupItem(entities.groups, result.Item);
+            } catch (ex) {
+                throw new Error(
+                    ex.message || "Could not load group.",
+                    ex.code || "GET_GROUP_ERROR",
+                    { id, slug }
+                );
+            }
         },
-        getSystemData(params: GetSystemParams): Promise<System> {
-            return Promise.resolve(undefined);
+        async getSystemData({ tenant }): Promise<System> {
+            const keys = createSystemKeys(tenant);
+            try {
+                const result = await entities.system.get(keys);
+                if (!result || !result.Item) {
+                    return null;
+                }
+                return cleanupItem(entities.system, result.Item);
+            } catch (ex) {
+                throw new Error(
+                    ex.message || "Could not load system.",
+                    ex.code || "GET_SYSTEM_ERROR",
+                    { keys }
+                );
+            }
         },
-        getTenantLinkByIdentity<TLink = TenantLink>(
-            params: GetTenantLinkByIdentityParams
-        ): Promise<TLink> {
-            return Promise.resolve(undefined);
+        async getTenantLinkByIdentity<TLink = TenantLink>({ tenant, identity }): Promise<TLink> {
+            try {
+                const result = await entities.tenantLinks.query(`IDENTITY#${identity}`, {
+                    beginsWith: `LINK#T#${tenant}#`,
+                    limit: 1
+                });
+
+                if (!result || !result.Items) {
+                    return null;
+                }
+                return cleanupItem(entities.tenantLinks, result.Items[0]);
+            } catch (ex) {
+                throw new Error(
+                    ex.message || "Could not get tenant link for identity.",
+                    ex.code || "GET_TENANT_LINK_BY_IDENTITY",
+                    { tenant, identity }
+                );
+            }
         },
-        async listApiKeys({ sort, tenant }: ListApiKeysParams): Promise<ApiKey[]> {
+        async listApiKeys({ sort, tenant }): Promise<ApiKey[]> {
             let items: ApiKey[] = [];
             try {
                 items = await queryAll<ApiKey>({
@@ -169,31 +310,127 @@ export const createStorageOperations = (
             });
             return sortedItems.map(item => cleanupItem(entities.apiKeys, item));
         },
-        listGroups(params: ListGroupsParams): Promise<Group[]> {
-            return Promise.resolve([]);
+        async listGroups({ sort, tenant }): Promise<Group[]> {
+            let items: Group[];
+            try {
+                items = await queryAll<Group>({
+                    entity: entities.groups,
+                    partitionKey: `T#${tenant}#GROUPS`,
+                    options: {
+                        index: "GSI1",
+                        beginsWith: ""
+                    }
+                });
+            } catch (ex) {
+                throw new Error(
+                    ex.message || "Could not list groups.",
+                    ex.code || "LIST_GROUP_ERROR"
+                );
+            }
+
+            return cleanupItems(
+                entities.groups,
+                sortItems({
+                    items,
+                    sort,
+                    fields: []
+                })
+            );
         },
-        listTenantLinksByIdentity(params: ListTenantLinksByIdentityParams): Promise<TenantLink[]> {
-            return Promise.resolve([]);
+        async listTenantLinksByIdentity({ identity }): Promise<TenantLink[]> {
+            const links = await queryAll<TenantLink>({
+                entity: entities.tenantLinks,
+                partitionKey: `IDENTITY#${identity}`,
+                options: { beginsWith: `LINK#` }
+            });
+
+            return cleanupItems(entities.tenantLinks, links);
         },
-        listTenantLinksByTenant(params: ListTenantLinksParams): Promise<TenantLink[]> {
-            return Promise.resolve([]);
+        async listTenantLinksByTenant({ tenant }): Promise<TenantLink[]> {
+            const links = await queryAll<TenantLink>({
+                entity: entities.tenantLinks,
+                partitionKey: `T#${tenant}`,
+                options: { index: "GSI1", beginsWith: "" }
+            });
+
+            return cleanupItems(entities.tenantLinks, links);
         },
-        listTenantLinksByType<TLink = TenantLink>(
-            params: ListTenantLinksByTypeParams
-        ): Promise<TLink[]> {
-            return Promise.resolve([]);
+        async listTenantLinksByType<TLink = TenantLink>({ type, tenant }): Promise<TLink[]> {
+            const links = await queryAll<TLink>({
+                entity: entities.tenantLinks,
+                partitionKey: `T#${tenant}`,
+                options: { index: "GSI1", beginsWith: `TYPE#${type}#` }
+            });
+
+            return cleanupItems(entities.tenantLinks, links);
         },
-        updateApiKey(params: UpdateApiKeyParams): Promise<ApiKey> {
-            return Promise.resolve(undefined);
+        async updateApiKey({ apiKey }): Promise<ApiKey> {
+            const keys = createApiKeyKeys(apiKey);
+
+            try {
+                await entities.apiKeys.put({
+                    ...apiKey,
+                    TYPE: "security.apiKey",
+                    ...keys
+                });
+                return apiKey;
+            } catch (ex) {
+                throw new Error(
+                    ex.message || "Could not update api key.",
+                    ex.code || "UPDATE_API_KEY_ERROR",
+                    { keys }
+                );
+            }
         },
-        updateGroup(params: UpdateGroupParams): Promise<Group> {
-            return Promise.resolve(undefined);
+        async updateGroup({ group }): Promise<Group> {
+            const keys = createGroupKeys(group);
+
+            try {
+                await entities.groups.put({
+                    ...cleanupItem(entities.groups, group),
+                    ...keys
+                });
+                return group;
+            } catch (ex) {
+                throw new Error(
+                    ex.message || "Could not update group.",
+                    ex.code || "UPDATE_GROUP_ERROR",
+                    { keys, group }
+                );
+            }
         },
-        updateSystemData(params: UpdateSystemParams): Promise<System> {
-            return Promise.resolve(undefined);
+        async updateSystemData({ system, original }): Promise<System> {
+            const keys = createSystemKeys(system.tenant);
+            try {
+                await entities.system.put({
+                    ...keys,
+                    ...cleanupItem(entities.system, system)
+                });
+                return system;
+            } catch (ex) {
+                throw new Error(
+                    ex.message || "Could not update system.",
+                    ex.code || "UPDATE_SYSTEM_ERROR",
+                    {
+                        keys,
+                        system,
+                        original
+                    }
+                );
+            }
         },
-        updateTenantLinks(params: UpdateTenantLinkParams[]): Promise<void> {
-            return Promise.resolve(undefined);
+        async updateTenantLinks(links): Promise<void> {
+            const items = links.map(link => {
+                return entities.tenantLinks.putBatch({
+                    PK: `IDENTITY#${link.identity}`,
+                    SK: `LINK#T#${link.tenant}`,
+                    GSI1_PK: `T#${link.tenant}`,
+                    GSI1_SK: `TYPE#${link.type}#IDENTITY#${link.identity}`,
+                    ...cleanupItem(entities.tenantLinks, link)
+                });
+            });
+
+            await batchWriteAll({ table, items });
         }
     };
 };

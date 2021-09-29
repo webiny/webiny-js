@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Entity, Table } from "dynamodb-toolbox";
 import { cleanupItem } from "@webiny/db-dynamodb/utils/cleanup";
 import Error from "@webiny/error";

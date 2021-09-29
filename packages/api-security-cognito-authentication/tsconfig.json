@@ -2,6 +2,9 @@
   "extends": "../../tsconfig",
   "references": [
     {
+      "path": "../api-authentication"
+    },
+    {
       "path": "../api-security"
     },
     {
@@ -13,6 +16,8 @@
   ],
   "compilerOptions": {
     "paths": {
+      "@webiny/api-authentication/*": ["../api-authentication/src/*"],
+      "@webiny/api-authentication": ["../api-authentication/src"],
       "@webiny/api-security/*": ["../api-security/src/*"],
       "@webiny/api-security": ["../api-security/src"],
       "@webiny/handler/*": ["../handler/src/*"],

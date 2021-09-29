@@ -6,6 +6,9 @@
       "path": "../handler"
     },
     {
+      "path": "../handler-http"
+    },
+    {
       "path": "../plugins"
     }
   ],
@@ -14,6 +17,8 @@
       "~/*": ["./src/*"],
       "@webiny/handler/*": ["../handler/src/*"],
       "@webiny/handler": ["../handler/src"],
+      "@webiny/handler-http/*": ["../handler-http/src/*"],
+      "@webiny/handler-http": ["../handler-http/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"]
     },

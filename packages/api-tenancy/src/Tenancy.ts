@@ -7,6 +7,15 @@ export interface TenancyConfig {
     storageOperations: TenancyStorageOperations;
 }
 
+const withToString = tenant => {
+    return {
+        ...tenant,
+        toString() {
+            return this.id;
+        }
+    };
+};
+
 export async function createTenancy({
     tenant,
     storageOperations
@@ -22,7 +31,7 @@ export async function createTenancy({
         },
 
         setCurrentTenant(tenant: Tenant) {
-            currentTenant = tenant;
+            currentTenant = withToString(tenant);
         },
         ...createSystemMethods(storageOperations),
         ...createTenantsMethods(storageOperations)

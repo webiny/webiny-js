@@ -29,6 +29,11 @@ import scaffoldsPlugins from "./plugins/scaffolds";
 
 const debug = process.env.DEBUG === "true";
 
+const documentClient = new DocumentClient({
+    convertEmptyValues: true,
+    region: process.env.AWS_REGION
+});
+
 export const handler = createHandler({
     plugins: [
         dynamoDbPlugins(),
@@ -37,14 +42,9 @@ export const handler = createHandler({
         elasticSearch({ endpoint: `https://${process.env.ELASTIC_SEARCH_ENDPOINT}` }),
         dbPlugins({
             table: process.env.DB_TABLE,
-            driver: new DynamoDbDriver({
-                documentClient: new DocumentClient({
-                    convertEmptyValues: true,
-                    region: process.env.AWS_REGION
-                })
-            })
+            driver: new DynamoDbDriver({ documentClient })
         }),
-        securityPlugins(),
+        securityPlugins({ documentClient }),
         i18nPlugins(),
         i18nDynamoDbStorageOperations(),
         i18nContentPlugins(),

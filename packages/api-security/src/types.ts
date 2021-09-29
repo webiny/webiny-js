@@ -35,7 +35,12 @@ export interface InstallEvent {
     tenant: string;
 }
 
-export interface Security extends Authentication {
+export interface GetGroupWhere {
+    id?: string;
+    slug?: string;
+}
+
+export interface Security<TIdentity = SecurityIdentity> extends Authentication<TIdentity> {
     onBeforeInstall: Topic;
     onInstall: Topic;
     onAfterInstall: Topic;
@@ -55,10 +60,10 @@ export interface Security extends Authentication {
     updateApiKey(id: string, data: ApiKeyInput): Promise<ApiKey>;
     deleteApiKey(id: string): Promise<boolean>;
     // Groups
-    getGroup(id: string, options: CrudOptions): Promise<Group>;
-    listGroups(options: CrudOptions): Promise<Group[]>;
-    createGroup(input: Record<string, any>, options: CrudOptions): Promise<Group>;
-    updateGroup(id: string, input: Record<string, any>): Promise<Group>;
+    getGroup(where: GetGroupWhere, options?: CrudOptions): Promise<Group>;
+    listGroups(options?: CrudOptions): Promise<Group[]>;
+    createGroup(input: GroupInput, options?: CrudOptions): Promise<Group>;
+    updateGroup(id: string, input: Partial<GroupInput>): Promise<Group>;
     deleteGroup(id: string): Promise<void>;
     // Links
     createTenantLinks(params: CreateTenantLinkParams[]): Promise<void>;
@@ -84,7 +89,7 @@ export interface SecurityStorageOperations {
     listGroups(params: ListGroupsParams): Promise<Group[]>;
     createGroup(params: CreateGroupParams): Promise<Group>;
     updateGroup(params: UpdateGroupParams): Promise<Group>;
-    deleteGroup(params: DeleteGroupParams): Promise<Group>;
+    deleteGroup(params: DeleteGroupParams): Promise<void>;
     getSystemData(params: GetSystemParams): Promise<System>;
     createSystemData(params: CreateSystemParams): Promise<System>;
     updateSystemData(params: UpdateSystemParams): Promise<System>;
@@ -104,7 +109,7 @@ export interface SecurityStorageOperations {
     listApiKeys(params: ListApiKeysParams): Promise<ApiKey[]>;
     createApiKey(params: CreateApiKeyParams): Promise<ApiKey>;
     updateApiKey(params: UpdateApiKeyParams): Promise<ApiKey>;
-    deleteApiKey(params: DeleteApiKeyParams): Promise<ApiKey>;
+    deleteApiKey(params: DeleteApiKeyParams): Promise<void>;
 }
 
 export interface SecurityPermission {
@@ -112,8 +117,8 @@ export interface SecurityPermission {
     [key: string]: any;
 }
 
-export interface SecurityContext extends ContextInterface {
-    security: Security;
+export interface SecurityContext<TIdentity = SecurityIdentity> extends ContextInterface {
+    security: Security<TIdentity>;
 }
 
 export interface FullAccessPermission {
@@ -138,14 +143,11 @@ export interface Group {
     permissions: SecurityPermission[];
 }
 
-export type GroupInput = Pick<Group, "name" | "slug" | "description" | "system" | "permissions">;
+export type GroupInput = Pick<Group, "name" | "slug" | "description" | "permissions" | "system">;
 
 export interface GetGroupParams {
     tenant: string;
-    where: {
-        id?: string;
-        slug?: string;
-    };
+    where: GetGroupWhere;
 }
 
 export interface ListGroupsParams {

@@ -8,22 +8,15 @@ import {
 } from "../types";
 import { createTopic } from "@webiny/pubsub";
 
-export const createSystemMethods = ({ getTenant, storageOperations }: SecurityConfig) => {
+export const createSystemMethods = ({
+    getTenant,
+    storageOperations
+}: SecurityConfig) => {
     return {
         onBeforeInstall: createTopic<InstallEvent>("security.beforeInstall"),
         onInstall: createTopic<InstallEvent>("security.install"),
         onAfterInstall: createTopic<InstallEvent>("security.afterInstall"),
         onCleanup: createTopic<ErrorEvent>("security.cleanup"),
-        async get() {
-            try {
-                return await storageOperations.getSystemData({ tenant: getTenant() });
-            } catch (ex) {
-                throw new Error(
-                    ex.message || "Could not load the system data.",
-                    ex.code || "GET_SYSTEM_ERROR"
-                );
-            }
-        },
 
         async getVersion() {
             const system = await storageOperations.getSystemData({ tenant: getTenant() });

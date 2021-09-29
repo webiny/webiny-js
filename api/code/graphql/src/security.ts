@@ -1,22 +1,21 @@
 import tenancy from "@webiny/api-tenancy";
+import { createStorageOperations as tenancyStorageOperations } from "@webiny/api-tenancy-so-ddb";
 import security from "@webiny/api-security";
-import personalAccessTokenAuthentication from "@webiny/api-security-admin-users/authentication/personalAccessToken";
-import apiKeyAuthentication from "@webiny/api-security-admin-users/authentication/apiKey";
+import { createStorageOperations as securityStorageOperations } from "@webiny/api-security-so-ddb";
+import apiKeyAuthentication from "@webiny/api-security/plugins/apiKeyAuthentication";
+import apiKeyAuthorization from "@webiny/api-security/plugins/apiKeyAuthorization";
+import anonymousAuthorization from "@webiny/api-security/plugins/anonymousAuthorization";
 import userAuthorization from "@webiny/api-security-admin-users/authorization/user";
-import apiKeyAuthorization from "@webiny/api-security-admin-users/authorization/apiKey";
-import anonymousAuthorization from "@webiny/api-security-admin-users/authorization/anonymous";
+import personalAccessTokenAuthentication from "@webiny/api-security-admin-users/authentication/personalAccessToken";
 import cognitoAuthentication from "@webiny/api-security-cognito-authentication";
 import cognitoIdentityProvider from "@webiny/api-security-admin-users-cognito";
 import { authenticateUsingHttpHeader } from "@webiny/api-authentication/authenticateUsingHttpHeader";
-import { createStorageOperations } from "@webiny/api-security-so-ddb";
 
-export default () => [
+export default ({ documentClient }) => [
     /**
-     * Security Tenancy API (context, users, groups, tenant links).
-     * This will setup the complete GraphQL schema to manage users, groups, access tokens,
-     * and provide you with a TenancyContext to access current Tenant data and DB operations.
+     * Tenancy Framework.
      */
-    tenancy(),
+    tenancy({ storageOperations: tenancyStorageOperations({ documentClient }) }),
 
     /**
      * Cognito IDP plugin (hooks for User CRUD methods).
@@ -35,7 +34,7 @@ export default () => [
      * Adds a context plugin to setup Security app.
      */
     security({
-        storageOperations: createStorageOperations({ documentClient }),
+        storageOperations: securityStorageOperations({ documentClient }),
     }),
 
     /**

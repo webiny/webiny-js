@@ -12,7 +12,8 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@webiny/api-security": "^5.14.0",
+    "@webiny/api-authentication": "^5.13.0",
+    "@webiny/api-security": "^5.13.0",
     "@webiny/handler": "^5.14.0",
     "@webiny/handler-http": "^5.14.0",
     "jsonwebtoken": "^8.5.1",
