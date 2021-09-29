@@ -36,9 +36,9 @@ export const IMPORT_PAGES = gql`
 `;
 
 export const EXPORT_PAGES = gql`
-    mutation PbExportPages($ids: [ID]!) {
+    mutation PbExportPages($ids: [ID]!, $revisionType: PbExportPageRevisionType) {
         pageBuilder {
-            exportPages(ids: $ids) {
+            exportPages(ids: $ids, revisionType: $revisionType) {
                 data {
                     task {
                         id
