@@ -123,8 +123,9 @@ export type PageImportExportTaskCrud = {
     getSubTask(id: string, subtaskId: string): Promise<PageImportExportTask>;
     getSubTaskByStatus(
         id: string,
-        status: PageImportExportTaskStatus
-    ): Promise<PageImportExportTask>;
+        status: PageImportExportTaskStatus,
+        limit: number
+    ): Promise<PageImportExportTask[]>;
     createSubTask(
         id: string,
         subTaskId: string,

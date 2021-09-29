@@ -246,25 +246,22 @@ const plugin: ContextPlugin<PbContext> = {
                     return task;
                 },
 
-                async getSubTaskByStatus(id, status) {
-                    const permission = await checkBasePermissions(context, PERMISSION_NAME, {
+                async getSubTaskByStatus(id, status, limit) {
+                    await checkBasePermissions(context, PERMISSION_NAME, {
                         rwd: "r"
                     });
 
-                    const [[task]] = await db.read<PageImportExportTask>({
+                    const [tasks] = await db.read<PageImportExportTask>({
                         ...defaults.db,
                         query: { GSI1_PK: PK(id), GSI1_SK: status },
-                        limit: 1
+                        limit: limit
                     });
 
-                    if (!task) {
+                    if (!tasks) {
                         return null;
                     }
 
-                    const identity = context.security.getIdentity();
-                    checkOwnPermissions(identity, permission, task);
-
-                    return task;
+                    return tasks;
                 }
             }
         };
