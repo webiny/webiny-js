@@ -15,8 +15,10 @@ import {
     ListItemMeta,
     ListItemText,
     ListItemTextSecondary,
-    ListTextOverline
+    ListTextOverline,
+    ListSelectBox
 } from "@webiny/ui/List";
+import { Checkbox } from "@webiny/ui/Checkbox";
 import { Typography } from "@webiny/ui/Typography";
 import { css } from "emotion";
 import { Form } from "@webiny/form";
@@ -32,9 +34,10 @@ import { ReactComponent as FilterIcon } from "@webiny/app-admin/assets/icons/fil
 import SearchUI from "@webiny/app-admin/components/SearchUI";
 import { deserializeSorters, serializeSorters } from "../utils";
 import * as GQLCache from "~/admin/views/Pages/cache";
-import { WrapperWithFileUpload } from "~/editor/plugins/defaultBar/components/ImportPageButton";
 import { ReactComponent as FileUploadIcon } from "~/editor/plugins/defaultBar/components/icons/file_upload.svg";
 import useImportPageDialog from "~/editor/plugins/defaultBar/components/ImportPageButton/useImportPageDialog";
+import { useMultiSelect } from "~/admin/views/Pages/hooks/useMultiSelect";
+import { ExportPagesButton } from "~/editor/plugins/defaultBar/components/ExportPageButton";
 
 const t = i18n.ns("app-page-builder/admin/pages/data-list");
 const rightAlign = css({
@@ -77,7 +80,7 @@ const sorters = [
 type PagesDataListProps = {
     onCreatePage: (event?: React.SyntheticEvent) => void;
     canCreate: boolean;
-    onImportPage?: (key: string) => void;
+    onImportPage: (event?: React.SyntheticEvent) => void;
 };
 const PagesDataList = ({ onCreatePage, canCreate, onImportPage }: PagesDataListProps) => {
     const [filter, setFilter] = useState("");
@@ -247,24 +250,17 @@ const PagesDataList = ({ onCreatePage, canCreate, onImportPage }: PagesDataListP
         }
         return (
             <Actions>
-                <WrapperWithFileUpload onSelect={onImportPage}>
-                    {({ showFileManager }) => (
-                        <ButtonSecondary
-                            data-testid="import-page-button"
-                            onClick={() => {
-                                showImportPageDialog(showFileManager, onImportPage);
-                            }}
-                        >
-                            <ButtonIcon icon={<FileUploadIcon />} /> {t`Import Page`}
-                        </ButtonSecondary>
-                    )}
-                </WrapperWithFileUpload>
+                <ButtonSecondary data-testid="import-page-button" onClick={onImportPage}>
+                    <ButtonIcon icon={<FileUploadIcon />} /> {t`Import Page`}
+                </ButtonSecondary>
                 <ButtonSecondary data-testid="new-record-button" onClick={onCreatePage}>
                     <ButtonIcon icon={<AddIcon />} /> {t`New Page`}
                 </ButtonSecondary>
             </Actions>
         );
     }, [canCreate, showImportPageDialog]);
+
+    const multiSelectProps = useMultiSelect({ useRouter: true });
 
     return (
         <DataList
@@ -282,6 +278,12 @@ const PagesDataList = ({ onCreatePage, canCreate, onImportPage }: PagesDataListP
                     data-testid={"default-data-list.filter"}
                 />
             }
+            multiSelectActions={
+                <ExportPagesButton getMultiSelected={multiSelectProps.getMultiSelected} />
+            }
+            multiSelectAll={multiSelectProps.multiSelectAll}
+            isAllMultiSelected={multiSelectProps.isAllMultiSelected}
+            isNoneMultiSelected={multiSelectProps.isNoneMultiSelected}
         >
             {({ data }) => (
                 <>
@@ -294,6 +296,12 @@ const PagesDataList = ({ onCreatePage, canCreate, onImportPage }: PagesDataListP
                         {Array.isArray(data) &&
                             data.map(page => (
                                 <ListItem key={page.id} selected={page.id === selectedPageId}>
+                                    <ListSelectBox>
+                                        <Checkbox
+                                            onChange={() => multiSelectProps.multiSelect(page)}
+                                            value={multiSelectProps.isMultiSelected(page)}
+                                        />
+                                    </ListSelectBox>
                                     <ListItemText
                                         onClick={() => {
                                             query.set("id", page.id);
