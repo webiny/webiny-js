@@ -191,21 +191,3 @@ export const UPDATE_PAGE_ELEMENT = gql`
         }
     }
 `;
-
-export const IMPORT_PAGES = gql`
-    mutation PbImportPage($category: String!, $data: PbImportPageInput!) {
-        pageBuilder {
-            importPages(category: $category, data: $data) {
-                data {
-                    task {
-                        id
-                        stats
-                        status
-                        data
-                    }
-                }
-                ${error}
-            }
-        }
-    }
-`;
