@@ -1,6 +1,6 @@
 import { ListResponse, Response, ErrorResponse } from "@webiny/handler-graphql/responses";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
-import { Page, PbContext } from "~/types";
+import { Page, PageExportRevisionType, PbContext } from "~/types";
 import Error from "@webiny/error";
 import resolve from "./utils/resolve";
 import pageSettings from "./pages/pageSettings";
@@ -217,6 +217,11 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                 any
             }
 
+            enum PbExportPageRevisionType {
+                published
+                latest
+            }
+
             input PbListPagesWhereTagsInput {
                 query: [String]
                 rule: PbTagsRule
@@ -299,7 +304,10 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                 updateImageSize: PbDeleteResponse
 
                 # Export pages
-                exportPages(ids: [ID]!): PbExportPageResponse
+                exportPages(
+                    ids: [ID]!
+                    revisionType: PbExportPageRevisionType
+                ): PbExportPageResponse
 
                 # Import pages
                 importPages(category: String!, data: PbImportPageInput!): PbImportPageResponse
@@ -457,8 +465,14 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                     return resolve(() => context.pageBuilder.pages.requestChanges(args.id));
                 },
 
-                exportPages: async (_, args: { ids: string[] }, context) => {
-                    return resolve(() => context.pageBuilder.pages.exportPages(args.ids));
+                exportPages: async (
+                    _,
+                    args: { ids: string[]; revisionType: PageExportRevisionType },
+                    context
+                ) => {
+                    return resolve(() =>
+                        context.pageBuilder.pages.exportPages(args.ids, args.revisionType)
+                    );
                 },
 
                 importPages: async (

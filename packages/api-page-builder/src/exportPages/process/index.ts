@@ -1,6 +1,6 @@
 import { HandlerPlugin } from "@webiny/handler/types";
 import { ArgsContext } from "@webiny/handler-args/types";
-import { PageImportExportTaskStatus, PbContext } from "~/types";
+import { PageExportRevisionType, PageImportExportTaskStatus, PbContext } from "~/types";
 import { updateMainTask, zeroPad } from "~/importPages/utils";
 import { invokeHandlerClient } from "~/importPages/client";
 import { NotFoundError } from "@webiny/handler-graphql";
@@ -66,19 +66,29 @@ export default (
             log(`Fetched sub task => ${subTask.id}`);
 
             const { input } = subTask;
-            const { pageId, exportPagesDataKey } = input;
+            const { pageId, exportPagesDataKey, revisionType } = input;
 
             /**
-             * At the moment, we're only interested in the published revision of the page.
-             * And in case of no published version available, we use the latest revision.-
+             * At the moment, we only export a single revision of the page.
+             * It could be "published" or "latest" depending upon user input.
+             *
+             * Note: In case of no "published" revision available, we use the latest revision.
              */
             let page;
             try {
-                // Get published page.
-                page = await pageBuilder.pages.getPublishedById({ id: pageId });
+                if (revisionType === PageExportRevisionType.PUBLISHED) {
+                    // Get "published" page.
+                    page = await pageBuilder.pages.getPublishedById({ id: pageId });
+                } else {
+                    // Get "latest" page.
+                    page = await pageBuilder.pages.get(pageId);
+                }
             } catch (e) {
-                // If no published page be found, get latest page.
-                if (e instanceof NotFoundError) {
+                // If we're looking for "published" page and doesn't found it, get latest page.
+                if (
+                    revisionType === PageExportRevisionType.PUBLISHED &&
+                    e instanceof NotFoundError
+                ) {
                     page = await pageBuilder.pages.get(pageId);
                 } else {
                     throw e;

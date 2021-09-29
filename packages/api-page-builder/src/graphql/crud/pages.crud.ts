@@ -1524,7 +1524,7 @@ const plugin: ContextPlugin<PbContext> = {
                     };
                 },
 
-                async exportPages(pageIds: string[]) {
+                async exportPages(pageIds: string[], revisionType) {
                     await checkBasePermissions(context, PERMISSION_NAME, {
                         rwd: "w"
                     });
@@ -1551,7 +1551,8 @@ const plugin: ContextPlugin<PbContext> = {
                                 status: PageImportExportTaskStatus.PENDING,
                                 input: {
                                     pageId,
-                                    exportPagesDataKey
+                                    exportPagesDataKey,
+                                    revisionType
                                 }
                             }
                         );
@@ -1561,7 +1562,8 @@ const plugin: ContextPlugin<PbContext> = {
                         status: PageImportExportTaskStatus.PROCESSING,
                         stats: initialStats(pageIds.length),
                         input: {
-                            exportPagesDataKey
+                            exportPagesDataKey,
+                            revisionType
                         }
                     });
 

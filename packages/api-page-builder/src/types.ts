@@ -23,6 +23,11 @@ export type PageElement = {
     };
 };
 
+export enum PageExportRevisionType {
+    PUBLISHED = "published",
+    LATEST = "latest"
+}
+
 export enum PageImportExportTaskStatus {
     PENDING = "pending",
     PROCESSING = "processing",

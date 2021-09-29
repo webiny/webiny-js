@@ -13,6 +13,7 @@ import {
     Menu,
     Page,
     PageElement,
+    PageExportRevisionType,
     PageImportExportTask,
     PageImportExportTaskStatus
 } from "~/types";
@@ -90,7 +91,10 @@ export type PagesCrud = {
     unpublish<TPage extends Page = Page>(id: string): Promise<TPage>;
     requestReview<TPage extends Page = Page>(id: string): Promise<TPage>;
     requestChanges<TPage extends Page = Page>(id: string): Promise<TPage>;
-    exportPages(ids: string[]): Promise<{ task: PageImportExportTask }>;
+    exportPages(
+        ids: string[],
+        revisionType: PageExportRevisionType
+    ): Promise<{ task: PageImportExportTask }>;
     importPages<TPage extends Page = Page>(
         category: string,
         data: Record<string, any>
