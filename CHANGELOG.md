@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.15.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.15.0-beta.1...v5.15.0-beta.2) (2021-09-29)
+
+
+### Bug Fixes
+
+* **api-page-builder:** cli upgrade ([b69a2e3](https://github.com/webiny/webiny-js/commit/b69a2e343c4d397e632289cd4904ae3fcf828187))
+
+
+
+
+
 # [5.15.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.15.0-beta.0...v5.15.0-beta.1) (2021-09-28)
 
 
