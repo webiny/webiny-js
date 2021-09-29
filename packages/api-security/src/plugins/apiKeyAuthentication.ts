@@ -1,8 +1,7 @@
 import { Context as HandlerContext } from "@webiny/handler/types";
-import { HttpContext } from "@webiny/handler-http/types";
 import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
 import { SecurityContext } from "~/types";
-type Context = HandlerContext<HttpContext, SecurityContext>;
+type Context = HandlerContext<SecurityContext>;
 
 export interface Config {
     identityType?: string;

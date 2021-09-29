@@ -1,7 +1,8 @@
 import useGqlHandler from "./useGqlHandler";
+import { defaultIdentity } from "./mocks/defaultIdentity";
 
 describe(`"Login" test`, () => {
-    const { install, securityIdentity } = useGqlHandler();
+    const { install, securityIdentity } = useGqlHandler({ plugins: [defaultIdentity()] });
 
     beforeEach(async () => {
         const [response] = await install.install();

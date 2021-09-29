@@ -10,7 +10,17 @@ export const LOGIN = /* GraphQL */ `
     mutation Login {
         security {
             login {
-                data
+                data {
+                    ...on SecurityIdentity {
+                        id
+                        displayName
+                        access {
+                            id
+                            name
+                            permissions
+                        }
+                    }
+                }
                 error ${ERROR_FIELD}
             }
         }

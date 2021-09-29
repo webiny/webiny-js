@@ -19,8 +19,6 @@
     "@webiny/api-security": "^5.13.0",
     "@webiny/db-dynamodb": "^5.13.0",
     "@webiny/error": "^5.13.0",
-    "@webiny/handler-db": "^5.13.0",
-    "@webiny/plugins": "^5.13.0",
     "dynamodb-toolbox": "^0.3.4"
   },
   "devDependencies": {

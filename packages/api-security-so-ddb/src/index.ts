@@ -53,9 +53,9 @@ export const createStorageOperations = (
         SK: `API_KEY#${apiKey.id}`
     });
 
-    const createGroupKeys = (group: Group) => ({
-        PK: `T#${group.tenant}`,
-        SK: `GROUP#${group.id}`
+    const createGroupKeys = (group: Pick<Group, "tenant" | "id">) => ({
+        PK: `T#${group.tenant}#GROUP#${group.id}`,
+        SK: `A`
     });
 
     const createSystemKeys = tenant => ({
@@ -224,10 +224,10 @@ export const createStorageOperations = (
             try {
                 let result;
                 if (id) {
-                    result = await entities.groups.get({
-                        PK: `T#${tenant}`,
-                        SK: `GROUP#${id}`
-                    });
+                    const response = await entities.groups.get(createGroupKeys({ tenant, id }));
+                    if (response.Item) {
+                        result = response.Item;
+                    }
                 } else if (slug) {
                     result = await queryOne({
                         entity: entities.groups,
@@ -239,10 +239,7 @@ export const createStorageOperations = (
                     });
                 }
 
-                if (!result || !result.Item) {
-                    return null;
-                }
-                return cleanupItem(entities.groups, result.Item);
+                return cleanupItem(entities.groups, result);
             } catch (ex) {
                 throw new Error(
                     ex.message || "Could not load group.",

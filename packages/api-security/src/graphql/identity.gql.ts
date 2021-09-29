@@ -1,4 +1,5 @@
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSchemaPlugin";
+import { Response } from "@webiny/handler-graphql";
 import { SecurityContext } from "~/types";
 
 export default new GraphQLSchemaPlugin<SecurityContext>({
@@ -15,9 +16,10 @@ export default new GraphQLSchemaPlugin<SecurityContext>({
         }
 
         interface SecurityIdentity {
-            id: String!
+            id: ID!
+            type: String!
             displayName: String!
-            access: [TenantAccess]
+            access: [TenantAccess!]!
         }
 
         type SecurityIdentityLoginResponse {
@@ -33,7 +35,7 @@ export default new GraphQLSchemaPlugin<SecurityContext>({
     resolvers: {
         SecurityMutation: {
             login: async (root, args, context) => {
-                return context.security.getIdentity();
+                return new Response(context.security.getIdentity());
             }
         }
     }
