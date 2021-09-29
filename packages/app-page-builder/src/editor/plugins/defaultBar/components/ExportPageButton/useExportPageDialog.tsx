@@ -6,20 +6,14 @@ import { ButtonIcon, ButtonSecondary, CopyButton } from "@webiny/ui/Button";
 import { Typography } from "@webiny/ui/Typography";
 import { Cell, Grid } from "@webiny/ui/Grid";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
-import { CircularProgress } from "@webiny/ui/Progress";
 
 import { ReactComponent as FileDownloadIcon } from "~/editor/assets/icons/file_download_black_24dp.svg";
+import ExportPageLoadingDialogContent from "./ExportPageLoadingDialogContent";
 
-const t = i18n.ns("app-page-builder/editor/plugins/defaultBar/importPage");
+const t = i18n.ns("app-page-builder/editor/plugins/defaultBar/exportPageButton");
 
 const confirmationMessageStyles = css`
     max-width: 600px;
-`;
-
-const spinnerWrapper = css`
-    position: relative;
-    width: 400px;
-    height: 180px;
 `;
 
 const linkWrapper = css`
@@ -40,16 +34,6 @@ const gridClass = css`
         padding-bottom: 0;
     }
 `;
-
-const ExportPageLoadingDialogMessage: React.FunctionComponent = () => {
-    return (
-        <div className={confirmationMessageStyles}>
-            <div className={spinnerWrapper}>
-                <CircularProgress label={t`Preparing your export...`} />
-            </div>
-        </div>
-    );
-};
 
 interface ExportPageDialogProps {
     exportUrl: string;
@@ -110,11 +94,11 @@ const useExportPageDialog = () => {
                 }
             });
         },
-        showExportPageLoadingDialog: (onCancel: Function) => {
-            showDialog(<ExportPageLoadingDialogMessage />, {
-                title: t`Export page`,
+        showExportPageLoadingDialog: taskId => {
+            showDialog(<ExportPageLoadingDialogContent taskId={taskId} />, {
+                title: t`Preparing your export...`,
                 actions: {
-                    cancel: { label: t`Cancel`, onClick: onCancel }
+                    cancel: { label: t`Cancel` }
                 }
             });
         },

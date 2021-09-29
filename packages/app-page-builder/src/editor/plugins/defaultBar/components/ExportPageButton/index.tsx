@@ -5,10 +5,16 @@ import { MenuItem } from "@webiny/ui/Menu";
 import { ListItemGraphic } from "@webiny/ui/List";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { Icon } from "@webiny/ui/Icon";
-
-import { ReactComponent as DownloadIcon } from "../icons/file_download.svg";
+import { IconButton } from "@webiny/ui/Button";
+import { Tooltip } from "@webiny/ui/Tooltip";
+import { i18n } from "@webiny/app/i18n";
 import { EXPORT_PAGES, GET_PAGE_IMPORT_EXPORT_TASK } from "~/admin/graphql/pageImportExport.gql";
 import useExportPageDialog from "./useExportPageDialog";
+import useExportPageRevisionSelectorDialog from "./useExportPageRevisionSelectorDialog";
+// assets
+import { ReactComponent as DownloadIcon } from "../icons/file_download.svg";
+
+const t = i18n.ns("app-page-builder/editor/plugins/defaultBar/exportPageButton");
 
 const INTERVAL = 2 * 1000;
 
@@ -98,3 +104,69 @@ const ExportPageButton: React.FunctionComponent<{ page: any }> = ({ page }) => {
 };
 
 export default ExportPageButton;
+
+const useExportPage = () => {
+    const [taskId, setTaskId] = useState<string>(null);
+    const { showSnackbar } = useSnackbar();
+    const { showExportPageLoadingDialog } = useExportPageDialog();
+
+    const [exportPage] = useMutation(EXPORT_PAGES, {
+        onCompleted: response => {
+            const { error, data } = get(response, "pageBuilder.exportPages", {});
+            if (error) {
+                return showSnackbar(error.message);
+            }
+            setTaskId(data.task.id);
+        }
+    });
+
+    useEffect(() => {
+        if (taskId) {
+            showExportPageLoadingDialog(taskId);
+        }
+    }, [taskId]);
+
+    return {
+        exportPage
+    };
+};
+
+export const ExportPagesButton = ({ getMultiSelected }) => {
+    const { exportPage } = useExportPage();
+    const { showExportPageRevisionSelectorDialog } = useExportPageRevisionSelectorDialog();
+
+    const selected = getMultiSelected();
+
+    const renderExportPagesTooltip = selected => {
+        const count = selected.length;
+        if (count > 0) {
+            return t`Export {count|count:1:page:default:pages}.`({
+                count
+            });
+        }
+
+        return t`Export pages`;
+    };
+
+    return (
+        <Tooltip content={renderExportPagesTooltip(selected)} placement={"bottom"}>
+            <IconButton
+                icon={<DownloadIcon />}
+                disabled={selected.length === 0}
+                onClick={async () => {
+                    showExportPageRevisionSelectorDialog({
+                        onAccept: revisionType => {
+                            // Open Export Pages Dialog
+                            exportPage({
+                                variables: {
+                                    ids: selected.map(i => i.pid),
+                                    revisionType
+                                }
+                            });
+                        }
+                    });
+                }}
+            />
+        </Tooltip>
+    );
+};

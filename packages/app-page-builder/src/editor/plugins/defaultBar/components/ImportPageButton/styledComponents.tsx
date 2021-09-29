@@ -3,6 +3,7 @@ import { Typography } from "@webiny/ui/Typography";
 import Accordion from "~/editor/plugins/elementSettings/components/Accordion";
 // assets
 import { ReactComponent as UploadInProgressIcon } from "./assets/undraw-uploading.svg";
+import { ReactComponent as ExportInProgressIcon } from "./assets/undraw_export_files.svg";
 import { ReactComponent as CircleIcon } from "./assets/check-circle-24dp.svg";
 
 export const ShowDetails = {
@@ -104,6 +105,11 @@ export const LoadingDialog = {
         flex-grow: 1;
     `,
     UploadIllustration: styled(UploadInProgressIcon)`
+        width: 100%;
+        max-width: 300px;
+        height: auto;
+    `,
+    ExportIllustration: styled(ExportInProgressIcon)`
         width: 100%;
         max-width: 300px;
         height: auto;
