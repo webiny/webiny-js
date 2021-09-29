@@ -6,29 +6,29 @@
     "watch": "yarn webiny run watch"
   },
   "dependencies": {
-    "@webiny/api-elasticsearch": "^5.15.0-beta.1",
-    "@webiny/api-headless-cms": "^5.15.0-beta.1",
-    "@webiny/api-headless-cms-ddb-es": "^5.15.0-beta.1",
-    "@webiny/api-i18n": "^5.15.0-beta.1",
-    "@webiny/api-i18n-content": "^5.15.0-beta.1",
-    "@webiny/api-i18n-ddb": "^5.15.0-beta.1",
-    "@webiny/api-security": "^5.15.0-beta.1",
-    "@webiny/api-security-admin-users": "^5.15.0-beta.1",
-    "@webiny/api-security-admin-users-so-ddb": "^5.15.0-beta.1",
-    "@webiny/api-security-cognito-authentication": "^5.15.0-beta.1",
-    "@webiny/api-tenancy": "^5.15.0-beta.1",
-    "@webiny/cli": "^5.15.0-beta.1",
-    "@webiny/db-dynamodb": "^5.15.0-beta.1",
-    "@webiny/handler": "^5.15.0-beta.1",
-    "@webiny/handler-args": "^5.15.0-beta.1",
-    "@webiny/handler-aws": "^5.15.0-beta.1",
-    "@webiny/handler-client": "^5.15.0-beta.1",
-    "@webiny/handler-db": "^5.15.0-beta.1",
-    "@webiny/handler-http": "^5.15.0-beta.1",
-    "@webiny/handler-logs": "^5.15.0-beta.1",
-    "@webiny/project-utils": "^5.15.0-beta.1"
+    "@webiny/api-elasticsearch": "^5.15.0-beta.2",
+    "@webiny/api-headless-cms": "^5.15.0-beta.2",
+    "@webiny/api-headless-cms-ddb-es": "^5.15.0-beta.2",
+    "@webiny/api-i18n": "^5.15.0-beta.2",
+    "@webiny/api-i18n-content": "^5.15.0-beta.2",
+    "@webiny/api-i18n-ddb": "^5.15.0-beta.2",
+    "@webiny/api-security": "^5.15.0-beta.2",
+    "@webiny/api-security-admin-users": "^5.15.0-beta.2",
+    "@webiny/api-security-admin-users-so-ddb": "^5.15.0-beta.2",
+    "@webiny/api-security-cognito-authentication": "^5.15.0-beta.2",
+    "@webiny/api-tenancy": "^5.15.0-beta.2",
+    "@webiny/cli": "^5.15.0-beta.2",
+    "@webiny/db-dynamodb": "^5.15.0-beta.2",
+    "@webiny/handler": "^5.15.0-beta.2",
+    "@webiny/handler-args": "^5.15.0-beta.2",
+    "@webiny/handler-aws": "^5.15.0-beta.2",
+    "@webiny/handler-client": "^5.15.0-beta.2",
+    "@webiny/handler-db": "^5.15.0-beta.2",
+    "@webiny/handler-http": "^5.15.0-beta.2",
+    "@webiny/handler-logs": "^5.15.0-beta.2",
+    "@webiny/project-utils": "^5.15.0-beta.2"
   },
   "devDependencies": {
-    "@webiny/cli-plugin-deploy-pulumi": "^5.15.0-beta.1"
+    "@webiny/cli-plugin-deploy-pulumi": "^5.15.0-beta.2"
   }
 }
