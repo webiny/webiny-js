@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.15.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.15.0-beta.2...v5.15.0-beta.3) (2021-09-30)
+
+
+### Bug Fixes
+
+* check if identity exists before making any further checks ([5f7bec0](https://github.com/webiny/webiny-js/commit/5f7bec01375b2c9c36916e27e59f353b6991a5f8))
+
+
+
+
+
 # [5.15.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.15.0-beta.1...v5.15.0-beta.2) (2021-09-29)
 
 
