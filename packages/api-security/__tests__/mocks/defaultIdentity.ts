@@ -14,7 +14,7 @@ export const defaultIdentity = () => {
         resolvers: {
             Admin: {
                 async access() {
-                    return [{ id: "root", name: "Root", permissions: [{ name: "*" }] }];
+                    return [{ id: "root", permissions: [{ name: "*" }] }];
                 },
                 __isTypeOf(obj) {
                     return obj.type === "admin";

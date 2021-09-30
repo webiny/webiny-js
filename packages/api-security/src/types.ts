@@ -35,16 +35,23 @@ export interface InstallEvent {
     tenant: string;
 }
 
+export interface LoginEvent<TIdentity> {
+    identity: TIdentity;
+}
+
 export interface GetGroupWhere {
     id?: string;
     slug?: string;
 }
 
 export interface Security<TIdentity = SecurityIdentity> extends Authentication<TIdentity> {
-    onBeforeInstall: Topic;
-    onInstall: Topic;
-    onAfterInstall: Topic;
+    onBeforeInstall: Topic<InstallEvent>;
+    onInstall: Topic<InstallEvent>;
+    onAfterInstall: Topic<InstallEvent>;
     onCleanup: Topic<ErrorEvent>;
+    onLogin: Topic<LoginEvent<TIdentity>>;
+    enableAuthorization(): void;
+    disableAuthorization(): void;
     addAuthorizer(authorizer: Authorizer): void;
     getAuthorizers(): Authorizer[];
     getPermission<TPermission extends SecurityPermission = SecurityPermission>(
@@ -80,7 +87,6 @@ export interface Security<TIdentity = SecurityIdentity> extends Authentication<T
     // System
     getVersion(): Promise<string>;
     setVersion(version: string): Promise<System>;
-    isInstalled(): Promise<boolean>;
     install(this: Security): Promise<void>;
 }
 

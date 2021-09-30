@@ -3,9 +3,19 @@ import { Tenancy, TenancyStorageOperations } from "~/types";
 
 export function createSystemMethods(storageOperations: TenancyStorageOperations) {
     return {
-        async getVersion() {
+        async getVersion(this: Tenancy) {
             const system = await storageOperations.getSystemData();
-            
+
+            // BC check
+            if (!system) {
+                const rootTenant = await this.getTenantById("root");
+                if (rootTenant) {
+                    await this.setVersion(process.env.WEBINY_VERSION);
+                    return "5.15.0";
+                }
+                return null;
+            }
+
             return system ? system.version : null;
         },
 
@@ -38,19 +48,8 @@ export function createSystemMethods(storageOperations: TenancyStorageOperations)
             }
         },
 
-        async isInstalled() {
-            try {
-                return !!(await storageOperations.getSystemData());
-            } catch (ex) {
-                throw new Error(
-                    ex.message || "Could not load root tenant.",
-                    ex.code || "TENANCY_SYSTEM_ERROR"
-                );
-            }
-        },
-
         async install(this: Tenancy) {
-            if (await this.isInstalled()) {
+            if (await this.getVersion()) {
                 throw new Error("Tenancy is already installed.", "TENANCY_INSTALL_ABORTED");
             }
 

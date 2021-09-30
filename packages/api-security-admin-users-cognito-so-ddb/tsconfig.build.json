@@ -1,0 +1,21 @@
+{
+  "extends": "../../tsconfig.build.json",
+  "include": ["./src"],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "../db-dynamodb",
+    "../error",
+    "../api-security-admin-users-cognito"
+  ],
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "declarationDir": "./dist",
+    "paths": {
+      "~/*": ["./src/*"]
+    },
+    "baseUrl": "."
+  },
+  "references": []
+}

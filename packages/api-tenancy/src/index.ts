@@ -1,6 +1,6 @@
 import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
 import {TenancyContext, TenancyStorageOperations} from "./types";
-import { createTenancy } from "./Tenancy";
+import { createTenancy } from "./createTenancy";
 import graphqlPlugins from "./graphql";
 
 interface TenancyPluginsParams {

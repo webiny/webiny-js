@@ -1,6 +1,5 @@
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { Table } from "dynamodb-toolbox";
-import configurations from "~/configurations";
 
 export interface Params {
     table: string;
@@ -9,7 +8,7 @@ export interface Params {
 
 export const createTable = ({ table, documentClient }: Params) => {
     return new Table({
-        name: configurations.db().table || table,
+        name: table || process.env.DB_TABLE_TENANCY || process.env.DB_TABLE,
         partitionKey: "PK",
         sortKey: "SK",
         DocumentClient: documentClient,

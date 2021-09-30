@@ -8420,8 +8420,9 @@ __metadata:
     "@babel/runtime": ^7.5.5
     "@webiny/cli": ^5.13.0
     "@webiny/handler": ^5.13.0
-    "@webiny/plugins": ^5.13.0
+    "@webiny/handler-http": ^5.13.0
     "@webiny/project-utils": ^5.13.0
+    jest-dynalite: ^3.2.0
     rimraf: ^3.0.2
     ttypescript: ^1.5.12
     typescript: ^4.1.3
@@ -9077,31 +9078,49 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-security-admin-users-cognito@npm:^5.14.0":
-  version: 5.14.0
-  resolution: "@webiny/api-security-admin-users-cognito@npm:5.14.0"
+"@webiny/api-security-admin-users-cognito@^5.14.0, @webiny/api-security-admin-users-cognito@workspace:packages/api-security-admin-users-cognito":
+  version: 0.0.0-use.local
+  resolution: "@webiny/api-security-admin-users-cognito@workspace:packages/api-security-admin-users-cognito"
   dependencies:
-    "@webiny/api-security-admin-users": 5.14.0
-    "@webiny/handler-graphql": 5.14.0
-  checksum: ebfa82a5696b27cd16632b12716815c874a96e41e191006da284297f6deb59ef49f108923e8d1b1ac5104330268ccbc6b85fe72d5b26d04a089bc4adbbe0ace2
-  languageName: node
-  linkType: hard
+    "@babel/cli": ^7.5.5
+    "@babel/core": ^7.5.5
+    "@types/jsonwebtoken": ^8.5.1
+    "@webiny/api-security": ^5.13.0
+    "@webiny/api-tenancy": ^5.13.0
+    "@webiny/cli": ^5.14.0
+    "@webiny/error": ^5.14.0
+    "@webiny/handler": ^5.14.0
+    "@webiny/handler-graphql": ^5.14.0
+    "@webiny/project-utils": ^5.14.0
+    "@webiny/pubsub": ^5.13.0
+    mdbid: ^1.0.0
+    rimraf: ^3.0.2
+    typescript: ^4.1.3
+  languageName: unknown
+  linkType: soft
 
-"@webiny/api-security-admin-users-so-ddb@npm:^5.14.0":
-  version: 5.14.0
-  resolution: "@webiny/api-security-admin-users-so-ddb@npm:5.14.0"
+"@webiny/api-security-admin-users-so-ddb@^5.14.0, @webiny/api-security-admin-users-so-ddb@workspace:packages/api-security-admin-users-cognito-so-ddb":
+  version: 0.0.0-use.local
+  resolution: "@webiny/api-security-admin-users-so-ddb@workspace:packages/api-security-admin-users-cognito-so-ddb"
   dependencies:
-    "@webiny/api-security-admin-users": 5.14.0
-    "@webiny/api-tenancy": 5.14.0
-    "@webiny/db-dynamodb": 5.14.0
-    "@webiny/error": 5.14.0
-    "@webiny/handler-db": 5.14.0
-    dynamodb-toolbox: 0.3.4
-  checksum: ed2de399b97eab21e139414b9c0b2f941c00ef6ccb1b3545be740f3adebf81a2c59376ff9fca1181e290a8cf8e4cf2cf0b1718f582cc5b89a33d5edc4998c9e6
-  languageName: node
-  linkType: hard
+    "@babel/cli": ^7.5.5
+    "@babel/core": ^7.5.5
+    "@webiny/api-security-admin-users-cognito": ^5.14.0
+    "@webiny/cli": ^5.14.0
+    "@webiny/db-dynamodb": ^5.14.0
+    "@webiny/error": ^5.14.0
+    "@webiny/project-utils": ^5.14.0
+    dynamodb-toolbox: ^0.3.4
+    jest: ^26.6.3
+    jest-dynalite: ^3.2.0
+    jest-environment-node: ^27.0.6
+    rimraf: ^3.0.2
+    ttypescript: ^1.5.12
+    typescript: ^4.1.3
+  languageName: unknown
+  linkType: soft
 
-"@webiny/api-security-admin-users@npm:5.14.0, @webiny/api-security-admin-users@npm:^5.14.0":
+"@webiny/api-security-admin-users@npm:^5.14.0":
   version: 5.14.0
   resolution: "@webiny/api-security-admin-users@npm:5.14.0"
   dependencies:
@@ -9133,10 +9152,9 @@ __metadata:
     "@babel/core": ^7.5.5
     "@types/jsonwebtoken": ^8.5.1
     "@webiny/api-authentication": ^5.13.0
-    "@webiny/api-security": ^5.14.0
+    "@webiny/api-security": ^5.13.0
     "@webiny/cli": ^5.14.0
     "@webiny/handler": ^5.14.0
-    "@webiny/handler-http": ^5.14.0
     "@webiny/project-utils": ^5.14.0
     jsonwebtoken: ^8.5.1
     jwk-to-pem: ^2.0.1
@@ -9156,8 +9174,6 @@ __metadata:
     "@webiny/cli": ^5.13.0
     "@webiny/db-dynamodb": ^5.13.0
     "@webiny/error": ^5.13.0
-    "@webiny/handler-db": ^5.13.0
-    "@webiny/plugins": ^5.13.0
     "@webiny/project-utils": ^5.13.0
     dynamodb-toolbox: ^0.3.4
     jest: ^26.6.3
@@ -9178,16 +9194,22 @@ __metadata:
     "@babel/preset-env": ^7.5.5
     "@babel/preset-typescript": ^7.8.3
     "@babel/runtime": ^7.5.5
+    "@commodo/fields": 1.1.2-beta.20
     "@webiny/api-authentication": ^5.13.0
     "@webiny/api-tenancy": ^5.13.0
     "@webiny/api-tenancy-so-ddb": ^5.13.0
     "@webiny/cli": ^5.13.0
     "@webiny/error": ^5.13.0
     "@webiny/handler": ^5.13.0
+    "@webiny/handler-aws": ^5.14.0
     "@webiny/handler-graphql": ^5.13.0
+    "@webiny/handler-http": ^5.14.0
     "@webiny/plugins": ^5.13.0
     "@webiny/project-utils": ^5.13.0
     "@webiny/pubsub": ^5.13.0
+    "@webiny/validation": ^5.14.0
+    commodo-fields-object: ^1.0.6
+    deep-equal: ^2.0.5
     mdbid: ^1.0.0
     minimatch: ^3.0.4
     rimraf: ^3.0.2
@@ -9220,7 +9242,6 @@ __metadata:
     "@webiny/cli": ^5.13.0
     "@webiny/db-dynamodb": ^5.13.0
     "@webiny/error": ^5.13.0
-    "@webiny/plugins": ^5.13.0
     "@webiny/project-utils": ^5.13.0
     dynamodb-toolbox: ^0.3.4
     jest: ^26.6.3
@@ -9239,11 +9260,11 @@ __metadata:
     "@babel/cli": ^7.5.5
     "@babel/core": ^7.5.5
     "@webiny/cli": ^5.13.0
+    "@webiny/error": ^5.13.0
     "@webiny/handler": ^5.13.0
     "@webiny/handler-db": ^5.13.0
     "@webiny/handler-graphql": ^5.13.0
     "@webiny/handler-http": ^5.13.0
-    "@webiny/plugins": ^5.13.0
     "@webiny/project-utils": ^5.13.0
     "@webiny/pubsub": ^5.13.0
     dataloader: ^2.0.0
@@ -10390,7 +10411,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/db-dynamodb@5.14.0, @webiny/db-dynamodb@^5.13.0, @webiny/db-dynamodb@^5.14.0, @webiny/db-dynamodb@workspace:packages/db-dynamodb":
+"@webiny/db-dynamodb@^5.13.0, @webiny/db-dynamodb@^5.14.0, @webiny/db-dynamodb@workspace:packages/db-dynamodb":
   version: 0.0.0-use.local
   resolution: "@webiny/db-dynamodb@workspace:packages/db-dynamodb"
   dependencies:
@@ -16759,7 +16780,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"deep-equal@npm:2.0.5":
+"deep-equal@npm:2.0.5, deep-equal@npm:^2.0.5":
   version: 2.0.5
   resolution: "deep-equal@npm:2.0.5"
   dependencies:
@@ -17679,7 +17700,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dynamodb-toolbox@npm:0.3.4, dynamodb-toolbox@npm:^0.3.3, dynamodb-toolbox@npm:^0.3.4":
+"dynamodb-toolbox@npm:^0.3.3, dynamodb-toolbox@npm:^0.3.4":
   version: 0.3.4
   resolution: "dynamodb-toolbox@npm:0.3.4"
   checksum: 84d96aa86fc7b7f9cd06c6be9feadbf6e48c854a607fc65323bc1dceac531fd79b4387d22f466ece2cbc736d624573c04379fd227d9e89e623ece83e8da41972

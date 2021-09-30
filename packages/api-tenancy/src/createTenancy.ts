@@ -1,6 +1,6 @@
 import { Tenant, TenancyStorageOperations, Tenancy } from "./types";
-import { createSystemMethods } from "~/Tenancy/createSystemMethods";
-import { createTenantsMethods } from "~/Tenancy/createTenantsMethods";
+import { createSystemMethods } from "~/createTenancy/createSystemMethods";
+import { createTenantsMethods } from "~/createTenancy/createTenantsMethods";
 
 export interface TenancyConfig {
     tenant: string;

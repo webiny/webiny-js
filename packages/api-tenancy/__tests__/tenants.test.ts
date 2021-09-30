@@ -1,5 +1,5 @@
 import { Tenancy } from "~/types";
-import { createTenancy } from "~/Tenancy";
+import { createTenancy } from "~/createTenancy";
 
 describe(`Test "Tenancy" tenants`, () => {
     // @ts-ignore

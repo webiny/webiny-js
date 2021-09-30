@@ -22,7 +22,7 @@ describe(`"Login" test`, () => {
                         data: {
                             id: "123456789",
                             displayName: "John Doe",
-                            access: [{ id: "root", name: "Root", permissions: [{ name: "*" }] }]
+                            access: [{ id: "root", permissions: [{ name: "*" }] }]
                         },
                         error: null
                     }

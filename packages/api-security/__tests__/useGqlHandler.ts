@@ -64,7 +64,7 @@ export default (opts: UseGqlHandlerParams = {}) => {
             tenancyPlugins({
                 storageOperations: tenancyStorageOperations({
                     documentClient,
-                    table: "Tenancy"
+                    table: "DynamoDB"
                 })
             }),
             securityPlugins({ storageOperations }),

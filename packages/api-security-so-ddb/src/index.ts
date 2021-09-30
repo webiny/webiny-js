@@ -78,12 +78,12 @@ export const createStorageOperations = (
                     ...keys
                 });
                 return apiKey;
-            } catch (ex) {
-                throw new Error(
-                    ex.message || "Could not create api key.",
-                    ex.code || "CREATE_API_KEY_ERROR",
-                    { keys }
-                );
+            } catch (err) {
+                throw Error.from(err, {
+                    message: "Could not create api key.",
+                    code: "CREATE_API_KEY_ERROR",
+                    data: { keys }
+                });
             }
         },
         async createGroup({ group }): Promise<Group> {
@@ -100,12 +100,12 @@ export const createStorageOperations = (
                     ...keys
                 });
                 return group;
-            } catch (ex) {
-                throw new Error(
-                    ex.message || "Could not create group.",
-                    ex.code || "CREATE_GROUP_ERROR",
-                    { keys }
-                );
+            } catch (err) {
+                throw Error.from(err, {
+                    message: "Could not create group.",
+                    code: "CREATE_GROUP_ERROR",
+                    data: { keys }
+                });
             }
         },
         async createSystemData({ system }): Promise<System> {
@@ -116,15 +116,12 @@ export const createStorageOperations = (
                     ...cleanupItem(entities.system, system)
                 });
                 return system;
-            } catch (ex) {
-                throw new Error(
-                    ex.message || "Could not create system.",
-                    ex.code || "CREATE_SYSTEM_ERROR",
-                    {
-                        keys,
-                        system
-                    }
-                );
+            } catch (err) {
+                throw Error.from(err, {
+                    message: "Could not create system.",
+                    code: "CREATE_SYSTEM_ERROR",
+                    data: { keys, system }
+                });
             }
         },
         async createTenantLinks(links): Promise<void> {
@@ -145,12 +142,12 @@ export const createStorageOperations = (
 
             try {
                 await entities.apiKeys.delete(keys);
-            } catch (ex) {
-                throw new Error(
-                    ex.message || "Could not update api key.",
-                    ex.code || "UPDATE_API_KEY_ERROR",
-                    { keys }
-                );
+            } catch (err) {
+                throw Error.from(err, {
+                    message: "Could not update api key.",
+                    code: "UPDATE_API_KEY_ERROR",
+                    data: { keys }
+                });
             }
         },
         async deleteGroup({ group }) {
@@ -158,12 +155,12 @@ export const createStorageOperations = (
 
             try {
                 await entities.groups.delete(keys);
-            } catch (ex) {
-                throw new Error(
-                    ex.message || "Could not delete group.",
-                    ex.code || "CREATE_DELETE_ERROR",
-                    { keys, group }
-                );
+            } catch (err) {
+                throw Error.from(err, {
+                    message: "Could not delete group.",
+                    code: "CREATE_DELETE_ERROR",
+                    data: { keys, group }
+                });
             }
         },
         async deleteTenantLinks(links): Promise<void> {
@@ -188,12 +185,12 @@ export const createStorageOperations = (
                     return null;
                 }
                 return cleanupItem(entities.apiKeys, result.Item);
-            } catch (ex) {
-                throw new Error(
-                    ex.message || "Could not load api key.",
-                    ex.code || "GET_API_KEY_ERROR",
-                    { id, keys }
-                );
+            } catch (err) {
+                throw Error.from(err, {
+                    message: "Could not load api key.",
+                    code: "GET_API_KEY_ERROR",
+                    data: { id, keys }
+                });
             }
         },
         async getApiKeyByToken({ tenant, token }) {
@@ -209,15 +206,12 @@ export const createStorageOperations = (
             try {
                 const result = await queryOne<ApiKey>(queryParams);
                 return cleanupItem(entities.apiKeys, result);
-            } catch (ex) {
-                throw new Error(
-                    ex.message || "Could not load api key by token.",
-                    ex.code || "GET_BY_TOKEN_API_KEY_ERROR",
-                    {
-                        partitionKey: queryParams.partitionKey,
-                        options: queryParams.options
-                    }
-                );
+            } catch (err) {
+                throw Error.from(err, {
+                    message: "Could not load api key by token.",
+                    code: "GET_BY_TOKEN_API_KEY_ERROR",
+                    data: { partitionKey: queryParams.partitionKey, options: queryParams.options }
+                });
             }
         },
         async getGroup({ tenant, where: { id, slug } }): Promise<Group> {
@@ -240,12 +234,12 @@ export const createStorageOperations = (
                 }
 
                 return cleanupItem(entities.groups, result);
-            } catch (ex) {
-                throw new Error(
-                    ex.message || "Could not load group.",
-                    ex.code || "GET_GROUP_ERROR",
-                    { id, slug }
-                );
+            } catch (err) {
+                throw Error.from(err, {
+                    message: "Could not load group.",
+                    code: "GET_GROUP_ERROR",
+                    data: { id, slug }
+                });
             }
         },
         async getSystemData({ tenant }): Promise<System> {
@@ -256,12 +250,12 @@ export const createStorageOperations = (
                     return null;
                 }
                 return cleanupItem(entities.system, result.Item);
-            } catch (ex) {
-                throw new Error(
-                    ex.message || "Could not load system.",
-                    ex.code || "GET_SYSTEM_ERROR",
-                    { keys }
-                );
+            } catch (err) {
+                throw Error.from(err, {
+                    message: "Could not load system.",
+                    code: "GET_SYSTEM_ERROR",
+                    data: { keys }
+                });
             }
         },
         async getTenantLinkByIdentity<TLink = TenantLink>({ tenant, identity }): Promise<TLink> {
@@ -275,12 +269,12 @@ export const createStorageOperations = (
                     return null;
                 }
                 return cleanupItem(entities.tenantLinks, result.Items[0]);
-            } catch (ex) {
-                throw new Error(
-                    ex.message || "Could not get tenant link for identity.",
-                    ex.code || "GET_TENANT_LINK_BY_IDENTITY",
-                    { tenant, identity }
-                );
+            } catch (err) {
+                throw Error.from(err, {
+                    message: "Could not get tenant link for identity.",
+                    code: "GET_TENANT_LINK_BY_IDENTITY",
+                    data: { tenant, identity }
+                });
             }
         },
         async listApiKeys({ sort, tenant }): Promise<ApiKey[]> {
@@ -293,11 +287,11 @@ export const createStorageOperations = (
                         beginsWith: "API_KEY#"
                     }
                 });
-            } catch (ex) {
-                throw new Error(
-                    ex.message || "Could not list api keys.",
-                    ex.code || "LIST_API_KEY_ERROR"
-                );
+            } catch (err) {
+                throw Error.from(err, {
+                    message: "Could not list api keys.",
+                    code: "LIST_API_KEY_ERROR"
+                });
             }
 
             const sortedItems = sortItems({
@@ -318,11 +312,11 @@ export const createStorageOperations = (
                         beginsWith: ""
                     }
                 });
-            } catch (ex) {
-                throw new Error(
-                    ex.message || "Could not list groups.",
-                    ex.code || "LIST_GROUP_ERROR"
-                );
+            } catch (err) {
+                throw Error.from(err, {
+                    message: "Could not list groups.",
+                    code: "LIST_GROUP_ERROR"
+                });
             }
 
             return cleanupItems(
@@ -371,12 +365,12 @@ export const createStorageOperations = (
                     ...keys
                 });
                 return apiKey;
-            } catch (ex) {
-                throw new Error(
-                    ex.message || "Could not update api key.",
-                    ex.code || "UPDATE_API_KEY_ERROR",
-                    { keys }
-                );
+            } catch (err) {
+                throw Error.from(err, {
+                    message: "Could not update api key.",
+                    code: "UPDATE_API_KEY_ERROR",
+                    data: { keys }
+                });
             }
         },
         async updateGroup({ group }): Promise<Group> {
@@ -388,12 +382,12 @@ export const createStorageOperations = (
                     ...keys
                 });
                 return group;
-            } catch (ex) {
-                throw new Error(
-                    ex.message || "Could not update group.",
-                    ex.code || "UPDATE_GROUP_ERROR",
-                    { keys, group }
-                );
+            } catch (err) {
+                throw Error.from(err, {
+                    message: "Could not update group.",
+                    code: "UPDATE_GROUP_ERROR",
+                    data: { keys, group }
+                });
             }
         },
         async updateSystemData({ system, original }): Promise<System> {
@@ -404,16 +398,12 @@ export const createStorageOperations = (
                     ...cleanupItem(entities.system, system)
                 });
                 return system;
-            } catch (ex) {
-                throw new Error(
-                    ex.message || "Could not update system.",
-                    ex.code || "UPDATE_SYSTEM_ERROR",
-                    {
-                        keys,
-                        system,
-                        original
-                    }
-                );
+            } catch (err) {
+                throw Error.from(err, {
+                    message: "Could not update system.",
+                    code: "UPDATE_SYSTEM_ERROR",
+                    data: { keys, system, original }
+                });
             }
         },
         async updateTenantLinks(links): Promise<void> {

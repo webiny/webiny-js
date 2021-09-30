@@ -1,10 +1,10 @@
-export interface CmsDatabaseConfig {
+export interface DatabaseConfig {
     table: string;
     keys: any[];
 }
 
-export const db: CmsDatabaseConfig = {
-    table: process.env.DB_TABLE_SECURITY,
+export const db: DatabaseConfig = {
+    table: process.env.DB_TABLE_ADMIN_USERS,
     keys: [
         {
             primary: true,

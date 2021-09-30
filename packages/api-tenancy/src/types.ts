@@ -22,7 +22,6 @@ export interface Tenancy {
     setCurrentTenant(tenant: Tenant): void;
     getVersion(): Promise<string>;
     setVersion(version: string): Promise<void>;
-    isInstalled(): Promise<boolean>;
     install(): Promise<void>;
     getRootTenant(): Promise<Tenant>;
     getTenantById<TTenant extends Tenant = Tenant>(id: string): Promise<TTenant>;
@@ -56,7 +55,7 @@ export interface TenancyStorageOperations {
     createTenant<TTenant extends Tenant = Tenant>(data: TTenant): Promise<TTenant>;
     updateTenant<TTenant extends Tenant = Tenant>(data: TTenant): Promise<TTenant>;
     deleteTenant(id: string): Promise<void>;
-    getSystemData(): Promise<System>;
+    getSystemData(): Promise<System | null>;
     createSystemData(data: System): Promise<System>;
     updateSystemData(data: System): Promise<System>;
 }

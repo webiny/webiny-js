@@ -4,7 +4,8 @@ import { Authorizer, Security, SecurityPermission, SecurityConfig } from "./type
 import { createApiKeysMethods } from "~/createSecurity/createApiKeysMethods";
 import { createGroupsMethods } from "~/createSecurity/createGroupsMethods";
 import { createSystemMethods } from "~/createSecurity/createSystemMethods";
-import { createIdentityMethods } from "~/createSecurity/createIdentityMethods";
+import { createTenantLinksMethods } from "~/createSecurity/createTenantLinksMethods";
+import { createTopic } from "@webiny/pubsub";
 
 export interface GetTenant {
     (): string;
@@ -14,9 +15,17 @@ export const createSecurity = async (config: SecurityConfig): Promise<Security> 
     const authentication = createAuthentication();
     const authorizers: Authorizer[] = [];
     let permissions: SecurityPermission[] = null;
+    let performAuthorization = true;
 
     const security: Security = {
         ...authentication,
+        onLogin: createTopic("security.onLogin"),
+        enableAuthorization() {
+            performAuthorization = true;
+        },
+        disableAuthorization() {
+            performAuthorization = false;
+        },
         addAuthorizer(authorizer: Authorizer) {
             authorizers.push(authorizer);
         },
@@ -26,6 +35,9 @@ export const createSecurity = async (config: SecurityConfig): Promise<Security> 
         async getPermission<TPermission extends SecurityPermission = SecurityPermission>(
             permission: string
         ): Promise<TPermission | null> {
+            if (!performAuthorization) {
+                return { name: "*" } as TPermission;
+            }
             const perms = await this.getPermissions();
             const exactMatch = perms.find(p => p.name === permission);
             if (exactMatch) {
@@ -64,11 +76,11 @@ export const createSecurity = async (config: SecurityConfig): Promise<Security> 
 
             return permissions.some(p => p.name === "*");
         },
-        ...createIdentityMethods(config),
+        ...createTenantLinksMethods(config),
         ...createGroupsMethods(config),
         ...createApiKeysMethods(config),
         ...createSystemMethods(config)
     };
-    
+
     return security;
 };

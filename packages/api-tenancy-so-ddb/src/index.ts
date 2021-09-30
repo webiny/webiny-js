@@ -61,12 +61,12 @@ export const createStorageOperations: CreateTenancyStorageOperations = params =>
                     ...data
                 });
                 return data;
-            } catch (ex) {
-                throw new Error(
-                    ex.message || "Could not create system record.",
-                    ex.code || "CREATE_SYSTEM_ERROR",
-                    { keys: systemKeys, data }
-                );
+            } catch (err) {
+                throw Error.from(err, {
+                    message: "Could not create system record.",
+                    code: "CREATE_SYSTEM_ERROR",
+                    data: { keys: systemKeys, data }
+                });
             }
         },
         async getSystemData(): Promise<System> {
@@ -76,12 +76,12 @@ export const createStorageOperations: CreateTenancyStorageOperations = params =>
                     return null;
                 }
                 return cleanupItem(entities.system, result.Item);
-            } catch (ex) {
-                throw new Error(
-                    ex.message || "Could not load system record.",
-                    ex.code || "GET_SYSTEM_ERROR",
-                    { keys: systemKeys }
-                );
+            } catch (err) {
+                throw Error.from(err, {
+                    message: "Could not load system record.",
+                    code: "GET_SYSTEM_ERROR",
+                    data: { keys: systemKeys }
+                });
             }
         },
         async updateSystemData(data: System): Promise<System> {
@@ -91,12 +91,12 @@ export const createStorageOperations: CreateTenancyStorageOperations = params =>
                     ...data
                 });
                 return data;
-            } catch (ex) {
-                throw new Error(
-                    ex.message || "Could not update system record.",
-                    ex.code || "UPDATE_SYSTEM_ERROR",
-                    { keys: systemKeys, data }
-                );
+            } catch (err) {
+                throw Error.from(err, {
+                    message: "Could not update system record.",
+                    code: "UPDATE_SYSTEM_ERROR",
+                    data: { keys: systemKeys, data }
+                });
             }
         },
 
@@ -134,12 +134,12 @@ export const createStorageOperations: CreateTenancyStorageOperations = params =>
                     ...data
                 });
                 return data as TTenant;
-            } catch (ex) {
-                throw new Error(
-                    ex.message || "Could not create tenant record.",
-                    ex.code || "CREATE_TENANT_ERROR",
-                    { keys, data }
-                );
+            } catch (err) {
+                throw Error.from(err, {
+                    message: "Could not create tenant record.",
+                    code: "CREATE_TENANT_ERROR",
+                    data: { keys, data }
+                });
             }
         },
 
@@ -156,12 +156,12 @@ export const createStorageOperations: CreateTenancyStorageOperations = params =>
                     ...data
                 });
                 return data as TTenant;
-            } catch (ex) {
-                throw new Error(
-                    ex.message || "Could not update tenant record.",
-                    ex.code || "CREATE_TENANT_ERROR",
-                    { keys, data }
-                );
+            } catch (err) {
+                throw Error.from(err, {
+                    message: "Could not update tenant record.",
+                    code: "CREATE_TENANT_ERROR",
+                    data: { keys, data }
+                });
             }
         },
 

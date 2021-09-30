@@ -10,7 +10,7 @@ import {
     UpdateTenantLinkParams
 } from "~/types";
 
-export const createIdentityMethods = ({ storageOperations }: SecurityConfig) => {
+export const createTenantLinksMethods = ({ storageOperations }: SecurityConfig) => {
     return {
         async createTenantLinks(params: CreateTenantLinkParams[]) {
             await storageOperations.createTenantLinks(params);

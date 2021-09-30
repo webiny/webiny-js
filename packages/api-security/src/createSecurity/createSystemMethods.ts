@@ -8,16 +8,12 @@ import {
 } from "../types";
 import { createTopic } from "@webiny/pubsub";
 
-export const createSystemMethods = ({
-    getTenant,
-    storageOperations
-}: SecurityConfig) => {
+export const createSystemMethods = ({ getTenant, storageOperations }: SecurityConfig) => {
     return {
-        onBeforeInstall: createTopic<InstallEvent>("security.beforeInstall"),
-        onInstall: createTopic<InstallEvent>("security.install"),
-        onAfterInstall: createTopic<InstallEvent>("security.afterInstall"),
-        onCleanup: createTopic<ErrorEvent>("security.cleanup"),
-
+        onBeforeInstall: createTopic<InstallEvent>("security.onBeforeInstall"),
+        onInstall: createTopic<InstallEvent>("security.onInstall"),
+        onAfterInstall: createTopic<InstallEvent>("security.onAfterInstall"),
+        onCleanup: createTopic<ErrorEvent>("security.onCleanup"),
         async getVersion() {
             const system = await storageOperations.getSystemData({ tenant: getTenant() });
 
@@ -51,16 +47,8 @@ export const createSystemMethods = ({
             }
         },
 
-        async isInstalled() {
-            try {
-                return !!(await storageOperations.getSystemData({ tenant: getTenant() }));
-            } catch (ex) {
-                return false;
-            }
-        },
-
         async install(this: Security) {
-            if (await this.isInstalled()) {
+            if (await this.getVersion()) {
                 throw new Error("Security is already installed.", "SECURITY_INSTALL_ABORTED");
             }
 

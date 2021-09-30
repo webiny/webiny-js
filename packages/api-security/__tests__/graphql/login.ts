@@ -16,7 +16,6 @@ export const LOGIN = /* GraphQL */ `
                         displayName
                         access {
                             id
-                            name
                             permissions
                         }
                     }

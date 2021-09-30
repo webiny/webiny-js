@@ -7,7 +7,7 @@ export const createTopic = <TEvent = any>(topicName = undefined): Topic<TEvent> 
         getTopicName() {
             return topicName || "unknown";
         },
-        subscribe(cb: Subscriber<TEvent>) {
+        subscribe<TEvent>(cb: Subscriber<TEvent>) {
             subscribers.push(cb);
         },
         getSubscribers() {

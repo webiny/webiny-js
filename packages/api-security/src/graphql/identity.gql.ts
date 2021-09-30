@@ -8,9 +8,6 @@ export default new GraphQLSchemaPlugin<SecurityContext>({
             "Tenant ID"
             id: ID!
 
-            "Tenant name"
-            name: String!
-
             "Tenant permissions"
             permissions: [JSON!]!
         }
@@ -35,7 +32,11 @@ export default new GraphQLSchemaPlugin<SecurityContext>({
     resolvers: {
         SecurityMutation: {
             login: async (root, args, context) => {
-                return new Response(context.security.getIdentity());
+                const identity = context.security.getIdentity();
+                if (identity) {
+                    await context.security.onLogin.publish({ identity });
+                }
+                return new Response(identity);
             }
         }
     }

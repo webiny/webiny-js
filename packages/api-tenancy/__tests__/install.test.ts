@@ -1,12 +1,12 @@
 import { Tenancy } from "~/types";
-import { createTenancy } from "~/Tenancy";
+import { createTenancy } from "~/createTenancy";
 
 describe(`Test "Tenancy" install`, () => {
     // @ts-ignore
     const { storageOperations } = __getStorageOperations();
     let tenancy: Tenancy = null;
 
-    beforeAll(async () => {
+    beforeEach(async () => {
         tenancy = await createTenancy({
             tenant: null,
             storageOperations
@@ -15,20 +15,18 @@ describe(`Test "Tenancy" install`, () => {
 
     test(`should return null for "version"`, async () => {
         const version = await tenancy.getVersion();
-        const isInstalled = await tenancy.isInstalled();
         expect(version).toBe(null);
-        expect(isInstalled).toEqual(false);
     });
 
     test(`should run "install" successfully`, async () => {
-        let isInstalled = await tenancy.isInstalled();
-        expect(isInstalled).toEqual(false);
+        let version = await tenancy.getVersion();
+        expect(version).toEqual(null);
 
         await tenancy.install();
 
-        // Let's see whether "isInstalled" return true now?
-        isInstalled = await tenancy.isInstalled();
-        expect(isInstalled).toEqual(true);
+        // Let's see if "getVersion" can return a version now
+        version = await tenancy.getVersion();
+        expect(version).toEqual(process.env.WEBINY_VERSION);
 
         // There has to be a "root" tenant
         const rootTenant = await tenancy.getRootTenant();
@@ -40,7 +38,6 @@ describe(`Test "Tenancy" install`, () => {
 
     test(`should prevent "install" from being executed twice`, async () => {
         await tenancy.install();
-
         expect.assertions(2);
 
         return tenancy.install().catch(err => {

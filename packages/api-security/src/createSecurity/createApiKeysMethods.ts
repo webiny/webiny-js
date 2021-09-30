@@ -132,7 +132,7 @@ export const createApiKeysMethods = ({ getTenant, storageOperations }: SecurityC
                 throw new NotAuthorizedError();
             }
 
-            const model = new APIKeyModel().populate(data);
+            const model = await new APIKeyModel().populate(data);
             await model.validate();
             const changedData = await model.toJSON({ onlyDirty: true });
 
