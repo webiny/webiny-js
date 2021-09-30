@@ -8,6 +8,12 @@ import { BindComponent } from "@webiny/form/Bind";
 import { IconPrefix, IconName } from "@fortawesome/fontawesome-svg-core";
 import { Form, FormSetValue } from "@webiny/form/Form";
 
+export enum PageImportExportTaskStatus {
+    PENDING = "pending",
+    PROCESSING = "processing",
+    COMPLETED = "completed",
+    FAILED = "failed"
+}
 export type PbElementDataSettingsSpacingValueType = {
     all?: string;
     top?: string;

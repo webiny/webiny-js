@@ -8,18 +8,27 @@ import { i18n } from "@webiny/app/i18n";
 import { LoadingDialog } from "../ImportPageButton/styledComponents";
 import ProgressBar from "../ImportPageButton/ProgressBar";
 import useExportPageDialog from "./useExportPageDialog";
+import { PageImportExportTaskStatus } from "~/types";
 
 const t = i18n.ns("app-page-builder/editor/plugins/defaultBar/importPage");
 
 const completionMessage = t`All pages have been exported`;
-const progressMessage = t`Waiting for operation status`;
+const errorMessage = t`Failed to import pages`;
+const pendingMessage = t`Waiting for operation status`;
+const processingMessage = t`Exporting pages`;
 
 const INTERVAL = 0.5 * 1000;
 
-const ExportPageLoadingDialogContent: FunctionComponent<{ taskId: string }> = ({ taskId }) => {
-    const { showSnackbar } = useSnackbar();
-    const [completed, setCompleted] = useState<boolean>(false);
+const MESSAGES = {
+    [PageImportExportTaskStatus.COMPLETED]: completionMessage,
+    [PageImportExportTaskStatus.PROCESSING]: processingMessage,
+    [PageImportExportTaskStatus.PENDING]: pendingMessage
+};
 
+const ExportPageLoadingDialogContent: FunctionComponent<{ taskId: string }> = ({ taskId }) => {
+    const [completed, setCompleted] = useState<boolean>(false);
+    const [error, setError] = useState(null);
+    const { showSnackbar } = useSnackbar();
     const { showExportPageContentDialog } = useExportPageDialog();
 
     const { data } = useQuery(GET_PAGE_IMPORT_EXPORT_TASK, {
@@ -43,6 +52,7 @@ const ExportPageLoadingDialogContent: FunctionComponent<{ taskId: string }> = ({
             setCompleted(true);
             showSnackbar("Error: Failed to export pages!");
             // TODO: @ashutosh show an informative dialog about error.
+            setError(data.error);
         }
 
         if (data && data.status === "completed") {
@@ -61,7 +71,7 @@ const ExportPageLoadingDialogContent: FunctionComponent<{ taskId: string }> = ({
     }, [data]);
 
     const { status, stats } = get(data, "pageBuilder.getPageImportExportTask.data", {
-        status: "pending",
+        status: PageImportExportTaskStatus.PENDING,
         stats: null
     });
 
@@ -71,27 +81,36 @@ const ExportPageLoadingDialogContent: FunctionComponent<{ taskId: string }> = ({
                 <LoadingDialog.ExportIllustration />
             </LoadingDialog.WrapperLeft>
             <LoadingDialog.WrapperRight>
-                {status === "completed" ? (
+                {error ? (
+                    <LoadingDialog.TitleContainer>
+                        <LoadingDialog.CancelIcon />
+                        <Typography use={"subtitle1"}>{errorMessage}</Typography>
+                    </LoadingDialog.TitleContainer>
+                ) : status === PageImportExportTaskStatus.COMPLETED ? (
                     <LoadingDialog.TitleContainer>
                         <LoadingDialog.CheckMarkIcon />
-                        <Typography use={"subtitle1"}>{completionMessage}</Typography>
+                        <Typography use={"subtitle1"}>{MESSAGES[status]}</Typography>
                     </LoadingDialog.TitleContainer>
                 ) : (
                     <LoadingDialog.TitleContainer>
                         <LoadingDialog.Pulse>
                             <div className="inner" />
                         </LoadingDialog.Pulse>
-                        <Typography use={"subtitle1"}>{progressMessage}</Typography>
+                        <Typography use={"subtitle1"}>{MESSAGES[status]}</Typography>
                     </LoadingDialog.TitleContainer>
                 )}
 
                 <LoadingDialog.StatsContainer>
-                    <LoadingDialog.StatusContainer>
-                        <LoadingDialog.StatusTitle use={"subtitle2"}>
-                            {t`Status`}
-                        </LoadingDialog.StatusTitle>
-                        <LoadingDialog.StatusBody use={"body2"}>{status}</LoadingDialog.StatusBody>
-                    </LoadingDialog.StatusContainer>
+                    {error && (
+                        <LoadingDialog.StatusContainer>
+                            <LoadingDialog.StatusTitle use={"subtitle2"}>
+                                {t`Error`}
+                            </LoadingDialog.StatusTitle>
+                            <LoadingDialog.StatusBody use={"body2"}>
+                                {error.message}
+                            </LoadingDialog.StatusBody>
+                        </LoadingDialog.StatusContainer>
+                    )}
                     {stats && (
                         <LoadingDialog.ProgressContainer>
                             <LoadingDialog.StatusTitle use={"subtitle2"}>

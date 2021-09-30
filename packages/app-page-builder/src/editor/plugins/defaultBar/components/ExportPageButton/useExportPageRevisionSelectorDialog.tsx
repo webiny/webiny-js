@@ -11,7 +11,7 @@ import { usePageBuilder } from "~/hooks/usePageBuilder";
 const t = i18n.ns("app-page-builder/editor/plugins/defaultBar/exportPageButton");
 
 const confirmationMessageStyles = css`
-    max-width: 600px;
+    width: 600px;
 `;
 
 const ExportPageDialogMessage: React.FunctionComponent = () => {

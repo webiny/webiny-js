@@ -16,7 +16,7 @@ import useExportPage from "./useExportPage";
 const t = i18n.ns("app-page-builder/editor/plugins/defaultBar/exportPageButton");
 
 const confirmationMessageStyles = css`
-    max-width: 600px;
+    width: 600px;
 `;
 
 const linkWrapper = css`
@@ -40,7 +40,7 @@ const gridClass = css`
 
 const spinnerWrapper = css`
     position: relative;
-    width: 400px;
+    width: 100%;
     height: 180px;
 `;
 

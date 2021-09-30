@@ -34,6 +34,7 @@ export const ShowDetails = {
 export const LoadingDialog = {
     Wrapper: styled.div`
         display: flex;
+        width: 600px;
     `,
 
     WrapperLeft: styled.div`
@@ -55,9 +56,9 @@ export const LoadingDialog = {
         display: flex;
         margin-right: 16px;
         --blob-size: 20px;
-        --pulse-color-alpha10: hsla(15deg, 96%, 56%, 1);
-        --pulse-color-alpha7: hsla(15deg, 96%, 56%, 0.7);
-        --pulse-color-alpha0: hsla(15deg, 96%, 56%, 0);
+        --pulse-color-alpha10: rgba(52, 172, 224, 1);
+        --pulse-color-alpha7: rgba(52, 172, 224, 0.7);
+        --pulse-color-alpha0: rgba(52, 172, 224, 0);
 
         & .inner {
             border-radius: 50%;
