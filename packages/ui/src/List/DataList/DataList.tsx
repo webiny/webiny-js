@@ -172,13 +172,13 @@ type Props = {
     multiSelectActions?: React.ReactNode;
 
     // Provide callback that will be executed once user selects all list items.
-    multiSelectAll?: (value: boolean) => void;
+    multiSelectAll?: (value: boolean, data: Object[]) => void;
 
     // Callback which returns true if all items were selected, otherwise returns false.
-    isAllMultiSelected?: () => boolean;
+    isAllMultiSelected?: (data: Object[]) => boolean;
 
     // Callback which returns true if none of the items were selected, otherwise returns false.
-    isNoneMultiSelected?: () => boolean;
+    isNoneMultiSelected?: (data: Object[]) => boolean;
 
     showOptions?: { [key: string]: any };
 
@@ -201,10 +201,13 @@ const MultiSelectAll = (props: Props) => {
             {typeof props.multiSelectAll === "function" && (
                 <ListHeaderItem>
                     <Checkbox
-                        indeterminate={!props.isAllMultiSelected() && !props.isNoneMultiSelected()}
-                        value={props.isAllMultiSelected()}
+                        indeterminate={
+                            !props.isAllMultiSelected(props.data) &&
+                            !props.isNoneMultiSelected(props.data)
+                        }
+                        value={props.isAllMultiSelected(props.data)}
                         onClick={() => {
-                            props.multiSelectAll(!props.isAllMultiSelected());
+                            props.multiSelectAll(!props.isAllMultiSelected(props.data), props.data);
                         }}
                     />
                 </ListHeaderItem>
