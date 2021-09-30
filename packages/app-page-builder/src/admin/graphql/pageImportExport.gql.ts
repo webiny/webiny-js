@@ -60,6 +60,7 @@ export const GET_PAGE_IMPORT_EXPORT_TASK = gql`
                 data {
                     status
                     data
+                    error
                     ${STATS}
                 }
                 ${ERROR}

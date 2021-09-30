@@ -5,6 +5,7 @@ import Accordion from "~/editor/plugins/elementSettings/components/Accordion";
 import { ReactComponent as UploadInProgressIcon } from "./assets/undraw-uploading.svg";
 import { ReactComponent as ExportInProgressIcon } from "./assets/undraw_export_files.svg";
 import { ReactComponent as CircleIcon } from "./assets/check-circle-24dp.svg";
+import { ReactComponent as CancelIcon } from "./assets/cancel-24dp.svg";
 
 export const ShowDetails = {
     Container: styled.div`
@@ -117,5 +118,9 @@ export const LoadingDialog = {
     CheckMarkIcon: styled(CircleIcon)`
         margin-right: 16px;
         fill: var(--mdc-theme-secondary);
+    `,
+    CancelIcon: styled(CancelIcon)`
+        margin-right: 16px;
+        fill: var(--mdc-theme-error);
     `
 };

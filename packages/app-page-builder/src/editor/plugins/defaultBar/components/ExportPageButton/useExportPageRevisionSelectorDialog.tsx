@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { css } from "emotion";
 import { i18n } from "@webiny/app/i18n";
 import { useDialog } from "@webiny/app-admin/hooks/useDialog";
@@ -6,6 +6,7 @@ import { Typography } from "@webiny/ui/Typography";
 import { Cell, Grid } from "@webiny/ui/Grid";
 import { Radio, RadioGroup } from "@webiny/ui/Radio";
 import { Form } from "@webiny/form";
+import { usePageBuilder } from "~/hooks/usePageBuilder";
 
 const t = i18n.ns("app-page-builder/editor/plugins/defaultBar/exportPageButton");
 
@@ -13,15 +14,10 @@ const confirmationMessageStyles = css`
     max-width: 600px;
 `;
 
-interface ExportPageDialogProps {
-    value: string;
-    setValue: Function;
-}
+const ExportPageDialogMessage: React.FunctionComponent = () => {
+    const { exportPageData } = usePageBuilder();
+    const { revisionType: value, setRevisionType: setValue } = exportPageData;
 
-const ExportPageDialogMessage: React.FunctionComponent<ExportPageDialogProps> = ({
-    value,
-    setValue
-}) => {
     return (
         <div className={confirmationMessageStyles}>
             <Grid style={{ paddingTop: 0 }}>
@@ -70,25 +66,22 @@ const ExportPageDialogMessage: React.FunctionComponent<ExportPageDialogProps> = 
 
 const useExportPageRevisionSelectorDialog = () => {
     const { showDialog, hideDialog } = useDialog();
-    const [revisionType, setRevisionType] = useState<"published" | "latest">("published");
 
     return {
         showExportPageRevisionSelectorDialog: ({ onAccept }) => {
-            showDialog(
-                <ExportPageDialogMessage value={revisionType} setValue={setRevisionType} />,
-                {
-                    title: t`Select Page Revision`,
-                    actions: {
-                        cancel: { label: t`Cancel` },
-                        accept: {
-                            label: t`Continue`,
-                            onClick: () => {
-                                onAccept(revisionType);
-                            }
+            showDialog(<ExportPageDialogMessage />, {
+                title: t`Select Page Revision`,
+                actions: {
+                    cancel: { label: t`Cancel` },
+                    accept: {
+                        label: t`Continue`,
+                        onClick: () => {
+                            // Give it sometime
+                            setTimeout(onAccept, 500);
                         }
                     }
                 }
-            );
+            });
         },
         hideDialog
     };

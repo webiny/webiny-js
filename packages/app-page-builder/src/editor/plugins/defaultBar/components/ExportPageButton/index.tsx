@@ -105,37 +105,10 @@ const ExportPageButton: React.FunctionComponent<{ page: any }> = ({ page }) => {
 
 export default ExportPageButton;
 
-const useExportPage = () => {
-    const [taskId, setTaskId] = useState<string>(null);
-    const { showSnackbar } = useSnackbar();
-    const { showExportPageLoadingDialog } = useExportPageDialog();
-
-    const [exportPage] = useMutation(EXPORT_PAGES, {
-        onCompleted: response => {
-            const { error, data } = get(response, "pageBuilder.exportPages", {});
-            if (error) {
-                return showSnackbar(error.message);
-            }
-            setTaskId(data.task.id);
-        }
-    });
-
-    useEffect(() => {
-        if (taskId) {
-            showExportPageLoadingDialog(taskId);
-        }
-    }, [taskId]);
-
-    return {
-        exportPage
-    };
-};
-
 export const ExportPagesButton = ({ getMultiSelected }) => {
-    const { exportPage } = useExportPage();
-    const { showExportPageRevisionSelectorDialog } = useExportPageRevisionSelectorDialog();
-
     const selected = getMultiSelected();
+    const { showExportPageRevisionSelectorDialog } = useExportPageRevisionSelectorDialog();
+    const { showExportPageInitializeDialog } = useExportPageDialog();
 
     const renderExportPagesTooltip = selected => {
         const count = selected.length;
@@ -153,17 +126,9 @@ export const ExportPagesButton = ({ getMultiSelected }) => {
             <IconButton
                 icon={<DownloadIcon />}
                 disabled={selected.length === 0}
-                onClick={async () => {
+                onClick={() => {
                     showExportPageRevisionSelectorDialog({
-                        onAccept: revisionType => {
-                            // Open Export Pages Dialog
-                            exportPage({
-                                variables: {
-                                    ids: selected.map(i => i.pid),
-                                    revisionType
-                                }
-                            });
-                        }
+                        onAccept: () => showExportPageInitializeDialog({ ids: selected })
                     });
                 }}
             />

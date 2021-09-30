@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { css } from "emotion";
 import { i18n } from "@webiny/app/i18n";
 import { useDialog } from "@webiny/app-admin/hooks/useDialog";
@@ -6,9 +6,12 @@ import { ButtonIcon, ButtonSecondary, CopyButton } from "@webiny/ui/Button";
 import { Typography } from "@webiny/ui/Typography";
 import { Cell, Grid } from "@webiny/ui/Grid";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
+import { CircularProgress } from "@webiny/ui/Progress";
 
+import { usePageBuilder } from "~/hooks/usePageBuilder";
 import { ReactComponent as FileDownloadIcon } from "~/editor/assets/icons/file_download_black_24dp.svg";
 import ExportPageLoadingDialogContent from "./ExportPageLoadingDialogContent";
+import useExportPage from "./useExportPage";
 
 const t = i18n.ns("app-page-builder/editor/plugins/defaultBar/exportPageButton");
 
@@ -34,6 +37,39 @@ const gridClass = css`
         padding-bottom: 0;
     }
 `;
+
+const spinnerWrapper = css`
+    position: relative;
+    width: 400px;
+    height: 180px;
+`;
+
+const ExportPageLoadingDialogMessage: React.FunctionComponent<{
+    ids: string[];
+}> = ({ ids }) => {
+    const { exportPage } = useExportPage();
+    const {
+        exportPageData: { revisionType }
+    } = usePageBuilder();
+
+    useEffect(() => {
+        console.log({ revisionType, ids });
+        exportPage({
+            variables: {
+                ids,
+                revisionType
+            }
+        });
+    }, []);
+
+    return (
+        <div className={confirmationMessageStyles}>
+            <div className={spinnerWrapper}>
+                <CircularProgress label={t`Preparing your export...`} />
+            </div>
+        </div>
+    );
+};
 
 interface ExportPageDialogProps {
     exportUrl: string;
@@ -96,6 +132,14 @@ const useExportPageDialog = () => {
         },
         showExportPageLoadingDialog: taskId => {
             showDialog(<ExportPageLoadingDialogContent taskId={taskId} />, {
+                title: t`Preparing your export...`,
+                actions: {
+                    cancel: { label: t`Cancel` }
+                }
+            });
+        },
+        showExportPageInitializeDialog: props => {
+            showDialog(<ExportPageLoadingDialogMessage {...props} />, {
                 title: t`Preparing your export...`,
                 actions: {
                     cancel: { label: t`Cancel` }

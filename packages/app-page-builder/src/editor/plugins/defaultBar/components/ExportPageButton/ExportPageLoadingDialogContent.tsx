@@ -41,7 +41,7 @@ const ExportPageLoadingDialogContent: FunctionComponent<{ taskId: string }> = ({
         // Handler failed task
         if (data && data.status === "failed") {
             setCompleted(true);
-            showSnackbar("Error: Failed to export the page!");
+            showSnackbar("Error: Failed to export pages!");
             // TODO: @ashutosh show an informative dialog about error.
         }
 
