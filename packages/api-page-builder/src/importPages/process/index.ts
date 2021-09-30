@@ -138,13 +138,11 @@ export default (
 
                 subTask = await pageBuilder.pageImportExportTask.updateSubTask(taskId, subTask.id, {
                     status: PageImportExportTaskStatus.FAILED,
-                    data: {
-                        error: {
-                            name: e.name,
-                            message: e.message,
-                            stack: e.stack,
-                            code: "IMPORT_FAILED"
-                        }
+                    error: {
+                        name: e.name,
+                        message: e.message,
+                        stack: e.stack,
+                        code: "IMPORT_FAILED"
                     }
                 });
 

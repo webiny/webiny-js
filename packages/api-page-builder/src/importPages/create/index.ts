@@ -98,12 +98,10 @@ export default (
 
             await pageBuilder.pageImportExportTask.update(task.id, {
                 status: PageImportExportTaskStatus.FAILED,
-                data: {
-                    error: {
-                        name: e.name,
-                        message: e.message,
-                        code: e.code || "EXPORT_FAILED"
-                    }
+                error: {
+                    name: e.name,
+                    message: e.message,
+                    code: e.code || "EXPORT_FAILED"
                 }
             });
 
