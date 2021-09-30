@@ -260,7 +260,7 @@ const PagesDataList = ({ onCreatePage, canCreate, onImportPage }: PagesDataListP
         );
     }, [canCreate, showImportPageDialog]);
 
-    const multiSelectProps = useMultiSelect({ useRouter: true });
+    const multiSelectProps = useMultiSelect({ useRouter: false, getValue: item => item.pid });
 
     return (
         <DataList

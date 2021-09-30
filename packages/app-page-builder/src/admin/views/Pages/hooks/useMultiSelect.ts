@@ -3,6 +3,7 @@ import { useRouter } from "@webiny/react-router";
 
 export type UseMultiSelectParams = {
     useRouter?: boolean;
+    getValue?: (item: Record<string, any>) => string;
 };
 
 export type MultiListProps = {
@@ -13,7 +14,7 @@ export type MultiListProps = {
     isAllMultiSelected: (data: any[]) => boolean;
     multiSelectAll: (value: boolean, data: any[]) => void;
     getMultiSelected: () => any[];
-    multiSelect: (items: string | string[], value?: boolean) => void;
+    multiSelect: (items: Record<string, any> | Record<string, any>[], value?: boolean) => void;
 };
 
 const useMultiSelect = (params: UseMultiSelectParams) => {
@@ -21,6 +22,7 @@ const useMultiSelect = (params: UseMultiSelectParams) => {
     let history = null;
     let location = null;
     const routerHook = useRouter();
+    const { getValue } = params;
 
     if (params.useRouter !== false) {
         history = routerHook.history;
@@ -36,16 +38,17 @@ const useMultiSelect = (params: UseMultiSelectParams) => {
             const returnItems = [...multiSelectedItems];
 
             items.forEach(item => {
+                const id = getValue(item);
                 if (value === undefined) {
-                    returnItems.includes(item)
-                        ? returnItems.splice(returnItems.indexOf(item), 1)
-                        : returnItems.push(item);
+                    returnItems.includes(id)
+                        ? returnItems.splice(returnItems.indexOf(id), 1)
+                        : returnItems.push(id);
                 } else {
                     if (value === true) {
-                        !returnItems.includes(item) && returnItems.push(item);
+                        !returnItems.includes(id) && returnItems.push(id);
                     } else {
-                        returnItems.includes(item) &&
-                            returnItems.splice(returnItems.indexOf(item), 1);
+                        returnItems.includes(id) &&
+                            returnItems.splice(returnItems.indexOf(getValue(item)), 1);
                     }
                 }
             });
@@ -66,7 +69,7 @@ const useMultiSelect = (params: UseMultiSelectParams) => {
                 return false;
             }
 
-            return multiSelectedItems.includes(item);
+            return multiSelectedItems.includes(getValue(item));
         },
         isNoneMultiSelected() {
             return multiSelectedItems.length === 0;
