@@ -8636,6 +8636,8 @@ __metadata:
     "@webiny/handler-graphql": ^5.14.0
     "@webiny/plugins": ^5.14.0
     "@webiny/project-utils": ^5.14.0
+    "@webiny/pubsub": ^5.14.0
+    "@webiny/utils": ^5.15.0
     "@webiny/validation": ^5.14.0
     commodo-fields-object: ^1.0.6
     csvtojson: ^2.0.10
@@ -8684,6 +8686,8 @@ __metadata:
     "@webiny/handler-graphql": ^5.14.0
     "@webiny/plugins": ^5.14.0
     "@webiny/project-utils": ^5.14.0
+    "@webiny/pubsub": ^5.14.0
+    "@webiny/utils": ^5.15.0
     "@webiny/validation": ^5.14.0
     commodo-fields-object: ^1.0.6
     csvtojson: ^2.0.10
@@ -10726,7 +10730,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/pubsub@workspace:packages/pubsub":
+"@webiny/pubsub@^5.14.0, @webiny/pubsub@workspace:packages/pubsub":
   version: 0.0.0-use.local
   resolution: "@webiny/pubsub@workspace:packages/pubsub"
   dependencies:
@@ -10962,6 +10966,20 @@ __metadata:
   peerDependencies:
     react: 16.14.0
     react-dom: 16.14.0
+  languageName: unknown
+  linkType: soft
+
+"@webiny/utils@^5.15.0, @webiny/utils@workspace:packages/utils":
+  version: 0.0.0-use.local
+  resolution: "@webiny/utils@workspace:packages/utils"
+  dependencies:
+    "@babel/cli": ^7.12.10
+    "@babel/core": ^7.5.5
+    "@webiny/cli": ^5.13.0
+    "@webiny/project-utils": ^5.13.0
+    rimraf: ^3.0.2
+    ttypescript: ^1.5.12
+    typescript: ^4.1.3
   languageName: unknown
   linkType: soft
 
