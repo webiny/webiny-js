@@ -19,18 +19,18 @@ export const createSystemStorageOperations = (
 ): FormBuilderSystemStorageOperations => {
     const { entity } = params;
 
-    const createPartitionKey = ({ tenant }: FormBuilderSystemCreateKeysParams): string => {
+    const createSystemPartitionKey = ({ tenant }: FormBuilderSystemCreateKeysParams): string => {
         return `T#${tenant}#SYSTEM`;
     };
 
-    const createSortKey = (): string => {
+    const createSystemSortKey = (): string => {
         return "FB";
     };
 
     const createKeys = (params: FormBuilderSystemCreateKeysParams) => {
         return {
-            PK: createPartitionKey(params),
-            SK: createSortKey()
+            PK: createSystemPartitionKey(params),
+            SK: createSystemSortKey()
         };
     };
 
@@ -109,7 +109,7 @@ export const createSystemStorageOperations = (
         createSystem,
         getSystem,
         updateSystem,
-        createPartitionKey,
-        createSortKey
+        createSystemPartitionKey,
+        createSystemSortKey
     };
 };

@@ -12,6 +12,7 @@ import {
     EntityCompositeAttributes
 } from "dynamodb-toolbox/dist/classes/Entity";
 import { Client } from "@elastic/elasticsearch";
+import { Plugin } from "@webiny/plugins";
 
 export type AttributeDefinition = DynamoDBTypes | EntityAttributeConfig | EntityCompositeAttributes;
 
@@ -21,6 +22,7 @@ export enum ENTITIES {
     FORM = "FormBuilderForm",
     ES_FORM = "FormBuilderFormEs",
     SUBMISSION = "FormBuilderSubmission",
+    ES_SUBMISSION = "FormBuilderSubmissionEs",
     SYSTEM = "FormBuilderSystem",
     SETTINGS = "FormBuilderSettings"
 }
@@ -29,18 +31,9 @@ export interface CreateStorageOperationsFactoryParams {
     documentClient: DocumentClient;
     elasticsearch: Client;
     table?: string;
+    esTable?: string;
     attributes?: Record<ENTITIES, Attributes>;
-}
-
-export type Entities = "form" | "esForm" | "submission" | "system" | "settings";
-
-export interface FormBuilderStorageOperations extends BaseFormBuilderStorageOperations {
-    getTable(): Table;
-    getEntities(): Record<Entities, Entity<any>>;
-}
-
-export interface CreateStorageOperationsFactory {
-    (params: CreateStorageOperationsFactoryParams): FormBuilderStorageOperations;
+    plugins?: Plugin;
 }
 
 export interface FormBuilderSystemCreateKeysParams {
@@ -48,18 +41,42 @@ export interface FormBuilderSystemCreateKeysParams {
 }
 
 export interface FormBuilderSystemStorageOperations extends BaseFormBuilderSystemStorageOperations {
-    createPartitionKey: (params: FormBuilderSystemCreateKeysParams) => string;
-    createSortKey: () => string;
+    createSystemPartitionKey: (params: FormBuilderSystemCreateKeysParams) => string;
+    createSystemSortKey: () => string;
+}
+
+export interface FormBuilderSubmissionStorageOperationsCreatePartitionKeyParams {
+    tenant: string;
+    locale: string;
+    formId: string;
 }
 
 export interface FormBuilderSubmissionStorageOperations
     extends BaseFormBuilderSubmissionStorageOperations {
-    createPartitionKey: () => string;
-    createSortKey: () => string;
+    createSubmissionPartitionKey: (
+        params: FormBuilderSubmissionStorageOperationsCreatePartitionKeyParams
+    ) => string;
+    createSubmissionSortKey: (id: string) => string;
 }
 
 export interface FormBuilderSettingsStorageOperations
     extends BaseFormBuilderSettingsStorageOperations {
-    createPartitionKey: () => string;
-    createSortKey: () => string;
+    createSettingsPartitionKey: () => string;
+    createSettingsSortKey: () => string;
+}
+
+export type Entities = "form" | "esForm" | "submission" | "esSubmission" | "system" | "settings";
+
+export interface FormBuilderStorageOperations
+    extends BaseFormBuilderStorageOperations,
+        FormBuilderSystemStorageOperations,
+        FormBuilderSubmissionStorageOperations,
+        FormBuilderSettingsStorageOperations {
+    getTable(): Table;
+    getEsTable(): Table;
+    getEntities(): Record<Entities, Entity<any>>;
+}
+
+export interface CreateStorageOperationsFactory {
+    (params: CreateStorageOperationsFactoryParams): FormBuilderStorageOperations;
 }

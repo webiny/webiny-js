@@ -10,7 +10,10 @@ import { createSubmissionStorageOperations } from "~/operations/submission";
 import { createSettingsStorageOperations } from "~/operations/settings";
 import { createFormStorageOperations } from "~/operations/form";
 import { createElasticsearchIndex } from "~/operations/system/createElasticsearchIndex";
-import { createFormElasticsearchEntity } from "~/definitions/formElasticsearch";
+import { createElasticsearchTable } from "~/definitions/tableElasticsearch";
+import { PluginsContainer } from "@webiny/plugins";
+import { createElasticsearchEntity } from "~/definitions/elasticsearch";
+import submissionElasticsearchFields from "./operations/submission/elasticsearchFields";
 
 const reservedFields = ["PK", "SK", "index", "data"];
 
@@ -24,7 +27,20 @@ const isReserved = (name: string): void => {
 };
 
 export const createStorageOperationsFactory: CreateStorageOperationsFactory = params => {
-    const { attributes, table: tableName, documentClient, elasticsearch } = params;
+    const {
+        attributes,
+        table: tableName,
+        esTable: esTableName,
+        documentClient,
+        elasticsearch,
+        plugins: pluginsInput
+    } = params;
+
+    const plugins = new PluginsContainer();
+
+    plugins.register(pluginsInput || []);
+
+    plugins.register(submissionElasticsearchFields());
 
     if (attributes) {
         Object.values(attributes).forEach(attrs => {
@@ -37,13 +53,18 @@ export const createStorageOperationsFactory: CreateStorageOperationsFactory = pa
         documentClient
     });
 
+    const esTable = createElasticsearchTable({
+        tableName: esTableName,
+        documentClient
+    });
+
     const entities = {
         form: createFormEntity({
             entityName: ENTITIES.FORM,
             table,
             attributes: attributes[ENTITIES.FORM]
         }),
-        esForm: createFormElasticsearchEntity({
+        esForm: createElasticsearchEntity({
             entityName: ENTITIES.ES_FORM,
             table,
             attributes: attributes[ENTITIES.ES_FORM]
@@ -52,6 +73,11 @@ export const createStorageOperationsFactory: CreateStorageOperationsFactory = pa
             entityName: ENTITIES.SUBMISSION,
             table,
             attributes: attributes[ENTITIES.SUBMISSION]
+        }),
+        esSubmission: createElasticsearchEntity({
+            entityName: ENTITIES.ES_SUBMISSION,
+            table,
+            attributes: attributes[ENTITIES.ES_SUBMISSION]
         }),
         system: createSystemEntity({
             entityName: ENTITIES.SYSTEM,
@@ -67,7 +93,7 @@ export const createStorageOperationsFactory: CreateStorageOperationsFactory = pa
 
     return {
         init: async formBuilder => {
-            formBuilder.onAfterInstall(async ({ tenant }) => {
+            formBuilder.onAfterInstall.subscribe(async ({ tenant }) => {
                 await createElasticsearchIndex({
                     elasticsearch,
                     tenant
@@ -75,6 +101,7 @@ export const createStorageOperationsFactory: CreateStorageOperationsFactory = pa
             });
         },
         getTable: () => table,
+        getEsTable: () => esTable,
         getEntities: () => entities,
         ...createSystemStorageOperations({
             table,
@@ -93,7 +120,9 @@ export const createStorageOperationsFactory: CreateStorageOperationsFactory = pa
         ...createSubmissionStorageOperations({
             elasticsearch,
             table,
-            entity: entities.submission
+            entity: entities.submission,
+            esEntity: entities.esSubmission,
+            plugins
         })
     };
 };

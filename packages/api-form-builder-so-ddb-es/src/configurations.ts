@@ -5,28 +5,6 @@ interface ElasticsearchConfigParams {
 }
 
 export default {
-    db: {
-        table: process.env.DB_TABLE_FORM_BUILDER,
-        keys: [
-            {
-                primary: true,
-                unique: true,
-                name: "primary",
-                fields: [{ name: "PK" }, { name: "SK" }]
-            }
-        ]
-    },
-    esDb: {
-        table: process.env.DB_TABLE_ELASTICSEARCH,
-        keys: [
-            {
-                primary: true,
-                unique: true,
-                name: "primary",
-                fields: [{ name: "PK" }, { name: "SK" }]
-            }
-        ]
-    },
     es(params: ElasticsearchConfigParams) {
         const { tenant } = params;
 
