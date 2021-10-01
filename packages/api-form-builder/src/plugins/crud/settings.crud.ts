@@ -1,30 +1,27 @@
-import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
 import * as utils from "./utils";
 import * as models from "./settings.models";
-import { Settings, FormBuilderContext } from "~/types";
+import { Settings, FormBuilderContext, SettingsCRUD, FormBuilder } from "~/types";
 import WebinyError from "@webiny/error";
+import { Tenant } from "@webiny/api-tenancy/types";
+import { I18NLocale } from "@webiny/api-i18n/types";
 
-export default new ContextPlugin<FormBuilderContext>(async context => {
-    /**
-     * If formsBuilder is not defined on the context, do not continue, but log it.
-     */
-    if (!context.formBuilder) {
-        console.log("Missing formBuilder on context. Skipping Forms crud.");
-        return;
-    }
-    const storageOperations = context.formBuilder.storageOperations;
+export interface Params {
+    tenant: Tenant;
+    locale: I18NLocale;
+    context: FormBuilderContext;
+}
 
-    const tenant = context.tenancy.getCurrentTenant();
-    const locale = context.i18n.getCurrentLocale();
+export const createSettingsCrud = (params: Params): SettingsCRUD => {
+    const { tenant, locale, context } = params;
 
-    context.formBuilder.settings = {
-        async getSettings(options = { auth: true }) {
+    return {
+        async getSettings(this: FormBuilder, options = { auth: true }) {
             if (!options || options.auth !== false) {
                 await utils.checkBaseSettingsPermissions(context);
             }
 
             try {
-                return await storageOperations.getSettings({
+                return await this.storageOperations.getSettings({
                     tenant: tenant.id,
                     locale: locale.code
                 });
@@ -35,7 +32,7 @@ export default new ContextPlugin<FormBuilderContext>(async context => {
                 );
             }
         },
-        async createSettings(input) {
+        async createSettings(this: FormBuilder, input) {
             const formBuilderSettings = new models.CreateDataModel().populate(input);
             await formBuilderSettings.validate();
 
@@ -46,7 +43,7 @@ export default new ContextPlugin<FormBuilderContext>(async context => {
                 locale: locale.code
             };
             try {
-                return await storageOperations.createSettings({
+                return await this.storageOperations.createSettings({
                     settings
                 });
             } catch (ex) {
@@ -60,13 +57,13 @@ export default new ContextPlugin<FormBuilderContext>(async context => {
                 );
             }
         },
-        async updateSettings(data) {
+        async updateSettings(this: FormBuilder, data) {
             await utils.checkBaseSettingsPermissions(context);
             const updatedData = new models.UpdateDataModel().populate(data);
             await updatedData.validate();
 
             const newSettings = await updatedData.toJSON({ onlyDirty: true });
-            const original = await context.formBuilder.settings.getSettings();
+            const original = await this.getSettings();
 
             const settings: Settings = {
                 ...original,
@@ -75,7 +72,7 @@ export default new ContextPlugin<FormBuilderContext>(async context => {
                 locale: locale.code
             };
             try {
-                return await storageOperations.updateSettings({
+                return await this.storageOperations.updateSettings({
                     settings,
                     original
                 });
@@ -91,11 +88,12 @@ export default new ContextPlugin<FormBuilderContext>(async context => {
             }
         },
 
-        async deleteSettings() {
-            const settings = await context.formBuilder.settings.getSettings();
+        async deleteSettings(this: FormBuilder) {
+            await utils.checkBaseSettingsPermissions(context);
+            const settings = await this.getSettings();
 
             try {
-                await storageOperations.deleteSettings({ settings });
+                await this.storageOperations.deleteSettings({ settings });
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not delete settings.",
@@ -104,4 +102,4 @@ export default new ContextPlugin<FormBuilderContext>(async context => {
             }
         }
     };
-});
+};

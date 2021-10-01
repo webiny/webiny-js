@@ -5,51 +5,56 @@ import { ElasticsearchContext } from "@webiny/api-elasticsearch/types";
 import { SecurityPermission } from "@webiny/api-security/types";
 import { FileManagerContext } from "@webiny/api-file-manager/types";
 import { I18NContext } from "@webiny/api-i18n/types";
+import { Topic } from "@webiny/pubsub/types";
 
-type FbFormTriggerData = Record<string, any>;
-type FbSubmissionData = Record<string, any>;
+interface FbFormTriggerData {
+    [key: string]: any;
+}
+interface FbSubmissionData {
+    [key: string]: any;
+}
 
-type FbFormFieldValidator = {
+interface FbFormFieldValidator {
     name: string;
     message: any;
     settings: Record<string, any>;
-};
+}
 
-export type FbFormFieldValidatorPlugin = Plugin & {
+export interface FbFormFieldValidatorPlugin extends Plugin {
     type: "fb-form-field-validator";
     validator: {
         name: string;
         validate: (value: any, validator: FbFormFieldValidator) => Promise<any>;
     };
-};
+}
 
-export type FbFormFieldPatternValidatorPlugin = Plugin & {
+export interface FbFormFieldPatternValidatorPlugin extends Plugin {
     type: "fb-form-field-validator-pattern";
     pattern: {
         name: string;
         regex: string;
         flags: string;
     };
-};
+}
 
-export type FbFormTriggerHandlerParams = {
+export interface FbFormTriggerHandlerParams {
     addLog: (log: Record<string, any>) => void;
     trigger: FbFormTriggerData;
     data: FbSubmissionData;
     form: FbForm;
-};
+}
 
 /**
  * Used to define custom business logic that gets executed upon successful form submission (e.g. send data to a specific e-mail address).
  * @see https://docs.webiny.com/docs/webiny-apps/form-builder/development/plugins-reference/api#form-trigger-handler
  */
-export type FbFormTriggerHandlerPlugin = Plugin & {
+export interface FbFormTriggerHandlerPlugin extends Plugin {
     type: "form-trigger-handler";
     trigger: string;
     handle: (args: FbFormTriggerHandlerParams) => Promise<void>;
-};
+}
 
-export type FbForm = {
+export interface FbForm {
     id: string;
     tenant: string;
     locale: string;
@@ -75,49 +80,51 @@ export type FbForm = {
      */
     formId: string;
     webinyVersion: string;
-};
+}
 
-export type CreatedBy = {
+export interface CreatedBy {
     id: string;
     displayName: string;
     type: string;
-};
+}
 
-export type OwnedBy = CreatedBy;
+export interface OwnedBy extends CreatedBy {
+    //
+}
 
-type FormCreateInput = {
+interface FormCreateInput {
     name: string;
-};
+}
 
-type FormUpdateInput = {
+interface FormUpdateInput {
     name: string;
     fields: Record<string, any>[];
     layout: string[][];
     settings: Record<string, any>;
     triggers: Record<string, any>;
-};
+}
 
-type FbFormStats = {
+export interface FbFormStats {
     submissions: number;
     views: number;
     conversionRate: number;
-};
+}
 
 type FbSubmissionsSort = Record<"createdOn", 1 | -1>;
 
-type FbListSubmissionsOptions = {
+interface FbListSubmissionsOptions {
     limit?: number;
     after?: string;
     sort?: FbSubmissionsSort;
-};
+}
 
-export type FbListSubmissionsMeta = {
+export interface FbListSubmissionsMeta {
     cursor: string;
     hasMoreItems: boolean;
     totalCount: number;
-};
+}
 
-export type FormsCRUD = {
+export interface FormsCRUD {
     getForm(id: string): Promise<FbForm>;
     getFormStats(id: string): Promise<FbFormStats>;
     listForms(): Promise<FbForm[]>;
@@ -133,7 +140,7 @@ export type FormsCRUD = {
     getPublishedFormRevisionById(revisionId: string): Promise<FbForm>;
     getLatestPublishedFormRevision(formId: string): Promise<FbForm>;
     deleteRevision(id: string): Promise<boolean>;
-    getSubmissionsByIds(formId: string, submissionIds: string[]): Promise<FbSubmission[]>;
+    getSubmissionsByIds(form: string | FbForm, submissionIds: string[]): Promise<FbSubmission[]>;
     listFormSubmissions(
         formId: string,
         options: FbListSubmissionsOptions
@@ -146,16 +153,33 @@ export type FormsCRUD = {
     ): Promise<FbSubmission>;
     updateSubmission(formId: string, data: FbSubmission): Promise<boolean>;
     deleteSubmission(formId: string, submissionId: string): Promise<boolean>;
-};
+}
 
-export type SystemCRUD = {
-    getVersion(): Promise<string>;
-    setVersion(version: string): Promise<void>;
-    install(args: { domain?: string }): Promise<void>;
-    upgrade(version: string, data?: Record<string, any>): Promise<boolean>;
-};
+export interface BeforeInstallTopic {
+    tenant: Tenant;
+}
 
-export type FbSubmission = {
+export interface AfterInstallTopic {
+    tenant: Tenant;
+}
+
+export interface SystemCRUD {
+    /**
+     * @internal
+     */
+    getSystem(): Promise<System>;
+    getSystemVersion(): Promise<string>;
+    setSystemVersion(version: string): Promise<void>;
+    installSystem(args: { domain?: string }): Promise<void>;
+    upgradeSystem(version: string, data?: Record<string, any>): Promise<boolean>;
+    /**
+     * Events
+     */
+    onBeforeInstall: Topic<BeforeInstallTopic>;
+    onAfterInstall: Topic<AfterInstallTopic>;
+}
+
+export interface FbSubmission {
     id: string;
     locale: string;
     ownedBy: OwnedBy;
@@ -170,17 +194,21 @@ export type FbSubmission = {
         layout: string[][];
     };
     logs: Record<string, any>[];
-};
+    /**
+     * TODO add via upgrade
+     */
+    tenant: string;
+}
 
-export type SubmissionInput = {
+export interface SubmissionInput {
     data: Record<string, any>;
     meta: Record<string, any>;
     reCaptchaResponseToken: string;
-};
+}
 
-export type SubmissionUpdateData = {
+export interface SubmissionUpdateData {
     logs: Record<string, any>;
-};
+}
 
 /**
  * @category Settings
@@ -198,12 +226,12 @@ export interface Settings {
     locale: string;
 }
 
-export type SettingsCRUD = {
+export interface SettingsCRUD {
     getSettings(options?: { auth: boolean }): Promise<Settings>;
     createSettings(data: Partial<Settings>): Promise<Settings>;
     updateSettings(data: Partial<Settings>): Promise<Settings>;
     deleteSettings(): Promise<void>;
-};
+}
 
 export interface FbFormPermission extends SecurityPermission {
     name: "fb.form";
@@ -217,21 +245,11 @@ export interface FbFormSettingsPermission extends SecurityPermission {
     name: "fb.settings";
 }
 
-export interface AfterInstallTopic {
-    tenant: Tenant;
-}
 /**
  * The object representing form builder internals.
  */
-export interface FormBuilderContextObject {
-    forms: FormsCRUD;
-    settings: SettingsCRUD;
-    system: SystemCRUD;
+export interface FormBuilder extends SystemCRUD, SettingsCRUD, FormsCRUD {
     storageOperations: FormBuilderStorageOperations;
-    /**
-     * TODO: use Topic<AfterInstallTopic> as a type when topics package is merged.
-     */
-    onAfterInstall: (params: any) => Promise<any>;
 }
 
 export interface FormBuilderContext
@@ -243,7 +261,7 @@ export interface FormBuilderContext
     /**
      *
      */
-    formBuilder: FormBuilderContextObject;
+    formBuilder: FormBuilder;
 }
 /**
  * @category System
@@ -429,6 +447,8 @@ export interface FormBuilderStorageOperationsGetSubmissionParams {
     where: {
         id?: string;
         formId?: string;
+        tenant: string;
+        locale: string;
     };
 }
 
@@ -438,10 +458,14 @@ export interface FormBuilderStorageOperationsGetSubmissionParams {
  */
 export interface FormBuilderStorageOperationsListSubmissionsParams {
     where: {
-        id_in?: string;
-        formId?: string;
+        id_in?: string[];
+        parent?: string;
+        locale: string;
+        tenant: string;
     };
-    sort: string[];
+    after?: string;
+    limit?: number;
+    sort?: string[];
 }
 
 /**
@@ -469,6 +493,7 @@ export interface FormBuilderStorageOperationsUpdateSubmissionParams {
  * @category StorageOperationsParams
  */
 export interface FormBuilderStorageOperationsDeleteSubmissionParams {
+    form: FbForm;
     submission: FbSubmission;
 }
 
@@ -519,11 +544,19 @@ export interface FormBuilderFormStorageOperations {
 /**
  * @category StorageOperations
  */
+export interface FormBuilderStorageOperationsListSubmissionsResponse {
+    items: FbSubmission[];
+    meta: FbListSubmissionsMeta;
+}
+
+/**
+ * @category StorageOperations
+ */
 export interface FormBuilderSubmissionStorageOperations {
     getSubmission(params: FormBuilderStorageOperationsGetSubmissionParams): Promise<FbSubmission>;
     listSubmissions(
         params: FormBuilderStorageOperationsListSubmissionsParams
-    ): Promise<FbSubmission[]>;
+    ): Promise<FormBuilderStorageOperationsListSubmissionsResponse>;
     createSubmission(
         params: FormBuilderStorageOperationsCreateSubmissionParams
     ): Promise<FbSubmission>;
@@ -546,5 +579,5 @@ export interface FormBuilderStorageOperations
      * We can initialize what ever we require in this method.
      * Initially it was intended to attach events like afterInstall, beforeInstall, etc...
      */
-    init?: (formBuilder: FormBuilderContext) => Promise<void>;
+    init?: (formBuilder: FormBuilder) => Promise<void>;
 }

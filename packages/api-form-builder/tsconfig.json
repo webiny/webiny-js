@@ -35,6 +35,9 @@
       "path": "../error"
     },
     {
+      "path": "../pubsub"
+    },
+    {
       "path": "../handler"
     },
     {
@@ -77,7 +80,10 @@
       "@webiny/api-upgrade": ["../api-upgrade/src"],
       "@webiny/db-dynamodb/*": ["../db-dynamodb/src/*"],
       "@webiny/db-dynamodb": ["../db-dynamodb/src"],
+      "@webiny/error/*": ["../error/src/*"],
       "@webiny/error": ["../error/src"],
+      "@webiny/pubsub/*": ["../pubsub/src/*"],
+      "@webiny/pubsub": ["../pubsub/src"],
       "@webiny/handler/*": ["../handler/src/*"],
       "@webiny/handler": ["../handler/src"],
       "@webiny/handler-aws/*": ["../handler-aws/src/*"],

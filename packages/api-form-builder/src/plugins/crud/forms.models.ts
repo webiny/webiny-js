@@ -109,6 +109,7 @@ export const FormSubmissionCreateDataModel = withFields({
 })();
 
 export const FormSubmissionUpdateDataModel = withFields({
+    id: string({ validation: validation.create("required,maxLength:100") }),
     logs: fields({
         list: true,
         value: [],

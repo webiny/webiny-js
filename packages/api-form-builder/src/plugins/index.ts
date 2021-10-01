@@ -1,6 +1,4 @@
-import forms from "./crud/forms.crud";
-import settings from "./crud/settings.crud";
-import system from "./crud/system.crud";
+import cruds from "./crud";
 import graphql from "./graphql";
 import upgrades from "./upgrades";
 import triggerHandlers from "./triggers/triggerHandlers";
@@ -9,9 +7,7 @@ import formsGraphQL from "./graphql/form";
 import formSettingsGraphQL from "./graphql/formSettings";
 
 export default () => [
-    forms,
-    settings,
-    system,
+    cruds(),
     graphql,
     upgrades,
     triggerHandlers,

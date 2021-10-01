@@ -1,59 +1,61 @@
 import WebinyError from "@webiny/error";
-import { NotAuthorizedError } from "@webiny/api-security";
+import { NotAuthorizedError, SecurityIdentity } from "@webiny/api-security";
 import { UpgradePlugin } from "@webiny/api-upgrade/types";
 import { getApplicablePlugin } from "@webiny/api-upgrade";
 import {
+    AfterInstallTopic,
+    BeforeInstallTopic,
+    FormBuilder,
     FormBuilderContext,
-    FormBuilderStorageOperationsGetSystemParams,
     Settings,
-    System
+    System,
+    SystemCRUD
 } from "~/types";
 import { executeCallbacks } from "~/plugins/crud/utils";
 import { FormBuilderSystemPlugin } from "~/plugins/definitions/FormBuilderSystemPlugin";
-import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
+import { Tenant } from "@webiny/api-tenancy/types";
+import { createTopic } from "@webiny/pubsub";
 
-export default new ContextPlugin<FormBuilderContext>(async context => {
-    /**
-     * If formsBuilder is not defined on the context, do not continue, but log it.
-     */
-    if (!context.formBuilder) {
-        console.log("Missing formBuilder on context. Skipping Forms crud.");
-        return;
-    }
+export interface Params {
+    identity: SecurityIdentity;
+    tenant: Tenant;
+    context: FormBuilderContext;
+}
 
-    const tenant = context.tenancy.getCurrentTenant();
+export const createSystemCrud = (params: Params): SystemCRUD => {
+    const { tenant, identity, context } = params;
 
-    const storageOperations = context.formBuilder.storageOperations;
+    const onBeforeInstall = createTopic<BeforeInstallTopic>();
+    const onAfterInstall = createTopic<AfterInstallTopic>();
 
-    const getSystem = async (params: FormBuilderStorageOperationsGetSystemParams) => {
-        try {
-            return await storageOperations.getSystem(params);
-        } catch (ex) {
-            throw new WebinyError(
-                ex.message || "Could not load system.",
-                ex.code || "GET_SYSTEM_ERROR"
-            );
-        }
-    };
-
-    context.formBuilder.system = {
-        async getVersion() {
-            const system = await getSystem({
-                tenant: tenant.id
-            });
+    return {
+        onBeforeInstall,
+        onAfterInstall,
+        async getSystem(this: FormBuilder) {
+            try {
+                return await this.storageOperations.getSystem({
+                    tenant: tenant.id
+                });
+            } catch (ex) {
+                throw new WebinyError(
+                    ex.message || "Could not load system.",
+                    ex.code || "GET_SYSTEM_ERROR"
+                );
+            }
+        },
+        async getSystemVersion(this: FormBuilder) {
+            const system = await this.getSystem();
             return system ? system.version : null;
         },
-        async setVersion(version: string) {
-            const original = await getSystem({
-                tenant: tenant.id
-            });
+        async setSystemVersion(this: FormBuilder, version: string) {
+            const original = await this.getSystem();
             const system: System = {
                 version,
                 tenant: tenant.id
             };
             if (!original) {
                 try {
-                    await storageOperations.createSystem({
+                    await this.storageOperations.createSystem({
                         system
                     });
                     return;
@@ -69,7 +71,7 @@ export default new ContextPlugin<FormBuilderContext>(async context => {
             }
 
             try {
-                await storageOperations.updateSystem({
+                await this.storageOperations.updateSystem({
                     original,
                     system
                 });
@@ -84,8 +86,8 @@ export default new ContextPlugin<FormBuilderContext>(async context => {
                 );
             }
         },
-        async install({ domain }) {
-            const version = await context.formBuilder.system.getVersion();
+        async installSystem(this: FormBuilder, { domain }) {
+            const version = await this.getSystemVersion();
             if (version) {
                 throw new WebinyError(
                     "Form builder is already installed.",
@@ -114,7 +116,7 @@ export default new ContextPlugin<FormBuilderContext>(async context => {
                         tenant
                     }
                 );
-                const settings = await context.formBuilder.settings.createSettings(data);
+                const settings = await this.createSettings(data);
                 await executeCallbacks<FormBuilderSystemPlugin["afterInstall"]>(
                     systemPlugins,
                     "afterInstall",
@@ -123,9 +125,9 @@ export default new ContextPlugin<FormBuilderContext>(async context => {
                         tenant
                     }
                 );
-                await context.formBuilder.system.setVersion(context.WEBINY_VERSION);
+                await this.setSystemVersion(context.WEBINY_VERSION);
             } catch (err) {
-                await context.formBuilder.settings.deleteSettings();
+                await this.deleteSettings();
 
                 throw new WebinyError(
                     "Form builder failed to install!",
@@ -136,8 +138,7 @@ export default new ContextPlugin<FormBuilderContext>(async context => {
                 );
             }
         },
-        async upgrade(version) {
-            const identity = context.security.getIdentity();
+        async upgradeSystem(this: FormBuilder, version: string) {
             if (!identity) {
                 throw new NotAuthorizedError();
             }
@@ -148,7 +149,7 @@ export default new ContextPlugin<FormBuilderContext>(async context => {
 
             const plugin = getApplicablePlugin({
                 deployedVersion: context.WEBINY_VERSION,
-                installedAppVersion: await context.formBuilder.system.getVersion(),
+                installedAppVersion: await this.getSystemVersion(),
                 upgradePlugins,
                 upgradeToVersion: version
             });
@@ -156,9 +157,9 @@ export default new ContextPlugin<FormBuilderContext>(async context => {
             await plugin.apply(context);
 
             // Store new app version
-            await context.formBuilder.system.setVersion(version);
+            await this.setSystemVersion(version);
 
             return true;
         }
     };
-});
+};
