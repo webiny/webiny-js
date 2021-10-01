@@ -1,22 +1,20 @@
-import { FieldSortOptions, SortType, SortOrder } from "./types";
 import WebinyError from "@webiny/error";
+import { FieldSortOptions, SortType, SortOrder } from "./types";
 import { ElasticsearchFieldPlugin } from "./plugins/definition/ElasticsearchFieldPlugin";
-import { ContextInterface } from "@webiny/handler/types";
 
 const sortRegExp = new RegExp(/^([a-zA-Z-0-9_]+)_(ASC|DESC)$/);
 
 export interface Params {
-    context: ContextInterface;
     sort: string[];
     defaults?: {
         field?: string;
         order?: SortOrder;
         unmappedType?: string;
     };
-    plugins: Record<string, ElasticsearchFieldPlugin>;
+    fieldPlugins: Record<string, ElasticsearchFieldPlugin>;
 }
 export const createSort = (params: Params): SortType => {
-    const { sort, defaults, plugins } = params;
+    const { sort, defaults, fieldPlugins } = params;
     if (!sort || sort.length === 0) {
         const { field, order, unmappedType } = defaults || {};
         /**
@@ -40,7 +38,7 @@ export const createSort = (params: Params): SortType => {
         const [, field, initialOrder] = match;
         const order: SortOrder = initialOrder.toLowerCase() === "asc" ? "asc" : "desc";
 
-        const plugin: ElasticsearchFieldPlugin = plugins[field] || plugins["*"];
+        const plugin: ElasticsearchFieldPlugin = fieldPlugins[field] || fieldPlugins["*"];
         if (!plugin) {
             throw new WebinyError(`Missing plugin for the field "${field}"`, "PLUGIN_ERROR", {
                 field

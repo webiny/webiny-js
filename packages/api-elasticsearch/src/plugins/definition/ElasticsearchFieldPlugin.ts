@@ -1,14 +1,9 @@
 import { Plugin } from "@webiny/plugins";
 import { FieldSortOptions, SortOrder } from "elastic-ts";
-import { ContextInterface } from "@webiny/handler/types";
 
 export type UnmappedTypes = "date" | "long" | string;
 
 export interface ToSearchValueParams {
-    /**
-     * Some variable that has a ContextInterface as a base.
-     */
-    context: ContextInterface;
     /**
      * The value to transform.
      */
