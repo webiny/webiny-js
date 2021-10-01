@@ -90,5 +90,9 @@ export const sortItems = <T extends any = any>(params: Params<T>): T[] => {
         info.orders.push(reverse === true ? "desc" : "asc");
     }
 
+    if (info.sorters.length === 0) {
+        return items;
+    }
+
     return lodashOrderBy(items, info.sorters, info.orders);
 };
