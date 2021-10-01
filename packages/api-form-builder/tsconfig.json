@@ -35,6 +35,9 @@
       "path": "../error"
     },
     {
+      "path": "../utils"
+    },
+    {
       "path": "../pubsub"
     },
     {
@@ -82,6 +85,8 @@
       "@webiny/db-dynamodb": ["../db-dynamodb/src"],
       "@webiny/error/*": ["../error/src/*"],
       "@webiny/error": ["../error/src"],
+      "@webiny/utils/*": ["../utils/src/*"],
+      "@webiny/utils": ["../utils/src"],
       "@webiny/pubsub/*": ["../pubsub/src/*"],
       "@webiny/pubsub": ["../pubsub/src"],
       "@webiny/handler/*": ["../handler/src/*"],

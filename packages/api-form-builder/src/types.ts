@@ -71,7 +71,7 @@ export interface FbForm {
     status: string;
     fields: Record<string, any>[];
     layout: string[][];
-    stats: Record<string, any>;
+    stats: FbFormStats;
     settings: Record<string, any>;
     triggers: Record<string, any>;
     /**
@@ -124,8 +124,12 @@ export interface FbListSubmissionsMeta {
     totalCount: number;
 }
 
+export interface FormBuilderGetFormOptions {
+    auth?: boolean;
+}
+
 export interface FormsCRUD {
-    getForm(id: string): Promise<FbForm>;
+    getForm(id: string, options?: FormBuilderGetFormOptions): Promise<FbForm>;
     getFormStats(id: string): Promise<FbFormStats>;
     listForms(): Promise<FbForm[]>;
     createForm(data: FormCreateInput): Promise<FbForm>;
@@ -140,6 +144,9 @@ export interface FormsCRUD {
     getPublishedFormRevisionById(revisionId: string): Promise<FbForm>;
     getLatestPublishedFormRevision(formId: string): Promise<FbForm>;
     deleteRevision(id: string): Promise<boolean>;
+}
+
+export interface SubmissionsCRUD {
     getSubmissionsByIds(form: string | FbForm, submissionIds: string[]): Promise<FbSubmission[]>;
     listFormSubmissions(
         formId: string,
@@ -194,6 +201,8 @@ export interface FbSubmission {
         layout: string[][];
     };
     logs: Record<string, any>[];
+    createdOn: string;
+    savedOn: string;
     /**
      * TODO add via upgrade
      */
@@ -248,7 +257,7 @@ export interface FbFormSettingsPermission extends SecurityPermission {
 /**
  * The object representing form builder internals.
  */
-export interface FormBuilder extends SystemCRUD, SettingsCRUD, FormsCRUD {
+export interface FormBuilder extends SystemCRUD, SettingsCRUD, FormsCRUD, SubmissionsCRUD {
     storageOperations: FormBuilderStorageOperations;
 }
 
@@ -410,7 +419,7 @@ export interface FormBuilderStorageOperationsCreateFormParams {
  * @category StorageOperationsParams
  */
 export interface FormBuilderStorageOperationsUpdateFormParams {
-    input: Record<string, any>;
+    input?: Record<string, any>;
     original: FbForm;
     form: FbForm;
 }
@@ -459,7 +468,7 @@ export interface FormBuilderStorageOperationsGetSubmissionParams {
 export interface FormBuilderStorageOperationsListSubmissionsParams {
     where: {
         id_in?: string[];
-        parent?: string;
+        parent: string;
         locale: string;
         tenant: string;
     };
