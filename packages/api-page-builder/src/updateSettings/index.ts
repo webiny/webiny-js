@@ -67,7 +67,8 @@ export default (): HandlerPlugin<PbContext, ArgsContext<HandlerArgs>> => ({
 
             const settings = {
                 ...original,
-                ...updateSettingsData
+                ...updateSettingsData,
+                ...settingsParams
             };
 
             await storageOperations.update({

@@ -3,6 +3,162 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.15.0](https://github.com/webiny/webiny-js/compare/v5.15.0-beta.3...v5.15.0) (2021-09-30)
+
+**Note:** Version bump only for package webiny-js
+
+
+
+
+
+# [5.15.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.15.0-beta.2...v5.15.0-beta.3) (2021-09-30)
+
+
+### Bug Fixes
+
+* check if identity exists before making any further checks ([5f7bec0](https://github.com/webiny/webiny-js/commit/5f7bec01375b2c9c36916e27e59f353b6991a5f8))
+
+
+
+
+
+# [5.15.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.15.0-beta.1...v5.15.0-beta.2) (2021-09-29)
+
+
+### Bug Fixes
+
+* **api-page-builder:** cli upgrade ([b69a2e3](https://github.com/webiny/webiny-js/commit/b69a2e343c4d397e632289cd4904ae3fcf828187))
+
+
+
+
+
+# [5.15.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.15.0-beta.0...v5.15.0-beta.1) (2021-09-28)
+
+
+### Bug Fixes
+
+* add `graphqlApiUrl: cloudfront.getDistributionUrl("/graphql")` ([f1dd9a4](https://github.com/webiny/webiny-js/commit/f1dd9a4d5a5446a66506bd5d22401c4891ba1340))
+* add poc files ([76fc182](https://github.com/webiny/webiny-js/commit/76fc182b17b43c5d5314634d83ec924633ab46ef))
+* adjust "creating-new-user" check in the security/users form ([403aae8](https://github.com/webiny/webiny-js/commit/403aae865eaad98403a5672be8cf110ab7709794))
+* check if `headers` exists before using the `in` operator ([ec0b49e](https://github.com/webiny/webiny-js/commit/ec0b49e25ecd3e8de95e70bc273967417052d61c))
+* correct package versions ([4b636c0](https://github.com/webiny/webiny-js/commit/4b636c0054b281488909ed0578ba3036e4a4004a))
+* disable help processing until after plugins are imported ([d69c909](https://github.com/webiny/webiny-js/commit/d69c9098477383157653871891c1b441c0ee4bd1))
+* fix dependencies ([1f8aabc](https://github.com/webiny/webiny-js/commit/1f8aabcce610f583345247c1ca08f7153da2dd89))
+* refactor styles functions ([1e8f85c](https://github.com/webiny/webiny-js/commit/1e8f85ca9d1f63e895217d9e9c1518089b2ae0c9))
+* replace {dev} with dev ([91c53e4](https://github.com/webiny/webiny-js/commit/91c53e43ac74d9fa535caf6fc67eed974b4edfb0))
+* update yarn.lock ([61bed7b](https://github.com/webiny/webiny-js/commit/61bed7baf86000b55a93403813df48abf73bb8b2))
+* **api-headless-cms-ddb-es:** missing rawValues on elasticsearch entry ([#1930](https://github.com/webiny/webiny-js/issues/1930)) ([9dddf1b](https://github.com/webiny/webiny-js/commit/9dddf1b6f7fdcdf48f8fec6f96383f415348c087))
+* **api-page-builder:** decompress content only on output ([#1935](https://github.com/webiny/webiny-js/issues/1935)) ([9a12da9](https://github.com/webiny/webiny-js/commit/9a12da9e4247e93b6cbae85b764cd9dd6c717f34))
+* fix dependencies ([3b8e9f1](https://github.com/webiny/webiny-js/commit/3b8e9f140900172a4ed377b5dd8e69e57bce573e))
+* make typeDefs optional ([6ca09e1](https://github.com/webiny/webiny-js/commit/6ca09e1f377592be91a8ac4a07ec91f47563fafc))
+* problem with richtexteditor RTL support ([#1902](https://github.com/webiny/webiny-js/issues/1902)) ([dc5329e](https://github.com/webiny/webiny-js/commit/dc5329eb4d5b8a1ba66a3b5ae92cdfad4970fe6a))
+* rename back to app-page-builder-elements ([7d647b9](https://github.com/webiny/webiny-js/commit/7d647b9dafd697830963734bd9b8d777b6841d58))
+* set "" as the default value for typeDefs ([a4478cc](https://github.com/webiny/webiny-js/commit/a4478cc7bd03b9334b75a586a9bebfc99425ee1e))
+* simplify link argument ([ab957ed](https://github.com/webiny/webiny-js/commit/ab957ed0a34f9dc4aafab24044db715c6ab21163))
+* use `@webiny/app-page-builder-elements` ([f9f78d4](https://github.com/webiny/webiny-js/commit/f9f78d4a2b554e66b36477a18a82cc572be75f88))
+* use map instead of reduce in order to maintain content model order on the Manage API with array of objects ([1716888](https://github.com/webiny/webiny-js/commit/17168888a556b9f1ca8b067189580457146b03b7))
+* use map instead of reduce in order to maintain content model order on the Read API with array of objects ([e891a3a](https://github.com/webiny/webiny-js/commit/e891a3a5987b7534935ed0686d0ac21687288434))
+* **app:** do not overwrite tenant header ([818fc6e](https://github.com/webiny/webiny-js/commit/818fc6e9034844b91770bbbd472d65f53dc4f4c9))
+* **app-security-admin-users:** allow custom form fields ([442aa4b](https://github.com/webiny/webiny-js/commit/442aa4bff8834711d7be6825ff1f1615e4a3eca5))
+
+
+### Features
+
+* add ability to customize link ([05c8ba1](https://github.com/webiny/webiny-js/commit/05c8ba17caa5de28e95565561eb58fdfe3335f21))
+* **api-file-manager:** add and_in operator for tags querying ([#1912](https://github.com/webiny/webiny-js/issues/1912)) ([2ea6d20](https://github.com/webiny/webiny-js/commit/2ea6d202282ff6e7997b0ded0da5b43918edaa39))
+* **api-page-builder:** add content compression plugins and default ([#1921](https://github.com/webiny/webiny-js/issues/1921)) ([6c507bf](https://github.com/webiny/webiny-js/commit/6c507bfc4bb12ca4ebd8ffb4e8913750061bd0ab))
+* **api-page-builder:** dynamodb only storage operations ([#1916](https://github.com/webiny/webiny-js/issues/1916)) ([612f86c](https://github.com/webiny/webiny-js/commit/612f86cde5fb518351cbfbd5e3f8d5fa99f77e7e))
+
+
+
+
+
+# [5.15.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.14.0...v5.15.0-beta.0) (2021-09-16)
+
+
+### Bug Fixes
+
+* **api-page-builder:** prerendering plugins and cypress tests ([#1907](https://github.com/webiny/webiny-js/issues/1907)) ([7a408f9](https://github.com/webiny/webiny-js/commit/7a408f946f08f2630857d90648a4548c6b09b182))
+* **cypress:** add cypress waiting for menu check ([#1909](https://github.com/webiny/webiny-js/issues/1909)) ([d381214](https://github.com/webiny/webiny-js/commit/d38121437fab4e50e8924b0210308822e9230743))
+* add `apiUrl` ([70285a2](https://github.com/webiny/webiny-js/commit/70285a2b462884f7f26a0c4a7f4965a6a3d5d307))
+* add `crawlDirectory` type ([0e26244](https://github.com/webiny/webiny-js/commit/0e26244c04398236f7be2de79e584d904b3d1806))
+* add `protect: true` ([5be4039](https://github.com/webiny/webiny-js/commit/5be4039ca7328040c6dc5e1f267813b385ff2840))
+* add `REACT_APP_API_URL` ([61c9e32](https://github.com/webiny/webiny-js/commit/61c9e32c57c32f6e9519dc93b64b074f67b8f138))
+* add comment ([05b70c7](https://github.com/webiny/webiny-js/commit/05b70c77122fb02653eaa189e4321978edc94cd0))
+* add comment ([61dafeb](https://github.com/webiny/webiny-js/commit/61dafeb08883b1c80033d3164581f56138fee675))
+* add missing AWS_REGION env variable ([c540ba4](https://github.com/webiny/webiny-js/commit/c540ba4b2b6c3ad755d84078032077de66dd194a))
+* add missing DB_TABLE_ELASTICSEARCH env var ([481f443](https://github.com/webiny/webiny-js/commit/481f443e1b1c51fec25a37b67685d1e86eccbb7a))
+* add missing dependency ([d2278fd](https://github.com/webiny/webiny-js/commit/d2278fd93b702ae1d93a96161d29caa9fc41a996))
+* add missing dependency ([f35a871](https://github.com/webiny/webiny-js/commit/f35a871b9ffe3758238030c0b58b92d0700c911c))
+* correct args passing in `setProperties` function ([2ac0fed](https://github.com/webiny/webiny-js/commit/2ac0fedb8bf760b15686de44523138816e708c36))
+* correct if statements ([1dcdd73](https://github.com/webiny/webiny-js/commit/1dcdd735d89f1918952481a6ae510a60cf113b7f))
+* correct import ([dd304c4](https://github.com/webiny/webiny-js/commit/dd304c449612aa8c1383768dae6034cec757e3bc))
+* create `crawlDirectory` function ([a301006](https://github.com/webiny/webiny-js/commit/a30100678df05ce72bc4745ffe9d6160e66d7003))
+* create `getDistributionUrl` ([7e8a894](https://github.com/webiny/webiny-js/commit/7e8a894a62d74d1cee0176bb44bfd7447daf764f))
+* create `getDistributionUrl` getter ([98582bb](https://github.com/webiny/webiny-js/commit/98582bbbc03230830aab49fe2d0ca71b940f1c25))
+* create utils ([6a24dcf](https://github.com/webiny/webiny-js/commit/6a24dcfb02130a672c1e90794910f8a0549f659d))
+* create utils index file ([3bf3352](https://github.com/webiny/webiny-js/commit/3bf3352011842998d998ad2daea178d0766a3464))
+* disable telemetry ([4ec762a](https://github.com/webiny/webiny-js/commit/4ec762af128881910143a5bb3745ec6c4d5001d9))
+* ensure .env files are searched in project root, not in CWD ([9230ec0](https://github.com/webiny/webiny-js/commit/9230ec09eb45395b786c5cc10f80889ff31a6f00))
+* export `dynamoDbElasticsearchTable` ([c07cec9](https://github.com/webiny/webiny-js/commit/c07cec9798fc47cfb3f20e66549ec8d2caa2d09b))
+* export sendEvent ([e7e5e5a](https://github.com/webiny/webiny-js/commit/e7e5e5ad1aea113543c5cbb0b96972c40d4f06a6))
+* import getProject` directly ([2af0f67](https://github.com/webiny/webiny-js/commit/2af0f677f8d48fce4913cb0bc375a0e78b9709fd))
+* instead of commenting, remove extra code ([66f4835](https://github.com/webiny/webiny-js/commit/66f48359d43bf5c9ddafe5df3c25018a6ab83834))
+* lazy-load config ([acb5ede](https://github.com/webiny/webiny-js/commit/acb5eded9ea320b118c01365812b6db2b9ccbd15))
+* parse `debug` flag's value ([9368e34](https://github.com/webiny/webiny-js/commit/9368e34076a2c85918794ff0bb7b5a93ffca48a5))
+* prevent using the watch command with prod envs ([4aa2074](https://github.com/webiny/webiny-js/commit/4aa20740476a54391f0d8470e24efbe95e181ad2))
+* remove curly braces ([1862de9](https://github.com/webiny/webiny-js/commit/1862de9e345551d5401df9cec62c5ebc19769c7e))
+* remove extra get function ([6aa6533](https://github.com/webiny/webiny-js/commit/6aa65333927284a354f2f79274dba3fc2ffd212a))
+* remove globalConfig util ([c33d037](https://github.com/webiny/webiny-js/commit/c33d0374f9212a71eb6113f66d52e39c0809183b))
+* remove old api folder ([5dce8e2](https://github.com/webiny/webiny-js/commit/5dce8e2c7871fd1e24326e73e3a9459208ce7f75))
+* remove old config folder ([4caf132](https://github.com/webiny/webiny-js/commit/4caf132b2d9b2f67584d08c583c1bfd66a6514a7))
+* remove old require ([616fe7a](https://github.com/webiny/webiny-js/commit/616fe7ab8cf7bb2ebbeb32bd064d17dc9b07b424))
+* remove telemetry getter ([62630e8](https://github.com/webiny/webiny-js/commit/62630e87b20e5a408848ccb718e07409625e3bd2))
+* remove unnecessary import ([e95f8e9](https://github.com/webiny/webiny-js/commit/e95f8e935e8649b42ff9b5764d74aebaeb6b224f))
+* remove verifyConfig step (no longer needed) ([2d49cb9](https://github.com/webiny/webiny-js/commit/2d49cb907bda7c6050e40eb3a82209f27ae0c7b7))
+* rename property to `distribution` ([fe968a8](https://github.com/webiny/webiny-js/commit/fe968a8a56a8e50516884503e53ae1bce58539d5))
+* rename to `extraPayload` ([b5bcda8](https://github.com/webiny/webiny-js/commit/b5bcda88029c003d0c5704a37bff4771b9056d5e))
+* replace `graphqlApiUrl` with `apiUrl` ([d16f399](https://github.com/webiny/webiny-js/commit/d16f39924e457498b11020720f6640f350e6c559))
+* retrieve user ID via global config ([7ce1fab](https://github.com/webiny/webiny-js/commit/7ce1fab12baa9ecfd706b69b7a3d7837a2d6cddb))
+* update dependencies ([fe2a736](https://github.com/webiny/webiny-js/commit/fe2a73694c14d3694ecc2117619f6907fa6d156a))
+* update dependencies ([37f2691](https://github.com/webiny/webiny-js/commit/37f2691f3cb615615a089d977f58a22a8bb21f50))
+* update README ([d3a7666](https://github.com/webiny/webiny-js/commit/d3a7666d9fed3502901d1655a74e87bc1e12bb74))
+* update README ([ebd78ff](https://github.com/webiny/webiny-js/commit/ebd78ff3631428a12ea1bfa8cf579118da2aec50))
+* update README ([53a2cdd](https://github.com/webiny/webiny-js/commit/53a2cddfe83770d0df76545903efe0c8a410c82f))
+* update README [no ci] ([1cd42f3](https://github.com/webiny/webiny-js/commit/1cd42f3fc1e2ac2e1393380e1c5b34b16589e255))
+* update README [no ci] ([71a3cf7](https://github.com/webiny/webiny-js/commit/71a3cf72b9a592cc5df52ac1af67304902783e59))
+* update README [no ci] ([c85db35](https://github.com/webiny/webiny-js/commit/c85db35850a119c5f60e979b671ad7254a49d567))
+* update README [skip-ci] ([4ab2daa](https://github.com/webiny/webiny-js/commit/4ab2daabb14e6bb6a154b5f9a656e2884da86c93))
+* **app-headless-cms:** help text display on file field ([6394720](https://github.com/webiny/webiny-js/commit/639472033186445af44cc97eeaeda484581c3e59))
+* use `API_URL` ([803a41c](https://github.com/webiny/webiny-js/commit/803a41c4465af0f20de40ce355e45ed73b281e14))
+* use `crawlDirectory` util ([ce9769c](https://github.com/webiny/webiny-js/commit/ce9769c4dd7e4a8cc1a8cc15ab579539048999ae))
+* use base `sendEvent` function ([6f93072](https://github.com/webiny/webiny-js/commit/6f9307212e05b98f2a4866002258238b216e0b3b))
+* use built-in isEnabled ([4051257](https://github.com/webiny/webiny-js/commit/4051257c58165dbcc9805283d183583ed0bf7d15))
+* use built-in isEnabled ([8efb821](https://github.com/webiny/webiny-js/commit/8efb821762d16af602ec13debfd3e9cbad22749f))
+* use built-in utils to enable/disable telemetry ([50566a8](https://github.com/webiny/webiny-js/commit/50566a85404b0cbf26db8dcd4241fd426de1bdb7))
+* use global-config package ([a678b18](https://github.com/webiny/webiny-js/commit/a678b18d9d760a69eb6badaaf6451acd3c7fb953))
+* use new `globalConfig` ([ab8e382](https://github.com/webiny/webiny-js/commit/ab8e3827a90b4be4c807bcb7a6f943213e83fd7a))
+* use newly introduced `crawlDirectory` function ([53cfab5](https://github.com/webiny/webiny-js/commit/53cfab5645e3069ee1d87422c9bf7748dc2207ff))
+* use telemetry.sendEvent ([9bc4098](https://github.com/webiny/webiny-js/commit/9bc40986dbfcd0c84299ed3926eecc13f75b8dc5))
+
+
+### Features
+
+* **api-page-builder:** storage operations ([#1872](https://github.com/webiny/webiny-js/issues/1872)) ([8738612](https://github.com/webiny/webiny-js/commit/8738612d0a908f39738c81d4a39173c10a461f7d))
+* add telemetry getter ([b1a5e8d](https://github.com/webiny/webiny-js/commit/b1a5e8df96b1591266fbd8df90d6689a526da0f3))
+* add utils ([d9be82a](https://github.com/webiny/webiny-js/commit/d9be82a76f5210704c71cd8e191aca698cb0963c))
+* create `sendEvent` function for CLI environment ([d0babff](https://github.com/webiny/webiny-js/commit/d0babffeb1cb3a7a796caa8a25f3f9a2ba9359d7))
+* create base `sendEvent` function ([a764e85](https://github.com/webiny/webiny-js/commit/a764e854c5da0ebcb99038e9b9aaf3184202edc3))
+* create webiny/global-config package ([efffba0](https://github.com/webiny/webiny-js/commit/efffba0ccaa89d6840e2170ba8aa69938967d282))
+* import custom `sendEvent` function ([ef802b5](https://github.com/webiny/webiny-js/commit/ef802b50609e7f8bec7e7ad93b38e3a5827c25c7))
+* import new `sendEvent` function ([45c4412](https://github.com/webiny/webiny-js/commit/45c441287076b2a022e50866ef6c7597be6c9f9b))
+* read telemetry flag from global and project configs ([f89ae7f](https://github.com/webiny/webiny-js/commit/f89ae7f7f9e64e6c5fd591b8df8f181ccc14932e))
+
+
+
+
+
 # [5.14.0](https://github.com/webiny/webiny-js/compare/v5.14.0-beta.0...v5.14.0) (2021-08-30)
 
 **Note:** Version bump only for package webiny-js
