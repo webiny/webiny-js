@@ -25,18 +25,18 @@ export const createSettingsStorageOperations = (
 ): FormBuilderSettingsStorageOperations => {
     const { entity } = params;
 
-    const createPartitionKey = ({ tenant, locale }: CreateKeysParams): string => {
+    const createSettingsPartitionKey = ({ tenant, locale }: CreateKeysParams): string => {
         return `T#${tenant}#L#${locale}#FB#SETTINGS`;
     };
 
-    const createSortKey = (): string => {
+    const createSettingsSortKey = (): string => {
         return "default";
     };
 
     const createKeys = (params: CreateKeysParams) => {
         return {
-            PK: createPartitionKey(params),
-            SK: createSortKey()
+            PK: createSettingsPartitionKey(params),
+            SK: createSettingsSortKey()
         };
     };
 
@@ -134,7 +134,7 @@ export const createSettingsStorageOperations = (
         getSettings,
         updateSettings,
         deleteSettings,
-        createPartitionKey,
-        createSortKey
+        createSettingsPartitionKey,
+        createSettingsSortKey
     });
 };
