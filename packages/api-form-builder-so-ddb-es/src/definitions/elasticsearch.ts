@@ -7,7 +7,7 @@ export interface Params {
     attributes: Attributes;
 }
 
-export const createFormElasticsearchEntity = (params: Params) => {
+export const createElasticsearchEntity = (params: Params) => {
     const { table, entityName, attributes } = params;
     return new Entity({
         name: entityName,

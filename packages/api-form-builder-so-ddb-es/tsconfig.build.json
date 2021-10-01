@@ -12,6 +12,8 @@
     "../api-security",
     "../api-upgrade",
     "../error",
+    "../utils",
+    "../pubsub",
     "../handler",
     "../handler-graphql",
     "../validation",
