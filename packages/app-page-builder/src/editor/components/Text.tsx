@@ -15,10 +15,7 @@ type TextElementProps = {
     mediumEditorOptions: CoreOptions;
 };
 
-const Text: React.FunctionComponent<TextElementProps> = ({
-    elementId,
-    mediumEditorOptions,
-}) => {
+const Text: React.FunctionComponent<TextElementProps> = ({ elementId, mediumEditorOptions }) => {
     const element: PbEditorElement = useRecoilValue(elementWithChildrenByIdSelector(elementId));
     const [{ displayMode }] = useRecoilState(uiAtom);
     const [activeElementId, setActiveElementAtomValue] = useRecoilState(activeElementAtom);

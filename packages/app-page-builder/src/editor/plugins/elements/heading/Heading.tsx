@@ -35,7 +35,7 @@ const CustomHeading = props => {
         getClassNames(defaultStyles),
         getElementClassNames(element),
         getThemeClassNames(theme => theme.styles.typography.h),
-        getThemeClassNames(theme => theme.styles.typography[tag]),
+        getThemeClassNames(theme => theme.styles.typography[tag])
     );
 
     return (

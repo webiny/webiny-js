@@ -22,7 +22,6 @@ export default (args: PbEditorTextElementPluginsArgs = {}): PbEditorPageElementP
         "pb-editor-page-element-settings-delete"
     ];
 
-
     const defaultToolbar = {
         title: "Heading",
         group: "pb-editor-element-group-basic",
@@ -32,7 +31,6 @@ export default (args: PbEditorTextElementPluginsArgs = {}): PbEditorPageElementP
     };
 
     const elementType = kebabCase(args.elementType || "heading");
-
 
     return {
         name: `pb-editor-page-element-${elementType}`,
@@ -82,7 +80,7 @@ export default (args: PbEditorTextElementPluginsArgs = {}): PbEditorPageElementP
             return typeof args.create === "function" ? args.create(defaultValue) : defaultValue;
         },
         render(props) {
-            return <Heading {...props} mediumEditorOptions={args.mediumEditorOptions}/>
+            return <Heading {...props} mediumEditorOptions={args.mediumEditorOptions} />;
         }
     };
 };
