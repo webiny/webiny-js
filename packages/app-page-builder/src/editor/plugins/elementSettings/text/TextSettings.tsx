@@ -27,6 +27,7 @@ import { BaseColorPicker } from "../components/ColorPicker";
 import useUpdateHandlers from "../../elementSettings/useUpdateHandlers";
 import TextAlignment from "./TextAlignment";
 import { applyFallbackDisplayMode } from "../elementSettingsUtils";
+import { usePageElements } from "@webiny/app-page-builder-elements/hooks/usePageElements";
 
 const classes = {
     grid: css({
@@ -63,6 +64,8 @@ const TextSettings: React.FunctionComponent<
 > = ({ defaultAccordionValue, options }) => {
     const { displayMode } = useRecoilValue(uiAtom);
     const activeElementId = useRecoilValue(activeElementAtom);
+    const {theme : peTheme} = usePageElements();
+
     const element = useRecoilValue(elementWithChildrenByIdSelector(activeElementId));
     const [{ theme }] = plugins.byType<PbThemePlugin>("pb-theme");
 
@@ -74,6 +77,8 @@ const TextSettings: React.FunctionComponent<
 
     const themeTypographyOptions = useMemo(() => {
         const { types } = theme.elements[element.type] || { types: [] };
+        const asd = peTheme?.styles?.typography?.[element.type] || {};
+        
         return types.map(el => (
             <option value={el.className} key={el.label}>
                 {el.label}
