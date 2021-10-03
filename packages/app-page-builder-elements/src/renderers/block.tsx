@@ -13,7 +13,7 @@ declare global {
     }
 }
 
-const defaultStyles = { display: "block" };
+const defaultStyles = { display: "block", boxSizing: "border-box" };
 
 const Block: ElementRenderer = ({ element }) => {
     const { combineClassNames, getClassNames, getElementClassNames } = usePageElements();

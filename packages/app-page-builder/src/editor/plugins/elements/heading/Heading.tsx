@@ -1,13 +1,17 @@
 import React from "react";
-import classNames from "classnames";
-import { CoreOptions } from "medium-editor";
+import { usePageElements } from "@webiny/app-page-builder-elements/hooks/usePageElements";
 import Text from "~/editor/components/Text";
-import { PbEditorTextElementProps } from "~/types";
 import { getMediumEditorOptions } from "../utils/textUtils";
+import { CoreOptions } from "medium-editor";
 
-export const headingClassName = classNames(
-    "webiny-pb-base-page-element-style webiny-pb-page-element-text"
-);
+declare global {
+    //eslint-disable-next-line
+    namespace JSX {
+        interface IntrinsicElements {
+            "pb-heading": any;
+        }
+    }
+}
 
 const DEFAULT_EDITOR_OPTIONS: CoreOptions = {
     toolbar: {
@@ -19,19 +23,38 @@ const DEFAULT_EDITOR_OPTIONS: CoreOptions = {
     }
 };
 
-const Heading: React.FunctionComponent<PbEditorTextElementProps> = ({
-    elementId,
-    mediumEditorOptions
-}) => {
+const defaultStyles = { display: "block" };
+
+const CustomHeading = props => {
+    const { element, mediumEditorOptions } = props;
+    const tag = element.data.text.desktop.tag || "h1";
+
+    const { getClassNames, getElementClassNames, getThemeClassNames, combineClassNames } =
+        usePageElements();
+    const classNames = combineClassNames(
+        getClassNames(defaultStyles),
+        getElementClassNames(element),
+        getThemeClassNames(theme => theme.styles.typography.h),
+        getThemeClassNames(theme => theme.styles.typography[tag]),
+    );
+
     return (
-        <Text
-            elementId={elementId}
-            mediumEditorOptions={getMediumEditorOptions(
-                DEFAULT_EDITOR_OPTIONS,
-                mediumEditorOptions
+        <pb-heading class={classNames}>
+            {props.isActive ? (
+                <Text
+                    elementId={element.id}
+                    mediumEditorOptions={getMediumEditorOptions(
+                        DEFAULT_EDITOR_OPTIONS,
+                        mediumEditorOptions
+                    )}
+                />
+            ) : (
+                React.createElement(tag, {
+                    dangerouslySetInnerHTML: { __html: element.data.text.data.text }
+                })
             )}
-            rootClassName={headingClassName}
-        />
+        </pb-heading>
     );
 };
-export default React.memo(Heading);
+
+export default CustomHeading;
