@@ -64,7 +64,7 @@ const TextSettings: React.FunctionComponent<
 > = ({ defaultAccordionValue, options }) => {
     const { displayMode } = useRecoilValue(uiAtom);
     const activeElementId = useRecoilValue(activeElementAtom);
-    const {theme : peTheme} = usePageElements();
+    const { theme: peTheme } = usePageElements();
 
     const element = useRecoilValue(elementWithChildrenByIdSelector(activeElementId));
     const [{ theme }] = plugins.byType<PbThemePlugin>("pb-theme");
@@ -78,7 +78,7 @@ const TextSettings: React.FunctionComponent<
     const themeTypographyOptions = useMemo(() => {
         const { types } = theme.elements[element.type] || { types: [] };
         const asd = peTheme?.styles?.typography?.[element.type] || {};
-        
+
         return types.map(el => (
             <option value={el.className} key={el.label}>
                 {el.label}
