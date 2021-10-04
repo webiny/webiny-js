@@ -15,7 +15,7 @@ type ReactMediumEditorProps = {
     value: string;
     onChange: (value: string) => void;
     onSelect: () => void;
-    tag: string;
+    tag: string | [string, Record<string, any>];
     options?: CoreOptions;
     [key: string]: any;
 };
@@ -41,6 +41,10 @@ const ReactMediumEditor = ({
             onSelect();
         }
     };
+
+    const tagName = Array.isArray(tag) ? tag[0] : tag;
+    const tagProps = Array.isArray(tag) && tag[1] ? tag[1] : {};
+
     /**
      * Here we're recreating the "Medium editor" whenever the "tag" changes because that's the element editor is mounted on.
      */
@@ -72,12 +76,13 @@ const ReactMediumEditor = ({
         return () => {
             editorRef.current.destroy();
         };
-    }, [options, tag]);
+    }, [options, tagName]);
 
-    return createElement(tag, {
+    return createElement(tagName, {
         dangerouslySetInnerHTML: { __html: value },
         ref: elementRef,
-        className: editorClass
+        ...tagProps,
+        className: `${editorClass} ${tagProps.className}`
     });
 };
 
