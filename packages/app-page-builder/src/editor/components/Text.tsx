@@ -1,70 +1,22 @@
-import React, { useCallback, useMemo } from "react";
-import { useRecoilState, useRecoilValue } from "recoil";
-import get from "lodash/get";
+import React from "react";
 import { CoreOptions } from "medium-editor";
-import { PbEditorElement } from "~/types";
-import { elementWithChildrenByIdSelector, activeElementAtom, uiAtom } from "../recoil/modules";
-import useUpdateHandlers from "../plugins/elementSettings/useUpdateHandlers";
-import ReactMediumEditor from "../components/MediumEditor";
-import { applyFallbackDisplayMode } from "../plugins/elementSettings/elementSettingsUtils";
+import { usePageElements } from "@webiny/app-page-builder-elements/hooks/usePageElements";
 
-const DATA_NAMESPACE = "data.text";
+import PeText from "./Text/PeText";
+import PbText from "./Text/PbText";
 
 type TextElementProps = {
     elementId: string;
     mediumEditorOptions: CoreOptions;
+    rootClassName?: string;
 };
 
-const Text: React.FunctionComponent<TextElementProps> = ({ elementId, mediumEditorOptions }) => {
-    const element: PbEditorElement = useRecoilValue(elementWithChildrenByIdSelector(elementId));
-    const [{ displayMode }] = useRecoilState(uiAtom);
-    const [activeElementId, setActiveElementAtomValue] = useRecoilState(activeElementAtom);
-    const { getUpdateValue } = useUpdateHandlers({
-        element,
-        dataNamespace: DATA_NAMESPACE
-    });
-
-    const fallbackValue = useMemo(
-        () =>
-            applyFallbackDisplayMode(displayMode, mode =>
-                get(element, `${DATA_NAMESPACE}.${mode}`)
-            ),
-        [displayMode]
-    );
-
-    const value = get(element, `${DATA_NAMESPACE}.${displayMode}`, fallbackValue);
-
-    const onChange = useCallback(
-        value => {
-            getUpdateValue(DATA_NAMESPACE)(value);
-        },
-        [getUpdateValue]
-    );
-
-    const onSelect = useCallback(() => {
-        // Mark element active on editor element selection
-        if (elementId && activeElementId !== elementId) {
-            setActiveElementAtomValue(elementId);
-        }
-    }, [activeElementId, elementId]);
-
-    // required due to re-rendering when set content atom and still nothing in elements atom
-    if (!element) {
-        return null;
+const Text: React.FunctionComponent<TextElementProps> = props => {
+    const pageElements = usePageElements();
+    if (pageElements) {
+        return <PeText {...props} />;
     }
-
-    const textContent = get(element, `${DATA_NAMESPACE}.data.text`);
-    const tag = get(value, "tag");
-
-    return (
-        <ReactMediumEditor
-            elementId={elementId}
-            tag={tag}
-            value={textContent}
-            onChange={onChange}
-            options={mediumEditorOptions}
-            onSelect={onSelect}
-        />
-    );
+    return <PbText {...props} />;
 };
+
 export default React.memo(Text);
