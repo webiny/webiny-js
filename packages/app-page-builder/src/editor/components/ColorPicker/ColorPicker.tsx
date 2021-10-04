@@ -6,7 +6,10 @@ import classNames from "classnames";
 import { isEqual } from "lodash";
 import { ChromePicker } from "react-color";
 import { Menu } from "@webiny/ui/Menu";
-import { usePageBuilder } from "../../../hooks/usePageBuilder";
+import { usePageBuilder } from "~/hooks/usePageBuilder";
+import { usePageElements } from "@webiny/app-page-builder-elements/hooks/usePageElements";
+import { Theme } from "@webiny/app-page-builder-elements/types";
+
 // Icons
 import { ReactComponent as IconPalette } from "../../assets/icons/round-color_lens-24px.svg";
 import { ReactComponent as ColorizeIcon } from "./colorize.svg";
@@ -210,12 +213,19 @@ const ColorPicker = ({ value, onChange, onChangeComplete, compact = false }: Col
     );
 
     const { theme } = usePageBuilder();
+    let peTheme: Theme = {};
+    const pageElements = usePageElements();
+    if (pageElements) {
+        peTheme = pageElements.theme;
+    }
+
+    const themeColors = { ...theme.colors, ...peTheme.styles?.colors };
 
     let themeColor = false;
 
     const colorPicker = (
         <ColorPickerStyle onClick={hidePicker}>
-            {Object.values(theme.colors).map((color, index) => {
+            {Object.values(themeColors).map((color, index) => {
                 if (color === value || value === "transparent") {
                     themeColor = true;
                 }
