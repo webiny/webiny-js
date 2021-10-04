@@ -16,15 +16,12 @@ declare global {
 const defaultStyles = { display: "block", boxSizing: "border-box" };
 
 const Block: ElementRenderer = ({ element }) => {
-    const { combineClassNames, getClassNames, getElementClassNames } = usePageElements();
-    const classNames = combineClassNames(
-        getClassNames(defaultStyles),
-        getElementClassNames(element)
-    );
+    const { getClassNames, getElementClassNames } = usePageElements();
+    const classNames = getClassNames(defaultStyles);
 
     return (
         <pb-block class={classNames}>
-            <pb-block-inner>
+            <pb-block-inner class={getElementClassNames(element)}>
                 <Elements element={element} />
             </pb-block-inner>
         </pb-block>
