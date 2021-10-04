@@ -28,6 +28,7 @@ import useUpdateHandlers from "../../elementSettings/useUpdateHandlers";
 import TextAlignment from "./TextAlignment";
 import { applyFallbackDisplayMode } from "../elementSettingsUtils";
 import { usePageElements } from "@webiny/app-page-builder-elements/hooks/usePageElements";
+import { Theme } from "@webiny/app-page-builder-elements/types";
 
 const classes = {
     grid: css({
@@ -64,7 +65,12 @@ const TextSettings: React.FunctionComponent<
 > = ({ defaultAccordionValue, options }) => {
     const { displayMode } = useRecoilValue(uiAtom);
     const activeElementId = useRecoilValue(activeElementAtom);
-    const { theme: peTheme } = usePageElements();
+
+    let peTheme: Theme = {};
+    const pageElements = usePageElements();
+    if (pageElements) {
+        peTheme = pageElements.theme;
+    }
 
     const element = useRecoilValue(elementWithChildrenByIdSelector(activeElementId));
     const [{ theme }] = plugins.byType<PbThemePlugin>("pb-theme");
@@ -77,13 +83,20 @@ const TextSettings: React.FunctionComponent<
 
     const themeTypographyOptions = useMemo(() => {
         const { types } = theme.elements[element.type] || { types: [] };
-        const asd = peTheme?.styles?.typography?.[element.type] || {};
+        const peThemeTypography = Object.keys(peTheme.styles?.typography || {});
 
-        return types.map(el => (
-            <option value={el.className} key={el.label}>
-                {el.label}
-            </option>
-        ));
+        return [
+            ...types.map(el => (
+                <option value={el.className} key={el.label}>
+                    {el.label}
+                </option>
+            )),
+            ...peThemeTypography.map(el => (
+                <option value={el} key={el}>
+                    {el}
+                </option>
+            ))
+        ];
     }, [theme, element]);
 
     const { getUpdateValue, getUpdatePreview } = useUpdateHandlers({
