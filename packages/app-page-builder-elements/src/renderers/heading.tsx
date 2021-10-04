@@ -14,21 +14,19 @@ declare global {
 const defaultStyles = { display: "block" };
 
 const Heading: ElementRenderer = ({ element }) => {
-    const { getClassNames, getElementClassNames, getThemeClassNames, combineClassNames } =
-        usePageElements();
+    const { getClassNames, getElementClassNames, combineClassNames } = usePageElements();
     const tag = element.data.text.desktop.tag || "h1";
 
     const classNames = combineClassNames(
         getClassNames(defaultStyles),
-        getElementClassNames(element),
-        getThemeClassNames(theme => theme.styles.typography.h),
-        getThemeClassNames(theme => theme.styles.typography[tag])
+        getElementClassNames(element)
     );
 
     return (
-        <pb-heading class={classNames}>
+        <pb-heading>
             {React.createElement(tag, {
-                dangerouslySetInnerHTML: { __html: element.data.text.data.text }
+                dangerouslySetInnerHTML: { __html: element.data.text.data.text },
+                className: classNames
             })}
         </pb-heading>
     );
