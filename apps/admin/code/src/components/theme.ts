@@ -1,38 +1,26 @@
-const fonts = {
-    default: "'Trebuchet MS', sans-serif;"
-}
+import { Theme } from "@webiny/app-page-builder-elements/types";
 
 const colors = {
     text: "#231010",
-    primary: "#fa5723"
+    primary: "#fa5723",
+    secondary: "purple",
+    tertiary: "cyan",
 };
 
-const typography = {
-    primary: { fontFamily: fonts.default, fontSize: 14, color: colors.text },
-    paragraph: {
-    },
-    heading: {
-        h: {
-            fontFamily: fonts.default,
-            fontWeight: "bold",
-            color: colors.text,
-            margin: 0,
-            padding: 0
-        },
-        h1: {
-            fontSize: 32
-        },
-        h2: {
-            fontSize: 24
-        },
-        h3: {
-            fontSize: 16
-        }
-    }
+const fonts = {
+    default: "'Trebuchet MS', sans-serif;"
+};
+
+const heading = {
+    fontFamily: fonts.default,
+    color: colors.text,
+    fontWeight: "bold",
+    margin: 0,
+    padding: 0
 };
 
 // Theme
-export const theme = {
+export const theme: Theme = {
     breakpoints: {
         desktop: { mediaQuery: "@media (max-width: 4000px)" },
         tablet: { mediaQuery: "@media (max-width: 991px)" },
@@ -43,7 +31,21 @@ export const theme = {
         colors,
         typography: {
             paragraph: {
-
+                fontFamily: fonts.default,
+                fontSize: 14,
+                color: colors.text
+            },
+            heading1: {
+                ...heading,
+                fontSize: 32
+            },
+            heading2: {
+                ...heading,
+                fontSize: 24
+            },
+            heading3: {
+                ...heading,
+                fontSize: 16
             }
         }
     }
