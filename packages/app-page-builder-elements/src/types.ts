@@ -6,13 +6,16 @@ export interface Element {
     type: string;
     data: Record<string, any>;
     elements: Element[];
-    path: string[];
+    path?: string[];
     [key: string]: any;
 }
 
 export type Content = Element;
 
-export type StylesObjects = Record<string, CSSObject> | CSSObject;
+/**
+ * Should be a `CSSObject` object or an object with breakpoint names as keys and `CSSObject` objects as values.
+ */
+export type StylesObjects = Record<string, any>; // TODO: CSSObject | Record<string, CSSObject>; doesn't work?
 
 export interface PageElementsProviderProps {
     theme: Theme;
@@ -51,6 +54,9 @@ export interface Breakpoint {
 }
 
 export interface Theme {
-    breakpoints: Record<string, Breakpoint>;
-    styles: Record<string, any>;
+    breakpoints?: Record<string, Breakpoint>;
+    styles?: {
+        colors?: Record<string, any>,
+        typography?: Record<string, StylesObjects>
+    };
 }
