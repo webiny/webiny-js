@@ -3,6 +3,74 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.15.0](https://github.com/webiny/webiny-js/compare/v5.15.0-beta.3...v5.15.0) (2021-09-30)
+
+**Note:** Version bump only for package @webiny/cli
+
+
+
+
+
+# [5.15.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.15.0-beta.2...v5.15.0-beta.3) (2021-09-30)
+
+**Note:** Version bump only for package @webiny/cli
+
+
+
+
+
+# [5.15.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.15.0-beta.1...v5.15.0-beta.2) (2021-09-29)
+
+
+### Bug Fixes
+
+* **api-page-builder:** cli upgrade ([b69a2e3](https://github.com/webiny/webiny-js/commit/b69a2e343c4d397e632289cd4904ae3fcf828187))
+
+
+
+
+
+# [5.15.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.15.0-beta.0...v5.15.0-beta.1) (2021-09-28)
+
+
+### Bug Fixes
+
+* disable help processing until after plugins are imported ([d69c909](https://github.com/webiny/webiny-js/commit/d69c9098477383157653871891c1b441c0ee4bd1))
+
+
+
+
+
+# [5.15.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.14.0...v5.15.0-beta.0) (2021-09-16)
+
+
+### Bug Fixes
+
+* add missing dependency ([f35a871](https://github.com/webiny/webiny-js/commit/f35a871b9ffe3758238030c0b58b92d0700c911c))
+* ensure .env files are searched in project root, not in CWD ([9230ec0](https://github.com/webiny/webiny-js/commit/9230ec09eb45395b786c5cc10f80889ff31a6f00))
+* export sendEvent ([e7e5e5a](https://github.com/webiny/webiny-js/commit/e7e5e5ad1aea113543c5cbb0b96972c40d4f06a6))
+* import getProject` directly ([2af0f67](https://github.com/webiny/webiny-js/commit/2af0f677f8d48fce4913cb0bc375a0e78b9709fd))
+* lazy-load config ([acb5ede](https://github.com/webiny/webiny-js/commit/acb5eded9ea320b118c01365812b6db2b9ccbd15))
+* parse `debug` flag's value ([9368e34](https://github.com/webiny/webiny-js/commit/9368e34076a2c85918794ff0bb7b5a93ffca48a5))
+* remove globalConfig util ([c33d037](https://github.com/webiny/webiny-js/commit/c33d0374f9212a71eb6113f66d52e39c0809183b))
+* remove old config folder ([4caf132](https://github.com/webiny/webiny-js/commit/4caf132b2d9b2f67584d08c583c1bfd66a6514a7))
+* remove old require ([616fe7a](https://github.com/webiny/webiny-js/commit/616fe7ab8cf7bb2ebbeb32bd064d17dc9b07b424))
+* remove verifyConfig step (no longer needed) ([2d49cb9](https://github.com/webiny/webiny-js/commit/2d49cb907bda7c6050e40eb3a82209f27ae0c7b7))
+* update dependencies ([37f2691](https://github.com/webiny/webiny-js/commit/37f2691f3cb615615a089d977f58a22a8bb21f50))
+* use built-in utils to enable/disable telemetry ([50566a8](https://github.com/webiny/webiny-js/commit/50566a85404b0cbf26db8dcd4241fd426de1bdb7))
+* use new `globalConfig` ([ab8e382](https://github.com/webiny/webiny-js/commit/ab8e3827a90b4be4c807bcb7a6f943213e83fd7a))
+* use telemetry.sendEvent ([9bc4098](https://github.com/webiny/webiny-js/commit/9bc40986dbfcd0c84299ed3926eecc13f75b8dc5))
+
+
+### Features
+
+* **api-page-builder:** storage operations ([#1872](https://github.com/webiny/webiny-js/issues/1872)) ([8738612](https://github.com/webiny/webiny-js/commit/8738612d0a908f39738c81d4a39173c10a461f7d))
+* add utils ([d9be82a](https://github.com/webiny/webiny-js/commit/d9be82a76f5210704c71cd8e191aca698cb0963c))
+
+
+
+
+
 # [5.14.0](https://github.com/webiny/webiny-js/compare/v5.14.0-beta.0...v5.14.0) (2021-08-30)
 
 **Note:** Version bump only for package @webiny/cli

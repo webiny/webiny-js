@@ -22,6 +22,22 @@ export interface PartitionKeyOptions {
     locale?: string | boolean;
 }
 
+const extractFromStorage = (settings: Settings): Settings => {
+    return {
+        ...settings,
+        tenant: !settings.tenant ? false : settings.tenant,
+        locale: !settings.locale ? false : settings.locale
+    };
+};
+
+const prepareForStorage = (settings: Settings): Settings => {
+    return {
+        ...settings,
+        tenant: !settings.tenant ? null : settings.tenant,
+        locale: !settings.locale ? null : settings.locale
+    };
+};
+
 export class SettingsStorageOperationsDdbEs implements SettingsStorageOperations {
     protected readonly context: PbContext;
     public readonly table: Table;
@@ -48,10 +64,7 @@ export class SettingsStorageOperationsDdbEs implements SettingsStorageOperations
     public async get(params: SettingsStorageOperationsGetParams): Promise<Settings> {
         const { where } = params;
         const keys = {
-            PK: this.createPartitionKey({
-                tenant: where.tenant,
-                locale: where.locale
-            }),
+            PK: this.createPartitionKey(where),
             SK: this.createSortKey(where)
         };
         try {
@@ -59,7 +72,9 @@ export class SettingsStorageOperationsDdbEs implements SettingsStorageOperations
             if (!result || !result.Item) {
                 return null;
             }
-            return cleanupItem(this.entity, result.Item);
+            const settings = cleanupItem(this.entity, result.Item);
+
+            return extractFromStorage(settings);
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not load settings record.",
@@ -74,15 +89,12 @@ export class SettingsStorageOperationsDdbEs implements SettingsStorageOperations
     public async create(params: SettingsStorageOperationsCreateParams): Promise<Settings> {
         const { settings } = params;
         const keys = {
-            PK: this.createPartitionKey({
-                tenant: settings.tenant,
-                locale: settings.locale
-            }),
+            PK: this.createPartitionKey(settings),
             SK: this.createSortKey(settings)
         };
         try {
             await this.entity.put({
-                ...settings,
+                ...prepareForStorage(settings),
                 TYPE: this.createType(),
                 ...keys
             });
@@ -102,26 +114,13 @@ export class SettingsStorageOperationsDdbEs implements SettingsStorageOperations
 
     public async update(params: SettingsStorageOperationsUpdateParams): Promise<Settings> {
         const { original, settings } = params;
-        if (original.type !== settings.type) {
-            throw new WebinyError(
-                `A "type" on both original and updated item must be identical.`,
-                "UNSUPPORTED_UPDATE",
-                {
-                    original,
-                    settings
-                }
-            );
-        }
         const keys = {
-            PK: this.createPartitionKey({
-                tenant: settings.tenant,
-                locale: settings.locale
-            }),
-            SK: this.createSortKey(original)
+            PK: this.createPartitionKey(settings),
+            SK: this.createSortKey(settings)
         };
         try {
             await this.entity.put({
-                ...settings,
+                ...prepareForStorage(settings),
                 TYPE: this.createType(),
                 ...keys
             });
