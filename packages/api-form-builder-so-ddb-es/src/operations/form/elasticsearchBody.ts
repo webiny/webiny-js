@@ -1,4 +1,3 @@
-import WebinyError from "@webiny/error";
 import { SearchBody as esSearchBody } from "elastic-ts";
 import { decodeCursor } from "@webiny/api-elasticsearch/cursors";
 import { ElasticsearchBoolQueryConfig } from "@webiny/api-elasticsearch/types";
@@ -11,24 +10,7 @@ import { FormElasticsearchBodyModifierPlugin } from "~/plugins/FormElasticsearch
 import { FormBuilderStorageOperationsListFormsParams } from "@webiny/api-form-builder/types";
 import { FormElasticsearchQueryModifierPlugin } from "~/plugins/FormElasticsearchQueryModifierPlugin";
 import { PluginsContainer } from "@webiny/plugins";
-
-const parseWhereKeyRegExp = new RegExp(/^([a-zA-Z0-9]+)(_[a-zA-Z0-9_]+)?$/);
-const parseWhereKey = (key: string) => {
-    const match = key.match(parseWhereKeyRegExp);
-
-    if (!match) {
-        throw new Error(`It is not possible to search by key "${key}"`);
-    }
-
-    const [, field, operation = "eq"] = match;
-    const op = operation.match(/^_/) ? operation.substr(1) : operation;
-
-    if (!field.match(/^([a-zA-Z]+)$/)) {
-        throw new Error(`Cannot filter by "${field}".`);
-    }
-
-    return { field, op };
-};
+import { applyWhere } from "@webiny/api-elasticsearch/where";
 
 const createInitialQueryValue = (): ElasticsearchBoolQueryConfig => {
     return {
@@ -46,32 +28,6 @@ const createInitialQueryValue = (): ElasticsearchBoolQueryConfig => {
         should: [],
         filter: []
     };
-};
-
-const findFieldPlugin = (
-    plugins: Record<string, FormElasticsearchFieldPlugin>,
-    field: string
-): FormElasticsearchFieldPlugin => {
-    const plugin = plugins[field] || plugins["*"];
-    if (plugin) {
-        return plugin;
-    }
-    throw new WebinyError(`Missing plugin for the field "${field}".`, "PLUGIN_ERROR", {
-        field
-    });
-};
-
-const findOperatorPlugin = (
-    plugins: Record<string, ElasticsearchQueryBuilderOperatorPlugin>,
-    operator: string
-): ElasticsearchQueryBuilderOperatorPlugin => {
-    const fieldPlugin = plugins[operator];
-    if (fieldPlugin) {
-        return fieldPlugin;
-    }
-    throw new WebinyError(`Missing plugin for the operator "${operator}"`, "PLUGIN_ERROR", {
-        operator
-    });
 };
 
 interface CreateElasticsearchQueryParams extends CreateElasticsearchBodyParams {
@@ -127,43 +83,12 @@ const createElasticsearchQuery = (params: CreateElasticsearchQueryParams & {}) =
     /**
      * We apply other conditions as they are passed via the where value.
      */
-    for (const key in where) {
-        if (where.hasOwnProperty(key) === false) {
-            continue;
-        }
-        const initialValue = where[key];
-        /**
-         * There is a possibility that undefined is sent as a value, so just skip it.
-         */
-        if (initialValue === undefined) {
-            continue;
-        }
-        const { field, op } = parseWhereKey(key);
-        const fieldPlugin = findFieldPlugin(fieldPlugins, field);
-        const operatorPlugin = findOperatorPlugin(operatorPlugins, op);
-
-        /**
-         * Get the path but in the case of * (all fields, replace * with the field.
-         * Custom path would return its own value anyways.
-         */
-        const path = fieldPlugin.getPath(field);
-        const basePath = fieldPlugin.getBasePath(field);
-        /**
-         * Transform the value for the search.
-         */
-        const value = fieldPlugin.toSearchValue({
-            value: initialValue,
-            path,
-            basePath
-        });
-
-        operatorPlugin.apply(query, {
-            value,
-            path,
-            basePath: basePath,
-            keyword: fieldPlugin.keyword
-        });
-    }
+    applyWhere({
+        query,
+        where,
+        fields: fieldPlugins,
+        operators: operatorPlugins
+    });
 
     return query;
 };
