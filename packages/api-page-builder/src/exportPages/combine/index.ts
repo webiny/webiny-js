@@ -55,6 +55,11 @@ export default (): HandlerPlugin<PbContext, ArgsContext<HandlerArgs>> => ({
                     url: pageExportUpload.Location
                 }
             });
+
+            // Remove individual zip files from storage
+            const deleteFilePromises = zipFileKeys.map(key => s3Stream.deleteObject(key));
+            await Promise.all(deleteFilePromises);
+            log(`Successfully deleted ${deleteFilePromises.length} zip files.`);
         } catch (e) {
             log("[EXPORT_PAGES_COMBINE] Error => ", e);
 

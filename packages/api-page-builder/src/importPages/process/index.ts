@@ -52,7 +52,6 @@ export default (
                 taskId,
                 zeroPad(subTaskIndex)
             );
-            prevStatusOfSubTask = subTask.status;
 
             /**
              * Base condition!!
@@ -64,6 +63,7 @@ export default (
             } else {
                 noPendingTask = false;
             }
+            prevStatusOfSubTask = subTask.status;
 
             log(`Fetched sub task => ${subTask.id}`);
 

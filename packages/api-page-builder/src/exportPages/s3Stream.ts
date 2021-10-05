@@ -77,6 +77,10 @@ class S3Stream {
             })
             .promise();
     }
+
+    deleteObject(key: string) {
+        return this.s3.deleteObject({ Key: key, Bucket: this.bucket }).promise();
+    }
 }
 
 export const s3Stream = new S3Stream();
