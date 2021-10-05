@@ -19,7 +19,7 @@ class S3Stream {
      */
     async isFileAccessible(Key: string): Promise<boolean> {
         try {
-            await this.s3.headObject({ Bucket: this.bucket, Key }).promise();
+            await this.getObjectHead(Key);
             return true;
         } catch (error) {
             console.warn(`Error while fetching meta data for file "${Key}"`);
@@ -28,11 +28,18 @@ class S3Stream {
         }
     }
 
+    getObjectHead(Key: string): Promise<S3.HeadObjectOutput> {
+        return this.s3.headObject({ Bucket: this.bucket, Key }).promise();
+    }
+
     readStream(Key: string): Readable {
         return this.s3.getObject({ Bucket: this.bucket, Key }).createReadStream();
     }
 
-    writeStream(Key: string): {
+    writeStream(
+        Key: string,
+        contentType: string = ARCHIVE_CONTENT_TYPE
+    ): {
         streamPassThrough: PassThrough;
         streamPassThroughUploadPromise: Promise<S3.ManagedUpload.SendData>;
     } {
@@ -42,7 +49,7 @@ class S3Stream {
             ACL: "public-read",
             Body: streamPassThrough,
             Bucket: this.bucket,
-            ContentType: ARCHIVE_CONTENT_TYPE,
+            ContentType: contentType,
             Key
         };
 
@@ -78,7 +85,7 @@ class S3Stream {
             .promise();
     }
 
-    deleteObject(key: string) {
+    deleteObject(key: string): Promise<S3.DeleteObjectOutput> {
         return this.s3.deleteObject({ Key: key, Bucket: this.bucket }).promise();
     }
 }

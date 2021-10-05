@@ -4,7 +4,6 @@ import S3 from "aws-sdk/clients/s3";
 import dotProp from "dot-prop-immutable";
 import fs from "fs-extra";
 import fetch from "node-fetch";
-import { PassThrough } from "stream";
 import { deleteFile } from "~/graphql/crud/install/utils/downloadInstallFiles";
 import path from "path";
 import chunk from "lodash/chunk";
@@ -13,6 +12,7 @@ import { PbContext } from "~/graphql/types";
 import { FileInput } from "@webiny/api-file-manager/types";
 import WebinyError from "@webiny/error";
 import { PageImportExportTaskStatus, Page } from "~/types";
+import { s3Stream } from "~/exportPages/s3Stream";
 
 export type CreatePage = () => Promise<Page>;
 export type UpdatePage = (page: Page, content: Record<string, any>) => Promise<Page>;
@@ -20,10 +20,7 @@ export type UpdatePage = (page: Page, content: Record<string, any>) => Promise<P
 const INSTALL_DIR = "/tmp";
 const INSTALL_EXTRACT_DIR = path.join(INSTALL_DIR, "apiPageBuilderImportPage");
 const FILES_COUNT_IN_EACH_BATCH = 15;
-const FM_BUCKET = process.env.S3_BUCKET;
 const ZIP_CONTENT_TYPE = "application/zip";
-
-const s3 = new S3({ region: process.env.AWS_REGION });
 
 interface UpdateFilesInPageDataParams {
     data: Record<string, any>;
@@ -71,7 +68,6 @@ interface UploadPageAssetsReturnType {
     fileIdToKeyMap?: Map<string, string>;
 }
 
-// FIXME: We currently only support import page via ZIP file key
 export const uploadPageAssets = async ({
     context,
     filesData,
@@ -144,22 +140,6 @@ export const uploadPageAssets = async ({
     };
 };
 
-// TODO: Use S3Stream instead
-function uploadStream(Key: string, contentType: string) {
-    const passThrough = new PassThrough();
-    return {
-        passThrough,
-        promise: s3
-            .upload({
-                Bucket: process.env.S3_BUCKET,
-                Key,
-                Body: passThrough,
-                ContentType: contentType
-            })
-            .promise()
-    };
-}
-
 interface FileUploadsData {
     data: string;
     assets: Record<string, string>;
@@ -189,7 +169,8 @@ export async function importPage({
     log(`Downloading Page data file: ${pageDataFileKey} at "${PAGE_DATA_FILE_PATH}"`);
     // Download and save page data file in disk.
     await new Promise((resolve, reject) => {
-        getS3FileStream(pageDataFileKey)
+        s3Stream
+            .readStream(pageDataFileKey)
             .on("error", reject)
             .pipe(fs.createWriteStream(PAGE_DATA_FILE_PATH))
             .on("error", reject)
@@ -240,14 +221,15 @@ async function uploadFilesFromS3({
         const tempNewKey = oldKeyToNewKeyMap[oldKey];
 
         // Read file.
-        const readStream = getS3FileStream(tempNewKey);
+        const readStream = s3Stream.readStream(tempNewKey);
         // Get file meta data.
         const fileMetaData = fileKeyToFileMap.get(oldKey);
 
         if (fileMetaData) {
             const newKey = uniqueId("", `-${fileMetaData.key}`);
-            const { passThrough, promise } = uploadStream(newKey, fileMetaData.type);
-            readStream.pipe(passThrough);
+            const { streamPassThrough, streamPassThroughUploadPromise: promise } =
+                s3Stream.writeStream(newKey, fileMetaData.type);
+            readStream.pipe(streamPassThrough);
             promises.push(promise);
 
             console.log(`Successfully queued file "${newKey}"`);
@@ -257,35 +239,13 @@ async function uploadFilesFromS3({
     return Promise.all(promises);
 }
 
-// TODO: Move into FileStorage plugins | Use S3Stream
-function getS3FileStream(Key: string) {
-    return s3
-        .getObject({
-            Bucket: process.env.S3_BUCKET,
-            Key: Key
-        })
-        .createReadStream();
-}
-
-// TODO: Move into FileStorage plugins | Use S3Stream
 async function getObjectMetaFromS3(Key: string) {
-    const meta = await s3
-        .headObject({
-            Bucket: process.env.S3_BUCKET,
-            Key: Key
-        })
-        .promise();
+    const meta = await s3Stream.getObjectHead(Key);
 
     if (meta.ContentType !== ZIP_CONTENT_TYPE) {
         throw new WebinyError(`Unsupported file type: "${meta.ContentType}"`, "UNSUPPORTED_FILE");
     }
 }
-
-const IGNORE_SYSTEM_FILES = ["__MACOSX"];
-// TODO: Maybe we don't need it anymore?
-const isSystemFile = fileName => {
-    return IGNORE_SYSTEM_FILES.some(system => fileName.startsWith(system));
-};
 
 function getOldFileKey(key: string) {
     /*
@@ -328,7 +288,7 @@ export async function readExtractAndUploadZipFileContents(
         // We're first retrieving object's meta data, just to check whether the file is available at the given Key
         await getObjectMetaFromS3(zipFileKey);
 
-        readStream = getS3FileStream(zipFileKey);
+        readStream = s3Stream.readStream(zipFileKey);
     }
     /**
      * Note:
@@ -345,11 +305,12 @@ export async function readExtractAndUploadZipFileContents(
         log(`Processing zip file "${filePath}" from top level zip.`);
         const type = entry.type; // 'Directory' or 'File'
 
-        if (type === "File" && !isSystemFile(filePath) && filePath.endsWith(ZIP_EXTENSION)) {
+        if (type === "File" && filePath.endsWith(ZIP_EXTENSION)) {
             const newKey = `${uniquePath}/${filePath}`;
 
-            const { passThrough, promise } = uploadStream(newKey, ZIP_CONTENT_TYPE);
-            entry.pipe(passThrough);
+            const { streamPassThrough, streamPassThroughUploadPromise: promise } =
+                s3Stream.writeStream(newKey, ZIP_CONTENT_TYPE);
+            entry.pipe(streamPassThrough);
             /**
              * Note: We're not simply awaiting the promise inside async-iterator because
              * the streams returned by "unzipper.Parse()" doesn't work reliably that way.
@@ -373,7 +334,7 @@ export async function readExtractAndUploadZipFileContents(
         const zipKey = zipKeys[i];
         const uniquePageKey = path.basename(zipKey).replace(path.extname(zipKey), "");
 
-        const zip = getS3FileStream(zipKey).pipe(unzipper.Parse({ forceStream: true }));
+        const zip = s3Stream.readStream(zipKey).pipe(unzipper.Parse({ forceStream: true }));
         // Process each entry in the zip file.
         for await (const entry of zip) {
             const filePath = entry.path;
@@ -381,13 +342,14 @@ export async function readExtractAndUploadZipFileContents(
             console.log(`Processing page file ${filePath}`);
             const type = entry.type; // 'Directory' or 'File'
 
-            if (type === "File" && !isSystemFile(filePath)) {
+            if (type === "File") {
                 const newKey = `${uniquePath}/${uniquePageKey}/${filePath}`;
 
                 dataMap = prepareMap({ map: dataMap, filePath, newKey });
 
-                const { passThrough, promise } = uploadStream(newKey, FILE_CONTENT_TYPE);
-                entry.pipe(passThrough);
+                const { streamPassThrough, streamPassThroughUploadPromise: promise } =
+                    s3Stream.writeStream(newKey, FILE_CONTENT_TYPE);
+                entry.pipe(streamPassThrough);
                 /**
                  * Note: We're not simply awaiting the promise inside async-iterator because
                  * the streams returned by "unzipper.Parse()" doesn't work reliably that way.
@@ -431,31 +393,17 @@ function prepareMap({ map, filePath, newKey }) {
     return map;
 }
 
-// TODO: Use FileStorage plugins instead | Use S3Stream
 async function deleteS3Folder(key) {
     // Append trailing slash i.e "/" to key to make sure we only delete a specific folder.
     if (!key.endsWith("/")) {
         key = `${key}/`;
     }
 
-    const response = await s3
-        .listObjects({
-            Bucket: FM_BUCKET,
-            Prefix: key
-        })
-        .promise();
-
+    const response = await s3Stream.listObject(key);
     const keys = response.Contents.map(c => c.Key);
     console.log(`Found ${keys.length} files.`);
 
-    const deleteFilePromises = keys.map(key =>
-        s3
-            .deleteObject({
-                Bucket: FM_BUCKET,
-                Key: key
-            })
-            .promise()
-    );
+    const deleteFilePromises = keys.map(key => s3Stream.deleteObject(key));
 
     await Promise.all(deleteFilePromises);
     console.log(`Successfully deleted ${deleteFilePromises.length} files.`);
