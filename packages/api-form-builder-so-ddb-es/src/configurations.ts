@@ -1,6 +1,4 @@
-import { Tenant } from "@webiny/api-tenancy/types";
-
-interface ElasticsearchConfigParams {
+export interface ElasticsearchConfigParams {
     tenant: string;
 }
 

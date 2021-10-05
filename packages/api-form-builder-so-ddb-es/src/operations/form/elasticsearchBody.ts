@@ -5,11 +5,11 @@ import { ElasticsearchBoolQueryConfig } from "@webiny/api-elasticsearch/types";
 import { createSort } from "@webiny/api-elasticsearch/sort";
 import { createLimit } from "@webiny/api-elasticsearch/limit";
 import { ElasticsearchQueryBuilderOperatorPlugin } from "@webiny/api-elasticsearch/plugins/definition/ElasticsearchQueryBuilderOperatorPlugin";
-import { SubmissionElasticsearchFieldPlugin } from "~/plugins/SubmissionElasticsearchFieldPlugin";
-import { SubmissionElasticsearchSortModifierPlugin } from "~/plugins/SubmissionElasticsearchSortModifierPlugin";
-import { SubmissionElasticsearchBodyModifierPlugin } from "~/plugins/SubmissionElasticsearchBodyModifierPlugin";
-import { FormBuilderStorageOperationsListSubmissionsParams } from "@webiny/api-form-builder/types";
-import { SubmissionElasticsearchQueryModifierPlugin } from "~/plugins/SubmissionElasticsearchQueryModifierPlugin";
+import { FormElasticsearchFieldPlugin } from "~/plugins/FormElasticsearchFieldPlugin";
+import { FormElasticsearchSortModifierPlugin } from "~/plugins/FormElasticsearchSortModifierPlugin";
+import { FormElasticsearchBodyModifierPlugin } from "~/plugins/FormElasticsearchBodyModifierPlugin";
+import { FormBuilderStorageOperationsListFormsParams } from "@webiny/api-form-builder/types";
+import { FormElasticsearchQueryModifierPlugin } from "~/plugins/FormElasticsearchQueryModifierPlugin";
 import { PluginsContainer } from "@webiny/plugins";
 
 const parseWhereKeyRegExp = new RegExp(/^([a-zA-Z0-9]+)(_[a-zA-Z0-9_]+)?$/);
@@ -38,7 +38,7 @@ const createInitialQueryValue = (): ElasticsearchBoolQueryConfig => {
              */
             {
                 term: {
-                    "__type.keyword": "fb.submission"
+                    "__type.keyword": "fb.form"
                 }
             }
         ],
@@ -48,14 +48,10 @@ const createInitialQueryValue = (): ElasticsearchBoolQueryConfig => {
     };
 };
 
-export const createSubmissionElasticType = (): string => {
-    return "fb.submission";
-};
-
 const findFieldPlugin = (
-    plugins: Record<string, SubmissionElasticsearchFieldPlugin>,
+    plugins: Record<string, FormElasticsearchFieldPlugin>,
     field: string
-): SubmissionElasticsearchFieldPlugin => {
+): FormElasticsearchFieldPlugin => {
     const plugin = plugins[field] || plugins["*"];
     if (plugin) {
         return plugin;
@@ -79,7 +75,7 @@ const findOperatorPlugin = (
 };
 
 interface CreateElasticsearchQueryParams extends CreateElasticsearchBodyParams {
-    fieldPlugins: Record<string, SubmissionElasticsearchFieldPlugin>;
+    fieldPlugins: Record<string, FormElasticsearchFieldPlugin>;
 }
 
 const createElasticsearchQuery = (params: CreateElasticsearchQueryParams & {}) => {
@@ -97,7 +93,7 @@ const createElasticsearchQuery = (params: CreateElasticsearchQueryParams & {}) =
             return acc;
         }, {});
 
-    const where: FormBuilderStorageOperationsListSubmissionsParams["where"] = {
+    const where: FormBuilderStorageOperationsListFormsParams["where"] = {
         ...initialWhere
     };
     /**
@@ -128,15 +124,6 @@ const createElasticsearchQuery = (params: CreateElasticsearchQueryParams & {}) =
         }
     });
     delete where.locale;
-    /**
-     * And add the parent (form) to the filtering, if it exists.
-     */
-    query.must.push({
-        term: {
-            "form.parent.keyword": where.parent
-        }
-    });
-    delete where.parent;
     /**
      * We apply other conditions as they are passed via the where value.
      */
@@ -183,7 +170,7 @@ const createElasticsearchQuery = (params: CreateElasticsearchQueryParams & {}) =
 
 interface CreateElasticsearchBodyParams {
     plugins: PluginsContainer;
-    where: FormBuilderStorageOperationsListSubmissionsParams["where"];
+    where: FormBuilderStorageOperationsListFormsParams["where"];
     limit: number;
     after?: string;
     sort: string[];
@@ -192,8 +179,8 @@ interface CreateElasticsearchBodyParams {
 export const createElasticsearchBody = (params: CreateElasticsearchBodyParams): esSearchBody => {
     const { plugins, where, limit: initialLimit, sort: initialSort, after } = params;
 
-    const fieldPlugins: Record<string, SubmissionElasticsearchFieldPlugin> = plugins
-        .byType<SubmissionElasticsearchFieldPlugin>(SubmissionElasticsearchFieldPlugin.type)
+    const fieldPlugins: Record<string, FormElasticsearchFieldPlugin> = plugins
+        .byType<FormElasticsearchFieldPlugin>(FormElasticsearchFieldPlugin.type)
         .reduce((acc, plugin) => {
             acc[plugin.field] = plugin;
             return acc;
@@ -211,8 +198,8 @@ export const createElasticsearchBody = (params: CreateElasticsearchBodyParams): 
         fieldPlugins
     });
 
-    const queryModifiers = plugins.byType<SubmissionElasticsearchQueryModifierPlugin>(
-        SubmissionElasticsearchQueryModifierPlugin.type
+    const queryModifiers = plugins.byType<FormElasticsearchQueryModifierPlugin>(
+        FormElasticsearchQueryModifierPlugin.type
     );
 
     for (const plugin of queryModifiers) {
@@ -222,8 +209,8 @@ export const createElasticsearchBody = (params: CreateElasticsearchBodyParams): 
         });
     }
 
-    const sortModifiers = plugins.byType<SubmissionElasticsearchSortModifierPlugin>(
-        SubmissionElasticsearchSortModifierPlugin.type
+    const sortModifiers = plugins.byType<FormElasticsearchSortModifierPlugin>(
+        FormElasticsearchSortModifierPlugin.type
     );
 
     for (const plugin of sortModifiers) {
@@ -252,8 +239,8 @@ export const createElasticsearchBody = (params: CreateElasticsearchBodyParams): 
         sort
     };
 
-    const bodyModifiers = plugins.byType<SubmissionElasticsearchBodyModifierPlugin>(
-        SubmissionElasticsearchBodyModifierPlugin.type
+    const bodyModifiers = plugins.byType<FormElasticsearchBodyModifierPlugin>(
+        FormElasticsearchBodyModifierPlugin.type
     );
 
     for (const plugin of bodyModifiers) {

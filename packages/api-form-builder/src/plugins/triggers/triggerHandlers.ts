@@ -1,5 +1,5 @@
 import got from "got";
-import { FbFormTriggerHandlerPlugin } from "../../types";
+import { FbFormTriggerHandlerPlugin } from "~/types";
 
 const plugin: FbFormTriggerHandlerPlugin = {
     type: "form-trigger-handler",

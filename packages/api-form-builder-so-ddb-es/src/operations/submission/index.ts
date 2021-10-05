@@ -12,7 +12,6 @@ import { Client } from "@elastic/elasticsearch";
 import WebinyError from "@webiny/error";
 import { batchReadAll } from "@webiny/db-dynamodb/utils/batchRead";
 import { sortItems } from "@webiny/db-dynamodb/utils/sort";
-import { encodeCursor } from "@webiny/api-form-builder/plugins/crud/utils";
 import { createLimit } from "@webiny/api-elasticsearch/limit";
 import {
     createElasticsearchBody,
@@ -26,6 +25,7 @@ import {
 import configurations from "~/configurations";
 import { cleanupItem } from "@webiny/db-dynamodb/utils/cleanup";
 import { parseIdentifier } from "@webiny/utils";
+import { decodeCursor, encodeCursor } from "@webiny/api-elasticsearch/cursors";
 
 export interface Params {
     entity: Entity<any>;
@@ -268,7 +268,7 @@ export const createSubmissionStorageOperations = (
             sort,
             limit: limit + 1,
             where,
-            after
+            after: decodeCursor(after)
         });
 
         const esConfig = configurations.es({

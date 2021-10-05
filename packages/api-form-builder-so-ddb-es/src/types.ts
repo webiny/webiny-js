@@ -59,9 +59,16 @@ export interface FormBuilderSubmissionStorageOperations
     createSubmissionSortKey: (id: string) => string;
 }
 
+export interface FormBuilderSettingsStorageOperationsCreatePartitionKeyParams {
+    tenant: string;
+    locale: string;
+}
+
 export interface FormBuilderSettingsStorageOperations
     extends BaseFormBuilderSettingsStorageOperations {
-    createSettingsPartitionKey: () => string;
+    createSettingsPartitionKey: (
+        params: FormBuilderSettingsStorageOperationsCreatePartitionKeyParams
+    ) => string;
     createSettingsSortKey: () => string;
 }
 

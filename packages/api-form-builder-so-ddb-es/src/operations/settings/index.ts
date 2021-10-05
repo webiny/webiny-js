@@ -6,7 +6,10 @@ import {
     Settings
 } from "@webiny/api-form-builder/types";
 import { Entity, Table } from "dynamodb-toolbox";
-import { FormBuilderSettingsStorageOperations } from "~/types";
+import {
+    FormBuilderSettingsStorageOperations,
+    FormBuilderSettingsStorageOperationsCreatePartitionKeyParams
+} from "~/types";
 import WebinyError from "@webiny/error";
 import { cleanupItem } from "@webiny/db-dynamodb/utils/cleanup";
 
@@ -15,17 +18,15 @@ export interface Params {
     table: Table;
 }
 
-export interface CreateKeysParams {
-    tenant: string;
-    locale: string;
-}
-
 export const createSettingsStorageOperations = (
     params: Params
 ): FormBuilderSettingsStorageOperations => {
     const { entity } = params;
 
-    const createSettingsPartitionKey = ({ tenant, locale }: CreateKeysParams): string => {
+    const createSettingsPartitionKey = ({
+        tenant,
+        locale
+    }: FormBuilderSettingsStorageOperationsCreatePartitionKeyParams): string => {
         return `T#${tenant}#L#${locale}#FB#SETTINGS`;
     };
 
@@ -33,7 +34,7 @@ export const createSettingsStorageOperations = (
         return "default";
     };
 
-    const createKeys = (params: CreateKeysParams) => {
+    const createKeys = (params: FormBuilderSettingsStorageOperationsCreatePartitionKeyParams) => {
         return {
             PK: createSettingsPartitionKey(params),
             SK: createSettingsSortKey()
@@ -129,12 +130,12 @@ export const createSettingsStorageOperations = (
         }
     };
 
-    return <FormBuilderSettingsStorageOperations>(<FormBuilderSettingsStorageOperations>{
+    return {
         createSettings,
         getSettings,
         updateSettings,
         deleteSettings,
         createSettingsPartitionKey,
         createSettingsSortKey
-    });
+    };
 };

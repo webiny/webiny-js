@@ -3715,6 +3715,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@jest/environment@npm:^27.2.4":
+  version: 27.2.4
+  resolution: "@jest/environment@npm:27.2.4"
+  dependencies:
+    "@jest/fake-timers": ^27.2.4
+    "@jest/types": ^27.2.4
+    "@types/node": "*"
+    jest-mock: ^27.2.4
+  checksum: 67d762d093f6eeb43fb1eefb2217136408a749eba1a8318ceea9b198d35552c10f76af543e0f062f3c5b1e939ef62eb1cfc9cee099e9e1913ba482044ccad806
+  languageName: node
+  linkType: hard
+
 "@jest/fake-timers@npm:^26.6.2":
   version: 26.6.2
   resolution: "@jest/fake-timers@npm:26.6.2"
@@ -3740,6 +3752,20 @@ __metadata:
     jest-mock: ^27.0.6
     jest-util: ^27.0.6
   checksum: 95de7a744c2494339303e2e41444332b647df66c26c2f27a6e6a8ba8e3aa53b2e574b42be5d5f99e0adcb6a6b71adbed854395431ce5e10b894dcf57d6280097
+  languageName: node
+  linkType: hard
+
+"@jest/fake-timers@npm:^27.2.4":
+  version: 27.2.4
+  resolution: "@jest/fake-timers@npm:27.2.4"
+  dependencies:
+    "@jest/types": ^27.2.4
+    "@sinonjs/fake-timers": ^8.0.1
+    "@types/node": "*"
+    jest-message-util: ^27.2.4
+    jest-mock: ^27.2.4
+    jest-util: ^27.2.4
+  checksum: 5123f63cbe21d1d577b9d800ce3cd20e72811d7a4e3f05cace84334bd8bb28b778c2d4ae33004ee24469867e0f80efb1eb70517a840dfa12d42991c53ebf7640
   languageName: node
   linkType: hard
 
@@ -3917,6 +3943,19 @@ __metadata:
     "@types/yargs": ^16.0.0
     chalk: ^4.0.0
   checksum: abe367b073d5b7396d7397620f57a24409551bb940761d78e6775f10aee68fb96eb80d7177824090ac811c7e7ba5d9cfce4cbdded86f3adef2abc291da28de77
+  languageName: node
+  linkType: hard
+
+"@jest/types@npm:^27.2.4":
+  version: 27.2.4
+  resolution: "@jest/types@npm:27.2.4"
+  dependencies:
+    "@types/istanbul-lib-coverage": ^2.0.0
+    "@types/istanbul-reports": ^3.0.0
+    "@types/node": "*"
+    "@types/yargs": ^16.0.0
+    chalk: ^4.0.0
+  checksum: 0d34189874354a63bc80eeb99da75078ea8a65599c6cd0b937cf1909fc9d490f99adf5aa32ca5a67735496f131491f323b750983d471ecbbcd3e3fec618b01df
   languageName: node
   linkType: hard
 
@@ -6534,6 +6573,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@sinonjs/fake-timers@npm:^8.0.1":
+  version: 8.0.1
+  resolution: "@sinonjs/fake-timers@npm:8.0.1"
+  dependencies:
+    "@sinonjs/commons": ^1.7.0
+  checksum: 97a78e6f83dd420d73b155a0438cd0fd3392e706b8314530db3d99354689cc714eb3d18540be2aedcd3a3d6070e14f509dce7c6cc817701e9538b3b8ac423eaa
+  languageName: node
+  linkType: hard
+
 "@sinonjs/samsam@npm:^5.3.1":
   version: 5.3.1
   resolution: "@sinonjs/samsam@npm:5.3.1"
@@ -8613,43 +8661,28 @@ __metadata:
     "@babel/preset-env": ^7.5.5
     "@babel/preset-typescript": ^7.8.3
     "@babel/runtime": ^7.5.5
-    "@commodo/fields": 1.1.2-beta.20
     "@elastic/elasticsearch": 7.12.0
     "@shelf/jest-elasticsearch": ^1.0.0
     "@webiny/api-dynamodb-to-elasticsearch": ^5.14.0
     "@webiny/api-elasticsearch": ^5.14.0
-    "@webiny/api-file-manager": ^5.14.0
-    "@webiny/api-file-manager-ddb-es": ^5.14.0
     "@webiny/api-form-builder": ^5.14.0
-    "@webiny/api-i18n": ^5.14.0
-    "@webiny/api-i18n-content": ^5.14.0
-    "@webiny/api-i18n-ddb": ^5.14.0
-    "@webiny/api-security": ^5.14.0
     "@webiny/api-tenancy": ^5.14.0
-    "@webiny/api-upgrade": ^5.14.0
     "@webiny/cli": ^5.14.0
     "@webiny/db-dynamodb": ^5.14.0
     "@webiny/error": ^5.14.0
     "@webiny/handler": ^5.14.0
     "@webiny/handler-aws": ^5.14.0
     "@webiny/handler-db": ^5.14.0
-    "@webiny/handler-graphql": ^5.14.0
     "@webiny/plugins": ^5.14.0
     "@webiny/project-utils": ^5.14.0
-    "@webiny/pubsub": ^5.14.0
     "@webiny/utils": ^5.15.0
-    "@webiny/validation": ^5.14.0
-    commodo-fields-object: ^1.0.6
     csvtojson: ^2.0.10
-    got: ^9.6.0
+    dynamodb-toolbox: ^0.3.4
+    elastic-ts: ^0.7.0
     jest: ^26.6.3
     jest-dynalite: ^3.2.0
-    json2csv: ^4.5.2
-    lodash: ^4.17.11
-    mdbid: ^1.0.0
-    node-fetch: ^2.6.1
+    jest-environment-node: ^27.2.4
     rimraf: ^3.0.2
-    slugify: ^1.2.9
     ttypescript: ^1.5.12
     typescript: ^4.1.3
   languageName: unknown
@@ -10736,6 +10769,9 @@ __metadata:
   dependencies:
     "@babel/cli": ^7.12.10
     "@babel/core": ^7.5.5
+    "@babel/preset-env": ^7.5.5
+    "@babel/preset-typescript": ^7.8.3
+    "@babel/runtime": ^7.5.5
     "@webiny/cli": ^5.13.0
     "@webiny/project-utils": ^5.13.0
     rimraf: ^3.0.2
@@ -10975,6 +11011,9 @@ __metadata:
   dependencies:
     "@babel/cli": ^7.12.10
     "@babel/core": ^7.5.5
+    "@babel/preset-env": ^7.5.5
+    "@babel/preset-typescript": ^7.8.3
+    "@babel/runtime": ^7.5.5
     "@webiny/cli": ^5.13.0
     "@webiny/project-utils": ^5.13.0
     rimraf: ^3.0.2
@@ -23447,6 +23486,20 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
+"jest-environment-node@npm:^27.2.4":
+  version: 27.2.4
+  resolution: "jest-environment-node@npm:27.2.4"
+  dependencies:
+    "@jest/environment": ^27.2.4
+    "@jest/fake-timers": ^27.2.4
+    "@jest/types": ^27.2.4
+    "@types/node": "*"
+    jest-mock: ^27.2.4
+    jest-util: ^27.2.4
+  checksum: b131068b9cb58c982f70409284810cb9f5e7c0d4381fa08b041ea852f925c09030e2ec05e45b5950253ea49844427887e2292a388f3e19a58dee877f85afb7e8
+  languageName: node
+  linkType: hard
+
 "jest-extended@npm:^0.11.5":
   version: 0.11.5
   resolution: "jest-extended@npm:0.11.5"
@@ -23625,6 +23678,23 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
+"jest-message-util@npm:^27.2.4":
+  version: 27.2.4
+  resolution: "jest-message-util@npm:27.2.4"
+  dependencies:
+    "@babel/code-frame": ^7.12.13
+    "@jest/types": ^27.2.4
+    "@types/stack-utils": ^2.0.0
+    chalk: ^4.0.0
+    graceful-fs: ^4.2.4
+    micromatch: ^4.0.4
+    pretty-format: ^27.2.4
+    slash: ^3.0.0
+    stack-utils: ^2.0.3
+  checksum: 61c43fdc8f7b1ecdffa311d9f7f9ad34e9e74abd4484ac7188ff0717c1f2bf05816bb302e4c454562ce1065ebe8583891d1f6e58a0b9cbc8fe04eb625fad5aea
+  languageName: node
+  linkType: hard
+
 "jest-mock-console@npm:^1.0.0":
   version: 1.1.0
   resolution: "jest-mock-console@npm:1.1.0"
@@ -23651,6 +23721,16 @@ fsevents@^1.2.7:
     "@jest/types": ^27.0.6
     "@types/node": "*"
   checksum: 2a8b56abf4a8f920cce1cce6a679796965a74ae04c4abe37e51c1d01f6ecfaaa26bba79a431a6f631c327ec9c4f0fa38938697fae4c717fb00337da144a900c3
+  languageName: node
+  linkType: hard
+
+"jest-mock@npm:^27.2.4":
+  version: 27.2.4
+  resolution: "jest-mock@npm:27.2.4"
+  dependencies:
+    "@jest/types": ^27.2.4
+    "@types/node": "*"
+  checksum: 779507837588a725b716379a78902ed39f41c39bcdcc828c2f2666388f5411ec8dce362b1b25d85e7ea376c8b12c74550bf9f048b226274a7bcd245af6b3473c
   languageName: node
   linkType: hard
 
@@ -23831,6 +23911,20 @@ fsevents@^1.2.7:
     is-ci: ^3.0.0
     picomatch: ^2.2.3
   checksum: db1131e8b09e0397bf0b857da81f4def96a3877bcc6dc7f63fded6d9c5ab5ca8579465a8118b57647d106cf35452713e9e2de3b15eadfd654b800e75288a768e
+  languageName: node
+  linkType: hard
+
+"jest-util@npm:^27.2.4":
+  version: 27.2.4
+  resolution: "jest-util@npm:27.2.4"
+  dependencies:
+    "@jest/types": ^27.2.4
+    "@types/node": "*"
+    chalk: ^4.0.0
+    graceful-fs: ^4.2.4
+    is-ci: ^3.0.0
+    picomatch: ^2.2.3
+  checksum: 319f583a3279768b017e5462d647271191034fccdf84bacdc6a54f1750bf21f1fa16bd960515883959b0a1a0cb7346fdc627448c5a3bd8f00100dcb6f3aa8305
   languageName: node
   linkType: hard
 

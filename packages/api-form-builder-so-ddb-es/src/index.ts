@@ -14,6 +14,7 @@ import { createElasticsearchTable } from "~/definitions/tableElasticsearch";
 import { PluginsContainer } from "@webiny/plugins";
 import { createElasticsearchEntity } from "~/definitions/elasticsearch";
 import submissionElasticsearchFields from "./operations/submission/elasticsearchFields";
+import formElasticsearchFields from "./operations/form/elasticsearchFields";
 
 const reservedFields = ["PK", "SK", "index", "data"];
 
@@ -41,6 +42,7 @@ export const createStorageOperationsFactory: CreateStorageOperationsFactory = pa
     plugins.register(pluginsInput || []);
 
     plugins.register(submissionElasticsearchFields());
+    plugins.register(formElasticsearchFields());
 
     if (attributes) {
         Object.values(attributes).forEach(attrs => {
@@ -115,7 +117,8 @@ export const createStorageOperationsFactory: CreateStorageOperationsFactory = pa
             elasticsearch,
             table,
             entity: entities.form,
-            esEntity: entities.esForm
+            esEntity: entities.esForm,
+            plugins
         }),
         ...createSubmissionStorageOperations({
             elasticsearch,
