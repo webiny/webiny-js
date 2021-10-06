@@ -22,19 +22,19 @@ export type DbItem<T> = T & {
 export type Attributes = Record<string, AttributeDefinition>;
 
 export enum ENTITIES {
-    SYSTEM = "SecuritySystem",
-    USER = "SecurityAdminUser"
+    SYSTEM = "AdminUsers.System",
+    USERS = "AdminUsers.User"
 }
 
-export interface CreateSecurityStorageOperations {
+export interface CreateAdminUsersStorageOperations {
     (params: {
         documentClient: DocumentClient;
         table?: string;
         attributes?: Record<ENTITIES, Attributes>;
-    }): SecurityStorageOperations;
+    }): AdminUsersStorageOperations;
 }
 
-export interface SecurityStorageOperations extends BaseAdminUsersStorageOperations {
+export interface AdminUsersStorageOperations extends BaseAdminUsersStorageOperations {
     getTable(): Table;
-    getEntities(): Record<"tenants" | "system", Entity<any>>;
+    getEntities(): Record<"users" | "system", Entity<any>>;
 }

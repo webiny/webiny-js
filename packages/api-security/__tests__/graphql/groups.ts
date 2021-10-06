@@ -63,7 +63,7 @@ export const LIST_SECURITY_GROUPS = /* GraphQL */ `
 export const GET_SECURITY_GROUP = /* GraphQL */ `
     query GetGroup($id: ID!) {
         security {
-            getGroup(id: $id) {
+            getGroup(where: { id: $id }) {
                 data ${DATA_FIELD()}
                 error ${ERROR_FIELD}
             }

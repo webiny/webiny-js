@@ -1,10 +1,13 @@
 import { SecurityContext } from "@webiny/api-security/types";
 import { TenancyContext } from "@webiny/api-tenancy/types";
 import { AdminUsersContext } from "~/types";
+import { migration } from "~/migration";
 
 type Context = SecurityContext & TenancyContext & AdminUsersContext;
 
-export const subscribeToEvents = ({ security, tenancy, adminUsers }: Context) => {
+export const subscribeToEvents = (context: Context) => {
+    const { security, tenancy, adminUsers } = context;
+
     const getTenant = () => {
         const tenant = tenancy.getCurrentTenant();
         return tenant ? tenant.id : undefined;
@@ -12,7 +15,7 @@ export const subscribeToEvents = ({ security, tenancy, adminUsers }: Context) =>
 
     // After a new user is created, link him to a tenant via the assigned group.
     adminUsers.onUserAfterCreate.subscribe(async ({ user }) => {
-        const group = await security.getGroup({ id: user.group });
+        const group = await security.getGroup({ where: { id: user.group } });
         await security.createTenantLinks([
             {
                 tenant: getTenant(),
@@ -22,6 +25,7 @@ export const subscribeToEvents = ({ security, tenancy, adminUsers }: Context) =>
                 identity: user.id,
                 type: "group",
                 data: {
+                    group: group.id,
                     permissions: group.permissions
                 }
             }
@@ -34,20 +38,27 @@ export const subscribeToEvents = ({ security, tenancy, adminUsers }: Context) =>
             return;
         }
 
-        const group = await security.getGroup({ id: updatedUser.group });
+        const group = await security.getGroup({ where: { id: updatedUser.group } });
         await security.updateTenantLinks([
             {
                 tenant: getTenant(),
                 identity: updatedUser.id,
                 type: "group",
-                data: { permissions: group.permissions }
+                data: { group: group.id, permissions: group.permissions }
             }
         ]);
     });
 
     // Before install, load `full-access` group and assign it to the new user.
     adminUsers.onBeforeInstall.subscribe(async ({ user }) => {
-        const group = await security.getGroup({ slug: "full-access" });
+        const group = await security.getGroup({ where: { slug: "full-access" } });
         user.group = group.id;
     });
+
+    adminUsers.onInstall.subscribe(async ({ user }) => {
+        await adminUsers.createUser(user);
+    });
+
+    // Setup migration script
+    migration(context);
 };

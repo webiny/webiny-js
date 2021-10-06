@@ -103,6 +103,9 @@ export const createSystemEntity = (table, attributes = {}) => {
 
 export const createTenantLinkEntity = (table, attributes = {}) => {
     return createEntity(ENTITIES.TENANT_LINK, table, {
+        createdOn: {
+            type: "string"
+        },
         identity: {
             type: "string"
         },

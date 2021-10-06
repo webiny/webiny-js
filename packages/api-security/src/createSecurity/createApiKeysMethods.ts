@@ -76,7 +76,9 @@ export const createApiKeysMethods = ({ getTenant, storageOperations }: SecurityC
             }
             try {
                 return await storageOperations.listApiKeys({
-                    tenant: getTenant(),
+                    where: {
+                        tenant: getTenant()
+                    },
                     sort: ["createdOn_ASC"]
                 });
             } catch (ex) {

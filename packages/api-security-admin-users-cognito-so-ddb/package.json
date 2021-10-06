@@ -1,5 +1,5 @@
 {
-  "name": "@webiny/api-security-admin-users-so-ddb",
+  "name": "@webiny/api-security-admin-users-cognito-so-ddb",
   "version": "5.14.0",
   "main": "index.js",
   "repository": {

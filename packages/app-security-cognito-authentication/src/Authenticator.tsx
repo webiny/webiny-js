@@ -107,14 +107,16 @@ export const Authenticator = (props: AuthenticatorProps) => {
             setState({ checkingUser: true });
             const user = await Auth.currentSession();
 
-            const { login, ...data } = await props.getIdentityData({
+            const { id, displayName, type, ...data } = await props.getIdentityData({
                 client,
                 payload: user.getIdToken().payload
             });
 
             setIdentity(
                 new SecurityIdentity({
-                    login,
+                    id,
+                    displayName,
+                    type,
                     ...data,
                     logout() {
                         Auth.signOut();

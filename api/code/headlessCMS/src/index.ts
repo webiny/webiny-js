@@ -11,13 +11,19 @@ import headlessCmsPlugins from "@webiny/api-headless-cms/content";
 import headlessCmsDynamoDbElasticStorageOperation from "@webiny/api-headless-cms-ddb-es";
 import securityPlugins from "./security";
 import logsPlugins from "@webiny/handler-logs";
-import securityAdminUsersDynamoDbStorageOperations from "@webiny/api-security-admin-users-so-ddb";
+import adminUsersPlugins from "@webiny/api-security-admin-users-cognito";
+import { createStorageOperations as createAdminUsersStorageOperations } from "@webiny/api-security-admin-users-cognito-so-ddb";
 import elasticsearchDataGzipCompression from "@webiny/api-elasticsearch/plugins/GzipCompression";
 
 // Imports plugins created via scaffolding utilities.
 import scaffoldsPlugins from "./plugins/scaffolds";
 
 const debug = process.env.DEBUG === "true";
+
+const documentClient = new DocumentClient({
+    convertEmptyValues: true,
+    region: process.env.AWS_REGION
+});
 
 export const handler = createHandler({
     plugins: [
@@ -26,21 +32,18 @@ export const handler = createHandler({
         elasticSearch({ endpoint: `https://${process.env.ELASTIC_SEARCH_ENDPOINT}` }),
         dbPlugins({
             table: process.env.DB_TABLE,
-            driver: new DynamoDbDriver({
-                documentClient: new DocumentClient({
-                    convertEmptyValues: true,
-                    region: process.env.AWS_REGION
-                })
-            })
+            driver: new DynamoDbDriver({ documentClient })
         }),
-        securityPlugins(),
+        securityPlugins({ documentClient }),
+        adminUsersPlugins({
+            storageOperations: createAdminUsersStorageOperations({ documentClient })
+        }),
         i18nPlugins(),
         i18nDynamoDbStorageOperations(),
         i18nContentPlugins(),
         headlessCmsPlugins({ debug }),
         headlessCmsDynamoDbElasticStorageOperation(),
         scaffoldsPlugins(),
-        securityAdminUsersDynamoDbStorageOperations(),
         elasticsearchDataGzipCompression()
     ],
     http: { debug }

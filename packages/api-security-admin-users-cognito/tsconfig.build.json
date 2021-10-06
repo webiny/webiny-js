@@ -6,6 +6,7 @@
     "dist",
     "../api-security",
     "../api-tenancy",
+    "../db-dynamodb",
     "../error",
     "../handler",
     "../handler-graphql",

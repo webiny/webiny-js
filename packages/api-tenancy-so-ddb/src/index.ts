@@ -1,4 +1,3 @@
-import { System, Tenant } from "@webiny/api-tenancy/types";
 import { batchReadAll } from "@webiny/db-dynamodb/utils/batchRead";
 import { cleanupItem, cleanupItems } from "@webiny/db-dynamodb/utils/cleanup";
 import { queryAll } from "@webiny/db-dynamodb/utils/query";
@@ -7,6 +6,7 @@ import { createTable } from "~/definitions/table";
 import { createTenantEntity } from "~/definitions/tenantEntity";
 import { createSystemEntity } from "~/definitions/systemEntity";
 import { CreateTenancyStorageOperations, ENTITIES } from "~/types";
+import { System, Tenant } from "@webiny/api-tenancy/types";
 
 const reservedFields = ["PK", "SK", "index", "data"];
 

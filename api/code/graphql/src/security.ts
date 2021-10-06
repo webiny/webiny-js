@@ -2,53 +2,30 @@ import tenancy from "@webiny/api-tenancy";
 import { createStorageOperations as tenancyStorageOperations } from "@webiny/api-tenancy-so-ddb";
 import security from "@webiny/api-security";
 import { createStorageOperations as securityStorageOperations } from "@webiny/api-security-so-ddb";
+import { authenticateUsingHttpHeader } from "@webiny/api-security/plugins/authenticateUsingHttpHeader";
 import apiKeyAuthentication from "@webiny/api-security/plugins/apiKeyAuthentication";
 import apiKeyAuthorization from "@webiny/api-security/plugins/apiKeyAuthorization";
+import groupAuthorization from "@webiny/api-security/plugins/groupAuthorization";
 import anonymousAuthorization from "@webiny/api-security/plugins/anonymousAuthorization";
-import userAuthorization from "@webiny/api-security-admin-users/authorization/user";
-import personalAccessTokenAuthentication from "@webiny/api-security-admin-users/authentication/personalAccessToken";
 import cognitoAuthentication from "@webiny/api-security-cognito-authentication";
-import cognitoIdentityProvider from "@webiny/api-security-admin-users-cognito";
-import { authenticateUsingHttpHeader } from "@webiny/api-authentication/authenticateUsingHttpHeader";
 
 export default ({ documentClient }) => [
     /**
-     * Tenancy Framework.
+     * Setup Tenancy app.
      */
     tenancy({ storageOperations: tenancyStorageOperations({ documentClient }) }),
-
-    /**
-     * Cognito IDP plugin (hooks for User CRUD methods).
-     * This plugin will perform CRUD operations on Cognito when you do something with the user
-     * via the UI or API. It's mostly to push changes to Cognito when they happen in your app.
-     *
-     * It also extends the GraphQL schema with things like "password", which we don't handle
-     * natively in our security, but Cognito will handle it for us.
-     */
-    cognitoIdentityProvider({
-        region: process.env.COGNITO_REGION,
-        userPoolId: process.env.COGNITO_USER_POOL_ID
-    }),
 
     /**
      * Adds a context plugin to setup Security app.
      */
     security({
-        storageOperations: securityStorageOperations({ documentClient }),
+        storageOperations: securityStorageOperations({ documentClient })
     }),
 
     /**
      * Perform authentication using the common "Authorization" HTTP header.
      */
     authenticateUsingHttpHeader(),
-
-    /**
-     * Authentication plugin for Personal Access Tokens.
-     * PATs are directly linked to Users. We consider a token to be valid, if we manage to load
-     * a User who owns this particular token. The "identityType" is important, and it has to match
-     * the "identityType" configured in the authorization plugin later in this file.
-     */
-    personalAccessTokenAuthentication({ identityType: "admin" }),
 
     /**
      * Authentication plugin for API Keys.
@@ -75,11 +52,9 @@ export default ({ documentClient }) => [
     apiKeyAuthorization({ identityType: "api-key" }),
 
     /**
-     * Authorization plugin to load user permissions for requested tenant.
-     * The authorization will only be performed on identities whose "type" matches
-     * the provided "identityType".
+     * Authorization plugin to fetch permissions from a security group associated with the identity.
      */
-    userAuthorization({ identityType: "admin" }),
+    groupAuthorization({ identityType: "admin" }),
 
     /**
      * Authorization plugin to load permissions for anonymous requests.

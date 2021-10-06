@@ -5,7 +5,7 @@ describe(`"Login" test`, () => {
     const { install, securityIdentity } = useGqlHandler({ plugins: [defaultIdentity()] });
 
     beforeEach(async () => {
-        const [response] = await install.install();
+        const [response] = await install.install({ "x-tenant": "root" });
         if (response.data.security.install.error) {
             throw new Error(response.data.security.install.error.message);
             process.exit(0);
@@ -22,7 +22,12 @@ describe(`"Login" test`, () => {
                         data: {
                             id: "123456789",
                             displayName: "John Doe",
-                            access: [{ id: "root", permissions: [{ name: "*" }] }]
+                            type: "admin",
+                            tenant: {
+                                id: "root",
+                                name: "Root"
+                            },
+                            permissions: [{ name: "*" }]
                         },
                         error: null
                     }

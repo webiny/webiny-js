@@ -17,8 +17,9 @@ export interface BaseUserAttributes {
 }
 
 export interface CreateUserInput extends BaseUserAttributes {
+    id?: string;
     password: string;
-    group: string;
+    group?: string;
     avatar?: Record<string, any>;
 }
 
@@ -27,7 +28,7 @@ export type UpdateUserInput = Partial<CreateUserInput>;
 export interface AdminUser extends BaseUserAttributes {
     id: string;
     tenant: string;
-    group: string;
+    group?: string;
     avatar?: Record<string, any>;
     createdOn: string;
     createdBy: CreatedBy;
@@ -112,14 +113,16 @@ export interface ErrorEvent extends InstallEvent {
 }
 
 export interface InstallEvent {
-    user: CreateUserInput;
+    tenant: string;
+    user: InstallParams;
 }
 
-interface InstallParams {
+export interface InstallParams {
     firstName: string;
     lastName: string;
     email: string;
     password: string;
+    group?: string;
 }
 
 export interface AdminUsers {
@@ -130,9 +133,12 @@ export interface AdminUsers {
     onUserBeforeDelete: Topic<BeforeDeleteEvent>;
     onUserAfterDelete: Topic<AfterDeleteEvent>;
     onBeforeInstall: Topic<InstallEvent>;
+    /**
+     * This will be executed during Webiny installation.
+     */
     onInstall: Topic<InstallEvent>;
     onAfterInstall: Topic<InstallEvent>;
-    onCleanup: Topic<InstallEvent>;
+    onCleanup: Topic<ErrorEvent>;
     getStorageOperations(): AdminUsersStorageOperations;
     isEmailTaken(email: string): Promise<void>;
     getUser<TUser extends AdminUser = AdminUser>(params: GetUserParams): Promise<TUser>;

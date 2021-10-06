@@ -1,38 +1,31 @@
-import { Security, CrudOptions, Group } from "~/types";
+import { Security, Group } from "~/types";
 
 export const attachGroupInstaller = (security: Security) => {
     const createdGroups: Group[] = [];
 
     const createDefaultGroups = async () => {
-        const options: CrudOptions = { auth: false };
-        const groups = await security.listGroups(options);
+        const groups = await security.listGroups();
 
         if (!groups.find(g => g.slug === "full-access")) {
-            const group = await security.createGroup(
-                {
-                    name: "Full Access",
-                    description: "Grants full access to all apps.",
-                    system: true,
-                    slug: "full-access",
-                    permissions: [{ name: "*" }]
-                },
-                options
-            );
+            const group = await security.createGroup({
+                name: "Full Access",
+                description: "Grants full access to all apps.",
+                system: true,
+                slug: "full-access",
+                permissions: [{ name: "*" }]
+            });
 
             createdGroups.push(group);
         }
 
         if (!groups.find(g => g.slug === "anonymous")) {
-            const group = await security.createGroup(
-                {
-                    name: "Anonymous",
-                    description: "Permissions for anonymous users (public access).",
-                    system: true,
-                    slug: "anonymous",
-                    permissions: []
-                },
-                options
-            );
+            const group = await security.createGroup({
+                name: "Anonymous",
+                description: "Permissions for anonymous users (public access).",
+                system: true,
+                slug: "anonymous",
+                permissions: []
+            });
             createdGroups.push(group);
         }
     };

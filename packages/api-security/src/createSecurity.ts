@@ -19,7 +19,13 @@ export const createSecurity = async (config: SecurityConfig): Promise<Security> 
 
     const security: Security = {
         ...authentication,
+        onBeforeLogin: createTopic("security.onBeforeLogin"),
         onLogin: createTopic("security.onLogin"),
+        onAfterLogin: createTopic("security.onAfterLogin"),
+        onIdentity: createTopic("security.onIdentity"),
+        getStorageOperations() {
+            return config.storageOperations;
+        },
         enableAuthorization() {
             performAuthorization = true;
         },
@@ -31,6 +37,10 @@ export const createSecurity = async (config: SecurityConfig): Promise<Security> 
         },
         getAuthorizers() {
             return authorizers;
+        },
+        setIdentity(identity) {
+            authentication.setIdentity(identity);
+            this.onIdentity.publish({ identity });
         },
         async getPermission<TPermission extends SecurityPermission = SecurityPermission>(
             permission: string

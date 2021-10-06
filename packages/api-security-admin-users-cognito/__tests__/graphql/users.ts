@@ -14,21 +14,6 @@ const DATA_FIELD = /* GraphQL */ `
     }
 `;
 
-const DATA_FIELD_IDENTITY = /* GraphQL */ `
-    {
-        id
-        email
-        firstName
-        lastName
-        avatar
-        gravatar
-        access {
-            id
-            permissions
-        }
-    }
-`;
-
 const ERROR_FIELD = /* GraphQL */ `
     {
         code
@@ -39,9 +24,27 @@ const ERROR_FIELD = /* GraphQL */ `
 
 export const LOGIN = /* GraphQL */ `
     mutation login {
-        adminUsers {
+        security {
             login {
-                data ${DATA_FIELD_IDENTITY}
+                data  {
+                    ... on AdminUserIdentity {
+                        id
+                        displayName
+                        type
+                        tenant {
+                            id
+                            name
+                        }
+                        permissions
+                        profile {
+                            email
+                            firstName
+                            lastName
+                            avatar
+                            gravatar
+                        }
+                    }
+                }
                 error ${ERROR_FIELD}
             }
         }
@@ -93,9 +96,9 @@ export const LIST_USERS = /* GraphQL */ `
 `;
 
 export const GET_USER = /* GraphQL */ `
-    query GetUser($id: ID!) {
+    query GetUser($id: ID, $email: String) {
         adminUsers {
-            getUser(id: $id) {
+            getUser(where: { id: $id, email: $email }) {
                 data ${DATA_FIELD}
                 error ${ERROR_FIELD}
             }
@@ -119,6 +122,21 @@ export const UPDATE_CURRENT_USER = /* GraphQL */ `
         adminUsers {
             updateCurrentUser(data: $data) {
                 data ${DATA_FIELD}
+                error ${ERROR_FIELD}
+            }
+        }
+    }
+`;
+
+export const GET_SECURITY_GROUP = /* GraphQL */ `
+    query GetGroup($id: ID, $slug: String) {
+        security {
+            getGroup(where: { id: $id, slug: $slug }) {
+                data {
+                    id
+                    name
+                    slug
+                }
                 error ${ERROR_FIELD}
             }
         }

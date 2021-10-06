@@ -3,15 +3,28 @@ import graphqlHandler from "@webiny/handler-graphql";
 import i18nPlugins from "../src/graphql";
 import tenancyPlugins from "@webiny/api-tenancy";
 import securityPlugins from "@webiny/api-security";
-import { SecurityIdentity } from "@webiny/api-security";
+const { DocumentClient } = require("aws-sdk/clients/dynamodb");
+import { createStorageOperations as tenancyStorageOperations } from "@webiny/api-tenancy-so-ddb";
+import { createStorageOperations as securityStorageOperations } from "@webiny/api-security-so-ddb";
 import { apiCallsFactory } from "./helpers";
-import { SecurityPermission } from "@webiny/api-security/types";
+import { SecurityIdentity, SecurityPermission } from "@webiny/api-security/types";
+import { customAuthenticator } from "./mocks/customAuthenticator";
+import { customAuthorizer } from "./mocks/customAuthorizer";
 
 type UseGqlHandlerParams = {
     permissions?: SecurityPermission[];
     identity?: SecurityIdentity;
     plugins?: any;
 };
+// IMPORTANT: This must be removed from here in favor of a dynamic SO setup.
+const documentClient = new DocumentClient({
+    convertEmptyValues: true,
+    endpoint: process.env.MOCK_DYNAMODB_ENDPOINT || "http://localhost:8001",
+    sslEnabled: false,
+    region: "local",
+    accessKeyId: "test",
+    secretAccessKey: "test"
+});
 
 export default (params: UseGqlHandlerParams = {}) => {
     const { plugins: extraPlugins } = params;
@@ -29,24 +42,15 @@ export default (params: UseGqlHandlerParams = {}) => {
     // Creates the actual handler. Feel free to add additional plugins if needed.
     const handler = createHandler(
         storageOperations(),
-        tenancyPlugins(),
+        tenancyPlugins({
+            storageOperations: tenancyStorageOperations({ documentClient, table: "DynamoDB" })
+        }),
+        securityPlugins({
+            storageOperations: securityStorageOperations({ documentClient, table: "DynamoDB" })
+        }),
+        customAuthenticator(),
+        customAuthorizer(),
         graphqlHandler(),
-        securityPlugins(),
-        { type: "security-authorization", getPermissions: () => [{ name: "*" }] },
-        {
-            type: "security-authentication",
-            async authenticate(context) {
-                if ("Authorization" in context.http.request.headers) {
-                    return;
-                }
-
-                return new SecurityIdentity({
-                    id: "admin@webiny.com",
-                    type: "admin",
-                    displayName: "John Doe"
-                });
-            }
-        },
         {
             type: "context",
             apply(context) {

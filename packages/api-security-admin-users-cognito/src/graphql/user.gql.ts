@@ -9,15 +9,21 @@ import {
 import { AdminUser, AdminUsersContext, CreateUserInput, UpdateUserInput } from "~/types";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSchemaPlugin";
 import { NotAuthorizedError } from "@webiny/api-security";
-import { GroupTenantLink, SecurityContext, SecurityIdentity } from "@webiny/api-security/types";
+import { SecurityContext, SecurityIdentity } from "@webiny/api-security/types";
 
 export default new GraphQLSchemaPlugin<AdminUsersContext & SecurityContext>({
     typeDefs: /* GraphQL */ `
-        type AdminUser implements SecurityIdentity {
+        type AdminUserIdentity implements SecurityIdentity {
             id: ID!
             type: String!
             displayName: String!
-            access: [TenantAccess!]!
+            permissions: [JSON!]!
+            tenant: Tenant
+            profile: AdminUser
+        }
+
+        type AdminUser {
+            id: ID!
             firstName: String
             lastName: String
             email: String
@@ -71,8 +77,13 @@ export default new GraphQLSchemaPlugin<AdminUsersContext & SecurityContext>({
             error: AdminUsersError
         }
 
+        input AdminUsersGetUserWhereInput {
+            id: ID
+            email: String
+        }
+
         extend type AdminUsersQuery {
-            getUser(id: ID): AdminUsersResponse
+            getUser(where: AdminUsersGetUserWhereInput): AdminUsersResponse
 
             getCurrentUser: AdminUsersResponse
 
@@ -90,30 +101,33 @@ export default new GraphQLSchemaPlugin<AdminUsersContext & SecurityContext>({
         }
     `,
     resolvers: {
-        AdminUser: {
-            gravatar(user: AdminUser) {
-                return "https://www.gravatar.com/avatar/" + md5(user.email);
-            },
-            async access(user: AdminUser, args, { security }) {
-                const identity = security.getIdentity();
-                const links = await security.listTenantLinksByIdentity({ identity: identity.id });
-                return links.map((link: GroupTenantLink) => ({
-                    id: link.tenant,
-                    permissions: link.data.permissions
-                }));
+        AdminUserIdentity: {
+            async profile(identity, args, context) {
+                console.log(`Resolve profile: ${identity.id}`);
+                const profile = await context.adminUsers.getUser({ where: { id: identity.id } });
+                console.log(JSON.stringify(profile, null, 2));
+                return profile;
             },
             __isTypeOf(obj: SecurityIdentity) {
                 return obj.type === "admin";
             }
         },
+        AdminUser: {
+            gravatar(user: AdminUser) {
+                return "https://www.gravatar.com/avatar/" + md5(user.email);
+            },
+            group(user, args, context) {
+                return context.security.getGroup({ where: { id: user.group } });
+            }
+        },
         AdminUsersQuery: {
-            getUser: async (_, args: { id: string }, context) => {
-                const { id } = args;
-
+            getUser: async (_, { where }, context) => {
                 try {
-                    const user = await context.adminUsers.getUser({ where: { id } });
+                    const user = await context.adminUsers.getUser({ where });
                     if (!user) {
-                        return new NotFoundResponse(`User "${id}" was not found!`);
+                        return new NotFoundResponse(
+                            `User "${JSON.stringify(where)}" was not found!`
+                        );
                     }
                     return new Response(user);
                 } catch (e) {
@@ -154,6 +168,8 @@ export default new GraphQLSchemaPlugin<AdminUsersContext & SecurityContext>({
 
                 let user = await adminUsers.getUser({ where: { id: identity.id } });
                 if (!user) {
+                    // TODO: check if current identity belongs to a different tenant.
+                    // If so, switch to that other tenant, and update his profile there.
                     return new NotFoundResponse("User not found!");
                 }
 

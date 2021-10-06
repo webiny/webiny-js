@@ -5,7 +5,7 @@ import { withFields, string } from "@commodo/fields";
 import { validation } from "@webiny/validation";
 import Error from "@webiny/error";
 import { NotFoundError } from "@webiny/handler-graphql";
-import { CrudOptions, GetGroupWhere, Group, GroupTenantLink, Security } from "~/types";
+import {GetGroupParams, Group, GroupTenantLink, Security} from "~/types";
 import NotAuthorizedError from "../NotAuthorizedError";
 import { SecurityConfig } from "~/types";
 
@@ -26,10 +26,7 @@ const UpdateDataModel = withFields({
     permissions: object({ list: true })
 })();
 
-async function checkPermission(security: Security, options?: CrudOptions) {
-    if (options && options.auth === false) {
-        return;
-    }
+async function checkPermission(security: Security) {
     const permission = await security.getPermission("security.group");
 
     if (!permission) {
@@ -52,21 +49,16 @@ async function updateTenantLinks(security: Security, tenant: string, group: Grou
     );
 }
 
-export const createGroupsMethods = ({
-    getTenant,
-    storageOperations
-}: SecurityConfig) => {
+export const createGroupsMethods = ({ getTenant, storageOperations }: SecurityConfig) => {
     return {
-        async getGroup(
-            this: Security,
-            where: GetGroupWhere,
-            options: CrudOptions = {}
-        ): Promise<Group> {
-            await checkPermission(this, options);
+        async getGroup(this: Security, { where }: GetGroupParams): Promise<Group> {
+            await checkPermission(this);
 
             let group: Group = null;
             try {
-                group = await storageOperations.getGroup({ tenant: getTenant(), where });
+                group = await storageOperations.getGroup({
+                    where: { ...where, tenant: getTenant() }
+                });
             } catch (ex) {
                 throw new Error(
                     ex.message || "Could not get group.",
@@ -80,11 +72,13 @@ export const createGroupsMethods = ({
             return group;
         },
 
-        async listGroups(this: Security, options: CrudOptions = {}) {
-            await checkPermission(this, options);
+        async listGroups(this: Security) {
+            await checkPermission(this);
             try {
                 return await storageOperations.listGroups({
-                    tenant: getTenant(),
+                    where: {
+                        tenant: getTenant()
+                    },
                     sort: ["createdOn_ASC"]
                 });
             } catch (ex) {
@@ -95,8 +89,8 @@ export const createGroupsMethods = ({
             }
         },
 
-        async createGroup(this: Security, input, options = {}) {
-            await checkPermission(this, options);
+        async createGroup(this: Security, input) {
+            await checkPermission(this);
 
             const identity = this.getIdentity();
             const currentTenant = getTenant();
@@ -104,8 +98,8 @@ export const createGroupsMethods = ({
             await new CreateDataModel().populate({ ...input, tenant: currentTenant }).validate();
 
             const existing = await storageOperations.getGroup({
-                tenant: currentTenant,
                 where: {
+                    tenant: currentTenant,
                     slug: input.slug
                 }
             });
@@ -149,8 +143,7 @@ export const createGroupsMethods = ({
             await model.validate();
 
             const original = await storageOperations.getGroup({
-                tenant: getTenant(),
-                where: { id }
+                where: { tenant: getTenant(), id }
             });
             if (!original) {
                 throw new NotFoundError(`Group "${id}" was not found!`);
@@ -184,7 +177,7 @@ export const createGroupsMethods = ({
         async deleteGroup(this: Security, id: string) {
             await checkPermission(this);
 
-            const group = await storageOperations.getGroup({ tenant: getTenant(), where: { id } });
+            const group = await storageOperations.getGroup({ where: { tenant: getTenant(), id } });
             if (!group) {
                 throw new NotFoundError(`Group "${id}" was not found!`);
             }

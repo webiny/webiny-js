@@ -4,7 +4,6 @@ import { UiProvider } from "@webiny/app/contexts/Ui";
 import { Routes } from "@webiny/app/components/Routes";
 import { I18NProvider } from "@webiny/app-i18n/contexts/I18N";
 import { SecurityProvider } from "@webiny/app-security";
-import { TenancyProvider } from "@webiny/app-tenancy/contexts/Tenancy";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { AppInstaller } from "@webiny/app-admin/components/AppInstaller";
 import { CmsProvider } from "@webiny/app-headless-cms/admin/contexts/Cms";
@@ -55,40 +54,33 @@ export const App = () => (
                         */}
                         <Authentication getIdentityData={getIdentityData}>
                             {/*
-                                <TenancyProvider> controls access to different tenants and manages permissions a user
-                                has on each particular tenant. At this point, Webiny doesn't provide a tenancy management app so
-                                your app is limited to a single tenant.
+                                <I18NProvider> loads system locales. Webiny supports multi-language content and language-based
+                                permissions, so we always need to know all locales to be able to render language selectors,
+                                and send the proper locale code to the GraphQL API.
                             */}
-                            <TenancyProvider>
+                            <I18NProvider
+                                loader={<CircularProgress label={"Loading locales..."} />}
+                            >
                                 {/*
-                                    <I18NProvider> loads system locales. Webiny supports multi-language content and language-based
-                                    permissions, so we always need to know all locales to be able to render language selectors,
-                                    and send the proper locale code to the GraphQL API.
+                                    <PageBuilderProvider> handles "pb-theme" plugins and combines them into a single
+                                    "theme" object. You can build your theme using multiple "pb-theme" plugins and
+                                    then access is using "usePageBuilder()" hook.
                                 */}
-                                <I18NProvider
-                                    loader={<CircularProgress label={"Loading locales..."} />}
-                                >
+                                <PageBuilderProvider>
                                     {/*
-                                        <PageBuilderProvider> handles "pb-theme" plugins and combines them into a single
-                                        "theme" object. You can build your theme using multiple "pb-theme" plugins and
-                                        then access is using "usePageBuilder()" hook.
+                                        <CmsProvider> handles CMS environments and provides an Apollo Client instance
+                                        that points to the /manage GraphQL API.
                                     */}
-                                    <PageBuilderProvider>
+                                    <CmsProvider createApolloClient={createApolloClient}>
                                         {/*
-                                            <CmsProvider> handles CMS environments and provides an Apollo Client instance
-                                            that points to the /manage GraphQL API.
+                                            <Routes/> is a helper component that loads all "route" plugins, sorts them
+                                            in the correct "path" order and renders using the <Switch> component,
+                                            so only the matching route is rendered.
                                         */}
-                                        <CmsProvider createApolloClient={createApolloClient}>
-                                            {/*
-                                                <Routes/> is a helper component that loads all "route" plugins, sorts them
-                                                in the correct "path" order and renders using the <Switch> component,
-                                                so only the matching route is rendered.
-                                            */}
-                                            <Routes />
-                                        </CmsProvider>
-                                    </PageBuilderProvider>
-                                </I18NProvider>
-                            </TenancyProvider>
+                                        <Routes />
+                                    </CmsProvider>
+                                </PageBuilderProvider>
+                            </I18NProvider>
                         </Authentication>
                     </AppInstaller>
                 </UiProvider>

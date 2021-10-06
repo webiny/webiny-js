@@ -4,7 +4,6 @@ import { validation } from "@webiny/validation";
 import { AdminUsers } from "~/types";
 
 const CreateUserDataModel = withFields({
-    id: string({ validation: validation.create("required") }),
     email: string({ validation: validation.create("required,minLength:2") }),
     firstName: string({ validation: validation.create("required,minLength:2") }),
     lastName: string({ validation: validation.create("required,minLength:2") }),

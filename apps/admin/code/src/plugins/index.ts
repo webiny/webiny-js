@@ -1,5 +1,6 @@
 import { plugins } from "@webiny/plugins";
 import { WebinyInitPlugin } from "@webiny/app/types";
+import tenancy from "@webiny/app-tenancy";
 import welcomeScreenPlugins from "@webiny/app-plugin-admin-welcome-screen";
 import routeNotFound from "./routeNotFound";
 import basePlugins from "./base";
@@ -45,6 +46,10 @@ plugins.register([
      * Enables storing content (pages, forms, content, ...) in multiple locales.
      */
     i18nContentPlugins,
+    /**
+     * Tenant installation.
+     */
+    tenancy(),
     /**
      * Security app and authentication plugins.
      */

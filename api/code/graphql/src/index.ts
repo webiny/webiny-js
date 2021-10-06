@@ -1,11 +1,12 @@
+import "source-map-support/register";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { createHandler } from "@webiny/handler-aws";
 import graphqlPlugins from "@webiny/handler-graphql";
 import i18nPlugins from "@webiny/api-i18n/graphql";
 import i18nDynamoDbStorageOperations from "@webiny/api-i18n-ddb";
 import i18nContentPlugins from "@webiny/api-i18n-content/plugins";
-import adminUsersPlugins from "@webiny/api-security-admin-users";
-import securityAdminUsersDynamoDbStorageOperations from "@webiny/api-security-admin-users-so-ddb";
+import adminUsersPlugins from "@webiny/api-security-admin-users-cognito";
+import { createStorageOperations as createAdminUsersStorageOperations } from "@webiny/api-security-admin-users-cognito-so-ddb";
 import pageBuilderPlugins from "@webiny/api-page-builder/graphql";
 import pageBuilderDynamoDbElasticsearchPlugins from "@webiny/api-page-builder-so-ddb-es";
 import pageBuilderPrerenderingPlugins from "@webiny/api-page-builder/prerendering";
@@ -19,10 +20,10 @@ import fileManagerDynamoDbElasticStorageOperation from "@webiny/api-file-manager
 import logsPlugins from "@webiny/handler-logs";
 import fileManagerS3 from "@webiny/api-file-manager-s3";
 import formBuilderPlugins from "@webiny/api-form-builder/plugins";
-import securityPlugins from "./security";
 import headlessCmsPlugins from "@webiny/api-headless-cms/plugins";
 import headlessCmsDynamoDbElasticStorageOperation from "@webiny/api-headless-cms-ddb-es";
 import elasticsearchDataGzipCompression from "@webiny/api-elasticsearch/plugins/GzipCompression";
+import securityPlugins from "./security";
 
 // Imports plugins created via scaffolding utilities.
 import scaffoldsPlugins from "./plugins/scaffolds";
@@ -62,8 +63,9 @@ export const handler = createHandler({
                 }
             }
         }),
-        adminUsersPlugins(),
-        securityAdminUsersDynamoDbStorageOperations(),
+        adminUsersPlugins({
+            storageOperations: createAdminUsersStorageOperations({ documentClient })
+        }),
         pageBuilderPlugins(),
         pageBuilderDynamoDbElasticsearchPlugins(),
         pageBuilderPrerenderingPlugins(),

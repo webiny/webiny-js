@@ -1,4 +1,37 @@
-import { LOGIN } from "@webiny/app-security-admin-users/graphql";
+import gql from "graphql-tag";
+
+const LOGIN = gql`
+    mutation Login {
+        security {
+            login {
+                data {
+                    ... on AdminUserIdentity {
+                        id
+                        displayName
+                        type
+                        tenant {
+                            id
+                            name
+                            description
+                        }
+                        permissions
+                        profile {
+                            firstName
+                            lastName
+                            avatar
+                            gravatar
+                        }
+                    }
+                }
+                error {
+                    code
+                    message
+                    data
+                }
+            }
+        }
+    }
+`;
 
 /**
  * `getIdentityData` is a function that has to return information about the identity (a user within Webiny).

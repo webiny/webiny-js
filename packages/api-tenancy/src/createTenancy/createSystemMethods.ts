@@ -11,7 +11,7 @@ export function createSystemMethods(storageOperations: TenancyStorageOperations)
                 const rootTenant = await this.getTenantById("root");
                 if (rootTenant) {
                     await this.setVersion(process.env.WEBINY_VERSION);
-                    return "5.15.0";
+                    return process.env.WEBINY_VERSION;
                 }
                 return null;
             }
@@ -58,7 +58,11 @@ export function createSystemMethods(storageOperations: TenancyStorageOperations)
                  * `install` will only ever be executed for the initial "root" tenant.
                  * Other tenants are created manually, using Tenant Manager application.
                  */
-                await this.createTenant({ id: "root", name: "Root" });
+                await this.createTenant({
+                    id: "root",
+                    name: "Root",
+                    description: "The top-level Webiny tenant."
+                });
                 await this.setVersion(process.env.WEBINY_VERSION);
             } catch (err) {
                 throw new Error(err.message, "TENANCY_INSTALL_ABORTED", err.data || {});

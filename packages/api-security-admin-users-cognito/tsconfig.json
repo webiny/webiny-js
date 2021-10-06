@@ -11,6 +11,9 @@
       "path": "../error"
     },
     {
+      "path": "../db-dynamodb"
+    },
+    {
       "path": "../handler-graphql"
     },
     {
@@ -26,6 +29,8 @@
       "@webiny/api-tenancy": ["../api-tenancy/src"],
       "@webiny/error/*": ["../error/src/*"],
       "@webiny/error": ["../error/src"],
+      "@webiny/db-dynamodb/*": ["../db-dynamodb/src/*"],
+      "@webiny/db-dynamodb": ["../db-dynamodb/src"],
       "@webiny/handler/*": ["../handler/src/*"],
       "@webiny/handler": ["../handler/src"],
       "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],

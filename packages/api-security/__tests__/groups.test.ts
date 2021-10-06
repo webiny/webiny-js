@@ -2,7 +2,7 @@ import useGqlHandler from "./useGqlHandler";
 import mocks from "./mocks/securityGroup";
 
 describe("Security Group CRUD Test", () => {
-    const { install, securityGroup } = useGqlHandler({ fullAccess: true });
+    const { install, securityGroup } = useGqlHandler();
 
     beforeEach(async () => {
         await install.install();

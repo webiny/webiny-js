@@ -6,7 +6,6 @@ import i18nContext from "@webiny/api-i18n/graphql/context";
 import i18nDynamoDbStorageOperations from "@webiny/api-i18n-ddb";
 import i18nContentPlugins from "@webiny/api-i18n-content/plugins";
 import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
-import { SecurityIdentity } from "@webiny/api-security";
 import filesPlugins from "~/plugins";
 
 // Graphql
@@ -25,7 +24,7 @@ import {
     GET_SETTINGS,
     UPDATE_SETTINGS
 } from "./graphql/fileManagerSettings";
-import { SecurityPermission } from "@webiny/api-security/types";
+import { SecurityIdentity, SecurityPermission } from "@webiny/api-security/types";
 import { until } from "./helpers";
 import { FilePhysicalStoragePlugin } from "~/plugins/definitions/FilePhysicalStoragePlugin";
 

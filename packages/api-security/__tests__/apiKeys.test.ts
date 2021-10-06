@@ -3,7 +3,7 @@ import apiKeyAuthentication from "~/plugins/apiKeyAuthentication";
 import apiKeyAuthorization from "~/plugins/apiKeyAuthorization";
 
 describe("Security API Key Test", () => {
-    const { install, securityApiKeys } = useGqlHandler({ fullAccess: true });
+    const { install, securityApiKeys } = useGqlHandler();
 
     beforeEach(async () => {
         await install.install();
@@ -118,7 +118,7 @@ describe("Security API Key Test", () => {
     });
 
     test("should authenticate using API key sent via headers", async () => {
-        const { securityApiKeys } = useGqlHandler({ fullAccess: true });
+        const { securityApiKeys } = useGqlHandler();
 
         const { securityGroup } = useGqlHandler({
             plugins: [

@@ -214,7 +214,7 @@ export const createStorageOperations = (
                 });
             }
         },
-        async getGroup({ tenant, where: { id, slug } }): Promise<Group> {
+        async getGroup({ where: { tenant, id, slug } }): Promise<Group> {
             try {
                 let result;
                 if (id) {
@@ -258,17 +258,20 @@ export const createStorageOperations = (
                 });
             }
         },
-        async getTenantLinkByIdentity<TLink = TenantLink>({ tenant, identity }): Promise<TLink> {
+        async getTenantLinkByIdentity<TLink extends TenantLink = TenantLink>({
+            tenant,
+            identity
+        }): Promise<TLink> {
             try {
-                const result = await entities.tenantLinks.query(`IDENTITY#${identity}`, {
-                    beginsWith: `LINK#T#${tenant}#`,
-                    limit: 1
+                const result = await queryOne<TLink>({
+                    entity: entities.tenantLinks,
+                    partitionKey: `IDENTITY#${identity}`,
+                    options: {
+                        eq: `LINK#T#${tenant}`
+                    }
                 });
 
-                if (!result || !result.Items) {
-                    return null;
-                }
-                return cleanupItem(entities.tenantLinks, result.Items[0]);
+                return cleanupItem(entities.tenantLinks, result);
             } catch (err) {
                 throw Error.from(err, {
                     message: "Could not get tenant link for identity.",
@@ -277,7 +280,7 @@ export const createStorageOperations = (
                 });
             }
         },
-        async listApiKeys({ sort, tenant }): Promise<ApiKey[]> {
+        async listApiKeys({ where: { tenant }, sort }): Promise<ApiKey[]> {
             let items: ApiKey[] = [];
             try {
                 items = await queryAll<ApiKey>({
@@ -301,7 +304,7 @@ export const createStorageOperations = (
             });
             return sortedItems.map(item => cleanupItem(entities.apiKeys, item));
         },
-        async listGroups({ sort, tenant }): Promise<Group[]> {
+        async listGroups({ where: { tenant }, sort }): Promise<Group[]> {
             let items: Group[];
             try {
                 items = await queryAll<Group>({
@@ -332,7 +335,7 @@ export const createStorageOperations = (
             const links = await queryAll<TenantLink>({
                 entity: entities.tenantLinks,
                 partitionKey: `IDENTITY#${identity}`,
-                options: { beginsWith: `LINK#` }
+                options: { beginsWith: "LINK#" }
             });
 
             return cleanupItems(entities.tenantLinks, links);

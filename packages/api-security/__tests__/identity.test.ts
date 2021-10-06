@@ -30,20 +30,29 @@ describe("identity test", () => {
             identity: "1"
         });
 
-        expect(linksByIdentity[0]).toEqual(link1);
+        expect(linksByIdentity[0]).toEqual({
+            ...link1,
+            createdOn: expect.any(String)
+        });
 
         const linksByType = await security.listTenantLinksByType({
             type: "group",
             tenant
         });
 
-        expect(linksByType[0]).toEqual(link1);
+        expect(linksByType[0]).toEqual({
+            ...link1,
+            createdOn: expect.any(String)
+        });
 
         const linksByTenant = await security.listTenantLinksByTenant({
             tenant
         });
 
-        expect(linksByTenant).toEqual([link1, link2]);
+        expect(linksByTenant).toEqual([
+            { ...link1, createdOn: expect.any(String) },
+            { ...link2, createdOn: expect.any(String) }
+        ]);
 
         await security.updateTenantLinks([{ ...link2, type: "idp" }]);
 

@@ -18,11 +18,13 @@ import {
     LIST_USERS,
     GET_USER,
     GET_CURRENT_USER,
-    LOGIN
+    LOGIN,
+    GET_SECURITY_GROUP
 } from "./graphql/users";
 
 import { INSTALL, IS_INSTALLED, INSTALL_SECURITY, INSTALL_TENANCY } from "./graphql/install";
-import {customAuthorizer} from "./mocks/customAuthorizer";
+import { customAuthorizer } from "./mocks/customAuthorizer";
+import { authenticateUsingHttpHeader } from "@webiny/api-security/plugins/authenticateUsingHttpHeader";
 
 type UseGqlHandlerParams = {
     fullAccess?: boolean;
@@ -40,7 +42,7 @@ const documentClient = new DocumentClient({
 });
 
 export default (opts: UseGqlHandlerParams = {}) => {
-    const defaults = { mockUser: true, fullAccess: false, plugins: [] };
+    const defaults = { fullAccess: false, plugins: [] };
     opts = Object.assign({}, defaults, opts);
 
     // @ts-ignore
@@ -58,6 +60,7 @@ export default (opts: UseGqlHandlerParams = {}) => {
             storageOperations
         }),
         graphqlHandler(),
+        authenticateUsingHttpHeader(),
         customAuthenticator(),
         customAuthorizer({ fullAccess: opts.fullAccess }),
         ...opts.plugins
@@ -65,6 +68,9 @@ export default (opts: UseGqlHandlerParams = {}) => {
 
     // Let's also create the "invoke" function. This will make handler invocations in actual tests easier and nicer.
     const invoke = async ({ httpMethod = "POST", body, headers = {}, ...rest }) => {
+        if (!("authorization" in headers)) {
+            headers["authorization"] = "mock-user";
+        }
         const response = await handler({
             httpMethod,
             headers,
@@ -76,9 +82,9 @@ export default (opts: UseGqlHandlerParams = {}) => {
         return [JSON.parse(response.body), response];
     };
 
-    const securityUser = {
-        async login() {
-            return invoke({ body: { query: LOGIN } });
+    const adminUsers = {
+        async login(headers = {}) {
+            return invoke({ body: { query: LOGIN }, headers });
         },
         async create(variables) {
             return invoke({ body: { query: CREATE_USER, variables } });
@@ -120,10 +126,17 @@ export default (opts: UseGqlHandlerParams = {}) => {
         }
     };
 
+    const securityGroups = {
+        async get(variables) {
+            return invoke({ body: { query: GET_SECURITY_GROUP, variables } });
+        }
+    };
+
     return {
         handler,
         invoke,
-        securityUser,
+        adminUsers,
+        securityGroups,
         install
     };
 };

@@ -1,65 +1,57 @@
 import useGqlHandler from "./useGqlHandler";
 import mocks from "./mocks/securityUser";
-import groupMocks from "./mocks/securityGroup";
 import md5 from "md5";
+import { AdminUser } from "~/types";
 
 const createGravatar = email => `https://www.gravatar.com/avatar/${md5(email)}`;
 
 describe("Security User CRUD Test", () => {
-    const { install, securityUser, securityGroup } = useGqlHandler();
-    let groupA;
-    let groupB;
+    const { install, adminUsers, securityGroups } = useGqlHandler({ fullAccess: true });
 
-    const adminData = { firstName: "John", lastName: "Doe", login: "admin@webiny.com" };
+    const adminData = {
+        firstName: "John",
+        lastName: "Doe",
+        email: "admin@webiny.com"
+    };
 
-    beforeEach(async () => {
-        await install.install({
-            data: adminData
+    const setupTest = () => {
+        return install.install({
+            data: { ...adminData, password: "12345678" }
         });
-    });
+    };
+    
+    beforeEach(setupTest);
 
     test("should create, read, update and delete users", async () => {
-        // Create user groups
-        const [createGroupAResponse] = await securityGroup.create({
-            data: groupMocks.groupA
-        });
+        const [groupResponseA] = await securityGroups.get({ slug: "full-access" });
+        const fullAccessGroup = groupResponseA.data.security.getGroup.data;
 
-        groupA = createGroupAResponse.data.security.createGroup.data;
-        expect(createGroupAResponse).toEqual({
-            data: {
-                security: {
-                    createGroup: {
-                        data: groupMocks.groupA,
-                        error: null
-                    }
-                }
-            }
-        });
-
-        const [createGroupBResponse] = await securityGroup.create({
-            data: groupMocks.groupB
-        });
-
-        groupB = createGroupBResponse.data.security.createGroup.data;
+        const [groupResponseB] = await securityGroups.get({ slug: "anonymous" });
+        const anonymousGroup = groupResponseB.data.security.getGroup.data;
 
         // Let's create a user.
-        const [createUserAResponse] = await securityUser.create({
+        const [createUserAResponse] = await adminUsers.create({
             data: {
                 ...mocks.userA,
-                group: groupA.slug
+                password: "12345678",
+                group: fullAccessGroup.id
             }
         });
+
+        const userA: AdminUser = createUserAResponse.data.adminUsers.createUser.data;
 
         expect(createUserAResponse).toEqual({
             data: {
-                security: {
+                adminUsers: {
                     createUser: {
                         data: {
                             ...mocks.userA,
-                            gravatar: createGravatar(mocks.userA.login),
+                            id: expect.any(String),
+                            gravatar: createGravatar(mocks.userA.email),
                             group: {
-                                slug: groupMocks.groupA.slug,
-                                name: groupMocks.groupA.name
+                                id: fullAccessGroup.id,
+                                slug: fullAccessGroup.slug,
+                                name: fullAccessGroup.name
                             }
                         },
                         error: null
@@ -68,23 +60,26 @@ describe("Security User CRUD Test", () => {
             }
         });
 
-        const [createUserBResponse] = await securityUser.create({
+        const [createUserBResponse] = await adminUsers.create({
             data: {
                 ...mocks.userB,
-                group: groupA.slug
+                password: "12345678",
+                group: fullAccessGroup.id
             }
         });
 
         expect(createUserBResponse).toEqual({
             data: {
-                security: {
+                adminUsers: {
                     createUser: {
                         data: {
                             ...mocks.userB,
-                            gravatar: createGravatar(mocks.userB.login),
+                            id: expect.any(String),
+                            gravatar: createGravatar(mocks.userB.email),
                             group: {
-                                slug: groupA.slug,
-                                name: groupA.name
+                                id: fullAccessGroup.id,
+                                name: fullAccessGroup.name,
+                                slug: fullAccessGroup.slug
                             }
                         },
                         error: null
@@ -93,38 +88,26 @@ describe("Security User CRUD Test", () => {
             }
         });
 
-        // Let's check whether both of the group exists
-        const [listUsersResponse] = await securityUser.list();
+        const userB: AdminUser = createUserBResponse.data.adminUsers.createUser.data;
+
+        // Let's check if both users exist
+        const [listUsersResponse] = await adminUsers.list();
 
         expect(listUsersResponse).toMatchObject({
             data: {
-                security: {
+                adminUsers: {
                     listUsers: {
                         data: [
                             {
                                 firstName: "John",
                                 lastName: "Doe",
-                                login: "admin@webiny.com",
+                                email: "admin@webiny.com",
                                 group: {
                                     slug: "full-access"
                                 }
                             },
-                            {
-                                ...mocks.userA,
-                                gravatar: createGravatar(mocks.userA.login),
-                                group: {
-                                    slug: groupA.slug,
-                                    name: groupA.name
-                                }
-                            },
-                            {
-                                ...mocks.userB,
-                                gravatar: createGravatar(mocks.userB.login),
-                                group: {
-                                    slug: groupA.slug,
-                                    name: groupA.name
-                                }
-                            }
+                            userA,
+                            userB
                         ],
                         error: null
                     }
@@ -134,8 +117,8 @@ describe("Security User CRUD Test", () => {
 
         // Let's update the "userB" name
         const updatedName = "User B";
-        const [updateUserResponse] = await securityUser.update({
-            login: mocks.userB.login,
+        const [updateUserResponse] = await adminUsers.update({
+            id: userB.id,
             data: {
                 lastName: updatedName
             }
@@ -143,16 +126,11 @@ describe("Security User CRUD Test", () => {
 
         expect(updateUserResponse).toEqual({
             data: {
-                security: {
+                adminUsers: {
                     updateUser: {
                         data: {
-                            ...mocks.userB,
-                            lastName: updatedName,
-                            gravatar: createGravatar(mocks.userB.login),
-                            group: {
-                                name: "Group-A",
-                                slug: "group-a"
-                            }
+                            ...userB,
+                            lastName: updatedName
                         },
                         error: null
                     }
@@ -161,13 +139,11 @@ describe("Security User CRUD Test", () => {
         });
 
         // Delete  "userB"
-        const [deleteUserResponse] = await securityUser.delete({
-            login: mocks.userB.login
-        });
+        const [deleteUserResponse] = await adminUsers.delete({ id: userB.id });
 
         expect(deleteUserResponse).toEqual({
             data: {
-                security: {
+                adminUsers: {
                     deleteUser: {
                         data: true,
                         error: null
@@ -177,19 +153,17 @@ describe("Security User CRUD Test", () => {
         });
 
         // Should not contain "userB"
-        const [getUserBResponse] = await securityUser.get({
-            login: mocks.userB.login
-        });
+        const [getUserBResponse] = await adminUsers.get({ email: userB.email });
 
         expect(getUserBResponse).toEqual({
             data: {
-                security: {
+                adminUsers: {
                     getUser: {
                         data: null,
                         error: {
                             code: "NOT_FOUND",
                             data: null,
-                            message: `User "${mocks.userB.login}" was not found!`
+                            message: `User \"{\"email\":\"${mocks.userB.email}\"}\" was not found!`
                         }
                     }
                 }
@@ -197,20 +171,13 @@ describe("Security User CRUD Test", () => {
         });
 
         // Should contain "userA"
-        const [getUserAResponse] = await securityUser.get({ login: mocks.userA.login });
+        const [getUserAResponse] = await adminUsers.get({ email: userA.email });
 
         expect(getUserAResponse).toEqual({
             data: {
-                security: {
+                adminUsers: {
                     getUser: {
-                        data: {
-                            ...mocks.userA,
-                            gravatar: createGravatar(mocks.userA.login),
-                            group: {
-                                slug: groupMocks.groupA.slug,
-                                name: groupMocks.groupA.name
-                            }
-                        },
+                        data: userA,
                         error: null
                     }
                 }
@@ -218,21 +185,21 @@ describe("Security User CRUD Test", () => {
         });
 
         // Update user's group
-        const [updateUserAResponse] = await securityUser.update({
-            login: mocks.userA.login,
-            data: { group: groupB.slug }
+        const [updateUserAResponse] = await adminUsers.update({
+            id: userA.id,
+            data: { group: anonymousGroup.id }
         });
 
         expect(updateUserAResponse).toEqual({
             data: {
-                security: {
+                adminUsers: {
                     updateUser: {
                         data: {
-                            ...mocks.userA,
-                            gravatar: createGravatar(mocks.userA.login),
+                            ...userA,
                             group: {
-                                slug: groupB.slug,
-                                name: groupB.name
+                                id: anonymousGroup.id,
+                                name: anonymousGroup.name,
+                                slug: anonymousGroup.slug
                             }
                         },
                         error: null
@@ -242,33 +209,30 @@ describe("Security User CRUD Test", () => {
         });
     });
 
-    test("should not allow creation of user without a group", async () => {
-        const [{ errors }] = await securityUser.create({
-            data: { ...mocks.userA, login: "admin@webiny.com" }
-        });
+    test("should not allow creating a user if email is taken", async () => {
+        const [groupResponseA] = await securityGroups.get({ slug: "full-access" });
+        const fullAccessGroup = groupResponseA.data.security.getGroup.data;
 
-        expect(errors.length).toBe(1);
-        expect(
-            errors[0].message.includes("Field group of required type String! was not provided.")
-        ).toBe(true);
-    });
-
-    test("should not allow creating a user if login is taken", async () => {
         // Creating a user with same "email" should not be allowed
-        const [response] = await securityUser.create({
-            data: { ...mocks.userA, login: "admin@webiny.com", group: groupA.slug }
+        const [response] = await adminUsers.create({
+            data: {
+                ...mocks.userA,
+                email: "admin@webiny.com",
+                group: fullAccessGroup.id,
+                password: "12345678"
+            }
         });
 
         expect(response).toEqual({
             data: {
-                security: {
+                adminUsers: {
                     createUser: {
                         data: null,
                         error: {
                             code: "USER_EXISTS",
-                            message: "User with that login already exists.",
+                            message: "User with that email already exists.",
                             data: {
-                                id: "admin@webiny.com"
+                                email: "admin@webiny.com"
                             }
                         }
                     }
@@ -278,16 +242,26 @@ describe("Security User CRUD Test", () => {
     });
 
     test("should return current user based on identity", async () => {
+        const [groupResponseA] = await securityGroups.get({ slug: "full-access" });
+        const fullAccessGroup = groupResponseA.data.security.getGroup.data;
+
         // Creating a user with same "email" should not be allowed
-        const [response] = await securityUser.getCurrentUser();
+        const [response] = await adminUsers.getCurrentUser();
 
         expect(response).toEqual({
             data: {
-                security: {
+                adminUsers: {
                     getCurrentUser: {
                         data: {
                             ...adminData,
-                            avatar: null
+                            id: expect.any(String),
+                            gravatar: createGravatar(adminData.email),
+                            avatar: null,
+                            group: {
+                                id: fullAccessGroup.id,
+                                name: fullAccessGroup.name,
+                                slug: fullAccessGroup.slug
+                            }
                         },
                         error: null
                     }
@@ -297,13 +271,14 @@ describe("Security User CRUD Test", () => {
     });
 
     test("should not allow deletion of own user account", async () => {
-        const [response] = await securityUser.delete({
-            login: "admin@webiny.com"
-        });
+        const [getUserResponse] = await adminUsers.get({ email: "admin@webiny.com" });
+        const user = getUserResponse.data.adminUsers.getUser.data;
+
+        const [response] = await adminUsers.delete({ id: user.id });
 
         expect(response).toEqual({
             data: {
-                security: {
+                adminUsers: {
                     deleteUser: {
                         data: null,
                         error: {

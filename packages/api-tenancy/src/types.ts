@@ -17,6 +17,7 @@ export interface Tenancy {
     onTenantAfterUpdate: Topic<TenantAfterUpdateEvent>;
     onTenantBeforeDelete: Topic<TenantBeforeDeleteEvent>;
     onTenantAfterDelete: Topic<TenantAfterDeleteEvent>;
+    isMultiTenant(): boolean;
     getStorageOperations(): TenancyStorageOperations;
     getCurrentTenant<TTenant extends Tenant = Tenant>(): TTenant;
     setCurrentTenant(tenant: Tenant): void;

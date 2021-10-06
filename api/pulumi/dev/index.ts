@@ -57,7 +57,8 @@ export default () => {
             PRERENDERING_QUEUE_PROCESS_HANDLER: prerenderingService.functions.queue.process.arn,
             S3_BUCKET: fileManager.bucket.id,
             DEBUG,
-            WEBINY_LOGS_FORWARD_URL
+            WEBINY_LOGS_FORWARD_URL,
+            NODE_OPTIONS: "--enable-source-maps"
         },
         primaryDynamodbTable: dynamoDb.table,
         elasticsearchDynamodbTable: elasticSearch.table,

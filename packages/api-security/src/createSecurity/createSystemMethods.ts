@@ -55,9 +55,11 @@ export const createSystemMethods = ({ getTenant, storageOperations }: SecurityCo
             const installEvent = { tenant: getTenant() };
 
             try {
+                this.disableAuthorization();
                 await this.onBeforeInstall.publish(installEvent);
                 await this.onInstall.publish(installEvent);
                 await this.onAfterInstall.publish(installEvent);
+                this.enableAuthorization();
             } catch (err) {
                 await this.onCleanup.publish({ error: err, tenant: getTenant() });
 

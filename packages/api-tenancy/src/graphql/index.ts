@@ -6,6 +6,13 @@ const emptyResolver = () => ({});
 
 export default new GraphQLSchemaPlugin<TenancyContext>({
     typeDefs: /* GraphQL */ `
+        type Tenant {
+            id: ID!
+            name: String!
+            description: String!
+            parent: ID
+        }
+
         type TenancyQuery {
             version: String
         }
@@ -39,6 +46,11 @@ export default new GraphQLSchemaPlugin<TenancyContext>({
         },
         Mutation: {
             tenancy: emptyResolver
+        },
+        Tenant: {
+            description(tenant) {
+                return tenant.description || "";
+            }
         },
         TenancyQuery: {
             version: async (root, args, context) => {

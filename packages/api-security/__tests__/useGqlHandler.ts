@@ -1,13 +1,12 @@
 import groupAuthorization from "~/plugins/groupAuthorization";
-
 const { DocumentClient } = require("aws-sdk/clients/dynamodb");
 import { createHandler } from "@webiny/handler-aws";
 import graphqlHandlerPlugins from "@webiny/handler-graphql";
 import { PluginCollection } from "@webiny/plugins/types";
 import tenancyPlugins from "@webiny/api-tenancy";
 import { createStorageOperations as tenancyStorageOperations } from "@webiny/api-tenancy-so-ddb";
-import { authenticateUsingHttpHeader } from "../src/plugins/authenticateUsingHttpHeader";
-import securityPlugins from "../src/index";
+import { authenticateUsingHttpHeader } from "~/plugins/authenticateUsingHttpHeader";
+import securityPlugins from "~/index";
 // Graphql
 import {
     UPDATE_SECURITY_GROUP,
@@ -32,7 +31,6 @@ import { customAuthenticator } from "./mocks/customAuthenticator";
 import { triggerAuthentication } from "./mocks/triggerAuthentication";
 
 type UseGqlHandlerParams = {
-    fullAccess?: boolean;
     plugins?: PluginCollection;
 };
 
@@ -46,7 +44,7 @@ const documentClient = new DocumentClient({
 });
 
 export default (opts: UseGqlHandlerParams = {}) => {
-    const defaults = { fullAccess: false, plugins: [] };
+    const defaults = { plugins: [] };
     opts = Object.assign({}, defaults, opts);
 
     // @ts-ignore
@@ -62,6 +60,7 @@ export default (opts: UseGqlHandlerParams = {}) => {
             graphqlHandlerPlugins(),
             // TODO: tenancy storage operations need to be loaded dynamically, but for now this will do since we only have DDB storage for this app.
             tenancyPlugins({
+                // multiTenancy: true,
                 storageOperations: tenancyStorageOperations({
                     documentClient,
                     table: "DynamoDB"
@@ -71,7 +70,7 @@ export default (opts: UseGqlHandlerParams = {}) => {
             authenticateUsingHttpHeader(),
             triggerAuthentication(),
             customAuthenticator(),
-            opts.fullAccess ? customGroupAuthorizer() : null,
+            customGroupAuthorizer(),
             groupAuthorization({ identityType: "admin" }),
             ...opts.plugins
         ].filter(Boolean)
@@ -130,9 +129,9 @@ export default (opts: UseGqlHandlerParams = {}) => {
         async isInstalled() {
             return invoke({ body: { query: IS_INSTALLED } });
         },
-        async install() {
+        async install(headers = {}) {
             await this.installTenancy();
-            return invoke({ body: { query: INSTALL } });
+            return invoke({ body: { query: INSTALL }, headers });
         },
         async installTenancy() {
             return await invoke({ body: { query: INSTALL_TENANCY } });

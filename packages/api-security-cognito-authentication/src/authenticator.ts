@@ -63,8 +63,7 @@ export const authenticator =
                 id: token.sub,
                 type: config.identityType,
                 displayName: `${token.given_name} ${token.family_name}`,
-                firstName: token.given_name,
-                lastName: token.family_name,
+                // This is necessary for migration to the new `adminUsers` app and will removed in the future versions.
                 email: token.email
             };
         }

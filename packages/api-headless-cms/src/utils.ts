@@ -48,7 +48,7 @@ const RWD = {
     d: "delete"
 };
 
-export const checkPermissions = async <TPermission = SecurityPermission>(
+export const checkPermissions = async <TPermission extends SecurityPermission= SecurityPermission>(
     context: CmsContext,
     name: string,
     check?: { rwd?: string; pw?: string }

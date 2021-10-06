@@ -8,14 +8,12 @@ export const defaultIdentity = () => {
                 id: ID!
                 type: String!
                 displayName: String!
-                access: [TenantAccess!]!
+                permissions: [JSON!]!
+                tenant: Tenant
             }
         `,
         resolvers: {
             Admin: {
-                async access() {
-                    return [{ id: "root", permissions: [{ name: "*" }] }];
-                },
                 __isTypeOf(obj) {
                     return obj.type === "admin";
                 }

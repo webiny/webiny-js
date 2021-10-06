@@ -1,8 +1,11 @@
 import { ErrorResponse, Response } from "@webiny/handler-graphql/responses";
 import { AdminUsersContext } from "~/types";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSchemaPlugin";
+import { SecurityContext } from "@webiny/api-security/types";
 
-export default new GraphQLSchemaPlugin<AdminUsersContext>({
+type Context = SecurityContext & AdminUsersContext;
+
+export default new GraphQLSchemaPlugin<Context>({
     typeDefs: /* GraphQL */ `
         input AdminUsersInstallInput {
             firstName: String!
@@ -30,7 +33,9 @@ export default new GraphQLSchemaPlugin<AdminUsersContext>({
         AdminUsersMutation: {
             install: async (root, args, context) => {
                 try {
+                    context.security.disableAuthorization();
                     await context.adminUsers.install(args.data);
+                    context.security.enableAuthorization();
                     return new Response(true);
                 } catch (e) {
                     return new ErrorResponse(e);

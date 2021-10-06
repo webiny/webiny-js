@@ -40,9 +40,14 @@ export default new GraphQLSchemaPlugin<SecurityContext>({
             data: [SecurityGroup]
             error: SecurityError
         }
+        
+        input GetGroupWhereInput {
+            id: ID
+            slug: String
+        }
 
         extend type SecurityQuery {
-            getGroup(id: ID!): SecurityGroupResponse
+            getGroup(where: GetGroupWhereInput!): SecurityGroupResponse
             listGroups: SecurityGroupListResponse
         }
 
@@ -54,9 +59,9 @@ export default new GraphQLSchemaPlugin<SecurityContext>({
     `,
     resolvers: {
         SecurityQuery: {
-            getGroup: async (_, { id }: { id: string }, context) => {
+            getGroup: async (_, { where }, context) => {
                 try {
-                    const group = await context.security.getGroup({ id });
+                    const group = await context.security.getGroup({ where });
                     return new Response(group);
                 } catch (e) {
                     return new ErrorResponse(e);

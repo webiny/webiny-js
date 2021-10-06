@@ -4,57 +4,45 @@ import md5 from "md5";
 const createGravatar = email => `https://www.gravatar.com/avatar/${md5(email)}`;
 
 describe(`"Login" test`, () => {
-    const { install, securityUser } = useGqlHandler();
-    const login = "admin@webiny.com";
+    const { install, adminUsers } = useGqlHandler();
+    const email = "admin@webiny.com";
 
     beforeEach(async () => {
         const [response] = await install.install({
-            data: { firstName: "John", lastName: "Doe", login }
+            data: { firstName: "John", lastName: "Doe", email, password: "12345678" }
         });
-        if (response?.data?.security?.install?.error) {
-            console.log(response.data.security.install.error);
-            throw new Error(response.data.security.install.error.message);
+
+        if (response?.data?.adminUsers?.install?.error) {
+            console.log(response.data.adminUsers.install.error);
+            throw new Error(response.data.adminUsers.install.error.message);
             process.exit(0);
         }
     });
 
     test("Should be able to login", async () => {
-        const [response] = await securityUser.login();
+        // We need to mock the identity ID.
+        const [response] = await adminUsers.login();
 
         expect(response).toEqual({
             data: {
                 security: {
                     login: {
                         data: {
-                            login: "admin@webiny.com",
-                            firstName: "John",
-                            lastName: "Doe",
-                            avatar: null,
-                            gravatar: createGravatar(login),
-                            access: [{ id: "root", name: "Root", permissions: [{ name: "*" }] }]
-                        },
-                        error: null
-                    }
-                }
-            }
-        });
-
-        /**
-         * We must try the second login to verify that user is not created again.
-         */
-        const [secondResponse] = await securityUser.login();
-
-        expect(secondResponse).toEqual({
-            data: {
-                security: {
-                    login: {
-                        data: {
-                            login: "admin@webiny.com",
-                            firstName: "John",
-                            lastName: "Doe",
-                            avatar: null,
-                            gravatar: createGravatar(login),
-                            access: [{ id: "root", name: "Root", permissions: [{ name: "*" }] }]
+                            id: expect.any(String),
+                            displayName: "John Doe",
+                            type: "admin",
+                            permissions: [{ name: "*" }],
+                            tenant: {
+                                id: "root",
+                                name: "Root"
+                            },
+                            profile: {
+                                email,
+                                firstName: "John",
+                                lastName: "Doe",
+                                avatar: null,
+                                gravatar: createGravatar(email)
+                            }
                         },
                         error: null
                     }
@@ -64,18 +52,18 @@ describe(`"Login" test`, () => {
     });
 
     test("Should be able to update current user", async () => {
-        const [updateUserResponse] = await securityUser.updateCurrentUser({
+        const [updateUserResponse] = await adminUsers.updateCurrentUser({
             data: { firstName: "Jane", lastName: "Wayne" }
         });
 
         expect(updateUserResponse).toMatchObject({
             data: {
-                security: {
+                adminUsers: {
                     updateCurrentUser: {
                         data: {
                             firstName: "Jane",
                             lastName: "Wayne",
-                            login: "admin@webiny.com"
+                            email
                         },
                         error: null
                     }
@@ -84,16 +72,16 @@ describe(`"Login" test`, () => {
         });
 
         // Let's see if the current user record updated or not
-        const [getUserResponse] = await securityUser.get({ login: "admin@webiny.com" });
+        const [getUserResponse] = await adminUsers.get({ email });
 
         expect(getUserResponse).toMatchObject({
             data: {
-                security: {
+                adminUsers: {
                     getUser: {
                         data: {
                             firstName: "Jane",
                             lastName: "Wayne",
-                            login: "admin@webiny.com"
+                            email
                         },
                         error: null
                     }

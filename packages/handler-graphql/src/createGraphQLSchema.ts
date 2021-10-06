@@ -61,6 +61,7 @@ export const createGraphQLSchema = (context: Context<HttpContext>) => {
 
     return makeExecutableSchema({
         typeDefs,
-        resolvers
+        resolvers,
+        inheritResolversFromInterfaces: true
     });
 };

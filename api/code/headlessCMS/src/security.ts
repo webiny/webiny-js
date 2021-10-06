@@ -1,35 +1,31 @@
 import tenancy from "@webiny/api-tenancy";
+import { createStorageOperations as tenancyStorageOperations } from "@webiny/api-tenancy-so-ddb";
 import security from "@webiny/api-security";
-import personalAccessTokenAuthentication from "@webiny/api-security-admin-users/authentication/personalAccessToken";
-import apiKeyAuthentication from "@webiny/api-security-admin-users/authentication/apiKey";
-import userAuthorization from "@webiny/api-security-admin-users/authorization/user";
-import apiKeyAuthorization from "@webiny/api-security-admin-users/authorization/apiKey";
-import adminUsersContext from "@webiny/api-security-admin-users/context";
-import anonymousAuthorization from "@webiny/api-security-admin-users/authorization/anonymous";
+import { createStorageOperations as securityStorageOperations } from "@webiny/api-security-so-ddb";
+import { authenticateUsingHttpHeader } from "@webiny/api-security/plugins/authenticateUsingHttpHeader";
+import apiKeyAuthentication from "@webiny/api-security/plugins/apiKeyAuthentication";
+import apiKeyAuthorization from "@webiny/api-security/plugins/apiKeyAuthorization";
+import groupAuthorization from "@webiny/api-security/plugins/groupAuthorization";
+import anonymousAuthorization from "@webiny/api-security/plugins/anonymousAuthorization";
 import cognitoAuthentication from "@webiny/api-security-cognito-authentication";
 
-export default () => [
+export default ({ documentClient }) => [
     /**
-     * Learn more: https://www.webiny.com/docs/key-topics/multi-tenancy
+     * Setup Tenancy app.
      */
-    tenancy(),
+    tenancy({ storageOperations: tenancyStorageOperations({ documentClient }) }),
 
     /**
-     * Learn more: https://www.webiny.com/docs/key-topics/security-framework/introduction
+     * Adds a context plugin to setup Security app.
      */
-    security(),
+    security({
+        storageOperations: securityStorageOperations({ documentClient })
+    }),
 
     /**
-     * Adds Admin Users context to support authentication and authorization plugins.
+     * Perform authentication using the common "Authorization" HTTP header.
      */
-    adminUsersContext(),
-    /**
-     * Authentication plugin for Personal Access Tokens.
-     * PATs are directly linked to Users. We consider a token to be valid, if we manage to load
-     * a User who owns this particular token. The "identityType" is important, and it has to match
-     * the "identityType" configured in the authorization plugin later in this file.
-     */
-    personalAccessTokenAuthentication({ identityType: "admin" }),
+    authenticateUsingHttpHeader(),
 
     /**
      * Authentication plugin for API Keys.
@@ -56,11 +52,9 @@ export default () => [
     apiKeyAuthorization({ identityType: "api-key" }),
 
     /**
-     * Authorization plugin to load user permissions for requested tenant.
-     * The authorization will only be performed on identities whose "type" matches
-     * the provided "identityType".
+     * Authorization plugin to fetch permissions from a security group associated with the identity.
      */
-    userAuthorization({ identityType: "admin" }),
+    groupAuthorization({ identityType: "admin" }),
 
     /**
      * Authorization plugin to load permissions for anonymous requests.

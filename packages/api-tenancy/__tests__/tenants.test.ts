@@ -14,21 +14,34 @@ describe(`Test "Tenancy" tenants`, () => {
     });
 
     test(`should create/update/list/delete tenants`, async () => {
-        await tenancy.createTenant({ id: "1", name: "Tenant #1", parent: "root" });
+        const tenant1Data = {
+            id: "1",
+            name: "Tenant #1",
+            description: "The first sub-tenant",
+            parent: "root"
+        };
+
+        const tenant2Data = {
+            id: "2",
+            name: "Tenant #2",
+            description: "The second sub-tenant",
+            parent: "root"
+        };
+
+        await tenancy.createTenant(tenant1Data);
         const tenants = await tenancy.listTenants({ parent: "root" });
         expect(tenants.length).toBe(1);
-        expect(tenants[0]).toEqual({ id: "1", name: "Tenant #1", parent: "root" });
+        expect(tenants[0]).toEqual(tenant1Data);
 
-        await tenancy.createTenant({ id: "2", name: "Tenant #2", parent: "root" });
+        await tenancy.createTenant(tenant2Data);
         const tenant2 = await tenancy.getTenantById("2");
-        expect(tenant2.name).toEqual("Tenant #2");
+        expect(tenant2).toEqual(tenant2Data);
 
         await tenancy.updateTenant("2", { name: "Tenant #2.1", description: "Subtenant" });
         await expect(tenancy.getTenantById("2")).resolves.toEqual({
-            id: "2",
+            ...tenant2Data,
             name: "Tenant #2.1",
-            description: "Subtenant",
-            parent: "root"
+            description: "Subtenant"
         });
 
         await tenancy.deleteTenant("1");

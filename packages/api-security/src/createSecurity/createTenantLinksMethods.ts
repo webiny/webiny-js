@@ -13,7 +13,12 @@ import {
 export const createTenantLinksMethods = ({ storageOperations }: SecurityConfig) => {
     return {
         async createTenantLinks(params: CreateTenantLinkParams[]) {
-            await storageOperations.createTenantLinks(params);
+            await storageOperations.createTenantLinks(
+                params.map(item => ({
+                    ...item,
+                    createdOn: new Date().toISOString()
+                }))
+            );
         },
 
         async updateTenantLinks(params: UpdateTenantLinkParams[]) {
@@ -24,7 +29,7 @@ export const createTenantLinksMethods = ({ storageOperations }: SecurityConfig) 
             await storageOperations.deleteTenantLinks(params);
         },
 
-        listTenantLinksByType<TLink extends TenantLink = TenantLink>(
+        async listTenantLinksByType<TLink extends TenantLink = TenantLink>(
             params: ListTenantLinksByTypeParams
         ): Promise<TLink[]> {
             return storageOperations.listTenantLinksByType(params);
@@ -38,8 +43,10 @@ export const createTenantLinksMethods = ({ storageOperations }: SecurityConfig) 
             return storageOperations.listTenantLinksByIdentity(params);
         },
 
-        getTenantLinkByIdentity<TData>(params: GetTenantLinkByIdentityParams) {
-            return storageOperations.getTenantLinkByIdentity<TData>(params);
+        async getTenantLinkByIdentity<TLink extends TenantLink = TenantLink>(
+            params: GetTenantLinkByIdentityParams
+        ): Promise<TLink> {
+            return storageOperations.getTenantLinkByIdentity(params);
         }
     };
 };

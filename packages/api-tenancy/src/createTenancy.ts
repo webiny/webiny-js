@@ -5,6 +5,7 @@ import { createTenantsMethods } from "~/createTenancy/createTenantsMethods";
 export interface TenancyConfig {
     tenant: string;
     storageOperations: TenancyStorageOperations;
+    multiTenancy?: boolean;
 }
 
 const withToString = tenant => {
@@ -18,7 +19,8 @@ const withToString = tenant => {
 
 export async function createTenancy({
     tenant,
-    storageOperations
+    storageOperations,
+    multiTenancy = false
 }: TenancyConfig): Promise<Tenancy> {
     let currentTenant;
 
@@ -29,7 +31,9 @@ export async function createTenancy({
         getCurrentTenant<TTenant extends Tenant = Tenant>(): TTenant {
             return currentTenant as TTenant;
         },
-
+        isMultiTenant() {
+            return multiTenancy;
+        },
         setCurrentTenant(tenant: Tenant) {
             currentTenant = withToString(tenant);
         },

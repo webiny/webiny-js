@@ -2,7 +2,7 @@ import mdbid from "mdbid";
 import cloneDeep from "lodash.clonedeep";
 import { createTopic } from "@webiny/pubsub";
 import Error from "@webiny/error";
-import { Security, SecurityIdentity, SecurityPermission } from "@webiny/api-security/types";
+import { SecurityIdentity, SecurityPermission } from "@webiny/api-security/types";
 import { NotAuthorizedError } from "@webiny/api-security";
 import { NotFoundError } from "@webiny/handler-graphql";
 import { AdminUser, AdminUsers, AdminUsersStorageOperations, System } from "./types";
@@ -59,7 +59,7 @@ export const createAdminUsers = ({
                 });
             }
         },
-        async createUser(data) {
+        async createUser(this: AdminUsers, data) {
             await checkPermission();
             const tenant = getTenant();
 
@@ -78,7 +78,7 @@ export const createAdminUsers = ({
 
             const user: AdminUser = {
                 ...data,
-                id: mdbid(),
+                id: data.id || mdbid(),
                 createdOn: new Date().toISOString(),
                 createdBy,
                 tenant
@@ -86,7 +86,7 @@ export const createAdminUsers = ({
 
             let result;
             try {
-                await this.onBeforeCreate.publish({ user, inputData: data });
+                await this.onUserBeforeCreate.publish({ user, inputData: data });
                 /**
                  * Always delete `password` from the user data!
                  */
@@ -94,13 +94,16 @@ export const createAdminUsers = ({
                 result = await storageOperations.createUser({ user });
 
                 try {
-                    await this.onAfterCreate.publish({ user: result, inputData: data });
+                    await this.onUserAfterCreate.publish({ user: result, inputData: data });
                 } catch (err) {
                     // Not sure if we care about errors in `onAfterCreate`.
                     // Maybe add an `onCreateError` event for potential cleanup operations?
                     // For now, just log it.
                     console.log(err);
                 }
+
+                loaders.getUser.clear(result.id).prime(result.id, result);
+
                 return result;
             } catch (err) {
                 throw Error.from(err, {
@@ -110,7 +113,7 @@ export const createAdminUsers = ({
                 });
             }
         },
-        async deleteUser(id: string) {
+        async deleteUser(this: AdminUsers, id: string) {
             await checkPermission();
 
             const identity = getIdentity();
@@ -125,10 +128,10 @@ export const createAdminUsers = ({
             }
 
             try {
-                await this.onBeforeDelete.publish({ user });
+                await this.onUserBeforeDelete.publish({ user });
                 await storageOperations.deleteUser({ user });
                 loaders.clearLoadersCache(id);
-                await this.onAfterDelete.publish({ user });
+                await this.onUserAfterDelete.publish({ user });
             } catch (err) {
                 throw Error.from(err, {
                     message: "Could not delete user.",
@@ -146,7 +149,8 @@ export const createAdminUsers = ({
             }
 
             // Querying by email is very rare, so we don't need to bother with DataLoader for now.
-            return storageOperations.getUser({ where: { tenant: getTenant(), ...where } });
+            const tenant = getTenant();
+            return storageOperations.getUser({ where: { tenant, ...where } });
         },
         async listUsers(params = {}) {
             await checkPermission();
@@ -164,7 +168,7 @@ export const createAdminUsers = ({
                 });
             }
         },
-        async updateUser(id, data) {
+        async updateUser(this: AdminUsers, id, data) {
             await checkPermission();
 
             const originalUser = await this.getUser({ where: { id } });
@@ -174,11 +178,8 @@ export const createAdminUsers = ({
 
             const updateData = cloneDeep(data);
 
-            // Make sure "group" is not sent to the storage layer.
-            delete originalUser["group"];
-
             try {
-                await this.onBeforeUpdate.publish({
+                await this.onUserBeforeUpdate.publish({
                     user: originalUser,
                     updateData,
                     inputData: data
@@ -188,7 +189,11 @@ export const createAdminUsers = ({
 
                 await storageOperations.updateUser({ user: updatedUser });
 
-                await this.onAfterUpdate.publish({ originalUser, updatedUser });
+                await this.onUserAfterUpdate.publish({
+                    originalUser,
+                    updatedUser,
+                    inputData: data
+                });
 
                 await loaders.updateDataLoaderUserCache(id, updateData);
 
@@ -201,12 +206,12 @@ export const createAdminUsers = ({
             }
         },
         async getVersion() {
-            try {
-                const system = await storageOperations.getSystemData({ tenant: getTenant() });
+            const system = await storageOperations.getSystemData({ tenant: getTenant() });
+            if (system) {
                 return system.version;
-            } catch (err) {
-                // TODO: add BC check of legacy users
             }
+
+            return null;
         },
 
         async setVersion(version) {
@@ -238,19 +243,21 @@ export const createAdminUsers = ({
             }
         },
 
-        async install(this: Security) {
+        async install(this: AdminUsers, data) {
             if (await this.getVersion()) {
                 throw new Error("Admin Users is already installed.", "ADMIN_USERS_INSTALL_ABORTED");
             }
 
-            const installEvent = { tenant: getTenant() };
+            const user = { ...data, id: mdbid() };
+
+            const installEvent = { tenant: getTenant(), user };
 
             try {
                 await this.onBeforeInstall.publish(installEvent);
                 await this.onInstall.publish(installEvent);
                 await this.onAfterInstall.publish(installEvent);
             } catch (err) {
-                await this.onCleanup.publish({ error: err, tenant: getTenant() });
+                await this.onCleanup.publish({ error: err, tenant: getTenant(), user });
 
                 throw new Error(err.message, "SECURITY_INSTALL_ABORTED", err.data || {});
             }

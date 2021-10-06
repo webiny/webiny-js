@@ -1,7 +1,7 @@
 module.exports = {
     tables: [
         {
-            TableName: "I18N",
+            TableName: "DynamoDB",
             KeySchema: [
                 { AttributeName: "PK", KeyType: "HASH" },
                 { AttributeName: "SK", KeyType: "RANGE" }

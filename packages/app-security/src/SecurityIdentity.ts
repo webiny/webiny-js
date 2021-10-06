@@ -2,15 +2,19 @@ import minimatch from "minimatch";
 import { SecurityPermission } from "./types";
 
 export type SecurityIdentityData = {
-    login: string;
+    id: string;
+    displayName: string;
+    type: string;
     permissions?: SecurityPermission[];
     logout(): void;
-    [key: string]: any;
     getPermission?(permission: string): SecurityPermission;
+    [key: string]: any;
 };
 
 export class SecurityIdentity {
-    login: string;
+    id: string;
+    displayName: string;
+    type: string;
     permissions: SecurityPermission[];
     [key: string]: any;
 
@@ -28,10 +32,6 @@ export class SecurityIdentity {
         }, {}) as SecurityIdentityData;
 
         return new SecurityIdentity({ ...currentData, ...data });
-    }
-
-    setPermissions(permissions: SecurityPermission[]) {
-        this.permissions = permissions;
     }
 
     getPermission<T extends SecurityPermission = SecurityPermission>(name: string): T {

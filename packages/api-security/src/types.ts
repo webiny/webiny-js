@@ -39,6 +39,10 @@ export interface LoginEvent<TIdentity> {
     identity: TIdentity;
 }
 
+export interface IdentityEvent<TIdentity> {
+    identity: TIdentity;
+}
+
 export interface GetGroupWhere {
     id?: string;
     slug?: string;
@@ -49,7 +53,11 @@ export interface Security<TIdentity = SecurityIdentity> extends Authentication<T
     onInstall: Topic<InstallEvent>;
     onAfterInstall: Topic<InstallEvent>;
     onCleanup: Topic<ErrorEvent>;
+    onBeforeLogin: Topic<LoginEvent<TIdentity>>;
     onLogin: Topic<LoginEvent<TIdentity>>;
+    onAfterLogin: Topic<LoginEvent<TIdentity>>;
+    onIdentity: Topic<IdentityEvent<TIdentity>>;
+    getStorageOperations(): SecurityStorageOperations;
     enableAuthorization(): void;
     disableAuthorization(): void;
     addAuthorizer(authorizer: Authorizer): void;
@@ -67,9 +75,9 @@ export interface Security<TIdentity = SecurityIdentity> extends Authentication<T
     updateApiKey(id: string, data: ApiKeyInput): Promise<ApiKey>;
     deleteApiKey(id: string): Promise<boolean>;
     // Groups
-    getGroup(where: GetGroupWhere, options?: CrudOptions): Promise<Group>;
-    listGroups(options?: CrudOptions): Promise<Group[]>;
-    createGroup(input: GroupInput, options?: CrudOptions): Promise<Group>;
+    getGroup(params: GetGroupParams): Promise<Group>;
+    listGroups(params?: ListGroupsParams): Promise<Group[]>;
+    createGroup(input: GroupInput): Promise<Group>;
     updateGroup(id: string, input: Partial<GroupInput>): Promise<Group>;
     deleteGroup(id: string): Promise<void>;
     // Links
@@ -81,7 +89,7 @@ export interface Security<TIdentity = SecurityIdentity> extends Authentication<T
     ): Promise<TLink[]>;
     listTenantLinksByTenant(params: ListTenantLinksParams): Promise<TenantLink[]>;
     listTenantLinksByIdentity(params: ListTenantLinksByIdentityParams): Promise<TenantLink[]>;
-    getTenantLinkByIdentity<TLink = TenantLink>(
+    getTenantLinkByIdentity<TLink extends TenantLink = TenantLink>(
         params: GetTenantLinkByIdentityParams
     ): Promise<TLink>;
     // System
@@ -91,31 +99,33 @@ export interface Security<TIdentity = SecurityIdentity> extends Authentication<T
 }
 
 export interface SecurityStorageOperations {
-    getGroup(params: GetGroupParams): Promise<Group>;
-    listGroups(params: ListGroupsParams): Promise<Group[]>;
-    createGroup(params: CreateGroupParams): Promise<Group>;
-    updateGroup(params: UpdateGroupParams): Promise<Group>;
-    deleteGroup(params: DeleteGroupParams): Promise<void>;
-    getSystemData(params: GetSystemParams): Promise<System>;
-    createSystemData(params: CreateSystemParams): Promise<System>;
-    updateSystemData(params: UpdateSystemParams): Promise<System>;
-    createTenantLinks(params: CreateTenantLinkParams[]): Promise<void>;
-    updateTenantLinks(params: UpdateTenantLinkParams[]): Promise<void>;
-    deleteTenantLinks(params: DeleteTenantLinkParams[]): Promise<void>;
-    listTenantLinksByType<TLink = TenantLink>(
+    getGroup(params: StorageOperationsGetGroupParams): Promise<Group>;
+    listGroups(params: StorageOperationsListGroupsParams): Promise<Group[]>;
+    createGroup(params: StorageOperationsCreateGroupParams): Promise<Group>;
+    updateGroup(params: StorageOperationsUpdateGroupParams): Promise<Group>;
+    deleteGroup(params: StorageOperationsDeleteGroupParams): Promise<void>;
+    getSystemData(params: StorageOperationsGetSystemParams): Promise<System>;
+    createSystemData(params: StorageOperationsCreateSystemParams): Promise<System>;
+    updateSystemData(params: StorageOperationsUpdateSystemParams): Promise<System>;
+    createTenantLinks(params: StorageOperationsCreateTenantLinkParams[]): Promise<void>;
+    updateTenantLinks(params: StorageOperationsUpdateTenantLinkParams[]): Promise<void>;
+    deleteTenantLinks(params: StorageOperationsDeleteTenantLinkParams[]): Promise<void>;
+    listTenantLinksByType<TLink extends TenantLink = TenantLink>(
         params: ListTenantLinksByTypeParams
     ): Promise<TLink[]>;
-    listTenantLinksByTenant(params: ListTenantLinksParams): Promise<TenantLink[]>;
-    listTenantLinksByIdentity(params: ListTenantLinksByIdentityParams): Promise<TenantLink[]>;
-    getTenantLinkByIdentity<TLink = TenantLink>(
-        params: GetTenantLinkByIdentityParams
+    listTenantLinksByTenant(params: StorageOperationsListTenantLinksParams): Promise<TenantLink[]>;
+    listTenantLinksByIdentity(
+        params: StorageOperationsListTenantLinksByIdentityParams
+    ): Promise<TenantLink[]>;
+    getTenantLinkByIdentity<TLink extends TenantLink = TenantLink>(
+        params: StorageOperationsGetTenantLinkByIdentityParams
     ): Promise<TLink>;
-    getApiKey(params: GetApiKeyParams): Promise<ApiKey>;
-    getApiKeyByToken(params: GetApiKeyByTokenParams): Promise<ApiKey>;
-    listApiKeys(params: ListApiKeysParams): Promise<ApiKey[]>;
-    createApiKey(params: CreateApiKeyParams): Promise<ApiKey>;
-    updateApiKey(params: UpdateApiKeyParams): Promise<ApiKey>;
-    deleteApiKey(params: DeleteApiKeyParams): Promise<void>;
+    getApiKey(params: StorageOperationsGetApiKeyParams): Promise<ApiKey>;
+    getApiKeyByToken(params: StorageOperationsGetApiKeyByTokenParams): Promise<ApiKey>;
+    listApiKeys(params: StorageOperationsListApiKeysParams): Promise<ApiKey[]>;
+    createApiKey(params: StorageOperationsCreateApiKeyParams): Promise<ApiKey>;
+    updateApiKey(params: StorageOperationsUpdateApiKeyParams): Promise<ApiKey>;
+    deleteApiKey(params: StorageOperationsDeleteApiKeyParams): Promise<void>;
 }
 
 export interface SecurityPermission {
@@ -152,12 +162,13 @@ export interface Group {
 export type GroupInput = Pick<Group, "name" | "slug" | "description" | "permissions" | "system">;
 
 export interface GetGroupParams {
-    tenant: string;
     where: GetGroupWhere;
 }
 
 export interface ListGroupsParams {
-    tenant: string;
+    where?: {
+        id_in?: string[];
+    };
     sort?: string[];
 }
 
@@ -194,10 +205,6 @@ export interface CreateSystemParams {
 export interface UpdateSystemParams {
     original: System;
     system: System;
-}
-
-export interface CrudOptions {
-    auth?: boolean;
 }
 
 export interface CreateTenantLinkParams<TData = Record<string, any>> {
@@ -237,7 +244,8 @@ export interface GetTenantLinkByIdentityParams {
     tenant: string;
 }
 
-export interface TenantLink<TData = Record<string, any>> {
+export interface TenantLink<TData = any> {
+    createdOn: string;
     identity: string;
     tenant: string;
     type: string;
@@ -272,14 +280,13 @@ export interface GetApiKeyParams {
     id: string;
 }
 
+export interface ListApiKeysParams {
+    sort?: string[];
+}
+
 export interface GetApiKeyByTokenParams {
     tenant: string;
     token: string;
-}
-
-export interface ListApiKeysParams {
-    tenant: string;
-    sort?: string[];
 }
 
 export interface CreateApiKeyParams {
@@ -294,3 +301,41 @@ export interface UpdateApiKeyParams {
 export interface DeleteApiKeyParams {
     apiKey: ApiKey;
 }
+
+export interface StorageOperationsListApiKeysParams extends ListApiKeysParams {
+    where: {
+        tenant: string;
+    };
+}
+
+export interface StorageOperationsGetGroupParams extends GetGroupParams {
+    where: GetGroupParams["where"] & {
+        tenant: string;
+    };
+}
+
+export interface StorageOperationsListGroupsParams extends ListGroupsParams {
+    where: ListGroupsParams["where"] & {
+        tenant: string;
+    };
+}
+
+export type StorageOperationsCreateGroupParams = CreateGroupParams;
+export type StorageOperationsUpdateGroupParams = UpdateGroupParams;
+export type StorageOperationsDeleteGroupParams = DeleteGroupParams;
+export type StorageOperationsGetSystemParams = GetSystemParams;
+export type StorageOperationsCreateSystemParams = CreateSystemParams;
+export type StorageOperationsUpdateSystemParams = UpdateSystemParams;
+export interface StorageOperationsCreateTenantLinkParams extends CreateTenantLinkParams {
+    createdOn: string;
+}
+export type StorageOperationsUpdateTenantLinkParams = UpdateTenantLinkParams;
+export type StorageOperationsDeleteTenantLinkParams = DeleteTenantLinkParams;
+export type StorageOperationsListTenantLinksParams = ListTenantLinksParams;
+export type StorageOperationsListTenantLinksByIdentityParams = ListTenantLinksByIdentityParams;
+export type StorageOperationsGetTenantLinkByIdentityParams = GetTenantLinkByIdentityParams;
+export type StorageOperationsGetApiKeyParams = GetApiKeyParams;
+export type StorageOperationsGetApiKeyByTokenParams = GetApiKeyByTokenParams;
+export type StorageOperationsCreateApiKeyParams = CreateApiKeyParams;
+export type StorageOperationsUpdateApiKeyParams = UpdateApiKeyParams;
+export type StorageOperationsDeleteApiKeyParams = DeleteApiKeyParams;

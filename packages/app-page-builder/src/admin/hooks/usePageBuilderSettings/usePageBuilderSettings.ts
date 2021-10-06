@@ -58,7 +58,12 @@ export const UPDATE_SETTINGS = gql`
 
 export function usePageBuilderSettings() {
     const getSettingsQuery = useQuery(GET_SETTINGS);
-    const { tenant } = useTenancy();
+    let tenantId = "root";
+    const tenancy = useTenancy();
+    if (tenancy) {
+        tenantId = tenancy.tenant.id;
+    }
+
     const { getCurrentLocale } = useI18N();
 
     const settings = get(getSettingsQuery, "data.pageBuilder.getSettings.data") || {};
@@ -81,7 +86,7 @@ export function usePageBuilderSettings() {
         const query = [
             "preview=" + encodeURIComponent(page.id),
             "__locale=" + getCurrentLocale("content"),
-            tenant ? "__tenant=" + tenant.id : null
+            "__tenant=" + tenantId
         ];
 
         return url + "?" + query.filter(Boolean).join("&");

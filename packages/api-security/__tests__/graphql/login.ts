@@ -11,12 +11,14 @@ export const LOGIN = /* GraphQL */ `
         security {
             login {
                 data {
-                    ...on SecurityIdentity {
+                    ...on Admin {
                         id
                         displayName
-                        access {
+                        permissions
+                        type
+                        tenant {
                             id
-                            permissions
+                            name
                         }
                     }
                 }
