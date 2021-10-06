@@ -24,6 +24,9 @@
       "path": "../../../packages/api-page-builder"
     },
     {
+      "path": "../../../packages/api-page-builder-import-export"
+    },
+    {
       "path": "../../../packages/api-tenancy"
     },
     {
@@ -111,6 +114,12 @@
       "@webiny/handler-graphql": ["../../../packages/handler-graphql/src"],
       "@webiny/api-page-builder/*": ["../../../packages/api-page-builder/src/*"],
       "@webiny/api-page-builder": ["../../../packages/api-page-builder/src"],
+      "@webiny/api-page-builder-import-export/*": [
+        "../../../../../packages/api-page-builder-import-export/src/*"
+      ],
+      "@webiny/api-page-builder-import-export": [
+        "../../../../../packages/api-page-builder-import-export/src"
+      ],
       "@webiny/api-form-builder/*": ["../../../packages/api-form-builder/src/*"],
       "@webiny/api-form-builder": ["../../../packages/api-form-builder/src"],
       "@webiny/api-security/*": ["../../../packages/api-security/src/*"],

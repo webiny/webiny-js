@@ -1,6 +1,8 @@
 {
   "extends": "../../../../../tsconfig.json",
-  "include": ["./src"],
+  "include": [
+    "./src"
+  ],
   "references": [
     {
       "path": "../../../../../packages/api-elasticsearch"
@@ -19,6 +21,9 @@
     },
     {
       "path": "../../../../../packages/api-page-builder"
+    },
+    {
+      "path": "../../../../../packages/api-page-builder-import-export"
     },
     {
       "path": "../../../../../packages/api-tenancy"
@@ -59,27 +64,75 @@
   ],
   "compilerOptions": {
     "paths": {
-      "~/*": ["./src/*"],
-      "@webiny/api-elasticsearch/*": ["../../../../../packages/api-elasticsearch/src/*"],
-      "@webiny/api-elasticsearch": ["../../../../../packages/api-elasticsearch/src"],
-      "@webiny/api-i18n/*": ["../../../../../packages/api-i18n/src/*"],
-      "@webiny/api-i18n": ["../../../../../packages/api-i18n/src"],
-      "@webiny/api-i18n-ddb/*": ["../../../../../packages/api-i18n-ddb/src/*"],
-      "@webiny/api-i18n-ddb": ["../../../../../packages/api-i18n-ddb/src"],
-      "@webiny/api-i18n-content/*": ["../../../../../packages/api-i18n-content/src/*"],
-      "@webiny/api-i18n-content": ["../../../../../packages/api-i18n-content/src"],
-      "@webiny/handler-aws/*": ["../../../../../packages/handler-aws/src/*"],
-      "@webiny/handler-aws": ["../../../../../packages/handler-aws/src"],
-      "@webiny/api-page-builder/*": ["../../../../../packages/api-page-builder/src/*"],
-      "@webiny/api-page-builder": ["../../../../../packages/api-page-builder/src"],
-      "@webiny/api-security/*": ["../../../../../packages/api-security/src/*"],
-      "@webiny/api-security": ["../../../../../packages/api-security/src"],
-      "@webiny/api-tenancy/*": ["../../../../../packages/api-tenancy/src/*"],
-      "@webiny/api-tenancy": ["../../../../../packages/api-tenancy/src"],
-      "@webiny/db-dynamodb/*": ["../../../../../packages/db-dynamodb/src/*"],
-      "@webiny/db-dynamodb": ["../../../../../packages/db-dynamodb/src"],
-      "@webiny/api-security-admin-users/*": ["../../../../../packages/api-security-admin-users/src/*"],
-      "@webiny/api-security-admin-users": ["../../../../../packages/api-security-admin-users/src"],
+      "~/*": [
+        "./src/*"
+      ],
+      "@webiny/api-elasticsearch/*": [
+        "../../../../../packages/api-elasticsearch/src/*"
+      ],
+      "@webiny/api-elasticsearch": [
+        "../../../../../packages/api-elasticsearch/src"
+      ],
+      "@webiny/api-i18n/*": [
+        "../../../../../packages/api-i18n/src/*"
+      ],
+      "@webiny/api-i18n": [
+        "../../../../../packages/api-i18n/src"
+      ],
+      "@webiny/api-i18n-ddb/*": [
+        "../../../../../packages/api-i18n-ddb/src/*"
+      ],
+      "@webiny/api-i18n-ddb": [
+        "../../../../../packages/api-i18n-ddb/src"
+      ],
+      "@webiny/api-i18n-content/*": [
+        "../../../../../packages/api-i18n-content/src/*"
+      ],
+      "@webiny/api-i18n-content": [
+        "../../../../../packages/api-i18n-content/src"
+      ],
+      "@webiny/handler-aws/*": [
+        "../../../../../packages/handler-aws/src/*"
+      ],
+      "@webiny/handler-aws": [
+        "../../../../../packages/handler-aws/src"
+      ],
+      "@webiny/api-page-builder/*": [
+        "../../../../../packages/api-page-builder/src/*"
+      ],
+      "@webiny/api-page-builder": [
+        "../../../../../packages/api-page-builder/src"
+      ],
+      "@webiny/api-page-builder-import-export/*": [
+        "../../../../../packages/api-page-builder-import-export/src/*"
+      ],
+      "@webiny/api-page-builder-import-export": [
+        "../../../../../packages/api-page-builder-import-export/src"
+      ],
+      "@webiny/api-security/*": [
+        "../../../../../packages/api-security/src/*"
+      ],
+      "@webiny/api-security": [
+        "../../../../../packages/api-security/src"
+      ],
+      "@webiny/api-tenancy/*": [
+        "../../../../../packages/api-tenancy/src/*"
+      ],
+      "@webiny/api-tenancy": [
+        "../../../../../packages/api-tenancy/src"
+      ],
+      "@webiny/db-dynamodb/*": [
+        "../../../../../packages/db-dynamodb/src/*"
+      ],
+      "@webiny/db-dynamodb": [
+        "../../../../../packages/db-dynamodb/src"
+      ],
+      "@webiny/api-security-admin-users/*": [
+        "../../../../../packages/api-security-admin-users/src/*"
+      ],
+      "@webiny/api-security-admin-users": [
+        "../../../../../packages/api-security-admin-users/src"
+      ],
       "@webiny/api-security-admin-users-cognito/*": [
         "../../../../../packages/api-security-admin-users-cognito/src/*"
       ],

@@ -14,6 +14,7 @@
     "@webiny/api-i18n-content": "^5.14.0",
     "@webiny/api-i18n-ddb": "^5.14.0",
     "@webiny/api-page-builder": "^5.14.0",
+    "@webiny/api-page-builder-import-export": "^5.14.0",
     "@webiny/api-security": "^5.14.0",
     "@webiny/api-security-admin-users": "^5.14.0",
     "@webiny/api-security-admin-users-cognito": "^5.14.0",
