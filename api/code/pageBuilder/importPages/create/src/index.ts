@@ -6,6 +6,7 @@ import i18nContentPlugins from "@webiny/api-i18n-content/plugins";
 import adminUsersPlugins from "@webiny/api-security-admin-users";
 import securityAdminUsersDynamoDbStorageOperations from "@webiny/api-security-admin-users-so-ddb";
 import pageBuilderPlugins from "@webiny/api-page-builder/graphql";
+import pageBuilderImportExportPlugins from "@webiny/api-page-builder-import-export/graphql";
 import importPagesCreatePlugins from "@webiny/api-page-builder-import-export/importPages/create";
 import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
@@ -44,6 +45,7 @@ export const handler = createHandler({
         adminUsersPlugins(),
         securityAdminUsersDynamoDbStorageOperations(),
         pageBuilderPlugins(),
+        pageBuilderImportExportPlugins(),
         importPagesCreatePlugins({
             handlers: {
                 process: process.env.IMPORT_PAGE_QUEUE_PROCESS_HANDLER
