@@ -1,6 +1,6 @@
 import { ListResponse, Response, ErrorResponse } from "@webiny/handler-graphql/responses";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
-import { Page, PageExportRevisionType, PbContext } from "~/types";
+import { Page, PbContext } from "~/types";
 import Error from "@webiny/error";
 import resolve from "./utils/resolve";
 import pageSettings from "./pages/pageSettings";
@@ -164,24 +164,6 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                 error: PbError
             }
 
-            type PbExportPageData {
-                task: PbPageImportExportTask
-            }
-
-            type PbExportPageResponse {
-                data: PbExportPageData
-                error: PbError
-            }
-
-            type PbImportPageData {
-                task: PbPageImportExportTask
-            }
-
-            type PbImportPageResponse {
-                data: PbImportPageData
-                error: PbError
-            }
-
             enum PbListPagesSortOrders {
                 desc
                 asc
@@ -217,11 +199,6 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                 any
             }
 
-            enum PbExportPageRevisionType {
-                published
-                latest
-            }
-
             input PbListPagesWhereTagsInput {
                 query: [String]
                 rule: PbTagsRule
@@ -234,11 +211,6 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
 
             input PbListPageTagsSearchInput {
                 query: String!
-            }
-
-            input PbImportPageInput {
-                zipFileKey: String
-                zipFileUrl: String
             }
 
             extend type PbQuery {
@@ -302,15 +274,6 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                 deleteRevision(id: ID!): PbDeleteResponse
 
                 updateImageSize: PbDeleteResponse
-
-                # Export pages
-                exportPages(
-                    ids: [ID]!
-                    revisionType: PbExportPageRevisionType
-                ): PbExportPageResponse
-
-                # Import pages
-                importPages(category: String!, data: PbImportPageInput!): PbImportPageResponse
             }
         `,
         resolvers: {
@@ -463,26 +426,6 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
 
                 requestChanges: async (_, args: { id: string }, context) => {
                     return resolve(() => context.pageBuilder.pages.requestChanges(args.id));
-                },
-
-                exportPages: async (
-                    _,
-                    args: { ids: string[]; revisionType: PageExportRevisionType },
-                    context
-                ) => {
-                    return resolve(() =>
-                        context.pageBuilder.pages.exportPages(args.ids, args.revisionType)
-                    );
-                },
-
-                importPages: async (
-                    _,
-                    args: { category: string; data: Record<string, any> },
-                    context
-                ) => {
-                    return resolve(() =>
-                        context.pageBuilder.pages.importPages(args.category, args.data)
-                    );
                 }
             },
             PbPageSettings: {

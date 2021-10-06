@@ -7,16 +7,7 @@ import { I18NContext } from "@webiny/api-i18n/types";
 import { ElasticsearchContext } from "@webiny/api-elasticsearch/types";
 import DataLoader from "dataloader";
 import { ClientContext } from "@webiny/handler-client/types";
-import {
-    Category,
-    DefaultSettings,
-    Menu,
-    Page,
-    PageElement,
-    PageExportRevisionType,
-    PageImportExportTask,
-    PageImportExportTaskStatus
-} from "~/types";
+import { Category, DefaultSettings, Menu, Page, PageElement } from "~/types";
 import { PrerenderingServiceClientContext } from "@webiny/api-prerendering-service/client/types";
 import { FileManagerContext } from "@webiny/api-file-manager/types";
 
@@ -91,14 +82,6 @@ export type PagesCrud = {
     unpublish<TPage extends Page = Page>(id: string): Promise<TPage>;
     requestReview<TPage extends Page = Page>(id: string): Promise<TPage>;
     requestChanges<TPage extends Page = Page>(id: string): Promise<TPage>;
-    exportPages(
-        ids: string[],
-        revisionType: PageExportRevisionType
-    ): Promise<{ task: PageImportExportTask }>;
-    importPages<TPage extends Page = Page>(
-        category: string,
-        data: Record<string, any>
-    ): Promise<TPage>;
     prerendering: {
         render(args: RenderParams): Promise<void>;
         flush(args: FlushParams): Promise<void>;
@@ -111,35 +94,6 @@ export type PageElementsCrud = {
     create(data: Record<string, any>): Promise<PageElement>;
     update(id: string, data: Record<string, any>): Promise<PageElement>;
     delete(id: string): Promise<PageElement>;
-};
-
-type PageImportExportTaskCreateData = Omit<PageImportExportTask, "id" | "createdOn" | "createdBy">;
-
-export type PageImportExportTaskCrud = {
-    get(id: string): Promise<PageImportExportTask>;
-    list(): Promise<PageImportExportTask[]>;
-    create(data: Partial<PageImportExportTaskCreateData>): Promise<PageImportExportTask>;
-    update(
-        id: string,
-        data: Partial<PageImportExportTaskCreateData>
-    ): Promise<PageImportExportTask>;
-    delete(id: string): Promise<PageImportExportTask>;
-    getSubTask(id: string, subtaskId: string): Promise<PageImportExportTask>;
-    getSubTaskByStatus(
-        id: string,
-        status: PageImportExportTaskStatus,
-        limit: number
-    ): Promise<PageImportExportTask[]>;
-    createSubTask(
-        id: string,
-        subTaskId: string,
-        data: Partial<PageImportExportTaskCreateData>
-    ): Promise<PageImportExportTask>;
-    updateSubTask(
-        id: string,
-        subTaskId: string,
-        data: Partial<PageImportExportTaskCreateData>
-    ): Promise<PageImportExportTask>;
 };
 
 export type CategoriesCrud = {
@@ -208,7 +162,6 @@ export type PbContext = Context<
             menus: MenusCrud;
             settings: SettingsCrud;
             system: SystemCrud;
-            pageImportExportTask: PageImportExportTaskCrud;
         };
     }
 >;
