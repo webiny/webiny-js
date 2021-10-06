@@ -1,0 +1,33 @@
+{
+  "extends": "../../tsconfig.build.json",
+  "include": [
+    "./src"
+  ],
+  "exclude": [
+    "node_modules",
+    "../db",
+    "../api-dynamodb-to-elasticsearch",
+    "../handler",
+    "../handler-args",
+    "../validation",
+    "../api-i18n-ddb",
+    "../handler-graphql",
+    "../error",
+    "../api-file-manager",
+    "../api-file-manager-ddb-es",
+    "../api-page-builder"
+  ],
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "declarationDir": "./dist",
+    "paths": {
+      "~/*": [
+        "./src/*"
+      ]
+    },
+    "baseUrl": "."
+  },
+  "references": [
+  ]
+}
