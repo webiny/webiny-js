@@ -37,6 +37,8 @@ export const parseWhereKey = (key: string): ParseWhereKeyResult => {
     return { field, operator };
 };
 
+const ALL = ElasticsearchFieldPlugin.ALL;
+
 export const applyWhere = (params: Params): void => {
     const { query, where, fields, operators } = params;
 
@@ -52,17 +54,25 @@ export const applyWhere = (params: Params): void => {
             continue;
         }
         const { field, operator } = parseWhereKey(key);
-        const fieldPlugin: ElasticsearchFieldPlugin = fields[field] || field["*"];
+        const fieldPlugin: ElasticsearchFieldPlugin = fields[field] || fields[ALL];
         if (!fieldPlugin) {
-            throw new WebinyError(`Missing plugin for the field "${field}".`, "PLUGIN_ERROR", {
-                field
-            });
+            throw new WebinyError(
+                `Missing plugin for the field "${field}".`,
+                "PLUGIN_WHERE_ERROR",
+                {
+                    field
+                }
+            );
         }
         const operatorPlugin = operators[operator];
         if (!operatorPlugin) {
-            throw new WebinyError(`Missing plugin for the operator "${operator}"`, "PLUGIN_ERROR", {
-                operator
-            });
+            throw new WebinyError(
+                `Missing plugin for the operator "${operator}"`,
+                "PLUGIN_WHERE_ERROR",
+                {
+                    operator
+                }
+            );
         }
 
         /**
