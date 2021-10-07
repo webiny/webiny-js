@@ -4,6 +4,7 @@ import { Settings, FormBuilderContext, SettingsCRUD, FormBuilder } from "~/types
 import WebinyError from "@webiny/error";
 import { Tenant } from "@webiny/api-tenancy/types";
 import { I18NLocale } from "@webiny/api-i18n/types";
+import { NotFoundError } from "@webiny/handler-graphql";
 
 export interface Params {
     tenant: Tenant;
@@ -15,13 +16,16 @@ export const createSettingsCrud = (params: Params): SettingsCRUD => {
     const { tenant, locale, context } = params;
 
     return {
-        async getSettings(this: FormBuilder, options = { auth: true }) {
-            if (!options || options.auth !== false) {
+        async getSettings(this: FormBuilder, params) {
+            const { auth, throwOnNotFound } = params || {};
+
+            if (auth !== false) {
                 await utils.checkBaseSettingsPermissions(context);
             }
 
+            let settings: Settings = null;
             try {
-                return await this.storageOperations.getSettings({
+                settings = await this.storageOperations.getSettings({
                     tenant: tenant.id,
                     locale: locale.code
                 });
@@ -31,14 +35,33 @@ export const createSettingsCrud = (params: Params): SettingsCRUD => {
                     ex.code || "GET_SETTINGS_ERROR"
                 );
             }
+            if (throwOnNotFound === true && !settings) {
+                throw new NotFoundError(`"Form Builder" settings not found!`);
+            }
+            return settings;
         },
         async createSettings(this: FormBuilder, input) {
             const formBuilderSettings = new models.CreateDataModel().populate(input);
             await formBuilderSettings.validate();
 
             const data = await formBuilderSettings.toJSON();
+
+            const original = await this.getSettings({ auth: false });
+            if (original) {
+                throw new WebinyError(
+                    `"Form Builder" settings already exist.`,
+                    "FORM_BUILDER_SETTINGS_CREATE_ERROR",
+                    {
+                        settings: original
+                    }
+                );
+            }
+            /**
+             * Assign specific properties, just to be sure nothing else gets in the record.
+             */
             const settings: Settings = {
-                ...data,
+                domain: data.domain,
+                reCaptcha: data.reCaptcha,
                 tenant: tenant.id,
                 locale: locale.code
             };
@@ -64,13 +87,27 @@ export const createSettingsCrud = (params: Params): SettingsCRUD => {
 
             const newSettings = await updatedData.toJSON({ onlyDirty: true });
             const original = await this.getSettings();
+            if (!original) {
+                throw new NotFoundError(`"Form Builder" settings not found!`);
+            }
 
-            const settings: Settings = {
-                ...original,
-                ...newSettings,
-                tenant: tenant.id,
-                locale: locale.code
-            };
+            /**
+             * Assign specific properties, just to be sure nothing else gets in the record.
+             */
+            const settings: Settings = Object.keys(newSettings).reduce(
+                (collection, key) => {
+                    if (newSettings[key] === undefined) {
+                        return collection;
+                    }
+                    collection[key] = newSettings[key];
+                    return collection;
+                },
+                {
+                    ...original,
+                    tenant: tenant.id,
+                    locale: locale.code
+                }
+            );
             try {
                 return await this.storageOperations.updateSettings({
                     settings,

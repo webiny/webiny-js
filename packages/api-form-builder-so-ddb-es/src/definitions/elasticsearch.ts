@@ -25,6 +25,10 @@ export const createElasticsearchEntity = (params: Params) => {
             data: {
                 type: "map"
             },
+            TYPE: {
+                type: "string"
+            },
+
             ...(attributes || {})
         }
     });

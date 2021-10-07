@@ -1,12 +1,18 @@
 export const FORM_DATA_FIELD = /* GraphQL */ `
     {
         id
+        formId
+        version
         savedOn
         createdOn
         publishedOn
         version
         name
         layout
+        fields {
+            fieldId
+            type
+        }
         settings {
             reCaptcha {
                 settings {

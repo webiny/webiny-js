@@ -11,8 +11,6 @@ import {
     System,
     SystemCRUD
 } from "~/types";
-import { executeCallbacks } from "~/plugins/crud/utils";
-import { FormBuilderSystemPlugin } from "~/plugins/definitions/FormBuilderSystemPlugin";
 import { Tenant } from "@webiny/api-tenancy/types";
 import { createTopic } from "@webiny/pubsub";
 
@@ -102,29 +100,16 @@ export const createSystemCrud = (params: Params): SystemCRUD => {
                 data.domain = domain;
             }
 
-            const systemPlugins = context.plugins.byType<FormBuilderSystemPlugin>(
-                FormBuilderSystemPlugin.type
-            );
-
-            // Create ES index if it doesn't already exist.
             try {
-                await executeCallbacks<FormBuilderSystemPlugin["beforeInstall"]>(
-                    systemPlugins,
-                    "beforeInstall",
-                    {
-                        settings: data,
-                        tenant
-                    }
-                );
-                const settings = await this.createSettings(data);
-                await executeCallbacks<FormBuilderSystemPlugin["afterInstall"]>(
-                    systemPlugins,
-                    "afterInstall",
-                    {
-                        settings,
-                        tenant
-                    }
-                );
+                await onBeforeInstall.publish({
+                    tenant
+                });
+
+                await this.createSettings(data);
+
+                await onAfterInstall.publish({
+                    tenant
+                });
                 await this.setSystemVersion(context.WEBINY_VERSION);
             } catch (err) {
                 await this.deleteSettings();

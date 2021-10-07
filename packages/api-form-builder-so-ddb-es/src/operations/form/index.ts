@@ -4,6 +4,7 @@ import {
     FormBuilderStorageOperationsCreateFormFromParams,
     FormBuilderStorageOperationsCreateFormParams,
     FormBuilderStorageOperationsDeleteFormParams,
+    FormBuilderStorageOperationsDeleteFormRevisionParams,
     FormBuilderStorageOperationsGetFormParams,
     FormBuilderStorageOperationsListFormRevisionsParams,
     FormBuilderStorageOperationsListFormsParams,
@@ -20,12 +21,10 @@ import { cleanupItem } from "@webiny/db-dynamodb/utils/cleanup";
 import { batchWriteAll } from "@webiny/db-dynamodb/utils/batchWrite";
 import configurations from "~/configurations";
 import { filterItems } from "@webiny/db-dynamodb/utils/filter";
-import { ValueFilterPlugin } from "@webiny/db-dynamodb/plugins/definitions/ValueFilterPlugin";
 import fields from "./fields";
 import { sortItems } from "@webiny/db-dynamodb/utils/sort";
-import dynamoDbValueFilters from "@webiny/db-dynamodb/plugins/filters";
 import { parseIdentifier, zeroPad } from "@webiny/utils";
-import { createElasticsearchBody } from "./elasticsearchBody";
+import { createElasticsearchBody, createFormElasticType } from "./elasticsearchBody";
 import { decodeCursor, encodeCursor } from "@webiny/api-elasticsearch/cursors";
 import { PluginsContainer } from "@webiny/plugins";
 
@@ -48,7 +47,7 @@ type FbFormElastic = Omit<FbForm, "triggers" | "fields" | "settings" | "layout" 
 };
 
 const getESDataForLatestRevision = (form: FbForm): FbFormElastic => ({
-    __type: "fb.form",
+    __type: createFormElasticType(),
     id: form.id,
     createdOn: form.createdOn,
     savedOn: form.savedOn,
@@ -75,8 +74,6 @@ export interface CreatePartitionKeyParams {
 
 export const createFormStorageOperations = (params: Params): FormBuilderFormStorageOperations => {
     const { entity, esEntity, table, plugins, elasticsearch } = params;
-
-    const dynamoDbValueFilterPlugins: ValueFilterPlugin[] = dynamoDbValueFilters();
 
     const formDynamoDbFields = fields();
 
@@ -163,7 +160,7 @@ export const createFormStorageOperations = (params: Params): FormBuilderFormStor
             await esEntity.put({
                 index,
                 data: getESDataForLatestRevision(form),
-                TYPE: createFormLatestType(),
+                TYPE: createFormType(),
                 ...latestKeys
             });
         } catch (ex) {
@@ -498,20 +495,7 @@ export const createFormStorageOperations = (params: Params): FormBuilderFormStor
              * When we implement sending only plugins that we require, we will change this as well.
              */
             context: {
-                plugins: {
-                    byType: (type: string) => {
-                        if (type !== ValueFilterPlugin.type) {
-                            throw new WebinyError(
-                                "No other plugins are required in the filtering.",
-                                "MALFORMED_TYPE",
-                                {
-                                    type
-                                }
-                            );
-                        }
-                        return dynamoDbValueFilterPlugins;
-                    }
-                }
+                plugins
             } as any,
             items,
             where,
@@ -597,11 +581,11 @@ export const createFormStorageOperations = (params: Params): FormBuilderFormStor
      * - update latest record if current one is the latest
      */
     const deleteFormRevision = async (
-        params: FormBuilderStorageOperationsDeleteFormParams
+        params: FormBuilderStorageOperationsDeleteFormRevisionParams
     ): Promise<FbForm> => {
-        const { form } = params;
+        const { form, revisions, previous } = params;
 
-        const { tenant, locale, formId } = form;
+        // const { tenant, locale, formId } = form;
 
         const revisionKeys = {
             PK: createPartitionKey(form),
@@ -613,43 +597,42 @@ export const createFormStorageOperations = (params: Params): FormBuilderFormStor
             SK: createLatestSortKey()
         };
 
-        const latestForm = await getForm({
-            where: {
-                formId,
-                latest: true,
-                tenant,
-                locale
-            }
-        });
-        const latestPublishedForm = await getForm({
-            where: {
-                formId,
-                published: true,
-                tenant,
-                locale
-            }
-        });
+        // const latestForm = await getForm({
+        //     where: {
+        //         formId,
+        //         latest: true,
+        //         tenant,
+        //         locale
+        //     }
+        // });
+        // const latestPublishedForm = await getForm({
+        //     where: {
+        //         formId,
+        //         published: true,
+        //         tenant,
+        //         locale
+        //     }
+        // });
+
+        // const isLatest = latestForm ? latestForm.id === form.id : false;
+        // const isLatestPublished = latestPublishedForm ? latestPublishedForm.id === form.id : false;
+
+        const latestForm = revisions[0];
+        const latestPublishedForm = revisions.find(rev => rev.published === true);
+
         const isLatest = latestForm ? latestForm.id === form.id : false;
         const isLatestPublished = latestPublishedForm ? latestPublishedForm.id === form.id : false;
 
         const items = [entity.deleteBatch(revisionKeys)];
         let esDataItem = undefined;
+
         if (isLatest || isLatestPublished) {
-            const revisions = await listFormRevisions({
-                where: {
-                    formId,
-                    tenant,
-                    locale,
-                    version_not: form.version
-                },
-                sort: ["version_DESC"]
-            });
             /**
              * Sort out the latest published record.
              */
             if (isLatestPublished) {
                 const previouslyPublishedForm = revisions
-                    .filter(f => !!f.publishedOn)
+                    .filter(f => !!f.publishedOn && f.version !== form.version)
                     .sort((a, b) => {
                         return (
                             new Date(b.publishedOn).getTime() - new Date(a.publishedOn).getTime()
@@ -680,20 +663,20 @@ export const createFormStorageOperations = (params: Params): FormBuilderFormStor
             if (isLatest) {
                 items.push(
                     entity.putBatch({
-                        ...form,
+                        ...previous,
                         ...latestKeys,
                         TYPE: createFormLatestType()
                     })
                 );
 
                 const { index } = configurations.es({
-                    tenant: form.tenant
+                    tenant: previous.tenant
                 });
 
                 esDataItem = {
                     index,
                     ...latestKeys,
-                    data: getESDataForLatestRevision(form)
+                    data: getESDataForLatestRevision(previous)
                 };
             }
         }

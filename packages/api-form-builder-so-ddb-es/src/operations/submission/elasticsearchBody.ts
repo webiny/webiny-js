@@ -38,7 +38,7 @@ interface CreateElasticsearchQueryParams extends CreateElasticsearchBodyParams {
     fieldPlugins: Record<string, SubmissionElasticsearchFieldPlugin>;
 }
 
-const createElasticsearchQuery = (params: CreateElasticsearchQueryParams & {}) => {
+const createElasticsearchQuery = (params: CreateElasticsearchQueryParams) => {
     const { plugins, where: initialWhere, fieldPlugins } = params;
     const query = createInitialQueryValue();
     /**

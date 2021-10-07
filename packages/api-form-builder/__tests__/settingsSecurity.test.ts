@@ -1,5 +1,6 @@
 import { SecurityIdentity } from "@webiny/api-security";
 import useGqlHandler from "./useGqlHandler";
+import { SecurityPermission } from "@webiny/api-security/types";
 
 const NOT_AUTHORIZED_RESPONSE = operation => ({
     data: {
@@ -16,8 +17,6 @@ const NOT_AUTHORIZED_RESPONSE = operation => ({
     }
 });
 
-const esFbIndex = "root-form-builder";
-
 describe("Form Builder Settings Security Test", () => {
     const identityA = new SecurityIdentity({
         id: "a",
@@ -32,16 +31,7 @@ describe("Form Builder Settings Security Test", () => {
     });
 
     beforeEach(async () => {
-        try {
-            await defaultHandler.install({ domain: "localhost:5000" });
-            await defaultHandler.elasticsearch.indices.create({ index: esFbIndex });
-        } catch (e) {}
-    });
-
-    afterEach(async () => {
-        try {
-            await defaultHandler.elasticsearch.indices.delete({ index: esFbIndex });
-        } catch (e) {}
+        await defaultHandler.install({ domain: "localhost:5000" });
     });
 
     const insufficientUpdatePermissions = [
@@ -52,7 +42,7 @@ describe("Form Builder Settings Security Test", () => {
 
     test.each(insufficientUpdatePermissions)(
         `should forbid "updateSettings" with %j and %j`,
-        async (permissions, identity) => {
+        async (permissions: SecurityPermission[], identity: SecurityIdentity) => {
             const { updateSettings } = useGqlHandler({ permissions, identity });
             const [response] = await updateSettings();
             expect(response).toEqual(NOT_AUTHORIZED_RESPONSE("updateSettings"));
@@ -65,8 +55,8 @@ describe("Form Builder Settings Security Test", () => {
     ];
 
     test.each(sufficientUpdatePermissions)(
-        `should allow "updateSettings" with invalid permissions`,
-        async (permissions, identity) => {
+        `should allow "updateSettings" with sufficient permissions`,
+        async (permissions: SecurityPermission[], identity: SecurityIdentity) => {
             const { updateSettings } = useGqlHandler({ permissions, identity });
             const [response] = await updateSettings({ data: { domain: "localhost:3000" } });
             expect(response).toMatchObject({
@@ -97,7 +87,7 @@ describe("Form Builder Settings Security Test", () => {
 
     test.each(insufficientGetPermissions)(
         `should forbid "getSettings" with %j and %j`,
-        async (permissions, identity) => {
+        async (permissions: SecurityPermission[], identity: SecurityIdentity) => {
             const { install } = defaultHandler;
             // Let's install the "Form Builder" app first.
             await install({ domain: "localhost:5000" });
@@ -115,7 +105,7 @@ describe("Form Builder Settings Security Test", () => {
 
     test.each(sufficientGetPermissions)(
         `should allow "getSettings" with %j and %j`,
-        async (permissions, identity) => {
+        async (permissions: SecurityPermission[], identity: SecurityIdentity) => {
             const { install } = defaultHandler;
             // Let's install the "Form Builder" app first.
             await install({ domain: "localhost:5000" });

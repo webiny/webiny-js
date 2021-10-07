@@ -22,6 +22,9 @@ export const createSystemEntity = (params: Params): Entity<any> => {
             version: {
                 type: "string"
             },
+            tenant: {
+                type: "string"
+            },
             ...(attributes || {})
         }
     });

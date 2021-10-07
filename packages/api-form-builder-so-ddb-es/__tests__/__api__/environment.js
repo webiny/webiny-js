@@ -1,51 +1,35 @@
 const dbPlugins = require("@webiny/handler-db").default;
 const { DynamoDbDriver } = require("@webiny/db-dynamodb");
 const { DocumentClient } = require("aws-sdk/clients/dynamodb");
-const elasticsearchClientContextPlugin = require("@webiny/api-elasticsearch").default;
+const createElasticsearchClientContextPlugin = require("@webiny/api-elasticsearch").default;
 const { createHandler } = require("@webiny/handler-aws");
 const dynamoToElastic = require("@webiny/api-dynamodb-to-elasticsearch/handler").default;
-const { Client } = require("@elastic/elasticsearch");
 const { simulateStream } = require("@webiny/project-utils/testing/dynamodb");
 const NodeEnvironment = require("jest-environment-node");
 const elasticsearchDataGzipCompression =
     require("@webiny/api-elasticsearch/plugins/GzipCompression").default;
 const { ContextPlugin } = require("@webiny/handler/plugins/ContextPlugin");
 const dynamoDbPlugins = require("@webiny/db-dynamodb/plugins").default;
+const { createClient: createElasticsearchClient } = require("@webiny/api-elasticsearch/client");
+const { getOperators: getElasticsearchOperators } = require("@webiny/api-elasticsearch/operators");
 /**
  * For this to work it must load plugins that have already been built
  */
-const plugins = require("../../dist/index").default;
+const { createStorageOperationsFactory } = require("../../dist/index");
 
-if (typeof plugins !== "function") {
-    throw new Error(`Loaded plugins file must export a function that returns an array of plugins.`);
+if (typeof createStorageOperationsFactory !== "function") {
+    throw new Error(
+        `Loaded "createStorageOperationsFactory" must be a function that will return the storage operations.`
+    );
 }
 
 const ELASTICSEARCH_PORT = process.env.ELASTICSEARCH_PORT || "9200";
-
-const getStorageOperationsPlugins = ({ documentClient, elasticsearchClientContext }) => {
-    return () => {
-        const pluginsValue = plugins();
-        const dbPluginsValue = dbPlugins({
-            table: "FormBuilder",
-            driver: new DynamoDbDriver({
-                documentClient
-            })
-        });
-        return [
-            ...dynamoDbPlugins(),
-            elasticsearchDataGzipCompression(),
-            ...pluginsValue,
-            ...dbPluginsValue,
-            elasticsearchClientContext
-        ];
-    };
-};
 
 class FormBuilderTestEnvironment extends NodeEnvironment {
     async setup() {
         await super.setup();
 
-        const elasticsearchClient = new Client({
+        const elasticsearchClient = createElasticsearchClient({
             node: `http://localhost:${ELASTICSEARCH_PORT}`
         });
         const documentClient = new DocumentClient({
@@ -56,7 +40,7 @@ class FormBuilderTestEnvironment extends NodeEnvironment {
             accessKeyId: "test",
             secretAccessKey: "test"
         });
-        const elasticsearchClientContext = elasticsearchClientContextPlugin({
+        const elasticsearchClientContext = createElasticsearchClientContextPlugin({
             endpoint: `http://localhost:${ELASTICSEARCH_PORT}`,
             auth: {}
         });
@@ -78,11 +62,37 @@ class FormBuilderTestEnvironment extends NodeEnvironment {
         /**
          * This is a global function that will be called inside the tests to get all relevant plugins, methods and objects.
          */
-        this.global.__getStorageOperationsPlugins = () => {
-            return getStorageOperationsPlugins({
-                elasticsearchClientContext,
-                documentClient
-            });
+        this.global.__getStorageOperations = () => {
+            return {
+                createStorageOperations: () => {
+                    return createStorageOperationsFactory({
+                        table: "DynamoDB",
+                        esTable: "ElasticSearchStream",
+                        documentClient,
+                        // TODO need to insert elasticsearch client
+                        elasticsearch: elasticsearchClient,
+                        plugins: [
+                            ...dynamoDbPlugins(),
+                            elasticsearchDataGzipCompression(),
+                            ...getElasticsearchOperators()
+                        ]
+                    });
+                },
+                getGlobalPlugins: () => {
+                    return [
+                        elasticsearchClientContext,
+                        ...dbPlugins({
+                            table: "DynamoDB",
+                            driver: new DynamoDbDriver({
+                                documentClient
+                            })
+                        }),
+                        ...dynamoDbPlugins(),
+                        elasticsearchDataGzipCompression(),
+                        ...getElasticsearchOperators()
+                    ];
+                }
+            };
         };
         this.global.__beforeEach = clearEsIndices;
         this.global.__afterEach = clearEsIndices;

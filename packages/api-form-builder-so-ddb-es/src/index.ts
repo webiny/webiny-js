@@ -15,6 +15,7 @@ import { PluginsContainer } from "@webiny/plugins";
 import { createElasticsearchEntity } from "~/definitions/elasticsearch";
 import submissionElasticsearchFields from "./operations/submission/elasticsearchFields";
 import formElasticsearchFields from "./operations/form/elasticsearchFields";
+import dynamoDbValueFilters from "@webiny/db-dynamodb/plugins/filters";
 
 const reservedFields = ["PK", "SK", "index", "data"];
 
@@ -43,6 +44,7 @@ export const createStorageOperationsFactory: CreateStorageOperationsFactory = pa
 
     plugins.register(submissionElasticsearchFields());
     plugins.register(formElasticsearchFields());
+    plugins.register(dynamoDbValueFilters());
 
     if (attributes) {
         Object.values(attributes).forEach(attrs => {
@@ -64,32 +66,32 @@ export const createStorageOperationsFactory: CreateStorageOperationsFactory = pa
         form: createFormEntity({
             entityName: ENTITIES.FORM,
             table,
-            attributes: attributes[ENTITIES.FORM]
+            attributes: attributes ? attributes[ENTITIES.FORM] : {}
         }),
         esForm: createElasticsearchEntity({
             entityName: ENTITIES.ES_FORM,
-            table,
-            attributes: attributes[ENTITIES.ES_FORM]
+            table: esTable,
+            attributes: attributes ? attributes[ENTITIES.ES_FORM] : {}
         }),
         submission: createSubmissionEntity({
             entityName: ENTITIES.SUBMISSION,
             table,
-            attributes: attributes[ENTITIES.SUBMISSION]
+            attributes: attributes ? attributes[ENTITIES.SUBMISSION] : {}
         }),
         esSubmission: createElasticsearchEntity({
             entityName: ENTITIES.ES_SUBMISSION,
-            table,
-            attributes: attributes[ENTITIES.ES_SUBMISSION]
+            table: esTable,
+            attributes: attributes ? attributes[ENTITIES.ES_SUBMISSION] : {}
         }),
         system: createSystemEntity({
             entityName: ENTITIES.SYSTEM,
             table,
-            attributes: attributes[ENTITIES.SYSTEM]
+            attributes: attributes ? attributes[ENTITIES.SYSTEM] : {}
         }),
         settings: createSettingsEntity({
             entityName: ENTITIES.SETTINGS,
             table,
-            attributes: attributes[ENTITIES.SETTINGS]
+            attributes: attributes ? attributes[ENTITIES.SETTINGS] : {}
         })
     };
 

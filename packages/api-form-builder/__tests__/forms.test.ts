@@ -9,7 +9,6 @@ jest.setTimeout(60000);
 describe('Form Builder "Form" Test', () => {
     const {
         until,
-        elasticsearch,
         install,
         installFileManager,
         createForm,
@@ -29,9 +28,6 @@ describe('Form Builder "Form" Test', () => {
         exportFormSubmissions
     } = useGqlHandler();
 
-    const esFbIndex = "root-form-builder";
-    const esFmIndex = "root-file-manager";
-
     beforeEach(async () => {
         try {
             // Run FB installer
@@ -41,16 +37,6 @@ describe('Form Builder "Form" Test', () => {
         } catch (e) {
             console.log(e);
         }
-    });
-
-    afterEach(async () => {
-        try {
-            await elasticsearch.indices.delete({ index: esFbIndex });
-        } catch (e) {}
-
-        try {
-            await elasticsearch.indices.delete({ index: esFmIndex });
-        } catch (e) {}
     });
 
     test("should create a form and return it in the list of latest forms", async () => {
@@ -118,7 +104,12 @@ describe('Form Builder "Form" Test', () => {
 
         await until(
             () => listForms().then(([data]) => data),
-            ({ data }) => data.formBuilder.listForms.data.length > 0
+            ({ data }) => data.formBuilder.listForms.data.length > 0,
+            {
+                name: "after create form",
+                wait: 500,
+                tries: 20
+            }
         );
 
         // Create 2 new revisions
@@ -131,7 +122,12 @@ describe('Form Builder "Form" Test', () => {
         // Wait until the new revision is indexed in Elastic as "latest"
         await until(
             () => listForms().then(([data]) => data),
-            ({ data }) => data.formBuilder.listForms.data[0].id === id3
+            ({ data }) => data.formBuilder.listForms.data[0].id === id3,
+            {
+                name: "after create revisions",
+                wait: 500,
+                tries: 20
+            }
         );
 
         // Check that the form is inserted into Elastic
@@ -141,12 +137,28 @@ describe('Form Builder "Form" Test', () => {
         expect(data1[0].id).toEqual(id3);
 
         // Delete latest revision
-        await deleteRevision({ revision: id3 });
+        const [deleteRevisionResponse] = await deleteRevision({ revision: id3 });
+
+        expect(deleteRevisionResponse).toEqual({
+            data: {
+                formBuilder: {
+                    deleteRevision: {
+                        data: true,
+                        error: null
+                    }
+                }
+            }
+        });
 
         // Wait until the previous revision is indexed in Elastic as "latest"
         await until(
             () => listForms().then(([data]) => data),
-            ({ data }) => data.formBuilder.listForms.data[0].id === id2
+            ({ data }) => data.formBuilder.listForms.data[0].id === id2,
+            {
+                name: "after delete revision 3",
+                wait: 500,
+                tries: 20
+            }
         );
 
         // Make sure revision #2 is now "latest"
@@ -156,7 +168,18 @@ describe('Form Builder "Form" Test', () => {
         expect(data2[0].id).toEqual(id2);
 
         // Delete revision #1; Revision #2 should still be "latest"
-        await deleteRevision({ revision: id });
+        const [deleteRevision1Response] = await deleteRevision({ revision: id });
+
+        expect(deleteRevision1Response).toEqual({
+            data: {
+                formBuilder: {
+                    deleteRevision: {
+                        data: true,
+                        error: null
+                    }
+                }
+            }
+        });
 
         // Get revisions #2 and verify it's the only remaining revision of this form
         const [get] = await getFormRevisions({ id: id2 });
@@ -283,7 +306,12 @@ describe('Form Builder "Form" Test', () => {
         // Wait until propagated to Elastic...
         await until(
             () => listFormSubmissions({ form: id }).then(([data]) => data),
-            ({ data }) => data.formBuilder.listFormSubmissions.data.length === 2
+            ({ data }) => data.formBuilder.listFormSubmissions.data.length === 2,
+            {
+                name: "after create submission",
+                wait: 500,
+                tries: 200
+            }
         );
 
         // Load submissions

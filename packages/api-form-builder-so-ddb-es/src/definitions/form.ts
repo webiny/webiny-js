@@ -68,7 +68,7 @@ export const createFormEntity = (params: Params): Entity<any> => {
                 type: "string"
             },
             fields: {
-                type: "map"
+                type: "list"
             },
             layout: {
                 type: "list"
@@ -81,6 +81,9 @@ export const createFormEntity = (params: Params): Entity<any> => {
             },
             triggers: {
                 type: "map"
+            },
+            webinyVersion: {
+                type: "string"
             },
             ...(attributes || {})
         }

@@ -25,24 +25,25 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
             }
 
             type FbForm {
-                id: ID
-                createdBy: FbFormUser
-                ownedBy: FbFormUser
-                createdOn: DateTime
-                savedOn: DateTime
+                id: ID!
+                formId: ID!
+                createdBy: FbFormUser!
+                ownedBy: FbFormUser!
+                createdOn: DateTime!
+                savedOn: DateTime!
                 publishedOn: DateTime
-                version: Int
-                name: String
-                slug: String
-                fields: [FbFormFieldType]
-                layout: [[String]]
-                settings: FbFormSettingsType
+                version: Int!
+                name: String!
+                slug: String!
+                fields: [FbFormFieldType!]!
+                layout: [[String]]!
+                settings: FbFormSettingsType!
                 triggers: JSON
-                published: Boolean
-                locked: Boolean
-                status: FbFormStatusEnum
-                stats: FbFormStatsType
-                overallStats: FbFormStatsType
+                published: Boolean!
+                locked: Boolean!
+                status: FbFormStatusEnum!
+                stats: FbFormStatsType!
+                overallStats: FbFormStatsType!
             }
 
             type FbFieldOptionsType {
@@ -243,8 +244,11 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                 error: FbError
             }
 
-            input FbSubmissionSortInput {
-                createdOn: Int
+            enum FbSubmissionSort {
+                createdOn_ASC
+                createdOn_DESC
+                savedOn_ASC
+                savedOn_DESC
             }
 
             extend type FbQuery {
@@ -263,7 +267,7 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                 # List form submissions for specific Form
                 listFormSubmissions(
                     form: ID!
-                    sort: FbSubmissionSortInput
+                    sort: [FbSubmissionSort!]
                     limit: Int
                     after: String
                 ): FbFormSubmissionsListResponse

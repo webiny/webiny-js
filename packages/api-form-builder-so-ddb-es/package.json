@@ -2,6 +2,13 @@
   "name": "@webiny/api-form-builder-so-ddb-es",
   "version": "5.14.0",
   "main": "index.js",
+  "keywords": [
+    "@webiny/api-form-builder",
+    "storage-operations",
+    "dynamodb",
+    "elasticsearch",
+    "fb:ddb-es"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git",

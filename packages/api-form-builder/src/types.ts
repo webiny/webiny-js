@@ -126,6 +126,10 @@ export interface FormBuilderGetFormOptions {
     auth?: boolean;
 }
 
+export interface FormBuilderGetFormRevisionsOptions {
+    auth?: boolean;
+}
+
 export interface FormsCRUD {
     getForm(id: string, options?: FormBuilderGetFormOptions): Promise<FbForm>;
     getFormStats(id: string): Promise<FbFormStats>;
@@ -138,7 +142,7 @@ export interface FormsCRUD {
     createFormRevision(fromRevisionId: string): Promise<FbForm>;
     incrementFormViews(id: string): Promise<boolean>;
     incrementFormSubmissions(id: string): Promise<boolean>;
-    getFormRevisions(id: string): Promise<FbForm[]>;
+    getFormRevisions(id: string, options?: FormBuilderGetFormRevisionsOptions): Promise<FbForm[]>;
     getPublishedFormRevisionById(revisionId: string): Promise<FbForm>;
     getLatestPublishedFormRevision(formId: string): Promise<FbForm>;
     deleteFormRevision(id: string): Promise<boolean>;
@@ -201,6 +205,7 @@ export interface FbSubmission {
     logs: Record<string, any>[];
     createdOn: string;
     savedOn: string;
+    webinyVersion: string;
     /**
      * TODO add via upgrade
      */
@@ -222,7 +227,6 @@ export interface SubmissionUpdateData {
  * @category DataModel
  */
 export interface Settings {
-    key: "form-builder";
     domain: string;
     reCaptcha: {
         enabled: boolean;
@@ -233,8 +237,13 @@ export interface Settings {
     locale: string;
 }
 
+export interface SettingsCRUDGetParams {
+    auth?: boolean;
+    throwOnNotFound?: boolean;
+}
+
 export interface SettingsCRUD {
-    getSettings(options?: { auth: boolean }): Promise<Settings>;
+    getSettings(params?: SettingsCRUDGetParams): Promise<Settings>;
     createSettings(data: Partial<Settings>): Promise<Settings>;
     updateSettings(data: Partial<Settings>): Promise<Settings>;
     deleteSettings(): Promise<void>;
@@ -449,6 +458,22 @@ export interface FormBuilderStorageOperationsDeleteFormParams {
  * @category StorageOperations
  * @category StorageOperationsParams
  */
+export interface FormBuilderStorageOperationsDeleteFormRevisionParams {
+    /**
+     * Method always receives all the revisions of given form ordered by version_DESC.
+     */
+    revisions: FbForm[];
+    /**
+     * Previous revision of the current form. Always the first lesser available version.
+     */
+    previous: FbForm;
+    form: FbForm;
+}
+
+/**
+ * @category StorageOperations
+ * @category StorageOperationsParams
+ */
 export interface FormBuilderStorageOperationsPublishFormParams {
     original: FbForm;
     form: FbForm;
@@ -561,7 +586,9 @@ export interface FormBuilderFormStorageOperations {
     /**
      * Delete the single form revision.
      */
-    deleteFormRevision(params: FormBuilderStorageOperationsDeleteFormParams): Promise<FbForm>;
+    deleteFormRevision(
+        params: FormBuilderStorageOperationsDeleteFormRevisionParams
+    ): Promise<FbForm>;
     publishForm(params: FormBuilderStorageOperationsPublishFormParams): Promise<FbForm>;
     unpublishForm(params: FormBuilderStorageOperationsUnpublishFormParams): Promise<FbForm>;
 }

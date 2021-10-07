@@ -19,10 +19,40 @@ export const createSubmissionEntity = (params: Params): Entity<any> => {
             SK: {
                 sortKey: true
             },
-            GSI1_PK: {
+            id: {
                 type: "string"
             },
-            GSI1_SK: {
+            TYPE: {
+                type: "string"
+            },
+            data: {
+                type: "map"
+            },
+            meta: {
+                type: "map"
+            },
+            form: {
+                type: "map"
+            },
+            logs: {
+                type: "list"
+            },
+            createdOn: {
+                type: "string"
+            },
+            savedOn: {
+                type: "string"
+            },
+            ownedBy: {
+                type: "map"
+            },
+            tenant: {
+                type: "string"
+            },
+            locale: {
+                type: "string"
+            },
+            webinyVersion: {
                 type: "string"
             },
             ...(attributes || {})

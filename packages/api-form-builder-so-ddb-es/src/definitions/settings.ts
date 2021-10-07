@@ -22,16 +22,16 @@ export const createSettingsEntity = (params: Params): Entity<any> => {
             TYPE: {
                 type: "string"
             },
-            key: {
+            reCaptcha: {
+                type: "map"
+            },
+            domain: {
                 type: "string"
             },
-            uploadMinFileSize: {
-                type: "number"
+            tenant: {
+                type: "string"
             },
-            uploadMaxFileSize: {
-                type: "number"
-            },
-            srcPrefix: {
+            locale: {
                 type: "string"
             },
             ...(attributes || {})

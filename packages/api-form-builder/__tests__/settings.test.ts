@@ -5,9 +5,9 @@ describe("Settings Test", () => {
 
     test(`Should not be able to get & update settings before "install"`, async () => {
         // Should not have any settings without install
-        let [response] = await getSettings();
+        const [getSettingsResponse] = await getSettings();
 
-        expect(response).toEqual({
+        expect(getSettingsResponse).toEqual({
             data: {
                 formBuilder: {
                     getSettings: {
@@ -22,8 +22,8 @@ describe("Settings Test", () => {
             }
         });
 
-        [response] = await updateSettings({ data: { domain: "main" } });
-        expect(response).toEqual({
+        const [updateSettingsResponse] = await updateSettings({ data: { domain: "main" } });
+        expect(updateSettingsResponse).toEqual({
             data: {
                 formBuilder: {
                     updateSettings: {
@@ -41,9 +41,9 @@ describe("Settings Test", () => {
 
     test("Should be able to install `Form Builder`", async () => {
         // "isInstalled" should return false prior "install"
-        let [response] = await isInstalled();
+        const [isInstalledResponse] = await isInstalled();
 
-        expect(response).toEqual({
+        expect(isInstalledResponse).toEqual({
             data: {
                 formBuilder: {
                     version: null
@@ -52,9 +52,9 @@ describe("Settings Test", () => {
         });
 
         // Let's install the `Form builder`
-        [response] = await install({ domain: "http://localhost:3001" });
+        const [installResponse] = await install({ domain: "http://localhost:3001" });
 
-        expect(response).toEqual({
+        expect(installResponse).toEqual({
             data: {
                 formBuilder: {
                     install: {
@@ -66,7 +66,7 @@ describe("Settings Test", () => {
         });
 
         // "isInstalled" should return true after "install"
-        [response] = await isInstalled();
+        const [response] = await isInstalled();
 
         expect(response).toEqual({
             data: {
@@ -79,9 +79,9 @@ describe("Settings Test", () => {
 
     test(`Should be able to get & update settings after "install"`, async () => {
         // Let's install the `Form builder`
-        let [response] = await install({ domain: "http://localhost:3001" });
+        const [installResponse] = await install({ domain: "http://localhost:3001" });
 
-        expect(response).toEqual({
+        expect(installResponse).toEqual({
             data: {
                 formBuilder: {
                     install: {
@@ -93,9 +93,9 @@ describe("Settings Test", () => {
         });
 
         // Should not have any settings without install
-        [response] = await getSettings();
+        const [getSettingsResponse] = await getSettings();
 
-        expect(response).toEqual({
+        expect(getSettingsResponse).toEqual({
             data: {
                 formBuilder: {
                     getSettings: {
@@ -113,11 +113,33 @@ describe("Settings Test", () => {
             }
         });
 
-        [response] = await updateSettings({ data: { domain: "http://localhost:5001" } });
-        expect(response).toEqual({
+        const [updateSettingsResponse] = await updateSettings({
+            data: { domain: "http://localhost:5001" }
+        });
+        expect(updateSettingsResponse).toEqual({
             data: {
                 formBuilder: {
                     updateSettings: {
+                        data: {
+                            domain: "http://localhost:5001",
+                            reCaptcha: {
+                                enabled: null,
+                                secretKey: null,
+                                siteKey: null
+                            }
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+
+        const [getSettingsAfterUpdateResponse] = await getSettings();
+
+        expect(getSettingsAfterUpdateResponse).toEqual({
+            data: {
+                formBuilder: {
+                    getSettings: {
                         data: {
                             domain: "http://localhost:5001",
                             reCaptcha: {

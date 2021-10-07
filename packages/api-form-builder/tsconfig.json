@@ -29,9 +29,6 @@
       "path": "../api-upgrade"
     },
     {
-      "path": "../db-dynamodb"
-    },
-    {
       "path": "../error"
     },
     {
@@ -45,9 +42,6 @@
     },
     {
       "path": "../handler-aws"
-    },
-    {
-      "path": "../handler-db"
     },
     {
       "path": "../handler-graphql"
@@ -81,8 +75,6 @@
       "@webiny/api-tenancy": ["../api-tenancy/src"],
       "@webiny/api-upgrade/*": ["../api-upgrade/src/*"],
       "@webiny/api-upgrade": ["../api-upgrade/src"],
-      "@webiny/db-dynamodb/*": ["../db-dynamodb/src/*"],
-      "@webiny/db-dynamodb": ["../db-dynamodb/src"],
       "@webiny/error/*": ["../error/src/*"],
       "@webiny/error": ["../error/src"],
       "@webiny/utils/*": ["../utils/src/*"],
@@ -93,8 +85,6 @@
       "@webiny/handler": ["../handler/src"],
       "@webiny/handler-aws/*": ["../handler-aws/src/*"],
       "@webiny/handler-aws": ["../handler-aws/src"],
-      "@webiny/handler-db/*": ["../handler-db/src/*"],
-      "@webiny/handler-db": ["../handler-db/src"],
       "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
       "@webiny/handler-graphql": ["../handler-graphql/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],

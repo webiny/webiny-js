@@ -79,7 +79,9 @@ export const createFormsCrud = (params: Params): FormsCRUD => {
             // We don't need to check permissions here, as this method is only called
             // as a resolver to an `FbForm` GraphQL type, and we already check permissions
             // and ownership when resolving the form in `getForm`.
-            const revisions = await this.getFormRevisions(id);
+            const revisions = await this.getFormRevisions(id, {
+                auth: false
+            });
 
             // Then calculate the stats
             const stats: FbFormStats = {
@@ -191,8 +193,11 @@ export const createFormsCrud = (params: Params): FormsCRUD => {
             //     );
             // }
         },
-        async getFormRevisions(this: FormBuilder, id) {
-            const permission = await utils.checkBaseFormPermissions(context, { rwd: "r" });
+        async getFormRevisions(this: FormBuilder, id, options) {
+            let permission: FbFormPermission = null;
+            if (!options || options.auth !== false) {
+                permission = await utils.checkBaseFormPermissions(context, { rwd: "r" });
+            }
             // const [uniqueId] = id.split("#");
             //
             // const [forms] = await db.read<FbForm>({
@@ -216,8 +221,8 @@ export const createFormsCrud = (params: Params): FormsCRUD => {
                         locale: locale.code
                     }
                 });
-                if (forms.length === 0) {
-                    return [];
+                if (forms.length === 0 || !permission) {
+                    return forms;
                 }
                 utils.checkOwnership(forms[0], permission, context);
 
@@ -338,7 +343,7 @@ export const createFormsCrud = (params: Params): FormsCRUD => {
             const dataModel = new models.FormCreateDataModel().populate(input);
             await dataModel.validate();
 
-            const data = dataModel.toJSON();
+            const data = await dataModel.toJSON();
 
             // Forms are identified by a common parent ID + Revision number
             const formId = mdbid();
@@ -599,9 +604,26 @@ export const createFormsCrud = (params: Params): FormsCRUD => {
             });
             checkOwnership(form, permission, context);
 
+            const revisions = await this.storageOperations.listFormRevisions({
+                where: {
+                    formId: form.formId,
+                    tenant: form.tenant,
+                    locale: form.locale
+                },
+                sort: ["version_DESC"]
+            });
+
+            const previous = revisions.find(rev => rev.version < form.version);
+            if (!previous && revisions.length === 1) {
+                // Means we're deleting the last revision, so we need to delete the whole form.
+                return this.deleteForm(form.formId);
+            }
+
             try {
                 await this.storageOperations.deleteFormRevision({
-                    form
+                    form,
+                    previous,
+                    revisions
                 });
                 return true;
             } catch (ex) {

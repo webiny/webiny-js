@@ -89,11 +89,17 @@ export const createSubmissionStorageOperations = (
         }
 
         try {
+            const { index } = configurations.es({
+                tenant: form.tenant
+            });
             await esEntity.put({
-                ...submission,
-                ...keys,
-                __type: createSubmissionElasticType(),
-                TYPE: createSubmissionType()
+                index,
+                data: {
+                    ...submission,
+                    __type: createSubmissionElasticType()
+                },
+                TYPE: createSubmissionType(),
+                ...keys
             });
         } catch (ex) {
             throw new WebinyError(
@@ -223,7 +229,9 @@ export const createSubmissionStorageOperations = (
         /**
          * We need to remove empty results because it is a possibility that batch read returned null for non-existing record.
          */
-        const submissions = results.filter(Boolean);
+        const submissions = results.filter(Boolean).map(submission => {
+            return cleanupItem(entity, submission);
+        });
         if (!sort) {
             return submissions;
         }

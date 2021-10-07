@@ -6,19 +6,12 @@ import tenancyPlugins from "@webiny/api-tenancy";
 import securityPlugins from "@webiny/api-security";
 import fileManagerPlugins from "@webiny/api-file-manager/plugins";
 import fileManagerDynamoDbElasticPlugins from "@webiny/api-file-manager-ddb-es";
-import dbPlugins from "@webiny/handler-db";
 import i18nContext from "@webiny/api-i18n/graphql/context";
 import i18nDynamoDbStorageOperations from "@webiny/api-i18n-ddb";
 import i18nContentPlugins from "@webiny/api-i18n-content/plugins";
 import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
-import { DynamoDbDriver } from "@webiny/db-dynamodb";
-import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { SecurityIdentity } from "@webiny/api-security";
-import elasticsearchClientContextPlugin from "@webiny/api-elasticsearch";
-import { simulateStream } from "@webiny/project-utils/testing/dynamodb";
-import dynamoToElastic from "@webiny/api-dynamodb-to-elasticsearch/handler";
-import { Client } from "@elastic/elasticsearch";
-import formBuilderPlugins from "../src/plugins";
+import { createFormBuilder } from "~/index";
 // Graphql
 import { INSTALL as INSTALL_FILE_MANAGER } from "./graphql/fileManagerSettings";
 import {
@@ -46,71 +39,38 @@ import {
     LIST_FROM_SUBMISSIONS,
     EXPORT_FORM_SUBMISSIONS
 } from "./graphql/formSubmission";
+import { SecurityPermission } from "@webiny/api-security/types";
+import { Tenant } from "@webiny/api-tenancy/types";
+import { until } from "./helpers";
 
 const defaultTenant = { id: "root", name: "Root", parent: null };
 
-const until = async (execute, until, options = {}) => {
-    const tries = options.tries ?? 5;
-    const wait = options.wait ?? 1000;
+export interface UseGqlHandlerParams {
+    permissions?: SecurityPermission[];
+    identity?: SecurityIdentity;
+    plugins?: any;
+    tenant?: Tenant;
+}
 
-    let result;
-    let triesCount = 0;
-
-    while (true) {
-        result = await execute();
-
-        let done;
-        try {
-            done = await until(result);
-        } catch {}
-
-        if (done) {
-            return result;
-        }
-
-        triesCount++;
-        if (triesCount === tries) {
-            break;
-        }
-
-        // Wait.
-        await new Promise(resolve => {
-            setTimeout(() => resolve(), wait);
-        });
+export default (params: UseGqlHandlerParams = {}) => {
+    const { permissions, identity, tenant, plugins = [] } = params;
+    // @ts-ignore
+    if (typeof __getStorageOperations !== "function") {
+        throw new Error(`There is no global "__getStorageOperations" function.`);
+    }
+    // @ts-ignore
+    const { createStorageOperations, getGlobalPlugins } = __getStorageOperations();
+    if (typeof createStorageOperations !== "function") {
+        throw new Error(
+            `A product of "__getStorageOperations" must be a function to initialize storage operations.`
+        );
+    }
+    if (typeof getGlobalPlugins === "function") {
+        plugins.push(...getGlobalPlugins());
     }
 
-    throw new Error(
-        `Tried ${tries} times but failed. Last result that was received: ${JSON.stringify(
-            result,
-            null,
-            2
-        )}`
-    );
-};
-
-const ELASTICSEARCH_PORT = process.env.ELASTICSEARCH_PORT || "9200";
-
-export default ({ permissions, identity, tenant } = {}) => {
-    const documentClient = new DocumentClient({
-        convertEmptyValues: true,
-        endpoint: process.env.MOCK_DYNAMODB_ENDPOINT,
-        sslEnabled: false,
-        region: "local"
-    });
-
-    const elasticsearchClientContext = elasticsearchClientContextPlugin({
-        endpoint: `http://localhost:${ELASTICSEARCH_PORT}`
-    });
-
-    // Intercept DocumentClient operations and trigger dynamoToElastic function (almost like a DynamoDB Stream trigger)
-    simulateStream(documentClient, createHandler(elasticsearchClientContext, dynamoToElastic()));
-
     const handler = createHandler(
-        dbPlugins({
-            table: "FormBuilder",
-            driver: new DynamoDbDriver({ documentClient })
-        }),
-        elasticsearchClientContext,
+        ...plugins,
         graphqlHandlerPlugins(),
         tenancyPlugins(),
         securityPlugins(),
@@ -128,7 +88,13 @@ export default ({ permissions, identity, tenant } = {}) => {
         mockLocalesPlugins(),
         fileManagerPlugins(),
         fileManagerDynamoDbElasticPlugins(),
-        formBuilderPlugins(),
+        /**
+         * We need to create the form builder API app.
+         * It requires storage operations and plugins from the storage operations.
+         */
+        createFormBuilder({
+            storageOperations: createStorageOperations()
+        }),
         {
             type: "security-authorization",
             name: "security-authorization",
@@ -162,8 +128,9 @@ export default ({ permissions, identity, tenant } = {}) => {
                     }
                 };
             },
-            // eslint-disable-next-line
-            async delete(args) {}
+            async delete() {
+                // dummy
+            }
         }
     );
 
@@ -182,10 +149,6 @@ export default ({ permissions, identity, tenant } = {}) => {
 
     return {
         until,
-        elasticsearch: new Client({
-            hosts: [`http://localhost:${ELASTICSEARCH_PORT}`],
-            node: `http://localhost:${ELASTICSEARCH_PORT}`
-        }),
         sleep: (ms = 100) => {
             return new Promise(resolve => {
                 setTimeout(resolve, ms);
@@ -194,17 +157,17 @@ export default ({ permissions, identity, tenant } = {}) => {
         handler,
         invoke,
         // Form builder settings
-        async updateSettings(variables) {
+        async updateSettings(variables = {}) {
             return invoke({ body: { query: UPDATE_SETTINGS, variables } });
         },
-        async getSettings(variables) {
+        async getSettings(variables = {}) {
             return invoke({ body: { query: GET_SETTINGS, variables } });
         },
         // Install Form builder
-        async install(variables) {
+        async install(variables = {}) {
             return invoke({ body: { query: INSTALL, variables } });
         },
-        async isInstalled(variables) {
+        async isInstalled(variables = {}) {
             return invoke({ body: { query: IS_INSTALLED, variables } });
         },
         // Install File Manager

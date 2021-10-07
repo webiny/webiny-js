@@ -1,6 +1,5 @@
 import { NotAuthorizedError } from "@webiny/api-security";
 import { FbForm, FbFormPermission, FbFormSettingsPermission, FormBuilderContext } from "~/types";
-import { Plugin } from "@webiny/plugins/types";
 
 export const checkBaseFormPermissions = async (
     context: FormBuilderContext,
@@ -78,22 +77,6 @@ export const checkOwnership = (
         const identity = context.security.getIdentity();
         if (form.ownedBy.id !== identity.id) {
             throw new NotAuthorizedError();
-        }
-    }
-};
-
-type CallbackFallback = (args: any) => void | Promise<void>;
-
-export const executeCallbacks = async <
-    TCallbackFunction extends CallbackFallback = CallbackFallback
->(
-    plugins: Plugin[],
-    hook: string,
-    args: Parameters<TCallbackFunction>[0]
-) => {
-    for (const plugin of plugins) {
-        if (typeof plugin[hook] === "function") {
-            await plugin[hook](args);
         }
     }
 };

@@ -67,7 +67,7 @@ export const EXPORT_FORM_SUBMISSIONS = /* GraphQL */ `
 `;
 
 export const LIST_FROM_SUBMISSIONS = /* GraphQL */ `
-    query ListFormSubmissions($form: ID!, $sort: FbSubmissionSortInput, $limit: Int, $after: String) {
+    query ListFormSubmissions($form: ID!, $sort: [FbSubmissionSort!], $limit: Int, $after: String) {
         formBuilder {
             listFormSubmissions(form: $form, sort: $sort, limit: $limit, after: $after) {
                 data ${DATA_FIELD}

@@ -12,6 +12,10 @@ import { FormElasticsearchQueryModifierPlugin } from "~/plugins/FormElasticsearc
 import { PluginsContainer } from "@webiny/plugins";
 import { applyWhere } from "@webiny/api-elasticsearch/where";
 
+export const createFormElasticType = (): string => {
+    return "fb.form";
+};
+
 const createInitialQueryValue = (): ElasticsearchBoolQueryConfig => {
     return {
         must: [
@@ -20,7 +24,7 @@ const createInitialQueryValue = (): ElasticsearchBoolQueryConfig => {
              */
             {
                 term: {
-                    "__type.keyword": "fb.form"
+                    "__type.keyword": createFormElasticType()
                 }
             }
         ],
@@ -34,7 +38,7 @@ interface CreateElasticsearchQueryParams extends CreateElasticsearchBodyParams {
     fieldPlugins: Record<string, FormElasticsearchFieldPlugin>;
 }
 
-const createElasticsearchQuery = (params: CreateElasticsearchQueryParams & {}) => {
+const createElasticsearchQuery = (params: CreateElasticsearchQueryParams) => {
     const { plugins, where: initialWhere, fieldPlugins } = params;
     const query = createInitialQueryValue();
     /**

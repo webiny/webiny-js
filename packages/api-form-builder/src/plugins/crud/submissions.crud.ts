@@ -26,7 +26,9 @@ export const createSubmissionsCrud = (params: Params): SubmissionsCRUD => {
         async getSubmissionsByIds(this: FormBuilder, formId, submissionIds) {
             let form: FbForm;
             if (typeof formId === "string") {
-                form = await this.getForm(formId);
+                form = await this.getForm(formId, {
+                    auth: false
+                });
                 if (!form) {
                     throw new NotFoundError("Form not found");
                 }
@@ -196,7 +198,9 @@ export const createSubmissionsCrud = (params: Params): SubmissionsCRUD => {
         ) {
             // const { formBuilder } = context;
 
-            const form = await this.getForm(formId);
+            const form = await this.getForm(formId, {
+                auth: false
+            });
 
             // const [uniqueId, version] = formId.split("#");
             //
@@ -212,7 +216,10 @@ export const createSubmissionsCrud = (params: Params): SubmissionsCRUD => {
             //     throw new NotFoundError(`Form "${formId}" was not found!`);
             // }
 
-            const settings = await this.getSettings({ auth: false });
+            const settings = await this.getSettings({
+                auth: false,
+                throwOnNotFound: true
+            });
 
             if (settings.reCaptcha && settings.reCaptcha.enabled) {
                 if (!reCaptchaResponseToken) {
@@ -324,8 +331,28 @@ export const createSubmissionsCrud = (params: Params): SubmissionsCRUD => {
                 locale: form.locale,
                 ownedBy: form.ownedBy,
                 logs: [],
-                tenant: form.tenant
+                tenant: form.tenant,
+                webinyVersion: context.WEBINY_VERSION
             };
+
+            try {
+                await this.storageOperations.createSubmission({
+                    input: modelData,
+                    form,
+                    submission
+                });
+            } catch (ex) {
+                throw new WebinyError(
+                    ex.message || "Could not create form submission.",
+                    ex.code || "CREATE_FORM_SUBMISSION_ERROR",
+                    {
+                        ...(ex.data || {}),
+                        input: modelData,
+                        form,
+                        submission
+                    }
+                );
+            }
 
             // Store submission to DB
             // await db
@@ -422,9 +449,11 @@ export const createSubmissionsCrud = (params: Params): SubmissionsCRUD => {
             //
             // return true;
 
-            const submissionId = updatedData.id;
+            const submissionId = input.id;
 
-            const form = await this.getForm(formId);
+            const form = await this.getForm(formId, {
+                auth: false
+            });
             // if (!form) {
             //     throw new NotFoundError(/"Form not found.");
             // }
@@ -438,7 +467,8 @@ export const createSubmissionsCrud = (params: Params): SubmissionsCRUD => {
              */
             const submission: FbSubmission = {
                 ...original,
-                logs: updatedData.logs
+                logs: updatedData.logs,
+                webinyVersion: context.WEBINY_VERSION
             };
 
             try {
