@@ -27,7 +27,7 @@ export enum ENTITIES {
     SETTINGS = "FormBuilderSettings"
 }
 
-export interface CreateStorageOperationsFactoryParams {
+export interface FormBuilderStorageOperationsFactoryParams {
     documentClient: DocumentClient;
     elasticsearch: Client;
     table?: string;
@@ -84,6 +84,6 @@ export interface FormBuilderStorageOperations
     getEntities(): Record<Entities, Entity<any>>;
 }
 
-export interface CreateStorageOperationsFactory {
-    (params: CreateStorageOperationsFactoryParams): FormBuilderStorageOperations;
+export interface FormBuilderStorageOperationsFactory {
+    (params: FormBuilderStorageOperationsFactoryParams): FormBuilderStorageOperations;
 }

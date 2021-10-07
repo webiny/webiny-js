@@ -11,6 +11,7 @@
     "@webiny/api-file-manager-ddb-es": "^5.15.0",
     "@webiny/api-file-manager-s3": "^5.15.0",
     "@webiny/api-form-builder": "^5.15.0",
+    "@webiny/api-form-builder-so-ddb-es": "^5.15.0",
     "@webiny/api-headless-cms": "^5.15.0",
     "@webiny/api-headless-cms-ddb-es": "^5.15.0",
     "@webiny/api-i18n": "^5.15.0",

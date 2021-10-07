@@ -1,4 +1,4 @@
-import { CreateStorageOperationsFactory, ENTITIES } from "~/types";
+import { FormBuilderStorageOperationsFactory, ENTITIES } from "~/types";
 import WebinyError from "@webiny/error";
 import { createTable } from "~/definitions/table";
 import { createFormEntity } from "~/definitions/form";
@@ -28,7 +28,7 @@ const isReserved = (name: string): void => {
     });
 };
 
-export const createStorageOperationsFactory: CreateStorageOperationsFactory = params => {
+export const createFormBuilderStorageOperations: FormBuilderStorageOperationsFactory = params => {
     const {
         attributes,
         table: tableName,

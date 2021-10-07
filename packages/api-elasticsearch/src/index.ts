@@ -1,10 +1,16 @@
 import { ElasticsearchContext } from "~/types";
 import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
 import WebinyError from "@webiny/error";
-import { createClient, ElasticsearchClientOptions } from "~/client";
+import { createElasticsearchClient, ElasticsearchClientOptions } from "~/client";
 import { getOperators } from "~/operators";
+import { Client } from "@elastic/elasticsearch";
 
-export default (options: ElasticsearchClientOptions): ContextPlugin<ElasticsearchContext> => {
+/**
+ * We must accept either Elasticsearch client or options that create the client.
+ */
+export default (
+    params: ElasticsearchClientOptions | Client
+): ContextPlugin<ElasticsearchContext> => {
     return new ContextPlugin<ElasticsearchContext>(context => {
         if (context.elasticsearch) {
             throw new WebinyError(
@@ -15,7 +21,8 @@ export default (options: ElasticsearchClientOptions): ContextPlugin<Elasticsearc
         /**
          * Initialize the Elasticsearch client.
          */
-        context.elasticsearch = createClient(options);
+        context.elasticsearch =
+            params instanceof Client ? params : createElasticsearchClient(params);
 
         context.plugins.register(getOperators());
     });

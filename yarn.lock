@@ -8485,7 +8485,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-dynamodb-to-elasticsearch@^5.14.0, @webiny/api-dynamodb-to-elasticsearch@^5.15.0, @webiny/api-dynamodb-to-elasticsearch@workspace:packages/api-dynamodb-to-elasticsearch":
+"@webiny/api-dynamodb-to-elasticsearch@^5.15.0, @webiny/api-dynamodb-to-elasticsearch@workspace:packages/api-dynamodb-to-elasticsearch":
   version: 0.0.0-use.local
   resolution: "@webiny/api-dynamodb-to-elasticsearch@workspace:packages/api-dynamodb-to-elasticsearch"
   dependencies:
@@ -8506,7 +8506,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-elasticsearch@^5.14.0, @webiny/api-elasticsearch@^5.15.0, @webiny/api-elasticsearch@workspace:packages/api-elasticsearch":
+"@webiny/api-elasticsearch@^5.15.0, @webiny/api-elasticsearch@workspace:packages/api-elasticsearch":
   version: 0.0.0-use.local
   resolution: "@webiny/api-elasticsearch@workspace:packages/api-elasticsearch"
   dependencies:
@@ -8652,7 +8652,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-form-builder-so-ddb-es@workspace:packages/api-form-builder-so-ddb-es":
+"@webiny/api-form-builder-so-ddb-es@^5.15.0, @webiny/api-form-builder-so-ddb-es@workspace:packages/api-form-builder-so-ddb-es":
   version: 0.0.0-use.local
   resolution: "@webiny/api-form-builder-so-ddb-es@workspace:packages/api-form-builder-so-ddb-es"
   dependencies:
@@ -8663,18 +8663,18 @@ __metadata:
     "@babel/runtime": ^7.5.5
     "@elastic/elasticsearch": 7.12.0
     "@shelf/jest-elasticsearch": ^1.0.0
-    "@webiny/api-dynamodb-to-elasticsearch": ^5.14.0
-    "@webiny/api-elasticsearch": ^5.14.0
-    "@webiny/api-form-builder": ^5.14.0
-    "@webiny/api-tenancy": ^5.14.0
-    "@webiny/cli": ^5.14.0
-    "@webiny/db-dynamodb": ^5.14.0
-    "@webiny/error": ^5.14.0
-    "@webiny/handler": ^5.14.0
-    "@webiny/handler-aws": ^5.14.0
-    "@webiny/handler-db": ^5.14.0
-    "@webiny/plugins": ^5.14.0
-    "@webiny/project-utils": ^5.14.0
+    "@webiny/api-dynamodb-to-elasticsearch": ^5.15.0
+    "@webiny/api-elasticsearch": ^5.15.0
+    "@webiny/api-form-builder": ^5.15.0
+    "@webiny/api-tenancy": ^5.15.0
+    "@webiny/cli": ^5.15.0
+    "@webiny/db-dynamodb": ^5.15.0
+    "@webiny/error": ^5.15.0
+    "@webiny/handler": ^5.15.0
+    "@webiny/handler-aws": ^5.15.0
+    "@webiny/handler-db": ^5.15.0
+    "@webiny/plugins": ^5.15.0
+    "@webiny/project-utils": ^5.15.0
     "@webiny/utils": ^5.15.0
     csvtojson: ^2.0.10
     dynamodb-toolbox: ^0.3.4
@@ -8688,7 +8688,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-form-builder@^5.14.0, @webiny/api-form-builder@^5.15.0, @webiny/api-form-builder@workspace:packages/api-form-builder":
+"@webiny/api-form-builder@^5.15.0, @webiny/api-form-builder@workspace:packages/api-form-builder":
   version: 0.0.0-use.local
   resolution: "@webiny/api-form-builder@workspace:packages/api-form-builder"
   dependencies:
@@ -9252,7 +9252,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-tenancy@^5.14.0, @webiny/api-tenancy@^5.15.0, @webiny/api-tenancy@workspace:packages/api-tenancy":
+"@webiny/api-tenancy@^5.15.0, @webiny/api-tenancy@workspace:packages/api-tenancy":
   version: 0.0.0-use.local
   resolution: "@webiny/api-tenancy@workspace:packages/api-tenancy"
   dependencies:
@@ -10320,7 +10320,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/cli@^5.13.0, @webiny/cli@^5.14.0, @webiny/cli@^5.15.0, @webiny/cli@workspace:packages/cli":
+"@webiny/cli@^5.13.0, @webiny/cli@^5.15.0, @webiny/cli@workspace:packages/cli":
   version: 0.0.0-use.local
   resolution: "@webiny/cli@workspace:packages/cli"
   dependencies:
@@ -10393,7 +10393,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/db-dynamodb@^5.14.0, @webiny/db-dynamodb@^5.15.0, @webiny/db-dynamodb@workspace:packages/db-dynamodb":
+"@webiny/db-dynamodb@^5.15.0, @webiny/db-dynamodb@workspace:packages/db-dynamodb":
   version: 0.0.0-use.local
   resolution: "@webiny/db-dynamodb@workspace:packages/db-dynamodb"
   dependencies:
@@ -10433,7 +10433,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/error@^5.14.0, @webiny/error@^5.15.0, @webiny/error@workspace:packages/error":
+"@webiny/error@^5.15.0, @webiny/error@workspace:packages/error":
   version: 0.0.0-use.local
   resolution: "@webiny/error@workspace:packages/error"
   dependencies:
@@ -10494,7 +10494,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/handler-aws@^5.14.0, @webiny/handler-aws@^5.15.0, @webiny/handler-aws@workspace:packages/handler-aws":
+"@webiny/handler-aws@^5.15.0, @webiny/handler-aws@workspace:packages/handler-aws":
   version: 0.0.0-use.local
   resolution: "@webiny/handler-aws@workspace:packages/handler-aws"
   dependencies:
@@ -10539,7 +10539,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/handler-db@^5.14.0, @webiny/handler-db@^5.15.0, @webiny/handler-db@workspace:packages/handler-db":
+"@webiny/handler-db@^5.15.0, @webiny/handler-db@workspace:packages/handler-db":
   version: 0.0.0-use.local
   resolution: "@webiny/handler-db@workspace:packages/handler-db"
   dependencies:
@@ -10617,7 +10617,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/handler@^5.14.0, @webiny/handler@^5.15.0, @webiny/handler@workspace:packages/handler":
+"@webiny/handler@^5.15.0, @webiny/handler@workspace:packages/handler":
   version: 0.0.0-use.local
   resolution: "@webiny/handler@workspace:packages/handler"
   dependencies:
@@ -10681,7 +10681,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/plugins@^5.14.0, @webiny/plugins@^5.15.0, @webiny/plugins@workspace:packages/plugins":
+"@webiny/plugins@^5.15.0, @webiny/plugins@workspace:packages/plugins":
   version: 0.0.0-use.local
   resolution: "@webiny/plugins@workspace:packages/plugins"
   dependencies:
@@ -10696,7 +10696,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/project-utils@^5.13.0, @webiny/project-utils@^5.14.0, @webiny/project-utils@^5.15.0, @webiny/project-utils@workspace:packages/project-utils":
+"@webiny/project-utils@^5.13.0, @webiny/project-utils@^5.15.0, @webiny/project-utils@workspace:packages/project-utils":
   version: 0.0.0-use.local
   resolution: "@webiny/project-utils@workspace:packages/project-utils"
   dependencies:
@@ -11822,6 +11822,7 @@ __metadata:
     "@webiny/api-file-manager-ddb-es": ^5.15.0
     "@webiny/api-file-manager-s3": ^5.15.0
     "@webiny/api-form-builder": ^5.15.0
+    "@webiny/api-form-builder-so-ddb-es": ^5.15.0
     "@webiny/api-headless-cms": ^5.15.0
     "@webiny/api-headless-cms-ddb-es": ^5.15.0
     "@webiny/api-i18n": ^5.15.0

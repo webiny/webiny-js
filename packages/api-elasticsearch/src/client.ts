@@ -6,7 +6,7 @@ export interface ElasticsearchClientOptions extends ClientOptions {
     endpoint?: string;
 }
 
-export const createClient = (options: ElasticsearchClientOptions) => {
+export const createElasticsearchClient = (options: ElasticsearchClientOptions) => {
     const { endpoint, node, ...rest } = options;
 
     const clientOptions: ClientOptions = {

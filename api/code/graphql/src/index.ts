@@ -18,30 +18,38 @@ import fileManagerPlugins from "@webiny/api-file-manager/plugins";
 import fileManagerDynamoDbElasticStorageOperation from "@webiny/api-file-manager-ddb-es";
 import logsPlugins from "@webiny/handler-logs";
 import fileManagerS3 from "@webiny/api-file-manager-s3";
-import formBuilderPlugins from "@webiny/api-form-builder/plugins";
+import createFormBuilder from "@webiny/api-form-builder";
 import securityPlugins from "./security";
 import headlessCmsPlugins from "@webiny/api-headless-cms/plugins";
 import headlessCmsDynamoDbElasticStorageOperation from "@webiny/api-headless-cms-ddb-es";
 import elasticsearchDataGzipCompression from "@webiny/api-elasticsearch/plugins/GzipCompression";
+import { createFormBuilderStorageOperations } from "@webiny/api-form-builder-so-ddb-es";
 
 // Imports plugins created via scaffolding utilities.
 import scaffoldsPlugins from "./plugins/scaffolds";
+import { createElasticsearchClient } from "@webiny/api-elasticsearch/client";
 
 const debug = process.env.DEBUG === "true";
+
+const documentClient = new DocumentClient({
+    convertEmptyValues: true,
+    region: process.env.AWS_REGION
+});
+
+const elasticsearchClient = createElasticsearchClient({
+    endpoint: `https://${process.env.ELASTIC_SEARCH_ENDPOINT}`
+});
 
 export const handler = createHandler({
     plugins: [
         dynamoDbPlugins(),
         logsPlugins(),
         graphqlPlugins({ debug }),
-        elasticSearch({ endpoint: `https://${process.env.ELASTIC_SEARCH_ENDPOINT}` }),
+        elasticSearch(elasticsearchClient),
         dbPlugins({
             table: process.env.DB_TABLE,
             driver: new DynamoDbDriver({
-                documentClient: new DocumentClient({
-                    convertEmptyValues: true,
-                    region: process.env.AWS_REGION
-                })
+                documentClient
             })
         }),
         securityPlugins(),
@@ -67,7 +75,12 @@ export const handler = createHandler({
         pageBuilderPlugins(),
         pageBuilderDynamoDbElasticsearchPlugins(),
         pageBuilderPrerenderingPlugins(),
-        formBuilderPlugins(),
+        createFormBuilder({
+            storageOperations: createFormBuilderStorageOperations({
+                documentClient,
+                elasticsearch: elasticsearchClient
+            })
+        }),
         headlessCmsPlugins(),
         headlessCmsDynamoDbElasticStorageOperation(),
         scaffoldsPlugins(),
