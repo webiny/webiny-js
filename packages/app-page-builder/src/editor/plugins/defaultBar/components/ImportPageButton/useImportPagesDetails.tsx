@@ -29,7 +29,7 @@ const ImportPagesDetails: FunctionComponent<ImportPagesDetailsProps> = ({ loadin
                             <ShowDetails.Label use={"subtitle2"}>
                                 {t`Pages imported:`}
                             </ShowDetails.Label>
-                            <ShowDetails.List>
+                            <ShowDetails.List data-testid={"import-pages-dialog.show-detail-list"}>
                                 {get(
                                     data,
                                     "pageBuilder.getPageImportExportSubTaskByStatus.data",

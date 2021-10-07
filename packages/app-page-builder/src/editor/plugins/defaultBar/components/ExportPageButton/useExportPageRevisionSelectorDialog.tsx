@@ -80,7 +80,8 @@ const useExportPageRevisionSelectorDialog = () => {
                             setTimeout(onAccept, 500);
                         }
                     }
-                }
+                },
+                dataTestId: "export-pages.select-revision-type-dialog"
             });
         },
         hideDialog

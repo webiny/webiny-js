@@ -124,6 +124,7 @@ export const ExportPagesButton = ({ getMultiSelected }) => {
     return (
         <Tooltip content={renderExportPagesTooltip(selected)} placement={"bottom"}>
             <IconButton
+                data-testid={"export-page-button"}
                 icon={<DownloadIcon />}
                 disabled={selected.length === 0}
                 onClick={() => {

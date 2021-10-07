@@ -157,7 +157,8 @@ const useImportPageLoadingDialog = () => {
                 title: importPageDialogTitle,
                 actions: {
                     accept: { label: t`Continue`, onClick: () => window.location.reload() }
-                }
+                },
+                dataTestId: "import-pages.loading-dialog"
             });
         }
     };

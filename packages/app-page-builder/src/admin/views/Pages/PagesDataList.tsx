@@ -303,6 +303,7 @@ const PagesDataList = ({ onCreatePage, canCreate, onImportPage }: PagesDataListP
                                         />
                                     </ListSelectBox>
                                     <ListItemText
+                                        data-testid={"pages-default-data-list.select-page"}
                                         onClick={() => {
                                             query.set("id", page.id);
                                             history.push({ search: query.toString() });

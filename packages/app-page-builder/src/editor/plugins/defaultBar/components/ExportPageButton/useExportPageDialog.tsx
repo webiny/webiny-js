@@ -91,6 +91,7 @@ const ExportPageDialogMessage: React.FunctionComponent<ExportPageDialogProps> = 
                         </Typography>
                         <span className={"copy-button__wrapper"}>
                             <CopyButton
+                                data-testid={"export-pages.export-ready-dialog.copy-button"}
                                 value={exportUrl}
                                 onCopy={() => showSnackbar("Successfully copied!")}
                             />
@@ -127,7 +128,8 @@ const useExportPageDialog = () => {
                 title: t`Your export is now ready!`,
                 actions: {
                     cancel: { label: t`Close` }
-                }
+                },
+                dataTestId: "export-pages.export-ready-dialog"
             });
         },
         showExportPageLoadingDialog: taskId => {
@@ -135,7 +137,8 @@ const useExportPageDialog = () => {
                 title: t`Preparing your export...`,
                 actions: {
                     cancel: { label: t`Cancel` }
-                }
+                },
+                dataTestId: "export-pages.loading-dialog"
             });
         },
         showExportPageInitializeDialog: props => {
@@ -143,7 +146,8 @@ const useExportPageDialog = () => {
                 title: t`Preparing your export...`,
                 actions: {
                     cancel: { label: t`Cancel` }
-                }
+                },
+                dataTestId: "export-pages.initial-dialog"
             });
         },
         hideDialog

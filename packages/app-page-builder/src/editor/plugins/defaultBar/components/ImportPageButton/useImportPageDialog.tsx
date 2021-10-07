@@ -72,6 +72,7 @@ export const ImportPageDialogContent = ({ onUploadFile, onPasteFileLink }) => {
                                     <Input
                                         description={t`The URL has to be public. We'll use it to download the export page data file.`}
                                         label={"File URL"}
+                                        data-testid={"import-pages.input-dialog.input-url"}
                                     />
                                 </Bind>
                             </Cell>
@@ -124,7 +125,8 @@ const useImportPageDialog = () => {
                     title: importPageDialogTitle,
                     actions: {
                         cancel: { label: t`Cancel` }
-                    }
+                    },
+                    dataTestId: "import-pages.input-dialog"
                 }
             );
         }
