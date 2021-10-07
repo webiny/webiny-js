@@ -4,10 +4,7 @@
   "exclude": [
     "node_modules",
     "../plugins",
-    "../db",
     "../api-i18n-content",
-    "../api-elasticsearch",
-    "../api-dynamodb-to-elasticsearch",
     "../api-security",
     "../api-upgrade",
     "../handler",
@@ -19,7 +16,6 @@
     "../api-i18n-ddb",
     "../handler-graphql",
     "../handler-aws",
-    "../db-dynamodb",
     "../error",
     "../api-file-manager",
     "../api-file-manager-ddb-es",

@@ -22,6 +22,9 @@ const flatten = (responses: Record<string, any[]>): any[] => {
  * It will fetch all results, as there is a next() method call built in.
  */
 export const batchReadAll = async <T = any>(params: Params): Promise<T[]> => {
+    if (params.items.length === 0) {
+        return [];
+    }
     const items: T[] = [];
     const result = await params.table.batchGet(params.items);
 

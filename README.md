@@ -17,7 +17,7 @@
 [![SemVer](http://img.shields.io/:semver-2.0.0-brightgreen.svg)](http://semver.org)
 ![](https://img.shields.io/npm/types/scrub-js.svg)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
-[![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-v1.4%20adopted-ff69b4.svg)](/docs/CODE_OF_CONDUCT.md)
+[![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg)](/docs/CODE_OF_CONDUCT.md)
 [![Join our Slack community https://www.webiny.com/slack](https://img.shields.io/badge/Slack-Join%20our%20community!-orange)](https://www.webiny.com/slack)
 
 </p>
@@ -112,6 +112,13 @@ Thanks goes to these wonderful people:
                     </a>
                     <br />
                 </td></tr><tr><td align="center">
+                    <a href="https://github.com/brunozoric">
+                        <img src="https://avatars.githubusercontent.com/u/10399339?v=4" width="100px;" alt="Bruno Zorić"/>
+                        <br />
+                        <sub><b>Bruno Zorić</b></sub>
+                    </a>
+                    <br />
+                </td><td align="center">
                     <a href="https://github.com/roman-vabishchevych">
                         <img src="https://avatars3.githubusercontent.com/u/4134474?v=4" width="100px;" alt="Roman Vabishchevych"/>
                         <br />
@@ -146,14 +153,14 @@ Thanks goes to these wonderful people:
                         <sub><b>Fsalker</b></sub>
                     </a>
                     <br />
-                </td><td align="center">
+                </td></tr><tr><td align="center">
                     <a href="https://github.com/naokia">
                         <img src="https://avatars2.githubusercontent.com/u/5516121?v=4" width="100px;" alt="naokia"/>
                         <br />
                         <sub><b>naokia</b></sub>
                     </a>
                     <br />
-                </td></tr><tr><td align="center">
+                </td><td align="center">
                     <a href="https://github.com/tjrexer">
                         <img src="https://avatars2.githubusercontent.com/u/7013045?v=4" width="100px;" alt="Tim Rexer"/>
                         <br />
@@ -188,14 +195,14 @@ Thanks goes to these wonderful people:
                         <sub><b>Lenon Tolfo</b></sub>
                     </a>
                     <br />
-                </td><td align="center">
+                </td></tr><tr><td align="center">
                     <a href="https://github.com/ahmad-reza619">
                         <img src="https://avatars3.githubusercontent.com/u/52902060?v=4" width="100px;" alt="Ahmad Reza"/>
                         <br />
                         <sub><b>Ahmad Reza</b></sub>
                     </a>
                     <br />
-                </td></tr><tr><td align="center">
+                </td><td align="center">
                     <a href="https://github.com/EmilK15">
                         <img src="https://avatars0.githubusercontent.com/u/9532882?v=4" width="100px;" alt="Emil Kais"/>
                         <br />
@@ -230,14 +237,14 @@ Thanks goes to these wonderful people:
                         <sub><b>Albiona</b></sub>
                     </a>
                     <br />
-                </td><td align="center">
+                </td></tr><tr><td align="center">
                     <a href="https://github.com/Jeremytijal">
                         <img src="https://avatars3.githubusercontent.com/u/40340340?v=4" width="100px;" alt="Jeremytijal"/>
                         <br />
                         <sub><b>Jeremytijal</b></sub>
                     </a>
                     <br />
-                </td></tr><tr><td align="center">
+                </td><td align="center">
                     <a href="https://sundeepcharan.com">
                         <img src="https://avatars3.githubusercontent.com/u/32637757?v=4" width="100px;" alt="Sundeep Charan Ramkumar"/>
                         <br />
@@ -272,14 +279,14 @@ Thanks goes to these wonderful people:
                         <sub><b>Jon R</b></sub>
                     </a>
                     <br />
-                </td><td align="center">
+                </td></tr><tr><td align="center">
                     <a href="https://github.com/afzalsayed96">
                         <img src="https://avatars1.githubusercontent.com/u/14029371?v=4" width="100px;" alt="Afzal Sayed"/>
                         <br />
                         <sub><b>Afzal Sayed</b></sub>
                     </a>
                     <br />
-                </td></tr><tr><td align="center">
+                </td><td align="center">
                     <a href="https://github.com/Anshuman71">
                         <img src="https://avatars2.githubusercontent.com/u/28081510?v=4" width="100px;" alt="Anshuman Bhardwaj"/>
                         <br />
@@ -314,14 +321,14 @@ Thanks goes to these wonderful people:
                         <sub><b>Mark Wilcox</b></sub>
                     </a>
                     <br />
-                </td><td align="center">
+                </td></tr><tr><td align="center">
                     <a href="https://github.com/anushkrishnav">
                         <img src="https://avatars3.githubusercontent.com/u/54374648?v=4" width="100px;" alt="A N U S H"/>
                         <br />
                         <sub><b>A N U S H</b></sub>
                     </a>
                     <br />
-                </td></tr><tr><td align="center">
+                </td><td align="center">
                     <a href="https://github.com/aloks98">
                         <img src="https://avatars3.githubusercontent.com/u/45600289?v=4" width="100px;" alt="Alok Kumar Sahoo"/>
                         <br />
@@ -356,14 +363,14 @@ Thanks goes to these wonderful people:
                         <sub><b>Darsh Shah</b></sub>
                     </a>
                     <br />
-                </td><td align="center">
+                </td></tr><tr><td align="center">
                     <a href="https://github.com/ankurvr">
                         <img src="https://avatars.githubusercontent.com/u/3338156?v=4" width="100px;" alt="Ankur Raiyani"/>
                         <br />
                         <sub><b>Ankur Raiyani</b></sub>
                     </a>
                     <br />
-                </td></tr><tr><td align="center">
+                </td><td align="center">
                     <a href="https://github.com/karthick3018">
                         <img src="https://avatars.githubusercontent.com/u/47154512?v=4" width="100px;" alt="Karthick Raja"/>
                         <br />
@@ -375,6 +382,27 @@ Thanks goes to these wonderful people:
                         <img src="https://avatars.githubusercontent.com/u/127711?v=4" width="100px;" alt="Fabio A. Correa"/>
                         <br />
                         <sub><b>Fabio A. Correa</b></sub>
+                    </a>
+                    <br />
+                </td><td align="center">
+                    <a href="https://github.com/IzioDev">
+                        <img src="https://avatars.githubusercontent.com/u/9900846?v=4" width="100px;" alt="Romain Billot"/>
+                        <br />
+                        <sub><b>Romain Billot</b></sub>
+                    </a>
+                    <br />
+                </td><td align="center">
+                    <a href="https://github.com/snstanton">
+                        <img src="https://avatars.githubusercontent.com/u/209370?v=4" width="100px;" alt="Scott Stanton"/>
+                        <br />
+                        <sub><b>Scott Stanton</b></sub>
+                    </a>
+                    <br />
+                </td><td align="center">
+                    <a href="https://github.com/nelsonchen5">
+                        <img src="https://avatars.githubusercontent.com/u/31781643?v=4" width="100px;" alt="Nelson Chen"/>
+                        <br />
+                        <sub><b>Nelson Chen</b></sub>
                     </a>
                     <br />
                 </td></tr>

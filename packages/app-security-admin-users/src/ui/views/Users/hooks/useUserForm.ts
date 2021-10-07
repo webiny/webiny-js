@@ -1,18 +1,9 @@
 import { useCallback } from "react";
 import { useMutation, useQuery } from "@apollo/react-hooks";
-import pick from "lodash/pick";
 import isEmpty from "lodash/isEmpty";
 import { useRouter } from "@webiny/react-router";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { CREATE_USER, LIST_USERS, READ_USER, UPDATE_USER } from "~/ui/views/Users/graphql";
-
-const pickDataForCreateOperation = data => {
-    return pick(data, ["login", "password", "firstName", "lastName", "avatar", "group"]);
-};
-
-const pickDataForUpdateOperation = data => {
-    return pick(data, ["password", "firstName", "lastName", "avatar", "group"]);
-};
 
 export type UseUserForm = ReturnType<typeof useUserForm>;
 
@@ -21,8 +12,8 @@ export function useUserForm() {
     const { showSnackbar } = useSnackbar();
 
     const query = new URLSearchParams(location.search);
-    const newUser = query.get("new") === "true";
     const login = query.get("login");
+    const newUser = query.get("new") === "true" || !login;
 
     const { data, loading: userLoading } = useQuery(READ_USER, {
         variables: { login },
@@ -52,25 +43,10 @@ export function useUserForm() {
 
     const onSubmit = useCallback(
         async data => {
-            const isUpdate = data.createdOn;
-            const [operation, args] = isUpdate
-                ? [
-                      update,
-                      {
-                          variables: {
-                              login: data.login,
-                              data: pickDataForUpdateOperation(data)
-                          }
-                      }
-                  ]
-                : [
-                      create,
-                      {
-                          variables: {
-                              data: pickDataForCreateOperation(data)
-                          }
-                      }
-                  ];
+            const { login, ...rest } = data;
+            const [operation, args] = !newUser
+                ? [update, { variables: { login, data: rest } }]
+                : [create, { variables: { data } }];
 
             const result = await operation(args);
 
@@ -80,7 +56,7 @@ export function useUserForm() {
                 return showSnackbar(error.message);
             }
 
-            !isUpdate && history.push(`/security/users?login=${encodeURIComponent(user.login)}`);
+            newUser && history.push(`/security/users?login=${encodeURIComponent(user.login)}`);
             showSnackbar("User saved successfully.");
         },
         [login]
@@ -95,6 +71,7 @@ export function useUserForm() {
         loading,
         user,
         onSubmit,
+        isNewUser: newUser,
         fullName: `${user.firstName || ""} ${user.lastName || ""}`.trim(),
         showEmptyView,
         createUser() {

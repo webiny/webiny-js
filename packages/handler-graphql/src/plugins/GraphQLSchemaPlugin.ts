@@ -3,7 +3,7 @@ import { GraphQLSchemaDefinition, Resolvers, Types } from "../types";
 import { Context } from "@webiny/handler/types";
 
 export interface GraphQLSchemaPluginConfig<TContext> {
-    typeDefs: Types;
+    typeDefs?: Types;
     resolvers?: Resolvers<TContext>;
 }
 
@@ -18,7 +18,7 @@ export class GraphQLSchemaPlugin<TContext = Context> extends Plugin {
 
     get schema(): GraphQLSchemaDefinition<TContext> {
         return {
-            typeDefs: this.config.typeDefs,
+            typeDefs: this.config.typeDefs || "",
             resolvers: this.config.resolvers
         };
     }

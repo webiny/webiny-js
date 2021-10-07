@@ -314,7 +314,9 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
 
             if (deploy) {
                 console.log(
-                    `Running ${chalk.green(`yarn webiny deploy ${input.path}`)} command...`
+                    `Running ${chalk.green(
+                        `yarn webiny deploy ${input.path} --env dev`
+                    )} command...`
                 );
                 console.log();
                 await deployGraphQLAPI(input.path, "dev", input);
@@ -339,7 +341,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 console.log(chalk.bold("Next Steps"));
                 console.log(
                     `‣ open your GraphQL API with a GraphQL client, via the following URL:\n  ${chalk.green(
-                        `[POST] ${stackOutput.graphqlApiUrl}`
+                        `[POST] ${stackOutput.apiUrl}/graphql`
                     )}`
                 );
             }

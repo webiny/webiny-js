@@ -113,7 +113,7 @@ class SearchBar extends React.Component<SearchBarProps, SearchBarState> {
         this.setState(
             state => {
                 const newState = set(state, "searchTerm.previous", state.searchTerm.current);
-                return set(newState, "plugins.current", plugin);
+                return set(newState, "plugins.current", plugin) as any;
             },
             () => {
                 const query = new URLSearchParams();

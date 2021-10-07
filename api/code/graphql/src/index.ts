@@ -7,6 +7,8 @@ import i18nContentPlugins from "@webiny/api-i18n-content/plugins";
 import adminUsersPlugins from "@webiny/api-security-admin-users";
 import securityAdminUsersDynamoDbStorageOperations from "@webiny/api-security-admin-users-so-ddb";
 import pageBuilderPlugins from "@webiny/api-page-builder/graphql";
+import pageBuilderDynamoDbElasticsearchPlugins from "@webiny/api-page-builder-so-ddb-es";
+import pageBuilderPrerenderingPlugins from "@webiny/api-page-builder/prerendering";
 import pageBuilderImportExportPlugins from "@webiny/api-page-builder-import-export/graphql";
 import prerenderingServicePlugins from "@webiny/api-prerendering-service/client";
 import dbPlugins from "@webiny/handler-db";
@@ -64,6 +66,8 @@ export const handler = createHandler({
         adminUsersPlugins(),
         securityAdminUsersDynamoDbStorageOperations(),
         pageBuilderPlugins(),
+        pageBuilderDynamoDbElasticsearchPlugins(),
+        pageBuilderPrerenderingPlugins(),
         pageBuilderImportExportPlugins(),
         formBuilderPlugins(),
         headlessCmsPlugins(),

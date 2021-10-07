@@ -1,6 +1,8 @@
 import React from "react";
 import classNames from "classnames";
-import Text from "../../../components/Text";
+import Text from "~/editor/components/Text";
+import { PbEditorTextElementProps } from "~/types";
+import { getMediumEditorOptions } from "../utils/textUtils";
 
 export const className = classNames(
     "webiny-pb-base-page-element-style webiny-pb-page-element-text webiny-pb-typography-list"
@@ -9,17 +11,24 @@ export const className = classNames(
 const DEFAULT_EDITOR_OPTIONS = {
     toolbar: {
         buttons: ["bold", "italic", "underline", "anchor", "unorderedlist", "orderedlist"]
+    },
+    anchor: {
+        targetCheckbox: true,
+        targetCheckboxText: "Open in a new tab"
     }
 };
 
-type ParagraphType = {
-    elementId: string;
-};
-const List: React.FunctionComponent<ParagraphType> = ({ elementId }) => {
+const List: React.FunctionComponent<PbEditorTextElementProps> = ({
+    elementId,
+    mediumEditorOptions
+}) => {
     return (
         <Text
             elementId={elementId}
-            editorOptions={DEFAULT_EDITOR_OPTIONS}
+            mediumEditorOptions={getMediumEditorOptions(
+                DEFAULT_EDITOR_OPTIONS,
+                mediumEditorOptions
+            )}
             rootClassName={className}
         />
     );

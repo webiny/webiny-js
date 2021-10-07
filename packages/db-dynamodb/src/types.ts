@@ -21,3 +21,12 @@ export type Operator = {
     canProcess: ({ key }: CanProcessArgs) => boolean;
     process: ({ key, value, args }: ProcessArgs) => void;
 };
+
+/**
+ * We use this definition to search for a value in any given field that was passed.
+ * It works as an "OR" condition.
+ */
+export interface DynamoDbContainsFilter {
+    fields: string[];
+    value: string;
+}

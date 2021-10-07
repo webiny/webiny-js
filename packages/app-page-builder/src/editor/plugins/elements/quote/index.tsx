@@ -1,15 +1,11 @@
 import React from "react";
 import kebabCase from "lodash/kebabCase";
 import Quote, { className } from "./Quote";
-import {
-    DisplayMode,
-    PbEditorPageElementPlugin,
-    PbEditorElementPluginArgs
-} from "../../../../types";
+import { DisplayMode, PbEditorPageElementPlugin, PbEditorTextElementPluginsArgs } from "~/types";
 import { createInitialTextValue } from "../utils/textUtils";
 import { createInitialPerDeviceSettingValue } from "../../elementSettings/elementSettingsUtils";
 
-export default (args: PbEditorElementPluginArgs = {}): PbEditorPageElementPlugin => {
+export default (args: PbEditorTextElementPluginsArgs = {}): PbEditorPageElementPlugin => {
     const defaultText = "Block Quote";
     const elementType = kebabCase(args.elementType || "quote");
     const defaultToolbar = {
@@ -79,7 +75,7 @@ export default (args: PbEditorElementPluginArgs = {}): PbEditorPageElementPlugin
             return typeof args.create === "function" ? args.create(defaultValue) : defaultValue;
         },
         render({ element }) {
-            return <Quote elementId={element.id} />;
+            return <Quote elementId={element.id} mediumEditorOptions={args.mediumEditorOptions} />;
         }
     };
 };

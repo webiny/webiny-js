@@ -1,7 +1,7 @@
 const { green } = require("chalk");
 const { getStackOutput, getPulumi } = require("@webiny/cli-plugin-deploy-pulumi/utils");
+const { sendEvent } = require("@webiny/cli/utils");
 const execa = require("execa");
-const { sendEvent } = require("@webiny/telemetry");
 const sleep = require("../utils/sleep");
 
 const deploy = (stack, env, inputs) =>
@@ -38,9 +38,9 @@ module.exports = async (inputs, context) => {
     installed && console.log();
 
     // 1. Get exports from `website` stack, for `args.env` environment.
-    const apiOutput = await getStackOutput("api", env);
-    const adminOutput = await getStackOutput("apps/admin", env);
-    const websiteOutput = await getStackOutput("apps/website", env);
+    const apiOutput = getStackOutput({ folder: "api", env });
+    const adminOutput = getStackOutput({ folder: "apps/admin", env });
+    const websiteOutput = getStackOutput({ folder: "apps/website", env });
     const isFirstDeployment = !apiOutput && !adminOutput && !websiteOutput;
     if (isFirstDeployment) {
         context.info(
@@ -83,7 +83,7 @@ module.exports = async (inputs, context) => {
     } catch (e) {
         await sendEvent({
             event: "project-deploy-error",
-            data: {
+            properties: {
                 errorMessage: e.message,
                 errorStack: e.stack
             }
@@ -93,10 +93,10 @@ module.exports = async (inputs, context) => {
     }
 
     const outputs = {
-        api: await getStackOutput("api", env),
+        api: getStackOutput({ folder: "api", env }),
         apps: {
-            admin: await getStackOutput("apps/admin", env),
-            site: await getStackOutput("apps/website", env)
+            admin: getStackOutput({ folder: "apps/admin", env }),
+            site: getStackOutput({ folder: "apps/website", env })
         }
     };
 

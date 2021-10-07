@@ -7,6 +7,8 @@ import adminUsersPlugins from "@webiny/api-security-admin-users";
 import securityAdminUsersDynamoDbStorageOperations from "@webiny/api-security-admin-users-so-ddb";
 import i18nContentPlugins from "@webiny/api-i18n-content/plugins";
 import pageBuilderPlugins from "@webiny/api-page-builder/graphql";
+import pageBuilderDynamoDbElasticsearchPlugins from "@webiny/api-page-builder-so-ddb-es";
+import pageBuilderPrerenderingPlugins from "@webiny/api-page-builder/prerendering";
 import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import elasticsearchClientContextPlugin from "@webiny/api-elasticsearch";
@@ -63,6 +65,8 @@ export const handler = createHandler({
         adminUsersPlugins(),
         securityAdminUsersDynamoDbStorageOperations(),
         pageBuilderPlugins(),
+        pageBuilderDynamoDbElasticsearchPlugins(),
+        pageBuilderPrerenderingPlugins(),
         formBuilderPlugins(),
         headlessCmsPlugins(),
         headlessCmsDynamoDbElasticStorageOperation(),

@@ -1,12 +1,13 @@
 import * as aws from "@pulumi/aws";
+import * as pulumi from "@pulumi/pulumi";
 import ApiGateway from "./apiGateway";
 import { parse } from "url";
 
 class Cloudfront {
-    cloudfront: aws.cloudfront.Distribution;
+    distribution: aws.cloudfront.Distribution;
     constructor({ apiGateway }: { apiGateway: ApiGateway }) {
-        this.cloudfront = new aws.cloudfront.Distribution("project-application-name", {
-            waitForDeployment: false,
+        this.distribution = new aws.cloudfront.Distribution("project-application-name", {
+            waitForDeployment: true,
             defaultCacheBehavior: {
                 compress: true,
                 allowedMethods: ["GET", "HEAD", "OPTIONS", "PUT", "POST", "PATCH", "DELETE"],
@@ -27,41 +28,6 @@ class Cloudfront {
             },
             isIpv6Enabled: true,
             enabled: true,
-            orderedCacheBehaviors: [
-                {
-                    compress: true,
-                    allowedMethods: ["GET", "HEAD", "OPTIONS", "PUT", "POST", "PATCH", "DELETE"],
-                    cachedMethods: ["GET", "HEAD", "OPTIONS"],
-                    forwardedValues: {
-                        cookies: {
-                            forward: "none"
-                        },
-                        headers: ["Accept", "Accept-Language"],
-                        queryString: true
-                    },
-                    pathPattern: "/cms*",
-                    viewerProtocolPolicy: "allow-all",
-                    targetOriginId: apiGateway.api.name
-                },
-                {
-                    allowedMethods: ["GET", "HEAD", "OPTIONS", "PUT", "POST", "PATCH", "DELETE"],
-                    cachedMethods: ["GET", "HEAD", "OPTIONS"],
-                    forwardedValues: {
-                        cookies: {
-                            forward: "none"
-                        },
-                        headers: ["Accept", "Accept-Language"],
-                        queryString: true
-                    },
-                    // MinTTL <= DefaultTTL <= MaxTTL
-                    minTtl: 0,
-                    defaultTtl: 0,
-                    maxTtl: 2592000,
-                    pathPattern: "/files/*",
-                    viewerProtocolPolicy: "allow-all",
-                    targetOriginId: apiGateway.api.name
-                }
-            ],
             origins: [
                 {
                     domainName: apiGateway.defaultStage.invokeUrl.apply((url: string) =>
@@ -88,6 +54,10 @@ class Cloudfront {
                 cloudfrontDefaultCertificate: true
             }
         });
+    }
+
+    getDistributionUrl(path = "") {
+        return pulumi.interpolate`https://${this.distribution.domainName}${path}`;
     }
 }
 

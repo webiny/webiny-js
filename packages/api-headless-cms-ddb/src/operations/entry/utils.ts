@@ -228,7 +228,7 @@ export const sortEntryItems = (args: SortEntryItemsArgs): CmsContentEntry[] => {
     } else if (sort.length === 0) {
         sort.push("savedOn_DESC");
     } else if (sort.length > 1) {
-        throw new WebinyError("Sorting is limited to a single field", "SORT_ERROR", {
+        throw new WebinyError("Sorting is limited to a single field.", "SORT_ERROR", {
             sort: sort
         });
     }

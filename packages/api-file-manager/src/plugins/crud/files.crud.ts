@@ -305,12 +305,15 @@ const filesContextCrudPlugin = new ContextPlugin<FileManagerContext>(async conte
                 types = [],
                 tags = [],
                 ids = [],
-                after = null
+                after = null,
+                where: initialWhere,
+                sort: initialSort
             } = params;
 
             const { i18nContent } = context;
 
             const where: FileManagerFilesStorageOperationsListParamsWhere = {
+                ...initialWhere,
                 private: false,
                 locale: i18nContent.locale.code
             };
@@ -322,37 +325,57 @@ const filesContextCrudPlugin = new ContextPlugin<FileManagerContext>(async conte
                 where.createdBy = identity.id;
             }
             /**
+             * We need to map the old GraphQL definition to the new one.
+             * That GQL definition is marked as deprecated.
+             */
+            /**
              * To have standardized where objects across the applications, we transform the types into type_in.
              */
-            if (Array.isArray(types) && types.length > 0) {
+            if (Array.isArray(types) && types.length > 0 && !where.type_in) {
                 where.type_in = types;
             }
             /**
              * TODO: determine the change of this part.
              * Either assign search keyword to something meaningful or throw it out.
              */
-            if (search) {
+            if (search && !where.search) {
                 where.search = search;
             }
             /**
              * Same as on types/type_in.
              */
-            if (Array.isArray(tags) && tags.length > 0) {
+            if (Array.isArray(tags) && tags.length > 0 && !where.tag_in) {
                 where.tag_in = tags.map(tag => tag.toLowerCase());
             }
             /**
              * Same as on types/type_in.
              */
-            if (Array.isArray(ids) && ids.length > 0) {
+            if (Array.isArray(ids) && ids.length > 0 && !where.id_in) {
                 where.id_in = ids;
             }
 
-            return storageOperations.list({
-                where,
-                after,
-                limit,
-                sort: ["id_DESC"]
-            });
+            const sort =
+                Array.isArray(initialSort) && initialSort.length > 0 ? initialSort : ["id_DESC"];
+            try {
+                return await storageOperations.list({
+                    where,
+                    after,
+                    limit,
+                    sort
+                });
+            } catch (ex) {
+                throw new WebinyError(
+                    ex.message || "Could not list files by given parameters.",
+                    ex.code || "FILE_TAG_SEARCH_ERROR",
+                    {
+                        ...(ex.data || {}),
+                        where,
+                        after,
+                        limit,
+                        sort
+                    }
+                );
+            }
         },
         async listTags({ after, limit }) {
             await checkBasePermissions(context);

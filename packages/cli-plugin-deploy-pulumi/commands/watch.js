@@ -14,6 +14,10 @@ const terminalOutput = require("./watch/output/terminalOutput");
 const minimatch = require("minimatch");
 const glob = require("fast-glob");
 
+// Do not allow watching "prod" and "production" environments. On the Pulumi CLI side, the command
+// is still in preview mode, so it's definitely not wise to use it on production environments.
+const WATCH_DISABLED_ENVIRONMENTS = ["prod", "production"];
+
 module.exports = async (inputs, context) => {
     // 1. Initial checks for deploy and build commands.
     if (!inputs.folder && !inputs.package) {
@@ -40,6 +44,12 @@ module.exports = async (inputs, context) => {
 
     if (inputs.deploy && !inputs.env) {
         throw new Error(`Please specify environment, for example "dev".`);
+    }
+
+    if (WATCH_DISABLED_ENVIRONMENTS.includes(inputs.env)) {
+        throw new Error(
+            `${chalk.red("webiny watch")} command cannot be used with production environments.`
+        );
     }
 
     if (!inputs.build && !inputs.deploy) {

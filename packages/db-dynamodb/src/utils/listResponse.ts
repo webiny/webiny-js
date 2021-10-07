@@ -18,7 +18,7 @@ export const createListResponse = <T>(params: CreateListResponseParams<T>): [T[]
     const start = decodeCursor(after) || 0;
     const hasMoreItems = totalCount > start + limit;
     const end = limit > totalCount + start + limit ? undefined : start + limit;
-    const items = initialItems.slice(start, end);
+    const items = end ? initialItems.slice(start, end) : initialItems;
 
     const cursor = items.length > 0 ? encodeCursor(start + limit) : null;
 

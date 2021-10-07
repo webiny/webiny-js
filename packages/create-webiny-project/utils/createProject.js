@@ -6,7 +6,7 @@ const Listr = require("listr");
 const path = require("path");
 const writeJson = require("write-json-file");
 const rimraf = require("rimraf");
-const { sendEvent } = require("@webiny/telemetry");
+const { sendEvent } = require("@webiny/telemetry/cli");
 const getPackageJson = require("./getPackageJson");
 const checkProjectName = require("./checkProjectName");
 const yaml = require("js-yaml");
@@ -228,7 +228,7 @@ module.exports = async function createProject({
     } catch (err) {
         await sendEvent({
             event: "create-webiny-project-error",
-            data: {
+            properties: {
                 errorMessage: err.message,
                 errorStack: err.stack
             }

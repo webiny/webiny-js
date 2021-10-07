@@ -37,3 +37,8 @@ This file contains initial database data and phyiscal files - images, used on in
 In the `data` folder, you will find JSON files, which represent initial data that will be inserted into the database in the Page Builder installation process (pages, page elements, categories and menus).
 
 The `images` folder contains all of the images.
+
+
+### Testing
+
+To test the package with certain storage operations attached check that storage oprations package for instructions.

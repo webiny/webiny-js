@@ -1,14 +1,25 @@
 #!/usr/bin/env node
+const path = require("path");
 const yargs = require("yargs");
-const { log } = require("./utils");
+const { log, getProject } = require("./utils");
+const { boolean } = require("boolean");
 
-// Immediately load .env.{--env} and .env files.
+// Immediately load .env.{PASSED_ENVIRONMENT} and .env files.
 // This way we ensure all of the environment variables are not loaded too late.
-const paths = yargs.argv.env ? [".env", `.env.${yargs.argv.env}`] : [".env"];
+const project = getProject();
+let paths = [path.join(project.root, ".env")];
+
+// Disable help processing until after plugins are imported
+yargs.help(false);
+
+if (yargs.argv.env) {
+    paths.push(path.join(project.root, `.env.${yargs.argv.env}`));
+}
+
 for (let i = 0; i < paths.length; i++) {
     const path = paths[i];
     const { error } = require("dotenv").config({ path });
-    if (yargs.argv.debug) {
+    if (boolean(yargs.argv.debug)) {
         if (error) {
             log.info(`Could not load environment variables from ${log.info.hl(path)}.`);
         } else {
@@ -92,5 +103,5 @@ yargs
 (async () => {
     await createCommands(yargs, context);
     // Run
-    yargs.argv;
+    yargs.help().argv;
 })();
