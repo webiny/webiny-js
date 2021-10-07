@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { SecurityContext, SecurityContextValue } from "../contexts/Security";
+import { SecurityContext, SecurityContextValue } from "~/contexts/Security";
 
 export type UseSecurity = ReturnType<typeof useSecurity>;
 

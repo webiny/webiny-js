@@ -5,7 +5,8 @@ import graphqlPlugins from "@webiny/handler-graphql";
 import i18nPlugins from "@webiny/api-i18n/graphql";
 import i18nDynamoDbStorageOperations from "@webiny/api-i18n-ddb";
 import i18nContentPlugins from "@webiny/api-i18n-content/plugins";
-import adminUsersPlugins from "@webiny/api-security-admin-users-cognito";
+import adminUsersCognitoPlugins from "@webiny/api-security-admin-users-cognito";
+import { syncWithCognito } from "@webiny/api-security-admin-users-cognito/syncWithCognito";
 import { createStorageOperations as createAdminUsersStorageOperations } from "@webiny/api-security-admin-users-cognito-so-ddb";
 import pageBuilderPlugins from "@webiny/api-page-builder/graphql";
 import pageBuilderDynamoDbElasticsearchPlugins from "@webiny/api-page-builder-so-ddb-es";
@@ -63,8 +64,12 @@ export const handler = createHandler({
                 }
             }
         }),
-        adminUsersPlugins({
+        adminUsersCognitoPlugins({
             storageOperations: createAdminUsersStorageOperations({ documentClient })
+        }),
+        syncWithCognito({
+            region: process.env.COGNITO_REGION,
+            userPoolId: process.env.COGNITO_USER_POOL_ID
         }),
         pageBuilderPlugins(),
         pageBuilderDynamoDbElasticsearchPlugins(),

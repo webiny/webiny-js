@@ -5,8 +5,8 @@
     "node_modules",
     "../app",
     "../app-admin",
+    "../app-security",
     "../form",
-    "../app-security-admin-users",
     "../app-security-cognito-authentication",
     "../plugins",
     "../ui",
@@ -16,7 +16,9 @@
     "rootDir": "./src",
     "outDir": "./dist",
     "declarationDir": "./dist",
-    "paths": {},
+    "paths": {
+      "~/*": ["./src/*"]
+    },
     "baseUrl": "."
   },
   "references": []

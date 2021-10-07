@@ -16,7 +16,7 @@ export default ({ documentClient }) => [
     tenancy({ storageOperations: tenancyStorageOperations({ documentClient }) }),
 
     /**
-     * Adds a context plugin to setup Security app.
+     * Setup Security app.
      */
     security({
         storageOperations: securityStorageOperations({ documentClient })
@@ -24,20 +24,21 @@ export default ({ documentClient }) => [
 
     /**
      * Perform authentication using the common "Authorization" HTTP header.
+     * This will fetch the value of the header, and execute the authentication process.
      */
     authenticateUsingHttpHeader(),
 
     /**
-     * Authentication plugin for API Keys.
+     * API Key authenticator.
      * API Keys are a standalone entity, and are not connected to users in any way.
-     * They identify a project, a 3rd party client, not the user.
+     * They identify a project, a 3rd party client, not a particular user.
      * They are used for programmatic API access, CMS data import/export, etc.
      */
     apiKeyAuthentication({ identityType: "api-key" }),
 
     /**
      * Cognito authentication plugin.
-     * This plugin will verify the JWT token against a provided User Pool.
+     * This plugin will verify the JWT token against the provided User Pool.
      */
     cognitoAuthentication({
         region: process.env.COGNITO_REGION,

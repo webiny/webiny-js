@@ -133,7 +133,13 @@ export const migration = (context: Context) => {
                 slug: group.slug,
                 description: group.description,
                 system: group.system,
-                permissions: group.permissions
+                // Rename user permission
+                permissions: group.permissions.map(permission => {
+                    if (permission.name === "security.user") {
+                        permission.name = "adminUsers.user";
+                    }
+                    return permission;
+                })
             });
 
             newGroupsBySlug[newGroup.slug] = newGroup;

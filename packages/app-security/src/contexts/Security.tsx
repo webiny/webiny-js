@@ -1,15 +1,15 @@
-import React, { useState, useMemo } from "react";
-import { SecurityIdentity } from "../SecurityIdentity";
+import React, { useState, useMemo, Dispatch, SetStateAction } from "react";
+import { SecurityIdentity } from "~/SecurityIdentity";
 
 export const SecurityContext = React.createContext(null);
 
 export type SecurityContextValue = {
     identity: SecurityIdentity | null;
-    setIdentity(data: SecurityIdentity): void;
+    setIdentity: Dispatch<SetStateAction<SecurityIdentity>>;
 };
 
 export const SecurityProvider = props => {
-    const [identity, setIdentity] = useState(null);
+    const [identity, setIdentity] = useState<SecurityIdentity>(null);
 
     const value = useMemo(
         () => ({

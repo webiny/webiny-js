@@ -30,6 +30,7 @@ export default new GraphQLSchemaPlugin<AdminUsersContext & SecurityContext>({
             avatar: JSON
             gravatar: String
             group: SecurityGroup
+            createdOn: DateTime
         }
 
         """

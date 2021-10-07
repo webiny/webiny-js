@@ -21,7 +21,6 @@
     "@webiny/app-page-builder": "^5.14.0",
     "@webiny/app-plugin-admin-welcome-screen": "^5.14.0",
     "@webiny/app-security": "^5.14.0",
-    "@webiny/app-security-admin-users": "^5.14.0",
     "@webiny/app-security-admin-users-cognito": "^5.14.0",
     "@webiny/app-tenancy": "^5.14.0",
     "@webiny/cli": "^5.14.0",

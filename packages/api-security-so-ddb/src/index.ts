@@ -48,9 +48,9 @@ export const createStorageOperations = (
         tenantLinks: createTenantLinkEntity(table, attributes[ENTITIES.TENANT_LINK])
     };
 
-    const createApiKeyKeys = (apiKey: ApiKey) => ({
-        PK: `T#${apiKey.tenant}`,
-        SK: `API_KEY#${apiKey.id}`
+    const createApiKeyKeys = ({ id, tenant }: Pick<ApiKey, "id" | "tenant">) => ({
+        PK: `T#${tenant}#API_KEY#${id}`,
+        SK: `A`
     });
 
     const createGroupKeys = (group: Pick<Group, "tenant" | "id">) => ({
@@ -67,8 +67,8 @@ export const createStorageOperations = (
         async createApiKey({ apiKey }): Promise<ApiKey> {
             const keys = {
                 ...createApiKeyKeys(apiKey),
-                GSI1_PK: `T#${apiKey.tenant}`,
-                GSI1_SK: `API_KEY#${apiKey.token}`
+                GSI1_PK: `T#${apiKey.tenant}#API_KEYS`,
+                GSI1_SK: apiKey.token
             };
 
             try {
@@ -174,10 +174,7 @@ export const createStorageOperations = (
             await batchWriteAll({ table, items });
         },
         async getApiKey({ id, tenant }) {
-            const keys = {
-                PK: `T#${tenant}`,
-                SK: `API_KEY#${id}`
-            };
+            const keys = createApiKeyKeys({ id, tenant });
 
             try {
                 const result = await entities.apiKeys.get(keys);
@@ -196,9 +193,9 @@ export const createStorageOperations = (
         async getApiKeyByToken({ tenant, token }) {
             const queryParams: QueryOneParams = {
                 entity: entities.apiKeys,
-                partitionKey: `T#${tenant}`,
+                partitionKey: `T#${tenant}#API_KEYS`,
                 options: {
-                    eq: `API_KEY#${token}`,
+                    eq: token,
                     index: "GSI1"
                 }
             };
@@ -285,9 +282,10 @@ export const createStorageOperations = (
             try {
                 items = await queryAll<ApiKey>({
                     entity: entities.apiKeys,
-                    partitionKey: `T#${tenant}`,
+                    partitionKey: `T#${tenant}#API_KEYS`,
                     options: {
-                        beginsWith: "API_KEY#"
+                        index: "GSI1",
+                        beginsWith: ""
                     }
                 });
             } catch (err) {

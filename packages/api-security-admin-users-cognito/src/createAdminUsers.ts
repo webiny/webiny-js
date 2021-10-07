@@ -25,7 +25,7 @@ export const createAdminUsers = ({
     const loaders = createUserLoaders({ getTenant, storageOperations });
 
     const checkPermission = async () => {
-        const permission = await getPermission("security.user");
+        const permission = await getPermission("adminUsers.user");
 
         if (!permission) {
             throw new NotAuthorizedError();
