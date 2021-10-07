@@ -10,16 +10,16 @@ const elasticsearchDataGzipCompression =
     require("@webiny/api-elasticsearch/plugins/GzipCompression").default;
 const { ContextPlugin } = require("@webiny/handler/plugins/ContextPlugin");
 const dynamoDbPlugins = require("@webiny/db-dynamodb/plugins").default;
-const { createClient: createElasticsearchClient } = require("@webiny/api-elasticsearch/client");
-const { getOperators: getElasticsearchOperators } = require("@webiny/api-elasticsearch/operators");
+const { createElasticsearchClient } = require("@webiny/api-elasticsearch/client");
+const { getElasticsearchOperators } = require("@webiny/api-elasticsearch/operators");
 /**
  * For this to work it must load plugins that have already been built
  */
-const { createStorageOperationsFactory } = require("../../dist/index");
+const { createFormBuilderStorageOperations } = require("../../dist/index");
 
-if (typeof createStorageOperationsFactory !== "function") {
+if (typeof createFormBuilderStorageOperations !== "function") {
     throw new Error(
-        `Loaded "createStorageOperationsFactory" must be a function that will return the storage operations.`
+        `Loaded "createFormBuilderStorageOperations" must be a function that will return the storage operations.`
     );
 }
 
@@ -65,7 +65,7 @@ class FormBuilderTestEnvironment extends NodeEnvironment {
         this.global.__getStorageOperations = () => {
             return {
                 createStorageOperations: () => {
-                    return createStorageOperationsFactory({
+                    return createFormBuilderStorageOperations({
                         table: "DynamoDB",
                         esTable: "ElasticSearchStream",
                         documentClient,

@@ -12,7 +12,7 @@ import { ElasticsearchQueryBuilderOperatorInPlugin } from "~/plugins/operator/in
 import { ElasticsearchQueryBuilderOperatorAndInPlugin } from "~/plugins/operator/andIn";
 import { ElasticsearchQueryBuilderOperatorNotInPlugin } from "~/plugins/operator/notIn";
 
-export const getOperators = () => [
+export const getElasticsearchOperators = () => [
     new ElasticsearchQueryBuilderOperatorBetweenPlugin(),
     new ElasticsearchQueryBuilderOperatorNotBetweenPlugin(),
     new ElasticsearchQueryBuilderOperatorContainsPlugin(),

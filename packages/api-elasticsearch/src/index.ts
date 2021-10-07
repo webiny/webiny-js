@@ -2,7 +2,7 @@ import { ElasticsearchContext } from "~/types";
 import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
 import WebinyError from "@webiny/error";
 import { createElasticsearchClient, ElasticsearchClientOptions } from "~/client";
-import { getOperators } from "~/operators";
+import { getElasticsearchOperators } from "~/operators";
 import { Client } from "@elastic/elasticsearch";
 
 /**
@@ -24,6 +24,6 @@ export default (
         context.elasticsearch =
             params instanceof Client ? params : createElasticsearchClient(params);
 
-        context.plugins.register(getOperators());
+        context.plugins.register(getElasticsearchOperators());
     });
 };
