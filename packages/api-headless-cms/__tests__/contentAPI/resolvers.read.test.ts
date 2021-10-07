@@ -1,4 +1,4 @@
-import { CmsContentModelGroup } from "../../src/types";
+import { CmsContentModelGroup } from "~/types";
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
 import models from "./mocks/contentModels";
 import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
@@ -149,6 +149,16 @@ describe("READ - Resolvers", () => {
 
         // Create an entry
         const [create] = await createCategory({ data: { title: "Title 1", slug: "slug-1" } });
+
+        expect(create).toEqual({
+            data: {
+                createCategory: {
+                    data: expect.any(Object),
+                    error: null
+                }
+            }
+        });
+
         const category = create.data.createCategory.data;
         const { id: categoryId } = category;
 
