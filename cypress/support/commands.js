@@ -1,4 +1,5 @@
 import "cypress-wait-until";
+import { addMatchImageSnapshotCommand } from "cypress-image-snapshot/command";
 import "./login";
 import "./dropFile";
 import "./reloadUntil";
@@ -33,3 +34,5 @@ import "./fileManager/fmListTags";
 Cypress.Commands.overwrite("visit", (orig, url, options) => {
     return orig(url, { ...options, failOnStatusCode: false });
 });
+
+addMatchImageSnapshotCommand();
