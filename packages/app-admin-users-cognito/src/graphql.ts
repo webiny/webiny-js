@@ -16,6 +16,7 @@ export const LOGIN = gql`
                         }
                         permissions
                         profile {
+                            email
                             firstName
                             lastName
                             avatar

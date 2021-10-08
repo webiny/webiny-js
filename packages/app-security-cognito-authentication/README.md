@@ -22,4 +22,4 @@ It also provides a React context and a bunch of hooks to use in your custom UI. 
 
 ## Where is it used?
 
-Currently, this packaged is used in [@webiny/app-security-admin-users-cognito](../app-security-admin-users-cognito).
+Currently, this packaged is used in [@webiny/app-admin-users-cognito](../app-security-admin-users-cognito).
