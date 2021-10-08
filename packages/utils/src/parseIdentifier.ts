@@ -9,15 +9,9 @@ export interface ParseIdentifierResult {
 }
 
 export const parseIdentifier = (value: string): ParseIdentifierResult => {
-    if (value.includes("#") === true) {
-        const [id, version] = value.split("#");
-        return {
-            id,
-            version: Number(version)
-        };
-    }
+    const [id, version] = value.split("#");
     return {
-        id: value,
-        version: null
+        id,
+        version: version ? Number(version) : null
     };
 };
