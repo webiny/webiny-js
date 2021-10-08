@@ -1,0 +1,27 @@
+{
+  "extends": "../../tsconfig.build.json",
+  "include": ["./src"],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "../error",
+    "../handler",
+    "../handler-http",
+    "../api-security",
+    "../api-tenancy",
+    "../plugins",
+    "../validation",
+    "../handler-aws",
+    "../handler-graphql"
+  ],
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "declarationDir": "./dist",
+    "paths": {
+      "~/*": ["./src/*"]
+    },
+    "baseUrl": "."
+  },
+  "references": []
+}
