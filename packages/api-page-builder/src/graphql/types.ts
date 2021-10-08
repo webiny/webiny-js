@@ -4,6 +4,11 @@ import { SecurityContext, SecurityPermission } from "@webiny/api-security/types"
 import { TenancyContext } from "@webiny/api-tenancy/types";
 import { I18NContext } from "@webiny/api-i18n/types";
 import { ClientContext } from "@webiny/handler-client/types";
+import { Topic } from "@webiny/pubsub/types";
+import { Args as PsFlushParams } from "@webiny/api-prerendering-service/flush/types";
+import { Args as PsRenderParams } from "@webiny/api-prerendering-service/render/types";
+import { Args as PsQueueAddParams } from "@webiny/api-prerendering-service/queue/add/types";
+
 import {
     Category,
     CategoryStorageOperations,
@@ -17,7 +22,6 @@ import {
     System
 } from "~/types";
 import { PrerenderingServiceClientContext } from "@webiny/api-prerendering-service/client/types";
-import { FlushParams, RenderParams } from "~/plugins/PrerenderingPagePlugin";
 
 // CRUD types.
 export interface ListPagesParams {
@@ -185,6 +189,12 @@ export interface PbContext
         menus: MenusCrud;
         settings: SettingsCrud;
         system: SystemCrud;
+        setPrerenderingHandlers: (configuration: PrerenderingHandlers) => void;
+        getPrerenderingHandlers: () => PrerenderingHandlers;
+        onPageBeforeRender: Topic<PageBeforeRenderEvent>;
+        onPageAfterRender: Topic<PageAfterRenderEvent>;
+        onPageBeforeFlush: Topic<PageBeforeFlushEvent>;
+        onPageAfterFlush: Topic<PageAfterFlushEvent>;
     };
 }
 
@@ -217,4 +227,78 @@ export interface PageSecurityPermission extends PbSecurityPermission {
     // "p" - publish
     // "u" - unpublish
     pw: string;
+}
+
+// Page Builder lifecycle events.
+export interface PageBeforeRenderEvent extends Pick<RenderParams, "paths" | "tags"> {
+    args: {
+        render?: PsRenderParams[];
+        queue?: PsQueueAddParams[];
+    };
+}
+
+export interface PageAfterRenderEvent extends Pick<RenderParams, "paths" | "tags"> {
+    args: {
+        render?: PsRenderParams[];
+        queue?: PsQueueAddParams[];
+    };
+}
+
+export interface PageBeforeFlushEvent extends Pick<FlushParams, "paths" | "tags"> {
+    args: {
+        flush?: PsFlushParams[];
+        queue?: PsQueueAddParams[];
+    };
+}
+
+export interface PageAfterFlushEvent extends Pick<FlushParams, "paths" | "tags"> {
+    args: {
+        flush?: PsFlushParams[];
+        queue?: PsQueueAddParams[];
+    };
+}
+
+// Prerendering configuration.
+export interface Tag {
+    key: string;
+    value?: string;
+}
+
+export interface TagItem {
+    tag: Tag;
+    configuration?: {
+        meta?: Record<string, any>;
+        storage?: {
+            folder?: string;
+            name?: string;
+        };
+    };
+}
+
+export interface PathItem {
+    path: string;
+    configuration?: {
+        meta?: Record<string, any>;
+        storage?: {
+            folder?: string;
+            name?: string;
+        };
+    };
+}
+
+export interface RenderParams {
+    context: PbContext;
+    tags?: TagItem[];
+    paths?: PathItem[];
+}
+
+export interface FlushParams {
+    context: PbContext;
+    tags?: TagItem[];
+    paths?: PathItem[];
+}
+
+export interface PrerenderingHandlers {
+    render(args: RenderParams): Promise<void>;
+    flush(args: FlushParams): Promise<void>;
 }
