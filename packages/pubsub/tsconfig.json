@@ -3,7 +3,9 @@
   "references": [],
   "include": ["./src", "./__tests__"],
   "compilerOptions": {
-    "paths": {},
+    "paths": {
+      "~/*": ["./src/*"]
+    },
     "baseUrl": "."
   }
 }

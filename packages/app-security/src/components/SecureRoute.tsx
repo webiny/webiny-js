@@ -11,7 +11,11 @@ export default ({
     permission?: string;
 }): React.ReactElement => {
     const { identity } = useSecurity();
-    const hasPermission = permission ? identity.getPermission(permission) : true;
+
+    let hasPermission = false;
+    if (identity) {
+        hasPermission = permission ? Boolean(identity.getPermission(permission)) : true;
+    }
 
     if (hasPermission) {
         return children;
