@@ -100,17 +100,13 @@ export class Pulumi {
 
         if (installed) {
             const { version } = require("@pulumi/aws/package.json");
-            await execa(
-                this.pulumiBinaryPath,
-                ["plugin", "install", "resource", "aws", version],
-                {
-                    stdio: "inherit",
-                    env: {
-                        PULUMI_HOME: this.pulumiFolder,
-                        PULUMI_SKIP_UPDATE_CHECK: "true"
-                    }
+            await execa(this.pulumiBinaryPath, ["plugin", "install", "resource", "aws", version], {
+                stdio: "inherit",
+                env: {
+                    PULUMI_HOME: this.pulumiFolder,
+                    PULUMI_SKIP_UPDATE_CHECK: "true"
                 }
-            );
+            });
         }
 
         return installed;
