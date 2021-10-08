@@ -47,9 +47,11 @@ module.exports = async (inputs, context) => {
     }
 
     if (WATCH_DISABLED_ENVIRONMENTS.includes(inputs.env)) {
-        throw new Error(
-            `${chalk.red("webiny watch")} command cannot be used with production environments.`
-        );
+        if (!inputs.allowProduction) {
+            throw new Error(
+                `${chalk.red("webiny watch")} command cannot be used with production environments.`
+            );
+        }
     }
 
     if (!inputs.build && !inputs.deploy) {
@@ -322,7 +324,7 @@ module.exports = async (inputs, context) => {
 };
 
 const printLog = ({ pattern = "*", consoleLog, output }) => {
-    const plainPrefix = `${consoleLog.meta.functionName}:`;
+    const plainPrefix = `${consoleLog.meta.functionName}: `;
     let message = consoleLog.args.join(" ").trim();
     if (message) {
         if (minimatch(plainPrefix, pattern)) {
