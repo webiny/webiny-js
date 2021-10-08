@@ -15,6 +15,12 @@ export const createSystemMethods = ({ getTenant, storageOperations }: SecurityCo
         onAfterInstall: createTopic<InstallEvent>("security.onAfterInstall"),
         onCleanup: createTopic<ErrorEvent>("security.onCleanup"),
         async getVersion() {
+            const tenantId = getTenant();
+            
+            if (!tenantId) {
+                return null;
+            }
+
             const system = await storageOperations.getSystemData({ tenant: getTenant() });
 
             return system ? system.version : null;

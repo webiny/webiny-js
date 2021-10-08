@@ -22,10 +22,11 @@ type Context = SecurityContext & TenancyContext;
 
 export default ({ storageOperations }: SecurityConfig): PluginCollection => [
     new ContextPlugin<Context>(async context => {
-        const getTenant = () => context.tenancy.getCurrentTenant();
-
         context.security = await createSecurity({
-            getTenant: () => getTenant().id,
+            getTenant: () => {
+                const tenant = context.tenancy.getCurrentTenant();
+                return tenant ? tenant.id : undefined;
+            },
             storageOperations
         });
 

@@ -1,0 +1,25 @@
+{
+  "extends": "../../tsconfig",
+  "references": [
+    {
+      "path": "../api-cognito-authenticator"
+    },
+    {
+      "path": "../handler"
+    },
+    {
+      "path": "../api-security"
+    }
+  ],
+  "compilerOptions": {
+    "paths": {
+      "@webiny/api-cognito-authenticator/*": ["../api-cognito-authenticator/src/*"],
+      "@webiny/api-cognito-authenticator": ["../api-cognito-authenticator/src"],
+      "@webiny/handler/*": ["../handler/src/*"],
+      "@webiny/handler": ["../handler/src"],
+      "@webiny/api-security/*": ["../api-security/src/*"],
+      "@webiny/api-security": ["../api-security/src"]
+    },
+    "baseUrl": "."
+  }
+}

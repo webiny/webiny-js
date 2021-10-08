@@ -79,7 +79,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-amplify/auth@npm:^4.0.2":
+"@aws-amplify/auth@npm:4.2.1, @aws-amplify/auth@npm:^4.0.2":
   version: 4.2.1
   resolution: "@aws-amplify/auth@npm:4.2.1"
   dependencies:
@@ -8407,6 +8407,66 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@webiny/api-admin-users-cognito-so-ddb@^5.14.0, @webiny/api-admin-users-cognito-so-ddb@workspace:packages/api-admin-users-cognito-so-ddb":
+  version: 0.0.0-use.local
+  resolution: "@webiny/api-admin-users-cognito-so-ddb@workspace:packages/api-admin-users-cognito-so-ddb"
+  dependencies:
+    "@babel/cli": ^7.5.5
+    "@babel/core": ^7.5.5
+    "@webiny/api-admin-users-cognito": ^5.14.0
+    "@webiny/cli": ^5.14.0
+    "@webiny/db-dynamodb": ^5.14.0
+    "@webiny/error": ^5.14.0
+    "@webiny/project-utils": ^5.14.0
+    dynamodb-toolbox: ^0.3.4
+    jest: ^26.6.3
+    jest-dynalite: ^3.2.0
+    jest-environment-node: ^27.0.6
+    rimraf: ^3.0.2
+    ttypescript: ^1.5.12
+    typescript: ^4.1.3
+  languageName: unknown
+  linkType: soft
+
+"@webiny/api-admin-users-cognito@^5.14.0, @webiny/api-admin-users-cognito@workspace:packages/api-admin-users-cognito":
+  version: 0.0.0-use.local
+  resolution: "@webiny/api-admin-users-cognito@workspace:packages/api-admin-users-cognito"
+  dependencies:
+    "@babel/cli": ^7.5.5
+    "@babel/core": ^7.5.5
+    "@types/jsonwebtoken": ^8.5.1
+    "@webiny/api-security": ^5.14.0
+    "@webiny/api-tenancy": ^5.14.0
+    "@webiny/cli": ^5.14.0
+    "@webiny/db-dynamodb": ^5.14.0
+    "@webiny/error": ^5.14.0
+    "@webiny/handler": ^5.14.0
+    "@webiny/handler-graphql": ^5.14.0
+    "@webiny/project-utils": ^5.14.0
+    "@webiny/pubsub": ^5.14.0
+    dynamodb-toolbox: ^0.3.4
+    mdbid: ^1.0.0
+    rimraf: ^3.0.2
+    typescript: ^4.1.3
+  languageName: unknown
+  linkType: soft
+
+"@webiny/api-authentication-cognito@workspace:packages/api-authentication-cognito":
+  version: 0.0.0-use.local
+  resolution: "@webiny/api-authentication-cognito@workspace:packages/api-authentication-cognito"
+  dependencies:
+    "@babel/cli": ^7.5.5
+    "@babel/core": ^7.5.5
+    "@webiny/api-authentication": ^5.14.0
+    "@webiny/api-cognito-authenticator": ^5.14.0
+    "@webiny/cli": ^5.14.0
+    "@webiny/handler": ^5.14.0
+    "@webiny/project-utils": ^5.14.0
+    rimraf: ^3.0.2
+    typescript: ^4.1.3
+  languageName: unknown
+  linkType: soft
+
 "@webiny/api-authentication@^5.14.0, @webiny/api-authentication@workspace:packages/api-authentication":
   version: 0.0.0-use.local
   resolution: "@webiny/api-authentication@workspace:packages/api-authentication"
@@ -8425,6 +8485,23 @@ __metadata:
     jest-dynalite: ^3.2.0
     rimraf: ^3.0.2
     ttypescript: ^1.5.12
+    typescript: ^4.1.3
+  languageName: unknown
+  linkType: soft
+
+"@webiny/api-cognito-authenticator@^5.14.0, @webiny/api-cognito-authenticator@workspace:packages/api-cognito-authenticator":
+  version: 0.0.0-use.local
+  resolution: "@webiny/api-cognito-authenticator@workspace:packages/api-cognito-authenticator"
+  dependencies:
+    "@babel/cli": ^7.5.5
+    "@babel/core": ^7.5.5
+    "@types/jsonwebtoken": ^8.5.1
+    "@webiny/cli": ^5.14.0
+    "@webiny/project-utils": ^5.14.0
+    jsonwebtoken: ^8.5.1
+    jwk-to-pem: ^2.0.1
+    node-fetch: ^2.6.1
+    rimraf: ^3.0.2
     typescript: ^4.1.3
   languageName: unknown
   linkType: soft
@@ -9078,49 +9155,15 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-security-admin-users-cognito-so-ddb@workspace:packages/api-security-admin-users-cognito-so-ddb":
-  version: 0.0.0-use.local
-  resolution: "@webiny/api-security-admin-users-cognito-so-ddb@workspace:packages/api-security-admin-users-cognito-so-ddb"
+"@webiny/api-security-admin-users-cognito@npm:^5.14.0":
+  version: 5.15.0
+  resolution: "@webiny/api-security-admin-users-cognito@npm:5.15.0"
   dependencies:
-    "@babel/cli": ^7.5.5
-    "@babel/core": ^7.5.5
-    "@webiny/api-security-admin-users-cognito": ^5.14.0
-    "@webiny/cli": ^5.14.0
-    "@webiny/db-dynamodb": ^5.14.0
-    "@webiny/error": ^5.14.0
-    "@webiny/project-utils": ^5.14.0
-    dynamodb-toolbox: ^0.3.4
-    jest: ^26.6.3
-    jest-dynalite: ^3.2.0
-    jest-environment-node: ^27.0.6
-    rimraf: ^3.0.2
-    ttypescript: ^1.5.12
-    typescript: ^4.1.3
-  languageName: unknown
-  linkType: soft
-
-"@webiny/api-security-admin-users-cognito@^5.14.0, @webiny/api-security-admin-users-cognito@workspace:packages/api-security-admin-users-cognito":
-  version: 0.0.0-use.local
-  resolution: "@webiny/api-security-admin-users-cognito@workspace:packages/api-security-admin-users-cognito"
-  dependencies:
-    "@babel/cli": ^7.5.5
-    "@babel/core": ^7.5.5
-    "@types/jsonwebtoken": ^8.5.1
-    "@webiny/api-security": ^5.14.0
-    "@webiny/api-tenancy": ^5.14.0
-    "@webiny/cli": ^5.14.0
-    "@webiny/db-dynamodb": ^5.14.0
-    "@webiny/error": ^5.14.0
-    "@webiny/handler": ^5.14.0
-    "@webiny/handler-graphql": ^5.14.0
-    "@webiny/project-utils": ^5.14.0
-    "@webiny/pubsub": ^5.14.0
-    dynamodb-toolbox: ^0.3.4
-    mdbid: ^1.0.0
-    rimraf: ^3.0.2
-    typescript: ^4.1.3
-  languageName: unknown
-  linkType: soft
+    "@webiny/api-security-admin-users": 5.15.0
+    "@webiny/handler-graphql": 5.15.0
+  checksum: 92125497cbb3e8942330e918488e95d8a30f5a058f7bf48337809681ca36b50ddb834353aab836e1f40f05456ab57a10ca91c02994232fe6e62b0823e435fd53
+  languageName: node
+  linkType: hard
 
 "@webiny/api-security-admin-users-so-ddb@npm:^5.14.0":
   version: 5.15.0
@@ -9184,14 +9227,28 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@webiny/api-security-cognito-authentication@^5.14.0, @webiny/api-security-cognito-authentication@workspace:packages/api-security-cognito-authentication":
+"@webiny/api-security-cognito-authentication@npm:^5.14.0":
+  version: 5.15.0
+  resolution: "@webiny/api-security-cognito-authentication@npm:5.15.0"
+  dependencies:
+    "@webiny/api-security": 5.15.0
+    "@webiny/handler": 5.15.0
+    "@webiny/handler-http": 5.15.0
+    jsonwebtoken: 8.5.1
+    jwk-to-pem: 2.0.5
+    node-fetch: 2.6.1
+  checksum: 8ceb8a98e1f2ee0b4e137c6dca3d392a32a1aa6800dabd438c8b21fc625f0891764c61b3eb77622ec7aa086a28d41b1250c1fe3bd00eda89566af048adc16248
+  languageName: node
+  linkType: hard
+
+"@webiny/api-security-cognito@^5.14.0, @webiny/api-security-cognito@workspace:packages/api-security-cognito":
   version: 0.0.0-use.local
-  resolution: "@webiny/api-security-cognito-authentication@workspace:packages/api-security-cognito-authentication"
+  resolution: "@webiny/api-security-cognito@workspace:packages/api-security-cognito"
   dependencies:
     "@babel/cli": ^7.5.5
     "@babel/core": ^7.5.5
     "@types/jsonwebtoken": ^8.5.1
-    "@webiny/api-authentication": ^5.14.0
+    "@webiny/api-cognito-authenticator": ^5.14.0
     "@webiny/api-security": ^5.14.0
     "@webiny/cli": ^5.14.0
     "@webiny/handler": ^5.14.0
@@ -9204,7 +9261,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-security-so-ddb@workspace:packages/api-security-so-ddb":
+"@webiny/api-security-so-ddb@^5.14.0, @webiny/api-security-so-ddb@workspace:packages/api-security-so-ddb":
   version: 0.0.0-use.local
   resolution: "@webiny/api-security-so-ddb@workspace:packages/api-security-so-ddb"
   dependencies:
@@ -9349,6 +9406,38 @@ __metadata:
     jest-mock-console: ^1.0.0
     rimraf: ^3.0.2
     semver: ^7.3.4
+    typescript: ^4.1.3
+  languageName: unknown
+  linkType: soft
+
+"@webiny/app-admin-users-cognito@workspace:packages/app-admin-users-cognito":
+  version: 0.0.0-use.local
+  resolution: "@webiny/app-admin-users-cognito@workspace:packages/app-admin-users-cognito"
+  dependencies:
+    "@babel/cli": ^7.5.5
+    "@babel/core": ^7.5.5
+    "@babel/plugin-proposal-class-properties": ^7.5.5
+    "@babel/plugin-proposal-throw-expressions": ^7.7.4
+    "@babel/preset-env": ^7.5.5
+    "@babel/preset-react": ^7.0.0
+    "@babel/preset-typescript": ^7.8.3
+    "@emotion/styled": ^10.0.27
+    "@webiny/app": ^5.14.0
+    "@webiny/app-admin": ^5.14.0
+    "@webiny/app-security": ^5.14.0
+    "@webiny/app-security-cognito-authentication": ^5.14.0
+    "@webiny/cli": ^5.14.0
+    "@webiny/form": ^5.14.0
+    "@webiny/plugins": ^5.14.0
+    "@webiny/project-utils": ^5.14.0
+    "@webiny/ui": ^5.14.0
+    "@webiny/validation": ^5.14.0
+    babel-plugin-lodash: ^3.3.4
+    emotion: ^10.0.27
+    react: ^16.14.0
+    react-dom: ^16.14.0
+    rimraf: ^3.0.2
+    ttypescript: ^1.5.12
     typescript: ^4.1.3
   languageName: unknown
   linkType: soft
@@ -9909,40 +9998,27 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/app-security-admin-users-cognito@^5.14.0, @webiny/app-security-admin-users-cognito@workspace:packages/app-security-admin-users-cognito":
-  version: 0.0.0-use.local
-  resolution: "@webiny/app-security-admin-users-cognito@workspace:packages/app-security-admin-users-cognito"
+"@webiny/app-security-admin-users-cognito@npm:^5.14.0":
+  version: 5.15.0
+  resolution: "@webiny/app-security-admin-users-cognito@npm:5.15.0"
   dependencies:
-    "@babel/cli": ^7.5.5
-    "@babel/core": ^7.5.5
-    "@babel/plugin-proposal-class-properties": ^7.5.5
-    "@babel/plugin-proposal-throw-expressions": ^7.7.4
-    "@babel/preset-env": ^7.5.5
-    "@babel/preset-react": ^7.0.0
-    "@babel/preset-typescript": ^7.8.3
-    "@emotion/styled": ^10.0.27
-    "@webiny/app": ^5.14.0
-    "@webiny/app-admin": ^5.14.0
-    "@webiny/app-security": ^5.14.0
-    "@webiny/app-security-admin-users": ^5.14.0
-    "@webiny/app-security-cognito-authentication": ^5.14.0
-    "@webiny/cli": ^5.14.0
-    "@webiny/form": ^5.14.0
-    "@webiny/plugins": ^5.14.0
-    "@webiny/project-utils": ^5.14.0
-    "@webiny/ui": ^5.14.0
-    "@webiny/validation": ^5.14.0
-    babel-plugin-lodash: ^3.3.4
-    emotion: ^10.0.27
-    react: ^16.14.0
-    react-dom: ^16.14.0
-    rimraf: ^3.0.2
-    ttypescript: ^1.5.12
-    typescript: ^4.1.3
-  languageName: unknown
-  linkType: soft
+    "@emotion/styled": 10.0.27
+    "@webiny/app": 5.15.0
+    "@webiny/app-admin": 5.15.0
+    "@webiny/app-security-admin-users": 5.15.0
+    "@webiny/app-security-cognito-authentication": 5.15.0
+    "@webiny/form": 5.15.0
+    "@webiny/plugins": 5.15.0
+    "@webiny/ui": 5.15.0
+    "@webiny/validation": 5.15.0
+    emotion: 10.0.27
+    react: 16.14.0
+    react-dom: 16.14.0
+  checksum: d9d01e3a0f1818c4a83f14ad9fb7749817a876d94d44d9172a7b1c83b59fb220188ce9bff0124e65a921a8a03be919d00b371110028ff6d975b7e93093829be0
+  languageName: node
+  linkType: hard
 
-"@webiny/app-security-admin-users@npm:^5.14.0":
+"@webiny/app-security-admin-users@npm:5.15.0":
   version: 5.15.0
   resolution: "@webiny/app-security-admin-users@npm:5.15.0"
   dependencies:
@@ -10010,6 +10086,30 @@ __metadata:
     typescript: ^4.1.3
   languageName: unknown
   linkType: soft
+
+"@webiny/app-security-cognito-authentication@npm:5.15.0":
+  version: 5.15.0
+  resolution: "@webiny/app-security-cognito-authentication@npm:5.15.0"
+  dependencies:
+    "@apollo/react-hooks": 3.1.5
+    "@aws-amplify/auth": 4.2.1
+    "@emotion/core": 10.1.1
+    "@types/react": 16.14.2
+    "@webiny/app": 5.15.0
+    "@webiny/app-security": 5.15.0
+    "@webiny/plugins": 5.15.0
+    apollo-cache: 1.3.5
+    apollo-client: 2.6.10
+    apollo-link: 1.2.14
+    apollo-link-context: 1.0.20
+    apollo-utilities: 1.3.4
+    graphql: 14.7.0
+    lodash.get: 4.4.2
+    react: 16.14.0
+    react-dom: 16.14.0
+  checksum: 57af2bd5869f4035d19ab3ac33a9585925a4346ef47e4f01915244545b4a1042805b0572c4353d82840232eb192e5dbf21df879d1fcfa115cdac6694ae7d820c
+  languageName: node
+  linkType: hard
 
 "@webiny/app-security@^5.14.0, @webiny/app-security@workspace:packages/app-security":
   version: 0.0.0-use.local
@@ -11780,7 +11880,6 @@ __metadata:
     "@webiny/app-page-builder": ^5.14.0
     "@webiny/app-plugin-admin-welcome-screen": ^5.14.0
     "@webiny/app-security": ^5.14.0
-    "@webiny/app-security-admin-users": ^5.14.0
     "@webiny/app-security-admin-users-cognito": ^5.14.0
     "@webiny/app-tenancy": ^5.14.0
     "@webiny/cli": ^5.14.0
@@ -12275,6 +12374,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "api-headless-cms@workspace:api/code/headlessCMS"
   dependencies:
+    "@webiny/api-admin-users-cognito": ^5.14.0
+    "@webiny/api-admin-users-cognito-so-ddb": ^5.14.0
     "@webiny/api-elasticsearch": ^5.14.0
     "@webiny/api-headless-cms": ^5.14.0
     "@webiny/api-headless-cms-ddb-es": ^5.14.0
@@ -12282,10 +12383,10 @@ __metadata:
     "@webiny/api-i18n-content": ^5.14.0
     "@webiny/api-i18n-ddb": ^5.14.0
     "@webiny/api-security": ^5.14.0
-    "@webiny/api-security-admin-users": ^5.14.0
-    "@webiny/api-security-admin-users-so-ddb": ^5.14.0
-    "@webiny/api-security-cognito-authentication": ^5.14.0
+    "@webiny/api-security-cognito": ^5.14.0
+    "@webiny/api-security-so-ddb": ^5.14.0
     "@webiny/api-tenancy": ^5.14.0
+    "@webiny/api-tenancy-so-ddb": ^5.14.0
     "@webiny/cli": ^5.14.0
     "@webiny/cli-plugin-deploy-pulumi": ^5.14.0
     "@webiny/db-dynamodb": ^5.14.0
@@ -24811,7 +24912,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"jwk-to-pem@npm:^2.0.1":
+"jwk-to-pem@npm:2.0.5, jwk-to-pem@npm:^2.0.1":
   version: 2.0.5
   resolution: "jwk-to-pem@npm:2.0.5"
   dependencies:

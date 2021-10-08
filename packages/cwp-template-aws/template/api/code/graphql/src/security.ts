@@ -6,7 +6,7 @@ import userAuthorization from "@webiny/api-security-admin-users/authorization/us
 import apiKeyAuthorization from "@webiny/api-security-admin-users/authorization/apiKey";
 import anonymousAuthorization from "@webiny/api-security-admin-users/authorization/anonymous";
 import cognitoAuthentication from "@webiny/api-security-cognito-authentication";
-import cognitoIdentityProvider from "@webiny/api-security-admin-users-cognito";
+import cognitoIdentityProvider from "@webiny/api-admin-users-cognito";
 
 export default () => [
     /**

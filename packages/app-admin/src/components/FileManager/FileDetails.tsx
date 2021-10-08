@@ -177,7 +177,8 @@ export default function FileDetails(props: FileDetailsProps) {
                 return false;
             }
             if (fmFilePermission.own) {
-                return get(item, "createdBy.id") === identity.login;
+                const identityId = identity.id || identity.login;
+                return get(item, "createdBy.id") === identityId;
             }
             if (typeof fmFilePermission.rwd === "string") {
                 return fmFilePermission.rwd.includes("d");

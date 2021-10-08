@@ -123,7 +123,7 @@ const MenusForm = ({ canCreate }: MenusFormProps) => {
         }
 
         if (pbMenuPermission.own) {
-            return loadedMenu?.createdBy?.id === identity.login;
+            return loadedMenu?.createdBy?.id === identity.id;
         }
 
         if (typeof pbMenuPermission.rwd === "string") {

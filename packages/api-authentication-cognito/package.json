@@ -1,0 +1,35 @@
+{
+  "name": "@webiny/api-authentication-cognito",
+  "version": "5.14.0",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git"
+  },
+  "description": "Authenticator for AWS Cognito idToken",
+  "contributors": [
+    "Pavel Denisjuk <pavel@webiny.com>"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "@webiny/api-authentication": "^5.14.0",
+    "@webiny/api-cognito-authenticator": "^5.14.0",
+    "@webiny/handler": "^5.14.0"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.5.5",
+    "@babel/core": "^7.5.5",
+    "@webiny/cli": "^5.14.0",
+    "@webiny/project-utils": "^5.14.0",
+    "rimraf": "^3.0.2",
+    "typescript": "^4.1.3"
+  },
+  "publishConfig": {
+    "access": "public",
+    "directory": "dist"
+  },
+  "scripts": {
+    "build": "yarn webiny run build",
+    "watch": "yarn webiny run watch"
+  }
+}

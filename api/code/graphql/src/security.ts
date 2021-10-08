@@ -7,7 +7,7 @@ import apiKeyAuthentication from "@webiny/api-security/plugins/apiKeyAuthenticat
 import apiKeyAuthorization from "@webiny/api-security/plugins/apiKeyAuthorization";
 import groupAuthorization from "@webiny/api-security/plugins/groupAuthorization";
 import anonymousAuthorization from "@webiny/api-security/plugins/anonymousAuthorization";
-import cognitoAuthentication from "@webiny/api-security-cognito-authentication";
+import cognitoAuthentication from "@webiny/api-security-cognito";
 
 export default ({ documentClient }) => [
     /**

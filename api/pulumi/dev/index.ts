@@ -18,8 +18,8 @@ const DEBUG = String(process.env.DEBUG);
 const WEBINY_LOGS_FORWARD_URL = String(process.env.WEBINY_LOGS_FORWARD_URL);
 
 export default () => {
-    const dynamoDb = new DynamoDB();
     const cognito = new Cognito();
+    const dynamoDb = new DynamoDB();
     const elasticSearch = new ElasticSearch();
     const fileManager = new FileManager();
 
@@ -124,6 +124,7 @@ export default () => {
         region: process.env.AWS_REGION,
         apiUrl: cloudfront.cloudfront.domainName.apply(value => `https://${value}`),
         cognitoUserPoolId: cognito.userPool.id,
+        cognitoUserPoolName: cognito.userPool.name,
         cognitoAppClientId: cognito.userPoolClient.id,
         updatePbSettingsFunction: pageBuilder.functions.updateSettings.arn,
         psQueueAdd: prerenderingService.functions.queue.add.arn,

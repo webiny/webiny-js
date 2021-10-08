@@ -60,7 +60,7 @@ async function upgradeGraphQLSecurity(file, filePath, { info }) {
         "@webiny/api-plugin-security-cognito/authentication":
             "@webiny/api-security-cognito-authentication",
         "@webiny/api-plugin-security-cognito/identityProvider":
-            "@webiny/api-security-admin-users-cognito"
+            "@webiny/api-admin-users-cognito"
     };
 
     file.getImportDeclarations().forEach(imp => {
@@ -146,7 +146,7 @@ async function upgradeHeadlessSecurity(file, filePath, context) {
     // Headless security is almost identical and we can reuse graphql upgrade
     await upgradeGraphQLSecurity(file, filePath, context);
 
-    const cognitoIdPImport = file.getImportDeclaration("@webiny/api-security-admin-users-cognito");
+    const cognitoIdPImport = file.getImportDeclaration("@webiny/api-admin-users-cognito");
     if (cognitoIdPImport) {
         cognitoIdPImport.renameDefaultImport("adminUsersContext");
         cognitoIdPImport.setModuleSpecifier("@webiny/api-security-admin-users/context");

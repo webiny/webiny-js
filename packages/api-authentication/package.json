@@ -13,8 +13,7 @@
   "dependencies": {
     "@babel/runtime": "^7.5.5",
     "@webiny/handler": "^5.14.0",
-    "@webiny/handler-http": "^5.14.0",
-    "@webiny/project-utils": "^5.14.0"
+    "@webiny/handler-http": "^5.14.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",
@@ -24,6 +23,7 @@
     "@babel/preset-env": "^7.5.5",
     "@babel/preset-typescript": "^7.0.0",
     "@webiny/cli": "^5.14.0",
+    "@webiny/project-utils": "^5.14.0",
     "jest-dynalite": "^3.2.0",
     "rimraf": "^3.0.2",
     "ttypescript": "^1.5.12",

@@ -31,7 +31,7 @@ import { Cell, Grid } from "@webiny/ui/Grid";
 import { Select } from "@webiny/ui/Select";
 import usePermission from "../../../hooks/usePermission";
 import { useForms } from "./useForms";
-import { deserializeSorters, serializeSorters } from "~/admin/views/utils";
+import { deserializeSorters, serializeSorters } from "../utils";
 
 const t = i18n.namespace("FormsApp.FormsDataList");
 const rightAlign = css({

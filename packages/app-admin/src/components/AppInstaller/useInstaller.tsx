@@ -116,6 +116,14 @@ export const useInstaller = () => {
             }
             return getInstallers(installers, graph, toInstall, toUpgrade);
         }
+        toInstall.sort((a, b) => {
+            if (a.secure && !b.secure) {
+                return 1;
+            } else if (!a.secure && b.secure) {
+                return -1;
+            }
+            return 0;
+        });
         return { toInstall, toUpgrade };
     }, []);
 
