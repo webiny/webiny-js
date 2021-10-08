@@ -8,11 +8,16 @@ type Command = string | string[];
 type PulumiArgs = { [key: string]: string | boolean };
 type ExecaArgs = { [key: string]: any };
 
-type DefaultArgs = {
+type Options = {
     args?: PulumiArgs;
     execa?: ExecaArgs;
     beforePulumiInstall?: () => any;
     afterPulumiInstall?: () => any;
+
+    // A folder into which the Pulumi CLI, along with all of its meta data and config files, will be set up.
+    // It's recommended this folder is not checked in into a code repository, since the Pulumi CLI can store
+    // sensitive information here, for example - user's Pulumi Service credentials.
+    pulumiFolder?: string;
 };
 
 type RunArgs = {
@@ -29,17 +34,24 @@ type InstallArgs = {
 };
 
 export const FLAG_NON_INTERACTIVE = "--non-interactive";
-export const PULUMI_FOLDER = path.join(__dirname, "pulumi", os.platform());
-export const PULUMI_BINARY_PATH = path.join(PULUMI_FOLDER, "pulumi", "pulumi");
 
 export class Pulumi {
-    defaultArgs: DefaultArgs;
-    constructor(options: DefaultArgs = {}) {
-        this.defaultArgs = options;
+    options: Options;
+    pulumiFolder: string;
+    pulumiBinaryPath: string;
+    constructor(options: Options = {}) {
+        this.options = options;
+
+        this.pulumiFolder = path.join(
+            options.pulumiFolder || process.cwd(),
+            "pulumi-cli",
+            os.platform()
+        );
+        this.pulumiBinaryPath = path.join(this.pulumiFolder, "pulumi", "pulumi");
     }
 
     run(rawArgs: RunArgs) {
-        const args = merge({}, this.defaultArgs, rawArgs);
+        const args = merge({}, this.options, rawArgs);
 
         if (!Array.isArray(args.command)) {
             args.command = [args.command];
@@ -70,18 +82,18 @@ export class Pulumi {
 
         // Prepare execa args.
         set(args.execa, "env.PULUMI_SKIP_UPDATE_CHECK", "true");
-        set(args.execa, "env.PULUMI_HOME", PULUMI_FOLDER);
+        set(args.execa, "env.PULUMI_HOME", this.pulumiFolder);
 
-        return execa(PULUMI_BINARY_PATH, [...args.command, ...finalArgs, FLAG_NON_INTERACTIVE], {
+        return execa(this.pulumiBinaryPath, [...args.command, ...finalArgs, FLAG_NON_INTERACTIVE], {
             ...args.execa
         });
     }
 
     async install(rawArgs?: InstallArgs): Promise<boolean> {
-        const args = merge({}, this.defaultArgs, rawArgs);
+        const args = merge({}, this.options, rawArgs);
 
         const installed = await downloadBinaries(
-            PULUMI_FOLDER,
+            this.pulumiFolder,
             args.beforePulumiInstall,
             args.afterPulumiInstall
         );
@@ -89,12 +101,12 @@ export class Pulumi {
         if (installed) {
             const { version } = require("@pulumi/aws/package.json");
             await execa(
-                path.join(PULUMI_FOLDER, "pulumi", "pulumi"),
+                this.pulumiBinaryPath,
                 ["plugin", "install", "resource", "aws", version],
                 {
                     stdio: "inherit",
                     env: {
-                        PULUMI_HOME: PULUMI_FOLDER,
+                        PULUMI_HOME: this.pulumiFolder,
                         PULUMI_SKIP_UPDATE_CHECK: "true"
                     }
                 }
