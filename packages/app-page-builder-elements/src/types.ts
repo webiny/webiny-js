@@ -6,11 +6,9 @@ export interface Element {
     type: string;
     data: Record<string, any>;
     elements: Element[];
-    path: string[]
+    path: string[];
     [key: string]: any;
 }
-
-
 
 export type Content = Element;
 

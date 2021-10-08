@@ -16,7 +16,6 @@ declare global {
 const defaultStyles = { display: "block" };
 
 const Grid: ElementRenderer = ({ element }) => {
-    console.log(element)
     const { getClassNames, getElementClassNames, combineClassNames } = usePageElements();
     const classNames = combineClassNames(
         getClassNames(defaultStyles),

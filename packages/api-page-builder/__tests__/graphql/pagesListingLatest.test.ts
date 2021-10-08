@@ -44,7 +44,7 @@ describe("listing latest pages", () => {
             const page = response.data.pageBuilder.createPage.data;
 
             if (response.data.pageBuilder.createPage.error) {
-                throw new Error(response.data.pageBuilder.createPage.error);
+                throw new Error(response.data.pageBuilder.createPage.error.message);
             }
 
             await waitPage(handler, page);
@@ -57,7 +57,7 @@ describe("listing latest pages", () => {
             });
 
             if (updateResponse.data.pageBuilder.updatePage.error) {
-                throw new Error(updateResponse.data.pageBuilder.updatePage.error);
+                throw new Error(updateResponse.data.pageBuilder.updatePage.error.message);
             }
 
             pages.push(updateResponse.data.pageBuilder.updatePage.data);
@@ -66,11 +66,11 @@ describe("listing latest pages", () => {
 
         // List should show all pages - all updated.
         await until(
-            () => listPages({ sort: "createdOn_ASC" }),
+            () => listPages({ sort: ["createdOn_ASC"] }),
             ([res]) => {
                 const data = res.data.pageBuilder.listPages.data;
                 return (
-                    data.length === 5 &&
+                    data.length === pages.length &&
                     letters.every((letter: string, index: number) => {
                         return data[index].title === `page-${letter}`;
                     })
@@ -728,7 +728,20 @@ describe("listing latest pages", () => {
     test("filtering by tags", async () => {
         const initialData = await createInitialData();
         // Just in case, ensure all pages are present.
-        await until(listPages, ([res]) => res.data.pageBuilder.listPages.data.length === 5);
+        await until(
+            () =>
+                listPages({
+                    sort: ["createdOn_DESC"]
+                }),
+            ([res]) => {
+                return res.data.pageBuilder.listPages.data.length === initialData.pages.length;
+            },
+            {
+                name: "filtering by tags - list pages after creating initial data",
+                wait: 500,
+                tries: 30
+            }
+        );
 
         const tags = {
             [initialData.pages[0].id]: ["news", "world"],
@@ -792,7 +805,10 @@ describe("listing latest pages", () => {
                     },
                     sort: ["createdOn_ASC"]
                 }),
-            ([res]) => res.data.pageBuilder.listPages.data.length === 2
+            ([res]) => res.data.pageBuilder.listPages.data.length === 2,
+            {
+                name: "list tags world, news"
+            }
         ).then(([res]) =>
             expect(res.data.pageBuilder.listPages.data).toMatchObject([
                 { title: "page-a" },
@@ -810,7 +826,10 @@ describe("listing latest pages", () => {
                     },
                     sort: ["createdOn_ASC"]
                 }),
-            ([res]) => res.data.pageBuilder.listPages.data.length === 2
+            ([res]) => res.data.pageBuilder.listPages.data.length === 2,
+            {
+                name: "list tags local, news"
+            }
         ).then(([res]) =>
             expect(res.data.pageBuilder.listPages.data).toMatchObject([
                 { title: "page-b" },
@@ -904,7 +923,7 @@ describe("listing latest pages", () => {
                 }),
             ([res]) => res.data.pageBuilder.listPages.data.length === 3,
             {
-                name: "list pages serverless worth it"
+                name: "list pages why go serverless"
             }
         );
 

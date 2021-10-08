@@ -117,29 +117,18 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
                 },
                 async getContentEntries(_, args, context) {
                     const models = await context.cms.models.list();
+                    const entriesByModel = args.entries.map((ref, index) => {
+                        return {
+                            entryId: ref.entryId,
+                            modelId: ref.modelId,
+                            index
+                        };
+                    });
 
-                    // Group entries by modelId
-                    const entriesByModel = args.entries.reduce((acc, ref) => {
-                        // Check if requested modelId is in the list of models this user is allowed to access.
-                        if (!models.some(m => m.modelId === ref.modelId)) {
-                            return acc;
-                        }
-
-                        if (!acc[ref.modelId]) {
-                            acc[ref.modelId] = [];
-                        }
-                        acc[ref.modelId].push(ref.entryId);
-                        return acc;
-                    }, {});
-
-                    const getters = Object.keys(entriesByModel).map(async modelId => {
+                    const getters = entriesByModel.map(async ({ modelId, entryId }) => {
+                        // Get model manager, to get access to CRUD methods
                         const model = models.find(m => m.modelId === modelId);
-
-                        const entries = await context.cms.entries.getByIds(
-                            model,
-                            entriesByModel[modelId]
-                        );
-
+                        const entries = await context.cms.entries.getByIds(model, [entryId]);
                         return entries.map(entry => ({
                             id: entry.id,
                             model: {
@@ -150,9 +139,8 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
                             title: getEntryTitle(model, entry)
                         }));
                     });
-
                     return new Response(
-                        await Promise.all(getters).then(results => {
+                        await Promise.all(getters).then((results: any[]) => {
                             return results.reduce((result, item) => result.concat(item), []);
                         })
                     );

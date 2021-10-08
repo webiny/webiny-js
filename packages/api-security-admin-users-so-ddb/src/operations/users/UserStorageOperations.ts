@@ -33,6 +33,7 @@ import { Tenant } from "@webiny/api-tenancy/types";
 import { createTokenEntity } from "~/definitions/tokenEntity";
 import { DbItem } from "~/types";
 import { sortItems } from "@webiny/db-dynamodb/utils/sort";
+import { GroupDynamoDbFieldPlugin } from "~/plugins/GroupDynamoDbFieldPlugin";
 
 interface Params {
     context: AdminUsersContext;
@@ -188,11 +189,14 @@ export class UserStorageOperationsDdb implements UserStorageOperations {
             );
         }
 
-        return sortItems({
-            context: this.context,
+        const fields = this.context.plugins.byType<GroupDynamoDbFieldPlugin>(
+            GroupDynamoDbFieldPlugin.type
+        );
+
+        return sortItems<User>({
             items: users,
             sort,
-            fields: ["createdOn"]
+            fields
         });
     }
 

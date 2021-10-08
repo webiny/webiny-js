@@ -87,16 +87,20 @@ export default (options: Options): PluginCollection => {
         // Add password input to admin user form
         new UIViewPlugin<UsersFormView>(UsersFormView, view => {
             const bioSection = view.getElement("bio");
+
+            const useFormHook = () => view.getUserFormHook();
+
             bioSection.addElement(
                 new PasswordElement("password", {
                     name: "password",
                     label: "Password",
-                    description: props => {
-                        const { data } = props.formProps;
-                        return data.createdOn && "Type a new password to reset it.";
+                    description: () => {
+                        const { isNewUser } = useFormHook();
+                        return !isNewUser && "Type a new password to reset it.";
                     },
-                    validators: props => {
-                        if (!props.formProps.data.createdOn) {
+                    validators: () => {
+                        const { isNewUser } = useFormHook();
+                        if (isNewUser) {
                             return [...passwordValidators, validation.create("required")];
                         }
                         return passwordValidators;

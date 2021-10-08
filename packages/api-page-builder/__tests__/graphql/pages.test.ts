@@ -10,8 +10,8 @@ describe("CRUD Test", () => {
         handler;
 
     test("create, read, update and delete pages", async () => {
-        let [response] = await createPage({ category: "unknown" });
-        expect(response).toEqual({
+        const [createPageUnknownResponse] = await createPage({ category: "unknown" });
+        expect(createPageUnknownResponse).toEqual({
             data: {
                 pageBuilder: {
                     createPage: {
@@ -42,8 +42,8 @@ describe("CRUD Test", () => {
                 category: "slug"
             };
 
-            let [response] = await createPage(data);
-            expect(response).toMatchObject({
+            const [createPageResponse] = await createPage(data);
+            expect(createPageResponse).toMatchObject({
                 data: {
                     pageBuilder: {
                         createPage: {
@@ -66,12 +66,12 @@ describe("CRUD Test", () => {
                 }
             });
 
-            let { id } = response.data.pageBuilder.createPage.data;
+            let { id } = createPageResponse.data.pageBuilder.createPage.data;
 
             ids.push(id);
-            [response] = await getPage({ id });
+            const [getPageResponse] = await getPage({ id });
 
-            expect(response).toMatchObject({
+            expect(getPageResponse).toMatchObject({
                 data: {
                     pageBuilder: {
                         getPage: {
@@ -89,7 +89,7 @@ describe("CRUD Test", () => {
                 }
             });
 
-            id = response.data.pageBuilder.getPage.data.id;
+            id = getPageResponse.data.pageBuilder.getPage.data.id;
 
             data = {
                 title: "title-UPDATED-" + i,
@@ -105,17 +105,17 @@ describe("CRUD Test", () => {
                 }
             };
 
-            [response] = await updatePage({
+            const [updatePageResponse] = await updatePage({
                 id,
                 data
             });
 
-            const updatedPage = response.data.pageBuilder.updatePage.data;
+            const updatedPage = updatePageResponse.data.pageBuilder.updatePage.data;
 
             await waitPage(handler, updatedPage);
         }
 
-        [response] = await until(
+        const [listAfterUpdateResponse] = await until(
             () => listPages({ sort: ["createdOn_DESC"] }),
             ([res]) => {
                 const data: any[] = res.data.pageBuilder.listPages.data;
@@ -127,7 +127,7 @@ describe("CRUD Test", () => {
             }
         );
 
-        expect(response).toMatchObject({
+        expect(listAfterUpdateResponse).toMatchObject({
             data: {
                 pageBuilder: {
                     listPages: {
@@ -209,8 +209,8 @@ describe("CRUD Test", () => {
         });
 
         // After deleting all pages, list should be empty.
-        for (let i = 0; i < response.data.pageBuilder.listPages.data.length; i++) {
-            const { id } = response.data.pageBuilder.listPages.data[i];
+        for (let i = 0; i < listAfterUpdateResponse.data.pageBuilder.listPages.data.length; i++) {
+            const { id } = listAfterUpdateResponse.data.pageBuilder.listPages.data[i];
             const [deleteResponse] = await deletePage({ id });
             expect(deleteResponse).toMatchObject({
                 data: {
@@ -232,7 +232,7 @@ describe("CRUD Test", () => {
             });
         }
 
-        [response] = await until(
+        const [listPagesAfterDeleteResponse] = await until(
             () => listPages({ sort: ["createdOn_DESC"] }),
             ([res]) => {
                 return res.data.pageBuilder.listPages.data.length === 0;
@@ -243,7 +243,7 @@ describe("CRUD Test", () => {
             }
         );
 
-        expect(response).toEqual({
+        expect(listPagesAfterDeleteResponse).toEqual({
             data: {
                 pageBuilder: {
                     listPages: {
