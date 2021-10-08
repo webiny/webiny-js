@@ -34,20 +34,6 @@ export const createFormsCrud = (params: Params): FormsCRUD => {
                 permission = await utils.checkBaseFormPermissions(context, { rwd: "r" });
             }
 
-            // const [uniqueId, version] = id.split("#");
-            //
-            // const [[form]] = await db.read<FbForm>({
-            //     ...defaults.db,
-            //     query: {
-            //         PK: PK_FORM(uniqueId),
-            //         SK: SK_FORM_REVISION(version)
-            //     }
-            // });
-            //
-            // utils.checkOwnership(form, permission, context);
-            //
-            // return form;
-
             let form: FbForm = undefined;
             try {
                 form = await this.storageOperations.getForm({
@@ -76,14 +62,18 @@ export const createFormsCrud = (params: Params): FormsCRUD => {
             return form;
         },
         async getFormStats(this: FormBuilder, id) {
-            // We don't need to check permissions here, as this method is only called
-            // as a resolver to an `FbForm` GraphQL type, and we already check permissions
-            // and ownership when resolving the form in `getForm`.
+            /**
+             * We don't need to check permissions here, as this method is only called
+             * as a resolver to an `FbForm` GraphQL type, and we already check permissions
+             * and ownership when resolving the form in `getForm`.
+             */
             const revisions = await this.getFormRevisions(id, {
                 auth: false
             });
 
-            // Then calculate the stats
+            /**
+             * Then calculate the stats
+             */
             const stats: FbFormStats = {
                 submissions: 0,
                 views: 0,
@@ -137,81 +127,12 @@ export const createFormsCrud = (params: Params): FormsCRUD => {
                     }
                 );
             }
-
-            // const must: any = [
-            //     { term: { "__type.keyword": "fb.form" } },
-            //     { term: { "locale.keyword": locale.code } }
-            // ];
-            //
-            // // Only get records which are owned by current user.
-            // if (permission.own === true) {
-            //     const identity = context.security.getIdentity();
-            //     must.push({
-            //         term: { "ownedBy.id.keyword": identity.id }
-            //     });
-            // }
-            //
-            // // When ES index is shared between tenants, we need to filter records by tenant ID
-            // const sharedIndex = process.env.ELASTICSEARCH_SHARED_INDEXES === "true";
-            // if (sharedIndex) {
-            //     must.push({ term: { "tenant.keyword": tenant.id } });
-            // }
-            //
-            // const body = {
-            //     query: {
-            //         bool: {
-            //             must
-            //         }
-            //     },
-            //     sort: [
-            //         {
-            //             savedOn: {
-            //                 order: "desc",
-            //
-            //                 unmapped_type: "date"
-            //             }
-            //         }
-            //     ],
-            //     size: 1000
-            // };
-            //
-            // // Get "latest" form revisions from Elasticsearch.
-            // try {
-            //     const response = await elasticsearch.search({
-            //         ...defaults.es(context),
-            //         body
-            //     });
-            //
-            //     return response.body.hits.hits.map(item => item._source);
-            // } catch (ex) {
-            //     throw new WebinyError(
-            //         ex.message || "Could not perform search.",
-            //         ex.code || "ELASTICSEARCH_ERROR",
-            //         {
-            //             body
-            //         }
-            //     );
-            // }
         },
         async getFormRevisions(this: FormBuilder, id, options) {
             let permission: FbFormPermission = null;
             if (!options || options.auth !== false) {
                 permission = await utils.checkBaseFormPermissions(context, { rwd: "r" });
             }
-            // const [uniqueId] = id.split("#");
-            //
-            // const [forms] = await db.read<FbForm>({
-            //     ...defaults.db,
-            //     query: {
-            //         PK: PK_FORM(uniqueId),
-            //         SK: { $beginsWith: "REV#" },
-            //         sort: { SK: -1 }
-            //     }
-            // });
-            //
-            // utils.checkOwnership(forms[0], permission, context);
-            //
-            // return forms.sort((a, b) => b.version - a.version);
 
             try {
                 const forms = await this.storageOperations.listFormRevisions({
@@ -245,22 +166,6 @@ export const createFormsCrud = (params: Params): FormsCRUD => {
                 });
             }
 
-            // const [[form]] = await db.read<FbForm>({
-            //     ...defaults.db,
-            //     query: {
-            //         PK: PK_FORM(uniqueId),
-            //         SK: SK_FORM_REVISION(version)
-            //     }
-            // });
-            //
-            // if (!form || !form.published) {
-            //     throw new NotFoundError(`Form "${revisionId}" was not found!`);
-            // }
-            //
-            //
-            //
-            // return form;
-
             let form: FbForm = undefined;
             try {
                 form = await this.storageOperations.getForm({
@@ -287,30 +192,10 @@ export const createFormsCrud = (params: Params): FormsCRUD => {
             return form;
         },
         async getLatestPublishedFormRevision(this: FormBuilder, id) {
-            // Make sure we have a unique form ID, and not a revision ID
+            /**
+             * Make sure we have a unique form ID, and not a revision ID
+             */
             const [formId] = id.split("#");
-
-            // const [[latestPublishedItem]] = await db.read({
-            //     ...defaults.db,
-            //     query: {
-            //         PK: PK_FORM(uniqueId),
-            //         SK: SK_FORM_LATEST_PUBLISHED()
-            //     }
-            // });
-            //
-            // if (!latestPublishedItem) {
-            //     throw new NotFoundError(`Form "${formId}" was not found!`);
-            // }
-            //
-            // const [[form]] = await db.read<FbForm>({
-            //     ...defaults.db,
-            //     query: {
-            //         PK: PK_FORM(uniqueId),
-            //         SK: SK_FORM_REVISION(latestPublishedItem.version)
-            //     }
-            // });
-            //
-            // return form;
 
             let form: FbForm = undefined;
             try {
@@ -345,7 +230,9 @@ export const createFormsCrud = (params: Params): FormsCRUD => {
 
             const data = await dataModel.toJSON();
 
-            // Forms are identified by a common parent ID + Revision number
+            /**
+             * Forms are identified by a common parent ID + Revision number
+             */
             const formId = mdbid();
             const version = 1;
             const id = createIdentifier({
@@ -386,7 +273,9 @@ export const createFormsCrud = (params: Params): FormsCRUD => {
                     views: 0,
                     submissions: 0
                 },
-                // Will be added via a "update"
+                /**
+                 * Will be added via a "update"
+                 */
                 fields: [],
                 layout: [],
                 settings: await new models.FormSettingsModel().toJSON(),
@@ -415,9 +304,6 @@ export const createFormsCrud = (params: Params): FormsCRUD => {
             await updateData.validate();
             const data = await updateData.toJSON({ onlyDirty: true });
 
-            // const [uniqueId, version] = id.split("#");
-            // const FORM_PK = PK_FORM(uniqueId);
-
             const original = await this.storageOperations.getForm({
                 where: {
                     id,
@@ -426,71 +312,19 @@ export const createFormsCrud = (params: Params): FormsCRUD => {
                 }
             });
 
-            // const [[[form]], [[latestForm]]] = await db
-            //     .batch()
-            //     .read({
-            //         ...defaults.db,
-            //         query: {
-            //             PK: FORM_PK,
-            //             SK: SK_FORM_REVISION(version)
-            //         }
-            //     })
-            //     .read({
-            //         ...defaults.db,
-            //         query: {
-            //             PK: FORM_PK,
-            //             SK: SK_FORM_LATEST()
-            //         }
-            //     })
-            //     .execute();
-
             if (!original) {
                 throw new NotFoundError(`Form "${id}" was not found!`);
             }
 
             checkOwnership(original, permission, context);
 
-            // const newData = Object.assign(), {
-            //     savedOn: new Date().toISOString()
-            // });
             const form: FbForm = {
                 ...original,
                 ...data,
                 savedOn: new Date().toISOString(),
+                tenant: tenant.id,
                 webinyVersion: context.WEBINY_VERSION
             };
-            // Object.assign(form, newData);
-
-            // Finally save it to DB
-            // const batch = db.batch().update({
-            //     ...defaults.db,
-            //     query: {
-            //         PK: FORM_PK,
-            //         SK: SK_FORM_REVISION(version)
-            //     },
-            //     data: form
-            // });
-
-            // Update form in "Elastic Search"
-            // if (latestForm.id === id) {
-            //     batch.update({
-            //         ...defaults.esDb,
-            //         query: {
-            //             PK: FORM_PK,
-            //             SK: SK_FORM_LATEST()
-            //         },
-            //         data: {
-            //             PK: FORM_PK,
-            //             SK: SK_FORM_LATEST(),
-            //             index: defaults.es(context).index,
-            //             data: getESDataForLatestRevision(form, context)
-            // }
-            // });
-            // }
-
-            // await batch.execute();
-            //
-            // return form;
 
             try {
                 return await this.storageOperations.updateForm({
@@ -541,63 +375,9 @@ export const createFormsCrud = (params: Params): FormsCRUD => {
                     }
                 );
             }
-
-            // const [uniqueId] = id.split("#");
-            //
-            // const [items] = await db.read<DbItem<FbForm>>({
-            //     ...defaults.db,
-            //     query: {
-            //         PK: PK_FORM(uniqueId),
-            //         SK: { $gt: " " }
-            //     }
-            // });
-            //
-            // if (!items.length) {
-            //     throw new NotFoundError(`Form ${id} was not found!`);
-            // }
-            //
-            // const form = items.find(item => item.TYPE === TYPE_FORM);
-            // checkOwnership(form, permission, context);
-            //
-            // // Delete all items in batches of 25
-            // await utils.paginateBatch<DbItem>(items, 25, async items => {
-            //     await db
-            //         .batch()
-            //         .delete(
-            //             ...items.map(item => ({
-            //                 ...defaults.db,
-            //                 query: { PK: item.PK, SK: item.SK }
-            //             }))
-            //         )
-            //         .execute();
-            // });
-            //
-            // // Delete items from "Elastic Search"
-            // await db.delete({
-            //     ...defaults.esDb,
-            //     query: {
-            //         PK: PK_FORM(uniqueId),
-            //         SK: SK_FORM_LATEST()
-            //     }
-            // });
-            //
-            // return true;
         },
         async deleteFormRevision(this: FormBuilder, id) {
             const permission = await utils.checkBaseFormPermissions(context, { rwd: "d" });
-
-            // const [formId] = id.split("#");
-            //
-            // const form = await this.storageOperations.getForm({
-            //     where: {
-            //         id,
-            //         tenant: tenant.id,
-            //         locale: locale.code
-            //     }
-            // });
-            // if (!form) {
-            //     throw new NotFoundError(`Form "${id}" was not found!`);
-            // }
 
             const form = await this.getForm(id, {
                 auth: false
@@ -615,7 +395,9 @@ export const createFormsCrud = (params: Params): FormsCRUD => {
 
             const previous = revisions.find(rev => rev.version < form.version);
             if (!previous && revisions.length === 1) {
-                // Means we're deleting the last revision, so we need to delete the whole form.
+                /**
+                 * Means we're deleting the last revision, so we need to delete the whole form.
+                 */
                 return this.deleteForm(form.formId);
             }
 
@@ -636,178 +418,6 @@ export const createFormsCrud = (params: Params): FormsCRUD => {
                     }
                 );
             }
-            /**
-             * Find the latest form. This will be used to determine what to update.
-             */
-            // const latestForm = await this.storageOperations.getForm({
-            //     where: {
-            //         formId: form.formId,
-            //         latest: true,
-            //         tenant: tenant.id,
-            //         locale: locale.code
-            //     }
-            // });
-            /**
-             * Find the latest published form. This will be used to determine if to delete the publish record or not.
-             * It is possible that it is same as the revision we are deleting.
-             */
-            // const latestPublishedForm = await this.storageOperations.getForm({
-            //     where: {
-            //         formId: form.formId,
-            //         published: true,
-            //         tenant: tenant.id,
-            //         locale: locale.code
-            //     }
-            // });
-            /**
-             * We also need to find revisions that were published, sort by publishedOn_DESC.
-             * Basically, we need only the last one.
-             */
-            // const previouslyPublishedRevisions = await this.storageOperations.listFormRevisions({
-            //     where: {
-            //         formId: form.formId,
-            //         version_not: form.version,
-            //         publishedOn_not: null,
-            //         tenant: tenant.id,
-            //         locale: locale.code
-            //     },
-            //     sort: ["publishedOn_DESC"]
-            // });
-
-            // const [uniqueId, version] = id.split("#");
-            // const FORM_PK = PK_FORM(uniqueId);
-            //
-            // // Load form, latest form and latest published form records
-            // const [[[form]], [[lForm]], [[lpForm]]] = await db
-            //     .batch()
-            //     .read({
-            //         ...defaults.db,
-            //         query: {
-            //             PK: FORM_PK,
-            //             SK: SK_FORM_REVISION(version)
-            //         }
-            //     })
-            //     .read({
-            //         ...defaults.db,
-            //         query: {
-            //             PK: FORM_PK,
-            //             SK: SK_FORM_LATEST()
-            //         }
-            //     })
-            //     .read({
-            //         ...defaults.db,
-            //         query: {
-            //             PK: FORM_PK,
-            //             SK: SK_FORM_LATEST_PUBLISHED()
-            //         }
-            //     })
-            //     .execute();
-            //
-            // if (!form) {
-            //     throw new NotFoundError(`Form "${id}" was not found!`);
-            // }
-            //
-            // checkOwnership(form, permission, context);
-            //
-            // const batch = db.batch().delete({
-            //     ...defaults.db,
-            //     query: {
-            //         PK: FORM_PK,
-            //         SK: SK_FORM_REVISION(version)
-            //     }
-            // });
-            //
-            // if (lForm.id === id || (lpForm && lpForm.id === id)) {
-            //     // Get all form revisions
-            //     const [revisions] = await db.read<FbForm>({
-            //         ...defaults.db,
-            //         query: { PK: FORM_PK, SK: { $beginsWith: "REV#" } },
-            //         sort: { SK: -1 }
-            //     });
-            //
-            //     // Update or delete the "latest published" record
-            //     if (lpForm && lpForm.id === id) {
-            //         const publishedRevision = revisions
-            //             .filter(rev => rev.id !== id && rev.publishedOn !== null)
-            //             .sort(
-            //                 (a, b) =>
-            //                     new Date(b.publishedOn).getTime() -
-            //                     new Date(a.publishedOn).getTime()
-            //             )
-            //             .shift();
-            //
-            //         if (publishedRevision) {
-            //             batch.update({
-            //                 ...defaults.db,
-            //                 query: {
-            //                     PK: FORM_PK,
-            //                     SK: SK_FORM_LATEST_PUBLISHED()
-            //                 },
-            //                 data: {
-            //                     PK: FORM_PK,
-            //                     SK: SK_FORM_LATEST_PUBLISHED(),
-            //                     TYPE: TYPE_FORM_LATEST_PUBLISHED,
-            //                     id: publishedRevision.id,
-            //                     version: publishedRevision.version
-            //                 }
-            //             });
-            //         } else {
-            //             batch.delete({
-            //                 ...defaults.db,
-            //                 query: {
-            //                     PK: FORM_PK,
-            //                     SK: SK_FORM_LATEST_PUBLISHED()
-            //                 }
-            //             });
-            //         }
-            //     }
-            //
-            //     if (lForm.id === id) {
-            //         // Find revision right before the one being deleted
-            //         const prevRevision = revisions
-            //             .filter(rev => rev.version < form.version)
-            //             .sort((a, b) => b.version - a.version)
-            //             .shift();
-            //
-            //         if (!prevRevision && revisions.length === 1) {
-            //             // Means we're deleting the last revision, so we need to delete the whole form.
-            //             return this.deleteForm(uniqueId);
-            //         }
-            //
-            //         batch
-            //             .update({
-            //                 ...defaults.db,
-            //                 query: {
-            //                     PK: FORM_PK,
-            //                     SK: SK_FORM_LATEST()
-            //                 },
-            //                 data: {
-            //                     PK: FORM_PK,
-            //                     SK: SK_FORM_LATEST(),
-            //                     TYPE: TYPE_FORM_LATEST,
-            //                     id: prevRevision.id,
-            //                     version: prevRevision.version
-            //                 }
-            //             })
-            //             .update({
-            //                 ...defaults.esDb,
-            //                 query: {
-            //                     PK: FORM_PK,
-            //                     SK: SK_FORM_LATEST()
-            //                 },
-            //                 data: {
-            //                     PK: FORM_PK,
-            //                     SK: SK_FORM_LATEST(),
-            //                     index: defaults.es(context).index,
-            //                     data: getESDataForLatestRevision(prevRevision, context)
-            //                 }
-            //             });
-            //     }
-            // }
-            //
-            // await batch.execute();
-            //
-            // return true;
         },
         async publishForm(this: FormBuilder, id) {
             const permission = await utils.checkBaseFormPermissions(context, {
@@ -829,6 +439,7 @@ export const createFormsCrud = (params: Params): FormsCRUD => {
                 locked: true,
                 savedOn: new Date().toISOString(),
                 status: utils.getStatus({ published: true, locked: true }),
+                tenant: tenant.id,
                 webinyVersion: context.WEBINY_VERSION
             };
 
@@ -848,90 +459,6 @@ export const createFormsCrud = (params: Params): FormsCRUD => {
                     }
                 );
             }
-
-            // const [uniqueId, version] = id.split("#");
-            //
-            // const [[[form]], [[latestForm]]] = await db
-            //     .batch()
-            //     .read({
-            //         ...defaults.db,
-            //         query: {
-            //             PK: PK_FORM(uniqueId),
-            //             SK: SK_FORM_REVISION(version)
-            //         }
-            //     })
-            //     .read({
-            //         ...defaults.db,
-            //         query: {
-            //             PK: PK_FORM(uniqueId),
-            //             SK: SK_FORM_LATEST()
-            //         }
-            //     })
-            //     .execute();
-            //
-            // if (!form) {
-            //     throw new NotFoundError(`Form "${id}" was not found!`);
-            // }
-            //
-            // checkOwnership(form, permission, context);
-            //
-            // const savedOn = new Date().toISOString();
-            // const status = utils.getStatus({ published: true, locked: true });
-            //
-            // Object.assign(form, {
-            //     published: true,
-            //     publishedOn: savedOn,
-            //     locked: true,
-            //     savedOn,
-            //     status
-            // });
-            //
-            // // Finally save it to DB
-            // const batch = db
-            //     .batch()
-            //     .update({
-            //         ...defaults.db,
-            //         query: {
-            //             PK: PK_FORM(uniqueId),
-            //             SK: SK_FORM_REVISION(version)
-            //         },
-            //         data: form
-            //     })
-            //     .update({
-            //         ...defaults.db,
-            //         query: {
-            //             PK: PK_FORM(uniqueId),
-            //             SK: SK_FORM_LATEST_PUBLISHED()
-            //         },
-            //         data: {
-            //             PK: PK_FORM(uniqueId),
-            //             SK: SK_FORM_LATEST_PUBLISHED(),
-            //             TYPE: TYPE_FORM_LATEST_PUBLISHED,
-            //             id,
-            //             version: form.version
-            //         }
-            //     });
-            //
-            // // Update form in "Elastic Search"
-            // if (latestForm.id === id) {
-            //     batch.update({
-            //         ...defaults.esDb,
-            //         query: {
-            //             PK: PK_FORM(uniqueId),
-            //             SK: SK_FORM_LATEST()
-            //         },
-            //         data: {
-            //             PK: PK_FORM(uniqueId),
-            //             SK: SK_FORM_LATEST(),
-            //             index: defaults.es(context).index,
-            //             data: getESDataForLatestRevision(form, context)
-            //         }
-            //     });
-            // }
-            //
-            // await batch.execute();
-            //
-            // return form;
         },
         async unpublishForm(this: FormBuilder, id) {
             const permission = await utils.checkBaseFormPermissions(context, {
@@ -950,6 +477,7 @@ export const createFormsCrud = (params: Params): FormsCRUD => {
                 published: false,
                 savedOn: new Date().toISOString(),
                 status: utils.getStatus({ published: false, locked: true }),
+                tenant: tenant.id,
                 webinyVersion: context.WEBINY_VERSION
             };
 
@@ -969,126 +497,6 @@ export const createFormsCrud = (params: Params): FormsCRUD => {
                     }
                 );
             }
-
-            // const [uniqueId, version] = id.split("#");
-            // const FORM_PK = PK_FORM(uniqueId);
-            //
-            // const [[[form]], [[latestForm]], [[latestPublishedForm]]] = await db
-            //     .batch()
-            //     .read({
-            //         ...defaults.db,
-            //         query: {
-            //             PK: FORM_PK,
-            //             SK: SK_FORM_REVISION(version)
-            //         }
-            //     })
-            //     .read({
-            //         ...defaults.db,
-            //         query: {
-            //             PK: FORM_PK,
-            //             SK: SK_FORM_LATEST()
-            //         }
-            //     })
-            //     .read({
-            //         ...defaults.db,
-            //         query: {
-            //             PK: FORM_PK,
-            //             SK: SK_FORM_LATEST_PUBLISHED()
-            //         }
-            //     })
-            //     .execute();
-            //
-            // if (!form) {
-            //     throw new NotFoundError(`Form "${id}" was not found!`);
-            // }
-            //
-            // checkOwnership(form, permission, context);
-            //
-            // const savedOn = new Date().toISOString();
-            // const status = utils.getStatus({ published: false, locked: true });
-            //
-            // Object.assign(form, {
-            //     published: false,
-            //     savedOn,
-            //     status
-            // });
-            //
-            // // Update DB item
-            // const batch = db.batch().update({
-            //     ...defaults.db,
-            //     query: {
-            //         PK: FORM_PK,
-            //         SK: SK_FORM_REVISION(version)
-            //     },
-            //     data: form
-            // });
-            //
-            // // Update or delete "latest published" item from DB
-            // if (latestPublishedForm.id === id) {
-            //     const [revisions] = await db.read<FbForm>({
-            //         ...defaults.db,
-            //         query: {
-            //             PK: FORM_PK,
-            //             SK: { $beginsWith: "REV#" }
-            //         },
-            //         sort: { SK: -1 }
-            //     });
-            //
-            //     // Find published revision with highest publishedOn data
-            //     const publishedRevision = revisions
-            //         .filter(rev => rev.id !== id && rev.publishedOn !== null)
-            //         .sort(
-            //             (a, b) =>
-            //                 new Date(b.publishedOn).getTime() - new Date(a.publishedOn).getTime()
-            //         )
-            //         .shift();
-            //
-            //     if (publishedRevision) {
-            //         batch.update({
-            //             ...defaults.db,
-            //             query: {
-            //                 PK: FORM_PK,
-            //                 SK: SK_FORM_LATEST_PUBLISHED()
-            //             },
-            //             data: {
-            //                 PK: FORM_PK,
-            //                 SK: SK_FORM_LATEST_PUBLISHED(),
-            //                 TYPE: TYPE_FORM_LATEST_PUBLISHED,
-            //                 id: publishedRevision.id,
-            //                 version: publishedRevision.version
-            //             }
-            //         });
-            //     } else {
-            //         batch.delete({
-            //             ...defaults.db,
-            //             query: {
-            //                 PK: FORM_PK,
-            //                 SK: SK_FORM_LATEST_PUBLISHED()
-            //             }
-            //         });
-            //     }
-            // }
-            //
-            // // Update form in "Elastic Search"
-            // if (latestForm.id === id) {
-            //     batch.update({
-            //         ...defaults.esDb,
-            //         query: {
-            //             PK: PK_FORM(uniqueId),
-            //             SK: SK_FORM_LATEST()
-            //         },
-            //         data: {
-            //             PK: PK_FORM(uniqueId),
-            //             SK: SK_FORM_LATEST(),
-            //             index: defaults.es(context).index,
-            //             data: getESDataForLatestRevision(form, context)
-            //         }
-            //     });
-            // }
-            //
-            // await batch.execute();
-            //
-            // return form;
         },
         async createFormRevision(this: FormBuilder, id) {
             await utils.checkBaseFormPermissions(context, { rwd: "w" });
@@ -1130,7 +538,9 @@ export const createFormsCrud = (params: Params): FormsCRUD => {
                 locked: false,
                 published: false,
                 publishedOn: null,
-                status: utils.getStatus({ published: false, locked: false })
+                status: utils.getStatus({ published: false, locked: false }),
+                tenant: tenant.id,
+                webinyVersion: context.WEBINY_VERSION
             };
 
             try {
@@ -1150,108 +560,6 @@ export const createFormsCrud = (params: Params): FormsCRUD => {
                     }
                 );
             }
-
-            // const batch = db.batch();
-            //
-            // const [uniqueId, version] = sourceRevisionId.split("#");
-            // const FORM_PK = PK_FORM(uniqueId);
-            //
-            // const [[[form]], [[latestForm]]] = await batch
-            //     .read({
-            //         ...defaults.db,
-            //         query: {
-            //             PK: FORM_PK,
-            //             SK: SK_FORM_REVISION(version)
-            //         }
-            //     })
-            //     .read({
-            //         ...defaults.db,
-            //         query: {
-            //             PK: FORM_PK,
-            //             SK: SK_FORM_LATEST()
-            //         }
-            //     })
-            //     .execute();
-            //
-            // if (!form) {
-            //     throw new NotFoundError(`Form "${sourceRevisionId}" was not found!`);
-            // }
-            //
-            // const identity = context.security.getIdentity();
-            // const newVersion = latestForm.version + 1;
-            // const id = `${uniqueId}#${zeroPad(newVersion)}`;
-            //
-            // const newRevision: FbForm = {
-            //     id,
-            //     locale: form.locale,
-            //     savedOn: new Date().toISOString(),
-            //     createdOn: new Date().toISOString(),
-            //     createdBy: {
-            //         id: identity.id,
-            //         displayName: identity.displayName,
-            //         type: identity.type
-            //     },
-            //     ownedBy: form.ownedBy,
-            //     name: form.name,
-            //     slug: form.slug,
-            //     version: newVersion,
-            //     locked: false,
-            //     published: false,
-            //     publishedOn: null,
-            //     status: utils.getStatus({ published: false, locked: false }),
-            //     fields: form.fields,
-            //     layout: form.layout,
-            //     stats: {
-            //         submissions: 0,
-            //         views: 0
-            //     },
-            //     settings: form.settings,
-            //     triggers: form.triggers,
-            //     tenant: form.tenant
-            // };
-            //
-            // // Store form to DB and update `latest revision` item
-            // await db
-            //     .batch()
-            //     .create({
-            //         ...defaults.db,
-            //         data: {
-            //             PK: FORM_PK,
-            //             SK: SK_FORM_REVISION(newVersion),
-            //             TYPE: "fb.form",
-            //             ...newRevision
-            //         }
-            //     })
-            //     .update({
-            //         ...defaults.db,
-            //         query: {
-            //             PK: FORM_PK,
-            //             SK: SK_FORM_LATEST()
-            //         },
-            //         data: {
-            //             PK: FORM_PK,
-            //             SK: SK_FORM_LATEST(),
-            //             TYPE: TYPE_FORM_LATEST,
-            //             id: newRevision.id,
-            //             version: newRevision.version
-            //         }
-            //     })
-            //     .update({
-            //         ...defaults.esDb,
-            //         query: {
-            //             PK: FORM_PK,
-            //             SK: SK_FORM_LATEST()
-            //         },
-            //         data: {
-            //             PK: FORM_PK,
-            //             SK: SK_FORM_LATEST(),
-            //             index: defaults.es(context).index,
-            //             data: getESDataForLatestRevision(newRevision, context)
-            //         }
-            //     })
-            //     .execute();
-            //
-            // return newRevision;
         },
         async incrementFormViews(this: FormBuilder, id) {
             const original = await this.getForm(id, {
@@ -1263,7 +571,9 @@ export const createFormsCrud = (params: Params): FormsCRUD => {
                 stats: {
                     ...original.stats,
                     views: original.stats.views + 1
-                }
+                },
+                tenant: tenant.id,
+                webinyVersion: context.WEBINY_VERSION
             };
 
             try {
@@ -1281,36 +591,6 @@ export const createFormsCrud = (params: Params): FormsCRUD => {
                     }
                 );
             }
-            // const [uniqueId, version] = id.split("#");
-            // const FORM_PK = PK_FORM(uniqueId);
-            // const FORM_SK = SK_FORM_REVISION(version);
-            //
-            // const [[form]] = await db.read<FbForm>({
-            //     ...defaults.db,
-            //     query: {
-            //         PK: FORM_PK,
-            //         SK: FORM_SK
-            //     }
-            // });
-            //
-            // if (!form) {
-            //     throw new NotFoundError(`Form "${id}" was not found!`);
-            // }
-            //
-            // // Increment views
-            // form.stats.views = form.stats.views + 1;
-            //
-            // // Update "form stats" in DB.
-            // await db.update({
-            //     ...defaults.db,
-            //     query: {
-            //         PK: FORM_PK,
-            //         SK: FORM_SK
-            //     },
-            //     data: {
-            //         stats: form.stats
-            //     }
-            // });
 
             return true;
         },
@@ -1324,7 +604,9 @@ export const createFormsCrud = (params: Params): FormsCRUD => {
                 stats: {
                     ...original.stats,
                     submissions: original.stats.submissions + 1
-                }
+                },
+                tenant: tenant.id,
+                webinyVersion: context.WEBINY_VERSION
             };
 
             try {
@@ -1342,37 +624,6 @@ export const createFormsCrud = (params: Params): FormsCRUD => {
                     }
                 );
             }
-
-            // const [uniqueId, version] = id.split("#");
-            // const FORM_PK = PK_FORM(uniqueId);
-            // const FORM_SK = SK_FORM_REVISION(version);
-            //
-            // const [[form]] = await db.read<FbForm>({
-            //     ...defaults.db,
-            //     query: {
-            //         PK: FORM_PK,
-            //         SK: FORM_SK
-            //     }
-            // });
-            //
-            // if (!form) {
-            //     throw new NotFoundError(`Form "${id}" was not found!`);
-            // }
-            //
-            // // Increment submissions
-            // form.stats.submissions++;
-            //
-            // // Update "form stats" in DB.
-            // await db.update({
-            //     ...defaults.db,
-            //     query: {
-            //         PK: FORM_PK,
-            //         SK: FORM_SK
-            //     },
-            //     data: {
-            //         stats: form.stats
-            //     }
-            // });
 
             return true;
         }

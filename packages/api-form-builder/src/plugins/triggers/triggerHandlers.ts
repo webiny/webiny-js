@@ -10,9 +10,11 @@ const plugin: FbFormTriggerHandlerPlugin = {
         if (Array.isArray(urls)) {
             for (let i = 0; i < urls.length; i++) {
                 const url = urls[i];
-                // Could be executed without awaiting the end result of the trigger? Not sure how it would
-                // work in Lambda, so for now, let's await the result of the request, and update form submission
-                // logs accordingly.
+                /**
+                 * Could be executed without awaiting the end result of the trigger? Not sure how it would
+                 * work in Lambda, so for now, let's await the result of the request, and update form submission
+                 * logs accordingly.
+                 */
                 try {
                     const response = await got(url, {
                         method: "post",

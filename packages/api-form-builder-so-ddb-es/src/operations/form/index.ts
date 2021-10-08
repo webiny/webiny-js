@@ -1,6 +1,5 @@
 import {
     FbForm,
-    FormBuilderFormStorageOperations,
     FormBuilderStorageOperationsCreateFormFromParams,
     FormBuilderStorageOperationsCreateFormParams,
     FormBuilderStorageOperationsDeleteFormParams,
@@ -27,6 +26,7 @@ import { parseIdentifier, zeroPad } from "@webiny/utils";
 import { createElasticsearchBody, createFormElasticType } from "./elasticsearchBody";
 import { decodeCursor, encodeCursor } from "@webiny/api-elasticsearch/cursors";
 import { PluginsContainer } from "@webiny/plugins";
+import { FormBuilderFormCreateKeyParams, FormBuilderFormStorageOperations } from "~/types";
 
 export type DbRecord<T = any> = T & {
     PK: string;
@@ -66,18 +66,12 @@ const getESDataForLatestRevision = (form: FbForm): FbFormElastic => ({
     formId: form.formId
 });
 
-export interface CreatePartitionKeyParams {
-    tenant: string;
-    locale: string;
-    id: string;
-}
-
 export const createFormStorageOperations = (params: Params): FormBuilderFormStorageOperations => {
     const { entity, esEntity, table, plugins, elasticsearch } = params;
 
     const formDynamoDbFields = fields();
 
-    const createPartitionKey = (params: CreatePartitionKeyParams): string => {
+    const createFormPartitionKey = (params: FormBuilderFormCreateKeyParams): string => {
         const { tenant, locale, id: targetId } = params;
 
         const { id } = parseIdentifier(targetId);
@@ -116,11 +110,11 @@ export const createFormStorageOperations = (params: Params): FormBuilderFormStor
         const { form } = params;
 
         const revisionKeys = {
-            PK: createPartitionKey(form),
+            PK: createFormPartitionKey(form),
             SK: createRevisionSortKey(form.id)
         };
         const latestKeys = {
-            PK: createPartitionKey(form),
+            PK: createFormPartitionKey(form),
             SK: createLatestSortKey()
         };
 
@@ -182,12 +176,12 @@ export const createFormStorageOperations = (params: Params): FormBuilderFormStor
         const { form, original, latest } = params;
 
         const revisionKeys = {
-            PK: createPartitionKey(form),
+            PK: createFormPartitionKey(form),
             SK: createRevisionSortKey(form.version)
         };
 
         const latestKeys = {
-            PK: createPartitionKey(form),
+            PK: createFormPartitionKey(form),
             SK: createLatestSortKey()
         };
 
@@ -256,11 +250,11 @@ export const createFormStorageOperations = (params: Params): FormBuilderFormStor
         const { form, original } = params;
 
         const revisionKeys = {
-            PK: createPartitionKey(form),
+            PK: createFormPartitionKey(form),
             SK: createRevisionSortKey(form.id)
         };
         const latestKeys = {
-            PK: createPartitionKey(form),
+            PK: createFormPartitionKey(form),
             SK: createLatestSortKey()
         };
 
@@ -369,7 +363,7 @@ export const createFormStorageOperations = (params: Params): FormBuilderFormStor
         }
 
         const keys = {
-            PK: createPartitionKey({
+            PK: createFormPartitionKey({
                 tenant,
                 locale,
                 id: formId || id
@@ -435,12 +429,15 @@ export const createFormStorageOperations = (params: Params): FormBuilderFormStor
 
         const hasMoreItems = items.length > limit;
         if (hasMoreItems) {
-            // Remove the last item from results, we don't want to include it.
+            /**
+             * Remove the last item from results, we don't want to include it.
+             */
             items.pop();
         }
-
-        // Cursor is the `sort` value of the last item in the array.
-        // https://www.elastic.co/guide/en/elasticsearch/reference/current/paginate-search-results.html#search-after
+        /**
+         * Cursor is the `sort` value of the last item in the array.
+         * https://www.elastic.co/guide/en/elasticsearch/reference/current/paginate-search-results.html#search-after
+         */
 
         const meta = {
             hasMoreItems,
@@ -461,7 +458,7 @@ export const createFormStorageOperations = (params: Params): FormBuilderFormStor
         const { id, formId, tenant, locale } = initialWhere;
         const queryAllParams: QueryAllParams = {
             entity,
-            partitionKey: createPartitionKey({
+            partitionKey: createFormPartitionKey({
                 tenant,
                 locale,
                 id: id || formId
@@ -521,7 +518,7 @@ export const createFormStorageOperations = (params: Params): FormBuilderFormStor
          */
         const queryAllParams = {
             entity,
-            partitionKey: createPartitionKey(form),
+            partitionKey: createFormPartitionKey(form),
             options: {
                 gte: " "
             }
@@ -558,7 +555,7 @@ export const createFormStorageOperations = (params: Params): FormBuilderFormStor
         }
 
         const latestKeys = {
-            PK: createPartitionKey(form),
+            PK: createFormPartitionKey(form),
             SK: createLatestSortKey()
         };
         try {
@@ -585,37 +582,15 @@ export const createFormStorageOperations = (params: Params): FormBuilderFormStor
     ): Promise<FbForm> => {
         const { form, revisions, previous } = params;
 
-        // const { tenant, locale, formId } = form;
-
         const revisionKeys = {
-            PK: createPartitionKey(form),
+            PK: createFormPartitionKey(form),
             SK: createRevisionSortKey(form.id)
         };
 
         const latestKeys = {
-            PK: createPartitionKey(form),
+            PK: createFormPartitionKey(form),
             SK: createLatestSortKey()
         };
-
-        // const latestForm = await getForm({
-        //     where: {
-        //         formId,
-        //         latest: true,
-        //         tenant,
-        //         locale
-        //     }
-        // });
-        // const latestPublishedForm = await getForm({
-        //     where: {
-        //         formId,
-        //         published: true,
-        //         tenant,
-        //         locale
-        //     }
-        // });
-
-        // const isLatest = latestForm ? latestForm.id === form.id : false;
-        // const isLatestPublished = latestPublishedForm ? latestPublishedForm.id === form.id : false;
 
         const latestForm = revisions[0];
         const latestPublishedForm = revisions.find(rev => rev.published === true);
@@ -643,7 +618,7 @@ export const createFormStorageOperations = (params: Params): FormBuilderFormStor
                     items.push(
                         entity.putBatch({
                             ...previouslyPublishedForm,
-                            PK: createPartitionKey(previouslyPublishedForm),
+                            PK: createFormPartitionKey(previouslyPublishedForm),
                             SK: createLatestPublishedSortKey(),
                             TYPE: createFormLatestPublishedType()
                         })
@@ -651,7 +626,7 @@ export const createFormStorageOperations = (params: Params): FormBuilderFormStor
                 } else {
                     items.push(
                         entity.deleteBatch({
-                            PK: createPartitionKey(previouslyPublishedForm),
+                            PK: createFormPartitionKey(previouslyPublishedForm),
                             SK: createLatestPublishedSortKey()
                         })
                     );
@@ -736,17 +711,17 @@ export const createFormStorageOperations = (params: Params): FormBuilderFormStor
         const { form, original } = params;
 
         const revisionKeys = {
-            PK: createPartitionKey(form),
+            PK: createFormPartitionKey(form),
             SK: createRevisionSortKey(form.version)
         };
 
         const latestKeys = {
-            PK: createPartitionKey(form),
+            PK: createFormPartitionKey(form),
             SK: createLatestSortKey()
         };
 
         const latestPublishedKeys = {
-            PK: createPartitionKey(form),
+            PK: createFormPartitionKey(form),
             SK: createLatestPublishedSortKey()
         };
 
@@ -852,17 +827,17 @@ export const createFormStorageOperations = (params: Params): FormBuilderFormStor
         const { form, original } = params;
 
         const revisionKeys = {
-            PK: createPartitionKey(form),
+            PK: createFormPartitionKey(form),
             SK: createRevisionSortKey(form.version)
         };
 
         const latestKeys = {
-            PK: createPartitionKey(form),
+            PK: createFormPartitionKey(form),
             SK: createLatestSortKey()
         };
 
         const latestPublishedKeys = {
-            PK: createPartitionKey(form),
+            PK: createFormPartitionKey(form),
             SK: createLatestPublishedSortKey()
         };
 
@@ -992,6 +967,7 @@ export const createFormStorageOperations = (params: Params): FormBuilderFormStor
         deleteForm,
         deleteFormRevision,
         publishForm,
-        unpublishForm
+        unpublishForm,
+        createFormPartitionKey
     };
 };

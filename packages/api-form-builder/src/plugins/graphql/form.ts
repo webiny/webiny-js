@@ -366,10 +366,14 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                     let form;
 
                     if (args.revision) {
-                        // This fetches the exact revision specified by revision ID
+                        /**
+                         * This fetches the exact revision specified by revision ID
+                         */
                         form = await formBuilder.getPublishedFormRevisionById(args.revision);
                     } else if (args.parent) {
-                        // This fetches the latest published revision for given parent form
+                        /**
+                         * This fetches the latest published revision for given parent form
+                         */
                         form = await formBuilder.getLatestPublishedFormRevision(args.parent);
                     }
 
@@ -383,7 +387,7 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                     _,
                     args: {
                         form: string;
-                        sort?: Record<string, 1 | -1>;
+                        sort?: string[];
                         limit?: number;
                         after?: string;
                     },
@@ -402,7 +406,9 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                 }
             },
             FbMutation: {
-                // Creates a new form
+                /**
+                 * Creates a new form
+                 */
                 createForm: async (_, args, { formBuilder }) => {
                     try {
                         const form = await formBuilder.createForm(args.data);
@@ -412,7 +418,9 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                         return new ErrorResponse(e);
                     }
                 },
-                // Deletes the entire form with all of its revisions
+                /**
+                 * Deletes the entire form with all of its revisions
+                 */
                 deleteForm: async (_, args, { formBuilder }) => {
                     try {
                         await formBuilder.deleteForm(args.id);
@@ -422,7 +430,9 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                         return new ErrorResponse(e);
                     }
                 },
-                // Creates a revision from the given revision
+                /**
+                 * Creates a revision from the given revision
+                 */
                 createRevisionFrom: async (_, args, { formBuilder }) => {
                     try {
                         const form = await formBuilder.createFormRevision(args.revision);
@@ -432,7 +442,9 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                         return new ErrorResponse(e);
                     }
                 },
-                // Updates revision
+                /**
+                 * Updates revision
+                 */
                 updateRevision: async (_, args, { formBuilder }) => {
                     try {
                         const form = await formBuilder.updateForm(args.revision, args.data);
@@ -442,7 +454,9 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                         return new ErrorResponse(e);
                     }
                 },
-                // Publish revision (must be given an exact revision ID to publish)
+                /**
+                 * Publish revision (must be given an exact revision ID to publish)
+                 */
                 publishRevision: async (_, { revision }, { formBuilder }) => {
                     try {
                         const form = await formBuilder.publishForm(revision);
@@ -461,7 +475,9 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                         return new ErrorResponse(e);
                     }
                 },
-                // Delete a revision
+                /**
+                 * Delete a revision
+                 */
                 deleteRevision: async (_, args, { formBuilder }) => {
                     try {
                         await formBuilder.deleteFormRevision(args.revision);
@@ -508,14 +524,18 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                             return new NotFoundResponse("No form submissions found.");
                         }
 
-                        // Get all revisions of the form.
+                        /**
+                         * Get all revisions of the form.
+                         */
                         const revisions = await formBuilder.getFormRevisions(form);
                         const publishedRevisions = revisions.filter(r => r.published);
 
                         const rows = [];
                         const fields = {};
 
-                        // First extract all distinct fields across all form submissions.
+                        /**
+                         * First extract all distinct fields across all form submissions.
+                         */
                         for (let i = 0; i < publishedRevisions.length; i++) {
                             const revision = publishedRevisions[i];
                             for (let j = 0; j < revision.fields.length; j++) {
@@ -526,7 +546,9 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                             }
                         }
 
-                        // Build rows.
+                        /**
+                         * Build rows.
+                         */
                         for (let i = 0; i < submissions.length; i++) {
                             const submissionData = submissions[i].data;
                             const row = {};
@@ -540,7 +562,9 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                             rows.push(row);
                         }
 
-                        // Save CSV file and return its URL to the client.
+                        /**
+                         * Save CSV file and return its URL to the client.
+                         */
                         const csv = await parseAsync(rows, { fields: Object.values(fields) });
                         const buffer = Buffer.from(csv);
                         const { key } = await fileManager.storage.upload({

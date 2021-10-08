@@ -16,8 +16,11 @@ import { createElasticsearchEntity } from "~/definitions/elasticsearch";
 import submissionElasticsearchFields from "./operations/submission/elasticsearchFields";
 import formElasticsearchFields from "./operations/form/elasticsearchFields";
 import dynamoDbValueFilters from "@webiny/db-dynamodb/plugins/filters";
+import { getElasticsearchOperators } from "@webiny/api-elasticsearch/operators";
 
-const reservedFields = ["PK", "SK", "index", "data"];
+import upgrade5160 from "./upgrades/5.16.0";
+
+const reservedFields = ["PK", "SK", "index", "data", "TYPE", "__type", "GSI1_PK", "GSI1_SK"];
 
 const isReserved = (name: string): void => {
     if (reservedFields.includes(name) === false) {
@@ -30,7 +33,7 @@ const isReserved = (name: string): void => {
 
 export const createFormBuilderStorageOperations: FormBuilderStorageOperationsFactory = params => {
     const {
-        attributes,
+        attributes = {},
         table: tableName,
         esTable: esTableName,
         documentClient,
@@ -38,19 +41,34 @@ export const createFormBuilderStorageOperations: FormBuilderStorageOperationsFac
         plugins: pluginsInput
     } = params;
 
-    const plugins = new PluginsContainer();
-
-    plugins.register(pluginsInput || []);
-
-    plugins.register(submissionElasticsearchFields());
-    plugins.register(formElasticsearchFields());
-    plugins.register(dynamoDbValueFilters());
-
     if (attributes) {
         Object.values(attributes).forEach(attrs => {
             Object.keys(attrs).forEach(isReserved);
         });
     }
+
+    const plugins = new PluginsContainer([
+        /**
+         * User defined plugins.
+         */
+        pluginsInput || [],
+        /**
+         * Elasticsearch field definitions for the submission record.
+         */
+        submissionElasticsearchFields(),
+        /**
+         * Elasticsearch field definitions for the form record.
+         */
+        formElasticsearchFields(),
+        /**
+         * DynamoDB filter plugins for the where conditions.
+         */
+        dynamoDbValueFilters(),
+        /**
+         * Elasticsearch operators.
+         */
+        getElasticsearchOperators()
+    ]);
 
     const table = createTable({
         tableName,
@@ -63,35 +81,41 @@ export const createFormBuilderStorageOperations: FormBuilderStorageOperationsFac
     });
 
     const entities = {
+        /**
+         * Regular entities.
+         */
         form: createFormEntity({
             entityName: ENTITIES.FORM,
             table,
-            attributes: attributes ? attributes[ENTITIES.FORM] : {}
-        }),
-        esForm: createElasticsearchEntity({
-            entityName: ENTITIES.ES_FORM,
-            table: esTable,
-            attributes: attributes ? attributes[ENTITIES.ES_FORM] : {}
+            attributes: attributes[ENTITIES.FORM]
         }),
         submission: createSubmissionEntity({
             entityName: ENTITIES.SUBMISSION,
             table,
-            attributes: attributes ? attributes[ENTITIES.SUBMISSION] : {}
-        }),
-        esSubmission: createElasticsearchEntity({
-            entityName: ENTITIES.ES_SUBMISSION,
-            table: esTable,
-            attributes: attributes ? attributes[ENTITIES.ES_SUBMISSION] : {}
+            attributes: attributes[ENTITIES.SUBMISSION]
         }),
         system: createSystemEntity({
             entityName: ENTITIES.SYSTEM,
             table,
-            attributes: attributes ? attributes[ENTITIES.SYSTEM] : {}
+            attributes: attributes[ENTITIES.SYSTEM]
         }),
         settings: createSettingsEntity({
             entityName: ENTITIES.SETTINGS,
             table,
-            attributes: attributes ? attributes[ENTITIES.SETTINGS] : {}
+            attributes: attributes[ENTITIES.SETTINGS]
+        }),
+        /**
+         * Elasticsearch entities.
+         */
+        esForm: createElasticsearchEntity({
+            entityName: ENTITIES.ES_FORM,
+            table: esTable,
+            attributes: attributes[ENTITIES.ES_FORM]
+        }),
+        esSubmission: createElasticsearchEntity({
+            entityName: ENTITIES.ES_SUBMISSION,
+            table: esTable,
+            attributes: attributes[ENTITIES.ES_SUBMISSION]
         })
     };
 
@@ -104,6 +128,7 @@ export const createFormBuilderStorageOperations: FormBuilderStorageOperationsFac
                 });
             });
         },
+        upgrade: upgrade5160(),
         getTable: () => table,
         getEsTable: () => esTable,
         getEntities: () => entities,

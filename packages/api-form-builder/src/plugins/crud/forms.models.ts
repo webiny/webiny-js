@@ -1,4 +1,3 @@
-// "Form Fields" data model.
 import { validation } from "@webiny/validation";
 import { boolean, fields, string, withFields, number } from "@commodo/fields";
 import { object } from "commodo-fields-object";
@@ -8,7 +7,9 @@ export const FormFieldsModel = withFields({
     type: string({ validation: validation.create("required") }),
     name: string({ validation: validation.create("required") }),
     fieldId: string({ validation: validation.create("required") }),
-    // Note: We've replaced "i18nString()" with "string()"
+    /**
+     * Note: We've replaced "i18nString()" with "string()"
+     */
     label: string({ validation: validation.create("maxLength:100") }),
     helpText: string({ validation: validation.create("maxLength:100") }),
     placeholderText: string({ validation: validation.create("maxLength:100") }),
@@ -32,7 +33,6 @@ export const FormFieldsModel = withFields({
     settings: object({ value: {} })
 })();
 
-// "Form Settings" data model.
 export const FormSettingsModel = withFields({
     layout: fields({
         value: {},
@@ -40,9 +40,13 @@ export const FormSettingsModel = withFields({
             renderer: string({ value: "default" })
         })()
     }),
-    // Note: We've replaced "i18nString()" with "string()"
+    /**
+     * Note: We've replaced "i18nString()" with "string()"
+     */
     submitButtonLabel: string({ validation: validation.create("maxLength:100") }),
-    // Note: We've replaced "i18nObject()" with "object()"
+    /**
+     * Note: We've replaced "i18nObject()" with "object()"
+     */
     successMessage: object(),
     termsOfServiceMessage: fields({
         instanceOf: withFields({
@@ -55,7 +59,9 @@ export const FormSettingsModel = withFields({
         value: {},
         instanceOf: withFields({
             enabled: boolean(),
-            // Note: We've replaced "i18nString()" with "string()"
+            /**
+             * Note: We've replaced "i18nString()" with "string()"
+             */
             errorMessage: string({
                 value: "Please verify that you are not a robot.",
                 validation: validation.create("maxLength:100")

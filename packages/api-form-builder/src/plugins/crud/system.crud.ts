@@ -93,7 +93,9 @@ export const createSystemCrud = (params: Params): SystemCRUD => {
                 );
             }
 
-            // Prepare "settings" data
+            /**
+             * Prepare "settings" data
+             */
             const data: Partial<Settings> = {};
 
             if (domain) {
@@ -128,20 +130,29 @@ export const createSystemCrud = (params: Params): SystemCRUD => {
                 throw new NotAuthorizedError();
             }
 
-            const upgradePlugins = context.plugins
-                .byType<UpgradePlugin>("api-upgrade")
-                .filter(pl => pl.app === "form-builder");
+            const upgradePlugins: UpgradePlugin[] = [];
+
+            /**
+             * There are no more registered plugins for the upgrades because each storage operations gives it's own, if some upgrade exists.
+             */
+            if (this.storageOperations.upgrade) {
+                upgradePlugins.push(this.storageOperations.upgrade);
+            }
+
+            const installedAppVersion = await this.getSystemVersion();
 
             const plugin = getApplicablePlugin({
                 deployedVersion: context.WEBINY_VERSION,
-                installedAppVersion: await this.getSystemVersion(),
+                installedAppVersion,
                 upgradePlugins,
                 upgradeToVersion: version
             });
 
             await plugin.apply(context);
 
-            // Store new app version
+            /**
+             * Store new app version
+             */
             await this.setSystemVersion(version);
 
             return true;

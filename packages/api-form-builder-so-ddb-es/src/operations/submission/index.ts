@@ -307,13 +307,15 @@ export const createSubmissionStorageOperations = (
 
         const hasMoreItems = items.length > limit;
         if (hasMoreItems) {
-            // Remove the last item from results, we don't want to include it.
+            /**
+             * Remove the last item from results, we don't want to include it.
+             */
             items.pop();
         }
-
-        // Cursor is the `sort` value of the last item in the array.
-        // https://www.elastic.co/guide/en/elasticsearch/reference/current/paginate-search-results.html#search-after
-
+        /**
+         * Cursor is the `sort` value of the last item in the array.
+         * https://www.elastic.co/guide/en/elasticsearch/reference/current/paginate-search-results.html#search-after
+         */
         const meta = {
             hasMoreItems,
             totalCount: total.value,

@@ -7,6 +7,8 @@
     "../api-form-builder",
     "../error",
     "../utils",
+    "../api-upgrade",
+    "../api-i18n",
     "../handler",
     "../handler-aws",
     "../handler-db",

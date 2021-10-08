@@ -60,30 +60,6 @@ export const createSubmissionsCrud = (params: Params): SubmissionsCRUD => {
                     }
                 );
             }
-
-            // const [uniqueId] = formId.split("#");
-            // const FORM_PK = PK_FORM(uniqueId);
-            //
-            // const batch = db.batch();
-            //
-            // batch.read(
-            //     ...submissionIds.map(submissionId => ({
-            //         ...defaults.db,
-            //         query: {
-            //             PK: FORM_PK,
-            //             SK: `FS#${submissionId}`
-            //         }
-            //     }))
-            // );
-            //
-            // const response = await batch.execute();
-            //
-            // return response
-            //     .map(item => {
-            //         const [[formSubmission]] = item;
-            //         return formSubmission;
-            //     })
-            //     .filter(Boolean);
         },
         async listFormSubmissions(this: FormBuilder, formId, options = {}) {
             const { submissions } = await utils.checkBaseFormPermissions(context);
@@ -97,14 +73,7 @@ export const createSubmissionsCrud = (params: Params): SubmissionsCRUD => {
              */
             const form = await this.getForm(formId);
 
-            const { sort: initialSort = { createdOn: -1 }, after = null, limit = 10 } = options;
-            /**
-             * TODO switch sorting to strings (createdOn_ASC, createdOn_DESC, etc...)
-             */
-            const sort = Object.keys(initialSort).map(key => {
-                const order = initialSort[key];
-                return `${key}_${order === -1 ? "DESC" : "ASC"}`;
-            });
+            const { sort: initialSort, after = null, limit = 10 } = options;
 
             const listSubmissionsParams: FormBuilderStorageOperationsListSubmissionsParams = {
                 where: {
@@ -114,7 +83,10 @@ export const createSubmissionsCrud = (params: Params): SubmissionsCRUD => {
                 },
                 after,
                 limit,
-                sort: sort.length > 0 ? sort : ["createdOn_DESC"]
+                sort:
+                    Array.isArray(initialSort) && initialSort.length
+                        ? initialSort
+                        : ["createdOn_DESC"]
             };
 
             try {
@@ -130,64 +102,6 @@ export const createSubmissionsCrud = (params: Params): SubmissionsCRUD => {
                     }
                 );
             }
-
-            // 10000 is a hard limit of ElasticSearch for `size` parameter.
-            // if (limit >= 10000) {
-            //     limit = 9999;
-            // }
-            //
-            // const [uniqueId] = formId.split("#");
-            //
-            // const filter: Record<string, any>[] = [
-            //     { term: { "__type.keyword": "fb.submission" } },
-            //     { term: { "locale.keyword": i18nContent.locale.code } },
-            //     // Load all form submissions no matter the revision
-            //     { term: { "form.parent.keyword": uniqueId } }
-            // ];
-            //
-            // // When ES index is shared between tenants, we need to filter records by tenant ID
-            // const sharedIndex = process.env.ELASTICSEARCH_SHARED_INDEXES === "true";
-            // if (sharedIndex) {
-            //     const tenant = tenancy.getCurrentTenant();
-            //     filter.push({ term: { "tenant.keyword": tenant.id } });
-            // }
-            //
-            // const body: Record<string, any> = {
-            //     query: {
-            //         bool: { filter }
-            //     },
-            //     size: limit + 1,
-            //     sort: [{ createdOn: { order: sort.createdOn > 0 ? "asc" : "desc" } }]
-            // };
-            //
-            // if (after) {
-            //     body["search_after"] = utils.decodeCursor(after);
-            // }
-            //
-            // const response = await elasticsearch.search({
-            //     ...defaults.es(context),
-            //     body
-            // });
-            //
-            // const { hits, total } = response.body.hits;
-            // const items = hits.map(item => item._source);
-            //
-            // const hasMoreItems = items.length > limit;
-            // if (hasMoreItems) {
-            //     // Remove the last item from results, we don't want to include it.
-            //     items.pop();
-            // }
-            //
-            // // Cursor is the `sort` value of the last item in the array.
-            // // https://www.elastic.co/guide/en/elasticsearch/reference/current/paginate-search-results.html#search-after
-            //
-            // const meta = {
-            //     hasMoreItems,
-            //     totalCount: total.value,
-            //     cursor: items.length > 0 ? encodeCursor(hits[items.length - 1].sort) : null
-            // };
-            //
-            // return [items, meta];
         },
         async createFormSubmission(
             this: FormBuilder,
@@ -196,25 +110,9 @@ export const createSubmissionsCrud = (params: Params): SubmissionsCRUD => {
             rawData,
             meta
         ) {
-            // const { formBuilder } = context;
-
             const form = await this.getForm(formId, {
                 auth: false
             });
-
-            // const [uniqueId, version] = formId.split("#");
-            //
-            // const [[form]] = await db.read<FbForm>({
-            //     ...defaults.db,
-            //     query: {
-            //         PK: PK_FORM(uniqueId),
-            //         SK: SK_FORM_REVISION(version)
-            //     }
-            // });
-
-            // if (!form) {
-            //     throw new NotFoundError(`Form "${formId}" was not found!`);
-            // }
 
             const settings = await this.getSettings({
                 auth: false,
@@ -252,7 +150,9 @@ export const createSubmissionsCrud = (params: Params): SubmissionsCRUD => {
                 }
             }
 
-            // Validate data
+            /**
+             * Validate data
+             */
             const validatorPlugins = context.plugins.byType("fb-form-field-validator");
             const { fields } = form;
 
@@ -304,7 +204,9 @@ export const createSubmissionsCrud = (params: Params): SubmissionsCRUD => {
                 };
             }
 
-            // Use model for data validation and default values.
+            /**
+             * Use model for data validation and default values.
+             */
             const submissionModel = new models.FormSubmissionCreateDataModel().populate({
                 data,
                 meta,
@@ -330,8 +232,8 @@ export const createSubmissionsCrud = (params: Params): SubmissionsCRUD => {
                 id: mdbid(),
                 locale: form.locale,
                 ownedBy: form.ownedBy,
-                logs: [],
                 tenant: form.tenant,
+                logs: [],
                 webinyVersion: context.WEBINY_VERSION
             };
 
@@ -354,43 +256,15 @@ export const createSubmissionsCrud = (params: Params): SubmissionsCRUD => {
                 );
             }
 
-            // Store submission to DB
-            // await db
-            //     .batch()
-            //     .create({
-            //         ...defaults.db,
-            //         data: {
-            //             PK: PK_FORM(uniqueId),
-            //             SK: SK_SUBMISSION(submission.id),
-            //             TYPE: TYPE_FORM_SUBMISSION,
-            //             tenant: form.tenant,
-            //             ...submission
-            //         }
-            //     })
-            //     .create({
-            //         ...defaults.esDb,
-            //         data: {
-            //             PK: PK_FORM(uniqueId),
-            //             SK: SK_SUBMISSION(submission.id),
-            //             index: defaults.es(context).index,
-            //             data: {
-            //                 __type: "fb.submission",
-            //                 webinyVersion: context.WEBINY_VERSION,
-            //                 createdOn: new Date().toISOString(),
-            //                 tenant: context.tenancy.getCurrentTenant().id,
-            //                 ...submission
-            //             }
-            //         }
-            //     })
-            //     .execute();
-
             submission.logs.push({
                 type: "info",
                 message: "Form submission created."
             });
 
             try {
-                // Execute triggers
+                /**
+                 * Execute triggers
+                 */
                 if (form.triggers) {
                     const plugins = context.plugins.byType("form-trigger-handler");
                     for (let i = 0; i < plugins.length; i++) {
@@ -421,7 +295,9 @@ export const createSubmissionsCrud = (params: Params): SubmissionsCRUD => {
                     message: e.message
                 });
             } finally {
-                // Save submission to include the logs that were added during trigger processing.
+                /**
+                 * Save submission to include the logs that were added during trigger processing.
+                 */
                 await this.updateSubmission(form.id, submission);
             }
 
@@ -433,30 +309,12 @@ export const createSubmissionsCrud = (params: Params): SubmissionsCRUD => {
 
             const updatedData = data.toJSON();
 
-            // const [uniqueId] = formId.split("#");
-            //
-            // // Finally save it to DB
-            // await db.update({
-            //     ...defaults.db,
-            //     query: {
-            //         PK: PK_FORM(uniqueId),
-            //         SK: SK_SUBMISSION(data.id)
-            //     },
-            //     data: {
-            //         logs: data.logs
-            //     }
-            // });
-            //
-            // return true;
-
             const submissionId = input.id;
 
             const form = await this.getForm(formId, {
                 auth: false
             });
-            // if (!form) {
-            //     throw new NotFoundError(/"Form not found.");
-            // }
+
             const [original] = await this.getSubmissionsByIds(formId, [submissionId]);
             if (!original) {
                 throw new NotFoundError("Submission not found.");
@@ -467,6 +325,7 @@ export const createSubmissionsCrud = (params: Params): SubmissionsCRUD => {
              */
             const submission: FbSubmission = {
                 ...original,
+                tenant: form.tenant,
                 logs: updatedData.logs,
                 webinyVersion: context.WEBINY_VERSION
             };
@@ -493,29 +352,8 @@ export const createSubmissionsCrud = (params: Params): SubmissionsCRUD => {
             }
         },
         async deleteSubmission(this: FormBuilder, formId, submissionId) {
-            // const [uniqueId] = formId.split("#");
-            // await db
-            //     .batch()
-            //     .delete({
-            //         ...defaults.db,
-            //         query: {
-            //             PK: PK_FORM(uniqueId),
-            //             SK: SK_SUBMISSION(submissionId)
-            //         }
-            //     })
-            //     .delete({
-            //         ...defaults.esDb,
-            //         query: {
-            //             PK: PK_FORM(uniqueId),
-            //             SK: SK_SUBMISSION(submissionId)
-            //         }
-            //     })
-            //     .execute();
-
             const form = await this.getForm(formId);
-            // if (!form) {
-            //     throw new NotFoundError(/"Form not found.");
-            // }
+
             const [submission] = await this.getSubmissionsByIds(form, [submissionId]);
             if (!submission) {
                 throw new NotFoundError("Submission not found.");

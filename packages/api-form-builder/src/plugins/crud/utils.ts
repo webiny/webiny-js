@@ -43,7 +43,9 @@ export const getStatus = (params: { published: boolean; locked: boolean }) => {
     return params.locked ? "locked" : "draft";
 };
 
-// Has read/write/delete permissions?
+/**
+ * Has read/write/delete permissions?
+ */
 export const hasRwd = (permission: FbFormPermission, rwd: string) => {
     if (typeof permission.rwd !== "string") {
         return true;
@@ -52,12 +54,19 @@ export const hasRwd = (permission: FbFormPermission, rwd: string) => {
     return permission.rwd.includes(rwd);
 };
 
-// Has publishing workflow permissions?
+/**
+ * Has publishing workflow permissions?
+ */
 export const hasPW = (permission: FbFormPermission, pw: string) => {
-    const isCustom = Object.keys(permission).length > 1; // "name" key is always present
+    /**
+     * "name" key is always present
+     */
+    const isCustom = Object.keys(permission).length > 1;
 
     if (!isCustom) {
-        // Means it's a "full-access" permission.
+        /**
+         * Means it's a "full-access" permission.
+         */
         return true;
     }
 

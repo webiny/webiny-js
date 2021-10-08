@@ -2,7 +2,8 @@ import {
     FormBuilderStorageOperations as BaseFormBuilderStorageOperations,
     FormBuilderSystemStorageOperations as BaseFormBuilderSystemStorageOperations,
     FormBuilderSubmissionStorageOperations as BaseFormBuilderSubmissionStorageOperations,
-    FormBuilderSettingsStorageOperations as BaseFormBuilderSettingsStorageOperations
+    FormBuilderSettingsStorageOperations as BaseFormBuilderSettingsStorageOperations,
+    FormBuilderFormStorageOperations as BaseFormBuilderFormStorageOperations
 } from "@webiny/api-form-builder/types";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { Table, Entity } from "dynamodb-toolbox";
@@ -45,6 +46,16 @@ export interface FormBuilderSystemStorageOperations extends BaseFormBuilderSyste
     createSystemSortKey: () => string;
 }
 
+export interface FormBuilderFormCreateKeyParams {
+    id: string;
+    tenant: string;
+    locale: string;
+}
+
+export interface FormBuilderFormStorageOperations extends BaseFormBuilderFormStorageOperations {
+    createFormPartitionKey: (params: FormBuilderFormCreateKeyParams) => string;
+}
+
 export interface FormBuilderSubmissionStorageOperationsCreatePartitionKeyParams {
     tenant: string;
     locale: string;
@@ -76,9 +87,10 @@ export type Entities = "form" | "esForm" | "submission" | "esSubmission" | "syst
 
 export interface FormBuilderStorageOperations
     extends BaseFormBuilderStorageOperations,
-        FormBuilderSystemStorageOperations,
+        FormBuilderSettingsStorageOperations,
         FormBuilderSubmissionStorageOperations,
-        FormBuilderSettingsStorageOperations {
+        FormBuilderFormStorageOperations,
+        FormBuilderSystemStorageOperations {
     getTable(): Table;
     getEsTable(): Table;
     getEntities(): Record<Entities, Entity<any>>;

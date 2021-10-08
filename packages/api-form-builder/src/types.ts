@@ -6,6 +6,7 @@ import { SecurityPermission } from "@webiny/api-security/types";
 import { FileManagerContext } from "@webiny/api-file-manager/types";
 import { I18NContext } from "@webiny/api-i18n/types";
 import { Topic } from "@webiny/pubsub/types";
+import { UpgradePlugin } from "@webiny/api-upgrade/types";
 
 interface FbFormTriggerData {
     [key: string]: any;
@@ -74,10 +75,6 @@ export interface FbForm {
     stats: Omit<FbFormStats, "conversionRate">;
     settings: Record<string, any>;
     triggers: Record<string, any>;
-    /**
-     * The ID that connects all form revisions.
-     * TODO: Add via upgrade for 5.16.0 to both DynamoDB and Elasticsearch. (formId and webinyVersion)
-     */
     formId: string;
     webinyVersion: string;
 }
@@ -108,12 +105,10 @@ export interface FbFormStats {
     conversionRate: number;
 }
 
-type FbSubmissionsSort = Record<"createdOn", 1 | -1>;
-
 interface FbListSubmissionsOptions {
     limit?: number;
     after?: string;
-    sort?: FbSubmissionsSort;
+    sort?: string[];
 }
 
 export interface FbListSubmissionsMeta {
@@ -206,9 +201,6 @@ export interface FbSubmission {
     createdOn: string;
     savedOn: string;
     webinyVersion: string;
-    /**
-     * TODO add via upgrade
-     */
     tenant: string;
 }
 
@@ -361,7 +353,6 @@ export interface FormBuilderStorageOperationsGetFormParams {
         id?: string;
         formId?: string;
         version?: number;
-        // slug?: string;
         published?: boolean;
         latest?: boolean;
         tenant: string;
@@ -632,4 +623,8 @@ export interface FormBuilderStorageOperations
      * Initially it was intended to attach events like afterInstall, beforeInstall, etc...
      */
     init?: (formBuilder: FormBuilder) => Promise<void>;
+    /**
+     * An upgrade to run if necessary.
+     */
+    upgrade?: UpgradePlugin | null;
 }

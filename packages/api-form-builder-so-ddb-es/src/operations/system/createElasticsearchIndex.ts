@@ -21,7 +21,9 @@ export const createElasticsearchIndex = async (params: Params) => {
     await elasticsearch.indices.create({
         ...esIndex,
         body: {
-            // need this part for sorting to work on text fields
+            /**
+             * need this part for sorting to work on text fields
+             */
             settings: {
                 analysis: {
                     analyzer: {

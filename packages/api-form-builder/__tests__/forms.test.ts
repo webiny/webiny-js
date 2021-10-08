@@ -305,7 +305,7 @@ describe('Form Builder "Form" Test', () => {
 
         // Wait until propagated to Elastic...
         await until(
-            () => listFormSubmissions({ form: id }).then(([data]) => data),
+            () => listFormSubmissions({ form: id, sort: "savedOn_ASC" }).then(([data]) => data),
             ({ data }) => data.formBuilder.listFormSubmissions.data.length === 2,
             {
                 name: "after create submission",
