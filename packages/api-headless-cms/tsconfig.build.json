@@ -8,7 +8,6 @@
     "../api-i18n-ddb",
     "../api-i18n-content",
     "../api-security",
-    "../api-security-admin-users",
     "../api-tenancy",
     "../api-file-manager",
     "../api-upgrade",

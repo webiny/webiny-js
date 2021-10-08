@@ -52,7 +52,6 @@ export default [
         await view.isRendered();
 
         const { identity } = view.getSecurityHook();
-        console.log(identity);
         const hasPermissions = identity.getPermission(PERMISSION_FM_SETTINGS) !== undefined;
         if (!hasPermissions) {
             return;

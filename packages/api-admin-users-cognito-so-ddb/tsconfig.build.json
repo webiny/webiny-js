@@ -6,7 +6,7 @@
     "dist",
     "../db-dynamodb",
     "../error",
-    "../api-security-admin-users-cognito"
+    "../api-admin-users-cognito"
   ],
   "compilerOptions": {
     "rootDir": "./src",
