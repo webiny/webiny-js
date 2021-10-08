@@ -169,10 +169,12 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 const replacements = [
                     {
                         find: "PATH",
-                        replaceWith: path.relative(
-                            path.join(context.project.root, input.path, "code", "graphql"),
-                            context.project.root
-                        )
+                        replaceWith: path
+                            .relative(
+                                path.join(context.project.root, input.path, "code", "graphql"),
+                                context.project.root
+                            )
+                            .replace("\\", "/")
                     }
                 ];
                 replaceInPath(p, replacements);
@@ -184,10 +186,12 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 const replacements = [
                     {
                         find: "PATH",
-                        replaceWith: path.relative(
-                            path.join(context.project.root, input.path, "code", "graphql"),
-                            context.project.root
-                        )
+                        replaceWith: path
+                            .relative(
+                                path.join(context.project.root, input.path, "code", "graphql"),
+                                context.project.root
+                            )
+                            .replace("\\", "/")
                     }
                 ];
                 replaceInPath(p, replacements);
@@ -217,7 +221,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
 
             // Add package to workspaces.
             const rootPackageJsonPath = path.join(context.project.root, "package.json");
-            const pathToAdd = `${input.path}/code/graphql`;
+            const pathToAdd = `${input.path}/code/graphql`.replace("\\", "/");
             await addWorkspaceToRootPackageJson(rootPackageJsonPath, pathToAdd);
 
             ora.stopAndPersist({
