@@ -5,7 +5,7 @@ import { PackageJson } from "@webiny/cli-plugin-scaffold/types";
 
 export default async (packageJsonPath, pathToAdd) => {
     // Ensure forward slashes are used.
-    pathToAdd = pathToAdd.replace("\\", "/");
+    pathToAdd = pathToAdd.replace(/\\/g, "/");
 
     const rootPackageJson = await readJson<PackageJson>(packageJsonPath);
     if (!rootPackageJson.workspaces.packages.includes(pathToAdd)) {

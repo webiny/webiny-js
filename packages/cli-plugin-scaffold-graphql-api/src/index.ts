@@ -174,7 +174,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                                 path.join(context.project.root, input.path, "code", "graphql"),
                                 context.project.root
                             )
-                            .replace("\\", "/")
+                            .replace(/\\/g, "/")
                     }
                 ];
                 replaceInPath(p, replacements);
@@ -191,7 +191,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                                 path.join(context.project.root, input.path, "code", "graphql"),
                                 context.project.root
                             )
-                            .replace("\\", "/")
+                            .replace(/\\/g, "/")
                     }
                 ];
                 replaceInPath(p, replacements);
@@ -221,7 +221,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
 
             // Add package to workspaces.
             const rootPackageJsonPath = path.join(context.project.root, "package.json");
-            const pathToAdd = `${input.path}/code/graphql`.replace("\\", "/");
+            const pathToAdd = `${input.path}/code/graphql`.replace(/\\/g, "/");
             await addWorkspaceToRootPackageJson(rootPackageJsonPath, pathToAdd);
 
             ora.stopAndPersist({
