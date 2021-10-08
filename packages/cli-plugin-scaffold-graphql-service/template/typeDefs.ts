@@ -41,9 +41,9 @@ export default /* GraphQL */ `
     }
 
     type TargetDataModelQuery {
-        # Returns a single TargetDataModel entry. 
+        # Returns a single TargetDataModel entry.
         getTargetDataModel(id: ID!): TargetDataModel
-        
+
         # Lists one or more TargetDataModel entries.
         listTargetDataModels(
             limit: Int
