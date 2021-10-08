@@ -174,7 +174,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
 
             // Add package to workspaces.
             const rootPackageJsonPath = path.join(context.project.root, "package.json");
-            const pathToAdd = `${input.path}/code`;
+            const pathToAdd = `${input.path}/code`.replace("\\", "/");
             await addWorkspaceToRootPackageJson(rootPackageJsonPath, pathToAdd);
 
             ora.stopAndPersist({
