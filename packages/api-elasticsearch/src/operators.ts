@@ -12,7 +12,7 @@ import { ElasticsearchQueryBuilderOperatorInPlugin } from "~/plugins/operator/in
 import { ElasticsearchQueryBuilderOperatorAndInPlugin } from "~/plugins/operator/andIn";
 import { ElasticsearchQueryBuilderOperatorNotInPlugin } from "~/plugins/operator/notIn";
 
-export const getElasticsearchOperators = () => [
+const operators = [
     new ElasticsearchQueryBuilderOperatorBetweenPlugin(),
     new ElasticsearchQueryBuilderOperatorNotBetweenPlugin(),
     new ElasticsearchQueryBuilderOperatorContainsPlugin(),
@@ -27,3 +27,8 @@ export const getElasticsearchOperators = () => [
     new ElasticsearchQueryBuilderOperatorAndInPlugin(),
     new ElasticsearchQueryBuilderOperatorNotInPlugin()
 ];
+/**
+ * We export as a function because there might be something to be sent to the operators at some point.
+ * This way, we make it easier to upgrade.
+ */
+export const getElasticsearchOperators = () => operators;
