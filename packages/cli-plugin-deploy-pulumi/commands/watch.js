@@ -40,7 +40,7 @@ module.exports = async (inputs, context) => {
     }
 
     inputs.build = inputs.build !== false;
-    inputs.deploy = Boolean(projectApplication && inputs.deploy !== false);
+    inputs.deploy = projectApplication && inputs.deploy !== false;
 
     if (inputs.deploy && !inputs.env) {
         throw new Error(`Please specify environment, for example "dev".`);
@@ -218,10 +218,31 @@ module.exports = async (inputs, context) => {
             });
 
             watchCloudInfrastructure.stdout.on("data", data => {
-                output.log({
-                    type: "deploy",
-                    message: data.toString()
-                });
+                const line = data.toString();
+
+                try {
+                    const [, , name, message] = line
+                        .match(/(.*)\[(.*)\] (.*)/)
+                        .map(item => item.trim());
+
+                    if (name) {
+                        const coloredName = chalk.hex(getRandomColorForString(name)).bold(name);
+                        output.log({
+                            type: "deploy",
+                            message: `${coloredName}: ${message}`
+                        });
+                    } else {
+                        output.log({
+                            type: "deploy",
+                            message
+                        });
+                    }
+                } catch (e) {
+                    output.log({
+                        type: "deploy",
+                        message: line
+                    });
+                }
             });
 
             watchCloudInfrastructure.stderr.on("data", data => {
