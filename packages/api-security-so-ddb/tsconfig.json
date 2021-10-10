@@ -1,26 +1,6 @@
 {
   "extends": "../../tsconfig",
   "include": ["./src", "./__tests__"],
-  "references": [
-    {
-      "path": "../api-security"
-    },
-    {
-      "path": "../api-tenancy"
-    },
-    {
-      "path": "../db-dynamodb"
-    },
-    {
-      "path": "../handler-db"
-    },
-    {
-      "path": "../error"
-    },
-    {
-      "path": "../plugins"
-    }
-  ],
   "compilerOptions": {
     "paths": {
       "~/*": ["./src/*"],
@@ -38,5 +18,13 @@
       "@webiny/plugins": ["../plugins/src"]
     },
     "baseUrl": "."
-  }
+  },
+  "references": [
+    { "path": "../api-security" },
+    { "path": "../api-tenancy" },
+    { "path": "../db-dynamodb" },
+    { "path": "../handler-db" },
+    { "path": "../error" },
+    { "path": "../plugins" }
+  ]
 }

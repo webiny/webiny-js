@@ -25,6 +25,15 @@
     },
     {
       "path": "../pubsub"
+    },
+    {
+      "path": "../handler-aws"
+    },
+    {
+      "path": "../handler-http"
+    },
+    {
+      "path": "../validation"
     }
   ],
   "compilerOptions": {

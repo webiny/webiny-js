@@ -1,16 +1,6 @@
 {
   "extends": "../../tsconfig.build.json",
   "include": ["./src"],
-  "exclude": [
-    "node_modules",
-    "dist",
-    "../db-dynamodb",
-    "../handler-db",
-    "../error",
-    "../plugins",
-    "../api-security",
-    "../api-tenancy"
-  ],
   "compilerOptions": {
     "rootDir": "./src",
     "outDir": "./dist",
@@ -20,5 +10,13 @@
     },
     "baseUrl": "."
   },
-  "references": []
+  "references": [
+    { "path": "../api-tenancy/tsconfig.build.json" },
+    { "path": "../handler-db/tsconfig.build.json" },
+    { "path": "../plugins/tsconfig.build.json" },
+    { "path": "../db-dynamodb/tsconfig.build.json" },
+    { "path": "../error/tsconfig.build.json" },
+    { "path": "../api-security/tsconfig.build.json" },
+    { "path": "../api-tenancy/tsconfig.build.json" }
+  ]
 }

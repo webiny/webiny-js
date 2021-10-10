@@ -1,51 +1,94 @@
 {
-  "extends": "../../tsconfig",
-  "references": [
-    {
-      "path": "../api-security"
-    },
-    {
-      "path": "../api-tenancy"
-    },
-    {
-      "path": "../error"
-    },
-    {
-      "path": "../handler"
-    },
-    {
-      "path": "../handler-aws"
-    },
-    {
-      "path": "../handler-client"
-    },
-    {
-      "path": "../handler-graphql"
-    },
-    {
-      "path": "../plugins"
-    }
-  ],
-  "compilerOptions": {
-    "paths": {
-      "~/*": ["./src/*"],
-      "@webiny/api-security/*": ["../api-security/src/*"],
-      "@webiny/api-security": ["../api-security/src"],
-      "@webiny/api-tenancy/*": ["../api-tenancy/src/*"],
-      "@webiny/api-tenancy": ["../api-tenancy/src"],
-      "@webiny/handler/*": ["../handler/src/*"],
-      "@webiny/handler": ["../handler/src"],
-      "@webiny/error/*": ["../error/src/*"],
-      "@webiny/error": ["../error/src"],
-      "@webiny/handler-aws/*": ["../handler-aws/src/*"],
-      "@webiny/handler-aws": ["../handler-aws/src"],
-      "@webiny/handler-client/*": ["../handler-client/src/*"],
-      "@webiny/handler-client": ["../handler-client/src"],
-      "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
-      "@webiny/handler-graphql": ["../handler-graphql/src"],
-      "@webiny/plugins/*": ["../plugins/src/*"],
-      "@webiny/plugins": ["../plugins/src"]
-    },
-    "baseUrl": "."
-  }
+	"extends": "../../tsconfig",
+	"references": [
+		{
+			"path": "../api-security"
+		},
+		{
+			"path": "../api-tenancy"
+		},
+		{
+			"path": "../error"
+		},
+		{
+			"path": "../handler"
+		},
+		{
+			"path": "../handler-aws"
+		},
+		{
+			"path": "../handler-client"
+		},
+		{
+			"path": "../handler-graphql"
+		},
+		{
+			"path": "../plugins"
+		},
+		{
+			"path": "../api-security-so-ddb"
+		},
+		{
+			"path": "../api-tenancy-so-ddb"
+		},
+		{
+			"path": "../handler-http"
+		}
+	],
+	"compilerOptions": {
+		"paths": {
+			"~/*": [
+				"./src/*"
+			],
+			"@webiny/api-security/*": [
+				"../api-security/src/*"
+			],
+			"@webiny/api-security": [
+				"../api-security/src"
+			],
+			"@webiny/api-tenancy/*": [
+				"../api-tenancy/src/*"
+			],
+			"@webiny/api-tenancy": [
+				"../api-tenancy/src"
+			],
+			"@webiny/handler/*": [
+				"../handler/src/*"
+			],
+			"@webiny/handler": [
+				"../handler/src"
+			],
+			"@webiny/error/*": [
+				"../error/src/*"
+			],
+			"@webiny/error": [
+				"../error/src"
+			],
+			"@webiny/handler-aws/*": [
+				"../handler-aws/src/*"
+			],
+			"@webiny/handler-aws": [
+				"../handler-aws/src"
+			],
+			"@webiny/handler-client/*": [
+				"../handler-client/src/*"
+			],
+			"@webiny/handler-client": [
+				"../handler-client/src"
+			],
+			"@webiny/handler-graphql/*": [
+				"../handler-graphql/src/*"
+			],
+			"@webiny/handler-graphql": [
+				"../handler-graphql/src"
+			],
+			"@webiny/plugins/*": [
+				"../plugins/src/*"
+			],
+			"@webiny/plugins": [
+				"../plugins/src"
+			]
+		},
+		"baseUrl": "."
+	}
 }

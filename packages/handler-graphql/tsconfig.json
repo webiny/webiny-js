@@ -1,22 +1,5 @@
 {
   "extends": "../../tsconfig",
-  "references": [
-    {
-      "path": "../error"
-    },
-    {
-      "path": "../handler"
-    },
-    {
-      "path": "../handler-http"
-    },
-    {
-      "path": "../plugins"
-    },
-    {
-      "path": "../handler-args"
-    }
-  ],
   "compilerOptions": {
     "paths": {
       "@webiny/error/*": ["../error/src/*"],
@@ -31,5 +14,12 @@
       "@webiny/handler-args": ["../handler-args/src"]
     },
     "baseUrl": "."
-  }
+  },
+  "references": [
+    { "path": "../error" },
+    { "path": "../handler" },
+    { "path": "../handler-http" },
+    { "path": "../plugins" },
+    { "path": "../handler-args" }
+  ]
 }

@@ -59,7 +59,7 @@
     "react-dnd": "^9.3.4",
     "react-dnd-html5-backend": "^9.3.4",
     "react-dom": "^16.14.0",
-    "react-helmet": "^5.2.0",
+    "react-helmet": "^5.2.1",
     "react-images": "^0.5.19",
     "react-sortable": "^2.0.0",
     "react-sortable-tree": "^2.6.0",

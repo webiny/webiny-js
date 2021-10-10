@@ -14,10 +14,7 @@
   "dependencies": {
     "@webiny/api-cognito-authenticator": "^5.15.0",
     "@webiny/api-security": "^5.15.0",
-    "@webiny/handler": "^5.15.0",
-    "jsonwebtoken": "^8.5.1",
-    "jwk-to-pem": "^2.0.1",
-    "node-fetch": "^2.6.1"
+    "@webiny/handler": "^5.15.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",

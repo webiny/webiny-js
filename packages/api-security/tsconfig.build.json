@@ -5,12 +5,16 @@
     "node_modules",
     "./dist",
     "../api-authentication",
+    "../api-tenancy-so-ddb",
     "../api-tenancy",
     "../error",
     "../handler",
     "../handler-graphql",
     "../plugins",
-    "../pubsub"
+    "../pubsub",
+    "../handler-aws",
+    "../handler-http",
+    "../validation"
   ],
   "compilerOptions": {
     "rootDir": "./src",
@@ -20,6 +24,5 @@
       "~/*": ["./src/*"]
     },
     "baseUrl": "."
-  },
-  "references": []
+  }
 }

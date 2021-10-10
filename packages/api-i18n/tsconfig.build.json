@@ -1,25 +1,45 @@
 {
-  "extends": "../../tsconfig.build.json",
-  "include": ["src"],
-  "exclude": [
-    "node_modules",
-    "../api-security",
-    "../api-tenancy",
-    "../plugins",
-    "../error",
-    "../handler",
-    "../handler-aws",
-    "../handler-graphql",
-    "../handler-client"
-  ],
-  "compilerOptions": {
-    "outDir": "dist",
-    "rootDir": "src",
-    "declarationDir": "dist",
-    "baseUrl": ".",
-    "paths": {
-      "~/*": ["./src/*"]
-    }
-  },
-  "references": []
+	"extends": "../../tsconfig.build.json",
+	"include": [
+		"src"
+	],
+	"exclude": [
+		"node_modules",
+		"../api-security",
+		"../api-tenancy",
+		"../plugins",
+		"../error",
+		"../handler",
+		"../handler-aws",
+		"../handler-graphql",
+		"../handler-client",
+		"../api-security-so-ddb",
+		"../api-tenancy-so-ddb",
+		"../handler-http"
+	],
+	"compilerOptions": {
+		"outDir": "dist",
+		"rootDir": "src",
+		"declarationDir": "dist",
+		"baseUrl": ".",
+		"paths": {
+			"~/*": [
+				"./src/*"
+			]
+		}
+	},
+	"references": [
+		{
+			"path": "../api-security-so-ddb/tsconfig.build.json"
+		},
+		{
+			"path": "../api-tenancy-so-ddb/tsconfig.build.json"
+		},
+		{
+			"path": "../handler-http/tsconfig.build.json"
+		},
+		{
+			"path": "../plugins/tsconfig.build.json"
+		}
+	]
 }

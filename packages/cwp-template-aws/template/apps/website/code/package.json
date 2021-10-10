@@ -25,7 +25,7 @@
     "lodash.trim": "^4.4.2",
     "react": "^16.14.0",
     "react-dom": "^16.14.0",
-    "react-helmet": "^6.1.0",
+    "react-helmet": "^5.2.1",
     "regenerator-runtime": "^0.13.5",
     "theme": "^0.1.0"
   },

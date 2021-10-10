@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { omit } from "lodash";
+import omit from "lodash/omit";
 import { useQuery, useMutation } from "@apollo/react-hooks";
 import { i18n } from "@webiny/app/i18n";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
