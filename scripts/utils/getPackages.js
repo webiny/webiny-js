@@ -56,9 +56,12 @@ module.exports.getPackages = (args = {}) => {
                 }
             }
 
+            const hasTypescriptInDeps =
+                packageJson.devDependencies && Boolean(packageJson.devDependencies["typescript"]);
+
             try {
                 return {
-                    isTs: Boolean(tsConfigJson || tsConfigBuildJson),
+                    isTs: Boolean(tsConfigJson || tsConfigBuildJson || hasTypescriptInDeps),
                     name: packageJson.name,
                     folderName: basename(path),
                     packageFolder: path,

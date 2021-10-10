@@ -1,3 +1,3 @@
 export enum Permission {
-    Users = "adminUsers.user",
+    Users = "adminUsers.user"
 }

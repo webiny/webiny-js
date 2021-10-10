@@ -40,7 +40,7 @@ export default new GraphQLSchemaPlugin<SecurityContext>({
             data: [SecurityGroup]
             error: SecurityError
         }
-        
+
         input GetGroupWhereInput {
             id: ID
             slug: String

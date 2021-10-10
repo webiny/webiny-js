@@ -1,45 +1,24 @@
 {
-	"extends": "../../tsconfig.build.json",
-	"include": [
-		"src"
-	],
-	"exclude": [
-		"node_modules",
-		"../api-security",
-		"../api-tenancy",
-		"../plugins",
-		"../error",
-		"../handler",
-		"../handler-aws",
-		"../handler-graphql",
-		"../handler-client",
-		"../api-security-so-ddb",
-		"../api-tenancy-so-ddb",
-		"../handler-http"
-	],
-	"compilerOptions": {
-		"outDir": "dist",
-		"rootDir": "src",
-		"declarationDir": "dist",
-		"baseUrl": ".",
-		"paths": {
-			"~/*": [
-				"./src/*"
-			]
-		}
-	},
-	"references": [
-		{
-			"path": "../api-security-so-ddb/tsconfig.build.json"
-		},
-		{
-			"path": "../api-tenancy-so-ddb/tsconfig.build.json"
-		},
-		{
-			"path": "../handler-http/tsconfig.build.json"
-		},
-		{
-			"path": "../plugins/tsconfig.build.json"
-		}
-	]
+  "extends": "../../tsconfig.build.json",
+  "include": ["src"],
+  "references": [
+    { "path": "../api-security/tsconfig.build.json" },
+    { "path": "../api-security-so-ddb/tsconfig.build.json" },
+    { "path": "../api-tenancy/tsconfig.build.json" },
+    { "path": "../api-tenancy-so-ddb/tsconfig.build.json" },
+    { "path": "../error/tsconfig.build.json" },
+    { "path": "../handler/tsconfig.build.json" },
+    { "path": "../handler-aws/tsconfig.build.json" },
+    { "path": "../handler-client/tsconfig.build.json" },
+    { "path": "../handler-graphql/tsconfig.build.json" },
+    { "path": "../handler-http/tsconfig.build.json" },
+    { "path": "../plugins/tsconfig.build.json" }
+  ],
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "declarationDir": "./dist",
+    "paths": { "~/*": ["./src/*"] },
+    "baseUrl": "."
+  }
 }

@@ -1,33 +1,20 @@
 {
-  "extends": "../../tsconfig",
+  "extends": "../../tsconfig.json",
   "include": ["src"],
   "references": [
-    {
-      "path": "../app"
-    },
-    {
-      "path": "../app-security"
-    },
-    {
-      "path": "../form"
-    },
-    {
-      "path": "../plugins"
-    },
-    {
-      "path": "../react-router"
-    },
-    {
-      "path": "../ui"
-    },
-    {
-      "path": "../ui-composer"
-    },
-    {
-      "path": "../validation"
-    }
+    { "path": "../app" },
+    { "path": "../app-security" },
+    { "path": "../form" },
+    { "path": "../plugins" },
+    { "path": "../react-router" },
+    { "path": "../ui" },
+    { "path": "../ui-composer" },
+    { "path": "../validation" }
   ],
   "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "declarationDir": "./dist",
     "paths": {
       "~/*": ["./src/*"],
       "@webiny/app/*": ["../app/src/*"],

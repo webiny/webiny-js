@@ -16,7 +16,7 @@ export const createSystemMethods = ({ getTenant, storageOperations }: SecurityCo
         onCleanup: createTopic<ErrorEvent>("security.onCleanup"),
         async getVersion() {
             const tenantId = getTenant();
-            
+
             if (!tenantId) {
                 return null;
             }

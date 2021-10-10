@@ -3,7 +3,7 @@ import { Link } from "@webiny/react-router";
 import { css } from "emotion";
 import styled from "@emotion/styled";
 import Helmet from "react-helmet";
-import authErrorImg from "../assets/images/SecureRouteError.svg";
+import authErrorImg from "./SecureRouteError.svg";
 import { Typography } from "@webiny/ui/Typography";
 
 const ContentWrapper = styled("div")({
@@ -30,7 +30,7 @@ const styles = {
     })
 };
 
-const NotAuthorizedError = () => {
+export const NotAuthorizedError = () => {
     return (
         <ContentWrapper>
             <Helmet title={"Not authorized"} />
@@ -51,5 +51,3 @@ const NotAuthorizedError = () => {
         </ContentWrapper>
     );
 };
-
-export default NotAuthorizedError;

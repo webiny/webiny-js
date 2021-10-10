@@ -1,13 +1,13 @@
 {
-  "extends": "../../tsconfig",
+  "extends": "../../tsconfig.json",
   "include": ["src"],
-  "references": [
-    {
-      "path": "../handler"
-    }
-  ],
+  "references": [{ "path": "../handler" }],
   "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "declarationDir": "./dist",
     "paths": {
+      "~/*": ["./src/*"],
       "@webiny/handler/*": ["../handler/src/*"],
       "@webiny/handler": ["../handler/src"]
     },

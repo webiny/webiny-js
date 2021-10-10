@@ -1,21 +1,15 @@
 {
-  "extends": "../../tsconfig",
-  "include": ["./src", "./__tests__"],
+  "extends": "../../tsconfig.json",
+  "include": ["src"],
   "references": [
-    {
-      "path": "../api-tenancy"
-    },
-    {
-      "path": "../db-dynamodb"
-    },
-    {
-      "path": "../error"
-    },
-    {
-      "path": "../plugins"
-    }
+    { "path": "../api-tenancy" },
+    { "path": "../db-dynamodb" },
+    { "path": "../error" }
   ],
   "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "declarationDir": "./dist",
     "paths": {
       "~/*": ["./src/*"],
       "@webiny/api-tenancy/*": ["../api-tenancy/src/*"],

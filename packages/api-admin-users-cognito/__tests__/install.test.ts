@@ -2,7 +2,7 @@ import useGqlHandler from "./useGqlHandler";
 
 describe(`Test "Admin Users" install`, () => {
     const { install } = useGqlHandler({ fullAccess: true });
-    
+
     beforeEach(async () => {
         await install.installTenancy();
         await install.installSecurity();

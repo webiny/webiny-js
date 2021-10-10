@@ -1,15 +1,13 @@
 {
-  "extends": "../../tsconfig",
-  "references": [
-    {
-      "path": "../db"
-    },
-    {
-      "path": "../handler"
-    }
-  ],
+  "extends": "../../tsconfig.json",
+  "include": ["src"],
+  "references": [{ "path": "../db" }, { "path": "../handler" }],
   "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "declarationDir": "./dist",
     "paths": {
+      "~/*": ["./src/*"],
       "@webiny/db/*": ["../db/src/*"],
       "@webiny/db": ["../db/src"],
       "@webiny/handler/*": ["../handler/src/*"],

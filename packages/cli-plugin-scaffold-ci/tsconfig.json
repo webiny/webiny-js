@@ -1,20 +1,17 @@
 {
-  "extends": "../../tsconfig",
+  "extends": "../../tsconfig.json",
   "include": ["src"],
-  "references": [
-    {
-      "path": "../plugins"
-    },
-    {
-      "path": "../cli-plugin-scaffold"
-    }
-  ],
+  "references": [{ "path": "../cli-plugin-scaffold" }, { "path": "../plugins" }],
   "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "declarationDir": "./dist",
     "paths": {
-      "@webiny/plugins/*": ["../plugins/src/*"],
-      "@webiny/plugins": ["../plugins/src"],
+      "~/*": ["./src/*"],
       "@webiny/cli-plugin-scaffold/*": ["../cli-plugin-scaffold/src/*"],
-      "@webiny/cli-plugin-scaffold": ["../cli-plugin-scaffold/src"]
+      "@webiny/cli-plugin-scaffold": ["../cli-plugin-scaffold/src"],
+      "@webiny/plugins/*": ["../plugins/src/*"],
+      "@webiny/plugins": ["../plugins/src"]
     },
     "baseUrl": "."
   }

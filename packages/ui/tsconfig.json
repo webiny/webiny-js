@@ -1,26 +1,17 @@
 {
-  "extends": "../../tsconfig",
-  "exclude": [
-    "node_modules",
-    "./dist",
-    "**/__tests__/**",
-    "../storybook-utils",
-    "../form",
-    "../validation"
-  ],
+  "extends": "../../tsconfig.json",
+  "include": ["src"],
   "references": [
-    {
-      "path": "../form"
-    },
-    {
-      "path": "../storybook-utils"
-    },
-    {
-      "path": "../validation"
-    }
+    { "path": "../form" },
+    { "path": "../storybook-utils" },
+    { "path": "../validation" }
   ],
   "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "declarationDir": "./dist",
     "paths": {
+      "~/*": ["./src/*"],
       "@webiny/form/*": ["../form/src/*"],
       "@webiny/form": ["../form/src"],
       "@webiny/storybook-utils/*": ["../storybook-utils/src/*"],

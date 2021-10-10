@@ -1,44 +1,24 @@
 {
-  "extends": "../../tsconfig",
+  "extends": "../../tsconfig.json",
+  "include": ["src"],
   "references": [
-    {
-      "path": "../app"
-    },
-    {
-      "path": "../app-admin"
-    },
-    {
-      "path": "../app-graphql-playground"
-    },
-    {
-      "path": "../app-i18n"
-    },
-    {
-      "path": "../app-plugin-admin-welcome-screen"
-    },
-    {
-      "path": "../app-security"
-    },
-    {
-      "path": "../error"
-    },
-    {
-      "path": "../form"
-    },
-    {
-      "path": "../plugins"
-    },
-    {
-      "path": "../react-router"
-    },
-    {
-      "path": "../ui"
-    },
-    {
-      "path": "../validation"
-    }
+    { "path": "../app" },
+    { "path": "../app-admin" },
+    { "path": "../app-graphql-playground" },
+    { "path": "../app-i18n" },
+    { "path": "../app-plugin-admin-welcome-screen" },
+    { "path": "../app-security" },
+    { "path": "../error" },
+    { "path": "../form" },
+    { "path": "../plugins" },
+    { "path": "../react-router" },
+    { "path": "../ui" },
+    { "path": "../validation" }
   ],
   "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "declarationDir": "./dist",
     "paths": {
       "~/*": ["./src/*"],
       "@webiny/app/*": ["../app/src/*"],

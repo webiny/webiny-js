@@ -2,5 +2,4 @@ import { ElasticsearchFieldPlugin } from "@webiny/api-elasticsearch/plugins/defi
 
 export class CmsEntryElasticsearchFieldPlugin extends ElasticsearchFieldPlugin {
     public static readonly type: string = "elasticsearch.fieldDefinition.cms.entry";
-    
 }

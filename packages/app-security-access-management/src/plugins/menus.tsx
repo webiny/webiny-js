@@ -5,7 +5,7 @@ import { NavigationView } from "@webiny/app-admin/ui/views/NavigationView";
 
 export default new UIViewPlugin<NavigationView>(NavigationView, async view => {
     await view.isRendered();
-    
+
     const { identity } = view.getSecurityHook();
     const groups = identity.getPermission(Permission.Groups);
     const apiKeys = identity.getPermission(Permission.ApiKeys);
@@ -15,18 +15,17 @@ export default new UIViewPlugin<NavigationView>(NavigationView, async view => {
     }
 
     const mainMenu = view.getSettingsMenuElement().addElement<NavigationMenuElement>(
-        new NavigationMenuElement("security", {
-            label: "Security",
+        new NavigationMenuElement("accessManagement", {
+            label: "Access Management",
             tags: [TAGS.UTILS]
         })
     );
-
 
     if (groups) {
         mainMenu.addElement<NavigationMenuElement>(
             new NavigationMenuElement("groups", {
                 label: "Groups",
-                path: "/security/groups"
+                path: "/access-management/groups"
             })
         );
     }
@@ -35,7 +34,7 @@ export default new UIViewPlugin<NavigationView>(NavigationView, async view => {
         mainMenu.addElement<NavigationMenuElement>(
             new NavigationMenuElement("apiKeys", {
                 label: "API Keys",
-                path: "/security/api-keys"
+                path: "/access-management/api-keys"
             })
         );
     }

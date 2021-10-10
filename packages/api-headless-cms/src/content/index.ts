@@ -27,7 +27,7 @@ export default (options: CmsContentPluginsIndexArgs = {}) => [
     fieldTypePlugins(),
     validatorsPlugins(),
     defaultStoragePlugin(),
-    objectStoragePlugin(),
+    objectStoragePlugin()
     // new InternalAuthenticationPlugin("read-api-key"),
     // new InternalAuthorizationPlugin("read-api-key")
 ];

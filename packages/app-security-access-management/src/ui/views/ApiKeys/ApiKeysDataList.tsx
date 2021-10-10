@@ -101,7 +101,7 @@ const ApiKeysDataList = () => {
                 showSnackbar(t`Api key "{id}" deleted.`({ id: item.id }));
 
                 if (id === item.id) {
-                    history.push(`/security/api-keys`);
+                    history.push(`/access-management/api-keys`);
                 }
             });
         },
@@ -134,11 +134,11 @@ const ApiKeysDataList = () => {
 
     return (
         <DataList
-            title={t`Security API keys`}
+            title={t`API Keys`}
             actions={
                 <ButtonSecondary
                     data-testid="new-record-button"
-                    onClick={() => history.push("/security/api-keys?new=true")}
+                    onClick={() => history.push("/access-management/api-keys?new=true")}
                 >
                     <ButtonIcon icon={<AddIcon />} /> {t`New API Key`}
                 </ButtonSecondary>
@@ -165,7 +165,9 @@ const ApiKeysDataList = () => {
                     {data.map(item => (
                         <ListItem key={item.id} selected={item.id === id}>
                             <ListItemText
-                                onClick={() => history.push(`/security/api-keys?id=${item.id}`)}
+                                onClick={() =>
+                                    history.push(`/access-management/api-keys?id=${item.id}`)
+                                }
                             >
                                 {item.name}
                                 <ListItemTextSecondary>{item.description}</ListItemTextSecondary>

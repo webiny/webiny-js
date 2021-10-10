@@ -1,18 +1,15 @@
 {
-  "extends": "../../tsconfig",
-  "include": ["./src", "./__tests__"],
+  "extends": "../../tsconfig.json",
+  "include": ["src"],
   "references": [
-    {
-      "path": "../api-admin-users-cognito"
-    },
-    {
-      "path": "../db-dynamodb"
-    },
-    {
-      "path": "../error"
-    }
+    { "path": "../api-admin-users-cognito" },
+    { "path": "../db-dynamodb" },
+    { "path": "../error" }
   ],
   "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "declarationDir": "./dist",
     "paths": {
       "~/*": ["./src/*"],
       "@webiny/api-admin-users-cognito/*": ["../api-admin-users-cognito/src/*"],

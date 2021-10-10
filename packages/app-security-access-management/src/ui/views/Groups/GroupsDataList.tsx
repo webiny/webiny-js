@@ -103,7 +103,7 @@ const GroupsDataList = () => {
                 showSnackbar(t`Group "{slug}" deleted.`({ slug: item.slug }));
 
                 if (id === item.id) {
-                    history.push(`/security/groups`);
+                    history.push(`/access-management/groups`);
                 }
             });
         },
@@ -136,11 +136,11 @@ const GroupsDataList = () => {
 
     return (
         <DataList
-            title={t`Security Groups`}
+            title={t`Groups`}
             actions={
                 <ButtonSecondary
                     data-testid="new-record-button"
-                    onClick={() => history.push("/security/groups?new=true")}
+                    onClick={() => history.push("/access-management/groups?new=true")}
                 >
                     <ButtonIcon icon={<AddIcon />} /> {t`New Group`}
                 </ButtonSecondary>
@@ -163,7 +163,9 @@ const GroupsDataList = () => {
                     {data.map(item => (
                         <ListItem key={item.id} selected={item.id === id}>
                             <ListItemText
-                                onClick={() => history.push(`/security/groups?id=${item.id}`)}
+                                onClick={() =>
+                                    history.push(`/access-management/groups?id=${item.id}`)
+                                }
                             >
                                 {item.name}
                                 <ListItemTextSecondary>{item.description}</ListItemTextSecondary>

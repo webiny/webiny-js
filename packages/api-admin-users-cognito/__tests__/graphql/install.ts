@@ -45,4 +45,3 @@ export const INSTALL_SECURITY = /* GraphQL */ `
         }
     }
 `;
-

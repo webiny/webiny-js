@@ -1,23 +1,15 @@
 {
   "extends": "../../tsconfig.json",
-  "references": [
-    {
-      "path": "../app"
-    },
-    {
-      "path": "../form"
-    },
-    {
-      "path": "../plugins"
-    }
-  ],
+  "include": ["src"],
+  "references": [{ "path": "../app" }, { "path": "../plugins" }],
   "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "declarationDir": "./dist",
     "paths": {
       "~/*": ["./src/*"],
       "@webiny/app/*": ["../app/src/*"],
       "@webiny/app": ["../app/src"],
-      "@webiny/form/*": ["../form/src/*"],
-      "@webiny/form": ["../form/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"]
     },

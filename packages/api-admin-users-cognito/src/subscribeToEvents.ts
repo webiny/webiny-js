@@ -7,7 +7,7 @@ type Context = SecurityContext & TenancyContext & AdminUsersContext;
 
 export const subscribeToEvents = (context: Context) => {
     const { security, tenancy, adminUsers } = context;
-    
+
     const getTenant = () => {
         const tenant = tenancy.getCurrentTenant();
         return tenant ? tenant.id : undefined;

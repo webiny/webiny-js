@@ -1,6 +1,6 @@
 import {
     TenancyStorageOperations,
-    TenancyStorageOperations as BaseTenantsStorageOperations,
+    TenancyStorageOperations as BaseTenantsStorageOperations
 } from "@webiny/api-tenancy/types";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { Table, Entity } from "dynamodb-toolbox";

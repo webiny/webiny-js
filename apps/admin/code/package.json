@@ -23,6 +23,7 @@
     "@webiny/app-page-builder": "^5.15.0",
     "@webiny/app-plugin-admin-welcome-screen": "^5.15.0",
     "@webiny/app-security": "^5.15.0",
+    "@webiny/app-security-access-management": "^5.15.0",
     "@webiny/app-tenancy": "^5.15.0",
     "@webiny/cli": "^5.15.0",
     "@webiny/cli-plugin-deploy-pulumi": "^5.15.0",

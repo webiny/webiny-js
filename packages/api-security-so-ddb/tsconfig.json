@@ -1,30 +1,24 @@
 {
-  "extends": "../../tsconfig",
-  "include": ["./src", "./__tests__"],
+  "extends": "../../tsconfig.json",
+  "include": ["src"],
+  "references": [
+    { "path": "../api-security" },
+    { "path": "../db-dynamodb" },
+    { "path": "../error" }
+  ],
   "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "declarationDir": "./dist",
     "paths": {
       "~/*": ["./src/*"],
       "@webiny/api-security/*": ["../api-security/src/*"],
       "@webiny/api-security": ["../api-security/src"],
-      "@webiny/api-tenancy/*": ["../api-tenancy/src/*"],
-      "@webiny/api-tenancy": ["../api-tenancy/src"],
       "@webiny/db-dynamodb/*": ["../db-dynamodb/src/*"],
       "@webiny/db-dynamodb": ["../db-dynamodb/src"],
-      "@webiny/handler-db/*": ["../handler-db/src/*"],
-      "@webiny/handler-db": ["../handler-db/src"],
       "@webiny/error/*": ["../error/src/*"],
-      "@webiny/error": ["../error/src"],
-      "@webiny/plugins/*": ["../plugins/src/*"],
-      "@webiny/plugins": ["../plugins/src"]
+      "@webiny/error": ["../error/src"]
     },
     "baseUrl": "."
-  },
-  "references": [
-    { "path": "../api-security" },
-    { "path": "../api-tenancy" },
-    { "path": "../db-dynamodb" },
-    { "path": "../handler-db" },
-    { "path": "../error" },
-    { "path": "../plugins" }
-  ]
+  }
 }

@@ -1,22 +1,18 @@
 {
-  "extends": "../../tsconfig",
+  "extends": "../../tsconfig.json",
   "include": ["src"],
   "references": [
-    {
-      "path": "../cli-plugin-scaffold"
-    },
-    {
-      "path": "../cli-plugin-scaffold-graphql-api"
-    },
-    {
-      "path": "../handler"
-    },
-    {
-      "path": "../plugins"
-    }
+    { "path": "../cli-plugin-scaffold" },
+    { "path": "../cli-plugin-scaffold-graphql-api" },
+    { "path": "../handler" },
+    { "path": "../plugins" }
   ],
   "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "declarationDir": "./dist",
     "paths": {
+      "~/*": ["./src/*"],
       "@webiny/cli-plugin-scaffold/*": ["../cli-plugin-scaffold/src/*"],
       "@webiny/cli-plugin-scaffold": ["../cli-plugin-scaffold/src"],
       "@webiny/cli-plugin-scaffold-graphql-api/*": ["../cli-plugin-scaffold-graphql-api/src/*"],

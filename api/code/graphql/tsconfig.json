@@ -123,12 +123,8 @@
       "@webiny/api-headless-cms": ["../../../packages/api-headless-cms/src"],
       "@webiny/api-headless-cms-ddb-es/*": ["../../../packages/api-headless-cms-ddb-es/src/*"],
       "@webiny/api-headless-cms-ddb-es": ["../../../packages/api-headless-cms-ddb-es/src"],
-      "@webiny/api-admin-users-cognito/*": [
-        "../../../packages/api-admin-users-cognito/src/*"
-      ],
-      "@webiny/api-admin-users-cognito": [
-        "../../../packages/api-admin-users-cognito/src"
-      ],
+      "@webiny/api-admin-users-cognito/*": ["../../../packages/api-admin-users-cognito/src/*"],
+      "@webiny/api-admin-users-cognito": ["../../../packages/api-admin-users-cognito/src"],
       "@webiny/api-security-cognito-authentication": [
         "../../../packages/api-security-cognito-authentication/src"
       ]

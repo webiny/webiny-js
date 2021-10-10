@@ -18,10 +18,10 @@
     "@emotion/styled": "^10.0.17",
     "@types/react": "^16.9.56",
     "@webiny/app": "^5.15.0",
+    "@webiny/app-admin": "^5.15.0",
     "@webiny/app-security": "^5.15.0",
     "@webiny/plugins": "^5.15.0",
     "@webiny/ui": "^5.15.0",
-    "@webiny/app-admin": "^5.15.0",
     "graphql-tag": "^2.12.5",
     "react": "^16.14.0",
     "react-dom": "^16.14.0"

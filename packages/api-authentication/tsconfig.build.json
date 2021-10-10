@@ -1,14 +1,15 @@
 {
   "extends": "../../tsconfig.build.json",
-  "include": ["./src"],
-  "exclude": ["node_modules", "./dist", "../handler", "../handler-http"],
+  "include": ["src"],
+  "references": [
+    { "path": "../handler/tsconfig.build.json" },
+    { "path": "../handler-http/tsconfig.build.json" }
+  ],
   "compilerOptions": {
     "rootDir": "./src",
     "outDir": "./dist",
     "declarationDir": "./dist",
-    "baseUrl": ".",
-    "paths": {
-      "~/*": ["./src/*"]
-    }
+    "paths": { "~/*": ["./src/*"] },
+    "baseUrl": "."
   }
 }

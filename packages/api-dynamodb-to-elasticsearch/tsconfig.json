@@ -1,25 +1,23 @@
 {
-  "extends": "../../tsconfig",
-  "include": ["./src"],
+  "extends": "../../tsconfig.json",
+  "include": ["src"],
   "references": [
-    {
-      "path": "../api-elasticsearch"
-    },
-    {
-      "path": "../handler"
-    },
-    {
-      "path": "../error"
-    }
+    { "path": "../api-elasticsearch" },
+    { "path": "../error" },
+    { "path": "../handler" }
   ],
   "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "declarationDir": "./dist",
     "paths": {
+      "~/*": ["./src/*"],
       "@webiny/api-elasticsearch/*": ["../api-elasticsearch/src/*"],
       "@webiny/api-elasticsearch": ["../api-elasticsearch/src"],
-      "@webiny/handler/*": ["../handler/src/*"],
-      "@webiny/handler": ["../handler/src"],
       "@webiny/error/*": ["../error/src/*"],
-      "@webiny/error": ["../error/src"]
+      "@webiny/error": ["../error/src"],
+      "@webiny/handler/*": ["../handler/src/*"],
+      "@webiny/handler": ["../handler/src"]
     },
     "baseUrl": "."
   }

@@ -10,7 +10,7 @@ const DEFAULT_HEADERS = {
     "Access-Control-Allow-Methods": "OPTIONS,POST"
 };
 
-const lowercaseKeys = (obj) => {
+const lowercaseKeys = obj => {
     return Object.keys(obj).reduce((acc, key) => {
         acc[key.toLowerCase()] = obj[key];
         return acc;

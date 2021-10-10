@@ -1,23 +1,18 @@
 {
   "extends": "../../tsconfig.build.json",
   "include": ["src"],
-  "exclude": [
-    "node_modules",
-    "../api-headless-cms",
-    "../handler-db",
-    "../db-dynamodb",
-    "../error",
-    "../plugins",
-    "./jest.config.js"
+  "references": [
+    { "path": "../api-headless-cms/tsconfig.build.json" },
+    { "path": "../db-dynamodb/tsconfig.build.json" },
+    { "path": "../error/tsconfig.build.json" },
+    { "path": "../handler-db/tsconfig.build.json" },
+    { "path": "../plugins/tsconfig.build.json" }
   ],
   "compilerOptions": {
-    "outDir": "dist",
-    "rootDir": "src",
-    "declarationDir": "dist",
-    "paths": {
-      "~/*": ["./src/*"]
-    },
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "declarationDir": "./dist",
+    "paths": { "~/*": ["./src/*"] },
     "baseUrl": "."
-  },
-  "references": []
+  }
 }

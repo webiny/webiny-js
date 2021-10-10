@@ -1,34 +1,27 @@
 {
-  "extends": "../../tsconfig",
-  "include": ["src", "__tests__/**/*.ts"],
+  "extends": "../../tsconfig.json",
+  "include": ["src"],
   "references": [
-    {
-      "path": "../api-headless-cms"
-    },
-    {
-      "path": "../error"
-    },
-    {
-      "path": "../handler-db"
-    },
-    {
-      "path": "../db-dynamodb"
-    },
-    {
-      "path": "../plugins"
-    }
+    { "path": "../api-headless-cms" },
+    { "path": "../db-dynamodb" },
+    { "path": "../error" },
+    { "path": "../handler-db" },
+    { "path": "../plugins" }
   ],
   "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "declarationDir": "./dist",
     "paths": {
       "~/*": ["./src/*"],
       "@webiny/api-headless-cms/*": ["../api-headless-cms/src/*"],
       "@webiny/api-headless-cms": ["../api-headless-cms/src"],
+      "@webiny/db-dynamodb/*": ["../db-dynamodb/src/*"],
+      "@webiny/db-dynamodb": ["../db-dynamodb/src"],
       "@webiny/error/*": ["../error/src/*"],
       "@webiny/error": ["../error/src"],
       "@webiny/handler-db/*": ["../handler-db/src/*"],
-      "@webiny/handler-aws": ["../handler-aws/src"],
-      "@webiny/db-dynamodb/*": ["../db-dynamodb/src/*"],
-      "@webiny/db-dynamodb": ["../db-dynamodb/src"],
+      "@webiny/handler-db": ["../handler-db/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"]
     },

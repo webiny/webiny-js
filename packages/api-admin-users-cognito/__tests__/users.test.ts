@@ -19,7 +19,7 @@ describe("Security User CRUD Test", () => {
             data: { ...adminData, password: "12345678" }
         });
     };
-    
+
     beforeEach(setupTest);
 
     test("should create, read, update and delete users", async () => {

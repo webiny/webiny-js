@@ -59,8 +59,7 @@ async function upgradeGraphQLSecurity(file, filePath, { info }) {
         "@webiny/api-security/authenticator": "@webiny/api-security",
         "@webiny/api-plugin-security-cognito/authentication":
             "@webiny/api-security-cognito-authentication",
-        "@webiny/api-plugin-security-cognito/identityProvider":
-            "@webiny/api-admin-users-cognito"
+        "@webiny/api-plugin-security-cognito/identityProvider": "@webiny/api-admin-users-cognito"
     };
 
     file.getImportDeclarations().forEach(imp => {

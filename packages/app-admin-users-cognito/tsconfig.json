@@ -1,44 +1,40 @@
 {
   "extends": "../../tsconfig.json",
+  "include": ["src"],
   "references": [
-    {
-      "path": "../app"
-    },
-    {
-      "path": "../app-admin"
-    },
-    {
-      "path": "../app-security"
-    },
-    {
-      "path": "../app-cognito-essentials"
-    },
-    {
-      "path": "../form"
-    },
-    {
-      "path": "../plugins"
-    },
-    {
-      "path": "../ui"
-    },
-    {
-      "path": "../validation"
-    }
+    { "path": "../app" },
+    { "path": "../app-admin" },
+    { "path": "../app-security" },
+    { "path": "../app-security-access-management" },
+    { "path": "../form" },
+    { "path": "../plugins" },
+    { "path": "../react-router" },
+    { "path": "../ui" },
+    { "path": "../validation" }
   ],
   "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "declarationDir": "./dist",
     "paths": {
       "~/*": ["./src/*"],
       "@webiny/app/*": ["../app/src/*"],
+      "@webiny/app": ["../app/src"],
       "@webiny/app-admin/*": ["../app-admin/src/*"],
-      "@webiny/form": ["../form/src"],
+      "@webiny/app-admin": ["../app-admin/src"],
       "@webiny/app-security/*": ["../app-security/src/*"],
       "@webiny/app-security": ["../app-security/src"],
-      "@webiny/app-cognito-essentials/*": ["../app-cognito-essentials/src/*"],
-      "@webiny/app-cognito-essentials": ["../app-cognito-essentials/src"],
+      "@webiny/app-security-access-management/*": ["../app-security-access-management/src/*"],
+      "@webiny/app-security-access-management": ["../app-security-access-management/src"],
+      "@webiny/form/*": ["../form/src/*"],
+      "@webiny/form": ["../form/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"],
+      "@webiny/react-router/*": ["../react-router/src/*"],
+      "@webiny/react-router": ["../react-router/src"],
       "@webiny/ui/*": ["../ui/src/*"],
+      "@webiny/ui": ["../ui/src"],
+      "@webiny/validation/*": ["../validation/src/*"],
       "@webiny/validation": ["../validation/src"]
     },
     "baseUrl": "."

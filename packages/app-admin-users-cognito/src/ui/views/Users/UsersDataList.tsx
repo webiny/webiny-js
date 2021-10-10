@@ -179,11 +179,7 @@ const UsersDataList = () => {
                                 />
                             </ListItemGraphic>
                             <ListItemText
-                                onClick={() =>
-                                    history.push(
-                                        `/admin-users?id=${item.id}`
-                                    )
-                                }
+                                onClick={() => history.push(`/admin-users?id=${item.id}`)}
                             >
                                 {item.firstName} {item.lastName}
                                 <ListItemTextSecondary>{item.email}</ListItemTextSecondary>

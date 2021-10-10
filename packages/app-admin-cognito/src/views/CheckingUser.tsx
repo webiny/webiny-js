@@ -1,5 +1,5 @@
 import React from "react";
-import { useAuthenticator } from "@webiny/app-cognito-essentials/hooks/useAuthenticator";
+import { useAuthenticator } from "@webiny/app-cognito-authenticator/hooks/useAuthenticator";
 import { CircularProgress } from "@webiny/ui/Progress";
 
 const CheckingUser = () => {

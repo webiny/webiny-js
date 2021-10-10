@@ -1,24 +1,19 @@
 {
   "extends": "../../tsconfig.json",
+  "include": ["src"],
   "references": [
-    {
-      "path": "../app-admin"
-    },
-    {
-      "path": "../app-security"
-    },
-    {
-      "path": "../plugins"
-    },
-    {
-      "path": "../react-router"
-    },
-    {
-      "path": "../ui"
-    }
+    { "path": "../app-admin" },
+    { "path": "../app-security" },
+    { "path": "../plugins" },
+    { "path": "../react-router" },
+    { "path": "../ui" }
   ],
   "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "declarationDir": "./dist",
     "paths": {
+      "~/*": ["./src/*"],
       "@webiny/app-admin/*": ["../app-admin/src/*"],
       "@webiny/app-admin": ["../app-admin/src"],
       "@webiny/app-security/*": ["../app-security/src/*"],

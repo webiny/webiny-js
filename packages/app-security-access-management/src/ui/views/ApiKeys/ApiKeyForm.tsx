@@ -50,7 +50,7 @@ const ApiKeyForm = () => {
 
             const { error } = data.security.apiKey;
             if (error) {
-                history.push("/security/api-keys");
+                history.push("/access-management/api-keys");
                 showSnackbar(error.message);
             }
         }
@@ -91,7 +91,7 @@ const ApiKeyForm = () => {
 
             const { id } = response.data.security.apiKey.data;
 
-            !isUpdate && history.push(`/security/api-keys?id=${id}`);
+            !isUpdate && history.push(`/access-management/api-keys?id=${id}`);
             showSnackbar(t`API key saved successfully.`);
         },
         [id]
@@ -108,7 +108,7 @@ const ApiKeyForm = () => {
                 action={
                     <ButtonDefault
                         data-testid="new-record-button"
-                        onClick={() => history.push("/security/api-keys?new=true")}
+                        onClick={() => history.push("/access-management/api-keys?new=true")}
                     >
                         <ButtonIcon icon={<AddIcon />} /> {t`New API Key`}
                     </ButtonDefault>
@@ -195,7 +195,7 @@ const ApiKeyForm = () => {
                         <SimpleFormFooter>
                             <ButtonWrapper>
                                 <ButtonDefault
-                                    onClick={() => history.push("/security/api-keys")}
+                                    onClick={() => history.push("/access-management/api-keys")}
                                 >{t`Cancel`}</ButtonDefault>
                                 <ButtonPrimary
                                     onClick={form.submit}

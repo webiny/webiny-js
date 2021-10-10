@@ -4,11 +4,13 @@ import routes from "./routes";
 import menus from "./menus";
 import installation from "./installation";
 import permissionRenderer from "./permissionRenderer";
+import cognito from "./cognito";
 
 export default (): PluginCollection => [
     globalSearchUsers,
     routes,
     menus,
     installation,
-    permissionRenderer
+    permissionRenderer,
+    cognito()
 ];

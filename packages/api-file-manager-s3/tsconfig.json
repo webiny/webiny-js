@@ -1,18 +1,19 @@
 {
-  "extends": "../../tsconfig",
+  "extends": "../../tsconfig.json",
+  "include": ["src"],
   "references": [
-    {
-      "path": "../handler-graphql"
-    },
-    {
-      "path": "../validation"
-    },
-    {
-      "path": "../api-file-manager"
-    }
+    { "path": "../api-file-manager" },
+    { "path": "../handler-graphql" },
+    { "path": "../validation" }
   ],
   "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "declarationDir": "./dist",
     "paths": {
+      "~/*": ["./src/*"],
+      "@webiny/api-file-manager/*": ["../api-file-manager/src/*"],
+      "@webiny/api-file-manager": ["../api-file-manager/src"],
       "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
       "@webiny/handler-graphql": ["../handler-graphql/src"],
       "@webiny/validation/*": ["../validation/src/*"],

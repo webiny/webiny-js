@@ -27,8 +27,11 @@ async function output(target, content) {
 (async () => {
     const workspaces = getPackages({ includes: "/packages/" });
 
-    for (let i = 0; i < workspaces.length; i++) {
-        const wpObject = workspaces[i];
+    for (const wpObject of workspaces) {
+        if (!wpObject.isTs) {
+            continue;
+        }
+
         if (packagesToCheck.length) {
             if (!packagesToCheck.includes(wpObject.packageJson.name)) {
                 continue;
@@ -41,14 +44,15 @@ async function output(target, content) {
             ...wpObject.packageJson.devDependencies
         })
             .filter(getPackage)
+            .filter(name => workspaces.find(pkg => pkg.packageJson.name === name).isTs)
             .map(name => workspaces.find(pkg => pkg.packageJson.name === name));
 
         // Generate `tsconfig.json`
         const tsconfigJson = {
             extends: "../../tsconfig.json",
-            include: ["src", "__tests__"],
+            include: ["src"],
             references: dependencies.map(dep => ({
-                path: [`${getRelativePath(wpObject.packageFolder, dep.packageFolder)}`]
+                path: `${getRelativePath(wpObject.packageFolder, dep.packageFolder)}`
             })),
             compilerOptions: {
                 rootDir: "./src",
@@ -72,14 +76,12 @@ async function output(target, content) {
         // Generate `tsconfig.build.json`
         const tsconfigBuildJson = {
             extends: "../../tsconfig.build.json",
-            include: ["src", "__tests__"],
+            include: ["src"],
             references: dependencies.map(dep => ({
-                path: [
-                    `${getRelativePath(
-                        wpObject.packageFolder,
-                        dep.packageFolder
-                    )}/tsconfig.build.json`
-                ]
+                path: `${getRelativePath(
+                    wpObject.packageFolder,
+                    dep.packageFolder
+                )}/tsconfig.build.json`
             })),
             compilerOptions: {
                 rootDir: "./src",

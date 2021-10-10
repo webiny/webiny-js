@@ -1,78 +1,37 @@
 {
-  "extends": "../../tsconfig",
+  "extends": "../../tsconfig.json",
+  "include": ["src"],
   "references": [
-    {
-      "path": "../api-file-manager"
-    },
-    {
-      "path": "../api-i18n"
-    },
-    {
-      "path": "../api-i18n-ddb"
-    },
-    {
-      "path": "../api-i18n-content"
-    },
-    {
-      "path": "../api-prerendering-service"
-    },
-    {
-      "path": "../api-security"
-    },
-    {
-      "path": "../api-tenancy"
-    },
-    {
-      "path": "../api-upgrade"
-    },
-    {
-      "path": "../error"
-    },
-    {
-      "path": "../handler"
-    },
-    {
-      "path": "../handler-args"
-    },
-    {
-      "path": "../handler-aws"
-    },
-    {
-      "path": "../handler-client"
-    },
-    {
-      "path": "../handler-db"
-    },
-    {
-      "path": "../handler-graphql"
-    },
-    {
-      "path": "../plugins"
-    },
-    {
-      "path": "../pubsub"
-    },
-    {
-      "path": "../validation"
-    },
-    {
-      "path": "../api-file-manager"
-    },
-    {
-      "path": "../api-file-manager-ddb-es"
-    }
+    { "path": "../api-file-manager" },
+    { "path": "../api-i18n" },
+    { "path": "../api-i18n-content" },
+    { "path": "../api-prerendering-service" },
+    { "path": "../api-security" },
+    { "path": "../api-tenancy" },
+    { "path": "../api-upgrade" },
+    { "path": "../error" },
+    { "path": "../handler" },
+    { "path": "../handler-args" },
+    { "path": "../handler-aws" },
+    { "path": "../handler-client" },
+    { "path": "../handler-db" },
+    { "path": "../handler-graphql" },
+    { "path": "../plugins" },
+    { "path": "../pubsub" },
+    { "path": "../validation" },
+    { "path": "../api-file-manager-ddb-es" },
+    { "path": "../api-i18n-ddb" }
   ],
   "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "declarationDir": "./dist",
     "paths": {
       "~/*": ["./src/*"],
       "@webiny/api-file-manager/*": ["../api-file-manager/src/*"],
       "@webiny/api-file-manager": ["../api-file-manager/src"],
-      "@webiny/api-file-manager-ddb-es/*": ["../api-file-manager-ddb-es/src/*"],
-      "@webiny/api-file-manager-ddb-es": ["../api-file-manager-ddb-es/src"],
       "@webiny/api-i18n/*": ["../api-i18n/src/*"],
       "@webiny/api-i18n": ["../api-i18n/src"],
-      "@webiny/api-i18n-ddb/*": ["../api-i18n-ddb/src/*"],
-      "@webiny/api-i18n-ddb": ["../api-i18n-ddb/src"],
       "@webiny/api-i18n-content/*": ["../api-i18n-content/src/*"],
       "@webiny/api-i18n-content": ["../api-i18n-content/src"],
       "@webiny/api-prerendering-service/*": ["../api-prerendering-service/src/*"],
@@ -102,7 +61,11 @@
       "@webiny/pubsub/*": ["../pubsub/src/*"],
       "@webiny/pubsub": ["../pubsub/src"],
       "@webiny/validation/*": ["../validation/src/*"],
-      "@webiny/validation": ["../validation/src"]
+      "@webiny/validation": ["../validation/src"],
+      "@webiny/api-file-manager-ddb-es/*": ["../api-file-manager-ddb-es/src/*"],
+      "@webiny/api-file-manager-ddb-es": ["../api-file-manager-ddb-es/src"],
+      "@webiny/api-i18n-ddb/*": ["../api-i18n-ddb/src/*"],
+      "@webiny/api-i18n-ddb": ["../api-i18n-ddb/src"]
     },
     "baseUrl": "."
   }

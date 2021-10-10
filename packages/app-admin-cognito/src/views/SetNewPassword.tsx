@@ -9,8 +9,8 @@ import { Elevation } from "@webiny/ui/Elevation";
 import { CircularProgress } from "@webiny/ui/Progress";
 import StateContainer from "./StateContainer";
 import { alignRight, InnerContent, Title, errorMessage } from "./StyledComponents";
-import { useAuthenticator } from "@webiny/app-cognito-essentials/hooks/useAuthenticator";
-import { useSetNewPassword } from "@webiny/app-cognito-essentials/hooks/useSetNewPassword";
+import { useAuthenticator } from "@webiny/app-cognito-authenticator/hooks/useAuthenticator";
+import { useSetNewPassword } from "@webiny/app-cognito-authenticator/hooks/useSetNewPassword";
 
 const SetNewPassword = () => {
     const { checkingUser, changeState } = useAuthenticator();

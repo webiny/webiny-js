@@ -1,29 +1,22 @@
 {
-  "extends": "../../tsconfig",
-  "include": ["./src", "./__tests__"],
+  "extends": "../../tsconfig.json",
+  "include": ["src"],
   "references": [
-    {
-      "path": "../handler"
-    },
-    {
-      "path": "../handler-db"
-    },
-    {
-      "path": "../handler-http"
-    },
-    {
-      "path": "../handler-graphql"
-    },
-    {
-      "path": "../plugins"
-    },
-    {
-      "path": "../pubsub"
-    }
+    { "path": "../error" },
+    { "path": "../handler" },
+    { "path": "../handler-db" },
+    { "path": "../handler-graphql" },
+    { "path": "../handler-http" },
+    { "path": "../pubsub" }
   ],
   "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "declarationDir": "./dist",
     "paths": {
       "~/*": ["./src/*"],
+      "@webiny/error/*": ["../error/src/*"],
+      "@webiny/error": ["../error/src"],
       "@webiny/handler/*": ["../handler/src/*"],
       "@webiny/handler": ["../handler/src"],
       "@webiny/handler-db/*": ["../handler-db/src/*"],
@@ -32,8 +25,6 @@
       "@webiny/handler-graphql": ["../handler-graphql/src"],
       "@webiny/handler-http/*": ["../handler-http/src/*"],
       "@webiny/handler-http": ["../handler-http/src"],
-      "@webiny/plugins/*": ["../plugins/src/*"],
-      "@webiny/plugins": ["../plugins/src"],
       "@webiny/pubsub/*": ["../pubsub/src/*"],
       "@webiny/pubsub": ["../pubsub/src"]
     },

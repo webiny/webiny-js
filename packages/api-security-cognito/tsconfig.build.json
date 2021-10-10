@@ -1,19 +1,16 @@
 {
   "extends": "../../tsconfig.build.json",
-  "include": ["./src"],
-  "exclude": [
-    "node_modules",
-    "dist",
-    "../api-security",
-    "../api-cognito-authenticator",
-    "../handler"
+  "include": ["src"],
+  "references": [
+    { "path": "../api-cognito-authenticator/tsconfig.build.json" },
+    { "path": "../api-security/tsconfig.build.json" },
+    { "path": "../handler/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "rootDir": "./src",
     "outDir": "./dist",
     "declarationDir": "./dist",
-    "paths": {},
+    "paths": { "~/*": ["./src/*"] },
     "baseUrl": "."
-  },
-  "references": []
+  }
 }

@@ -8,8 +8,8 @@ import { Typography } from "@webiny/ui/Typography";
 import { Elevation } from "@webiny/ui/Elevation";
 import { Alert } from "@webiny/ui/Alert";
 import { CircularProgress } from "@webiny/ui/Progress";
-import { useAuthenticator } from "@webiny/app-cognito-essentials/hooks/useAuthenticator";
-import { useSignIn } from "@webiny/app-cognito-essentials/hooks/useSignIn";
+import { useAuthenticator } from "@webiny/app-cognito-authenticator/hooks/useAuthenticator";
+import { useSignIn } from "@webiny/app-cognito-authenticator/hooks/useSignIn";
 import StateContainer from "./StateContainer";
 import { alignRight, alignCenter, InnerContent, Title, errorMessage } from "./StyledComponents";
 

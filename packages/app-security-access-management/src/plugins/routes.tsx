@@ -15,11 +15,11 @@ const plugins: RoutePlugin[] = [
         route: (
             <Route
                 exact
-                path={"/security/groups"}
+                path={"/access-management/groups"}
                 render={() => (
                     <SecureRoute permission={Permission.Groups}>
                         <AdminLayout>
-                            <Helmet title={"Security - Groups"} />
+                            <Helmet title={"Access Management - Groups"} />
                             <Groups />
                         </AdminLayout>
                     </SecureRoute>
@@ -33,10 +33,10 @@ const plugins: RoutePlugin[] = [
         route: (
             <Route
                 exact
-                path={"/security/api-keys"}
+                path={"/access-management/api-keys"}
                 render={() => (
                     <SecureRoute permission={Permission.ApiKeys}>
-                        <AdminLayout title={"Security - API Keys"}>
+                        <AdminLayout title={"Access Management - API Keys"}>
                             <ApiKeys />
                         </AdminLayout>
                     </SecureRoute>

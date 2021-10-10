@@ -50,7 +50,7 @@ const GroupForm = () => {
 
             const { error } = data.security.group;
             if (error) {
-                history.push("/security/groups");
+                history.push("/access-management/groups");
                 showSnackbar(error.message);
             }
         }
@@ -104,7 +104,7 @@ const GroupForm = () => {
                 return showSnackbar(error.message);
             }
 
-            !isUpdate && history.push(`/security/groups?id=${group.id}`);
+            !isUpdate && history.push(`/access-management/groups?id=${group.id}`);
             showSnackbar(t`Group saved successfully!`);
         },
         [id]
@@ -123,7 +123,7 @@ const GroupForm = () => {
                 action={
                     <ButtonDefault
                         data-testid="new-record-button"
-                        onClick={() => history.push("/security/groups?new=true")}
+                        onClick={() => history.push("/access-management/groups?new=true")}
                     >
                         <ButtonIcon icon={<AddIcon />} />
                         {t`New Group`}
@@ -202,7 +202,7 @@ const GroupForm = () => {
                             <SimpleFormFooter>
                                 <ButtonWrapper>
                                     <ButtonDefault
-                                        onClick={() => history.push("/security/groups")}
+                                        onClick={() => history.push("/access-management/groups")}
                                     >{t`Cancel`}</ButtonDefault>
                                     <ButtonPrimary
                                         onClick={form.submit}

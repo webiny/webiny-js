@@ -1,50 +1,38 @@
 {
-  "extends": "../../tsconfig",
+  "extends": "../../tsconfig.json",
+  "include": ["src"],
   "references": [
-    {
-      "path": "../db-dynamodb"
-    },
-    {
-      "path": "../error"
-    },
-    {
-      "path": "../api-i18n"
-    },
-    {
-      "path": "../api-security"
-    },
-    {
-      "path": "../api-tenancy"
-    },
-    {
-      "path": "../handler-db"
-    },
-    {
-      "path": "../handler-graphql"
-    },
-    {
-      "path": "../handler-aws"
-    }
+    { "path": "../api-i18n" },
+    { "path": "../db-dynamodb" },
+    { "path": "../error" },
+    { "path": "../handler-db" },
+    { "path": "../api-security" },
+    { "path": "../api-tenancy" },
+    { "path": "../handler-aws" },
+    { "path": "../handler-graphql" }
   ],
   "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "declarationDir": "./dist",
     "paths": {
       "~/*": ["./src/*"],
       "@webiny/api-i18n/*": ["../api-i18n/src/*"],
       "@webiny/api-i18n": ["../api-i18n/src"],
+      "@webiny/db-dynamodb/*": ["../db-dynamodb/src/*"],
+      "@webiny/db-dynamodb": ["../db-dynamodb/src"],
+      "@webiny/error/*": ["../error/src/*"],
+      "@webiny/error": ["../error/src"],
+      "@webiny/handler-db/*": ["../handler-db/src/*"],
+      "@webiny/handler-db": ["../handler-db/src"],
       "@webiny/api-security/*": ["../api-security/src/*"],
       "@webiny/api-security": ["../api-security/src"],
       "@webiny/api-tenancy/*": ["../api-tenancy/src/*"],
       "@webiny/api-tenancy": ["../api-tenancy/src"],
-      "@webiny/db-dynamodb/*": ["../db-dynamodb/src/*"],
-      "@webiny/db-dynamodb": ["../db-dynamodb/src"],
-      "@webiny/handler-db/*": ["../handler-db/src/*"],
-      "@webiny/handler-db": ["../handler-db/src"],
       "@webiny/handler-aws/*": ["../handler-aws/src/*"],
       "@webiny/handler-aws": ["../handler-aws/src"],
       "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
-      "@webiny/handler-graphql": ["../handler-graphql/src"],
-      "@webiny/error/*": ["../error/src/*"],
-      "@webiny/error": ["../error/src"]
+      "@webiny/handler-graphql": ["../handler-graphql/src"]
     },
     "baseUrl": "."
   }

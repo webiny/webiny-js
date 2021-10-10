@@ -1,15 +1,16 @@
 {
   "extends": "../../tsconfig.build.json",
-  "include": ["./src"],
-  "exclude": ["node_modules", "dist", "../db-dynamodb", "../error", "../api-tenancy"],
+  "include": ["src"],
+  "references": [
+    { "path": "../api-tenancy/tsconfig.build.json" },
+    { "path": "../db-dynamodb/tsconfig.build.json" },
+    { "path": "../error/tsconfig.build.json" }
+  ],
   "compilerOptions": {
     "rootDir": "./src",
     "outDir": "./dist",
     "declarationDir": "./dist",
-    "paths": {
-      "~/*": ["./src/*"]
-    },
+    "paths": { "~/*": ["./src/*"] },
     "baseUrl": "."
-  },
-  "references": []
+  }
 }
