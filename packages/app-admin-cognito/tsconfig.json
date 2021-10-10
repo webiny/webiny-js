@@ -1,0 +1,24 @@
+{
+  "extends": "../../tsconfig.json",
+  "references": [
+    {
+      "path": "../app"
+    },
+    {
+      "path": "../app-cognito-essentials"
+    },
+    {
+      "path": "../validation"
+    }
+  ],
+  "compilerOptions": {
+    "paths": {
+      "~/*": ["./src/*"],
+      "@webiny/app/*": ["../app/src/*"],
+      "@webiny/app-cognito-essentials/*": ["../app-cognito-essentials/src/*"],
+      "@webiny/app-cognito-essentials": ["../app-cognito-essentials/src"],
+      "@webiny/validation": ["../validation/src"]
+    },
+    "baseUrl": "."
+  }
+}

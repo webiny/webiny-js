@@ -9,13 +9,14 @@ import { AppInstaller } from "@webiny/app-admin/components/AppInstaller";
 import { CmsProvider } from "@webiny/app-headless-cms/admin/contexts/Cms";
 import { PageBuilderProvider } from "@webiny/app-page-builder/contexts/PageBuilder";
 import { BrowserRouter } from "@webiny/react-router";
-import { Authentication } from "@webiny/app-admin-users-cognito/Authentication";
 import { createApolloClient } from "./components/apolloClient";
 import { Telemetry } from "./components/Telemetry";
 import { getIdentityData } from "./components/getIdentityData";
-
+import { createAuthentication } from "@webiny/app-admin-cognito";
 // Import styles which include custom theme styles
 import "./App.scss";
+
+const Authentication = createAuthentication({ getIdentityData });
 
 export const App = () => (
     <ApolloProvider client={createApolloClient({ uri: process.env.REACT_APP_GRAPHQL_API_URL })}>
@@ -43,45 +44,34 @@ export const App = () => (
                 <UiProvider>
                     {/*
                         <AppInstaller> checks and runs app installers registered via "admin-installation" plugins.
-                        Requires "app-installer-security" plugin configured in "./plugins/security.ts"
-                        to render login for protected installers.
                     */}
-                    <AppInstaller>
+                    <AppInstaller Authentication={Authentication}>
                         {/*
-                            Once all installers are executed, <Authentication> is mounted to check the identity
-                            and prompt for login, if necessary. Once logged in, it sets the identity data into
-                            the <SecurityProvider>.
+                            <I18NProvider> loads system locales. Webiny supports multi-language content and language-based
+                            permissions, so we always need to know all locales to be able to render language selectors,
+                            and send the proper locale code to the GraphQL API.
                         */}
-                        <Authentication getIdentityData={getIdentityData}>
+                        <I18NProvider loader={<CircularProgress label={"Loading locales..."} />}>
                             {/*
-                                <I18NProvider> loads system locales. Webiny supports multi-language content and language-based
-                                permissions, so we always need to know all locales to be able to render language selectors,
-                                and send the proper locale code to the GraphQL API.
+                                <PageBuilderProvider> handles "pb-theme" plugins and combines them into a single
+                                "theme" object. You can build your theme using multiple "pb-theme" plugins and
+                                then access is using "usePageBuilder()" hook.
                             */}
-                            <I18NProvider
-                                loader={<CircularProgress label={"Loading locales..."} />}
-                            >
+                            <PageBuilderProvider>
                                 {/*
-                                    <PageBuilderProvider> handles "pb-theme" plugins and combines them into a single
-                                    "theme" object. You can build your theme using multiple "pb-theme" plugins and
-                                    then access is using "usePageBuilder()" hook.
+                                    <CmsProvider> handles CMS environments and provides an Apollo Client instance
+                                    that points to the /manage GraphQL API.
                                 */}
-                                <PageBuilderProvider>
+                                <CmsProvider createApolloClient={createApolloClient}>
                                     {/*
-                                        <CmsProvider> handles CMS environments and provides an Apollo Client instance
-                                        that points to the /manage GraphQL API.
+                                        <Routes/> is a helper component that loads all "route" plugins, sorts them
+                                        in the correct "path" order and renders using the <Switch> component,
+                                        so only the matching route is rendered.
                                     */}
-                                    <CmsProvider createApolloClient={createApolloClient}>
-                                        {/*
-                                            <Routes/> is a helper component that loads all "route" plugins, sorts them
-                                            in the correct "path" order and renders using the <Switch> component,
-                                            so only the matching route is rendered.
-                                        */}
-                                        <Routes />
-                                    </CmsProvider>
-                                </PageBuilderProvider>
-                            </I18NProvider>
-                        </Authentication>
+                                    <Routes />
+                                </CmsProvider>
+                            </PageBuilderProvider>
+                        </I18NProvider>
                     </AppInstaller>
                 </UiProvider>
             </BrowserRouter>

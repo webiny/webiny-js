@@ -126,6 +126,7 @@ export default () => {
         cognitoUserPoolId: cognito.userPool.id,
         cognitoUserPoolName: cognito.userPool.name,
         cognitoAppClientId: cognito.userPoolClient.id,
+        cognitoUserPoolPasswordPolicy: cognito.userPool.passwordPolicy,
         updatePbSettingsFunction: pageBuilder.functions.updateSettings.arn,
         psQueueAdd: prerenderingService.functions.queue.add.arn,
         psQueueProcess: prerenderingService.functions.queue.process.arn,

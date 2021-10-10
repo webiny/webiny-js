@@ -1,5 +1,5 @@
 {
-  "name": "@webiny/app-security-cognito-authentication",
+  "name": "@webiny/app-cognito-essentials",
   "version": "5.15.0",
   "main": "index.js",
   "repository": {

@@ -12,11 +12,3 @@ export type Tenant = {
     group: string;
     permissions: SecurityPermission[];
 };
-
-export interface PasswordPolicy {
-    minimumLength?: number;
-    requireLowercase?: boolean;
-    requireNumbers?: boolean;
-    requireSymbols?: boolean;
-    requireUppercase?: boolean;
-}

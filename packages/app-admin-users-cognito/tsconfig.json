@@ -11,7 +11,7 @@
       "path": "../app-security"
     },
     {
-      "path": "../app-security-cognito-authentication"
+      "path": "../app-cognito-essentials"
     },
     {
       "path": "../form"
@@ -34,10 +34,8 @@
       "@webiny/form": ["../form/src"],
       "@webiny/app-security/*": ["../app-security/src/*"],
       "@webiny/app-security": ["../app-security/src"],
-      "@webiny/app-security-cognito-authentication/*": [
-        "../app-security-cognito-authentication/src/*"
-      ],
-      "@webiny/app-security-cognito-authentication": ["../app-security-cognito-authentication/src"],
+      "@webiny/app-cognito-essentials/*": ["../app-cognito-essentials/src/*"],
+      "@webiny/app-cognito-essentials": ["../app-cognito-essentials/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"],
       "@webiny/ui/*": ["../ui/src/*"],

@@ -54,7 +54,7 @@ const sassLoader = {
     loader: require.resolve("sass-loader"),
     options: {
         sourceMap: true,
-        sassOptions: { includePaths: sassIncludePaths }
+        sassOptions: { includePaths: sassIncludePaths, quietDeps: true }
     }
 };
 

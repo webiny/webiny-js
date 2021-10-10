@@ -6,8 +6,8 @@ import { Input } from "@webiny/ui/Input";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Typography } from "@webiny/ui/Typography";
 import { Elevation } from "@webiny/ui/Elevation";
-import { useAuthenticator } from "@webiny/app-security-cognito-authentication/hooks/useAuthenticator";
-import { useRequireNewPassword } from "@webiny/app-security-cognito-authentication/hooks/useRequireNewPassword";
+import { useAuthenticator } from "@webiny/app-cognito-essentials/hooks/useAuthenticator";
+import { useRequireNewPassword } from "@webiny/app-cognito-essentials/hooks/useRequireNewPassword";
 import StateContainer from "./StateContainer";
 import { alignRight, InnerContent, Title } from "./StyledComponents";
 

@@ -1,5 +1,5 @@
 {
-  "name": "@webiny/app-admin-users-cognito",
+  "name": "@webiny/app-admin-cognito",
   "version": "5.15.0",
   "main": "index.js",
   "repository": {
@@ -21,6 +21,7 @@
     "@webiny/plugins": "^5.15.0",
     "@webiny/ui": "^5.15.0",
     "@webiny/validation": "^5.15.0",
+    "apollo-link-context": "^1.0.20",
     "emotion": "^10.0.27",
     "react": "^16.14.0",
     "react-dom": "^16.14.0"

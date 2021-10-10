@@ -8467,6 +8467,7 @@ __metadata:
     "@webiny/project-utils": ^5.15.0
     "@webiny/pubsub": ^5.15.0
     dynamodb-toolbox: ^0.3.4
+    md5: ^2.3.0
     mdbid: ^1.0.0
     rimraf: ^3.0.2
     typescript: ^4.1.3
@@ -9334,6 +9335,39 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@webiny/app-admin-cognito@^5.15.0, @webiny/app-admin-cognito@workspace:packages/app-admin-cognito":
+  version: 0.0.0-use.local
+  resolution: "@webiny/app-admin-cognito@workspace:packages/app-admin-cognito"
+  dependencies:
+    "@babel/cli": ^7.5.5
+    "@babel/core": ^7.5.5
+    "@babel/plugin-proposal-class-properties": ^7.5.5
+    "@babel/plugin-proposal-throw-expressions": ^7.7.4
+    "@babel/preset-env": ^7.5.5
+    "@babel/preset-react": ^7.0.0
+    "@babel/preset-typescript": ^7.8.3
+    "@emotion/styled": ^10.0.27
+    "@webiny/app": ^5.15.0
+    "@webiny/app-admin": ^5.15.0
+    "@webiny/app-cognito-essentials": ^5.15.0
+    "@webiny/app-security": ^5.15.0
+    "@webiny/cli": ^5.15.0
+    "@webiny/form": ^5.15.0
+    "@webiny/plugins": ^5.15.0
+    "@webiny/project-utils": ^5.15.0
+    "@webiny/ui": ^5.15.0
+    "@webiny/validation": ^5.15.0
+    apollo-link-context: ^1.0.20
+    babel-plugin-lodash: ^3.3.4
+    emotion: ^10.0.27
+    react: ^16.14.0
+    react-dom: ^16.14.0
+    rimraf: ^3.0.2
+    ttypescript: ^1.5.12
+    typescript: ^4.1.3
+  languageName: unknown
+  linkType: soft
+
 "@webiny/app-admin-users-cognito@^5.15.0, @webiny/app-admin-users-cognito@workspace:packages/app-admin-users-cognito":
   version: 0.0.0-use.local
   resolution: "@webiny/app-admin-users-cognito@workspace:packages/app-admin-users-cognito"
@@ -9348,8 +9382,8 @@ __metadata:
     "@emotion/styled": ^10.0.27
     "@webiny/app": ^5.15.0
     "@webiny/app-admin": ^5.15.0
+    "@webiny/app-cognito-essentials": ^5.15.0
     "@webiny/app-security": ^5.15.0
-    "@webiny/app-security-cognito-authentication": ^5.15.0
     "@webiny/cli": ^5.15.0
     "@webiny/form": ^5.15.0
     "@webiny/plugins": ^5.15.0
@@ -9428,6 +9462,41 @@ __metadata:
     semver: ^7.3.4
     store: ^2.0.12
     ttypescript: ^1.5.12
+    typescript: ^4.1.3
+  languageName: unknown
+  linkType: soft
+
+"@webiny/app-cognito-essentials@^5.15.0, @webiny/app-cognito-essentials@workspace:packages/app-cognito-essentials":
+  version: 0.0.0-use.local
+  resolution: "@webiny/app-cognito-essentials@workspace:packages/app-cognito-essentials"
+  dependencies:
+    "@apollo/react-hooks": ^3.1.5
+    "@aws-amplify/auth": ^4.0.2
+    "@babel/cli": ^7.5.5
+    "@babel/core": ^7.5.5
+    "@babel/plugin-proposal-class-properties": ^7.5.5
+    "@babel/plugin-proposal-throw-expressions": ^7.7.4
+    "@babel/preset-env": ^7.5.5
+    "@babel/preset-react": ^7.0.0
+    "@babel/preset-typescript": ^7.8.3
+    "@emotion/core": ^10.0.27
+    "@types/react": ^16.9.56
+    "@webiny/app": ^5.15.0
+    "@webiny/app-security": ^5.15.0
+    "@webiny/cli": ^5.15.0
+    "@webiny/plugins": ^5.15.0
+    "@webiny/project-utils": ^5.15.0
+    apollo-cache: ^1.3.5
+    apollo-client: ^2.6.10
+    apollo-link: ^1.2.14
+    apollo-link-context: ^1.0.20
+    apollo-utilities: ^1.3.4
+    babel-plugin-lodash: ^3.3.4
+    graphql: ^14.7.0
+    lodash.get: ^4.4.2
+    react: ^16.14.0
+    react-dom: ^16.14.0
+    rimraf: ^3.0.2
     typescript: ^4.1.3
   languageName: unknown
   linkType: soft
@@ -9864,41 +9933,6 @@ __metadata:
     react: ^16.14.0
     react-dom: ^16.14.0
     react-helmet: ^6.0.0
-    rimraf: ^3.0.2
-    typescript: ^4.1.3
-  languageName: unknown
-  linkType: soft
-
-"@webiny/app-security-cognito-authentication@^5.15.0, @webiny/app-security-cognito-authentication@workspace:packages/app-security-cognito-authentication":
-  version: 0.0.0-use.local
-  resolution: "@webiny/app-security-cognito-authentication@workspace:packages/app-security-cognito-authentication"
-  dependencies:
-    "@apollo/react-hooks": ^3.1.5
-    "@aws-amplify/auth": ^4.0.2
-    "@babel/cli": ^7.5.5
-    "@babel/core": ^7.5.5
-    "@babel/plugin-proposal-class-properties": ^7.5.5
-    "@babel/plugin-proposal-throw-expressions": ^7.7.4
-    "@babel/preset-env": ^7.5.5
-    "@babel/preset-react": ^7.0.0
-    "@babel/preset-typescript": ^7.8.3
-    "@emotion/core": ^10.0.27
-    "@types/react": ^16.9.56
-    "@webiny/app": ^5.15.0
-    "@webiny/app-security": ^5.15.0
-    "@webiny/cli": ^5.15.0
-    "@webiny/plugins": ^5.15.0
-    "@webiny/project-utils": ^5.15.0
-    apollo-cache: ^1.3.5
-    apollo-client: ^2.6.10
-    apollo-link: ^1.2.14
-    apollo-link-context: ^1.0.20
-    apollo-utilities: ^1.3.4
-    babel-plugin-lodash: ^3.3.4
-    graphql: ^14.7.0
-    lodash.get: ^4.4.2
-    react: ^16.14.0
-    react-dom: ^16.14.0
     rimraf: ^3.0.2
     typescript: ^4.1.3
   languageName: unknown
@@ -11325,6 +11359,7 @@ __metadata:
     "@types/react": ^16.14.2
     "@webiny/app": ^5.15.0
     "@webiny/app-admin": ^5.15.0
+    "@webiny/app-admin-cognito": ^5.15.0
     "@webiny/app-admin-users-cognito": ^5.15.0
     "@webiny/app-file-manager": ^5.15.0
     "@webiny/app-file-manager-s3": ^5.15.0
@@ -14436,6 +14471,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"charenc@npm:0.0.2":
+  version: 0.0.2
+  resolution: "charenc@npm:0.0.2"
+  checksum: 81dcadbe57e861d527faf6dd3855dc857395a1c4d6781f4847288ab23cffb7b3ee80d57c15bba7252ffe3e5e8019db767757ee7975663ad2ca0939bb8fcaf2e5
+  languageName: node
+  linkType: hard
+
 "charm@npm:~0.1.0, charm@npm:~0.1.1":
   version: 0.1.2
   resolution: "charm@npm:0.1.2"
@@ -15846,6 +15888,13 @@ __metadata:
     shebang-command: ^2.0.0
     which: ^2.0.1
   checksum: 671cc7c7288c3a8406f3c69a3ae2fc85555c04169e9d611def9a675635472614f1c0ed0ef80955d5b6d4e724f6ced67f0ad1bb006c2ea643488fcfef994d7f52
+  languageName: node
+  linkType: hard
+
+"crypt@npm:0.0.2":
+  version: 0.0.2
+  resolution: "crypt@npm:0.0.2"
+  checksum: baf4c7bbe05df656ec230018af8cf7dbe8c14b36b98726939cef008d473f6fe7a4fad906cfea4062c93af516f1550a3f43ceb4d6615329612c6511378ed9fe34
   languageName: node
   linkType: hard
 
@@ -22342,7 +22391,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"is-buffer@npm:^1.0.2, is-buffer@npm:^1.1.5":
+"is-buffer@npm:^1.0.2, is-buffer@npm:^1.1.5, is-buffer@npm:~1.1.6":
   version: 1.1.6
   resolution: "is-buffer@npm:1.1.6"
   checksum: 4a186d995d8bbf9153b4bd9ff9fd04ae75068fe695d29025d25e592d9488911eeece84eefbd8fa41b8ddcc0711058a71d4c466dcf6f1f6e1d83830052d8ca707
@@ -25737,6 +25786,17 @@ fsevents@^1.2.7:
     inherits: ^2.0.1
     safe-buffer: ^5.1.2
   checksum: 098494d885684bcc4f92294b18ba61b7bd353c23147fbc4688c75b45cb8590f5a95fd4584d742415dcc52487f7a1ef6ea611cfa1543b0dc4492fe026357f3f0c
+  languageName: node
+  linkType: hard
+
+"md5@npm:^2.3.0":
+  version: 2.3.0
+  resolution: "md5@npm:2.3.0"
+  dependencies:
+    charenc: 0.0.2
+    crypt: 0.0.2
+    is-buffer: ~1.1.6
+  checksum: a63cacf4018dc9dee08c36e6f924a64ced735b37826116c905717c41cebeb41a522f7a526ba6ad578f9c80f02cb365033ccd67fe186ffbcc1a1faeb75daa9b6e
   languageName: node
   linkType: hard
 

@@ -1,9 +1,7 @@
 import React, { useReducer, useEffect, useMemo } from "react";
-import Auth from "@aws-amplify/auth";
-import { ApolloClient } from "apollo-client";
-import { useApolloClient } from "@apollo/react-hooks";
-import { useSecurity } from "@webiny/app-security";
-import { SecurityIdentity } from "@webiny/app-security/SecurityIdentity";
+import { Auth } from "@aws-amplify/auth";
+import { AuthOptions } from "@aws-amplify/auth/lib-esm/types";
+import { CognitoIdToken } from "./types";
 
 export type AuthState =
     | "signIn"
@@ -40,20 +38,14 @@ export interface AuthContextValue {
     message: AuthMessage;
 }
 
-export interface AuthenticatorProps {
-    getIdentityData(params: {
-        client: ApolloClient<any>;
-        payload: { [key: string]: any };
-    }): Promise<{ [key: string]: any }>;
+export interface AuthenticatorProps extends AuthOptions {
+    onToken: (token: CognitoIdToken) => void;
     children: React.ReactNode;
 }
 
 export const AuthenticatorContext = React.createContext<AuthContextValue>({} as any);
 
-export const Authenticator = (props: AuthenticatorProps) => {
-    const { setIdentity } = useSecurity();
-    const client = useApolloClient();
-
+export const Authenticator = ({ onToken, children }: AuthenticatorProps) => {
     const [state, setState] = useReducer((prev, next) => ({ ...prev, ...next }), {
         authState: "signIn",
         authData: null,
@@ -104,28 +96,17 @@ export const Authenticator = (props: AuthenticatorProps) => {
 
         // Cognito states call this state with user data.
         if (state === "signedIn") {
-            setState({ checkingUser: true });
             const user = await Auth.currentSession();
+            const idToken = user.getIdToken();
 
-            const { id, displayName, type, ...data } = await props.getIdentityData({
-                client,
-                payload: user.getIdToken().payload
+            onToken({
+                idToken: idToken.getJwtToken(),
+                payload: idToken.payload,
+                logout() {
+                    Auth.signOut();
+                    setState({ authState: "signIn" });
+                }
             });
-
-            setIdentity(
-                new SecurityIdentity({
-                    id,
-                    displayName,
-                    type,
-                    ...data,
-                    logout() {
-                        Auth.signOut();
-                        setIdentity(null);
-                        setState({ authState: "signIn" });
-                    }
-                })
-            );
-            setState({ checkingUser: false });
         }
 
         setState({ authState: state, authData: data });
@@ -135,9 +116,5 @@ export const Authenticator = (props: AuthenticatorProps) => {
         return { ...state, changeState: onChangeState };
     }, [state]);
 
-    return (
-        <AuthenticatorContext.Provider value={value}>
-            {props.children}
-        </AuthenticatorContext.Provider>
-    );
+    return <AuthenticatorContext.Provider value={value}>{children}</AuthenticatorContext.Provider>;
 };

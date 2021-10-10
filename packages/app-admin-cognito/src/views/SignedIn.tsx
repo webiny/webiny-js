@@ -1,4 +1,4 @@
-import { useSignedIn } from "@webiny/app-security-cognito-authentication/hooks/useSignedIn";
+import { useSignedIn } from "@webiny/app-cognito-essentials/hooks/useSignedIn";
 
 const SignedIn = ({ children }) => {
     const { shouldRender } = useSignedIn();

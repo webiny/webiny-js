@@ -1,17 +1,7 @@
 {
   "extends": "../../tsconfig.build.json",
   "include": ["./src"],
-  "exclude": [
-    "node_modules",
-    "../app",
-    "../app-admin",
-    "../app-security",
-    "../form",
-    "../app-cognito-essentials",
-    "../plugins",
-    "../ui",
-    "../validation"
-  ],
+  "exclude": ["node_modules", "../app", "../app-cognito-essentials", "../validation"],
   "compilerOptions": {
     "rootDir": "./src",
     "outDir": "./dist",

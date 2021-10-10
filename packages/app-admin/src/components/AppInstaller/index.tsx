@@ -6,7 +6,6 @@ import { SplitView, LeftPanel, RightPanel } from "../SplitView";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Typography } from "@webiny/ui/Typography";
 import { Elevation } from "@webiny/ui/Elevation";
-import { View } from "@webiny/app/components/View";
 import { useInstaller } from "./useInstaller";
 import Sidebar from "./Sidebar";
 import {
@@ -24,9 +23,9 @@ const markInstallerAsCompleted = () =>
 const installerCompleted =
     localStorage["wby_installer_status"] === process.env.REACT_APP_WEBINY_VERSION;
 
-export const AppInstaller = ({ children }) => {
+export const AppInstaller = ({ Authentication, children }) => {
     if (installerCompleted) {
-        return children;
+        return <Authentication>{children}</Authentication>;
     }
 
     const [finished, setFinished] = useState(false);
@@ -59,9 +58,7 @@ export const AppInstaller = ({ children }) => {
                 </LeftPanel>
                 <RightPanel span={10}>
                     {!showLogin && !secure && content}
-                    {(showLogin || secure) && (
-                        <View name={"admin.installation.secureInstaller"}>{content}</View>
-                    )}
+                    {(showLogin || secure) && <Authentication>{content}</Authentication>}
                 </RightPanel>
             </SplitView>
         );
@@ -85,7 +82,7 @@ export const AppInstaller = ({ children }) => {
     // This means there are no installers to run or installation was finished
     if (!loading && (installers.length === 0 || finished)) {
         markInstallerAsCompleted();
-        return children;
+        return <Authentication>{children}</Authentication>;
     }
 
     if (installer) {

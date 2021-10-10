@@ -10,8 +10,8 @@ import { Elevation } from "@webiny/ui/Elevation";
 import StateContainer from "./StateContainer";
 import { alignRight, InnerContent, Title } from "./StyledComponents";
 import { CircularProgress } from "@webiny/ui/Progress";
-import { useAuthenticator } from "@webiny/app-security-cognito-authentication/hooks/useAuthenticator";
-import { useForgotPassword } from "@webiny/app-security-cognito-authentication/hooks/useForgotPassword";
+import { useAuthenticator } from "@webiny/app-cognito-essentials/hooks/useAuthenticator";
+import { useForgotPassword } from "@webiny/app-cognito-essentials/hooks/useForgotPassword";
 
 const ForgotPassword = () => {
     const { checkingUser, authData, changeState } = useAuthenticator();
