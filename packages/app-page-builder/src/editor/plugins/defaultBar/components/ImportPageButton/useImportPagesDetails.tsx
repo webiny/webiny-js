@@ -30,30 +30,28 @@ const ImportPagesDetails: FunctionComponent<ImportPagesDetailsProps> = ({ loadin
                                 {t`Pages imported:`}
                             </ShowDetails.Label>
                             <ShowDetails.List data-testid={"import-pages-dialog.show-detail-list"}>
-                                {get(
-                                    data,
-                                    "pageBuilder.getPageImportExportSubTaskByStatus.data",
-                                    []
-                                ).map(({ data }) => {
-                                    const { page } = data;
-                                    return (
-                                        <ShowDetails.ListItem key={page.id}>
-                                            <Typography use={"body2"}>
-                                                {`${page.title} (v${page.version})`}
-                                            </Typography>
-                                            <Link
-                                                to={`/page-builder/pages?id=${encodeURIComponent(
-                                                    page.id
-                                                )}`}
-                                                target={"_blank"}
-                                            >
-                                                <ShowDetails.LinkText use={"body2"}>
-                                                    {t`view`}
-                                                </ShowDetails.LinkText>
-                                            </Link>
-                                        </ShowDetails.ListItem>
-                                    );
-                                })}
+                                {get(data, "pageBuilder.listPageImportExportSubTask.data", []).map(
+                                    ({ data }) => {
+                                        const { page } = data;
+                                        return (
+                                            <ShowDetails.ListItem key={page.id}>
+                                                <Typography use={"body2"}>
+                                                    {`${page.title} (v${page.version})`}
+                                                </Typography>
+                                                <Link
+                                                    to={`/page-builder/pages?id=${encodeURIComponent(
+                                                        page.id
+                                                    )}`}
+                                                    target={"_blank"}
+                                                >
+                                                    <ShowDetails.LinkText use={"body2"}>
+                                                        {t`view`}
+                                                    </ShowDetails.LinkText>
+                                                </Link>
+                                            </ShowDetails.ListItem>
+                                        );
+                                    }
+                                )}
                             </ShowDetails.List>
                         </Scrollbar>
                     </ShowDetails.Accordion>

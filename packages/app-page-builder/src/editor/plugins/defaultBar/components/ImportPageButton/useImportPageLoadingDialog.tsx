@@ -10,7 +10,7 @@ import ProgressBar from "./ProgressBar";
 import { LoadingDialog } from "./styledComponents";
 import {
     GET_PAGE_IMPORT_EXPORT_TASK,
-    GET_PAGE_IMPORT_EXPORT_TASK_BY_STATUS
+    LIST_PAGE_IMPORT_EXPORT_SUB_TASKS
 } from "~/admin/graphql/pageImportExport.gql";
 import { PageImportExportTaskStatus } from "~/types";
 
@@ -46,7 +46,7 @@ const ImportPageLoadingDialogContent: FunctionComponent<{ taskId: string }> = ({
         notifyOnNetworkStatusChange: true
     });
 
-    const [getSubTasks, getSubTasksQuery] = useLazyQuery(GET_PAGE_IMPORT_EXPORT_TASK_BY_STATUS, {
+    const [getSubTasks, getSubTasksQuery] = useLazyQuery(LIST_PAGE_IMPORT_EXPORT_SUB_TASKS, {
         variables: {
             id: taskId,
             status: "completed"

@@ -69,10 +69,10 @@ export const GET_PAGE_IMPORT_EXPORT_TASK = gql`
     }
 `;
 
-export const GET_PAGE_IMPORT_EXPORT_TASK_BY_STATUS = gql`
-    query PbPageGetImportExportSubTaskByStatus($id: ID!, $status: PbPageImportExportTaskStatus) {
+export const LIST_PAGE_IMPORT_EXPORT_SUB_TASKS = gql`
+    query PbPageListPageImportExportSubTask($id: ID!, $status: PbPageImportExportTaskStatus, $limit: Int) {
         pageBuilder {
-            getPageImportExportSubTaskByStatus(id: $id, status: $status) {
+            listPageImportExportSubTask(id: $id, status: $status, limit: $limit) {
                 data {
                     id
                     status
