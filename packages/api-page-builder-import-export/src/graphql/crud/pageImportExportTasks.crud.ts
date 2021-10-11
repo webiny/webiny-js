@@ -242,6 +242,35 @@ export default ({ storageOperations }: PageImportExportPluginsParams) =>
                 }
             },
 
+            async updateStats(id, input) {
+                const permission = await checkBasePermissions(context, PERMISSION_NAME, {
+                    rwd: "w"
+                });
+                const original = await context.pageBuilder.pageImportExportTask.get(id);
+                if (!original) {
+                    throw new NotFoundError(`PageImportExportTask "${id}" not found.`);
+                }
+
+                const identity = context.security.getIdentity();
+                checkOwnPermissions(identity, permission, original);
+
+                try {
+                    return await storageOperations.updateTaskStats({
+                        input,
+                        original
+                    });
+                } catch (ex) {
+                    throw new WebinyError(
+                        ex.message || "Could not update pageImportExportTask.",
+                        ex.code || "UPDATE_PAGE_IMPORT_EXPORT_TASK_ERROR",
+                        {
+                            ...(ex.data || {}),
+                            original
+                        }
+                    );
+                }
+            },
+
             async createSubTask(parent, id, input) {
                 await checkBasePermissions(context, PERMISSION_NAME, { rwd: "w" });
 

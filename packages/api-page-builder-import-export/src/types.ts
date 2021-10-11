@@ -174,6 +174,18 @@ export interface PageImportExportTaskStorageOperationsUpdateSubTaskParams {
  * @category StorageOperations
  * @category PageImportExportTaskStorageOperations
  */
+export interface PageImportExportTaskStorageOperationsUpdateTaskStatsParams {
+    input: {
+        prevStatus: PageImportExportTaskStatus;
+        nextStatus: PageImportExportTaskStatus;
+    };
+    original: PageImportExportTask;
+}
+
+/**
+ * @category StorageOperations
+ * @category PageImportExportTaskStorageOperations
+ */
 export interface PageImportExportTaskStorageOperations {
     /**
      * Get a single page import export task item by given params.
@@ -199,6 +211,10 @@ export interface PageImportExportTaskStorageOperations {
 
     delete(
         params: PageImportExportTaskStorageOperationsDeleteParams
+    ): Promise<PageImportExportTask>;
+
+    updateTaskStats(
+        params: PageImportExportTaskStorageOperationsUpdateTaskStatsParams
     ): Promise<PageImportExportTask>;
 
     /**
