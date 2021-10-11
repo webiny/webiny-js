@@ -45,9 +45,10 @@ const plugin: GraphQLSchemaPlugin<PbPageImportExportContext> = {
 
             extend type PbQuery {
                 getPageImportExportTask(id: ID!): PbPageImportExportTaskResponse
-                getPageImportExportSubTaskByStatus(
+                listPageImportExportSubTask(
                     id: ID!
                     status: PbPageImportExportTaskStatus
+                    limit: Int
                 ): PbPageImportExportTaskListResponse
             }
         `,
@@ -58,16 +59,16 @@ const plugin: GraphQLSchemaPlugin<PbPageImportExportContext> = {
                         return context.pageBuilder.pageImportExportTask.get(args.id);
                     });
                 },
-                getPageImportExportSubTaskByStatus: async (
+                listPageImportExportSubTask: async (
                     _,
-                    args: { id: string; status: PageImportExportTaskStatus },
+                    args: { id: string; status: PageImportExportTaskStatus; limit: number },
                     context
                 ) => {
                     return resolve(() => {
-                        return context.pageBuilder.pageImportExportTask.getSubTaskByStatus(
+                        return context.pageBuilder.pageImportExportTask.listSubTasks(
                             args.id,
                             args.status,
-                            100
+                            args.limit
                         );
                     });
                 }
@@ -75,5 +76,4 @@ const plugin: GraphQLSchemaPlugin<PbPageImportExportContext> = {
         }
     }
 };
-
 export default plugin;
