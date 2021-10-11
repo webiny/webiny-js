@@ -1,31 +1,33 @@
 {
-  "name": "api-page-builder-export-pages-process",
-  "version": "0.1.0",
-  "scripts": {
-    "build": "yarn webiny run build",
-    "watch": "yarn webiny run watch"
-  },
-  "dependencies": {
-    "@webiny/api-elasticsearch": "^5.14.0",
-    "@webiny/api-file-manager": "^5.14.0",
-    "@webiny/api-file-manager-ddb-es": "^5.14.0",
-    "@webiny/api-file-manager-s3": "^5.14.0",
-    "@webiny/api-i18n": "^5.14.0",
-    "@webiny/api-i18n-content": "^5.14.0",
-    "@webiny/api-i18n-ddb": "^5.14.0",
-    "@webiny/api-page-builder": "^5.14.0",
-    "@webiny/api-page-builder-import-export": "^5.14.0",
-    "@webiny/api-security": "^5.14.0",
-    "@webiny/api-security-admin-users": "^5.14.0",
-    "@webiny/api-security-admin-users-cognito": "^5.14.0",
-    "@webiny/api-security-admin-users-so-ddb": "^5.14.0",
-    "@webiny/api-security-cognito-authentication": "^5.14.0",
-    "@webiny/api-tenancy": "^5.14.0",
-    "@webiny/cli": "^5.14.0",
-    "@webiny/db-dynamodb": "^5.14.0",
-    "@webiny/handler-aws": "^5.14.0",
-    "@webiny/handler-db": "^5.14.0",
-    "@webiny/handler-logs": "^5.14.0",
-    "@webiny/project-utils": "^5.14.0"
-  }
+	"name": "api-page-builder-export-pages-process",
+	"version": "0.1.0",
+	"scripts": {
+		"build": "yarn webiny run build",
+		"watch": "yarn webiny run watch"
+	},
+	"dependencies": {
+		"@webiny/api-elasticsearch": "^5.14.0",
+		"@webiny/api-file-manager": "^5.14.0",
+		"@webiny/api-file-manager-ddb-es": "^5.14.0",
+		"@webiny/api-file-manager-s3": "^5.14.0",
+		"@webiny/api-i18n": "^5.14.0",
+		"@webiny/api-i18n-content": "^5.14.0",
+		"@webiny/api-i18n-ddb": "^5.14.0",
+		"@webiny/api-page-builder": "^5.14.0",
+		"@webiny/api-page-builder-import-export": "^5.14.0",
+		"@webiny/api-page-builder-so-ddb-es": "^5.15.0",
+		"@webiny/api-security": "^5.14.0",
+		"@webiny/api-security-admin-users": "^5.14.0",
+		"@webiny/api-security-admin-users-cognito": "^5.14.0",
+		"@webiny/api-security-admin-users-so-ddb": "^5.14.0",
+		"@webiny/api-security-cognito-authentication": "^5.14.0",
+		"@webiny/api-tenancy": "^5.14.0",
+		"@webiny/cli": "^5.14.0",
+		"@webiny/db-dynamodb": "^5.14.0",
+		"@webiny/handler-aws": "^5.14.0",
+		"@webiny/handler-db": "^5.14.0",
+		"@webiny/handler-logs": "^5.14.0",
+		"@webiny/project-utils": "^5.14.0",
+		"@webiny/api-page-builder-import-export-so-ddb": "^5.15.0"
+	}
 }

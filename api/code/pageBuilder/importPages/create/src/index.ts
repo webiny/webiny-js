@@ -6,7 +6,9 @@ import i18nContentPlugins from "@webiny/api-i18n-content/plugins";
 import adminUsersPlugins from "@webiny/api-security-admin-users";
 import securityAdminUsersDynamoDbStorageOperations from "@webiny/api-security-admin-users-so-ddb";
 import pageBuilderPlugins from "@webiny/api-page-builder/graphql";
+import pageBuilderDynamoDbElasticsearchPlugins from "@webiny/api-page-builder-so-ddb-es";
 import pageBuilderImportExportPlugins from "@webiny/api-page-builder-import-export/graphql";
+import { createStorageOperations } from "@webiny/api-page-builder-import-export-so-ddb";
 import importPagesCreatePlugins from "@webiny/api-page-builder-import-export/importPages/create";
 import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
@@ -18,6 +20,11 @@ import logsPlugins from "@webiny/handler-logs";
 import fileManagerS3 from "@webiny/api-file-manager-s3";
 import securityPlugins from "./security";
 
+const documentClient = new DocumentClient({
+    convertEmptyValues: true,
+    region: process.env.AWS_REGION
+});
+
 const debug = process.env.DEBUG === "true";
 
 export const handler = createHandler({
@@ -28,10 +35,7 @@ export const handler = createHandler({
         dbPlugins({
             table: process.env.DB_TABLE,
             driver: new DynamoDbDriver({
-                documentClient: new DocumentClient({
-                    convertEmptyValues: true,
-                    region: process.env.AWS_REGION
-                })
+                documentClient
             })
         }),
         securityPlugins(),
@@ -45,7 +49,10 @@ export const handler = createHandler({
         adminUsersPlugins(),
         securityAdminUsersDynamoDbStorageOperations(),
         pageBuilderPlugins(),
-        pageBuilderImportExportPlugins(),
+        pageBuilderDynamoDbElasticsearchPlugins(),
+        pageBuilderImportExportPlugins({
+            storageOperations: createStorageOperations({ documentClient })
+        }),
         importPagesCreatePlugins({
             handlers: {
                 process: process.env.IMPORT_PAGE_QUEUE_PROCESS_HANDLER

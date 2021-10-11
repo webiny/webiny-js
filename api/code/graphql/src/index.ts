@@ -10,6 +10,7 @@ import pageBuilderPlugins from "@webiny/api-page-builder/graphql";
 import pageBuilderDynamoDbElasticsearchPlugins from "@webiny/api-page-builder-so-ddb-es";
 import pageBuilderPrerenderingPlugins from "@webiny/api-page-builder/prerendering";
 import pageBuilderImportExportPlugins from "@webiny/api-page-builder-import-export/graphql";
+import { createStorageOperations } from "@webiny/api-page-builder-import-export-so-ddb";
 import prerenderingServicePlugins from "@webiny/api-prerendering-service/client";
 import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
@@ -28,6 +29,11 @@ import elasticsearchDataGzipCompression from "@webiny/api-elasticsearch/plugins/
 // Imports plugins created via scaffolding utilities.
 import scaffoldsPlugins from "./plugins/scaffolds";
 
+const documentClient = new DocumentClient({
+    convertEmptyValues: true,
+    region: process.env.AWS_REGION
+});
+
 const debug = process.env.DEBUG === "true";
 
 export const handler = createHandler({
@@ -39,10 +45,7 @@ export const handler = createHandler({
         dbPlugins({
             table: process.env.DB_TABLE,
             driver: new DynamoDbDriver({
-                documentClient: new DocumentClient({
-                    convertEmptyValues: true,
-                    region: process.env.AWS_REGION
-                })
+                documentClient
             })
         }),
         securityPlugins(),
@@ -68,7 +71,9 @@ export const handler = createHandler({
         pageBuilderPlugins(),
         pageBuilderDynamoDbElasticsearchPlugins(),
         pageBuilderPrerenderingPlugins(),
-        pageBuilderImportExportPlugins(),
+        pageBuilderImportExportPlugins({
+            storageOperations: createStorageOperations({ documentClient })
+        }),
         formBuilderPlugins(),
         headlessCmsPlugins(),
         headlessCmsDynamoDbElasticStorageOperation(),
