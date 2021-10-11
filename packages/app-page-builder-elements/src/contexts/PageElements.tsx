@@ -1,4 +1,4 @@
-import React, { createContext, useCallback } from "react";
+import React, { createContext, useCallback, useEffect } from "react";
 import {
     Breakpoint,
     StylesObjects,
@@ -6,6 +6,7 @@ import {
     PageElementsProviderProps
 } from "~/types";
 import { css, cx, CSSObject } from "@emotion/css";
+import { setUsingPageElements } from "~/utils";
 
 export const PageElementsContext = createContext(null);
 
@@ -114,6 +115,11 @@ export const PageElementsProvider: React.FC<PageElementsProviderProps> = ({
         const styles = getStyles(customStyles);
         return styles.map(item => css(item));
     }, []);
+
+    // Provides a way to check whether the `PageElementsProvider` React component was mounted or not,
+    // in a non-React context. In React contexts, it's strongly recommended the value of `usePageElements`
+    // React hook is checked instead (a `null` value means the provider React component wasn't mounted).
+    useEffect(() => setUsingPageElements(true), []);
 
     const value: PageElementsContextValue = {
         theme,
