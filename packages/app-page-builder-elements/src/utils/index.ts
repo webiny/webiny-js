@@ -1,7 +1,14 @@
 // Provides a way to check whether the `PageElementsProvider` React component was mounted or not,
 // in a non-React context. In React contexts, it's strongly recommended the value of `usePageElements`
 // React hook is checked instead (a `null` value means the provider React component wasn't mounted).
-import {Breakpoint, ElementStylesCallback, StylesCallback, StylesObjects, ThemeStylesCallback} from "~/types";
+import {
+    AssignStylesCallback,
+    Breakpoint,
+    ElementStylesCallback,
+    StylesCallback,
+    StylesObjects,
+    ThemeStylesCallback
+} from "~/types";
 import { CSSObject } from "@emotion/css";
 
 let usingPageElementsFlag = false;
@@ -30,7 +37,7 @@ export const isPerBreakpointStylesObject = ({
     return false;
 };
 
-export const assignStyles = (args: {
+export const assignStyles: AssignStylesCallback = (args: {
     breakpoints: Record<string, Breakpoint>;
     styles: StylesObjects;
     assignTo?: CSSObject;
@@ -57,12 +64,14 @@ export const defaultElementStylesCallback: ElementStylesCallback = ({
     element,
     modifiers,
     renderers,
-    theme
+    theme,
+    assignStyles: customAssignStylesCallback
 }) => {
     const styles = {};
 
     for (const modifierName in modifiers.styles) {
-        assignStyles({
+        const assign = customAssignStylesCallback || assignStyles;
+        assign({
             breakpoints: theme.breakpoints,
             assignTo: styles,
             styles: modifiers.styles[modifierName]({
@@ -77,7 +86,11 @@ export const defaultElementStylesCallback: ElementStylesCallback = ({
     return [styles];
 };
 
-export const defaultThemeStylesCallback: ThemeStylesCallback = ({ theme, getStyles }) => {
+export const defaultThemeStylesCallback: ThemeStylesCallback = ({
+    theme,
+    getStyles,
+    assignStyles: customAssignStylesCallback
+}) => {
     let themeStyles = {};
     try {
         themeStyles = getStyles(theme);
@@ -87,7 +100,8 @@ export const defaultThemeStylesCallback: ThemeStylesCallback = ({ theme, getStyl
         console.log(e);
     }
 
-    const styles = assignStyles({
+    const assign = customAssignStylesCallback || assignStyles;
+    const styles = assign({
         breakpoints: theme.breakpoints,
         styles: themeStyles
     });
