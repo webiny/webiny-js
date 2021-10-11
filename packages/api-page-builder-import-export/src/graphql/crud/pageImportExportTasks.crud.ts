@@ -3,13 +3,18 @@ import { string, withFields } from "@commodo/fields";
 import { object } from "commodo-fields-object";
 import { validation } from "@webiny/validation";
 import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
-import defaults from "@webiny/api-page-builder/graphql/crud/utils/defaults";
-import getPKPrefix from "@webiny/api-page-builder/graphql/crud/utils/getPKPrefix";
 import checkBasePermissions from "@webiny/api-page-builder/graphql/crud/utils/checkBasePermissions";
 import checkOwnPermissions from "@webiny/api-page-builder/graphql/crud/utils/checkOwnPermissions";
 import { NotFoundError } from "@webiny/handler-graphql";
-import { PageImportExportTask, PageImportExportTaskStatus } from "~/types";
+import {
+    PageImportExportPluginsParams,
+    PageImportExportTask,
+    PageImportExportTaskStatus,
+    PageImportExportTaskStorageOperationsListSubTaskParams
+} from "~/types";
 import { PbPageImportExportContext } from "~/graphql/types";
+import WebinyError from "@webiny/error";
+import { PageElementStorageOperationsListParams } from "@webiny/api-page-builder/types";
 
 const validStatus = `${PageImportExportTaskStatus.PENDING}:${PageImportExportTaskStatus.PROCESSING}:${PageImportExportTaskStatus.COMPLETED}:${PageImportExportTaskStatus.FAILED}`;
 
@@ -33,233 +38,377 @@ const UpdateDataModel = withFields({
     error: object()
 })();
 
-const TYPE = "pb.exportPageTask";
 const PERMISSION_NAME = "pb.page";
-const PAGE_IMPORT_EXPORT_TASK = "PIET";
-const SUB_TASK = "SUB";
 
-export default new ContextPlugin<PbPageImportExportContext>(context => {
-    const { db } = context;
-
-    const PK = taskId => `${getPKPrefix(context)}${PAGE_IMPORT_EXPORT_TASK}#${taskId}`;
-    const SK = id => `${SUB_TASK}#${id}`;
-
-    // Modify context
-    context.pageBuilder.pageImportExportTask = {
-        async get(id) {
-            const permission = await checkBasePermissions(context, PERMISSION_NAME, {
-                rwd: "r"
-            });
-
-            const [[task]] = await db.read<PageImportExportTask>({
-                ...defaults.db,
-                query: { PK: PK(id), SK: "A" },
-                limit: 1
-            });
-
-            if (!task) {
-                return null;
-            }
-
-            const identity = context.security.getIdentity();
-            checkOwnPermissions(identity, permission, task);
-
-            return task;
-        },
-
-        async list() {
-            const permission = await checkBasePermissions(context, PERMISSION_NAME, {
-                rwd: "r"
-            });
-
-            const [task] = await db.read<PageImportExportTask>({
-                ...defaults.db,
-                query: { PK: { $beginsWith: PK("") }, SK: "A" }
-            });
-
-            // If user can only manage own records, let's check if he owns the loaded one.
-            if (permission.own) {
-                const identity = context.security.getIdentity();
-                return task.filter(item => item.createdBy.id === identity.id);
-            }
-
-            return task;
-        },
-
-        async create(data) {
-            await checkBasePermissions(context, PERMISSION_NAME, { rwd: "w" });
-
-            const createDataModel = new CreateDataModel().populate(data);
-            await createDataModel.validate();
-
-            const id = mdbid();
-            const identity = context.security.getIdentity();
-
-            const createData = Object.assign(await createDataModel.toJSON(), {
-                PK: PK(id),
-                SK: "A",
-                TYPE,
-                tenant: context.tenancy.getCurrentTenant().id,
-                locale: context.i18nContent.getLocale().code,
-                id,
-                createdOn: new Date().toISOString(),
-                createdBy: {
-                    id: identity.id,
-                    type: identity.type,
-                    displayName: identity.displayName
-                }
-            });
-
-            await db.create({ ...defaults.db, data: createData });
-
-            return createData;
-        },
-
-        async update(id, data) {
-            const permission = await checkBasePermissions(context, PERMISSION_NAME, {
-                rwd: "w"
-            });
-            const task = await this.get(id);
-            if (!task) {
-                throw new NotFoundError(`ExportPageTask "${id}" not found.`);
-            }
-
-            const identity = context.security.getIdentity();
-            checkOwnPermissions(identity, permission, task);
-
-            const updateDataModel = new UpdateDataModel().populate(data);
-            await updateDataModel.validate();
-
-            const updateData = await updateDataModel.toJSON({ onlyDirty: true });
-
-            await db.update({
-                ...defaults.db,
-                query: { PK: PK(id), SK: "A" },
-                data: updateData
-            });
-
-            return { ...task, ...updateData };
-        },
-
-        async delete(id) {
-            const permission = await checkBasePermissions(context, PERMISSION_NAME, {
-                rwd: "d"
-            });
-
-            const exportPageTask = await this.get(id);
-            if (!exportPageTask) {
-                throw new NotFoundError(`ExportPageTask "${id}" not found.`);
-            }
-
-            const identity = context.security.getIdentity();
-            checkOwnPermissions(identity, permission, exportPageTask);
-
-            await db.delete({
-                ...defaults.db,
-                query: { PK: PK(id), SK: "A" }
-            });
-
-            return exportPageTask;
-        },
-
-        async createSubTask(id, subTaskId, data) {
-            await checkBasePermissions(context, PERMISSION_NAME, { rwd: "w" });
-
-            const createDataModel = new CreateDataModel().populate(data);
-            await createDataModel.validate();
-
-            const identity = context.security.getIdentity();
-
-            const createData = Object.assign(await createDataModel.toJSON(), {
-                PK: PK(id),
-                SK: SK(subTaskId),
-                // Using GSI
-                GSI1_PK: PK(id),
-                GSI1_SK: createDataModel.status,
-                TYPE,
-                tenant: context.tenancy.getCurrentTenant().id,
-                locale: context.i18nContent.getLocale().code,
-                id: subTaskId,
-                createdOn: new Date().toISOString(),
-                createdBy: {
-                    id: identity.id,
-                    type: identity.type,
-                    displayName: identity.displayName
-                }
-            });
-
-            await db.create({ ...defaults.db, data: createData });
-
-            return createData;
-        },
-
-        async updateSubTask(id, subTaskId, data) {
-            const permission = await checkBasePermissions(context, PERMISSION_NAME, {
-                rwd: "w"
-            });
-            const task = await this.getSubTask(id, subTaskId);
-            if (!task) {
-                throw new NotFoundError(`ExportPageTask "${id}" not found.`);
-            }
-
-            const identity = context.security.getIdentity();
-            checkOwnPermissions(identity, permission, task);
-
-            const updateDataModel = new UpdateDataModel().populate(data);
-            await updateDataModel.validate();
-
-            const updateData = await updateDataModel.toJSON({ onlyDirty: true });
-
-            await db.update({
-                ...defaults.db,
-                query: { PK: PK(id), SK: SK(subTaskId) },
-                data: {
-                    ...updateData,
-                    // Using GSI
-                    GSI1_SK: updateData.status
-                }
-            });
-
-            return { ...task, ...updateData };
-        },
-
-        async getSubTask(id, subTaskId) {
-            const permission = await checkBasePermissions(context, PERMISSION_NAME, {
-                rwd: "r"
-            });
-
-            const [[task]] = await db.read<PageImportExportTask>({
-                ...defaults.db,
-                query: { PK: PK(id), SK: SK(subTaskId) },
-                limit: 1
-            });
-
-            if (!task) {
-                return null;
-            }
-
-            const identity = context.security.getIdentity();
-            checkOwnPermissions(identity, permission, task);
-
-            return task;
-        },
-
-        async getSubTaskByStatus(id, status, limit) {
-            await checkBasePermissions(context, PERMISSION_NAME, {
-                rwd: "r"
-            });
-
-            const [tasks] = await db.read<PageImportExportTask>({
-                ...defaults.db,
-                query: { GSI1_PK: PK(id), GSI1_SK: status },
-                limit: limit
-            });
-
-            if (!tasks) {
-                return null;
-            }
-
-            return tasks;
+export default ({ storageOperations }: PageImportExportPluginsParams) =>
+    new ContextPlugin<PbPageImportExportContext>(async context => {
+        /**
+         * If pageBuilder is not defined on the context, do not continue, but log it.
+         */
+        if (!context.pageBuilder) {
+            console.log("Missing pageBuilder on context. Skipping Page ImportExportTasks crud.");
+            return;
         }
-    };
-});
+
+        // Modify context
+        context.pageBuilder.pageImportExportTask = {
+            storageOperations,
+            async get(id) {
+                const permission = await checkBasePermissions(context, PERMISSION_NAME, {
+                    rwd: "r"
+                });
+
+                const tenant = context.tenancy.getCurrentTenant();
+                const locale = context.i18nContent.getLocale();
+
+                const params = {
+                    where: {
+                        tenant: tenant.id,
+                        locale: locale.code,
+                        id
+                    }
+                };
+
+                let pageImportExportTask: PageImportExportTask | undefined;
+
+                try {
+                    pageImportExportTask = await storageOperations.get(params);
+
+                    if (!pageImportExportTask) {
+                        return null;
+                    }
+                } catch (ex) {
+                    throw new WebinyError(
+                        ex.message || "Could not get pageImportExportTask by id.",
+                        ex.code || "GET_PAGE_IMPORT_EXPORT_TASK_ERROR",
+                        {
+                            ...(ex.data || {}),
+                            params
+                        }
+                    );
+                }
+                const identity = context.security.getIdentity();
+                checkOwnPermissions(identity, permission, pageImportExportTask);
+
+                return pageImportExportTask;
+            },
+
+            async list(params) {
+                const permission = await checkBasePermissions(context, PERMISSION_NAME, {
+                    rwd: "r"
+                });
+
+                const tenant = context.tenancy.getCurrentTenant();
+                const locale = context.i18nContent.getLocale();
+
+                const { sort } = params || {};
+
+                const listParams: PageElementStorageOperationsListParams = {
+                    where: {
+                        tenant: tenant.id,
+                        locale: locale.code
+                    },
+                    sort: Array.isArray(sort) && sort.length > 0 ? sort : ["createdOn_ASC"]
+                };
+
+                // If user can only manage own records, let's add that to the listing.
+                if (permission.own) {
+                    const identity = context.security.getIdentity();
+                    listParams.where.createdBy = identity.id;
+                }
+
+                try {
+                    const [items] = await storageOperations.list(listParams);
+                    return items;
+                } catch (ex) {
+                    throw new WebinyError(
+                        ex.message || "Could not list all page elements.",
+                        ex.code || "LIST_PAGE_ELEMENTS_ERROR",
+                        {
+                            params
+                        }
+                    );
+                }
+            },
+
+            async create(input) {
+                await checkBasePermissions(context, PERMISSION_NAME, { rwd: "w" });
+
+                const createDataModel = new CreateDataModel().populate(input);
+                await createDataModel.validate();
+
+                const id: string = mdbid();
+                const identity = context.security.getIdentity();
+
+                const data: PageImportExportTask = await createDataModel.toJSON();
+
+                const pageImportExportTask: PageImportExportTask = {
+                    ...data,
+                    tenant: context.tenancy.getCurrentTenant().id,
+                    locale: context.i18nContent.getLocale().code,
+                    id,
+                    createdOn: new Date().toISOString(),
+                    createdBy: {
+                        id: identity.id,
+                        type: identity.type,
+                        displayName: identity.displayName
+                    }
+                };
+
+                try {
+                    return await storageOperations.create({
+                        input: data,
+                        pageImportExportTask
+                    });
+                } catch (ex) {
+                    throw new WebinyError(
+                        ex.message || "Could not create pageImportExportTask.",
+                        ex.code || "CREATE_PAGE_IMPORT_EXPORT_TASK_ERROR",
+                        {
+                            ...(ex.data || {}),
+                            pageImportExportTask
+                        }
+                    );
+                }
+            },
+
+            async update(id, input) {
+                const permission = await checkBasePermissions(context, PERMISSION_NAME, {
+                    rwd: "w"
+                });
+                const original = await context.pageBuilder.pageImportExportTask.get(id);
+                if (!original) {
+                    throw new NotFoundError(`PageImportExportTask "${id}" not found.`);
+                }
+
+                const identity = context.security.getIdentity();
+                checkOwnPermissions(identity, permission, original);
+
+                const updateDataModel = new UpdateDataModel().populate(input);
+                await updateDataModel.validate();
+
+                const data = await updateDataModel.toJSON({ onlyDirty: true });
+
+                const pageImportExportTask: PageImportExportTask = {
+                    ...original,
+                    ...data
+                };
+
+                try {
+                    return await storageOperations.update({
+                        input: data,
+                        original,
+                        pageImportExportTask
+                    });
+                } catch (ex) {
+                    throw new WebinyError(
+                        ex.message || "Could not update pageImportExportTask.",
+                        ex.code || "UPDATE_PAGE_IMPORT_EXPORT_TASK_ERROR",
+                        {
+                            ...(ex.data || {}),
+                            original,
+                            pageImportExportTask
+                        }
+                    );
+                }
+            },
+
+            async delete(id) {
+                const permission = await checkBasePermissions(context, PERMISSION_NAME, {
+                    rwd: "d"
+                });
+
+                const pageImportExportTask = await context.pageBuilder.pageImportExportTask.get(id);
+                if (!pageImportExportTask) {
+                    throw new NotFoundError(`PageImportExportTask "${id}" not found.`);
+                }
+
+                const identity = context.security.getIdentity();
+                checkOwnPermissions(identity, permission, pageImportExportTask);
+
+                try {
+                    return await storageOperations.delete({
+                        pageImportExportTask
+                    });
+                } catch (ex) {
+                    throw new WebinyError(
+                        ex.message || "Could not delete pageImportExportTask.",
+                        ex.code || "DELETE_PAGE_IMPORT_EXPORT_TASK_ERROR",
+                        {
+                            ...(ex.data || {}),
+                            pageImportExportTask
+                        }
+                    );
+                }
+            },
+
+            async createSubTask(parent, id, input) {
+                await checkBasePermissions(context, PERMISSION_NAME, { rwd: "w" });
+
+                const createDataModel = new CreateDataModel().populate(input);
+                await createDataModel.validate();
+
+                const identity = context.security.getIdentity();
+
+                const data = await createDataModel.toJSON();
+
+                const pageImportExportSubTask: PageImportExportTask = {
+                    ...data,
+                    tenant: context.tenancy.getCurrentTenant().id,
+                    locale: context.i18nContent.getLocale().code,
+                    id: id,
+                    parent: parent,
+                    createdOn: new Date().toISOString(),
+                    createdBy: {
+                        id: identity.id,
+                        type: identity.type,
+                        displayName: identity.displayName
+                    }
+                };
+
+                try {
+                    return await storageOperations.createSubTask({
+                        input: data,
+                        pageImportExportSubTask
+                    });
+                } catch (ex) {
+                    throw new WebinyError(
+                        ex.message || "Could not create pageImportExportSubTask.",
+                        ex.code || "CREATE_PAGE_IMPORT_EXPORT_TASK_ERROR",
+                        {
+                            ...(ex.data || {}),
+                            pageImportExportSubTask
+                        }
+                    );
+                }
+            },
+
+            async updateSubTask(parent, subTaskId, input) {
+                const permission = await checkBasePermissions(context, PERMISSION_NAME, {
+                    rwd: "w"
+                });
+                const original = await context.pageBuilder.pageImportExportTask.getSubTask(
+                    parent,
+                    subTaskId
+                );
+                if (!original) {
+                    throw new NotFoundError(
+                        `PageImportExportTask parent: "${parent}" and id: "${subTaskId}" not found.`
+                    );
+                }
+
+                const identity = context.security.getIdentity();
+                checkOwnPermissions(identity, permission, original);
+
+                const updateDataModel = new UpdateDataModel().populate(input);
+                await updateDataModel.validate();
+
+                const data = await updateDataModel.toJSON({ onlyDirty: true });
+                // TODO: Merge recursively
+                const pageImportExportSubTask: PageImportExportTask = {
+                    ...original,
+                    ...data
+                };
+
+                try {
+                    return await storageOperations.updateSubTask({
+                        input: data,
+                        original,
+                        pageImportExportSubTask
+                    });
+                } catch (ex) {
+                    throw new WebinyError(
+                        ex.message || "Could not update pageImportExportSubTask.",
+                        ex.code || "UPDATE_PAGE_IMPORT_EXPORT_TASK_ERROR",
+                        {
+                            ...(ex.data || {}),
+                            pageImportExportSubTask,
+                            original
+                        }
+                    );
+                }
+            },
+
+            async getSubTask(parent, subTaskId) {
+                const permission = await checkBasePermissions(context, PERMISSION_NAME, {
+                    rwd: "r"
+                });
+                const tenant = context.tenancy.getCurrentTenant();
+                const locale = context.i18nContent.getLocale();
+
+                const params = {
+                    where: {
+                        tenant: tenant.id,
+                        locale: locale.code,
+                        id: subTaskId,
+                        parent: parent
+                    }
+                };
+
+                let pageImportExportSubTask: PageImportExportTask | undefined;
+
+                try {
+                    pageImportExportSubTask = await storageOperations.getSubTask(params);
+                    if (!pageImportExportSubTask) {
+                        return null;
+                    }
+                } catch (ex) {
+                    throw new WebinyError(
+                        ex.message || "Could not get pageImportExportSubTask by id.",
+                        ex.code || "GET_PAGE_IMPORT_EXPORT_TASK_ERROR",
+                        {
+                            ...(ex.data || {}),
+                            params
+                        }
+                    );
+                }
+
+                const identity = context.security.getIdentity();
+                checkOwnPermissions(identity, permission, pageImportExportSubTask);
+
+                return pageImportExportSubTask;
+            },
+
+            async listSubTasks(parent, status, limit) {
+                const permission = await checkBasePermissions(context, PERMISSION_NAME, {
+                    rwd: "r"
+                });
+
+                const tenant = context.tenancy.getCurrentTenant();
+                const locale = context.i18nContent.getLocale();
+
+                const listParams: PageImportExportTaskStorageOperationsListSubTaskParams = {
+                    where: {
+                        tenant: tenant.id,
+                        locale: locale.code,
+                        parent: parent,
+                        status
+                    },
+                    limit
+                };
+
+                // If user can only manage own records, let's add that to the listing.
+                if (permission.own) {
+                    const identity = context.security.getIdentity();
+                    listParams.where.createdBy = identity.id;
+                }
+
+                try {
+                    const [items] = await storageOperations.listSubTasks(listParams);
+                    return items;
+                } catch (ex) {
+                    throw new WebinyError(
+                        ex.message || "Could not list all pageImportExportSubTask.",
+                        ex.code || "LIST_PAGE_IMPORT_EXPORT_TASK_ERROR",
+                        {
+                            params: {
+                                parent,
+                                status,
+                                limit
+                            }
+                        }
+                    );
+                }
+            }
+        };
+    });
