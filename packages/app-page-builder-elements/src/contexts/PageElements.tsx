@@ -1,53 +1,9 @@
 import React, { createContext, useCallback, useEffect } from "react";
-import {
-    Breakpoint,
-    StylesObjects,
-    PageElementsContextValue,
-    PageElementsProviderProps
-} from "~/types";
-import { css, cx, CSSObject } from "@emotion/css";
-import { setUsingPageElements } from "~/utils";
+import { PageElementsContextValue, PageElementsProviderProps } from "~/types";
+import { css, cx } from "@emotion/css";
+import { setUsingPageElements, assignStyles } from "~/utils";
 
 export const PageElementsContext = createContext(null);
-
-// Detect if we're working with a per-breakpoint object, or just a set of regular CSS properties.
-const isPerBreakpointStylesObject = ({
-    breakpoints,
-    styles
-}: {
-    breakpoints: Record<string, Breakpoint>;
-    styles: StylesObjects;
-}): boolean => {
-    for (const breakpointName in breakpoints) {
-        if (styles[breakpointName]) {
-            return true;
-        }
-    }
-    return false;
-};
-
-const assignStyles = (args: {
-    breakpoints: Record<string, Breakpoint>;
-    styles: StylesObjects;
-    assignTo?: CSSObject;
-}) => {
-    const { breakpoints, styles = {}, assignTo = {} } = args;
-    if (isPerBreakpointStylesObject({ breakpoints, styles })) {
-        for (const breakpointName in breakpoints) {
-            const breakpoint = breakpoints[breakpointName];
-            if (styles && styles[breakpointName]) {
-                if (!assignTo[breakpoint.mediaQuery]) {
-                    assignTo[breakpoint.mediaQuery] = {};
-                }
-                Object.assign(assignTo[breakpoint.mediaQuery], styles[breakpointName]);
-            }
-        }
-    } else {
-        Object.assign(assignTo, styles);
-    }
-
-    return assignTo;
-};
 
 export const PageElementsProvider: React.FC<PageElementsProviderProps> = ({
     children,
