@@ -11,7 +11,8 @@ import {
     PageImportExportTaskStorageOperationsListSubTaskParams,
     PageImportExportTaskStorageOperationsListSubTaskResponse,
     PageImportExportTaskStorageOperationsUpdateParams,
-    PageImportExportTaskStorageOperationsUpdateSubTaskParams
+    PageImportExportTaskStorageOperationsUpdateSubTaskParams,
+    PageImportExportTaskStorageOperationsUpdateTaskStatsParams
 } from "@webiny/api-page-builder-import-export/types";
 import { cleanupItem } from "@webiny/db-dynamodb/utils/cleanup";
 import WebinyError from "@webiny/error";
@@ -21,6 +22,7 @@ import { createTable } from "~/definitions/table";
 import { createPageImportExportTaskEntity } from "~/definitions/pageImportExportTaskEntity";
 import { CreateStorageOperations, PartitionKeyOptions } from "./types";
 
+// @ts-ignore
 export const createStorageOperations: CreateStorageOperations = params => {
     const { table: tableName, documentClient, attributes = {} } = params;
 
@@ -222,6 +224,49 @@ export const createStorageOperations: CreateStorageOperations = params => {
                     {
                         keys,
                         pageImportExportTask
+                    }
+                );
+            }
+        },
+
+        async updateTaskStats(
+            params: PageImportExportTaskStorageOperationsUpdateTaskStatsParams
+        ): Promise<PageImportExportTask> {
+            const {
+                original,
+                input: { prevStatus, nextStatus }
+            } = params;
+
+            const keys = {
+                PK: this.createPartitionKey({
+                    tenant: original.tenant,
+                    locale: original.locale,
+                    id: original.id
+                }),
+                SK: "A",
+                GSI1_PK: PARENT_TASK_GSI1_PK,
+                GSI1_SK: original.createdOn
+            };
+
+            try {
+                await entity.update({
+                    TYPE: this.createType(),
+                    ...keys,
+                    stats: {
+                        $set: {
+                            [prevStatus]: { $add: -1 },
+                            [nextStatus]: { $add: 1 }
+                        }
+                    }
+                });
+                return original;
+            } catch (ex) {
+                throw new WebinyError(
+                    ex.message || "Could not update pageImportExportTask.",
+                    ex.code || "PAGE_IMPORT_EXPORT_TASK_UPDATE_ERROR",
+                    {
+                        keys,
+                        original
                     }
                 );
             }

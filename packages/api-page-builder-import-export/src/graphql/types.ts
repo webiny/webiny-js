@@ -34,6 +34,13 @@ export type PageImportExportTaskCrud = {
         id: string,
         data: Partial<PageImportExportTaskCreateData>
     ): Promise<PageImportExportTask>;
+    updateStats(
+        id: string,
+        data: {
+            prevStatus: PageImportExportTaskStatus;
+            nextStatus: PageImportExportTaskStatus;
+        }
+    ): Promise<PageImportExportTask>;
     delete(id: string): Promise<PageImportExportTask>;
     getSubTask(id: string, subtaskId: string): Promise<PageImportExportTask>;
     listSubTasks(
