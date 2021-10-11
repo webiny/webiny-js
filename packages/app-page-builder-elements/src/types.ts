@@ -25,14 +25,38 @@ export interface PageElementsProviderProps {
     };
 }
 
+export type GetElementStyles = (element: Element) => Array<CSSObject>;
+export type GetElementClassNames = (element: Element) => Array<string>;
+export type GetThemeStyles = (getStyles: (theme: Theme) => StylesObjects) => Array<CSSObject>;
+export type GetThemeClassNames = (getStyles: (theme: Theme) => StylesObjects) => Array<string>;
+export type GetStyles = (styles: StylesObjects) => Array<CSSObject>;
+export type GetClassNames = (styles: StylesObjects) => Array<string>;
+
+type SetElementStylesCallbackParams = PageElementsProviderProps & { element: Element };
+type SetThemeStylesCallbackParams = PageElementsProviderProps & {
+    getStyles: (theme: Theme) => StylesObjects;
+};
+type SetStylesCallbackParams = PageElementsProviderProps & { styles: StylesObjects };
+
+export type ElementStylesCallback = (params: SetElementStylesCallbackParams) => Array<CSSObject>;
+export type ThemeStylesCallback = (params: SetThemeStylesCallbackParams) => Array<CSSObject>;
+export type StylesCallback = (params: SetStylesCallbackParams) => Array<CSSObject>;
+
+export type SetElementStylesCallback = (callback: ElementStylesCallback) => void;
+export type SetThemeStylesCallback = (callback: ThemeStylesCallback) => void;
+export type SetStylesCallback = (callback: StylesCallback) => void;
+
 export interface PageElementsContextValue extends PageElementsProviderProps {
-    getElementStyles: (element: Element) => Array<CSSObject>;
-    getElementClassNames: (element: Element) => Array<string>;
-    getThemeStyles: (getStyles: (theme: Theme) => StylesObjects) => Array<CSSObject>;
-    getThemeClassNames: (getStyles: (theme: Theme) => StylesObjects) => Array<string>;
-    getStyles: (styles: StylesObjects) => Array<CSSObject>;
-    getClassNames: (styles: StylesObjects) => Array<string>;
+    getElementStyles: GetElementStyles;
+    getElementClassNames: GetElementClassNames;
+    getThemeStyles: GetThemeStyles;
+    getThemeClassNames: GetThemeClassNames;
+    getStyles: GetStyles;
+    getClassNames: GetClassNames;
     combineClassNames: typeof cx;
+    setElementStylesCallback: SetElementStylesCallback;
+    setThemeStylesCallback: SetThemeStylesCallback;
+    setStylesCallback: SetStylesCallback;
 }
 
 export interface ElementRendererProps {
