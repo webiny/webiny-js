@@ -25,7 +25,7 @@ const createBackupFileName = file => {
 
     const now = Math.floor(Date.now() / 1000);
 
-    const backup = file.replace(new RegExp(`${ext}\$`), `.${now}${ext}`);
+    const backup = file.replace(new RegExp(`${ext}$`), `.${now}${ext}`);
 
     const backupFile = createFullFile(backup);
     if (!fs.existsSync(backupFile)) {
