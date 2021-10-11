@@ -9,6 +9,7 @@ type TextElementProps = {
     elementId: string;
     mediumEditorOptions: CoreOptions;
     rootClassName?: string;
+    tag?: string | [string, Record<string, any>];
 };
 
 const Text: React.FunctionComponent<TextElementProps> = props => {
