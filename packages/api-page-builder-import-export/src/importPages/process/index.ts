@@ -1,7 +1,7 @@
 import { HandlerPlugin } from "@webiny/handler/types";
 import { ArgsContext } from "@webiny/handler-args/types";
 import { PageImportExportTaskStatus, PbPageImportExportContext } from "~/types";
-import { importPage, updateMainTask, zeroPad } from "~/importPages/utils";
+import { importPage, zeroPad } from "~/importPages/utils";
 import { invokeHandlerClient } from "~/importPages/client";
 
 export type HandlerArgs = {
@@ -74,11 +74,9 @@ export default (
                 status: PageImportExportTaskStatus.PROCESSING
             });
             // Update stats in main task
-            await updateMainTask({
-                pageBuilder,
-                taskId,
-                currentStatus: PageImportExportTaskStatus.PROCESSING,
-                previousStatus: prevStatusOfSubTask
+            await pageBuilder.pageImportExportTask.updateStats(taskId, {
+                prevStatus: prevStatusOfSubTask,
+                nextStatus: PageImportExportTaskStatus.PROCESSING
             });
             prevStatusOfSubTask = subTask.status;
 
@@ -115,11 +113,9 @@ export default (
                 }
             });
             // Update stats in main task
-            await updateMainTask({
-                pageBuilder,
-                taskId,
-                currentStatus: PageImportExportTaskStatus.COMPLETED,
-                previousStatus: prevStatusOfSubTask
+            await pageBuilder.pageImportExportTask.updateStats(taskId, {
+                prevStatus: prevStatusOfSubTask,
+                nextStatus: PageImportExportTaskStatus.COMPLETED
             });
             prevStatusOfSubTask = subTask.status;
         } catch (e) {
@@ -144,11 +140,9 @@ export default (
                 });
 
                 // Update stats in main task
-                await updateMainTask({
-                    pageBuilder,
-                    taskId,
-                    currentStatus: PageImportExportTaskStatus.FAILED,
-                    previousStatus: prevStatusOfSubTask
+                await pageBuilder.pageImportExportTask.updateStats(taskId, {
+                    prevStatus: prevStatusOfSubTask,
+                    nextStatus: PageImportExportTaskStatus.FAILED
                 });
                 prevStatusOfSubTask = subTask.status;
             }

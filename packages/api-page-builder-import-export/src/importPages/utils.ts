@@ -406,39 +406,6 @@ async function deleteS3Folder(key) {
     console.log(`Successfully deleted ${deleteFilePromises.length} files.`);
 }
 
-interface UpdateMainTaskStatsParams {
-    pageBuilder: PbPageImportExportContext["pageBuilder"];
-    taskId: string;
-    currentStatus: PageImportExportTaskStatus;
-    previousStatus: PageImportExportTaskStatus;
-}
-
-export async function updateMainTask({
-    pageBuilder,
-    taskId,
-    currentStatus,
-    previousStatus
-}: UpdateMainTaskStatsParams) {
-    // TODO: @ashutosh use Dynamodb Toolbox
-    /**
-     *  Current implementation make two DB calls to update task `stats` due to DB client limitations.
-     *  After migrating to storage operations, we'll use the update method of Dynamodb Toolbox entity to avoid
-     *  redundant DB call.
-     */
-    const task = await pageBuilder.pageImportExportTask.get(taskId);
-
-    await pageBuilder.pageImportExportTask.update(taskId, {
-        status: PageImportExportTaskStatus.PROCESSING,
-        stats: {
-            ...task.stats,
-            // Increment current status count.
-            [currentStatus]: task.stats[currentStatus] + 1,
-            // Decrement previous status count.
-            [previousStatus]: task.stats[previousStatus] - 1
-        }
-    });
-}
-
 export const zeroPad = version => `${version}`.padStart(5, "0");
 
 export function initialStats(total) {
