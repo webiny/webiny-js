@@ -1,5 +1,11 @@
 import { PagesCrud, PbContext } from "@webiny/api-page-builder/types";
-import { PageExportRevisionType, PageImportExportTask, PageImportExportTaskStatus } from "~/types";
+import {
+    PageExportRevisionType,
+    PageImportExportTask,
+    PageImportExportTaskStatus,
+    PageImportExportTaskStorageOperations,
+    PageImportExportTaskStorageOperationsListParams
+} from "~/types";
 
 export type PagesImportExportCrud = {
     exportPages(
@@ -15,8 +21,14 @@ export type PagesImportExportCrud = {
 type PageImportExportTaskCreateData = Omit<PageImportExportTask, "id" | "createdOn" | "createdBy">;
 
 export type PageImportExportTaskCrud = {
+    /**
+     * To be used internally in our code.
+     * @internal
+     */
+    storageOperations: PageImportExportTaskStorageOperations;
+
     get(id: string): Promise<PageImportExportTask>;
-    list(): Promise<PageImportExportTask[]>;
+    list(params?: PageImportExportTaskStorageOperationsListParams): Promise<PageImportExportTask[]>;
     create(data: Partial<PageImportExportTaskCreateData>): Promise<PageImportExportTask>;
     update(
         id: string,
@@ -24,7 +36,7 @@ export type PageImportExportTaskCrud = {
     ): Promise<PageImportExportTask>;
     delete(id: string): Promise<PageImportExportTask>;
     getSubTask(id: string, subtaskId: string): Promise<PageImportExportTask>;
-    getSubTaskByStatus(
+    listSubTasks(
         id: string,
         status: PageImportExportTaskStatus,
         limit: number
@@ -46,4 +58,8 @@ export interface PbPageImportExportContext extends PbContext {
         pages: PagesCrud & PagesImportExportCrud;
         pageImportExportTask: PageImportExportTaskCrud;
     };
+}
+
+export interface PageImportExportPluginsParams {
+    storageOperations: PageImportExportTaskStorageOperations;
 }
