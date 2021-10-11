@@ -2,6 +2,9 @@
   "name": "@webiny/api-page-builder-import-export",
   "version": "5.14.0",
   "main": "index.js",
+  "keywords": [
+    "pbie:base"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git",
@@ -15,9 +18,11 @@
     "@commodo/fields": "beta",
     "@webiny/api-file-manager": "^5.14.0",
     "@webiny/api-page-builder": "^5.14.0",
+    "@webiny/api-security": "^5.15.0",
     "@webiny/error": "^5.14.0",
     "@webiny/handler": "^5.14.0",
     "@webiny/handler-args": "^5.14.0",
+    "@webiny/handler-aws": "^5.15.0",
     "@webiny/handler-graphql": "^5.14.0",
     "@webiny/validation": "^5.14.0",
     "archiver": "^5.3.0",

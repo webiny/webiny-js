@@ -36,6 +36,12 @@
     },
     {
       "path": "../api-page-builder"
+    },
+    {
+      "path": "../api-security"
+    },
+    {
+      "path": "../handler-aws"
     }
   ],
   "compilerOptions": {

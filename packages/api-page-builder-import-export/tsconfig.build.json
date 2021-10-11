@@ -15,7 +15,9 @@
     "../error",
     "../api-file-manager",
     "../api-file-manager-ddb-es",
-    "../api-page-builder"
+    "../api-page-builder",
+    "../api-security",
+    "../handler-aws"
   ],
   "compilerOptions": {
     "rootDir": "./src",
@@ -29,5 +31,11 @@
     "baseUrl": "."
   },
   "references": [
+    {
+      "path": "../api-security/tsconfig.build.json"
+    },
+    {
+      "path": "../handler-aws/tsconfig.build.json"
+    }
   ]
 }
