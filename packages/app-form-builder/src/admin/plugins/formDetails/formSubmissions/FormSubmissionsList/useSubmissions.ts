@@ -13,9 +13,7 @@ export default form => {
         },
         exportInProgress: false,
         submissions: [],
-        sort: {
-            createdOn: -1
-        }
+        sort: ["createdOn_DESC"]
     });
 
     const client = useApolloClient();
