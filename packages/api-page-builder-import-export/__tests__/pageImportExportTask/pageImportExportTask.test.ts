@@ -1,5 +1,6 @@
 import useHandler from "./useHandler";
 import { PageImportExportTaskCrud, PageImportExportTaskStatus } from "~/types";
+import { initialStats } from "~/importPages/utils";
 
 describe("Page builder import export task Test", () => {
     const { handler } = useHandler();
@@ -209,5 +210,76 @@ describe("Page builder import export task Test", () => {
                 parent: taskId
             }
         ]);
+    });
+
+    test("Should able to update stats of a task", async () => {
+        const { pageBuilder } = await handler();
+        const pageImportExportTask: PageImportExportTaskCrud = pageBuilder.pageImportExportTask;
+
+        // Create a PageImportExportTask
+        let result = await pageImportExportTask.create({
+            status: PageImportExportTaskStatus.PENDING,
+            stats: initialStats(5)
+        });
+
+        const taskId = result.id;
+
+        expect(result).toMatchObject({
+            status: "pending",
+            createdBy: {
+                id: "mocked",
+                displayName: "m"
+            },
+            stats: {
+                [PageImportExportTaskStatus.PENDING]: 5,
+                [PageImportExportTaskStatus.PROCESSING]: 0,
+                [PageImportExportTaskStatus.COMPLETED]: 0,
+                [PageImportExportTaskStatus.FAILED]: 0,
+                total: 5
+            }
+        });
+        // Update status of one sub task from "pending" to "processing"
+        await pageImportExportTask.updateStats(taskId, {
+            prevStatus: PageImportExportTaskStatus.PENDING,
+            nextStatus: PageImportExportTaskStatus.PROCESSING
+        });
+
+        // Should have 4 "pending" and 1 "processing"
+        result = await pageImportExportTask.get(taskId);
+        expect(result).toMatchObject({
+            createdBy: {
+                id: "mocked",
+                displayName: "m"
+            },
+            stats: {
+                [PageImportExportTaskStatus.PENDING]: 4,
+                [PageImportExportTaskStatus.PROCESSING]: 1,
+                [PageImportExportTaskStatus.COMPLETED]: 0,
+                [PageImportExportTaskStatus.FAILED]: 0,
+                total: 5
+            }
+        });
+
+        // Update status of one sub task from "pending" to "failed"
+        await pageImportExportTask.updateStats(taskId, {
+            nextStatus: PageImportExportTaskStatus.FAILED,
+            prevStatus: PageImportExportTaskStatus.PENDING
+        });
+
+        // Should have 3 "pending", 1 "failed", and 1 "processing"
+        result = await pageImportExportTask.get(taskId);
+        expect(result).toMatchObject({
+            createdBy: {
+                id: "mocked",
+                displayName: "m"
+            },
+            stats: {
+                [PageImportExportTaskStatus.PENDING]: 3,
+                [PageImportExportTaskStatus.PROCESSING]: 1,
+                [PageImportExportTaskStatus.COMPLETED]: 0,
+                [PageImportExportTaskStatus.FAILED]: 1,
+                total: 5
+            }
+        });
     });
 });
