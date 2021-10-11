@@ -24,11 +24,7 @@ import { PageStorageOperationsProviderPlugin } from "~/plugins/PageStorageOperat
 import lodashTrimEnd from "lodash/trimEnd";
 import { createStorageOperations } from "./storageOperations";
 import { getZeroPaddedVersionNumber } from "~/utils/zeroPaddedVersionNumber";
-import {
-    FlushParams,
-    PrerenderingPagePlugin,
-    RenderParams
-} from "~/plugins/PrerenderingPagePlugin";
+import { FlushParams, RenderParams } from "~/graphql/types";
 import { ContentCompressionPlugin } from "~/plugins/ContentCompressionPlugin";
 
 const STATUS_CHANGES_REQUESTED = "changesRequested";
@@ -207,12 +203,6 @@ export default new ContextPlugin<PbContext>(async context => {
             }
         }
     };
-    /**
-     * We always take the last prerendering plugin.
-     */
-    const pagePrerenderingPlugin = context.plugins
-        .byType<PrerenderingPagePlugin>(PrerenderingPagePlugin.type)
-        .pop();
 
     context.pageBuilder.pages = {
         storageOperations,
@@ -484,33 +474,33 @@ export default new ContextPlugin<PbContext>(async context => {
 
             /*
                 ***** Comments left from the old code. These are the steps that need to happen for delete to work properly
-                
+
                 1. Load the page and latest / published page (rev) data.
-                
+
                 2. Do a couple of checks.
-            
+
                 3. Let's start updating. But first, let's trigger before-delete hook callbacks.
-                
+
                 Before we continue, note that if `publishedPageData` exists, then `publishedPagePathData`
                 also exists. And to delete it, we can read `publishedPageData.path` to get its SK.
                 There can't be a situation where just one record exists, there's always gonna be both.
-                
+
                 If we are deleting the initial version, we need to remove all versions and all of the meta data.
-                
+
                 4.1. We delete pages in batches of 15.
-                
+
                 4.2. Finally, delete data from ES.
-                
-                
+
+
                 5. If we are deleting a specific version (version > 1)...
-                
+
                 6.1. Delete the actual page entry.
-                
+
                 6.2. If the page is published, remove published data, both from DB and ES
-                
+
                 6.3. If the page is latest, assign the previously latest page as the new latest.
                 Updates must be made again both on DB and ES side.
-                
+
             */
 
             const page = await storageOperations.get({
@@ -1206,16 +1196,10 @@ export default new ContextPlugin<PbContext>(async context => {
         },
         prerendering: {
             flush: async (args: FlushParams) => {
-                if (!pagePrerenderingPlugin) {
-                    return;
-                }
-                return pagePrerenderingPlugin.flush(args);
+                return args.context.pageBuilder.getPrerenderingHandlers().flush(args);
             },
             render: async (args: RenderParams) => {
-                if (!pagePrerenderingPlugin) {
-                    return;
-                }
-                return pagePrerenderingPlugin.render(args);
+                return args.context.pageBuilder.getPrerenderingHandlers().render(args);
             }
         }
     };

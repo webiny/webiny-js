@@ -1,22 +1,20 @@
-import { PrerenderingPagePlugin } from "~/plugins/PrerenderingPagePlugin";
+import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
+import { PbContext } from "~/graphql/types";
 
 export type Markable = "render" | "flush";
 
-export class PrerenderingPageMethodsPlugin extends PrerenderingPagePlugin {
-    private readonly tracker: PrerenderingTracking;
-
-    public constructor(tracker: PrerenderingTracking) {
-        super();
-        this.tracker = tracker;
-    }
-    public async render() {
-        this.tracker.add("render");
-    }
-
-    public async flush() {
-        this.tracker.add("flush");
-    }
-}
+export const createPrerenderingHandlers = (tracker: PrerenderingTracking) => {
+    return new ContextPlugin<PbContext>(context => {
+        context.pageBuilder.setPrerenderingHandlers({
+            render: async () => {
+                tracker.add("render");
+            },
+            flush: async () => {
+                tracker.add("flush");
+            }
+        });
+    });
+};
 
 export class PrerenderingTracking {
     private readonly mark = new Map<Markable, number>();

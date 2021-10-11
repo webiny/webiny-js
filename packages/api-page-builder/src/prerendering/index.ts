@@ -1,8 +1,6 @@
-import { PrerenderingPagePluginImpl } from "./page";
+import { prerenderingHandlers } from "./prerenderingHandlers";
 import prerenderingHookPlugins from "./hooks";
-/**
- * We need to hook up the prerendering to our app.
- */
+
 export default () => {
-    return [new PrerenderingPagePluginImpl(), ...prerenderingHookPlugins()];
+    return [prerenderingHandlers, ...prerenderingHookPlugins()];
 };
