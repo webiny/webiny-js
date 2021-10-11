@@ -1,0 +1,30 @@
+{
+  "extends": "../../tsconfig.build.json",
+  "include": ["./src"],
+  "exclude": [
+    "node_modules",
+    "../plugins",
+    "../api-form-builder",
+    "../error",
+    "../utils",
+    "../api-upgrade",
+    "../api-i18n",
+    "../handler",
+    "../handler-aws",
+    "../handler-db",
+    "../api-elasticsearch",
+    "../api-dynamodb-to-elasticsearch",
+    "../db-dynamodb",
+    "../api-tenancy"
+  ],
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "declarationDir": "./dist",
+    "paths": {
+      "~/*": ["./src/*"]
+    },
+    "baseUrl": "."
+  },
+  "references": []
+}

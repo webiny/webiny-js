@@ -2,16 +2,17 @@ import lodashOrderBy from "lodash/orderBy";
 import WebinyError from "@webiny/error";
 import { FieldPlugin } from "~/plugins/definitions/FieldPlugin";
 
-interface Sorters {
+interface Info {
     sorters: string[];
     orders: string[];
 }
 
-interface ExtractSortResult {
+interface Response {
     reverse: boolean;
     field: string;
 }
-const extractSort = (sortBy: string, fields: FieldPlugin[]): ExtractSortResult => {
+
+const extractSort = (sortBy: string, fields: FieldPlugin[]): Response => {
     const result = sortBy.split("_");
     if (result.length !== 2) {
         throw new WebinyError(
@@ -32,7 +33,8 @@ const extractSort = (sortBy: string, fields: FieldPlugin[]): ExtractSortResult =
         });
     }
     const fieldPlugin = fields.find(f => f.getField() === field);
-    if (!fieldPlugin || fieldPlugin.isSortable() === false) {
+    const isSortable = fieldPlugin ? fieldPlugin.isSortable() : true;
+    if (isSortable === false) {
         throw new WebinyError(`Cannot sort by given field: "${field}".`, "UNSUPPORTED_SORT_ERROR", {
             fields,
             field
@@ -59,6 +61,7 @@ interface Params<T> {
      */
     fields: FieldPlugin[];
 }
+
 export const sortItems = <T extends any = any>(params: Params<T>): T[] => {
     const { items, sort: initialSort = [], fields } = params;
     if (items.length <= 1) {
@@ -67,12 +70,15 @@ export const sortItems = <T extends any = any>(params: Params<T>): T[] => {
         initialSort.push("createdOn_DESC");
     }
 
-    const info: Sorters = {
+    const info: Info = {
         sorters: [],
         orders: []
     };
 
     for (const sort of initialSort) {
+        /**
+         * Possibly empty array item was passed.
+         */
         if (!sort) {
             continue;
         }
@@ -82,6 +88,10 @@ export const sortItems = <T extends any = any>(params: Params<T>): T[] => {
 
         info.sorters.push(path);
         info.orders.push(reverse === true ? "desc" : "asc");
+    }
+
+    if (info.sorters.length === 0) {
+        return items;
     }
 
     return lodashOrderBy(items, info.sorters, info.orders);
