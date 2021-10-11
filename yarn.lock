@@ -9572,7 +9572,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/app-page-builder-elements@workspace:packages/app-page-builder-elements":
+"@webiny/app-page-builder-elements@^5.15.0, @webiny/app-page-builder-elements@workspace:packages/app-page-builder-elements":
   version: 0.0.0-use.local
   resolution: "@webiny/app-page-builder-elements@workspace:packages/app-page-builder-elements"
   dependencies:
@@ -9628,6 +9628,7 @@ __metadata:
     "@webiny/app": ^5.15.0
     "@webiny/app-admin": ^5.15.0
     "@webiny/app-i18n": ^5.15.0
+    "@webiny/app-page-builder-elements": ^5.15.0
     "@webiny/app-plugin-admin-welcome-screen": ^5.15.0
     "@webiny/app-security": ^5.15.0
     "@webiny/app-tenancy": ^5.15.0

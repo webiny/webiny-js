@@ -53,10 +53,15 @@ export interface Breakpoint {
     mediaQuery: string;
 }
 
+export type ThemeBreakpoints = Record<string, Breakpoint>;
+
+export interface ThemeStyles {
+    colors?: Record<string, any>;
+    typography?: Record<string, StylesObjects>;
+    [key: string]: any;
+}
+
 export interface Theme {
-    breakpoints?: Record<string, Breakpoint>;
-    styles?: {
-        colors?: Record<string, any>,
-        typography?: Record<string, StylesObjects>
-    };
+    breakpoints?: ThemeBreakpoints;
+    styles?: ThemeStyles;
 }
