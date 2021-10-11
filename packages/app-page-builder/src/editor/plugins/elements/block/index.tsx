@@ -46,6 +46,11 @@ export default (args: PbEditorElementPluginArgs = {}): PbEditorPageElementPlugin
                 type: this.elementType,
                 elements: [],
                 data: {
+                    // TODO: enable the user to provide default styles.
+                    // It'd be better if no default styles were applied, or even better:
+                    // if the default styles could be set via maybe the `Theme` object.
+                    // We could also use the page element's factory function to provide defaults:
+                    // `createBlock({ defaultStyles: { desktop: { ... }, tablet: { ... } } })`
                     settings: {
                         width: createInitialPerDeviceSettingValue(
                             { value: "100%" },
