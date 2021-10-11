@@ -10,7 +10,12 @@ import {
     GetThemeStyles,
     GetThemeClassNames,
     GetStyles,
-    GetClassNames
+    GetClassNames,
+    AssignStylesCallback,
+    SetElementStylesCallback,
+    SetThemeStylesCallback,
+    SetStylesCallback,
+    SetAssignStylesCallback
 } from "~/types";
 import { css, cx } from "@emotion/css";
 import {
@@ -28,17 +33,45 @@ export const PageElementsProvider: React.FC<PageElementsProviderProps> = ({
     renderers = {},
     modifiers
 }) => {
-    const [customElementStylesCallback, setElementStylesCallback] =
+    // Styles-related callback customization.
+    const [customAssignStylesCallback, setCustomAssignStylesCallback] =
+        useState<AssignStylesCallback>(null);
+    const [customElementStylesCallback, setCustomElementStylesCallback] =
         useState<ElementStylesCallback>();
-    const [customThemeStylesCallback, setThemeStylesCallback] = useState<ThemeStylesCallback>();
-    const [customStylesCallback, setStylesCallback] = useState<StylesCallback>();
+    const [customThemeStylesCallback, setCustomThemeStylesCallback] =
+        useState<ThemeStylesCallback>();
+    const [customStylesCallback, setCustomStylesCallback] = useState<StylesCallback>();
 
+    const setAssignStylesCallback = useCallback<SetAssignStylesCallback>(callback => {
+        setCustomAssignStylesCallback(() => callback);
+    }, []);
+
+    const setElementStylesCallback = useCallback<SetElementStylesCallback>(callback => {
+        setCustomElementStylesCallback(() => callback);
+    }, []);
+
+    const setThemeStylesCallback = useCallback<SetThemeStylesCallback>(callback => {
+        setCustomThemeStylesCallback(() => callback);
+    }, []);
+
+    const setStylesCallback = useCallback<SetStylesCallback>(callback => {
+        setCustomStylesCallback(() => callback);
+    }, []);
+
+    // Styles-related callbacks.
     const getElementStyles = useCallback<GetElementStyles>(
         element => {
             const callback = customElementStylesCallback || defaultElementStylesCallback;
-            return callback({ element, theme, renderers, modifiers });
+
+            return callback({
+                element,
+                theme,
+                renderers,
+                modifiers,
+                assignStyles: customAssignStylesCallback
+            });
         },
-        [customElementStylesCallback]
+        [customElementStylesCallback, customAssignStylesCallback]
     );
 
     const getElementClassNames = useCallback<GetElementClassNames>(
@@ -51,9 +84,15 @@ export const PageElementsProvider: React.FC<PageElementsProviderProps> = ({
     const getThemeStyles = useCallback<GetThemeStyles>(
         getStyles => {
             const callback = customThemeStylesCallback || defaultThemeStylesCallback;
-            return callback({ getStyles, theme, renderers, modifiers });
+            return callback({
+                getStyles,
+                theme,
+                renderers,
+                modifiers,
+                assignStyles: customAssignStylesCallback
+            });
         },
-        [customThemeStylesCallback]
+        [customThemeStylesCallback, customAssignStylesCallback]
     );
 
     const getThemeClassNames = useCallback<GetThemeClassNames>(
@@ -64,10 +103,19 @@ export const PageElementsProvider: React.FC<PageElementsProviderProps> = ({
         [getThemeStyles]
     );
 
-    const getStyles = useCallback<GetStyles>(styles => {
-        const callback = customStylesCallback || defaultStylesCallback;
-        return callback({ styles, theme, renderers, modifiers });
-    }, []);
+    const getStyles = useCallback<GetStyles>(
+        styles => {
+            const callback = customStylesCallback || defaultStylesCallback;
+            return callback({
+                styles,
+                theme,
+                renderers,
+                modifiers,
+                assignStyles: customAssignStylesCallback
+            });
+        },
+        [customStylesCallback, customAssignStylesCallback]
+    );
 
     const getClassNames = useCallback<GetClassNames>(
         customStyles => {
@@ -93,6 +141,7 @@ export const PageElementsProvider: React.FC<PageElementsProviderProps> = ({
         getStyles,
         getClassNames,
         combineClassNames: cx,
+        setAssignStylesCallback,
         setElementStylesCallback,
         setThemeStylesCallback,
         setStylesCallback

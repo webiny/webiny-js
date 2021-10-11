@@ -32,16 +32,31 @@ export type GetThemeClassNames = (getStyles: (theme: Theme) => StylesObjects) =>
 export type GetStyles = (styles: StylesObjects) => Array<CSSObject>;
 export type GetClassNames = (styles: StylesObjects) => Array<string>;
 
-type SetElementStylesCallbackParams = PageElementsProviderProps & { element: Element };
+type SetAssignStylesCallbackParams = {
+    breakpoints: Record<string, Breakpoint>;
+    styles: StylesObjects;
+    assignTo?: CSSObject;
+};
+
+type SetElementStylesCallbackParams = PageElementsProviderProps & {
+    element: Element;
+    assignStyles?: AssignStylesCallback;
+};
 type SetThemeStylesCallbackParams = PageElementsProviderProps & {
     getStyles: (theme: Theme) => StylesObjects;
+    assignStyles?: AssignStylesCallback;
 };
-type SetStylesCallbackParams = PageElementsProviderProps & { styles: StylesObjects };
+type SetStylesCallbackParams = PageElementsProviderProps & {
+    styles: StylesObjects;
+    assignStyles?: AssignStylesCallback;
+};
 
+export type AssignStylesCallback = (params: SetAssignStylesCallbackParams) => CSSObject;
 export type ElementStylesCallback = (params: SetElementStylesCallbackParams) => Array<CSSObject>;
 export type ThemeStylesCallback = (params: SetThemeStylesCallbackParams) => Array<CSSObject>;
 export type StylesCallback = (params: SetStylesCallbackParams) => Array<CSSObject>;
 
+export type SetAssignStylesCallback = (callback: AssignStylesCallback) => void;
 export type SetElementStylesCallback = (callback: ElementStylesCallback) => void;
 export type SetThemeStylesCallback = (callback: ThemeStylesCallback) => void;
 export type SetStylesCallback = (callback: StylesCallback) => void;
@@ -54,6 +69,7 @@ export interface PageElementsContextValue extends PageElementsProviderProps {
     getStyles: GetStyles;
     getClassNames: GetClassNames;
     combineClassNames: typeof cx;
+    setAssignStylesCallback: SetAssignStylesCallback;
     setElementStylesCallback: SetElementStylesCallback;
     setThemeStylesCallback: SetThemeStylesCallback;
     setStylesCallback: SetStylesCallback;
