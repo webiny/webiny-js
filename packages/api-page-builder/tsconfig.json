@@ -50,6 +50,9 @@
       "path": "../plugins"
     },
     {
+      "path": "../pubsub"
+    },
+    {
       "path": "../validation"
     },
     {
@@ -96,6 +99,8 @@
       "@webiny/handler-graphql": ["../handler-graphql/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"],
+      "@webiny/pubsub/*": ["../pubsub/src/*"],
+      "@webiny/pubsub": ["../pubsub/src"],
       "@webiny/validation/*": ["../validation/src/*"],
       "@webiny/validation": ["../validation/src"]
     },
