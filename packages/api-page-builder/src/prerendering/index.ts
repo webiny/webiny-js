@@ -1,6 +1,6 @@
 import { prerenderingHandlers } from "./prerenderingHandlers";
-import prerenderingHookPlugins from "./hooks";
+import hooks from "./hooks";
 
 export default () => {
-    return [prerenderingHandlers, ...prerenderingHookPlugins()];
+    return [prerenderingHandlers, ...hooks()];
 };
