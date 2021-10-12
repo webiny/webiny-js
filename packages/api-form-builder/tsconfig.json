@@ -5,7 +5,7 @@
       "path": "../api-file-manager"
     },
     {
-      "path": "../api-file-manager-ddb-es"
+      "path": "../api-file-manager-ddb"
     },
     {
       "path": "../api-i18n"
@@ -61,6 +61,8 @@
       "~/*": ["./src/*"],
       "@webiny/api-file-manager/*": ["../api-file-manager/src/*"],
       "@webiny/api-file-manager": ["../api-file-manager/src"],
+      "@webiny/api-file-manager-ddb-es/*": ["../api-file-manager-ddb-es/src/*"],
+      "@webiny/api-file-manager-ddb-es": ["../api-file-manager-ddb-es/src"],
       "@webiny/api-i18n/*": ["../api-i18n/src/*"],
       "@webiny/api-i18n": ["../api-i18n/src"],
       "@webiny/api-i18n-ddb/*": ["../api-i18n-ddb/src/*"],

@@ -485,8 +485,8 @@ export interface FormBuilderStorageOperationsUnpublishFormParams {
  */
 export interface FormBuilderStorageOperationsGetSubmissionParams {
     where: {
-        id?: string;
-        formId?: string;
+        id: string;
+        formId: string;
         tenant: string;
         locale: string;
     };
@@ -499,7 +499,7 @@ export interface FormBuilderStorageOperationsGetSubmissionParams {
 export interface FormBuilderStorageOperationsListSubmissionsParams {
     where: {
         id_in?: string[];
-        parent: string;
+        formId: string;
         locale: string;
         tenant: string;
     };

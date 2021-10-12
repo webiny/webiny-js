@@ -39,7 +39,7 @@ export const createSubmissionsCrud = (params: Params): SubmissionsCRUD => {
             const listSubmissionsParams: FormBuilderStorageOperationsListSubmissionsParams = {
                 where: {
                     id_in: submissionIds,
-                    parent: form.formId,
+                    formId: form.formId,
                     tenant: form.tenant,
                     locale: form.locale
                 }
@@ -79,14 +79,14 @@ export const createSubmissionsCrud = (params: Params): SubmissionsCRUD => {
                 where: {
                     tenant: form.tenant,
                     locale: form.locale,
-                    parent: form.formId
+                    formId: form.formId
                 },
                 after,
                 limit,
-                sort:
-                    Array.isArray(initialSort) && initialSort.length
-                        ? initialSort
-                        : ["createdOn_DESC"]
+                /**
+                 * No sorting if nothing was passed.
+                 */
+                sort: Array.isArray(initialSort) && initialSort.length ? initialSort : []
             };
 
             try {

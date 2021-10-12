@@ -314,6 +314,10 @@ export const createFormsCrud = (params: Params): FormsCRUD => {
 
             if (!original) {
                 throw new NotFoundError(`Form "${id}" was not found!`);
+            } else if (original.locked) {
+                throw new WebinyError("Not allowed to modify locked form.", "FORM_LOCKED_ERROR", {
+                    form: original
+                });
             }
 
             checkOwnership(original, permission, context);

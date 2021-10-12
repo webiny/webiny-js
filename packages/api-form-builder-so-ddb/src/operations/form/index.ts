@@ -1,3 +1,4 @@
+import WebinyError from "@webiny/error";
 import {
     FbForm,
     FormBuilderStorageOperationsCreateFormFromParams,
@@ -13,83 +14,98 @@ import {
     FormBuilderStorageOperationsUpdateFormParams
 } from "@webiny/api-form-builder/types";
 import { Entity, Table } from "dynamodb-toolbox";
-import { Client } from "@elastic/elasticsearch";
 import { queryAll, QueryAllParams } from "@webiny/db-dynamodb/utils/query";
-import WebinyError from "@webiny/error";
 import { cleanupItem } from "@webiny/db-dynamodb/utils/cleanup";
 import { batchWriteAll } from "@webiny/db-dynamodb/utils/batchWrite";
-import configurations from "~/configurations";
 import { filterItems } from "@webiny/db-dynamodb/utils/filter";
-import fields from "./fields";
 import { sortItems } from "@webiny/db-dynamodb/utils/sort";
-import { parseIdentifier, zeroPad } from "@webiny/utils";
-import { createElasticsearchBody, createFormElasticType } from "./elasticsearchBody";
-import { decodeCursor, encodeCursor } from "@webiny/api-elasticsearch/cursors";
+import { createIdentifier, parseIdentifier } from "@webiny/utils";
 import { PluginsContainer } from "@webiny/plugins";
-import { FormBuilderFormCreateKeyParams, FormBuilderFormStorageOperations } from "~/types";
+import {
+    FormBuilderFormCreateGSIPartitionKeyParams,
+    FormBuilderFormCreatePartitionKeyParams,
+    FormBuilderFormStorageOperations
+} from "~/types";
+import { FormDynamoDbFieldPlugin } from "~/plugins/FormDynamoDbFieldPlugin";
+import { decodeCursor, encodeCursor } from "@webiny/db-dynamodb/utils/cursor";
 
-export type DbRecord<T = any> = T & {
+type DbRecord<T = any> = T & {
     PK: string;
     SK: string;
     TYPE: string;
 };
 
+interface Keys {
+    PK: string;
+    SK: string;
+}
+
+interface FormLatestSortKeyParams {
+    id?: string;
+    formId?: string;
+}
+
+interface GsiKeys {
+    GSI1_PK: string;
+    GSI1_SK: string;
+}
+
 export interface Params {
     entity: Entity<any>;
-    esEntity: Entity<any>;
     table: Table;
-    elasticsearch: Client;
     plugins: PluginsContainer;
 }
 
-type FbFormElastic = Omit<FbForm, "triggers" | "fields" | "settings" | "layout" | "stats"> & {
-    __type: string;
-};
-
-const getESDataForLatestRevision = (form: FbForm): FbFormElastic => ({
-    __type: createFormElasticType(),
-    id: form.id,
-    createdOn: form.createdOn,
-    savedOn: form.savedOn,
-    name: form.name,
-    slug: form.slug,
-    published: form.published,
-    publishedOn: form.publishedOn,
-    version: form.version,
-    locked: form.locked,
-    status: form.status,
-    createdBy: form.createdBy,
-    ownedBy: form.ownedBy,
-    tenant: form.tenant,
-    locale: form.locale,
-    webinyVersion: form.webinyVersion,
-    formId: form.formId
-});
-
 export const createFormStorageOperations = (params: Params): FormBuilderFormStorageOperations => {
-    const { entity, esEntity, table, plugins, elasticsearch } = params;
+    const { entity, table, plugins } = params;
 
-    const formDynamoDbFields = fields();
+    const formDynamoDbFields = plugins.byType<FormDynamoDbFieldPlugin>(
+        FormDynamoDbFieldPlugin.type
+    );
 
-    const createFormPartitionKey = (params: FormBuilderFormCreateKeyParams): string => {
+    const createFormPartitionKey = (params: FormBuilderFormCreatePartitionKeyParams): string => {
+        const { tenant, locale } = params;
+
+        return `T#${tenant}#L#${locale}#FB#F`;
+    };
+
+    const createFormLatestPartitionKey = (
+        params: FormBuilderFormCreatePartitionKeyParams
+    ): string => {
+        return `${createFormPartitionKey(params)}#L`;
+    };
+
+    const createFormLatestPublishedPartitionKey = (
+        params: FormBuilderFormCreatePartitionKeyParams
+    ): string => {
+        return `${createFormPartitionKey(params)}#LP`;
+    };
+
+    const createFormGSIPartitionKey = (
+        params: FormBuilderFormCreateGSIPartitionKeyParams
+    ): string => {
         const { tenant, locale, id: targetId } = params;
-
         const { id } = parseIdentifier(targetId);
 
         return `T#${tenant}#L#${locale}#FB#F#${id}`;
     };
 
-    const createRevisionSortKey = (value: string | number): string => {
-        const version = typeof value === "number" ? Number(value) : parseIdentifier(value).version;
-        return `REV#${zeroPad(version)}`;
+    const createRevisionSortKey = ({ id }: { id: string }): string => {
+        return `${id}`;
     };
 
-    const createLatestSortKey = (): string => {
-        return "L";
+    const createFormLatestSortKey = ({ id, formId }: FormLatestSortKeyParams): string => {
+        const value = parseIdentifier(id || formId);
+        return value.id;
     };
 
-    const createLatestPublishedSortKey = (): string => {
-        return "LP";
+    const createLatestPublishedSortKey = ({ id, formId }: FormLatestSortKeyParams): string => {
+        const value = parseIdentifier(id || formId);
+        return value.id;
+    };
+
+    const createGSISortKey = (version: number) => {
+        return `${version}`;
     };
 
     const createFormType = (): string => {
@@ -104,91 +120,48 @@ export const createFormStorageOperations = (params: Params): FormBuilderFormStor
         return "fb.form.latestPublished";
     };
 
+    const createRevisionKeys = (form: FbForm): Keys => {
+        return {
+            PK: createFormPartitionKey(form),
+            SK: createRevisionSortKey(form)
+        };
+    };
+
+    const createLatestKeys = (form: FbForm): Keys => {
+        return {
+            PK: createFormLatestPartitionKey(form),
+            SK: createFormLatestSortKey(form)
+        };
+    };
+
+    const createLatestPublishedKeys = (form: FbForm): Keys => {
+        return {
+            PK: createFormLatestPublishedPartitionKey(form),
+            SK: createLatestPublishedSortKey(form)
+        };
+    };
+
+    const createGSIKeys = (form: FbForm): GsiKeys => {
+        return {
+            GSI1_PK: createFormGSIPartitionKey(form),
+            GSI1_SK: createGSISortKey(form.version)
+        };
+    };
+
     const createForm = async (
         params: FormBuilderStorageOperationsCreateFormParams
     ): Promise<FbForm> => {
         const { form } = params;
 
-        const revisionKeys = {
-            PK: createFormPartitionKey(form),
-            SK: createRevisionSortKey(form.id)
-        };
-        const latestKeys = {
-            PK: createFormPartitionKey(form),
-            SK: createLatestSortKey()
-        };
-
-        const items = [
-            entity.putBatch({
-                ...form,
-                TYPE: createFormType(),
-                ...revisionKeys
-            }),
-            entity.putBatch({
-                ...form,
-                TYPE: createFormLatestType(),
-                ...latestKeys
-            })
-        ];
-
-        try {
-            await batchWriteAll({
-                table,
-                items
-            });
-        } catch (ex) {
-            throw new WebinyError(
-                ex.message || "Could not insert form data into regular table.",
-                ex.code || "CREATE_FORM_ERROR",
-                {
-                    revisionKeys,
-                    latestKeys,
-                    form
-                }
-            );
-        }
-        try {
-            const { index } = configurations.es({
-                tenant: form.tenant
-            });
-            await esEntity.put({
-                index,
-                data: getESDataForLatestRevision(form),
-                TYPE: createFormType(),
-                ...latestKeys
-            });
-        } catch (ex) {
-            throw new WebinyError(
-                ex.message || "Could not insert form data into Elasticsearch table.",
-                ex.code || "CREATE_FORM_ERROR",
-                {
-                    latestKeys,
-                    form
-                }
-            );
-        }
-        return form;
-    };
-
-    const createFormFrom = async (
-        params: FormBuilderStorageOperationsCreateFormFromParams
-    ): Promise<FbForm> => {
-        const { form, original, latest } = params;
-
-        const revisionKeys = {
-            PK: createFormPartitionKey(form),
-            SK: createRevisionSortKey(form.version)
-        };
-
-        const latestKeys = {
-            PK: createFormPartitionKey(form),
-            SK: createLatestSortKey()
-        };
+        const revisionKeys = createRevisionKeys(form);
+        const latestKeys = createLatestKeys(form);
+        const gsiKeys = createGSIKeys(form);
 
         const items = [
             entity.putBatch({
                 ...form,
                 ...revisionKeys,
+                ...gsiKeys,
                 TYPE: createFormType()
             }),
             entity.putBatch({
@@ -205,8 +178,49 @@ export const createFormStorageOperations = (params: Params): FormBuilderFormStor
             });
         } catch (ex) {
             throw new WebinyError(
-                ex.message ||
-                    "Could not create form data in the regular table, from existing form.",
+                ex.message || "Could not insert form data into table.",
+                ex.code || "CREATE_FORM_ERROR",
+                {
+                    revisionKeys,
+                    latestKeys,
+                    form
+                }
+            );
+        }
+        return form;
+    };
+
+    const createFormFrom = async (
+        params: FormBuilderStorageOperationsCreateFormFromParams
+    ): Promise<FbForm> => {
+        const { form, original, latest } = params;
+
+        const revisionKeys = createRevisionKeys(form);
+        const latestKeys = createLatestKeys(form);
+        const gsiKeys = createGSIKeys(form);
+
+        const items = [
+            entity.putBatch({
+                ...form,
+                ...revisionKeys,
+                ...gsiKeys,
+                TYPE: createFormType()
+            }),
+            entity.putBatch({
+                ...form,
+                ...latestKeys,
+                TYPE: createFormLatestType()
+            })
+        ];
+
+        try {
+            await batchWriteAll({
+                table,
+                items
+            });
+        } catch (ex) {
+            throw new WebinyError(
+                ex.message || "Could not create form data in the table, from existing form.",
                 ex.code || "CREATE_FORM_FROM_ERROR",
                 {
                     revisionKeys,
@@ -218,29 +232,6 @@ export const createFormStorageOperations = (params: Params): FormBuilderFormStor
             );
         }
 
-        try {
-            const { index } = configurations.es({
-                tenant: form.tenant
-            });
-            await esEntity.put({
-                index,
-                data: getESDataForLatestRevision(form),
-                TYPE: createFormLatestType(),
-                ...latestKeys
-            });
-        } catch (ex) {
-            throw new WebinyError(
-                ex.message ||
-                    "Could not create form in the Elasticsearch table, from existing form.",
-                ex.code || "CREATE_FORM_FROM_ERROR",
-                {
-                    latestKeys,
-                    form,
-                    latest,
-                    original
-                }
-            );
-        }
         return form;
     };
 
@@ -249,14 +240,9 @@ export const createFormStorageOperations = (params: Params): FormBuilderFormStor
     ): Promise<FbForm> => {
         const { form, original } = params;
 
-        const revisionKeys = {
-            PK: createFormPartitionKey(form),
-            SK: createRevisionSortKey(form.id)
-        };
-        const latestKeys = {
-            PK: createFormPartitionKey(form),
-            SK: createLatestSortKey()
-        };
+        const revisionKeys = createRevisionKeys(form);
+        const latestKeys = createLatestKeys(form);
+        const gsiKeys = createGSIKeys(form);
 
         const { formId, tenant, locale } = form;
 
@@ -273,16 +259,17 @@ export const createFormStorageOperations = (params: Params): FormBuilderFormStor
         const items = [
             entity.putBatch({
                 ...form,
-                TYPE: createFormType(),
-                ...revisionKeys
+                ...revisionKeys,
+                ...gsiKeys,
+                TYPE: createFormType()
             })
         ];
         if (isLatestForm) {
             items.push(
                 entity.putBatch({
                     ...form,
-                    TYPE: createFormLatestType(),
-                    ...latestKeys
+                    ...latestKeys,
+                    TYPE: createFormLatestType()
                 })
             );
         }
@@ -293,7 +280,7 @@ export const createFormStorageOperations = (params: Params): FormBuilderFormStor
             });
         } catch (ex) {
             throw new WebinyError(
-                ex.message || "Could not update form data in the regular table.",
+                ex.message || "Could not update form data in the table.",
                 ex.code || "UPDATE_FORM_ERROR",
                 {
                     revisionKeys,
@@ -304,54 +291,37 @@ export const createFormStorageOperations = (params: Params): FormBuilderFormStor
                 }
             );
         }
-        /**
-         * No need to go further if its not latest form.
-         */
-        if (!isLatestForm) {
-            return form;
-        }
 
-        try {
-            const { index } = configurations.es({
-                tenant: form.tenant
-            });
-            await esEntity.put({
-                index,
-                data: getESDataForLatestRevision(form),
-                TYPE: createFormLatestType(),
-                ...latestKeys
-            });
-        } catch (ex) {
-            throw new WebinyError(
-                ex.message || "Could not update form data in the Elasticsearch table.",
-                ex.code || "UPDATE_FORM_ERROR",
-                {
-                    latestKeys,
-                    form,
-                    latestForm,
-                    original
-                }
-            );
-        }
         return form;
     };
 
     const getForm = async (params: FormBuilderStorageOperationsGetFormParams): Promise<FbForm> => {
         const { where } = params;
-        const { id, formId, latest, published, version, tenant, locale } = where;
+        const { id, formId, latest, published, version } = where;
         if (latest && published) {
             throw new WebinyError("Cannot have both latest and published params.");
         }
+        let partitionKey: string;
         let sortKey: string;
         if (latest) {
-            sortKey = createLatestSortKey();
+            partitionKey = createFormLatestPartitionKey(where);
+            sortKey = createFormLatestSortKey(where);
         } else if (published && !version) {
             /**
              * Because of the specifics how DynamoDB works, we must not load the published record if version is sent.
              */
-            sortKey = createLatestPublishedSortKey();
+            partitionKey = createFormLatestPublishedPartitionKey(where);
+            sortKey = createLatestPublishedSortKey(where);
         } else if (id || version) {
-            sortKey = createRevisionSortKey(version || id);
+            partitionKey = createFormPartitionKey(where);
+            sortKey = createRevisionSortKey({
+                id:
+                    id ||
+                    createIdentifier({
+                        id: formId,
+                        version
+                    })
+            });
         } else {
             throw new WebinyError(
                 "Missing parameter to create a sort key.",
@@ -363,11 +333,7 @@ export const createFormStorageOperations = (params: Params): FormBuilderFormStor
         }
 
         const keys = {
-            PK: createFormPartitionKey({
-                tenant,
-                locale,
-                id: formId || id
-            }),
+            PK: partitionKey,
             SK: sortKey
         };
 
@@ -391,58 +357,67 @@ export const createFormStorageOperations = (params: Params): FormBuilderFormStor
     const listForms = async (
         params: FormBuilderStorageOperationsListFormsParams
     ): Promise<FormBuilderStorageOperationsListFormsResponse> => {
-        const { sort, limit, where, after } = params;
+        const { sort, limit, where: initialWhere, after } = params;
 
-        const body = createElasticsearchBody({
-            plugins,
-            sort,
-            limit: limit + 1,
-            where,
-            after: decodeCursor(after)
-        });
-
-        const esConfig = configurations.es({
-            tenant: where.tenant
-        });
-
-        const query = {
-            ...esConfig,
-            body
+        const queryAllParams: QueryAllParams = {
+            entity,
+            partitionKey: createFormLatestPartitionKey(initialWhere),
+            options: {
+                gte: " "
+            }
         };
 
-        let response;
+        let results;
         try {
-            response = await elasticsearch.search(query);
+            results = await queryAll<FbForm>(queryAllParams);
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could list forms.",
                 ex.code || "LIST_FORMS_ERROR",
                 {
-                    where,
-                    query
+                    where: initialWhere,
+                    partitionKey: queryAllParams.partitionKey
                 }
             );
         }
+        const totalCount = results.length;
 
-        const { hits, total } = response.body.hits;
-        const items = hits.map(item => item._source);
-
-        const hasMoreItems = items.length > limit;
-        if (hasMoreItems) {
-            /**
-             * Remove the last item from results, we don't want to include it.
-             */
-            items.pop();
-        }
+        const where = {
+            ...initialWhere
+        };
         /**
-         * Cursor is the `sort` value of the last item in the array.
-         * https://www.elastic.co/guide/en/elasticsearch/reference/current/paginate-search-results.html#search-after
+         * We need to remove conditions so we do not filter by them again.
          */
+        delete where.tenant;
+        delete where.locale;
+
+        const filteredItems = filterItems({
+            plugins,
+            items: results,
+            where,
+            fields: formDynamoDbFields
+        });
+
+        const sortedItems = sortItems({
+            items: filteredItems,
+            sort,
+            fields: formDynamoDbFields
+        });
+
+        const start = decodeCursor(after) || 0;
+        const hasMoreItems = totalCount > start + limit;
+        const end = limit > totalCount + start + limit ? undefined : start + limit;
+        const items = sortedItems.slice(start, end);
+        /**
+         * Although we do not need a cursor here, we will use it as such to keep it standardized.
+         * Number is simply encoded.
+         */
+        const cursor = items.length > 0 ? encodeCursor(start + limit) : null;
 
         const meta = {
             hasMoreItems,
-            totalCount: total.value,
-            cursor: items.length > 0 ? encodeCursor(hits[items.length - 1].sort) : null
+            totalCount,
+            cursor
         };
 
         return {
@@ -456,15 +431,17 @@ export const createFormStorageOperations = (params: Params): FormBuilderFormStor
     ): Promise<FbForm[]> => {
         const { where: initialWhere, sort } = params;
         const { id, formId, tenant, locale } = initialWhere;
+
         const queryAllParams: QueryAllParams = {
             entity,
-            partitionKey: createFormPartitionKey({
+            partitionKey: createFormGSIPartitionKey({
                 tenant,
                 locale,
-                id: id || formId
+                id: formId || id
             }),
             options: {
-                beginsWith: "REV#"
+                index: "GSI1",
+                gte: " "
             }
         };
 
@@ -482,19 +459,22 @@ export const createFormStorageOperations = (params: Params): FormBuilderFormStor
             );
         }
         const where = {
-            ...initialWhere,
-            id: undefined,
-            formId: undefined
+            ...initialWhere
         };
+        /**
+         * We need to remove conditions so we do not filter by them again.
+         */
+        delete where.id;
+        delete where.formId;
+        delete where.tenant;
+        delete where.locale;
+
         const filteredItems = filterItems({
             plugins,
             items,
             where,
             fields: formDynamoDbFields
         });
-        if (Array.isArray(sort) === false || sort.length === 0) {
-            return filteredItems;
-        }
         return sortItems({
             items: filteredItems,
             sort,
@@ -530,12 +510,23 @@ export const createFormStorageOperations = (params: Params): FormBuilderFormStor
             );
         }
 
+        let hasLatestPublishedRecord = false;
+
         const deleteItems = items.map(item => {
+            if (!hasLatestPublishedRecord && item.published) {
+                hasLatestPublishedRecord = true;
+            }
             return entity.deleteBatch({
                 PK: item.PK,
                 SK: item.SK
             });
         });
+        if (hasLatestPublishedRecord) {
+            deleteItems.push(entity.deleteBatch(createLatestPublishedKeys(items[0])));
+        }
+
+        deleteItems.push(entity.deleteBatch(createLatestKeys(items[0])));
+
         try {
             await batchWriteAll({
                 table,
@@ -545,22 +536,6 @@ export const createFormStorageOperations = (params: Params): FormBuilderFormStor
             throw new WebinyError(
                 ex.message || "Could not delete form and it's submissions.",
                 ex.code || "DELETE_FORM_AND_SUBMISSIONS_ERROR"
-            );
-        }
-
-        const latestKeys = {
-            PK: createFormPartitionKey(form),
-            SK: createLatestSortKey()
-        };
-        try {
-            await esEntity.delete(latestKeys);
-        } catch (ex) {
-            throw new WebinyError(
-                ex.message || "Could not delete latest form record from Elasticsearch.",
-                ex.code || "DELETE_FORM_ERROR",
-                {
-                    latestKeys
-                }
             );
         }
         return form;
@@ -576,15 +551,8 @@ export const createFormStorageOperations = (params: Params): FormBuilderFormStor
     ): Promise<FbForm> => {
         const { form, revisions, previous } = params;
 
-        const revisionKeys = {
-            PK: createFormPartitionKey(form),
-            SK: createRevisionSortKey(form.id)
-        };
-
-        const latestKeys = {
-            PK: createFormPartitionKey(form),
-            SK: createLatestSortKey()
-        };
+        const revisionKeys = createRevisionKeys(form);
+        const latestKeys = createLatestKeys(form);
 
         const latestForm = revisions[0];
         const latestPublishedForm = revisions.find(rev => rev.published === true);
@@ -593,7 +561,6 @@ export const createFormStorageOperations = (params: Params): FormBuilderFormStor
         const isLatestPublished = latestPublishedForm ? latestPublishedForm.id === form.id : false;
 
         const items = [entity.deleteBatch(revisionKeys)];
-        let esDataItem = undefined;
 
         if (isLatest || isLatestPublished) {
             /**
@@ -612,17 +579,15 @@ export const createFormStorageOperations = (params: Params): FormBuilderFormStor
                     items.push(
                         entity.putBatch({
                             ...previouslyPublishedForm,
-                            PK: createFormPartitionKey(previouslyPublishedForm),
-                            SK: createLatestPublishedSortKey(),
+                            ...createLatestPublishedKeys(previouslyPublishedForm),
+                            GSI1_PK: null,
+                            GSI1_SK: null,
                             TYPE: createFormLatestPublishedType()
                         })
                     );
                 } else {
                     items.push(
-                        entity.deleteBatch({
-                            PK: createFormPartitionKey(previouslyPublishedForm),
-                            SK: createLatestPublishedSortKey()
-                        })
+                        entity.deleteBatch(createLatestPublishedKeys(previouslyPublishedForm))
                     );
                 }
             }
@@ -634,19 +599,11 @@ export const createFormStorageOperations = (params: Params): FormBuilderFormStor
                     entity.putBatch({
                         ...previous,
                         ...latestKeys,
+                        GSI1_PK: null,
+                        GSI1_SK: null,
                         TYPE: createFormLatestType()
                     })
                 );
-
-                const { index } = configurations.es({
-                    tenant: previous.tenant
-                });
-
-                esDataItem = {
-                    index,
-                    ...latestKeys,
-                    data: getESDataForLatestRevision(previous)
-                };
             }
         }
         /**
@@ -657,30 +614,10 @@ export const createFormStorageOperations = (params: Params): FormBuilderFormStor
                 table,
                 items
             });
-        } catch (ex) {
-            throw new WebinyError(
-                ex.message || "Could not delete form revision from regular table.",
-                ex.code || "DELETE_FORM_REVISION_ERROR",
-                {
-                    form,
-                    latestForm,
-                    revisionKeys,
-                    latestKeys
-                }
-            );
-        }
-        /**
-         * And then the Elasticsearch data, if any.
-         */
-        if (!esDataItem) {
-            return form;
-        }
-        try {
-            await esEntity.put(esDataItem);
             return form;
         } catch (ex) {
             throw new WebinyError(
-                ex.message || "Could not delete form from to the Elasticsearch table.",
+                ex.message || "Could not delete form revision from table.",
                 ex.code || "DELETE_FORM_REVISION_ERROR",
                 {
                     form,
@@ -704,19 +641,15 @@ export const createFormStorageOperations = (params: Params): FormBuilderFormStor
     ): Promise<FbForm> => {
         const { form, original } = params;
 
-        const revisionKeys = {
-            PK: createFormPartitionKey(form),
-            SK: createRevisionSortKey(form.version)
-        };
+        const revisionKeys = createRevisionKeys(form);
 
-        const latestKeys = {
-            PK: createFormPartitionKey(form),
-            SK: createLatestSortKey()
-        };
+        const latestKeys = createLatestKeys(form);
 
-        const latestPublishedKeys = {
-            PK: createFormPartitionKey(form),
-            SK: createLatestPublishedSortKey()
+        const latestPublishedKeys = createLatestPublishedKeys(form);
+
+        const gsiKeys = {
+            GSI1_PK: createFormGSIPartitionKey(form),
+            GSI1_SK: createGSISortKey(form.version)
         };
 
         const { locale, tenant, formId } = form;
@@ -738,6 +671,7 @@ export const createFormStorageOperations = (params: Params): FormBuilderFormStor
             entity.putBatch({
                 ...form,
                 ...revisionKeys,
+                ...gsiKeys,
                 TYPE: createFormType()
             }),
             entity.putBatch({
@@ -778,35 +712,7 @@ export const createFormStorageOperations = (params: Params): FormBuilderFormStor
                 }
             );
         }
-        if (!isLatestForm) {
-            return form;
-        }
-        const { index } = configurations.es({
-            tenant: form.tenant
-        });
-        const esData = getESDataForLatestRevision(form);
-        try {
-            await esEntity.put({
-                ...latestKeys,
-                index,
-                TYPE: createFormLatestType(),
-                data: esData
-            });
-            return form;
-        } catch (ex) {
-            throw new WebinyError(
-                ex.message || "Could not publish form to the Elasticsearch.",
-                ex.code || "PUBLISH_FORM_ERROR",
-                {
-                    form,
-                    original,
-                    latestForm,
-                    revisionKeys,
-                    latestKeys,
-                    latestPublishedKeys
-                }
-            );
-        }
+        return form;
     };
 
     /**
@@ -820,20 +726,10 @@ export const createFormStorageOperations = (params: Params): FormBuilderFormStor
     ): Promise<FbForm> => {
         const { form, original } = params;
 
-        const revisionKeys = {
-            PK: createFormPartitionKey(form),
-            SK: createRevisionSortKey(form.version)
-        };
-
-        const latestKeys = {
-            PK: createFormPartitionKey(form),
-            SK: createLatestSortKey()
-        };
-
-        const latestPublishedKeys = {
-            PK: createFormPartitionKey(form),
-            SK: createLatestPublishedSortKey()
-        };
+        const revisionKeys = createRevisionKeys(form);
+        const latestKeys = createLatestKeys(form);
+        const latestPublishedKeys = createLatestPublishedKeys(form);
+        const gsiKeys = createGSIKeys(form);
 
         const { formId, tenant, locale } = form;
 
@@ -862,12 +758,17 @@ export const createFormStorageOperations = (params: Params): FormBuilderFormStor
             entity.putBatch({
                 ...form,
                 ...revisionKeys,
+                ...gsiKeys,
                 TYPE: createFormType()
             })
         ];
-        let esData: any = undefined;
+
         if (isLatest) {
-            esData = getESDataForLatestRevision(form);
+            entity.putBatch({
+                ...form,
+                ...latestKeys,
+                TYPE: createFormLatestType()
+            });
         }
         /**
          * In case previously published revision exists, replace current one with that one.
@@ -904,40 +805,10 @@ export const createFormStorageOperations = (params: Params): FormBuilderFormStor
                 table,
                 items
             });
+            return form;
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not unpublish form.",
-                ex.code || "UNPUBLISH_FORM_ERROR",
-                {
-                    form,
-                    original,
-                    latestForm,
-                    revisionKeys,
-                    latestKeys,
-                    latestPublishedKeys
-                }
-            );
-        }
-        /**
-         * No need to go further in case of non-existing Elasticsearch data.
-         */
-        if (!esData) {
-            return form;
-        }
-        const { index } = configurations.es({
-            tenant: form.tenant
-        });
-        try {
-            await esEntity.put({
-                ...latestKeys,
-                index,
-                TYPE: createFormLatestType(),
-                data: esData
-            });
-            return form;
-        } catch (ex) {
-            throw new WebinyError(
-                ex.message || "Could not unpublish form from the Elasticsearch.",
                 ex.code || "UNPUBLISH_FORM_ERROR",
                 {
                     form,
