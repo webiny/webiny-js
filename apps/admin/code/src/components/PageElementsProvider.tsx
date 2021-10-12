@@ -38,7 +38,7 @@ export const PageElementsProvider: React.FC = ({ children }) => (
             heading: createHeading(),
             list: createList(),
             image: createImage(),
-            paragraph: createParagraph(),
+            paragraph: createParagraph()
         }}
         modifiers={{
             styles: {

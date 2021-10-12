@@ -31,12 +31,12 @@ type BlockContainerPropsType = {
     elementId: string;
 };
 const BlockContainer: React.FunctionComponent<BlockContainerPropsType> = ({
-                                                                              elementStyle,
-                                                                              elementAttributes,
-                                                                              customClasses,
-                                                                              combineClassNames,
-                                                                              elementId
-                                                                          }) => {
+    elementStyle,
+    elementAttributes,
+    customClasses,
+    combineClassNames,
+    elementId
+}) => {
     const { displayMode } = useRecoilValue(uiAtom);
     const handler = useEventActionHandler();
     const element = useRecoilValue(elementByIdSelector(elementId));
