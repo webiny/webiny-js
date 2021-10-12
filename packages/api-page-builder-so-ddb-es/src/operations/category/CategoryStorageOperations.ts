@@ -101,7 +101,7 @@ export class CategoryStorageOperationsDdbEs implements CategoryStorageOperations
         );
 
         const filteredItems = filterItems<Category>({
-            context: this.context,
+            plugins: this.context.plugins,
             where: restWhere,
             items,
             fields
@@ -111,7 +111,6 @@ export class CategoryStorageOperationsDdbEs implements CategoryStorageOperations
             items: filteredItems,
             sort,
             fields
-            //: ["id", "createdOn", "savedOn", "publishedOn"]
         });
 
         return createListResponse({

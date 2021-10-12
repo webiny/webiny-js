@@ -101,7 +101,7 @@ export class CategoryStorageOperationsDdb implements CategoryStorageOperations {
         );
 
         const filteredItems = filterItems<Category>({
-            context: this.context,
+            plugins: this.context.plugins,
             where: restWhere,
             items,
             fields

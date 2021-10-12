@@ -28,6 +28,7 @@ import {
 } from "~/types";
 import { FormDynamoDbFieldPlugin } from "~/plugins/FormDynamoDbFieldPlugin";
 import { decodeCursor, encodeCursor } from "@webiny/db-dynamodb/utils/cursor";
+import { get } from "@webiny/db-dynamodb/utils/get";
 
 type DbRecord<T = any> = T & {
     PK: string;
@@ -338,11 +339,8 @@ export const createFormStorageOperations = (params: Params): FormBuilderFormStor
         };
 
         try {
-            const result = await entity.get(keys);
-            if (!result || !result.Item) {
-                return null;
-            }
-            return cleanupItem(entity, result.Item);
+            const item = await get<FbForm>({ entity, keys });
+            return cleanupItem(entity, item);
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not get form by keys.",

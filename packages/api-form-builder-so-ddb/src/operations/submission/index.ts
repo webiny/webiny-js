@@ -21,6 +21,7 @@ import { decodeCursor, encodeCursor } from "@webiny/db-dynamodb/utils/cursor";
 import { sortItems } from "@webiny/db-dynamodb/utils/sort";
 import { filterItems } from "@webiny/db-dynamodb/utils/filter";
 import { FormSubmissionDynamoDbFieldPlugin } from "~/plugins/FormSubmissionDynamoDbFieldPlugin";
+import { get } from "@webiny/db-dynamodb/utils/get";
 
 export interface Params {
     entity: Entity<any>;
@@ -231,13 +232,8 @@ export const createSubmissionStorageOperations = (
         };
 
         try {
-            const result = await entity.get(keys);
-
-            if (!result || !result.Item) {
-                return null;
-            }
-
-            return cleanupItem(entity, result.Item);
+            const item = await get<FbSubmission>({ entity, keys });
+            return cleanupItem(entity, item);
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not oad submission.",

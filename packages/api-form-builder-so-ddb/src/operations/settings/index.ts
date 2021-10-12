@@ -12,6 +12,7 @@ import {
 } from "~/types";
 import WebinyError from "@webiny/error";
 import { cleanupItem } from "@webiny/db-dynamodb/utils/cleanup";
+import { get } from "@webiny/db-dynamodb/utils/get";
 
 export interface Params {
     entity: Entity<any>;
@@ -71,11 +72,8 @@ export const createSettingsStorageOperations = (
         const keys = createKeys(params);
 
         try {
-            const result = await entity.get(keys);
-            if (!result || !result.Item) {
-                return null;
-            }
-            return cleanupItem(entity, result.Item);
+            const item = await get<Settings>({ entity, keys });
+            return cleanupItem(entity, item);
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not get the settings record by given keys.",
