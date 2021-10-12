@@ -1,22 +1,21 @@
 import dotProp from "dot-prop";
 import WebinyError from "@webiny/error";
-import { Plugin } from "@webiny/plugins";
+import { Plugin, PluginsContainer } from "@webiny/plugins";
 import { ValueFilterPlugin } from "~/plugins/definitions/ValueFilterPlugin";
-import { ContextInterface } from "@webiny/handler/types";
 import { FieldPlugin } from "~/plugins/definitions/FieldPlugin";
 import { DynamoDbContainsFilter } from "~/types";
 
 type TransformValue = (value: any) => any;
 
 export interface Params<T extends any = any> {
+    plugins: PluginsContainer;
     items: T[];
     where: Record<string, any>;
-    context: ContextInterface;
     fields: FieldPlugin[];
 }
 
 interface MappedPluginParams {
-    context: ContextInterface;
+    plugins: PluginsContainer;
     type: string;
     property: string;
 }
@@ -30,7 +29,7 @@ interface Filter {
 }
 
 const getMappedPlugins = <T extends Plugin>(params: MappedPluginParams): Record<string, T> => {
-    return params.context.plugins.byType<T>(params.type).reduce((plugins, plugin) => {
+    return params.plugins.byType<T>(params.type).reduce((plugins, plugin) => {
         const op = plugin[params.property];
         plugins[op] = plugin;
         return plugins;
@@ -71,7 +70,7 @@ const findFilterPlugin = (
 const multiSearchFieldOperations = ["contains", "fuzzy"];
 
 const createFilters = (params: Omit<Params, "items">): Filter[] => {
-    const { context, where, fields } = params;
+    const { plugins, where, fields } = params;
 
     const keys = Object.keys(where);
     /**
@@ -81,7 +80,7 @@ const createFilters = (params: Omit<Params, "items">): Filter[] => {
         return [];
     }
     const filterPlugins = getMappedPlugins<ValueFilterPlugin>({
-        context,
+        plugins,
         type: ValueFilterPlugin.type,
         property: "operation"
     });
