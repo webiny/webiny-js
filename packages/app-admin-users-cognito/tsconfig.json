@@ -1,9 +1,11 @@
 {
   "extends": "../../tsconfig.json",
-  "include": ["src"],
+  "include": ["src", "__tests__/**/*.ts"],
   "references": [
     { "path": "../app" },
     { "path": "../app-admin" },
+    { "path": "../app-admin-cognito" },
+    { "path": "../app-tenancy" },
     { "path": "../app-security" },
     { "path": "../app-security-access-management" },
     { "path": "../form" },
@@ -13,7 +15,7 @@
     { "path": "../validation" }
   ],
   "compilerOptions": {
-    "rootDir": "./src",
+    "rootDirs": ["./src", "./__tests__"],
     "outDir": "./dist",
     "declarationDir": "./dist",
     "paths": {
@@ -22,6 +24,10 @@
       "@webiny/app": ["../app/src"],
       "@webiny/app-admin/*": ["../app-admin/src/*"],
       "@webiny/app-admin": ["../app-admin/src"],
+      "@webiny/app-tenancy/*": ["../app-tenancy/src/*"],
+      "@webiny/app-tenancy": ["../app-tenancy/src"],
+      "@webiny/app-admin-cognito/*": ["../app-admin-cognito/src/*"],
+      "@webiny/app-admin-cognito": ["../app-admin-cognito/src"],
       "@webiny/app-security/*": ["../app-security/src/*"],
       "@webiny/app-security": ["../app-security/src"],
       "@webiny/app-security-access-management/*": ["../app-security-access-management/src/*"],

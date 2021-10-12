@@ -66,7 +66,7 @@ export const migration = (context: Context) => {
 
         // If it's a new project, `securityVersion` should match the current Webiny version.
         // If so, we let installers work as intended, by returning `null`, which means "not installed".
-        if (securityVersion === context.WEBINY_VERSION) {
+        if (securityVersion === context.WEBINY_VERSION || !securityVersion) {
             return null;
         }
 

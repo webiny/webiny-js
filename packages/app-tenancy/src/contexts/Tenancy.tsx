@@ -1,8 +1,7 @@
-import React, { useState, useMemo, useCallback, Fragment, useRef } from "react";
+import React, { useMemo, useCallback, Fragment, useState } from "react";
+import { default as localStorage } from "store";
 import { plugins } from "@webiny/plugins";
-import { useSecurity } from "@webiny/app-security";
 import { TenantHeaderLinkPlugin } from "@webiny/app/plugins/TenantHeaderLinkPlugin";
-import { TenantPlugin } from "../plugins/TenantPlugin";
 export const TenancyContext = React.createContext(null);
 
 export interface Tenant {
@@ -10,57 +9,62 @@ export interface Tenant {
     name: string;
 }
 
-export type TenancyContextValue<TTenant = Tenant> = {
-    tenant: TTenant | null;
-    tenants: TTenant[];
-    setTenant(tenant: TTenant): void;
-    onChange(cb: (tenant: TTenant) => void);
+export type TenancyContextValue = {
+    tenant: string | null;
+    setTenant(tenant: string): void;
+};
+
+const LOCAL_STORAGE_KEY = "webiny_tenant";
+
+function loadState() {
+    return localStorage.get(LOCAL_STORAGE_KEY) || null;
+}
+
+function storeState(state) {
+    localStorage.set(LOCAL_STORAGE_KEY, state);
+}
+
+const getInitialTenant = () => {
+    const currentTenant = loadState();
+    plugins.register(new TenantHeaderLinkPlugin(currentTenant || "root"));
+    return currentTenant;
 };
 
 export const TenancyProvider = props => {
-    const [currentTenant, setCurrentTenant] = useState<Tenant>(null);
-    const { identity } = useSecurity();
-    const onChangeCallbacks = useRef(new Set<Function>());
+    const [currentTenant, setTenant] = useState(getInitialTenant);
 
-    const tenantPlugins = plugins.byType<TenantPlugin>(TenantPlugin.type);
+    const changeTenant = useCallback(
+        (tenant: string) => {
+            if (!tenant) {
+                localStorage.remove(LOCAL_STORAGE_KEY);
 
-    /**
-     * Create plugin elements. Once mounted, they will attach to Tenancy using `useTenancy()` hook.
-     * Why mounting an element? Because that will allow the plugin authors to access any available context
-     * using hooks and we won't need to think about all the possible dependencies we need to provide to the plugin.
-     */
-    const pluginElements = useMemo(() => {
-        return tenantPlugins.map(plugin => plugin.render());
-    }, [tenantPlugins]);
+                window.location.pathname = "/";
+            }
 
-    const changeTenant = useCallback(async (tenant: Tenant) => {
-        const callbacks = onChangeCallbacks.current.values();
-        for (const callback of callbacks) {
-            callback(tenant);
-        }
-        setCurrentTenant(tenant);
-        plugins.register(new TenantHeaderLinkPlugin(tenant.id));
-    }, []);
+            if (!currentTenant) {
+                plugins.register(new TenantHeaderLinkPlugin(tenant));
+                setTenant(tenant);
+                storeState(tenant);
+                return;
+            }
+
+            storeState(tenant);
+            window.location.pathname = "/";
+        },
+        [currentTenant]
+    );
 
     const value = useMemo<TenancyContextValue>(
         () => ({
             tenant: currentTenant,
-            tenants: identity.access,
-            setTenant: changeTenant,
-            onChange: cb => {
-                onChangeCallbacks.current.add(cb);
-                return () => onChangeCallbacks.current.delete(cb);
-            }
+            setTenant: changeTenant
         }),
-        [identity, currentTenant]
+        [currentTenant]
     );
 
     return (
         <TenancyContext.Provider value={value}>
-            <Fragment>
-                {pluginElements}
-                {currentTenant ? props.children : null}
-            </Fragment>
+            <Fragment>{props.children}</Fragment>
         </TenancyContext.Provider>
     );
 };

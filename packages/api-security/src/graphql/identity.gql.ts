@@ -1,5 +1,5 @@
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSchemaPlugin";
-import { Response } from "@webiny/handler-graphql";
+import { ErrorResponse, Response } from "@webiny/handler-graphql";
 import { SecurityContext } from "~/types";
 import { TenancyContext } from "@webiny/api-tenancy/types";
 
@@ -30,7 +30,7 @@ export default new GraphQLSchemaPlugin<Context>({
             permissions(identity, args, context) {
                 return context.security.getPermissions();
             },
-            tenant(_, args, context) {
+            async tenant(identity, args, context) {
                 return context.tenancy.getCurrentTenant();
             }
         },
@@ -38,9 +38,13 @@ export default new GraphQLSchemaPlugin<Context>({
             login: async (root, args, context) => {
                 const identity = context.security.getIdentity();
                 if (identity) {
-                    await context.security.onBeforeLogin.publish({ identity });
-                    await context.security.onLogin.publish({ identity });
-                    await context.security.onAfterLogin.publish({ identity });
+                    try {
+                        await context.security.onBeforeLogin.publish({ identity });
+                        await context.security.onLogin.publish({ identity });
+                        await context.security.onAfterLogin.publish({ identity });
+                    } catch (err) {
+                        return new ErrorResponse({ code: err.code, message: err.message });
+                    }
                 }
                 return new Response(identity);
             }

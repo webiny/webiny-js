@@ -38,6 +38,7 @@ export interface GetUserParams {
     where: {
         id?: string;
         email?: string;
+        tenant?: string;
     };
 }
 

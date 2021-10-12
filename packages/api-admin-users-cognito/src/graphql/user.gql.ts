@@ -10,8 +10,9 @@ import { AdminUser, AdminUsersContext, CreateUserInput, UpdateUserInput } from "
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSchemaPlugin";
 import { NotAuthorizedError } from "@webiny/api-security";
 import { SecurityContext, SecurityIdentity } from "@webiny/api-security/types";
+import { TenancyContext } from "@webiny/api-tenancy/types";
 
-export default new GraphQLSchemaPlugin<AdminUsersContext & SecurityContext>({
+export default new GraphQLSchemaPlugin<AdminUsersContext & SecurityContext & TenancyContext>({
     typeDefs: /* GraphQL */ `
         type AdminUserIdentity implements SecurityIdentity {
             id: ID!
@@ -104,7 +105,19 @@ export default new GraphQLSchemaPlugin<AdminUsersContext & SecurityContext>({
     resolvers: {
         AdminUserIdentity: {
             async profile(identity, args, context) {
-                return context.adminUsers.getUser({ where: { id: identity.id } });
+                const profile = await context.adminUsers.getUser({ where: { id: identity.id } });
+                
+                if (profile) {
+                    return profile;
+                }
+
+                // We must also consider an option where we have multi-tenancy, and current identity is
+                // a "parent" tenant user, so naturally, his user profile lives in his original tenant.
+                const tenant = context.tenancy.getCurrentTenant();
+                
+                return await context.adminUsers.getUser({
+                    where: { id: identity.id, tenant: tenant.parent }
+                });
             },
             __isTypeOf(obj: SecurityIdentity) {
                 return obj.type === "admin";

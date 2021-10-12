@@ -1,3 +1,6 @@
 import installation from "~/plugins/installation";
+export * from "./contexts/Tenancy";
+export * from "./hooks/useTenancy";
+export * from "./withTenant";
 
-export default () => [installation];
+export const plugins = () => [installation];

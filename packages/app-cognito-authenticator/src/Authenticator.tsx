@@ -99,7 +99,7 @@ export const Authenticator = ({ onToken, children }: AuthenticatorProps) => {
             const user = await Auth.currentSession();
             const idToken = user.getIdToken();
 
-            onToken({
+            await onToken({
                 idToken: idToken.getJwtToken(),
                 payload: idToken.payload,
                 logout() {

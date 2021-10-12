@@ -30,7 +30,7 @@ function createTenantLoaders(storageOperations: TenancyStorageOperations) {
     return {
         get getTenant() {
             if (!loaders.get("getTenant")) {
-                loaders.set("getTenant", new DataLoader<string, Tenant>(ids => getTenant(ids)));
+                loaders.set("getTenant", new DataLoader<string, any>(ids => getTenant(ids)));
             }
             return loaders.get("getTenant");
         }
@@ -51,8 +51,11 @@ export function createTenantsMethods(storageOperations: TenancyStorageOperations
             return loaders.getTenant.load("root");
         },
 
-        getTenantById<TTenant extends Tenant = Tenant>(id: string): Promise<TTenant> {
-            return loaders.getTenant.load(id);
+        async getTenantById<TTenant extends Tenant = Tenant>(
+            this: Tenancy,
+            id: string
+        ): Promise<TTenant> {
+            return await loaders.getTenant.load(id);
         },
 
         async listTenants<TTenant extends Tenant = Tenant>({ parent }): Promise<TTenant[]> {

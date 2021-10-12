@@ -13,6 +13,7 @@ export const LOGIN = gql`
                             id
                             name
                             description
+                            parent
                         }
                         permissions
                         profile {

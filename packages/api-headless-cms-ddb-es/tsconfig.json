@@ -1,6 +1,6 @@
 {
   "extends": "../../tsconfig.json",
-  "include": ["src"],
+  "include": ["src", "__tests__/**/*.ts"],
   "references": [
     { "path": "../api-headless-cms" },
     { "path": "../api-upgrade" },
@@ -14,7 +14,7 @@
     { "path": "../api-elasticsearch" }
   ],
   "compilerOptions": {
-    "rootDir": "./src",
+    "rootDirs": ["./src", "./__tests__"],
     "outDir": "./dist",
     "declarationDir": "./dist",
     "paths": {

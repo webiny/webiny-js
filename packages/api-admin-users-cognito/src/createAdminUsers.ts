@@ -85,26 +85,13 @@ export const createAdminUsers = ({
             };
 
             let result;
+            await this.onUserBeforeCreate.publish({ user, inputData: data });
+            /**
+             * Always delete `password` from the user data!
+             */
+            delete user["password"];
             try {
-                await this.onUserBeforeCreate.publish({ user, inputData: data });
-                /**
-                 * Always delete `password` from the user data!
-                 */
-                delete user["password"];
                 result = await storageOperations.createUser({ user });
-
-                try {
-                    await this.onUserAfterCreate.publish({ user: result, inputData: data });
-                } catch (err) {
-                    // Not sure if we care about errors in `onAfterCreate`.
-                    // Maybe add an `onCreateError` event for potential cleanup operations?
-                    // For now, just log it.
-                    console.log(err);
-                }
-
-                loaders.getUser.clear(result.id).prime(result.id, result);
-
-                return result;
             } catch (err) {
                 throw Error.from(err, {
                     message: "Could not create user.",
@@ -112,6 +99,18 @@ export const createAdminUsers = ({
                     data: { user: result || user }
                 });
             }
+            try {
+                await this.onUserAfterCreate.publish({ user: result, inputData: data });
+            } catch (err) {
+                // Not sure if we care about errors in `onAfterCreate`.
+                // Maybe add an `onCreateError` event for potential cleanup operations?
+                // For now, just log it.
+                console.log(err);
+            }
+
+            loaders.getUser.clear(result.id).prime(result.id, result);
+
+            return result;
         },
         async deleteUser(this: AdminUsers, id: string) {
             await checkPermission();
@@ -130,7 +129,7 @@ export const createAdminUsers = ({
             try {
                 await this.onUserBeforeDelete.publish({ user });
                 await storageOperations.deleteUser({ user });
-                loaders.clearLoadersCache(id);
+                loaders.clearLoadersCache([{ tenant: getTenant(), id }]);
                 await this.onUserAfterDelete.publish({ user });
             } catch (err) {
                 throw Error.from(err, {
@@ -145,7 +144,10 @@ export const createAdminUsers = ({
 
             // Majority of querying is happening via `id`, so let's use a DataLoader here.
             if (where.id) {
-                return loaders.getUser.load(where.id);
+                return await loaders.getUser.load({
+                    ...where,
+                    tenant: where.tenant || getTenant()
+                });
             }
 
             // Querying by email is very rare, so we don't need to bother with DataLoader for now.
@@ -195,7 +197,7 @@ export const createAdminUsers = ({
                     inputData: data
                 });
 
-                await loaders.updateDataLoaderUserCache(id, updateData);
+                await loaders.updateDataLoaderUserCache({ tenant: getTenant(), id }, updateData);
 
                 return updatedUser;
             } catch (err) {
@@ -211,7 +213,9 @@ export const createAdminUsers = ({
                 return null;
             }
 
+            console.log("admin users get version", tenantId);
             const system = await storageOperations.getSystemData({ tenant: tenantId });
+            console.log("admin users get version", JSON.stringify(system));
             if (system) {
                 return system.version;
             }
@@ -263,7 +267,7 @@ export const createAdminUsers = ({
             } catch (err) {
                 await this.onCleanup.publish({ error: err, tenant: getTenant(), user });
 
-                throw new Error(err.message, "ADMIN_USERS_INSTALL_ABORTED", err.data || {});
+                throw Error.from(err, { message: "ADMIN_USERS_INSTALL_ABORTED" });
             }
 
             // Store app version

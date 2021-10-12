@@ -1,6 +1,6 @@
 {
   "extends": "../../tsconfig.json",
-  "include": ["src"],
+  "include": ["src", "__tests__/**/*.ts"],
   "references": [
     { "path": "../api-elasticsearch" },
     { "path": "../api-file-manager" },
@@ -13,7 +13,7 @@
     { "path": "../api-i18n" }
   ],
   "compilerOptions": {
-    "rootDir": "./src",
+    "rootDirs": ["./src", "./__tests__"],
     "outDir": "./dist",
     "declarationDir": "./dist",
     "paths": {

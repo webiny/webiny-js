@@ -7,7 +7,7 @@ import { ViewPlugin } from "@webiny/app/plugins/ViewPlugin";
 import { UIViewPlugin } from "@webiny/app-admin/ui/UIView";
 import { UsersFormView } from "~/ui/views/Users/UsersFormView";
 import { PasswordElement } from "@webiny/app-admin/ui/elements/form/PasswordElement";
-import { createPasswordValidator, PasswordPolicy } from "./createPasswordValidator";
+import { createPasswordValidator, PasswordPolicy } from "~/createPasswordValidator";
 
 export default (): PluginCollection => {
     const passwordValidator = createPasswordValidator(

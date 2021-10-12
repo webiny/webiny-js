@@ -1,0 +1,1 @@
+export { createGetIdentityData } from "./createGetIdentityData";

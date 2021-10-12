@@ -7,13 +7,6 @@ export default () => {
                 data: Tenant
                 error: TenancyError
             }
-
-            extend type TenancyQuery {
-
-            }
-        `,
-        resolvers: {
-            TenancyQuery: {}
-        }
+        `
     });
 };

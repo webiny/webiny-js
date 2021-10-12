@@ -23,6 +23,7 @@ import formBuilderPlugins from "@webiny/api-form-builder/plugins";
 import headlessCmsPlugins from "@webiny/api-headless-cms/plugins";
 import headlessCmsDynamoDbElasticStorageOperation from "@webiny/api-headless-cms-ddb-es";
 import elasticsearchDataGzipCompression from "@webiny/api-elasticsearch/plugins/GzipCompression";
+import tenantManager from "@webiny/api-tenant-manager";
 import securityPlugins from "./security";
 
 // Imports plugins created via scaffolding utilities.
@@ -46,6 +47,7 @@ export const handler = createHandler({
             driver: new DynamoDbDriver({ documentClient })
         }),
         securityPlugins({ documentClient }),
+        tenantManager(),
         i18nPlugins(),
         i18nDynamoDbStorageOperations(),
         i18nContentPlugins(),

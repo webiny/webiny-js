@@ -6,6 +6,7 @@ import { authenticateUsingHttpHeader } from "@webiny/api-security/plugins/authen
 import apiKeyAuthentication from "@webiny/api-security/plugins/apiKeyAuthentication";
 import apiKeyAuthorization from "@webiny/api-security/plugins/apiKeyAuthorization";
 import groupAuthorization from "@webiny/api-security/plugins/groupAuthorization";
+import parentTenantGroupAuthorization from "@webiny/api-security/plugins/parentTenantGroupAuthorization";
 import anonymousAuthorization from "@webiny/api-security/plugins/anonymousAuthorization";
 import cognitoAuthentication from "@webiny/api-security-cognito";
 
@@ -13,7 +14,10 @@ export default ({ documentClient }) => [
     /**
      * Setup Tenancy app.
      */
-    tenancy({ storageOperations: tenancyStorageOperations({ documentClient }) }),
+    tenancy({
+        multiTenancy: true,
+        storageOperations: tenancyStorageOperations({ documentClient })
+    }),
 
     /**
      * Setup Security app.
@@ -56,6 +60,11 @@ export default ({ documentClient }) => [
      * Authorization plugin to fetch permissions from a security group associated with the identity.
      */
     groupAuthorization({ identityType: "admin" }),
+
+    /**
+     * Authorization plugin to fetch permissions from the parent tenant.
+     */
+    parentTenantGroupAuthorization({ identityType: "admin" }),
 
     /**
      * Authorization plugin to load permissions for anonymous requests.

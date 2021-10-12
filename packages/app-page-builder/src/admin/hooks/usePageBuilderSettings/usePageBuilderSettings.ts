@@ -61,7 +61,7 @@ export function usePageBuilderSettings() {
     let tenantId = "root";
     const tenancy = useTenancy();
     if (tenancy) {
-        tenantId = tenancy.tenant.id;
+        tenantId = tenancy.tenant || tenantId;
     }
 
     const { getCurrentLocale } = useI18N();

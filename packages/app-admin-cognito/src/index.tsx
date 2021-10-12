@@ -15,14 +15,6 @@ import ForgotPassword from "~/views/ForgotPassword";
 import SetNewPassword from "~/views/SetNewPassword";
 import SignedIn from "~/views/SignedIn";
 import { useSecurity, SecurityIdentity } from "@webiny/app-security";
-
-export interface Config extends AuthOptions {
-    getIdentityData(params: {
-        client: ApolloClient<any>;
-        payload: { [key: string]: any };
-    }): Promise<{ [key: string]: any }>;
-}
-
 const createApolloLinkPlugin = () => {
     return new ApolloLinkPlugin(() => {
         return setContext(async (_, { headers }) => {
@@ -58,7 +50,15 @@ export interface Props {
     children: React.ReactNode;
 }
 
-export const createAuthentication = ({ getIdentityData, ...config }: Config) => {
+export interface Config extends AuthOptions {
+    onError?(error: Error): void;
+    getIdentityData(params: {
+        client: ApolloClient<any>;
+        payload: { [key: string]: any };
+    }): Promise<{ [key: string]: any }>;
+}
+
+export const createAuthentication = ({ getIdentityData, onError, ...config }: Config) => {
     Object.keys(config).forEach(key => config[key] === undefined && delete config[key]);
     Auth.configure({ ...defaultOptions, ...config });
 
@@ -70,20 +70,29 @@ export const createAuthentication = ({ getIdentityData, ...config }: Config) => 
         const onToken = useCallback(async (token: CognitoIdToken) => {
             const { payload, logout } = token;
 
-            const { id, displayName, type, ...data } = await getIdentityData({
-                client,
-                payload
-            });
-
-            setIdentity(
-                new SecurityIdentity({
-                    id,
-                    displayName,
-                    type,
-                    ...data,
-                    logout
-                })
-            );
+            try {
+                const { id, displayName, type, ...data } = await getIdentityData({
+                    client,
+                    payload
+                });
+                
+                setIdentity(
+                    new SecurityIdentity({
+                        id,
+                        displayName,
+                        type,
+                        ...data,
+                        logout
+                    })
+                );
+            } catch (err) {
+                console.log("ERROR", err);
+                if (typeof onError === "function") {
+                    onError(err);
+                } else {
+                    console.error(err);
+                }
+            }
         }, []);
 
         useEffect(() => {

@@ -3,7 +3,9 @@
   "include": ["src"],
   "references": [
     { "path": "../app/tsconfig.build.json" },
+    { "path": "../app-tenancy/tsconfig.build.json" },
     { "path": "../app-admin/tsconfig.build.json" },
+    { "path": "../app-admin-cognito/tsconfig.build.json" },
     { "path": "../app-security/tsconfig.build.json" },
     { "path": "../app-security-access-management/tsconfig.build.json" },
     { "path": "../form/tsconfig.build.json" },

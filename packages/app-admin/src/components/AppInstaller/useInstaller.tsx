@@ -3,7 +3,7 @@ import { Graph, alg } from "graphlib";
 import { sort, gt, lte } from "semver";
 import { useApolloClient } from "@apollo/react-hooks";
 import { plugins } from "@webiny/plugins";
-import { AdminInstallationPlugin } from "../../types";
+import { AdminInstallationPlugin } from "~/types";
 import { CircularProgress } from "@webiny/ui/Progress";
 
 const Loader = ({ children, ...props }) => (

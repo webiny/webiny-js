@@ -1,6 +1,6 @@
 {
   "extends": "../../tsconfig.json",
-  "include": ["src"],
+  "include": ["src", "__tests__/**/*.ts"],
   "references": [
     { "path": "../api-i18n" },
     { "path": "../db-dynamodb" },
@@ -12,7 +12,7 @@
     { "path": "../handler-graphql" }
   ],
   "compilerOptions": {
-    "rootDir": "./src",
+    "rootDirs": ["./src", "./__tests__"],
     "outDir": "./dist",
     "declarationDir": "./dist",
     "paths": {

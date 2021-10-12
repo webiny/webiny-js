@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
+import { default as localStorage } from "store";
 import { useSecurity } from "@webiny/app-security";
+import { useTenancy } from "@webiny/app-tenancy";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { ButtonPrimary } from "@webiny/ui/Button";
 import { SplitView, LeftPanel, RightPanel } from "../SplitView";
@@ -17,16 +19,23 @@ import {
     SuccessDialog
 } from "./styled";
 
-const markInstallerAsCompleted = () =>
-    (localStorage["wby_installer_status"] = process.env.REACT_APP_WEBINY_VERSION);
-
-const installerCompleted =
-    localStorage["wby_installer_status"] === process.env.REACT_APP_WEBINY_VERSION;
-
 export const AppInstaller = ({ Authentication, children }) => {
-    if (installerCompleted) {
-        return <Authentication>{children}</Authentication>;
+    let tenantId = "root";
+
+    const tenancy = useTenancy();
+    if (tenancy) {
+        tenantId = tenancy.tenant || tenantId;
     }
+
+    const lsKey = `webiny_installation_${tenantId}`;
+
+    const markInstallerAsCompleted = () => {
+        localStorage.set(lsKey, process.env.REACT_APP_WEBINY_VERSION);
+    };
+
+    const isInstallerCompleted = () => {
+        return localStorage.get(lsKey) === process.env.REACT_APP_WEBINY_VERSION;
+    };
 
     const [finished, setFinished] = useState(false);
     const { identity } = useSecurity();
@@ -45,6 +54,10 @@ export const AppInstaller = ({ Authentication, children }) => {
             onUser();
         }
     }, [identity]);
+
+    if (isInstallerCompleted()) {
+        return <Authentication>{children}</Authentication>;
+    }
 
     const renderLayout = (content, secure = false) => {
         return (

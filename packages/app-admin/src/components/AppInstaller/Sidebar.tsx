@@ -116,9 +116,6 @@ const Installations = ({ title, allInstallers, installer, showLogin }) => {
 };
 
 const Sidebar = ({ allInstallers, installer, showLogin }) => {
-    console.log("==== render Sidebar ====");
-    console.log("showLogin", showLogin);
-    console.log("installer", installer);
     const upgrades = allInstallers.filter(installer => installer.type === "upgrade");
     const installations = allInstallers.filter(installer => installer.type === "install");
 

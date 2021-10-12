@@ -1,6 +1,6 @@
 import { plugins } from "@webiny/plugins";
 import { WebinyInitPlugin } from "@webiny/app/types";
-import tenancy from "@webiny/app-tenancy";
+import { plugins as tenancyPlugins } from "@webiny/app-tenancy";
 import welcomeScreenPlugins from "@webiny/app-plugin-admin-welcome-screen";
 import routeNotFound from "./routeNotFound";
 import basePlugins from "./base";
@@ -12,6 +12,7 @@ import securityPlugins from "./security";
 import pageBuilderPlugins from "./pageBuilder";
 import formBuilderPlugins from "./formBuilder";
 import headlessCmsPlugins from "./headlessCms";
+import tenantManagerPlugins from "./tenantManager";
 import theme from "theme";
 
 // Imports plugins created via scaffolding utilities.
@@ -49,7 +50,7 @@ plugins.register([
     /**
      * Tenant installation.
      */
-    tenancy(),
+    tenancyPlugins(),
     /**
      * Security app and authentication plugins.
      */
@@ -66,6 +67,10 @@ plugins.register([
      * Headless CMS app.
      */
     headlessCmsPlugins,
+    /**
+     * Tenant Manager
+     */
+    tenantManagerPlugins,
     /**
      * App theme controls page builder and form builder layouts, styles, etc.
      */

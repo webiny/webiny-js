@@ -16,12 +16,11 @@ export default ({ multiTenancy, storageOperations }: TenancyPluginsParams) => {
             let tenantId = "root";
 
             if (multiTenancy === true) {
-                // In multi-tenant environments, `x-tenant` header is mandatory.
-                const { headers = {} } = context.http.request;
+                const { headers = {}, method } = context.http.request;
 
                 tenantId = headers["x-tenant"];
 
-                if (!tenantId) {
+                if (!tenantId && method === "POST") {
                     throw new Error({
                         message: `"x-tenant" header is missing in the request!`,
                         code: "MISSING_TENANT_HEADER"

@@ -1,9 +1,9 @@
 {
   "extends": "../../tsconfig.json",
-  "include": ["src"],
+  "include": ["src", "__tests__/**/*.ts"],
   "references": [{ "path": "../db" }, { "path": "../handler" }],
   "compilerOptions": {
-    "rootDir": "./src",
+    "rootDirs": ["./src", "./__tests__"],
     "outDir": "./dist",
     "declarationDir": "./dist",
     "paths": {

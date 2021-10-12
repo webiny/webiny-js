@@ -1,4 +1,5 @@
 import CognitoIdentityServiceProvider from "aws-sdk/clients/cognitoidentityserviceprovider";
+import Error from "@webiny/error";
 import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
 import { SecurityContext } from "@webiny/api-security/types";
 import { AdminUsersContext, BaseUserAttributes } from "~/types";
@@ -48,7 +49,7 @@ export const syncWithCognito = ({
 
     const cognito = new CognitoIdentityServiceProvider({ region });
 
-    return new ContextPlugin<Context>(({ security, adminUsers }) => {
+    return new ContextPlugin<Context>(({ adminUsers }) => {
         adminUsers.onUserBeforeCreate.subscribe(async ({ user, inputData }) => {
             // Immediately delete password from `user`, as that object will be stored to the database.
             // Password field is attached by Cognito plugin, so we only want this plugin to handle it.
@@ -64,10 +65,18 @@ export const syncWithCognito = ({
                     })
                     .promise();
 
-                // User exists
-                return;
-            } catch {
-                // User does not exist
+                // User exists; there are multiple ways to resolve the conflict
+                // but for now, we simply prevent user creation.
+                throw new Error({
+                    message: `An account with this email already exists in your Cognito User Pool.`,
+                    code: "COGNITO_ACCOUNT_EXISTS"
+                });
+            } catch (err) {
+                if (err.code === "COGNITO_ACCOUNT_EXISTS") {
+                    throw err;
+                }
+
+                // User does not exist.
             }
 
             const params = {

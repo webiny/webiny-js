@@ -6,35 +6,33 @@ import { Response } from "@webiny/handler-graphql";
 type Context = SecurityContext & TenancyContext;
 
 export default () => {
-    return new GraphQLSchemaPlugin<Context>({
-        typeDefs: /* GraphQL */ `
-            type TenantResponse {
-                data: Tenant
-                error: TenancyError
-            }
+    return [
+        new GraphQLSchemaPlugin<Context>({
+            typeDefs: /* GraphQL */ `
+                extend type TenancyQuery {
+                    getDefaultTenant: TenantResponse
+                }
+            `,
+            resolvers: {
+                TenancyQuery: {
+                    async getDefaultTenant(_, args, { security, tenancy }) {
+                        const identity = security.getIdentity();
 
-            extend type TenancyQuery {
-                getDefaultTenant: TenantResponse
-            }
-        `,
-        resolvers: {
-            TenancyQuery: {
-                async getDefaultTenant(_, args, { security, tenancy }) {
-                    const identity = security.getIdentity();
+                        const links = await security.listTenantLinksByIdentity({
+                            identity: identity.id
+                        });
 
-                    const links = await security.listTenantLinksByIdentity({
-                        identity: identity.id
-                    });
+                        // We need to find the oldest link, and that's our "default" tenant.
+                        links.sort(
+                            (a, b) =>
+                                new Date(a.createdOn).getTime() - new Date(b.createdOn).getTime()
+                        );
 
-                    // We need to find the oldest link, and that's our "default" tenant.
-                    links.sort(
-                        (a, b) => new Date(a.createdOn).getTime() - new Date(b.createdOn).getTime()
-                    );
-
-                    const { tenant } = links[0];
-                    return new Response(await tenancy.getTenantById(tenant));
+                        const { tenant } = links[0];
+                        return new Response(await tenancy.getTenantById(tenant));
+                    }
                 }
             }
-        }
-    });
+        })
+    ];
 };
