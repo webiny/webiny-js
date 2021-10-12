@@ -5554,15 +5554,15 @@ __metadata:
   linkType: hard
 
 "@octokit/oauth-methods@npm:^1.1.0, @octokit/oauth-methods@npm:^1.2.2":
-  version: 1.2.5
-  resolution: "@octokit/oauth-methods@npm:1.2.5"
+  version: 1.2.6
+  resolution: "@octokit/oauth-methods@npm:1.2.6"
   dependencies:
     "@octokit/oauth-authorization-url": ^4.3.1
     "@octokit/request": ^5.4.14
     "@octokit/request-error": ^2.0.5
     "@octokit/types": ^6.12.2
     btoa-lite: ^1.0.0
-  checksum: 37f623c121e4aa777883a71c7e1aadbf6b04cda1c5d8b8c31ade0d655afb2a46a2ee25e4e8afa75695983622b132d2210b5fe13c97bd26623b70486bddb21bfc
+  checksum: 524205cb8802d37a335dd9dd55591ae8a7ccc621049dfbfe8d501f77e3249c728adbd5faffc001963c9af517e6498fda3a267085948c342f612c5dfac2e9ce60
   languageName: node
   linkType: hard
 
@@ -5927,8 +5927,8 @@ __metadata:
   linkType: hard
 
 "@pulumi/aws@npm:^4.10.0":
-  version: 4.24.0
-  resolution: "@pulumi/aws@npm:4.24.0"
+  version: 4.24.1
+  resolution: "@pulumi/aws@npm:4.24.1"
   dependencies:
     "@pulumi/pulumi": ^3.0.0
     aws-sdk: ^2.0.0
@@ -5936,7 +5936,7 @@ __metadata:
     mime: ^2.0.0
     read-package-tree: ^5.2.1
     resolve: ^1.7.1
-  checksum: 3a9e18a3bb6a5806aacc0a22920e879be08c1942c9e4b0a70a7aee63dd3dc7c52d1d996763c3e1657774f1a3d953cc1fca52e7734ba7a6ff469ae919d9b71026
+  checksum: daaace8637ece9af07dd4dad7af129640cde3e0a6c8e4b926c67e96ce8c390f65b89c561b2f3fe701082780c479387c0ca4079c829ec80492444a29c4ed11ffa
   languageName: node
   linkType: hard
 
@@ -7217,9 +7217,9 @@ __metadata:
   linkType: hard
 
 "@types/aws-lambda@npm:^8.10.83":
-  version: 8.10.83
-  resolution: "@types/aws-lambda@npm:8.10.83"
-  checksum: 5d13dd0e630db27a941dd53fa6a0d2a45c8e1d43ad945b6a629d73e410d3e4aaf99cd4eea85843b4b877b00f2a9e9eef8002b9fcd18b7f563cc657ca7bac658c
+  version: 8.10.84
+  resolution: "@types/aws-lambda@npm:8.10.84"
+  checksum: c4013fd6f1a10f3856dbdde839009dbfba93d2157f61ea38eccfa74dac0ea96f16da8044c473a0cb442d5dce148a22f3219d993bf41be26c470d398440ca9151
   languageName: node
   linkType: hard
 
@@ -8905,7 +8905,6 @@ __metadata:
     "@babel/preset-env": ^7.5.5
     "@babel/preset-typescript": ^7.8.3
     "@babel/runtime": ^7.5.5
-    "@webiny/api-page-builder": ^5.15.0
     "@webiny/api-page-builder-import-export": ^5.14.0
     "@webiny/api-security": ^5.15.0
     "@webiny/api-tenancy": ^5.15.0
@@ -8914,15 +8913,12 @@ __metadata:
     "@webiny/error": ^5.15.0
     "@webiny/handler": ^5.15.0
     "@webiny/handler-aws": ^5.15.0
-    "@webiny/handler-db": ^5.15.0
     "@webiny/handler-graphql": ^5.15.0
     "@webiny/project-utils": ^5.15.0
-    dataloader: ^2.0.0
     dynamodb-toolbox: ^0.3.4
     jest: ^26.6.3
     jest-dynalite: ^3.2.0
     jest-environment-node: ^27.0.6
-    lodash: ^4.17.21
     rimraf: ^3.0.2
     ttypescript: ^1.5.12
     typescript: ^4.1.3
@@ -8948,11 +8944,13 @@ __metadata:
     "@webiny/api-file-manager-ddb-es": ^5.14.0
     "@webiny/api-i18n-ddb": ^5.14.0
     "@webiny/api-page-builder": ^5.14.0
+    "@webiny/api-security": ^5.15.0
     "@webiny/cli": ^5.14.0
     "@webiny/db": ^5.14.0
     "@webiny/error": ^5.14.0
     "@webiny/handler": ^5.14.0
     "@webiny/handler-args": ^5.14.0
+    "@webiny/handler-aws": ^5.15.0
     "@webiny/handler-graphql": ^5.14.0
     "@webiny/project-utils": ^5.14.0
     "@webiny/validation": ^5.14.0
@@ -11900,6 +11898,7 @@ __metadata:
     "@webiny/api-i18n-ddb": ^5.14.0
     "@webiny/api-page-builder": ^5.14.0
     "@webiny/api-page-builder-import-export": ^5.14.0
+    "@webiny/api-page-builder-import-export-so-ddb": ^5.15.0
     "@webiny/api-page-builder-so-ddb-es": ^5.15.0
     "@webiny/api-security": ^5.14.0
     "@webiny/api-security-admin-users": ^5.14.0
@@ -11929,6 +11928,7 @@ __metadata:
     "@webiny/api-i18n-ddb": ^5.14.0
     "@webiny/api-page-builder": ^5.14.0
     "@webiny/api-page-builder-import-export": ^5.14.0
+    "@webiny/api-page-builder-import-export-so-ddb": ^5.15.0
     "@webiny/api-page-builder-so-ddb-es": ^5.15.0
     "@webiny/api-security": ^5.14.0
     "@webiny/api-security-admin-users": ^5.14.0
@@ -11973,6 +11973,7 @@ __metadata:
     "@webiny/api-i18n-ddb": ^5.14.0
     "@webiny/api-page-builder": ^5.14.0
     "@webiny/api-page-builder-import-export": ^5.14.0
+    "@webiny/api-page-builder-import-export-so-ddb": ^5.15.0
     "@webiny/api-page-builder-so-ddb-es": ^5.15.0
     "@webiny/api-security": ^5.14.0
     "@webiny/api-security-admin-users": ^5.14.0
@@ -12002,6 +12003,7 @@ __metadata:
     "@webiny/api-i18n-ddb": ^5.14.0
     "@webiny/api-page-builder": ^5.14.0
     "@webiny/api-page-builder-import-export": ^5.14.0
+    "@webiny/api-page-builder-import-export-so-ddb": ^5.15.0
     "@webiny/api-page-builder-so-ddb-es": ^5.15.0
     "@webiny/api-security": ^5.14.0
     "@webiny/api-security-admin-users": ^5.14.0
@@ -12769,8 +12771,8 @@ __metadata:
   linkType: hard
 
 "aws-sdk@npm:^2.0.0, aws-sdk@npm:^2.539.0":
-  version: 2.1004.0
-  resolution: "aws-sdk@npm:2.1004.0"
+  version: 2.1005.0
+  resolution: "aws-sdk@npm:2.1005.0"
   dependencies:
     buffer: 4.9.2
     events: 1.1.1
@@ -12781,7 +12783,7 @@ __metadata:
     url: 0.10.3
     uuid: 3.3.2
     xml2js: 0.4.19
-  checksum: d3df024691a5968aa409e53c6efc2f76d1ca775e9d2ae46116388113c8667ce93cd6ec15ab3d3d0edeb3e56b58caf5ea5975db1610904b14a97411c221ea6db5
+  checksum: 765dce76ea6969c1eade46127fe1ed6ccde813a2aaf6d267d286ed4183c14d40e1f7c2ae50a939b9ad453e78efe0628d5fc34d9bb0e6f0564299105b82d9f73d
   languageName: node
   linkType: hard
 
@@ -17969,9 +17971,9 @@ __metadata:
   linkType: hard
 
 "electron-to-chromium@npm:^1.3.247, electron-to-chromium@npm:^1.3.378, electron-to-chromium@npm:^1.3.857":
-  version: 1.3.864
-  resolution: "electron-to-chromium@npm:1.3.864"
-  checksum: a3405aa5d1ce5af0da9b2c5fff9da9aeaa49d9aafc2a3046a7d448e438ef02a7ed10625a10b2eb6b6c3452d70f75f9b28c9ea3603f74b29cbdcdacd984927f69
+  version: 1.3.866
+  resolution: "electron-to-chromium@npm:1.3.866"
+  checksum: 03b4cf46baf631d9022d7d2f1c058899152941a7d3b3e9df02c2fc48d2eb52362637337b3e2e793a533fa30ed9ec844b4a1d56a55c421d64e39cf8080b980d52
   languageName: node
   linkType: hard
 
@@ -18508,12 +18510,13 @@ __metadata:
   linkType: hard
 
 "eslint-module-utils@npm:^2.6.2":
-  version: 2.6.2
-  resolution: "eslint-module-utils@npm:2.6.2"
+  version: 2.7.0
+  resolution: "eslint-module-utils@npm:2.7.0"
   dependencies:
     debug: ^3.2.7
+    find-up: ^2.1.0
     pkg-dir: ^2.0.0
-  checksum: 814591f494e4f4b04c1af0fde2a679e7a7664a5feb51175e02ba96d671e34ec60cb1835d174508eb81c07a6c92c243f84c6349f4169b3bec1a8dbdd36a0934f3
+  checksum: 98f284dee995ed3e12a7ea61525ad421abf1ec6483182555382c29d087890d6e79e8cad15edd189e3389e76e593098105d38435990e1fa4e6cb855869c79980a
   languageName: node
   linkType: hard
 
@@ -23440,9 +23443,9 @@ fsevents@^1.2.7:
   linkType: hard
 
 "istanbul-lib-coverage@npm:^3.0.0, istanbul-lib-coverage@npm:^3.0.1":
-  version: 3.0.1
-  resolution: "istanbul-lib-coverage@npm:3.0.1"
-  checksum: abb09e725179b60fd76208b10e467ec0796f8a0ee4c9f5a9250b2894d873997346907951e70b7fe1162cd609f9e1da62d54243d671b5b5c8083440f8f93cd050
+  version: 3.0.2
+  resolution: "istanbul-lib-coverage@npm:3.0.2"
+  checksum: 22b36d106fb7f85ce22a1a52c335e160b37c1dbf8d95e68eb9564c60c7b86fcd2f752cb53abb39900e284eb7a7ef4285d53b5d50c59d66182114f3013505a011
   languageName: node
   linkType: hard
 
@@ -23470,23 +23473,23 @@ fsevents@^1.2.7:
   linkType: hard
 
 "istanbul-lib-source-maps@npm:^4.0.0":
-  version: 4.0.0
-  resolution: "istanbul-lib-source-maps@npm:4.0.0"
+  version: 4.0.1
+  resolution: "istanbul-lib-source-maps@npm:4.0.1"
   dependencies:
     debug: ^4.1.1
     istanbul-lib-coverage: ^3.0.0
     source-map: ^0.6.1
-  checksum: 292bfb4083e5f8783cdf829a7686b1a377d0c6c2119d4343c8478e948b38146c4827cddc7eee9f57605acd63c291376d67e4a84163d37c5fc78ad0f27f7e2621
+  checksum: 21ad3df45db4b81852b662b8d4161f6446cd250c1ddc70ef96a585e2e85c26ed7cd9c2a396a71533cfb981d1a645508bc9618cae431e55d01a0628e7dec62ef2
   languageName: node
   linkType: hard
 
 "istanbul-reports@npm:^3.0.2":
-  version: 3.0.3
-  resolution: "istanbul-reports@npm:3.0.3"
+  version: 3.0.4
+  resolution: "istanbul-reports@npm:3.0.4"
   dependencies:
     html-escaper: ^2.0.0
     istanbul-lib-report: ^3.0.0
-  checksum: 56b54e82ac2121ecb79664924eec2987494ef7b19333d686d6b72686ab411172e9c93f8d27d8be7e15ee468de25749f8b1b6b093a73697f443751795954212aa
+  checksum: c42200cc9785b0b216769aa31245374bc7d2b9ae4daeca14f7b5a17d057dc4d3fa9ce842eb8ce41737e728a0ebfaee611955dde1b11e7ad1ba78564de7314f81
   languageName: node
   linkType: hard
 
