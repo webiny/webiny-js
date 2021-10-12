@@ -19,6 +19,7 @@
     "@webiny/app-i18n": "^5.15.0",
     "@webiny/app-i18n-content": "^5.15.0",
     "@webiny/app-page-builder": "^5.15.0",
+    "@webiny/app-page-builder-elements": "^5.15.0",
     "@webiny/app-plugin-admin-welcome-screen": "^5.15.0",
     "@webiny/app-security": "^5.15.0",
     "@webiny/app-security-admin-users": "^5.15.0",
