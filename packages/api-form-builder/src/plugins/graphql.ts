@@ -1,6 +1,6 @@
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
 import { ErrorResponse, Response } from "@webiny/handler-graphql";
-import { FormBuilderContext } from "../types";
+import { FormBuilderContext } from "~/types";
 
 const emptyResolver = () => ({});
 
@@ -62,7 +62,7 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                     }
 
                     try {
-                        return formBuilder.system.getVersion();
+                        return formBuilder.getSystemVersion();
                     } catch (e) {
                         return new ErrorResponse({
                             code: "FORM_BUILDER_ERROR",
@@ -75,7 +75,7 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
             FbMutation: {
                 install: async (root, args, context) => {
                     try {
-                        await context.formBuilder.system.install({ domain: args.domain });
+                        await context.formBuilder.installSystem({ domain: args.domain });
 
                         return new Response(true);
                     } catch (e) {
@@ -88,7 +88,7 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                 },
                 upgrade: async (root, args, context) => {
                     try {
-                        await context.formBuilder.system.upgrade(args.version as string);
+                        await context.formBuilder.upgradeSystem(args.version as string);
 
                         return new Response(true);
                     } catch (e) {

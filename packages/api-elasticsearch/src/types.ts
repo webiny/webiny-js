@@ -45,9 +45,7 @@ export type ElasticsearchQueryOperator =
  * @category Plugin
  * @category Elasticsearch
  */
-export interface ElasticsearchQueryBuilderArgsPlugin<
-    T extends ContextInterface = ContextInterface
-> {
+export interface ElasticsearchQueryBuilderArgsPlugin {
     /**
      * A full path to the field. Including the ".keyword" if it is added.
      */
@@ -64,20 +62,4 @@ export interface ElasticsearchQueryBuilderArgsPlugin<
      * Is path containing the ".keyword"
      */
     keyword: boolean;
-    /**
-     * Context we are working in.
-     */
-    context: T;
-}
-
-/**
- * Definition for the ElasticsearchQueryModifierPlugin parameters.
- */
-export interface ElasticsearchQueryModifierPluginParams<
-    T extends ContextInterface = ContextInterface
-> {
-    /**
-     * Context we are working in.
-     */
-    context: T;
 }

@@ -3,6 +3,73 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.15.0](https://github.com/webiny/webiny-js/compare/v5.15.0-beta.3...v5.15.0) (2021-09-30)
+
+**Note:** Version bump only for package @webiny/cli-plugin-scaffold-full-stack-app
+
+
+
+
+
+# [5.15.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.15.0-beta.2...v5.15.0-beta.3) (2021-09-30)
+
+**Note:** Version bump only for package @webiny/cli-plugin-scaffold-full-stack-app
+
+
+
+
+
+# [5.15.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.15.0-beta.1...v5.15.0-beta.2) (2021-09-29)
+
+**Note:** Version bump only for package @webiny/cli-plugin-scaffold-full-stack-app
+
+
+
+
+
+# [5.15.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.15.0-beta.0...v5.15.0-beta.1) (2021-09-28)
+
+
+### Bug Fixes
+
+* replace {dev} with dev ([91c53e4](https://github.com/webiny/webiny-js/commit/91c53e43ac74d9fa535caf6fc67eed974b4edfb0))
+
+
+
+
+
+# [5.15.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.14.0...v5.15.0-beta.0) (2021-09-16)
+
+
+### Bug Fixes
+
+* add `REACT_APP_API_URL` ([61c9e32](https://github.com/webiny/webiny-js/commit/61c9e32c57c32f6e9519dc93b64b074f67b8f138))
+* replace `graphqlApiUrl` with `apiUrl` ([d16f399](https://github.com/webiny/webiny-js/commit/d16f39924e457498b11020720f6640f350e6c559))
+
+
+
+
+
+# [5.14.0](https://github.com/webiny/webiny-js/compare/v5.14.0-beta.0...v5.14.0) (2021-08-30)
+
+**Note:** Version bump only for package @webiny/cli-plugin-scaffold-full-stack-app
+
+
+
+
+
+# [5.14.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.13.0...v5.14.0-beta.0) (2021-08-26)
+
+
+### Bug Fixes
+
+* replace `project-applications-path` correctly ([5dad538](https://github.com/webiny/webiny-js/commit/5dad538793f448613a05c000b4707d2fb806ddd2))
+* run prettier ([75a424c](https://github.com/webiny/webiny-js/commit/75a424c0e6a1d2551a018ec32e9f57168460fafb))
+
+
+
+
+
 # [5.13.0](https://github.com/webiny/webiny-js/compare/v5.13.0-beta.4...v5.13.0) (2021-08-18)
 
 

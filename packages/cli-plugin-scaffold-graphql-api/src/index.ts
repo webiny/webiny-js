@@ -169,10 +169,12 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 const replacements = [
                     {
                         find: "PATH",
-                        replaceWith: path.relative(
-                            path.join(context.project.root, input.path, "code", "graphql"),
-                            context.project.root
-                        )
+                        replaceWith: path
+                            .relative(
+                                path.join(context.project.root, input.path, "code", "graphql"),
+                                context.project.root
+                            )
+                            .replace(/\\/g, "/")
                     }
                 ];
                 replaceInPath(p, replacements);
@@ -184,10 +186,12 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 const replacements = [
                     {
                         find: "PATH",
-                        replaceWith: path.relative(
-                            path.join(context.project.root, input.path, "code", "graphql"),
-                            context.project.root
-                        )
+                        replaceWith: path
+                            .relative(
+                                path.join(context.project.root, input.path, "code", "graphql"),
+                                context.project.root
+                            )
+                            .replace(/\\/g, "/")
                     }
                 ];
                 replaceInPath(p, replacements);
@@ -217,7 +221,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
 
             // Add package to workspaces.
             const rootPackageJsonPath = path.join(context.project.root, "package.json");
-            const pathToAdd = `${input.path}/code/graphql`;
+            const pathToAdd = `${input.path}/code/graphql`.replace(/\\/g, "/");
             await addWorkspaceToRootPackageJson(rootPackageJsonPath, pathToAdd);
 
             ora.stopAndPersist({
@@ -314,7 +318,9 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
 
             if (deploy) {
                 console.log(
-                    `Running ${chalk.green(`yarn webiny deploy ${input.path}`)} command...`
+                    `Running ${chalk.green(
+                        `yarn webiny deploy ${input.path} --env dev`
+                    )} command...`
                 );
                 console.log();
                 await deployGraphQLAPI(input.path, "dev", input);
@@ -339,7 +345,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 console.log(chalk.bold("Next Steps"));
                 console.log(
                     `‣ open your GraphQL API with a GraphQL client, via the following URL:\n  ${chalk.green(
-                        `[POST] ${stackOutput.graphqlApiUrl}`
+                        `[POST] ${stackOutput.apiUrl}/graphql`
                     )}`
                 );
             }

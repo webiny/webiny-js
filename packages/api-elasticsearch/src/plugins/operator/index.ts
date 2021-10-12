@@ -3,6 +3,7 @@ export * from "./contains";
 export * from "./equal";
 export * from "./gt";
 export * from "./gte";
+export * from "./andIn";
 export * from "./in";
 export * from "./lt";
 export * from "./lte";

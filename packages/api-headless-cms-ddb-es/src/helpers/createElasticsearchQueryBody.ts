@@ -20,9 +20,10 @@ import {
     ElasticsearchBoolQueryConfig
 } from "@webiny/api-elasticsearch/types";
 import { decodeCursor } from "@webiny/api-elasticsearch/cursors";
-import { ElasticsearchFieldPlugin } from "@webiny/api-elasticsearch/plugins/definition/ElasticsearchFieldPlugin";
 import { createSort } from "@webiny/api-elasticsearch/sort";
 import { createModelFields, ModelField, ModelFields } from "./fields";
+import { CmsEntryElasticsearchFieldPlugin } from "~/plugins/CmsEntryElasticsearchFieldPlugin";
+import { parseWhereKey } from "@webiny/api-elasticsearch/where";
 
 interface CreateElasticsearchParams {
     context: CmsContext;
@@ -52,25 +53,6 @@ interface CreateElasticsearchQueryArgs {
 const specialFields = ["published", "latest"];
 const noKeywordFields = ["date", "number", "boolean"];
 
-const parseWhereKeyRegExp = new RegExp(/^([a-zA-Z0-9]+)(_[a-zA-Z0-9_]+)?$/);
-
-const parseWhereKey = (key: string) => {
-    const match = key.match(parseWhereKeyRegExp);
-
-    if (!match) {
-        throw new Error(`It is not possible to search by key "${key}"`);
-    }
-
-    const [, field, operation = "eq"] = match;
-    const op = operation.match(/^_/) ? operation.substr(1) : operation;
-
-    if (!field.match(/^([a-zA-Z]+)$/)) {
-        throw new Error(`Cannot filter by "${field}".`);
-    }
-
-    return { field, op };
-};
-
 const createElasticsearchSortParams = (args: CreateElasticsearchSortParams): esSort => {
     const { context, sort, modelFields, parentPath, searchPlugins } = args;
 
@@ -78,15 +60,16 @@ const createElasticsearchSortParams = (args: CreateElasticsearchSortParams): esS
         return undefined;
     }
 
-    const sortPlugins = Object.values(modelFields).reduce((plugins, modelField) => {
+    const sortPlugins: Record<string, CmsEntryElasticsearchFieldPlugin> = Object.values(
+        modelFields
+    ).reduce((plugins, modelField) => {
         const searchPlugin = searchPlugins[modelField.type];
 
-        plugins[modelField.field.fieldId] = new ElasticsearchFieldPlugin({
+        plugins[modelField.field.fieldId] = new CmsEntryElasticsearchFieldPlugin({
             unmappedType: modelField.unmappedType,
             keyword: hasKeyword(modelField),
             sortable: modelField.isSortable,
             searchable: modelField.isSearchable,
-            entity: "ContentElasticsearchEntry",
             field: modelField.field.fieldId,
             path: createFieldPath({
                 context,
@@ -99,8 +82,7 @@ const createElasticsearchSortParams = (args: CreateElasticsearchSortParams): esS
     }, {});
 
     return createSort({
-        context,
-        plugins: sortPlugins,
+        fieldPlugins: sortPlugins,
         sort
     });
 };
@@ -249,7 +231,7 @@ const execElasticsearchBuildQueryPlugins = (
         if (where[key] === undefined) {
             continue;
         }
-        const { field, op } = parseWhereKey(key);
+        const { field, operator } = parseWhereKey(key);
         const modelField = modelFields[field];
 
         if (!modelField) {
@@ -259,10 +241,10 @@ const execElasticsearchBuildQueryPlugins = (
         if (!isSearchable) {
             throw new WebinyError(`Field "${field}" is not searchable.`);
         }
-        const plugin = operatorPlugins[op];
+        const plugin = operatorPlugins[operator];
         if (!plugin) {
             throw new WebinyError("Operator plugin missing.", "PLUGIN_MISSING", {
-                operator: op
+                operator
             });
         }
         const fieldSearchPlugin = searchPlugins[modelField.type];
@@ -284,7 +266,6 @@ const execElasticsearchBuildQueryPlugins = (
             basePath: fieldPath,
             path: keyword ? `${fieldPath}.keyword` : fieldPath,
             value,
-            context,
             keyword
         });
     }

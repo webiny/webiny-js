@@ -2,6 +2,9 @@
 export default {
     name: "webiny-js",
     cli: {
+        // No need to track anything when developing Webiny.
+        telemetry: false,
+
         plugins: async () => {
             /**
              * In webiny-js repo, we need to handle cases when packages are not yet built.

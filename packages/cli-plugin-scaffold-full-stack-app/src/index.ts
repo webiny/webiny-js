@@ -80,7 +80,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
             ];
         },
         generate: async options => {
-            const { input, context, inquirer } = options;
+            const { input, context, inquirer, wait } = options;
 
             const appPath = path.join(input.path, "/app");
             const apiPath = path.join(input.path, "/api");
@@ -139,6 +139,15 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
 
             const templateFolderPath = path.join(__dirname, "templates", "essentials");
             await ncp(templateFolderPath, appPath);
+
+            await wait(500);
+
+            // Replace generic "TargetDataModel" with received "dataModelName" argument.
+            const codeReplacements = [
+                { find: "project-applications-path", replaceWith: input.path }
+            ];
+
+            replaceInPath(path.join(appPath, "code", "webiny.config.ts"), codeReplacements);
         },
         onSuccess: async options => {
             const { input, inquirer, context, wait } = options;
@@ -203,8 +212,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                         replaceWith: Case.constant(dataModelName.singular)
                     },
                     { find: "target-data-model", replaceWith: Case.kebab(dataModelName.singular) },
-                    { find: "Target Data Model", replaceWith: Case.title(dataModelName.singular) },
-                    { find: "project-applications-path", replaceWith: input.path }
+                    { find: "Target Data Model", replaceWith: Case.title(dataModelName.singular) }
                 ];
 
                 replaceInPath(path.join(appPath, "code", "**/*.ts"), codeReplacements);
@@ -224,7 +232,9 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
 
             if (deploy) {
                 console.log();
-                console.log(`Running ${chalk.green(`yarn webiny deploy ${apiPath}`)} command...`);
+                console.log(
+                    `Running ${chalk.green(`yarn webiny deploy ${apiPath} --env dev`)} command...`
+                );
                 console.log();
                 await deployGraphQLAPI(apiPath, "dev", input);
             }

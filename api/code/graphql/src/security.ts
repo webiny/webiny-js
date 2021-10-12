@@ -54,7 +54,7 @@ export default () => [
 
     /**
      * Cognito authentication plugin.
-     * This plugin will verify the authorization token against a provided User Pool.
+     * This plugin will verify the JWT token against a provided User Pool.
      */
     cognitoAuthentication({
         region: process.env.COGNITO_REGION,

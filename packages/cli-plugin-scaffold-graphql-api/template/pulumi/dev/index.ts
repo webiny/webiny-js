@@ -1,4 +1,3 @@
-import * as pulumi from "@pulumi/pulumi";
 import DynamoDB from "./dynamoDb";
 import Graphql from "./graphql";
 import ApiGateway from "./apiGateway";
@@ -46,7 +45,8 @@ export default () => {
 
     return {
         region: process.env.AWS_REGION,
-        graphqlApiUrl: pulumi.interpolate`https://${cloudfront.cloudfront.domainName}/graphql`,
+        apiUrl: cloudfront.getDistributionUrl(),
+        graphqlApiUrl: cloudfront.getDistributionUrl("/graphql"),
         dynamoDbTable: dynamoDb.table.name
     };
 };

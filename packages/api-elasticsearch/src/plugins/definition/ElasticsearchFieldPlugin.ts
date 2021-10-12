@@ -1,14 +1,18 @@
 import { Plugin } from "@webiny/plugins";
 import { FieldSortOptions, SortOrder } from "elastic-ts";
-import { ContextInterface } from "@webiny/handler/types";
 
 export type UnmappedTypes = "date" | "long" | string;
 
+const keywordLessUnmappedType = ["date", "long"];
+
+const unmappedTypeHasKeyword = (type: string): boolean => {
+    if (keywordLessUnmappedType.includes(type)) {
+        return false;
+    }
+    return true;
+};
+
 export interface ToSearchValueParams {
-    /**
-     * Some variable that has a ContextInterface as a base.
-     */
-    context: ContextInterface;
     /**
      * The value to transform.
      */
@@ -23,10 +27,6 @@ export interface ToSearchValueParams {
     basePath: string;
 }
 export interface Params {
-    /**
-     * Which entity is this plugin for.
-     */
-    entity: string;
     /**
      * Which field is this plugin for.
      */
@@ -60,21 +60,15 @@ export interface Params {
     toSearchValue?: (params: ToSearchValueParams) => any;
 }
 
-export class ElasticsearchFieldPlugin extends Plugin {
-    public static readonly type = "elasticsearch.fieldDefinition";
-    public static readonly ALL = "*";
+export abstract class ElasticsearchFieldPlugin extends Plugin {
+    public static readonly ALL: string = "*";
 
-    private readonly _entity: string;
     private readonly _field: string;
     private readonly _path: string;
     private readonly _keyword: boolean;
     private readonly _unmappedType: string;
     private readonly _sortable: boolean;
     private readonly _searchable: boolean;
-
-    public get entity(): string {
-        return this._entity;
-    }
 
     public get field(): string {
         return this._field;
@@ -102,11 +96,13 @@ export class ElasticsearchFieldPlugin extends Plugin {
 
     constructor(params: Params) {
         super();
-        this._entity = params.entity;
         this._field = params.field;
         this._path = params.path || params.field;
         this._keyword = params.keyword === undefined ? true : params.keyword;
         this._unmappedType = params.unmappedType;
+        if (unmappedTypeHasKeyword(params.unmappedType) === false) {
+            this._keyword = false;
+        }
         this._sortable = params.sortable === undefined ? true : params.sortable;
         this._searchable = params.searchable === undefined ? true : params.searchable;
     }

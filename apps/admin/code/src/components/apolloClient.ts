@@ -1,7 +1,7 @@
 import ApolloClient from "apollo-client";
 import { ApolloLink } from "apollo-link";
 import { BatchHttpLink } from "apollo-link-batch-http";
-import { InMemoryCache } from "apollo-cache-inmemory";
+import { InMemoryCache } from "@webiny/app/apollo-client/InMemoryCache";
 import { plugins } from "@webiny/plugins";
 import { ApolloDynamicLink } from "@webiny/app/plugins/ApolloDynamicLink";
 import { ApolloCacheObjectIdPlugin } from "@webiny/app/plugins/ApolloCacheObjectIdPlugin";

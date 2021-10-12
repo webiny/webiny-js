@@ -1,10 +1,10 @@
 import uniqid from "uniqid";
 
 const sort = {
-    NEWEST_TO_OLDEST: "createdOn:desc",
-    OLDEST_TO_NEWEST: "createdOn:asc",
-    A_TO_Z: "title:asc",
-    Z_TO_A: "title:desc"
+    NEWEST_TO_OLDEST: "createdOn_DESC",
+    OLDEST_TO_NEWEST: "createdOn_ASC",
+    A_TO_Z: "title_ASC",
+    Z_TO_A: "title_DESC"
 };
 
 context("Menus Module", () => {

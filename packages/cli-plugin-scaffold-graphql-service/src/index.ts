@@ -155,64 +155,88 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
             await ncp(templateFolderPath, newCodePath);
 
             // Remove I18N and Security-related code if the GraphQL API doesn't support those.
-            // Support is being detected via `Context` type, defined withing the root types.ts file.
+            // Support is being detected via `Context` type, defined within the root types.ts file.
             const typesTsPath = findUp.sync("types.ts", { cwd: input.pluginsFolderPath });
             if (typesTsPath) {
                 const meta = getContextMeta(typesTsPath);
                 if (!meta.i18n) {
-                    // If I18NContext was not detected, comment out relevant I18N code.
-                    const codeReplacements = [
-                        {
-                            find: `const locale = this\\.context\\.i18nContent`,
-                            replaceWith: `// const locale = this.context.i18nContent`
-                        },
-                        {
-                            find: "base = `L#",
-                            replaceWith: "// base = `L#;"
-                        }
-                    ];
-
+                    // If I18NContext was not detected, remove relevant I18N code.
                     replaceInPath(
                         path.join(newCodePath, "/resolvers/TargetDataModelsResolver.ts"),
-                        codeReplacements
+                        {
+                            find: new RegExp(
+                                "\\/\\/ If our .*base = `L#\\${locale}#\\${base}`;",
+                                "s"
+                            ),
+                            replaceWith: ""
+                        }
                     );
                 }
 
                 if (!meta.security) {
                     {
-                        // If I18NContext was not detected, comment out relevant I18N code.
+                        // If SecurityContext was not detected, comment out relevant SecurityContext code.
                         const codeReplacements = [
                             {
-                                find: `import { SecurityIdentity } from`,
-                                replaceWith: `// import { SecurityIdentity } from`
+                                find: new RegExp('\\/\\/ If our GraphQL API.*\\/types";\\n', "s"),
+                                replaceWith: ""
                             },
                             {
-                                find: "createdBy: Pick<SecurityIdentity",
-                                replaceWith: "// createdBy: Pick<SecurityIdentity"
+                                find: new RegExp("createdBy: Pick<SecurityIdentity.*\\n"),
+                                replaceWith: ""
                             }
                         ];
                         replaceInPath(path.join(newCodePath, "/types.ts"), codeReplacements);
                     }
 
                     {
-                        // If I18NContext was not detected, comment out relevant I18N code.
+                        // If SecurityContext was not detected, comment out relevant SecurityContext code.
                         const codeReplacements = [
                             {
-                                find: `const { security } = this.context;`,
-                                replaceWith: `// const { security } = this.context;`
+                                find: new RegExp("\\/\\/ If our GraphQL API.*context;\\n", "s"),
+                                replaceWith: ""
                             },
                             {
-                                find: "const identity = await security.getIdentity",
-                                replaceWith: "// const identity = await security.getIdentity"
+                                find: new RegExp("const identity = await security.*?\\n"),
+                                replaceWith: ""
                             },
                             {
-                                find: new RegExp("createdBy: identity.*},", "gms"),
-                                replaceWith: "/* $& */"
+                                find: new RegExp("createdBy: identity && \\{.*\\},\\n", "s"),
+                                replaceWith: ""
                             }
                         ];
 
                         replaceInPath(
                             path.join(newCodePath, "/resolvers/TargetDataModelsMutation.ts"),
+                            codeReplacements
+                        );
+                    }
+
+                    {
+                        // If SecurityContext was not detected, comment out relevant SecurityContext code.
+                        const codeReplacements = [
+                            {
+                                find: new RegExp("type TargetDataModelCreatedBy {.*?}\\n", "s"),
+                                replaceWith: ""
+                            },
+                            {
+                                find: new RegExp("createdBy: TargetDataModelCreatedBy\\n"),
+                                replaceWith: ""
+                            }
+                        ];
+                        replaceInPath(path.join(newCodePath, "/typeDefs.ts"), codeReplacements);
+                    }
+
+                    {
+                        // If SecurityContext was not detected, comment out relevant SecurityContext code.
+                        const codeReplacements = [
+                            {
+                                find: new RegExp('createdBy: { type: "map" },\\n'),
+                                replaceWith: ""
+                            }
+                        ];
+                        replaceInPath(
+                            path.join(newCodePath, "/entities/TargetDataModel.ts"),
                             codeReplacements
                         );
                     }
@@ -313,7 +337,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
 
             console.log(
                 `‣ deploy the extended GraphQL API and continue developing by running the ${chalk.green(
-                    "yarn webiny watch api/code/graphql --env {dev}"
+                    "yarn webiny watch api/code/graphql --env dev"
                 )} command`
             );
 
