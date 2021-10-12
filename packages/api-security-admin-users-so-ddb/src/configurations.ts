@@ -9,7 +9,7 @@ interface Configurations {
 
 const configurations: Configurations = {
     db: () => ({
-        table: process.env.DB_TABLE_SECURITY,
+        table: process.env.DB_TABLE_SECURITY || process.env.DB_TABLE,
         keys: [
             {
                 primary: true,

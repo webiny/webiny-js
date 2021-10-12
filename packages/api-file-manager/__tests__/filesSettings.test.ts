@@ -15,8 +15,8 @@ describe("Files settings test", () => {
     });
 
     test("install File manager", async () => {
-        let [response] = await isInstalled({});
-        expect(response).toEqual({
+        const [isInstalledResponse] = await isInstalled({});
+        expect(isInstalledResponse).toEqual({
             data: {
                 fileManager: {
                     version: null
@@ -24,10 +24,10 @@ describe("Files settings test", () => {
             }
         });
 
-        [response] = await install({
+        const [installResponse] = await install({
             srcPrefix: "https://0c6fb883-webiny-latest-files.s3.amazonaws.com/"
         });
-        expect(response).toEqual({
+        expect(installResponse).toEqual({
             data: {
                 fileManager: {
                     install: {
@@ -38,8 +38,8 @@ describe("Files settings test", () => {
             }
         });
 
-        [response] = await isInstalled({});
-        expect(response).toEqual({
+        const [afterInstallIsInstalledResponse] = await isInstalled({});
+        expect(afterInstallIsInstalledResponse).toEqual({
             data: {
                 fileManager: {
                     version: expect.any(String)
@@ -65,8 +65,8 @@ describe("Files settings test", () => {
             }
         });
 
-        let [response] = await getSettings();
-        expect(response).toEqual({
+        const [getSettingsResponse] = await getSettings();
+        expect(getSettingsResponse).toEqual({
             data: {
                 fileManager: {
                     getSettings: {
@@ -80,8 +80,10 @@ describe("Files settings test", () => {
             }
         });
 
-        [response] = await updateSettings({ data: { uploadMinFileSize: -1111 } });
-        expect(response).toEqual({
+        const [updateInvalidMinFileSize] = await updateSettings({
+            data: { uploadMinFileSize: -1111 }
+        });
+        expect(updateInvalidMinFileSize).toEqual({
             data: {
                 fileManager: {
                     updateSettings: {
@@ -104,10 +106,10 @@ describe("Files settings test", () => {
             }
         });
 
-        [response] = await updateSettings({
+        const [updateMinFileSizeSettingsReponse] = await updateSettings({
             data: { uploadMinFileSize: 1024 }
         });
-        expect(response).toEqual({
+        expect(updateMinFileSizeSettingsReponse).toEqual({
             data: {
                 fileManager: {
                     updateSettings: {
@@ -121,8 +123,8 @@ describe("Files settings test", () => {
             }
         });
 
-        [response] = await getSettings({});
-        expect(response).toEqual({
+        const [getSettingsAfterUpdateResponse] = await getSettings({});
+        expect(getSettingsAfterUpdateResponse).toEqual({
             data: {
                 fileManager: {
                     getSettings: {

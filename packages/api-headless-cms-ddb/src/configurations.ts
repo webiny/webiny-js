@@ -20,7 +20,7 @@ interface Configurations {
 
 const configurations: Configurations = {
     db: () => ({
-        table: process.env.DB_TABLE_HEADLESS_CMS,
+        table: process.env.DB_TABLE_HEADLESS_CMS || process.env.DB_TABLE,
         keys: [
             {
                 primary: true,

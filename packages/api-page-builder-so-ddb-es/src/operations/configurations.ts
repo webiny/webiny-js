@@ -3,7 +3,7 @@ import { PbContext } from "@webiny/api-page-builder/graphql/types";
 
 export default {
     db: () => ({
-        table: process.env.DB_TABLE_PAGE_BUILDER,
+        table: process.env.DB_TABLE_PAGE_BUILDER || process.env.DB_TABLE,
         keys: [
             {
                 primary: true,

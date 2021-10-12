@@ -1,28 +1,24 @@
 import WebinyError from "@webiny/error";
 import { Plugin } from "@webiny/plugins";
-import { ContextInterface } from "@webiny/handler/types";
 import { Sort } from "elastic-ts";
 
-export interface ModifySortParams<T extends ContextInterface> {
-    context: T;
+export interface ModifySortParams {
     sort: Sort;
 }
 
-interface Callable<T extends ContextInterface> {
-    (params: ModifySortParams<T>): void;
+interface Callable {
+    (params: ModifySortParams): void;
 }
 
-export abstract class ElasticsearchSortModifierPlugin<
-    T extends ContextInterface = ContextInterface
-> extends Plugin {
-    private readonly callable?: Callable<T>;
+export abstract class ElasticsearchSortModifierPlugin extends Plugin {
+    private readonly callable?: Callable;
 
-    public constructor(callable?: Callable<T>) {
+    public constructor(callable?: Callable) {
         super();
         this.callable = callable;
     }
 
-    public modifySort(params: ModifySortParams<T>): void {
+    public modifySort(params: ModifySortParams): void {
         if (typeof this.callable !== "function") {
             throw new WebinyError(
                 `Missing modification for the sort.`,

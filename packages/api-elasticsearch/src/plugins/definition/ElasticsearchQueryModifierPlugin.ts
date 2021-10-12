@@ -1,29 +1,25 @@
 import WebinyError from "@webiny/error";
 import { Plugin } from "@webiny/plugins";
 import { ElasticsearchBoolQueryConfig } from "~/types";
-import { ContextInterface } from "@webiny/handler/types";
 
-export interface ModifyQueryParams<T extends ContextInterface> {
-    context: T;
+export interface ModifyQueryParams {
     query: ElasticsearchBoolQueryConfig;
     where: Record<string, any>;
 }
 
-interface Callable<T extends ContextInterface> {
-    (params: ModifyQueryParams<T>): void;
+interface Callable {
+    (params: ModifyQueryParams): void;
 }
 
-export abstract class ElasticsearchQueryModifierPlugin<
-    T extends ContextInterface = ContextInterface
-> extends Plugin {
-    private readonly callable?: Callable<T>;
+export abstract class ElasticsearchQueryModifierPlugin extends Plugin {
+    private readonly callable?: Callable;
 
-    public constructor(callable?: Callable<T>) {
+    public constructor(callable?: Callable) {
         super();
         this.callable = callable;
     }
 
-    public modifyQuery(params: ModifyQueryParams<T>): void {
+    public modifyQuery(params: ModifyQueryParams): void {
         if (typeof this.callable !== "function") {
             throw new WebinyError(
                 `Missing modification for the query.`,

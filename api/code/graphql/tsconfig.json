@@ -62,6 +62,9 @@
       "path": "../../../packages/api-form-builder"
     },
     {
+      "path": "../../../packages/api-form-builder-so-ddb-es"
+    },
+    {
       "path": "../../../packages/api-elasticsearch"
     },
     {
@@ -196,6 +199,11 @@
       "@webiny/api-form-builder": [
         "../../../packages/api-form-builder/src"
       ],
+      "@webiny/api-form-builder-so-ddb-es/*": [
+        "../../../packages/api-form-builder-so-ddb-es/src/*"
+      ],
+      "@webiny/api-form-builder-so-ddb-es": ["../../../packages/api-form-builder-so-ddb-es/src"],
+
       "@webiny/api-security/*": [
         "../../../packages/api-security/src/*"
       ],

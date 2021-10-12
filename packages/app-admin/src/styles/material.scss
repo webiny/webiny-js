@@ -1,3 +1,5 @@
+@use "~@material/theme/mixins" as themeMixins;
+
 // material variables
 $mdc-theme-primary: $webiny-theme-light-primary;
 $mdc-theme-on-primary: $webiny-theme-light-on-primary;
@@ -49,7 +51,7 @@ body.dark-theme {
   $mdc-theme-text-primary-on-background: $webiny-theme-dark-text-primary-on-background;
   $mdc-theme-text-hint-on-dark: $webiny-theme-dark-text-hint-on-dark;
 
-  @include mdc-theme-prop("on-primary", $webiny-theme-dark-text-primary-on-background);
+  @include themeMixins.mdc-theme-prop("on-primary", $webiny-theme-dark-text-primary-on-background);
 
   background-color: $mdc-theme-background;
 
@@ -67,6 +69,6 @@ body.dark-theme {
   --mdc-theme-text-hint-on-dark: #{$mdc-theme-text-hint-on-dark};
   --mdc-theme-caret-down: #{$webiny-theme-dark-caret-down};
 
-  @import "@material/textfield/mdc-text-field";
+  @import "~@material/textfield/mdc-text-field";
   @import "material-theme-assignments.scss";
 }

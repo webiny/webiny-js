@@ -1,12 +1,12 @@
 import useGqlHandler from "./useGqlHandler";
-import { PrerenderingPageMethodsPlugin, PrerenderingTracking } from "./mocks/prerendering";
+import { createPrerenderingHandlers, PrerenderingTracking } from "./mocks/prerendering";
 import { Menu, Page } from "~/types";
 
 describe("make sure that prerendering render and flush are running", () => {
     const tracking = new PrerenderingTracking();
 
     const handler = useGqlHandler({
-        plugins: [new PrerenderingPageMethodsPlugin(tracking)]
+        plugins: [createPrerenderingHandlers(tracking)]
     });
 
     beforeEach(() => {
@@ -85,7 +85,6 @@ describe("make sure that prerendering render and flush are running", () => {
         const page = await createPage();
 
         await publishPage(page);
-
         expect(tracking.getCount("render")).toEqual(2);
         expect(tracking.getCount("flush")).toEqual(0);
     });

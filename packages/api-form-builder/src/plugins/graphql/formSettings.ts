@@ -1,6 +1,6 @@
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
-import { ErrorResponse, NotFoundResponse, Response } from "@webiny/handler-graphql/responses";
-import { FormBuilderContext } from "../../types";
+import { ErrorResponse, Response } from "@webiny/handler-graphql/responses";
+import { FormBuilderContext } from "~/types";
 
 const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
     type: "graphql-schema",
@@ -45,10 +45,9 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
             FbQuery: {
                 async getSettings(_, args, { formBuilder }) {
                     try {
-                        const settings = await formBuilder.settings.getSettings();
-                        if (!settings) {
-                            return new NotFoundResponse(`"Form Builder" settings not found!`);
-                        }
+                        const settings = await formBuilder.getSettings({
+                            throwOnNotFound: true
+                        });
                         return new Response(settings);
                     } catch (err) {
                         return new ErrorResponse(err);
@@ -58,13 +57,7 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
             FbMutation: {
                 updateSettings: async (_, args, { formBuilder }) => {
                     try {
-                        const existingSettings = await formBuilder.settings.getSettings();
-
-                        if (!existingSettings) {
-                            return new NotFoundResponse(`"Form Builder" settings not found!`);
-                        }
-
-                        const settings = await formBuilder.settings.updateSettings(args.data);
+                        const settings = await formBuilder.updateSettings(args.data);
                         return new Response(settings);
                     } catch (err) {
                         return new ErrorResponse(err);

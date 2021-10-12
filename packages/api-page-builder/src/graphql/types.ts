@@ -4,6 +4,11 @@ import { SecurityContext, SecurityPermission } from "@webiny/api-security/types"
 import { TenancyContext } from "@webiny/api-tenancy/types";
 import { I18NContext } from "@webiny/api-i18n/types";
 import { ClientContext } from "@webiny/handler-client/types";
+import { Topic } from "@webiny/pubsub/types";
+import { Args as PsFlushParams } from "@webiny/api-prerendering-service/flush/types";
+import { Args as PsRenderParams } from "@webiny/api-prerendering-service/render/types";
+import { Args as PsQueueAddParams } from "@webiny/api-prerendering-service/queue/add/types";
+
 import {
     Category,
     CategoryStorageOperations,
@@ -17,7 +22,6 @@ import {
     System
 } from "~/types";
 import { PrerenderingServiceClientContext } from "@webiny/api-prerendering-service/client/types";
-import { FlushParams, RenderParams } from "~/plugins/PrerenderingPagePlugin";
 import { FileManagerContext } from "@webiny/api-file-manager/types";
 
 // CRUD types.
@@ -66,43 +70,27 @@ export interface PagesCrud {
      * @internal
      */
     storageOperations: PageStorageOperations;
-
     get<TPage extends Page = Page>(id: string, options?: GetPagesOptions): Promise<TPage>;
-
     listLatest<TPage extends Page = Page>(
         args: ListPagesParams,
         options?: ListLatestPagesOptions
     ): Promise<[TPage[], ListMeta]>;
-
     listPublished<TPage extends Page = Page>(args: ListPagesParams): Promise<[TPage[], ListMeta]>;
-
     listTags(args: { search: { query: string } }): Promise<string[]>;
-
     getPublishedById<TPage extends Page = Page>(args: {
         id: string;
         preview?: boolean;
     }): Promise<TPage>;
-
     getPublishedByPath<TPage extends Page = Page>(args: { path: string }): Promise<TPage>;
-
     listPageRevisions<TPage extends Page = Page>(id: string): Promise<TPage[]>;
-
     create<TPage extends Page = Page>(category: string): Promise<TPage>;
-
     createFrom<TPage extends Page = Page>(page: string): Promise<TPage>;
-
     update<TPage extends Page = Page>(id: string, data: Record<string, any>): Promise<TPage>;
-
     delete<TPage extends Page = Page>(id: string): Promise<[TPage, TPage]>;
-
     publish<TPage extends Page = Page>(id: string): Promise<TPage>;
-
     unpublish<TPage extends Page = Page>(id: string): Promise<TPage>;
-
     requestReview<TPage extends Page = Page>(id: string): Promise<TPage>;
-
     requestChanges<TPage extends Page = Page>(id: string): Promise<TPage>;
-
     prerendering: {
         render(args: RenderParams): Promise<void>;
         flush(args: FlushParams): Promise<void>;
@@ -112,22 +100,16 @@ export interface PagesCrud {
 export interface ListPageElementsParams {
     sort?: string[];
 }
-
 export interface PageElementsCrud {
     /**
      * To be used internally in our code.
      * @internal
      */
     storageOperations: PageElementStorageOperations;
-
     get(id: string): Promise<PageElement>;
-
     list(params?: ListPageElementsParams): Promise<PageElement[]>;
-
     create(data: Record<string, any>): Promise<PageElement>;
-
     update(id: string, data: Record<string, any>): Promise<PageElement>;
-
     delete(id: string): Promise<PageElement>;
 }
 
@@ -137,15 +119,10 @@ export interface CategoriesCrud {
      * @internal
      */
     storageOperations: CategoryStorageOperations;
-
     get(slug: string, options?: { auth: boolean }): Promise<Category>;
-
     list(): Promise<Category[]>;
-
     create(data: Record<string, any>): Promise<Category>;
-
     update(slug: string, data: Record<string, any>): Promise<Category>;
-
     delete(slug: string): Promise<Category>;
 }
 
@@ -163,17 +140,11 @@ export interface MenusCrud {
      * @internal
      */
     storageOperations: MenuStorageOperations;
-
     get(slug: string, options?: MenuGetOptions): Promise<Menu>;
-
     getPublic(slug: string): Promise<Menu>;
-
     list(params?: ListMenuParams): Promise<Menu[]>;
-
     create(data: Record<string, any>): Promise<Menu>;
-
     update(slug: string, data: Record<string, any>): Promise<Menu>;
-
     delete(slug: string): Promise<Menu>;
 }
 
@@ -198,13 +169,9 @@ export interface SettingsCrud {
 
 export interface SystemCrud {
     get: () => Promise<System>;
-
     getVersion(): Promise<string>;
-
     setVersion(version: string): Promise<void>;
-
     install(args: { name: string; insertDemoData: boolean }): Promise<void>;
-
     upgrade(version: string, data?: Record<string, any>): Promise<boolean>;
 }
 
@@ -224,6 +191,12 @@ export interface PbContext
         menus: MenusCrud;
         settings: SettingsCrud;
         system: SystemCrud;
+        setPrerenderingHandlers: (configuration: PrerenderingHandlers) => void;
+        getPrerenderingHandlers: () => PrerenderingHandlers;
+        onPageBeforeRender: Topic<PageBeforeRenderEvent>;
+        onPageAfterRender: Topic<PageAfterRenderEvent>;
+        onPageBeforeFlush: Topic<PageBeforeFlushEvent>;
+        onPageAfterFlush: Topic<PageAfterFlushEvent>;
     };
 }
 
@@ -256,4 +229,78 @@ export interface PageSecurityPermission extends PbSecurityPermission {
     // "p" - publish
     // "u" - unpublish
     pw: string;
+}
+
+// Page Builder lifecycle events.
+export interface PageBeforeRenderEvent extends Pick<RenderParams, "paths" | "tags"> {
+    args: {
+        render?: PsRenderParams[];
+        queue?: PsQueueAddParams[];
+    };
+}
+
+export interface PageAfterRenderEvent extends Pick<RenderParams, "paths" | "tags"> {
+    args: {
+        render?: PsRenderParams[];
+        queue?: PsQueueAddParams[];
+    };
+}
+
+export interface PageBeforeFlushEvent extends Pick<FlushParams, "paths" | "tags"> {
+    args: {
+        flush?: PsFlushParams[];
+        queue?: PsQueueAddParams[];
+    };
+}
+
+export interface PageAfterFlushEvent extends Pick<FlushParams, "paths" | "tags"> {
+    args: {
+        flush?: PsFlushParams[];
+        queue?: PsQueueAddParams[];
+    };
+}
+
+// Prerendering configuration.
+export interface Tag {
+    key: string;
+    value?: string;
+}
+
+export interface TagItem {
+    tag: Tag;
+    configuration?: {
+        meta?: Record<string, any>;
+        storage?: {
+            folder?: string;
+            name?: string;
+        };
+    };
+}
+
+export interface PathItem {
+    path: string;
+    configuration?: {
+        meta?: Record<string, any>;
+        storage?: {
+            folder?: string;
+            name?: string;
+        };
+    };
+}
+
+export interface RenderParams {
+    context: PbContext;
+    tags?: TagItem[];
+    paths?: PathItem[];
+}
+
+export interface FlushParams {
+    context: PbContext;
+    tags?: TagItem[];
+    paths?: PathItem[];
+}
+
+export interface PrerenderingHandlers {
+    render(args: RenderParams): Promise<void>;
+    flush(args: FlushParams): Promise<void>;
 }

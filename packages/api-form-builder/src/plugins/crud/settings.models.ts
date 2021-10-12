@@ -2,7 +2,6 @@ import { validation } from "@webiny/validation";
 import { withFields, string, boolean, fields } from "@commodo/fields";
 
 export const CreateDataModel = withFields({
-    installed: boolean({ value: false }),
     domain: string(),
     reCaptcha: fields({
         value: {},
