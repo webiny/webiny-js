@@ -17,6 +17,8 @@
     "@webiny/api-headless-cms-ddb-es": "latest",
     "@webiny/api-page-builder": "latest",
     "@webiny/api-page-builder-so-ddb-es": "latest",
+    "@webiny/api-page-builder-import-export": "latest",
+    "@webiny/api-page-builder-import-export-so-ddb": "latest",
     "@webiny/api-elasticsearch": "latest",
     "@webiny/api-prerendering-service": "latest",
     "@webiny/api-security": "latest",
