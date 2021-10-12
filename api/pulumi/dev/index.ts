@@ -65,7 +65,6 @@ export default () => {
             PRERENDERING_QUEUE_PROCESS_HANDLER: prerenderingService.functions.queue.process.arn,
             S3_BUCKET: fileManager.bucket.id,
             IMPORT_PAGES_CREATE_HANDLER: pageBuilder.functions.importPages.create.arn,
-            IMPORT_PAGES_PROCESS_HANDLER: pageBuilder.functions.importPages.process.arn,
             EXPORT_PAGES_PROCESS_HANDLER: pageBuilder.functions.exportPages.process.arn,
             DEBUG,
             WEBINY_LOGS_FORWARD_URL
