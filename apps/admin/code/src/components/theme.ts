@@ -4,7 +4,7 @@ const colors = {
     text: "#231010",
     primary: "#fa5723",
     secondary: "purple",
-    tertiary: "cyan",
+    tertiary: "cyan"
 };
 
 const fonts = {
