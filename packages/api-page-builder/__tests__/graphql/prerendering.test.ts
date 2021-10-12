@@ -85,7 +85,7 @@ describe("make sure that prerendering render and flush are running", () => {
         const page = await createPage();
 
         await publishPage(page);
-        expect(tracking.getCount("render")).toEqual(2);
+        expect(tracking.getCount("render")).toEqual(1);
         expect(tracking.getCount("flush")).toEqual(0);
     });
 
@@ -95,7 +95,7 @@ describe("make sure that prerendering render and flush are running", () => {
         tracking.reset();
 
         await unpublishPage(page);
-        expect(tracking.getCount("render")).toEqual(1);
+        expect(tracking.getCount("render")).toEqual(0);
         expect(tracking.getCount("flush")).toEqual(1);
     });
 
