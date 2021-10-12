@@ -123,7 +123,11 @@ module.exports = function (webpackEnv, { paths, babelCustomizer }) {
                             autoprefixer: {
                                 flexbox: "no-2009"
                             },
-                            stage: 3
+                            stage: 3,
+                            // Necessary for "@material" to work with dart implementation of sass
+                            features: {
+                                "custom-properties": false
+                            }
                         }),
                         // Adds PostCSS Normalize as the reset css with default options,
                         // so that it honors browserslist config in package.json
