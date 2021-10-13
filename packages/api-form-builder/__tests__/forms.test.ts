@@ -189,7 +189,7 @@ describe('Form Builder "Form" Test', () => {
         expect(revisions[0].version).toEqual(2);
     });
 
-    test("should delete a form and all of its revisions from DB and Elastic", async () => {
+    test("should delete a form and all of its revisions", async () => {
         const [create] = await createForm({ data: { name: "contact-us" } });
         const { id } = create.data.formBuilder.createForm.data;
 
@@ -202,7 +202,12 @@ describe('Form Builder "Form" Test', () => {
 
         await until(
             () => listForms().then(([data]) => data),
-            ({ data }) => data.formBuilder.listForms.data.length === 0
+            ({ data }) => data.formBuilder.listForms.data.length === 0,
+            {
+                name: "list after delete form",
+                wait: 500,
+                tries: 20
+            }
         );
 
         const [get] = await getForm({ revision: id });
@@ -291,16 +296,36 @@ describe('Form Builder "Form" Test', () => {
         await publishRevision({ revision: id });
 
         // Create form submissions
-        await createFormSubmission({
+        const [createSubmission1Response] = await createFormSubmission({
             revision: id,
             data: formSubmissionDataA.data,
             meta: formSubmissionDataA.meta
         });
+        expect(createSubmission1Response).toMatchObject({
+            data: {
+                formBuilder: {
+                    createFormSubmission: {
+                        data: expect.any(Object),
+                        error: null
+                    }
+                }
+            }
+        });
 
-        await createFormSubmission({
+        const [createSubmission2Response] = await createFormSubmission({
             revision: id,
             data: formSubmissionDataB.data,
             meta: formSubmissionDataB.meta
+        });
+        expect(createSubmission2Response).toMatchObject({
+            data: {
+                formBuilder: {
+                    createFormSubmission: {
+                        data: expect.any(Object),
+                        error: null
+                    }
+                }
+            }
         });
 
         // Wait until propagated to Elastic...
@@ -322,6 +347,17 @@ describe('Form Builder "Form" Test', () => {
 
         // Export submissions
         const [exportCSV] = await exportFormSubmissions({ form: id });
+        expect(exportCSV).toMatchObject({
+            data: {
+                formBuilder: {
+                    exportFormSubmissions: {
+                        data: expect.any(Object),
+                        error: null
+                    }
+                }
+            }
+        });
+
         const { data } = exportCSV.data.formBuilder.exportFormSubmissions;
         expect(data).toMatchObject({
             src: `https://some.domain.com/files/form_submissions_export.csv`,

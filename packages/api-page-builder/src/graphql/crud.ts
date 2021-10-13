@@ -18,10 +18,10 @@ import { createTopic } from "@webiny/pubsub";
 const createPageBuilder = () => {
     let prerenderingHandlers = {
         render: async () => {
-            console.log('Skipping page rendering - "render" handler not defined.');
+            // empty
         },
         flush: async () => {
-            console.log('Skipping page flushing - "flush" handler not defined.');
+            // empty
         }
     };
 

@@ -108,7 +108,7 @@ export class MenuStorageOperationsDdb implements MenuStorageOperations {
         );
 
         const filteredItems = filterItems<Menu>({
-            context: this.context,
+            plugins: this.context.plugins,
             where: restWhere,
             items,
             fields

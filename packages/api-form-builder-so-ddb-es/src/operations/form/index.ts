@@ -281,7 +281,7 @@ export const createFormStorageOperations = (params: Params): FormBuilderFormStor
             items.push(
                 entity.putBatch({
                     ...form,
-                    TYPE: createLatestSortKey(),
+                    TYPE: createFormLatestType(),
                     ...latestKeys
                 })
             );
@@ -487,13 +487,7 @@ export const createFormStorageOperations = (params: Params): FormBuilderFormStor
             formId: undefined
         };
         const filteredItems = filterItems({
-            /**
-             * At the moment we need to send the plugins like this because plugins are extracted from the context.plugins.
-             * When we implement sending only plugins that we require, we will change this as well.
-             */
-            context: {
-                plugins
-            } as any,
+            plugins,
             items,
             where,
             fields: formDynamoDbFields

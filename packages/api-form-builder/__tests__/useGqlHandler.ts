@@ -5,7 +5,7 @@ import graphqlHandlerPlugins from "@webiny/handler-graphql";
 import tenancyPlugins from "@webiny/api-tenancy";
 import securityPlugins from "@webiny/api-security";
 import fileManagerPlugins from "@webiny/api-file-manager/plugins";
-import fileManagerDynamoDbElasticPlugins from "@webiny/api-file-manager-ddb-es";
+import fileManagerDynamoDbPlugins from "@webiny/api-file-manager-ddb";
 import i18nContext from "@webiny/api-i18n/graphql/context";
 import i18nDynamoDbStorageOperations from "@webiny/api-i18n-ddb";
 import i18nContentPlugins from "@webiny/api-i18n-content/plugins";
@@ -87,7 +87,7 @@ export default (params: UseGqlHandlerParams = {}) => {
         i18nContentPlugins(),
         mockLocalesPlugins(),
         fileManagerPlugins(),
-        fileManagerDynamoDbElasticPlugins(),
+        fileManagerDynamoDbPlugins(),
         /**
          * We need to create the form builder API app.
          * It requires storage operations and plugins from the storage operations.

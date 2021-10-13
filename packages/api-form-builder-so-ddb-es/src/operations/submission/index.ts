@@ -40,10 +40,6 @@ export const createSubmissionStorageOperations = (
 ): FormBuilderSubmissionStorageOperations => {
     const { entity, esEntity, table, elasticsearch, plugins } = params;
 
-    /**
-     * This is a form partition key.
-     * TODO: figure out how to use the one from the ~/operations/forms/index.ts file.
-     */
     const createSubmissionPartitionKey = (
         params: FormBuilderSubmissionStorageOperationsCreatePartitionKeyParams
     ) => {
@@ -202,8 +198,7 @@ export const createSubmissionStorageOperations = (
         const items = where.id_in.map(id => {
             return entity.getBatch({
                 PK: createSubmissionPartitionKey({
-                    ...where,
-                    formId: where.parent
+                    ...where
                 }),
                 SK: createSubmissionSortKey(id)
             });
@@ -248,15 +243,6 @@ export const createSubmissionStorageOperations = (
         const { where, sort, limit: initialLimit, after } = params;
 
         if (where.id_in) {
-            if (!where.parent) {
-                throw new WebinyError(
-                    `Cannot search for form submissions by IDs without the "parent".`,
-                    "MALFORMED_WHERE_CONDITION",
-                    {
-                        where
-                    }
-                );
-            }
             const items = await listSubmissionsByIds(params);
 
             return {

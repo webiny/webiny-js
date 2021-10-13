@@ -14,6 +14,9 @@
     "access": "public",
     "directory": "dist"
   },
+  "dependencies": {
+    "@webiny/error": "^5.15.0"
+  },
   "devDependencies": {
     "@babel/cli": "^7.12.10",
     "@babel/core": "^7.5.5",

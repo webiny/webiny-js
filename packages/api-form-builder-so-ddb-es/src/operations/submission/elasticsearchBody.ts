@@ -89,10 +89,10 @@ const createElasticsearchQuery = (params: CreateElasticsearchQueryParams) => {
      */
     query.must.push({
         term: {
-            "form.parent.keyword": where.parent
+            "form.parent.keyword": where.formId
         }
     });
-    delete where.parent;
+    delete where.formId;
     /**
      * We apply other conditions as they are passed via the where value.
      */

@@ -1,0 +1,41 @@
+{
+  "extends": "../../tsconfig",
+  "references": [
+    {
+      "path": "../api-form-builder"
+    },
+    {
+      "path": "../db-dynamodb"
+    },
+    {
+      "path": "../error"
+    },
+    {
+      "path": "../utils"
+    },
+    {
+      "path": "../handler-db"
+    },
+    {
+      "path": "../plugins"
+    }
+  ],
+  "compilerOptions": {
+    "paths": {
+      "~/*": ["./src/*"],
+      "@webiny/api-form-builder/*": ["../api-form-builder/src/*"],
+      "@webiny/api-form-builder": ["../api-form-builder/src"],
+      "@webiny/db-dynamodb/*": ["../db-dynamodb/src/*"],
+      "@webiny/db-dynamodb": ["../db-dynamodb/src"],
+      "@webiny/error/*": ["../error/src/*"],
+      "@webiny/error": ["../error/src"],
+      "@webiny/utils/*": ["../utils/src/*"],
+      "@webiny/utils": ["../utils/src"],
+      "@webiny/handler-db/*": ["../handler-db/src/*"],
+      "@webiny/handler-db": ["../handler-db/src"],
+      "@webiny/plugins/*": ["../plugins/src/*"],
+      "@webiny/plugins": ["../plugins/src"]
+    },
+    "baseUrl": "."
+  }
+}
