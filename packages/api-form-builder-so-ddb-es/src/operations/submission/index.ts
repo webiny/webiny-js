@@ -262,7 +262,7 @@ export const createSubmissionStorageOperations = (
             sort,
             limit: limit + 1,
             where,
-            after: decodeCursor(after)
+            after: decodeCursor(after) as any
         });
 
         const esConfig = configurations.es({
