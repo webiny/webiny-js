@@ -1,8 +1,6 @@
 {
   "extends": "../../tsconfig.build.json",
-  "include": [
-    "src"
-  ],
+  "include": ["src"],
   "exclude": [
     "node_modules",
     "../error",
@@ -20,9 +18,7 @@
     "declarationDir": "dist",
     "baseUrl": ".",
     "paths": {
-      "~/*": [
-        "./src/*"
-      ]
+      "~/*": ["./src/*"]
     }
   },
   "references": []
