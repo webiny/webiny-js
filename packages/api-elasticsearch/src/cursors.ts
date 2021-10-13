@@ -6,7 +6,12 @@ export const encodeCursor = (cursor?: string): string | undefined => {
         return undefined;
     }
 
-    return Buffer.from(JSON.stringify(cursor)).toString("base64");
+    try {
+        return Buffer.from(JSON.stringify(cursor)).toString("base64");
+    } catch (ex) {
+        console.error(ex.message);
+    }
+    return undefined;
 };
 /**
  * Decode a received value into a Elasticsearch cursor.
@@ -19,7 +24,7 @@ export const decodeCursor = (cursor?: string): string | undefined => {
     try {
         return JSON.parse(Buffer.from(cursor, "base64").toString("ascii"));
     } catch (ex) {
-        console.log(ex.message);
+        console.error(ex.message);
     }
     return undefined;
 };
