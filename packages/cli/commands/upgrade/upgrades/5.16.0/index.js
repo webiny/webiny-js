@@ -5,6 +5,7 @@
 const { prettierFormat, yarnInstall } = require("../utils");
 const path = require("path");
 const fs = require("fs");
+const fsExtra = require("fs-extra");
 
 const targetVersion = "5.16.0";
 
@@ -111,6 +112,18 @@ const copyFiles = (context, initialTargets) => {
         }
     }
     context.info("File copying complete!");
+};
+
+/**
+ * @param context {CliContext}
+ * @param targets {{source: string, destination: string}[]}
+ */
+const copyFolders = (context, targets) => {
+    context.info(`Copy folders...`);
+
+    for (const target of targets) {
+        fsExtra.copySync(target.source, target.destination);
+    }
 };
 
 /**
@@ -221,12 +234,51 @@ module.exports = {
             {
                 source: "node_modules/@webiny/cwp-template-aws/template/api/code/graphql/package.json",
                 destination: "api/code/graphql/package.json"
+            },
+            // Update cloud resources for "dev" environment
+            {
+                source: "node_modules/@webiny/cwp-template-aws/template/api/pulumi/dev/index.ts",
+                destination: "api/pulumi/dev/index.ts"
+            },
+            {
+                source: "node_modules/@webiny/cwp-template-aws/template/api/pulumi/dev/policies.ts",
+                destination: "api/pulumi/dev/policies.ts"
+            },
+            {
+                source: "node_modules/@webiny/cwp-template-aws/template/api/pulumi/dev/pageBuilder.ts",
+                destination: "api/pulumi/dev/pageBuilder.ts"
+            },
+            // Update cloud resources for "prod" environment
+            {
+                source: "node_modules/@webiny/cwp-template-aws/template/api/pulumi/prod/index.ts",
+                destination: "api/pulumi/prod/index.ts"
+            },
+            {
+                source: "node_modules/@webiny/cwp-template-aws/template/api/pulumi/prod/policies.ts",
+                destination: "api/pulumi/prod/policies.ts"
+            },
+            {
+                source: "node_modules/@webiny/cwp-template-aws/template/api/pulumi/prod/pageBuilder.ts",
+                destination: "api/pulumi/prod/pageBuilder.ts"
             }
         ];
         /**
          * Copy new files to their destinations.
          */
         copyFiles(context, targets);
+        /**
+         * Copy folders to their destinations.
+         */
+        copyFolders(context, [
+            {
+                source: "node_modules/@webiny/cwp-template-aws/template/api/code/pageBuilder/exportPages",
+                destination: "api/code/pageBuilder/exportPages"
+            },
+            {
+                source: "node_modules/@webiny/cwp-template-aws/template/api/code/pageBuilder/importPages",
+                destination: "api/code/pageBuilder/importPages"
+            }
+        ]);
         /**
          * If any package.json destinations, set the versions to current one.
          */

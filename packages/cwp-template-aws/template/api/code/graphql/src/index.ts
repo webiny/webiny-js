@@ -9,6 +9,8 @@ import i18nContentPlugins from "@webiny/api-i18n-content/plugins";
 import pageBuilderPlugins from "@webiny/api-page-builder/graphql";
 import pageBuilderDynamoDbElasticsearchPlugins from "@webiny/api-page-builder-so-ddb-es";
 import pageBuilderPrerenderingPlugins from "@webiny/api-page-builder/prerendering";
+import pageBuilderImportExportPlugins from "@webiny/api-page-builder-import-export/graphql";
+import { createStorageOperations as createPageImportExportStorageOperations } from "@webiny/api-page-builder-import-export-so-ddb";
 import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import elasticsearchClientContextPlugin from "@webiny/api-elasticsearch";
@@ -73,6 +75,9 @@ export const handler = createHandler({
         pageBuilderPlugins(),
         pageBuilderDynamoDbElasticsearchPlugins(),
         pageBuilderPrerenderingPlugins(),
+        pageBuilderImportExportPlugins({
+            storageOperations: createPageImportExportStorageOperations({ documentClient })
+        }),
         createFormBuilder({
             storageOperations: createFormBuilderStorageOperations({
                 elasticsearch: elasticsearchClient,

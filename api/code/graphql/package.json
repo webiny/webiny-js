@@ -18,6 +18,8 @@
     "@webiny/api-i18n-content": "^5.15.0",
     "@webiny/api-i18n-ddb": "^5.15.0",
     "@webiny/api-page-builder": "^5.15.0",
+    "@webiny/api-page-builder-import-export": "^5.15.0",
+    "@webiny/api-page-builder-import-export-so-ddb": "^5.15.0",
     "@webiny/api-page-builder-so-ddb-es": "^5.15.0",
     "@webiny/api-prerendering-service": "^5.15.0",
     "@webiny/api-security": "^5.15.0",

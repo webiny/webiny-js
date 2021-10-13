@@ -9,6 +9,8 @@ import securityAdminUsersDynamoDbStorageOperations from "@webiny/api-security-ad
 import pageBuilderPlugins from "@webiny/api-page-builder/graphql";
 import pageBuilderDynamoDbElasticsearchPlugins from "@webiny/api-page-builder-so-ddb-es";
 import pageBuilderPrerenderingPlugins from "@webiny/api-page-builder/prerendering";
+import pageBuilderImportExportPlugins from "@webiny/api-page-builder-import-export/graphql";
+import { createStorageOperations } from "@webiny/api-page-builder-import-export-so-ddb";
 import prerenderingServicePlugins from "@webiny/api-prerendering-service/client";
 import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
@@ -75,6 +77,9 @@ export const handler = createHandler({
         pageBuilderPlugins(),
         pageBuilderDynamoDbElasticsearchPlugins(),
         pageBuilderPrerenderingPlugins(),
+        pageBuilderImportExportPlugins({
+            storageOperations: createStorageOperations({ documentClient })
+        }),
         createFormBuilder({
             storageOperations: createFormBuilderStorageOperations({
                 documentClient,

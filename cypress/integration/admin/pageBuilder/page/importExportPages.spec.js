@@ -1,0 +1,149 @@
+context("Export Pages", () => {
+    before(() => {
+        // use the Chrome debugger protocol to grant the current browser window
+        // access to the clipboard from the current origin
+        // https://chromedevtools.github.io/devtools-protocol/tot/Browser/#method-grantPermissions
+        // We are using cy.wrap to wait for the promise returned
+        // from the Cypress.automation call, so the test continues
+        // after the clipboard permission has been granted
+        cy.wrap(
+            Cypress.automation("remote:debugger:protocol", {
+                command: "Browser.grantPermissions",
+                params: {
+                    permissions: ["clipboardReadWrite", "clipboardSanitizedWrite"],
+                    origin: window.location.origin
+                }
+            })
+        );
+    });
+    beforeEach(() => cy.login());
+    const pageTitle = "Welcome to Webiny";
+
+    const searchForPage = title => {
+        cy.findByTestId("default-data-list.search").within(() => {
+            cy.findByPlaceholderText(/Search pages/i).type(title);
+            cy.wait(1000);
+        });
+    };
+
+    const clearSearch = () => {
+        cy.findByTestId("default-data-list.search").within(() => {
+            cy.findByPlaceholderText(/Search pages/i).clear();
+        });
+    };
+
+    it("should be able to export a page", () => {
+        cy.visit("/page-builder/pages");
+        searchForPage(pageTitle);
+        // Select page for export
+        cy.findByTestId("default-data-list").within(() => {
+            cy.get(".mdc-list-item")
+                .first()
+                .within(() => {
+                    cy.findByText(/Welcome to Webiny/i).should("exist");
+                    cy.findByTestId("pages-default-data-list.select-page").click({ force: true });
+                    cy.get(`[type="checkbox"]`).check();
+                });
+        });
+        /**
+         * Save image snapshot of the page preview before export so that we can compare it with importing the page.
+         */
+        cy.get(".webiny-pb-page-document").matchImageSnapshot();
+        // Initiate page export
+        cy.findByTestId("export-page-button").click();
+
+        // Select revision type
+        cy.findByTestId("export-pages.select-revision-type-dialog").should("be.visible");
+        cy.findByTestId("export-pages.select-revision-type-dialog").within(() => {
+            cy.findByText(/Continue/i).click();
+        });
+        // Initial loading
+        cy.findByTestId("export-pages.initial-dialog").should("be.visible");
+        // Loading with stats
+        cy.findByTestId("export-pages.loading-dialog").should("be.visible");
+        // Export ready
+        cy.findByTestId("export-pages.export-ready-dialog").should("be.visible");
+        // Copy export file URL
+        cy.findByTestId("export-pages.export-ready-dialog").within(() => {
+            cy.findByTestId("export-pages.export-ready-dialog.copy-button").click();
+        });
+        cy.findByText(/Successfully copied!/i).should("be.visible");
+        // Close dialog
+        cy.findByTestId("export-pages.export-ready-dialog").within(() => {
+            cy.findByText(/Close/i).click();
+        });
+        clearSearch();
+    });
+    it("should be able to import page", () => {
+        cy.visit("/page-builder/pages");
+        // Import page
+        cy.findByTestId("import-page-button").click();
+        // Select category
+        cy.findByTestId("pb-new-page-category-modal").within(() => {
+            cy.findByText("Static").click();
+        });
+        // User input
+        cy.findByTestId("import-pages.input-dialog").within(() => {
+            cy.findByText(/Paste file URL/i).click();
+            // Let's check the copied text
+            // eslint-disable-next-line jest/valid-expect-in-promise
+            cy.window()
+                .its("navigator.clipboard")
+                .invoke("readText")
+                // .should("inc", 'npm install -D cypress')
+                .then(text => {
+                    cy.get(`[type="text"]`).type(text);
+                });
+            cy.findByText(/Continue/i).click();
+        });
+        // Loading
+        cy.findByTestId("import-pages.loading-dialog").should("be.visible");
+        // Verify the result
+        cy.findByTestId("import-pages.loading-dialog").within(() => {
+            cy.findByText("All pages have been imported").should("be.visible");
+            cy.findByText(/Show details/i).click();
+            cy.findByTestId("import-pages-dialog.show-detail-list")
+                .children()
+                .should("have.length", 1);
+
+            cy.findByText(/Continue/i).click();
+        });
+
+        // Page should be there
+        searchForPage(pageTitle);
+
+        cy.findByTestId("default-data-list").within(() => {
+            cy.get(".mdc-list-item")
+                .first()
+                .within(() => {
+                    cy.findByText("Welcome to Webiny").should("exist");
+                    cy.findByText(/Static/i).should("exist");
+                    cy.findByText(/Draft/i).should("exist");
+                    cy.findByText(/(v1)/i).should("exist");
+                    cy.findByTestId("pages-default-data-list.select-page").click({ force: true });
+                });
+        });
+        // Check the image snapshot of the imported page
+        cy.get(".webiny-pb-page-document").matchImageSnapshot();
+
+        // Delete the imported page
+        cy.findByTestId("default-data-list").within(() => {
+            cy.get(".mdc-list-item")
+                .first()
+                .within(() => {
+                    cy.findByTestId("pages-default-data-list.select-page").click({ force: true });
+                });
+        });
+        cy.findByTestId("pb-page-details-header-delete-button").click();
+        cy.findByTestId("pb-page-details-header-delete-dialog").within(() => {
+            cy.findByText(/Confirm/i).click();
+        });
+        cy.findByTestId("default-data-list").within(() => {
+            cy.get(".mdc-list-item")
+                .first()
+                .within(() => {
+                    cy.findByText(/Draft/i).should("not.exist");
+                });
+        });
+    });
+});

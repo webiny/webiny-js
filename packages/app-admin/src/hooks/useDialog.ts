@@ -7,6 +7,11 @@ const useDialog = () => {
             ui.setState(ui => {
                 return { ...ui, dialog: { message, options } };
             });
+        },
+        hideDialog: () => {
+            ui.setState(ui => {
+                return { ...ui, dialog: null };
+            });
         }
     };
 };
