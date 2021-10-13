@@ -15,16 +15,18 @@ const defaultStyles = { display: "block" };
 
 const Heading: ElementRenderer = ({ element }) => {
     const { getClassNames, getElementClassNames, combineClassNames } = usePageElements();
+    const tag = element.data.text.desktop.tag || "h1";
+
     const classNames = combineClassNames(
         getClassNames(defaultStyles),
         getElementClassNames(element)
     );
 
-    const tag = element.data.text.desktop.tag || "h1";
     return (
-        <pb-heading class={classNames}>
+        <pb-heading>
             {React.createElement(tag, {
-                dangerouslySetInnerHTML: { __html: element.data.text.data.text }
+                dangerouslySetInnerHTML: { __html: element.data.text.data.text },
+                className: classNames
             })}
         </pb-heading>
     );

@@ -7,7 +7,7 @@
     "../api-i18n",
     "../api-i18n-ddb",
     "../api-file-manager",
-    "../api-file-manager-ddb-es",
+    "../api-file-manager-ddb",
     "../api-security",
     "../api-upgrade",
     "../error",

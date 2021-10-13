@@ -3,6 +3,11 @@ import WebinyError from "@webiny/error";
 import { DbContext } from "@webiny/handler-db/types";
 import DynamoDbDriver from "~/DynamoDbDriver";
 
+/**
+ * Will be removed in favor of directly passing the documentClient to the storage operations.
+ *
+ * @deprecated
+ */
 export const getDocumentClient = <T extends DbContext>(context: T): DocumentClient => {
     if (!context.db) {
         throw new WebinyError("Missing db on context.", "DB_ERROR");

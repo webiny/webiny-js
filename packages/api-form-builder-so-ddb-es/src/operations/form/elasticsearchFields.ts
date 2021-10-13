@@ -17,6 +17,10 @@ export default () => [
         field: "ownedBy",
         path: "ownedBy.id"
     }),
+    new FormElasticsearchFieldPlugin({
+        field: "createdBy",
+        path: "createdBy.id"
+    }),
     /**
      * Always add the ALL fields plugin because of the keyword/path build.
      */

@@ -64,10 +64,11 @@ interface Params<T> {
 
 export const sortItems = <T extends any = any>(params: Params<T>): T[] => {
     const { items, sort: initialSort = [], fields } = params;
-    if (items.length <= 1) {
+    /**
+     * Skip sorting if nothing was passed to sort by or nothing to sort.
+     */
+    if (items.length <= 1 || Array.isArray(initialSort) === false || initialSort.length === 0) {
         return items;
-    } else if (initialSort.length === 0) {
-        initialSort.push("createdOn_DESC");
     }
 
     const info: Info = {

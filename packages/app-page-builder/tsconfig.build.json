@@ -8,6 +8,7 @@
     "../app",
     "../app-admin",
     "../app-i18n",
+    "../app-page-builder-elements",
     "../app-plugin-admin-welcome-screen",
     "../app-security",
     "../app-tenancy",

@@ -248,9 +248,9 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
          * It will build the filters out of the where input and transform the values it is using.
          */
         const filteredFiles = filterItems({
+            plugins: this.context.plugins,
             items,
             where,
-            context: this.context,
             fields
         });
 
