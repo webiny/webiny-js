@@ -4,7 +4,7 @@ import { setupContentModelGroup, setupContentModels } from "../utils/setup";
 import { useFruitReadHandler } from "../utils/useFruitReadHandler";
 
 const appleData = {
-    name: "Ap ` ple",
+    name: "A’p ` pl ' e",
     isSomething: false,
     rating: 400,
     numbers: [5, 6, 7.2, 10.18, 12.05],
@@ -19,7 +19,7 @@ const appleData = {
 };
 
 const strawberryData = {
-    name: "Straw ` berry",
+    name: "Straw `er ' ry",
     isSomething: true,
     rating: 500,
     numbers: [5, 6, 7.2, 10.18, 12.05],
@@ -34,7 +34,7 @@ const strawberryData = {
 };
 
 const bananaData = {
-    name: "Ban ` ana",
+    name: "Ban ` a 'na",
     isSomething: false,
     rating: 450,
     numbers: [5, 6, 7.2, 10.18, 12.05],
@@ -42,6 +42,21 @@ const bananaData = {
     url: "https://banana.test",
     lowerCase: "banana",
     upperCase: "BANANA",
+    date: "2020-12-03",
+    dateTime: new Date("2020-12-03T12:12:21").toISOString(),
+    dateTimeZ: "2020-12-03T14:52:41+01:00",
+    time: "11:59:01"
+};
+
+const grahamData = {
+    name: "Graham O’Keeffe",
+    isSomething: false,
+    rating: 450,
+    numbers: [5, 6, 7.2, 10.18, 12.05],
+    email: "graham@doe.com",
+    url: "https://graham.test",
+    lowerCase: "graham",
+    upperCase: "GRAHAM",
     date: "2020-12-03",
     dateTime: new Date("2020-12-03T12:12:21").toISOString(),
     dateTimeZ: "2020-12-03T14:52:41+01:00",
@@ -65,6 +80,9 @@ describe("sorting + cursor", () => {
             data
         });
 
+        if (response.data.createFruit.error) {
+            throw new Error(response.data.createFruit.error.message);
+        }
         const createdFruit = response.data.createFruit.data;
 
         const [publish] = await publishFruit({
@@ -86,7 +104,8 @@ describe("sorting + cursor", () => {
         return {
             apple: await createAndPublishFruit(appleData),
             strawberry: await createAndPublishFruit(strawberryData),
-            banana: await createAndPublishFruit(bananaData)
+            banana: await createAndPublishFruit(bananaData),
+            graham: await createAndPublishFruit(grahamData)
         };
     };
 
@@ -100,13 +119,13 @@ describe("sorting + cursor", () => {
         // If this `until` resolves successfully, we know entry is accessible via the "read" API
         await until(
             () => listFruits({}).then(([data]) => data),
-            ({ data }) => data.listFruits.data.length === 3,
+            ({ data }) => data.listFruits.data.length === 4,
             { name: "list all fruits", tries: 10 }
         );
     };
 
     test("should load items with after cursor with special characters", async () => {
-        const { apple, banana, strawberry } = await setupFruits();
+        const { apple, graham, banana, strawberry } = await setupFruits();
 
         const handler = useFruitReadHandler({
             ...readOpts
@@ -130,7 +149,7 @@ describe("sorting + cursor", () => {
                     ],
                     meta: {
                         hasMoreItems: true,
-                        totalCount: 3,
+                        totalCount: 4,
                         cursor: expect.any(String)
                     },
                     error: null
@@ -154,7 +173,31 @@ describe("sorting + cursor", () => {
                     ],
                     meta: {
                         hasMoreItems: true,
-                        totalCount: 3,
+                        totalCount: 4,
+                        cursor: expect.any(String)
+                    },
+                    error: null
+                }
+            }
+        });
+
+        const [grahamListResponse] = await listFruits({
+            sort: ["name_ASC"],
+            limit: 1,
+            after: bananaListResponse.data.listFruits.meta.cursor
+        });
+
+        expect(grahamListResponse).toEqual({
+            data: {
+                listFruits: {
+                    data: [
+                        {
+                            ...graham
+                        }
+                    ],
+                    meta: {
+                        hasMoreItems: true,
+                        totalCount: 4,
                         cursor: expect.any(String)
                     },
                     error: null
@@ -165,7 +208,7 @@ describe("sorting + cursor", () => {
         const [strawberryListResponse] = await listFruits({
             sort: ["name_ASC"],
             limit: 1,
-            after: bananaListResponse.data.listFruits.meta.cursor
+            after: grahamListResponse.data.listFruits.meta.cursor
         });
 
         expect(strawberryListResponse).toEqual({
@@ -178,7 +221,7 @@ describe("sorting + cursor", () => {
                     ],
                     meta: {
                         hasMoreItems: false,
-                        totalCount: 3,
+                        totalCount: 4,
                         cursor: null
                     },
                     error: null
