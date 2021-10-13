@@ -101,14 +101,15 @@ export default ({ storageOperations }: PageImportExportPluginsParams) =>
                 const tenant = context.tenancy.getCurrentTenant();
                 const locale = context.i18nContent.getLocale();
 
-                const { sort } = params || {};
+                const { sort, limit } = params || {};
 
                 const listParams: PageElementStorageOperationsListParams = {
                     where: {
                         tenant: tenant.id,
                         locale: locale.code
                     },
-                    sort: Array.isArray(sort) && sort.length > 0 ? sort : ["createdOn_ASC"]
+                    sort: Array.isArray(sort) && sort.length > 0 ? sort : ["createdOn_ASC"],
+                    limit: limit
                 };
 
                 // If user can only manage own records, let's add that to the listing.
