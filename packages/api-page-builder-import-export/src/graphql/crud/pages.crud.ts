@@ -33,7 +33,7 @@ export default new ContextPlugin<PbPageImportExportContext>(context => {
             }
 
             // Create a task for import page
-            const task = await context.pageBuilder.pageImportExportTask.create({
+            const task = await context.pageBuilder.pageImportExportTask.createTask({
                 status: PageImportExportTaskStatus.PENDING,
                 input: {
                     category: categorySlug,
@@ -68,7 +68,7 @@ export default new ContextPlugin<PbPageImportExportContext>(context => {
             }
 
             // Create the main task for page export.
-            const task = await context.pageBuilder.pageImportExportTask.create({
+            const task = await context.pageBuilder.pageImportExportTask.createTask({
                 status: PageImportExportTaskStatus.PENDING
             });
             const exportPagesDataKey = `${EXPORT_PAGES_FOLDER_KEY}/${task.id}`;
@@ -90,7 +90,7 @@ export default new ContextPlugin<PbPageImportExportContext>(context => {
                 );
             }
             // Update main task status.
-            await context.pageBuilder.pageImportExportTask.update(task.id, {
+            await context.pageBuilder.pageImportExportTask.updateTask(task.id, {
                 status: PageImportExportTaskStatus.PROCESSING,
                 stats: initialStats(pageIds.length),
                 input: {

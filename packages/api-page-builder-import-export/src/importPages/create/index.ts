@@ -73,7 +73,7 @@ export default (
                 log(`Added SUB_TASK "${subtask.id}" to queue.`);
             }
             // Update main task status
-            await pageBuilder.pageImportExportTask.update(task.id, {
+            await pageBuilder.pageImportExportTask.updateTask(task.id, {
                 status: PageImportExportTaskStatus.PROCESSING,
                 stats: initialStats(pageKeys.length)
             });
@@ -97,7 +97,7 @@ export default (
             const { invocationArgs: args, pageBuilder } = context;
             const { task } = args;
 
-            await pageBuilder.pageImportExportTask.update(task.id, {
+            await pageBuilder.pageImportExportTask.updateTask(task.id, {
                 status: PageImportExportTaskStatus.FAILED,
                 error: {
                     name: e.name,

@@ -158,7 +158,7 @@ export default (
             if (noPendingTask) {
                 log(`No pending sub-task for task ${taskId}`);
 
-                await pageBuilder.pageImportExportTask.update(taskId, {
+                await pageBuilder.pageImportExportTask.updateTask(taskId, {
                     status: PageImportExportTaskStatus.COMPLETED,
                     data: {
                         message: `Finish importing pages.`

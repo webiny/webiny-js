@@ -56,7 +56,7 @@ const plugin: GraphQLSchemaPlugin<PbPageImportExportContext> = {
             PbQuery: {
                 getPageImportExportTask: async (_, args: { id: string }, context) => {
                     return resolve(() => {
-                        return context.pageBuilder.pageImportExportTask.get(args.id);
+                        return context.pageBuilder.pageImportExportTask.getTask(args.id);
                     });
                 },
                 listPageImportExportSubTask: async (

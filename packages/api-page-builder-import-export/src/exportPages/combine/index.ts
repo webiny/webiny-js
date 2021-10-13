@@ -28,7 +28,7 @@ export default (): HandlerPlugin<PbPageImportExportContext, ArgsContext<HandlerA
         const { taskId } = args;
 
         try {
-            const task = await pageBuilder.pageImportExportTask.get(taskId);
+            const task = await pageBuilder.pageImportExportTask.getTask(taskId);
 
             const { exportPagesDataKey } = task.input;
 
@@ -47,7 +47,7 @@ export default (): HandlerPlugin<PbPageImportExportContext, ArgsContext<HandlerA
             log(`Done uploading... File is located at ${pageExportUpload.Location} `);
 
             // Update task status and save export page data key
-            await pageBuilder.pageImportExportTask.update(taskId, {
+            await pageBuilder.pageImportExportTask.updateTask(taskId, {
                 status: PageImportExportTaskStatus.COMPLETED,
                 data: {
                     message: `Finish uploading page export.`,
@@ -67,7 +67,7 @@ export default (): HandlerPlugin<PbPageImportExportContext, ArgsContext<HandlerA
              * In case of error, we'll update the task status to "failed",
              * so that, client can show notify the user appropriately.
              */
-            await pageBuilder.pageImportExportTask.update(taskId, {
+            await pageBuilder.pageImportExportTask.updateTask(taskId, {
                 status: PageImportExportTaskStatus.FAILED,
                 error: {
                     name: e.name,

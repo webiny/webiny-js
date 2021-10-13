@@ -53,7 +53,7 @@ export default ({ storageOperations }: PageImportExportPluginsParams) =>
         // Modify context
         context.pageBuilder.pageImportExportTask = {
             storageOperations,
-            async get(id) {
+            async getTask(id) {
                 const permission = await checkBasePermissions(context, PERMISSION_NAME, {
                     rwd: "r"
                 });
@@ -72,7 +72,7 @@ export default ({ storageOperations }: PageImportExportPluginsParams) =>
                 let pageImportExportTask: PageImportExportTask | undefined;
 
                 try {
-                    pageImportExportTask = await storageOperations.get(params);
+                    pageImportExportTask = await storageOperations.getTask(params);
 
                     if (!pageImportExportTask) {
                         return null;
@@ -93,7 +93,7 @@ export default ({ storageOperations }: PageImportExportPluginsParams) =>
                 return pageImportExportTask;
             },
 
-            async list(params) {
+            async listTasks(params) {
                 const permission = await checkBasePermissions(context, PERMISSION_NAME, {
                     rwd: "r"
                 });
@@ -118,7 +118,7 @@ export default ({ storageOperations }: PageImportExportPluginsParams) =>
                 }
 
                 try {
-                    const [items] = await storageOperations.list(listParams);
+                    const [items] = await storageOperations.listTasks(listParams);
                     return items;
                 } catch (ex) {
                     throw new WebinyError(
@@ -131,7 +131,7 @@ export default ({ storageOperations }: PageImportExportPluginsParams) =>
                 }
             },
 
-            async create(input) {
+            async createTask(input) {
                 await checkBasePermissions(context, PERMISSION_NAME, { rwd: "w" });
 
                 const createDataModel = new CreateDataModel().populate(input);
@@ -156,9 +156,9 @@ export default ({ storageOperations }: PageImportExportPluginsParams) =>
                 };
 
                 try {
-                    return await storageOperations.create({
+                    return await storageOperations.createTask({
                         input: data,
-                        pageImportExportTask
+                        task: pageImportExportTask
                     });
                 } catch (ex) {
                     throw new WebinyError(
@@ -172,11 +172,11 @@ export default ({ storageOperations }: PageImportExportPluginsParams) =>
                 }
             },
 
-            async update(id, input) {
+            async updateTask(id, input) {
                 const permission = await checkBasePermissions(context, PERMISSION_NAME, {
                     rwd: "w"
                 });
-                const original = await context.pageBuilder.pageImportExportTask.get(id);
+                const original = await context.pageBuilder.pageImportExportTask.getTask(id);
                 if (!original) {
                     throw new NotFoundError(`PageImportExportTask "${id}" not found.`);
                 }
@@ -195,10 +195,10 @@ export default ({ storageOperations }: PageImportExportPluginsParams) =>
                 };
 
                 try {
-                    return await storageOperations.update({
+                    return await storageOperations.updateTask({
                         input: data,
                         original,
-                        pageImportExportTask
+                        task: pageImportExportTask
                     });
                 } catch (ex) {
                     throw new WebinyError(
@@ -213,12 +213,14 @@ export default ({ storageOperations }: PageImportExportPluginsParams) =>
                 }
             },
 
-            async delete(id) {
+            async deleteTask(id) {
                 const permission = await checkBasePermissions(context, PERMISSION_NAME, {
                     rwd: "d"
                 });
 
-                const pageImportExportTask = await context.pageBuilder.pageImportExportTask.get(id);
+                const pageImportExportTask = await context.pageBuilder.pageImportExportTask.getTask(
+                    id
+                );
                 if (!pageImportExportTask) {
                     throw new NotFoundError(`PageImportExportTask "${id}" not found.`);
                 }
@@ -227,8 +229,8 @@ export default ({ storageOperations }: PageImportExportPluginsParams) =>
                 checkOwnPermissions(identity, permission, pageImportExportTask);
 
                 try {
-                    return await storageOperations.delete({
-                        pageImportExportTask
+                    return await storageOperations.deleteTask({
+                        task: pageImportExportTask
                     });
                 } catch (ex) {
                     throw new WebinyError(
@@ -246,7 +248,7 @@ export default ({ storageOperations }: PageImportExportPluginsParams) =>
                 const permission = await checkBasePermissions(context, PERMISSION_NAME, {
                     rwd: "w"
                 });
-                const original = await context.pageBuilder.pageImportExportTask.get(id);
+                const original = await context.pageBuilder.pageImportExportTask.getTask(id);
                 if (!original) {
                     throw new NotFoundError(`PageImportExportTask "${id}" not found.`);
                 }
@@ -298,7 +300,7 @@ export default ({ storageOperations }: PageImportExportPluginsParams) =>
                 try {
                     return await storageOperations.createSubTask({
                         input: data,
-                        pageImportExportSubTask
+                        subTask: pageImportExportSubTask
                     });
                 } catch (ex) {
                     throw new WebinyError(
@@ -343,7 +345,7 @@ export default ({ storageOperations }: PageImportExportPluginsParams) =>
                     return await storageOperations.updateSubTask({
                         input: data,
                         original,
-                        pageImportExportSubTask
+                        subTask: pageImportExportSubTask
                     });
                 } catch (ex) {
                     throw new WebinyError(

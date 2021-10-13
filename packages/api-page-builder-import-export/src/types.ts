@@ -91,7 +91,7 @@ export type PageImportExportTaskStorageOperationsListResponse = [
  */
 export interface PageImportExportTaskStorageOperationsCreateParams {
     input: Record<string, any>;
-    pageImportExportTask: PageImportExportTask;
+    task: PageImportExportTask;
 }
 
 /**
@@ -101,7 +101,7 @@ export interface PageImportExportTaskStorageOperationsCreateParams {
 export interface PageImportExportTaskStorageOperationsUpdateParams {
     input: Record<string, any>;
     original: PageImportExportTask;
-    pageImportExportTask: PageImportExportTask;
+    task: PageImportExportTask;
 }
 
 /**
@@ -109,7 +109,7 @@ export interface PageImportExportTaskStorageOperationsUpdateParams {
  * @category PageImportExportTaskStorageOperations
  */
 export interface PageImportExportTaskStorageOperationsDeleteParams {
-    pageImportExportTask: PageImportExportTask;
+    task: PageImportExportTask;
 }
 
 /**
@@ -157,7 +157,7 @@ export type PageImportExportTaskStorageOperationsListSubTaskResponse = [
  */
 export interface PageImportExportTaskStorageOperationsCreateSubTaskParams {
     input: Record<string, any>;
-    pageImportExportSubTask: PageImportExportTask;
+    subTask: PageImportExportTask;
 }
 
 /**
@@ -167,7 +167,7 @@ export interface PageImportExportTaskStorageOperationsCreateSubTaskParams {
 export interface PageImportExportTaskStorageOperationsUpdateSubTaskParams {
     input: Record<string, any>;
     original: PageImportExportTask;
-    pageImportExportSubTask: PageImportExportTask;
+    subTask: PageImportExportTask;
 }
 
 /**
@@ -190,26 +190,26 @@ export interface PageImportExportTaskStorageOperations {
     /**
      * Get a single page import export task item by given params.
      */
-    get(
+    getTask(
         params: PageImportExportTaskStorageOperationsGetParams
     ): Promise<PageImportExportTask | null>;
 
     /**
      * Get all page import export tasks by given params.
      */
-    list(
+    listTasks(
         params: PageImportExportTaskStorageOperationsListParams
     ): Promise<PageImportExportTaskStorageOperationsListResponse>;
 
-    create(
+    createTask(
         params: PageImportExportTaskStorageOperationsCreateParams
     ): Promise<PageImportExportTask>;
 
-    update(
+    updateTask(
         params: PageImportExportTaskStorageOperationsUpdateParams
     ): Promise<PageImportExportTask>;
 
-    delete(
+    deleteTask(
         params: PageImportExportTaskStorageOperationsDeleteParams
     ): Promise<PageImportExportTask>;
 

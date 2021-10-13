@@ -27,10 +27,12 @@ export type PageImportExportTaskCrud = {
      */
     storageOperations: PageImportExportTaskStorageOperations;
 
-    get(id: string): Promise<PageImportExportTask>;
-    list(params?: PageImportExportTaskStorageOperationsListParams): Promise<PageImportExportTask[]>;
-    create(data: Partial<PageImportExportTaskCreateData>): Promise<PageImportExportTask>;
-    update(
+    getTask(id: string): Promise<PageImportExportTask>;
+    listTasks(
+        params?: PageImportExportTaskStorageOperationsListParams
+    ): Promise<PageImportExportTask[]>;
+    createTask(data: Partial<PageImportExportTaskCreateData>): Promise<PageImportExportTask>;
+    updateTask(
         id: string,
         data: Partial<PageImportExportTaskCreateData>
     ): Promise<PageImportExportTask>;
@@ -41,7 +43,7 @@ export type PageImportExportTaskCrud = {
             nextStatus: PageImportExportTaskStatus;
         }
     ): Promise<PageImportExportTask>;
-    delete(id: string): Promise<PageImportExportTask>;
+    deleteTask(id: string): Promise<PageImportExportTask>;
     getSubTask(id: string, subtaskId: string): Promise<PageImportExportTask>;
     listSubTasks(
         id: string,
