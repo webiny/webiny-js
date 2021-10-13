@@ -118,8 +118,8 @@ const copyFiles = (context, initialTargets) => {
  * @param context {CliContext}
  * @param targets {{source: string, destination: string}[]}
  */
-const addNewFiles = (context, targets) => {
-    context.info(`Adding new files...`);
+const copyFolders = (context, targets) => {
+    context.info(`Copy folders...`);
 
     for (const target of targets) {
         fsExtra.copySync(target.source, target.destination);
@@ -267,9 +267,9 @@ module.exports = {
          */
         copyFiles(context, targets);
         /**
-         * Add new files to their destinations.
+         * Copy folders to their destinations.
          */
-        addNewFiles(context, [
+        copyFolders(context, [
             {
                 source: "node_modules/@webiny/cwp-template-aws/template/api/code/pageBuilder/exportPages",
                 destination: "api/code/pageBuilder/exportPages"
