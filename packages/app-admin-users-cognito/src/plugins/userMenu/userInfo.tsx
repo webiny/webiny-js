@@ -9,6 +9,8 @@ import { Avatar } from "@webiny/ui/Avatar";
 import { GenericElement } from "@webiny/app-admin/ui/elements/GenericElement";
 import { UIViewPlugin } from "@webiny/app-admin/ui/UIView";
 import { AdminView } from "@webiny/app-admin/ui/views/AdminView";
+import { useTenancy } from "@webiny/app-tenancy";
+import { ButtonPrimary } from "@webiny/ui/Button";
 
 const avatarImage = css({
     height: "40px !important",
@@ -72,12 +74,20 @@ const UserInfo = () => {
         return null;
     }
 
+    // This is only applicable in multi-tenant environments
+    const { currentTenant, defaultTenant } = security.identity;
+
+    let linkTo = "/account";
+    if (currentTenant && defaultTenant && currentTenant.id !== defaultTenant.id) {
+        linkTo = "/";
+    }
+
     const { email, firstName, lastName, avatar, gravatar } = security.identity.profile || {};
     const fullName = `${firstName} ${lastName}`;
 
     return (
-        <Link to={"/account"} className={linkStyles}>
-            <ListItem ripple={false}>
+        <Link to={linkTo} className={linkStyles}>
+            <ListItem ripple={false} className={linkStyles}>
                 <ListItemGraphic className={avatarImage}>
                     <Avatar
                         className={"avatar"}

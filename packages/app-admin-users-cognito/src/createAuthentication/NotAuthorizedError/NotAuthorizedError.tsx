@@ -1,5 +1,4 @@
 import * as React from "react";
-import { Link } from "@webiny/react-router";
 import { css } from "emotion";
 import styled from "@emotion/styled";
 import Helmet from "react-helmet";

@@ -1,9 +1,6 @@
 import React from "react";
 import { gql } from "graphql-tag";
 import { useTenancy } from "~/hooks/useTenancy";
-import { plugins } from "@webiny/plugins";
-import { TenantHeaderLinkPlugin } from "@webiny/app/plugins/TenantHeaderLinkPlugin";
-import { ApolloLinkPlugin } from "@webiny/app/plugins/ApolloLinkPlugin";
 
 export const GET_DEFAULT_TENANT = gql`
     query GetDefaultTenant {

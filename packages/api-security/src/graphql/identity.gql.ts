@@ -12,7 +12,6 @@ export default new GraphQLSchemaPlugin<Context>({
             type: String!
             displayName: String!
             permissions: [JSON!]!
-            tenant: Tenant
         }
 
         type SecurityIdentityLoginResponse {
@@ -29,9 +28,6 @@ export default new GraphQLSchemaPlugin<Context>({
         SecurityIdentity: {
             permissions(identity, args, context) {
                 return context.security.getPermissions();
-            },
-            async tenant(identity, args, context) {
-                return context.tenancy.getCurrentTenant();
             }
         },
         SecurityMutation: {

@@ -11,13 +11,17 @@ import { PageBuilderProvider } from "@webiny/app-page-builder/contexts/PageBuild
 import { BrowserRouter } from "@webiny/react-router";
 import { createApolloClient } from "./components/apolloClient";
 import { Telemetry } from "./components/Telemetry";
-import { createAuthentication, createGetIdentityData } from "@webiny/app-admin-users-cognito";
 // Import styles which include custom theme styles
 import "./App.scss";
+import {
+    createAuthentication,
+    createGetIdentityData,
+    LOGIN_MT
+} from "@webiny/app-admin-users-cognito";
 import { TenancyProvider, withTenant } from "@webiny/app-tenancy";
 
 const Authentication = withTenant(createAuthentication(), {
-    getIdentityData: createGetIdentityData()
+    getIdentityData: createGetIdentityData(LOGIN_MT)
 });
 
 export const App = () => (

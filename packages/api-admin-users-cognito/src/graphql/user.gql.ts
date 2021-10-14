@@ -19,7 +19,6 @@ export default new GraphQLSchemaPlugin<AdminUsersContext & SecurityContext & Ten
             type: String!
             displayName: String!
             permissions: [JSON!]!
-            tenant: Tenant
             profile: AdminUser
         }
 
