@@ -26,7 +26,7 @@ context("Export & Import Pages", () => {
                 .within(() => {
                     cy.findByText(/Welcome to Webiny/i).should("exist");
                     cy.findByTestId("pages-default-data-list.select-page").click({ force: true });
-                    cy.get(`[type="checkbox"]`).exist();
+                    cy.get(`[type="checkbox"]`).should("exist");
                     cy.get(`[type="checkbox"]`).check();
                 });
         });
