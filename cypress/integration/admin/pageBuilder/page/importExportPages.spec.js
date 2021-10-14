@@ -1,4 +1,4 @@
-context("Export Pages", () => {
+context("Export & Import Pages", () => {
     beforeEach(() => cy.login());
     const pageTitle = "Welcome to Webiny";
 
@@ -16,7 +16,7 @@ context("Export Pages", () => {
         });
     };
 
-    it("should be able to export a page", () => {
+    it("should be able to export and import a page", () => {
         cy.visit("/page-builder/pages");
         searchForPage(pageTitle);
         // Select page for export
@@ -26,6 +26,7 @@ context("Export Pages", () => {
                 .within(() => {
                     cy.findByText(/Welcome to Webiny/i).should("exist");
                     cy.findByTestId("pages-default-data-list.select-page").click({ force: true });
+                    cy.get(`[type="checkbox"]`).exist();
                     cy.get(`[type="checkbox"]`).check();
                 });
         });
@@ -57,9 +58,7 @@ context("Export Pages", () => {
             cy.findByText(/Close/i).click();
         });
         clearSearch();
-    });
-    it("should be able to import page", () => {
-        cy.visit("/page-builder/pages");
+
         // Import page
         cy.findByTestId("import-page-button").click();
         // Select category
