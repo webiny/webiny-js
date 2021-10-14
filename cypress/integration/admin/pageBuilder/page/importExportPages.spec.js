@@ -1,4 +1,4 @@
-context("Export Pages", () => {
+context("Export & Import Pages", () => {
     beforeEach(() => cy.login());
     const pageTitle = "Welcome to Webiny";
 
@@ -16,7 +16,7 @@ context("Export Pages", () => {
         });
     };
 
-    it("should be able to export a page", () => {
+    it("should be able to export and import a page", () => {
         cy.visit("/page-builder/pages");
         searchForPage(pageTitle);
         // Select page for export
@@ -26,13 +26,14 @@ context("Export Pages", () => {
                 .within(() => {
                     cy.findByText(/Welcome to Webiny/i).should("exist");
                     cy.findByTestId("pages-default-data-list.select-page").click({ force: true });
+                    cy.get(`[type="checkbox"]`).exist();
                     cy.get(`[type="checkbox"]`).check();
                 });
         });
         /**
          * Save image snapshot of the page preview before export so that we can compare it with importing the page.
          */
-        cy.get("pb-document").matchImageSnapshot();
+        cy.get(".webiny-pb-page-document").matchImageSnapshot();
         // Initiate page export
         cy.findByTestId("export-page-button").click();
 
@@ -57,9 +58,7 @@ context("Export Pages", () => {
             cy.findByText(/Close/i).click();
         });
         clearSearch();
-    });
-    it("should be able to import page", () => {
-        cy.visit("/page-builder/pages");
+
         // Import page
         cy.findByTestId("import-page-button").click();
         // Select category
@@ -108,7 +107,7 @@ context("Export Pages", () => {
                 });
         });
         // Check the image snapshot of the imported page
-        cy.get("pb-document").matchImageSnapshot();
+        cy.get(".webiny-pb-page-document").matchImageSnapshot();
 
         // Delete the imported page
         cy.findByTestId("default-data-list").within(() => {
