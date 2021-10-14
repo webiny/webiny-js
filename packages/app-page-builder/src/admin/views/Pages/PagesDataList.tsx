@@ -166,7 +166,7 @@ const PagesDataList = ({ onCreatePage, canCreate, onImportPage }: PagesDataListP
         () => (
             <DataListModalOverlay>
                 <Form
-                    data={{ ...where, sort: [sort] }}
+                    data={{ ...where, sort }}
                     onChange={({ status, category, sort }) => {
                         // Update "where" filter.
                         const where = { category, status: undefined };

@@ -36,7 +36,7 @@ const LoaderUl = styled("ul")({
 });
 
 const Loader = () => (
-    <LoaderUl>
+    <LoaderUl data-testid={"default-data-list.loading"}>
         {[1, 2, 3, 4, 5].map(item => (
             <li key={"list-" + item}>
                 <div className="graphic">

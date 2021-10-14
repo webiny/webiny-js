@@ -1,29 +1,13 @@
 context("Export Pages", () => {
-    before(() => {
-        // use the Chrome debugger protocol to grant the current browser window
-        // access to the clipboard from the current origin
-        // https://chromedevtools.github.io/devtools-protocol/tot/Browser/#method-grantPermissions
-        // We are using cy.wrap to wait for the promise returned
-        // from the Cypress.automation call, so the test continues
-        // after the clipboard permission has been granted
-        cy.wrap(
-            Cypress.automation("remote:debugger:protocol", {
-                command: "Browser.grantPermissions",
-                params: {
-                    permissions: ["clipboardReadWrite", "clipboardSanitizedWrite"],
-                    origin: window.location.origin
-                }
-            })
-        );
-    });
     beforeEach(() => cy.login());
     const pageTitle = "Welcome to Webiny";
 
     const searchForPage = title => {
         cy.findByTestId("default-data-list.search").within(() => {
             cy.findByPlaceholderText(/Search pages/i).type(title);
-            cy.wait(1000);
         });
+        // Wait for loading
+        cy.findByTestId("default-data-list.loading");
     };
 
     const clearSearch = () => {
@@ -48,7 +32,7 @@ context("Export Pages", () => {
         /**
          * Save image snapshot of the page preview before export so that we can compare it with importing the page.
          */
-        cy.get(".webiny-pb-page-document").matchImageSnapshot();
+        cy.get("pb-document").matchImageSnapshot();
         // Initiate page export
         cy.findByTestId("export-page-button").click();
 
@@ -124,7 +108,7 @@ context("Export Pages", () => {
                 });
         });
         // Check the image snapshot of the imported page
-        cy.get(".webiny-pb-page-document").matchImageSnapshot();
+        cy.get("pb-document").matchImageSnapshot();
 
         // Delete the imported page
         cy.findByTestId("default-data-list").within(() => {
