@@ -32,7 +32,7 @@ context("Export Pages", () => {
         /**
          * Save image snapshot of the page preview before export so that we can compare it with importing the page.
          */
-        cy.get("pb-document").matchImageSnapshot();
+        cy.get(".webiny-pb-page-document").matchImageSnapshot();
         // Initiate page export
         cy.findByTestId("export-page-button").click();
 
@@ -108,7 +108,7 @@ context("Export Pages", () => {
                 });
         });
         // Check the image snapshot of the imported page
-        cy.get("pb-document").matchImageSnapshot();
+        cy.get(".webiny-pb-page-document").matchImageSnapshot();
 
         // Delete the imported page
         cy.findByTestId("default-data-list").within(() => {
