@@ -1,7 +1,7 @@
 module.exports = {
     tables: [
         {
-            TableName: `PrerenderingService`,
+            TableName: "PrerenderingService",
             KeySchema: [
                 { AttributeName: "PK", KeyType: "HASH" },
                 { AttributeName: "SK", KeyType: "RANGE" }
