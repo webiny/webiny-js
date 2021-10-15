@@ -22,7 +22,7 @@ const windowSet = (page, name, value) => {
 
 export type File = { type: string; body: any; name: string; meta: Record<string, any> };
 
-export default async (url: string, args: Args): Promise<[File[], Meta]> => {
+export default async (url: string, args: Params): Promise<[File[], Meta]> => {
     const id = shortid.generate();
     const ts = new Date().getTime();
 
@@ -96,27 +96,30 @@ export default async (url: string, args: Args): Promise<[File[], Meta]> => {
 
 let browser;
 
-type RenderResult = {
+export interface RenderResult {
     content: string;
     meta: Record<string, any>;
-};
+}
 
-type Args = {
+export interface Params {
     context: HandlerContext;
     args: BaseHandlerArgs;
     configuration: Configuration;
     renderUrlFunction?: (url: string) => RenderResult;
-};
+}
 
-type Meta = {
+export interface Meta {
     url: string;
     id: string;
     ts: number;
     render: RenderResult;
-    args: Args;
-};
+    args: Params;
+}
 
-export const defaultRenderUrlFunction = async (url: string, args: Args): Promise<RenderResult> => {
+export const defaultRenderUrlFunction = async (
+    url: string,
+    params: Params
+): Promise<RenderResult> => {
     if (!browser) {
         browser = await chromium.puppeteer.launch({
             args: chromium.args,
@@ -132,19 +135,19 @@ export const defaultRenderUrlFunction = async (url: string, args: Args): Promise
     // Can be used to add additional logic - e.g. skip a GraphQL query to be made when in pre-rendering process.
     windowSet(browserPage, "__PS_RENDER__", true);
 
-    const tenant = args?.args?.configuration?.meta?.tenant;
+    const tenant = params?.args?.configuration?.meta?.tenant;
     if (tenant) {
         console.log("Setting tenant (__PS_RENDER_TENANT__) to window object....");
         windowSet(browserPage, "__PS_RENDER_TENANT__", tenant);
     }
 
-    const locale = args?.args?.configuration?.meta?.locale;
+    const locale = params?.args?.configuration?.meta?.locale;
     if (locale) {
         console.log("Setting locale (__PS_RENDER_LOCALE__) to window object....");
         windowSet(browserPage, "__PS_RENDER_LOCALE__", locale);
     }
 
-    const notFoundPage = args?.args?.configuration?.meta?.notFoundPage;
+    const notFoundPage = params?.args?.configuration?.meta?.notFoundPage;
     if (notFoundPage) {
         console.log("Setting locale (__PS_NOT_FOUND_PAGE__) to window object....");
         windowSet(browserPage, "__PS_NOT_FOUND_PAGE__", true);
