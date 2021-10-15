@@ -55,6 +55,8 @@ const args = {
 
     cypressConfig.env.AWS_COGNITO_USER_POOL_ID = apiOutput.cognitoUserPoolId;
     cypressConfig.env.AWS_COGNITO_CLIENT_ID = apiOutput.cognitoAppClientId;
+    // For cypress-image-snapshot
+    cypressConfig.env.failOnSnapshotDiff = false;
 
     // If testing with "local" stack, use "localhost" for the app URLs, otherwise fetch from state files.
 
@@ -80,8 +82,6 @@ const args = {
         cypressConfig.env.ADMIN_URL = adminOutput.appUrl;
         cypressConfig.env.WEBSITE_URL = websiteOutput.deliveryUrl;
         cypressConfig.env.WEBSITE_PREVIEW_URL = websiteOutput.appUrl;
-        // For cypress-image-snapshot
-        cypressConfig.env.failOnSnapshotDiff = false;
     }
 
     await writeJson(cypressConfigPath, cypressConfig);
