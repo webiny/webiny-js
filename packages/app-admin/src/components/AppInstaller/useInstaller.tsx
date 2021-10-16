@@ -12,7 +12,7 @@ const Loader = ({ children, ...props }) => (
     </Suspense>
 );
 
-export const useInstaller = () => {
+export const useInstaller = ({ isInstalled }) => {
     const [{ loading, installers, installerIndex, showLogin, skippingVersions }, setState] =
         useReducer((prev, next) => ({ ...prev, ...next }), {
             loading: true,
@@ -157,6 +157,10 @@ export const useInstaller = () => {
 
     useEffect(() => {
         (async () => {
+            if (isInstalled) {
+                return;
+            }
+
             const allInstallers = [];
             await Promise.all(
                 plugins.byType<AdminInstallationPlugin>("admin-installation").map(async pl => {

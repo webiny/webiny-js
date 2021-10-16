@@ -47,7 +47,7 @@ export const AppInstaller = ({ Authentication, children }) => {
         showLogin,
         onUser,
         skippingVersions
-    } = useInstaller();
+    } = useInstaller({ isInstalled: isInstallerCompleted() });
 
     useEffect(() => {
         if (identity) {
