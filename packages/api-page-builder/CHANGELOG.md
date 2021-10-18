@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.17.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.15.0...v5.17.0-beta.0) (2021-10-18)
+
+
+### Bug Fixes
+
+* correct dependencies ([269c59a](https://github.com/webiny/webiny-js/commit/269c59ad0e61b1ef0d5faa58ec380583d94c9eed))
+
+
+### Features
+
+* **api-form-builder:** dynamodb storage ops ([#1955](https://github.com/webiny/webiny-js/issues/1955)) ([8dff8e1](https://github.com/webiny/webiny-js/commit/8dff8e13496308b3f625e833e26f356ef35b061d))
+* divide prerendering-related plugins into separate files ([688ce46](https://github.com/webiny/webiny-js/commit/688ce46277a69eb3d8003b8f384176be3dd5a125))
+
+
+
+
+
 # [5.15.0](https://github.com/webiny/webiny-js/compare/v5.15.0-beta.3...v5.15.0) (2021-09-30)
 
 **Note:** Version bump only for package @webiny/api-page-builder

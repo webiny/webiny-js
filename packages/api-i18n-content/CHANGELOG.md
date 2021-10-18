@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.17.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.15.0...v5.17.0-beta.0) (2021-10-18)
+
+**Note:** Version bump only for package @webiny/api-i18n-content
+
+
+
+
+
 # [5.15.0](https://github.com/webiny/webiny-js/compare/v5.15.0-beta.3...v5.15.0) (2021-09-30)
 
 **Note:** Version bump only for package @webiny/api-i18n-content

@@ -6,12 +6,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 # [5.17.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.15.0...v5.17.0-beta.0) (2021-10-18)
 
 
-### Bug Fixes
-
-* **api-form-builder-so-ddb-es:** types for decoded cursor ([658281c](https://github.com/webiny/webiny-js/commit/658281cf7e936541230a47b89fd6219c33e3397e))
-
-
 ### Features
 
-* **api-form-builder:** dynamodb storage ops ([#1955](https://github.com/webiny/webiny-js/issues/1955)) ([8dff8e1](https://github.com/webiny/webiny-js/commit/8dff8e13496308b3f625e833e26f356ef35b061d))
 * **api-form-builder:** storage operations ([#1942](https://github.com/webiny/webiny-js/issues/1942)) ([a041a2c](https://github.com/webiny/webiny-js/commit/a041a2c00432c86e84f9be002b3943a629906d77))
+* **pubsub:** add pub/sub package ([#1936](https://github.com/webiny/webiny-js/issues/1936)) ([3a2facb](https://github.com/webiny/webiny-js/commit/3a2facb072af70b1f4d647ab23219a4c42e1bf74))

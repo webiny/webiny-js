@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.17.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.15.0...v5.17.0-beta.0) (2021-10-18)
+
+
+### Bug Fixes
+
+* use `.webiny` folder for Pulumi CLI-related files and folders ([139d1c1](https://github.com/webiny/webiny-js/commit/139d1c147c0da9a66a8059ee51a98880b0cbf772))
+
+
+### Features
+
+* introduce `--allow-production` when watching production environment (not recommended) ([8d627ab](https://github.com/webiny/webiny-js/commit/8d627abef6fcc595528734dbb9a16b503e02a47d))
+* make logs in "Deploy" pane prettier ([74f9d6c](https://github.com/webiny/webiny-js/commit/74f9d6c9dfdf0714754b4d01970dbab919b2c9ab))
+
+
+
+
+
 # [5.15.0](https://github.com/webiny/webiny-js/compare/v5.15.0-beta.3...v5.15.0) (2021-09-30)
 
 **Note:** Version bump only for package @webiny/cli-plugin-deploy-pulumi
