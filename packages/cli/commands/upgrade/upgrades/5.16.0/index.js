@@ -8,6 +8,13 @@ const fs = require("fs");
 const fsExtra = require("fs-extra");
 
 const targetVersion = "5.16.0";
+/**
+ * Timestamp in seconds. Remove the milliseconds.
+ * @return {number}
+ */
+const createCurrentTimestamp = () => {
+    return Math.floor(Date.now() / 1000);
+};
 
 const checkFiles = files => {
     for (const initialFile of files) {
@@ -24,7 +31,7 @@ const checkFiles = files => {
 const createBackupFileName = file => {
     const ext = `.${file.split(".").pop()}`;
 
-    const now = Math.floor(Date.now() / 1000);
+    const now = createCurrentTimestamp();
 
     const backup = file.replace(new RegExp(`${ext}$`), `.${now}${ext}`);
 
@@ -120,7 +127,30 @@ const copyFiles = (context, initialTargets) => {
  */
 const copyFolders = (context, targets) => {
     context.info(`Copy folders...`);
-
+    /**
+     * First we need to backup existing folders.
+     */
+    for (const target of targets) {
+        const folders = target.destination.split("/");
+        const folderName = folders.pop();
+        const now = createCurrentTimestamp();
+        const backupDestination = folders.concat([`${folderName}_${now}`]).join("/");
+        if (fs.existsSync(target.destination) === false) {
+            context.info(`No destination "${target.destination}" to backup.`);
+            continue;
+        }
+        fsExtra.copySync(target.destination, backupDestination);
+        context.info(`Backed up "${target.destination}" to ${backupDestination}.`);
+    }
+    /**
+     * Delete existing folders.
+     */
+    for (const target of targets) {
+        fsExtra.removeSync(target.destination);
+    }
+    /**
+     * And in the end we need to copy new folders to their destinations.
+     */
     for (const target of targets) {
         fsExtra.copySync(target.source, target.destination);
     }
