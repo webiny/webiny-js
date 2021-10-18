@@ -7,25 +7,27 @@ import {
     PrerenderingServiceStorageOperationsDeleteTagUrlLinksParams,
     PrerenderingServiceStorageOperationsGetRenderParams,
     PrerenderingServiceStorageOperationsListRendersParams,
+    PrerenderingServiceStorageOperationsListTagUrlLinksParams,
     Render,
     TagUrlLink
 } from "@webiny/api-prerendering-service/types";
 import { Entity } from "dynamodb-toolbox";
 import { get } from "@webiny/db-dynamodb/utils/get";
 import { queryAll, QueryAllParams } from "@webiny/db-dynamodb/utils/query";
-import { queryOptions as DynamoDBToolboxQueryOptions } from "dynamodb-toolbox/dist/classes/Table";
 import { batchReadAll } from "@webiny/db-dynamodb/utils/batchRead";
 import { batchWriteAll } from "@webiny/db-dynamodb/utils/batchWrite";
 import { Tag } from "@webiny/api-prerendering-service/queue/add/types";
+import { cleanupItem, cleanupItems } from "@webiny/db-dynamodb/utils/cleanup";
+import { queryOptions as DynamoDBToolboxQueryOptions } from "dynamodb-toolbox/dist/classes/Table";
 
 export interface Params {
     entity: Entity<any>;
-    urlTagLinkEntity: Entity<any>;
+    tagUrlLinkEntity: Entity<any>;
 }
 
 export interface CreateTagUrlLinkPartitionKeyParams {
     namespace: string;
-    tag: Tag;
+    tag: Pick<Tag, "key">;
 }
 
 export interface CreateTagUrlLinkSortKeyParams {
@@ -36,10 +38,16 @@ export interface CreateTagUrlLinkSortKeyParams {
 export const createRenderStorageOperations = (
     params: Params
 ): PrerenderingServiceRenderStorageOperations => {
-    const { entity, urlTagLinkEntity } = params;
+    const { entity, tagUrlLinkEntity } = params;
 
     const createRenderPartitionKey = (namespace: string): string => {
-        return `${namespace}#PS#RENDER`;
+        /**
+         * For backwards compatibility remove the T# if it exists.
+         */
+        if (namespace.startsWith("T#")) {
+            namespace = namespace.replace(/^T#/, "");
+        }
+        return `T#${namespace}#PS#RENDER`;
     };
 
     const createRenderSortKey = (url: string): string => {
@@ -48,6 +56,28 @@ export const createRenderStorageOperations = (
 
     const createRenderType = (): string => {
         return "ps.render";
+    };
+
+    const createTagUrlLinkPartitionKey = (params: CreateTagUrlLinkPartitionKeyParams): string => {
+        const { tag } = params;
+        let { namespace } = params;
+        if (namespace.startsWith("T#")) {
+            namespace = namespace.replace(/^T#/, "");
+        }
+        return `T#${namespace}#PS#TAG#${tag.key}`;
+    };
+
+    const createTagUrlLinkSortKey = (params: CreateTagUrlLinkSortKeyParams): string => {
+        const { tag, url } = params;
+        const values = [tag.value];
+        if (url) {
+            values.push(url);
+        }
+        return values.join("#");
+    };
+
+    const createTagUrlLinkType = (): string => {
+        return "ps.tagUrlLink";
     };
 
     const getRender = async (params: PrerenderingServiceStorageOperationsGetRenderParams) => {
@@ -59,10 +89,11 @@ export const createRenderStorageOperations = (
         };
 
         try {
-            return await get<Render>({
+            const result = await get<Render>({
                 entity,
                 keys
             });
+            return cleanupItem(entity, result);
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not get render record by given key.",
@@ -83,11 +114,12 @@ export const createRenderStorageOperations = (
         };
 
         try {
-            return await entity.put({
+            await entity.put({
                 ...render,
                 ...keys,
                 TYPE: createRenderType()
             });
+            return render;
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not create render record.",
@@ -99,7 +131,9 @@ export const createRenderStorageOperations = (
             );
         }
     };
-    const deleteRender = async (params: PrerenderingServiceStorageOperationsDeleteRenderParams) => {
+    const deleteRender = async (
+        params: PrerenderingServiceStorageOperationsDeleteRenderParams
+    ): Promise<void> => {
         const { render } = params;
 
         const keys = {
@@ -108,7 +142,7 @@ export const createRenderStorageOperations = (
         };
 
         try {
-            return await entity.delete(keys);
+            await entity.delete(keys);
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not delete render record.",
@@ -133,36 +167,12 @@ export const createRenderStorageOperations = (
             return [];
         }
 
-        const partitionKey = createTagUrlLinkPartitionKey({
-            tag,
-            namespace
+        const links = await listTagUrlLinks({
+            where: {
+                namespace,
+                tag
+            }
         });
-        const options: DynamoDBToolboxQueryOptions = {};
-        if (tag.value) {
-            options.beginsWith = `${tag.value}#`;
-        } else {
-            options.gte = " ";
-        }
-
-        const queryAllParams: QueryAllParams = {
-            entity: urlTagLinkEntity,
-            partitionKey,
-            options
-        };
-
-        let links: TagUrlLink[] = [];
-        try {
-            links = await queryAll<TagUrlLink>(queryAllParams);
-        } catch (ex) {
-            throw new WebinyError(
-                ex.message || "Could not list tagUrlLink records.",
-                ex.code || "LIST_TAG_URL_LINK_ERROR",
-                {
-                    partitionKey: queryAllParams.partitionKey,
-                    options: queryAllParams.options
-                }
-            );
-        }
 
         const items = links.map(link => {
             return entity.getBatch({
@@ -171,10 +181,11 @@ export const createRenderStorageOperations = (
             });
         });
         try {
-            return await batchReadAll<Render>({
+            const results = await batchReadAll<Render>({
                 table: entity.table,
                 items
             });
+            return cleanupItems(entity, results);
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not list render records after links.",
@@ -203,7 +214,9 @@ export const createRenderStorageOperations = (
         };
 
         try {
-            return await queryAll<Render>(queryAllParams);
+            const results = await queryAll<Render>(queryAllParams);
+
+            return cleanupItems(entity, results);
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not list render records.",
@@ -216,31 +229,13 @@ export const createRenderStorageOperations = (
         }
     };
 
-    const createTagUrlLinkPartitionKey = (params: CreateTagUrlLinkPartitionKeyParams): string => {
-        const { namespace, tag } = params;
-        return `${namespace}#PS#TAG#${tag.key}`;
-    };
-
-    const createTagUrlLinkSortKey = (params: CreateTagUrlLinkSortKeyParams): string => {
-        const { tag, url } = params;
-        const values = [tag.value];
-        if (url) {
-            values.push(url);
-        }
-        return values.join("#");
-    };
-
-    const createTagUrlLinkType = (): string => {
-        return "ps.tagUrlLink";
-    };
-
     const createTagUrlLinks = async (
         params: PrerenderingServiceStorageOperationsCreateTagUrlLinksParams
     ) => {
         const { tagUrlLinks } = params;
 
         const items = tagUrlLinks.map(item => {
-            return urlTagLinkEntity.putBatch({
+            return tagUrlLinkEntity.putBatch({
                 ...item,
                 TYPE: createTagUrlLinkType(),
                 PK: createTagUrlLinkPartitionKey({
@@ -256,20 +251,19 @@ export const createRenderStorageOperations = (
 
         try {
             await batchWriteAll({
-                table: urlTagLinkEntity.table,
+                table: tagUrlLinkEntity.table,
                 items
             });
+            return tagUrlLinks;
         } catch (ex) {
             throw new WebinyError(
-                ex.message || "Could not create urlTagLink records.",
+                ex.message || "Could not create tagUrlLink records.",
                 ex.code || "CREATE_URL_TAG_LINKS_ERROR",
                 {
                     tagUrlLinks
                 }
             );
         }
-
-        return tagUrlLinks;
     };
 
     const deleteTagUrlLinks = async (
@@ -277,7 +271,7 @@ export const createRenderStorageOperations = (
     ): Promise<void> => {
         const { namespace, tags, url } = params;
         const items = tags.map(tag => {
-            return urlTagLinkEntity.deleteBatch({
+            return tagUrlLinkEntity.deleteBatch({
                 PK: createTagUrlLinkPartitionKey({
                     tag,
                     namespace
@@ -291,17 +285,57 @@ export const createRenderStorageOperations = (
 
         try {
             await batchWriteAll({
-                table: urlTagLinkEntity.table,
+                table: tagUrlLinkEntity.table,
                 items
             });
         } catch (ex) {
             throw new WebinyError(
-                ex.message || "Could not delete urlTagLink records.",
+                ex.message || "Could not delete tagUrlLink records.",
                 ex.code || "DELETE_URL_TAG_LINKS_ERROR",
                 {
                     tags,
                     namespace,
                     url
+                }
+            );
+        }
+    };
+
+    const listTagUrlLinks = async (
+        params: PrerenderingServiceStorageOperationsListTagUrlLinksParams
+    ) => {
+        const { where } = params;
+        const { namespace, tag } = where;
+
+        const partitionKey = createTagUrlLinkPartitionKey({
+            namespace,
+            tag
+        });
+
+        const options: DynamoDBToolboxQueryOptions = {};
+        if (tag.value) {
+            options.beginsWith = `${tag.value}#`;
+        } else {
+            options.gte = " ";
+        }
+
+        const queryAllParams: QueryAllParams = {
+            entity: tagUrlLinkEntity,
+            partitionKey,
+            options
+        };
+
+        try {
+            const results = await queryAll<TagUrlLink>(queryAllParams);
+
+            return cleanupItems(tagUrlLinkEntity, results);
+        } catch (ex) {
+            throw new WebinyError(
+                ex.message || "Could not list tagUrlLink records.",
+                ex.code || "LIST_TAG_URL_LINK_ERROR",
+                {
+                    partitionKey,
+                    options
                 }
             );
         }
@@ -313,6 +347,7 @@ export const createRenderStorageOperations = (
         listRenders,
         getRender,
         createTagUrlLinks,
-        deleteTagUrlLinks
+        deleteTagUrlLinks,
+        listTagUrlLinks
     };
 };

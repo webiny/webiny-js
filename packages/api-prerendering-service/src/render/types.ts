@@ -1,7 +1,6 @@
 import { HandlerPlugin as DefaultHandlerPlugin, ContextInterface } from "@webiny/handler/types";
 import { ArgsContext } from "@webiny/handler-args/types";
 import { Plugin } from "@webiny/plugins/types";
-import { PrerenderingServiceStorageOperations } from "~/types";
 
 export interface Configuration {
     website?: {

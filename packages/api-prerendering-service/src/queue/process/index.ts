@@ -4,6 +4,7 @@ import pluralize from "pluralize";
 import { HandlerPlugin, ProcessHookPlugin } from "./types";
 import { QueueJob, PrerenderingServiceStorageOperations } from "~/types";
 import { HandlerResponse } from "~/types";
+import { get as dotPropGet } from "dot-prop";
 
 const IS_TEST = process.env.NODE_ENV === "test";
 const log = (...args) => {
@@ -58,13 +59,6 @@ export default (params: Configuration): HandlerPlugin => {
                 }
 
                 log("Fetching all of the jobs added to the queue...");
-                // const [jobs] = await context.db.read<QueueJob>({
-                //     ...defaults.db,
-                //     query: {
-                //         PK: "PS#Q#JOB",
-                //         SK: { $gte: " " }
-                //     }
-                // });
 
                 const jobs = await storageOperations.listQueueJobs();
 
@@ -108,7 +102,9 @@ export default (params: Configuration): HandlerPlugin => {
                         }
                     }
 
-                    // TODO: Ideally, we'd want to add support for processing `flush` jobs as well.
+                    /**
+                     * TODO: Ideally, we'd want to add support for processing `flush` jobs as well.
+                     */
                 }
 
                 log(
@@ -140,7 +136,9 @@ export default (params: Configuration): HandlerPlugin => {
                         return !renderAllJobs[dbNamespace];
                     });
 
-                    // TODO: Ideally, we'd want to add support for processing `flush` jobs as well.
+                    /**
+                     * TODO: Ideally, we'd want to add support for processing `flush` jobs as well.
+                     */
                 }
 
                 /**
@@ -172,13 +170,15 @@ export default (params: Configuration): HandlerPlugin => {
                     log("Processing unique job.", JSON.stringify(uniqueJob));
                     const { args } = uniqueJob;
 
-                    // TODO: Ideally, we'd want to add support for processing `flush` jobs as well.
+                    /**
+                     * TODO: Ideally, we'd want to add support for processing `flush` jobs as well.
+                     */
                     const { render /*flush*/ } = args;
 
                     if (render) {
                         const { tag, path, url, configuration } = render;
 
-                        const dbNamespace = configuration?.db?.namespace || "";
+                        const dbNamespace = dotPropGet(configuration, "db.namespace", "");
                         if (!uniqueDbNamespaces[dbNamespace]) {
                             uniqueDbNamespaces[dbNamespace] = uniqueDbNamespaces;
                         }
@@ -204,7 +204,9 @@ export default (params: Configuration): HandlerPlugin => {
 
                                 for (const render of renders) {
                                     const { url, args } = render;
-                                    // We just need the `args` of the `renderData`.
+                                    /**
+                                     * We just need the `args` of the `renderData`.
+                                     */
                                     uniqueJobsPerOperationPerDbNamespace.render[dbNamespace][url] =
                                         args;
                                 }
@@ -235,10 +237,13 @@ export default (params: Configuration): HandlerPlugin => {
                              * B) For tags like { key: "pb-page" }, we don't care about tag value (value in SK
                              * column), so we don't send anything as the SK condition.
                              */
-
                             for (const render of renders) {
-                                uniqueJobsPerOperationPerDbNamespace.render[dbNamespace][url] =
-                                    render.args;
+                                if (!render || !render.args) {
+                                    continue;
+                                }
+                                uniqueJobsPerOperationPerDbNamespace.render[dbNamespace][
+                                    render.url
+                                ] = render.args;
                             }
                         }
                     }
@@ -314,7 +319,9 @@ export default (params: Configuration): HandlerPlugin => {
                 if (Object.keys(uniqueJobsPerOperationPerDbNamespace.flush).length === 0) {
                     log("There are no flush jobs to issue. Moving on...");
                 } else {
-                    // TODO: probably a good amount of code can be copied from above render processing.
+                    /**
+                     * TODO: probably a good amount of code can be copied from above render processing.
+                     */
                 }
 
                 log(`All queue jobs processed, triggering "afterProcess" hook...`);

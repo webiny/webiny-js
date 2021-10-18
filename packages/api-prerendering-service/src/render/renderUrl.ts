@@ -20,7 +20,12 @@ const windowSet = (page, name, value) => {
     })`);
 };
 
-export type File = { type: string; body: any; name: string; meta: Record<string, any> };
+export interface File {
+    type: string;
+    body: any;
+    name: string;
+    meta: Record<string, any>;
+}
 
 export default async (url: string, args: Params): Promise<[File[], Meta]> => {
     const id = shortid.generate();

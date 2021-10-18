@@ -9,6 +9,7 @@ import {
 import { Entity } from "dynamodb-toolbox";
 import { batchWriteAll } from "@webiny/db-dynamodb/utils/batchWrite";
 import { queryAll, QueryAllParams } from "@webiny/db-dynamodb/utils/query";
+import { cleanupItems } from "@webiny/db-dynamodb/utils/cleanup";
 
 export interface Params {
     entity: Entity<any>;
@@ -40,11 +41,12 @@ export const createQueueJobStorageOperations = (
         };
 
         try {
-            return await entity.put({
+            await entity.put({
                 ...queueJob,
                 ...keys,
                 TYPE: createQueueJobType()
             });
+            return queueJob;
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not create render record.",
@@ -70,7 +72,9 @@ export const createQueueJobStorageOperations = (
         };
 
         try {
-            return await queryAll<QueueJob>(queryAllParams);
+            const results = await queryAll<QueueJob>(queryAllParams);
+
+            return cleanupItems(entity, results);
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not list queue jobs records.",
@@ -100,6 +104,7 @@ export const createQueueJobStorageOperations = (
                 table: entity.table,
                 items
             });
+            return queueJobs;
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not delete queue jobs records.",
@@ -109,7 +114,6 @@ export const createQueueJobStorageOperations = (
                 }
             );
         }
-        return queueJobs;
     };
 
     return {

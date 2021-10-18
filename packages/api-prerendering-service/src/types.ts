@@ -13,7 +13,11 @@ export interface Render {
     url: string;
     args?: Record<string, any>;
     configuration?: Record<string, any>;
-    files: { name: string; type: string; meta: Record<string, any> }[];
+    files: {
+        name: string;
+        type: string;
+        meta: Record<string, any>;
+    }[];
 }
 
 /**
@@ -80,14 +84,22 @@ export interface PrerenderingServiceStorageOperationsDeleteTagUrlLinksParams {
     url?: string;
 }
 
+export interface PrerenderingServiceStorageOperationsListTagUrlLinksParams {
+    where: {
+        namespace: string;
+        tag: {
+            key: string;
+            value?: string;
+        };
+    };
+}
+
 export interface PrerenderingServiceRenderStorageOperations {
     getRender: (params: PrerenderingServiceStorageOperationsGetRenderParams) => Promise<Render>;
     createRender: (
         params: PrerenderingServiceStorageOperationsCreateRenderParams
     ) => Promise<Render>;
-    deleteRender: (
-        params: PrerenderingServiceStorageOperationsDeleteRenderParams
-    ) => Promise<Render>;
+    deleteRender: (params: PrerenderingServiceStorageOperationsDeleteRenderParams) => Promise<void>;
     listRenders: (
         params: PrerenderingServiceStorageOperationsListRendersParams
     ) => Promise<Render[]>;
@@ -98,6 +110,10 @@ export interface PrerenderingServiceRenderStorageOperations {
     deleteTagUrlLinks: (
         params: PrerenderingServiceStorageOperationsDeleteTagUrlLinksParams
     ) => Promise<void>;
+
+    listTagUrlLinks: (
+        params: PrerenderingServiceStorageOperationsListTagUrlLinksParams
+    ) => Promise<TagUrlLink[]>;
 }
 
 export interface PrerenderingServiceQueueJobStorageOperations {

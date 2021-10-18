@@ -1,4 +1,4 @@
-import render from "@webiny/api-prerendering-service/render/renderUrl";
+import render from "~/render/renderUrl";
 import prettier from "prettier";
 
 const BASE_HTML = `<html lang="en"><head><meta charset="utf-8" /></head><body><div id="root">A sample page.</div></body></html>`;

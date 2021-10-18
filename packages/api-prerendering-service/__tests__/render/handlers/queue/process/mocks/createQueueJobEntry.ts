@@ -1,6 +1,7 @@
 import mdbid from "mdbid";
+import { QueueJob } from "~/types";
 
-type Args = {
+interface Args {
     render?: {
         configuration?: {
             db?: {
@@ -12,13 +13,11 @@ type Args = {
             key: string;
         };
     };
-};
+}
 
-export default function (args: Args) {
+export default function (args: Args): QueueJob {
     return {
-        SK: mdbid(),
-        PK: "PS#Q#JOB",
-        TYPE: "ps.queue.job",
+        id: mdbid(),
         args
     };
 }

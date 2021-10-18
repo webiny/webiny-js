@@ -5,6 +5,7 @@ import { createRenderEntity } from "~/definitions/render";
 import { createQueueJobEntity } from "~/definitions/queueJob";
 import { createRenderStorageOperations } from "~/operations/render";
 import { createQueueJobStorageOperations } from "~/operations/queueJob";
+import { createTagUrlLinkEntity } from "~/definitions/tagUrlLink";
 
 const reservedFields = ["PK", "SK", "index", "data", "TYPE", "__type", "GSI1_PK", "GSI1_SK"];
 
@@ -17,7 +18,7 @@ const isReserved = (name: string): void => {
     });
 };
 
-export const createPrerenderingServiceStorageOperations: PrerenderingServiceFactory = async (
+export const createPrerenderingServiceStorageOperations: PrerenderingServiceFactory = (
     params: PrerenderingServiceFactoryParams
 ) => {
     const { attributes = {}, table: tableName, documentClient } = params;
@@ -44,10 +45,10 @@ export const createPrerenderingServiceStorageOperations: PrerenderingServiceFact
             table,
             attributes: attributes[ENTITIES.QUEUE_JOB]
         }),
-        urlTagLink: createQueueJobEntity({
-            entityName: ENTITIES.URL_TAG_LINK,
+        tagUrlLink: createTagUrlLinkEntity({
+            entityName: ENTITIES.TAG_URL_LINK,
             table,
-            attributes: attributes[ENTITIES.URL_TAG_LINK]
+            attributes: attributes[ENTITIES.TAG_URL_LINK]
         })
     };
 
@@ -56,7 +57,7 @@ export const createPrerenderingServiceStorageOperations: PrerenderingServiceFact
         getEntities: () => entities,
         ...createRenderStorageOperations({
             entity: entities.render,
-            urlTagLinkEntity: entities.urlTagLink
+            tagUrlLinkEntity: entities.tagUrlLink
         }),
         ...createQueueJobStorageOperations({
             entity: entities.queueJob

@@ -22,6 +22,9 @@ export const createQueueJobEntity = (params: Params): Entity<any> => {
             TYPE: {
                 type: "string"
             },
+            id: {
+                type: "string"
+            },
             args: {
                 type: "map"
             },

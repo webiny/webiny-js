@@ -22,6 +22,9 @@ export const createTagUrlLinkEntity = (params: Params) => {
             TYPE: {
                 type: "string"
             },
+            namespace: {
+                type: "string"
+            },
             url: {
                 type: "string"
             },

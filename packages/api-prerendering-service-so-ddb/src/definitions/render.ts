@@ -22,6 +22,9 @@ export const createRenderEntity = (params: Params): Entity<any> => {
             TYPE: {
                 type: "string"
             },
+            namespace: {
+                type: "string"
+            },
             url: {
                 type: "string"
             },
@@ -32,7 +35,7 @@ export const createRenderEntity = (params: Params): Entity<any> => {
                 type: "map"
             },
             files: {
-                type: "map"
+                type: "list"
             },
             ...(attributes || {})
         }
