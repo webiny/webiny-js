@@ -3,8 +3,8 @@
   "include": ["src", "__tests__/**/*.ts"],
   "references": [
     { "path": "../app" },
-    { "path": "../app-tenancy" },
     { "path": "../app-security" },
+    { "path": "../app-tenancy" },
     { "path": "../form" },
     { "path": "../plugins" },
     { "path": "../react-router" },

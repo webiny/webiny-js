@@ -29,7 +29,6 @@
     "apollo-cache": "^1.3.5",
     "apollo-client": "^2.6.10",
     "apollo-link": "^1.2.14",
-    "apollo-link-context": "^1.0.20",
     "apollo-utilities": "^1.3.4",
     "graphql": "^14.7.0",
     "graphql-tag": "^2.10.1",

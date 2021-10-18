@@ -4,7 +4,8 @@ import pageImportExportTaskPlugins from "../../src/graphql/crud/pageImportExport
 import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
 import { PbContext } from "@webiny/api-page-builder/graphql/types";
 import WebinyError from "@webiny/error";
-import securityPlugins, { SecurityIdentity } from "@webiny/api-security";
+import securityPlugins from "@webiny/api-security";
+import { SecurityIdentity } from "@webiny/api-security/types";
 
 const setup = () => {
     return new ContextPlugin<PbContext>(context => {

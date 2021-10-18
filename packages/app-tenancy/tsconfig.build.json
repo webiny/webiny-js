@@ -4,7 +4,6 @@
   "references": [
     { "path": "../app/tsconfig.build.json" },
     { "path": "../app-admin/tsconfig.build.json" },
-    { "path": "../app-security/tsconfig.build.json" },
     { "path": "../plugins/tsconfig.build.json" },
     { "path": "../ui/tsconfig.build.json" }
   ],

@@ -1,60 +1,48 @@
 import tenancy from "@webiny/api-tenancy";
+import { createStorageOperations as tenancyStorageOperations } from "@webiny/api-tenancy-so-ddb";
 import security from "@webiny/api-security";
-import personalAccessTokenAuthentication from "@webiny/api-security-admin-users/authentication/personalAccessToken";
-import apiKeyAuthentication from "@webiny/api-security-admin-users/authentication/apiKey";
-import userAuthorization from "@webiny/api-security-admin-users/authorization/user";
-import apiKeyAuthorization from "@webiny/api-security-admin-users/authorization/apiKey";
-import anonymousAuthorization from "@webiny/api-security-admin-users/authorization/anonymous";
-import cognitoAuthentication from "@webiny/api-security-cognito-authentication";
-import cognitoIdentityProvider from "@webiny/api-security-admin-users-cognito";
+import { createStorageOperations as securityStorageOperations } from "@webiny/api-security-so-ddb";
+import { authenticateUsingHttpHeader } from "@webiny/api-security/plugins/authenticateUsingHttpHeader";
+import apiKeyAuthentication from "@webiny/api-security/plugins/apiKeyAuthentication";
+import apiKeyAuthorization from "@webiny/api-security/plugins/apiKeyAuthorization";
+import groupAuthorization from "@webiny/api-security/plugins/groupAuthorization";
+import parentTenantGroupAuthorization from "@webiny/api-security/plugins/parentTenantGroupAuthorization";
+import anonymousAuthorization from "@webiny/api-security/plugins/anonymousAuthorization";
+import cognitoAuthentication from "@webiny/api-security-cognito";
 
-export default () => [
+export default ({ documentClient }) => [
     /**
-     * Security Tenancy API (context, users, groups, tenant links).
-     * This will setup the complete GraphQL schema to manage users, groups, access tokens,
-     * and provide you with a TenancyContext to access current Tenant data and DB operations.
+     * Setup Tenancy app.
      */
-    tenancy(),
-
-    /**
-     * Cognito IDP plugin (hooks for User CRUD methods).
-     * This plugin will perform CRUD operations on Cognito when you do something with the user
-     * via the UI or API. It's mostly to push changes to Cognito when they happen in your app.
-     *
-     * It also extends the GraphQL schema with things like "password", which we don't handle
-     * natively in our security, but Cognito will handle it for us.
-     */
-    cognitoIdentityProvider({
-        region: process.env.COGNITO_REGION,
-        userPoolId: process.env.COGNITO_USER_POOL_ID
+    tenancy({
+        multiTenancy: true,
+        storageOperations: tenancyStorageOperations({ documentClient })
     }),
 
     /**
-     * Adds a context plugin to process `security-authentication` plugins.
-     * NOTE: this has to be registered *after* the "tenancy" plugins
-     * as some of the authentication plugins rely on tenancy context.
+     * Setup Security app.
      */
-    security(),
+    security({
+        storageOperations: securityStorageOperations({ documentClient })
+    }),
 
     /**
-     * Authentication plugin for Personal Access Tokens.
-     * PATs are directly linked to Users. We consider a token to be valid, if we manage to load
-     * a User who owns this particular token. The "identityType" is important, and it has to match
-     * the "identityType" configured in the authorization plugin later in this file.
+     * Perform authentication using the common "Authorization" HTTP header.
+     * This will fetch the value of the header, and execute the authentication process.
      */
-    personalAccessTokenAuthentication({ identityType: "admin" }),
+    authenticateUsingHttpHeader(),
 
     /**
-     * Authentication plugin for API Keys.
+     * API Key authenticator.
      * API Keys are a standalone entity, and are not connected to users in any way.
-     * They identify a project, a 3rd party client, not the user.
+     * They identify a project, a 3rd party client, not a particular user.
      * They are used for programmatic API access, CMS data import/export, etc.
      */
     apiKeyAuthentication({ identityType: "api-key" }),
 
     /**
      * Cognito authentication plugin.
-     * This plugin will verify the JWT token against a provided User Pool.
+     * This plugin will verify the JWT token against the provided User Pool.
      */
     cognitoAuthentication({
         region: process.env.COGNITO_REGION,
@@ -69,11 +57,14 @@ export default () => [
     apiKeyAuthorization({ identityType: "api-key" }),
 
     /**
-     * Authorization plugin to load user permissions for requested tenant.
-     * The authorization will only be performed on identities whose "type" matches
-     * the provided "identityType".
+     * Authorization plugin to fetch permissions from a security group associated with the identity.
      */
-    userAuthorization({ identityType: "admin" }),
+    groupAuthorization({ identityType: "admin" }),
+
+    /**
+     * Authorization plugin to fetch permissions from the parent tenant.
+     */
+    parentTenantGroupAuthorization({ identityType: "admin" }),
 
     /**
      * Authorization plugin to load permissions for anonymous requests.

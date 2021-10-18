@@ -29,6 +29,7 @@
     "@webiny/api-security-so-ddb": "^5.15.0",
     "@webiny/api-tenancy": "^5.15.0",
     "@webiny/api-tenancy-so-ddb": "^5.15.0",
+    "@webiny/api-tenant-manager": "^5.15.0",
     "@webiny/cli": "^5.15.0",
     "@webiny/db-dynamodb": "^5.15.0",
     "@webiny/handler": "^5.15.0",

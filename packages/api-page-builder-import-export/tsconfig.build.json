@@ -1,37 +1,26 @@
 {
   "extends": "../../tsconfig.build.json",
-  "include": ["./src"],
-  "exclude": [
-    "node_modules",
-    "../db",
-    "../api-dynamodb-to-elasticsearch",
-    "../handler",
-    "../handler-args",
-    "../validation",
-    "../api-i18n-ddb",
-    "../handler-graphql",
-    "../error",
-    "../api-file-manager",
-    "../api-file-manager-ddb-es",
-    "../api-page-builder",
-    "../api-security",
-    "../handler-aws"
+  "include": ["src"],
+  "references": [
+    { "path": "../api-file-manager/tsconfig.build.json" },
+    { "path": "../api-page-builder/tsconfig.build.json" },
+    { "path": "../api-security/tsconfig.build.json" },
+    { "path": "../error/tsconfig.build.json" },
+    { "path": "../handler/tsconfig.build.json" },
+    { "path": "../handler-args/tsconfig.build.json" },
+    { "path": "../handler-aws/tsconfig.build.json" },
+    { "path": "../handler-graphql/tsconfig.build.json" },
+    { "path": "../validation/tsconfig.build.json" },
+    { "path": "../api-dynamodb-to-elasticsearch/tsconfig.build.json" },
+    { "path": "../api-file-manager-ddb-es/tsconfig.build.json" },
+    { "path": "../api-i18n-ddb/tsconfig.build.json" },
+    { "path": "../db/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "rootDir": "./src",
     "outDir": "./dist",
     "declarationDir": "./dist",
-    "paths": {
-      "~/*": ["./src/*"]
-    },
+    "paths": { "~/*": ["./src/*"] },
     "baseUrl": "."
-  },
-  "references": [
-    {
-      "path": "../api-security/tsconfig.build.json"
-    },
-    {
-      "path": "../handler-aws/tsconfig.build.json"
-    }
-  ]
+  }
 }
