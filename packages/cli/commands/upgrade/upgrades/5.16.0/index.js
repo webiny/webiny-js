@@ -270,6 +270,9 @@ module.exports = {
          * Copy folders to their destinations.
          */
         copyFolders(context, [
+            /**
+             * Export/import pages.
+             */
             {
                 source: "node_modules/@webiny/cwp-template-aws/template/api/code/pageBuilder/exportPages",
                 destination: "api/code/pageBuilder/exportPages"
@@ -277,6 +280,13 @@ module.exports = {
             {
                 source: "node_modules/@webiny/cwp-template-aws/template/api/code/pageBuilder/importPages",
                 destination: "api/code/pageBuilder/importPages"
+            },
+            /**
+             * Prerendering services.
+             */
+            {
+                source: "node_modules/@webiny/cwp-template-aws/template/api/code/prerenderingService",
+                destination: "api/code/prerenderingService"
             }
         ]);
         /**
