@@ -313,7 +313,7 @@ describe("Render Pages Test", () => {
         expect(issuedRenders).toEqual([
             [
                 {
-                    url: "https://site.com/path-0",
+                    url: expect.stringMatching("https://site.com/path-"),
                     configuration: {
                         meta: {
                             cloudfront: {
@@ -330,7 +330,7 @@ describe("Render Pages Test", () => {
                     }
                 },
                 {
-                    url: "https://site.com/path-1",
+                    url: expect.stringMatching("https://site.com/path-"),
                     configuration: {
                         meta: {
                             cloudfront: {
@@ -347,7 +347,7 @@ describe("Render Pages Test", () => {
                     }
                 },
                 {
-                    url: "https://site.com/path-2",
+                    url: expect.stringMatching("https://site.com/path-"),
                     configuration: {
                         meta: {
                             cloudfront: {

@@ -1,9 +1,10 @@
 import { QueueJob } from "~/types";
+import mdbid from "mdbid";
 
 const mocks = {
     job: (index): QueueJob => {
         return {
-            id: `job-${index}`,
+            id: mdbid(),
             args: {
                 render: {
                     configuration: {
@@ -21,7 +22,7 @@ const mocks = {
     },
     renderAllJob: ({ index, namespace = "root" }): QueueJob => {
         return {
-            id: `job-all-${index}`,
+            id: index || mdbid(),
             args: {
                 render: {
                     configuration: {

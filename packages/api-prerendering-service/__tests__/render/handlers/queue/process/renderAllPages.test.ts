@@ -1,5 +1,6 @@
 import useHandler from "./useHandler";
 import mocks from "./mocks/renderAllPages";
+import mdbid from "mdbid";
 
 describe("Render All Pages Test", () => {
     it('should rerender all existing pages when "path: *" is present in the jobs list', async () => {
@@ -15,7 +16,7 @@ describe("Render All Pages Test", () => {
 
         for (let i = 0; i < 3; i++) {
             await storageOperations.createQueueJob({
-                queueJob: mocks.renderAllJob({ index: String(i) })
+                queueJob: mocks.renderAllJob({ index: mdbid() })
             });
         }
         const queueJobsAll = await storageOperations.listQueueJobs();
@@ -49,13 +50,13 @@ describe("Render All Pages Test", () => {
 
         for (let i = 0; i < 3; i++) {
             await storageOperations.createQueueJob({
-                queueJob: mocks.renderAllJob({ index: String(i) })
+                queueJob: mocks.renderAllJob({ index: mdbid() })
             });
         }
 
         for (let i = 0; i < 3; i++) {
             await storageOperations.createQueueJob({
-                queueJob: mocks.renderAllJob({ index: "custom-" + i, namespace: "namespace-" + i })
+                queueJob: mocks.renderAllJob({ index: mdbid(), namespace: "namespace-" + i })
             });
         }
 
