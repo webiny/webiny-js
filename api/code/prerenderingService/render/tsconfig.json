@@ -5,6 +5,9 @@
       "path": "../../../../packages/api-prerendering-service"
     },
     {
+      "path": "../../../../packages/api-prerendering-service-so-ddb"
+    },
+    {
       "path": "../../../../packages/api-prerendering-service-aws"
     },
     {
@@ -12,6 +15,33 @@
     },
     {
       "path": "../../../../packages/handler-logs"
+    },
+    {
+      "path": "../../../../packages/db-dynamodb"
     }
-  ]
+  ],
+  "compilerOptions": {
+    "paths": {
+      "@webiny/api-prerendering-service/*": ["../../../packages/api-prerendering-service/src/*"],
+      "@webiny/api-prerendering-service": ["../../../packages/api-prerendering-service/src"],
+      "@webiny/api-prerendering-service-so-ddb/*": [
+        "../../../packages/api-prerendering-service-so-ddb/src/*"
+      ],
+      "@webiny/api-prerendering-service-so-ddb": [
+        "../../../packages/api-prerendering-service-so-ddb/src"
+      ],
+      "@webiny/api-prerendering-service-aws/*": [
+        "../../../packages/api-prerendering-service-aws/src/*"
+      ],
+      "@webiny/api-prerendering-service-aws": [
+        "../../../packages/api-prerendering-service-aws/src"
+      ],
+      "@webiny/handler-aws/*": ["../../../packages/handler-aws/src/*"],
+      "@webiny/handler-aws": ["../../../packages/handler-aws/src"],
+      "@webiny/handler-logs/*": ["../../../packages/handler-logs/src/*"],
+      "@webiny/handler-logs": ["../../../packages/handler-logs/src"],
+      "@webiny/db-dynamodb/*": ["../../../packages/db-dynamodb/src/*"],
+      "@webiny/db-dynamodb": ["../../../packages/db-dynamodb/src"]
+    }
+  }
 }

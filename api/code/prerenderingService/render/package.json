@@ -8,6 +8,7 @@
   "dependencies": {
     "@webiny/api-prerendering-service": "^5.15.0",
     "@webiny/api-prerendering-service-aws": "^5.15.0",
+    "@webiny/api-prerendering-service-so-ddb": "^5.15.0",
     "@webiny/cli": "^5.15.0",
     "@webiny/db-dynamodb": "^5.15.0",
     "@webiny/handler-aws": "^5.15.0",

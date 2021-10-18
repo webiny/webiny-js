@@ -3,15 +3,10 @@
   "include": ["./src"],
   "exclude": [
     "node_modules",
-    "../plugins",
     "../db",
     "../db-dynamodb",
     "../api-prerendering-service",
-    "../handler",
     "../handler-aws",
-    "../handler-db",
-    "../handler-args",
-    "../handler-client",
     "../error"
   ],
   "compilerOptions": {

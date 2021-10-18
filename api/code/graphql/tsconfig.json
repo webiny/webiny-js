@@ -30,9 +30,6 @@
       "path": "../../../packages/api-page-builder-import-export"
     },
     {
-      "path": "../../../packages/api-page-builder-import-export-so-ddb"
-    },
-    {
       "path": "../../../packages/api-tenancy"
     },
     {
