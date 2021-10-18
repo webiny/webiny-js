@@ -1,14 +1,18 @@
 import { Plugin } from "@webiny/plugins";
 import { FieldSortOptions, SortOrder } from "elastic-ts";
-import { ContextInterface } from "@webiny/handler/types";
 
 export type UnmappedTypes = "date" | "long" | string;
 
+const keywordLessUnmappedType = ["date", "long"];
+
+const unmappedTypeHasKeyword = (type: string): boolean => {
+    if (keywordLessUnmappedType.includes(type)) {
+        return false;
+    }
+    return true;
+};
+
 export interface ToSearchValueParams {
-    /**
-     * Some variable that has a ContextInterface as a base.
-     */
-    context: ContextInterface;
     /**
      * The value to transform.
      */
@@ -97,6 +101,9 @@ export abstract class ElasticsearchFieldPlugin extends Plugin {
         this._path = params.path || params.field;
         this._keyword = params.keyword === undefined ? true : params.keyword;
         this._unmappedType = params.unmappedType;
+        if (unmappedTypeHasKeyword(params.unmappedType) === false) {
+            this._keyword = false;
+        }
         this._sortable = params.sortable === undefined ? true : params.sortable;
         this._searchable = params.searchable === undefined ? true : params.searchable;
     }

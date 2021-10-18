@@ -2,6 +2,11 @@ import { ContextInterface } from "@webiny/handler/types";
 import { AttributePlugin, DefinitionParams } from "~/plugins/definitions/AttributePlugin";
 import { PluginsContainer } from "@webiny/plugins";
 
+/**
+ * Will be removed in favor of directly assigning attributes to a certain entity when creating the storage operations.
+ *
+ * @deprecated
+ */
 export const getExtraAttributes = (
     context: ContextInterface,
     entity: string

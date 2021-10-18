@@ -61,7 +61,9 @@
       "api/code/fileManager/*",
       "api/code/graphql",
       "api/code/headlessCMS",
-      "api/code/pageBuilder/*",
+      "api/code/pageBuilder/updateSettings",
+      "api/code/pageBuilder/importPages/*",
+      "api/code/pageBuilder/exportPages/*",
       "api/code/prerenderingService/render",
       "api/code/prerenderingService/flush",
       "api/code/prerenderingService/queue/*"

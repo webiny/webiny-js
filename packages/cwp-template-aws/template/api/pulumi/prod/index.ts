@@ -42,12 +42,25 @@ export default () => {
 
     const pageBuilder = new PageBuilder({
         env: {
+            COGNITO_REGION: String(process.env.AWS_REGION),
+            COGNITO_USER_POOL_ID: cognito.userPool.id,
             DB_TABLE: dynamoDb.table.name,
             DB_TABLE_ELASTICSEARCH: elasticsearch.table.name,
-            DEBUG
+            ELASTIC_SEARCH_ENDPOINT: elasticsearch.domain.endpoint,
+
+            // Not required. Useful for testing purposes / ephemeral environments.
+            // https://www.webiny.com/docs/key-topics/ci-cd/testing/slow-ephemeral-environments
+            ELASTIC_SEARCH_INDEX_PREFIX: process.env.ELASTIC_SEARCH_INDEX_PREFIX,
+
+            S3_BUCKET: fileManager.bucket.id,
+            DEBUG,
+            WEBINY_LOGS_FORWARD_URL
         },
         bucket: fileManager.bucket,
-        primaryDynamodbTable: dynamoDb.table
+        primaryDynamodbTable: dynamoDb.table,
+        elasticsearchDynamodbTable: elasticsearch.table,
+        elasticsearchDomain: elasticsearch.domain,
+        cognitoUserPool: cognito.userPool
     });
 
     const api = new Graphql({
@@ -66,6 +79,8 @@ export default () => {
             PRERENDERING_FLUSH_HANDLER: prerenderingService.functions.flush.arn,
             PRERENDERING_QUEUE_ADD_HANDLER: prerenderingService.functions.queue.add.arn,
             PRERENDERING_QUEUE_PROCESS_HANDLER: prerenderingService.functions.queue.process.arn,
+            IMPORT_PAGES_CREATE_HANDLER: pageBuilder.functions.importPages.create.arn,
+            EXPORT_PAGES_PROCESS_HANDLER: pageBuilder.functions.exportPages.process.arn,
             S3_BUCKET: fileManager.bucket.id,
             DEBUG,
             WEBINY_LOGS_FORWARD_URL

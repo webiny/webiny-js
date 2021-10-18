@@ -9,7 +9,8 @@ export const DialogContainer: React.FC = () => {
     const {
         dataTestId,
         title,
-        actions = { cancel: null, accept: { label: "OK" } }
+        actions = { cancel: null, accept: { label: "OK" } },
+        style
     } = get(ui, "dialog.options", {});
 
     const hideDialog = useCallback(() => {
@@ -17,7 +18,7 @@ export const DialogContainer: React.FC = () => {
     }, [ui]);
 
     return (
-        <Dialog open={!!message} onClose={hideDialog} data-testid={dataTestId}>
+        <Dialog open={!!message} onClose={hideDialog} data-testid={dataTestId} style={style}>
             {title && <DialogTitle>{title}</DialogTitle>}
             <DialogContent>{message}</DialogContent>
             <DialogActions>

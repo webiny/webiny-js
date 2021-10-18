@@ -331,6 +331,8 @@ export default ({ permissions, identity, tenant, plugins }: Params = {}) => {
         async getPageElement(variables) {
             return invoke({ body: { query: GET_PAGE_ELEMENT, variables } });
         },
+
+        // PageBuilder Settings.
         async updateSettings(variables) {
             return invoke({ body: { query: UPDATE_SETTINGS, variables } });
         },

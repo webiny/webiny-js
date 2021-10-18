@@ -28,11 +28,11 @@ import { SecurityIdentity, SecurityPermission } from "@webiny/api-security/types
 import { until } from "./helpers";
 import { FilePhysicalStoragePlugin } from "~/plugins/definitions/FilePhysicalStoragePlugin";
 
-type UseGqlHandlerParams = {
+export interface UseGqlHandlerParams {
     permissions?: SecurityPermission[];
     identity?: SecurityIdentity;
     plugins?: any;
-};
+}
 
 export default (params?: UseGqlHandlerParams) => {
     const { permissions, identity, plugins = [] } = params;

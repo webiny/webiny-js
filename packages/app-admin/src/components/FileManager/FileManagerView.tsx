@@ -108,6 +108,7 @@ type FileManagerViewProps = {
     maxSize: number | string;
     multipleMaxCount: number;
     multipleMaxSize: number | string;
+    onUploadCompletion?: Function;
 };
 
 function renderFile(props) {
@@ -131,8 +132,16 @@ const renderEmpty = ({ hasPreviouslyUploadedFiles, browseFiles, fmFilePermission
 };
 
 function FileManagerView(props: FileManagerViewProps) {
-    const { onClose, onChange, accept, multiple, maxSize, multipleMaxCount, multipleMaxSize } =
-        props;
+    const {
+        onClose,
+        onChange,
+        accept,
+        multiple,
+        maxSize,
+        multipleMaxCount,
+        multipleMaxSize,
+        onUploadCompletion
+    } = props;
 
     const {
         selected,
@@ -303,11 +312,14 @@ function FileManagerView(props: FileManagerViewProps) {
         const list = Array.isArray(files) ? files : [files];
 
         const errors = [];
+        const uploadedFiles = [];
         await Promise.all(
             list.map(async file => {
                 try {
                     const response = await getFileUploader()(file, { apolloClient });
-                    await createFile({ variables: { data: response } });
+                    const createFileResponse = await createFile({ variables: { data: response } });
+                    // Save create file data for later
+                    uploadedFiles.push(get(createFileResponse, "data.fileManager.createFile.data"));
                 } catch (e) {
                     errors.push({ file, e });
                 }
@@ -340,6 +352,13 @@ function FileManagerView(props: FileManagerViewProps) {
 
         // We wait 750ms, just for everything to settle down a bit.
         setTimeout(() => showSnackbar(t`File upload complete.`), 750);
+        if (typeof onUploadCompletion === "function") {
+            // We wait 750ms, just for everything to settle down a bit.
+            setTimeout(() => {
+                onUploadCompletion(uploadedFiles);
+                onClose();
+            }, 750);
+        }
     };
 
     const renderUploadFileAction = useCallback(

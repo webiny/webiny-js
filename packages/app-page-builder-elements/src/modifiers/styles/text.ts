@@ -13,12 +13,20 @@ const text: ElementStylesModifier = ({ element, theme }) => {
         }
 
         const values = text[breakpointName];
+        const breakpointStyles = {
+            ...theme.styles.typography[values.typography]
+        };
+
+        if (values.color) {
+            breakpointStyles.color = values.color;
+        }
+        if (values.alignment) {
+            breakpointStyles.textAlign = values.alignment;
+        }
+
         return {
             ...returnStyles,
-            [breakpointName]: {
-                color: values.color,
-                textAlign: values.alignment
-            }
+            [breakpointName]: breakpointStyles
         };
     }, {});
 };

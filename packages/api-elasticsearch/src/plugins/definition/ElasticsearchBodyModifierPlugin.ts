@@ -1,28 +1,24 @@
 import WebinyError from "@webiny/error";
 import { Plugin } from "@webiny/plugins";
-import { ContextInterface } from "@webiny/handler/types";
 import { SearchBody } from "elastic-ts";
 
-export interface ModifyBodyParams<T extends ContextInterface> {
-    context: T;
+export interface ModifyBodyParams {
     body: SearchBody;
 }
 
-interface Callable<T extends ContextInterface> {
-    (params: ModifyBodyParams<T>): void;
+interface Callable {
+    (params: ModifyBodyParams): void;
 }
 
-export abstract class ElasticsearchBodyModifierPlugin<
-    T extends ContextInterface = ContextInterface
-> extends Plugin {
-    private readonly callable?: Callable<T>;
+export abstract class ElasticsearchBodyModifierPlugin extends Plugin {
+    private readonly callable?: Callable;
 
-    public constructor(callable?: Callable<T>) {
+    public constructor(callable?: Callable) {
         super();
         this.callable = callable;
     }
 
-    public modifyBody(params: ModifyBodyParams<T>): void {
+    public modifyBody(params: ModifyBodyParams): void {
         if (typeof this.callable !== "function") {
             throw new WebinyError(
                 `Missing modification for the body.`,

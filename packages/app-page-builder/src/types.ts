@@ -9,6 +9,12 @@ import { IconPrefix, IconName } from "@fortawesome/fontawesome-svg-core";
 import { Form, FormSetValue } from "@webiny/form/Form";
 import { CoreOptions } from "medium-editor";
 
+export enum PageImportExportTaskStatus {
+    PENDING = "pending",
+    PROCESSING = "processing",
+    COMPLETED = "completed",
+    FAILED = "failed"
+}
 export type PbElementDataSettingsSpacingValueType = {
     all?: string;
     top?: string;
@@ -375,7 +381,7 @@ export type PbEditorPageElementActionPlugin = Plugin & {
 };
 
 export type PbPageDetailsPlugin = Plugin & {
-    render: (params: { [key: string]: any }) => ReactNode;
+    render: (params: { page: Record<string, any>; [key: string]: any }) => ReactNode;
 };
 
 export type PbEditorPageSettingsPlugin = Plugin & {

@@ -357,7 +357,7 @@ export class CmsContentEntryDynamo implements CmsContentEntryStorageOperations {
          * Just build it here and pass on into other methods that require it to avoid mapping multiple times.
          */
         const modelFields = buildModelFields({
-            context: this.context,
+            plugins: this.context.plugins,
             model
         });
         /**
@@ -367,7 +367,7 @@ export class CmsContentEntryDynamo implements CmsContentEntryStorageOperations {
         const filteredItems = filterItems({
             items,
             where: queryOptions.where,
-            context: this.context,
+            plugins: this.context.plugins,
             fields: modelFields
         });
 

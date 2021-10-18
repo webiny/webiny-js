@@ -1,6 +1,6 @@
 export default {
     db: () => ({
-        table: process.env.DB_TABLE_FILE_MANGER,
+        table: process.env.DB_TABLE_FILE_MANGER || process.env.DB_TABLE,
         keys: [
             {
                 primary: true,

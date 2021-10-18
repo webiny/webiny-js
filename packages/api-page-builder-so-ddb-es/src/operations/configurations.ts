@@ -3,14 +3,15 @@ import { PbContext } from "@webiny/api-page-builder/graphql/types";
 
 export default {
     db: () => ({
-        table: process.env.DB_TABLE_PAGE_BUILDER,
+        table: process.env.DB_TABLE_PAGE_BUILDER || process.env.DB_TABLE,
         keys: [
             {
                 primary: true,
                 unique: true,
                 name: "primary",
                 fields: [{ name: "PK" }, { name: "SK" }]
-            }
+            },
+            { unique: true, name: "GSI1", fields: [{ name: "GSI1_PK" }, { name: "GSI1_SK" }] }
         ]
     }),
     esDb: () => ({

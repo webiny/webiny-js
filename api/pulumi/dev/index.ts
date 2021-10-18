@@ -36,12 +36,20 @@ export default () => {
 
     const pageBuilder = new PageBuilder({
         env: {
+            COGNITO_REGION: String(process.env.AWS_REGION),
+            COGNITO_USER_POOL_ID: cognito.userPool.id,
             DB_TABLE: dynamoDb.table.name,
             DB_TABLE_ELASTICSEARCH: elasticSearch.table.name,
-            DEBUG
+            ELASTIC_SEARCH_ENDPOINT: elasticSearch.domain.endpoint,
+            S3_BUCKET: fileManager.bucket.id,
+            DEBUG,
+            WEBINY_LOGS_FORWARD_URL
         },
+        primaryDynamodbTable: dynamoDb.table,
+        elasticsearchDynamodbTable: elasticSearch.table,
+        elasticsearchDomain: elasticSearch.domain,
         bucket: fileManager.bucket,
-        primaryDynamodbTable: dynamoDb.table
+        cognitoUserPool: cognito.userPool
     });
 
     const api = new Graphql({
@@ -56,6 +64,8 @@ export default () => {
             PRERENDERING_QUEUE_ADD_HANDLER: prerenderingService.functions.queue.add.arn,
             PRERENDERING_QUEUE_PROCESS_HANDLER: prerenderingService.functions.queue.process.arn,
             S3_BUCKET: fileManager.bucket.id,
+            IMPORT_PAGES_CREATE_HANDLER: pageBuilder.functions.importPages.create.arn,
+            EXPORT_PAGES_PROCESS_HANDLER: pageBuilder.functions.exportPages.process.arn,
             DEBUG,
             WEBINY_LOGS_FORWARD_URL,
             NODE_OPTIONS: "--enable-source-maps"

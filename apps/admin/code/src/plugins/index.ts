@@ -1,5 +1,5 @@
 import { plugins } from "@webiny/plugins";
-import { plugins as tenancyPlugins } from "@webiny/app-tenancy";
+import { WebinyInitPlugin } from "@webiny/app/types";
 import welcomeScreenPlugins from "@webiny/app-plugin-admin-welcome-screen";
 import routeNotFound from "./routeNotFound";
 import basePlugins from "./base";
@@ -11,6 +11,7 @@ import securityPlugins from "./security";
 import pageBuilderPlugins from "./pageBuilder";
 import formBuilderPlugins from "./formBuilder";
 import headlessCmsPlugins from "./headlessCms";
+import fileManagerPlugins from "./fileManager";
 import tenantManagerPlugins from "./tenantManager";
 import theme from "theme";
 
@@ -77,5 +78,9 @@ plugins.register([
     /**
      * Plugins created via scaffolding utilities.
      */
-    scaffoldsPlugins()
+    scaffoldsPlugins(),
+    /**
+     * File Manager app.
+     */
+    fileManagerPlugins
 ]);

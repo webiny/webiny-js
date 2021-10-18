@@ -725,7 +725,7 @@ export class PageStorageOperationsDdb implements PageStorageOperations {
 
         const filteredPages = filterItems<Page>({
             items: dbRecords,
-            context: this.context,
+            plugins: this.context.plugins,
             where,
             fields
         }).map(item => {

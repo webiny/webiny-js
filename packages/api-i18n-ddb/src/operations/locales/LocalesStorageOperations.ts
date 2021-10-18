@@ -222,9 +222,9 @@ export class LocalesStorageOperations implements I18NLocalesStorageOperations {
          * It will build the filters out of the where input and transform the values it is using.
          */
         const filteredFiles = filterItems({
+            plugins: this.context.plugins,
             items: results,
             where,
-            context: this.context,
             fields
         });
 
@@ -236,7 +236,6 @@ export class LocalesStorageOperations implements I18NLocalesStorageOperations {
         const sortedFiles = sortItems({
             items: filteredFiles,
             sort,
-            // TODO: add possibility to add more fields via plugins
             fields
         });
         /**

@@ -1,0 +1,112 @@
+{
+  "extends": "../../../../../tsconfig.json",
+  "include": ["./src"],
+  "references": [
+    {
+      "path": "../../../../../packages/api-elasticsearch"
+    },
+    {
+      "path": "../../../../../packages/api-i18n"
+    },
+    {
+      "path": "../../../../../packages/api-i18n-ddb"
+    },
+    {
+      "path": "../../../../../packages/api-security"
+    },
+    {
+      "path": "../../../../../packages/api-i18n-content"
+    },
+    {
+      "path": "../../../../../packages/api-page-builder"
+    },
+    {
+      "path": "../../../../../packages/api-page-builder-import-export"
+    },
+    {
+      "path": "../../../../../packages/api-tenancy"
+    },
+    {
+      "path": "../../../../../packages/api-security-admin-users"
+    },
+    {
+      "path": "../../../../../packages/api-security-admin-users-cognito"
+    },
+    {
+      "path": "../../../../../packages/api-security-admin-users-so-ddb"
+    },
+    {
+      "path": "../../../../../packages/api-file-manager"
+    },
+    {
+      "path": "../../../../../packages/api-file-manager-s3"
+    },
+    {
+      "path": "../../../../../packages/api-elasticsearch"
+    },
+    {
+      "path": "../../../../../packages/api-security-cognito-authentication"
+    },
+    {
+      "path": "../../../../../packages/db-dynamodb"
+    },
+    {
+      "path": "../../../../../packages/handler-aws"
+    },
+    {
+      "path": "../../../../../packages/handler-db"
+    },
+    {
+      "path": "../../../../../packages/handler-logs"
+    },
+    {
+      "path": "../../../../../packages/api-page-builder-so-ddb-es"
+    },
+    {
+      "path": "../../../../../packages/api-page-builder-import-export-so-ddb"
+    }
+  ],
+  "compilerOptions": {
+    "paths": {
+      "~/*": ["./src/*"],
+      "@webiny/api-elasticsearch/*": ["../../../../../packages/api-elasticsearch/src/*"],
+      "@webiny/api-elasticsearch": ["../../../../../packages/api-elasticsearch/src"],
+      "@webiny/api-i18n/*": ["../../../../../packages/api-i18n/src/*"],
+      "@webiny/api-i18n": ["../../../../../packages/api-i18n/src"],
+      "@webiny/api-i18n-ddb/*": ["../../../../../packages/api-i18n-ddb/src/*"],
+      "@webiny/api-i18n-ddb": ["../../../../../packages/api-i18n-ddb/src"],
+      "@webiny/api-i18n-content/*": ["../../../../../packages/api-i18n-content/src/*"],
+      "@webiny/api-i18n-content": ["../../../../../packages/api-i18n-content/src"],
+      "@webiny/handler-aws/*": ["../../../../../packages/handler-aws/src/*"],
+      "@webiny/handler-aws": ["../../../../../packages/handler-aws/src"],
+      "@webiny/api-page-builder/*": ["../../../../../packages/api-page-builder/src/*"],
+      "@webiny/api-page-builder": ["../../../../../packages/api-page-builder/src"],
+      "@webiny/api-page-builder-import-export/*": [
+        "../../../../../packages/api-page-builder-import-export/src/*"
+      ],
+      "@webiny/api-page-builder-import-export": [
+        "../../../../../packages/api-page-builder-import-export/src"
+      ],
+      "@webiny/api-security/*": ["../../../../../packages/api-security/src/*"],
+      "@webiny/api-security": ["../../../../../packages/api-security/src"],
+      "@webiny/api-tenancy/*": ["../../../../../packages/api-tenancy/src/*"],
+      "@webiny/api-tenancy": ["../../../../../packages/api-tenancy/src"],
+      "@webiny/db-dynamodb/*": ["../../../../../packages/db-dynamodb/src/*"],
+      "@webiny/db-dynamodb": ["../../../../../packages/db-dynamodb/src"],
+      "@webiny/api-security-admin-users/*": [
+        "../../../../../packages/api-security-admin-users/src/*"
+      ],
+      "@webiny/api-security-admin-users": ["../../../../../packages/api-security-admin-users/src"],
+      "@webiny/api-security-admin-users-cognito/*": [
+        "../../../../../packages/api-security-admin-users-cognito/src/*"
+      ],
+      "@webiny/api-security-admin-users-cognito": [
+        "../../../../../packages/api-security-admin-users-cognito/src"
+      ],
+      "@webiny/api-security-cognito-authentication": [
+        "../../../../../packages/api-security-cognito-authentication/src"
+      ]
+    },
+    "baseUrl": "."
+  }
+}

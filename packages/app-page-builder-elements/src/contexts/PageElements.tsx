@@ -1,52 +1,31 @@
-import React, { createContext, useCallback } from "react";
+import React, { createContext, useCallback, useEffect, useState } from "react";
 import {
-    Breakpoint,
-    StylesObjects,
     PageElementsContextValue,
-    PageElementsProviderProps
+    PageElementsProviderProps,
+    ElementStylesCallback,
+    StylesCallback,
+    ThemeStylesCallback,
+    GetElementClassNames,
+    GetElementStyles,
+    GetThemeStyles,
+    GetThemeClassNames,
+    GetStyles,
+    GetClassNames,
+    AssignStylesCallback,
+    SetElementStylesCallback,
+    SetThemeStylesCallback,
+    SetStylesCallback,
+    SetAssignStylesCallback
 } from "~/types";
-import { css, cx, CSSObject } from "@emotion/css";
+import { css, cx } from "@emotion/css";
+import {
+    setUsingPageElements,
+    defaultElementStylesCallback,
+    defaultThemeStylesCallback,
+    defaultStylesCallback
+} from "~/utils";
 
 export const PageElementsContext = createContext(null);
-
-// Detect if we're working with a per-breakpoint object, or just a set of regular CSS properties.
-const isPerBreakpointStylesObject = ({
-    breakpoints,
-    styles
-}: {
-    breakpoints: Record<string, Breakpoint>;
-    styles: StylesObjects;
-}): boolean => {
-    for (const breakpointName in breakpoints) {
-        if (styles[breakpointName]) {
-            return true;
-        }
-    }
-    return false;
-};
-
-const assignStyles = (args: {
-    breakpoints: Record<string, Breakpoint>;
-    styles: StylesObjects;
-    assignTo?: CSSObject;
-}) => {
-    const { breakpoints, styles = {}, assignTo = {} } = args;
-    if (isPerBreakpointStylesObject({ breakpoints, styles })) {
-        for (const breakpointName in breakpoints) {
-            const breakpoint = breakpoints[breakpointName];
-            if (styles && styles[breakpointName]) {
-                if (!assignTo[breakpoint.mediaQuery]) {
-                    assignTo[breakpoint.mediaQuery] = {};
-                }
-                Object.assign(assignTo[breakpoint.mediaQuery], styles[breakpointName]);
-            }
-        }
-    } else {
-        Object.assign(assignTo, styles);
-    }
-
-    return assignTo;
-};
 
 export const PageElementsProvider: React.FC<PageElementsProviderProps> = ({
     children,
@@ -54,66 +33,102 @@ export const PageElementsProvider: React.FC<PageElementsProviderProps> = ({
     renderers = {},
     modifiers
 }) => {
-    const getElementStyles = useCallback<PageElementsContextValue["getElementStyles"]>(element => {
-        const styles = {};
+    // Styles-related callback customization.
+    const [customAssignStylesCallback, setCustomAssignStylesCallback] =
+        useState<AssignStylesCallback>(null);
+    const [customElementStylesCallback, setCustomElementStylesCallback] =
+        useState<ElementStylesCallback>();
+    const [customThemeStylesCallback, setCustomThemeStylesCallback] =
+        useState<ThemeStylesCallback>();
+    const [customStylesCallback, setCustomStylesCallback] = useState<StylesCallback>();
 
-        for (const modifierName in modifiers.styles) {
-            assignStyles({
-                breakpoints: theme.breakpoints,
-                assignTo: styles,
-                styles: modifiers.styles[modifierName]({
-                    element,
-                    theme,
-                    renderers,
-                    modifiers
-                })
-            });
-        }
-
-        return [styles];
+    const setAssignStylesCallback = useCallback<SetAssignStylesCallback>(callback => {
+        setCustomAssignStylesCallback(() => callback);
     }, []);
 
-    const getElementClassNames = useCallback<PageElementsContextValue["getElementClassNames"]>(
+    const setElementStylesCallback = useCallback<SetElementStylesCallback>(callback => {
+        setCustomElementStylesCallback(() => callback);
+    }, []);
+
+    const setThemeStylesCallback = useCallback<SetThemeStylesCallback>(callback => {
+        setCustomThemeStylesCallback(() => callback);
+    }, []);
+
+    const setStylesCallback = useCallback<SetStylesCallback>(callback => {
+        setCustomStylesCallback(() => callback);
+    }, []);
+
+    // Styles-related callbacks.
+    const getElementStyles = useCallback<GetElementStyles>(
+        element => {
+            const callback = customElementStylesCallback || defaultElementStylesCallback;
+
+            return callback({
+                element,
+                theme,
+                renderers,
+                modifiers,
+                assignStyles: customAssignStylesCallback
+            });
+        },
+        [customElementStylesCallback, customAssignStylesCallback]
+    );
+
+    const getElementClassNames = useCallback<GetElementClassNames>(
         element => {
             return getElementStyles(element).map(item => css(item));
         },
-        []
+        [getElementStyles]
     );
 
-    const getThemeStyles = useCallback<PageElementsContextValue["getThemeStyles"]>(getStyles => {
-        let themeStyles = {};
-        try {
-            themeStyles = getStyles(theme);
-        } catch (e) {
-            // Do nothing.
-            console.warn("Could not load theme styles:");
-            console.log(e);
-        }
+    const getThemeStyles = useCallback<GetThemeStyles>(
+        getStyles => {
+            const callback = customThemeStylesCallback || defaultThemeStylesCallback;
+            return callback({
+                getStyles,
+                theme,
+                renderers,
+                modifiers,
+                assignStyles: customAssignStylesCallback
+            });
+        },
+        [customThemeStylesCallback, customAssignStylesCallback]
+    );
 
-        const styles = assignStyles({
-            breakpoints: theme.breakpoints,
-            styles: themeStyles
-        });
-
-        return [styles];
-    }, []);
-
-    const getThemeClassNames = useCallback<PageElementsContextValue["getThemeClassNames"]>(
+    const getThemeClassNames = useCallback<GetThemeClassNames>(
         getStyles => {
             const styles = getThemeStyles(getStyles);
             return styles.map(item => css(item));
         },
-        []
+        [getThemeStyles]
     );
 
-    const getStyles = useCallback<PageElementsContextValue["getStyles"]>(styles => {
-        return [styles];
-    }, []);
+    const getStyles = useCallback<GetStyles>(
+        styles => {
+            const callback = customStylesCallback || defaultStylesCallback;
+            return callback({
+                styles,
+                theme,
+                renderers,
+                modifiers,
+                assignStyles: customAssignStylesCallback
+            });
+        },
+        [customStylesCallback, customAssignStylesCallback]
+    );
 
-    const getClassNames = useCallback<PageElementsContextValue["getClassNames"]>(customStyles => {
-        const styles = getStyles(customStyles);
-        return styles.map(item => css(item));
-    }, []);
+    const getClassNames = useCallback<GetClassNames>(
+        customStyles => {
+            const styles = getStyles(customStyles);
+            return styles.map(item => css(item));
+        },
+        [getStyles]
+    );
+
+    // Provides a way to check whether the `PageElementsProvider` React component was mounted or not,
+    // in a non-React context. In React contexts, it's strongly recommended the value of `usePageElements`
+    // React hook is checked instead (a `null` value means the provider React component wasn't mounted).
+    useEffect(() => setUsingPageElements(true), []);
 
     const value: PageElementsContextValue = {
         theme,
@@ -125,7 +140,11 @@ export const PageElementsProvider: React.FC<PageElementsProviderProps> = ({
         getThemeClassNames,
         getStyles,
         getClassNames,
-        combineClassNames: cx
+        combineClassNames: cx,
+        setAssignStylesCallback,
+        setElementStylesCallback,
+        setThemeStylesCallback,
+        setStylesCallback
     };
 
     return <PageElementsContext.Provider value={value}>{children}</PageElementsContext.Provider>;

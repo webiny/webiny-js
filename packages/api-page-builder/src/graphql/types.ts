@@ -22,6 +22,7 @@ import {
     System
 } from "~/types";
 import { PrerenderingServiceClientContext } from "@webiny/api-prerendering-service/client/types";
+import { FileManagerContext } from "@webiny/api-file-manager/types";
 
 // CRUD types.
 export interface ListPagesParams {
@@ -181,6 +182,7 @@ export interface PbContext
         DbContext,
         SecurityContext,
         TenancyContext,
+        FileManagerContext,
         PrerenderingServiceClientContext {
     pageBuilder: Record<string, any> & {
         pages: PagesCrud;

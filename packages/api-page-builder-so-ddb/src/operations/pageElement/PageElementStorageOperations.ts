@@ -108,7 +108,7 @@ export class PageElementStorageOperationsDdb implements PageElementStorageOperat
         );
 
         const filteredItems = filterItems<PageElement>({
-            context: this.context,
+            plugins: this.context.plugins,
             where: restWhere,
             items: results,
             fields

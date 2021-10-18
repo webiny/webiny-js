@@ -21,6 +21,7 @@
     "execa": "2.1.0",
     "fast-glob": "^3.2.5",
     "find-up": "5.0.0",
+    "fs-extra": "^7.0.0",
     "load-json-file": "6.2.0",
     "ncp": "^2.0.0",
     "pirates": "^4.0.1",

@@ -1,6 +1,5 @@
 import { filterItems } from "~/utils/filter";
 import filters from "~/plugins/filters";
-import { ContextInterface } from "@webiny/handler/types";
 import { PluginsContainer } from "@webiny/plugins";
 import { FieldPlugin } from "~/plugins/definitions/FieldPlugin";
 
@@ -46,15 +45,10 @@ const fields = [
 ];
 
 describe("filtering util test", () => {
-    let context: ContextInterface;
+    let plugins: PluginsContainer;
 
     beforeEach(() => {
-        context = {
-            args: [],
-            plugins: new PluginsContainer(),
-            WEBINY_VERSION: process.env.WEBINY_VERSION
-        };
-        context.plugins.register(filters());
+        plugins = new PluginsContainer(filters());
     });
 
     it("should filter by equal id", () => {
@@ -62,7 +56,7 @@ describe("filtering util test", () => {
             id: 1
         };
 
-        const response = filterItems({ items, where, context, fields });
+        const response = filterItems({ items, where, plugins, fields });
 
         expect(response).toEqual([itemJohn]);
     });
@@ -71,7 +65,7 @@ describe("filtering util test", () => {
         const where = {
             text_contains: "j"
         };
-        const response = filterItems({ items, where, context, fields });
+        const response = filterItems({ items, where, plugins, fields });
 
         expect(response).toEqual([itemJohn, itemJane]);
     });
@@ -80,14 +74,14 @@ describe("filtering util test", () => {
         const whereFalse = {
             private: false
         };
-        const responseFalse = filterItems({ items, where: whereFalse, context, fields });
+        const responseFalse = filterItems({ items, where: whereFalse, plugins, fields });
 
         expect(responseFalse).toEqual([itemWebiny]);
 
         const whereTrue = {
             private: true
         };
-        const responseTrue = filterItems({ items, where: whereTrue, context, fields });
+        const responseTrue = filterItems({ items, where: whereTrue, plugins, fields });
 
         expect(responseTrue).toEqual([itemJohn, itemJane]);
     });
