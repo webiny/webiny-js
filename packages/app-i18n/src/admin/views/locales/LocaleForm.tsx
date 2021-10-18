@@ -54,7 +54,7 @@ const I18NLocaleForm = () => {
                             <Cell span={12}>
                                 <Bind name="code" validators={validation.create("required")}>
                                     <LocaleCodesAutoComplete
-                                        disabled={data.createdOn}
+                                        disabled={Boolean(data.createdOn)}
                                         label={t`Code`}
                                         description={t`For example: "en-GB"`}
                                     />
