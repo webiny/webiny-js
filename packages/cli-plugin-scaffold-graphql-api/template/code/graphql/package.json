@@ -1,0 +1,22 @@
+{
+  "name": "project-application-path",
+  "version": "0.1.0",
+  "scripts": {
+    "build": "yarn webiny run build",
+    "watch": "yarn webiny run watch"
+  },
+  "dependencies": {
+    "@webiny/handler": "^WEBINY_VERSION",
+    "@webiny/handler-args": "^WEBINY_VERSION",
+    "@webiny/handler-aws": "^WEBINY_VERSION",
+    "@webiny/handler-client": "^WEBINY_VERSION",
+    "@webiny/handler-graphql": "^WEBINY_VERSION",
+    "@webiny/handler-http": "^WEBINY_VERSION",
+    "@webiny/handler-logs": "^WEBINY_VERSION"
+  },
+  "devDependencies": {
+    "@webiny/cli": "^WEBINY_VERSION",
+    "@webiny/project-utils": "^WEBINY_VERSION",
+    "@webiny/cli-plugin-deploy-pulumi": "^WEBINY_VERSION"
+  }
+}

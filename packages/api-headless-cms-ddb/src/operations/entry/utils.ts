@@ -1,17 +1,17 @@
+import WebinyError from "@webiny/error";
+import lodashSortBy from "lodash.sortby";
+import dotProp from "dot-prop";
 import {
     CmsContentEntry,
     CmsContentEntryListWhere,
     CmsContentModel,
-    CmsContentModelField,
-    CmsContext
+    CmsContentModelField
 } from "@webiny/api-headless-cms/types";
 import { Plugin } from "@webiny/plugins/types";
-import WebinyError from "@webiny/error";
-import lodashSortBy from "lodash.sortby";
-import dotProp from "dot-prop";
 import { CmsFieldFilterPathPlugin, CmsFieldFilterValueTransformPlugin } from "~/types";
 import { systemFields } from "./systemFields";
 import { ValueFilterPlugin } from "@webiny/db-dynamodb/plugins/definitions/ValueFilterPlugin";
+import { PluginsContainer } from "@webiny/plugins";
 
 interface ModelField {
     def: CmsContentModelField;
@@ -23,7 +23,7 @@ interface ModelField {
 type ModelFieldRecords = Record<string, ModelField>;
 
 interface CreateFiltersArgs {
-    context: CmsContext;
+    plugins: PluginsContainer;
     where: CmsContentEntryListWhere;
     fields: ModelFieldRecords;
 }
@@ -40,7 +40,7 @@ interface ItemFilter {
 interface FilterItemsArgs {
     items: CmsContentEntry[];
     where: CmsContentEntryListWhere;
-    context: CmsContext;
+    plugins: PluginsContainer;
     fields: ModelFieldRecords;
 }
 
@@ -73,19 +73,19 @@ const transformValue = (value: any, transform: (value: any) => any): any => {
 };
 
 const createFilters = (args: CreateFiltersArgs): ItemFilter[] => {
-    const { where, context, fields } = args;
+    const { where, plugins, fields } = args;
     const filterPlugins = getMappedPlugins<ValueFilterPlugin>({
-        context,
+        plugins,
         type: ValueFilterPlugin.type,
         property: "operation"
     });
     const transformValuePlugins = getMappedPlugins<CmsFieldFilterValueTransformPlugin>({
-        context,
+        plugins,
         type: "cms-field-filter-value-transform",
         property: "fieldType"
     });
     const valuePathPlugins = getMappedPlugins<CmsFieldFilterPathPlugin>({
-        context,
+        plugins,
         type: "cms-field-filter-path",
         property: "fieldType"
     });
@@ -157,10 +157,10 @@ const createFilters = (args: CreateFiltersArgs): ItemFilter[] => {
 };
 
 export const filterItems = (args: FilterItemsArgs): CmsContentEntry[] => {
-    const { items, where, context, fields } = args;
+    const { items, where, plugins, fields } = args;
 
     const filters = createFilters({
-        context,
+        plugins,
         where,
         fields
     });
@@ -228,7 +228,7 @@ export const sortEntryItems = (args: SortEntryItemsArgs): CmsContentEntry[] => {
     } else if (sort.length === 0) {
         sort.push("savedOn_DESC");
     } else if (sort.length > 1) {
-        throw new WebinyError("Sorting is limited to a single field", "SORT_ERROR", {
+        throw new WebinyError("Sorting is limited to a single field.", "SORT_ERROR", {
             sort: sort
         });
     }
@@ -271,12 +271,12 @@ export const sortEntryItems = (args: SortEntryItemsArgs): CmsContentEntry[] => {
 };
 
 const getMappedPlugins = <T extends Plugin>(args: {
-    context: CmsContext;
+    plugins: PluginsContainer;
     type: string;
     property: string;
 }): Record<string, T> => {
-    const { context, type, property } = args;
-    const plugins = context.plugins.byType<T>(type);
+    const { plugins: pluginsContainer, type, property } = args;
+    const plugins = pluginsContainer.byType<T>(type);
     if (plugins.length === 0) {
         throw new WebinyError(`There are no plugins of type "${type}".`, "PLUGINS_ERROR", {
             type
@@ -300,19 +300,19 @@ const getMappedPlugins = <T extends Plugin>(args: {
 };
 
 export const buildModelFields = ({
-    context,
+    plugins,
     model
 }: {
-    context: CmsContext;
+    plugins: PluginsContainer;
     model: CmsContentModel;
 }) => {
     const transformValuePlugins = getMappedPlugins<CmsFieldFilterValueTransformPlugin>({
-        context,
+        plugins,
         type: "cms-field-filter-value-transform",
         property: "fieldType"
     });
     const valuePathPlugins = getMappedPlugins<CmsFieldFilterPathPlugin>({
-        context,
+        plugins,
         type: "cms-field-filter-path",
         property: "fieldType"
     });

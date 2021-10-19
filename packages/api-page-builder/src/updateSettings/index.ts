@@ -1,61 +1,98 @@
+import DefaultSettingsModel from "../utils/models/DefaultSettings.model";
 import { HandlerPlugin } from "@webiny/handler/types";
 import { ArgsContext } from "@webiny/handler-args/types";
-import { DbContext } from "@webiny/handler-db/types";
-import DefaultSettingsModel from "../utils/models/DefaultSettings.model";
-import defaults from "../utils/defaults";
-import { DefaultSettings } from "../types";
+import { PbContext, Settings, SettingsStorageOperations } from "~/types";
+import { createStorageOperations } from "~/graphql/crud/storageOperations";
+import { SettingsStorageOperationsProviderPlugin } from "~/plugins/SettingsStorageOperationsProviderPlugin";
 
-export type HandlerArgs = {
-    data: DefaultSettings;
-};
+export interface HandlerArgs {
+    data: Settings;
+}
 
-export type HandlerResponse = {
-    data: DefaultSettings;
+export interface HandlerResponse {
+    data: Settings;
     error: {
         message: string;
+        code?: string;
+        data?: Record<string, any>;
     };
-};
-
-const PK = "PB#SETTINGS";
-const SK = "default";
+}
 
 /**
  * Updates system default settings, for all tenants and all locales. Of course, these values can later be overridden
  * via the settings UI in the Admin app. But it's with these settings that every new tenant / locale will start off.
  */
-export default (): HandlerPlugin<DbContext, ArgsContext<HandlerArgs>> => ({
+export default (): HandlerPlugin<PbContext, ArgsContext<HandlerArgs>> => ({
     type: "handler",
     async handle(context): Promise<HandlerResponse> {
         try {
-            const { invocationArgs: args, db } = context;
-            let [[existingSettingsData]] = await db.read({
-                ...defaults.db,
-                query: { PK, SK }
+            /**
+             * We need to initialize storage operations for settings to be able to get and store the data.
+             */
+            const storageOperations = await createStorageOperations<SettingsStorageOperations>(
+                context,
+                SettingsStorageOperationsProviderPlugin.type
+            );
+            const { invocationArgs: args } = context;
+
+            const settingsParams: { type: string; tenant: false; locale: false } = {
+                type: "default",
+                tenant: false,
+                locale: false
+            };
+
+            let original = await storageOperations.get({
+                where: settingsParams
             });
 
-            if (!existingSettingsData) {
-                await db.create({
-                    ...defaults.db,
-                    data: { PK, SK, TYPE: "default", tenant: null, locale: null }
+            if (!original) {
+                const input: any = settingsParams;
+                await storageOperations.create({
+                    input,
+                    settings: {
+                        ...input
+                    }
                 });
-
-                existingSettingsData = {};
+                original = {
+                    ...input
+                };
             }
 
             const defaultSettingModel = new DefaultSettingsModel();
-            defaultSettingModel.populate(existingSettingsData).populate(args.data);
+            defaultSettingModel.populate(original).populate(args.data);
 
             await defaultSettingModel.validate();
 
             const updateSettingsData = await defaultSettingModel.toJSON();
-            await db.update({ ...defaults.db, query: { PK, SK }, data: updateSettingsData });
 
-            return { data: updateSettingsData, error: null };
-        } catch (e) {
+            const settings = {
+                ...original,
+                ...updateSettingsData,
+                ...settingsParams
+            };
+
+            await storageOperations.update({
+                input: updateSettingsData,
+                original,
+                settings
+            });
+
+            delete settings.locale;
+            delete settings.tenant;
+            delete settings.type;
+            return {
+                data: settings,
+                error: null
+            };
+        } catch (ex) {
             return {
                 data: null,
                 error: {
-                    message: e.message
+                    message: ex.message,
+                    code: ex.code || "UNKNOWN",
+                    data: {
+                        ...(ex.data || {})
+                    }
                 }
             };
         }

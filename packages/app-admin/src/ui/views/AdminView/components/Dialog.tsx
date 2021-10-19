@@ -6,18 +6,19 @@ import { Dialog, DialogAccept, DialogTitle, DialogActions, DialogContent } from 
 export const DialogContainer: React.FC = () => {
     const ui = useUi();
     const message = get(ui, "dialog.message");
-    const { dataTestId, title, actions = { cancel: null, accept: { label: "OK" } } } = get(
-        ui,
-        "dialog.options",
-        {}
-    );
+    const {
+        dataTestId,
+        title,
+        actions = { cancel: null, accept: { label: "OK" } },
+        style
+    } = get(ui, "dialog.options", {});
 
     const hideDialog = useCallback(() => {
         ui.setState(ui => ({ ...ui, dialog: null }));
     }, [ui]);
 
     return (
-        <Dialog open={!!message} onClose={hideDialog} data-testid={dataTestId}>
+        <Dialog open={!!message} onClose={hideDialog} data-testid={dataTestId} style={style}>
             {title && <DialogTitle>{title}</DialogTitle>}
             <DialogContent>{message}</DialogContent>
             <DialogActions>

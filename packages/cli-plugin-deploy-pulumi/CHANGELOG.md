@@ -3,6 +3,126 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.15.0](https://github.com/webiny/webiny-js/compare/v5.15.0-beta.3...v5.15.0) (2021-09-30)
+
+**Note:** Version bump only for package @webiny/cli-plugin-deploy-pulumi
+
+
+
+
+
+# [5.15.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.15.0-beta.2...v5.15.0-beta.3) (2021-09-30)
+
+**Note:** Version bump only for package @webiny/cli-plugin-deploy-pulumi
+
+
+
+
+
+# [5.15.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.15.0-beta.1...v5.15.0-beta.2) (2021-09-29)
+
+**Note:** Version bump only for package @webiny/cli-plugin-deploy-pulumi
+
+
+
+
+
+# [5.15.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.15.0-beta.0...v5.15.0-beta.1) (2021-09-28)
+
+**Note:** Version bump only for package @webiny/cli-plugin-deploy-pulumi
+
+
+
+
+
+# [5.15.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.14.0...v5.15.0-beta.0) (2021-09-16)
+
+
+### Bug Fixes
+
+* add `crawlDirectory` type ([0e26244](https://github.com/webiny/webiny-js/commit/0e26244c04398236f7be2de79e584d904b3d1806))
+* create `crawlDirectory` function ([a301006](https://github.com/webiny/webiny-js/commit/a30100678df05ce72bc4745ffe9d6160e66d7003))
+* create utils index file ([3bf3352](https://github.com/webiny/webiny-js/commit/3bf3352011842998d998ad2daea178d0766a3464))
+* prevent using the watch command with prod envs ([4aa2074](https://github.com/webiny/webiny-js/commit/4aa20740476a54391f0d8470e24efbe95e181ad2))
+* use newly introduced `crawlDirectory` function ([53cfab5](https://github.com/webiny/webiny-js/commit/53cfab5645e3069ee1d87422c9bf7748dc2207ff))
+
+
+
+
+
+# [5.14.0](https://github.com/webiny/webiny-js/compare/v5.14.0-beta.0...v5.14.0) (2021-08-30)
+
+**Note:** Version bump only for package @webiny/cli-plugin-deploy-pulumi
+
+
+
+
+
+# [5.14.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.13.0...v5.14.0-beta.0) (2021-08-26)
+
+**Note:** Version bump only for package @webiny/cli-plugin-deploy-pulumi
+
+
+
+
+
+# [5.13.0](https://github.com/webiny/webiny-js/compare/v5.13.0-beta.4...v5.13.0) (2021-08-18)
+
+
+### Bug Fixes
+
+* correct links ([1daaaad](https://github.com/webiny/webiny-js/commit/1daaaadb2ff4daa13aa559a9e3115772ac91e8c8))
+
+
+
+
+
+# [5.13.0-beta.4](https://github.com/webiny/webiny-js/compare/v5.13.0-beta.3...v5.13.0-beta.4) (2021-08-18)
+
+**Note:** Version bump only for package @webiny/cli-plugin-deploy-pulumi
+
+
+
+
+
+# [5.13.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.13.0-beta.2...v5.13.0-beta.3) (2021-08-17)
+
+**Note:** Version bump only for package @webiny/cli-plugin-deploy-pulumi
+
+
+
+
+
+# [5.13.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.13.0-beta.1...v5.13.0-beta.2) (2021-08-17)
+
+**Note:** Version bump only for package @webiny/cli-plugin-deploy-pulumi
+
+
+
+
+
+# [5.13.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.13.0-beta.0...v5.13.0-beta.1) (2021-08-16)
+
+**Note:** Version bump only for package @webiny/cli-plugin-deploy-pulumi
+
+
+
+
+
+# [5.13.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.12.0...v5.13.0-beta.0) (2021-08-16)
+
+
+### Bug Fixes
+
+* ensure env vars are loaded immediately as the CLI starts ([50b1e31](https://github.com/webiny/webiny-js/commit/50b1e31585a55094276e7d2ebbc3cdbd5c69cdba))
+* **cli:** use forward slash and disable path filtering on Windows ([6346ef9](https://github.com/webiny/webiny-js/commit/6346ef9867b8c9746bc523b011917519ff3f1779))
+* getStackOutput is a sync function ([5fdcb61](https://github.com/webiny/webiny-js/commit/5fdcb61e66ad3459e8108d95613f8af13361c852))
+* remove async ([f552c3a](https://github.com/webiny/webiny-js/commit/f552c3ad1ce9636c389f4f157cea0f4be22e0e25))
+
+
+
+
+
 # [5.12.0](https://github.com/webiny/webiny-js/compare/v5.12.0-beta.1...v5.12.0) (2021-08-05)
 
 **Note:** Version bump only for package @webiny/cli-plugin-deploy-pulumi

@@ -77,17 +77,13 @@ interface ConstructorArgs {
 export default class CmsContentModelGroupDynamoElastic
     implements CmsContentModelGroupStorageOperations {
     private readonly _context: CmsContext;
-    private _partitionKey: string;
 
     private get context(): CmsContext {
         return this._context;
     }
 
     private get partitionKey(): string {
-        if (!this._partitionKey) {
-            this._partitionKey = `${createBasePartitionKey(this.context)}#CMG`;
-        }
-        return this._partitionKey;
+        return `${createBasePartitionKey(this.context)}#CMG`;
     }
 
     public constructor({ context }: ConstructorArgs) {

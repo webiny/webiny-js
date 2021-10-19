@@ -1,6 +1,6 @@
 {
   "name": "@webiny/app-security-admin-users-cognito",
-  "version": "5.12.0",
+  "version": "5.15.0",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -13,14 +13,14 @@
   "license": "MIT",
   "dependencies": {
     "@emotion/styled": "^10.0.27",
-    "@webiny/app": "^5.12.0",
-    "@webiny/app-admin": "^5.12.0",
-    "@webiny/app-security-admin-users": "^5.12.0",
-    "@webiny/app-security-cognito-authentication": "^5.12.0",
-    "@webiny/form": "^5.12.0",
-    "@webiny/plugins": "^5.12.0",
-    "@webiny/ui": "^5.12.0",
-    "@webiny/validation": "^5.12.0",
+    "@webiny/app": "^5.15.0",
+    "@webiny/app-admin": "^5.15.0",
+    "@webiny/app-security-admin-users": "^5.15.0",
+    "@webiny/app-security-cognito-authentication": "^5.15.0",
+    "@webiny/form": "^5.15.0",
+    "@webiny/plugins": "^5.15.0",
+    "@webiny/ui": "^5.15.0",
+    "@webiny/validation": "^5.15.0",
     "emotion": "^10.0.27",
     "react": "^16.14.0",
     "react-dom": "^16.14.0"
@@ -33,8 +33,8 @@
     "@babel/preset-env": "^7.5.5",
     "@babel/preset-react": "^7.0.0",
     "@babel/preset-typescript": "^7.8.3",
-    "@webiny/cli": "^5.12.0",
-    "@webiny/project-utils": "^5.12.0",
+    "@webiny/cli": "^5.15.0",
+    "@webiny/project-utils": "^5.15.0",
     "babel-plugin-lodash": "^3.3.4",
     "rimraf": "^3.0.2",
     "typescript": "^4.1.3"

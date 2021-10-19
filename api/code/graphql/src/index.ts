@@ -7,6 +7,10 @@ import i18nContentPlugins from "@webiny/api-i18n-content/plugins";
 import adminUsersPlugins from "@webiny/api-security-admin-users";
 import securityAdminUsersDynamoDbStorageOperations from "@webiny/api-security-admin-users-so-ddb";
 import pageBuilderPlugins from "@webiny/api-page-builder/graphql";
+import pageBuilderDynamoDbElasticsearchPlugins from "@webiny/api-page-builder-so-ddb-es";
+import pageBuilderPrerenderingPlugins from "@webiny/api-page-builder/prerendering";
+import pageBuilderImportExportPlugins from "@webiny/api-page-builder-import-export/graphql";
+import { createStorageOperations } from "@webiny/api-page-builder-import-export-so-ddb";
 import prerenderingServicePlugins from "@webiny/api-prerendering-service/client";
 import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
@@ -16,31 +20,38 @@ import fileManagerPlugins from "@webiny/api-file-manager/plugins";
 import fileManagerDynamoDbElasticStorageOperation from "@webiny/api-file-manager-ddb-es";
 import logsPlugins from "@webiny/handler-logs";
 import fileManagerS3 from "@webiny/api-file-manager-s3";
-import formBuilderPlugins from "@webiny/api-form-builder/plugins";
+import { createFormBuilder } from "@webiny/api-form-builder";
 import securityPlugins from "./security";
 import headlessCmsPlugins from "@webiny/api-headless-cms/plugins";
 import headlessCmsDynamoDbElasticStorageOperation from "@webiny/api-headless-cms-ddb-es";
 import elasticsearchDataGzipCompression from "@webiny/api-elasticsearch/plugins/GzipCompression";
+import { createFormBuilderStorageOperations } from "@webiny/api-form-builder-so-ddb-es";
 
 // Imports plugins created via scaffolding utilities.
 import scaffoldsPlugins from "./plugins/scaffolds";
-import customPlugins from "./plugins/custom";
+import { createElasticsearchClient } from "@webiny/api-elasticsearch/client";
 
 const debug = process.env.DEBUG === "true";
+
+const documentClient = new DocumentClient({
+    convertEmptyValues: true,
+    region: process.env.AWS_REGION
+});
+
+const elasticsearchClient = createElasticsearchClient({
+    endpoint: `https://${process.env.ELASTIC_SEARCH_ENDPOINT}`
+});
 
 export const handler = createHandler({
     plugins: [
         dynamoDbPlugins(),
         logsPlugins(),
         graphqlPlugins({ debug }),
-        elasticSearch({ endpoint: `https://${process.env.ELASTIC_SEARCH_ENDPOINT}` }),
+        elasticSearch(elasticsearchClient),
         dbPlugins({
             table: process.env.DB_TABLE,
             driver: new DynamoDbDriver({
-                documentClient: new DocumentClient({
-                    convertEmptyValues: true,
-                    region: process.env.AWS_REGION
-                })
+                documentClient
             })
         }),
         securityPlugins(),
@@ -64,12 +75,21 @@ export const handler = createHandler({
         adminUsersPlugins(),
         securityAdminUsersDynamoDbStorageOperations(),
         pageBuilderPlugins(),
-        formBuilderPlugins(),
+        pageBuilderDynamoDbElasticsearchPlugins(),
+        pageBuilderPrerenderingPlugins(),
+        pageBuilderImportExportPlugins({
+            storageOperations: createStorageOperations({ documentClient })
+        }),
+        createFormBuilder({
+            storageOperations: createFormBuilderStorageOperations({
+                documentClient,
+                elasticsearch: elasticsearchClient
+            })
+        }),
         headlessCmsPlugins(),
         headlessCmsDynamoDbElasticStorageOperation(),
         scaffoldsPlugins(),
-        elasticsearchDataGzipCompression(),
-        customPlugins()
+        elasticsearchDataGzipCompression()
     ],
     http: { debug }
 });

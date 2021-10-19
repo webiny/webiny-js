@@ -3,6 +3,152 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.15.0](https://github.com/webiny/webiny-js/compare/v5.15.0-beta.3...v5.15.0) (2021-09-30)
+
+**Note:** Version bump only for package @webiny/cwp-template-aws
+
+
+
+
+
+# [5.15.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.15.0-beta.2...v5.15.0-beta.3) (2021-09-30)
+
+**Note:** Version bump only for package @webiny/cwp-template-aws
+
+
+
+
+
+# [5.15.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.15.0-beta.1...v5.15.0-beta.2) (2021-09-29)
+
+**Note:** Version bump only for package @webiny/cwp-template-aws
+
+
+
+
+
+# [5.15.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.15.0-beta.0...v5.15.0-beta.1) (2021-09-28)
+
+**Note:** Version bump only for package @webiny/cwp-template-aws
+
+
+
+
+
+# [5.15.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.14.0...v5.15.0-beta.0) (2021-09-16)
+
+
+### Bug Fixes
+
+* add missing DB_TABLE_ELASTICSEARCH env var ([481f443](https://github.com/webiny/webiny-js/commit/481f443e1b1c51fec25a37b67685d1e86eccbb7a))
+* correct import ([dd304c4](https://github.com/webiny/webiny-js/commit/dd304c449612aa8c1383768dae6034cec757e3bc))
+* export `dynamoDbElasticsearchTable` ([c07cec9](https://github.com/webiny/webiny-js/commit/c07cec9798fc47cfb3f20e66549ec8d2caa2d09b))
+* update dependencies ([37f2691](https://github.com/webiny/webiny-js/commit/37f2691f3cb615615a089d977f58a22a8bb21f50))
+* use `crawlDirectory` util ([ce9769c](https://github.com/webiny/webiny-js/commit/ce9769c4dd7e4a8cc1a8cc15ab579539048999ae))
+
+
+### Features
+
+* **api-page-builder:** storage operations ([#1872](https://github.com/webiny/webiny-js/issues/1872)) ([8738612](https://github.com/webiny/webiny-js/commit/8738612d0a908f39738c81d4a39173c10a461f7d))
+* import custom `sendEvent` function ([ef802b5](https://github.com/webiny/webiny-js/commit/ef802b50609e7f8bec7e7ad93b38e3a5827c25c7))
+
+
+
+
+
+# [5.14.0](https://github.com/webiny/webiny-js/compare/v5.14.0-beta.0...v5.14.0) (2021-08-30)
+
+**Note:** Version bump only for package @webiny/cwp-template-aws
+
+
+
+
+
+# [5.14.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.13.0...v5.14.0-beta.0) (2021-08-26)
+
+
+### Bug Fixes
+
+* update comment ([66c55fc](https://github.com/webiny/webiny-js/commit/66c55fc04c1ad6bdbab19a094e6af28547d4c9a1))
+
+
+### Features
+
+* custom Apollo InMemoryCache ([#1884](https://github.com/webiny/webiny-js/issues/1884)) ([7d30bd3](https://github.com/webiny/webiny-js/commit/7d30bd317300a03906d3bf34d15357e2615aadde))
+
+
+
+
+
+# [5.13.0](https://github.com/webiny/webiny-js/compare/v5.13.0-beta.4...v5.13.0) (2021-08-18)
+
+
+### Bug Fixes
+
+* correct links ([1daaaad](https://github.com/webiny/webiny-js/commit/1daaaadb2ff4daa13aa559a9e3115772ac91e8c8))
+
+
+
+
+
+# [5.13.0-beta.4](https://github.com/webiny/webiny-js/compare/v5.13.0-beta.3...v5.13.0-beta.4) (2021-08-18)
+
+**Note:** Version bump only for package @webiny/cwp-template-aws
+
+
+
+
+
+# [5.13.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.13.0-beta.2...v5.13.0-beta.3) (2021-08-17)
+
+**Note:** Version bump only for package @webiny/cwp-template-aws
+
+
+
+
+
+# [5.13.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.13.0-beta.1...v5.13.0-beta.2) (2021-08-17)
+
+**Note:** Version bump only for package @webiny/cwp-template-aws
+
+
+
+
+
+# [5.13.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.13.0-beta.0...v5.13.0-beta.1) (2021-08-16)
+
+**Note:** Version bump only for package @webiny/cwp-template-aws
+
+
+
+
+
+# [5.13.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.12.0...v5.13.0-beta.0) (2021-08-16)
+
+
+### Bug Fixes
+
+* add `PrerenderingServiceClientContext` ([b45913e](https://github.com/webiny/webiny-js/commit/b45913eef185a99c97dbdd74e084209bb07f893f))
+* add comment about the Context object ([97c0859](https://github.com/webiny/webiny-js/commit/97c085991799086edb4ccb422f48e8839a80bd1a))
+* add missing `PrerenderingServiceClientContext` context ([068cfa5](https://github.com/webiny/webiny-js/commit/068cfa52f779210bc2596ccbf0e774654187a1e4))
+* add missing contexts ([7e37ea5](https://github.com/webiny/webiny-js/commit/7e37ea53aaa80396d219c978ff4b7f168619aa48))
+* add new scaffolds ([bade8aa](https://github.com/webiny/webiny-js/commit/bade8aaf93e21fd458c6f18707b4142a8c69a47d))
+* disable `no-empty-interface` ([919f624](https://github.com/webiny/webiny-js/commit/919f6240e9387f4878029b0b2b5c59541f3e378a))
+* improve comment ([760c83a](https://github.com/webiny/webiny-js/commit/760c83a0bfccde42e8b0a746b88956ae8cc65b25))
+* reorganize env vars and add comments / docs links ([3991caf](https://github.com/webiny/webiny-js/commit/3991caf01b24c8b0b9691fc9332ee6133b22c554))
+* replace "Apollo Gateway Integration" with "GraphQL API Integration" ([f2bfa61](https://github.com/webiny/webiny-js/commit/f2bfa61998a8ed2d31ecbee83396682b60fe65c3))
+* undo eslint config change ([64900fd](https://github.com/webiny/webiny-js/commit/64900fdab6098ca3663c8630dd2d7b6d95fbb795))
+* update dependencies ([5f482ad](https://github.com/webiny/webiny-js/commit/5f482ad073fc3bee8a4aedc2103bffe904f4d833))
+
+
+### Features
+
+* add base `types.ts` file ([9dd89c2](https://github.com/webiny/webiny-js/commit/9dd89c2b4424572ab8dc03f2a6b06d544a6024e2))
+
+
+
+
+
 # [5.12.0](https://github.com/webiny/webiny-js/compare/v5.12.0-beta.1...v5.12.0) (2021-08-05)
 
 **Note:** Version bump only for package @webiny/cwp-template-aws

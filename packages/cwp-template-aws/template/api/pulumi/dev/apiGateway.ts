@@ -17,7 +17,7 @@ class ApiGateway {
         for (let i = 0; i < routes.length; i++) {
             const route = routes[i];
             const integration = new aws.apigatewayv2.Integration(route.name, {
-                description: "Apollo Gateway Integration",
+                description: "GraphQL API Integration",
                 apiId: this.api.id,
                 integrationType: "AWS_PROXY",
                 integrationMethod: route.method,

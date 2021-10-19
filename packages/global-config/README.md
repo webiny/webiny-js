@@ -1,0 +1,1 @@
+# @webiny/global-config

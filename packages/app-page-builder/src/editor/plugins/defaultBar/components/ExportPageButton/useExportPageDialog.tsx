@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { css } from "emotion";
 import { i18n } from "@webiny/app/i18n";
 import { useDialog } from "@webiny/app-admin/hooks/useDialog";
@@ -8,33 +8,26 @@ import { Cell, Grid } from "@webiny/ui/Grid";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { CircularProgress } from "@webiny/ui/Progress";
 
+import { usePageBuilder } from "~/hooks/usePageBuilder";
 import { ReactComponent as FileDownloadIcon } from "~/editor/assets/icons/file_download_black_24dp.svg";
+import ExportPageLoadingDialogContent from "./ExportPageLoadingDialogContent";
+import useExportPage from "./useExportPage";
 
-const t = i18n.ns("app-page-builder/editor/plugins/defaultBar/importPage");
+const t = i18n.ns("app-page-builder/editor/plugins/defaultBar/exportPageButton");
 
 const confirmationMessageStyles = css`
-    max-width: 600px;
-`;
-
-const spinnerWrapper = css`
-    position: relative;
-    width: 400px;
-    height: 180px;
+    width: 600px;
 `;
 
 const linkWrapper = css`
-    position: relative;
+    display: flex;
     background-color: var(--mdc-theme-background);
 
     & .link-text {
-        display: inline-block;
-        padding: 8px 16px;
+        padding: 8px 0 8px 16px;
     }
 
     & .copy-button__wrapper {
-        position: absolute;
-        top: 4px;
-        right: 18px;
     }
 `;
 
@@ -45,7 +38,30 @@ const gridClass = css`
     }
 `;
 
-const ExportPageLoadingDialogMessage: React.FunctionComponent = () => {
+const spinnerWrapper = css`
+    position: relative;
+    width: 100%;
+    height: 180px;
+`;
+
+const ExportPageLoadingDialogMessage: React.FunctionComponent<{
+    ids: string[];
+}> = ({ ids }) => {
+    const { exportPage } = useExportPage();
+    const {
+        exportPageData: { revisionType }
+    } = usePageBuilder();
+
+    useEffect(() => {
+        console.log({ revisionType, ids });
+        exportPage({
+            variables: {
+                ids,
+                revisionType
+            }
+        });
+    }, []);
+
     return (
         <div className={confirmationMessageStyles}>
             <div className={spinnerWrapper}>
@@ -75,6 +91,7 @@ const ExportPageDialogMessage: React.FunctionComponent<ExportPageDialogProps> = 
                         </Typography>
                         <span className={"copy-button__wrapper"}>
                             <CopyButton
+                                data-testid={"export-pages.export-ready-dialog.copy-button"}
                                 value={exportUrl}
                                 onCopy={() => showSnackbar("Successfully copied!")}
                             />
@@ -103,7 +120,7 @@ const ExportPageDialogMessage: React.FunctionComponent<ExportPageDialogProps> = 
 };
 
 const useExportPageDialog = () => {
-    const { showDialog } = useDialog();
+    const { showDialog, hideDialog } = useDialog();
 
     return {
         showExportPageContentDialog: (props: ExportPageDialogProps) => {
@@ -111,17 +128,29 @@ const useExportPageDialog = () => {
                 title: t`Your export is now ready!`,
                 actions: {
                     cancel: { label: t`Close` }
-                }
+                },
+                dataTestId: "export-pages.export-ready-dialog"
             });
         },
-        showExportPageLoadingDialog: () => {
-            showDialog(<ExportPageLoadingDialogMessage />, {
-                title: t`Export page`,
+        showExportPageLoadingDialog: taskId => {
+            showDialog(<ExportPageLoadingDialogContent taskId={taskId} />, {
+                title: t`Preparing your export...`,
                 actions: {
                     cancel: { label: t`Cancel` }
-                }
+                },
+                dataTestId: "export-pages.loading-dialog"
             });
-        }
+        },
+        showExportPageInitializeDialog: props => {
+            showDialog(<ExportPageLoadingDialogMessage {...props} />, {
+                title: t`Preparing your export...`,
+                actions: {
+                    cancel: { label: t`Cancel` }
+                },
+                dataTestId: "export-pages.initial-dialog"
+            });
+        },
+        hideDialog
     };
 };
 

@@ -26,7 +26,7 @@ interface Input {
 }
 
 const SCAFFOLD_DOCS_LINK =
-    "https://www.webiny.com/docs/how-to-guides/webiny-cli/scaffolding/extend-admin-area";
+    "https://www.webiny.com/docs/how-to-guides/scaffolding/extend-admin-area";
 
 export default (): CliCommandScaffoldTemplate<Input> => ({
     name: "cli-plugin-scaffold-template-graphql-app",
@@ -65,7 +65,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 {
                     name: "dataModelName",
                     message: "Enter initial entity name:",
-                    default: "Book",
+                    default: "Todo",
                     validate: (dataModelName, answers) => {
                         if (!dataModelName.match(/^([a-zA-Z]+)$/)) {
                             return "A valid name must consist of letters only.";
@@ -328,7 +328,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 ["Extend Admin Area", SCAFFOLD_DOCS_LINK],
                 [
                     "Use the Watch Command",
-                    "https://www.webiny.com/docs/how-to-guides/webiny-cli/use-watch-command"
+                    "https://www.webiny.com/docs/how-to-guides/use-watch-command"
                 ]
             ];
 

@@ -1,15 +1,11 @@
 import React from "react";
 import kebabCase from "lodash/kebabCase";
-import {
-    DisplayMode,
-    PbEditorPageElementPlugin,
-    PbEditorElementPluginArgs
-} from "../../../../types";
+import { DisplayMode, PbEditorPageElementPlugin, PbEditorTextElementPluginsArgs } from "~/types";
 import { createInitialPerDeviceSettingValue } from "../../elementSettings/elementSettingsUtils";
-import Heading, { headingClassName } from "./Heading";
 import { createInitialTextValue } from "../utils/textUtils";
+import Heading from "./Heading";
 
-export default (args: PbEditorElementPluginArgs = {}): PbEditorPageElementPlugin => {
+export default (args: PbEditorTextElementPluginsArgs = {}): PbEditorPageElementPlugin => {
     const defaultText = "Heading";
 
     const defaultSettings = [
@@ -26,15 +22,15 @@ export default (args: PbEditorElementPluginArgs = {}): PbEditorPageElementPlugin
         "pb-editor-page-element-settings-delete"
     ];
 
-    const elementType = kebabCase(args.elementType || "heading");
-
     const defaultToolbar = {
         title: "Heading",
         group: "pb-editor-element-group-basic",
         preview() {
-            return <h2 className={headingClassName}>{defaultText}</h2>;
+            return <h2>{defaultText}</h2>;
         }
     };
+
+    const elementType = kebabCase(args.elementType || "heading");
 
     return {
         name: `pb-editor-page-element-${elementType}`,
@@ -83,8 +79,8 @@ export default (args: PbEditorElementPluginArgs = {}): PbEditorPageElementPlugin
 
             return typeof args.create === "function" ? args.create(defaultValue) : defaultValue;
         },
-        render({ element }) {
-            return <Heading elementId={element.id} />;
+        render(props) {
+            return <Heading {...props} mediumEditorOptions={args.mediumEditorOptions} />;
         }
     };
 };

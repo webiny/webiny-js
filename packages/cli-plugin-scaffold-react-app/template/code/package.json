@@ -1,0 +1,52 @@
+{
+  "name": "project-application-path",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@apollo/react-components": "^3.1.5",
+    "@types/react": "^16.14.2",
+    "@webiny/app": "^WEBINY_VERSION",
+    "@webiny/plugins": "^WEBINY_VERSION",
+    "@webiny/react-router": "^WEBINY_VERSION",
+    "apollo-cache": "^1.3.5",
+    "apollo-cache-inmemory": "^1.6.6",
+    "apollo-client": "^2.2.8",
+    "apollo-link": "^1.2.14",
+    "apollo-link-batch-http": "^1.2.14",
+    "apollo-utilities": "^1.3.4",
+    "core-js": "^3.0.1",
+    "cross-fetch": "^3.0.4",
+    "graphql-tag": "^2.10.1",
+    "react": "^16.14.0",
+    "react-dom": "^16.14.0",
+    "regenerator-runtime": "^0.13.5"
+  },
+  "devDependencies": {
+    "@webiny/cli": "^WEBINY_VERSION",
+    "@webiny/cli-plugin-deploy-pulumi": "^WEBINY_VERSION",
+    "@webiny/project-utils": "^WEBINY_VERSION",
+    "cross-env": "^5.0.2",
+    "invariant": "^2.2.4"
+  },
+  "scripts": {
+    "watch": "cross-env PORT=3001 yarn webiny run watch",
+    "build": "yarn webiny run build"
+  },
+  "browserslist": {
+    "development": [
+      "last 2 chrome versions",
+      "last 2 firefox versions",
+      "last 2 edge versions"
+    ],
+    "production": [
+      ">0.25%",
+      "not op_mini all",
+      "ie 11"
+    ]
+  },
+  "svgo": {
+    "plugins": {
+      "removeViewBox": false
+    }
+  }
+}

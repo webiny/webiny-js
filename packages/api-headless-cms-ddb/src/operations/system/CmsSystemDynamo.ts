@@ -12,7 +12,6 @@ const SYSTEM_SORT_KEY = "CMS";
 
 export default class CmsSystemDynamo implements CmsSystemStorageOperations {
     private readonly _context: CmsContext;
-    private _partitionKey: string;
     private readonly _table: Table;
     private readonly _entity: Entity<any>;
 
@@ -21,14 +20,11 @@ export default class CmsSystemDynamo implements CmsSystemStorageOperations {
     }
 
     private get partitionKey(): string {
-        if (!this._partitionKey) {
-            const tenant = this._context.tenancy.getCurrentTenant();
-            if (!tenant) {
-                throw new WebinyError("Tenant missing.", "TENANT_NOT_FOUND");
-            }
-            this._partitionKey = `T#${tenant.id}#SYSTEM`;
+        const tenant = this._context.tenancy.getCurrentTenant();
+        if (!tenant) {
+            throw new WebinyError("Tenant missing.", "TENANT_NOT_FOUND");
         }
-        return this._partitionKey;
+        return `T#${tenant.id}#SYSTEM`;
     }
 
     public constructor({ context }: ConstructorArgs) {

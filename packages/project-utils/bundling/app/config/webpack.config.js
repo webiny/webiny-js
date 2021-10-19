@@ -54,7 +54,10 @@ const sassLoader = {
     loader: require.resolve("sass-loader"),
     options: {
         sourceMap: true,
-        sassOptions: { includePaths: sassIncludePaths }
+        sassOptions: {
+            includePaths: sassIncludePaths,
+            quietDeps: true
+        }
     }
 };
 
@@ -120,7 +123,11 @@ module.exports = function(webpackEnv, { paths, babelCustomizer }) {
                             autoprefixer: {
                                 flexbox: "no-2009"
                             },
-                            stage: 3
+                            stage: 3,
+                            // Necessary for "@material" to work with dart implementation of sass
+                            features: {
+                                "custom-properties": false
+                            }
                         }),
                         // Adds PostCSS Normalize as the reset css with default options,
                         // so that it honors browserslist config in package.json
@@ -397,6 +404,15 @@ module.exports = function(webpackEnv, { paths, babelCustomizer }) {
                                                     ReactComponent:
                                                         "@svgr/webpack?-svgo,+titleProp,+ref![path]"
                                                 }
+                                            }
+                                        }
+                                    ],
+                                    [
+                                        "babel-plugin-module-resolver",
+                                        {
+                                            cwd: paths.appPath,
+                                            alias: {
+                                                "~": "./src"
                                             }
                                         }
                                     ]

@@ -22,6 +22,7 @@ import { FilterExpressions } from "dynamodb-toolbox/dist/lib/expressionBuilder";
 import { decodeCursor, encodeCursor } from "@webiny/db-dynamodb/utils/cursor";
 import { filterItems } from "@webiny/db-dynamodb/utils/filter";
 import { sortItems } from "@webiny/db-dynamodb/utils/sort";
+import { FileDynamoDbFieldPlugin } from "~/plugins/FileDynamoDbFieldPlugin";
 
 interface FileItem extends File {
     PK: string;
@@ -46,7 +47,6 @@ const cleanStorageFile = (file: File & Record<string, any>): File => {
 
 export class FilesStorageOperations implements FileManagerFilesStorageOperations {
     private readonly _context: any;
-    private _partitionKey: string;
     private readonly _table: Table;
     private readonly _entity: Entity<any>;
 
@@ -55,18 +55,15 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
     }
 
     private get partitionKey(): string {
-        if (!this._partitionKey) {
-            const tenant = this.context.tenancy.getCurrentTenant();
-            const locale = this.context.i18nContent.getLocale();
-            if (!tenant) {
-                throw new WebinyError("Tenant missing.", "TENANT_NOT_FOUND");
-            }
-            if (!locale) {
-                throw new Error("Locale missing.");
-            }
-            this._partitionKey = `T#${tenant.id}#L#${locale.code}#FM#F`;
+        const tenant = this.context.tenancy.getCurrentTenant();
+        const locale = this.context.i18nContent.getLocale();
+        if (!tenant) {
+            throw new WebinyError("Tenant missing.", "TENANT_NOT_FOUND");
         }
-        return this._partitionKey;
+        if (!locale) {
+            throw new Error("Locale missing.");
+        }
+        return `T#${tenant.id}#L#${locale.code}#FM#F`;
     }
 
     public constructor({ context }: ConstructorParams) {
@@ -242,14 +239,19 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
                 }
             );
         }
+
+        const fields = this.context.plugins.byType<FileDynamoDbFieldPlugin>(
+            FileDynamoDbFieldPlugin.type
+        );
         /**
          * Filter the read items via the code.
          * It will build the filters out of the where input and transform the values it is using.
          */
         const filteredFiles = filterItems({
+            plugins: this.context.plugins,
             items,
             where,
-            context: this.context
+            fields
         });
 
         const totalCount = filteredFiles.length;
@@ -258,10 +260,9 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
          * It takes the sort input and sorts by it via the lodash sortBy method.
          */
         const sortedFiles = sortItems({
-            context: this.context,
             items: filteredFiles,
             sort,
-            fields: ["id", "createdBy", "createdOn"]
+            fields
         });
 
         const start = decodeCursor(after) || 0;

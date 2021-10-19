@@ -27,6 +27,8 @@ import { BaseColorPicker } from "../components/ColorPicker";
 import useUpdateHandlers from "../../elementSettings/useUpdateHandlers";
 import TextAlignment from "./TextAlignment";
 import { applyFallbackDisplayMode } from "../elementSettingsUtils";
+import { usePageElements } from "@webiny/app-page-builder-elements/hooks/usePageElements";
+import { Theme } from "@webiny/app-page-builder-elements/types";
 
 const classes = {
     grid: css({
@@ -56,11 +58,20 @@ const classes = {
 const TEXT_SETTINGS_COUNT = 4;
 const DATA_NAMESPACE = "data.text";
 
-const TextSettings: React.FunctionComponent<PbEditorPageElementSettingsRenderComponentProps & {
-    options: any;
-}> = ({ defaultAccordionValue, options }) => {
+const TextSettings: React.FunctionComponent<
+    PbEditorPageElementSettingsRenderComponentProps & {
+        options: any;
+    }
+> = ({ defaultAccordionValue, options }) => {
     const { displayMode } = useRecoilValue(uiAtom);
     const activeElementId = useRecoilValue(activeElementAtom);
+
+    let peTheme: Theme = {};
+    const pageElements = usePageElements();
+    if (pageElements) {
+        peTheme = pageElements.theme;
+    }
+
     const element = useRecoilValue(elementWithChildrenByIdSelector(activeElementId));
     const [{ theme }] = plugins.byType<PbThemePlugin>("pb-theme");
 
@@ -72,11 +83,20 @@ const TextSettings: React.FunctionComponent<PbEditorPageElementSettingsRenderCom
 
     const themeTypographyOptions = useMemo(() => {
         const { types } = theme.elements[element.type] || { types: [] };
-        return types.map(el => (
-            <option value={el.className} key={el.label}>
-                {el.label}
-            </option>
-        ));
+        const peThemeTypography = Object.keys(peTheme.styles?.typography || {});
+
+        return [
+            ...types.map(el => (
+                <option value={el.className} key={el.label}>
+                    {el.label}
+                </option>
+            )),
+            ...peThemeTypography.map(el => (
+                <option value={el} key={el}>
+                    {el}
+                </option>
+            ))
+        ];
     }, [theme, element]);
 
     const { getUpdateValue, getUpdatePreview } = useUpdateHandlers({
@@ -110,10 +130,10 @@ const TextSettings: React.FunctionComponent<PbEditorPageElementSettingsRenderCom
         [getUpdateValue, displayMode]
     );
 
-    const updateTag = useCallback((value: string) => getUpdateValue(`${displayMode}.tag`)(value), [
-        getUpdateValue,
-        displayMode
-    ]);
+    const updateTag = useCallback(
+        (value: string) => getUpdateValue(`${displayMode}.tag`)(value),
+        [getUpdateValue, displayMode]
+    );
 
     const fallbackValue = useMemo(
         () =>

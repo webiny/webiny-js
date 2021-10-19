@@ -1,6 +1,9 @@
 type StackOutput = Record<string, any>;
 
 export function tagResources(tags: Record<string, string>): void;
+
+export function crawlDirectory(dir: string, callback: (path: string) => void): void;
+
 export function getStackOutput(
     folder: string,
     env: string,
@@ -12,4 +15,4 @@ export function getStackOutput(options: {
     env: string;
     map?: Record<string, string>;
     cwd?: string;
-}): Promise<StackOutput>;
+}): StackOutput;

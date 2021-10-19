@@ -22,15 +22,6 @@ if (typeof plugins !== "function") {
 const ELASTICSEARCH_PORT = process.env.ELASTICSEARCH_PORT || "9200";
 
 const getStorageOperationsPlugins = ({ documentClient, elasticsearchClientContext }) => {
-    /**
-     * Intercept DocumentClient operations and trigger dynamoToElastic function (almost like a DynamoDB Stream trigger)
-     */
-    const simulationContext = new ContextPlugin(async context => {
-        context.plugins.register([elasticsearchDataGzipCompression()]);
-        await elasticsearchClientContext.apply(context);
-    });
-    simulateStream(documentClient, createHandler(simulationContext, dynamoToElastic()));
-
     return () => {
         const pluginsValue = plugins();
         const dbPluginsValue = dbPlugins({
@@ -67,6 +58,16 @@ class FileManagerTestEnvironment extends NodeEnvironment {
             endpoint: `http://localhost:${ELASTICSEARCH_PORT}`,
             auth: {}
         });
+
+        /**
+         * Intercept DocumentClient operations and trigger dynamoToElastic function (almost like a DynamoDB Stream trigger)
+         */
+        const simulationContext = new ContextPlugin(async context => {
+            context.plugins.register([elasticsearchDataGzipCompression()]);
+            await elasticsearchClientContext.apply(context);
+        });
+        simulateStream(documentClient, createHandler(simulationContext, dynamoToElastic()));
+
         const clearEsIndices = async () => {
             return elasticsearchClient.indices.delete({
                 index: "_all"

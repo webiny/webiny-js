@@ -12,6 +12,9 @@
     },
     {
       "path": "../handler"
+    },
+    {
+      "path": "../handler-db"
     }
   ],
   "compilerOptions": {
@@ -24,7 +27,9 @@
       "@webiny/error/*": ["../error/src/*"],
       "@webiny/error": ["../error/src"],
       "@webiny/handler/*": ["../handler/src/*"],
-      "@webiny/handler": ["../handler/src"]
+      "@webiny/handler": ["../handler/src"],
+      "@webiny/handler-db/*": ["../handler-db/src/*"],
+      "@webiny/handler-db": ["../handler-db/src"]
     },
     "baseUrl": "."
   }

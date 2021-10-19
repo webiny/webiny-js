@@ -60,6 +60,16 @@ export interface FileInput {
     tags: [string];
 }
 
+export interface FileListWhereParams {
+    search?: string;
+    type?: string;
+    type_in?: string[];
+    tag?: string;
+    tag_in?: string[];
+    tag_and_in?: string[];
+    id_in?: string[];
+    id?: string;
+}
 export interface FilesListOpts {
     search?: string;
     types?: string[];
@@ -67,6 +77,8 @@ export interface FilesListOpts {
     ids?: string[];
     limit?: number;
     after?: string;
+    where?: FileListWhereParams;
+    sort?: string[];
 }
 
 export interface FileListMeta {

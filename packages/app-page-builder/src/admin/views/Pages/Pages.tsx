@@ -32,7 +32,7 @@ const Pages = () => {
         closeDialog
     });
 
-    const { importPageMutation, beforeOnImportPage } = useImportPage({
+    const { showDialog } = useImportPage({
         setLoadingLabel: () => setLoadingLabel(LoadingLabel.IMPORTING_PAGE),
         clearLoadingLabel: () => setLoadingLabel(null),
         closeDialog
@@ -43,13 +43,12 @@ const Pages = () => {
         openDialog();
     }, []);
 
-    const handleOnImportPage = useCallback(args => {
-        beforeOnImportPage(args);
+    const handleOnImportPage = useCallback(() => {
         setOperation(Operation.IMPORT);
         openDialog();
     }, []);
 
-    const onSelect = operation === Operation.CREATE ? createPageMutation : importPageMutation;
+    const onSelect = operation === Operation.CREATE ? createPageMutation : showDialog;
 
     const { identity } = useSecurity();
 

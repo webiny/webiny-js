@@ -11,7 +11,9 @@
       "api/code/fileManager/*",
       "api/code/graphql",
       "api/code/headlessCMS",
-      "api/code/pageBuilder/*",
+      "api/code/pageBuilder/updateSettings",
+      "api/code/pageBuilder/importPages/*",
+      "api/code/pageBuilder/exportPages/*",
       "api/code/prerenderingService/render",
       "api/code/prerenderingService/flush",
       "api/code/prerenderingService/queue/*"
@@ -50,6 +52,7 @@
     "contreebutors": "^1.1.3",
     "cross-env": "^5.2.0",
     "cypress": "^6.0.1",
+    "cypress-image-snapshot": "^4.0.1",
     "cypress-wait-until": "^1.7.1",
     "cz-customizable": "^5.2.0",
     "del": "^6.0.0",

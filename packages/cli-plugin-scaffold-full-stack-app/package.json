@@ -1,0 +1,56 @@
+{
+  "name": "@webiny/cli-plugin-scaffold-full-stack-app",
+  "version": "5.15.0",
+  "description": "Generate Webiny GraphQL Admin app module",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/webiny/webiny-js.git",
+    "directory": "cli-plugin-scaffold-full-stack-app"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/webiny/webiny-js/issues"
+  },
+  "homepage": "https://github.com/webiny/webiny-js#readme",
+  "dependencies": {
+    "@webiny/cli": "^5.15.0",
+    "@webiny/cli-plugin-scaffold": "^5.15.0",
+    "@webiny/cli-plugin-scaffold-graphql-api": "^5.15.0",
+    "case": "^1.6.3",
+    "chalk": "^4.1.0",
+    "execa": "^5.0.0",
+    "ncp": "^2.0.0",
+    "replace-in-path": "^1.1.0",
+    "terminal-link": "^2.1.1"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.5.5",
+    "@babel/core": "^7.5.5",
+    "@babel/preset-env": "^7.5.5",
+    "@babel/preset-flow": "^7.0.0",
+    "@types/inquirer": "^7.3.1",
+    "@types/ncp": "^2.0.4",
+    "@types/pluralize": "^0.0.29",
+    "@webiny/handler": "^5.15.0",
+    "@webiny/plugins": "^5.15.0",
+    "@webiny/project-utils": "^5.15.0",
+    "rimraf": "^3.0.2",
+    "typescript": "^4.1.3"
+  },
+  "scripts": {
+    "build": "yarn webiny run build",
+    "watch": "yarn webiny run watch"
+  },
+  "publishConfig": {
+    "access": "public",
+    "directory": "dist"
+  },
+  "adio": {
+    "ignoreDirs": [
+      "template"
+    ]
+  }
+}

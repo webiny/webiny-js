@@ -3,6 +3,139 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.15.0](https://github.com/webiny/webiny-js/compare/v5.15.0-beta.3...v5.15.0) (2021-09-30)
+
+**Note:** Version bump only for package @webiny/api-page-builder
+
+
+
+
+
+# [5.15.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.15.0-beta.2...v5.15.0-beta.3) (2021-09-30)
+
+**Note:** Version bump only for package @webiny/api-page-builder
+
+
+
+
+
+# [5.15.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.15.0-beta.1...v5.15.0-beta.2) (2021-09-29)
+
+
+### Bug Fixes
+
+* **api-page-builder:** cli upgrade ([b69a2e3](https://github.com/webiny/webiny-js/commit/b69a2e343c4d397e632289cd4904ae3fcf828187))
+
+
+
+
+
+# [5.15.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.15.0-beta.0...v5.15.0-beta.1) (2021-09-28)
+
+
+### Bug Fixes
+
+* **api-page-builder:** decompress content only on output ([#1935](https://github.com/webiny/webiny-js/issues/1935)) ([9a12da9](https://github.com/webiny/webiny-js/commit/9a12da9e4247e93b6cbae85b764cd9dd6c717f34))
+
+
+### Features
+
+* **api-page-builder:** add content compression plugins and default ([#1921](https://github.com/webiny/webiny-js/issues/1921)) ([6c507bf](https://github.com/webiny/webiny-js/commit/6c507bfc4bb12ca4ebd8ffb4e8913750061bd0ab))
+* **api-page-builder:** dynamodb only storage operations ([#1916](https://github.com/webiny/webiny-js/issues/1916)) ([612f86c](https://github.com/webiny/webiny-js/commit/612f86cde5fb518351cbfbd5e3f8d5fa99f77e7e))
+
+
+
+
+
+# [5.15.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.14.0...v5.15.0-beta.0) (2021-09-16)
+
+
+### Bug Fixes
+
+* **api-page-builder:** prerendering plugins and cypress tests ([#1907](https://github.com/webiny/webiny-js/issues/1907)) ([7a408f9](https://github.com/webiny/webiny-js/commit/7a408f946f08f2630857d90648a4548c6b09b182))
+* **cypress:** add cypress waiting for menu check ([#1909](https://github.com/webiny/webiny-js/issues/1909)) ([d381214](https://github.com/webiny/webiny-js/commit/d38121437fab4e50e8924b0210308822e9230743))
+
+
+### Features
+
+* **api-page-builder:** storage operations ([#1872](https://github.com/webiny/webiny-js/issues/1872)) ([8738612](https://github.com/webiny/webiny-js/commit/8738612d0a908f39738c81d4a39173c10a461f7d))
+
+
+
+
+
+# [5.14.0](https://github.com/webiny/webiny-js/compare/v5.14.0-beta.0...v5.14.0) (2021-08-30)
+
+**Note:** Version bump only for package @webiny/api-page-builder
+
+
+
+
+
+# [5.14.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.13.0...v5.14.0-beta.0) (2021-08-26)
+
+**Note:** Version bump only for package @webiny/api-page-builder
+
+
+
+
+
+# [5.13.0](https://github.com/webiny/webiny-js/compare/v5.13.0-beta.4...v5.13.0) (2021-08-18)
+
+**Note:** Version bump only for package @webiny/api-page-builder
+
+
+
+
+
+# [5.13.0-beta.4](https://github.com/webiny/webiny-js/compare/v5.13.0-beta.3...v5.13.0-beta.4) (2021-08-18)
+
+**Note:** Version bump only for package @webiny/api-page-builder
+
+
+
+
+
+# [5.13.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.13.0-beta.2...v5.13.0-beta.3) (2021-08-17)
+
+**Note:** Version bump only for package @webiny/api-page-builder
+
+
+
+
+
+# [5.13.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.13.0-beta.1...v5.13.0-beta.2) (2021-08-17)
+
+**Note:** Version bump only for package @webiny/api-page-builder
+
+
+
+
+
+# [5.13.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.13.0-beta.0...v5.13.0-beta.1) (2021-08-16)
+
+**Note:** Version bump only for package @webiny/api-page-builder
+
+
+
+
+
+# [5.13.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.12.0...v5.13.0-beta.0) (2021-08-16)
+
+
+### Bug Fixes
+
+* lock elasticsearch version ([a66cefe](https://github.com/webiny/webiny-js/commit/a66cefe23472168307294442885cc287e8d65b05))
+
+
+### Features
+
+* add support for Yarn 3 ([#1862](https://github.com/webiny/webiny-js/issues/1862)) ([0e57fd3](https://github.com/webiny/webiny-js/commit/0e57fd3249320e009532efd0c5eac31e749f9afb))
+
+
+
+
+
 # [5.12.0](https://github.com/webiny/webiny-js/compare/v5.12.0-beta.1...v5.12.0) (2021-08-05)
 
 **Note:** Version bump only for package @webiny/api-page-builder

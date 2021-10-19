@@ -5,41 +5,56 @@ import { MenuItem } from "@webiny/ui/Menu";
 import { ListItemGraphic } from "@webiny/ui/List";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { Icon } from "@webiny/ui/Icon";
-
-import { ReactComponent as DownloadIcon } from "../icons/file_download.svg";
-import { EXPORT_PAGE, GET_EXPORT_PAGE_TASK } from "./graphql";
+import { IconButton } from "@webiny/ui/Button";
+import { Tooltip } from "@webiny/ui/Tooltip";
+import { i18n } from "@webiny/app/i18n";
+import { EXPORT_PAGES, GET_PAGE_IMPORT_EXPORT_TASK } from "~/admin/graphql/pageImportExport.gql";
 import useExportPageDialog from "./useExportPageDialog";
+import useExportPageRevisionSelectorDialog from "./useExportPageRevisionSelectorDialog";
+// assets
+import { ReactComponent as DownloadIcon } from "../icons/file_download.svg";
 
-const INTERVAL = 0.5 * 1000;
+const t = i18n.ns("app-page-builder/editor/plugins/defaultBar/exportPageButton");
+
+const INTERVAL = 2 * 1000;
 
 const ExportPageButton: React.FunctionComponent<{ page: any }> = ({ page }) => {
     const { showSnackbar } = useSnackbar();
-    const { showExportPageContentDialog, showExportPageLoadingDialog } = useExportPageDialog();
+    const { showExportPageContentDialog, showExportPageLoadingDialog, hideDialog } =
+        useExportPageDialog();
     const [taskId, setTaskId] = useState<string>(null);
 
-    const [exportPage, exportPageResponse] = useMutation(EXPORT_PAGE, {
+    const [exportPage, exportPageResponse] = useMutation(EXPORT_PAGES, {
         onCompleted: response => {
-            const { error, data } = get(response, "pageBuilder.exportPage", {});
+            const { error, data } = get(response, "pageBuilder.exportPages", {});
             if (error) {
                 return showSnackbar(error.message);
             }
-            setTaskId(data.taskId);
+            setTaskId(data.task.id);
         }
     });
-    const { data } = useQuery(GET_EXPORT_PAGE_TASK, {
+    const { data } = useQuery(GET_PAGE_IMPORT_EXPORT_TASK, {
         variables: {
             id: taskId
         },
-        skip: !taskId,
+        skip: taskId === null,
         fetchPolicy: "network-only",
-        pollInterval: INTERVAL,
+        pollInterval: taskId === null ? 0 : INTERVAL,
         notifyOnNetworkStatusChange: true
     });
 
     const pollExportPageTaskStatus = useCallback(response => {
-        const { error, data } = get(response, "pageBuilder.getPageExportTask", {});
+        const { error, data } = get(response, "pageBuilder.getPageImportExportTask", {});
         if (error) {
             return showSnackbar(error.message);
+        }
+
+        // Handler failed task
+        if (data && data.status === "failed") {
+            setTaskId(null);
+            showSnackbar("Error: Failed to export the page!");
+            // TODO: @ashutosh show an informative dialog about error.
+            hideDialog();
         }
 
         if (data && data.status === "completed") {
@@ -61,9 +76,13 @@ const ExportPageButton: React.FunctionComponent<{ page: any }> = ({ page }) => {
     // Handle Export Page Dialog Flow
     useEffect(() => {
         if (exportPageResponse.loading) {
-            showExportPageLoadingDialog();
+            showExportPageLoadingDialog(handleCancelExport);
         }
     }, [exportPageResponse]);
+
+    const handleCancelExport = useCallback(() => {
+        setTaskId(null);
+    }, []);
 
     if (!page) {
         return null;
@@ -72,7 +91,7 @@ const ExportPageButton: React.FunctionComponent<{ page: any }> = ({ page }) => {
     return (
         <MenuItem
             onClick={async () => {
-                await exportPage({ variables: { id: page.id } });
+                await exportPage({ variables: { ids: [page.id] } });
             }}
             data-testid={"pb-editor-page-options-menu-export"}
         >
@@ -85,3 +104,35 @@ const ExportPageButton: React.FunctionComponent<{ page: any }> = ({ page }) => {
 };
 
 export default ExportPageButton;
+
+export const ExportPagesButton = ({ getMultiSelected }) => {
+    const selected = getMultiSelected();
+    const { showExportPageRevisionSelectorDialog } = useExportPageRevisionSelectorDialog();
+    const { showExportPageInitializeDialog } = useExportPageDialog();
+
+    const renderExportPagesTooltip = selected => {
+        const count = selected.length;
+        if (count > 0) {
+            return t`Export {count|count:1:page:default:pages}.`({
+                count
+            });
+        }
+
+        return t`Export pages`;
+    };
+
+    return (
+        <Tooltip content={renderExportPagesTooltip(selected)} placement={"bottom"}>
+            <IconButton
+                data-testid={"export-page-button"}
+                icon={<DownloadIcon />}
+                disabled={selected.length === 0}
+                onClick={() => {
+                    showExportPageRevisionSelectorDialog({
+                        onAccept: () => showExportPageInitializeDialog({ ids: selected })
+                    });
+                }}
+            />
+        </Tooltip>
+    );
+};

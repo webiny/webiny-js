@@ -5,7 +5,7 @@ import {
     CmsContext,
     CmsModelFieldValidatorPlugin,
     CmsModelFieldValidatorValidateArgs
-} from "../../../../types";
+} from "~/types";
 import WebinyError from "@webiny/error";
 
 type PluginValidationCallable = (params: CmsModelFieldValidatorValidateArgs) => Promise<boolean>;
@@ -15,6 +15,7 @@ type InputData = Record<string, any>;
 interface ValidateArgs {
     validatorList: PluginValidationList;
     field: CmsContentModelField;
+    contentModel: CmsContentModel;
     data: InputData;
     context: CmsContext;
 }
@@ -28,7 +29,7 @@ const validateValue = async (
         return null;
     }
 
-    const { validatorList, context } = args;
+    const { validatorList, context, field, contentModel } = args;
     try {
         for (const fieldValidator of fieldValidators) {
             const name = fieldValidator.name;
@@ -40,7 +41,9 @@ const validateValue = async (
                 const result = await validate({
                     value,
                     context,
-                    validator: fieldValidator
+                    validator: fieldValidator,
+                    field,
+                    contentModel
                 });
                 if (!result) {
                     return fieldValidator.message;
@@ -145,7 +148,7 @@ export const validateModelEntryData = async (
      */
     const invalidFields = [];
     for (const field of contentModel.fields) {
-        const error = await execValidation({ validatorList, field, data, context });
+        const error = await execValidation({ contentModel, validatorList, field, data, context });
         if (!error) {
             continue;
         }

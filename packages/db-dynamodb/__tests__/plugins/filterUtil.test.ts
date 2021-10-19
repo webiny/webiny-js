@@ -1,8 +1,7 @@
 import { filterItems } from "~/utils/filter";
 import filters from "~/plugins/filters";
-import { ContextInterface } from "@webiny/handler/types";
 import { PluginsContainer } from "@webiny/plugins";
-import { FieldPathPlugin } from "~/plugins/definitions/FieldPathPlugin";
+import { FieldPlugin } from "~/plugins/definitions/FieldPlugin";
 
 const itemJohn = {
     id: 1,
@@ -28,24 +27,28 @@ const itemWebiny = {
 
 const items: any[] = [itemJohn, itemJane, itemWebiny];
 
+class TestField extends FieldPlugin {
+    public static readonly type: string = "dbDynamodb.filtering.test";
+}
+
+const fields = [
+    new TestField({
+        field: "id"
+    }),
+    new TestField({
+        field: "text"
+    }),
+    new TestField({
+        field: "private",
+        path: "meta.private"
+    })
+];
+
 describe("filtering util test", () => {
-    let context: ContextInterface;
+    let plugins: PluginsContainer;
 
     beforeEach(() => {
-        context = {
-            args: [],
-            plugins: new PluginsContainer(),
-            WEBINY_VERSION: process.env.WEBINY_VERSION
-        };
-        context.plugins.register(filters());
-        context.plugins.register([
-            new FieldPathPlugin({
-                fields: ["private"],
-                createPath: field => {
-                    return `meta.${field}`;
-                }
-            })
-        ]);
+        plugins = new PluginsContainer(filters());
     });
 
     it("should filter by equal id", () => {
@@ -53,7 +56,7 @@ describe("filtering util test", () => {
             id: 1
         };
 
-        const response = filterItems({ items, where, context });
+        const response = filterItems({ items, where, plugins, fields });
 
         expect(response).toEqual([itemJohn]);
     });
@@ -62,7 +65,7 @@ describe("filtering util test", () => {
         const where = {
             text_contains: "j"
         };
-        const response = filterItems({ items, where, context });
+        const response = filterItems({ items, where, plugins, fields });
 
         expect(response).toEqual([itemJohn, itemJane]);
     });
@@ -71,14 +74,14 @@ describe("filtering util test", () => {
         const whereFalse = {
             private: false
         };
-        const responseFalse = filterItems({ items, where: whereFalse, context });
+        const responseFalse = filterItems({ items, where: whereFalse, plugins, fields });
 
         expect(responseFalse).toEqual([itemWebiny]);
 
         const whereTrue = {
             private: true
         };
-        const responseTrue = filterItems({ items, where: whereTrue, context });
+        const responseTrue = filterItems({ items, where: whereTrue, plugins, fields });
 
         expect(responseTrue).toEqual([itemJohn, itemJane]);
     });

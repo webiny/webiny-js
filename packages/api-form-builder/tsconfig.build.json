@@ -7,26 +7,28 @@
     "../api-i18n",
     "../api-i18n-ddb",
     "../api-file-manager",
-    "../api-file-manager-ddb-es",
+    "../api-file-manager-ddb",
     "../api-security",
     "../api-upgrade",
     "../error",
+    "../utils",
+    "../pubsub",
     "../handler",
     "../handler-graphql",
     "../validation",
     "../api-i18n-content",
     "../handler-aws",
-    "../handler-db",
     "../api-elasticsearch",
     "../api-dynamodb-to-elasticsearch",
-    "../db-dynamodb",
     "../api-tenancy"
   ],
   "compilerOptions": {
     "rootDir": "./src",
     "outDir": "./dist",
     "declarationDir": "./dist",
-    "paths": {},
+    "paths": {
+      "~/*": ["./src/*"]
+    },
     "baseUrl": "."
   },
   "references": []

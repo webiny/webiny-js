@@ -81,7 +81,7 @@ export function usePageBuilderSettings() {
         const query = [
             "preview=" + encodeURIComponent(page.id),
             "__locale=" + getCurrentLocale("content"),
-            tenant ? "__tenant=" + tenant : null
+            tenant ? "__tenant=" + tenant.id : null
         ];
 
         return url + "?" + query.filter(Boolean).join("&");

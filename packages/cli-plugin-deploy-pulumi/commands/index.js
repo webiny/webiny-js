@@ -103,6 +103,11 @@ module.exports = [
                         describe: `Turn on debug logs`,
                         type: "boolean"
                     });
+                    yargs.option("allowProduction", {
+                        default: false,
+                        describe: `Enables running the watch command with "prod" and "production" environments (not recommended).`,
+                        type: "boolean"
+                    });
                 },
                 async argv => watch(argv, context)
             );

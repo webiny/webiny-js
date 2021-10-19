@@ -1,28 +1,34 @@
-import { Plugin } from "@webiny/plugins";
-import { ElasticsearchQueryModifierPluginParams } from "~/types";
 import WebinyError from "@webiny/error";
+import { Plugin } from "@webiny/plugins";
+import { ElasticsearchBoolQueryConfig } from "~/types";
 
-interface Callable<
-    T extends ElasticsearchQueryModifierPluginParams = ElasticsearchQueryModifierPluginParams
-> {
-    (params: T): string;
+export interface ModifyQueryParams {
+    query: ElasticsearchBoolQueryConfig;
+    where: Record<string, any>;
 }
 
-export class ElasticsearchQueryModifierPlugin extends Plugin {
-    public static readonly type = "elasticsearch.queryBuilder.modifier";
-    private readonly _callable?: Callable;
+interface Callable {
+    (params: ModifyQueryParams): void;
+}
+
+export abstract class ElasticsearchQueryModifierPlugin extends Plugin {
+    private readonly callable?: Callable;
 
     public constructor(callable?: Callable) {
         super();
-        this._callable = callable;
+        this.callable = callable;
     }
 
-    public apply<
-        P extends ElasticsearchQueryModifierPluginParams = ElasticsearchQueryModifierPluginParams
-    >(params: P): void {
-        if (!this._callable) {
-            throw new WebinyError(`Missing callable in the "${this.constructor.name}".`);
+    public modifyQuery(params: ModifyQueryParams): void {
+        if (typeof this.callable !== "function") {
+            throw new WebinyError(
+                `Missing modification for the query.`,
+                "QUERY_MODIFICATION_MISSING",
+                {
+                    params
+                }
+            );
         }
-        this._callable(params);
+        this.callable(params);
     }
 }

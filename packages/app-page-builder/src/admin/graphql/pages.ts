@@ -58,25 +58,20 @@ export const CREATE_PAGE = gql`
 export const LIST_PAGES = gql`
     query PbListPages(
         $where: PbListPagesWhereInput
-        $sort: PbListPagesSortInput
+        $sort: [PbListPagesSort!]
         $search: PbListPagesSearchInput
         $limit: Int
-        $page: Int
+        $after: String
     ) {
         pageBuilder {
-            listPages(where: $where, sort: $sort, limit: $limit, page: $page, search: $search) {
+            listPages(where: $where, sort: $sort, limit: $limit, after: $after, search: $search) {
                 data {
                     ${LIST_PAGES_DATA_FIELDS}
                 }
                 meta {
-                    page
-                    limit
                     totalCount
-                    totalPages
-                    from
-                    to
-                    nextPage
-                    previousPage
+                    hasMoreItems
+                    cursor
                 }
                 error {
                     data
@@ -89,7 +84,7 @@ export const LIST_PAGES = gql`
 `;
 
 export const GET_PAGE = gql`
-    query PbGetPage($id: ID!) {
+    query PbGetPagePreview($id: ID!) {
         pageBuilder {
             getPage(id: $id) {
                 data {

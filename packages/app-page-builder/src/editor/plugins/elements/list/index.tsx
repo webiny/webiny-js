@@ -1,15 +1,11 @@
 import React from "react";
 import kebabCase from "lodash/kebabCase";
-import {
-    DisplayMode,
-    PbEditorPageElementPlugin,
-    PbEditorElementPluginArgs
-} from "../../../../types";
+import { DisplayMode, PbEditorPageElementPlugin, PbEditorTextElementPluginsArgs } from "~/types";
 import List, { className } from "./List";
 import { createInitialTextValue } from "../utils/textUtils";
 import { createInitialPerDeviceSettingValue } from "../../elementSettings/elementSettingsUtils";
 
-export default (args: PbEditorElementPluginArgs = {}): PbEditorPageElementPlugin => {
+export default (args: PbEditorTextElementPluginsArgs = {}): PbEditorPageElementPlugin => {
     const elementType = kebabCase(args.elementType || "list");
 
     const defaultToolbar = {
@@ -88,7 +84,7 @@ export default (args: PbEditorElementPluginArgs = {}): PbEditorPageElementPlugin
             return typeof args.create === "function" ? args.create(defaultValue) : defaultValue;
         },
         render({ element }) {
-            return <List elementId={element.id} />;
+            return <List elementId={element.id} mediumEditorOptions={args.mediumEditorOptions} />;
         }
     };
 };

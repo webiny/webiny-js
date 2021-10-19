@@ -1,4 +1,4 @@
-context('Pages Previewing - with the "ssr-no-cache" query param', () => {
+context("Pages Previewing", () => {
     beforeEach(() => cy.login());
 
     const pageTitle1 = `Test pages previewing 1`;
@@ -38,7 +38,7 @@ context('Pages Previewing - with the "ssr-no-cache" query param', () => {
         return cy.pbListPages({ limit: 1, search: { query: pageTitle1 } }).then(([page]) => {
             const { path, id } = page;
             cy.visit(
-                `${Cypress.env("WEBSITE_URL")}${path}?preview=${encodeURIComponent(
+                `${Cypress.env("WEBSITE_PREVIEW_URL")}${path}?preview=${encodeURIComponent(
                     id
                 )}&__locale=en-US`
             );
@@ -71,7 +71,7 @@ context('Pages Previewing - with the "ssr-no-cache" query param', () => {
         return cy.pbListPages({ limit: 1, search: { query: pageTitle2 } }).then(([page]) => {
             const { path, id } = page;
             cy.visit(
-                `${Cypress.env("WEBSITE_URL")}${path}?preview=${encodeURIComponent(
+                `${Cypress.env("WEBSITE_PREVIEW_URL")}${path}?preview=${encodeURIComponent(
                     id
                 )}&__locale=en-US`
             );

@@ -6,7 +6,7 @@ import TargetDataModelsResolver from "./TargetDataModelsResolver";
  * Contains base `getTargetDataModel` and `listTargetDataModels` GraphQL resolver functions.
  * Feel free to adjust the code to your needs. Also, note that at some point in time, you will
  * most probably want to implement security-related checks.
- * https://www.webiny.com/docs/how-to-guides/webiny-cli/scaffolding/extend-graphql-api#essential-files
+ * https://www.webiny.com/docs/how-to-guides/scaffolding/extend-graphql-api#essential-files
  */
 
 interface GetTargetDataModelParams {
@@ -34,8 +34,10 @@ interface TargetDataModelsQuery {
  * To define our GraphQL resolvers, we are using the "class method resolvers" approach.
  * https://www.graphql-tools.com/docs/resolvers#class-method-resolvers
  */
-export default class TargetDataModelsQueryResolver extends TargetDataModelsResolver
-    implements TargetDataModelsQuery {
+export default class TargetDataModelsQuery
+    extends TargetDataModelsResolver
+    implements TargetDataModelsQuery
+{
     /**
      * Returns a single TargetDataModel entry from the database.
      * @param id

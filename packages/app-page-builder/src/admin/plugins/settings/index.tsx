@@ -57,14 +57,14 @@ const allPlugins = [
             })
         );
 
-        pageBuilderMenu.addElement(
+        pageBuilderMenu.addElement<NavigationMenuElement>(
             new NavigationMenuElement("menu.settings.pageBuilder.website", {
                 label: "Website",
                 path: "/settings/page-builder/website"
             })
         );
 
-        pageBuilderMenu.addElement(
+        pageBuilderMenu.addElement<NavigationMenuElement>(
             new NavigationMenuElement("menu.settings.pageBuilder.prerendering", {
                 label: "Prerendering",
                 path: "/settings/page-builder/prerendering"

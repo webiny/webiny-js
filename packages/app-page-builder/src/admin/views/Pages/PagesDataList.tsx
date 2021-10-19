@@ -15,8 +15,10 @@ import {
     ListItemMeta,
     ListItemText,
     ListItemTextSecondary,
-    ListTextOverline
+    ListTextOverline,
+    ListSelectBox
 } from "@webiny/ui/List";
+import { Checkbox } from "@webiny/ui/Checkbox";
 import { Typography } from "@webiny/ui/Typography";
 import { css } from "emotion";
 import { Form } from "@webiny/form";
@@ -30,11 +32,11 @@ import { ButtonIcon, ButtonSecondary } from "@webiny/ui/Button";
 import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
 import { ReactComponent as FilterIcon } from "@webiny/app-admin/assets/icons/filter-24px.svg";
 import SearchUI from "@webiny/app-admin/components/SearchUI";
-import { deserializeSorters, serializeSorters } from "../utils";
 import * as GQLCache from "~/admin/views/Pages/cache";
-import { WrapperWithFileUpload } from "~/editor/plugins/defaultBar/components/ImportPageButton";
 import { ReactComponent as FileUploadIcon } from "~/editor/plugins/defaultBar/components/icons/file_upload.svg";
 import useImportPageDialog from "~/editor/plugins/defaultBar/components/ImportPageButton/useImportPageDialog";
+import { useMultiSelect } from "~/admin/views/Pages/hooks/useMultiSelect";
+import { ExportPagesButton } from "~/editor/plugins/defaultBar/components/ExportPageButton";
 
 const t = i18n.ns("app-page-builder/admin/pages/data-list");
 const rightAlign = css({
@@ -55,29 +57,29 @@ const Actions = styled("div")({
     display: "flex",
     justifyContent: "space-between"
 });
-const sorters = [
+const SORTERS = [
     {
         label: t`Newest to oldest`,
-        sorters: { createdOn: "desc" }
+        sort: "createdOn_DESC"
     },
     {
         label: t`Oldest to newest`,
-        sorters: { createdOn: "asc" }
+        sort: "createdOn_ASC"
     },
     {
         label: t`Title A-Z`,
-        sorters: { title: "asc" }
+        sort: "title_ASC"
     },
     {
         label: t`Title Z-A`,
-        sorters: { title: "desc" }
+        sort: "title_DESC"
     }
 ];
 
 type PagesDataListProps = {
     onCreatePage: (event?: React.SyntheticEvent) => void;
     canCreate: boolean;
-    onImportPage?: (key: string) => void;
+    onImportPage: (event?: React.SyntheticEvent) => void;
 };
 const PagesDataList = ({ onCreatePage, canCreate, onImportPage }: PagesDataListProps) => {
     const [filter, setFilter] = useState("");
@@ -86,7 +88,7 @@ const PagesDataList = ({ onCreatePage, canCreate, onImportPage }: PagesDataListP
 
     const [fetchMoreLoading, setFetchMoreLoading] = useState(false);
     const [where, setWhere] = useState({});
-    const [sort, setSort] = useState({ createdOn: "desc" });
+    const [sort, setSort] = useState<string>(SORTERS[0].sort);
     const search = {
         query: query.get("search") || undefined
     };
@@ -135,10 +137,10 @@ const PagesDataList = ({ onCreatePage, canCreate, onImportPage }: PagesDataListP
         debounce(({ scrollFrame, fetchMore }) => {
             if (scrollFrame.top > 0.9) {
                 const meta = get(listQuery, "data.pageBuilder.listPages.meta", {});
-                if (meta.nextPage) {
+                if (meta.cursor) {
                     setFetchMoreLoading(true);
                     fetchMore({
-                        variables: { page: meta.page + 1 },
+                        variables: { after: meta.cursor },
                         updateQuery: (prev, { fetchMoreResult }) => {
                             if (!fetchMoreResult) {
                                 return prev;
@@ -164,7 +166,7 @@ const PagesDataList = ({ onCreatePage, canCreate, onImportPage }: PagesDataListP
         () => (
             <DataListModalOverlay>
                 <Form
-                    data={{ ...where, sort: serializeSorters(sort) }}
+                    data={{ ...where, sort }}
                     onChange={({ status, category, sort }) => {
                         // Update "where" filter.
                         const where = { category, status: undefined };
@@ -176,9 +178,7 @@ const PagesDataList = ({ onCreatePage, canCreate, onImportPage }: PagesDataListP
 
                         // Update "sort".
                         if (typeof sort === "string") {
-                            const newSort = deserializeSorters(sort);
-                            // @ts-ignore
-                            setSort(newSort);
+                            setSort(sort);
                         }
                     }}
                 >
@@ -218,12 +218,9 @@ const PagesDataList = ({ onCreatePage, canCreate, onImportPage }: PagesDataListP
                             <Cell span={12}>
                                 <Bind name={"sort"}>
                                     <Select label={t`Sort by`} description={"Sort pages by"}>
-                                        {sorters.map(({ label, sorters }) => {
+                                        {SORTERS.map(({ label, sort: value }) => {
                                             return (
-                                                <option
-                                                    key={label}
-                                                    value={serializeSorters(sorters)}
-                                                >
+                                                <option key={label} value={value}>
                                                     {label}
                                                 </option>
                                             );
@@ -247,24 +244,17 @@ const PagesDataList = ({ onCreatePage, canCreate, onImportPage }: PagesDataListP
         }
         return (
             <Actions>
-                <WrapperWithFileUpload onSelect={onImportPage}>
-                    {({ showFileManager }) => (
-                        <ButtonSecondary
-                            data-testid="import-page-button"
-                            onClick={() => {
-                                showImportPageDialog(showFileManager, onImportPage);
-                            }}
-                        >
-                            <ButtonIcon icon={<FileUploadIcon />} /> {t`Import Page`}
-                        </ButtonSecondary>
-                    )}
-                </WrapperWithFileUpload>
+                <ButtonSecondary data-testid="import-page-button" onClick={onImportPage}>
+                    <ButtonIcon icon={<FileUploadIcon />} /> {t`Import Page`}
+                </ButtonSecondary>
                 <ButtonSecondary data-testid="new-record-button" onClick={onCreatePage}>
                     <ButtonIcon icon={<AddIcon />} /> {t`New Page`}
                 </ButtonSecondary>
             </Actions>
         );
     }, [canCreate, showImportPageDialog]);
+
+    const multiSelectProps = useMultiSelect({ useRouter: false, getValue: item => item.pid });
 
     return (
         <DataList
@@ -282,6 +272,12 @@ const PagesDataList = ({ onCreatePage, canCreate, onImportPage }: PagesDataListP
                     data-testid={"default-data-list.filter"}
                 />
             }
+            multiSelectActions={
+                <ExportPagesButton getMultiSelected={multiSelectProps.getMultiSelected} />
+            }
+            multiSelectAll={multiSelectProps.multiSelectAll}
+            isAllMultiSelected={multiSelectProps.isAllMultiSelected}
+            isNoneMultiSelected={multiSelectProps.isNoneMultiSelected}
         >
             {({ data }) => (
                 <>
@@ -294,7 +290,14 @@ const PagesDataList = ({ onCreatePage, canCreate, onImportPage }: PagesDataListP
                         {Array.isArray(data) &&
                             data.map(page => (
                                 <ListItem key={page.id} selected={page.id === selectedPageId}>
+                                    <ListSelectBox>
+                                        <Checkbox
+                                            onChange={() => multiSelectProps.multiSelect(page)}
+                                            value={multiSelectProps.isMultiSelected(page)}
+                                        />
+                                    </ListSelectBox>
                                     <ListItemText
+                                        data-testid={"pages-default-data-list.select-page"}
                                         onClick={() => {
                                             query.set("id", page.id);
                                             history.push({ search: query.toString() });
@@ -306,7 +309,7 @@ const PagesDataList = ({ onCreatePage, canCreate, onImportPage }: PagesDataListP
                                         </ListTextOverline>
                                         {page.createdBy && (
                                             <ListItemTextSecondary>
-                                                Created by: {page.createdBy.firstName || "N/A"}.
+                                                Created by: {page.createdBy.displayName || "N/A"}.
                                                 Last modified: <TimeAgo datetime={page.savedOn} />.
                                             </ListItemTextSecondary>
                                         )}

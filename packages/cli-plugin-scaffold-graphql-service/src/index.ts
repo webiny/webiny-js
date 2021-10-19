@@ -15,8 +15,10 @@ import link from "terminal-link";
 import {
     createScaffoldsIndexFile,
     updateScaffoldsIndexFile,
-    formatCode
+    formatCode,
+    LAST_USED_GQL_API_PLUGINS_PATH
 } from "@webiny/cli-plugin-scaffold/utils";
+import getContextMeta from "./getContextMeta";
 
 const ncp = util.promisify(ncpBase.ncp);
 
@@ -27,7 +29,7 @@ interface Input {
 }
 
 const SCAFFOLD_DOCS_LINK =
-    "https://www.webiny.com/docs/how-to-guides/webiny-cli/scaffolding/extend-graphql-api";
+    "https://www.webiny.com/docs/how-to-guides/scaffolding/extend-graphql-api";
 
 export default (): CliCommandScaffoldTemplate<Input> => ({
     name: "cli-plugin-scaffold-graphql",
@@ -42,7 +44,12 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 {
                     name: "pluginsFolderPath",
                     message: "Enter plugins folder path:",
-                    default: `api/code/graphql/src/plugins`,
+                    default: () => {
+                        return (
+                            context.localStorage.get(LAST_USED_GQL_API_PLUGINS_PATH) ||
+                            `api/code/graphql/src/plugins`
+                        );
+                    },
                     validate: pluginsFolderPath => {
                         if (pluginsFolderPath.length < 2) {
                             return `Please enter GraphQL API ${chalk.cyan("plugins")} folder path.`;
@@ -54,7 +61,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 {
                     name: "dataModelName",
                     message: "Enter initial entity name:",
-                    default: "Book",
+                    default: "Todo",
                     validate: (dataModelName, answers) => {
                         if (!dataModelName.match(/^([a-zA-Z]+)$/)) {
                             return "A valid name must consist of letters only.";
@@ -85,6 +92,9 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
             ];
         },
         generate: async ({ input, ora, inquirer, wait, context }) => {
+            context.localStorage.set(LAST_USED_GQL_API_PLUGINS_PATH, input.pluginsFolderPath);
+
+            // Store used input, so that maybe some of
             const dataModelName = {
                 plural: pluralize(Case.camel(input.dataModelName)),
                 singular: pluralize.singular(Case.camel(input.dataModelName))
@@ -143,6 +153,95 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
 
             fs.mkdirSync(newCodePath, { recursive: true });
             await ncp(templateFolderPath, newCodePath);
+
+            // Remove I18N and Security-related code if the GraphQL API doesn't support those.
+            // Support is being detected via `Context` type, defined within the root types.ts file.
+            const typesTsPath = findUp.sync("types.ts", { cwd: input.pluginsFolderPath });
+            if (typesTsPath) {
+                const meta = getContextMeta(typesTsPath);
+                if (!meta.i18n) {
+                    // If I18NContext was not detected, remove relevant I18N code.
+                    replaceInPath(
+                        path.join(newCodePath, "/resolvers/TargetDataModelsResolver.ts"),
+                        {
+                            find: new RegExp(
+                                "\\/\\/ If our .*base = `L#\\${locale}#\\${base}`;",
+                                "s"
+                            ),
+                            replaceWith: ""
+                        }
+                    );
+                }
+
+                if (!meta.security) {
+                    {
+                        // If SecurityContext was not detected, comment out relevant SecurityContext code.
+                        const codeReplacements = [
+                            {
+                                find: new RegExp('\\/\\/ If our GraphQL API.*\\/types";\\n', "s"),
+                                replaceWith: ""
+                            },
+                            {
+                                find: new RegExp("createdBy: Pick<SecurityIdentity.*\\n"),
+                                replaceWith: ""
+                            }
+                        ];
+                        replaceInPath(path.join(newCodePath, "/types.ts"), codeReplacements);
+                    }
+
+                    {
+                        // If SecurityContext was not detected, comment out relevant SecurityContext code.
+                        const codeReplacements = [
+                            {
+                                find: new RegExp("\\/\\/ If our GraphQL API.*context;\\n", "s"),
+                                replaceWith: ""
+                            },
+                            {
+                                find: new RegExp("const identity = await security.*?\\n"),
+                                replaceWith: ""
+                            },
+                            {
+                                find: new RegExp("createdBy: identity && \\{.*\\},\\n", "s"),
+                                replaceWith: ""
+                            }
+                        ];
+
+                        replaceInPath(
+                            path.join(newCodePath, "/resolvers/TargetDataModelsMutation.ts"),
+                            codeReplacements
+                        );
+                    }
+
+                    {
+                        // If SecurityContext was not detected, comment out relevant SecurityContext code.
+                        const codeReplacements = [
+                            {
+                                find: new RegExp("type TargetDataModelCreatedBy {.*?}\\n", "s"),
+                                replaceWith: ""
+                            },
+                            {
+                                find: new RegExp("createdBy: TargetDataModelCreatedBy\\n"),
+                                replaceWith: ""
+                            }
+                        ];
+                        replaceInPath(path.join(newCodePath, "/typeDefs.ts"), codeReplacements);
+                    }
+
+                    {
+                        // If SecurityContext was not detected, comment out relevant SecurityContext code.
+                        const codeReplacements = [
+                            {
+                                find: new RegExp('createdBy: { type: "map" },\\n'),
+                                replaceWith: ""
+                            }
+                        ];
+                        replaceInPath(
+                            path.join(newCodePath, "/entities/TargetDataModel.ts"),
+                            codeReplacements
+                        );
+                    }
+                }
+            }
 
             // Replace generic "TargetDataModel" with received "dataModelName" argument.
             const codeReplacements = [
@@ -238,7 +337,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
 
             console.log(
                 `‣ deploy the extended GraphQL API and continue developing by running the ${chalk.green(
-                    "yarn webiny watch api/code/graphql --env {dev}"
+                    "yarn webiny watch api/code/graphql --env dev"
                 )} command`
             );
 
@@ -249,7 +348,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 ["Extend GraphQL API", SCAFFOLD_DOCS_LINK],
                 [
                     "Use the Watch Command",
-                    "https://www.webiny.com/docs/how-to-guides/webiny-cli/use-watch-command"
+                    "https://www.webiny.com/docs/how-to-guides/use-watch-command"
                 ]
             ];
 

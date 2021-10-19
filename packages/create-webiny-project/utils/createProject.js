@@ -6,7 +6,7 @@ const Listr = require("listr");
 const path = require("path");
 const writeJson = require("write-json-file");
 const rimraf = require("rimraf");
-const { sendEvent } = require("@webiny/telemetry");
+const { sendEvent } = require("@webiny/telemetry/cli");
 const getPackageJson = require("./getPackageJson");
 const checkProjectName = require("./checkProjectName");
 const yaml = require("js-yaml");
@@ -108,13 +108,10 @@ module.exports = async function createProject({
                 }
             },
             {
-                // Setup yarn@2
-                title: "Setup yarn@^2",
+                // Setup yarn
+                title: "Setup yarn",
                 task: async () => {
-                    // We are forcing the 2.x version.
-                    // https://github.com/yarnpkg/berry/issues/3180#issuecomment-887332050
                     await execa("yarn", ["set", "version", "berry"], { cwd: projectRoot });
-                    await execa("yarn", ["set", "version", "2.x"], { cwd: projectRoot });
 
                     const yamlPath = path.join(projectRoot, ".yarnrc.yml");
                     const parsedYaml = yaml.load(fs.readFileSync(yamlPath, "utf-8"));
@@ -231,7 +228,7 @@ module.exports = async function createProject({
     } catch (err) {
         await sendEvent({
             event: "create-webiny-project-error",
-            data: {
+            properties: {
                 errorMessage: err.message,
                 errorStack: err.stack
             }

@@ -105,14 +105,22 @@ type AccordionProps = {
     action?: ReactElement;
     icon?: ReactElement;
     defaultValue?: boolean;
+    className?: string;
 };
 
-const Accordion = ({ title, children, action, icon, defaultValue = false }: AccordionProps) => {
+const Accordion = ({
+    title,
+    children,
+    action,
+    icon,
+    defaultValue = false,
+    className
+}: AccordionProps) => {
     const [isOpen, setOpen] = useState(defaultValue);
     const toggleOpen = useCallback(() => setOpen(!isOpen), [isOpen]);
 
     return (
-        <div className={classes.accordionWrapper}>
+        <div className={classNames(classes.accordionWrapper, className)}>
             <div
                 className={classNames(classes.accordionHeader, { open: isOpen })}
                 onClick={toggleOpen}

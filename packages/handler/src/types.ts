@@ -2,12 +2,22 @@ import { Plugin, PluginsContainer } from "@webiny/plugins/types";
 
 export type HandlerArgs = any[];
 
+// There are a couple of different types that are used as a base Context type.
+// Ultimately, this is the one to be used, the rest are here just for backward-compatibility.
+export interface HandlerContext {
+    plugins: PluginsContainer;
+    args: HandlerArgs;
+    readonly WEBINY_VERSION: string;
+}
+
+// Left for backwards-compatibility.
 export interface ContextInterface {
     plugins: PluginsContainer;
     args: HandlerArgs;
     readonly WEBINY_VERSION: string;
 }
 
+// Left for backwards-compatibility.
 export type Context<
     C0 = Record<string, any>,
     C1 = Record<string, any>,

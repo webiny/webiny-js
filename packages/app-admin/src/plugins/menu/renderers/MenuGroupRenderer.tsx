@@ -47,12 +47,12 @@ const menuTitleActive = css({
 
 export class MenuGroupRenderer extends UIRenderer<NavigationMenuElement> {
     canRender(element: NavigationMenuElement): boolean {
-        const isInContent = Boolean(element.getParentOfType(ContentElement));
+        const isInContent = Boolean(element.getParentByType(ContentElement));
         return element.depth === 1 && isInContent && !element.config.path;
     }
 
     render({ element, props, next }: UIRenderParams<NavigationMenuElement>): React.ReactNode {
-        const hasChildren = element.getElements().length > 0;
+        const hasChildren = element.getChildren().length > 0;
 
         if (!hasChildren) {
             return null;

@@ -1,26 +1,21 @@
 import React, { useCallback, useState } from "react";
 import { css } from "emotion";
+import dotProp from "dot-prop-immutable";
 import { i18n } from "@webiny/app/i18n";
 import { useDialog } from "@webiny/app-admin/hooks/useDialog";
 import { ButtonIcon, ButtonSecondary } from "@webiny/ui/Button";
 import { Input } from "@webiny/ui/Input";
+import { Typography } from "@webiny/ui/Typography";
+import { Cell, Grid } from "@webiny/ui/Grid";
 import { Form } from "@webiny/form";
 import { useUi } from "@webiny/app/hooks/useUi";
-
+import { validation } from "@webiny/validation";
+import { WrapperWithFileUpload } from "./index";
+// assets
 import { ReactComponent as UploadFileIcon } from "../icons/file_upload.svg";
 import { ReactComponent as LinkIcon } from "~/editor/assets/icons/link.svg";
-import { Typography } from "@webiny/ui/Typography";
-import { validation } from "@webiny/validation";
-import { Cell, Grid } from "@webiny/ui/Grid";
 
 const t = i18n.ns("app-page-builder/editor/plugins/defaultBar/importPage");
-
-const confirmationMessageStyles = css({
-    "& code": {
-        backgroundColor: "var(--mdc-theme-background)",
-        padding: "0px 8px"
-    }
-});
 
 const contentContainer = css`
     padding: 36px 0;
@@ -39,18 +34,25 @@ const separator = css`
 
 export const importPageDialogTitle = t`Import page`;
 
-export const ImportPageDialogMessage = ({ onUploadFile, onPasteFileLink }) => {
+export const ImportPageDialogContent = ({ onUploadFile, onPasteFileLink }) => {
     const ui = useUi();
     const [showLink, setShowLink] = useState<boolean>(false);
 
-    const hideDialog = useCallback(() => {
+    const setDialogStyles = useCallback(
+        style => {
+            ui.setState(state => dotProp.set(state, "dialog.options.style", style));
+        },
+        [ui]
+    );
+
+    const closeDialog = useCallback(() => {
         ui.setState(state => ({ ...state, dialog: null }));
     }, [ui]);
 
     return (
-        <div className={confirmationMessageStyles}>
+        <div>
             <Typography use={"subtitle1"}>
-                {t`You can import page by either uploading a Webiny Page Export ZIP or by pasting export file URL.`}
+                {t`You can import page(s) by either uploading a Webiny Page Export ZIP or by pasting export file URL.`}
             </Typography>
 
             {showLink ? (
@@ -58,7 +60,7 @@ export const ImportPageDialogMessage = ({ onUploadFile, onPasteFileLink }) => {
                     data={{ url: "" }}
                     onSubmit={data => {
                         if (typeof onPasteFileLink === "function") {
-                            hideDialog();
+                            closeDialog();
                             onPasteFileLink(data.url);
                         }
                     }}
@@ -70,6 +72,7 @@ export const ImportPageDialogMessage = ({ onUploadFile, onPasteFileLink }) => {
                                     <Input
                                         description={t`The URL has to be public. We'll use it to download the export page data file.`}
                                         label={"File URL"}
+                                        data-testid={"import-pages.input-dialog.input-url"}
                                     />
                                 </Bind>
                             </Cell>
@@ -81,15 +84,20 @@ export const ImportPageDialogMessage = ({ onUploadFile, onPasteFileLink }) => {
                 </Form>
             ) : (
                 <div className={contentContainer}>
-                    <ButtonSecondary
-                        onClick={() => {
-                            hideDialog();
-                            onUploadFile();
-                        }}
-                    >
-                        <ButtonIcon icon={<UploadFileIcon />} />
-                        Upload File
-                    </ButtonSecondary>
+                    <WrapperWithFileUpload onSelect={onUploadFile}>
+                        {({ showFileManager }) => (
+                            <ButtonSecondary
+                                onClick={() => {
+                                    showFileManager();
+                                    setDialogStyles({ display: "none" });
+                                }}
+                            >
+                                <ButtonIcon icon={<UploadFileIcon />} />
+                                Upload File
+                            </ButtonSecondary>
+                        )}
+                    </WrapperWithFileUpload>
+
                     <span className={separator}>
                         <Typography use={"overline"}>{t`Or`}</Typography>
                     </span>
@@ -109,7 +117,7 @@ const useImportPageDialog = () => {
     return {
         showImportPageDialog: (onUploadFile = null, onPasteFileLink = null) => {
             showDialog(
-                <ImportPageDialogMessage
+                <ImportPageDialogContent
                     onUploadFile={onUploadFile}
                     onPasteFileLink={onPasteFileLink}
                 />,
@@ -117,7 +125,8 @@ const useImportPageDialog = () => {
                     title: importPageDialogTitle,
                     actions: {
                         cancel: { label: t`Cancel` }
-                    }
+                    },
+                    dataTestId: "import-pages.input-dialog"
                 }
             );
         }

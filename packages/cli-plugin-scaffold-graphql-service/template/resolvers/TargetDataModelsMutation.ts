@@ -7,7 +7,7 @@ import TargetDataModelsResolver from "./TargetDataModelsResolver";
  * Contains base `createTargetDataModel`, `updateTargetDataModel`, and `deleteTargetDataModel` GraphQL resolver functions.
  * Feel free to adjust the code to your needs. Also, note that at some point in time, you will
  * most probably want to implement custom data validation and security-related checks.
- * https://www.webiny.com/docs/how-to-guides/webiny-cli/scaffolding/extend-graphql-api#essential-files
+ * https://www.webiny.com/docs/how-to-guides/scaffolding/extend-graphql-api#essential-files
  */
 
 interface CreateTargetDataModelParams {
@@ -39,13 +39,18 @@ interface TargetDataModelsMutation {
  * To define our GraphQL resolvers, we are using the "class method resolvers" approach.
  * https://www.graphql-tools.com/docs/resolvers#class-method-resolvers
  */
-export default class TargetDataModelsMutationResolver extends TargetDataModelsResolver
-    implements TargetDataModelsMutation {
+export default class TargetDataModelsMutation
+    extends TargetDataModelsResolver
+    implements TargetDataModelsMutation
+{
     /**
      * Creates and returns a new TargetDataModel entry.
      * @param data
      */
     async createTargetDataModel({ data }: CreateTargetDataModelParams) {
+        // If our GraphQL API uses Webiny Security Framework, we can retrieve the
+        // currently logged in identity and assign it to the `createdBy` property.
+        // https://www.webiny.com/docs/key-topics/security-framework/introduction
         const { security } = this.context;
 
         // We use `mdbid` (https://www.npmjs.com/package/mdbid) library to generate

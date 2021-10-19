@@ -1,13 +1,18 @@
-import lodashSortBy from "lodash.sortby";
+import lodashOrderBy from "lodash/orderBy";
 import WebinyError from "@webiny/error";
-import { FieldPathPlugin } from "~/plugins/definitions/FieldPathPlugin";
-import { ContextInterface } from "@webiny/handler/types";
+import { FieldPlugin } from "~/plugins/definitions/FieldPlugin";
 
-interface ExtractSortResult {
+interface Info {
+    sorters: string[];
+    orders: string[];
+}
+
+interface Response {
     reverse: boolean;
     field: string;
 }
-const extractSort = (sortBy: string, fields: string[]): ExtractSortResult => {
+
+const extractSort = (sortBy: string, fields: FieldPlugin[]): Response => {
     const result = sortBy.split("_");
     if (result.length !== 2) {
         throw new WebinyError(
@@ -26,7 +31,10 @@ const extractSort = (sortBy: string, fields: string[]): ExtractSortResult => {
             order,
             fields
         });
-    } else if (fields.includes(field) === false) {
+    }
+    const fieldPlugin = fields.find(f => f.getField() === field);
+    const isSortable = fieldPlugin ? fieldPlugin.isSortable() : true;
+    if (isSortable === false) {
         throw new WebinyError(`Cannot sort by given field: "${field}".`, "UNSUPPORTED_SORT_ERROR", {
             fields,
             field
@@ -35,44 +43,57 @@ const extractSort = (sortBy: string, fields: string[]): ExtractSortResult => {
 
     return {
         field,
-        reverse: order === "DESC"
+        reverse: order.toUpperCase() === "DESC"
     };
 };
 
 interface Params<T> {
-    context: ContextInterface;
+    /**
+     * The items we are sorting.
+     */
     items: T[];
+    /**
+     * Sort options. For example: ["id_ASC"]
+     */
     sort: string[];
-    fields: string[];
+    /**
+     * Fields we can sort by.
+     */
+    fields: FieldPlugin[];
 }
+
 export const sortItems = <T extends any = any>(params: Params<T>): T[] => {
-    const { context, items, sort = [], fields } = params;
-    if (items.length <= 1) {
+    const { items, sort: initialSort = [], fields } = params;
+    /**
+     * Skip sorting if nothing was passed to sort by or nothing to sort.
+     */
+    if (items.length <= 1 || Array.isArray(initialSort) === false || initialSort.length === 0) {
         return items;
-    } else if (sort.length === 0) {
-        sort.push("createdOn_DESC");
-    } else if (sort.length > 1) {
-        throw new WebinyError("Sorting is limited to a single field", "SORT_ERROR", {
-            sort: sort
-        });
-    }
-    const [firstSort] = sort;
-    if (!firstSort) {
-        throw new WebinyError("Empty sort array item.", "SORT_ERROR", {
-            sort
-        });
     }
 
-    const { field, reverse } = extractSort(firstSort, fields);
+    const info: Info = {
+        sorters: [],
+        orders: []
+    };
 
-    const fieldPathPlugin = context.plugins
-        .byType<FieldPathPlugin>(FieldPathPlugin.type)
-        .find(plugin => plugin.canCreate(field));
-    const path = fieldPathPlugin ? fieldPathPlugin.createPath(field) : field;
+    for (const sort of initialSort) {
+        /**
+         * Possibly empty array item was passed.
+         */
+        if (!sort) {
+            continue;
+        }
+        const { field, reverse } = extractSort(sort, fields);
+        const fieldPlugin = fields.find(f => f.getField() === field);
+        const path = fieldPlugin ? fieldPlugin.getPath() : field;
 
-    const sortedItems = lodashSortBy(items, path);
-    if (!reverse) {
-        return sortedItems;
+        info.sorters.push(path);
+        info.orders.push(reverse === true ? "desc" : "asc");
     }
-    return sortedItems.reverse();
+
+    if (info.sorters.length === 0) {
+        return items;
+    }
+
+    return lodashOrderBy(items, info.sorters, info.orders);
 };

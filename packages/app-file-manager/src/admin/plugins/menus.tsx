@@ -62,7 +62,7 @@ export default [
             permission: PERMISSION_FM_SETTINGS
         });
 
-        fileManagerSettings.addElement(
+        fileManagerSettings.addElement<NavigationMenuElement>(
             new NavigationMenuElement("menu.settings.fileManager.general", {
                 label: "General",
                 path: "/settings/file-manager/general"

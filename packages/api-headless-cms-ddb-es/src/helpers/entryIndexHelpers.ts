@@ -150,7 +150,10 @@ export const extractEntriesFromIndex = ({
                         getFieldIndexPlugin,
                         getFieldTypePlugin,
                         value: entry.values[field.fieldId],
-                        rawValue: entry.rawValues[field.fieldId]
+                        /**
+                         * Possibly no rawValues so we must check for the existence of the field.
+                         */
+                        rawValue: entry.rawValues ? entry.rawValues[field.fieldId] : null
                     });
                 } catch (ex) {
                     throw new Error(

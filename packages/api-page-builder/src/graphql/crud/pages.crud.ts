@@ -1,38 +1,31 @@
 import mdbid from "mdbid";
 import uniqid from "uniqid";
-import trimStart from "lodash/trimStart";
-import omit from "lodash/omit";
-import get from "lodash/get";
-import merge from "lodash/merge";
+import lodashGet from "lodash/get";
 import DataLoader from "dataloader";
-import { NotAuthorizedError } from "@webiny/api-security";
-import Error from "@webiny/error";
 import { NotFoundError } from "@webiny/handler-graphql";
-import { Args as FlushArgs } from "@webiny/api-prerendering-service/flush/types";
-import { ContextPlugin } from "@webiny/handler/types";
-import getPKPrefix from "./utils/getPKPrefix";
-import defaults from "./utils/defaults";
+import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
 import {
-    ExportTaskStatus,
     Page,
-    PagesCrud,
     PageSecurityPermission,
-    PbContext,
-    TYPE
+    PageStorageOperations,
+    PageStorageOperationsListParams,
+    PageStorageOperationsListTagsParams,
+    PbContext
 } from "~/types";
-import { SearchPublishedPagesPlugin } from "~/plugins/SearchPublishedPagesPlugin";
-import { SearchLatestPagesPlugin } from "~/plugins/SearchLatestPagesPlugin";
-import createListMeta from "./utils/createListMeta";
 import checkBasePermissions from "./utils/checkBasePermissions";
 import checkOwnPermissions from "./utils/checkOwnPermissions";
-import getNormalizedListPagesArgs from "./utils/getNormalizedListPagesArgs";
 import executeCallbacks from "./utils/executeCallbacks";
 import normalizePath from "./pages/normalizePath";
 import { compressContent, extractContent } from "./pages/contentCompression";
 import { CreateDataModel, UpdateSettingsModel } from "./pages/models";
-import { getESLatestPageData, getESPublishedPageData } from "./pages/esPageData";
 import { PagePlugin } from "~/plugins/PagePlugin";
-import importPage from "~/graphql/crud/pages/importPage";
+import WebinyError from "@webiny/error";
+import { PageStorageOperationsProviderPlugin } from "~/plugins/PageStorageOperationsProviderPlugin";
+import lodashTrimEnd from "lodash/trimEnd";
+import { createStorageOperations } from "./storageOperations";
+import { getZeroPaddedVersionNumber } from "~/utils/zeroPaddedVersionNumber";
+import { FlushParams, RenderParams } from "~/graphql/types";
+import { ContentCompressionPlugin } from "~/plugins/ContentCompressionPlugin";
 
 const STATUS_CHANGES_REQUESTED = "changesRequested";
 const STATUS_REVIEW_REQUESTED = "reviewRequested";
@@ -40,1629 +33,1174 @@ const STATUS_DRAFT = "draft";
 const STATUS_PUBLISHED = "published";
 const STATUS_UNPUBLISHED = "unpublished";
 
-const getZeroPaddedVersionNumber = number => String(number).padStart(4, "0");
-
 const DEFAULT_EDITOR = "page-builder";
 const PERMISSION_NAME = "pb.page";
-const EXPORT_PAGE_TASK_FUNCTION = process.env.EXPORT_PAGE_TASK_FUNCTION;
 
-const plugin: ContextPlugin<PbContext> = {
-    type: "context",
-    async apply(context) {
-        const { db, i18nContent, elasticsearch } = context;
+interface DataLoaderGetByIdKey {
+    id: string;
+    latest?: boolean;
+    published?: boolean;
+}
 
-        const PK_PAGE = pid => `${getPKPrefix(context)}P#${pid}`;
-        const PK_PAGE_PUBLISHED_PATH = () => `${getPKPrefix(context)}PATH`;
-        const ES_DEFAULTS = () => defaults.es(context);
+const createNotIn = (exclude?: string[]): { paths: string[]; ids: string[] } => {
+    const paths: string[] = [];
+    const ids: string[] = [];
+    if (Array.isArray(exclude)) {
+        for (const item of exclude) {
+            /**
+             * Page "path" will always starts with a slash.
+             */
+            if (item.includes("/")) {
+                /**
+                 * Let's also ensure the trailing slash is removed.
+                 */
+                paths.push(lodashTrimEnd(item, "/"));
+                continue;
+            }
+            ids.push(item);
+        }
+    }
+    return {
+        paths: paths.length > 0 ? paths : undefined,
+        ids: ids.length > 0 ? ids : undefined
+    };
+};
 
-        // Used in a couple of key events - (un)publishing and pages deletion.
-        const pagePlugins = context.plugins.byType<PagePlugin>(PagePlugin.type);
+const extractPageContent = async (
+    plugins: ContentCompressionPlugin[],
+    page?: Page
+): Promise<Page | null> => {
+    if (!page || !page.content) {
+        return page;
+    }
+    const content = await extractContent(plugins, page);
+    return {
+        ...page,
+        content
+    };
+};
 
-        context.pageBuilder = {
-            ...context.pageBuilder,
-            pages: {
-                dataLoaders: {
-                    getPublishedById: new DataLoader(
-                        async argsArray => {
-                            const batch = db.batch();
-                            const notFoundError = new NotFoundError("Page not found.");
-                            const idNotProvidedError = new Error(
-                                'Cannot get published page - "id" not provided.'
-                            );
+const createSort = (sort?: string[]): string[] => {
+    if (Array.isArray(sort) === false || sort.length === 0) {
+        return ["createdOn_DESC"];
+    }
+    return sort;
+};
 
-                            const errorsAndResults = [];
+const createDataLoaderKeys = (id: string): DataLoaderGetByIdKey[] => {
+    const [pid] = id.split("#");
+    return [
+        {
+            id
+        },
+        {
+            id,
+            latest: true
+        },
+        {
+            id,
+            published: true
+        },
+        {
+            id: pid
+        },
+        {
+            id: pid,
+            latest: true
+        },
+        {
+            id: pid,
+            published: true
+        }
+    ];
+};
 
-                            let batchResultIndex = 0;
-                            for (let i = 0; i < argsArray.length; i++) {
-                                const args = argsArray[i];
+export default new ContextPlugin<PbContext>(async context => {
+    /**
+     * If pageBuilder is not defined on the context, do not continue, but log it.
+     */
+    if (!context.pageBuilder) {
+        console.log("Missing pageBuilder on context. Skipping Pages crud.");
+        return;
+    }
 
-                                if (!args.id) {
-                                    errorsAndResults.push(idNotProvidedError);
-                                    continue;
-                                }
+    const storageOperations = await createStorageOperations<PageStorageOperations>(
+        context,
+        PageStorageOperationsProviderPlugin.type
+    );
 
-                                // If we have a full ID, then try to load it directly.
-                                const [pid, version] = args.id.split("#");
+    /**
+     * Used in a couple of key events - (un)publishing and pages deletion.
+     */
+    const pagePlugins = context.plugins.byType<PagePlugin>(PagePlugin.type);
+    /**
+     * Content compression plugins used when compressing and decompressing the content.
+     * We reverse it because we want to apply the last one if possible.
+     */
+    const contentCompressionPlugins = context.plugins
+        .byType<ContentCompressionPlugin>(ContentCompressionPlugin.type)
+        .reverse();
+    if (contentCompressionPlugins.length === 0) {
+        throw new WebinyError(
+            "Missing content compression plugins. Must have at least one registered.",
+            "MISSING_COMPRESSION_PLUGINS"
+        );
+    }
 
-                                if (version) {
-                                    errorsAndResults.push(batchResultIndex++);
-                                    batch.read({
-                                        ...defaults.db,
-                                        query: { PK: PK_PAGE(pid), SK: `REV#${version}` }
-                                    });
-                                    continue;
-                                }
-
-                                errorsAndResults.push(batchResultIndex++);
-                                batch.read({
-                                    ...defaults.db,
-                                    query: {
-                                        PK: PK_PAGE(pid),
-                                        SK: `P`
-                                    }
-                                });
-                            }
-
-                            // Replace batch result indexes with actual results.
-                            const batchResults = await batch.execute();
-                            for (let i = 0; i < errorsAndResults.length; i++) {
-                                const errorResult = errorsAndResults[i];
-                                if (typeof errorResult !== "number") {
-                                    continue;
-                                }
-
-                                const [[page]] = batchResults[errorResult];
-                                if (!page) {
-                                    errorsAndResults[i] = notFoundError;
-                                    continue;
-                                }
-
-                                // If preview enabled, return the page, without checking if the page
-                                // is published. The preview flag is not utilized anywhere else.
-                                if (argsArray[i].preview || page.status === "published") {
-                                    errorsAndResults[i] = page;
-
-                                    // Extract compressed page content.
-                                    errorsAndResults[i].content = await extractContent(
-                                        errorsAndResults[i].content
-                                    );
-
-                                    continue;
-                                }
-
-                                errorsAndResults[i] = notFoundError;
-                            }
-
-                            return errorsAndResults;
-                        },
-                        {
-                            cacheKeyFn: key => key.id + key.preview
-                        }
-                    )
-                },
-                async get(id) {
-                    const [pid, rev] = id.split("#");
-                    const permission = await checkBasePermissions(context, PERMISSION_NAME, {
-                        rwd: "r"
-                    });
-
-                    let page;
-                    if (rev) {
-                        const [[exactRevision]] = await db.read<Page>({
-                            ...defaults.db,
-                            query: { PK: PK_PAGE(pid), SK: `REV#${rev}` }
-                        });
-                        page = exactRevision;
-                    } else {
-                        const [[latestRevision]] = await db.read<Page>({
-                            ...defaults.db,
-                            query: { PK: PK_PAGE(pid), SK: `L` }
-                        });
-                        page = latestRevision;
-                    }
-
-                    if (!page) {
-                        throw new NotFoundError("Page not found.");
-                    }
-
-                    const identity = context.security.getIdentity();
-                    checkOwnPermissions(identity, permission, page, "ownedBy");
-
-                    // Extract compressed page content.
-                    page.content = await extractContent(page.content);
-                    return page;
-                },
-
-                async getPublishedById(args) {
-                    return this.dataLoaders.getPublishedById.load(args);
-                },
-
-                async getPublishedByPath(args) {
-                    if (!args.path) {
-                        throw new Error('Cannot get published page - "path" not provided.');
-                    }
-
-                    const notFoundError = new NotFoundError("Page not found.");
-
-                    const normalizedPath = normalizePath(args.path);
-                    if (normalizedPath === "/") {
-                        const settings = await context.pageBuilder.settings.default.getCurrent();
-                        if (!settings?.pages?.home) {
-                            throw notFoundError;
-                        }
-
-                        return context.pageBuilder.pages.getPublishedById({
-                            id: settings.pages.home
-                        });
-                    }
-
-                    let [[page]] = await db.read<Page>({
-                        ...defaults.db,
-                        query: { PK: PK_PAGE_PUBLISHED_PATH(), SK: normalizedPath }
-                    });
-
-                    if (!page) {
-                        // Try loading dynamic pages
-                        for (const plugin of pagePlugins) {
-                            if (typeof plugin.notFound === "function") {
-                                page = await plugin.notFound({ args, context });
-                                if (page) {
-                                    break;
-                                }
-                            }
-                        }
-                    }
-
-                    if (page) {
-                        // Extract compressed page content.
-                        page.content = await extractContent(page.content);
-                        return page;
-                    }
-
-                    throw notFoundError;
-                },
-
-                async listLatest(args) {
-                    const permission = await checkBasePermissions(context, PERMISSION_NAME, {
-                        rwd: "r"
-                    });
-                    const { sort, from, size, query, page } = getNormalizedListPagesArgs(
-                        args,
-                        context
-                    );
-
-                    query.filter.push(
-                        {
-                            term: { "locale.keyword": i18nContent.getLocale().code }
-                        },
-                        { term: { latest: true } }
-                    );
-
-                    // If users can only manage own records, let's add the special filter.
-                    if (permission.own === true) {
-                        const identity = context.security.getIdentity();
-                        query.filter.push({
-                            term: { "createdBy.id.keyword": identity.id }
-                        });
-                    }
-
-                    const listLatestPlugins = context.plugins.byType<SearchLatestPagesPlugin>(
-                        SearchLatestPagesPlugin.type
-                    );
-
-                    for (const plugin of listLatestPlugins) {
-                        // Apply query modifications
-                        plugin.modifyQuery({ query, args, context });
-
-                        // Apply sort modifications
-                        plugin.modifySort({ sort, args, context });
-                    }
-
-                    const response = await elasticsearch.search({
-                        ...ES_DEFAULTS(),
-                        body: {
-                            query: {
-                                bool: {
-                                    must: query.must.length > 0 ? query.must : undefined,
-                                    must_not:
-                                        query.must_not.length > 0 ? query.must_not : undefined,
-                                    filter: query.filter.length > 0 ? query.filter : undefined
-                                }
-                            },
-                            from,
-                            size,
-                            sort
-                        }
-                    });
-
-                    const results = response.body.hits;
-                    const total = results.total.value;
-                    const data = total > 0 ? results.hits.map(item => item._source) : [];
-
-                    const meta = createListMeta({ page, limit: size, totalCount: total });
-                    return [data, meta];
-                },
-
-                async listPublished(args) {
-                    const { sort, from, size, query, page } = getNormalizedListPagesArgs(
-                        args,
-                        context
-                    );
-
-                    query.filter.push(
-                        {
-                            term: { "locale.keyword": i18nContent.getLocale().code }
-                        },
-                        { term: { published: true } }
-                    );
-
-                    const listPublishedPlugins = context.plugins.byType<SearchPublishedPagesPlugin>(
-                        SearchPublishedPagesPlugin.type
-                    );
-
-                    for (const plugin of listPublishedPlugins) {
-                        // Apply query modifications
-                        plugin.modifyQuery({ query, args, context });
-
-                        // Apply sort modifications
-                        plugin.modifySort({ sort, args, context });
-                    }
-
-                    const response = await elasticsearch.search({
-                        ...ES_DEFAULTS(),
-                        body: {
-                            query: {
-                                bool: {
-                                    must: query.must.length > 0 ? query.must : undefined,
-                                    must_not:
-                                        query.must_not.length > 0 ? query.must_not : undefined,
-                                    filter: query.filter.length > 0 ? query.filter : undefined
-                                }
-                            },
-                            from,
-                            size,
-                            sort
-                        }
-                    });
-
-                    const results = response.body.hits;
-                    const total = results.total.value;
-                    const data = total > 0 ? results.hits.map(item => item._source) : [];
-
-                    const meta = createListMeta({ page, limit: size, totalCount: total });
-                    return [data, meta];
-                },
-
-                async listTags(args) {
-                    if (args.search.query.length < 2) {
-                        throw new Error("Please provide at least two characters.");
-                    }
-
-                    let query = undefined;
-                    // When ES index is shared between tenants, we need to filter records by tenant ID
-                    const sharedIndex = process.env.ELASTICSEARCH_SHARED_INDEXES === "true";
-                    if (sharedIndex) {
-                        const tenant = context.tenancy.getCurrentTenant();
-                        query = {
-                            bool: {
-                                filter: [{ term: { "tenant.keyword": tenant.id } }]
-                            }
-                        };
-                    }
-
-                    const response = await elasticsearch.search({
-                        ...ES_DEFAULTS(),
-                        body: {
-                            query,
-                            size: 0,
-                            aggs: {
-                                tags: {
-                                    terms: {
-                                        field: "tags.keyword",
-                                        include: `.*${args.search.query}.*`,
-                                        size: 10
-                                    }
-                                }
-                            }
-                        }
-                    });
-
-                    try {
-                        return response.body.aggregations.tags.buckets.map(item => item.key);
-                    } catch {
-                        return [];
-                    }
-                },
-
-                async listPageRevisions(pageId) {
-                    const [pid] = pageId.split("#");
-                    const [pages] = await db.read<Page>({
-                        ...defaults.db,
-                        query: {
-                            PK: PK_PAGE(pid),
-                            SK: { $beginsWith: "REV#" },
-                            sort: { SK: -1 }
-                        }
-                    });
-
-                    return pages.sort((a, b) => b.version - a.version);
-                },
-
-                async create(categorySlug) {
-                    await checkBasePermissions(context, PERMISSION_NAME, { rwd: "w" });
-
-                    const category = await context.pageBuilder.categories.get(categorySlug);
-                    if (!category) {
-                        throw new NotFoundError(`Category with slug "${categorySlug}" not found.`);
-                    }
-
-                    const title = "Untitled";
-
-                    let pagePath = "";
-                    if (category.slug === "static") {
-                        pagePath = normalizePath("untitled-" + uniqid.time());
-                    } else {
-                        pagePath = normalizePath(
-                            [category.url, "untitled-" + uniqid.time()]
-                                .join("/")
-                                .replace(/\/\//g, "/")
-                        );
-                    }
-
-                    const identity = context.security.getIdentity();
-                    new CreateDataModel().populate({ category: category.slug }).validate();
-
-                    const [pid, version] = [mdbid(), 1];
-                    const zeroPaddedVersion = getZeroPaddedVersionNumber(version);
-
-                    const id = `${pid}#${zeroPaddedVersion}`;
-
-                    const updateSettingsModel = new UpdateSettingsModel().populate({
-                        general: {
-                            layout: category.layout
-                        }
-                    });
-
-                    const owner = {
-                        id: identity.id,
-                        displayName: identity.displayName,
-                        type: identity.type
-                    };
-
-                    const page: Page = {
-                        id,
+    /**
+     * We need a data loader to fetch a page by id because it is being called a lot throughout the code.
+     * This used to be more complex, with checks if it is preview mode and some others.
+     * We do those checks after the page was loaded.
+     */
+    const dataLoaderGetById = new DataLoader<DataLoaderGetByIdKey, Page, string>(
+        async keys => {
+            try {
+                const pages: Page[] = [];
+                for (const key of keys) {
+                    const [pid, version] = key.id.split("#");
+                    const where = {
                         pid,
-                        locale: context.i18nContent.getLocale().code,
-                        tenant: context.tenancy.getCurrentTenant().id,
-                        editor: DEFAULT_EDITOR,
-                        category: category.slug,
-                        title,
-                        path: pagePath,
-                        version: 1,
-                        status: STATUS_DRAFT,
-                        visibility: {
-                            list: { latest: true, published: true },
-                            get: { latest: true, published: true }
-                        },
-                        home: false,
-                        notFound: false,
-                        locked: false,
-                        publishedOn: null,
-                        createdFrom: null,
-                        settings: await updateSettingsModel.toJSON(),
-                        savedOn: new Date().toISOString(),
-                        createdOn: new Date().toISOString(),
-                        ownedBy: owner,
-                        createdBy: owner,
-                        content: compressContent() // Just create the initial { compression, content } object.
+                        version: version ? Number(version) : undefined,
+                        latest: key.latest,
+                        published: key.published
                     };
+                    const page: Page | null = await storageOperations.get({
+                        where
+                    });
+                    pages.push(page);
+                }
+                return pages;
+            } catch (ex) {
+                throw new WebinyError(
+                    ex.message || `Could not load pages.`,
+                    ex.code || "LOAD_PAGE_BY_IDS_ERROR",
+                    {
+                        keys
+                    }
+                );
+            }
+        },
+        {
+            cacheKeyFn: (key: DataLoaderGetByIdKey): string => {
+                const values: string[] = [key.id];
+                if (key.latest) {
+                    values.push(`#l`);
+                } else if (key.published) {
+                    values.push("#p");
+                }
+                return values.join("#");
+            }
+        }
+    );
+    const clearDataLoaderCache = (pages: Page[]) => {
+        for (const page of pages) {
+            if (!page) {
+                continue;
+            }
+            const keys = createDataLoaderKeys(page.id);
+            for (const key of keys) {
+                dataLoaderGetById.clear(key);
+            }
+        }
+    };
 
-                    await executeCallbacks<PagePlugin["beforeCreate"]>(
-                        pagePlugins,
-                        "beforeCreate",
-                        { context, page }
-                    );
+    context.pageBuilder.pages = {
+        storageOperations,
+        async create(slug) {
+            await checkBasePermissions(context, PERMISSION_NAME, { rwd: "w" });
 
-                    const ddbData = {
-                        PK: PK_PAGE(pid),
-                        SK: `REV#${zeroPaddedVersion}`,
-                        TYPE: TYPE.PAGE,
-                        ...page
-                    };
+            const category = await context.pageBuilder.categories.get(slug);
+            if (!category) {
+                throw new NotFoundError(`Category with slug "${slug}" not found.`);
+            }
 
-                    const latestPageKeys = { PK: PK_PAGE(pid), SK: "L" };
+            const title = "Untitled";
 
-                    await db
-                        .batch()
-                        .create({ ...defaults.db, data: ddbData })
-                        .create({
-                            ...defaults.db,
-                            data: { ...ddbData, ...latestPageKeys }
-                        })
-                        .create({
-                            ...defaults.esDb,
-                            data: {
-                                ...latestPageKeys,
-                                index: ES_DEFAULTS().index,
-                                data: getESLatestPageData(context, {
-                                    ...ddbData,
-                                    ...latestPageKeys
-                                })
-                            }
-                        })
-                        .execute();
+            let pagePath = "";
+            if (category.slug === "static") {
+                pagePath = normalizePath("untitled-" + uniqid.time());
+            } else {
+                pagePath = normalizePath(
+                    [category.url, "untitled-" + uniqid.time()].join("/").replace(/\/\//g, "/")
+                );
+            }
 
-                    await executeCallbacks<PagePlugin["afterCreate"]>(pagePlugins, "afterCreate", {
-                        context,
+            const identity = context.security.getIdentity();
+            new CreateDataModel().populate({ category: category.slug }).validate();
+
+            const pageId = mdbid();
+            const version = 1;
+
+            const id = `${pageId}#${getZeroPaddedVersionNumber(version)}`;
+
+            const updateSettingsModel = new UpdateSettingsModel().populate({
+                general: {
+                    layout: category.layout
+                }
+            });
+
+            const owner = {
+                id: identity.id,
+                displayName: identity.displayName,
+                type: identity.type
+            };
+            /**
+             * Just create the initial { compression, content } object.
+             */
+
+            const page: Page = {
+                id,
+                pid: pageId,
+                locale: context.i18nContent.getLocale().code,
+                tenant: context.tenancy.getCurrentTenant().id,
+                editor: DEFAULT_EDITOR,
+                category: category.slug,
+                title,
+                path: pagePath,
+                version,
+                status: STATUS_DRAFT,
+                visibility: {
+                    list: { latest: true, published: true },
+                    get: { latest: true, published: true }
+                },
+                home: false,
+                notFound: false,
+                locked: false,
+                publishedOn: null,
+                createdFrom: null,
+                settings: await updateSettingsModel.toJSON(),
+                savedOn: new Date().toISOString(),
+                createdOn: new Date().toISOString(),
+                ownedBy: owner,
+                createdBy: owner,
+                content: null,
+                webinyVersion: context.WEBINY_VERSION
+            };
+            page.content = await compressContent(contentCompressionPlugins, page);
+
+            try {
+                await executeCallbacks<PagePlugin["beforeCreate"]>(pagePlugins, "beforeCreate", {
+                    context,
+                    page
+                });
+                const result = await storageOperations.create({
+                    input: {
+                        slug
+                    },
+                    page
+                });
+                await executeCallbacks<PagePlugin["afterCreate"]>(pagePlugins, "afterCreate", {
+                    context,
+                    page: result
+                });
+                return (await extractPageContent(contentCompressionPlugins, page)) as any;
+            } catch (ex) {
+                throw new WebinyError(
+                    ex.message || "Could not create new page.",
+                    ex.code || "CREATE_PAGE_ERROR",
+                    {
+                        ...(ex.data || {}),
                         page
-                    });
-
-                    return omit(ddbData, ["PK", "SK", "content"]) as any;
-                },
-
-                async createFrom(from) {
-                    const permission = await checkBasePermissions(context, PERMISSION_NAME, {
-                        rwd: "w"
-                    });
-
-                    const [fromPid, fromVersion] = from.split("#");
-
-                    const [[[page]], [[latestPage]]] = await db
-                        .batch<[[Page]], [[Page]]>()
-                        .read({
-                            ...defaults.db,
-                            query: {
-                                PK: PK_PAGE(fromPid),
-                                SK: `REV#${fromVersion}`
-                            }
-                        })
-                        .read({
-                            ...defaults.db,
-                            query: {
-                                PK: PK_PAGE(fromPid),
-                                SK: "L"
-                            }
-                        })
-                        .execute();
-
-                    if (!page) {
-                        throw new NotFoundError(`Page "${from}" not found.`);
                     }
+                );
+            }
+        },
 
-                    // Must not be able to create a new page (revision) from a page of another author.
-                    if (permission?.own === true) {
-                        const identity = context.security.getIdentity();
-                        if (page.ownedBy.id !== identity.id) {
-                            throw new NotAuthorizedError();
-                        }
+        async createFrom(id) {
+            const permission = await checkBasePermissions(context, PERMISSION_NAME, {
+                rwd: "w"
+            });
+
+            const original = await context.pageBuilder.pages.get(id, {
+                decompress: false
+            });
+
+            if (!original) {
+                throw new NotFoundError(`Page not found.`);
+            }
+
+            /**
+             * Must not be able to create a new page (revision) from a page of another author.
+             */
+            const identity = context.security.getIdentity();
+            checkOwnPermissions(identity, permission, original, "ownedBy");
+
+            const latestPage = await storageOperations.get({
+                where: {
+                    pid: original.pid,
+                    latest: true
+                }
+            });
+
+            if (!latestPage) {
+                throw new NotFoundError("Missing latest page record.");
+            }
+
+            const version = latestPage.version + 1;
+
+            const newId = `${original.pid}#${getZeroPaddedVersionNumber(version)}`;
+
+            const page: Page = {
+                ...original,
+                id: newId,
+                status: STATUS_DRAFT,
+                locked: false,
+                publishedOn: null,
+                version,
+                savedOn: new Date().toISOString(),
+                createdFrom: id,
+                createdOn: new Date().toISOString(),
+                createdBy: {
+                    id: identity.id,
+                    displayName: identity.displayName,
+                    type: identity.type
+                }
+            };
+
+            try {
+                await executeCallbacks<PagePlugin["beforeCreate"]>(pagePlugins, "beforeCreate", {
+                    context,
+                    page
+                });
+                const result = await storageOperations.createFrom({
+                    original,
+                    latestPage,
+                    page
+                });
+                await executeCallbacks<PagePlugin["afterCreate"]>(pagePlugins, "afterCreate", {
+                    page: result,
+                    context
+                });
+                /**
+                 * Clear the dataLoader cache.
+                 */
+                clearDataLoaderCache([original, page, latestPage]);
+                return (await extractPageContent(contentCompressionPlugins, page)) as any;
+            } catch (ex) {
+                throw new WebinyError(
+                    ex.message || "Could not create from existing page.",
+                    ex.code || "CREATE_FROM_PAGE_ERROR",
+                    {
+                        ...(ex.data || {}),
+                        id,
+                        latestPage,
+                        original,
+                        page
                     }
+                );
+            }
+        },
 
-                    const nextVersion = latestPage.version + 1;
-                    const zeroPaddedNextVersion = getZeroPaddedVersionNumber(nextVersion);
-                    const nextId = `${fromPid}#${zeroPaddedNextVersion}`;
-                    const identity = context.security.getIdentity();
+        async update(id, input) {
+            const permission = await checkBasePermissions(context, PERMISSION_NAME, {
+                rwd: "w"
+            });
+            const original = await storageOperations.get({
+                where: {
+                    id
+                }
+            });
+            if (!original) {
+                throw new NotFoundError("Non-existing-page.");
+            }
+            if (original.locked) {
+                throw new WebinyError(`Cannot update page because it's locked.`);
+            }
 
-                    const data: Record<string, any> = {
-                        ...page,
-                        SK: `REV#${zeroPaddedNextVersion}`,
-                        id: nextId,
-                        status: STATUS_DRAFT,
-                        locked: false,
-                        publishedOn: null,
-                        version: nextVersion,
-                        savedOn: new Date().toISOString(),
-                        createdFrom: from,
-                        createdOn: new Date().toISOString(),
-                        createdBy: {
-                            id: identity.id,
-                            displayName: identity.displayName,
-                            type: identity.type
-                        }
-                    };
+            const identity = context.security.getIdentity();
+            checkOwnPermissions(identity, permission, original, "ownedBy");
 
-                    await executeCallbacks<PagePlugin["beforeCreate"]>(
-                        pagePlugins,
-                        "beforeCreate",
-                        {
-                            context,
-                            page: data as Page
-                        }
+            const page: Page = {
+                ...original,
+                ...input,
+                version: Number(original.version),
+                savedOn: new Date().toISOString()
+            };
+            const newContent = input.content;
+            if (newContent) {
+                page.content = await compressContent(contentCompressionPlugins, {
+                    ...page,
+                    content: newContent
+                });
+            }
+
+            try {
+                await executeCallbacks<PagePlugin["beforeUpdate"]>(pagePlugins, "beforeUpdate", {
+                    context,
+                    existingPage: original,
+                    inputData: input,
+                    updateData: page
+                });
+                const result = await storageOperations.update({
+                    input,
+                    original,
+                    page
+                });
+
+                await executeCallbacks<PagePlugin["afterUpdate"]>(pagePlugins, "afterUpdate", {
+                    context,
+                    page: result,
+                    inputData: input
+                });
+
+                /**
+                 * Clear the dataLoader cache.
+                 */
+                clearDataLoaderCache([original, page]);
+
+                return {
+                    ...result,
+                    content:
+                        newContent || (await extractContent(contentCompressionPlugins, original))
+                } as any;
+            } catch (ex) {
+                throw new WebinyError(
+                    ex.message || "Could not update existing page.",
+                    ex.code || "UPDATE_PAGE_ERROR",
+                    {
+                        ...(ex.data || {}),
+                        page,
+                        original,
+                        input
+                    }
+                );
+            }
+        },
+
+        async delete(id) {
+            const permission = await checkBasePermissions(context, PERMISSION_NAME, {
+                rwd: "d"
+            });
+
+            /*
+                ***** Comments left from the old code. These are the steps that need to happen for delete to work properly
+
+                1. Load the page and latest / published page (rev) data.
+
+                2. Do a couple of checks.
+
+                3. Let's start updating. But first, let's trigger before-delete hook callbacks.
+
+                Before we continue, note that if `publishedPageData` exists, then `publishedPagePathData`
+                also exists. And to delete it, we can read `publishedPageData.path` to get its SK.
+                There can't be a situation where just one record exists, there's always gonna be both.
+
+                If we are deleting the initial version, we need to remove all versions and all of the meta data.
+
+                4.1. We delete pages in batches of 15.
+
+                4.2. Finally, delete data from ES.
+
+
+                5. If we are deleting a specific version (version > 1)...
+
+                6.1. Delete the actual page entry.
+
+                6.2. If the page is published, remove published data, both from DB and ES
+
+                6.3. If the page is latest, assign the previously latest page as the new latest.
+                Updates must be made again both on DB and ES side.
+
+            */
+
+            const page = await storageOperations.get({
+                where: {
+                    id
+                }
+            });
+            if (!page) {
+                throw new NotFoundError("Non-existing page.");
+            }
+
+            const [pageId] = id.split("#");
+
+            const identity = context.security.getIdentity();
+            checkOwnPermissions(identity, permission, page, "ownedBy");
+
+            const settings = await context.pageBuilder.settings.getCurrent();
+            const pages = settings && settings.pages ? settings.pages : {};
+            for (const key in pages) {
+                if (pages[key] === page.pid) {
+                    throw new WebinyError(
+                        `Cannot delete page because it's set as ${key}.`,
+                        "DELETE_PAGE_ERROR"
                     );
+                }
+            }
 
-                    const latestPageKeys = {
-                        PK: PK_PAGE(fromPid),
-                        SK: "L"
-                    };
+            let latestPage = await storageOperations.get({
+                where: {
+                    pid: pageId,
+                    latest: true
+                }
+            });
+            const publishedPage = await storageOperations.get({
+                where: {
+                    pid: pageId,
+                    published: true
+                }
+            });
+            /**
+             * We can either delete all of the records connected to given page or single revision.
+             */
+            const deleteMethod = page.version === 1 ? "deleteAll" : "delete";
 
-                    const batch = db
-                        .batch()
-                        .create({ ...defaults.db, data })
-                        .update({
-                            ...defaults.db,
-                            query: latestPageKeys,
-                            data: {
-                                ...data,
-                                ...latestPageKeys
-                            }
-                        });
-
-                    // If the new revision is visible in "latest" page lists, then update the ES index.
-                    if (get(data, "visibility.list.latest") !== false) {
-                        batch.update({
-                            ...defaults.esDb,
-                            query: latestPageKeys,
-                            data: {
-                                ...latestPageKeys,
-                                index: ES_DEFAULTS().index,
-                                data: getESLatestPageData(context, data as Page)
-                            }
-                        });
+            try {
+                await executeCallbacks<PagePlugin["beforeDelete"]>(pagePlugins, "beforeDelete", {
+                    context,
+                    page,
+                    latestPage,
+                    publishedPage
+                });
+                const [resultPage, resultLatestPage] = await storageOperations[deleteMethod]({
+                    page,
+                    publishedPage,
+                    latestPage
+                });
+                latestPage = resultLatestPage || latestPage;
+                await executeCallbacks<PagePlugin["afterDelete"]>(pagePlugins, "afterDelete", {
+                    context,
+                    page: resultPage,
+                    latestPage: latestPage,
+                    publishedPage: publishedPage
+                });
+                /**
+                 * Clear the dataLoader cache.
+                 */
+                clearDataLoaderCache([page, publishedPage, latestPage]);
+                /**
+                 * 7. Done. We return both the deleted page, and the new latest one (if there is one).
+                 */
+                if (page.version === 1) {
+                    return [
+                        await extractPageContent(contentCompressionPlugins, resultPage),
+                        null
+                    ] as any;
+                }
+                return [
+                    await extractPageContent(contentCompressionPlugins, resultPage),
+                    await extractPageContent(contentCompressionPlugins, latestPage)
+                ] as any;
+            } catch (ex) {
+                throw new WebinyError(
+                    ex.message || "Could not delete page.",
+                    ex.code || "DELETE_PAGE_ERROR",
+                    {
+                        ...(ex.data || {}),
+                        id,
+                        page,
+                        publishedPage,
+                        latestPage
                     }
+                );
+            }
+        },
 
-                    await batch.execute();
+        async publish(id: string) {
+            await checkBasePermissions<PageSecurityPermission>(context, PERMISSION_NAME, {
+                pw: "p"
+            });
 
-                    await executeCallbacks<PagePlugin["afterCreate"]>(pagePlugins, "afterCreate", {
-                        page: data as Page,
-                        context
-                    });
+            const original = await context.pageBuilder.pages.get(id, {
+                decompress: false
+            });
 
-                    // Extract compressed page content.
-                    data.content = await extractContent(data.content);
+            if (original.status === STATUS_PUBLISHED) {
+                throw new NotFoundError(`Page is already published.`);
+            }
+            /**
+             * Already published page revision of this page.
+             */
+            const publishedPage = await storageOperations.get({
+                where: {
+                    pid: original.pid,
+                    published: true
+                }
+            });
+            /**
+             * We need a page that is published on given path.
+             */
+            const publishedPathPage = await storageOperations.get({
+                where: {
+                    path: original.path,
+                    published: true
+                }
+            });
+            /**
+             * Latest revision of this page.
+             */
+            const latestPage = await storageOperations.get({
+                where: {
+                    pid: original.pid,
+                    latest: true
+                }
+            });
+            /**
+             * If this is true, let's unpublish the page first. Note that we're not talking about this
+             * same page, but a previous revision. We're talking about a completely different page
+             * (with different PID). Remember that page ID equals `PID#version`.
+             */
+            if (publishedPathPage && publishedPathPage.pid !== original.pid) {
+                /**
+                 * Note two things here...
+                 * 1) It is possible that this call is about to try to unpublish a page that is set as
+                 * a special page (home / 404). In that case, this whole process will fail, and that
+                 * is to be expected. Maybe we could think of a better solution in the future, but for
+                 * now, it works like this. If there was only more ⏱.
+                 * 2) If a user doesn't have the unpublish permission, again, the whole action will fail.
+                 */
+                await context.pageBuilder.pages.unpublish(publishedPathPage.id);
+            }
 
-                    return data as Page;
-                },
+            const page: Page = {
+                ...original,
+                status: STATUS_PUBLISHED,
+                locked: true,
+                savedOn: new Date().toISOString(),
+                publishedOn: new Date().toISOString()
+            };
 
-                async update(id, data) {
-                    const permission = await checkBasePermissions(context, PERMISSION_NAME, {
-                        rwd: "w"
-                    });
+            try {
+                await executeCallbacks<PagePlugin["beforePublish"]>(pagePlugins, "beforePublish", {
+                    context,
+                    page,
+                    latestPage,
+                    publishedPage
+                });
 
-                    const [pid, rev] = id.split("#");
+                const result = await storageOperations.publish({
+                    original,
+                    page,
+                    latestPage,
+                    publishedPage,
+                    publishedPathPage
+                });
 
-                    const [[[existingPage]], [[existingLatestPage]]] = await db
-                        .batch()
-                        .read({
-                            ...defaults.db,
-                            query: { PK: PK_PAGE(pid), SK: `REV#${rev}` },
-                            limit: 1
-                        })
-                        .read({
-                            ...defaults.db,
-                            query: { PK: PK_PAGE(pid), SK: "L" },
-                            limit: 1
-                        })
-                        .execute();
-
-                    if (!existingPage) {
-                        throw new NotFoundError(`Page "${id}" not found.`);
-                    }
-
-                    if (existingPage.locked) {
-                        throw new Error(`Cannot update page because it's locked.`);
-                    }
-
-                    const identity = context.security.getIdentity();
-                    checkOwnPermissions(identity, permission, existingPage, "ownedBy");
-
-                    const updateData: Partial<Page> = {
-                        ...data,
-                        savedOn: new Date().toISOString()
-                    };
-
-                    await executeCallbacks<PagePlugin["beforeUpdate"]>(
-                        pagePlugins,
-                        "beforeUpdate",
-                        {
-                            context,
-                            existingPage,
-                            inputData: data,
-                            updateData
-                        }
-                    );
-
-                    const newContent = updateData.content;
-                    if (newContent) {
-                        updateData.content = compressContent(newContent);
-                    }
-
-                    const newPageData = { ...existingPage, ...updateData };
-                    const newLatestPage = { ...existingLatestPage, ...updateData };
-
-                    const batch = db.batch().update({
-                        ...defaults.db,
-                        query: { PK: PK_PAGE(pid), SK: `REV#${rev}` },
-                        data: newPageData
-                    });
-
-                    // If we updated the latest rev, make sure the changes are propagated to "L" record and ES.
-                    if (newLatestPage.id === id) {
-                        const latestPageKeys = { PK: PK_PAGE(pid), SK: "L" };
-
-                        batch.update({
-                            ...defaults.db,
-                            query: latestPageKeys,
-                            data: newLatestPage
-                        });
-
-                        // Update the ES index according to the value of the "latest pages lists" visibility setting.
-                        if (get(newPageData, "visibility.list.latest") !== false) {
-                            batch.update({
-                                ...defaults.esDb,
-                                query: latestPageKeys,
-                                data: {
-                                    ...latestPageKeys,
-                                    index: ES_DEFAULTS().index,
-                                    data: getESLatestPageData(context, newPageData)
-                                }
-                            });
-                        } else {
-                            batch.delete({
-                                ...defaults.esDb,
-                                query: latestPageKeys
-                            });
-                        }
-                    }
-
-                    await batch.execute();
-
-                    await executeCallbacks<PagePlugin["afterUpdate"]>(pagePlugins, "afterUpdate", {
-                        context,
-                        page: newPageData as Page,
-                        inputData: data
-                    });
-
-                    return {
-                        ...newPageData,
-                        content: newContent || newPageData.content
-                    };
-                },
-
-                async delete(pageId) {
-                    const permission = await checkBasePermissions(context, PERMISSION_NAME, {
-                        rwd: "d"
-                    });
-
-                    const [pid, rev] = pageId.split("#");
-                    const PAGE_PK = PK_PAGE(pid);
-
-                    // 1. Load the page and latest / published page (rev) data.
-                    const [[[page]], [[latestPage]], [[publishedPage]]] = await db
-                        .batch<[[Page]], [[Page]], [[Page]]>()
-                        .read({
-                            ...defaults.db,
-                            query: { PK: PAGE_PK, SK: `REV#${rev}` }
-                        })
-                        .read({
-                            ...defaults.db,
-                            query: { PK: PAGE_PK, SK: "L" }
-                        })
-                        .read({
-                            ...defaults.db,
-                            query: { PK: PAGE_PK, SK: "P" }
-                        })
-                        .execute();
-
-                    // 2. Do a couple of checks.
-                    if (!page) {
-                        throw new NotFoundError(`Page "${pageId}" not found.`);
-                    }
-
-                    const identity = context.security.getIdentity();
-                    checkOwnPermissions(identity, permission, page, "ownedBy");
-
-                    const settings = await context.pageBuilder.settings.default.getCurrent();
-                    const pages = settings?.pages || {};
-                    for (const key in pages) {
-                        if (pages[key] === page.pid) {
-                            throw new Error(`Cannot delete page because it's set as ${key}.`);
-                        }
-                    }
-
-                    // 3. Let's start updating. But first, let's trigger before-delete hook callbacks.
-                    await executeCallbacks<PagePlugin["beforeDelete"]>(
-                        pagePlugins,
-                        "beforeDelete",
-                        {
-                            context,
-                            page,
-                            latestPage,
-                            publishedPage
-                        }
-                    );
-
-                    // Before we continue, note that if `publishedPageData` exists, then `publishedPagePathData`
-                    // also exists. And to delete it, we can read `publishedPageData.path` to get its SK.
-                    // There can't be a situation where just one record exists, there's always gonna be both.
-
-                    // If we are deleting the initial version, we need to remove all versions and all of the meta data.
-                    if (page.version === 1) {
-                        // 4.1. We delete pages in batches of 15.
-                        let publishedPathEntryDeleted = false;
-                        while (true) {
-                            const [pageItemCollection] = await db.read({
-                                ...defaults.db,
-                                limit: 15,
-                                query: { PK: PAGE_PK, SK: { $gte: " " } }
-                            });
-
-                            if (pageItemCollection.length === 0) {
-                                break;
-                            }
-
-                            const batch = db.batch();
-                            for (let i = 0; i < pageItemCollection.length; i++) {
-                                const item = pageItemCollection[i];
-                                if (item.status === "published" && !publishedPathEntryDeleted) {
-                                    publishedPathEntryDeleted = true;
-                                    batch.delete({
-                                        ...defaults.db,
-                                        query: { PK: PK_PAGE_PUBLISHED_PATH(), SK: item.path }
-                                    });
-                                }
-
-                                batch.delete({
-                                    ...defaults.db,
-                                    query: { PK: item.PK, SK: item.SK }
-                                });
-                            }
-
-                            await batch.execute();
-                        }
-
-                        // 4.2. Finally, delete data from ES.
-                        await db
-                            .batch()
-                            .delete({
-                                ...defaults.esDb,
-                                query: {
-                                    PK: PAGE_PK,
-                                    SK: "L"
-                                }
-                            })
-                            .delete({
-                                ...defaults.esDb,
-                                query: {
-                                    PK: PAGE_PK,
-                                    SK: "P"
-                                }
-                            })
-                            .execute();
-
-                        await executeCallbacks<PagePlugin["afterDelete"]>(
-                            pagePlugins,
-                            "afterDelete",
-                            {
-                                context,
-                                page,
-                                latestPage,
-                                publishedPage
-                            }
-                        );
-
-                        return [page, null];
-                    }
-
-                    // 5. If we are deleting a specific version (version > 1)...
-
-                    // 6.1. Delete the actual page entry.
-                    const batch = db.batch().delete({
-                        ...defaults.db,
-                        query: { PK: PAGE_PK, SK: `REV#${rev}` }
-                    });
-
-                    // 6.2. If the page is published, remove published data, both from DB and ES.
-                    if (publishedPage && publishedPage.id === page.id) {
-                        batch
-                            .delete({
-                                ...defaults.db,
-                                query: {
-                                    PK: PAGE_PK,
-                                    SK: "P"
-                                }
-                            })
-                            .delete({
-                                ...defaults.db,
-                                query: {
-                                    PK: PK_PAGE_PUBLISHED_PATH(),
-                                    SK: publishedPage.path
-                                }
-                            })
-                            .delete({
-                                ...defaults.esDb,
-                                query: {
-                                    PK: PAGE_PK,
-                                    SK: "P"
-                                }
-                            });
-                    }
-
-                    // 6.3. If the page is latest, assign the previously latest page as the new latest.
-                    // Updates must be made again both on DB and ES side.
-                    let newLatestPage;
-                    if (latestPage.id === page.id) {
-                        [[newLatestPage]] = await db.read({
-                            ...defaults.db,
-                            query: { PK: PAGE_PK, SK: { $lt: `REV#${rev}` } },
-                            sort: { SK: -1 },
-                            limit: 1
-                        });
-
-                        // Update latest page data.
-                        batch
-                            .update({
-                                ...defaults.db,
-                                query: {
-                                    PK: PAGE_PK,
-                                    SK: "L"
-                                },
-                                data: {
-                                    ...newLatestPage,
-                                    PK: PAGE_PK,
-                                    SK: "L"
-                                }
-                            })
-                            .update({
-                                ...defaults.esDb,
-                                query: {
-                                    PK: PAGE_PK,
-                                    SK: "L"
-                                },
-                                data: {
-                                    PK: PAGE_PK,
-                                    SK: "L",
-                                    index: ES_DEFAULTS().index,
-                                    data: getESLatestPageData(context, newLatestPage)
-                                }
-                            });
-                    }
-
-                    await batch.execute();
-
-                    await executeCallbacks<PagePlugin["afterDelete"]>(pagePlugins, "afterDelete", {
-                        context,
+                await executeCallbacks<PagePlugin["afterPublish"]>(pagePlugins, "afterPublish", {
+                    context,
+                    page: result,
+                    latestPage,
+                    publishedPage
+                });
+                /**
+                 * Clear the dataLoader cache.
+                 * We need to clear cache for original publish, latest and path page.
+                 */
+                clearDataLoaderCache([
+                    original,
+                    result,
+                    latestPage,
+                    publishedPage,
+                    publishedPathPage
+                ]);
+                return (await extractPageContent(contentCompressionPlugins, result)) as any;
+            } catch (ex) {
+                throw new WebinyError(
+                    ex.message || "Could not publish page.",
+                    ex.code || "PUBLISH_PAGE_ERROR",
+                    {
+                        id,
+                        original,
                         page,
                         latestPage,
-                        publishedPage
-                    });
+                        publishedPage,
+                        publishedPathPage
+                    }
+                );
+            }
+        },
 
-                    // 7. Done. We return both the deleted page, and the new latest one (if there is one).
-                    return [page, newLatestPage];
-                },
+        async unpublish(id: string) {
+            await checkBasePermissions<PageSecurityPermission>(context, PERMISSION_NAME, {
+                pw: "u"
+            });
 
-                async publish(pageId: string) {
-                    const permission = await checkBasePermissions<PageSecurityPermission>(
+            const original = await context.pageBuilder.pages.get(id, {
+                decompress: false
+            });
+            /**
+             * Latest revision of the this page.
+             */
+            const latestPage = await storageOperations.get({
+                where: {
+                    pid: original.pid,
+                    latest: true
+                }
+            });
+
+            if (original.status !== "published") {
+                throw new WebinyError(`Page is not published.`);
+            }
+
+            const settings = await context.pageBuilder.settings.getCurrent();
+            const pages = settings && settings.pages ? settings.pages : {};
+            for (const key in pages) {
+                if (pages[key] === original.pid) {
+                    throw new WebinyError(
+                        `Cannot unpublish page because it's set as ${key}.`,
+                        "UNPUBLISH_PAGE_ERROR"
+                    );
+                }
+            }
+
+            const page: Page = {
+                ...original,
+                status: STATUS_UNPUBLISHED,
+                savedOn: new Date().toISOString()
+            };
+
+            try {
+                await executeCallbacks<PagePlugin["beforeUnpublish"]>(
+                    pagePlugins,
+                    "beforeUnpublish",
+                    {
                         context,
-                        PERMISSION_NAME,
-                        {
-                            pw: "p"
-                        }
-                    );
-
-                    const [pid, rev] = pageId.split("#");
-                    const PAGE_PK = PK_PAGE(pid);
-
-                    // `publishedPageData` will give us a record that contains `id` and `path, which tell us
-                    // the current revision and over which path it has been published, respectively.
-                    const [[[page]], [[publishedPage]], [[latestPage]]] = await db
-                        .batch<[[Page]], [[Page]], [[Page]]>()
-                        .read({
-                            ...defaults.db,
-                            query: { PK: PAGE_PK, SK: `REV#${rev}` }
-                        })
-                        .read({
-                            ...defaults.db,
-                            query: {
-                                PK: PAGE_PK,
-                                SK: "P"
-                            }
-                        })
-                        .read({
-                            ...defaults.db,
-                            query: {
-                                PK: PAGE_PK,
-                                SK: "L"
-                            }
-                        })
-                        .execute();
-
-                    if (!page) {
-                        throw new NotFoundError(`Page "${pageId}" not found.`);
+                        page
                     }
-
-                    const identity = context.security.getIdentity();
-                    checkOwnPermissions(identity, permission, page, "ownedBy");
-
-                    if (page.status === STATUS_PUBLISHED) {
-                        throw new NotFoundError(`Page "${pageId}" is already published.`);
-                    }
-
-                    const [[publishedPageOnPath]] = await db.read<Page>({
-                        ...defaults.db,
-                        query: {
-                            PK: PK_PAGE_PUBLISHED_PATH(),
-                            SK: page.path
-                        }
-                    });
-
-                    await executeCallbacks<PagePlugin["beforePublish"]>(
-                        pagePlugins,
-                        "beforePublish",
-                        {
-                            context,
-                            page,
-                            latestPage,
-                            publishedPage
-                        }
-                    );
-
-                    const pathTakenByAnotherPage =
-                        publishedPageOnPath && publishedPageOnPath.pid !== page.pid;
-
-                    // If this is true, let's unpublish the page first. Note that we're not talking about this
-                    // same page, but a previous revision. We're talking about a completely different page
-                    // (with different PID). Remember that page ID equals `PID#version`.
-                    if (pathTakenByAnotherPage) {
-                        // Note two things here...
-                        // 1) It is possible that this call is about to try to unpublish a page that is set as
-                        // a special page (home / 404). In that case, this whole process will fail, and that
-                        // is to be expected. Maybe we could think of a better solution in the future, but for
-                        // now, it works like this. If there was only more ⏱.
-                        // 2) If a user doesn't have the unpublish permission, again, the whole action will fail.
-                        await this.unpublish(publishedPageOnPath.id);
-                    }
-
-                    // Now that the other page has been unpublished, we can continue with publish the current one.
-
-                    // Change loaded page's status to published.
-                    page.status = STATUS_PUBLISHED;
-                    page.locked = true;
-                    page.publishedOn = new Date().toISOString();
-
-                    // We need to issue a couple of updates.
-                    const batch = db.batch();
-
-                    // 1. Update the page in the database first.
-                    batch.update({
-                        ...defaults.db,
-                        query: {
-                            PK: PAGE_PK,
-                            SK: `REV#${rev}`
-                        },
-                        data: page
-                    });
-
-                    // If we just published the latest version, update the latest revision entry too.
-                    if (latestPage.id === pageId) {
-                        batch.update({
-                            ...defaults.db,
-                            query: {
-                                PK: PAGE_PK,
-                                SK: "L"
-                            },
-                            data: { ...page, PK: PAGE_PK, SK: "L" }
-                        });
-                    }
-
-                    if (publishedPage) {
-                        const [, publishedRev] = publishedPage.id.split("#");
-                        batch
-                            .update({
-                                ...defaults.db,
-                                query: {
-                                    PK: PAGE_PK,
-                                    SK: `REV#${publishedRev}`
-                                },
-                                data: {
-                                    ...publishedPage,
-                                    status: STATUS_UNPUBLISHED,
-                                    PK: PAGE_PK,
-                                    SK: `REV#${publishedRev}`
-                                }
-                            })
-                            .update({
-                                ...defaults.db,
-                                query: {
-                                    PK: PAGE_PK,
-                                    SK: "P"
-                                },
-                                data: { ...page, PK: PAGE_PK, SK: "P" }
-                            });
-
-                        // If the paths are different, delete previous published-page-on-path entry.
-                        if (publishedPage.path !== page.path) {
-                            batch
-                                .delete({
-                                    ...defaults.db,
-                                    query: {
-                                        PK: PK_PAGE_PUBLISHED_PATH(),
-                                        SK: publishedPage.path
-                                    }
-                                })
-                                .create({
-                                    ...defaults.db,
-                                    data: {
-                                        ...page,
-                                        PK: PK_PAGE_PUBLISHED_PATH(),
-                                        SK: page.path
-                                    }
-                                });
-                        } else {
-                            batch.update({
-                                ...defaults.db,
-                                query: {
-                                    PK: PK_PAGE_PUBLISHED_PATH(),
-                                    SK: page.path
-                                },
-                                data: {
-                                    ...page,
-                                    PK: PK_PAGE_PUBLISHED_PATH(),
-                                    SK: page.path
-                                }
-                            });
-                        }
-                    } else {
-                        batch
-                            .create({
-                                ...defaults.db,
-                                data: {
-                                    ...page,
-                                    PK: PAGE_PK,
-                                    SK: "P"
-                                }
-                            })
-                            .create({
-                                ...defaults.db,
-                                data: {
-                                    ...page,
-                                    PK: PK_PAGE_PUBLISHED_PATH(),
-                                    SK: page.path
-                                }
-                            });
-                    }
-
-                    // If we are publishing the latest revision, let's also update the latest revision entry's
-                    // status in ES. Also, if we are publishing the latest revision and the "LATEST page lists
-                    // visibility" is not false, then we need to update the latest page revision entry in ES.
-                    if (
-                        latestPage?.id === pageId &&
-                        get(page, "visibility.list.latest") !== false
-                    ) {
-                        batch.update({
-                            ...defaults.esDb,
-                            query: {
-                                PK: PAGE_PK,
-                                SK: "L"
-                            },
-                            data: {
-                                PK: PAGE_PK,
-                                SK: "L",
-                                index: ES_DEFAULTS().index,
-                                data: getESLatestPageData(context, page)
-                            }
-                        });
-                    }
-
-                    // Update the published revision entry in ES,
-                    // if the "PUBLISHED page lists visibility" setting is not explicitly set to false.
-                    if (get(page, "visibility.list.published") !== false) {
-                        batch.create({
-                            ...defaults.esDb,
-                            data: {
-                                PK: PAGE_PK,
-                                SK: "P",
-                                index: ES_DEFAULTS().index,
-                                data: getESPublishedPageData(context, {
-                                    ...page,
-                                    id: pageId,
-                                    status: STATUS_PUBLISHED,
-                                    locked: true
-                                })
-                            }
-                        });
-                    } else {
-                        batch.delete({
-                            ...defaults.esDb,
-                            query: {
-                                PK: PAGE_PK,
-                                SK: "P"
-                            }
-                        });
-                    }
-
-                    await batch.execute();
-
-                    await executeCallbacks<PagePlugin["afterPublish"]>(
-                        pagePlugins,
-                        "afterPublish",
-                        {
-                            context,
-                            page,
-                            latestPage,
-                            publishedPage
-                        }
-                    );
-
-                    return page;
-                },
-
-                async unpublish(pageId: string) {
-                    const permission = await checkBasePermissions<PageSecurityPermission>(
+                );
+                const result = await storageOperations.unpublish({
+                    original,
+                    page,
+                    latestPage
+                });
+                await executeCallbacks<PagePlugin["afterUnpublish"]>(
+                    pagePlugins,
+                    "afterUnpublish",
+                    {
                         context,
-                        PERMISSION_NAME,
-                        {
-                            pw: "u"
-                        }
-                    );
-
-                    const [pid, rev] = pageId.split("#");
-                    const PAGE_PK = PK_PAGE(pid);
-
-                    const [[[page]], [[publishedPage]], [[latestPage]]] = await db
-                        .batch()
-                        .read({
-                            ...defaults.db,
-                            query: { PK: PAGE_PK, SK: `REV#${rev}` },
-                            limit: 1
-                        })
-                        .read({
-                            ...defaults.db,
-                            limit: 1,
-                            query: {
-                                PK: PAGE_PK,
-                                SK: "P"
-                            }
-                        })
-                        .read({
-                            ...defaults.db,
-                            limit: 1,
-                            query: {
-                                PK: PAGE_PK,
-                                SK: "L"
-                            }
-                        })
-                        .execute();
-
-                    if (!page) {
-                        throw new NotFoundError(`Page "${pageId}" not found.`);
+                        page: result
                     }
-
-                    const identity = context.security.getIdentity();
-                    checkOwnPermissions(identity, permission, page, "ownedBy");
-
-                    if (!publishedPage || publishedPage.id !== pageId) {
-                        throw new Error(`Page "${pageId}" is not published.`);
+                );
+                clearDataLoaderCache([original, latestPage]);
+                return (await extractPageContent(contentCompressionPlugins, result)) as any;
+            } catch (ex) {
+                throw new WebinyError(
+                    ex.message || "Could not unpublish page.",
+                    ex.code || "UNPUBLISH_PAGE_ERROR",
+                    {
+                        ...(ex.data || {}),
+                        id,
+                        original,
+                        page,
+                        latestPage
                     }
+                );
+            }
+        },
 
-                    const settings = await context.pageBuilder.settings.default.getCurrent();
-                    const pages = settings?.pages || {};
-                    for (const key in pages) {
-                        if (pages[key] === page.pid) {
-                            throw new Error(`Cannot unpublish page because it's set as ${key}.`);
-                        }
+        async requestReview(id: string) {
+            await checkBasePermissions(context, PERMISSION_NAME, {
+                pw: "r"
+            });
+
+            const original = await context.pageBuilder.pages.get(id, {
+                decompress: false
+            });
+
+            const allowedStatuses = [STATUS_DRAFT, STATUS_CHANGES_REQUESTED];
+            if (!allowedStatuses.includes(original.status)) {
+                throw new WebinyError(
+                    `Cannot request review - page is not a draft nor a change request has been issued.`,
+                    "REQUEST_REVIEW_ERROR"
+                );
+            }
+            /**
+             * Latest revision of the this page.
+             */
+            const latestPage = await storageOperations.get({
+                where: {
+                    pid: original.pid,
+                    latest: true
+                }
+            });
+
+            const page: Page = {
+                ...original,
+                status: STATUS_REVIEW_REQUESTED,
+                locked: true,
+                savedOn: new Date().toISOString()
+            };
+
+            try {
+                const result: any = await storageOperations.requestReview({
+                    original,
+                    page,
+                    latestPage
+                });
+                clearDataLoaderCache([original, latestPage]);
+                return (await extractPageContent(contentCompressionPlugins, result)) as any;
+            } catch (ex) {
+                throw new WebinyError(
+                    ex.message || "Could not request review for the page.",
+                    ex.code || "REQUEST_REVIEW_ERROR",
+                    {
+                        id,
+                        original,
+                        page,
+                        latestPage
                     }
+                );
+            }
+        },
 
-                    await executeCallbacks<PagePlugin["beforeUnpublish"]>(
-                        pagePlugins,
-                        "beforeUnpublish",
-                        {
-                            context,
-                            page
-                        }
-                    );
+        async requestChanges(id: string) {
+            await checkBasePermissions(context, PERMISSION_NAME, {
+                pw: "c"
+            });
 
-                    page.status = STATUS_UNPUBLISHED;
+            const original = await context.pageBuilder.pages.get(id, {
+                decompress: false
+            });
+            if (original.status !== STATUS_REVIEW_REQUESTED) {
+                throw new WebinyError(
+                    `Cannot request changes on a page that's not under review.`,
+                    "REQUESTED_CHANGES_ON_PAGE_REVISION_NOT_UNDER_REVIEW"
+                );
+            }
+            const identity = context.security.getIdentity();
+            if (original.createdBy.id === identity.id) {
+                throw new WebinyError(
+                    "Cannot request changes on page revision you created.",
+                    "REQUESTED_CHANGES_ON_PAGE_REVISION_YOU_CREATED"
+                );
+            }
+            /**
+             * Latest revision of the this page.
+             */
+            const latestPage = await storageOperations.get({
+                where: {
+                    pid: original.pid,
+                    latest: true
+                }
+            });
 
-                    const batch = db
-                        .batch()
-                        .delete({
-                            ...defaults.db,
-                            query: {
-                                PK: PAGE_PK,
-                                SK: "P"
-                            }
-                        })
-                        .delete({
-                            ...defaults.db,
-                            query: {
-                                PK: PK_PAGE_PUBLISHED_PATH(),
-                                SK: publishedPage.path
-                            }
-                        })
-                        .update({
-                            ...defaults.db,
-                            query: {
-                                PK: PAGE_PK,
-                                SK: `REV#${rev}`
-                            },
-                            data: page
-                        });
-
-                    // If we are unpublishing the latest revision, let's also update the latest revision entry's
-                    // status in ES. We can only do that if the entry actually exists, or in other words, if the
-                    // published page's "LATEST pages lists visibility" setting is not set to false.
-                    if (latestPage.id === pageId && get(page, "visibility.list.latest") !== false) {
-                        batch.update({
-                            ...defaults.esDb,
-                            query: {
-                                PK: PAGE_PK,
-                                SK: "L"
-                            },
-                            data: {
-                                PK: PAGE_PK,
-                                SK: "L",
-                                index: ES_DEFAULTS().index,
-                                data: getESLatestPageData(context, page)
-                            }
-                        });
+            const page: Page = {
+                ...original,
+                status: STATUS_CHANGES_REQUESTED,
+                locked: false
+            };
+            try {
+                const result: any = await storageOperations.requestChanges({
+                    original,
+                    page,
+                    latestPage
+                });
+                clearDataLoaderCache([original, latestPage]);
+                return (await extractPageContent(contentCompressionPlugins, result)) as any;
+            } catch (ex) {
+                throw new WebinyError(
+                    ex.message || "Could not request review for the page.",
+                    ex.code || "REQUEST_REVIEW_ERROR",
+                    {
+                        id,
+                        original,
+                        page,
+                        latestPage
                     }
+                );
+            }
+        },
 
-                    // And of course, delete the published revision entry in ES.
-                    if (get(page, "visibility.list.published") !== false) {
-                        batch.delete({
-                            ...defaults.esDb,
-                            query: {
-                                PK: PAGE_PK,
-                                SK: "P"
-                            }
-                        });
+        async get(id, options) {
+            const permission = await checkBasePermissions(context, PERMISSION_NAME, {
+                rwd: "r"
+            });
+
+            let page: Page = null;
+
+            try {
+                page = await dataLoaderGetById.load({
+                    id
+                });
+            } catch (ex) {
+                throw new WebinyError(
+                    ex.message || "Cannot get requested page.",
+                    ex.code || "GET_PAGE_ERROR",
+                    {
+                        id
                     }
+                );
+            }
+            if (!page) {
+                throw new NotFoundError(`Page not found.`);
+            }
 
-                    await batch.execute();
+            const identity = context.security.getIdentity();
+            checkOwnPermissions(identity, permission, page, "ownedBy");
 
-                    await executeCallbacks<PagePlugin["afterUnpublish"]>(
-                        pagePlugins,
-                        "afterUnpublish",
-                        {
-                            context,
-                            page
-                        }
-                    );
+            if (options && options.decompress === false) {
+                return page;
+            }
 
-                    return page;
-                },
+            return (await extractPageContent(contentCompressionPlugins, page)) as any;
+        },
 
-                async requestReview(pageId: string) {
-                    const permission = await checkBasePermissions(context, PERMISSION_NAME, {
-                        pw: "r"
-                    });
+        async getPublishedById(params) {
+            const { id, preview } = params;
 
-                    const [pid, rev] = pageId.split("#");
-                    const PAGE_PK = PK_PAGE(pid);
+            let page: Page = null;
 
-                    const [[[page]], [[latestPageData]]] = await db
-                        .batch()
-                        .read({
-                            ...defaults.db,
-                            query: { PK: PAGE_PK, SK: `REV#${rev}` }
-                        })
-                        .read({
-                            ...defaults.db,
-                            query: {
-                                PK: PAGE_PK,
-                                SK: "L"
-                            }
-                        })
-                        .execute();
-
-                    if (!page) {
-                        throw new NotFoundError(`Page "${pageId}" not found.`);
+            try {
+                page = await dataLoaderGetById.load({
+                    id,
+                    published: preview === true ? undefined : true
+                });
+                if (page && preview !== true && page.status !== STATUS_PUBLISHED) {
+                    page = null;
+                }
+            } catch (ex) {
+                throw new WebinyError(
+                    ex.message || "Cannot get requested page.",
+                    ex.code || "GET_PAGE_ERROR",
+                    {
+                        ...(ex.data || {}),
+                        id
                     }
+                );
+            }
+            if (!page) {
+                throw new NotFoundError(`Page not found.`);
+            }
 
-                    const allowedStatuses = [STATUS_DRAFT, STATUS_CHANGES_REQUESTED];
-                    if (!allowedStatuses.includes(page.status)) {
-                        throw new Error(
-                            `Cannot request review - page is not a draft nor a change request has been issued.`
-                        );
+            return (await extractPageContent(contentCompressionPlugins, page)) as any;
+        },
+
+        async getPublishedByPath(params) {
+            if (!params.path) {
+                throw new WebinyError(
+                    'Cannot get published page - "path" not provided.',
+                    "GET_PUBLISHED_PATH_ERROR"
+                );
+            }
+
+            const normalizedPath = normalizePath(params.path);
+            if (normalizedPath === "/") {
+                const settings = await context.pageBuilder.settings.getCurrent();
+                const homePage = lodashGet(settings, "pages.home");
+                if (!homePage) {
+                    throw new NotFoundError("Page not found.");
+                }
+
+                return await context.pageBuilder.pages.getPublishedById({
+                    id: homePage
+                });
+            }
+
+            let page: Page = undefined;
+
+            try {
+                page = await storageOperations.get({
+                    where: {
+                        path: normalizedPath,
+                        published: true
                     }
-
-                    const identity = context.security.getIdentity();
-                    checkOwnPermissions(identity, permission, page, "ownedBy");
-
-                    // Change loaded page's status to `reviewRequested`.
-                    page.status = STATUS_REVIEW_REQUESTED;
-                    page.locked = true;
-
-                    const batch = db.batch().update({
-                        ...defaults.db,
-                        query: {
-                            PK: PAGE_PK,
-                            SK: `REV#${rev}`
-                        },
-                        data: page
-                    });
-
-                    // If we updated the latest version, then make sure the changes are propagated to ES too.
-                    if (latestPageData.id === pageId) {
-                        // 0nly update if the "LATEST pages lists visibility" is not set to false.
-                        if (get(page, "visibility.list.latest") !== false) {
-                            batch.update({
-                                ...defaults.esDb,
-                                query: {
-                                    PK: PAGE_PK,
-                                    SK: "L"
-                                },
-                                data: {
-                                    PK: PAGE_PK,
-                                    SK: "L",
-                                    index: ES_DEFAULTS().index,
-                                    data: getESLatestPageData(context, page)
-                                }
-                            });
-                        }
+                });
+            } catch (ex) {
+                throw new WebinyError(
+                    ex.message || "Could not get published page by path.",
+                    ex.code || "GET_PUBLISHED_PAGE_BY_PATH_ERROR",
+                    {
+                        ...(ex.data || {}),
+                        path: normalizedPath
                     }
+                );
+            }
 
-                    await batch.execute();
-
-                    return page;
-                },
-
-                async requestChanges(pageId: string) {
-                    const permission = await checkBasePermissions(context, PERMISSION_NAME, {
-                        pw: "c"
-                    });
-
-                    const [pid, rev] = pageId.split("#");
-                    const PAGE_PK = PK_PAGE(pid);
-
-                    const [[[page]], [[latestPageData]]] = await db
-                        .batch()
-                        .read({
-                            ...defaults.db,
-                            query: { PK: PAGE_PK, SK: `REV#${rev}` }
-                        })
-                        .read({
-                            ...defaults.db,
-                            query: {
-                                PK: PAGE_PK,
-                                SK: "L"
-                            }
-                        })
-                        .execute();
-
-                    if (!page) {
-                        throw new NotFoundError(`Page "${pageId}" not found.`);
-                    }
-
-                    if (page.status !== STATUS_REVIEW_REQUESTED) {
-                        throw new Error(
-                            `Cannot request changes on a page that's not under review.`,
-                            "REQUESTED_CHANGES_ON_PAGE_REVISION_NOT_UNDER_REVIEW"
-                        );
-                    }
-
-                    const identity = context.security.getIdentity();
-                    if (page.createdBy.id === identity.id) {
-                        throw new Error(
-                            "Cannot request changes on page revision you created.",
-                            "REQUESTED_CHANGES_ON_PAGE_REVISION_YOU_CREATED"
-                        );
-                    }
-
-                    checkOwnPermissions(identity, permission, page, "ownedBy");
-
-                    // Change loaded page's status to published.
-                    page.status = STATUS_CHANGES_REQUESTED;
-                    page.locked = false;
-
-                    const batch = await db.batch().update({
-                        ...defaults.db,
-                        query: {
-                            PK: PAGE_PK,
-                            SK: `REV#${rev}`
-                        },
-                        data: page
-                    });
-
-                    // If we updated the latest version, then make sure the changes are propagated to ES too.
-                    if (latestPageData.id === pageId) {
-                        // Only update if the "LATEST pages lists visibility" is not set to false.
-                        if (get(page, "visibility.list.latest") !== false) {
-                            batch.update({
-                                ...defaults.esDb,
-                                query: {
-                                    PK: PAGE_PK,
-                                    SK: "L"
-                                },
-                                data: {
-                                    PK: PAGE_PK,
-                                    SK: "L",
-                                    index: ES_DEFAULTS().index,
-                                    data: getESLatestPageData(context, page)
-                                }
-                            });
-                        }
-                    }
-
-                    await batch.execute();
-
-                    return page;
-                },
-
-                async exportPage(pageId: string) {
-                    const permission = await checkBasePermissions(context, PERMISSION_NAME, {
-                        rwd: "w"
-                    });
-
-                    const [pid, rev] = pageId.split("#");
-                    const PAGE_PK = PK_PAGE(pid);
-
-                    const [[page]] = await db.read<Page>({
-                        ...defaults.db,
-                        query: { PK: PAGE_PK, SK: `REV#${rev}` }
-                    });
-
-                    if (!page) {
-                        throw new NotFoundError(`Page "${pageId}" not found.`);
-                    }
-
-                    const identity = context.security.getIdentity();
-
-                    checkOwnPermissions(identity, permission, page, "ownedBy");
-
-                    // Extract compressed page content.
-                    page.content = await extractContent(page.content);
-
-                    // Create a page export task
-                    const exportTask = await context.pageBuilder.pageExportTask.create({
-                        status: ExportTaskStatus.PENDING
-                    });
-
-                    // Invoke handler
-                    await context.handlerClient.invoke({
-                        name: EXPORT_PAGE_TASK_FUNCTION,
-                        payload: {
-                            page,
-                            taskId: exportTask.id,
-                            // TODO: Maybe there is a better way
-                            // @ts-ignore
-                            PK: exportTask.PK
-                        },
-                        await: false
-                    });
-
-                    return {
-                        taskId: exportTask.id
-                    };
-                },
-
-                async importPage(
-                    category: string,
-                    data: {
-                        zipFileKey: string;
-                        zipFileUrl: string;
-                    }
-                ) {
-                    await checkBasePermissions(context, PERMISSION_NAME, {
-                        rwd: "w"
-                    });
-                    // Create an empty page
-                    let page = await context.pageBuilder.pages.create(category);
-
-                    // Download the zip and upload the assets
-                    const { content } = await importPage({
-                        context,
-                        pageDataZipKey: data.zipFileKey,
-                        pageDataZipUrl: data.zipFileUrl,
-                        pageTitle: page.title
-                    });
-
-                    // Update page
-                    page = await context.pageBuilder.pages.update(page.id, { content });
-
-                    return page;
-                },
-
-                prerendering: {
-                    async render(args) {
-                        const current = await context.pageBuilder.settings.default.getCurrent();
-                        const appUrl = get(current, "prerendering.app.url");
-                        const storageName = get(current, "prerendering.storage.name");
-
-                        if (!appUrl || !storageName) {
-                            return;
-                        }
-
-                        const meta = merge(current?.prerendering?.meta, {
-                            tenant: context.tenancy.getCurrentTenant().id,
-                            locale: i18nContent.getLocale().code
-                        });
-
-                        const { paths, tags } = args;
-
-                        const dbNamespace = "T#" + context.tenancy.getCurrentTenant().id;
-
-                        if (Array.isArray(paths)) {
-                            await context.prerenderingServiceClient.render(
-                                paths.map(item => ({
-                                    url: appUrl + item.path,
-                                    configuration: merge(
-                                        {
-                                            meta,
-                                            storage: {
-                                                folder: trimStart(item.path, "/"),
-                                                name: storageName
-                                            },
-                                            db: {
-                                                namespace: dbNamespace
-                                            }
-                                        },
-                                        item.configuration
-                                    )
-                                }))
-                            );
-                        }
-
-                        if (Array.isArray(tags)) {
-                            await context.prerenderingServiceClient.queue.add(
-                                tags.map(item => ({
-                                    render: {
-                                        tag: item.tag,
-                                        configuration: merge(
-                                            {
-                                                db: {
-                                                    namespace: dbNamespace
-                                                }
-                                            },
-                                            item.configuration
-                                        )
-                                    }
-                                }))
-                            );
-                        }
-                    },
-                    async flush(args) {
-                        const current = await context.pageBuilder.settings.default.getCurrent();
-                        const appUrl = get(current, "prerendering.app.url");
-                        const storageName = get(current, "prerendering.storage.name");
-
-                        if (!storageName) {
-                            return;
-                        }
-
-                        const { paths, tags } = args;
-
-                        const dbNamespace = "T#" + context.tenancy.getCurrentTenant().id;
-
-                        if (Array.isArray(paths)) {
-                            await context.prerenderingServiceClient.flush(
-                                paths.map<FlushArgs>(p => ({
-                                    url: appUrl + p.path,
-                                    // Configuration is mainly static (defined here), but some configuration
-                                    // overrides can arrive via the call args, so let's do a merge here.
-                                    configuration: merge(
-                                        {
-                                            db: {
-                                                namespace: dbNamespace
-                                            }
-                                        },
-                                        p.configuration
-                                    )
-                                }))
-                            );
-                        }
-
-                        if (Array.isArray(tags)) {
-                            await context.prerenderingServiceClient.queue.add(
-                                tags.map(item => ({
-                                    flush: {
-                                        tag: item.tag,
-                                        configuration: merge(
-                                            {
-                                                db: {
-                                                    namespace: dbNamespace
-                                                }
-                                            },
-                                            item.configuration
-                                        )
-                                    }
-                                }))
-                            );
+            if (!page) {
+                /**
+                 * Try loading dynamic pages
+                 */
+                for (const plugin of pagePlugins) {
+                    if (typeof plugin.notFound === "function") {
+                        page = await plugin.notFound({ args: params, context });
+                        if (page) {
+                            break;
                         }
                     }
                 }
-            } as PagesCrud
-        };
-    }
-};
+            }
 
-export default plugin;
+            if (page) {
+                /**
+                 * Extract compressed page content.
+                 */
+                return (await extractPageContent(contentCompressionPlugins, page)) as any;
+            }
+
+            throw new NotFoundError("Page not found.");
+        },
+
+        async listLatest(params, options = {}) {
+            const { auth } = options;
+            let permission: { own?: boolean } = null;
+            if (auth !== false) {
+                permission = await checkBasePermissions(context, PERMISSION_NAME, {
+                    rwd: "r"
+                });
+            }
+
+            const { after, limit, sort, search, exclude, where: initialWhere = {} } = params;
+
+            /**
+             * If users can only manage own records, let's add the special filter.
+             */
+            let createdBy: string = undefined;
+            if (permission && permission.own === true) {
+                const identity = context.security.getIdentity();
+                createdBy = identity.id;
+            }
+
+            const { paths: pathNotIn, ids: pidNotIn } = createNotIn(exclude);
+            const { tags } = initialWhere;
+            delete initialWhere["tags"];
+
+            const listParams: PageStorageOperationsListParams = {
+                limit,
+                sort: createSort(sort),
+                where: {
+                    ...initialWhere,
+                    latest: true,
+                    search: search ? search.query : undefined,
+                    locale: context.i18nContent.getLocale().code,
+                    createdBy,
+                    path_not_in: pathNotIn,
+                    pid_not_in: pidNotIn,
+                    tags_in: tags && tags.query ? tags.query : undefined,
+                    tags_rule: tags && tags.rule ? tags.rule : undefined
+                },
+                after
+            };
+
+            try {
+                const { items, meta } = await storageOperations.list(listParams);
+
+                return [
+                    items as any[],
+                    {
+                        ...meta,
+                        cursor: meta.hasMoreItems ? meta.cursor : null
+                    }
+                ];
+            } catch (ex) {
+                throw new WebinyError(
+                    ex.message || "Could not list latest pages.",
+                    ex.code || "LIST_LATEST_PAGES_ERROR",
+                    {
+                        ...(ex.data || {}),
+                        params: listParams
+                    }
+                );
+            }
+        },
+
+        async listPublished(params) {
+            const { after, limit, sort, search, exclude, where: initialWhere = {} } = params;
+
+            const { paths: pathNotIn, ids: pidNotIn } = createNotIn(exclude);
+
+            const { tags } = initialWhere;
+            delete initialWhere["tags"];
+
+            const listParams: PageStorageOperationsListParams = {
+                limit,
+                sort: createSort(sort),
+                where: {
+                    ...initialWhere,
+                    published: true,
+                    search: search && search.query ? search.query : undefined,
+                    locale: context.i18nContent.getLocale().code,
+                    path_not_in: pathNotIn,
+                    pid_not_in: pidNotIn,
+                    tags_in: tags && tags.query ? tags.query : undefined,
+                    tags_rule: tags && tags.rule ? tags.rule : undefined
+                },
+                after
+            };
+
+            try {
+                const { items, meta } = await storageOperations.list(listParams);
+
+                return [
+                    items as any[],
+                    {
+                        ...meta,
+                        cursor: meta.hasMoreItems ? meta.cursor : null
+                    }
+                ];
+            } catch (ex) {
+                throw new WebinyError(
+                    ex.message || "Could not list published pages.",
+                    ex.code || "LIST_PUBLISHED_PAGES_ERROR",
+                    {
+                        ...(ex.data || {}),
+                        params: listParams
+                    }
+                );
+            }
+        },
+
+        async listPageRevisions(pageId) {
+            const [pid] = pageId.split("#");
+
+            try {
+                const pages = await storageOperations.listRevisions({
+                    where: {
+                        pid
+                    },
+                    /**
+                     * Let's hope there will be no more than 10000 revisions.
+                     * Need to implement "after" option if required.
+                     */
+                    limit: 10000,
+                    after: undefined
+                });
+                return pages as any[];
+            } catch (ex) {
+                throw new WebinyError(
+                    ex.message || "Could not load all the revisions from requested page.",
+                    ex.code || "LIST_PAGE_REVISIONS_ERROR",
+                    {
+                        ...(ex.data || {}),
+                        pageId
+                    }
+                );
+            }
+        },
+
+        async listTags(params) {
+            const search = params && params.search ? params.search.query : "";
+            if (search.length < 2) {
+                throw new WebinyError("Please provide at least two characters.", "LIST_TAGS_ERROR");
+            }
+
+            const listTagsParams: PageStorageOperationsListTagsParams = {
+                where: {
+                    tenant: context.tenancy.getCurrentTenant().id,
+                    locale: context.i18nContent.getLocale().code,
+                    search
+                }
+            };
+
+            try {
+                return await storageOperations.listTags(listTagsParams);
+            } catch (ex) {
+                throw new WebinyError(
+                    ex.message || "Could not load all tags by given params.",
+                    ex.code || "LIST_TAGS_ERROR",
+                    {
+                        ...(ex.data || {}),
+                        params: listTagsParams
+                    }
+                );
+            }
+        },
+        prerendering: {
+            flush: async (args: FlushParams) => {
+                return args.context.pageBuilder.getPrerenderingHandlers().flush(args);
+            },
+            render: async (args: RenderParams) => {
+                return args.context.pageBuilder.getPrerenderingHandlers().render(args);
+            }
+        }
+    };
+});

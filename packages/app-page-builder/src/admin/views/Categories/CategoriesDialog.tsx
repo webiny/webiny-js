@@ -60,7 +60,14 @@ const CategoriesDialog: React.FC<CategoriesDialogProps> = ({
                             return (
                                 <React.Fragment>
                                     {data?.pageBuilder?.listCategories?.data.map(item => (
-                                        <ListItem key={item.slug} onClick={() => onSelect(item)}>
+                                        <ListItem
+                                            key={item.slug}
+                                            onClick={() => {
+                                                onSelect(item);
+                                                // @ts-ignore
+                                                onClose();
+                                            }}
+                                        >
                                             <ListItemText>
                                                 <ListItemTextPrimary>
                                                     {item.name}

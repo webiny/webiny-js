@@ -13,18 +13,14 @@ const SORT_KEY = "I18N";
 
 export class SystemStorageOperations implements I18NSystemStorageOperations {
     private readonly _context: I18NContext;
-    private _partitionKey: string;
     private readonly _entity: Entity<any>;
 
     private get partitionKey(): string {
-        if (!this._partitionKey) {
-            const tenant = this._context.tenancy.getCurrentTenant();
-            if (!tenant) {
-                throw new WebinyError("Tenant missing.", "TENANT_NOT_FOUND");
-            }
-            this._partitionKey = `T#${tenant.id}#SYSTEM`;
+        const tenant = this._context.tenancy.getCurrentTenant();
+        if (!tenant) {
+            throw new WebinyError("Tenant missing.", "TENANT_NOT_FOUND");
         }
-        return this._partitionKey;
+        return `T#${tenant.id}#SYSTEM`;
     }
 
     public constructor({ context }: ConstructorParams) {
@@ -44,6 +40,7 @@ export class SystemStorageOperations implements I18NSystemStorageOperations {
             PK: this.partitionKey,
             SK: SORT_KEY
         };
+
         try {
             const result = await this._entity.get(keys);
 

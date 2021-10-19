@@ -9,6 +9,11 @@ export type ResponsiveDisplayMode = {
     setDisplayMode: Function;
 };
 
+export type ExportPageData = {
+    revisionType: string;
+    setRevisionType: Function;
+};
+
 export type PageBuilderContextValue = {
     theme: PbTheme;
     defaults?: {
@@ -17,6 +22,7 @@ export type PageBuilderContextValue = {
         };
     };
     responsiveDisplayMode?: ResponsiveDisplayMode;
+    exportPageData?: ExportPageData;
 };
 
 export type PageBuilderProviderProps = {
@@ -25,6 +31,7 @@ export type PageBuilderProviderProps = {
 
 export const PageBuilderProvider = ({ children }: PageBuilderProviderProps) => {
     const [displayMode, setDisplayMode] = React.useState(DisplayMode.DESKTOP);
+    const [revisionType, setRevisionType] = React.useState("published");
 
     const value: PageBuilderContextValue = React.useMemo(() => {
         const theme = Object.assign(
@@ -44,6 +51,10 @@ export const PageBuilderProvider = ({ children }: PageBuilderProviderProps) => {
                 responsiveDisplayMode: {
                     displayMode,
                     setDisplayMode
+                },
+                exportPageData: {
+                    revisionType,
+                    setRevisionType
                 }
             }}
         >

@@ -1,7 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 const chalk = require("chalk");
-const { importModule, getProject, PluginsContainer, log } = require("./utils");
+const { importModule, getProject, PluginsContainer, log, localStorage } = require("./utils");
 
 const project = getProject();
 
@@ -36,6 +36,9 @@ class Context {
         }
 
         this.plugins = new PluginsContainer();
+
+        this.localStorage = localStorage();
+
         this.onExitCallbacks = [];
 
         let onExitProcessed = false;
