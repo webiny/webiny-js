@@ -290,6 +290,52 @@ module.exports = {
             {
                 source: "node_modules/@webiny/cwp-template-aws/template/api/pulumi/prod/pageBuilder.ts",
                 destination: "api/pulumi/prod/pageBuilder.ts"
+            },
+            /**
+             * Update prerendering services.
+             *
+             * Flush
+             */
+            {
+                source: "node_modules/@webiny/cwp-template-aws/template/api/code/prerenderingService/flush/src/index.ts",
+                destination: "api/code/prerenderingService/flush/src/index.ts"
+            },
+            {
+                source: "node_modules/@webiny/cwp-template-aws/template/api/code/prerenderingService/flush/package.json",
+                destination: "api/code/prerenderingService/flush/package.json"
+            },
+            /**
+             * Queue add
+             */
+            {
+                source: "node_modules/@webiny/cwp-template-aws/template/api/code/prerenderingService/queue/add/src/index.ts",
+                destination: "api/code/prerenderingService/queue/add/src/index.ts"
+            },
+            {
+                source: "node_modules/@webiny/cwp-template-aws/template/api/code/prerenderingService/queue/add/package.json",
+                destination: "api/code/prerenderingService/queue/add/package.json"
+            },
+            /**
+             * Queue process
+             */
+            {
+                source: "node_modules/@webiny/cwp-template-aws/template/api/code/prerenderingService/queue/process/src/index.ts",
+                destination: "api/code/prerenderingService/queue/process/src/index.ts"
+            },
+            {
+                source: "node_modules/@webiny/cwp-template-aws/template/api/code/prerenderingService/queue/process/package.json",
+                destination: "api/code/prerenderingService/queue/process/package.json"
+            },
+            /**
+             * Render.
+             */
+            {
+                source: "node_modules/@webiny/cwp-template-aws/template/api/code/prerenderingService/render/src/index.ts",
+                destination: "api/code/prerenderingService/render/src/index.ts"
+            },
+            {
+                source: "node_modules/@webiny/cwp-template-aws/template/api/code/prerenderingService/render/package.json",
+                destination: "api/code/prerenderingService/render/package.json"
             }
         ];
         /**
@@ -310,13 +356,6 @@ module.exports = {
             {
                 source: "node_modules/@webiny/cwp-template-aws/template/api/code/pageBuilder/importPages",
                 destination: "api/code/pageBuilder/importPages"
-            },
-            /**
-             * Prerendering services.
-             */
-            {
-                source: "node_modules/@webiny/cwp-template-aws/template/api/code/prerenderingService",
-                destination: "api/code/prerenderingService"
             }
         ]);
         /**
