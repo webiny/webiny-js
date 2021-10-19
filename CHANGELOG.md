@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.16.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.17.0-beta.0...v5.16.0-beta.0) (2021-10-19)
+
+
+### Bug Fixes
+
+* create a gap between buttons ([83068f2](https://github.com/webiny/webiny-js/commit/83068f2017256750f26920d22a92b0522d2b762c))
+
+
+
+
+
 # [5.17.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.15.0...v5.17.0-beta.0) (2021-10-18)
 
 
