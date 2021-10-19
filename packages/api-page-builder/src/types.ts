@@ -32,7 +32,7 @@ export interface Menu {
     title: string;
     slug: string;
     description: string;
-    items: any[];
+    items: MenuItem[];
     createdOn: string;
     createdBy: {
         type: string;
@@ -46,6 +46,15 @@ export interface Menu {
     tenant: string;
     locale: string;
 }
+
+export interface MenuItem {
+    id: string;
+    title: string;
+    type: string;
+    children?: MenuItem[];
+    url?: string;
+}
+
 /**
  * @category RecordModel
  */
