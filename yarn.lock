@@ -20926,6 +20926,13 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
+"github-buttons@npm:^2.8.0":
+  version: 2.19.1
+  resolution: "github-buttons@npm:2.19.1"
+  checksum: 8ded4b39428768dca319ca50dceaeb2493059536454d37965da1046a67b8780ef14eda5379150625fcba8973ac05a45706e1197211a3965f48f115b4fb0edfee
+  languageName: node
+  linkType: hard
+
 "gl-matrix@npm:^2.1.0":
   version: 2.8.1
   resolution: "gl-matrix@npm:2.8.1"
@@ -31399,6 +31406,15 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
+"react-github-btn@npm:^1.2.1":
+  version: 1.2.1
+  resolution: "react-github-btn@npm:1.2.1"
+  dependencies:
+    github-buttons: ^2.8.0
+  checksum: 12c1b3631deef214ced7386b35fd73bbeb2d78742f409356955f475f22256b3af80b99ffa5bb185b66c63b4c34d75ad7a4cf1e947ef5ad3207f29f2fc28d58fc
+  languageName: node
+  linkType: hard
+
 "react-google-recaptcha@npm:^1.1.0":
   version: 1.1.0
   resolution: "react-google-recaptcha@npm:1.1.0"
@@ -35209,6 +35225,7 @@ resolve@^2.0.0-next.3:
     invariant: ^2.2.4
     lodash.get: ^4.4.2
     react: ^16.14.0
+    react-github-btn: ^1.2.1
     react-hamburger-menu: ^1.1.1
     react-helmet: ^5.2.0
   languageName: unknown
