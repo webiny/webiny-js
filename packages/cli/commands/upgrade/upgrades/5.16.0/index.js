@@ -2,7 +2,12 @@
  * A new type of upgrade where we take the files from cwp-template-aws and copy them into required locations.
  * Old files are always backed up.
  */
-const { prettierFormat, yarnInstall } = require("../utils");
+const {
+    prettierFormat,
+    yarnInstall,
+    addWorkspaceToRootPackageJson,
+    removeWorkspaceToRootPackageJson
+} = require("../utils");
 const path = require("path");
 const fs = require("fs");
 const fsExtra = require("fs-extra");
@@ -283,6 +288,17 @@ module.exports = {
          * If any package.json destinations, set the versions to current one.
          */
         assignPackageVersions(context, targets);
+
+        /**
+         * Update workspaces in root package.json.
+         */
+        context.info(" Update workspaces in root package.json...");
+        const rootPackageJson = path.join(context.project.root, "package.json");
+        await addWorkspaceToRootPackageJson(rootPackageJson, [
+            "api/code/pageBuilder/importPages/*",
+            "api/code/pageBuilder/exportPages/*"
+        ]);
+        await removeWorkspaceToRootPackageJson(rootPackageJson, ["api/code/pageBuilder/*"]);
 
         await prettierFormat(
             targets.map(t => t.destination),
