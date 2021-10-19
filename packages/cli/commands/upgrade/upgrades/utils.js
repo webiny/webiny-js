@@ -464,6 +464,7 @@ const copyFolders = (context, targets) => {
  *
  * @param context {CliContext}
  * @param initialTargets {{source: string, destination: string}[]}
+ * @param targetVersion {string}
  */
 const assignPackageVersions = (context, initialTargets, targetVersion) => {
     const targets = initialTargets
