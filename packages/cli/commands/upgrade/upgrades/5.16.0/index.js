@@ -11,8 +11,9 @@ const {
 const path = require("path");
 const fs = require("fs");
 const fsExtra = require("fs-extra");
+const cliPackageJson = require("@webiny/cli/package.json");
 
-const targetVersion = "5.16.0";
+const targetVersion = cliPackageJson.version;
 
 const checkFiles = files => {
     for (const initialFile of files) {
