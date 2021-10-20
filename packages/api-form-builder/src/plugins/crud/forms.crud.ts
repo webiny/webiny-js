@@ -388,9 +388,11 @@ export const createFormsCrud = (params: Params): FormsCRUD => {
             });
             checkOwnership(form, permission, context);
 
+            const formFormId = form.formId || form.id.split("#").pop();
+
             const revisions = await this.storageOperations.listFormRevisions({
                 where: {
-                    formId: form.formId,
+                    formId: formFormId,
                     tenant: form.tenant,
                     locale: form.locale
                 },
@@ -402,7 +404,7 @@ export const createFormsCrud = (params: Params): FormsCRUD => {
                 /**
                  * Means we're deleting the last revision, so we need to delete the whole form.
                  */
-                return this.deleteForm(form.formId);
+                return this.deleteForm(form.id);
             }
 
             try {
@@ -509,9 +511,11 @@ export const createFormsCrud = (params: Params): FormsCRUD => {
                 auth: false
             });
 
+            const originalFormFormId = original.formId || original.id.split("#").pop();
+
             const latest = await this.storageOperations.getForm({
                 where: {
-                    formId: original.formId,
+                    formId: originalFormFormId,
                     latest: true,
                     tenant: original.tenant,
                     locale: original.locale
@@ -524,7 +528,7 @@ export const createFormsCrud = (params: Params): FormsCRUD => {
             const form: FbForm = {
                 ...original,
                 id: createIdentifier({
-                    id: original.formId,
+                    id: originalFormFormId,
                     version
                 }),
                 version,
