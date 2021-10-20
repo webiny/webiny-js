@@ -8728,10 +8728,6 @@ __metadata:
     "@babel/preset-typescript": ^7.8.3
     "@babel/runtime": ^7.5.5
     "@commodo/fields": 1.1.2-beta.20
-    "@elastic/elasticsearch": 7.12.0
-    "@shelf/jest-elasticsearch": ^1.0.0
-    "@webiny/api-dynamodb-to-elasticsearch": ^5.15.0
-    "@webiny/api-elasticsearch": ^5.15.0
     "@webiny/api-file-manager": ^5.15.0
     "@webiny/api-file-manager-ddb": ^5.15.0
     "@webiny/api-i18n": ^5.15.0
@@ -8754,7 +8750,6 @@ __metadata:
     csvtojson: ^2.0.10
     got: ^9.6.0
     jest: ^26.6.3
-    jest-dynalite: ^3.2.0
     json2csv: ^4.5.2
     lodash: ^4.17.11
     mdbid: ^1.0.0

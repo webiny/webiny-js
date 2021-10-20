@@ -18,8 +18,6 @@
     "../validation",
     "../api-i18n-content",
     "../handler-aws",
-    "../api-elasticsearch",
-    "../api-dynamodb-to-elasticsearch",
     "../api-tenancy"
   ],
   "compilerOptions": {

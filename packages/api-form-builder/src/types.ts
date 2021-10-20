@@ -1,7 +1,6 @@
 import { Plugin } from "@webiny/plugins/types";
 import { TenancyContext, Tenant } from "@webiny/api-tenancy/types";
 import { I18NContentContext } from "@webiny/api-i18n-content/types";
-import { ElasticsearchContext } from "@webiny/api-elasticsearch/types";
 import { SecurityPermission } from "@webiny/api-security/types";
 import { FileManagerContext } from "@webiny/api-file-manager/types";
 import { I18NContext } from "@webiny/api-i18n/types";
@@ -264,8 +263,7 @@ export interface FormBuilderContext
     extends TenancyContext,
         I18NContext,
         I18NContentContext,
-        FileManagerContext,
-        ElasticsearchContext {
+        FileManagerContext {
     /**
      *
      */
