@@ -102,6 +102,16 @@ describe("Forms Submission Security Test", () => {
                                         siteKey: null
                                     }
                                 }
+                            },
+                            ownedBy: {
+                                id: identityA.id,
+                                displayName: identityA.displayName,
+                                type: identityA.type
+                            },
+                            createdBy: {
+                                id: identityA.id,
+                                displayName: identityA.displayName,
+                                type: identityA.type
                             }
                         },
                         error: null

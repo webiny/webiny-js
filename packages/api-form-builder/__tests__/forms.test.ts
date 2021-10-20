@@ -25,7 +25,8 @@ describe('Form Builder "Form" Test', () => {
         getPublishedForm,
         createFormSubmission,
         listFormSubmissions,
-        exportFormSubmissions
+        exportFormSubmissions,
+        defaultIdentity
     } = useGqlHandler();
 
     beforeEach(async () => {
@@ -53,7 +54,9 @@ describe('Form Builder "Form" Test', () => {
                             id: expect.any(String),
                             createdOn: /^20/,
                             savedOn: /^20/,
-                            status: "draft"
+                            status: "draft",
+                            createdBy: defaultIdentity,
+                            ownedBy: defaultIdentity
                         },
                         error: null
                     }

@@ -35,6 +35,16 @@ export const FORM_DATA_FIELD = /* GraphQL */ `
             submissions
             conversionRate
         }
+        createdBy {
+            id
+            displayName
+            type
+        }
+        ownedBy {
+            id
+            displayName
+            type
+        }
     }
 `;
 
