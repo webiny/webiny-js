@@ -4,7 +4,7 @@
  */
 const {
     prettierFormat,
-    yarnInstall,
+    yarnUp,
     addWorkspaceToRootPackageJson,
     removeWorkspaceToRootPackageJson
 } = require("../utils");
@@ -158,7 +158,7 @@ const assignPackageVersions = (context, initialTargets) => {
                     dependencies[key] = json.dependencies[key];
                     return dependencies;
                 } else if (json.dependencies[key] === "latest") {
-                    dependencies[key] = `^${targetVersion}`;
+                    dependencies[key] = `${targetVersion}`;
                 } else {
                     dependencies[key] = json.dependencies[key];
                 }
@@ -175,7 +175,7 @@ const assignPackageVersions = (context, initialTargets) => {
                             dependencies[key] = json.devDependencies[key];
                             return dependencies;
                         } else if (json.devDependencies[key] === "latest") {
-                            dependencies[key] = `^${targetVersion}`;
+                            dependencies[key] = `${targetVersion}`;
                         } else {
                             dependencies[key] = json.devDependencies[key];
                         }
@@ -308,10 +308,11 @@ module.exports = {
         );
 
         /**
-         * Install new packages.
+         * Up the versions again and install the packages.
          */
-        await yarnInstall({
-            context
+        await yarnUp({
+            context,
+            targetVersion
         });
 
         context.info("\n");
