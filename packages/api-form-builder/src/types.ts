@@ -1,5 +1,5 @@
 import { Plugin } from "@webiny/plugins/types";
-import { TenancyContext, Tenant } from "@webiny/api-tenancy/types";
+import { TenancyContext } from "@webiny/api-tenancy/types";
 import { I18NContentContext } from "@webiny/api-i18n-content/types";
 import { ElasticsearchContext } from "@webiny/api-elasticsearch/types";
 import { SecurityPermission } from "@webiny/api-security/types";
@@ -160,11 +160,11 @@ export interface SubmissionsCRUD {
 }
 
 export interface BeforeInstallTopic {
-    tenant: Tenant;
+    tenant: string;
 }
 
 export interface AfterInstallTopic {
-    tenant: Tenant;
+    tenant: string;
 }
 
 export interface SystemCRUD {

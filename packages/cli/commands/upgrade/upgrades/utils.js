@@ -175,6 +175,26 @@ const yarnInstall = async ({ context }) => {
 };
 
 /**
+ * Run to up the versions of all packages.
+ */
+const yarnUp = async ({ context, targetVersion }) => {
+    const { info, error } = context;
+    try {
+        info(`Updating all package versions to ${targetVersion}...`);
+        await execa(`yarn`, [`up`, `@webiny/*@${targetVersion}`], { cwd: process.cwd() });
+        await execa("yarn", { cwd: process.cwd() });
+        info("Finished update packages.");
+    } catch (ex) {
+        error("Updating of the packages failed.");
+        console.log(ex);
+        console.log(error(ex.message));
+        if (ex.stdout) {
+            console.log(ex.stdout);
+        }
+    }
+};
+
+/**
  *
  * @param plugins {tsMorph.Node}
  * @param afterElement {String|undefined}
@@ -356,6 +376,7 @@ module.exports = {
     createMorphProject,
     prettierFormat,
     yarnInstall,
+    yarnUp,
     addImportsToSource,
     addWorkspaceToRootPackageJson,
     removeWorkspaceToRootPackageJson
