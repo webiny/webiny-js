@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.16.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.16.0-beta.2...v5.16.0-beta.3) (2021-10-20)
+
+
+### Bug Fixes
+
+* **cli:** upgrade must take current cli version ([#1977](https://github.com/webiny/webiny-js/issues/1977)) ([4f9f4f0](https://github.com/webiny/webiny-js/commit/4f9f4f0dad8550de816b478a7a813a105a5f661f))
+
+
+
+
+
 # [5.16.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.16.0-beta.1...v5.16.0-beta.2) (2021-10-20)
 
 **Note:** Version bump only for package @webiny/api-form-builder-so-ddb-es
