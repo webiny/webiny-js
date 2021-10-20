@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.16.0-beta.4](https://github.com/webiny/webiny-js/compare/v5.16.0-beta.3...v5.16.0-beta.4) (2021-10-20)
+
+
+### Bug Fixes
+
+* **api-form-builder:** missing formId ([a721c8d](https://github.com/webiny/webiny-js/commit/a721c8d4b4075bc5eef4970e6f680a77b63c832f))
+* **app-form-builder:** fb submission sorting ([a3407ba](https://github.com/webiny/webiny-js/commit/a3407ba6e400e4d53d68801b8d9d298d3c156236))
+
+
+
+
+
 # [5.16.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.16.0-beta.2...v5.16.0-beta.3) (2021-10-20)
 
 
