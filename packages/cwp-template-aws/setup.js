@@ -39,7 +39,7 @@ const setup = async args => {
         console.log("Missing storage operations parameter.");
         process.exit(1);
     }
-    const commonTemplate = path.join(__dirname, `template`);
+    const commonTemplate = path.join(__dirname, `template/common`);
     const storageOperationsTemplate = path.join(__dirname, `template/${storageOperations}`);
     if (!fs.existsSync(commonTemplate)) {
         console.log(`Missing common template folder "${commonTemplate}".`);
