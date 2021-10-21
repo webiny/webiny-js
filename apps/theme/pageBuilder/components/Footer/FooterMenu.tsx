@@ -2,6 +2,7 @@ import React from "react";
 import styled from "@emotion/styled";
 import { css } from "emotion";
 import { Link } from "@webiny/react-router";
+import { hasMenuItems } from "../Menu";
 
 function trackGoToGithub({}: { placement: string }) {
     // @ts-ignore
@@ -98,6 +99,13 @@ export interface FooterMenuProps {
 }
 
 const FooterMenu: React.FunctionComponent<FooterMenuProps> = ({ data }) => {
+    /**
+     * Bail out early if there are no menu items.
+     */
+    if (!hasMenuItems(data)) {
+        return null;
+    }
+
     return (
         <ContentContainer className={footerMenu}>
             {data.items.map(item => {

@@ -1,6 +1,7 @@
 import React from "react";
 import * as Styled from "./styled";
 import MenuItemList from "./MenuItems";
+import { hasMenuItems } from "../Menu";
 
 interface NavigationProps {
     data: {
@@ -12,9 +13,9 @@ interface NavigationProps {
 
 const NavigationDesktop: React.FunctionComponent<NavigationProps> = ({ data }) => {
     /**
-     * Bail out early if there is no menu items.
+     * Bail out early if there are no menu items.
      */
-    if (data.items.length === 0) {
+    if (!hasMenuItems(data)) {
         return null;
     }
 

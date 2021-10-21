@@ -3,13 +3,16 @@ import HamburgerMenu from "react-hamburger-menu";
 import classNames from "classnames";
 import { Link } from "@webiny/react-router";
 
-import Menu from "../Menu";
+import Menu, { GET_PUBLIC_MENU, hasMenuItems } from "../Menu";
 import NavigationMobile from "./NavigationMobile";
 import { useHeader } from "./useMobileHeader";
 import { NavBar } from "./styled";
+import { useQuery } from "@apollo/react-hooks";
 
 const MobileHeader = ({ menuName, logo, name }) => {
     const { mobileMenu, toggleMobileMenu } = useHeader();
+    const { data } = useQuery(GET_PUBLIC_MENU, { variables: { slug: menuName } });
+
     return (
         <NavBar
             data-testid={"pb-mobile-header"}
@@ -27,20 +30,21 @@ const MobileHeader = ({ menuName, logo, name }) => {
                 </Link>
             </div>
             <Menu slug={menuName} component={NavigationMobile} />
-
-            <div onClick={toggleMobileMenu} className="webiny-pb-section-header__mobile-icon">
-                <HamburgerMenu
-                    isOpen={mobileMenu}
-                    menuClicked={toggleMobileMenu}
-                    width={18}
-                    height={15}
-                    strokeWidth={1}
-                    rotate={0}
-                    color="black"
-                    borderRadius={0}
-                    animationDuration={0.5}
-                />
-            </div>
+            {hasMenuItems(data) && (
+                <div onClick={toggleMobileMenu} className="webiny-pb-section-header__mobile-icon">
+                    <HamburgerMenu
+                        isOpen={mobileMenu}
+                        menuClicked={toggleMobileMenu}
+                        width={18}
+                        height={15}
+                        strokeWidth={1}
+                        rotate={0}
+                        color="black"
+                        borderRadius={0}
+                        animationDuration={0.5}
+                    />
+                </div>
+            )}
         </NavBar>
     );
 };

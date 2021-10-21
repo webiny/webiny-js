@@ -2,11 +2,18 @@ import * as React from "react";
 import { Link } from "@webiny/react-router";
 import { PbPageData } from "@webiny/app-page-builder/types";
 import FooterMenu, { CustomLink, FooterMenuProps } from "./FooterMenu";
-import Menu from "../Menu";
+import Menu, { hasMenuItems } from "../Menu";
 import Newsletter from "./Neswletter";
 import * as Styled from "./styled";
 
 const FooterSocialMenu: React.FunctionComponent<FooterMenuProps> = ({ data }) => {
+    /**
+     * Bail out early if there are no menu items.
+     */
+    if (!hasMenuItems(data)) {
+        return null;
+    }
+
     const socialMenuData = data.items.find(item => item.title === "Social");
     return (
         <Styled.Links>
