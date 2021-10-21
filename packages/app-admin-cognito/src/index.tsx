@@ -14,7 +14,7 @@ import RequireNewPassword from "~/views/RequireNewPassword";
 import ForgotPassword from "~/views/ForgotPassword";
 import SetNewPassword from "~/views/SetNewPassword";
 import SignedIn from "~/views/SignedIn";
-import { useSecurity, SecurityIdentity } from "@webiny/app-security";
+import { useSecurity } from "@webiny/app-security";
 const createApolloLinkPlugin = () => {
     return new ApolloLinkPlugin(() => {
         return setContext(async (_, { headers }) => {
@@ -71,20 +71,19 @@ export const createAuthentication = ({ getIdentityData, onError, ...config }: Co
             const { payload, logout } = token;
 
             try {
-                const { id, displayName, type, ...data } = await getIdentityData({
+                const { id, displayName, type, permissions, ...data } = await getIdentityData({
                     client,
                     payload
                 });
-                
-                setIdentity(
-                    new SecurityIdentity({
-                        id,
-                        displayName,
-                        type,
-                        ...data,
-                        logout
-                    })
-                );
+
+                setIdentity({
+                    id,
+                    displayName,
+                    type,
+                    permissions,
+                    ...data,
+                    logout
+                });
             } catch (err) {
                 console.log("ERROR", err);
                 if (typeof onError === "function") {

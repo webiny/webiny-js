@@ -19,7 +19,7 @@ import {
     SimpleFormFooter,
     SimpleFormContent
 } from "@webiny/app-admin/components/SimpleForm";
-import { SecurityIdentity, useSecurity } from "@webiny/app-security";
+import { useSecurity } from "@webiny/app-security";
 import { View } from "@webiny/app/components/View";
 
 const t = i18n.ns("app-security-admin-users/account-form");
@@ -48,7 +48,8 @@ const UserAccountForm = () => {
         }
 
         setIdentity(identity => {
-            return SecurityIdentity.from(identity, {
+            return {
+                ...identity,
                 displayName: `${formData.firstName} ${formData.lastName}`,
                 profile: {
                     ...identity.profile,
@@ -56,7 +57,7 @@ const UserAccountForm = () => {
                     lastName: formData.lastName,
                     avatar: formData.avatar
                 }
-            });
+            };
         });
 
         showSnackbar("Account saved successfully!");

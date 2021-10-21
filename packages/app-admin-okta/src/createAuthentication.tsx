@@ -8,7 +8,7 @@ import { OktaAuth, AuthStateManager } from "@okta/okta-auth-js";
 import OktaSignIn from "@okta/okta-signin-widget";
 import { plugins } from "@webiny/plugins";
 import { CircularProgress } from "@webiny/ui/Progress";
-import { SecurityIdentity, useSecurity } from "@webiny/app-security";
+import { useSecurity } from "@webiny/app-security";
 import { ApolloLinkPlugin } from "@webiny/app/plugins/ApolloLinkPlugin";
 
 import OktaSignInWidget from "./OktaSignInWidget";
@@ -31,15 +31,17 @@ export interface Props {
 }
 
 export const createAuthentication = ({ oktaAuth, oktaSignIn, ...config }: Config) => {
-    const withGetIdentityData =
-        Component =>
-        ({ children }) => {
+    const withGetIdentityData = Component => {
+        const WithGetIdentityData = ({ children }) => {
             const { isMultiTenant } = useTenancy();
             const loginMutation = config.loginMutation || (isMultiTenant ? LOGIN_MT : LOGIN_ST);
             const getIdentityData = config.getIdentityData || createGetIdentityData(loginMutation);
 
             return <Component getIdentityData={getIdentityData}>{children}</Component>;
         };
+
+        return WithGetIdentityData;
+    };
 
     const Authentication = ({ getIdentityData, children }: Props) => {
         const timerRef = useRef(null);
@@ -93,24 +95,23 @@ export const createAuthentication = ({ oktaAuth, oktaSignIn, ...config }: Config
             setIsAuthenticated(authState.isAuthenticated);
             if (authState.isAuthenticated) {
                 try {
-                    const { id, displayName, type, ...other } = await getIdentityData({
+                    const { id, displayName, type, permissions, ...other } = await getIdentityData({
                         client: apolloClient
                     });
 
-                    setIdentity(
-                        new SecurityIdentity({
-                            id,
-                            displayName,
-                            type,
-                            ...other,
-                            logout() {
-                                clearTimeout(timerRef.current);
-                                oktaAuth.signOut();
-                                setIdentity(null);
-                                setIsAuthenticated(false);
-                            }
-                        })
-                    );
+                    setIdentity({
+                        id,
+                        displayName,
+                        type,
+                        permissions,
+                        ...other,
+                        logout() {
+                            clearTimeout(timerRef.current);
+                            oktaAuth.signOut();
+                            setIdentity(null);
+                            setIsAuthenticated(false);
+                        }
+                    });
                 } catch (err) {
                     console.log(err);
                 }

@@ -20,7 +20,6 @@
     "@types/react": "^16.9.56",
     "@webiny/app": "^5.15.0",
     "@webiny/app-security": "^5.15.0",
-    "@webiny/app-tenancy": "^5.15.0",
     "@webiny/form": "^5.15.0",
     "@webiny/plugins": "^5.15.0",
     "@webiny/react-router": "^5.15.0",

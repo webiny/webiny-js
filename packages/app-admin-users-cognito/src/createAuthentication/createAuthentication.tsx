@@ -13,15 +13,17 @@ export interface CreateAuthenticationConfig extends Partial<BaseConfig> {
 }
 
 export const createAuthentication = (config: CreateAuthenticationConfig = {}) => {
-    const withGetIdentityData =
-        Component =>
-        ({ children }) => {
+    const withGetIdentityData = Component => {
+        const WithGetIdentityData = ({ children }) => {
             const { isMultiTenant } = useTenancy();
             const loginMutation = config.loginMutation || (isMultiTenant ? LOGIN_MT : LOGIN_ST);
             const getIdentityData = config.getIdentityData || createGetIdentityData(loginMutation);
 
             return <Component getIdentityData={getIdentityData}>{children}</Component>;
         };
+
+        return WithGetIdentityData;
+    };
 
     const Authentication = ({ getIdentityData, children }) => {
         const [error, setError] = useState(null);

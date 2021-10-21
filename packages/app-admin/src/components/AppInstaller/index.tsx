@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { default as localStorage } from "store";
 import { useSecurity } from "@webiny/app-security";
-import { useTenancy } from "@webiny/app-tenancy";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { ButtonPrimary } from "@webiny/ui/Button";
 import { SplitView, LeftPanel, RightPanel } from "../SplitView";
@@ -20,13 +19,8 @@ import {
 } from "./styled";
 
 export const AppInstaller = ({ Authentication, children }) => {
-    let tenantId = "root";
-
-    const tenancy = useTenancy();
-    if (tenancy) {
-        tenantId = tenancy.tenant || tenantId;
-    }
-
+    const tenantId = localStorage.get("webiny_tenant") || "root";
+    
     const lsKey = `webiny_installation_${tenantId}`;
 
     const markInstallerAsCompleted = () => {
