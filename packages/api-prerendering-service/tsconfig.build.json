@@ -8,7 +8,6 @@
     "../db-dynamodb",
     "../handler",
     "../handler-aws",
-    "../handler-db",
     "../handler-args",
     "../handler-client",
     "../error"
@@ -17,7 +16,9 @@
     "rootDir": "./src",
     "outDir": "./dist",
     "declarationDir": "./dist",
-    "paths": {},
+    "paths": {
+      "~/*": ["./src/*"]
+    },
     "baseUrl": "."
   },
   "references": []
