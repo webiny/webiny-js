@@ -1,4 +1,4 @@
-import render from "@webiny/api-prerendering-service/render/renderUrl";
+import render from "~/render/renderUrl";
 import prettier from "prettier";
 
 const BASE_HTML = `<!DOCTYPE html>
@@ -31,7 +31,7 @@ describe(`Link Preloading Test`, () => {
                     meta: {}
                 };
             }
-        });
+        } as any);
 
         const snapshot = `<!DOCTYPE html>
 <html lang="en">
