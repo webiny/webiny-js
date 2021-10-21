@@ -24,7 +24,7 @@
     "chrome-aws-lambda": "^5.5.0",
     "lodash": "^4.17.20",
     "mdbid": "^1.0.0",
-    "object-hash": "^2.2.0",
+    "object-hash": "^2.0.0",
     "pluralize": "^8.0.0",
     "posthtml": "^0.15.0",
     "posthtml-noopener": "^1.0.5",
