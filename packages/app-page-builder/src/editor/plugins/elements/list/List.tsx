@@ -1,14 +1,16 @@
 import React from "react";
 import classNames from "classnames";
-import Text from "~/editor/components/Text";
-import { PbEditorTextElementProps } from "~/types";
-import { getMediumEditorOptions } from "../utils/textUtils";
+import { MediumEditorOptions, PbEditorElement } from "~/types";
+import { usePageElements } from "@webiny/app-page-builder-elements/hooks/usePageElements";
+
+import PbList from "./PbList";
+import PeList from "./PeList";
 
 export const className = classNames(
     "webiny-pb-base-page-element-style webiny-pb-page-element-text webiny-pb-typography-list"
 );
 
-const DEFAULT_EDITOR_OPTIONS = {
+export const DEFAULT_EDITOR_OPTIONS = {
     toolbar: {
         buttons: ["bold", "italic", "underline", "anchor", "unorderedlist", "orderedlist"]
     },
@@ -18,19 +20,13 @@ const DEFAULT_EDITOR_OPTIONS = {
     }
 };
 
-const List: React.FunctionComponent<PbEditorTextElementProps> = ({
-    elementId,
-    mediumEditorOptions
-}) => {
-    return (
-        <Text
-            elementId={elementId}
-            mediumEditorOptions={getMediumEditorOptions(
-                DEFAULT_EDITOR_OPTIONS,
-                mediumEditorOptions
-            )}
-            rootClassName={className}
-        />
-    );
-};
+const List: React.FC<{ element: PbEditorElement; mediumEditorOptions?: MediumEditorOptions }> =
+    props => {
+        const pageElements = usePageElements();
+        if (pageElements) {
+            return <PeList {...props} />;
+        }
+        return <PbList {...props} elementId={props.element.id} />;
+    };
+
 export default React.memo(List);
