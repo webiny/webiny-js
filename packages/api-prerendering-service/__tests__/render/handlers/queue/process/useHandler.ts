@@ -2,7 +2,7 @@ import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { createHandler } from "@webiny/handler";
 import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
-import queueProcessPlugins from "~/queue/process";
+import queueProcessPlugins from "@webiny/api-prerendering-service/queue/process";
 import handlerClient from "@webiny/handler-client";
 
 const defaults = {

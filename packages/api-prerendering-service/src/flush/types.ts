@@ -1,9 +1,10 @@
-import { HandlerPlugin as DefaultHandlerPlugin, ContextInterface } from "@webiny/handler/types";
-import { Render } from "~/types";
+import { HandlerPlugin as DefaultHandlerPlugin, Context } from "@webiny/handler/types";
+import { DbRender } from "../types";
 import { ArgsContext } from "@webiny/handler-args/types";
 import { Plugin } from "@webiny/plugins/types";
+import { DbContext } from "@webiny/handler-db/types";
 
-export interface Configuration {
+export type Configuration = {
     website?: {
         url?: string;
     };
@@ -11,18 +12,16 @@ export interface Configuration {
         namespace?: string;
     };
     meta?: Record<string, any>;
-}
+};
 
-export interface Args {
+export type Args = {
     configuration?: Configuration;
     url?: string;
     path?: string;
-}
+};
 
 export type HandlerArgs = Args | Args[];
-export interface HandlerContext extends ContextInterface, ArgsContext<HandlerArgs> {
-    //
-}
+export type HandlerContext = Context<DbContext, ArgsContext<HandlerArgs>>;
 export type HandlerPlugin = DefaultHandlerPlugin<HandlerContext>;
 
 export type HookCallbackFunction = (args: {
@@ -30,11 +29,11 @@ export type HookCallbackFunction = (args: {
     context: HandlerContext;
     configuration: Configuration;
     args: Args;
-    render: Render;
+    render: DbRender;
 }) => void | Promise<void>;
 
-export interface FlushHookPlugin extends Plugin {
+export type FlushHookPlugin = Plugin<{
     type: "ps-flush-hook";
     beforeFlush?: HookCallbackFunction;
     afterFlush?: HookCallbackFunction;
-}
+}>;

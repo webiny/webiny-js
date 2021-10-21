@@ -9205,7 +9205,6 @@ __metadata:
     "@webiny/handler-args": ^5.15.0
     "@webiny/handler-aws": ^5.15.0
     "@webiny/handler-client": ^5.15.0
-    "@webiny/handler-db": ^5.15.0
     "@webiny/handler-graphql": ^5.15.0
     "@webiny/plugins": ^5.15.0
     "@webiny/project-utils": ^5.15.0
@@ -9303,7 +9302,7 @@ __metadata:
     jest-dynalite: ^3.3.1
     lodash: ^4.17.20
     mdbid: ^1.0.0
-    object-hash: ^2.0.0
+    object-hash: ^2.1.1
     pluralize: ^8.0.0
     posthtml: ^0.15.0
     posthtml-noopener: ^1.0.5
@@ -27975,7 +27974,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"object-hash@npm:^2.0.0":
+"object-hash@npm:^2.0.0, object-hash@npm:^2.1.1":
   version: 2.2.0
   resolution: "object-hash@npm:2.2.0"
   checksum: 55ba841e3adce9c4f1b9b46b41983eda40f854e0d01af2802d3ae18a7085a17168d6b81731d43fdf1d6bcbb3c9f9c56d22c8fea992203ad90a38d7d919bc28f1

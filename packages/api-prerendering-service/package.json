@@ -2,9 +2,6 @@
   "name": "@webiny/api-prerendering-service",
   "version": "5.15.0",
   "main": "index.js",
-  "keywords": [
-    "ps:base"
-  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git",
@@ -24,7 +21,7 @@
     "chrome-aws-lambda": "^5.5.0",
     "lodash": "^4.17.20",
     "mdbid": "^1.0.0",
-    "object-hash": "^2.0.0",
+    "object-hash": "^2.1.1",
     "pluralize": "^8.0.0",
     "posthtml": "^0.15.0",
     "posthtml-noopener": "^1.0.5",

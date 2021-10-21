@@ -20,12 +20,7 @@ const windowSet = (page, name, value) => {
     })`);
 };
 
-export interface File {
-    type: string;
-    body: any;
-    name: string;
-    meta: Record<string, any>;
-}
+export type File = { type: string; body: any; name: string; meta: Record<string, any> };
 
 export default async (url: string, args: Args): Promise<[File[], Meta]> => {
     const id = shortid.generate();
@@ -101,25 +96,25 @@ export default async (url: string, args: Args): Promise<[File[], Meta]> => {
 
 let browser;
 
-interface RenderResult {
+type RenderResult = {
     content: string;
     meta: Record<string, any>;
-}
+};
 
-interface Args {
+type Args = {
     context: HandlerContext;
     args: BaseHandlerArgs;
     configuration: Configuration;
     renderUrlFunction?: (url: string) => RenderResult;
-}
+};
 
-interface Meta {
+type Meta = {
     url: string;
     id: string;
     ts: number;
     render: RenderResult;
     args: Args;
-}
+};
 
 export const defaultRenderUrlFunction = async (url: string, args: Args): Promise<RenderResult> => {
     if (!browser) {

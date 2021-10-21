@@ -41,9 +41,6 @@
       "path": "../handler-client"
     },
     {
-      "path": "../handler-db"
-    },
-    {
       "path": "../handler-graphql"
     },
     {
@@ -93,8 +90,6 @@
       "@webiny/handler-aws": ["../handler-aws/src"],
       "@webiny/handler-client/*": ["../handler-client/src/*"],
       "@webiny/handler-client": ["../handler-client/src"],
-      "@webiny/handler-db/*": ["../handler-db/src/*"],
-      "@webiny/handler-db": ["../handler-db/src"],
       "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
       "@webiny/handler-graphql": ["../handler-graphql/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],

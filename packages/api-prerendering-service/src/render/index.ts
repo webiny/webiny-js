@@ -7,7 +7,7 @@ import getDbNamespace from "./../utils/getDbNamespace";
 import getRenderUrl from "./../utils/getRenderUrl";
 import getTagUrlLinkPKSK from "./../utils/getTagUrlLinkPKSK";
 import { HandlerPlugin, Configuration, RenderHookPlugin } from "./types";
-import { DbRender, TYPE, HandlerResponse, DbTagUrlLink } from "~/types";
+import { DbRender, TYPE, HandlerResponse, DbTagUrlLink } from "../types";
 import defaults from "./../utils/defaults";
 import omit from "lodash/omit";
 
