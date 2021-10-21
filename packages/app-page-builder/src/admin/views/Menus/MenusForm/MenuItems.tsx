@@ -11,9 +11,8 @@ import { ButtonPrimary } from "@webiny/ui/Button";
 import MenuItemsList from "./MenuItems/MenuItemsList";
 import MenuItemForm from "./MenuItems/MenuItemForm";
 import findObject from "./MenuItems/findObject";
-import { PbMenuItemPlugin } from "../../../../types";
+import { PbMenuItemPlugin } from "~/types";
 import { Typography } from "@webiny/ui/Typography";
-import { Form } from "@webiny/form";
 
 const leftPanel = css({
     padding: 25,
@@ -37,7 +36,6 @@ const AddMenu = styled("div")({
 
 type Props = {
     canSave: boolean;
-    menuForm: Form;
     onChange: Function;
     value: any;
 };

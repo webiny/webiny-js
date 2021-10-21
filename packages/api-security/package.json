@@ -5,12 +5,8 @@
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git"
   },
-  "contributors": [
-    "Pavel Denisjuk <pavel@webiny.com>",
-    "Sven Al Hamad <sven@webiny.com>",
-    "Adrian Smijulj <adrian@webiny.com>"
-  ],
-  "description": "The API for the Webiny Security (webiny-app-security) app.",
+  "author": "Webiny Ltd.",
+  "description": "Security layer for the Webiny GraphQL API.",
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.5.5",

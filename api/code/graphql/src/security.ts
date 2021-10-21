@@ -1,21 +1,25 @@
 import tenancy from "@webiny/api-tenancy";
 import { createStorageOperations as tenancyStorageOperations } from "@webiny/api-tenancy-so-ddb";
 import security from "@webiny/api-security";
+// import { createEnterprisePlugins as securityEnterprise } from "@webiny/api-security/enterprise";
 import { createStorageOperations as securityStorageOperations } from "@webiny/api-security-so-ddb";
 import { authenticateUsingHttpHeader } from "@webiny/api-security/plugins/authenticateUsingHttpHeader";
 import apiKeyAuthentication from "@webiny/api-security/plugins/apiKeyAuthentication";
 import apiKeyAuthorization from "@webiny/api-security/plugins/apiKeyAuthorization";
-import groupAuthorization from "@webiny/api-security/plugins/groupAuthorization";
-import parentTenantGroupAuthorization from "@webiny/api-security/plugins/parentTenantGroupAuthorization";
+// import groupAuthorization from "@webiny/api-security/plugins/groupAuthorization";
+// import parentTenantGroupAuthorization from "@webiny/api-security/plugins/parentTenantGroupAuthorization";
+// import cognitoAuthentication from "@webiny/api-security-cognito";
+import { createAuthenticator as oktaAuthenticator } from "@webiny/api-security-okta/createAuthenticator";
+import { createGroupAuthorizer as oktaGroupAuthorizer } from "@webiny/api-security-okta/createGroupAuthorizer";
+import { createIdentityType as oktaIdentityType } from "@webiny/api-security-okta/createIdentityType";
 import anonymousAuthorization from "@webiny/api-security/plugins/anonymousAuthorization";
-import cognitoAuthentication from "@webiny/api-security-cognito";
 
 export default ({ documentClient }) => [
     /**
      * Setup Tenancy app.
      */
     tenancy({
-        multiTenancy: true,
+        // multiTenancy: true,
         storageOperations: tenancyStorageOperations({ documentClient })
     }),
 
@@ -25,6 +29,11 @@ export default ({ documentClient }) => [
     security({
         storageOperations: securityStorageOperations({ documentClient })
     }),
+
+    /**
+     * Enable enterprise plugins.
+     */
+    // securityEnterprise(),
 
     /**
      * Perform authentication using the common "Authorization" HTTP header.
@@ -44,9 +53,47 @@ export default ({ documentClient }) => [
      * Cognito authentication plugin.
      * This plugin will verify the JWT token against the provided User Pool.
      */
-    cognitoAuthentication({
-        region: process.env.COGNITO_REGION,
-        userPoolId: process.env.COGNITO_USER_POOL_ID,
+    // cognitoAuthentication({
+    //     region: process.env.COGNITO_REGION,
+    //     userPoolId: process.env.COGNITO_USER_POOL_ID,
+    //     identityType: "admin"
+    // }),
+
+    /**
+     * Okta authentication plugin.
+     */
+    oktaAuthenticator({
+        clientId: process.env.OKTA_CLIENT_ID,
+        issuer: process.env.OKTA_ISSUER,
+        getIdentity({ token }) {
+            return {
+                id: token.sub,
+                type: "admin",
+                displayName: token.name,
+                // This part stores JWT claims into SecurityIdentity
+                group: token.webiny_group
+            };
+        }
+    }),
+
+    /**
+     * Okta authorization plugin.
+     */
+    oktaGroupAuthorizer({
+        identityType: "admin",
+        getGroupSlug({ security }) {
+            return security.getIdentity().group;
+        }
+    }),
+
+    /**
+     * Okta identity type.
+     * This plugin adds a GraphQL type that implements the SecurityIdentity interface.
+     * Every identity type must have a corresponding GraphQL type. You can further extend
+     * this type by adding `GraphQLSchemaPlugin` plugins.
+     */
+    oktaIdentityType({
+        name: "OktaIdentity",
         identityType: "admin"
     }),
 
@@ -59,12 +106,12 @@ export default ({ documentClient }) => [
     /**
      * Authorization plugin to fetch permissions from a security group associated with the identity.
      */
-    groupAuthorization({ identityType: "admin" }),
+    // groupAuthorization({ identityType: "admin" }),
 
     /**
      * Authorization plugin to fetch permissions from the parent tenant.
      */
-    parentTenantGroupAuthorization({ identityType: "admin" }),
+    // parentTenantGroupAuthorization({ identityType: "admin" }),
 
     /**
      * Authorization plugin to load permissions for anonymous requests.

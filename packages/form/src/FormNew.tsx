@@ -3,8 +3,8 @@ import _ from "lodash";
 import set from "lodash/fp/set";
 import { Bind } from "./BindNew";
 import ValidationError from "./ValidationError";
-import { useContext, useEffect, useImperativeHandle, useRef, useState } from "react";
-import { BindComponentProps, FormProps, Validation } from "~/types";
+import { useContext, useEffect, useImperativeHandle, useMemo, useRef, useState } from "react";
+import { BindComponentProps, FormAPI, FormProps, Validation } from "~/types";
 
 type State = {
     data: FormData;
@@ -19,33 +19,23 @@ interface GetOnChangeFn {
     afterChange: any;
 }
 
-export const FormContext = React.createContext(null);
+export const FormContext = React.createContext<FormAPI>(null);
 
 export const useForm = () => {
     return useContext(FormContext);
 };
 
 export const useBind = (props: BindComponentProps) => {
-    const { name, validators = [], defaultValue, beforeChange, afterChange } = props;
-
     const form = useForm();
 
     useEffect(() => {
-        // Track component rendering
-        form.trackLastRender(name);
+        if (props.defaultValue !== undefined && _.get(form.data, props.name) === undefined) {
+            form.setValue(props.name, props.defaultValue);
+        }
+    }, []);
 
-        // Store validators and custom messages
-        form.trackInput(name, { defaultValue, validators });
-    });
-
-    return {
-        form,
-        disabled: form.isDisabled(),
-        validate: form.getValidateFn(name),
-        validation: form.getValidationState(name),
-        value: _.get(form.data, name, defaultValue),
-        onChange: form.getOnChangeFn({ name, beforeChange, afterChange })
-    };
+    // @ts-ignore
+    return form.createField(props);
 };
 
 export const Form = React.forwardRef((props: FormProps, ref) => {
@@ -117,11 +107,11 @@ export const Form = React.forwardRef((props: FormProps, ref) => {
                 return linkStateChange(newValue, cb).then(value => {
                     // call the Form onChange with updated data
                     if (typeof props.onChange === "function") {
-                        props.onChange({ ...form.current.state.data }, form.current);
+                        props.onChange({ ...formRef.current.data }, formRef.current);
                     }
 
                     // Execute onAfterChange
-                    afterChange && afterChange(value, form.current);
+                    afterChange && afterChange(value, formRef.current);
 
                     return value;
                 });
@@ -143,7 +133,8 @@ export const Form = React.forwardRef((props: FormProps, ref) => {
         return validateFns.current[name];
     };
 
-    const form = useRef(null);
+    const formRef = useRef(null);
+    const stateRef = useRef(null);
 
     useEffect(() => {
         Object.keys(inputs.current).forEach(name => {
@@ -157,12 +148,13 @@ export const Form = React.forwardRef((props: FormProps, ref) => {
             }
         });
 
-        form.current = getFormRef();
+        formRef.current = getFormRef();
+        stateRef.current = state;
     });
 
     useImperativeHandle(ref, () => ({
         submit: () => {
-            form.current.submit();
+            formRef.current.submit();
         }
     }));
 
@@ -226,7 +218,7 @@ export const Form = React.forwardRef((props: FormProps, ref) => {
                 });
 
                 if (props.onSubmit) {
-                    return props.onSubmit(data, form.current);
+                    return props.onSubmit(data, formRef.current);
                 }
                 return;
             }
@@ -267,20 +259,21 @@ export const Form = React.forwardRef((props: FormProps, ref) => {
         // who uses it from the outside, but there is no time to come up with a better solution :(
         await new Promise(res => setTimeout(res, 10));
 
-        const { state } = form.current;
-
         // Proceed with validation...
-        if ((props.validateOnFirstSubmit && !state.wasSubmitted) || !inputs.current[name]) {
+        if (
+            (props.validateOnFirstSubmit && !stateRef.current.wasSubmitted) ||
+            !inputs.current[name]
+        ) {
             return Promise.resolve(null);
         }
-        const value = _.get(state.data, name, inputs.current[name].defaultValue);
+        const value = _.get(stateRef.current.data, name, inputs.current[name].defaultValue);
         const { validators } = inputs.current[name];
         const hasValidators = _.keys(validators).length;
 
         // Validate input
         const formData = {
             inputs: inputs.current,
-            data: { ...state.data }
+            data: { ...stateRef.current.data }
         };
 
         setState(state => ({
@@ -352,11 +345,51 @@ export const Form = React.forwardRef((props: FormProps, ref) => {
         }
     };
 
-    const getFormRef = () => ({
+    const isDisabled = () => {
+        if (props.disabled) {
+            const inputDisabledByForm =
+                typeof props.disabled === "function"
+                    ? props.disabled({ data: { ...state.data } })
+                    : props.disabled;
+            // Only override the input prop if the entire Form is disabled
+            if (inputDisabledByForm) {
+                return true;
+            }
+        }
+        return false;
+    };
+
+    const getValidationState = name => {
+        return (
+            state.validation[name] || {
+                isValid: null,
+                message: null,
+                results: null
+            }
+        );
+    };
+
+    const createField = (props: BindComponentProps) => {
+        const { name, validators = [], defaultValue, beforeChange, afterChange } = props;
+
+        // Track component rendering
+        lastRender.current.push(name);
+
+        // Store validators and custom messages
+        inputs.current[name] = { defaultValue, validators };
+
+        return {
+            form: formRef.current,
+            disabled: isDisabled(),
+            validate: getValidateFn(name),
+            validation: getValidationState(name),
+            value: _.get(state.data, name, defaultValue),
+            onChange: getOnChangeFn({ name, beforeChange, afterChange })
+        };
+    };
+
+    const getFormRef = (): FormAPI => ({
         data: state.data,
-        setState,
-        state,
-        onChangeFns: onChangeFns.current,
         setValue,
         validate,
         submit
@@ -369,45 +402,13 @@ export const Form = React.forwardRef((props: FormProps, ref) => {
         throw new Error("Form must have a function as its only child!");
     }
 
-    const formContext = {
-        data: state.data,
-        submit,
-        setValue,
-        trackInput(name, data) {
-            inputs.current[name] = data;
-        },
-        trackLastRender(name) {
-            lastRender.current.push(name);
-        },
-        getValidateFn(name) {
-            return getValidateFn(name);
-        },
-        getValidationState(name) {
-            return (
-                state.validation[name] || {
-                    isValid: null,
-                    message: null,
-                    results: null
-                }
-            );
-        },
-        getOnChangeFn({ name, beforeChange, afterChange }) {
-            return getOnChangeFn({ name, beforeChange, afterChange });
-        },
-        isDisabled() {
-            if (props.disabled) {
-                const inputDisabledByForm =
-                    typeof props.disabled === "function"
-                        ? props.disabled({ data: { ...state.data } })
-                        : props.disabled;
-                // Only override the input prop if the entire Form is disabled
-                if (inputDisabledByForm) {
-                    return true;
-                }
-            }
-            return false;
-        }
-    };
+    const formContext = useMemo(
+        () => ({
+            ...getFormRef(),
+            createField
+        }),
+        [state]
+    );
 
     return (
         <FormContext.Provider value={formContext}>
@@ -415,7 +416,7 @@ export const Form = React.forwardRef((props: FormProps, ref) => {
                 "webiny-form-container",
                 { onKeyDown: __onKeyDown },
                 children({
-                    data: _.cloneDeep(state.data),
+                    data: state.data,
                     setValue,
                     form: getFormRef(),
                     submit,

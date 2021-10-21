@@ -26,6 +26,7 @@
     "@webiny/api-prerendering-service": "^5.15.0",
     "@webiny/api-security": "^5.15.0",
     "@webiny/api-security-cognito": "^5.15.0",
+    "@webiny/api-security-okta": "^5.15.0",
     "@webiny/api-security-so-ddb": "^5.15.0",
     "@webiny/api-tenancy": "^5.15.0",
     "@webiny/api-tenancy-so-ddb": "^5.15.0",

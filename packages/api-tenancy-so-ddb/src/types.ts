@@ -4,24 +4,13 @@ import {
 } from "@webiny/api-tenancy/types";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { Table, Entity } from "dynamodb-toolbox";
-import { DynamoDBTypes } from "dynamodb-toolbox/dist/classes/Table";
+import { DynamoDBTypes, TableConstructor } from "dynamodb-toolbox/dist/classes/Table";
 import {
     EntityAttributeConfig,
     EntityCompositeAttributes
 } from "dynamodb-toolbox/dist/classes/Entity";
 
 export type AttributeDefinition = DynamoDBTypes | EntityAttributeConfig | EntityCompositeAttributes;
-
-/**
- * @internal
- * @private
- */
-export type DbItem<T> = T & {
-    PK: string;
-    SK: string;
-    GSI1_PK?: string;
-    GSI1_SK?: string;
-};
 
 export type Attributes = Record<string, AttributeDefinition>;
 
@@ -30,10 +19,14 @@ export enum ENTITIES {
     TENANT = "TenancyTenant"
 }
 
+export interface TableModifier {
+    (table: TableConstructor): TableConstructor;
+}
+
 export interface CreateTenancyStorageOperations {
     (params: {
         documentClient: DocumentClient;
-        table?: string;
+        table?: TableModifier;
         attributes?: Record<ENTITIES, Attributes>;
     }): TenancyStorageOperations;
 }

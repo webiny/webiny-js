@@ -3,7 +3,6 @@ import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
 import { TenancyContext, TenancyStorageOperations } from "./types";
 import { createTenancy } from "./createTenancy";
 import graphqlPlugins from "./graphql";
-import multiTenancyPlugins from "./multiTenancy";
 
 interface TenancyPluginsParams {
     multiTenancy?: boolean;
@@ -34,7 +33,6 @@ export default ({ multiTenancy, storageOperations }: TenancyPluginsParams) => {
                 storageOperations
             });
         }),
-        multiTenancy ? multiTenancyPlugins() : null,
         graphqlPlugins
     ].filter(Boolean);
 };

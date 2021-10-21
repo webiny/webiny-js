@@ -58,6 +58,11 @@ export const createStorageOperations = (
         SK: `A`
     });
 
+    const createGroupGsiKeys = (group: Pick<Group, "tenant" | "slug">) => ({
+        GSI1_PK: `T#${group.tenant}#GROUPS`,
+        GSI1_SK: group.slug
+    });
+
     const createSystemKeys = tenant => ({
         PK: `T#${tenant}#SYSTEM`,
         SK: "SECURITY"
@@ -89,8 +94,7 @@ export const createStorageOperations = (
         async createGroup({ group }): Promise<Group> {
             const keys = {
                 ...createGroupKeys(group),
-                GSI1_PK: `T#${group.tenant}#GROUPS`,
-                GSI1_SK: group.slug
+                ...createGroupGsiKeys(group)
             };
 
             try {
@@ -380,7 +384,8 @@ export const createStorageOperations = (
             try {
                 await entities.groups.put({
                     ...cleanupItem(entities.groups, group),
-                    ...keys
+                    ...keys,
+                    ...createGroupGsiKeys(group)
                 });
                 return group;
             } catch (err) {

@@ -63,19 +63,31 @@ export const createSecurity = async (config: SecurityConfig): Promise<Security> 
             return null;
         },
 
-        async getPermissions(): Promise<SecurityPermission[]> {
+        async getPermissions(this: Security): Promise<SecurityPermission[]> {
             if (Array.isArray(permissions)) {
                 return permissions;
             }
-
+            
+            // Authorizers often need to query business-related data, and since the identity is not yet
+            // authorized, these operations can easily trigger a NOT_AUTHORIZED error.
+            // To avoid this, we disable permission checks (assume `full-access` permissions) for 
+            // the duration of the authorization process.
+            
+            this.disableAuthorization();
             for (const authorizer of authorizers) {
                 const result = await authorizer();
                 if (Array.isArray(result)) {
+                    // Re-enable permission checks.
+                    this.enableAuthorization();
+
                     permissions = result;
 
                     return result;
                 }
             }
+
+            // Re-enable permission checks.
+            this.enableAuthorization();
 
             // Set an empty array since no permissions were found.
             return (permissions = []);

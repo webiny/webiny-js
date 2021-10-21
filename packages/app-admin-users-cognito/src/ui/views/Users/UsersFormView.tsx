@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "@emotion/styled";
 import { UIView } from "@webiny/app-admin/ui/UIView";
-import { Form } from "@webiny/form";
+import { FormAPI } from "@webiny/form";
 import { validation } from "@webiny/validation";
 import { GenericElement } from "@webiny/app-admin/ui/elements/GenericElement";
 import {
@@ -43,12 +43,12 @@ export class UsersFormView extends UIView {
         return this.getHook("userForm");
     }
 
-    submit(data: FormData, form?: Form) {
+    submit(data: FormData, form?: FormAPI) {
         this.dispatchEvent("onSubmit", { data, form });
         this.getUserFormHook().onSubmit(data);
     }
 
-    onSubmit(cb: (data: any, form: Form) => void) {
+    onSubmit(cb: (data: any, form: FormAPI) => void) {
         this.addEventListener("onSubmit", cb);
     }
 
@@ -58,7 +58,7 @@ export class UsersFormView extends UIView {
                 isLoading: () => {
                     return this.getUserFormHook().loading;
                 },
-                onSubmit: (data: FormData, form: Form) => {
+                onSubmit: (data: FormData, form: FormAPI) => {
                     this.submit(data, form);
                 },
                 getTitle: () => {

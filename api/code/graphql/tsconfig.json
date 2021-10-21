@@ -18,6 +18,9 @@
       "path": "../../../packages/api-security"
     },
     {
+      "path": "../../../packages/api-security-okta"
+    },
+    {
       "path": "../../../packages/api-i18n-content"
     },
     {

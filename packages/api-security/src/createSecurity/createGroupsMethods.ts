@@ -42,10 +42,12 @@ async function updateTenantLinks(security: Security, tenant: string, group: Grou
     }
 
     await security.updateTenantLinks(
-        links.map(link => ({
-            ...link,
-            data: { permissions: group.permissions }
-        }))
+        links
+            .filter(link => link.data.group === group.id)
+            .map(link => ({
+                ...link,
+                data: { group: group.id, permissions: group.permissions }
+            }))
     );
 }
 
@@ -57,7 +59,7 @@ export const createGroupsMethods = ({ getTenant, storageOperations }: SecurityCo
             let group: Group = null;
             try {
                 group = await storageOperations.getGroup({
-                    where: { ...where, tenant: getTenant() }
+                    where: { ...where, tenant: where.tenant || getTenant() }
                 });
             } catch (ex) {
                 throw new Error(

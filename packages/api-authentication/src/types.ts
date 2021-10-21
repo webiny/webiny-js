@@ -7,7 +7,7 @@ export interface Authenticator<TIdentity = Identity> {
 }
 
 export interface Authentication<TIdentity = Identity> {
-    getIdentity(): TIdentity;
+    getIdentity<TIdentity extends Identity = Identity>(): TIdentity;
     setIdentity(identity: TIdentity): void;
     addAuthenticator(authenticator: Authenticator<TIdentity>): void;
     getAuthenticators(): Authenticator[];

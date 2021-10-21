@@ -180,7 +180,7 @@ const MenusForm = ({ canCreate }: MenusFormProps) => {
                             </Cell>
                         </Grid>
                         <Bind name="items">
-                            {props => <MenuItems menuForm={form} {...props} canSave={canSave} />}
+                            {props => <MenuItems {...props} canSave={canSave} />}
                         </Bind>
                     </SimpleFormContent>
                     <SimpleFormFooter>

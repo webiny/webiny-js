@@ -6,8 +6,15 @@ export type BindComponentRenderPropValidation = {
 
 export type BindComponentRenderPropOnChange = (value: any) => Promise<void>;
 
+export interface FormAPI {
+    data: { [key: string]: any };
+    submit: (event?: React.SyntheticEvent<any, any>) => Promise<void>;
+    setValue: FormSetValue;
+    validate: () => void;
+}
+
 export type BindComponentRenderProp = {
-    form: Object;
+    form: FormAPI;
     onChange: BindComponentRenderPropOnChange;
     value: any;
     validate: () => Promise<boolean | any>;
@@ -26,16 +33,15 @@ export type BindComponentProps = {
 
 export type BindComponent = (props: BindComponentProps) => React.ReactElement;
 
-
 export type FormRenderPropParamsSubmit = (event?: React.SyntheticEvent<any, any>) => Promise<void>;
 
 export type FormSetValue = (name: string, value: any) => void;
 
 export type FormRenderPropParams = {
-    data: { [key: string]: any };
-    form: any;
-    submit: FormRenderPropParamsSubmit;
+    form: FormAPI;
     Bind: BindComponent;
+    data: { [key: string]: any };
+    submit: FormRenderPropParamsSubmit;
     setValue: FormSetValue;
 };
 

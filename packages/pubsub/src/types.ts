@@ -8,6 +8,8 @@ export interface Topic<TEvent = Event> {
     getTopicName(): string;
 
     subscribe(cb: (event: TEvent) => void | Promise<void>): void;
+    
+    subscribeOnce(cb: (event: TEvent) => void | Promise<void>): void;
 
     getSubscribers(): Subscriber<TEvent>[];
 

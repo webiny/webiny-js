@@ -1,6 +1,6 @@
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins";
 
-export default () => {
+export const createMultiTenancyPlugins = () => {
     return [
         new GraphQLSchemaPlugin({
             typeDefs: /* GraphQL */ `

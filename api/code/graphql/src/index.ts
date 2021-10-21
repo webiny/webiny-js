@@ -4,9 +4,9 @@ import graphqlPlugins from "@webiny/handler-graphql";
 import i18nPlugins from "@webiny/api-i18n/graphql";
 import i18nDynamoDbStorageOperations from "@webiny/api-i18n-ddb";
 import i18nContentPlugins from "@webiny/api-i18n-content/plugins";
-import adminUsersCognitoPlugins from "@webiny/api-admin-users-cognito";
-import { syncWithCognito } from "@webiny/api-admin-users-cognito/syncWithCognito";
-import { createStorageOperations as createAdminUsersStorageOperations } from "@webiny/api-admin-users-cognito-so-ddb";
+// import adminUsersCognitoPlugins from "@webiny/api-admin-users-cognito";
+// import { syncWithCognito } from "@webiny/api-admin-users-cognito/syncWithCognito";
+// import { createStorageOperations as createAdminUsersStorageOperations } from "@webiny/api-admin-users-cognito-so-ddb";
 import pageBuilderPlugins from "@webiny/api-page-builder/graphql";
 import pageBuilderDynamoDbElasticsearchPlugins from "@webiny/api-page-builder-so-ddb-es";
 import pageBuilderPrerenderingPlugins from "@webiny/api-page-builder/prerendering";
@@ -26,7 +26,7 @@ import { createFormBuilderStorageOperations } from "@webiny/api-form-builder-so-
 import headlessCmsPlugins from "@webiny/api-headless-cms/plugins";
 import headlessCmsDynamoDbElasticStorageOperation from "@webiny/api-headless-cms-ddb-es";
 import elasticsearchDataGzipCompression from "@webiny/api-elasticsearch/plugins/GzipCompression";
-import tenantManager from "@webiny/api-tenant-manager";
+// import tenantManager from "@webiny/api-tenant-manager";
 import securityPlugins from "./security";
 
 // Imports plugins created via scaffolding utilities.
@@ -55,7 +55,7 @@ export const handler = createHandler({
             driver: new DynamoDbDriver({ documentClient })
         }),
         securityPlugins({ documentClient }),
-        tenantManager(),
+        // tenantManager(),
         i18nPlugins(),
         i18nDynamoDbStorageOperations(),
         i18nContentPlugins(),
@@ -73,13 +73,13 @@ export const handler = createHandler({
                 }
             }
         }),
-        adminUsersCognitoPlugins({
-            storageOperations: createAdminUsersStorageOperations({ documentClient })
-        }),
-        syncWithCognito({
-            region: process.env.COGNITO_REGION,
-            userPoolId: process.env.COGNITO_USER_POOL_ID
-        }),
+        // adminUsersCognitoPlugins({
+        //     storageOperations: createAdminUsersStorageOperations({ documentClient })
+        // }),
+        // syncWithCognito({
+        //     region: process.env.COGNITO_REGION,
+        //     userPoolId: process.env.COGNITO_USER_POOL_ID
+        // }),
         pageBuilderPlugins(),
         pageBuilderDynamoDbElasticsearchPlugins(),
         pageBuilderPrerenderingPlugins(),

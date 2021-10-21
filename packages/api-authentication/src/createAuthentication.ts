@@ -7,9 +7,10 @@ export const createAuthentication = <
     const authenticators: Authenticator<TIdentity>[] = [];
 
     return {
-        getIdentity() {
-            return identity;
+        getIdentity<TIdentity extends Identity = Identity>(): TIdentity {
+            return identity as unknown as TIdentity;
         },
+
         setIdentity(newIdentity: TIdentity) {
             identity = newIdentity;
         },

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback } from "react";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Select } from "@webiny/ui/Select";
 import { i18n } from "@webiny/app/i18n";
@@ -9,7 +9,7 @@ import { useCmsData } from "./useCmsData";
 
 const t = i18n.ns("app-headless-cms/admin/plugins/permissionRenderer");
 
-const ContentModelGroupPermission = ({ Bind, data, entity, title, locales, setValue, form }) => {
+const ContentModelGroupPermission = ({ Bind, data, entity, title, locales }) => {
     const modelsGroups = useCmsData(locales);
 
     const getItems = useCallback(
@@ -18,17 +18,6 @@ const ContentModelGroupPermission = ({ Bind, data, entity, title, locales, setVa
         },
         [modelsGroups]
     );
-
-    useEffect(() => {
-        // Let's set default values for "accessScopes"
-        if (
-            data.endpoints.length > 0 &&
-            !data[`${entity}AccessScope`] &&
-            form.onChangeFns[`${entity}AccessScope`]
-        ) {
-            setValue(`${entity}AccessScope`, "full");
-        }
-    }, [data, setValue, form]);
 
     const disabledPrimaryActions =
         [undefined, "own", "no"].includes(data[`${entity}AccessScope`]) ||
@@ -43,7 +32,7 @@ const ContentModelGroupPermission = ({ Bind, data, entity, title, locales, setVa
                 <Cell span={12}>
                     <Grid style={{ padding: 0, paddingBottom: 24 }}>
                         <Cell span={12}>
-                            <Bind name={`${entity}AccessScope`}>
+                            <Bind name={`${entity}AccessScope`} defaultValue={"full"}>
                                 <Select label={t`Access Scope`}>
                                     <option value={"full"}>{t`All groups`}</option>
                                     <option value={"groups"}>{t`Only specific groups`}</option>

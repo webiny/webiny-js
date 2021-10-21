@@ -14,7 +14,7 @@ import {
     SimpleFormHeader
 } from "@webiny/app-admin/components/SimpleForm";
 import { useTargetDataModelsForm } from "./hooks/useTargetDataModelsForm";
-
+ 
 /**
  * Renders a form which enables creating new or editing existing Target Data Model entries.
  * Includes two basic fields - title (required) and description.
@@ -48,7 +48,7 @@ const TargetDataModelsForm = () => {
 
     return (
         <Form data={targetDataModel} onSubmit={onSubmit}>
-            {({ data, form, Bind }) => (
+            {({ data, submit, Bind }) => (
                 <SimpleForm>
                     {loading && <CircularProgress />}
                     <SimpleFormHeader title={data.title || "New Target Data Model"} />
@@ -75,7 +75,7 @@ const TargetDataModelsForm = () => {
                     </SimpleFormContent>
                     <SimpleFormFooter>
                         <ButtonDefault onClick={cancelEditing}>Cancel</ButtonDefault>
-                        <ButtonPrimary onClick={form.submit}>Save Target Data Model</ButtonPrimary>
+                        <ButtonPrimary onClick={submit}>Save Target Data Model</ButtonPrimary>
                     </SimpleFormFooter>
                 </SimpleForm>
             )}

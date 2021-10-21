@@ -46,6 +46,7 @@ export interface IdentityEvent<TIdentity> {
 export interface GetGroupWhere {
     id?: string;
     slug?: string;
+    tenant?: string;
 }
 
 export interface Security<TIdentity = SecurityIdentity> extends Authentication<TIdentity> {

@@ -1,14 +1,15 @@
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { Table } from "dynamodb-toolbox";
+import { TableModifier } from "~/types";
 
 export interface Params {
-    table: string;
+    table: TableModifier;
     documentClient: DocumentClient;
 }
 
 export const createTable = ({ table, documentClient }: Params) => {
-    return new Table({
-        name: table || process.env.DB_TABLE_TENANCY || process.env.DB_TABLE,
+    const tableConfig = {
+        name: process.env.DB_TABLE_TENANCY || process.env.DB_TABLE,
         partitionKey: "PK",
         sortKey: "SK",
         DocumentClient: documentClient,
@@ -18,5 +19,14 @@ export const createTable = ({ table, documentClient }: Params) => {
                 sortKey: "GSI1_SK"
             }
         }
-    });
+    };
+
+    const config = typeof table === "function" ? table(tableConfig) : tableConfig;
+    delete config["DocumentClient"];
+
+    console.log(JSON.stringify(config, null, 2));
+
+    config.DocumentClient = documentClient;
+
+    return new Table(config);
 };

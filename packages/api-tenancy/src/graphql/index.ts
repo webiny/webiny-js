@@ -21,6 +21,11 @@ export default new GraphQLSchemaPlugin<TenancyContext>({
             install: TenancyBooleanResponse
         }
 
+        type TenantResponse {
+            data: Tenant
+            error: TenancyError
+        }
+
         extend type Query {
             tenancy: TenancyQuery
         }

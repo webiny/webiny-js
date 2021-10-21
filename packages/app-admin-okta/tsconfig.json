@@ -1,0 +1,48 @@
+{
+  "extends": "../../tsconfig.json",
+  "references": [
+    {
+      "path": "../app"
+    },
+    {
+      "path": "../app-admin"
+    },
+    {
+      "path": "../app-security"
+    },
+    {
+      "path": "../app-security-admin-users"
+    },
+    {
+      "path": "../form"
+    },
+    {
+      "path": "../plugins"
+    },
+    {
+      "path": "../ui"
+    },
+    {
+      "path": "../validation"
+    }
+  ],
+  "compilerOptions": {
+    "paths": {
+      "@webiny/app/*": ["../app/src/*"],
+      "@webiny/app-admin/*": ["../app-admin/src/*"],
+      "@webiny/form": ["../form/src"],
+      "@webiny/app-security": ["../app-security/src"],
+      "@webiny/app-security-admin-users/*": ["../app-security-admin-users/src/*"],
+      "@webiny/app-security-admin-users": ["../app-security-admin-users/src"],
+      "@webiny/app-security-cognito-authentication/*": [
+        "../app-security-cognito-authentication/src/*"
+      ],
+      "@webiny/app-security-cognito-authentication": ["../app-security-cognito-authentication/src"],
+      "@webiny/plugins/*": ["../plugins/src/*"],
+      "@webiny/plugins": ["../plugins/src"],
+      "@webiny/ui/*": ["../ui/src/*"],
+      "@webiny/validation": ["../validation/src"]
+    },
+    "baseUrl": "."
+  }
+}

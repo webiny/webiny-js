@@ -19,7 +19,7 @@ const isReserved = name => {
 };
 
 export const createStorageOperations: CreateTenancyStorageOperations = params => {
-    const { table: tableName, documentClient, attributes = {} } = params;
+    const { table, documentClient, attributes = {} } = params;
 
     if (attributes) {
         Object.values(attributes).forEach(attrs => {
@@ -27,17 +27,17 @@ export const createStorageOperations: CreateTenancyStorageOperations = params =>
         });
     }
 
-    const table = createTable({ table: tableName, documentClient });
+    const tableInstance = createTable({ table, documentClient });
 
     const entities = {
         tenants: createTenantEntity({
             entityName: ENTITIES.TENANT,
-            table,
+            table: tableInstance,
             attributes: attributes[ENTITIES.TENANT]
         }),
         system: createSystemEntity({
             entityName: ENTITIES.SYSTEM,
-            table,
+            table: tableInstance,
             attributes: attributes[ENTITIES.SYSTEM]
         })
     };
@@ -49,7 +49,7 @@ export const createStorageOperations: CreateTenancyStorageOperations = params =>
 
     return {
         getTable() {
-            return table;
+            return tableInstance;
         },
         getEntities() {
             return entities;
@@ -103,7 +103,7 @@ export const createStorageOperations: CreateTenancyStorageOperations = params =>
         async getTenantsByIds<TTenant extends Tenant = Tenant>(ids: string[]): Promise<TTenant[]> {
             const items = ids.map(id => entities.tenants.getBatch({ PK: `T#${id}`, SK: "A" }));
 
-            const tenants = await batchReadAll<TTenant>({ table, items });
+            const tenants = await batchReadAll<TTenant>({ table: tableInstance, items });
 
             return cleanupItems(entities.tenants, tenants);
         },

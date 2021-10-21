@@ -56,6 +56,8 @@ export default () => {
         env: {
             COGNITO_REGION: String(process.env.AWS_REGION),
             COGNITO_USER_POOL_ID: cognito.userPool.id,
+            OKTA_ISSUER: process.env.OKTA_ISSUER,
+            OKTA_CLIENT_ID: process.env.OKTA_CLIENT_ID,
             DB_TABLE: dynamoDb.table.name,
             DB_TABLE_ELASTICSEARCH: elasticSearch.table.name,
             ELASTIC_SEARCH_ENDPOINT: elasticSearch.domain.endpoint,
@@ -81,6 +83,8 @@ export default () => {
         env: {
             COGNITO_REGION: String(process.env.AWS_REGION),
             COGNITO_USER_POOL_ID: cognito.userPool.id,
+            OKTA_ISSUER: process.env.OKTA_ISSUER,
+            OKTA_CLIENT_ID: process.env.OKTA_CLIENT_ID,
             DB_TABLE: dynamoDb.table.name,
             DB_TABLE_ELASTICSEARCH: elasticSearch.table.name,
             ELASTIC_SEARCH_ENDPOINT: elasticSearch.domain.endpoint,
