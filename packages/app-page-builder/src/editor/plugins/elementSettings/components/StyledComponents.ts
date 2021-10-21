@@ -1,3 +1,5 @@
+// https://github.com/emotion-js/emotion/issues/1431#issuecomment-529428305
+import "@emotion/core";
 import styled from "@emotion/styled";
 import { css } from "emotion";
 
@@ -118,7 +120,14 @@ export const SimpleButton = styled("button")({
     borderRadius: 1,
     backgroundColor: "transparent",
     padding: "8px 16px",
-    cursor: "pointer"
+    cursor: "pointer",
+    "&:hover": {
+        backgroundColor: "var(--mdc-theme-on-background)"
+    },
+    "&:disabled": {
+        backgroundColor: "transparent",
+        cursor: "not-allowed"
+    }
 });
 export const ButtonContainer = styled("div")({
     marginTop: 16
