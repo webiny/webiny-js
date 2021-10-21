@@ -7,7 +7,7 @@ import adminUsersPlugins from "@webiny/api-security-admin-users";
 import securityAdminUsersDynamoDbStorageOperations from "@webiny/api-security-admin-users-so-ddb";
 import i18nContentPlugins from "@webiny/api-i18n-content/plugins";
 import pageBuilderPlugins from "@webiny/api-page-builder/graphql";
-import pageBuilderDynamoDbElasticsearchPlugins from "@webiny/api-page-builder-so-ddb-es";
+import pageBuilderDynamoDbElasticsearchPlugins from "@webiny/api-page-builder-so-ddb";
 import pageBuilderPrerenderingPlugins from "@webiny/api-page-builder/prerendering";
 import pageBuilderImportExportPlugins from "@webiny/api-page-builder-import-export/graphql";
 import { createStorageOperations as createPageImportExportStorageOperations } from "@webiny/api-page-builder-import-export-so-ddb";
@@ -15,15 +15,15 @@ import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import elasticsearchClientContextPlugin from "@webiny/api-elasticsearch";
 import fileManagerPlugins from "@webiny/api-file-manager/plugins";
-import fileManagerDynamoDbElasticPlugins from "@webiny/api-file-manager-ddb-es";
+import fileManagerDynamoDbElasticPlugins from "@webiny/api-file-manager-ddb";
 import prerenderingServicePlugins from "@webiny/api-prerendering-service/client";
 import logsPlugins from "@webiny/handler-logs";
 import fileManagerS3 from "@webiny/api-file-manager-s3";
 import { createFormBuilder } from "@webiny/api-form-builder";
-import { createFormBuilderStorageOperations } from "@webiny/api-form-builder-so-ddb-es";
+import { createFormBuilderStorageOperations } from "@webiny/api-form-builder-so-ddb";
 import securityPlugins from "./security";
 import headlessCmsPlugins from "@webiny/api-headless-cms/plugins";
-import headlessCmsDynamoDbElasticStorageOperation from "@webiny/api-headless-cms-ddb-es";
+import headlessCmsDynamoDbElasticStorageOperation from "@webiny/api-headless-cms-ddb";
 import elasticsearchDataGzipCompression from "@webiny/api-elasticsearch/plugins/GzipCompression";
 
 // Imports plugins created via scaffolding utilities.

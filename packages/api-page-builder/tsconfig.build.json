@@ -19,7 +19,7 @@
     "../handler-aws",
     "../error",
     "../api-file-manager",
-    "../api-file-manager-ddb-es",
+    "../api-file-manager-ddb",
     "../api-tenancy",
     "../api-prerendering-service"
   ],

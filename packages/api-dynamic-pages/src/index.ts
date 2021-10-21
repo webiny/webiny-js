@@ -3,8 +3,8 @@ import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSche
 import { loadDynamicPage } from "./loadDynamicPage";
 import { DynamicPage } from "~/types";
 import { interpolateValue } from "~/interpolateValue";
-import { IndexPageDataPlugin } from "@webiny/api-page-builder-so-ddb-es/plugins/definitions/IndexPageDataPlugin";
-import { SearchPublishedPagesPlugin } from "@webiny/api-page-builder-so-ddb-es/plugins/definitions/SearchPublishedPagesPlugin";
+import { IndexPageDataPlugin } from "@webiny/api-page-builder-so-ddb/plugins/definitions/IndexPageDataPlugin";
+import { SearchPublishedPagesPlugin } from "@webiny/api-page-builder-so-ddb/plugins/definitions/SearchPublishedPagesPlugin";
 
 export default () => [
     new PagePlugin<DynamicPage>({

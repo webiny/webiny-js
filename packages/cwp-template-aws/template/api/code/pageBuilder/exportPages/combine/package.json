@@ -8,7 +8,7 @@
   "dependencies": {
     "@webiny/api-elasticsearch": "latest",
     "@webiny/api-file-manager": "latest",
-    "@webiny/api-file-manager-ddb-es": "latest",
+    "@webiny/api-file-manager-ddb": "latest",
     "@webiny/api-file-manager-s3": "latest",
     "@webiny/api-i18n": "latest",
     "@webiny/api-i18n-content": "latest",
@@ -16,7 +16,7 @@
     "@webiny/api-page-builder": "latest",
     "@webiny/api-page-builder-import-export": "latest",
     "@webiny/api-page-builder-import-export-so-ddb": "latest",
-    "@webiny/api-page-builder-so-ddb-es": "latest",
+    "@webiny/api-page-builder-so-ddb": "latest",
     "@webiny/api-security": "latest",
     "@webiny/api-security-admin-users": "latest",
     "@webiny/api-security-admin-users-cognito": "latest",

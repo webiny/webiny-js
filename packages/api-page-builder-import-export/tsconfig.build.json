@@ -12,7 +12,7 @@
     "../handler-graphql",
     "../error",
     "../api-file-manager",
-    "../api-file-manager-ddb-es",
+    "../api-file-manager-ddb",
     "../api-page-builder",
     "../api-security",
     "../handler-aws"

@@ -5,7 +5,7 @@
     "node_modules",
     "./dist",
     "../api-page-builder",
-    "../api-page-builder-so-ddb-es",
+    "../api-page-builder-so-ddb",
     "../handler-graphql",
     "../plugins"
   ],

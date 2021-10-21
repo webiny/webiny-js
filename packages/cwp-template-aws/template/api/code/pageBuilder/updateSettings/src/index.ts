@@ -3,7 +3,7 @@ import { createHandler } from "@webiny/handler-aws";
 import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import updateSettingsPlugins from "@webiny/api-page-builder/updateSettings";
-import pageBuilderDynamoDbElasticsearchPlugins from "@webiny/api-page-builder-so-ddb-es";
+import pageBuilderDynamoDbElasticsearchPlugins from "@webiny/api-page-builder-so-ddb";
 
 export const handler = createHandler(
     updateSettingsPlugins(),

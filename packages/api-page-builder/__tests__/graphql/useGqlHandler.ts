@@ -8,7 +8,7 @@ import i18nContentPlugins from "@webiny/api-i18n-content/plugins";
 import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
 
 import fileManagerPlugins from "@webiny/api-file-manager/plugins";
-import fileManagerDdbEsPlugins from "@webiny/api-file-manager-ddb-es";
+import fileManagerDdbEsPlugins from "@webiny/api-file-manager-ddb";
 import prerenderingServicePlugins from "@webiny/api-prerendering-service/client";
 
 import prerenderingHookPlugins from "../../src/prerendering/hooks";

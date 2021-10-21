@@ -8,7 +8,7 @@ import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import elasticsearchClientContextPlugin from "@webiny/api-elasticsearch";
 import headlessCmsPlugins from "@webiny/api-headless-cms/content";
 import securityPlugins from "./security";
-import headlessCmsDynamoDbElasticStorageOperation from "@webiny/api-headless-cms-ddb-es";
+import headlessCmsDynamoDbElasticStorageOperation from "@webiny/api-headless-cms-ddb";
 import logsPlugins from "@webiny/handler-logs";
 import securityAdminUsersDynamoDbStorageOperations from "@webiny/api-security-admin-users-so-ddb";
 import elasticsearchDataGzipCompression from "@webiny/api-elasticsearch/plugins/GzipCompression";

@@ -7,7 +7,7 @@
   },
   "dependencies": {
     "@webiny/api-page-builder": "latest",
-    "@webiny/api-page-builder-so-ddb-es": "latest",
+    "@webiny/api-page-builder-so-ddb": "latest",
     "@webiny/cli": "latest",
     "@webiny/db-dynamodb": "latest",
     "@webiny/handler-aws": "latest",

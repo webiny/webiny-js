@@ -7,7 +7,7 @@
   },
   "dependencies": {
     "@webiny/api-headless-cms": "latest",
-    "@webiny/api-headless-cms-ddb-es": "latest",
+    "@webiny/api-headless-cms-ddb": "latest",
     "@webiny/api-i18n": "latest",
     "@webiny/api-i18n-ddb": "latest",
     "@webiny/api-i18n-content": "latest",

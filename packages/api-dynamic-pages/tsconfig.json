@@ -6,7 +6,7 @@
       "path": "../api-page-builder"
     },
     {
-      "path": "../api-page-builder-so-ddb-es"
+      "path": "../api-page-builder-so-ddb"
     },
     {
       "path": "../handler-graphql"
@@ -20,8 +20,8 @@
       "~/*": ["./src/*"],
       "@webiny/api-page-builder/*": ["../api-page-builder/src/*"],
       "@webiny/api-page-builder": ["../api-page-builder/src"],
-      "@webiny/api-page-builder-so-ddb-es/*": ["../api-page-builder-so-ddb-es/src/*"],
-      "@webiny/api-page-builder-so-ddb-es": ["../api-page-builder-so-ddb-es/src"],
+      "@webiny/api-page-builder-so-ddb/*": ["../api-page-builder-so-ddb/src/*"],
+      "@webiny/api-page-builder-so-ddb": ["../api-page-builder-so-ddb/src"],
       "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
       "@webiny/handler-graphql": ["../handler-graphql/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
