@@ -28,7 +28,7 @@
     "@webiny/handler-db": "^5.15.0",
     "aws-sdk": "2.868.0",
     "dataloader": "^2.0.0",
-    "dot-prop": "^5.3.0",
+    "dot-prop": "^6.0.1",
     "dynamodb-toolbox": "^0.3.3",
     "jsonpack": "^1.1.5",
     "lodash.clonedeep": "^4.5.0",

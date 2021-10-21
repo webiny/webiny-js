@@ -106,8 +106,7 @@ class CmsTestEnvironment extends NodeEnvironment {
             secretAccessKey: "test"
         });
         const elasticsearchClientContext = elasticsearchClientContextPlugin({
-            endpoint: `http://localhost:${ELASTICSEARCH_PORT}`,
-            auth: {}
+            endpoint: `http://localhost:${ELASTICSEARCH_PORT}`
         });
         const clearEsIndices = async () => {
             return elasticsearchClient.indices.delete({

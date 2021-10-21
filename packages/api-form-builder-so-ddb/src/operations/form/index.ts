@@ -632,7 +632,6 @@ export const createFormStorageOperations = (params: Params): FormBuilderFormStor
      * - regular form record
      * - latest published form record
      * - latest form record - if form is latest one
-     * - elasticsearch latest form record
      */
     const publishForm = async (
         params: FormBuilderStorageOperationsPublishFormParams

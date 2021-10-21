@@ -41,8 +41,7 @@ class FormBuilderTestEnvironment extends NodeEnvironment {
             secretAccessKey: "test"
         });
         const elasticsearchClientContext = createElasticsearchClientContextPlugin({
-            endpoint: `http://localhost:${ELASTICSEARCH_PORT}`,
-            auth: {}
+            endpoint: `http://localhost:${ELASTICSEARCH_PORT}`
         });
 
         /**
