@@ -1,6 +1,7 @@
 import { HandlerPlugin as DefaultHandlerPlugin, ContextInterface } from "@webiny/handler/types";
 import { ArgsContext } from "@webiny/handler-args/types";
 import { Plugin } from "@webiny/plugins/types";
+import { DbContext } from "@webiny/handler-db/types";
 
 export interface Configuration {
     website?: {
@@ -23,7 +24,7 @@ export interface Args {
 }
 
 export type HandlerArgs = Args | Args[];
-export interface HandlerContext extends ContextInterface, ArgsContext<HandlerArgs> {
+export interface HandlerContext extends ContextInterface, ArgsContext<HandlerArgs>, DbContext {
     //
 }
 export type HandlerPlugin = DefaultHandlerPlugin<HandlerContext>;
