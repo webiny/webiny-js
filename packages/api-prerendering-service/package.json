@@ -2,6 +2,9 @@
   "name": "@webiny/api-prerendering-service",
   "version": "5.16.0",
   "main": "index.js",
+  "keywords": [
+    "ps:base"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git",

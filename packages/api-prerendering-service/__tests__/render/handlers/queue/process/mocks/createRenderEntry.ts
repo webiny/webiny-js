@@ -1,3 +1,5 @@
+import { Render } from "~/types";
+
 const defaults = {
     configuration: {
         meta: {
@@ -6,7 +8,7 @@ const defaults = {
             }
         },
         db: {
-            namespace: "T#root"
+            namespace: "root"
         },
         storage: {
             name: "s3-bucket-name",
@@ -15,25 +17,9 @@ const defaults = {
     }
 };
 
-type File = {
-    name: string;
-    type: string;
-    meta: { tags: Array<{ key: string; value: string }> } & Record<string, any>;
-};
-
-type Entry = Record<string, any> & {
-    PK: string;
-    SK: string;
-    TYPE: string;
-    url: string;
-    files: File[];
-};
-
-export default function (args): Entry {
+export default function (args): Render {
     return {
-        PK: "T#root#PS#RENDER",
-        SK: args.url,
-        TYPE: "ps.render",
+        namespace: args.namespace,
         url: args.url,
         args: {
             url: args.url,
