@@ -1,32 +1,26 @@
 {
-  "name": "@webiny/api-prerendering-service",
+  "name": "@webiny/api-prerendering-service-so-ddb",
   "version": "5.15.0",
   "main": "index.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git",
-    "directory": "packages/api-prerendering-service"
+    "directory": "packages/api-prerendering-service-so-ddb"
   },
-  "description": "A simple service for prerendering website URLs and saving them into a storage of choice.",
+  "keywords": [
+    "@webiny/api-prerendering-service",
+    "storage-operations",
+    "dynamodb",
+    "ps:ddb"
+  ],
+  "description": "A DynamoDB storage operations for the Prerendering Service API.",
   "author": "Webiny Ltd",
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.5.5",
+    "@webiny/api-prerendering-service": "^5.15.0",
     "@webiny/error": "^5.15.0",
-    "@webiny/handler": "^5.15.0",
-    "@webiny/handler-args": "^5.15.0",
-    "@webiny/handler-client": "^5.15.0",
-    "@webiny/handler-db": "^5.15.0",
-    "@webiny/plugins": "^5.15.0",
-    "chrome-aws-lambda": "^5.5.0",
-    "lodash": "^4.17.20",
-    "mdbid": "^1.0.0",
-    "object-hash": "^2.2.0",
-    "pluralize": "^8.0.0",
-    "posthtml": "^0.15.0",
-    "posthtml-noopener": "^1.0.5",
-    "posthtml-plugin-link-preload": "^1.0.0",
-    "shortid": "^2.2.16"
+    "dynamodb-toolbox": "^0.3.4"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",
@@ -40,6 +34,7 @@
     "@webiny/handler-aws": "^5.15.0",
     "@webiny/project-utils": "^5.15.0",
     "jest-dynalite": "^3.3.1",
+    "jest-environment-node": "^27.3.0",
     "prettier": "^2.3.2",
     "rimraf": "^3.0.2",
     "typescript": "^4.1.3"

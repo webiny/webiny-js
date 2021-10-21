@@ -23,23 +23,25 @@ export const createSubmissionsCrud = (params: Params): SubmissionsCRUD => {
     const { context } = params;
 
     return {
-        async getSubmissionsByIds(this: FormBuilder, formId, submissionIds) {
+        async getSubmissionsByIds(this: FormBuilder, id, submissionIds) {
             let form: FbForm;
-            if (typeof formId === "string") {
-                form = await this.getForm(formId, {
+            if (typeof id === "string") {
+                form = await this.getForm(id, {
                     auth: false
                 });
                 if (!form) {
                     throw new NotFoundError("Form not found");
                 }
             } else {
-                form = formId;
+                form = id;
             }
+
+            const formId = form.formId || form.id.split("#").shift();
 
             const listSubmissionsParams: FormBuilderStorageOperationsListSubmissionsParams = {
                 where: {
                     id_in: submissionIds,
-                    formId: form.formId,
+                    formId,
                     tenant: form.tenant,
                     locale: form.locale
                 }
@@ -61,7 +63,7 @@ export const createSubmissionsCrud = (params: Params): SubmissionsCRUD => {
                 );
             }
         },
-        async listFormSubmissions(this: FormBuilder, formId, options = {}) {
+        async listFormSubmissions(this: FormBuilder, id, options = {}) {
             const { submissions } = await utils.checkBaseFormPermissions(context);
 
             if (typeof submissions !== "undefined" && submissions !== true) {
@@ -71,15 +73,17 @@ export const createSubmissionsCrud = (params: Params): SubmissionsCRUD => {
             /**
              * Check if current identity is allowed to access this form.
              */
-            const form = await this.getForm(formId);
+            const form = await this.getForm(id);
 
             const { sort: initialSort, after = null, limit = 10 } = options;
+
+            const formId = form.formId || form.id.split("#").shift();
 
             const listSubmissionsParams: FormBuilderStorageOperationsListSubmissionsParams = {
                 where: {
                     tenant: form.tenant,
                     locale: form.locale,
-                    formId: form.formId
+                    formId
                 },
                 after,
                 limit,
@@ -103,14 +107,8 @@ export const createSubmissionsCrud = (params: Params): SubmissionsCRUD => {
                 );
             }
         },
-        async createFormSubmission(
-            this: FormBuilder,
-            formId,
-            reCaptchaResponseToken,
-            rawData,
-            meta
-        ) {
-            const form = await this.getForm(formId, {
+        async createFormSubmission(this: FormBuilder, id, reCaptchaResponseToken, rawData, meta) {
+            const form = await this.getForm(id, {
                 auth: false
             });
 
@@ -204,6 +202,7 @@ export const createSubmissionsCrud = (params: Params): SubmissionsCRUD => {
                 };
             }
 
+            const formId = form.formId || form.id.split("#").shift();
             /**
              * Use model for data validation and default values.
              */
@@ -212,7 +211,7 @@ export const createSubmissionsCrud = (params: Params): SubmissionsCRUD => {
                 meta,
                 form: {
                     id: form.id,
-                    parent: form.formId,
+                    parent: formId,
                     name: form.name,
                     version: form.version,
                     fields: form.fields,
