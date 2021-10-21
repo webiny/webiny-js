@@ -7,13 +7,13 @@ import { I18NLocale } from "@webiny/api-i18n/types";
 import { NotFoundError } from "@webiny/handler-graphql";
 
 export interface Params {
-    tenant: Tenant;
-    locale: I18NLocale;
+    getTenant: () => Tenant;
+    getLocale: () => I18NLocale;
     context: FormBuilderContext;
 }
 
 export const createSettingsCrud = (params: Params): SettingsCRUD => {
-    const { tenant, locale, context } = params;
+    const { getTenant, getLocale, context } = params;
 
     return {
         async getSettings(this: FormBuilder, params) {
@@ -26,8 +26,8 @@ export const createSettingsCrud = (params: Params): SettingsCRUD => {
             let settings: Settings = null;
             try {
                 settings = await this.storageOperations.getSettings({
-                    tenant: tenant.id,
-                    locale: locale.code
+                    tenant: getTenant().id,
+                    locale: getLocale().code
                 });
             } catch (ex) {
                 throw new WebinyError(
@@ -62,8 +62,8 @@ export const createSettingsCrud = (params: Params): SettingsCRUD => {
             const settings: Settings = {
                 domain: data.domain,
                 reCaptcha: data.reCaptcha,
-                tenant: tenant.id,
-                locale: locale.code
+                tenant: getTenant().id,
+                locale: getLocale().code
             };
             try {
                 return await this.storageOperations.createSettings({
@@ -104,8 +104,8 @@ export const createSettingsCrud = (params: Params): SettingsCRUD => {
                 },
                 {
                     ...original,
-                    tenant: tenant.id,
-                    locale: locale.code
+                    tenant: getTenant().id,
+                    locale: getLocale().code
                 }
             );
             try {

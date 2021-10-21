@@ -1,17 +1,16 @@
 import { Client } from "@elastic/elasticsearch";
 import configurations from "~/configurations";
-import { Tenant } from "@webiny/api-tenancy/types";
 
 export interface Params {
     elasticsearch: Client;
-    tenant: Tenant;
+    tenant: string;
 }
 
 export const createElasticsearchIndex = async (params: Params) => {
     const { tenant, elasticsearch } = params;
 
     const esIndex = configurations.es({
-        tenant: tenant.id
+        tenant
     });
 
     const { body: exists } = await elasticsearch.indices.exists(esIndex);

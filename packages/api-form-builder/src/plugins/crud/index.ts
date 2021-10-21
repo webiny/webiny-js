@@ -14,25 +14,33 @@ export default (params: Params) => {
     const { storageOperations } = params;
 
     return new ContextPlugin<FormBuilderContext>(async context => {
-        const tenant = context.tenancy.getCurrentTenant();
-        const identity = context.security.getIdentity();
-        const locale = context.i18nContent.getLocale();
+        const getLocale = () => {
+            return context.i18nContent.getLocale();
+        };
+
+        const getIdentity = () => {
+            return context.security.getIdentity();
+        };
+
+        const getTenant = () => {
+            return context.tenancy.getCurrentTenant();
+        };
 
         context.formBuilder = {
             storageOperations,
             ...createSystemCrud({
-                identity,
-                tenant,
+                getIdentity,
+                getTenant,
                 context
             }),
             ...createSettingsCrud({
-                tenant,
-                locale,
+                getTenant,
+                getLocale,
                 context
             }),
             ...createFormsCrud({
-                tenant,
-                locale,
+                getTenant,
+                getLocale,
                 context
             }),
             ...createSubmissionsCrud({

@@ -55,7 +55,10 @@ const InlineLoaderWrapper = styled("div")({
 });
 const Actions = styled("div")({
     display: "flex",
-    justifyContent: "space-between"
+    justifyContent: "flex-end",
+    "& button:not(:first-child)": {
+        marginLeft: 16
+    }
 });
 const SORTERS = [
     {

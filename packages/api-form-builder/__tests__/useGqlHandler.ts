@@ -52,6 +52,12 @@ export interface UseGqlHandlerParams {
     tenant?: Tenant;
 }
 
+const defaultIdentity = new SecurityIdentity({
+    id: "mocked",
+    displayName: "Mocked Identity",
+    type: "admin"
+});
+
 export default (params: UseGqlHandlerParams = {}) => {
     const { permissions, identity, tenant, plugins = [] } = params;
     // @ts-ignore
@@ -102,13 +108,7 @@ export default (params: UseGqlHandlerParams = {}) => {
         },
         {
             type: "security-authentication",
-            authenticate: () =>
-                identity ||
-                new SecurityIdentity({
-                    id: "mocked",
-                    displayName: "Mocked Identity",
-                    type: "admin"
-                })
+            authenticate: () => identity || defaultIdentity
         },
         {
             type: "api-file-manager-storage",
@@ -156,6 +156,7 @@ export default (params: UseGqlHandlerParams = {}) => {
         },
         handler,
         invoke,
+        defaultIdentity,
         // Form builder settings
         async updateSettings(variables = {}) {
             return invoke({ body: { query: UPDATE_SETTINGS, variables } });

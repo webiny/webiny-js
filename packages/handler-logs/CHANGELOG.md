@@ -3,6 +3,65 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.16.0](https://github.com/webiny/webiny-js/compare/v5.16.0-beta.4...v5.16.0) (2021-10-21)
+
+**Note:** Version bump only for package @webiny/handler-logs
+
+
+
+
+
+# [5.16.0-beta.4](https://github.com/webiny/webiny-js/compare/v5.16.0-beta.3...v5.16.0-beta.4) (2021-10-20)
+
+**Note:** Version bump only for package @webiny/handler-logs
+
+
+
+
+
+# [5.16.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.16.0-beta.2...v5.16.0-beta.3) (2021-10-20)
+
+**Note:** Version bump only for package @webiny/handler-logs
+
+
+
+
+
+# [5.16.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.16.0-beta.1...v5.16.0-beta.2) (2021-10-20)
+
+**Note:** Version bump only for package @webiny/handler-logs
+
+
+
+
+
+# [5.16.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.16.0-beta.0...v5.16.0-beta.1) (2021-10-19)
+
+**Note:** Version bump only for package @webiny/handler-logs
+
+
+
+
+
+# [5.16.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.17.0-beta.0...v5.16.0-beta.0) (2021-10-19)
+
+**Note:** Version bump only for package @webiny/handler-logs
+
+
+
+
+
+# [5.17.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.15.0...v5.17.0-beta.0) (2021-10-18)
+
+
+### Bug Fixes
+
+* wrap logs sending into a try...catch ([c1adb80](https://github.com/webiny/webiny-js/commit/c1adb80870aff2c73321c9f05725236b8dac087a))
+
+
+
+
+
 # [5.15.0](https://github.com/webiny/webiny-js/compare/v5.15.0-beta.3...v5.15.0) (2021-09-30)
 
 **Note:** Version bump only for package @webiny/handler-logs
