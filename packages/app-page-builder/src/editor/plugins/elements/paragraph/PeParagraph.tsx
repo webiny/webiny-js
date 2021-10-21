@@ -17,7 +17,6 @@ const defaultStyles = { display: "block" };
 
 const PeParagraph = props => {
     const { element, mediumEditorOptions } = props;
-    console.log({element})
 
     const { getClassNames, getElementClassNames, combineClassNames } = usePageElements();
     const classNames = combineClassNames(

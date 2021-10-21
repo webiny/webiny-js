@@ -16,7 +16,7 @@ export const DEFAULT_EDITOR_OPTIONS: CoreOptions = {
     }
 };
 
-const Heading: React.FC<{ element: PbEditorElement; mediumEditorOptions?: MediumEditorOptions }> =
+const Paragraph: React.FC<{ element: PbEditorElement; mediumEditorOptions?: MediumEditorOptions }> =
     props => {
         const pageElements = usePageElements();
         if (pageElements) {
@@ -25,4 +25,4 @@ const Heading: React.FC<{ element: PbEditorElement; mediumEditorOptions?: Medium
         return <PbParagraph {...props} elementId={props.element.id} />;
     };
 
-export default React.memo(Heading);
+export default React.memo(Paragraph);
