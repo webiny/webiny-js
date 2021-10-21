@@ -4,14 +4,14 @@ import { TenancyContext } from "@webiny/api-tenancy/types";
 
 type Context = TenancyContext & SecurityContext;
 
-export interface Config {
+export interface GroupAuthorizerConfig {
     // Specify an `identityType` if you want to only run this authorizer for specific identities.
     identityType?: string;
-    // Get a group slug to load permissions from.  
+    // Get a group slug to load permissions from.
     getGroupSlug(context: Context): string;
 }
 
-export const createGroupAuthorizer = (config: Config) => {
+export const createGroupAuthorizer = (config: GroupAuthorizerConfig) => {
     return new ContextPlugin<Context>(context => {
         const { security } = context;
         security.addAuthorizer(async () => {

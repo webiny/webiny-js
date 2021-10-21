@@ -7,6 +7,7 @@ import base from "./graphql/base.gql";
 import install from "./graphql/install.gql";
 import user from "./graphql/user.gql";
 import { subscribeToEvents } from "~/subscribeToEvents";
+import { applyMultiTenancyPlugins } from "~/enterprise/multiTenancy";
 
 type Context = SecurityContext & TenancyContext & AdminUsersContext;
 
@@ -35,6 +36,10 @@ export default ({ storageOperations }: Config) => {
             });
 
             subscribeToEvents(context);
+
+            if (context.tenancy.isMultiTenant()) {
+                applyMultiTenancyPlugins(context);
+            }
         }),
         base,
         install,

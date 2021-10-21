@@ -1,5 +1,6 @@
 import React, { useCallback, useState, useEffect, useRef } from "react";
 import { setContext } from "apollo-link-context";
+import ApolloClient from "apollo-client";
 import { DocumentNode } from "graphql";
 import { useApolloClient } from "@apollo/react-hooks";
 import { Security } from "@okta/okta-react";
@@ -11,7 +12,8 @@ import { SecurityIdentity, useSecurity } from "@webiny/app-security";
 import { ApolloLinkPlugin } from "@webiny/app/plugins/ApolloLinkPlugin";
 
 import OktaSignInWidget from "./OktaSignInWidget";
-import { createGetIdentityData } from "./createGetIdentityData";
+import { createGetIdentityData, LOGIN_MT, LOGIN_ST } from "./createGetIdentityData";
+import { useTenancy, withTenant } from "@webiny/app-tenancy";
 
 // eslint-disable-next-line @typescript-eslint/no-empty-function
 const noop = () => {};
@@ -24,20 +26,22 @@ export interface Config {
 }
 
 export interface Props {
+    getIdentityData(params: { client: ApolloClient<any> }): Promise<{ [key: string]: any }>;
     children: React.ReactNode;
 }
 
-export const createAuthentication = ({
-    getIdentityData,
-    loginMutation,
-    oktaAuth,
-    oktaSignIn
-}: Config) => {
-    if (!getIdentityData) {
-        getIdentityData = createGetIdentityData(loginMutation);
-    }
+export const createAuthentication = ({ oktaAuth, oktaSignIn, ...config }: Config) => {
+    const withGetIdentityData =
+        Component =>
+        ({ children }) => {
+            const { isMultiTenant } = useTenancy();
+            const loginMutation = config.loginMutation || (isMultiTenant ? LOGIN_MT : LOGIN_ST);
+            const getIdentityData = config.getIdentityData || createGetIdentityData(loginMutation);
 
-    const Authentication = ({ children }: Props) => {
+            return <Component getIdentityData={getIdentityData}>{children}</Component>;
+        };
+
+    const Authentication = ({ getIdentityData, children }: Props) => {
         const timerRef = useRef(null);
         const apolloClient = useApolloClient();
         const { identity, setIdentity } = useSecurity();
@@ -89,11 +93,16 @@ export const createAuthentication = ({
             setIsAuthenticated(authState.isAuthenticated);
             if (authState.isAuthenticated) {
                 try {
-                    const data = await getIdentityData({ client: apolloClient });
+                    const { id, displayName, type, ...other } = await getIdentityData({
+                        client: apolloClient
+                    });
 
                     setIdentity(
                         new SecurityIdentity({
-                            ...data,
+                            id,
+                            displayName,
+                            type,
+                            ...other,
                             logout() {
                                 clearTimeout(timerRef.current);
                                 oktaAuth.signOut();
@@ -131,5 +140,5 @@ export const createAuthentication = ({
         );
     };
 
-    return Authentication;
+    return withGetIdentityData(withTenant(Authentication));
 };

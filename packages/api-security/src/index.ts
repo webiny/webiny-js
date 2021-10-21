@@ -10,17 +10,18 @@ import {
 import graphqlPlugins from "./graphql";
 import { createSecurity } from "~/createSecurity";
 import { attachGroupInstaller } from "~/installation/groups";
+import { applyMultiTenancyPlugins, MultiTenancyConfig } from "~/enterprise/multiTenancy";
 
 export { default as NotAuthorizedResponse } from "./NotAuthorizedResponse";
 export { default as NotAuthorizedError } from "./NotAuthorizedError";
 
-export interface SecurityConfig {
+export interface SecurityConfig extends MultiTenancyConfig {
     storageOperations: SecurityStorageOperations;
 }
 
 type Context = SecurityContext & TenancyContext;
 
-export default ({ storageOperations }: SecurityConfig): PluginCollection => [
+export default ({ storageOperations, ...config }: SecurityConfig): PluginCollection => [
     new ContextPlugin<Context>(async context => {
         context.security = await createSecurity({
             getTenant: () => {
@@ -50,6 +51,10 @@ export default ({ storageOperations }: SecurityConfig): PluginCollection => [
             });
 
         // Backwards Compatibility - END
+
+        if (context.tenancy.isMultiTenant()) {
+            applyMultiTenancyPlugins(config, context)
+        }
     }),
     graphqlPlugins
 ];

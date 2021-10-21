@@ -5,27 +5,32 @@ import {
     Config as BaseConfig
 } from "@webiny/app-admin-cognito";
 import { NotAuthorizedError } from "./NotAuthorizedError";
-import { createGetIdentityData } from "~/createGetIdentityData";
+import { createGetIdentityData, LOGIN_ST, LOGIN_MT } from "~/createGetIdentityData";
+import { useTenancy, withTenant } from "@webiny/app-tenancy";
 
 export interface CreateAuthenticationConfig extends Partial<BaseConfig> {
     loginMutation?: DocumentNode;
 }
 
-export const createAuthentication = ({
-    getIdentityData,
-    ...config
-}: CreateAuthenticationConfig = {}) => {
-    const Authentication = ({ children, ...props }) => {
+export const createAuthentication = (config: CreateAuthenticationConfig = {}) => {
+    const withGetIdentityData =
+        Component =>
+        ({ children }) => {
+            const { isMultiTenant } = useTenancy();
+            const loginMutation = config.loginMutation || (isMultiTenant ? LOGIN_MT : LOGIN_ST);
+            const getIdentityData = config.getIdentityData || createGetIdentityData(loginMutation);
+
+            return <Component getIdentityData={getIdentityData}>{children}</Component>;
+        };
+
+    const Authentication = ({ getIdentityData, children }) => {
         const [error, setError] = useState(null);
         const BaseAuthentication = useMemo(() => {
             return baseCreateAuthentication({
                 onError(error: Error) {
                     setError(error.message);
                 },
-                getIdentityData:
-                    props.getIdentityData ||
-                    getIdentityData ||
-                    createGetIdentityData(config.loginMutation),
+                getIdentityData,
                 ...config
             });
         }, []);
@@ -37,5 +42,5 @@ export const createAuthentication = ({
         return <BaseAuthentication>{children}</BaseAuthentication>;
     };
 
-    return Authentication;
+    return withGetIdentityData(withTenant(Authentication));
 };

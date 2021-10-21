@@ -9,8 +9,6 @@ import { Avatar } from "@webiny/ui/Avatar";
 import { GenericElement } from "@webiny/app-admin/ui/elements/GenericElement";
 import { UIViewPlugin } from "@webiny/app-admin/ui/UIView";
 import { AdminView } from "@webiny/app-admin/ui/views/AdminView";
-import { useTenancy } from "@webiny/app-tenancy";
-import { ButtonPrimary } from "@webiny/ui/Button";
 
 const avatarImage = css({
     height: "40px !important",
@@ -77,16 +75,16 @@ const UserInfo = () => {
     // This is only applicable in multi-tenant environments
     const { currentTenant, defaultTenant } = security.identity;
 
-    let linkTo = "/account";
+    let wrapper: any = { Component: Link, props: { to: "/account"} };
     if (currentTenant && defaultTenant && currentTenant.id !== defaultTenant.id) {
-        linkTo = "/";
+        wrapper = { Component: "div", props: {} }
     }
 
     const { email, firstName, lastName, avatar, gravatar } = security.identity.profile || {};
     const fullName = `${firstName} ${lastName}`;
 
     return (
-        <Link to={linkTo} className={linkStyles}>
+        <wrapper.Component {...wrapper.props} className={linkStyles}>
             <ListItem ripple={false} className={linkStyles}>
                 <ListItemGraphic className={avatarImage}>
                     <Avatar
@@ -104,7 +102,7 @@ const UserInfo = () => {
                     <Typography use={"subtitle2"}>{email}</Typography>
                 </div>
             </ListItem>
-        </Link>
+        </wrapper.Component>
     );
 };
 

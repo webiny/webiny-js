@@ -11,6 +11,9 @@
       "path": "../app-security"
     },
     {
+      "path": "../app-tenancy"
+    },
+    {
       "path": "../app-security-admin-users"
     },
     {
@@ -32,6 +35,7 @@
       "@webiny/app-admin/*": ["../app-admin/src/*"],
       "@webiny/form": ["../form/src"],
       "@webiny/app-security": ["../app-security/src"],
+      "@webiny/app-tenancy": ["../app-tenancy/src"],
       "@webiny/app-security-admin-users/*": ["../app-security-admin-users/src/*"],
       "@webiny/app-security-admin-users": ["../app-security-admin-users/src"],
       "@webiny/app-security-cognito-authentication/*": [

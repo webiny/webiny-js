@@ -12,7 +12,7 @@ import pageBuilderPlugins from "./pageBuilder";
 import formBuilderPlugins from "./formBuilder";
 import headlessCmsPlugins from "./headlessCms";
 import fileManagerPlugins from "./fileManager";
-// import tenantManagerPlugins from "./tenantManager";
+import tenantManagerPlugins from "./tenantManager";
 import theme from "theme";
 
 // Imports plugins created via scaffolding utilities.
@@ -70,7 +70,7 @@ plugins.register([
     /**
      * Tenant Manager
      */
-    // tenantManagerPlugins,
+    tenantManagerPlugins,
     /**
      * App theme controls page builder and form builder layouts, styles, etc.
      */

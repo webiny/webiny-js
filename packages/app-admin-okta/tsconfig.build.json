@@ -5,6 +5,7 @@
     "node_modules",
     "../app",
     "../app-security",
+    "../app-tenancy",
     "../app-admin",
     "../form",
     "../app-security-admin-users",

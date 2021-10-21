@@ -20,12 +20,13 @@ export const GET_DEFAULT_TENANT = gql`
     }
 `;
 
-export const withTenant = (BaseAuthentication, { getIdentityData }) => {
-    const Authentication = ({ children }) => {
-        const { tenant, setTenant } = useTenancy();
+export const withTenant =
+    Component =>
+    ({ getIdentityData, children }) => {
+        const { tenant, setTenant, isMultiTenant } = useTenancy();
 
         const getIdentityWithTenant = async params => {
-            if (tenant) {
+            if (tenant || !isMultiTenant) {
                 return getIdentityData(params);
             }
 
@@ -39,19 +40,8 @@ export const withTenant = (BaseAuthentication, { getIdentityData }) => {
 
             setTenant(defaultTenantId);
 
-            return await new Promise(resolve => {
-                setTimeout(() => {
-                    resolve(getIdentityData(params));
-                }, 1000);
-            });
+            return getIdentityData(params);
         };
 
-        return (
-            <BaseAuthentication getIdentityData={getIdentityWithTenant}>
-                {children}
-            </BaseAuthentication>
-        );
+        return <Component getIdentityData={getIdentityWithTenant}>{children}</Component>;
     };
-
-    return Authentication;
-};

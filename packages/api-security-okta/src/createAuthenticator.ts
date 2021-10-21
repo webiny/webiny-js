@@ -12,7 +12,7 @@ const isJwt = token => token.split(".").length === 3;
 
 type Context = SecurityContext;
 
-export interface Config {
+export interface AuthenticatorConfig {
     // Okta issuer endpoint
     issuer: string;
     // Okta client ID
@@ -23,7 +23,7 @@ export interface Config {
 
 const jwksCache = new Map<string, Record<string, any>[]>();
 
-export const createAuthenticator = (config: Config) => {
+export const createAuthenticator = (config: AuthenticatorConfig) => {
     const getJWKs = async () => {
         const key = config.issuer;
 

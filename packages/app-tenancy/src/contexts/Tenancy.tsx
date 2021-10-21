@@ -12,6 +12,7 @@ export interface Tenant {
 export type TenancyContextValue = {
     tenant: string | null;
     setTenant(tenant: string): void;
+    isMultiTenant: boolean;
 };
 
 const LOCAL_STORAGE_KEY = "webiny_tenant";
@@ -57,7 +58,8 @@ export const TenancyProvider = props => {
     const value = useMemo<TenancyContextValue>(
         () => ({
             tenant: currentTenant,
-            setTenant: changeTenant
+            setTenant: changeTenant,
+            isMultiTenant: process.env.REACT_APP_WEBINY_MULTI_TENANCY === "true"
         }),
         [currentTenant]
     );

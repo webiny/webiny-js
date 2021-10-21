@@ -1,5 +1,7 @@
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins";
 import { SecurityIdentity } from "@webiny/api-security/types";
+import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
+import { TenancyContext } from "@webiny/api-tenancy/types";
 
 interface Config {
     name: string;
@@ -7,8 +9,9 @@ interface Config {
 }
 
 export const createIdentityType = (config: Config) => {
-    return new GraphQLSchemaPlugin({
-        typeDefs: `
+    return [
+        new GraphQLSchemaPlugin({
+            typeDefs: `
             type ${config.name} implements SecurityIdentity {
                 id: ID!
                 type: String!
@@ -16,12 +19,27 @@ export const createIdentityType = (config: Config) => {
                 permissions: [JSON!]!
             }
         `,
-        resolvers: {
-            [config.name]: {
-                __isTypeOf(obj: SecurityIdentity) {
-                    return obj.type === config.identityType;
+            resolvers: {
+                [config.name]: {
+                    __isTypeOf(obj: SecurityIdentity) {
+                        return obj.type === config.identityType;
+                    }
                 }
             }
-        }
-    });
+        }),
+        new ContextPlugin<TenancyContext>(context => {
+            if (context.tenancy.isMultiTenant()) {
+                context.plugins.register(
+                    new GraphQLSchemaPlugin({
+                        typeDefs: `
+                            extend type ${config.name} {
+                                currentTenant: Tenant
+                                defaultTenant: Tenant
+                            }
+                        `
+                    })
+                );
+            }
+        })
+    ];
 };

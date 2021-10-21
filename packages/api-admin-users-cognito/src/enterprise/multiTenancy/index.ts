@@ -1,7 +1,7 @@
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins";
 
-export const createMultiTenancyPlugins = () => {
-    return [
+export const applyMultiTenancyPlugins = context => {
+    context.plugins.register(
         new GraphQLSchemaPlugin({
             typeDefs: /* GraphQL */ `
                 extend type AdminUserIdentity {
@@ -10,5 +10,5 @@ export const createMultiTenancyPlugins = () => {
                 }
             `
         })
-    ];
+    );
 };
