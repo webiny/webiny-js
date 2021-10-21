@@ -388,7 +388,7 @@ export const createFormsCrud = (params: Params): FormsCRUD => {
             });
             checkOwnership(form, permission, context);
 
-            const formFormId = form.formId || form.id.split("#").pop();
+            const formFormId = form.formId || form.id.split("#").shift();
 
             const revisions = await this.storageOperations.listFormRevisions({
                 where: {
@@ -511,7 +511,7 @@ export const createFormsCrud = (params: Params): FormsCRUD => {
                 auth: false
             });
 
-            const originalFormFormId = original.formId || original.id.split("#").pop();
+            const originalFormFormId = original.formId || original.id.split("#").shift();
 
             const latest = await this.storageOperations.getForm({
                 where: {

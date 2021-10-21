@@ -75,7 +75,7 @@ export const createSubmissionsCrud = (params: Params): SubmissionsCRUD => {
 
             const { sort: initialSort, after = null, limit = 10 } = options;
 
-            const formFormId = form.formId || form.id.split("#").pop();
+            const formFormId = form.formId || form.id.split("#").shift();
 
             const listSubmissionsParams: FormBuilderStorageOperationsListSubmissionsParams = {
                 where: {
@@ -209,7 +209,7 @@ export const createSubmissionsCrud = (params: Params): SubmissionsCRUD => {
             /**
              * Use model for data validation and default values.
              */
-            const formFormId = form.formId || form.id.split("#").pop();
+            const formFormId = form.formId || form.id.split("#").shift();
             const submissionModel = new models.FormSubmissionCreateDataModel().populate({
                 data,
                 meta,
