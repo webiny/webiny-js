@@ -14,7 +14,7 @@
 }
 
 .webiny-pb-section-header-spacer {
-  height: 50px;
+  height: 65px; // We need this element to have the same height as the `Header`
   background-color: transparent;
   width: 100%;
 }
