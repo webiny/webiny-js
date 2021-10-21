@@ -2,17 +2,12 @@
  * A new type of upgrade where we take the files from cwp-template-aws and copy them into required locations.
  * Old files are always backed up.
  */
-const {
-    prettierFormat,
-    yarnInstall,
-    assignPackageVersions,
-    copyFolders,
-    copyFiles
-} = require("../utils");
+const { prettierFormat, yarnInstall, assignPackageVersions, copyFiles } = require("../utils");
 const cliPackage = require("@webiny/cli/package.json");
 const cliPackageVersion = cliPackage.version;
 
-const targetVersion = "5.16.0";
+const targetVersion = "5.17.0";
+
 /**
  * @type {CliUpgradePlugin}
  */
@@ -54,61 +49,57 @@ module.exports = {
      */
     async upgrade(options, context) {
         const targets = [
+            /**
+             * Update prerendering services.
+             *
+             * Flush
+             */
             {
-                source: "node_modules/@webiny/cwp-template-aws/template/api/code/graphql/src/index.ts",
-                destination: "api/code/graphql/src/index.ts"
+                source: "node_modules/@webiny/cwp-template-aws/template/api/code/prerenderingService/flush/src/index.ts",
+                destination: "api/code/prerenderingService/flush/src/index.ts"
             },
             {
-                source: "node_modules/@webiny/cwp-template-aws/template/api/code/graphql/package.json",
-                destination: "api/code/graphql/package.json"
+                source: "node_modules/@webiny/cwp-template-aws/template/api/code/prerenderingService/flush/package.json",
+                destination: "api/code/prerenderingService/flush/package.json"
             },
-            // Update cloud resources for "dev" environment
+            /**
+             * Queue add
+             */
             {
-                source: "node_modules/@webiny/cwp-template-aws/template/api/pulumi/dev/index.ts",
-                destination: "api/pulumi/dev/index.ts"
-            },
-            {
-                source: "node_modules/@webiny/cwp-template-aws/template/api/pulumi/dev/policies.ts",
-                destination: "api/pulumi/dev/policies.ts"
+                source: "node_modules/@webiny/cwp-template-aws/template/api/code/prerenderingService/queue/add/src/index.ts",
+                destination: "api/code/prerenderingService/queue/add/src/index.ts"
             },
             {
-                source: "node_modules/@webiny/cwp-template-aws/template/api/pulumi/dev/pageBuilder.ts",
-                destination: "api/pulumi/dev/pageBuilder.ts"
+                source: "node_modules/@webiny/cwp-template-aws/template/api/code/prerenderingService/queue/add/package.json",
+                destination: "api/code/prerenderingService/queue/add/package.json"
             },
-            // Update cloud resources for "prod" environment
+            /**
+             * Queue process
+             */
             {
-                source: "node_modules/@webiny/cwp-template-aws/template/api/pulumi/prod/index.ts",
-                destination: "api/pulumi/prod/index.ts"
-            },
-            {
-                source: "node_modules/@webiny/cwp-template-aws/template/api/pulumi/prod/policies.ts",
-                destination: "api/pulumi/prod/policies.ts"
+                source: "node_modules/@webiny/cwp-template-aws/template/api/code/prerenderingService/queue/process/src/index.ts",
+                destination: "api/code/prerenderingService/queue/process/src/index.ts"
             },
             {
-                source: "node_modules/@webiny/cwp-template-aws/template/api/pulumi/prod/pageBuilder.ts",
-                destination: "api/pulumi/prod/pageBuilder.ts"
+                source: "node_modules/@webiny/cwp-template-aws/template/api/code/prerenderingService/queue/process/package.json",
+                destination: "api/code/prerenderingService/queue/process/package.json"
+            },
+            /**
+             * Render.
+             */
+            {
+                source: "node_modules/@webiny/cwp-template-aws/template/api/code/prerenderingService/render/src/index.ts",
+                destination: "api/code/prerenderingService/render/src/index.ts"
+            },
+            {
+                source: "node_modules/@webiny/cwp-template-aws/template/api/code/prerenderingService/render/package.json",
+                destination: "api/code/prerenderingService/render/package.json"
             }
         ];
         /**
          * Copy new files to their destinations.
          */
         copyFiles(context, targets);
-        /**
-         * Copy folders to their destinations.
-         */
-        copyFolders(context, [
-            /**
-             * Export/import pages.
-             */
-            {
-                source: "node_modules/@webiny/cwp-template-aws/template/api/code/pageBuilder/exportPages",
-                destination: "api/code/pageBuilder/exportPages"
-            },
-            {
-                source: "node_modules/@webiny/cwp-template-aws/template/api/code/pageBuilder/importPages",
-                destination: "api/code/pageBuilder/importPages"
-            }
-        ]);
         /**
          * If any package.json destinations, set the versions to current one.
          */
