@@ -1,12 +1,12 @@
 import React from "react";
-import Text from "~/editor/components/Text";
+import { usePageElements } from "@webiny/app-page-builder-elements/hooks/usePageElements";
 import { CoreOptions } from "medium-editor";
-import { PbEditorTextElementProps } from "~/types";
-import { getMediumEditorOptions } from "../utils/textUtils";
+import { MediumEditorOptions, PbEditorElement } from "~/types";
 
-export const textClassName = "webiny-pb-base-page-element-style webiny-pb-page-element-text";
+import PeParagraph from "./PeParagraph";
+import PbParagraph from "./PbParagraph";
 
-const DEFAULT_EDITOR_OPTIONS: CoreOptions = {
+export const DEFAULT_EDITOR_OPTIONS: CoreOptions = {
     toolbar: {
         buttons: ["bold", "italic", "underline", "anchor"]
     },
@@ -16,18 +16,13 @@ const DEFAULT_EDITOR_OPTIONS: CoreOptions = {
     }
 };
 
-const Paragraph: React.FunctionComponent<PbEditorTextElementProps> = ({
-    elementId,
-    mediumEditorOptions
-}) => {
-    return (
-        <Text
-            elementId={elementId}
-            mediumEditorOptions={getMediumEditorOptions(
-                DEFAULT_EDITOR_OPTIONS,
-                mediumEditorOptions
-            )}
-        />
-    );
-};
-export default React.memo(Paragraph);
+const Heading: React.FC<{ element: PbEditorElement; mediumEditorOptions?: MediumEditorOptions }> =
+    props => {
+        const pageElements = usePageElements();
+        if (pageElements) {
+            return <PeParagraph {...props} />;
+        }
+        return <PbParagraph {...props} elementId={props.element.id} />;
+    };
+
+export default React.memo(Heading);

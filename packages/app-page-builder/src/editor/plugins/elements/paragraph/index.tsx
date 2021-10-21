@@ -1,7 +1,7 @@
 import React from "react";
 import kebabCase from "lodash/kebabCase";
 import { DisplayMode, PbEditorPageElementPlugin, PbEditorTextElementPluginsArgs } from "~/types";
-import Paragraph, { textClassName } from "./Paragraph";
+import Paragraph from "./Paragraph";
 import { createInitialTextValue } from "../utils/textUtils";
 import { createInitialPerDeviceSettingValue } from "../../elementSettings/elementSettingsUtils";
 
@@ -17,7 +17,7 @@ export default (args: PbEditorTextElementPluginsArgs = {}): PbEditorPageElementP
         title: "Paragraph",
         group: "pb-editor-element-group-basic",
         preview() {
-            return <p className={textClassName}>{defaultText}</p>;
+            return <p className={"webiny-pb-page-element-text"}>{defaultText}</p>;
         }
     };
 
@@ -77,7 +77,7 @@ export default (args: PbEditorTextElementPluginsArgs = {}): PbEditorPageElementP
         },
         render({ element }) {
             return (
-                <Paragraph elementId={element.id} mediumEditorOptions={args.mediumEditorOptions} />
+                <Paragraph element={element} mediumEditorOptions={args.mediumEditorOptions} />
             );
         }
     };
