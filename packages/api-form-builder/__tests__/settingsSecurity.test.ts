@@ -1,6 +1,5 @@
-import { SecurityIdentity } from "@webiny/api-security";
 import useGqlHandler from "./useGqlHandler";
-import { SecurityPermission } from "@webiny/api-security/types";
+import { SecurityPermission, SecurityIdentity } from "@webiny/api-security/types";
 
 const NOT_AUTHORIZED_RESPONSE = operation => ({
     data: {
@@ -18,12 +17,11 @@ const NOT_AUTHORIZED_RESPONSE = operation => ({
 });
 
 describe("Form Builder Settings Security Test", () => {
-    const identityA = new SecurityIdentity({
+    const identityA: SecurityIdentity = {
         id: "a",
-        login: "a",
         type: "test",
         displayName: "Aa"
-    });
+    };
 
     const defaultHandler = useGqlHandler({
         permissions: [{ name: "content.i18n" }, { name: "fb.*" }],
