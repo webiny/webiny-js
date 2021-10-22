@@ -62,9 +62,9 @@ jobs:
         if: steps.cached-packages.outputs.cache-hit != 'true'
         run: node scripts/buildWithCache.js
 
-      - name: Create packages list
-        id: create-packages-list
-        run: echo ls -alh
+      - name: Create packages list2
+        id: create-packages-list2
+        run: ls -alh
 
       - name: Create packages list
         id: create-packages-list
