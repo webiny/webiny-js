@@ -110,7 +110,7 @@ jobs:
       matrix:
         os: [ubuntu-latest]
         node: [12, 14]
-        package: [validation,plugins]
+        package: ${{ steps.cache-dependencies-packages.outputs.packages-list }}
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/setup-node@v2
