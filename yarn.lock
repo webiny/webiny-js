@@ -9300,7 +9300,6 @@ __metadata:
     "@webiny/plugins": ^5.16.0
     "@webiny/project-utils": ^5.16.0
     chrome-aws-lambda: ^5.5.0
-    dot-prop: ^6.0.1
     jest-dynalite: ^3.3.1
     lodash: ^4.17.20
     mdbid: ^1.0.0
