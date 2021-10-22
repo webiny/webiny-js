@@ -140,7 +140,7 @@ jobs:
         run: node scripts/buildWithCache.js
 
       - name: Run tests
-        run: yarn test packages/${{ matrix.package }}
+        run: yarn test ${{ matrix.package }}
 
   verdaccio-publish:
     needs: cache-dependencies-packages
