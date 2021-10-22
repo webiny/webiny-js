@@ -64,6 +64,10 @@ jobs:
 
       - name: Create packages list
         id: create-packages-list
+        run: echo ls -alh
+
+      - name: Create packages list
+        id: create-packages-list
         run: echo "::set-output name=packages-list::$(cat jest.packages.json)"
 
   code-analysis:
