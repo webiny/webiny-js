@@ -1,4 +1,3 @@
-import { PluginCollection } from "@webiny/plugins/types";
 import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
 import { TenancyContext } from "@webiny/api-tenancy/types";
 import {
@@ -10,19 +9,24 @@ import {
 import graphqlPlugins from "./graphql";
 import { createSecurity } from "~/createSecurity";
 import { attachGroupInstaller } from "~/installation/groups";
-import { applyMultiTenancyPlugins, MultiTenancyConfig } from "~/enterprise/multiTenancy";
+import {
+    applyMultiTenancyGraphQLPlugins,
+    applyMultiTenancyPlugins,
+    MultiTenancyAppConfig,
+    MultiTenancyGraphQLConfig
+} from "~/enterprise/multiTenancy";
 
 export { default as NotAuthorizedResponse } from "./NotAuthorizedResponse";
 export { default as NotAuthorizedError } from "./NotAuthorizedError";
 
-export interface SecurityConfig extends MultiTenancyConfig {
+export interface SecurityConfig extends MultiTenancyAppConfig {
     storageOperations: SecurityStorageOperations;
 }
 
 type Context = SecurityContext & TenancyContext;
 
-export default ({ storageOperations, ...config }: SecurityConfig): PluginCollection => [
-    new ContextPlugin<Context>(async context => {
+export const createSecurityApp = ({ storageOperations, ...config }: SecurityConfig) => {
+    return new ContextPlugin<Context>(async context => {
         context.security = await createSecurity({
             getTenant: () => {
                 const tenant = context.tenancy.getCurrentTenant();
@@ -53,8 +57,17 @@ export default ({ storageOperations, ...config }: SecurityConfig): PluginCollect
         // Backwards Compatibility - END
 
         if (context.tenancy.isMultiTenant()) {
-            applyMultiTenancyPlugins(config, context)
+            applyMultiTenancyPlugins(config, context);
         }
-    }),
-    graphqlPlugins
-];
+    });
+};
+
+export const createSecurityGraphQL = (config: MultiTenancyGraphQLConfig = {}) => {
+    return new ContextPlugin<Context>(context => {
+        context.plugins.register(graphqlPlugins);
+
+        if (context.tenancy.isMultiTenant()) {
+            applyMultiTenancyGraphQLPlugins(config, context);
+        }
+    });
+};

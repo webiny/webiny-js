@@ -9,21 +9,21 @@ export { getDefaultTenant } from "./getDefaultTenant";
 
 type Context = BaseContext<SecurityContext, TenancyContext>;
 
-export interface MultiTenancyConfig {
+export interface MultiTenancyAppConfig {
     /**
      * NOTE: This parameter is only relevant in multi-tenant environments.
      */
     verifyIdentityToTenantLink?: boolean;
+}
 
+export interface MultiTenancyGraphQLConfig {
     /**
-     * NOTE: This parameter is only relevant in multi-tenant environments. 
+     * NOTE: This parameter is only relevant in multi-tenant environments.
      */
     getDefaultTenant?(context: Context): Promise<Tenant>;
 }
 
-export const applyMultiTenancyPlugins = (config: MultiTenancyConfig, context: Context) => {
-    const getDefaultTenant = config.getDefaultTenant || baseGetDefaultTenant;
-
+export const applyMultiTenancyPlugins = (config: MultiTenancyAppConfig, context: Context) => {
     if (config.verifyIdentityToTenantLink !== false) {
         context.security.onAfterLogin.subscribe(async ({ identity }) => {
             // Check if current identity is allowed to access the given tenant!
@@ -55,6 +55,13 @@ export const applyMultiTenancyPlugins = (config: MultiTenancyConfig, context: Co
             });
         });
     }
+};
+
+export const applyMultiTenancyGraphQLPlugins = (
+    config: MultiTenancyGraphQLConfig,
+    context: Context
+) => {
+    const getDefaultTenant = config.getDefaultTenant || baseGetDefaultTenant;
 
     context.plugins.register(
         new GraphQLSchemaPlugin<Context>({
