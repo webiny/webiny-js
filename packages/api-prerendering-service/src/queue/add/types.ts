@@ -1,27 +1,23 @@
-import { HandlerPlugin as DefaultHandlerPlugin, ContextInterface } from "@webiny/handler/types";
+import { HandlerPlugin as DefaultHandlerPlugin, Context } from "@webiny/handler/types";
 import { ArgsContext } from "@webiny/handler-args/types";
-import { Args as FlushArgs } from "../../flush/types";
-import { Args as RenderArgs } from "../../render/types";
+import { DbContext } from "@webiny/handler-db/types";
+import { Args as FlushArgs } from "./../../flush/types";
+import { Args as RenderArgs } from "./../../render/types";
 import { Plugin } from "@webiny/plugins/types";
 
-export interface Tag {
-    key: string;
-    value?: string;
-}
+export type Tag = { key: string; value?: string };
 
-export interface QueueArgs {
+export type QueueArgs = {
     tag?: Tag;
-}
+};
 
-export interface Args {
+export type Args = {
     flush?: FlushArgs & QueueArgs;
     render?: RenderArgs & QueueArgs;
-}
+};
 
 export type HandlerArgs = Args | Args[];
-export interface HandlerContext extends ContextInterface, ArgsContext<HandlerArgs> {
-    //
-}
+export type HandlerContext = Context<DbContext, ArgsContext<HandlerArgs>>;
 export type HandlerPlugin = DefaultHandlerPlugin<HandlerContext>;
 
 export type HookCallbackFunction = (args: {
@@ -30,8 +26,8 @@ export type HookCallbackFunction = (args: {
     args: Args;
 }) => void | Promise<void>;
 
-export interface QueueAddHookPlugin extends Plugin {
+export type QueueAddHookPlugin = Plugin<{
     type: "ps-queue-add-hook";
     beforeAdd?: HookCallbackFunction;
     afterAdd?: HookCallbackFunction;
-}
+}>;
