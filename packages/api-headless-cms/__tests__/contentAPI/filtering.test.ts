@@ -6,7 +6,6 @@ import { useProductManageHandler } from "../utils/useProductManageHandler";
 import { useProductReadHandler } from "../utils/useProductReadHandler";
 import { useArticleManageHandler } from "../utils/useArticleManageHandler";
 import { useArticleReadHandler } from "../utils/useArticleReadHandler";
-import { SecurityIdentity } from "@webiny/api-security";
 import { setupContentModelGroup, setupContentModels } from "../utils/setup";
 
 jest.setTimeout(25000);
@@ -1348,11 +1347,11 @@ describe("filtering", () => {
         const articleManager = useArticleManageHandler(manageOpts);
         const articleAnotherManager = useArticleManageHandler({
             ...manageOpts,
-            identity: new SecurityIdentity({
-                id: "4321",
-                displayName: "User 4321",
+            identity: {
+                id: "87654321",
+                displayName: "Jane Doe",
                 type: "admin"
-            })
+            }
         });
 
         const group = await setupContentModelGroup(mainManager);
@@ -1390,7 +1389,7 @@ describe("filtering", () => {
             () => articleManager.listArticles().then(([data]) => data),
             ({ data }) => {
                 const entries = data?.listArticles?.data || [];
-                if (entries.length !== 2) {
+                if (entries.length < 2) {
                     return false;
                 }
                 return entries.every(entry => {
@@ -1402,7 +1401,7 @@ describe("filtering", () => {
 
         const [listEq123Response] = await articleManager.listArticles({
             where: {
-                createdBy: "123"
+                createdBy: "12345678"
             }
         });
 
@@ -1422,7 +1421,7 @@ describe("filtering", () => {
 
         const [listEq4321Response] = await articleManager.listArticles({
             where: {
-                createdBy: "4321"
+                createdBy: "87654321"
             }
         });
 
@@ -1442,7 +1441,7 @@ describe("filtering", () => {
 
         const [listNotEqResponse] = await articleManager.listArticles({
             where: {
-                createdBy_not: "123"
+                createdBy_not: "12345678"
             }
         });
 
@@ -1462,7 +1461,7 @@ describe("filtering", () => {
 
         const [listInResponse] = await articleManager.listArticles({
             where: {
-                createdBy_in: ["123"]
+                createdBy_in: ["12345678"]
             }
         });
 
@@ -1482,7 +1481,7 @@ describe("filtering", () => {
 
         const [listNotInResponse] = await articleManager.listArticles({
             where: {
-                createdBy_not_in: ["4321"]
+                createdBy_not_in: ["87654321"]
             }
         });
 
@@ -1502,7 +1501,7 @@ describe("filtering", () => {
 
         const [listNotInAllResponse] = await articleManager.listArticles({
             where: {
-                createdBy_not_in: ["4321", "123"]
+                createdBy_not_in: ["87654321", "12345678"]
             }
         });
 
@@ -1525,11 +1524,11 @@ describe("filtering", () => {
         const articleManager = useArticleManageHandler(manageOpts);
         const articleAnotherManager = useArticleManageHandler({
             ...manageOpts,
-            identity: new SecurityIdentity({
-                id: "4321",
-                displayName: "User 4321",
+            identity: {
+                id: "87654321",
+                displayName: "Jane Doe",
                 type: "admin"
-            })
+            }
         });
 
         const group = await setupContentModelGroup(mainManager);
@@ -1578,7 +1577,7 @@ describe("filtering", () => {
 
         const [listEq123Response] = await articleManager.listArticles({
             where: {
-                ownedBy: "123"
+                ownedBy: "12345678"
             }
         });
 
@@ -1598,7 +1597,7 @@ describe("filtering", () => {
 
         const [listEq4321Response] = await articleManager.listArticles({
             where: {
-                ownedBy: "4321"
+                ownedBy: "87654321"
             }
         });
 
@@ -1618,7 +1617,7 @@ describe("filtering", () => {
 
         const [listNotEqResponse] = await articleManager.listArticles({
             where: {
-                ownedBy_not: "123"
+                ownedBy_not: "12345678"
             }
         });
 
@@ -1638,7 +1637,7 @@ describe("filtering", () => {
 
         const [listInResponse] = await articleManager.listArticles({
             where: {
-                ownedBy_in: ["123"]
+                ownedBy_in: ["12345678"]
             }
         });
 
@@ -1658,7 +1657,7 @@ describe("filtering", () => {
 
         const [listNotInResponse] = await articleManager.listArticles({
             where: {
-                ownedBy_not_in: ["4321"]
+                ownedBy_not_in: ["87654321"]
             }
         });
 
@@ -1678,7 +1677,7 @@ describe("filtering", () => {
 
         const [listNotInAllResponse] = await articleManager.listArticles({
             where: {
-                ownedBy_not_in: ["4321", "123"]
+                ownedBy_not_in: ["87654321", "12345678"]
             }
         });
 

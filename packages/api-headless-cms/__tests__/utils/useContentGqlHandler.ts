@@ -5,6 +5,7 @@ import contentPlugins from "../../src/content";
 export const useContentGqlHandler = (args: GQLHandlerCallableArgs, plugins: Plugin[] = []) => {
     return useGqlHandler({
         ...args,
+        setupTenancyAndSecurityGraphQL: false,
         plugins: contentPlugins().concat(plugins)
     });
 };

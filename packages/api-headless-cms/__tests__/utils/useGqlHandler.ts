@@ -1,14 +1,12 @@
 import { introspectionQuery } from "graphql";
 import i18nContext from "@webiny/api-i18n/graphql/context";
 import i18nContentPlugins from "@webiny/api-i18n-content/plugins";
-import tenancyPlugins from "@webiny/api-tenancy";
-import securityPlugins from "@webiny/api-security";
-import apiKeyAuthentication from "@webiny/api-security-admin-users/authentication/apiKey";
-import apiKeyAuthorization from "@webiny/api-security-admin-users/authorization/apiKey";
 import { createHandler } from "@webiny/handler-aws";
 import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
 import { SecurityIdentity } from "@webiny/api-security/types";
-import { createIdentity, createPermissions, until, PermissionsArg } from "./helpers";
+import apiKeyAuthentication from "@webiny/api-security/plugins/apiKeyAuthentication";
+import apiKeyAuthorization from "@webiny/api-security/plugins/apiKeyAuthorization";
+import { createPermissions, until, PermissionsArg } from "./helpers";
 import { INSTALL_MUTATION, IS_INSTALLED_QUERY } from "./graphql/settings";
 import {
     CREATE_CONTENT_MODEL_GROUP_MUTATION,
@@ -31,8 +29,11 @@ import { ApiKey } from "@webiny/api-security-admin-users/types";
  * Unfortunately at we need to import the api-i18n-ddb package manually
  */
 import i18nDynamoDbStorageOperations from "@webiny/api-i18n-ddb";
+import { createTenancyAndSecurity } from "./tenancySecurity";
+
 
 export interface GQLHandlerCallableArgs {
+    setupTenancyAndSecurityGraphQL?: boolean;
     permissions?: PermissionsArg[];
     identity?: SecurityIdentity;
     plugins?: any[];
@@ -46,43 +47,41 @@ export const useGqlHandler = (args?: GQLHandlerCallableArgs) => {
         throw new Error(`There is no global "storageOperationsPlugins" function.`);
     }
     const tenant = { id: "root", name: "Root", parent: null };
-    const { permissions, identity, plugins = [], path } = args || {};
+    const { permissions, identity, plugins = [], path, setupTenancyAndSecurityGraphQL } = args || {};
 
     const handler = createHandler({
         plugins: [
             storageOperationsPlugins(),
-            tenancyPlugins(),
+            ...createTenancyAndSecurity({
+                setupGraphQL: setupTenancyAndSecurityGraphQL,
+                permissions: createPermissions(permissions),
+                identity
+            }),
             {
                 type: "context",
                 name: "context-security-tenant",
                 apply(context) {
-                    if (!context.security) {
-                        context.security = {};
-                    }
-                    context.tenancy.getCurrentTenant = () => {
-                        return tenant;
-                    };
-                    context.security.apiKeys = {
-                        getApiKeyByToken: async (token: string): Promise<ApiKey | null> => {
-                            if (!token || token !== "aToken") {
-                                return null;
-                            }
-                            const apiKey = "a1234567890";
-                            return {
-                                id: apiKey,
-                                name: apiKey,
-                                tenant: tenant.id,
-                                permissions: identity.permissions || [],
-                                token,
-                                createdBy: {
-                                    id: "test",
-                                    displayName: "test",
-                                    type: "admin"
-                                },
-                                description: "test",
-                                createdOn: new Date().toISOString()
-                            };
+                    context.security.getApiKeyByToken = async (
+                        token: string
+                    ): Promise<ApiKey | null> => {
+                        if (!token || token !== "aToken") {
+                            return null;
                         }
+                        const apiKey = "a1234567890";
+                        return {
+                            id: apiKey,
+                            name: apiKey,
+                            tenant: tenant.id,
+                            permissions: identity.permissions || [],
+                            token,
+                            createdBy: {
+                                id: "test",
+                                displayName: "test",
+                                type: "admin"
+                            },
+                            description: "test",
+                            createdOn: new Date().toISOString()
+                        };
                     };
                 }
             },
@@ -106,43 +105,12 @@ export const useGqlHandler = (args?: GQLHandlerCallableArgs) => {
                     context.http.request.path.parameters = { key: path };
                 }
             },
-            securityPlugins(),
             apiKeyAuthentication({ identityType: "api-key" }),
             apiKeyAuthorization({ identityType: "api-key" }),
             i18nContext(),
             i18nDynamoDbStorageOperations(),
             i18nContentPlugins(),
             mockLocalesPlugins(),
-            {
-                type: "security-authorization",
-                name: "security-authorization",
-                getPermissions: context => {
-                    const { headers = {} } = context.http || {};
-                    if (
-                        headers["Authorization"] ||
-                        headers["authorization"] ||
-                        (identity && identity.type === "api-key")
-                    ) {
-                        return;
-                    }
-                    return createPermissions(permissions);
-                }
-            },
-            {
-                type: "security-authentication",
-                authenticate: async context => {
-                    const { headers = {} } = context.http || {};
-                    if (
-                        headers["Authorization"] ||
-                        headers["authorization"] ||
-                        (identity && identity.type === "api-key")
-                    ) {
-                        return;
-                    }
-                    return createIdentity(identity);
-                }
-            },
-            //
             plugins
         ],
         http: { debug: true }
