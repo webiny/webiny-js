@@ -11,6 +11,7 @@ import { createHeading } from "@webiny/app-page-builder-elements/renderers/headi
 import { createList } from "@webiny/app-page-builder-elements/renderers/list";
 import { createImage } from "@webiny/app-page-builder-elements/renderers/image";
 import { createParagraph } from "@webiny/app-page-builder-elements/renderers/paragraph";
+import { createQuote } from "@webiny/app-page-builder-elements/renderers/quote";
 
 // Styles modifiers.
 import { createBackground } from "@webiny/app-page-builder-elements/modifiers/styles/background";
@@ -38,7 +39,8 @@ export const PageElementsProvider: React.FC = ({ children }) => (
             heading: createHeading(),
             list: createList(),
             image: createImage(),
-            paragraph: createParagraph()
+            paragraph: createParagraph(),
+            quote: createQuote()
         }}
         modifiers={{
             styles: {
