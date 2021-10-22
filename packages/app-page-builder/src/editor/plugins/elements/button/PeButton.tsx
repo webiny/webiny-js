@@ -3,7 +3,8 @@ import { css, cx } from "emotion";
 import merge from "lodash/merge";
 import set from "lodash/set";
 import { usePageElements } from "@webiny/app-page-builder-elements/hooks/usePageElements";
-import { PbEditorElement } from "~/types";
+import { Element } from "@webiny/app-page-builder-elements/types";
+import { PbEditorElement, PeEditorTextElementProps } from "~/types";
 import { useEventActionHandler } from "~/editor/hooks/useEventActionHandler";
 import { UpdateElementActionEvent } from "~/editor/recoil/actions";
 import SimpleEditableText from "./SimpleEditableText";
@@ -19,30 +20,37 @@ const buttonEditStyle = css({
 
 const DATA_NAMESPACE = "data.buttonText";
 
-const getButtonIconStyles = (position: "left" | "right" | "top" | "bottom") => {
+enum ButtonIconPosition {
+    LEFT = "left",
+    RIGHT = "right",
+    TOP = "top",
+    BOTTOM = "bottom"
+}
+
+const getButtonIconStyles = (position: ButtonIconPosition) => {
     switch (position) {
-        case "left":
+        case ButtonIconPosition.LEFT:
             return {
                 flexDirection: "row",
                 svg: {
                     marginRight: 8
                 }
             };
-        case "right":
+        case ButtonIconPosition.RIGHT:
             return {
                 flexDirection: "row-reverse",
                 svg: {
                     marginLeft: 8
                 }
             };
-        case "top":
+        case ButtonIconPosition.TOP:
             return {
                 flexDirection: "column",
                 svg: {
                     marginBottom: 8
                 }
             };
-        case "bottom":
+        case ButtonIconPosition.BOTTOM:
             return {
                 flexDirection: "column-reverse",
                 svg: {
@@ -63,9 +71,8 @@ declare global {
     }
 }
 
-const Button = ({ element }) => {
+const Button: React.FC<PeEditorTextElementProps> = ({ element, isActive }) => {
     const eventActionHandler = useEventActionHandler();
-    const isActive = true;
     const { type = "default", icon = {}, buttonText } = element.data || {};
     const defaultValue = typeof buttonText === "string" ? buttonText : "Click me";
     const value = useRef<string>(defaultValue);
@@ -103,7 +110,7 @@ const Button = ({ element }) => {
 
     const defaultThemeClassNames = getThemeClassNames(theme => theme.styles.buttons["default"]);
     const themeClassNames = getThemeClassNames(theme => theme.styles.buttons[type]);
-    const elementClassNames = getElementClassNames(element);
+    const elementClassNames = getElementClassNames(element as Element);
 
     const classNames = combineClassNames(
         getClassNames({
@@ -111,7 +118,7 @@ const Button = ({ element }) => {
             "& a": {
                 color: "inherit",
                 display: "flex",
-                ...getButtonIconStyles(position)
+                ...getButtonIconStyles(position as ButtonIconPosition)
             }
         }),
         defaultThemeClassNames,

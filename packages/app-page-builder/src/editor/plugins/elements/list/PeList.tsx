@@ -4,8 +4,8 @@ import { usePageElements } from "@webiny/app-page-builder-elements/hooks/usePage
 import Text from "~/editor/components/Text";
 import { getMediumEditorOptions } from "../utils/textUtils";
 import { DEFAULT_EDITOR_OPTIONS } from "./List";
-
-import { useActiveElementId } from "~/editor/hooks/useActiveElementId";
+import { Element } from "@webiny/app-page-builder-elements/types";
+import { PeEditorTextElementProps } from "~/types";
 
 declare global {
     //eslint-disable-next-line
@@ -38,21 +38,19 @@ const listStyles = css`
     }
 `;
 
-const PeList = props => {
+const PeList: React.FC<PeEditorTextElementProps> = props => {
     const { element, mediumEditorOptions } = props;
-    const [elementId] = useActiveElementId();
-    const isActive = elementId === element.id;
 
     const { getClassNames, getElementClassNames, combineClassNames } = usePageElements();
     const classNames = combineClassNames(
         listStyles,
         getClassNames(defaultStyles),
-        getElementClassNames(element)
+        getElementClassNames(element as Element)
     );
     const tag = "div";
     return (
         <pb-list>
-            {isActive ? (
+            {props.isActive ? (
                 <Text
                     tag={[tag, { className: classNames }]}
                     elementId={element.id}

@@ -1,6 +1,6 @@
 import React from "react";
 import classNames from "classnames";
-import { MediumEditorOptions, PbEditorElement } from "~/types";
+import { PeEditorTextElementProps } from "~/types";
 import { usePageElements } from "@webiny/app-page-builder-elements/hooks/usePageElements";
 
 import PbList from "./PbList";
@@ -20,13 +20,12 @@ export const DEFAULT_EDITOR_OPTIONS = {
     }
 };
 
-const List: React.FC<{ element: PbEditorElement; mediumEditorOptions?: MediumEditorOptions }> =
-    props => {
-        const pageElements = usePageElements();
-        if (pageElements) {
-            return <PeList {...props} />;
-        }
-        return <PbList {...props} elementId={props.element.id} />;
-    };
+const List: React.FC<PeEditorTextElementProps> = props => {
+    const pageElements = usePageElements();
+    if (pageElements) {
+        return <PeList {...props} />;
+    }
+    return <PbList {...props} elementId={props.element.id} />;
+};
 
 export default React.memo(List);

@@ -1,15 +1,18 @@
 import React from "react";
 import { usePageElements } from "@webiny/app-page-builder-elements/hooks/usePageElements";
-import PeButton from "~/editor/plugins/elements/button/PeButton";
+import { PeEditorTextElementProps } from "~/types";
 
-const Button = ({ element }) => {
+import PeButton from "./PeButton";
+import PbButton from "./PbButton";
+
+const Button: React.FC<PeEditorTextElementProps> = props => {
     const pageElements = usePageElements();
 
     if (pageElements) {
-        return <PeButton element={element} />;
+        return <PeButton {...props} />;
     }
 
-    return <PeButton element={element} />;
+    return <PbButton {...props} />;
 };
 
 export default Button;

@@ -74,8 +74,8 @@ export default (args: PbEditorTextElementPluginsArgs = {}): PbEditorPageElementP
 
             return typeof args.create === "function" ? args.create(defaultValue) : defaultValue;
         },
-        render({ element }) {
-            return <Quote element={element} mediumEditorOptions={args.mediumEditorOptions} />;
+        render(props) {
+            return <Quote {...props} mediumEditorOptions={args.mediumEditorOptions} />;
         }
     };
 };

@@ -1,8 +1,10 @@
 import React from "react";
 import { usePageElements } from "@webiny/app-page-builder-elements/hooks/usePageElements";
+import { Element } from "@webiny/app-page-builder-elements/types";
 import Text from "~/editor/components/Text";
 import { getMediumEditorOptions } from "../utils/textUtils";
 import { DEFAULT_EDITOR_OPTIONS } from "./Paragraph";
+import { PeEditorTextElementProps } from "~/types";
 
 declare global {
     //eslint-disable-next-line
@@ -15,13 +17,13 @@ declare global {
 
 const defaultStyles = { display: "block" };
 
-const PeParagraph = props => {
+const PeParagraph: React.FC<PeEditorTextElementProps> = props => {
     const { element, mediumEditorOptions } = props;
 
     const { getClassNames, getElementClassNames, combineClassNames } = usePageElements();
     const classNames = combineClassNames(
         getClassNames(defaultStyles),
-        getElementClassNames(element)
+        getElementClassNames(element as Element)
     );
     const tag = "p";
     return (

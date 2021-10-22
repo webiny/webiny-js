@@ -1,7 +1,7 @@
 import React from "react";
 import { usePageElements } from "@webiny/app-page-builder-elements/hooks/usePageElements";
 import { CoreOptions } from "medium-editor";
-import { MediumEditorOptions, PbEditorElement } from "~/types";
+import { PeEditorTextElementProps } from "~/types";
 
 import PeParagraph from "./PeParagraph";
 import PbParagraph from "./PbParagraph";
@@ -16,13 +16,12 @@ export const DEFAULT_EDITOR_OPTIONS: CoreOptions = {
     }
 };
 
-const Paragraph: React.FC<{ element: PbEditorElement; mediumEditorOptions?: MediumEditorOptions }> =
-    props => {
-        const pageElements = usePageElements();
-        if (pageElements) {
-            return <PeParagraph {...props} />;
-        }
-        return <PbParagraph {...props} elementId={props.element.id} />;
-    };
+const Paragraph: React.FC<PeEditorTextElementProps> = props => {
+    const pageElements = usePageElements();
+    if (pageElements) {
+        return <PeParagraph {...props} />;
+    }
+    return <PbParagraph {...props} elementId={props.element.id} />;
+};
 
 export default React.memo(Paragraph);

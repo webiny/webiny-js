@@ -3,7 +3,6 @@ import Text from "~/editor/components/Text";
 import { usePageElements } from "@webiny/app-page-builder-elements/hooks/usePageElements";
 import { Element } from "@webiny/app-page-builder-elements/types";
 import { PeEditorTextElementProps } from "~/types";
-import { useActiveElementId } from "~/editor/hooks/useActiveElementId";
 import { getMediumEditorOptions } from "../utils/textUtils";
 import { DEFAULT_EDITOR_OPTIONS } from "./Quote";
 
@@ -18,9 +17,11 @@ declare global {
 
 const defaultStyles = { display: "block" };
 
-const PeQuote: React.FC<PeEditorTextElementProps> = ({ element, mediumEditorOptions }) => {
-    const [elementId] = useActiveElementId();
-    const isActive = elementId === element.id;
+const PeQuote: React.FC<PeEditorTextElementProps> = ({
+    element,
+    mediumEditorOptions,
+    isActive
+}) => {
     const { getClassNames, getElementClassNames, combineClassNames } = usePageElements();
     const classNames = combineClassNames(
         getClassNames(defaultStyles),
