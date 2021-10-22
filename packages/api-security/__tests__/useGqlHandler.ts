@@ -63,7 +63,7 @@ export default (opts: UseGqlHandlerParams = {}) => {
                 // multiTenancy: true,
                 storageOperations: tenancyStorageOperations({
                     documentClient,
-                    table: "DynamoDB"
+                    table: process.env.DB_TABLE
                 })
             }),
             securityPlugins({ storageOperations }),

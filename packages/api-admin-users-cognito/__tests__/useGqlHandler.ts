@@ -1,6 +1,5 @@
 import { customAuthenticator } from "./mocks/customAuthenticator";
-
-const { DocumentClient } = require("aws-sdk/clients/dynamodb");
+import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { createHandler } from "@webiny/handler-aws";
 import graphqlHandler from "@webiny/handler-graphql";
 import tenancyPlugins from "@webiny/api-tenancy";
@@ -51,10 +50,10 @@ export default (opts: UseGqlHandlerParams = {}) => {
     // Creates the actual handler. Feel free to add additional plugins if needed.
     const handler = createHandler(
         tenancyPlugins({
-            storageOperations: tenancyStorageOperations({ documentClient, table: "DynamoDB" })
+            storageOperations: tenancyStorageOperations({ documentClient, table: process.env.DB_TABLE })
         }),
         securityPlugins({
-            storageOperations: securityStorageOperations({ documentClient, table: "DynamoDB" })
+            storageOperations: securityStorageOperations({ documentClient, table: process.env.DB_TABLE })
         }),
         adminUsersPlugins({
             storageOperations

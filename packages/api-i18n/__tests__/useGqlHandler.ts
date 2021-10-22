@@ -43,10 +43,10 @@ export default (params: UseGqlHandlerParams = {}) => {
     const handler = createHandler(
         storageOperations(),
         tenancyPlugins({
-            storageOperations: tenancyStorageOperations({ documentClient, table: "DynamoDB" })
+            storageOperations: tenancyStorageOperations({ documentClient, table: process.env.DB_TABLE })
         }),
         securityPlugins({
-            storageOperations: securityStorageOperations({ documentClient, table: "DynamoDB" })
+            storageOperations: securityStorageOperations({ documentClient, table: process.env.DB_TABLE })
         }),
         customAuthenticator(),
         customAuthorizer(),

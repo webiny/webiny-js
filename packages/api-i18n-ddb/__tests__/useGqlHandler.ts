@@ -31,7 +31,7 @@ export default (params: UseGqlHandlerParams) => {
 
     const handler = createHandler(
         dbPlugins({
-            table: "I18N",
+            table: process.env.DB_TABLE,
             driver: new DynamoDbDriver({
                 documentClient
             })

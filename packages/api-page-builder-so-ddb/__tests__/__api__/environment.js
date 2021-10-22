@@ -16,7 +16,7 @@ const getStorageOperationsPlugins = ({ documentClient }) => {
     return () => {
         const pluginsValue = plugins();
         const dbPluginsValue = dbPlugins({
-            table: "PageBuilder",
+            table: process.env.DB_TABLE,
             driver: new DynamoDbDriver({
                 documentClient
             })

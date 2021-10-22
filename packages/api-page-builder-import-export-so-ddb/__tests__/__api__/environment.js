@@ -25,7 +25,7 @@ class PageBuilderImportExportTaskTestEnvironment extends NodeEnvironment {
             return {
                 storageOperations: createStorageOperations({
                     documentClient,
-                    table: "PageBuilder"
+                    table: process.env.DB_TABLE
                 }),
                 plugins: []
             };

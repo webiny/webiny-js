@@ -1,13 +1,5 @@
 import useGqlHandler from "./useGqlHandler";
-import { SecurityIdentity } from "@webiny/api-security";
 import testFiles from "./data";
-
-const identityA = new SecurityIdentity({
-    id: "a",
-    login: "a",
-    type: "test",
-    displayName: "Aa"
-});
 
 const LONG_STRING = "pneumonoultramicroscopicsilicovolcanoconiosispneumonoultramicroscopi";
 const fileAData = {
@@ -34,10 +26,7 @@ const fileCData = {
 
 describe("Files CRUD test", () => {
     const { createFile, updateFile, createFiles, getFile, listFiles, listTags, until } =
-        useGqlHandler({
-            permissions: [{ name: "*" }],
-            identity: identityA
-        });
+        useGqlHandler();
 
     test("should create, read, update and delete files", async () => {
         const [create] = await createFile({ data: fileAData });

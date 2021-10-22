@@ -22,11 +22,6 @@ export const createTable = ({ table, documentClient }: Params) => {
     };
 
     const config = typeof table === "function" ? table(tableConfig) : tableConfig;
-    delete config["DocumentClient"];
-
-    console.log(JSON.stringify(config, null, 2));
-
-    config.DocumentClient = documentClient;
 
     return new Table(config);
 };

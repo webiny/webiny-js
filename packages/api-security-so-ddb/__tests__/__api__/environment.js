@@ -24,7 +24,7 @@ class ApiSecurityTestEnvironment extends NodeEnvironment {
             return {
                 storageOperations: createStorageOperations({
                     documentClient,
-                    table: "DynamoDB"
+                    table: process.env.DB_TABLE
                 }),
                 plugins: []
             };

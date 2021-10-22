@@ -32,8 +32,8 @@ describe("File lifecycle events", () => {
         id: expect.any(String),
         createdOn: expect.stringMatching(/^20/),
         createdBy: {
-            id: "mocked",
-            displayName: "m",
+            id: "12345678",
+            displayName: "John Doe",
             type: "admin"
         },
         tenant: "root",
