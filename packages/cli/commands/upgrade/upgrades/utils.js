@@ -175,6 +175,26 @@ const yarnInstall = async ({ context }) => {
 };
 
 /**
+ * Run to up the versions of all packages.
+ */
+const yarnUp = async ({ context, targetVersion }) => {
+    const { info, error } = context;
+    try {
+        info(`Updating all package versions to ${targetVersion}...`);
+        await execa(`yarn`, [`up`, `@webiny/*@${targetVersion}`], { cwd: process.cwd() });
+        await execa("yarn", { cwd: process.cwd() });
+        info("Finished update packages.");
+    } catch (ex) {
+        error("Updating of the packages failed.");
+        console.log(ex);
+        console.log(error(ex.message));
+        if (ex.stdout) {
+            console.log(ex.stdout);
+        }
+    }
+};
+
+/**
  *
  * @param plugins {tsMorph.Node}
  * @param afterElement {String|undefined}
@@ -311,6 +331,43 @@ const addImportsToSource = ({ context, source, imports, file }) => {
     }
 };
 
+/**
+ * @param packageJsonPath {String}
+ * @param pathsToAdd {String[]}
+ */
+const addWorkspaceToRootPackageJson = async (packageJsonPath, pathsToAdd) => {
+    const rootPackageJson = await loadJson(packageJsonPath);
+
+    pathsToAdd.forEach(pathToAdd => {
+        // Ensure forward slashes are used.
+        pathToAdd = pathToAdd.replace(/\\/g, "/");
+        // Add it to workspaces packages if not already
+        if (!rootPackageJson.workspaces.packages.includes(pathToAdd)) {
+            rootPackageJson.workspaces.packages.push(pathToAdd);
+        }
+    });
+
+    await writeJson(packageJsonPath, rootPackageJson);
+};
+
+/**
+ * @param packageJsonPath {String}
+ * @param pathsToRemove {String[]}
+ */
+const removeWorkspaceToRootPackageJson = async (packageJsonPath, pathsToRemove) => {
+    const rootPackageJson = await loadJson(packageJsonPath);
+
+    pathsToRemove.forEach(pathToRemove => {
+        // Remove it from workspaces packages if present
+        const index = rootPackageJson.workspaces.packages.indexOf(pathToRemove);
+        if (index !== -1) {
+            rootPackageJson.workspaces.packages.splice(index, 1);
+        }
+    });
+
+    await writeJson(packageJsonPath, rootPackageJson);
+};
+
 module.exports = {
     insertImport,
     addPackagesToDependencies,
@@ -319,5 +376,8 @@ module.exports = {
     createMorphProject,
     prettierFormat,
     yarnInstall,
-    addImportsToSource
+    yarnUp,
+    addImportsToSource,
+    addWorkspaceToRootPackageJson,
+    removeWorkspaceToRootPackageJson
 };

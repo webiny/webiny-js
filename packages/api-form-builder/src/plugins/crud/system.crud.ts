@@ -16,13 +16,13 @@ import { createTopic } from "@webiny/pubsub";
 import { SecurityIdentity } from "@webiny/api-security/types";
 
 export interface Params {
-    identity: SecurityIdentity;
-    tenant: Tenant;
+    getIdentity: () => SecurityIdentity;
+    getTenant: () => Tenant;
     context: FormBuilderContext;
 }
 
 export const createSystemCrud = (params: Params): SystemCRUD => {
-    const { tenant, identity, context } = params;
+    const { getTenant, getIdentity, context } = params;
 
     const onBeforeInstall = createTopic<BeforeInstallTopic>();
     const onAfterInstall = createTopic<AfterInstallTopic>();
@@ -33,7 +33,7 @@ export const createSystemCrud = (params: Params): SystemCRUD => {
         async getSystem(this: FormBuilder) {
             try {
                 return await this.storageOperations.getSystem({
-                    tenant: tenant.id
+                    tenant: getTenant().id
                 });
             } catch (ex) {
                 throw new WebinyError(
@@ -50,7 +50,7 @@ export const createSystemCrud = (params: Params): SystemCRUD => {
             const original = await this.getSystem();
             const system: System = {
                 version,
-                tenant: tenant.id
+                tenant: getTenant().id
             };
             if (!original) {
                 try {
@@ -105,13 +105,13 @@ export const createSystemCrud = (params: Params): SystemCRUD => {
 
             try {
                 await onBeforeInstall.publish({
-                    tenant
+                    tenant: getTenant().id
                 });
 
                 await this.createSettings(data);
 
                 await onAfterInstall.publish({
-                    tenant
+                    tenant: getTenant().id
                 });
                 await this.setSystemVersion(context.WEBINY_VERSION);
             } catch (err) {
@@ -127,6 +127,7 @@ export const createSystemCrud = (params: Params): SystemCRUD => {
             }
         },
         async upgradeSystem(this: FormBuilder, version: string) {
+            const identity = getIdentity();
             if (!identity) {
                 throw new NotAuthorizedError();
             }

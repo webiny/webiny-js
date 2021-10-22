@@ -516,4 +516,196 @@ describe("entry references", () => {
             }
         });
     });
+
+    /**
+     * TODO implement filtering by reference field to make this work
+     */
+    // eslint-disable-next-line
+    it.skip("should list articles filtered by reference", async () => {
+        const group = await setupContentModelGroup(mainManager);
+        await setupContentModels(mainManager, group, ["category", "article"]);
+
+        const categoryManager = useCategoryManageHandler(manageOpts);
+        const articleManager = useArticleManageHandler(manageOpts);
+        const articleReader = useArticleReadHandler(readOpts);
+
+        const techCategory = await createCategoryItem({
+            manager: categoryManager,
+            data: {
+                title: "Tech category",
+                slug: "tech-category"
+            },
+            publish: true
+        });
+
+        const techArticle = await createArticleItem({
+            manager: articleManager,
+            data: {
+                title: "Tech article",
+                body: null,
+                category: {
+                    entryId: techCategory.id,
+                    modelId: "category"
+                },
+                categories: [
+                    {
+                        entryId: techCategory.id,
+                        modelId: "category"
+                    }
+                ]
+            },
+            publish: true
+        });
+        const techCategory2 = await createCategoryItem({
+            manager: categoryManager,
+            from: techCategory,
+            data: {
+                title: "Tech category 2",
+                slug: "tech-category-2"
+            },
+            publish: true
+        });
+
+        const techArticle2 = await createArticleItem({
+            manager: articleManager,
+            // from: techArticle,
+            data: {
+                title: "Tech article 2",
+                body: null,
+                category: {
+                    entryId: techCategory2.id,
+                    modelId: "category"
+                },
+                categories: [
+                    {
+                        entryId: techCategory2.id,
+                        modelId: "category"
+                    }
+                ]
+            },
+            publish: true
+        });
+
+        const techCategory3 = await createCategoryItem({
+            manager: categoryManager,
+            from: techCategory2,
+            data: {
+                title: "Tech category 3",
+                slug: "tech-category-3"
+            },
+            publish: true
+        });
+
+        const techArticle3 = await createArticleItem({
+            manager: articleManager,
+            // from: techArticle2,
+            data: {
+                title: "Tech article 3",
+                body: null,
+                category: {
+                    entryId: techCategory3.id,
+                    modelId: "category"
+                },
+                categories: [
+                    {
+                        entryId: techCategory3.id,
+                        modelId: "category"
+                    }
+                ]
+            },
+            publish: true
+        });
+
+        const foodCategory = await createCategoryItem({
+            manager: categoryManager,
+            data: {
+                title: "Food category",
+                slug: "food-category"
+            },
+            publish: true
+        });
+
+        // eslint-disable-next-line
+        const foodArticle = await createArticleItem({
+            manager: articleManager,
+            data: {
+                title: "Food article",
+                body: null,
+                category: {
+                    entryId: foodCategory.id,
+                    modelId: "category"
+                },
+                categories: [
+                    {
+                        entryId: foodCategory.id,
+                        modelId: "category"
+                    }
+                ]
+            },
+            publish: true
+        });
+
+        /**
+         * Make sure we have all articles published.
+         */
+        await until(
+            () => articleManager.listArticles().then(([data]) => data),
+            ({ data }) => {
+                const entries = data?.listArticles?.data || [];
+                if (entries.length !== 4) {
+                    return false;
+                }
+                return entries.every(entry => {
+                    return !!entry.meta.publishedOn;
+                });
+            },
+            { name: "list all published articles", tries: 10 }
+        );
+
+        const [listArticlesEntryIdResponse] = await articleReader.listArticles({
+            where: {
+                category: {
+                    entryId: techCategory.entryId
+                }
+            },
+            sort: ["createdBy_ASC"]
+        });
+
+        expect(listArticlesEntryIdResponse).toEqual({
+            data: {
+                listArticles: {
+                    data: [techArticle, techArticle2, techArticle3],
+                    meta: {
+                        hasMoreItems: false,
+                        totalCount: 3,
+                        cursor: null
+                    },
+                    error: null
+                }
+            }
+        });
+
+        const [listArticlesEntryIdInResponse] = await articleReader.listArticles({
+            where: {
+                category: {
+                    entryId_in: [techCategory.entryId]
+                }
+            },
+            sort: ["createdBy_ASC"]
+        });
+
+        expect(listArticlesEntryIdInResponse).toEqual({
+            data: {
+                listArticles: {
+                    data: [techArticle, techArticle2, techArticle3],
+                    meta: {
+                        hasMoreItems: false,
+                        totalCount: 3,
+                        cursor: null
+                    },
+                    error: null
+                }
+            }
+        });
+    });
 });

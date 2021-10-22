@@ -3,6 +3,114 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.16.0](https://github.com/webiny/webiny-js/compare/v5.16.0-beta.4...v5.16.0) (2021-10-21)
+
+**Note:** Version bump only for package webiny-js
+
+
+
+
+
+# [5.16.0-beta.4](https://github.com/webiny/webiny-js/compare/v5.16.0-beta.3...v5.16.0-beta.4) (2021-10-20)
+
+
+### Bug Fixes
+
+* **api-form-builder:** missing formId ([a721c8d](https://github.com/webiny/webiny-js/commit/a721c8d4b4075bc5eef4970e6f680a77b63c832f))
+* **app-form-builder:** fb submission sorting ([a3407ba](https://github.com/webiny/webiny-js/commit/a3407ba6e400e4d53d68801b8d9d298d3c156236))
+
+
+
+
+
+# [5.16.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.16.0-beta.2...v5.16.0-beta.3) (2021-10-20)
+
+
+### Bug Fixes
+
+* **cli:** upgrade must take current cli version ([#1977](https://github.com/webiny/webiny-js/issues/1977)) ([4f9f4f0](https://github.com/webiny/webiny-js/commit/4f9f4f0dad8550de816b478a7a813a105a5f661f))
+
+
+
+
+
+# [5.16.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.16.0-beta.1...v5.16.0-beta.2) (2021-10-20)
+
+
+### Bug Fixes
+
+* **cli:** add missing workspaces ([9cb126b](https://github.com/webiny/webiny-js/commit/9cb126b5d1183e70d0e0062e60eb856024c58e5a))
+
+
+
+
+
+# [5.16.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.16.0-beta.0...v5.16.0-beta.1) (2021-10-19)
+
+
+### Bug Fixes
+
+* **cli:** Update workspaces in root package.json ([9e7f782](https://github.com/webiny/webiny-js/commit/9e7f782cd6a625277969b88d39f3c33a5b959382))
+
+
+
+
+
+# [5.16.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.17.0-beta.0...v5.16.0-beta.0) (2021-10-19)
+
+
+### Bug Fixes
+
+* create a gap between buttons ([83068f2](https://github.com/webiny/webiny-js/commit/83068f2017256750f26920d22a92b0522d2b762c))
+
+
+
+
+
+# [5.17.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.15.0...v5.17.0-beta.0) (2021-10-18)
+
+
+### Bug Fixes
+
+* **api-elasticsearch:** encode HTML special chars for cursor ([#1958](https://github.com/webiny/webiny-js/issues/1958)) ([292dc0a](https://github.com/webiny/webiny-js/commit/292dc0a9a4d4242f5d4725afa09b0dbec96aa875))
+* **api-form-builder-so-ddb-es:** types for decoded cursor ([658281c](https://github.com/webiny/webiny-js/commit/658281cf7e936541230a47b89fd6219c33e3397e))
+* **app-page-builder:** use correct value of sort ([911216f](https://github.com/webiny/webiny-js/commit/911216fecb863d9245c080a1b1ecbfa5e80727d4))
+* **cwp-template-aws:** add ELASTIC_SEARCH_INDEX_PREFIX to pageBuilder lambda ENV ([595a11a](https://github.com/webiny/webiny-js/commit/595a11ada2736415bd3c6ce3c7585e43b1082228))
+* add comments for query fields ([49e4d67](https://github.com/webiny/webiny-js/commit/49e4d67d296b86e1d96268e8a9ec838c09a49dd3))
+* add missing file ([aee62d6](https://github.com/webiny/webiny-js/commit/aee62d648c98fa6f65aa32064ab720c6767a6632))
+* add type for the missing `tag` prop ([6ff3df7](https://github.com/webiny/webiny-js/commit/6ff3df72f0dbaf2b79c78bb34f221a86baadcd26))
+* correct dependencies ([269c59a](https://github.com/webiny/webiny-js/commit/269c59ad0e61b1ef0d5faa58ec380583d94c9eed))
+* do not cache `PbPageListResponse` results ([7fcb187](https://github.com/webiny/webiny-js/commit/7fcb187f4671cb28bd8828692ea524393ac86818))
+* ensure forward slashes are used in import statements ([f86a2eb](https://github.com/webiny/webiny-js/commit/f86a2ebfd23faf8efc9a6c06d33d766b8d59f269))
+* refactor Theme type ([a151181](https://github.com/webiny/webiny-js/commit/a151181d0a22ca12ae67037087c95481c2fe7e99))
+* remove "Resolver" word ([fda84a7](https://github.com/webiny/webiny-js/commit/fda84a7bb922dbee1750c8bc6b045a7f1ca88881))
+* replace all occurrences, not just the first one ([1f6e1b0](https://github.com/webiny/webiny-js/commit/1f6e1b02f655fb230ac68e95f82115f095d9ad99))
+* update dependencies ([904f4cb](https://github.com/webiny/webiny-js/commit/904f4cbdebf354c1ca0ce14b0d2a2760a6e4692d))
+* update dependencies ([4eb5ca6](https://github.com/webiny/webiny-js/commit/4eb5ca66f2dca8c2af35fb52f1beff285f8d0936))
+* update dependencies ([1c52488](https://github.com/webiny/webiny-js/commit/1c524887b0930bb3ba74b470a272b4759bef46ce))
+* update dependencies ([5c4c47a](https://github.com/webiny/webiny-js/commit/5c4c47a3d18ae12f1214f0e821a9d5070f0a81fe))
+* use `.webiny` folder for Pulumi CLI-related files and folders ([139d1c1](https://github.com/webiny/webiny-js/commit/139d1c147c0da9a66a8059ee51a98880b0cbf772))
+* wrap logs sending into a try...catch ([c1adb80](https://github.com/webiny/webiny-js/commit/c1adb80870aff2c73321c9f05725236b8dac087a))
+
+
+### Features
+
+* **api-form-builder:** dynamodb storage ops ([#1955](https://github.com/webiny/webiny-js/issues/1955)) ([8dff8e1](https://github.com/webiny/webiny-js/commit/8dff8e13496308b3f625e833e26f356ef35b061d))
+* **ui:** add data-testid prop to Loader ([0a284db](https://github.com/webiny/webiny-js/commit/0a284db3fefb29954c9713a04dcdc7d96eb29473))
+* create `usingPageElements` helper function (used in non-React contexts) ([fbbc14b](https://github.com/webiny/webiny-js/commit/fbbc14b541b030fad21801ef9f7f7b44f4c2dcab))
+* divide prerendering-related plugins into separate files ([688ce46](https://github.com/webiny/webiny-js/commit/688ce46277a69eb3d8003b8f384176be3dd5a125))
+* enable passing tag props ([363cf28](https://github.com/webiny/webiny-js/commit/363cf28ef9b0067e3e8a707dfb8fafcba644c740))
+* introduce `--allow-production` when watching production environment (not recommended) ([8d627ab](https://github.com/webiny/webiny-js/commit/8d627abef6fcc595528734dbb9a16b503e02a47d))
+* introduce `pulumiFolder` option ([430c5d6](https://github.com/webiny/webiny-js/commit/430c5d62a2f911451f37995c2a5b7198773812f7))
+* make logs in "Deploy" pane prettier ([74f9d6c](https://github.com/webiny/webiny-js/commit/74f9d6c9dfdf0714754b4d01970dbab919b2c9ab))
+* use page elements if possible ([fc6dae6](https://github.com/webiny/webiny-js/commit/fc6dae66bbcbe4c059c9f42e629795bb7b0843e1))
+* **api-form-builder:** storage operations ([#1942](https://github.com/webiny/webiny-js/issues/1942)) ([a041a2c](https://github.com/webiny/webiny-js/commit/a041a2c00432c86e84f9be002b3943a629906d77))
+* **pubsub:** add pub/sub package ([#1936](https://github.com/webiny/webiny-js/issues/1936)) ([3a2facb](https://github.com/webiny/webiny-js/commit/3a2facb072af70b1f4d647ab23219a4c42e1bf74))
+
+
+
+
+
 # [5.15.0](https://github.com/webiny/webiny-js/compare/v5.15.0-beta.3...v5.15.0) (2021-09-30)
 
 **Note:** Version bump only for package webiny-js

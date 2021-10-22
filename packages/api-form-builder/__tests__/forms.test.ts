@@ -25,7 +25,8 @@ describe('Form Builder "Form" Test', () => {
         getPublishedForm,
         createFormSubmission,
         listFormSubmissions,
-        exportFormSubmissions
+        exportFormSubmissions,
+        defaultIdentity
     } = useGqlHandler();
 
     beforeEach(async () => {
@@ -53,7 +54,9 @@ describe('Form Builder "Form" Test', () => {
                             id: expect.any(String),
                             createdOn: /^20/,
                             savedOn: /^20/,
-                            status: "draft"
+                            status: "draft",
+                            createdBy: defaultIdentity,
+                            ownedBy: defaultIdentity
                         },
                         error: null
                     }
@@ -86,7 +89,12 @@ describe('Form Builder "Form" Test', () => {
 
         await until(
             () => listForms().then(([data]) => data),
-            ({ data }) => data.formBuilder.listForms.data[0].name === newData.name
+            ({ data }) => data.formBuilder.listForms.data[0].name === newData.name,
+            {
+                name: "list forms after update revision",
+                wait: 500,
+                tries: 20
+            }
         );
 
         const [get] = await getForm({ revision: id });
@@ -225,7 +233,12 @@ describe('Form Builder "Form" Test', () => {
 
         await until(
             () => listForms().then(([data]) => data),
-            ({ data }) => data.formBuilder.listForms.data[0].id === id
+            ({ data }) => data.formBuilder.listForms.data[0].id === id,
+            {
+                name: "list forms after publish revision",
+                wait: 500,
+                tries: 20
+            }
         );
 
         // Get the published form
@@ -340,7 +353,7 @@ describe('Form Builder "Form" Test', () => {
         );
 
         // Load submissions
-        const [submissions] = await listFormSubmissions({ form: id });
+        const [submissions] = await listFormSubmissions({ form: id, sort: ["createdOn_ASC"] });
         const list = submissions.data.formBuilder.listFormSubmissions;
         expect(list.data.length).toBe(2);
         expect(list.meta.totalCount).toBe(2);

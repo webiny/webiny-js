@@ -3,6 +3,79 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.16.0](https://github.com/webiny/webiny-js/compare/v5.16.0-beta.4...v5.16.0) (2021-10-21)
+
+**Note:** Version bump only for package @webiny/app-page-builder
+
+
+
+
+
+# [5.16.0-beta.4](https://github.com/webiny/webiny-js/compare/v5.16.0-beta.3...v5.16.0-beta.4) (2021-10-20)
+
+**Note:** Version bump only for package @webiny/app-page-builder
+
+
+
+
+
+# [5.16.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.16.0-beta.2...v5.16.0-beta.3) (2021-10-20)
+
+**Note:** Version bump only for package @webiny/app-page-builder
+
+
+
+
+
+# [5.16.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.16.0-beta.1...v5.16.0-beta.2) (2021-10-20)
+
+**Note:** Version bump only for package @webiny/app-page-builder
+
+
+
+
+
+# [5.16.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.16.0-beta.0...v5.16.0-beta.1) (2021-10-19)
+
+**Note:** Version bump only for package @webiny/app-page-builder
+
+
+
+
+
+# [5.16.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.17.0-beta.0...v5.16.0-beta.0) (2021-10-19)
+
+
+### Bug Fixes
+
+* create a gap between buttons ([83068f2](https://github.com/webiny/webiny-js/commit/83068f2017256750f26920d22a92b0522d2b762c))
+
+
+
+
+
+# [5.17.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.15.0...v5.17.0-beta.0) (2021-10-18)
+
+
+### Bug Fixes
+
+* **app-page-builder:** use correct value of sort ([911216f](https://github.com/webiny/webiny-js/commit/911216fecb863d9245c080a1b1ecbfa5e80727d4))
+* add missing file ([aee62d6](https://github.com/webiny/webiny-js/commit/aee62d648c98fa6f65aa32064ab720c6767a6632))
+* add type for the missing `tag` prop ([6ff3df7](https://github.com/webiny/webiny-js/commit/6ff3df72f0dbaf2b79c78bb34f221a86baadcd26))
+* correct dependencies ([269c59a](https://github.com/webiny/webiny-js/commit/269c59ad0e61b1ef0d5faa58ec380583d94c9eed))
+* update dependencies ([4eb5ca6](https://github.com/webiny/webiny-js/commit/4eb5ca66f2dca8c2af35fb52f1beff285f8d0936))
+* update dependencies ([1c52488](https://github.com/webiny/webiny-js/commit/1c524887b0930bb3ba74b470a272b4759bef46ce))
+
+
+### Features
+
+* enable passing tag props ([363cf28](https://github.com/webiny/webiny-js/commit/363cf28ef9b0067e3e8a707dfb8fafcba644c740))
+* use page elements if possible ([fc6dae6](https://github.com/webiny/webiny-js/commit/fc6dae66bbcbe4c059c9f42e629795bb7b0843e1))
+
+
+
+
+
 # [5.15.0](https://github.com/webiny/webiny-js/compare/v5.15.0-beta.3...v5.15.0) (2021-09-30)
 
 **Note:** Version bump only for package @webiny/app-page-builder

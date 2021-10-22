@@ -2,12 +2,18 @@
  * A new type of upgrade where we take the files from cwp-template-aws and copy them into required locations.
  * Old files are always backed up.
  */
-const { prettierFormat, yarnInstall } = require("../utils");
+const {
+    prettierFormat,
+    yarnUp,
+    addWorkspaceToRootPackageJson,
+    removeWorkspaceToRootPackageJson
+} = require("../utils");
 const path = require("path");
 const fs = require("fs");
 const fsExtra = require("fs-extra");
+const cliPackageJson = require("@webiny/cli/package.json");
 
-const targetVersion = "5.16.0";
+const targetVersion = cliPackageJson.version;
 
 const checkFiles = files => {
     for (const initialFile of files) {
@@ -152,7 +158,7 @@ const assignPackageVersions = (context, initialTargets) => {
                     dependencies[key] = json.dependencies[key];
                     return dependencies;
                 } else if (json.dependencies[key] === "latest") {
-                    dependencies[key] = `^${targetVersion}`;
+                    dependencies[key] = `${targetVersion}`;
                 } else {
                     dependencies[key] = json.dependencies[key];
                 }
@@ -169,7 +175,7 @@ const assignPackageVersions = (context, initialTargets) => {
                             dependencies[key] = json.devDependencies[key];
                             return dependencies;
                         } else if (json.devDependencies[key] === "latest") {
-                            dependencies[key] = `^${targetVersion}`;
+                            dependencies[key] = `${targetVersion}`;
                         } else {
                             dependencies[key] = json.devDependencies[key];
                         }
@@ -284,16 +290,29 @@ module.exports = {
          */
         assignPackageVersions(context, targets);
 
+        /**
+         * Update workspaces in root package.json.
+         */
+        context.info("Update workspaces in root package.json...");
+        const rootPackageJson = path.join(context.project.root, "package.json");
+        await addWorkspaceToRootPackageJson(rootPackageJson, [
+            "api/code/pageBuilder/updateSettings",
+            "api/code/pageBuilder/importPages/*",
+            "api/code/pageBuilder/exportPages/*"
+        ]);
+        await removeWorkspaceToRootPackageJson(rootPackageJson, ["api/code/pageBuilder/*"]);
+
         await prettierFormat(
             targets.map(t => t.destination),
             context
         );
 
         /**
-         * Install new packages.
+         * Up the versions again and install the packages.
          */
-        await yarnInstall({
-            context
+        await yarnUp({
+            context,
+            targetVersion
         });
 
         context.info("\n");

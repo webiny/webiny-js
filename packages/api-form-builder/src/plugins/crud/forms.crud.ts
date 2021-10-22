@@ -19,13 +19,13 @@ import { I18NLocale } from "@webiny/api-i18n/types";
 import { createIdentifier } from "@webiny/utils";
 
 export interface Params {
-    tenant: Tenant;
-    locale: I18NLocale;
+    getTenant: () => Tenant;
+    getLocale: () => I18NLocale;
     context: FormBuilderContext;
 }
 
 export const createFormsCrud = (params: Params): FormsCRUD => {
-    const { context, tenant, locale } = params;
+    const { context, getTenant, getLocale } = params;
 
     return {
         async getForm(this: FormBuilder, id, options) {
@@ -39,8 +39,8 @@ export const createFormsCrud = (params: Params): FormsCRUD => {
                 form = await this.storageOperations.getForm({
                     where: {
                         id,
-                        tenant: tenant.id,
-                        locale: locale.code
+                        tenant: getTenant().id,
+                        locale: getLocale().code
                     }
                 });
             } catch (ex) {
@@ -100,8 +100,8 @@ export const createFormsCrud = (params: Params): FormsCRUD => {
 
             const listFormParams: FormBuilderStorageOperationsListFormsParams = {
                 where: {
-                    tenant: tenant.id,
-                    locale: locale.code
+                    tenant: getTenant().id,
+                    locale: getLocale().code
                 },
                 limit: 10000,
                 sort: ["savedOn_DESC"],
@@ -138,8 +138,8 @@ export const createFormsCrud = (params: Params): FormsCRUD => {
                 const forms = await this.storageOperations.listFormRevisions({
                     where: {
                         id,
-                        tenant: tenant.id,
-                        locale: locale.code
+                        tenant: getTenant().id,
+                        locale: getLocale().code
                     }
                 });
                 if (forms.length === 0 || !permission) {
@@ -173,8 +173,8 @@ export const createFormsCrud = (params: Params): FormsCRUD => {
                         formId,
                         version: Number(version),
                         published: true,
-                        tenant: tenant.id,
-                        locale: locale.code
+                        tenant: getTenant().id,
+                        locale: getLocale().code
                     }
                 });
             } catch (ex) {
@@ -203,8 +203,8 @@ export const createFormsCrud = (params: Params): FormsCRUD => {
                     where: {
                         formId,
                         published: true,
-                        tenant: tenant.id,
-                        locale: locale.code
+                        tenant: getTenant().id,
+                        locale: getLocale().code
                     }
                 });
             } catch (ex) {
@@ -245,8 +245,8 @@ export const createFormsCrud = (params: Params): FormsCRUD => {
             const form: FbForm = {
                 id,
                 formId,
-                locale: locale.code,
-                tenant: tenant.id,
+                locale: getLocale().code,
+                tenant: getTenant().id,
                 savedOn: new Date().toISOString(),
                 createdOn: new Date().toISOString(),
                 createdBy: {
@@ -307,8 +307,8 @@ export const createFormsCrud = (params: Params): FormsCRUD => {
             const original = await this.storageOperations.getForm({
                 where: {
                     id,
-                    tenant: tenant.id,
-                    locale: locale.code
+                    tenant: getTenant().id,
+                    locale: getLocale().code
                 }
             });
 
@@ -326,7 +326,7 @@ export const createFormsCrud = (params: Params): FormsCRUD => {
                 ...original,
                 ...data,
                 savedOn: new Date().toISOString(),
-                tenant: tenant.id,
+                tenant: getTenant().id,
                 webinyVersion: context.WEBINY_VERSION
             };
 
@@ -354,8 +354,8 @@ export const createFormsCrud = (params: Params): FormsCRUD => {
             const form = await this.storageOperations.getForm({
                 where: {
                     id,
-                    tenant: tenant.id,
-                    locale: locale.code
+                    tenant: getTenant().id,
+                    locale: getLocale().code
                 }
             });
 
@@ -388,9 +388,11 @@ export const createFormsCrud = (params: Params): FormsCRUD => {
             });
             checkOwnership(form, permission, context);
 
+            const formFormId = form.formId || form.id.split("#").pop();
+
             const revisions = await this.storageOperations.listFormRevisions({
                 where: {
-                    formId: form.formId,
+                    formId: formFormId,
                     tenant: form.tenant,
                     locale: form.locale
                 },
@@ -402,7 +404,7 @@ export const createFormsCrud = (params: Params): FormsCRUD => {
                 /**
                  * Means we're deleting the last revision, so we need to delete the whole form.
                  */
-                return this.deleteForm(form.formId);
+                return this.deleteForm(form.id);
             }
 
             try {
@@ -443,7 +445,7 @@ export const createFormsCrud = (params: Params): FormsCRUD => {
                 locked: true,
                 savedOn: new Date().toISOString(),
                 status: utils.getStatus({ published: true, locked: true }),
-                tenant: tenant.id,
+                tenant: getTenant().id,
                 webinyVersion: context.WEBINY_VERSION
             };
 
@@ -481,7 +483,7 @@ export const createFormsCrud = (params: Params): FormsCRUD => {
                 published: false,
                 savedOn: new Date().toISOString(),
                 status: utils.getStatus({ published: false, locked: true }),
-                tenant: tenant.id,
+                tenant: getTenant().id,
                 webinyVersion: context.WEBINY_VERSION
             };
 
@@ -509,9 +511,11 @@ export const createFormsCrud = (params: Params): FormsCRUD => {
                 auth: false
             });
 
+            const originalFormFormId = original.formId || original.id.split("#").pop();
+
             const latest = await this.storageOperations.getForm({
                 where: {
-                    formId: original.formId,
+                    formId: originalFormFormId,
                     latest: true,
                     tenant: original.tenant,
                     locale: original.locale
@@ -524,7 +528,7 @@ export const createFormsCrud = (params: Params): FormsCRUD => {
             const form: FbForm = {
                 ...original,
                 id: createIdentifier({
-                    id: original.formId,
+                    id: originalFormFormId,
                     version
                 }),
                 version,
@@ -543,7 +547,7 @@ export const createFormsCrud = (params: Params): FormsCRUD => {
                 published: false,
                 publishedOn: null,
                 status: utils.getStatus({ published: false, locked: false }),
-                tenant: tenant.id,
+                tenant: getTenant().id,
                 webinyVersion: context.WEBINY_VERSION
             };
 
@@ -576,7 +580,7 @@ export const createFormsCrud = (params: Params): FormsCRUD => {
                     ...original.stats,
                     views: original.stats.views + 1
                 },
-                tenant: tenant.id,
+                tenant: getTenant().id,
                 webinyVersion: context.WEBINY_VERSION
             };
 
@@ -609,7 +613,7 @@ export const createFormsCrud = (params: Params): FormsCRUD => {
                     ...original.stats,
                     submissions: original.stats.submissions + 1
                 },
-                tenant: tenant.id,
+                tenant: getTenant().id,
                 webinyVersion: context.WEBINY_VERSION
             };
 
