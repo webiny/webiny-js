@@ -110,7 +110,7 @@ jobs:
       matrix:
         os: [ubuntu-latest]
         node: [12, 14]
-        package: [api-page-builder,api-headless-cms]
+        package: [validation,plugins]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/setup-node@v2
