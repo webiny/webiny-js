@@ -1,20 +1,15 @@
 import React from "react";
-import { ElementRoot } from "../../../../render/components/ElementRoot";
-import ButtonContainer from "./ButtonContainer";
+import { usePageElements } from "@webiny/app-page-builder-elements/hooks/usePageElements";
+import PeButton from "~/editor/plugins/elements/button/PeButton";
 
 const Button = ({ element }) => {
-    return (
-        <ElementRoot className={"webiny-pb-base-page-element-style"} element={element}>
-            {({ getAllClasses, elementStyle, elementAttributes }) => (
-                <ButtonContainer
-                    elementId={element.id}
-                    getAllClasses={getAllClasses}
-                    elementStyle={elementStyle}
-                    elementAttributes={elementAttributes}
-                />
-            )}
-        </ElementRoot>
-    );
+    const pageElements = usePageElements();
+
+    if (pageElements) {
+        return <PeButton element={element} />;
+    }
+
+    return <PeButton element={element} />;
 };
 
 export default Button;
