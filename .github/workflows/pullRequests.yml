@@ -64,7 +64,7 @@ jobs:
 
       - name: Create packages list
         id: create-packages-list
-        run: echo "::set-output name=packages-list::$(yarn webiny ws list --json)"
+        run: echo "::set-output name=packages-list::$(node scripts/listPackagesWithTests.js)"
 
   code-analysis:
     needs: cache-dependencies-packages
