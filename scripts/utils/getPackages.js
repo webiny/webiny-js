@@ -2,10 +2,10 @@ const readJson = require("load-json-file");
 const getPackages = require("get-yarn-workspaces");
 const { yellow } = require("chalk");
 const fs = require("fs-extra");
-const path = require("path");
+const nodePath = require("path");
 
-const PROJECT_ROOT = path.join(__dirname, "..", "..");
-const rootPackageJson = readJson.sync(path.join(PROJECT_ROOT, "package.json"));
+const PROJECT_ROOT = nodePath.join(__dirname, "..", "..");
+const rootPackageJson = readJson.sync(nodePath.join(PROJECT_ROOT, "package.json"));
 
 module.exports.PROJECT_ROOT = PROJECT_ROOT;
 module.exports.rootPackageJson = rootPackageJson;
@@ -56,10 +56,15 @@ module.exports.getPackages = (args = {}) => {
                 }
             }
 
+            const testsFolderPath = path + "/__tests__";
+            const hasTests = fs.existsSync(testsFolderPath);
+
             try {
                 return {
                     isTs: Boolean(tsConfigJson || tsConfigBuildJson),
+                    hasTests,
                     packageFolder: path,
+                    packageFolderRelativePath: path.replace(`${PROJECT_ROOT}/` , ''),
                     packageJsonPath,
                     tsConfigJsonPath,
                     tsConfigBuildJsonPath,
