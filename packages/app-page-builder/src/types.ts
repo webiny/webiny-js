@@ -349,7 +349,7 @@ export type PbEditorPageElementPlugin = Plugin & {
         parent?: PbEditorElement
     ) => Omit<PbEditorElement, "id">;
     // A function to render an element in the editor.
-    render: (params: { theme?: PbTheme; element: PbEditorElement; isActive: boolean }) => ReactNode;
+    render: (params: PbEditorPageElementRenderParams) => ReactNode;
     // A function to check if an element can be deleted.
     canDelete?: (params: { element: PbEditorElement }) => boolean;
     // Executed when another element is dropped on the drop zones of current element.
@@ -610,8 +610,13 @@ export interface PbEditorTextElementProps {
     mediumEditorOptions?: MediumEditorOptions;
 }
 
-export interface PeEditorTextElementProps {
+export interface PbEditorPageElementRenderParams {
+    theme?: PbTheme;
     element: PbEditorElement;
+    isActive: boolean;
+}
+
+export interface PeEditorTextElementProps extends PbEditorPageElementRenderParams {
     mediumEditorOptions?: MediumEditorOptions;
 }
 
