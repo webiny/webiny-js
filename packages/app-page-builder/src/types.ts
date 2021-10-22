@@ -610,6 +610,11 @@ export interface PbEditorTextElementProps {
     mediumEditorOptions?: MediumEditorOptions;
 }
 
+export interface PeEditorTextElementProps {
+    element: PbEditorElement;
+    mediumEditorOptions?: MediumEditorOptions;
+}
+
 export type PbRenderElementPluginArgs = {
     elementType?: string;
 };
