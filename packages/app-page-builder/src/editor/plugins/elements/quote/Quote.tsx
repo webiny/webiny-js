@@ -1,14 +1,15 @@
 import React from "react";
 import classNames from "classnames";
-import Text from "../../../components/Text";
-import { PbEditorTextElementProps } from "~/types";
-import { getMediumEditorOptions } from "../utils/textUtils";
+import { PeEditorTextElementProps } from "~/types";
+import { usePageElements } from "@webiny/app-page-builder-elements/hooks/usePageElements";
+import PeQuote from "./PeQuote";
+import PbQuote from "./PbQuote";
 
 export const className = classNames(
     "webiny-pb-base-page-element-style webiny-pb-page-element-text"
 );
 
-const DEFAULT_EDITOR_OPTIONS = {
+export const DEFAULT_EDITOR_OPTIONS = {
     toolbar: {
         buttons: ["bold", "italic", "underline", "anchor", "quote"]
     },
@@ -18,19 +19,12 @@ const DEFAULT_EDITOR_OPTIONS = {
     }
 };
 
-const Quote: React.FunctionComponent<PbEditorTextElementProps> = ({
-    elementId,
-    mediumEditorOptions
-}) => {
-    return (
-        <Text
-            elementId={elementId}
-            mediumEditorOptions={getMediumEditorOptions(
-                DEFAULT_EDITOR_OPTIONS,
-                mediumEditorOptions
-            )}
-            rootClassName={className}
-        />
-    );
+const Quote: React.FC<PeEditorTextElementProps> = props => {
+    const pageElements = usePageElements();
+    if (pageElements) {
+        return <PeQuote {...props} />;
+    }
+
+    return <PbQuote elementId={props.element.id} mediumEditorOptions={props.mediumEditorOptions} />;
 };
 export default React.memo(Quote);
