@@ -5,11 +5,11 @@
     { "path": "../api-security" },
     { "path": "../api-tenancy" },
     { "path": "../handler-graphql" },
-    { "path": "../handler-http" },
+    { "path": "../api-security-so-ddb" },
+    { "path": "../api-tenancy-so-ddb" },
     { "path": "../handler" },
     { "path": "../handler-aws" },
-    { "path": "../api-tenancy-so-ddb" },
-    { "path": "../api-security-so-ddb" }
+    { "path": "../handler-http" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -23,16 +23,16 @@
       "@webiny/api-tenancy": ["../api-tenancy/src"],
       "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
       "@webiny/handler-graphql": ["../handler-graphql/src"],
-      "@webiny/handler-http/*": ["../handler-http/src/*"],
-      "@webiny/handler-http": ["../handler-http/src"],
+      "@webiny/api-security-so-ddb/*": ["../api-security-so-ddb/src/*"],
+      "@webiny/api-security-so-ddb": ["../api-security-so-ddb/src"],
+      "@webiny/api-tenancy-so-ddb/*": ["../api-tenancy-so-ddb/src/*"],
+      "@webiny/api-tenancy-so-ddb": ["../api-tenancy-so-ddb/src"],
       "@webiny/handler/*": ["../handler/src/*"],
       "@webiny/handler": ["../handler/src"],
       "@webiny/handler-aws/*": ["../handler-aws/src/*"],
       "@webiny/handler-aws": ["../handler-aws/src"],
-      "@webiny/api-tenancy-so-ddb/*": ["../api-tenancy-so-ddb/src/*"],
-      "@webiny/api-tenancy-so-ddb": ["../api-tenancy-so-ddb/src"],
-      "@webiny/api-security-so-ddb/*": ["../api-security-so-ddb/src/*"],
-      "@webiny/api-security-so-ddb": ["../api-security-so-ddb/src"]
+      "@webiny/handler-http/*": ["../handler-http/src/*"],
+      "@webiny/handler-http": ["../handler-http/src"]
     },
     "baseUrl": "."
   }

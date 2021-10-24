@@ -4,7 +4,6 @@
   "references": [
     { "path": "../app" },
     { "path": "../app-security" },
-    { "path": "../app-tenancy" },
     { "path": "../form" },
     { "path": "../plugins" },
     { "path": "../react-router" },
@@ -22,8 +21,6 @@
       "@webiny/app": ["../app/src"],
       "@webiny/app-security/*": ["../app-security/src/*"],
       "@webiny/app-security": ["../app-security/src"],
-      "@webiny/app-tenancy/*": ["../app-tenancy/src/*"],
-      "@webiny/app-tenancy": ["../app-tenancy/src"],
       "@webiny/form/*": ["../form/src/*"],
       "@webiny/form": ["../form/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],

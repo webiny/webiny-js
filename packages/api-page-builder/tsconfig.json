@@ -20,7 +20,9 @@
     { "path": "../pubsub" },
     { "path": "../validation" },
     { "path": "../api-file-manager-ddb-es" },
-    { "path": "../api-i18n-ddb" }
+    { "path": "../api-i18n-ddb" },
+    { "path": "../api-security-so-ddb" },
+    { "path": "../api-tenancy-so-ddb" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -65,7 +67,11 @@
       "@webiny/api-file-manager-ddb-es/*": ["../api-file-manager-ddb-es/src/*"],
       "@webiny/api-file-manager-ddb-es": ["../api-file-manager-ddb-es/src"],
       "@webiny/api-i18n-ddb/*": ["../api-i18n-ddb/src/*"],
-      "@webiny/api-i18n-ddb": ["../api-i18n-ddb/src"]
+      "@webiny/api-i18n-ddb": ["../api-i18n-ddb/src"],
+      "@webiny/api-security-so-ddb/*": ["../api-security-so-ddb/src/*"],
+      "@webiny/api-security-so-ddb": ["../api-security-so-ddb/src"],
+      "@webiny/api-tenancy-so-ddb/*": ["../api-tenancy-so-ddb/src/*"],
+      "@webiny/api-tenancy-so-ddb": ["../api-tenancy-so-ddb/src"]
     },
     "baseUrl": "."
   }

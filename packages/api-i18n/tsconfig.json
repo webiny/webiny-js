@@ -11,8 +11,8 @@
     { "path": "../handler-aws" },
     { "path": "../handler-client" },
     { "path": "../handler-graphql" },
-    { "path": "../handler-http" },
-    { "path": "../plugins" }
+    { "path": "../plugins" },
+    { "path": "../handler-http" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -38,10 +38,10 @@
       "@webiny/handler-client": ["../handler-client/src"],
       "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
       "@webiny/handler-graphql": ["../handler-graphql/src"],
-      "@webiny/handler-http/*": ["../handler-http/src/*"],
-      "@webiny/handler-http": ["../handler-http/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
-      "@webiny/plugins": ["../plugins/src"]
+      "@webiny/plugins": ["../plugins/src"],
+      "@webiny/handler-http/*": ["../handler-http/src/*"],
+      "@webiny/handler-http": ["../handler-http/src"]
     },
     "baseUrl": "."
   }

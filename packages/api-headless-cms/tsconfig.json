@@ -16,7 +16,9 @@
     { "path": "../handler-graphql" },
     { "path": "../handler-http" },
     { "path": "../plugins" },
-    { "path": "../validation" }
+    { "path": "../validation" },
+    { "path": "../api-security-so-ddb" },
+    { "path": "../api-tenancy-so-ddb" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -53,7 +55,11 @@
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"],
       "@webiny/validation/*": ["../validation/src/*"],
-      "@webiny/validation": ["../validation/src"]
+      "@webiny/validation": ["../validation/src"],
+      "@webiny/api-security-so-ddb/*": ["../api-security-so-ddb/src/*"],
+      "@webiny/api-security-so-ddb": ["../api-security-so-ddb/src"],
+      "@webiny/api-tenancy-so-ddb/*": ["../api-tenancy-so-ddb/src/*"],
+      "@webiny/api-tenancy-so-ddb": ["../api-tenancy-so-ddb/src"]
     },
     "baseUrl": "."
   }

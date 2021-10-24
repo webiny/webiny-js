@@ -14,6 +14,9 @@
     { "path": "../api-dynamodb-to-elasticsearch" },
     { "path": "../api-file-manager-ddb-es" },
     { "path": "../api-i18n-ddb" },
+    { "path": "../api-security-so-ddb" },
+    { "path": "../api-tenancy" },
+    { "path": "../api-tenancy-so-ddb" },
     { "path": "../db" }
   ],
   "compilerOptions": {
@@ -46,6 +49,12 @@
       "@webiny/api-file-manager-ddb-es": ["../api-file-manager-ddb-es/src"],
       "@webiny/api-i18n-ddb/*": ["../api-i18n-ddb/src/*"],
       "@webiny/api-i18n-ddb": ["../api-i18n-ddb/src"],
+      "@webiny/api-security-so-ddb/*": ["../api-security-so-ddb/src/*"],
+      "@webiny/api-security-so-ddb": ["../api-security-so-ddb/src"],
+      "@webiny/api-tenancy/*": ["../api-tenancy/src/*"],
+      "@webiny/api-tenancy": ["../api-tenancy/src"],
+      "@webiny/api-tenancy-so-ddb/*": ["../api-tenancy-so-ddb/src/*"],
+      "@webiny/api-tenancy-so-ddb": ["../api-tenancy-so-ddb/src"],
       "@webiny/db/*": ["../db/src/*"],
       "@webiny/db": ["../db/src"]
     },

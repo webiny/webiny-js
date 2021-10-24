@@ -8959,7 +8959,9 @@ __metadata:
     "@webiny/api-i18n-content": ^5.16.0
     "@webiny/api-i18n-ddb": ^5.16.0
     "@webiny/api-security": ^5.16.0
+    "@webiny/api-security-so-ddb": ^5.16.0
     "@webiny/api-tenancy": ^5.16.0
+    "@webiny/api-tenancy-so-ddb": ^5.16.0
     "@webiny/api-upgrade": ^5.16.0
     "@webiny/cli": ^5.16.0
     "@webiny/error": ^5.16.0
@@ -9099,8 +9101,9 @@ __metadata:
     "@webiny/api-i18n-content": ^5.16.0
     "@webiny/api-i18n-ddb": ^5.16.0
     "@webiny/api-security": ^5.16.0
-    "@webiny/api-security-admin-users": ^5.16.0
+    "@webiny/api-security-so-ddb": ^5.16.0
     "@webiny/api-tenancy": ^5.16.0
+    "@webiny/api-tenancy-so-ddb": ^5.16.0
     "@webiny/api-upgrade": ^5.16.0
     "@webiny/cli": ^5.16.0
     "@webiny/error": ^5.16.0
@@ -9164,10 +9167,13 @@ __metadata:
     "@babel/runtime": ^7.5.5
     "@webiny/api-i18n": ^5.16.0
     "@webiny/api-security": ^5.16.0
+    "@webiny/api-security-so-ddb": ^5.16.0
     "@webiny/api-tenancy": ^5.16.0
+    "@webiny/api-tenancy-so-ddb": ^5.16.0
     "@webiny/cli": ^5.16.0
     "@webiny/db-dynamodb": ^5.16.0
     "@webiny/error": ^5.16.0
+    "@webiny/handler": ^5.16.0
     "@webiny/handler-aws": ^5.16.0
     "@webiny/handler-db": ^5.16.0
     "@webiny/handler-graphql": ^5.16.0
@@ -9262,6 +9268,9 @@ __metadata:
     "@webiny/api-i18n-ddb": ^5.16.0
     "@webiny/api-page-builder": ^5.16.0
     "@webiny/api-security": ^5.16.0
+    "@webiny/api-security-so-ddb": ^5.16.0
+    "@webiny/api-tenancy": ^5.16.0
+    "@webiny/api-tenancy-so-ddb": ^5.16.0
     "@webiny/cli": ^5.16.0
     "@webiny/db": ^5.16.0
     "@webiny/error": ^5.16.0
@@ -9381,7 +9390,9 @@ __metadata:
     "@webiny/api-i18n-ddb": ^5.16.0
     "@webiny/api-prerendering-service": ^5.16.0
     "@webiny/api-security": ^5.16.0
+    "@webiny/api-security-so-ddb": ^5.16.0
     "@webiny/api-tenancy": ^5.16.0
+    "@webiny/api-tenancy-so-ddb": ^5.16.0
     "@webiny/api-upgrade": ^5.16.0
     "@webiny/cli": ^5.16.0
     "@webiny/cli-plugin-deploy-pulumi": ^5.16.0
@@ -9473,68 +9484,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-security-admin-users-cognito@npm:^5.16.0":
-  version: 5.16.0
-  resolution: "@webiny/api-security-admin-users-cognito@npm:5.16.0"
-  dependencies:
-    "@webiny/api-security-admin-users": 5.16.0
-    "@webiny/handler-graphql": 5.16.0
-  checksum: 2c1cabcaf69bb291efb226ebcb6d023f7e71bc1774b6e4692223b738e54f5f06f96586f80c00458bfc04fd3dab9993a23e4468e904024120947c6e446e4cb017
-  languageName: node
-  linkType: hard
-
-"@webiny/api-security-admin-users-so-ddb@npm:^5.16.0":
-  version: 5.16.0
-  resolution: "@webiny/api-security-admin-users-so-ddb@npm:5.16.0"
-  dependencies:
-    "@webiny/api-security-admin-users": 5.16.0
-    "@webiny/api-tenancy": 5.16.0
-    "@webiny/db-dynamodb": 5.16.0
-    "@webiny/error": 5.16.0
-    "@webiny/handler-db": 5.16.0
-    dynamodb-toolbox: 0.3.4
-  checksum: 1d10c9786d277cc93517420a58400e6b52747cf9cce8c4bddbe3300e80fcef826991bf93c215e0b39e7c880f0a773a816dafebe294943d7e50bc3738fc1ffce3
-  languageName: node
-  linkType: hard
-
-"@webiny/api-security-admin-users@npm:5.16.0, @webiny/api-security-admin-users@npm:^5.16.0":
-  version: 5.16.0
-  resolution: "@webiny/api-security-admin-users@npm:5.16.0"
-  dependencies:
-    "@commodo/fields": 1.1.2-beta.20
-    "@webiny/api-security": 5.16.0
-    "@webiny/api-tenancy": 5.16.0
-    "@webiny/error": 5.16.0
-    "@webiny/handler": 5.16.0
-    "@webiny/handler-aws": 5.16.0
-    "@webiny/handler-graphql": 5.16.0
-    "@webiny/handler-http": 5.16.0
-    "@webiny/plugins": 5.16.0
-    "@webiny/validation": 5.16.0
-    commodo-fields-object: 1.0.6
-    dataloader: 2.0.0
-    deep-equal: 2.0.5
-    lodash.clonedeep: 4.5.0
-    md5: 2.3.0
-    mdbid: 1.0.0
-  checksum: 5e72ebfc8057d5436ef00b00fcaa018681de5ac5db56e872bf68d12312c2a33fb6d3513604a07e334b5168f5e6bbb85562f96d48e61f4d9e7abca1dffd223cc5
-  languageName: node
-  linkType: hard
-
-"@webiny/api-security-cognito-authentication@npm:^5.16.0":
-  version: 5.16.0
-  resolution: "@webiny/api-security-cognito-authentication@npm:5.16.0"
-  dependencies:
-    "@webiny/api-security": 5.16.0
-    "@webiny/handler": 5.16.0
-    "@webiny/handler-http": 5.16.0
-    jsonwebtoken: 8.5.1
-    jwk-to-pem: 2.0.5
-    node-fetch: 2.6.1
-  checksum: 58c28eed5f262b8787ac274d6eb84a01ed38a6c1a1797fe3b24148cdbb126f78c63f76a73bf386fe8056e92413c2bc12697639a8c5cf40ccd2849e5f8b7db449
-  languageName: node
-  linkType: hard
-
 "@webiny/api-security-cognito@^5.16.0, @webiny/api-security-cognito@workspace:packages/api-security-cognito":
   version: 0.0.0-use.local
   resolution: "@webiny/api-security-cognito@workspace:packages/api-security-cognito"
@@ -9552,7 +9501,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-security-okta@^5.16.0, @webiny/api-security-okta@workspace:packages/api-security-okta":
+"@webiny/api-security-okta@workspace:packages/api-security-okta":
   version: 0.0.0-use.local
   resolution: "@webiny/api-security-okta@workspace:packages/api-security-okta"
   dependencies:
@@ -9594,7 +9543,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-security@5.16.0, @webiny/api-security@^5.16.0, @webiny/api-security@workspace:packages/api-security":
+"@webiny/api-security@^5.16.0, @webiny/api-security@workspace:packages/api-security":
   version: 0.0.0-use.local
   resolution: "@webiny/api-security@workspace:packages/api-security"
   dependencies:
@@ -9648,7 +9597,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-tenancy@5.16.0, @webiny/api-tenancy@^5.16.0, @webiny/api-tenancy@workspace:packages/api-tenancy":
+"@webiny/api-tenancy@^5.16.0, @webiny/api-tenancy@workspace:packages/api-tenancy":
   version: 0.0.0-use.local
   resolution: "@webiny/api-tenancy@workspace:packages/api-tenancy"
   dependencies:
@@ -9754,7 +9703,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/app-admin-okta@^5.16.0, @webiny/app-admin-okta@workspace:packages/app-admin-okta":
+"@webiny/app-admin-okta@workspace:packages/app-admin-okta":
   version: 0.0.0-use.local
   resolution: "@webiny/app-admin-okta@workspace:packages/app-admin-okta"
   dependencies:
@@ -9771,15 +9720,19 @@ __metadata:
     "@okta/okta-react": ^6.1.0
     "@okta/okta-signin-widget": ^5.9.4
     "@webiny/app": ^5.16.0
+    "@webiny/app-admin": ^5.16.0
     "@webiny/app-security": ^5.16.0
     "@webiny/app-tenancy": ^5.16.0
     "@webiny/cli": ^5.16.0
     "@webiny/plugins": ^5.16.0
     "@webiny/project-utils": ^5.16.0
-    "@webiny/react-router": ^5.16.0
     "@webiny/ui": ^5.16.0
+    apollo-client: ^2.6.10
     apollo-link-context: ^1.0.20
     babel-plugin-lodash: ^3.3.4
+    emotion: ^10.0.27
+    graphql: ^14.7.0
+    graphql-tag: ^2.12.5
     react: ^16.14.0
     react-dom: ^16.14.0
     rimraf: ^3.0.2
@@ -10480,6 +10433,7 @@ __metadata:
     apollo-utilities: ^1.3.4
     babel-plugin-emotion: ^9.2.8
     babel-plugin-named-asset-import: ^1.0.0-next.3e165448
+    emotion: ^10.0.27
     graphql: ^14.7.0
     graphql-tag: ^2.10.1
     lodash: ^4.17.11
@@ -10923,7 +10877,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/db-dynamodb@5.16.0, @webiny/db-dynamodb@^5.16.0, @webiny/db-dynamodb@workspace:packages/db-dynamodb":
+"@webiny/db-dynamodb@^5.16.0, @webiny/db-dynamodb@workspace:packages/db-dynamodb":
   version: 0.0.0-use.local
   resolution: "@webiny/db-dynamodb@workspace:packages/db-dynamodb"
   dependencies:
@@ -10963,7 +10917,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/error@5.16.0, @webiny/error@^5.16.0, @webiny/error@workspace:packages/error":
+"@webiny/error@^5.16.0, @webiny/error@workspace:packages/error":
   version: 0.0.0-use.local
   resolution: "@webiny/error@workspace:packages/error"
   dependencies:
@@ -11024,7 +10978,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/handler-aws@5.16.0, @webiny/handler-aws@^5.16.0, @webiny/handler-aws@workspace:packages/handler-aws":
+"@webiny/handler-aws@^5.16.0, @webiny/handler-aws@workspace:packages/handler-aws":
   version: 0.0.0-use.local
   resolution: "@webiny/handler-aws@workspace:packages/handler-aws"
   dependencies:
@@ -11069,7 +11023,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/handler-db@5.16.0, @webiny/handler-db@^5.16.0, @webiny/handler-db@workspace:packages/handler-db":
+"@webiny/handler-db@^5.16.0, @webiny/handler-db@workspace:packages/handler-db":
   version: 0.0.0-use.local
   resolution: "@webiny/handler-db@workspace:packages/handler-db"
   dependencies:
@@ -11086,7 +11040,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/handler-graphql@5.16.0, @webiny/handler-graphql@^5.16.0, @webiny/handler-graphql@workspace:packages/handler-graphql":
+"@webiny/handler-graphql@^5.16.0, @webiny/handler-graphql@workspace:packages/handler-graphql":
   version: 0.0.0-use.local
   resolution: "@webiny/handler-graphql@workspace:packages/handler-graphql"
   dependencies:
@@ -11113,7 +11067,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/handler-http@5.16.0, @webiny/handler-http@^5.15.0, @webiny/handler-http@^5.16.0, @webiny/handler-http@workspace:packages/handler-http":
+"@webiny/handler-http@^5.15.0, @webiny/handler-http@^5.16.0, @webiny/handler-http@workspace:packages/handler-http":
   version: 0.0.0-use.local
   resolution: "@webiny/handler-http@workspace:packages/handler-http"
   dependencies:
@@ -11147,7 +11101,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/handler@5.16.0, @webiny/handler@^5.15.0, @webiny/handler@^5.16.0, @webiny/handler@workspace:packages/handler":
+"@webiny/handler@^5.15.0, @webiny/handler@^5.16.0, @webiny/handler@workspace:packages/handler":
   version: 0.0.0-use.local
   resolution: "@webiny/handler@workspace:packages/handler"
   dependencies:
@@ -11211,7 +11165,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/plugins@5.16.0, @webiny/plugins@^5.16.0, @webiny/plugins@workspace:packages/plugins":
+"@webiny/plugins@^5.16.0, @webiny/plugins@workspace:packages/plugins":
   version: 0.0.0-use.local
   resolution: "@webiny/plugins@workspace:packages/plugins"
   dependencies:
@@ -11551,7 +11505,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/validation@5.16.0, @webiny/validation@^5.16.0, @webiny/validation@workspace:packages/validation":
+"@webiny/validation@^5.16.0, @webiny/validation@workspace:packages/validation":
   version: 0.0.0-use.local
   resolution: "@webiny/validation@workspace:packages/validation"
   dependencies:
@@ -11888,7 +11842,6 @@ __metadata:
     "@types/react": ^16.14.2
     "@webiny/app": ^5.16.0
     "@webiny/app-admin": ^5.16.0
-    "@webiny/app-admin-okta": ^5.16.0
     "@webiny/app-admin-users-cognito": ^5.16.0
     "@webiny/app-file-manager": ^5.16.0
     "@webiny/app-file-manager-s3": ^5.16.0
@@ -12387,7 +12340,6 @@ __metadata:
     "@webiny/api-prerendering-service": ^5.16.0
     "@webiny/api-security": ^5.16.0
     "@webiny/api-security-cognito": ^5.16.0
-    "@webiny/api-security-okta": ^5.16.0
     "@webiny/api-security-so-ddb": ^5.16.0
     "@webiny/api-tenancy": ^5.16.0
     "@webiny/api-tenancy-so-ddb": ^5.16.0
@@ -12454,11 +12406,10 @@ __metadata:
     "@webiny/api-page-builder-import-export-so-ddb": ^5.16.0
     "@webiny/api-page-builder-so-ddb-es": ^5.16.0
     "@webiny/api-security": ^5.16.0
-    "@webiny/api-security-admin-users": ^5.16.0
-    "@webiny/api-security-admin-users-cognito": ^5.16.0
-    "@webiny/api-security-admin-users-so-ddb": ^5.16.0
-    "@webiny/api-security-cognito-authentication": ^5.16.0
+    "@webiny/api-security-cognito": ^5.16.0
+    "@webiny/api-security-so-ddb": ^5.16.0
     "@webiny/api-tenancy": ^5.16.0
+    "@webiny/api-tenancy-so-ddb": ^5.16.0
     "@webiny/cli": ^5.16.0
     "@webiny/db-dynamodb": ^5.16.0
     "@webiny/handler-aws": ^5.16.0
@@ -12484,11 +12435,10 @@ __metadata:
     "@webiny/api-page-builder-import-export-so-ddb": ^5.16.0
     "@webiny/api-page-builder-so-ddb-es": ^5.16.0
     "@webiny/api-security": ^5.16.0
-    "@webiny/api-security-admin-users": ^5.16.0
-    "@webiny/api-security-admin-users-cognito": ^5.16.0
-    "@webiny/api-security-admin-users-so-ddb": ^5.16.0
-    "@webiny/api-security-cognito-authentication": ^5.16.0
+    "@webiny/api-security-cognito": ^5.16.0
+    "@webiny/api-security-so-ddb": ^5.16.0
     "@webiny/api-tenancy": ^5.16.0
+    "@webiny/api-tenancy-so-ddb": ^5.16.0
     "@webiny/cli": ^5.16.0
     "@webiny/db-dynamodb": ^5.16.0
     "@webiny/handler-aws": ^5.16.0
@@ -12529,11 +12479,10 @@ __metadata:
     "@webiny/api-page-builder-import-export-so-ddb": ^5.16.0
     "@webiny/api-page-builder-so-ddb-es": ^5.16.0
     "@webiny/api-security": ^5.16.0
-    "@webiny/api-security-admin-users": ^5.16.0
-    "@webiny/api-security-admin-users-cognito": ^5.16.0
-    "@webiny/api-security-admin-users-so-ddb": ^5.16.0
-    "@webiny/api-security-cognito-authentication": ^5.16.0
+    "@webiny/api-security-cognito": ^5.16.0
+    "@webiny/api-security-so-ddb": ^5.16.0
     "@webiny/api-tenancy": ^5.16.0
+    "@webiny/api-tenancy-so-ddb": ^5.16.0
     "@webiny/cli": ^5.16.0
     "@webiny/db-dynamodb": ^5.16.0
     "@webiny/handler-aws": ^5.16.0
@@ -12559,11 +12508,10 @@ __metadata:
     "@webiny/api-page-builder-import-export-so-ddb": ^5.16.0
     "@webiny/api-page-builder-so-ddb-es": ^5.16.0
     "@webiny/api-security": ^5.16.0
-    "@webiny/api-security-admin-users": ^5.16.0
-    "@webiny/api-security-admin-users-cognito": ^5.16.0
-    "@webiny/api-security-admin-users-so-ddb": ^5.16.0
-    "@webiny/api-security-cognito-authentication": ^5.16.0
+    "@webiny/api-security-cognito": ^5.16.0
+    "@webiny/api-security-so-ddb": ^5.16.0
     "@webiny/api-tenancy": ^5.16.0
+    "@webiny/api-tenancy-so-ddb": ^5.16.0
     "@webiny/cli": ^5.16.0
     "@webiny/db-dynamodb": ^5.16.0
     "@webiny/handler-aws": ^5.16.0
@@ -15893,7 +15841,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"commodo-fields-object@npm:1.0.6, commodo-fields-object@npm:^1.0.3, commodo-fields-object@npm:^1.0.6":
+"commodo-fields-object@npm:^1.0.3, commodo-fields-object@npm:^1.0.6":
   version: 1.0.6
   resolution: "commodo-fields-object@npm:1.0.6"
   dependencies:
@@ -17308,7 +17256,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dataloader@npm:2.0.0, dataloader@npm:^2.0.0":
+"dataloader@npm:^2.0.0":
   version: 2.0.0
   resolution: "dataloader@npm:2.0.0"
   checksum: 9f10b9d2e35225b08a72435facfe40c0c124e329f43bd0fe4d67411ee667d12145f7ce63f9b74f73af8556dc6a98bae59147a5cca2171315dc1de509d4db04c0
@@ -17570,7 +17518,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"deep-equal@npm:2.0.5, deep-equal@npm:^2.0.5":
+"deep-equal@npm:^1.0.1, deep-equal@npm:^1.1.1":
+  version: 1.1.1
+  resolution: "deep-equal@npm:1.1.1"
+  dependencies:
+    is-arguments: ^1.0.4
+    is-date-object: ^1.0.1
+    is-regex: ^1.0.4
+    object-is: ^1.0.1
+    object-keys: ^1.1.1
+    regexp.prototype.flags: ^1.2.0
+  checksum: f92686f2c5bcdf714a75a5fa7a9e47cb374a8ec9307e717b8d1ce61f56a75aaebf5619c2a12b8087a705b5a2f60d0292c35f8b58cb1f72e3268a3a15cab9f78d
+  languageName: node
+  linkType: hard
+
+"deep-equal@npm:^2.0.5":
   version: 2.0.5
   resolution: "deep-equal@npm:2.0.5"
   dependencies:
@@ -17590,20 +17552,6 @@ __metadata:
     which-collection: ^1.0.1
     which-typed-array: ^1.1.2
   checksum: 2bb7332badf589b540184d25098acac750e30fe11c8dce4523d03fc5db15f46881a0105e6bf0b64bb0c57213a95ed964029ff0259026ad6f7f9e0019f8200de5
-  languageName: node
-  linkType: hard
-
-"deep-equal@npm:^1.0.1, deep-equal@npm:^1.1.1":
-  version: 1.1.1
-  resolution: "deep-equal@npm:1.1.1"
-  dependencies:
-    is-arguments: ^1.0.4
-    is-date-object: ^1.0.1
-    is-regex: ^1.0.4
-    object-is: ^1.0.1
-    object-keys: ^1.1.1
-    regexp.prototype.flags: ^1.2.0
-  checksum: f92686f2c5bcdf714a75a5fa7a9e47cb374a8ec9307e717b8d1ce61f56a75aaebf5619c2a12b8087a705b5a2f60d0292c35f8b58cb1f72e3268a3a15cab9f78d
   languageName: node
   linkType: hard
 
@@ -18499,7 +18447,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dynamodb-toolbox@npm:0.3.4, dynamodb-toolbox@npm:^0.3.3, dynamodb-toolbox@npm:^0.3.4":
+"dynamodb-toolbox@npm:^0.3.3, dynamodb-toolbox@npm:^0.3.4":
   version: 0.3.4
   resolution: "dynamodb-toolbox@npm:0.3.4"
   checksum: 36bde9d93b2749f4004ad9cefc9caa542b9084e10cd884a0f5128a35261da62580595c43c3ad68226bfe1dfc82a44c3d726167f1a267c143cc223e1170aa2e30
@@ -25299,7 +25247,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"jwk-to-pem@npm:2.0.5, jwk-to-pem@npm:^2.0.1":
+"jwk-to-pem@npm:^2.0.1":
   version: 2.0.5
   resolution: "jwk-to-pem@npm:2.0.5"
   dependencies:
@@ -26014,7 +25962,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"lodash.clonedeep@npm:4.5.0, lodash.clonedeep@npm:^4.5.0":
+"lodash.clonedeep@npm:^4.5.0":
   version: 4.5.0
   resolution: "lodash.clonedeep@npm:4.5.0"
   checksum: 92c46f094b064e876a23c97f57f81fbffd5d760bf2d8a1c61d85db6d1e488c66b0384c943abee4f6af7debf5ad4e4282e74ff83177c9e63d8ff081a4837c3489
@@ -26789,7 +26737,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"md5@npm:2.3.0, md5@npm:^2.3.0":
+"md5@npm:^2.3.0":
   version: 2.3.0
   resolution: "md5@npm:2.3.0"
   dependencies:
@@ -26800,7 +26748,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"mdbid@npm:1.0.0, mdbid@npm:^1.0.0":
+"mdbid@npm:^1.0.0":
   version: 1.0.0
   resolution: "mdbid@npm:1.0.0"
   dependencies:

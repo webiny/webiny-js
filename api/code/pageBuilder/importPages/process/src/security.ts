@@ -1,30 +1,40 @@
-import tenancy from "@webiny/api-tenancy";
+import{ createTenancyContext, createTenancyGraphQL } from "@webiny/api-tenancy";
 import { createStorageOperations as tenancyStorageOperations } from "@webiny/api-tenancy-so-ddb";
-import security from "@webiny/api-security";
+import { createSecurityContext, createSecurityGraphQL } from "@webiny/api-security";
 import { createStorageOperations as securityStorageOperations } from "@webiny/api-security-so-ddb";
 import { authenticateUsingHttpHeader } from "@webiny/api-security/plugins/authenticateUsingHttpHeader";
 import apiKeyAuthentication from "@webiny/api-security/plugins/apiKeyAuthentication";
 import apiKeyAuthorization from "@webiny/api-security/plugins/apiKeyAuthorization";
 import groupAuthorization from "@webiny/api-security/plugins/groupAuthorization";
 import parentTenantGroupAuthorization from "@webiny/api-security/plugins/parentTenantGroupAuthorization";
-import anonymousAuthorization from "@webiny/api-security/plugins/anonymousAuthorization";
 import cognitoAuthentication from "@webiny/api-security-cognito";
+import anonymousAuthorization from "@webiny/api-security/plugins/anonymousAuthorization";
 
 export default ({ documentClient }) => [
     /**
-     * Setup Tenancy app.
+     * Create Tenancy app in the `context`.
      */
-    tenancy({
+    createTenancyContext({
         multiTenancy: true,
         storageOperations: tenancyStorageOperations({ documentClient })
     }),
 
     /**
-     * Setup Security app.
+     * Expose tenancy GraphQL schema.
      */
-    security({
+    createTenancyGraphQL(),
+
+    /**
+     * Create Security app in the `context`.
+     */
+    createSecurityContext({
         storageOperations: securityStorageOperations({ documentClient })
     }),
+
+    /**
+     * Expose security GraphQL schema.
+     */
+    createSecurityGraphQL(),
 
     /**
      * Perform authentication using the common "Authorization" HTTP header.

@@ -19,7 +19,9 @@
     { "path": "../utils" },
     { "path": "../validation" },
     { "path": "../api-dynamodb-to-elasticsearch" },
-    { "path": "../api-file-manager-ddb" }
+    { "path": "../api-file-manager-ddb" },
+    { "path": "../api-security-so-ddb" },
+    { "path": "../api-tenancy-so-ddb" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -62,7 +64,11 @@
       "@webiny/api-dynamodb-to-elasticsearch/*": ["../api-dynamodb-to-elasticsearch/src/*"],
       "@webiny/api-dynamodb-to-elasticsearch": ["../api-dynamodb-to-elasticsearch/src"],
       "@webiny/api-file-manager-ddb/*": ["../api-file-manager-ddb/src/*"],
-      "@webiny/api-file-manager-ddb": ["../api-file-manager-ddb/src"]
+      "@webiny/api-file-manager-ddb": ["../api-file-manager-ddb/src"],
+      "@webiny/api-security-so-ddb/*": ["../api-security-so-ddb/src/*"],
+      "@webiny/api-security-so-ddb": ["../api-security-so-ddb/src"],
+      "@webiny/api-tenancy-so-ddb/*": ["../api-tenancy-so-ddb/src/*"],
+      "@webiny/api-tenancy-so-ddb": ["../api-tenancy-so-ddb/src"]
     },
     "baseUrl": "."
   }

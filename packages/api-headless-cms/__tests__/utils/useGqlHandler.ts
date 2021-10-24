@@ -3,7 +3,7 @@ import i18nContext from "@webiny/api-i18n/graphql/context";
 import i18nContentPlugins from "@webiny/api-i18n-content/plugins";
 import { createHandler } from "@webiny/handler-aws";
 import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
-import { SecurityIdentity } from "@webiny/api-security/types";
+import { ApiKey, SecurityIdentity } from "@webiny/api-security/types";
 import apiKeyAuthentication from "@webiny/api-security/plugins/apiKeyAuthentication";
 import apiKeyAuthorization from "@webiny/api-security/plugins/apiKeyAuthorization";
 import { createPermissions, until, PermissionsArg } from "./helpers";
@@ -23,14 +23,11 @@ import {
     UPDATE_CONTENT_MODEL_MUTATION
 } from "./graphql/contentModel";
 
-import { ApiKey } from "@webiny/api-security-admin-users/types";
-
 /**
  * Unfortunately at we need to import the api-i18n-ddb package manually
  */
 import i18nDynamoDbStorageOperations from "@webiny/api-i18n-ddb";
 import { createTenancyAndSecurity } from "./tenancySecurity";
-
 
 export interface GQLHandlerCallableArgs {
     setupTenancyAndSecurityGraphQL?: boolean;
@@ -47,7 +44,13 @@ export const useGqlHandler = (args?: GQLHandlerCallableArgs) => {
         throw new Error(`There is no global "storageOperationsPlugins" function.`);
     }
     const tenant = { id: "root", name: "Root", parent: null };
-    const { permissions, identity, plugins = [], path, setupTenancyAndSecurityGraphQL } = args || {};
+    const {
+        permissions,
+        identity,
+        plugins = [],
+        path,
+        setupTenancyAndSecurityGraphQL
+    } = args || {};
 
     const handler = createHandler({
         plugins: [

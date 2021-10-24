@@ -20,7 +20,9 @@
     { "path": "../pubsub/tsconfig.build.json" },
     { "path": "../validation/tsconfig.build.json" },
     { "path": "../api-file-manager-ddb-es/tsconfig.build.json" },
-    { "path": "../api-i18n-ddb/tsconfig.build.json" }
+    { "path": "../api-i18n-ddb/tsconfig.build.json" },
+    { "path": "../api-security-so-ddb/tsconfig.build.json" },
+    { "path": "../api-tenancy-so-ddb/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "rootDir": "./src",

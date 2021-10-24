@@ -9,21 +9,13 @@ import { AppInstaller } from "@webiny/app-admin/components/AppInstaller";
 import { CmsProvider } from "@webiny/app-headless-cms/admin/contexts/Cms";
 import { PageBuilderProvider } from "@webiny/app-page-builder/contexts/PageBuilder";
 import { BrowserRouter } from "@webiny/react-router";
+import { TenancyProvider } from "@webiny/app-tenancy";
+import { createAuthentication } from "@webiny/app-admin-users-cognito";
 import { createApolloClient } from "./components/apolloClient";
 import { Telemetry } from "./components/Telemetry";
-// Import styles which include custom theme styles
 import "./App.scss";
 
-import { TenancyProvider } from "@webiny/app-tenancy";
-
-// Cognito
-import { createAuthentication } from "@webiny/app-admin-users-cognito";
 const Authentication = createAuthentication();
-
-// Okta
-// import { oktaSignIn, oktaAuth } from "./okta";
-// import { createAuthentication } from "@webiny/app-admin-okta";
-// const Authentication = createAuthentication({ oktaSignIn, oktaAuth });
 
 export const App = () => (
     <TenancyProvider>
