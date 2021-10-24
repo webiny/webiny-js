@@ -3,12 +3,10 @@ import { createTenancyContext, createTenancyGraphQL } from "@webiny/api-tenancy"
 import { createStorageOperations as tenancyStorageOperations } from "@webiny/api-tenancy-so-ddb";
 import { createSecurityContext, createSecurityGraphQL } from "@webiny/api-security";
 import { createStorageOperations as securityStorageOperations } from "@webiny/api-security-so-ddb";
-import { SecurityContext, SecurityIdentity } from "@webiny/api-security/types";
+import { SecurityContext, SecurityIdentity, SecurityPermission } from "@webiny/api-security/types";
 import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
 import { BeforeHandlerPlugin } from "@webiny/handler/plugins/BeforeHandlerPlugin";
 import { TenancyContext } from "@webiny/api-tenancy/types";
-import { AdminUsersContext } from "~/types";
-import { createGroupAuthorizer } from "@webiny/api-security/plugins/groupAuthorization";
 
 // IMPORTANT: This must be removed from here in favor of a dynamic SO setup.
 const documentClient = new DocumentClient({
@@ -21,11 +19,17 @@ const documentClient = new DocumentClient({
 });
 
 interface Config {
-    fullAccess?: boolean;
+    permissions?: SecurityPermission[];
     identity?: SecurityIdentity;
 }
 
-export const createTenancyAndSecurity = ({ fullAccess, identity }: Config = {}) => {
+export const defaultIdentity = {
+    id: "12345678",
+    type: "admin",
+    displayName: "John Doe"
+};
+
+export const createTenancyAndSecurity = ({ permissions, identity }: Config = {}) => {
     return [
         createTenancyContext({
             storageOperations: tenancyStorageOperations({
@@ -45,32 +49,14 @@ export const createTenancyAndSecurity = ({ fullAccess, identity }: Config = {}) 
             context.tenancy.setCurrentTenant({ id: "root", name: "Root" });
 
             context.security.addAuthenticator(async () => {
-                return (
-                    identity || {
-                        id: "12345678",
-                        type: "admin",
-                        displayName: "John Doe"
-                    }
-                );
+                return identity || defaultIdentity;
             });
 
-            const groupAuthorizer = createGroupAuthorizer({ identityType: "admin" })(context);
             context.security.addAuthorizer(async () => {
-                if (fullAccess) {
-                    return [{ name: "*" }];
-                }
-
-                return groupAuthorizer();
+                return permissions || [{ name: "*" }];
             });
         }),
-        new BeforeHandlerPlugin<SecurityContext & AdminUsersContext>(context => {
-            // We need to set an exact user ID to match the Identity ID
-            context.adminUsers.onUserBeforeCreate.subscribe(({ user }) => {
-                if (user.email === "admin@webiny.com") {
-                    user.id = "12345678";
-                }
-            });
-
+        new BeforeHandlerPlugin<SecurityContext>(context => {
             return context.security.authenticate("");
         })
     ];

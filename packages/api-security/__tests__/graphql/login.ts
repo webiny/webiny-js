@@ -16,10 +16,6 @@ export const LOGIN = /* GraphQL */ `
                         displayName
                         permissions
                         type
-                        tenant {
-                            id
-                            name
-                        }
                     }
                 }
                 error ${ERROR_FIELD}

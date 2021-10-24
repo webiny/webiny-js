@@ -23,10 +23,6 @@ describe(`"Login" test`, () => {
                             id: "123456789",
                             displayName: "John Doe",
                             type: "admin",
-                            tenant: {
-                                id: "root",
-                                name: "Root"
-                            },
                             permissions: [{ name: "*" }]
                         },
                         error: null

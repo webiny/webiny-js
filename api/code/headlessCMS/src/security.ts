@@ -1,6 +1,6 @@
-import{ createTenancyApp, createTenancyGraphQL } from "@webiny/api-tenancy";
+import{ createTenancyContext, createTenancyGraphQL } from "@webiny/api-tenancy";
 import { createStorageOperations as tenancyStorageOperations } from "@webiny/api-tenancy-so-ddb";
-import { createSecurityApp, createSecurityGraphQL } from "@webiny/api-security";
+import { createSecurityContext, createSecurityGraphQL } from "@webiny/api-security";
 import { createStorageOperations as securityStorageOperations } from "@webiny/api-security-so-ddb";
 import { authenticateUsingHttpHeader } from "@webiny/api-security/plugins/authenticateUsingHttpHeader";
 import apiKeyAuthentication from "@webiny/api-security/plugins/apiKeyAuthentication";
@@ -15,7 +15,7 @@ export default ({ documentClient }) => [
     /**
      * Create Tenancy app in the `context`.
      */
-    createTenancyApp({
+    createTenancyContext({
         multiTenancy: true,
         storageOperations: tenancyStorageOperations({ documentClient })
     }),
@@ -28,7 +28,7 @@ export default ({ documentClient }) => [
     /**
      * Create Security app in the `context`.
      */
-    createSecurityApp({
+    createSecurityContext({
         storageOperations: securityStorageOperations({ documentClient })
     }),
 

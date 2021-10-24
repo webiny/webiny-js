@@ -7,7 +7,7 @@ import handlerClient from "@webiny/handler-client";
 
 const defaults = {
     db: {
-        table: "PrerenderingService",
+        table: process.env.DB_TABLE,
         keys: [
             {
                 primary: true,
@@ -39,7 +39,7 @@ export default (...plugins) => {
             }
         }),
         dbPlugins({
-            table: "PrerenderingService",
+            table: process.env.DB_TABLE,
             driver: dynamoDbDriver
         })
     );

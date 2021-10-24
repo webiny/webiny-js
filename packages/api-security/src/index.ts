@@ -25,7 +25,7 @@ export interface SecurityConfig extends MultiTenancyAppConfig {
 
 type Context = SecurityContext & TenancyContext;
 
-export const createSecurityApp = ({ storageOperations, ...config }: SecurityConfig) => {
+export const createSecurityContext = ({ storageOperations, ...config }: SecurityConfig) => {
     return new ContextPlugin<Context>(async context => {
         context.security = await createSecurity({
             getTenant: () => {

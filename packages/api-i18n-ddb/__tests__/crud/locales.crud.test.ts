@@ -1,5 +1,6 @@
 import useGqlHandler from "../useGqlHandler";
 import originField from "../mocks/originField";
+import { defaultIdentity } from "../tenancySecurity";
 
 const localeData = {
     code: "hr-HR",
@@ -9,11 +10,7 @@ const localeData = {
 
 const expectedLocaleData = {
     ...localeData,
-    createdBy: {
-        id: "admin@webiny.com",
-        displayName: "John Doe",
-        type: "admin"
-    },
+    createdBy: defaultIdentity,
     createdOn: expect.stringMatching(/^20/)
 };
 

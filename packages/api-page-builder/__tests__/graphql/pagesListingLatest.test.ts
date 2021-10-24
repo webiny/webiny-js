@@ -1,6 +1,6 @@
 import useGqlHandler from "./useGqlHandler";
 import { identityB } from "./mocks";
-import { Page } from "../../src/types";
+import { Page } from "~/types";
 import { waitPage } from "./utils/waitPage";
 
 describe("listing latest pages", () => {

@@ -1,13 +1,6 @@
 import { createHandler } from "@webiny/handler-aws";
 import graphqlHandler from "@webiny/handler-graphql";
 import tenantManagerPlugins from "../src";
-import tenancyPlugins from "@webiny/api-tenancy";
-import securityPlugins from "@webiny/api-security";
-const { DocumentClient } = require("aws-sdk/clients/dynamodb");
-import { createStorageOperations as tenancyStorageOperations } from "@webiny/api-tenancy-so-ddb";
-import { createStorageOperations as securityStorageOperations } from "@webiny/api-security-so-ddb";
-import { customAuthenticator } from "./mocks/customAuthenticator";
-import { customAuthorizer } from "./mocks/customAuthorizer";
 import {
     CREATE_TENANT,
     DELETE_TENANT,
@@ -17,34 +10,18 @@ import {
     INSTALL_TENANCY,
     INSTALL_SECURITY
 } from "./graphql/tenants";
+import { createTenancyAndSecurity } from "./tenancySecurity";
 
 type UseGqlHandlerParams = {
     plugins?: any;
 };
-
-// IMPORTANT: This must be removed from here in favor of a dynamic SO setup.
-const documentClient = new DocumentClient({
-    convertEmptyValues: true,
-    endpoint: process.env.MOCK_DYNAMODB_ENDPOINT || "http://localhost:8001",
-    sslEnabled: false,
-    region: "local",
-    accessKeyId: "test",
-    secretAccessKey: "test"
-});
 
 export default (params: UseGqlHandlerParams = {}) => {
     const { plugins: extraPlugins } = params;
 
     // Creates the actual handler. Feel free to add additional plugins if needed.
     const handler = createHandler(
-        tenancyPlugins({
-            storageOperations: tenancyStorageOperations({ documentClient, table: process.env.DB_TABLE })
-        }),
-        securityPlugins({
-            storageOperations: securityStorageOperations({ documentClient, table: process.env.DB_TABLE })
-        }),
-        customAuthenticator(),
-        customAuthorizer(),
+        ...createTenancyAndSecurity(),
         graphqlHandler(),
         tenantManagerPlugins(),
         extraPlugins || []

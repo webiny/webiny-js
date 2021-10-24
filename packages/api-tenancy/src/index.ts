@@ -9,7 +9,7 @@ interface TenancyPluginsParams {
     storageOperations: TenancyStorageOperations;
 }
 
-export const createTenancyApp = ({ multiTenancy, storageOperations }: TenancyPluginsParams) => {
+export const createTenancyContext = ({ multiTenancy, storageOperations }: TenancyPluginsParams) => {
     return new ContextPlugin<TenancyContext>(async context => {
         let tenantId = "root";
 

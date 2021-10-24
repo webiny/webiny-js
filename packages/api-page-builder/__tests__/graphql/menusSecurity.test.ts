@@ -74,10 +74,7 @@ describe("Menus Security Test", () => {
                         listMenus: {
                             data: [
                                 {
-                                    createdBy: {
-                                        displayName: "Aa",
-                                        id: "a"
-                                    },
+                                    createdBy: identityA,
                                     createdOn: /^20/,
                                     description: "list-menus-1-description",
                                     items: [
@@ -89,10 +86,7 @@ describe("Menus Security Test", () => {
                                     title: "list-menus-1-title"
                                 },
                                 {
-                                    createdBy: {
-                                        displayName: "Aa",
-                                        id: "a"
-                                    },
+                                    createdBy: identityA,
                                     createdOn: /^20/,
                                     description: "list-menus-2-description",
                                     items: [
@@ -104,10 +98,7 @@ describe("Menus Security Test", () => {
                                     title: "list-menus-2-title"
                                 },
                                 {
-                                    createdBy: {
-                                        displayName: "Bb",
-                                        id: "b"
-                                    },
+                                    createdBy: identityB,
                                     createdOn: /^20/,
                                     description: "list-menus-3-description",
                                     items: [
@@ -119,10 +110,7 @@ describe("Menus Security Test", () => {
                                     title: "list-menus-3-title"
                                 },
                                 {
-                                    createdBy: {
-                                        displayName: "Bb",
-                                        id: "b"
-                                    },
+                                    createdBy: identityB,
                                     createdOn: /^20/,
                                     description: "list-menus-4-description",
                                     items: [
@@ -158,10 +146,7 @@ describe("Menus Security Test", () => {
                     listMenus: {
                         data: [
                             {
-                                createdBy: {
-                                    displayName: "Aa",
-                                    id: "a"
-                                },
+                                createdBy: identityA,
                                 createdOn: /^20/,
                                 description: "list-menus-1-description",
                                 items: [
@@ -173,10 +158,7 @@ describe("Menus Security Test", () => {
                                 title: "list-menus-1-title"
                             },
                             {
-                                createdBy: {
-                                    displayName: "Aa",
-                                    id: "a"
-                                },
+                                createdBy: identityA,
                                 createdOn: /^20/,
                                 description: "list-menus-2-description",
                                 items: [
@@ -206,10 +188,7 @@ describe("Menus Security Test", () => {
                     listMenus: {
                         data: [
                             {
-                                createdBy: {
-                                    displayName: "Bb",
-                                    id: "b"
-                                },
+                                createdBy: identityB,
                                 createdOn: /^20/,
                                 description: "list-menus-3-description",
                                 items: [
@@ -221,10 +200,7 @@ describe("Menus Security Test", () => {
                                 title: "list-menus-3-title"
                             },
                             {
-                                createdBy: {
-                                    displayName: "Bb",
-                                    id: "b"
-                                },
+                                createdBy: identityB,
                                 createdOn: /^20/,
                                 description: "list-menus-4-description",
                                 items: [
@@ -458,10 +434,7 @@ describe("Menus Security Test", () => {
                         getMenu: {
                             data: {
                                 ...mock,
-                                createdBy: {
-                                    displayName: "Aa",
-                                    id: "a"
-                                },
+                                createdBy: identityA,
                                 createdOn: /^20/
                             },
                             error: null

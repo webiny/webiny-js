@@ -3,10 +3,9 @@ const { DocumentClient } = require("aws-sdk/clients/dynamodb");
 import { createHandler } from "@webiny/handler-aws";
 import graphqlHandlerPlugins from "@webiny/handler-graphql";
 import { PluginCollection } from "@webiny/plugins/types";
-import tenancyPlugins from "@webiny/api-tenancy";
 import { createStorageOperations as tenancyStorageOperations } from "@webiny/api-tenancy-so-ddb";
 import { authenticateUsingHttpHeader } from "~/plugins/authenticateUsingHttpHeader";
-import securityPlugins from "~/index";
+import { createSecurityGraphQL, createSecurityContext } from "~/index";
 // Graphql
 import {
     UPDATE_SECURITY_GROUP,
@@ -29,6 +28,7 @@ import { LOGIN } from "./graphql/login";
 import { customGroupAuthorizer } from "./mocks/customGroupAuthorizer";
 import { customAuthenticator } from "./mocks/customAuthenticator";
 import { triggerAuthentication } from "./mocks/triggerAuthentication";
+import {createTenancyContext, createTenancyGraphQL} from "@webiny/api-tenancy";
 
 type UseGqlHandlerParams = {
     plugins?: PluginCollection;
@@ -59,14 +59,15 @@ export default (opts: UseGqlHandlerParams = {}) => {
         plugins: [
             graphqlHandlerPlugins(),
             // TODO: tenancy storage operations need to be loaded dynamically, but for now this will do since we only have DDB storage for this app.
-            tenancyPlugins({
-                // multiTenancy: true,
+            createTenancyContext({
                 storageOperations: tenancyStorageOperations({
                     documentClient,
-                    table: process.env.DB_TABLE
+                    table: table => ({ ...table, name: process.env.DB_TABLE })
                 })
             }),
-            securityPlugins({ storageOperations }),
+            createTenancyGraphQL(),
+            createSecurityContext({ storageOperations }),
+            createSecurityGraphQL(),
             authenticateUsingHttpHeader(),
             triggerAuthentication(),
             customAuthenticator(),
