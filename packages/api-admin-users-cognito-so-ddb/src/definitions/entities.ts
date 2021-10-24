@@ -55,6 +55,9 @@ export const createUserEntity = (table, attributes = {}) => {
         group: {
             type: "string"
         },
+        webinyVersion: {
+            type: "string"
+        },
         ...attributes
     });
 };

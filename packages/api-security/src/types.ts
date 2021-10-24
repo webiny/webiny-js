@@ -158,6 +158,7 @@ export interface Group {
     description: string;
     system: boolean;
     permissions: SecurityPermission[];
+    webinyVersion: string;
 }
 
 export type GroupInput = Pick<Group, "name" | "slug" | "description" | "permissions" | "system">;
@@ -251,6 +252,7 @@ export interface TenantLink<TData = any> {
     tenant: string;
     type: string;
     data?: TData;
+    webinyVersion: string;
 }
 
 export type GroupTenantLink = TenantLink<{ group: string; permissions: SecurityPermission[] }>;
@@ -264,6 +266,7 @@ export interface ApiKey {
     permissions: SecurityPermission[];
     createdBy: CreatedBy;
     createdOn: string;
+    webinyVersion: string;
 }
 
 export interface ApiKeyInput {
@@ -329,6 +332,7 @@ export type StorageOperationsCreateSystemParams = CreateSystemParams;
 export type StorageOperationsUpdateSystemParams = UpdateSystemParams;
 export interface StorageOperationsCreateTenantLinkParams extends CreateTenantLinkParams {
     createdOn: string;
+    webinyVersion: string;
 }
 export type StorageOperationsUpdateTenantLinkParams = UpdateTenantLinkParams;
 export type StorageOperationsDeleteTenantLinkParams = DeleteTenantLinkParams;

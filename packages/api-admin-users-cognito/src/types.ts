@@ -32,6 +32,7 @@ export interface AdminUser extends BaseUserAttributes {
     avatar?: Record<string, any>;
     createdOn: string;
     createdBy: CreatedBy;
+    webinyVersion: string;
 }
 
 export interface GetUserParams {

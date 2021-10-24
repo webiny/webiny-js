@@ -81,7 +81,8 @@ export const createAdminUsers = ({
                 id: data.id || mdbid(),
                 createdOn: new Date().toISOString(),
                 createdBy,
-                tenant
+                tenant,
+                webinyVersion: process.env.WEBINY_VERSION
             };
 
             let result;

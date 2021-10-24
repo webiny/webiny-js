@@ -32,7 +32,8 @@ describe("identity test", () => {
 
         expect(linksByIdentity[0]).toEqual({
             ...link1,
-            createdOn: expect.any(String)
+            createdOn: expect.any(String),
+            webinyVersion: process.env.WEBINY_VERSION
         });
 
         const linksByType = await security.listTenantLinksByType({
@@ -42,7 +43,8 @@ describe("identity test", () => {
 
         expect(linksByType[0]).toEqual({
             ...link1,
-            createdOn: expect.any(String)
+            createdOn: expect.any(String),
+            webinyVersion: process.env.WEBINY_VERSION
         });
 
         const linksByTenant = await security.listTenantLinksByTenant({
@@ -50,8 +52,8 @@ describe("identity test", () => {
         });
 
         expect(linksByTenant).toEqual([
-            { ...link1, createdOn: expect.any(String) },
-            { ...link2, createdOn: expect.any(String) }
+            { ...link1, createdOn: expect.any(String), webinyVersion: process.env.WEBINY_VERSION },
+            { ...link2, createdOn: expect.any(String), webinyVersion: process.env.WEBINY_VERSION }
         ]);
 
         await security.updateTenantLinks([{ ...link2, type: "idp" }]);

@@ -5,7 +5,7 @@ import { withFields, string } from "@commodo/fields";
 import { validation } from "@webiny/validation";
 import Error from "@webiny/error";
 import { NotFoundError } from "@webiny/handler-graphql";
-import { GetGroupParams, Group, GroupTenantLink, Security } from "~/types";
+import {GetGroupParams, Group, GroupInput, GroupTenantLink, Security} from "~/types";
 import NotAuthorizedError from "../NotAuthorizedError";
 import { SecurityConfig } from "~/types";
 
@@ -91,7 +91,7 @@ export const createGroupsMethods = ({ getTenant, storageOperations }: SecurityCo
             }
         },
 
-        async createGroup(this: Security, input) {
+        async createGroup(this: Security, input: GroupInput) {
             await checkPermission(this);
 
             const identity = this.getIdentity();
@@ -115,6 +115,7 @@ export const createGroupsMethods = ({ getTenant, storageOperations }: SecurityCo
                 tenant: currentTenant,
                 system: false,
                 ...input,
+                webinyVersion: process.env.WEBINY_VERSION,
                 createdOn: new Date().toISOString(),
                 createdBy: identity
                     ? {

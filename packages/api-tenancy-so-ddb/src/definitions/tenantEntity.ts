@@ -35,6 +35,9 @@ export const createTenantEntity = ({ entityName, table, attributes }: Params): E
             parent: {
                 type: "string"
             },
+            webinyVersion: {
+                type: "string"
+            },
             ...(attributes || {})
         }
     });

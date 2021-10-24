@@ -55,6 +55,9 @@ export const createGroupEntity = (table, attributes = {}) => {
         permissions: {
             type: "list"
         },
+        webinyVersion: {
+            type: "string"
+        },
         ...attributes
     });
 };
@@ -84,6 +87,9 @@ export const createApiKeyEntity = (table, attributes = {}) => {
         },
         permissions: {
             type: "list"
+        },
+        webinyVersion: {
+            type: "string"
         },
         ...attributes
     });
@@ -117,6 +123,9 @@ export const createTenantLinkEntity = (table, attributes = {}) => {
         },
         data: {
             type: "map"
+        },
+        webinyVersion: {
+            type: "string"
         },
         ...attributes
     });

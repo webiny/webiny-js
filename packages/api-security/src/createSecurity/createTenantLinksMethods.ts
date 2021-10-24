@@ -16,7 +16,8 @@ export const createTenantLinksMethods = ({ storageOperations }: SecurityConfig) 
             await storageOperations.createTenantLinks(
                 params.map(item => ({
                     ...item,
-                    createdOn: new Date().toISOString()
+                    createdOn: new Date().toISOString(),
+                    webinyVersion: process.env.WEBINY_VERSION
                 }))
             );
         },

@@ -8,6 +8,7 @@ export interface Tenant {
     name: string;
     description?: string;
     parent?: string | null;
+    webinyVersion: string;
 }
 
 export interface Tenancy {

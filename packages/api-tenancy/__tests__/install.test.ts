@@ -33,7 +33,8 @@ describe(`Test "Tenancy" install`, () => {
         expect(rootTenant).toEqual({
             id: "root",
             name: "Root",
-            description: "The top-level Webiny tenant."
+            description: "The top-level Webiny tenant.",
+            webinyVersion: process.env.WEBINY_VERSION
         });
 
         // There must be a version stored

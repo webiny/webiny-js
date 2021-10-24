@@ -6,7 +6,7 @@ import { validation } from "@webiny/validation";
 import { NotAuthorizedError } from "@webiny/api-security";
 import { NotFoundError } from "@webiny/handler-graphql";
 import Error from "@webiny/error";
-import { ApiKey, ApiKeyPermission, Security } from "~/types";
+import {ApiKey, ApiKeyInput, ApiKeyPermission, Security} from "~/types";
 import { SecurityConfig } from "~/types";
 
 const APIKeyModel = withFields({
@@ -89,7 +89,7 @@ export const createApiKeysMethods = ({ getTenant, storageOperations }: SecurityC
             }
         },
 
-        async createApiKey(this: Security, data) {
+        async createApiKey(this: Security, data: ApiKeyInput) {
             const identity = this.getIdentity();
             const permission = await this.getPermission<ApiKeyPermission>("security.apiKey");
 
@@ -109,6 +109,7 @@ export const createApiKeysMethods = ({ getTenant, storageOperations }: SecurityC
                     type: identity.type
                 },
                 createdOn: new Date().toISOString(),
+                webinyVersion: process.env.WEBINY_VERSION,
                 ...data
             };
 
