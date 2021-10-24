@@ -3,7 +3,7 @@ import { ReactComponent as TenantIcon } from "../assets/business_black_24dp.svg"
 import { AdminMenuPlugin } from "@webiny/app-admin/types";
 import { useSecurity } from "@webiny/app-security";
 
-const TenantManagerMenu = ({ Menu, Section, Item }) => {
+const TenantManagerMenu = ({ Menu, Item }) => {
     const security = useSecurity();
 
     const { currentTenant } = security.identity;
@@ -14,9 +14,7 @@ const TenantManagerMenu = ({ Menu, Section, Item }) => {
 
     return (
         <Menu name="app-tenant-manager" label={`Tenant Manager`} icon={<TenantIcon />}>
-            <Section label={`Tenant Manager`}>
-                <Item label={`Tenants`} path="/tenants" />
-            </Section>
+            <Item label={`Tenants`} path="/tenants" />
         </Menu>
     );
 };

@@ -95,7 +95,7 @@ export const useTenantsList: UseTenantsListHook = (config: Config) => {
         item => {
             showConfirmation(async () => {
                 const response = await deleteIt({
-                    variables: item
+                    variables: { id: item.id }
                 });
 
                 const { error } = response.data.tenancy.deleteTenant;
@@ -105,7 +105,7 @@ export const useTenantsList: UseTenantsListHook = (config: Config) => {
 
                 showSnackbar(t`Tenant "{name}" deleted.`({ name: item.name }));
 
-                if (currentTenantId === item.code) {
+                if (currentTenantId === item.id) {
                     history.push(`/tenants`);
                 }
 

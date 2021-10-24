@@ -28,11 +28,11 @@ const t = i18n.ns("app-i18n/admin/locales/data-list");
 const SORTERS = [
     {
         label: t`Name A-Z` as string,
-        sorters: { code: "asc" }
+        sorters: { name: "asc" }
     },
     {
         label: t`Name Z-A` as string,
-        sorters: { code: "desc" }
+        sorters: { name: "desc" }
     }
 ];
 
@@ -84,6 +84,7 @@ const TenantDataList = () => {
             }
             data={tenants}
             title={t`Tenants`}
+            setSorters={setSort}
             search={
                 <SearchUI
                     value={filter}
@@ -109,10 +110,10 @@ const TenantDataList = () => {
                                         icon={<LoginIcon />}
                                         onClick={() => setTenant(item.id)}
                                     />
-                                    <DeleteIcon
-                                        onClick={() => deleteTenant(item.id)}
+                                    {/* <DeleteIcon
+                                        onClick={() => deleteTenant(item)}
                                         data-testid={"default-data-list.delete"}
-                                    />
+                                    />*/}
                                 </ListActions>
                             </ListItemMeta>
                         </ListItem>

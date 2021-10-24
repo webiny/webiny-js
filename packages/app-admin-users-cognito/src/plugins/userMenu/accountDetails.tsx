@@ -1,4 +1,5 @@
 import React from "react";
+import { css } from "emotion";
 import { ListItem, ListItemGraphic } from "@webiny/ui/List";
 import { Icon } from "@webiny/ui/Icon";
 import { Link } from "@webiny/react-router";
@@ -10,6 +11,12 @@ import { ReactComponent as AccountIcon } from "~/assets/icons/round-account_circ
 import { ReactComponent as LogoutIcon } from "~/assets/icons/logout_black_24dp.svg";
 import { useSecurity } from "@webiny/app-security";
 import { useTenancy } from "@webiny/app-tenancy";
+
+const linkStyles = css({
+    "&:hover": {
+        textDecoration: "none"
+    }
+});
 
 const AccountDetails = () => {
     const security = useSecurity();
@@ -34,7 +41,7 @@ const AccountDetails = () => {
     }
 
     return (
-        <Link to={"/account"}>
+        <Link to={"/account"} className={linkStyles}>
             <ListItem>
                 <ListItemGraphic>
                     <Icon icon={<AccountIcon />} />

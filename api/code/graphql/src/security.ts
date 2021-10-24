@@ -1,6 +1,6 @@
-import tenancy from "@webiny/api-tenancy";
+import{ createTenancyApp, createTenancyGraphQL } from "@webiny/api-tenancy";
 import { createStorageOperations as tenancyStorageOperations } from "@webiny/api-tenancy-so-ddb";
-import security from "@webiny/api-security";
+import { createSecurityApp, createSecurityGraphQL } from "@webiny/api-security";
 import { createStorageOperations as securityStorageOperations } from "@webiny/api-security-so-ddb";
 import { authenticateUsingHttpHeader } from "@webiny/api-security/plugins/authenticateUsingHttpHeader";
 import apiKeyAuthentication from "@webiny/api-security/plugins/apiKeyAuthentication";
@@ -13,23 +13,29 @@ import anonymousAuthorization from "@webiny/api-security/plugins/anonymousAuthor
 
 export default ({ documentClient }) => [
     /**
-     * Setup Tenancy app.
+     * Create Tenancy app in the `context`.
      */
-    tenancy({
+    createTenancyApp({
         multiTenancy: true,
         storageOperations: tenancyStorageOperations({ documentClient })
     }),
 
     /**
-     * Setup Security app.
+     * Expose tenancy GraphQL schema. 
      */
-    security({
+    createTenancyGraphQL(),
+
+    /**
+     * Create Security app in the `context`.
+     */
+    createSecurityApp({
         storageOperations: securityStorageOperations({ documentClient })
-        // verifyIdentityToTenantLink: false,
-        // async getDefaultTenant() {
-        //     return { id: "root", name: "Root" };
-        // }
     }),
+
+    /**
+     * Expose security GraphQL schema. 
+     */
+    createSecurityGraphQL(),
 
     /**
      * Perform authentication using the common "Authorization" HTTP header.
@@ -54,7 +60,7 @@ export default ({ documentClient }) => [
         userPoolId: process.env.COGNITO_USER_POOL_ID,
         identityType: "admin"
     }),
-    
+
     // /**
     //  * Okta authentication plugin.
     //  */

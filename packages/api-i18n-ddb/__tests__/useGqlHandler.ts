@@ -45,7 +45,7 @@ export default (params: UseGqlHandlerParams) => {
         {
             type: "security-authentication",
             async authenticate(context) {
-                if ("Authorization" in context.http.request.headers) {
+                if ("authorization" in context.http.request.headers) {
                     return;
                 }
 

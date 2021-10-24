@@ -49,7 +49,7 @@ export const createSecurity = async (config: SecurityConfig): Promise<Security> 
                 return { name: "*" } as TPermission;
             }
             const perms = await this.getPermissions();
-            const exactMatch = perms.find(p => p.name === permission);
+            const exactMatch = (perms || []).find(p => p.name === permission);
             if (exactMatch) {
                 return exactMatch as TPermission;
             }

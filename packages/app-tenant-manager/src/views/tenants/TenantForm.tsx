@@ -58,7 +58,7 @@ const TenantForm = () => {
                         </Grid>
                         <Grid>
                             <Cell span={12}>
-                                <Bind name="description">
+                                <Bind name="description" validators={validation.create("required")}>
                                     <Input label={"Description"} rows={4} />
                                 </Bind>
                             </Cell>
