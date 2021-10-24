@@ -1,7 +1,7 @@
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
-import tenancyPlugins from "@webiny/api-tenancy";
+import { createTenancyApp, createTenancyGraphQL } from "@webiny/api-tenancy";
 import { createStorageOperations as tenancyStorageOperations } from "@webiny/api-tenancy-so-ddb";
-import securityPlugins from "@webiny/api-security";
+import { createSecurityApp, createSecurityGraphQL } from "@webiny/api-security";
 import { createStorageOperations as securityStorageOperations } from "@webiny/api-security-so-ddb";
 import { SecurityContext, SecurityIdentity, SecurityPermission } from "@webiny/api-security/types";
 import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
@@ -19,24 +19,26 @@ const documentClient = new DocumentClient({
 });
 
 interface Config {
-    permissions: SecurityPermission[];
-    identity: SecurityIdentity;
+    permissions?: SecurityPermission[];
+    identity?: SecurityIdentity;
 }
 
-export const createTenancyAndSecurity = ({ permissions, identity }: Config) => {
+export const createTenancyAndSecurity = ({ permissions, identity }: Config = {}) => {
     return [
-        tenancyPlugins({
+        createTenancyApp({
             storageOperations: tenancyStorageOperations({
                 documentClient,
                 table: table => ({ ...table, name: process.env.DB_TABLE })
             })
         }),
-        securityPlugins({
+        createTenancyGraphQL(),
+        createSecurityApp({
             storageOperations: securityStorageOperations({
                 documentClient,
                 table: process.env.DB_TABLE
             })
         }),
+        createSecurityGraphQL(),
         new ContextPlugin<SecurityContext & TenancyContext>(context => {
             context.tenancy.setCurrentTenant({ id: "root", name: "Root" });
 

@@ -213,9 +213,7 @@ export const createAdminUsers = ({
                 return null;
             }
 
-            console.log("admin users get version", tenantId);
             const system = await storageOperations.getSystemData({ tenant: tenantId });
-            console.log("admin users get version", JSON.stringify(system));
             if (system) {
                 return system.version;
             }

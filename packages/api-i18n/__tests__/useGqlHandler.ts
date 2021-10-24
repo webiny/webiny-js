@@ -1,30 +1,15 @@
 import { createHandler } from "@webiny/handler-aws";
 import graphqlHandler from "@webiny/handler-graphql";
-import i18nPlugins from "../src/graphql";
-import tenancyPlugins from "@webiny/api-tenancy";
-import securityPlugins from "@webiny/api-security";
-const { DocumentClient } = require("aws-sdk/clients/dynamodb");
-import { createStorageOperations as tenancyStorageOperations } from "@webiny/api-tenancy-so-ddb";
-import { createStorageOperations as securityStorageOperations } from "@webiny/api-security-so-ddb";
-import { apiCallsFactory } from "./helpers";
 import { SecurityIdentity, SecurityPermission } from "@webiny/api-security/types";
-import { customAuthenticator } from "./mocks/customAuthenticator";
-import { customAuthorizer } from "./mocks/customAuthorizer";
+import i18nPlugins from "~/graphql";
+import { apiCallsFactory } from "./helpers";
+import { createTenancyAndSecurity } from "./tenancySecurity";
 
 type UseGqlHandlerParams = {
     permissions?: SecurityPermission[];
     identity?: SecurityIdentity;
     plugins?: any;
 };
-// IMPORTANT: This must be removed from here in favor of a dynamic SO setup.
-const documentClient = new DocumentClient({
-    convertEmptyValues: true,
-    endpoint: process.env.MOCK_DYNAMODB_ENDPOINT || "http://localhost:8001",
-    sslEnabled: false,
-    region: "local",
-    accessKeyId: "test",
-    secretAccessKey: "test"
-});
 
 export default (params: UseGqlHandlerParams = {}) => {
     const { plugins: extraPlugins } = params;
@@ -42,14 +27,7 @@ export default (params: UseGqlHandlerParams = {}) => {
     // Creates the actual handler. Feel free to add additional plugins if needed.
     const handler = createHandler(
         storageOperations(),
-        tenancyPlugins({
-            storageOperations: tenancyStorageOperations({ documentClient, table: process.env.DB_TABLE })
-        }),
-        securityPlugins({
-            storageOperations: securityStorageOperations({ documentClient, table: process.env.DB_TABLE })
-        }),
-        customAuthenticator(),
-        customAuthorizer(),
+        ...createTenancyAndSecurity(),
         graphqlHandler(),
         {
             type: "context",

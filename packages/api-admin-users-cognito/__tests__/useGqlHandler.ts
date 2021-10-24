@@ -1,12 +1,7 @@
-import { customAuthenticator } from "./mocks/customAuthenticator";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { createHandler } from "@webiny/handler-aws";
 import graphqlHandler from "@webiny/handler-graphql";
-import tenancyPlugins from "@webiny/api-tenancy";
-import securityPlugins from "@webiny/api-security";
 import { PluginCollection } from "@webiny/plugins/types";
-import { createStorageOperations as tenancyStorageOperations } from "@webiny/api-tenancy-so-ddb";
-import { createStorageOperations as securityStorageOperations } from "@webiny/api-security-so-ddb";
 import adminUsersPlugins from "../src/index";
 // Graphql
 import {
@@ -22,23 +17,13 @@ import {
 } from "./graphql/users";
 
 import { INSTALL, IS_INSTALLED, INSTALL_SECURITY, INSTALL_TENANCY } from "./graphql/install";
-import { customAuthorizer } from "./mocks/customAuthorizer";
 import { authenticateUsingHttpHeader } from "@webiny/api-security/plugins/authenticateUsingHttpHeader";
+import { createTenancyAndSecurity } from "./tenancySecurity";
 
 type UseGqlHandlerParams = {
     fullAccess?: boolean;
     plugins?: PluginCollection;
 };
-
-// IMPORTANT: This must be removed from here in favor of a dynamic SO setup.
-const documentClient = new DocumentClient({
-    convertEmptyValues: true,
-    endpoint: process.env.MOCK_DYNAMODB_ENDPOINT || "http://localhost:8001",
-    sslEnabled: false,
-    region: "local",
-    accessKeyId: "test",
-    secretAccessKey: "test"
-});
 
 export default (opts: UseGqlHandlerParams = {}) => {
     const defaults = { fullAccess: false, plugins: [] };
@@ -49,19 +34,12 @@ export default (opts: UseGqlHandlerParams = {}) => {
 
     // Creates the actual handler. Feel free to add additional plugins if needed.
     const handler = createHandler(
-        tenancyPlugins({
-            storageOperations: tenancyStorageOperations({ documentClient, table: process.env.DB_TABLE })
-        }),
-        securityPlugins({
-            storageOperations: securityStorageOperations({ documentClient, table: process.env.DB_TABLE })
-        }),
+        ...createTenancyAndSecurity({ fullAccess: defaults.fullAccess }),
         adminUsersPlugins({
             storageOperations
         }),
         graphqlHandler(),
         authenticateUsingHttpHeader(),
-        customAuthenticator(),
-        customAuthorizer({ fullAccess: opts.fullAccess }),
         ...opts.plugins
     );
 

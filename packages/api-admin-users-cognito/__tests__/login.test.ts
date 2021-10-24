@@ -32,10 +32,6 @@ describe(`"Login" test`, () => {
                             displayName: "John Doe",
                             type: "admin",
                             permissions: [{ name: "*" }],
-                            tenant: {
-                                id: "root",
-                                name: "Root"
-                            },
                             profile: {
                                 email,
                                 firstName: "John",

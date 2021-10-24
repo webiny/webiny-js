@@ -31,10 +31,6 @@ export const LOGIN = /* GraphQL */ `
                         id
                         displayName
                         type
-                        tenant {
-                            id
-                            name
-                        }
                         permissions
                         profile {
                             email
