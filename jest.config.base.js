@@ -7,27 +7,6 @@ process.env.DB_TABLE = "DynamoDB";
 process.env.DB_TABLE_ELASTICSEARCH = "ElasticSearchStream";
 process.env.WEBINY_VERSION = version;
 
-Object.defineProperty(process.env, "DB_TABLE", {
-    get: function () {
-        console.log(`DB table: ${this.DB_TABLE}`);
-        throw new Error("Getting DB_TABLE");
-    },
-    set: function (value) {
-        console.log(`DB table: ${this.DB_TABLE} -> ${value}`);
-        throw new Error("TRYING TO SET DB_TABLE");
-    }
-});
-Object.defineProperty(process.env, "DB_TABLE_ELASTICSEARCH", {
-    get: function () {
-        console.log(`ES table: ${this.DB_TABLE_ELASTICSEARCH}`);
-        throw new Error("Getting DB_TABLE_ELASTICSEARCH");
-    },
-    set: function (value) {
-        console.log(`ES table: ${this.DB_TABLE_ELASTICSEARCH} -> ${value}`);
-        throw new Error("TRYING TO SET DB_TABLE_ELASTICSEARCH");
-    }
-});
-
 module.exports = ({ path }, presets = []) => {
     const name = basename(path);
 
