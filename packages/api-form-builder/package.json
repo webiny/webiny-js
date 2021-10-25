@@ -19,7 +19,6 @@
   "dependencies": {
     "@babel/runtime": "^7.5.5",
     "@commodo/fields": "1.1.2-beta.20",
-    "@webiny/api-elasticsearch": "^5.16.0",
     "@webiny/api-file-manager": "^5.16.0",
     "@webiny/api-i18n": "^5.16.0",
     "@webiny/api-i18n-content": "^5.16.0",

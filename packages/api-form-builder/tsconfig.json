@@ -2,7 +2,6 @@
   "extends": "../../tsconfig.json",
   "include": ["src", "__tests__/**/*.ts"],
   "references": [
-    { "path": "../api-elasticsearch" },
     { "path": "../api-file-manager" },
     { "path": "../api-i18n" },
     { "path": "../api-i18n-content" },
@@ -29,8 +28,6 @@
     "declarationDir": "./dist",
     "paths": {
       "~/*": ["./src/*"],
-      "@webiny/api-elasticsearch/*": ["../api-elasticsearch/src/*"],
-      "@webiny/api-elasticsearch": ["../api-elasticsearch/src"],
       "@webiny/api-file-manager/*": ["../api-file-manager/src/*"],
       "@webiny/api-file-manager": ["../api-file-manager/src"],
       "@webiny/api-i18n/*": ["../api-i18n/src/*"],

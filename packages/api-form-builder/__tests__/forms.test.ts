@@ -75,7 +75,7 @@ describe('Form Builder "Form" Test', () => {
         expect(data[0].id).toEqual(id);
     });
 
-    test("should update form and return new data from DB and Elastic", async () => {
+    test("should update form and return new data from storage", async () => {
         const [create] = await createForm({ data: { name: "contact-us" } });
         const { id } = create.data.formBuilder.createForm.data;
 
@@ -127,7 +127,6 @@ describe('Form Builder "Form" Test', () => {
         const [create3] = await createRevisionFrom({ revision: id });
         const { id: id3 } = create3.data.formBuilder.createRevisionFrom.data;
 
-        // Wait until the new revision is indexed in Elastic as "latest"
         await until(
             () => listForms().then(([data]) => data),
             ({ data }) => data.formBuilder.listForms.data[0].id === id3,
@@ -138,7 +137,6 @@ describe('Form Builder "Form" Test', () => {
             }
         );
 
-        // Check that the form is inserted into Elastic
         const [list] = await listForms();
         const { data: data1 } = list.data.formBuilder.listForms;
         expect(data1.length).toBe(1);
@@ -158,7 +156,6 @@ describe('Form Builder "Form" Test', () => {
             }
         });
 
-        // Wait until the previous revision is indexed in Elastic as "latest"
         await until(
             () => listForms().then(([data]) => data),
             ({ data }) => data.formBuilder.listForms.data[0].id === id2,
@@ -341,7 +338,6 @@ describe('Form Builder "Form" Test', () => {
             }
         });
 
-        // Wait until propagated to Elastic...
         await until(
             () => listFormSubmissions({ form: id, sort: "savedOn_ASC" }).then(([data]) => data),
             ({ data }) => data.formBuilder.listFormSubmissions.data.length === 2,
