@@ -8,7 +8,7 @@ export interface Props {
 }
 
 export const Element: React.FC<Props> = props => {
-    const { renderers } = usePageElements();
+    const { renderers, getElementStyles } = usePageElements();
 
     const { element } = props;
     if (!element) {
@@ -17,6 +17,11 @@ export const Element: React.FC<Props> = props => {
 
     const ElementRenderer = renderers[element.type];
     if (!ElementRenderer) {
+        return null;
+    }
+    // Handle element visibility.
+    const [styles] = getElementStyles(element);
+    if (styles.visibility === "hidden") {
         return null;
     }
 
