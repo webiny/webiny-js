@@ -251,6 +251,15 @@ export type PbRenderElementAttributesPlugin = Plugin & {
     }) => { [key: string]: string };
 };
 
+type ActionParameter = { label: string; defaultValue: any };
+
+export type PbButtonElementClickHandlerPlugin = Plugin & {
+    type: "pb-button-element-click-handler";
+    title: string;
+    parameters: ActionParameter[];
+    handler: Function;
+};
+
 export type PbPageElementImagesListComponentPlugin = Plugin & {
     type: "pb-page-element-images-list-component";
     title: string;

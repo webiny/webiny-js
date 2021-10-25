@@ -19,12 +19,14 @@ const buttonWrapper = css({
 const buttonElementPluginsFactory = (args: PbEditorElementPluginArgs = {}) => {
     const defaultSettings = [
         "pb-editor-page-element-style-settings-button",
-        "pb-editor-page-element-style-settings-link",
+        "pb-editor-page-element-style-settings-action",
         "pb-editor-page-element-style-settings-horizontal-align-flex",
         "pb-editor-page-element-style-settings-margin",
         "pb-editor-page-element-settings-clone",
         "pb-editor-page-element-settings-delete"
     ];
+
+    // "pb-editor-page-element-style-settings-link",
 
     const defaultToolbar = {
         title: "Button",

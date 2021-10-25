@@ -56,6 +56,7 @@ import height from "@webiny/app-page-builder/editor/plugins/elementSettings/heig
 import align from "@webiny/app-page-builder/editor/plugins/elementSettings/align";
 import save from "@webiny/app-page-builder/editor/plugins/elementSettings/save";
 import link from "@webiny/app-page-builder/editor/plugins/elementSettings/link";
+import action from "@webiny/app-page-builder/editor/plugins/elementSettings/action";
 import gridSettings from "@webiny/app-page-builder/editor/plugins/elementSettings/grid";
 import textSettings from "@webiny/app-page-builder/editor/plugins/elementSettings/text";
 import visibility from "@webiny/app-page-builder/editor/plugins/elementSettings/visibility";
@@ -72,7 +73,11 @@ import { gridPresets } from "@webiny/app-page-builder/editor/plugins/gridPresets
 // event actions
 import actionPlugins from "@webiny/app-page-builder/editor/recoil/actions/plugins";
 
+// The default null clickHandler for buttons - you can add your own custom plugins here to extend the functionality of the button element
+import nullHandler from "./nullHandler";
+
 export default [
+    nullHandler,
     contentBackground,
     blockEditing,
     // Elements
@@ -133,6 +138,7 @@ export default [
     height,
     save,
     link,
+    action,
     gridSettings,
     textSettings,
     visibility,

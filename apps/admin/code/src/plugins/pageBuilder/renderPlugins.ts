@@ -35,6 +35,9 @@ import visibility from "@webiny/app-page-builder/render/plugins/elementSettings/
 // Responsive mode
 import responsiveMode from "@webiny/app-page-builder/render/plugins/responsiveMode";
 
+// Default null clickHandler
+import nullHandler from "./nullHandler";
+
 export default [
     // Elements
     document(),
@@ -59,6 +62,7 @@ export default [
     // Page settings
     pageSettings(),
     // Element settings
+    nullHandler,
     align,
     animation,
     background,

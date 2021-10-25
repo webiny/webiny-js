@@ -51,6 +51,9 @@ import margin from "@webiny/app-page-builder/render/plugins/elementSettings/marg
 import textSetting from "@webiny/app-page-builder/render/plugins/elementSettings/text";
 import visibility from "@webiny/app-page-builder/render/plugins/elementSettings/visibility";
 
+// The default null clickHandler for buttons - you can add your own custom plugins here to extend the functionality of the button element
+import nullHandler from "./nullHandler";
+
 /**
  * Responsive display mode plugins.
  */
@@ -59,7 +62,6 @@ import responsiveMode from "@webiny/app-page-builder/render/plugins/responsiveMo
 export default [
     linkPreload(),
     apolloCacheObjectId,
-
     // Page elements
     document(),
     block(),
@@ -85,6 +87,7 @@ export default [
     pageSettings(),
 
     // Page element settings
+    nullHandler,
     align,
     animation,
     background,
