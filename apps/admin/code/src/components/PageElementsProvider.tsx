@@ -24,6 +24,7 @@ import { createShadow } from "@webiny/app-page-builder-elements/modifiers/styles
 import { createText } from "@webiny/app-page-builder-elements/modifiers/styles/text";
 import { createVerticalAlign } from "@webiny/app-page-builder-elements/modifiers/styles/verticalAlign";
 import { createWidth } from "@webiny/app-page-builder-elements/modifiers/styles/width";
+import { createVisibility } from "@webiny/app-page-builder-elements/modifiers/styles/visibility";
 
 import { theme } from "./theme";
 
@@ -53,7 +54,8 @@ export const PageElementsProvider: React.FC = ({ children }) => (
                 shadow: createShadow(),
                 text: createText(),
                 verticalAlign: createVerticalAlign(),
-                width: createWidth()
+                width: createWidth(),
+                visibility: createVisibility()
             }
         }}
     >
