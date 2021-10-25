@@ -29,7 +29,7 @@ class PrerenderingServiceTestEnvironment extends NodeEnvironment {
             return {
                 createStorageOperations: () => {
                     return createPrerenderingServiceStorageOperations({
-                        table: process.env.DB_TABLE,
+                        table: "PrerenderingService",
                         documentClient
                     });
                 }

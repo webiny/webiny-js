@@ -1,7 +1,7 @@
 module.exports = {
     tables: [
         {
-            TableName: process.env.DB_TABLE,
+            TableName: "PerenderingService",
             KeySchema: [
                 { AttributeName: "PK", KeyType: "HASH" },
                 { AttributeName: "SK", KeyType: "RANGE" }
