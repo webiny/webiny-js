@@ -8,6 +8,8 @@ import anonymousAuthorization from "@webiny/api-security-admin-users/authorizati
 import cognitoAuthentication from "@webiny/api-security-cognito-authentication";
 import cognitoIdentityProvider from "@webiny/api-security-admin-users-cognito";
 
+export const kobaja = 123;
+
 export default () => [
     /**
      * Security Tenancy API (context, users, groups, tenant links).

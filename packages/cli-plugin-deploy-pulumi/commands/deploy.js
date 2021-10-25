@@ -1,6 +1,5 @@
 const path = require("path");
 const { green } = require("chalk");
-const execa = require("execa");
 const { loadEnvVariables, getPulumi, processHooks, login, notify } = require("../utils");
 const { getProjectApplication } = require("@webiny/cli/utils");
 
@@ -34,7 +33,39 @@ module.exports = async (inputs, context) => {
 
     await loadEnvVariables(inputs, context);
 
-    if (build) {
+    const t = new Date();
+
+    const libPaths = [
+        "/Users/adrian/dev/webiny-js/api/code/dynamoToElastic",
+        "/Users/adrian/dev/webiny-js/api/code/fileManager/download",
+        "/Users/adrian/dev/webiny-js/api/code/fileManager/manage",
+        "/Users/adrian/dev/webiny-js/api/code/fileManager/transform",
+        "/Users/adrian/dev/webiny-js/api/code/graphql",
+        "/Users/adrian/dev/webiny-js/api/code/headlessCMS",
+        "/Users/adrian/dev/webiny-js/api/code/pageBuilder/updateSettings",
+        "/Users/adrian/dev/webiny-js/api/code/pageBuilder/importPages/create",
+        "/Users/adrian/dev/webiny-js/api/code/pageBuilder/importPages/process",
+        "/Users/adrian/dev/webiny-js/api/code/pageBuilder/exportPages/combine",
+        "/Users/adrian/dev/webiny-js/api/code/pageBuilder/exportPages/process",
+        "/Users/adrian/dev/webiny-js/api/code/prerenderingService/render",
+        "/Users/adrian/dev/webiny-js/api/code/prerenderingService/flush",
+        "/Users/adrian/dev/webiny-js/api/code/prerenderingService/queue/add",
+        "/Users/adrian/dev/webiny-js/api/code/prerenderingService/queue/process"
+    ];
+
+    const promises = []
+    for (let i = 0; i < libPaths.length; i++) {
+        const libPath = libPaths[i];
+        // TODO: JS backwards compatibility here too
+        const wbyConfigTs = require(libPath + "/webiny.config.ts");
+        // await wbyConfigTs.default.commands.build({}, context);
+         promises.push(wbyConfigTs.default.commands.build({}, context));
+    }
+
+    await Promise.all(promises);
+
+    /*if (build) {
+        const t = new Date();
         await execa(
             "yarn",
             [
@@ -53,7 +84,9 @@ module.exports = async (inputs, context) => {
                 stdio: "inherit"
             }
         );
-    }
+    }*/
+
+    console.log("Build Time:", (new Date() - t) / 1000 + "s");
 
     await login(projectApplication);
 

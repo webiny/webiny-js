@@ -27,6 +27,10 @@ import headlessCmsDynamoDbElasticStorageOperation from "@webiny/api-headless-cms
 import elasticsearchDataGzipCompression from "@webiny/api-elasticsearch/plugins/GzipCompression";
 import { createFormBuilderStorageOperations } from "@webiny/api-form-builder-so-ddb-es";
 
+import kobaja from "~/security";
+
+console.log(kobaja)
+
 // Imports plugins created via scaffolding utilities.
 import scaffoldsPlugins from "./plugins/scaffolds";
 import { createElasticsearchClient } from "@webiny/api-elasticsearch/client";
