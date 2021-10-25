@@ -26,7 +26,7 @@ module.exports = async (inputs, context) => {
 
     const start = new Date();
     const getDuration = () => {
-        return (new Date() - start) / 1000;
+        return (new Date() - start) / 1000 + "s";
     };
 
     // Get project application metadata. Will throw an error if invalid folder specified.
@@ -54,6 +54,9 @@ module.exports = async (inputs, context) => {
             }
         );
     }
+
+    console.log("Total Duration: ", getDuration());
+    process.exit();
 
     await login(projectApplication);
 
