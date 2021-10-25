@@ -16,12 +16,30 @@ declare global {
 const defaultStyles = { display: "block", boxSizing: "border-box" };
 
 const Block: ElementRenderer = ({ element }) => {
-    const { getClassNames, getElementClassNames } = usePageElements();
+    const { getClassNames, getElementClassNames, combineClassNames, getElementStyles } =
+        usePageElements();
     const classNames = getClassNames(defaultStyles);
+    const [styles] = getElementStyles(element);
 
     return (
         <pb-block class={classNames}>
-            <pb-block-inner class={getElementClassNames(element)}>
+            <pb-block-inner
+                class={combineClassNames(
+                    getElementClassNames(element),
+                    getClassNames({
+                        boxSizing: "border-box",
+                        display: "flex",
+                        flexDirection: "column",
+                        width: styles.width,
+                        /**
+                         * We're swapping "justifyContent" & "alignItems" value here because
+                         * block has "flex-direction: column" rule applied.
+                         */
+                        justifyContent: styles.alignItems,
+                        alignItems: styles.justifyContent
+                    })
+                )}
+            >
                 <Elements element={element} />
             </pb-block-inner>
         </pb-block>
