@@ -1,21 +1,21 @@
 import React from "react";
 import kebabCase from "lodash/kebabCase";
-import Block from "./Block";
-import {
-    CreateElementActionEvent,
-    DeleteElementActionEvent,
-    updateElementAction
-} from "../../../recoil/actions";
-import { addElementToParent, createDroppedElement } from "../../../helpers";
 import {
     DisplayMode,
     EventActionHandlerActionCallableResponse,
     PbEditorPageElementPlugin,
     PbEditorElement,
     PbEditorElementPluginArgs
-} from "../../../../types";
-import { AfterDropElementActionEvent } from "../../../recoil/actions/afterDropElement";
+} from "~/types";
+import {
+    CreateElementActionEvent,
+    DeleteElementActionEvent,
+    updateElementAction
+} from "~/editor/recoil/actions";
+import { addElementToParent, createDroppedElement } from "~/editor/helpers";
+import { AfterDropElementActionEvent } from "~/editor/recoil/actions/afterDropElement";
 import { createInitialPerDeviceSettingValue } from "../../elementSettings/elementSettingsUtils";
+import Block from "./Block";
 
 export default (args: PbEditorElementPluginArgs = {}): PbEditorPageElementPlugin => {
     const elementSettings = [

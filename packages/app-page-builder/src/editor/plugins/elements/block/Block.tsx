@@ -1,42 +1,17 @@
 import React from "react";
-import BlockContainer from "./BlockContainer";
-import ElementAnimation from "../../../../render/components/ElementAnimation";
-import styled from "@emotion/styled";
-import { PbEditorElement } from "../../../../types";
-import { ElementRoot } from "../../../../render/components/ElementRoot";
+import { PbEditorPageElementRenderParams } from "~/types";
+import { usePageElements } from "@webiny/app-page-builder-elements/hooks/usePageElements";
 
-const BlockStyle = styled("div")({
-    position: "relative",
-    color: "#666",
-    padding: 5,
-    boxSizing: "border-box"
-});
-type BlockType = {
-    element: PbEditorElement;
-};
-const Block: React.FunctionComponent<BlockType> = ({ element }) => {
-    const { id } = element;
+import PbBlock from "./PbBlock";
+import PeBlock from "./PeBlock";
 
-    return (
-        <BlockStyle id={id} style={{ position: "relative" }}>
-            <ElementAnimation>
-                <ElementRoot element={element}>
-                    {({ elementStyle, elementAttributes, customClasses, combineClassNames }) => (
-                        <BlockContainer
-                            elementId={id}
-                            elementStyle={elementStyle}
-                            elementAttributes={elementAttributes}
-                            customClasses={[
-                                "webiny-pb-layout-block webiny-pb-base-page-element-style",
-                                ...customClasses
-                            ]}
-                            combineClassNames={combineClassNames}
-                        />
-                    )}
-                </ElementRoot>
-            </ElementAnimation>
-        </BlockStyle>
-    );
+const Block: React.FC<PbEditorPageElementRenderParams> = props => {
+    const pageElements = usePageElements();
+
+    if (pageElements) {
+        return <PeBlock {...props} />;
+    }
+    return <PbBlock {...props} />;
 };
 
 export default React.memo(Block);
