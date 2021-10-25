@@ -1,15 +1,16 @@
-import { HandlerPlugin as DefaultHandlerPlugin, Context } from "@webiny/handler/types";
+import { ContextInterface, HandlerPlugin as DefaultHandlerPlugin } from "@webiny/handler/types";
 import { Plugin } from "@webiny/plugins/types";
-import { DbContext } from "@webiny/handler-db/types";
 import { ClientContext } from "@webiny/handler-client/types";
 
-export type HandlerContext = Context<DbContext, ClientContext>;
+export interface HandlerContext extends ContextInterface, ClientContext {
+    //
+}
 export type HandlerPlugin = DefaultHandlerPlugin<HandlerContext>;
 
 export type HookCallbackFunction = ({ context: HandlerContext }) => void | Promise<void>;
 
-export type ProcessHookPlugin = Plugin<{
+export interface ProcessHookPlugin extends Plugin {
     type: "ps-queue-process-hook";
     beforeProcess?: HookCallbackFunction;
     afterProcess?: HookCallbackFunction;
-}>;
+}
