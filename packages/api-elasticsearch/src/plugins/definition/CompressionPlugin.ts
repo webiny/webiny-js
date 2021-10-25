@@ -3,6 +3,10 @@ import { Plugin } from "@webiny/plugins";
 export abstract class CompressionPlugin extends Plugin {
     public static readonly type = "elasticsearch.compression";
     /**
+     * Name of the plugin - debugging purpose.
+     */
+    public abstract getName(): string;
+    /**
      * Check if data can be compressed.
      */
     public abstract canCompress(data: any): boolean;

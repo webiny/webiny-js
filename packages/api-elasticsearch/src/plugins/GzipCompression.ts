@@ -45,6 +45,10 @@ interface OriginalData {
 }
 
 class GzipCompression extends CompressionPlugin {
+    public getName(): string {
+        return GZIP;
+    }
+
     public canCompress(data: any): boolean {
         /**
          * If already compressed, skip this.
