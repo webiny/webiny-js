@@ -30,7 +30,12 @@ export default (...plugins) => {
         })
     });
 
-    const storageOperations = getStorageOperations();
+    let storageOperations: any = {}; //getStorageOperations();
+    try {
+        storageOperations = getStorageOperations();
+    } catch (ex) {
+        console.log(ex.message);
+    }
 
     const handler = createHandler(
         ...plugins,
