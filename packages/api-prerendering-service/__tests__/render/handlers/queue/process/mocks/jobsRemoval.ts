@@ -1,9 +1,8 @@
+import mdbid from "mdbid";
 const mocks = {
     job: index => {
         return {
-            PK: "PS#Q#JOB",
-            SK: `job-id-${index}`,
-            TYPE: "ps.queue.job",
+            id: mdbid(),
             args: {
                 render: {
                     configuration: {

@@ -1,17 +1,13 @@
 type Entry = Record<string, any> & {
-    PK: string;
-    SK: string;
-    TYPE: string;
+    namespace: string;
     value: string;
     url: string;
     key: string;
 };
 
-export default function ({ url, key, value }): Entry {
+export default function ({ url, key, value, namespace }): Entry {
     return {
-        PK: `T#root#PS#TAG#${key}`,
-        SK: `${value}#${url}`,
-        TYPE: "ps.tagUrlLink",
+        namespace,
         value,
         url,
         key

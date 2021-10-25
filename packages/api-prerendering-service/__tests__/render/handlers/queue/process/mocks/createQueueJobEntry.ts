@@ -1,4 +1,5 @@
 import mdbid from "mdbid";
+import { QueueJob } from "~/types";
 
 type Args = {
     render?: {
@@ -14,11 +15,9 @@ type Args = {
     };
 };
 
-export default function (args: Args) {
+export default function (args: Args): QueueJob {
     return {
-        SK: mdbid(),
-        PK: "PS#Q#JOB",
-        TYPE: "ps.queue.job",
+        id: mdbid(),
         args
     };
 }

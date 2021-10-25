@@ -4,6 +4,7 @@ import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import queueProcessPlugins from "@webiny/api-prerendering-service/queue/process";
 import handlerClient from "@webiny/handler-client";
+import { getStorageOperations } from "../../../../storageOperations";
 
 const defaults = {
     db: {
@@ -29,6 +30,8 @@ export default (...plugins) => {
         })
     });
 
+    const storageOperations = getStorageOperations();
+
     const handler = createHandler(
         ...plugins,
         handlerClient(),
@@ -44,5 +47,5 @@ export default (...plugins) => {
         })
     );
 
-    return { handler, dynamoDbDriver, defaults };
+    return { handler, dynamoDbDriver, defaults, storageOperations };
 };

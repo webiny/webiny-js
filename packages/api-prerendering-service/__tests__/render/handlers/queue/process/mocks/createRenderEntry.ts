@@ -22,18 +22,14 @@ type File = {
 };
 
 type Entry = Record<string, any> & {
-    PK: string;
-    SK: string;
-    TYPE: string;
+    namespace: string;
     url: string;
     files: File[];
 };
 
 export default function (args): Entry {
     return {
-        PK: "T#root#PS#RENDER",
-        SK: args.url,
-        TYPE: "ps.render",
+        namespace: args.namespace,
         url: args.url,
         args: {
             url: args.url,

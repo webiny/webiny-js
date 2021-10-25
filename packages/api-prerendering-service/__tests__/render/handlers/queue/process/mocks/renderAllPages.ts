@@ -1,9 +1,10 @@
+import mdbid from "mdbid";
+import { QueueJob } from "~/types";
+
 const mocks = {
-    job: index => {
+    job: (index): QueueJob => {
         return {
-            PK: "PS#Q#JOB",
-            SK: `job-id-${index}`,
-            TYPE: "ps.queue.job",
+            id: mdbid(),
             args: {
                 render: {
                     configuration: {
@@ -19,11 +20,9 @@ const mocks = {
             }
         };
     },
-    renderAllJob: ({ index = "", namespace = "T#root" } = {}) => {
+    renderAllJob: ({ index = "", namespace = "T#root" } = {}): QueueJob => {
         return {
-            PK: "PS#Q#JOB",
-            SK: `render-all-job-id-${index}`,
-            TYPE: "ps.queue.job",
+            id: `${mdbid()}-${index}`,
             args: {
                 render: {
                     configuration: {
