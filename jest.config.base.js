@@ -3,7 +3,6 @@ const merge = require("merge");
 const tsPreset = require("ts-jest/presets/js-with-babel/jest-preset");
 const { version } = require("@webiny/cli/package.json");
 
-process.env.DB_TABLE = "DynamoDB";
 process.env.DB_TABLE_ELASTICSEARCH = "ElasticSearchStream";
 process.env.WEBINY_VERSION = version;
 
