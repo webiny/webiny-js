@@ -105,7 +105,7 @@ export default new GraphQLSchemaPlugin<AdminUsersContext & SecurityContext & Ten
         AdminUserIdentity: {
             async profile(identity, args, context) {
                 const profile = await context.adminUsers.getUser({ where: { id: identity.id } });
-                
+
                 if (profile) {
                     return profile;
                 }
@@ -113,7 +113,7 @@ export default new GraphQLSchemaPlugin<AdminUsersContext & SecurityContext & Ten
                 // We must also consider an option where we have multi-tenancy, and current identity is
                 // a "parent" tenant user, so naturally, his user profile lives in his original tenant.
                 const tenant = context.tenancy.getCurrentTenant();
-                
+
                 return await context.adminUsers.getUser({
                     where: { id: identity.id, tenant: tenant.parent }
                 });

@@ -31,7 +31,7 @@ export const ContentModelPermission = ({
             setValue(`${entity}AccessScope`, "own");
         }
     }, [data]);
-    
+
     const getItems = useCallback(
         (code: string) => {
             let list = get(modelsGroups, `${code}.models`, []);

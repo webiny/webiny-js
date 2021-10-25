@@ -28,7 +28,7 @@ import { LOGIN } from "./graphql/login";
 import { customGroupAuthorizer } from "./mocks/customGroupAuthorizer";
 import { customAuthenticator } from "./mocks/customAuthenticator";
 import { triggerAuthentication } from "./mocks/triggerAuthentication";
-import {createTenancyContext, createTenancyGraphQL} from "@webiny/api-tenancy";
+import { createTenancyContext, createTenancyGraphQL } from "@webiny/api-tenancy";
 
 type UseGqlHandlerParams = {
     plugins?: PluginCollection;

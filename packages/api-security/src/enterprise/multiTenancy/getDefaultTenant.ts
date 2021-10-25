@@ -1,6 +1,6 @@
-import {Context as BaseContext} from "@webiny/handler/types";
-import {SecurityContext} from "~/types";
-import {TenancyContext} from "@webiny/api-tenancy/types";
+import { Context as BaseContext } from "@webiny/handler/types";
+import { SecurityContext } from "~/types";
+import { TenancyContext } from "@webiny/api-tenancy/types";
 
 export type Context = BaseContext<SecurityContext, TenancyContext>;
 

@@ -108,7 +108,6 @@ export const useTenantsList: UseTenantsListHook = (config: Config) => {
                 if (currentTenantId === item.id) {
                     history.push(`/tenants`);
                 }
-
             });
         },
         [currentTenantId]

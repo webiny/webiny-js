@@ -15,7 +15,7 @@ export const useTenantForm = () => {
     const { showSnackbar } = useSnackbar();
     const id = new URLSearchParams(location.search).get("id");
     const newTenant = new URLSearchParams(location.search).get("new");
-    
+
     const getQuery = useQuery(GET_TENANT, {
         variables: { id },
         skip: !id,

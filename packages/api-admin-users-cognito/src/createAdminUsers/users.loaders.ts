@@ -26,7 +26,7 @@ export const createUserLoaders = ({ storageOperations }: Config) => {
             acc[item.tenant] = [...(acc[item.tenant] || []), item.id];
             return acc;
         }, {});
-        
+
         try {
             const results = await Promise.all(
                 Object.keys(byTenant).map(tenant => {
@@ -40,7 +40,7 @@ export const createUserLoaders = ({ storageOperations }: Config) => {
             ).then(res => flatten(res));
 
             return ids.map(({ tenant, id }) => {
-                return results.find(item => item.id === id && item.tenant === tenant)
+                return results.find(item => item.id === id && item.tenant === tenant);
             });
         } catch (err) {
             throw Error.from(err, {

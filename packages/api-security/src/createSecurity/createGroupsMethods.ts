@@ -5,7 +5,7 @@ import { withFields, string } from "@commodo/fields";
 import { validation } from "@webiny/validation";
 import Error from "@webiny/error";
 import { NotFoundError } from "@webiny/handler-graphql";
-import {GetGroupParams, Group, GroupInput, GroupTenantLink, Security} from "~/types";
+import { GetGroupParams, Group, GroupInput, GroupTenantLink, Security } from "~/types";
 import NotAuthorizedError from "../NotAuthorizedError";
 import { SecurityConfig } from "~/types";
 

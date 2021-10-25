@@ -6,7 +6,7 @@ import { validation } from "@webiny/validation";
 import { NotAuthorizedError } from "@webiny/api-security";
 import { NotFoundError } from "@webiny/handler-graphql";
 import Error from "@webiny/error";
-import {ApiKey, ApiKeyInput, ApiKeyPermission, Security} from "~/types";
+import { ApiKey, ApiKeyInput, ApiKeyPermission, Security } from "~/types";
 import { SecurityConfig } from "~/types";
 
 const APIKeyModel = withFields({

@@ -31,7 +31,6 @@ export const createParentTenantGroupAuthorizer =
         return tenantLink.data.permissions;
     };
 
-
 /**
  * This authorizer will check if the identity belongs to the parent tenant of the current tenant.
  * If so, parent tenant permissions will be loaded.

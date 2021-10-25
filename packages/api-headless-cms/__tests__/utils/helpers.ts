@@ -1,5 +1,5 @@
 import { pick } from "lodash";
-import {SecurityIdentity} from "@webiny/api-security/types";
+import { SecurityIdentity } from "@webiny/api-security/types";
 
 export interface PermissionsArg {
     name: string;

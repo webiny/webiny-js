@@ -75,9 +75,9 @@ const UserInfo = () => {
     // This is only applicable in multi-tenant environments
     const { currentTenant, defaultTenant } = security.identity;
 
-    let wrapper: any = { Component: Link, props: { to: "/account"} };
+    let wrapper: any = { Component: Link, props: { to: "/account" } };
     if (currentTenant && defaultTenant && currentTenant.id !== defaultTenant.id) {
-        wrapper = { Component: "div", props: {} }
+        wrapper = { Component: "div", props: {} };
     }
 
     const { email, firstName, lastName, avatar, gravatar } = security.identity.profile || {};

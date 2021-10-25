@@ -20,7 +20,7 @@ import {
 
 export const AppInstaller = ({ Authentication, children }) => {
     const tenantId = localStorage.get("webiny_tenant") || "root";
-    
+
     const lsKey = `webiny_installation_${tenantId}`;
 
     const markInstallerAsCompleted = () => {

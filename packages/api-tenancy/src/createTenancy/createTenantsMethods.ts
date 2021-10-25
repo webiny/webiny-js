@@ -66,7 +66,11 @@ export function createTenantsMethods(storageOperations: TenancyStorageOperations
             this: Tenancy,
             data: CreateTenantInput
         ) {
-            const tenant = { ...data, id: data.id ?? mdbid(), webinyVersion: process.env.WEBINY_VERSION };
+            const tenant = {
+                ...data,
+                id: data.id ?? mdbid(),
+                webinyVersion: process.env.WEBINY_VERSION
+            };
 
             await this.onTenantBeforeCreate.publish({ tenant });
 

@@ -31,7 +31,7 @@ describe(`Test "Tenancy" tenants`, () => {
         await tenancy.createTenant(tenant1Data);
         const tenants = await tenancy.listTenants({ parent: "root" });
         expect(tenants.length).toBe(1);
-        expect(tenants[0]).toEqual({...tenant1Data, webinyVersion: process.env.WEBINY_VERSION });
+        expect(tenants[0]).toEqual({ ...tenant1Data, webinyVersion: process.env.WEBINY_VERSION });
 
         await tenancy.createTenant(tenant2Data);
         const tenant2 = await tenancy.getTenantById("2");

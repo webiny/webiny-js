@@ -1,4 +1,4 @@
-import{ createTenancyContext, createTenancyGraphQL } from "@webiny/api-tenancy";
+import { createTenancyContext, createTenancyGraphQL } from "@webiny/api-tenancy";
 import { createStorageOperations as tenancyStorageOperations } from "@webiny/api-tenancy-so-ddb";
 import { createSecurityContext, createSecurityGraphQL } from "@webiny/api-security";
 import { createStorageOperations as securityStorageOperations } from "@webiny/api-security-so-ddb";
@@ -21,7 +21,7 @@ export default ({ documentClient }) => [
     }),
 
     /**
-     * Expose tenancy GraphQL schema. 
+     * Expose tenancy GraphQL schema.
      */
     createTenancyGraphQL(),
 
@@ -33,7 +33,7 @@ export default ({ documentClient }) => [
     }),
 
     /**
-     * Expose security GraphQL schema. 
+     * Expose security GraphQL schema.
      */
     createSecurityGraphQL(),
 
