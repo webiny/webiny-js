@@ -3,8 +3,6 @@ import { createHandler } from "@webiny/handler-aws";
 import i18nPlugins from "@webiny/api-i18n/graphql";
 import i18nDynamoDbStorageOperations from "@webiny/api-i18n-ddb";
 import i18nContentPlugins from "@webiny/api-i18n-content/plugins";
-import adminUsersPlugins from "@webiny/api-security-admin-users";
-import securityAdminUsersDynamoDbStorageOperations from "@webiny/api-security-admin-users-so-ddb";
 import pageBuilderPlugins from "@webiny/api-page-builder/graphql";
 import pageBuilderDynamoDbPlugins from "@webiny/api-page-builder-so-ddb";
 import pageBuilderImportExportPlugins from "@webiny/api-page-builder-import-export/graphql";
@@ -13,10 +11,7 @@ import exportPagesCombinePlugins from "@webiny/api-page-builder-import-export/ex
 import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import dynamoDbPlugins from "@webiny/db-dynamodb/plugins";
-import fileManagerPlugins from "@webiny/api-file-manager/plugins";
-import fileManagerDynamoDbStorageOperation from "@webiny/api-file-manager-ddb";
 import logsPlugins from "@webiny/handler-logs";
-import fileManagerS3 from "@webiny/api-file-manager-s3";
 import securityPlugins from "./security";
 
 const documentClient = new DocumentClient({
@@ -36,16 +31,10 @@ export const handler = createHandler({
                 documentClient
             })
         }),
-        securityPlugins(),
+        securityPlugins({ documentClient }),
         i18nPlugins(),
         i18nDynamoDbStorageOperations(),
         i18nContentPlugins(),
-        fileManagerPlugins(),
-        fileManagerDynamoDbStorageOperation(),
-        // Add File storage S3 plugin for API file manager.
-        fileManagerS3(),
-        adminUsersPlugins(),
-        securityAdminUsersDynamoDbStorageOperations(),
         pageBuilderPlugins(),
         pageBuilderDynamoDbPlugins(),
         pageBuilderImportExportPlugins({

@@ -59,7 +59,7 @@ const runInquirer = async cwp => {
             type: "list",
             name: "storageOperations",
             default: "ddb",
-            message: `Please choose with which storage operations you want to initialize Webiny project:`,
+            message: `Please choose which storage operations do you want to use with your Webiny project:`,
             choices: Object.values(choices)
         }
     ]);

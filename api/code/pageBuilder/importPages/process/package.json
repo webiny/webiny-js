@@ -18,7 +18,6 @@
     "@webiny/api-page-builder-import-export-so-ddb": "^5.16.0",
     "@webiny/api-page-builder-so-ddb-es": "^5.16.0",
     "@webiny/api-security": "^5.16.0",
-    "@webiny/api-security-cognito": "^5.16.0",
     "@webiny/api-security-so-ddb": "^5.16.0",
     "@webiny/api-tenancy": "^5.16.0",
     "@webiny/api-tenancy-so-ddb": "^5.16.0",

@@ -3,10 +3,13 @@ import { ArgsContext } from "@webiny/handler-args/types";
 import { PageImportExportTaskStatus, PbPageImportExportContext } from "~/types";
 import { importPage, zeroPad } from "~/importPages/utils";
 import { invokeHandlerClient } from "~/importPages/client";
+import { SecurityIdentity } from "@webiny/api-security/types";
+import { mockSecurity } from "~/mockSecurity";
 
 export type HandlerArgs = {
     taskId: string;
     subTaskIndex: number;
+    identity: SecurityIdentity;
 };
 
 export type HandlerResponse = {
@@ -35,9 +38,14 @@ export default (
         let noPendingTask = true;
         let prevStatusOfSubTask = PageImportExportTaskStatus.PENDING;
 
+        // Disable authorization; this is necessary because we call Page Builder CRUD methods which include authorization checks
+        // and this Lambda is invoked internally, without credentials.
+
         log("RUNNING Import Page Queue Process");
         const { invocationArgs: args, pageBuilder } = context;
-        const { taskId, subTaskIndex } = args;
+        const { taskId, subTaskIndex, identity } = args;
+
+        mockSecurity(identity, context);
 
         try {
             /*
@@ -172,7 +180,8 @@ export default (
                     name: configuration.handlers.process,
                     payload: {
                         taskId,
-                        subTaskIndex: subTaskIndex + 1
+                        subTaskIndex: subTaskIndex + 1,
+                        identity: context.security.getIdentity()
                     }
                 });
             }

@@ -11,8 +11,6 @@ import headlessCmsPlugins from "@webiny/api-headless-cms/content";
 import headlessCmsDynamoDbElasticStorageOperation from "@webiny/api-headless-cms-ddb-es";
 import securityPlugins from "./security";
 import logsPlugins from "@webiny/handler-logs";
-import adminUsersPlugins from "@webiny/api-admin-users-cognito";
-import { createStorageOperations as createAdminUsersStorageOperations } from "@webiny/api-admin-users-cognito-so-ddb";
 import elasticsearchDataGzipCompression from "@webiny/api-elasticsearch/plugins/GzipCompression";
 
 // Imports plugins created via scaffolding utilities.
@@ -35,9 +33,6 @@ export const handler = createHandler({
             driver: new DynamoDbDriver({ documentClient })
         }),
         securityPlugins({ documentClient }),
-        adminUsersPlugins({
-            storageOperations: createAdminUsersStorageOperations({ documentClient })
-        }),
         i18nPlugins(),
         i18nDynamoDbStorageOperations(),
         i18nContentPlugins(),

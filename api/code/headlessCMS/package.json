@@ -6,8 +6,6 @@
     "watch": "yarn webiny run watch"
   },
   "dependencies": {
-    "@webiny/api-admin-users-cognito": "^5.16.0",
-    "@webiny/api-admin-users-cognito-so-ddb": "^5.16.0",
     "@webiny/api-elasticsearch": "^5.16.0",
     "@webiny/api-headless-cms": "^5.16.0",
     "@webiny/api-headless-cms-ddb-es": "^5.16.0",

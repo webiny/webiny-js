@@ -8,8 +8,10 @@ import apiKeyAuthorization from "@webiny/api-security/plugins/apiKeyAuthorizatio
 import groupAuthorization from "@webiny/api-security/plugins/groupAuthorization";
 import parentTenantGroupAuthorization from "@webiny/api-security/plugins/parentTenantGroupAuthorization";
 import cognitoAuthentication from "@webiny/api-security-cognito";
-// import * as okta from "@webiny/api-security-okta";
 import anonymousAuthorization from "@webiny/api-security/plugins/anonymousAuthorization";
+import createAdminUsersApp from "@webiny/api-admin-users-cognito";
+import { syncWithCognito } from "@webiny/api-admin-users-cognito/syncWithCognito";
+import { createStorageOperations as createAdminUsersStorageOperations } from "@webiny/api-admin-users-cognito-so-ddb";
 
 export default ({ documentClient }) => [
     /**
@@ -37,6 +39,21 @@ export default ({ documentClient }) => [
     createSecurityGraphQL(),
 
     /**
+     * Create Admin Users app.
+     */
+    createAdminUsersApp({
+        storageOperations: createAdminUsersStorageOperations({ documentClient })
+    }),
+
+    /**
+     * Sync Admin Users with Cognito User Pool.
+     */
+    syncWithCognito({
+        region: process.env.COGNITO_REGION,
+        userPoolId: process.env.COGNITO_USER_POOL_ID
+    }),
+
+    /**
      * Perform authentication using the common "Authorization" HTTP header.
      * This will fetch the value of the header, and execute the authentication process.
      */
@@ -59,44 +76,6 @@ export default ({ documentClient }) => [
         userPoolId: process.env.COGNITO_USER_POOL_ID,
         identityType: "admin"
     }),
-
-    // /**
-    //  * Okta authentication plugin.
-    //  */
-    // okta.oktaAuthenticator({
-    //     clientId: process.env.OKTA_CLIENT_ID,
-    //     issuer: process.env.OKTA_ISSUER,
-    //     getIdentity({ token }) {
-    //         return {
-    //             id: token.sub,
-    //             type: "admin",
-    //             displayName: token.name,
-    //             // This part stores JWT claims into SecurityIdentity
-    //             group: token.webiny_group
-    //         };
-    //     }
-    // }),
-    //
-    // /**
-    //  * Okta authorization plugin.
-    //  */
-    // okta.oktaGroupAuthorizer({
-    //     identityType: "admin",
-    //     getGroupSlug({ security }) {
-    //         return security.getIdentity().group;
-    //     }
-    // }),
-    //
-    // /**
-    //  * Okta identity type.
-    //  * This plugin adds a GraphQL type that implements the SecurityIdentity interface.
-    //  * Every identity type must have a corresponding GraphQL type. You can further extend
-    //  * this type by adding `GraphQLSchemaPlugin` plugins.
-    //  */
-    // okta.oktaIdentityType({
-    //     name: "OktaIdentity",
-    //     identityType: "admin"
-    // }),
 
     /**
      * Authorization plugin to fetch permissions for a verified API key.

@@ -8,14 +8,18 @@ import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import dynamoDbPlugins from "@webiny/db-dynamodb/plugins";
 import headlessCmsPlugins from "@webiny/api-headless-cms/content";
 import securityPlugins from "./security";
-import headlessCmsDynamoDbStorageOperation from "@webiny/api-headless-cms-ddb";
+import headlessCmsDynamoDbStorageOperations from "@webiny/api-headless-cms-ddb";
 import logsPlugins from "@webiny/handler-logs";
-import securityAdminUsersDynamoDbStorageOperations from "@webiny/api-security-admin-users-so-ddb";
 
 // Imports plugins created via scaffolding utilities.
 import scaffoldsPlugins from "./plugins/scaffolds";
 
 const debug = process.env.DEBUG === "true";
+
+const documentClient = new DocumentClient({
+    convertEmptyValues: true,
+    region: process.env.AWS_REGION
+});
 
 export const handler = createHandler({
     plugins: [
@@ -23,20 +27,14 @@ export const handler = createHandler({
         logsPlugins(),
         dbPlugins({
             table: process.env.DB_TABLE,
-            driver: new DynamoDbDriver({
-                documentClient: new DocumentClient({
-                    convertEmptyValues: true,
-                    region: process.env.AWS_REGION
-                })
-            })
+            driver: new DynamoDbDriver({ documentClient })
         }),
-        securityPlugins(),
-        securityAdminUsersDynamoDbStorageOperations(),
+        securityPlugins({ documentClient }),
         i18nPlugins(),
         i18nDynamoDbStorageOperations(),
         i18nContentPlugins(),
         headlessCmsPlugins({ debug }),
-        headlessCmsDynamoDbStorageOperation(),
+        headlessCmsDynamoDbStorageOperations(),
         scaffoldsPlugins()
     ],
     http: { debug }

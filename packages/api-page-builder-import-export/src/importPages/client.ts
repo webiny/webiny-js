@@ -19,7 +19,7 @@ export async function invokeHandlerClient<TParams>({
     const invocationArgs = {
         httpMethod: request.method,
         body: request.body,
-        headers: request.headers,
+        headers: {},
         cookies: request.cookies
     };
     // Invoke handler

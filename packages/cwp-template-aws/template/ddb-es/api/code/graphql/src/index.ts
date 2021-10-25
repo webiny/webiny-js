@@ -3,28 +3,27 @@ import { createHandler } from "@webiny/handler-aws";
 import graphqlPlugins from "@webiny/handler-graphql";
 import i18nPlugins from "@webiny/api-i18n/graphql";
 import i18nDynamoDbStorageOperations from "@webiny/api-i18n-ddb";
-import adminUsersPlugins from "@webiny/api-security-admin-users";
-import securityAdminUsersDynamoDbStorageOperations from "@webiny/api-security-admin-users-so-ddb";
 import i18nContentPlugins from "@webiny/api-i18n-content/plugins";
 import pageBuilderPlugins from "@webiny/api-page-builder/graphql";
 import pageBuilderDynamoDbElasticsearchPlugins from "@webiny/api-page-builder-so-ddb-es";
 import pageBuilderPrerenderingPlugins from "@webiny/api-page-builder/prerendering";
 import pageBuilderImportExportPlugins from "@webiny/api-page-builder-import-export/graphql";
-import { createStorageOperations as createPageImportExportStorageOperations } from "@webiny/api-page-builder-import-export-so-ddb";
+import { createStorageOperations } from "@webiny/api-page-builder-import-export-so-ddb";
+import prerenderingServicePlugins from "@webiny/api-prerendering-service/client";
 import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
-import elasticsearchClientContextPlugin from "@webiny/api-elasticsearch";
+import dynamoDbPlugins from "@webiny/db-dynamodb/plugins";
+import elasticSearch from "@webiny/api-elasticsearch";
 import fileManagerPlugins from "@webiny/api-file-manager/plugins";
-import fileManagerDynamoDbElasticPlugins from "@webiny/api-file-manager-ddb-es";
-import prerenderingServicePlugins from "@webiny/api-prerendering-service/client";
+import fileManagerDynamoDbElasticStorageOperation from "@webiny/api-file-manager-ddb-es";
 import logsPlugins from "@webiny/handler-logs";
 import fileManagerS3 from "@webiny/api-file-manager-s3";
 import { createFormBuilder } from "@webiny/api-form-builder";
 import { createFormBuilderStorageOperations } from "@webiny/api-form-builder-so-ddb-es";
-import securityPlugins from "./security";
 import headlessCmsPlugins from "@webiny/api-headless-cms/plugins";
 import headlessCmsDynamoDbElasticStorageOperation from "@webiny/api-headless-cms-ddb-es";
 import elasticsearchDataGzipCompression from "@webiny/api-elasticsearch/plugins/GzipCompression";
+import securityPlugins from "./security";
 
 // Imports plugins created via scaffolding utilities.
 import scaffoldsPlugins from "./plugins/scaffolds";
@@ -43,22 +42,20 @@ const elasticsearchClient = createElasticsearchClient({
 
 export const handler = createHandler({
     plugins: [
+        dynamoDbPlugins(),
         logsPlugins(),
         graphqlPlugins({ debug }),
-        elasticsearchClientContextPlugin(elasticsearchClient),
+        elasticSearch(elasticsearchClient),
         dbPlugins({
             table: process.env.DB_TABLE,
-            driver: new DynamoDbDriver({
-                documentClient
-            })
+            driver: new DynamoDbDriver({ documentClient })
         }),
-        securityPlugins(),
+        securityPlugins({ documentClient }),
         i18nPlugins(),
         i18nDynamoDbStorageOperations(),
         i18nContentPlugins(),
         fileManagerPlugins(),
-        fileManagerDynamoDbElasticPlugins(),
-        // Add File storage S3 plugin for API file manager.
+        fileManagerDynamoDbElasticStorageOperation(),
         fileManagerS3(),
         prerenderingServicePlugins({
             handlers: {
@@ -70,18 +67,16 @@ export const handler = createHandler({
                 }
             }
         }),
-        adminUsersPlugins(),
-        securityAdminUsersDynamoDbStorageOperations(),
         pageBuilderPlugins(),
         pageBuilderDynamoDbElasticsearchPlugins(),
         pageBuilderPrerenderingPlugins(),
         pageBuilderImportExportPlugins({
-            storageOperations: createPageImportExportStorageOperations({ documentClient })
+            storageOperations: createStorageOperations({ documentClient })
         }),
         createFormBuilder({
             storageOperations: createFormBuilderStorageOperations({
-                elasticsearch: elasticsearchClient,
-                documentClient
+                documentClient,
+                elasticsearch: elasticsearchClient
             })
         }),
         headlessCmsPlugins(),
