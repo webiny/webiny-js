@@ -88,7 +88,6 @@ export const SecurityPermissions = ({ value, onChange }) => {
     return (
         <Form data={formData} onChange={onFormChange}>
             {({ data, Bind }) => {
-                const disableUserAccessScope = data.groupAccessScope === NO_ACCESS;
                 return (
                     <Fragment>
                         <Grid className={gridNoPaddingClass}>

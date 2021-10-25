@@ -223,7 +223,7 @@ export interface UpdateTenantLinkParams<TData = Record<string, any>> {
     data?: TData;
 }
 
-export interface DeleteTenantLinkParams<TData = Record<string, any>> {
+export interface DeleteTenantLinkParams {
     identity: string;
     tenant: string;
 }

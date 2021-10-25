@@ -39,7 +39,7 @@ context("Search and Sort Security API Key", () => {
     });
 
     it("should be able to search api key", () => {
-        cy.visit(`/security/api-keys`);
+        cy.visit(`/access-management/api-keys`);
 
         // Searching for a non existing api key should result in "no records found"
         cy.findByTestId("default-data-list.search").within(() => {
@@ -71,7 +71,7 @@ context("Search and Sort Security API Key", () => {
     });
 
     it("should be able to sort apiKeys", () => {
-        cy.visit(`/security/api-keys`);
+        cy.visit(`/access-management/api-keys`);
 
         // Sort apiKeys from "Name A -> Z"
         cy.findByTestId("default-data-list.filter").click();
@@ -98,9 +98,8 @@ context("Search and Sort Security API Key", () => {
         cy.findByTestId("default-data-list").within(() => {
             cy.get(".mdc-list-item")
                 .first()
-                .within(() => {
-                    cy.findByText(apiKeys[total - 1].name).should("exist");
-                });
+                .within(() => cy.findByText(apiKeys[total - 1].name))
+                .should("exist");
         });
 
         // Sort apiKeys from "Oldest to Newest"

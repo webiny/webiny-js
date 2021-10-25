@@ -16,7 +16,6 @@ type State = {
 interface GetOnChangeFn {
     name: string;
     beforeChange: any;
-    afterChange: any;
 }
 
 export const FormContext = React.createContext<FormAPI>(null);
@@ -83,17 +82,19 @@ export const Form = React.forwardRef((props: FormProps, ref) => {
     }
 
     const inputs = useRef({});
+    const afterChange = useRef({});
     const lastRender = useRef([]);
     const validateFns = useRef({});
     const onChangeFns = useRef({});
 
-    const getOnChangeFn = ({ name, beforeChange, afterChange }: GetOnChangeFn) => {
+    const getOnChangeFn = ({ name, beforeChange }: GetOnChangeFn) => {
         if (!onChangeFns.current[name]) {
             const linkStateChange = (
                 value: any,
                 inlineCallback: Function = _.noop
             ): Promise<any> => {
                 return new Promise(resolve => {
+                    afterChange.current[name] = true;
                     setState(state => set(`data.${name}`, value, state));
                     if (typeof inlineCallback === "function") {
                         inlineCallback(value);
@@ -102,24 +103,9 @@ export const Form = React.forwardRef((props: FormProps, ref) => {
                 });
             };
 
-            const baseOnChange = (newValue, cb) => {
-                // When linkState is done processing the value change...
-                return linkStateChange(newValue, cb).then(value => {
-                    // call the Form onChange with updated data
-                    if (typeof props.onChange === "function") {
-                        props.onChange({ ...formRef.current.data }, formRef.current);
-                    }
-
-                    // Execute onAfterChange
-                    afterChange && afterChange(value, formRef.current);
-
-                    return value;
-                });
-            };
-
             onChangeFns.current[name] = beforeChange
-                ? newValue => beforeChange(newValue, baseOnChange)
-                : baseOnChange;
+                ? newValue => beforeChange(newValue, linkStateChange)
+                : linkStateChange;
         }
 
         return onChangeFns.current[name];
@@ -150,6 +136,25 @@ export const Form = React.forwardRef((props: FormProps, ref) => {
 
         formRef.current = getFormRef();
         stateRef.current = state;
+    });
+
+    useEffect(() => {
+        Object.keys(afterChange.current).forEach(name => {
+            delete afterChange.current[name];
+
+            // call the Form onChange with updated data
+            if (typeof props.onChange === "function") {
+                props.onChange({ ...formRef.current.data }, formRef.current);
+            }
+
+            // Execute onAfterChange
+            if (inputs.current[name].afterChange) {
+                inputs.current[name].afterChange(
+                    _.get(formRef.current.data, name),
+                    formRef.current
+                );
+            }
+        });
     });
 
     useImperativeHandle(ref, () => ({
@@ -376,7 +381,7 @@ export const Form = React.forwardRef((props: FormProps, ref) => {
         lastRender.current.push(name);
 
         // Store validators and custom messages
-        inputs.current[name] = { defaultValue, validators };
+        inputs.current[name] = { defaultValue, validators, afterChange };
 
         return {
             form: formRef.current,
@@ -384,7 +389,7 @@ export const Form = React.forwardRef((props: FormProps, ref) => {
             validate: getValidateFn(name),
             validation: getValidationState(name),
             value: _.get(state.data, name, defaultValue),
-            onChange: getOnChangeFn({ name, beforeChange, afterChange })
+            onChange: getOnChangeFn({ name, beforeChange })
         };
     };
 
@@ -402,13 +407,12 @@ export const Form = React.forwardRef((props: FormProps, ref) => {
         throw new Error("Form must have a function as its only child!");
     }
 
-    const formContext = useMemo(
-        () => ({
+    const formContext = useMemo(() => {
+        return {
             ...getFormRef(),
             createField
-        }),
-        [state]
-    );
+        };
+    }, [state]);
 
     return (
         <FormContext.Provider value={formContext}>

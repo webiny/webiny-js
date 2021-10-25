@@ -6,7 +6,7 @@ context("Security -> Users", () => {
     });
 
     it("should create, update and delete user", () => {
-        cy.visit(`/security/users`);
+        cy.visit(`/admin-users`);
 
         // Create a user
         const [firstName, lastName] = [uniqid(), uniqid()];

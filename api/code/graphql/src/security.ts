@@ -16,7 +16,6 @@ export default ({ documentClient }) => [
      * Create Tenancy app in the `context`.
      */
     createTenancyContext({
-        multiTenancy: true,
         storageOperations: tenancyStorageOperations({ documentClient })
     }),
 

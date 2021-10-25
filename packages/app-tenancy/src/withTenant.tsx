@@ -20,9 +20,8 @@ export const GET_DEFAULT_TENANT = gql`
     }
 `;
 
-export const withTenant =
-    Component =>
-    ({ getIdentityData, children }) => {
+export const withTenant = Component => {
+    const WithTenant = ({ getIdentityData, children }) => {
         const { tenant, setTenant, isMultiTenant } = useTenancy();
 
         const getIdentityWithTenant = async params => {
@@ -45,3 +44,6 @@ export const withTenant =
 
         return <Component getIdentityData={getIdentityWithTenant}>{children}</Component>;
     };
+
+    return WithTenant;
+};

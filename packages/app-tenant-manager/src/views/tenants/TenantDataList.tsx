@@ -12,7 +12,6 @@ import {
     DataListModalOverlayAction
 } from "@webiny/ui/List";
 
-import { DeleteIcon } from "@webiny/ui/List/DataList/icons";
 import { ButtonIcon, ButtonSecondary, IconButton } from "@webiny/ui/Button";
 import { Cell, Grid } from "@webiny/ui/Grid";
 import { Select } from "@webiny/ui/Select";
@@ -47,8 +46,7 @@ const TenantDataList = () => {
         sort,
         setSort,
         serializeSorters,
-        editTenant,
-        deleteTenant
+        editTenant
     } = useTenantsList({ sorters: SORTERS });
 
     const { setTenant } = useTenancy();
