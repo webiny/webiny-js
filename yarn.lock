@@ -8952,7 +8952,6 @@ __metadata:
     "@elastic/elasticsearch": 7.12.0
     "@shelf/jest-elasticsearch": ^1.0.0
     "@webiny/api-dynamodb-to-elasticsearch": ^5.16.0
-    "@webiny/api-elasticsearch": ^5.16.0
     "@webiny/api-file-manager": ^5.16.0
     "@webiny/api-file-manager-ddb": ^5.16.0
     "@webiny/api-i18n": ^5.16.0
@@ -12362,8 +12361,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "api-headless-cms@workspace:api/code/headlessCMS"
   dependencies:
-    "@webiny/api-admin-users-cognito": ^5.16.0
-    "@webiny/api-admin-users-cognito-so-ddb": ^5.16.0
     "@webiny/api-elasticsearch": ^5.16.0
     "@webiny/api-headless-cms": ^5.16.0
     "@webiny/api-headless-cms-ddb-es": ^5.16.0
@@ -12394,9 +12391,6 @@ __metadata:
   resolution: "api-page-builder-export-pages-combine@workspace:api/code/pageBuilder/exportPages/combine"
   dependencies:
     "@webiny/api-elasticsearch": ^5.16.0
-    "@webiny/api-file-manager": ^5.16.0
-    "@webiny/api-file-manager-ddb-es": ^5.16.0
-    "@webiny/api-file-manager-s3": ^5.16.0
     "@webiny/api-i18n": ^5.16.0
     "@webiny/api-i18n-content": ^5.16.0
     "@webiny/api-i18n-ddb": ^5.16.0
@@ -12405,7 +12399,6 @@ __metadata:
     "@webiny/api-page-builder-import-export-so-ddb": ^5.16.0
     "@webiny/api-page-builder-so-ddb-es": ^5.16.0
     "@webiny/api-security": ^5.16.0
-    "@webiny/api-security-cognito": ^5.16.0
     "@webiny/api-security-so-ddb": ^5.16.0
     "@webiny/api-tenancy": ^5.16.0
     "@webiny/api-tenancy-so-ddb": ^5.16.0
@@ -12423,9 +12416,6 @@ __metadata:
   resolution: "api-page-builder-export-pages-process@workspace:api/code/pageBuilder/exportPages/process"
   dependencies:
     "@webiny/api-elasticsearch": ^5.16.0
-    "@webiny/api-file-manager": ^5.16.0
-    "@webiny/api-file-manager-ddb-es": ^5.16.0
-    "@webiny/api-file-manager-s3": ^5.16.0
     "@webiny/api-i18n": ^5.16.0
     "@webiny/api-i18n-content": ^5.16.0
     "@webiny/api-i18n-ddb": ^5.16.0
@@ -12434,7 +12424,6 @@ __metadata:
     "@webiny/api-page-builder-import-export-so-ddb": ^5.16.0
     "@webiny/api-page-builder-so-ddb-es": ^5.16.0
     "@webiny/api-security": ^5.16.0
-    "@webiny/api-security-cognito": ^5.16.0
     "@webiny/api-security-so-ddb": ^5.16.0
     "@webiny/api-tenancy": ^5.16.0
     "@webiny/api-tenancy-so-ddb": ^5.16.0
@@ -12467,9 +12456,6 @@ __metadata:
   resolution: "api-page-builder-import-pages-create@workspace:api/code/pageBuilder/importPages/create"
   dependencies:
     "@webiny/api-elasticsearch": ^5.16.0
-    "@webiny/api-file-manager": ^5.16.0
-    "@webiny/api-file-manager-ddb-es": ^5.16.0
-    "@webiny/api-file-manager-s3": ^5.16.0
     "@webiny/api-i18n": ^5.16.0
     "@webiny/api-i18n-content": ^5.16.0
     "@webiny/api-i18n-ddb": ^5.16.0
@@ -12478,7 +12464,6 @@ __metadata:
     "@webiny/api-page-builder-import-export-so-ddb": ^5.16.0
     "@webiny/api-page-builder-so-ddb-es": ^5.16.0
     "@webiny/api-security": ^5.16.0
-    "@webiny/api-security-cognito": ^5.16.0
     "@webiny/api-security-so-ddb": ^5.16.0
     "@webiny/api-tenancy": ^5.16.0
     "@webiny/api-tenancy-so-ddb": ^5.16.0
@@ -12507,7 +12492,6 @@ __metadata:
     "@webiny/api-page-builder-import-export-so-ddb": ^5.16.0
     "@webiny/api-page-builder-so-ddb-es": ^5.16.0
     "@webiny/api-security": ^5.16.0
-    "@webiny/api-security-cognito": ^5.16.0
     "@webiny/api-security-so-ddb": ^5.16.0
     "@webiny/api-tenancy": ^5.16.0
     "@webiny/api-tenancy-so-ddb": ^5.16.0
