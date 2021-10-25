@@ -66,7 +66,7 @@ class FormBuilderTestEnvironment extends NodeEnvironment {
             return {
                 createStorageOperations: () => {
                     return createFormBuilderStorageOperations({
-                        table: "DynamoDB",
+                        table: process.env.DB_TABLE,
                         esTable: "ElasticSearchStream",
                         documentClient,
                         // TODO need to insert elasticsearch client
@@ -82,7 +82,7 @@ class FormBuilderTestEnvironment extends NodeEnvironment {
                     return [
                         elasticsearchClientContext,
                         ...dbPlugins({
-                            table: "DynamoDB",
+                            table: process.env.DB_TABLE,
                             driver: new DynamoDbDriver({
                                 documentClient
                             })

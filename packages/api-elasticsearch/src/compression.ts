@@ -36,14 +36,12 @@ export const decompress = async (
 ): Promise<Record<string, any>> => {
     const plugins = getCompressionPlugins(context);
     if (plugins.length === 0) {
-        console.log("No decompression plugins.");
         return data;
     }
     for (const plugin of plugins) {
         if (plugin.canDecompress(data) === false) {
             continue;
         }
-        console.log(`Decompressing with "${plugin.getName()}".`);
         return await plugin.decompress(data);
     }
     /**

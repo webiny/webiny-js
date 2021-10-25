@@ -19,6 +19,7 @@ export default (context: CmsContext): Table => {
             "TABLE_NAME_ERROR"
         );
     }
+    console.log(`Elasticsearch table name "${tableName}", db "${configurations.db().table}".`);
     return new Table({
         name: tableName,
         partitionKey: "PK",
