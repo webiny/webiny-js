@@ -13,7 +13,7 @@
     "@webiny/api-i18n-content": "latest",
     "@webiny/api-security": "latest",
     "@webiny/api-security-cognito": "latest",
-    "@webiny/api-security-ddb": "latest",
+    "@webiny/api-security-so-ddb": "latest",
     "@webiny/api-tenancy": "latest",
     "@webiny/api-tenancy-so-ddb": "latest",
     "@webiny/cli": "latest",

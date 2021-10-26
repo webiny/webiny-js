@@ -23,7 +23,7 @@
     "@webiny/api-prerendering-service": "latest",
     "@webiny/api-security": "latest",
     "@webiny/api-security-cognito": "latest",
-    "@webiny/api-security-ddb": "latest",
+    "@webiny/api-security-so-ddb": "latest",
     "@webiny/api-admin-users-cognito": "latest",
     "@webiny/api-admin-users-so-ddb": "latest",
     "@webiny/api-tenancy": "latest",
