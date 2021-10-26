@@ -5,9 +5,9 @@ import { TermsOfServiceComponent } from "./components/Form/components/createTerm
 import {
     BindComponent,
     FormRenderPropParams,
-    Form,
-    FormRenderPropParamsSubmit
-} from "@webiny/form";
+    FormRenderPropParamsSubmit,
+    FormAPI
+} from "@webiny/form/types";
 import { ApolloClient } from "apollo-client";
 import { SecurityContextValue } from "@webiny/app-security";
 
@@ -183,10 +183,10 @@ export type FbEditorFormSettingsPlugin = Plugin & {
     title: string;
     description: string;
     icon: React.ReactElement<any>;
-    render(props: { Bind: BindComponent; form: Form; formData: any }): React.ReactNode;
+    render(props: { Bind: BindComponent; form: FormAPI; formData: any }): React.ReactNode;
     renderHeaderActions?(props: {
         Bind: BindComponent;
-        form: Form;
+        form: FormAPI;
         formData: any;
     }): React.ReactNode;
 };

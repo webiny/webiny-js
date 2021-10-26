@@ -30,7 +30,7 @@ context("Security -> Group", () => {
     });
 
     it("should create, update and delete group", () => {
-        cy.visit(`/security/groups`);
+        cy.visit(`/access-management/groups`);
 
         // Create a group
         const [name, slug, description] = [
@@ -88,7 +88,7 @@ context("Security -> Group", () => {
     });
 
     it("should create group with all permissions, verify and delete it", () => {
-        cy.visit(`/security/groups`);
+        cy.visit(`/access-management/groups`);
 
         // Create a group
         const [name, slug, description] = [

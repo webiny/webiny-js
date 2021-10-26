@@ -1,14 +1,15 @@
 {
   "extends": "../../tsconfig.build.json",
-  "include": ["./src"],
-  "exclude": ["node_modules", "./dist", "../api-dynamic-pages", "../api-headless-cms"],
+  "include": ["src"],
+  "references": [
+    { "path": "../api-dynamic-pages/tsconfig.build.json" },
+    { "path": "../api-headless-cms/tsconfig.build.json" }
+  ],
   "compilerOptions": {
     "rootDir": "./src",
     "outDir": "./dist",
     "declarationDir": "./dist",
-    "baseUrl": ".",
-    "paths": {
-      "~/*": ["./src/*"]
-    }
+    "paths": { "~/*": ["./src/*"] },
+    "baseUrl": "."
   }
 }

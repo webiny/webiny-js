@@ -1,30 +1,26 @@
 {
   "extends": "../../tsconfig.build.json",
-  "include": ["./src"],
-  "exclude": [
-    "node_modules",
-    "../plugins",
-    "../api-form-builder",
-    "../error",
-    "../utils",
-    "../api-upgrade",
-    "../api-i18n",
-    "../handler",
-    "../handler-aws",
-    "../handler-db",
-    "../api-elasticsearch",
-    "../api-dynamodb-to-elasticsearch",
-    "../db-dynamodb",
-    "../api-tenancy"
+  "include": ["src"],
+  "references": [
+    { "path": "../api-elasticsearch/tsconfig.build.json" },
+    { "path": "../api-form-builder/tsconfig.build.json" },
+    { "path": "../api-i18n/tsconfig.build.json" },
+    { "path": "../api-tenancy/tsconfig.build.json" },
+    { "path": "../api-upgrade/tsconfig.build.json" },
+    { "path": "../db-dynamodb/tsconfig.build.json" },
+    { "path": "../error/tsconfig.build.json" },
+    { "path": "../handler/tsconfig.build.json" },
+    { "path": "../handler-aws/tsconfig.build.json" },
+    { "path": "../plugins/tsconfig.build.json" },
+    { "path": "../utils/tsconfig.build.json" },
+    { "path": "../api-dynamodb-to-elasticsearch/tsconfig.build.json" },
+    { "path": "../handler-db/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "rootDir": "./src",
     "outDir": "./dist",
     "declarationDir": "./dist",
-    "paths": {
-      "~/*": ["./src/*"]
-    },
+    "paths": { "~/*": ["./src/*"] },
     "baseUrl": "."
-  },
-  "references": []
+  }
 }

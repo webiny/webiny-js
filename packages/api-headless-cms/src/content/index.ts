@@ -9,8 +9,8 @@ import fieldTypePlugins from "./plugins/graphqlFields";
 import defaultStoragePlugin from "./plugins/storage/default";
 import objectStoragePlugin from "./plugins/storage/object";
 import validatorsPlugins from "./plugins/validators";
-import { InternalAuthenticationPlugin } from "./plugins/internalSecurity/InternalAuthenticationPlugin";
-import { InternalAuthorizationPlugin } from "./plugins/internalSecurity/InternalAuthorizationPlugin";
+// import { InternalAuthenticationPlugin } from "./plugins/internalSecurity/InternalAuthenticationPlugin";
+// import { InternalAuthorizationPlugin } from "./plugins/internalSecurity/InternalAuthorizationPlugin";
 
 interface CmsContentPluginsIndexArgs {
     debug?: boolean;
@@ -27,7 +27,7 @@ export default (options: CmsContentPluginsIndexArgs = {}) => [
     fieldTypePlugins(),
     validatorsPlugins(),
     defaultStoragePlugin(),
-    objectStoragePlugin(),
-    new InternalAuthenticationPlugin("read-api-key"),
-    new InternalAuthorizationPlugin("read-api-key")
+    objectStoragePlugin()
+    // new InternalAuthenticationPlugin("read-api-key"),
+    // new InternalAuthorizationPlugin("read-api-key")
 ];

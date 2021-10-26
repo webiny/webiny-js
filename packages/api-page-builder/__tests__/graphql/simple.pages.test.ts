@@ -1,7 +1,7 @@
 import useGqlHandler from "./useGqlHandler";
 import { Page } from "~/types";
 import { waitPage } from "./utils/waitPage";
-import { SecurityIdentity } from "@webiny/api-security";
+import { identityB } from "./mocks";
 
 const sort: string[] = ["createdOn_DESC"];
 
@@ -30,13 +30,7 @@ const content = [
 describe("pages simple actions", () => {
     const handler = useGqlHandler();
 
-    const handlerB = useGqlHandler({
-        identity: new SecurityIdentity({
-            id: "mockedB",
-            displayName: "b",
-            type: "b"
-        })
-    });
+    const handlerB = useGqlHandler({ identity: identityB });
 
     const createCategory = async () => {
         const [response] = await handler.createCategory({

@@ -8,7 +8,7 @@ import { plugins } from "@webiny/plugins";
 const t = i18n.ns("app-headless-cms/admin/fields/rich-text");
 
 const getKey = (field, bind) => {
-    const formId = bind.form.state.data.id || "new";
+    const formId = bind.form.data.id || "new";
     return `${formId}.${field.fieldId}`;
 };
 

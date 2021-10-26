@@ -16,7 +16,6 @@ export const ContentModelPermission = ({
     Bind,
     data,
     setValue,
-    form,
     entity,
     title,
     locales,
@@ -32,17 +31,6 @@ export const ContentModelPermission = ({
             setValue(`${entity}AccessScope`, "own");
         }
     }, [data]);
-
-    useEffect(() => {
-        // Let's set default values for "accessScopes"
-        if (
-            data.endpoints.length > 0 &&
-            !data[`${entity}AccessScope`] &&
-            form.onChangeFns[`${entity}AccessScope`]
-        ) {
-            setValue(`${entity}AccessScope`, "full");
-        }
-    }, [data, form]);
 
     const getItems = useCallback(
         (code: string) => {
@@ -72,7 +60,7 @@ export const ContentModelPermission = ({
                 <Cell span={12}>
                     <Grid style={{ padding: 0, paddingBottom: 24 }}>
                         <Cell span={12}>
-                            <Bind name={`${entity}AccessScope`}>
+                            <Bind name={`${entity}AccessScope`} defaultValue={"full"}>
                                 <Select
                                     label={t`Access Scope`}
                                     disabled={data[`contentModelGroupAccessScope`] === "own"}

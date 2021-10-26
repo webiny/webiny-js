@@ -4,7 +4,7 @@ describe("CRUD Test", () => {
     const { createI18NLocale, updateI18NLocale, deleteI18NLocale, listI18NLocales, getI18NLocale } =
         useGqlHandler();
     const identity = {
-        id: "admin@webiny.com",
+        id: "12345678",
         type: "admin",
         displayName: "John Doe"
     };

@@ -1,16 +1,13 @@
 import useGqlHandler from "./useGqlHandler";
-import { SecurityIdentity } from "@webiny/api-security";
+import { SecurityIdentity } from "@webiny/api-security/types";
 
-const identityA = new SecurityIdentity({
+const identityA: SecurityIdentity = {
     id: "a",
-    login: "a",
     type: "test",
     displayName: "Aa"
-});
-
+};
 describe("Files settings test", () => {
     const { install, isInstalled, getSettings, updateSettings } = useGqlHandler({
-        permissions: [{ name: "*" }],
         identity: identityA
     });
 

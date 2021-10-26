@@ -67,7 +67,7 @@ class FormBuilderTestEnvironment extends NodeEnvironment {
                 createStorageOperations: () => {
                     return createFormBuilderStorageOperations({
                         table: process.env.DB_TABLE,
-                        esTable: "ElasticSearchStream",
+                        esTable: process.env.DB_TABLE_ELASTICSEARCH,
                         documentClient,
                         // TODO need to insert elasticsearch client
                         elasticsearch: elasticsearchClient,

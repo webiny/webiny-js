@@ -24,10 +24,38 @@ function random(length = 32) {
 }
 
 const setup = async args => {
-    const { isGitAvailable, projectRoot, projectName, templateOptions = {} } = args;
+    const {
+        isGitAvailable,
+        projectRoot,
+        projectName,
+        templateOptions = {},
+        storageOperations = "ddb"
+    } = args;
     const { region = getDefaultRegion() } = templateOptions;
+    /**
+     * We need to check for the existence of the common and storageOperations folders to continue.
+     */
+    if (!storageOperations) {
+        console.log("Missing storage operations parameter.");
+        process.exit(1);
+    }
+    const commonTemplate = path.join(__dirname, `template/common`);
+    const storageOperationsTemplate = path.join(__dirname, `template/${storageOperations}`);
+    if (!fs.existsSync(commonTemplate)) {
+        console.log(`Missing common template folder "${commonTemplate}".`);
+        process.exit(1);
+    } else if (!fs.existsSync(storageOperationsTemplate)) {
+        console.log(
+            `Missing storage operations "${storageOperations}" template folder "${storageOperationsTemplate}".`
+        );
+        process.exit(1);
+    }
 
-    fs.copySync(path.join(__dirname, "template"), projectRoot);
+    /**
+     * Then we copy the common template folder and selected storage operations folder.
+     */
+    fs.copySync(commonTemplate, projectRoot);
+    fs.copySync(storageOperationsTemplate, projectRoot);
 
     for (let i = 0; i < renames.length; i++) {
         fs.moveSync(

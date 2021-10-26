@@ -11,10 +11,7 @@
       "path": "../../../packages/api-security"
     },
     {
-      "path": "../../../packages/api-security-admin-users"
-    },
-    {
-      "path": "../../../packages/api-security-admin-users-so-ddb"
+      "path": "../../../packages/api-admin-users-cognito-so-ddb"
     },
     {
       "path": "../../../packages/api-security-cognito-authentication"
@@ -97,8 +94,8 @@
       "@webiny/api-headless-cms": ["../../../packages/api-headless-cms/src"],
       "@webiny/api-headless-cms-ddb-es/*": ["../../../packages/api-headless-cms-ddb-es/src/*"],
       "@webiny/api-headless-cms-ddb-es": ["../../../packages/api-headless-cms-ddb-es/src"],
-      "@webiny/api-security-admin-users/*": ["../../../packages/api-security-admin-users/src/*"],
-      "@webiny/api-security-admin-users": ["../../../packages/api-security-admin-users/src"],
+      "@webiny/api-admin-users/*": ["../../../packages/api-admin-users/src/*"],
+      "@webiny/api-admin-users": ["../../../packages/api-admin-users/src"],
       "@webiny/api-security-cognito-authentication": [
         "../../../packages/api-security-cognito-authentication/src"
       ]

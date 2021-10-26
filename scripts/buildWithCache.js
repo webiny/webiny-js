@@ -7,6 +7,7 @@ const path = require("path");
 const loadJson = require("load-json-file");
 const writeJson = require("write-json-file");
 const { green, red } = require("chalk");
+const argv = require("yargs").argv;
 
 const CACHE_FOLDER_PATH = ".webiny/cached-packages";
 const META_FILE_PATH = path.join(CACHE_FOLDER_PATH, "meta.json");
@@ -41,24 +42,28 @@ async function build() {
 
     console.log(`There is a total of ${green(workspacesPackages.length)} packages.`);
 
+    const useCache = argv.hasOwnProperty("cache") ? argv.cache : true;
+
     // 1. Determine for which packages we can use the cached built code, and for which we need to execute build.
-    for (let i = 0; i < workspacesPackages.length; i++) {
-        const workspacePackage = workspacesPackages[i];
+    if (!useCache) {
+        workspacesPackages.forEach(pkg => packagesNoCache.push(pkg));
+    } else {
+        for (const workspacePackage of workspacesPackages) {
+            const cacheFolderPath = getPackageCacheFolderPath(workspacePackage);
+            if (!fs.existsSync(cacheFolderPath)) {
+                packagesNoCache.push(workspacePackage);
+                continue;
+            }
 
-        const cacheFolderPath = getPackageCacheFolderPath(workspacePackage);
-        if (!fs.existsSync(cacheFolderPath)) {
-            packagesNoCache.push(workspacePackage);
-            continue;
-        }
+            const sourceHash = await getPackageSourceHash(workspacePackage);
 
-        const sourceHash = await getPackageSourceHash(workspacePackage);
+            const packageMeta = metaJson.packages[workspacePackage.packageJson.name] || {};
 
-        const packageMeta = metaJson.packages[workspacePackage.packageJson.name] || {};
-
-        if (packageMeta.sourceHash === sourceHash) {
-            packagesUseCache.push(workspacePackage);
-        } else {
-            packagesNoCache.push(workspacePackage);
+            if (packageMeta.sourceHash === sourceHash) {
+                packagesUseCache.push(workspacePackage);
+            } else {
+                packagesNoCache.push(workspacePackage);
+            }
         }
     }
 
@@ -66,6 +71,7 @@ async function build() {
     if (packagesUseCache.length) {
         if (packagesUseCache.length > 10) {
             console.log(`Using cache for ${green(packagesUseCache.length)} packages.`);
+            console.log(`To build all packages regardless of cache, use the --no-cache flag.`);
         } else {
             console.log("Using cache for following packages:");
             for (let i = 0; i < packagesUseCache.length; i++) {
@@ -80,7 +86,11 @@ async function build() {
             fs.copySync(cacheFolderPath, path.join(workspacePackage.packageFolder, "dist"));
         }
     } else {
-        console.log("Cache is empty, all packages need to be built.");
+        if (useCache) {
+            console.log("Cache is empty, all packages need to be built.");
+        } else {
+            console.log("Skipping cache.");
+        }
     }
 
     // 3. Where needed, let's build and update the cache.

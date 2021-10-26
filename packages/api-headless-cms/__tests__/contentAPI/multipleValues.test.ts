@@ -239,8 +239,8 @@ describe("multiple values in field", () => {
                         id: expect.any(String),
                         createdOn: expect.stringMatching(/^20/),
                         createdBy: {
-                            id: "123",
-                            displayName: "User 123",
+                            id: "12345678",
+                            displayName: "John Doe",
                             type: "admin"
                         },
                         savedOn: expect.stringMatching(/^20/),

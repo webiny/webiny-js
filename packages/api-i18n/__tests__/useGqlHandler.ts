@@ -1,11 +1,9 @@
 import { createHandler } from "@webiny/handler-aws";
 import graphqlHandler from "@webiny/handler-graphql";
-import i18nPlugins from "../src/graphql";
-import tenancyPlugins from "@webiny/api-tenancy";
-import securityPlugins from "@webiny/api-security";
-import { SecurityIdentity } from "@webiny/api-security";
+import { SecurityIdentity, SecurityPermission } from "@webiny/api-security/types";
+import i18nPlugins from "~/graphql";
 import { apiCallsFactory } from "./helpers";
-import { SecurityPermission } from "@webiny/api-security/types";
+import { createTenancyAndSecurity } from "./tenancySecurity";
 
 type UseGqlHandlerParams = {
     permissions?: SecurityPermission[];
@@ -29,24 +27,8 @@ export default (params: UseGqlHandlerParams = {}) => {
     // Creates the actual handler. Feel free to add additional plugins if needed.
     const handler = createHandler(
         storageOperations(),
-        tenancyPlugins(),
+        ...createTenancyAndSecurity(),
         graphqlHandler(),
-        securityPlugins(),
-        { type: "security-authorization", getPermissions: () => [{ name: "*" }] },
-        {
-            type: "security-authentication",
-            async authenticate(context) {
-                if ("Authorization" in context.http.request.headers) {
-                    return;
-                }
-
-                return new SecurityIdentity({
-                    id: "admin@webiny.com",
-                    type: "admin",
-                    displayName: "John Doe"
-                });
-            }
-        },
         {
             type: "context",
             apply(context) {

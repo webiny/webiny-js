@@ -20,7 +20,7 @@ const localeData = {
 const expectedLocaleData = {
     ...localeData,
     createdBy: {
-        id: "admin@webiny.com",
+        id: "12345678",
         type: "admin",
         displayName: "John Doe"
     },

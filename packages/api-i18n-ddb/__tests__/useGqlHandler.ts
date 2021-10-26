@@ -3,14 +3,13 @@ import graphqlHandler from "@webiny/handler-graphql";
 import i18nPlugins from "@webiny/api-i18n/graphql";
 import i18nDynamoDbStorageOperations from "~/index";
 import dynamoDbPlugins from "@webiny/db-dynamodb/plugins";
-import tenancyPlugins from "@webiny/api-tenancy";
-import securityPlugins from "@webiny/api-security";
 import { SecurityIdentity } from "@webiny/api-security";
 import { apiCallsFactory } from "../../api-i18n/__tests__/helpers";
 import { SecurityPermission } from "@webiny/api-security/types";
 import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
+import { createTenancyAndSecurity } from "./tenancySecurity";
 
 type UseGqlHandlerParams = {
     permissions?: SecurityPermission[];
@@ -36,34 +35,10 @@ export default (params: UseGqlHandlerParams) => {
                 documentClient
             })
         }),
+        ...createTenancyAndSecurity(),
         i18nDynamoDbStorageOperations(),
         dynamoDbPlugins(),
-        tenancyPlugins(),
         graphqlHandler(),
-        securityPlugins(),
-        { type: "security-authorization", getPermissions: () => [{ name: "*" }] },
-        {
-            type: "security-authentication",
-            async authenticate(context) {
-                if ("Authorization" in context.http.request.headers) {
-                    return;
-                }
-
-                return new SecurityIdentity({
-                    id: "admin@webiny.com",
-                    type: "admin",
-                    displayName: "John Doe"
-                });
-            }
-        },
-        {
-            type: "context",
-            apply(context) {
-                context.tenancy.getCurrentTenant = () => {
-                    return { id: "root", name: "Root", parent: null };
-                };
-            }
-        },
         i18nPlugins(),
         extraPlugins || []
     );

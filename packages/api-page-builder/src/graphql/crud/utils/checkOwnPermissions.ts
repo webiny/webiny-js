@@ -1,4 +1,5 @@
-import { NotAuthorizedError, SecurityIdentity } from "@webiny/api-security";
+import { NotAuthorizedError } from "@webiny/api-security";
+import { SecurityIdentity } from "@webiny/api-security/types";
 
 export default (
     identity: SecurityIdentity,

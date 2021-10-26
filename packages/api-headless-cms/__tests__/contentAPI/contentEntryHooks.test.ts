@@ -2,8 +2,7 @@ import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
 import { contentEntryHooks, hooksTracker } from "./mocks/lifecycleHooks";
 import models from "./mocks/contentModels";
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
-import { CmsContentModelGroup } from "../../src/types";
-import { SecurityIdentity } from "@webiny/api-security";
+import { CmsContentModelGroup } from "~/types";
 
 describe("contentEntryHooks", () => {
     let contentModelGroup: CmsContentModelGroup;
@@ -427,11 +426,11 @@ describe("contentEntryHooks", () => {
         const { requestCategoryChanges } = useCategoryManageHandler(
             {
                 ...manageOpts,
-                identity: new SecurityIdentity({
+                identity: {
                     id: "1234",
                     displayName: "User 1234",
                     type: "admin"
-                })
+                }
             },
             [contentEntryHooks()]
         );

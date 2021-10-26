@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { AuthorizationPlugin } from "@webiny/api-security/plugins/AuthorizationPlugin";
 import { CmsContext } from "~/types";
 

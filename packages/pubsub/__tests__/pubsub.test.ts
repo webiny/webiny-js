@@ -18,4 +18,19 @@ describe("pubsub", () => {
 
         expect(values).toEqual([1, 1]);
     });
+
+    test("subscribeOnce should only handle event once", async () => {
+        const topic = createTopic<number>();
+
+        const values = [];
+
+        topic.subscribeOnce(eventValue => {
+            values.push(eventValue);
+        });
+
+        await topic.publish(1);
+        await topic.publish(1);
+
+        expect(values).toEqual([1]);
+    });
 });

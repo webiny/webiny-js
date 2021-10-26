@@ -1,5 +1,5 @@
 import useGqlHandler from "./useGqlHandler";
-import { SecurityIdentity } from "@webiny/api-security";
+import { identityA, identityB } from "./mocks";
 
 function Mock(prefix = "") {
     this.slug = `${prefix}slug`;
@@ -21,20 +21,6 @@ const NOT_AUTHORIZED_RESPONSE = operation => ({
             }
         }
     }
-});
-
-const identityA = new SecurityIdentity({
-    id: "a",
-    login: "a",
-    type: "test",
-    displayName: "Aa"
-});
-
-const identityB = new SecurityIdentity({
-    id: "b",
-    login: "b",
-    type: "test",
-    displayName: "Bb"
 });
 
 describe("Categories Security Test", () => {
@@ -92,10 +78,7 @@ describe("Categories Security Test", () => {
                         listCategories: {
                             data: [
                                 {
-                                    createdBy: {
-                                        displayName: "Aa",
-                                        id: "a"
-                                    },
+                                    createdBy: identityA,
                                     createdOn: /^20/,
                                     url: "list-categories-1-url",
                                     layout: "list-categories-1-layout",
@@ -103,10 +86,7 @@ describe("Categories Security Test", () => {
                                     name: "list-categories-1-name"
                                 },
                                 {
-                                    createdBy: {
-                                        displayName: "Aa",
-                                        id: "a"
-                                    },
+                                    createdBy: identityA,
                                     createdOn: /^20/,
                                     url: "list-categories-2-url",
                                     layout: "list-categories-2-layout",
@@ -114,10 +94,7 @@ describe("Categories Security Test", () => {
                                     name: "list-categories-2-name"
                                 },
                                 {
-                                    createdBy: {
-                                        displayName: "Bb",
-                                        id: "b"
-                                    },
+                                    createdBy: identityB,
                                     createdOn: /^20/,
                                     url: "list-categories-3-url",
                                     layout: "list-categories-3-layout",
@@ -125,10 +102,7 @@ describe("Categories Security Test", () => {
                                     name: "list-categories-3-name"
                                 },
                                 {
-                                    createdBy: {
-                                        displayName: "Bb",
-                                        id: "b"
-                                    },
+                                    createdBy: identityB,
                                     createdOn: /^20/,
                                     url: "list-categories-4-url",
                                     layout: "list-categories-4-layout",
@@ -155,10 +129,7 @@ describe("Categories Security Test", () => {
                     listCategories: {
                         data: [
                             {
-                                createdBy: {
-                                    displayName: "Aa",
-                                    id: "a"
-                                },
+                                createdBy: identityA,
                                 createdOn: /^20/,
                                 url: "list-categories-1-url",
                                 layout: "list-categories-1-layout",
@@ -166,10 +137,7 @@ describe("Categories Security Test", () => {
                                 name: "list-categories-1-name"
                             },
                             {
-                                createdBy: {
-                                    displayName: "Aa",
-                                    id: "a"
-                                },
+                                createdBy: identityA,
                                 createdOn: /^20/,
                                 url: "list-categories-2-url",
                                 layout: "list-categories-2-layout",
@@ -195,10 +163,7 @@ describe("Categories Security Test", () => {
                     listCategories: {
                         data: [
                             {
-                                createdBy: {
-                                    displayName: "Bb",
-                                    id: "b"
-                                },
+                                createdBy: identityB,
                                 createdOn: /^20/,
                                 url: "list-categories-3-url",
                                 layout: "list-categories-3-layout",
@@ -206,10 +171,7 @@ describe("Categories Security Test", () => {
                                 name: "list-categories-3-name"
                             },
                             {
-                                createdBy: {
-                                    displayName: "Bb",
-                                    id: "b"
-                                },
+                                createdBy: identityB,
                                 createdOn: /^20/,
                                 url: "list-categories-4-url",
                                 layout: "list-categories-4-layout",
@@ -442,10 +404,7 @@ describe("Categories Security Test", () => {
                         getCategory: {
                             data: {
                                 ...mock,
-                                createdBy: {
-                                    displayName: "Aa",
-                                    id: "a"
-                                },
+                                createdBy: identityA,
                                 createdOn: /^20/
                             },
                             error: null

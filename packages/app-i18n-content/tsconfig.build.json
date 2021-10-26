@@ -1,23 +1,19 @@
 {
   "extends": "../../tsconfig.build.json",
   "include": ["src"],
-  "exclude": [
-    "node_modules",
-    "**/__tests__/**",
-    "./dist",
-    "../app",
-    "../app-i18n",
-    "../app-admin",
-    "../form",
-    "../ui",
-    "../app-security"
+  "references": [
+    { "path": "../app/tsconfig.build.json" },
+    { "path": "../app-admin/tsconfig.build.json" },
+    { "path": "../app-i18n/tsconfig.build.json" },
+    { "path": "../app-security/tsconfig.build.json" },
+    { "path": "../form/tsconfig.build.json" },
+    { "path": "../ui/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "rootDir": "./src",
     "outDir": "./dist",
     "declarationDir": "./dist",
-    "paths": {},
+    "paths": { "~/*": ["./src/*"] },
     "baseUrl": "."
-  },
-  "references": []
+  }
 }

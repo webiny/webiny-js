@@ -123,7 +123,7 @@ const MenusForm = ({ canCreate }: MenusFormProps) => {
         }
 
         if (pbMenuPermission.own) {
-            return loadedMenu?.createdBy?.id === identity.login;
+            return loadedMenu?.createdBy?.id === identity.id;
         }
 
         if (typeof pbMenuPermission.rwd === "string") {
@@ -180,7 +180,7 @@ const MenusForm = ({ canCreate }: MenusFormProps) => {
                             </Cell>
                         </Grid>
                         <Bind name="items">
-                            {props => <MenuItems menuForm={form} {...props} canSave={canSave} />}
+                            {props => <MenuItems {...props} canSave={canSave} />}
                         </Bind>
                     </SimpleFormContent>
                     <SimpleFormFooter>

@@ -46,7 +46,7 @@ export default new ContextPlugin<PbContext>(async context => {
         CategoryStorageOperationsProviderPlugin.type
     );
 
-    const { getPermission } = context.security;
+    const getPermission = name => context.security.getPermission(name);
 
     context.pageBuilder.categories = {
         storageOperations,
