@@ -8,7 +8,7 @@ export const readPageListVariables = () => {
     let variables;
 
     try {
-        variables = JSON.parse(localStorage.getItem("wby_pb_pages_list_latest_variables"));
+        variables = JSON.parse(localStorage.getItem("webiny_pb_pages_list_latest_variables"));
     } catch {}
 
     return variables;
@@ -16,7 +16,7 @@ export const readPageListVariables = () => {
 
 export const writePageListVariablesToLocalStorage = variables => {
     // Needs to be refactored. Possibly, with our own GQL client, this is going to be much easier to handle.
-    localStorage.setItem("wby_pb_pages_list_latest_variables", JSON.stringify(variables));
+    localStorage.setItem("webiny_pb_pages_list_latest_variables", JSON.stringify(variables));
 };
 
 const extractVariables = key => {

@@ -17,7 +17,7 @@ const pwOptions = [
     { id: "c", name: t`Request changes` }
 ];
 
-export const ContentEntryPermission = ({ Bind, data, entity, setValue, form, title }) => {
+export const ContentEntryPermission = ({ Bind, data, entity, setValue, title }) => {
     // Set "cms.contentEntry" access scope to "own" if "cms.contentModel" === "own".
     useEffect(() => {
         if (
@@ -27,17 +27,6 @@ export const ContentEntryPermission = ({ Bind, data, entity, setValue, form, tit
             setValue(`${entity}AccessScope`, "own");
         }
     }, [data]);
-
-    // Let's set default values for "accessScopes"
-    useEffect(() => {
-        if (
-            data.endpoints.length > 0 &&
-            !data[`${entity}AccessScope`] &&
-            form.onChangeFns[`${entity}AccessScope`]
-        ) {
-            setValue(`${entity}AccessScope`, "full");
-        }
-    }, [data, form]);
 
     const disabledPrimaryActions =
         [undefined, "own", "no"].includes(data[`${entity}AccessScope`]) ||
@@ -53,6 +42,7 @@ export const ContentEntryPermission = ({ Bind, data, entity, setValue, form, tit
                     <Grid style={{ padding: 0, paddingBottom: 24 }}>
                         <Cell span={12}>
                             <Bind
+                                defaultValue={"full"}
                                 name={`${entity}AccessScope`}
                                 beforeChange={(value, cb) => {
                                     if (value === "own") {

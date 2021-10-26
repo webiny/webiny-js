@@ -82,7 +82,32 @@ const createPackageFilter = (args = []) => {
 
 const isPackageAllowed = createPackageFilter(process.argv);
 
+// Extract positional arguments after --logHeapUsage (we assume those are package names/paths)
+// --logHeapUsage is the last optional parameter defined in package.json "test" script.
+const positionalParams = process.argv
+    .slice(process.argv.indexOf("--logHeapUsage"))
+    .filter(p => !p.startsWith("--"));
+
+const packagesInParams = positionalParams
+    .map(p => {
+        if (p.includes("packages")) {
+            return path.resolve(p);
+        }
+
+        return path.resolve("packages", p);
+    })
+    .map(p => p.replace(/\\/g, "/"));
+
+function isPackageInParams(pkg) {
+    if (!packagesInParams.length) {
+        return true;
+    }
+
+    return packagesInParams.some(p => p.startsWith(pkg));
+}
+
 const projects = allWorkspaces()
+    .map(p => p.replace(/\\/g, "/"))
     .reduce((collection, pkg) => {
         const hasConfig = hasPackageJestConfig(pkg);
         const setup = getPackageJestSetup(pkg);
@@ -94,6 +119,10 @@ const projects = allWorkspaces()
         // we need to filter out the packages that do not match required keywords, if any
         const keywords = getPackageKeywords(pkg);
         if (!isPackageAllowed(keywords)) {
+            return collection;
+        }
+
+        if (!isPackageInParams(pkg)) {
             return collection;
         }
 
@@ -128,6 +157,7 @@ if (projects.length === 0) {
     console.log(`There are no packages found. Please check the filters if you are using those.`);
     process.exit(1);
 }
+
 module.exports = {
     projects,
     modulePathIgnorePatterns: ["dist"],

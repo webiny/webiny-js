@@ -11,7 +11,6 @@ import isEmpty from "lodash/isEmpty";
 import get from "lodash/get";
 import { useRouter } from "@webiny/react-router";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
-import { Form } from "@webiny/form";
 import * as GQL from "~/admin/graphql/contentEntries";
 import { useQuery } from "~/admin/hooks";
 import { ContentEntriesContext } from "~/admin/views/contentEntries/ContentEntriesContext";
@@ -22,8 +21,8 @@ import { Tabs } from "@webiny/ui/Tabs";
 export interface ContentEntryContext extends ContentEntriesContext {
     createEntry: () => void;
     entry: CmsEditorContentEntry;
-    form: MutableRefObject<Form>;
-    setFormRef: (form: Form) => void;
+    form: MutableRefObject<{ submit: Function }>;
+    setFormRef: (form: { submit: Function }) => void;
     loading: boolean;
     setLoading: Dispatch<SetStateAction<boolean>>;
     revisions: CmsContentEntryRevision[];

@@ -1,5 +1,5 @@
 import WebinyError from "@webiny/error";
-import { NotAuthorizedError, SecurityIdentity } from "@webiny/api-security";
+import { NotAuthorizedError } from "@webiny/api-security";
 import { UpgradePlugin } from "@webiny/api-upgrade/types";
 import { getApplicablePlugin } from "@webiny/api-upgrade";
 import {
@@ -13,6 +13,7 @@ import {
 } from "~/types";
 import { Tenant } from "@webiny/api-tenancy/types";
 import { createTopic } from "@webiny/pubsub";
+import { SecurityIdentity } from "@webiny/api-security/types";
 
 export interface Params {
     getIdentity: () => SecurityIdentity;

@@ -10,6 +10,7 @@ export const DATA_FIELD = /* GraphQL */ `
         createdBy {
             id
             displayName
+            type
         }
     }
 `;

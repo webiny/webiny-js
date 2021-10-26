@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useRef } from "react";
 import styled from "@emotion/styled";
-import { Form, FormRenderPropParams } from "@webiny/form";
+import { Form } from "@webiny/form";
+import { FormAPI, FormRenderPropParams } from "@webiny/form/types";
 import { plugins } from "@webiny/plugins";
 import { CircularProgress } from "@webiny/ui/Progress";
 import RenderFieldElement from "./RenderFieldElement";
@@ -14,7 +15,7 @@ const FormWrapper = styled("div")({
 });
 
 interface ContentEntryFormProps extends UseContentEntryFormParams {
-    onForm?: (form: Form) => void;
+    onForm?: (form: FormAPI) => void;
 }
 
 export const ContentEntryForm = ({ onForm, ...props }: ContentEntryFormProps) => {

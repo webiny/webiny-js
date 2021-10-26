@@ -1,4 +1,4 @@
-import { SecurityIdentity } from "@webiny/api-security";
+import { SecurityIdentity } from "@webiny/api-security/types";
 import useGqlHandler from "./useGqlHandler";
 import * as mocks from "./mocks/form.mocks";
 
@@ -32,19 +32,17 @@ const NOT_AUTHORIZED_RESPONSE = operation => ({
     }
 });
 
-const identityA = new SecurityIdentity({
+const identityA: SecurityIdentity = {
     id: "a",
-    login: "a",
     type: "test",
     displayName: "Aa"
-});
+};
 
-const identityB = new SecurityIdentity({
+const identityB: SecurityIdentity = {
     id: "b",
-    login: "b",
     type: "test",
     displayName: "Bb"
-});
+};
 
 describe("Forms Submission Security Test", () => {
     const handlerA = useGqlHandler({

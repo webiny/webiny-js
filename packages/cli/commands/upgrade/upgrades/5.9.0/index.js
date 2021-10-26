@@ -82,7 +82,7 @@ module.exports = {
         addPackagesToDependencies(path.resolve(process.cwd(), "api/code/graphql"), {
             "@webiny/api-security-tenancy": null,
             "@webiny/api-security-admin-users": targetVersion,
-            "@webiny/api-security-admin-users-cognito": targetVersion,
+            "@webiny/api-admin-users-cognito": targetVersion,
             "@webiny/api-security-cognito-authentication": targetVersion,
             "@webiny/api-tenancy": targetVersion
         });

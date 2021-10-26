@@ -10,6 +10,13 @@ const DEFAULT_HEADERS = {
     "Access-Control-Allow-Methods": "OPTIONS,POST"
 };
 
+const lowercaseKeys = obj => {
+    return Object.keys(obj).reduce((acc, key) => {
+        acc[key.toLowerCase()] = obj[key];
+        return acc;
+    }, {});
+};
+
 export default (options: HandlerHttpOptions = {}) => [
     {
         type: "context",
@@ -24,7 +31,7 @@ export default (options: HandlerHttpOptions = {}) => [
             const request = {
                 method: invocationArgs.method,
                 body: invocationArgs.body,
-                headers: invocationArgs.headers,
+                headers: lowercaseKeys(invocationArgs.headers || {}),
                 cookies: invocationArgs.cookies,
                 path: {
                     base: path.base,

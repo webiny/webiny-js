@@ -8,6 +8,8 @@ import {
 import { initialStats, readExtractAndUploadZipFileContents, zeroPad } from "~/importPages/utils";
 import { invokeHandlerClient } from "~/importPages/client";
 import { HandlerArgs as ProcessHandlerArgs } from "../process";
+import { SecurityIdentity } from "@webiny/api-security/types";
+import { mockSecurity } from "~/mockSecurity";
 
 export type HandlerArgs = {
     category: string;
@@ -16,6 +18,7 @@ export type HandlerArgs = {
         zipFileUrl?: string;
     };
     task: PageImportExportTask;
+    identity: SecurityIdentity;
 };
 
 export type HandlerResponse = {
@@ -40,10 +43,12 @@ export default (
     type: "handler",
     async handle(context): Promise<HandlerResponse> {
         const log = console.log;
+
         try {
             log("RUNNING Import Pages Create");
             const { invocationArgs: args, pageBuilder } = context;
-            const { task, category, data } = args;
+            const { task, category, data, identity } = args;
+            mockSecurity(identity, context);
             // Step 1: Read the zip file
             const pagesDirMap = await readExtractAndUploadZipFileContents(
                 data.zipFileKey || data.zipFileUrl
@@ -84,7 +89,8 @@ export default (
                 payload: {
                     taskId: task.id,
                     // Execute "Process" for the first sub task.
-                    subTaskIndex: 1
+                    subTaskIndex: 1,
+                    identity: context.security.getIdentity()
                 }
             });
         } catch (e) {

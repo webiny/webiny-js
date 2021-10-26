@@ -1,9 +1,8 @@
-import { PbContext } from "../../../types";
+import { PbContext, PbSecurityPermission } from "../../../types";
 import { NotAuthorizedError } from "@webiny/api-security";
 import hasRwd from "./hasRwd";
-import { SecurityPermission } from "@webiny/api-security/types";
 
-export default async <TPermission = SecurityPermission>(
+export default async <TPermission extends PbSecurityPermission = PbSecurityPermission>(
     context: PbContext,
     name: string,
     check: { rwd?: string; pw?: string }

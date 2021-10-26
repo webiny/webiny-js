@@ -23,7 +23,7 @@ import { ReactComponent as CalendarIcon } from "../../assets/icons/today-24px.sv
 import { ReactComponent as HighlightIcon } from "../../assets/icons/highlight-24px.svg";
 import { useFileManager } from "./FileManagerContext";
 import { useMutation } from "@apollo/react-hooks";
-import { useSnackbar } from "../../hooks/useSnackbar";
+import { useSnackbar } from "~/hooks/useSnackbar";
 import { useSecurity } from "@webiny/app-security";
 import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
 import { DELETE_FILE, LIST_FILES, LIST_TAGS } from "./graphql";
@@ -177,7 +177,8 @@ export default function FileDetails(props: FileDetailsProps) {
                 return false;
             }
             if (fmFilePermission.own) {
-                return get(item, "createdBy.id") === identity.login;
+                const identityId = identity.id || identity.login;
+                return get(item, "createdBy.id") === identityId;
             }
             if (typeof fmFilePermission.rwd === "string") {
                 return fmFilePermission.rwd.includes("d");

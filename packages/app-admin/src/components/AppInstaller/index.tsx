@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { default as localStorage } from "store";
 import { useSecurity } from "@webiny/app-security";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { ButtonPrimary } from "@webiny/ui/Button";
@@ -6,7 +7,6 @@ import { SplitView, LeftPanel, RightPanel } from "../SplitView";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Typography } from "@webiny/ui/Typography";
 import { Elevation } from "@webiny/ui/Elevation";
-import { View } from "@webiny/app/components/View";
 import { useInstaller } from "./useInstaller";
 import Sidebar from "./Sidebar";
 import {
@@ -18,16 +18,18 @@ import {
     SuccessDialog
 } from "./styled";
 
-const markInstallerAsCompleted = () =>
-    (localStorage["wby_installer_status"] = process.env.REACT_APP_WEBINY_VERSION);
+export const AppInstaller = ({ Authentication, children }) => {
+    const tenantId = localStorage.get("webiny_tenant") || "root";
 
-const installerCompleted =
-    localStorage["wby_installer_status"] === process.env.REACT_APP_WEBINY_VERSION;
+    const lsKey = `webiny_installation_${tenantId}`;
 
-export const AppInstaller = ({ children }) => {
-    if (installerCompleted) {
-        return children;
-    }
+    const markInstallerAsCompleted = () => {
+        localStorage.set(lsKey, process.env.REACT_APP_WEBINY_VERSION);
+    };
+
+    const isInstallerCompleted = () => {
+        return localStorage.get(lsKey) === process.env.REACT_APP_WEBINY_VERSION;
+    };
 
     const [finished, setFinished] = useState(false);
     const { identity } = useSecurity();
@@ -39,13 +41,17 @@ export const AppInstaller = ({ children }) => {
         showLogin,
         onUser,
         skippingVersions
-    } = useInstaller();
+    } = useInstaller({ isInstalled: isInstallerCompleted() });
 
     useEffect(() => {
         if (identity) {
             onUser();
         }
     }, [identity]);
+
+    if (isInstallerCompleted()) {
+        return <Authentication>{children}</Authentication>;
+    }
 
     const renderLayout = (content, secure = false) => {
         return (
@@ -59,9 +65,7 @@ export const AppInstaller = ({ children }) => {
                 </LeftPanel>
                 <RightPanel span={10}>
                     {!showLogin && !secure && content}
-                    {(showLogin || secure) && (
-                        <View name={"admin.installation.secureInstaller"}>{content}</View>
-                    )}
+                    {(showLogin || secure) && <Authentication>{content}</Authentication>}
                 </RightPanel>
             </SplitView>
         );
@@ -85,7 +89,7 @@ export const AppInstaller = ({ children }) => {
     // This means there are no installers to run or installation was finished
     if (!loading && (installers.length === 0 || finished)) {
         markInstallerAsCompleted();
-        return children;
+        return <Authentication>{children}</Authentication>;
     }
 
     if (installer) {

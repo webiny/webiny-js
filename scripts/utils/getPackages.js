@@ -2,10 +2,10 @@ const readJson = require("load-json-file");
 const getPackages = require("get-yarn-workspaces");
 const { yellow } = require("chalk");
 const fs = require("fs-extra");
-const path = require("path");
+const { join, basename } = require("path");
 
-const PROJECT_ROOT = path.join(__dirname, "..", "..");
-const rootPackageJson = readJson.sync(path.join(PROJECT_ROOT, "package.json"));
+const PROJECT_ROOT = join(__dirname, "..", "..");
+const rootPackageJson = readJson.sync(join(PROJECT_ROOT, "package.json"));
 
 module.exports.PROJECT_ROOT = PROJECT_ROOT;
 module.exports.rootPackageJson = rootPackageJson;
@@ -56,9 +56,14 @@ module.exports.getPackages = (args = {}) => {
                 }
             }
 
+            const hasTypescriptInDeps =
+                packageJson.devDependencies && Boolean(packageJson.devDependencies["typescript"]);
+
             try {
                 return {
-                    isTs: Boolean(tsConfigJson || tsConfigBuildJson),
+                    isTs: Boolean(tsConfigJson || tsConfigBuildJson || hasTypescriptInDeps),
+                    name: packageJson.name,
+                    folderName: basename(path),
                     packageFolder: path,
                     packageJsonPath,
                     tsConfigJsonPath,

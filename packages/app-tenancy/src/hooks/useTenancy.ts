@@ -1,6 +1,6 @@
 import { useContext } from "react";
-import { TenancyContext, TenancyContextValue, Tenant } from "../contexts/Tenancy";
+import { TenancyContext, TenancyContextValue } from "~/contexts/Tenancy";
 
-export function useTenancy<TTenant = Tenant>() {
-    return useContext<TenancyContextValue<TTenant>>(TenancyContext);
+export function useTenancy() {
+    return useContext<TenancyContextValue>(TenancyContext);
 }

@@ -33,7 +33,7 @@ const { getPackages } = require("./utils/getPackages");
         const depPackageRelativePath = relative(
             targetPackage.packageFolder,
             join(depPackage.packageFolder)
-        );
+        ).replace(/\\/g, "/");
 
         targetPackage.packageJson.dependencies[
             depPackage.packageJson.name
@@ -50,7 +50,7 @@ const { getPackages } = require("./utils/getPackages");
             let exists = targetPackage.tsConfigBuildJson.exclude.includes(depPackageRelativePath);
             !exists && targetPackage.tsConfigBuildJson.exclude.push(depPackageRelativePath);
 
-            const path = join(depPackageRelativePath, "tsconfig.build.json");
+            const path = join(depPackageRelativePath, "tsconfig.build.json").replace(/\\/g, "/");
             exists = targetPackage.tsConfigBuildJson.references.find(item => item.path === path);
             !exists && targetPackage.tsConfigBuildJson.references.push({ path });
         }

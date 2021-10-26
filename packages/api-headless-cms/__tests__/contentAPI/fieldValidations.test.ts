@@ -692,8 +692,8 @@ describe("fieldValidations", () => {
                         id: expect.any(String),
                         createdOn: expect.stringMatching(/^20/),
                         createdBy: {
-                            displayName: "User 123",
-                            id: "123",
+                            id: "12345678",
+                            displayName: "John Doe",
                             type: "admin"
                         },
                         savedOn: expect.stringMatching(/^20/),
@@ -742,8 +742,8 @@ describe("fieldValidations", () => {
                         id: apple.id,
                         createdOn: apple.createdOn,
                         createdBy: {
-                            displayName: "User 123",
-                            id: "123",
+                            id: "12345678",
+                            displayName: "John Doe",
                             type: "admin"
                         },
                         savedOn: apple.savedOn,

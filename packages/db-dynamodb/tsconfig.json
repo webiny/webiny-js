@@ -1,35 +1,29 @@
 {
-  "extends": "../../tsconfig",
+  "extends": "../../tsconfig.json",
+  "include": ["src", "__tests__/**/*.ts"],
   "references": [
-    {
-      "path": "../db"
-    },
-    {
-      "path": "../plugins"
-    },
-    {
-      "path": "../error"
-    },
-    {
-      "path": "../handler"
-    },
-    {
-      "path": "../handler-db"
-    }
+    { "path": "../db" },
+    { "path": "../error" },
+    { "path": "../handler" },
+    { "path": "../handler-db" },
+    { "path": "../plugins" }
   ],
   "compilerOptions": {
+    "rootDirs": ["./src", "./__tests__"],
+    "outDir": "./dist",
+    "declarationDir": "./dist",
     "paths": {
       "~/*": ["./src/*"],
       "@webiny/db/*": ["../db/src/*"],
       "@webiny/db": ["../db/src"],
-      "@webiny/plugins/*": ["../plugins/src/*"],
-      "@webiny/plugins": ["../plugins/src"],
       "@webiny/error/*": ["../error/src/*"],
       "@webiny/error": ["../error/src"],
       "@webiny/handler/*": ["../handler/src/*"],
       "@webiny/handler": ["../handler/src"],
       "@webiny/handler-db/*": ["../handler-db/src/*"],
-      "@webiny/handler-db": ["../handler-db/src"]
+      "@webiny/handler-db": ["../handler-db/src"],
+      "@webiny/plugins/*": ["../plugins/src/*"],
+      "@webiny/plugins": ["../plugins/src"]
     },
     "baseUrl": "."
   }

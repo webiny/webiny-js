@@ -1,23 +1,19 @@
 {
   "extends": "../../tsconfig.build.json",
-  "include": ["./src"],
-  "exclude": [
-    "node_modules",
-    "../plugins",
-    "../api-form-builder",
-    "../error",
-    "../utils",
-    "../handler-db",
-    "../db-dynamodb"
+  "include": ["src"],
+  "references": [
+    { "path": "../api-form-builder/tsconfig.build.json" },
+    { "path": "../db-dynamodb/tsconfig.build.json" },
+    { "path": "../error/tsconfig.build.json" },
+    { "path": "../plugins/tsconfig.build.json" },
+    { "path": "../utils/tsconfig.build.json" },
+    { "path": "../handler-db/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "rootDir": "./src",
     "outDir": "./dist",
     "declarationDir": "./dist",
-    "paths": {
-      "~/*": ["./src/*"]
-    },
+    "paths": { "~/*": ["./src/*"] },
     "baseUrl": "."
-  },
-  "references": []
+  }
 }
