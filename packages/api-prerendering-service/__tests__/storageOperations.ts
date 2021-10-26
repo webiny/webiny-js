@@ -9,7 +9,7 @@ export const getStorageOperations = (): PrerenderingServiceStorageOperations => 
     const { createStorageOperations } = __getStorageOperations();
     if (typeof createStorageOperations !== "function") {
         throw new Error(
-            `A product of "__getStorageOperations" must be a function to initialize storage operations.`
+            `A product of "createStorageOperations" must be a function to initialize storage operations.`
         );
     }
     return createStorageOperations();
