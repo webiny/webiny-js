@@ -1474,7 +1474,12 @@ describe("READ - Resolvers", () => {
                         id: potato.id
                     }
                 }).then(([data]) => data),
-            ({ data }) => !!data.getProduct.data.id
+            ({ data }) => !!data.getProduct.data.id,
+            {
+                name: "get product after publishing",
+                wait: 400,
+                tries: 20
+            }
         );
 
         expect(result.data.getProduct.data).toMatchObject({
