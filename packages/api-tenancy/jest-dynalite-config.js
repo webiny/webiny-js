@@ -1,7 +1,7 @@
 module.exports = {
     tables: [
         {
-            TableName: `Tenancy`,
+            TableName: process.env.DB_TABLE,
             KeySchema: [
                 { AttributeName: "PK", KeyType: "HASH" },
                 { AttributeName: "SK", KeyType: "RANGE" }
