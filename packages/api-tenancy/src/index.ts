@@ -5,15 +5,16 @@ import { createTenancy } from "./createTenancy";
 import graphql from "./graphql";
 
 interface TenancyPluginsParams {
-    multiTenancy?: boolean;
     storageOperations: TenancyStorageOperations;
 }
 
-export const createTenancyContext = ({ multiTenancy, storageOperations }: TenancyPluginsParams) => {
+export const createTenancyContext = ({ storageOperations }: TenancyPluginsParams) => {
     return new ContextPlugin<TenancyContext>(async context => {
         let tenantId = "root";
 
-        if (multiTenancy === true) {
+        const multiTenancy = process.env.WEBINY_MULTI_TENANCY === "true";
+
+        if (multiTenancy) {
             const { headers = {}, method } = context.http.request;
 
             tenantId = headers["x-tenant"];
