@@ -132,8 +132,8 @@ describe("Files CRUD test", () => {
                 data.fileManager.listFiles.data.length === 1 &&
                 data.fileManager.listFiles.data[0].tags.length === 1,
             {
-                tries: 10,
-                wait: 500,
+                tries: 30,
+                wait: 400,
                 name: "list files after update tags"
             }
         );
@@ -179,7 +179,11 @@ describe("Files CRUD test", () => {
             ({ data }) => {
                 return data.fileManager.listFiles.data.length === 2;
             },
-            { name: "list all files", tries: 10 }
+            {
+                name: "list all files",
+                tries: 30,
+                wait: 400
+            }
         );
 
         // Let's get a all files
@@ -232,7 +236,11 @@ describe("Files CRUD test", () => {
             ({ data }) => {
                 return data.fileManager.listFiles.data.length === testFiles.length;
             },
-            { name: "bulk list all files", tries: 10 }
+            {
+                name: "bulk list all files",
+                tries: 20,
+                wait: 400
+            }
         );
 
         const inElastic = testFiles.reverse();
@@ -279,7 +287,11 @@ describe("Files CRUD test", () => {
             ({ data }) => {
                 return data.fileManager.listFiles.data.length === 3;
             },
-            { name: "bulk list tags", tries: 10 }
+            {
+                name: "bulk list tags",
+                tries: 30,
+                wait: 400
+            }
         );
 
         const [response] = await listFiles({
@@ -334,7 +346,11 @@ describe("Files CRUD test", () => {
             ({ data }) => {
                 return data.fileManager.listTags.length === tags.length;
             },
-            { name: "bulk list all tags", tries: 10 }
+            {
+                name: "bulk list all tags",
+                tries: 20,
+                wait: 400
+            }
         );
 
         const [response] = await listTags();
@@ -357,7 +373,11 @@ describe("Files CRUD test", () => {
             ({ data }) => {
                 return data.fileManager.listFiles.data.length === 3;
             },
-            { name: "list all files", tries: 20 }
+            {
+                name: "list all files",
+                tries: 20,
+                wait: 400
+            }
         );
 
         const [cResponse] = await listFiles({
