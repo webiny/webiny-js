@@ -18,5 +18,11 @@
     },
     "baseUrl": "."
   },
-  "references": []
+  "references": [
+    { "path": "../api-prerendering-service/tsconfig.build.json" },
+    { "path": "../error/tsconfig.build.json" },
+    { "path": "../db/tsconfig.build.json" },
+    { "path": "../db-dynamodb/tsconfig.build.json" },
+    { "path": "../handler-aws/tsconfig.build.json" }
+  ]
 }
