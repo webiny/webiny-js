@@ -10402,7 +10402,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/app-tenant-manager@^5.16.0, @webiny/app-tenant-manager@workspace:packages/app-tenant-manager":
+"@webiny/app-tenant-manager@workspace:packages/app-tenant-manager":
   version: 0.0.0-use.local
   resolution: "@webiny/app-tenant-manager@workspace:packages/app-tenant-manager"
   dependencies:
@@ -11855,7 +11855,6 @@ __metadata:
     "@webiny/app-security": ^5.16.0
     "@webiny/app-security-access-management": ^5.16.0
     "@webiny/app-tenancy": ^5.16.0
-    "@webiny/app-tenant-manager": ^5.16.0
     "@webiny/cli": ^5.16.0
     "@webiny/cli-plugin-deploy-pulumi": ^5.16.0
     "@webiny/plugins": ^5.16.0
