@@ -112,7 +112,7 @@ export default (params?: UseGqlHandlerParams) => {
     // Creates the actual handler. Feel free to add additional plugins if needed.
     const handler = createHandler(
         dbPlugins({
-            table: "FileManager",
+            table: process.env.DB_TABLE,
             driver: new DynamoDbDriver({
                 documentClient
             })

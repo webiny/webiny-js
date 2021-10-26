@@ -8,7 +8,7 @@ import { getStorageOperations } from "../../../../storageOperations";
 
 const defaults = {
     db: {
-        table: "PrerenderingService",
+        table: process.env.DB_TABLE,
         keys: [
             {
                 primary: true,
@@ -48,7 +48,7 @@ export default (...plugins) => {
             storageOperations
         }),
         dbPlugins({
-            table: "PrerenderingService",
+            table: process.env.DB_TABLE,
             driver: dynamoDbDriver
         })
     );
