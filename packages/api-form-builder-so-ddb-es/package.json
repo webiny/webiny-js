@@ -5,7 +5,7 @@
   "keywords": [
     "@webiny/api-form-builder",
     "storage-operations",
-    "dynamodb",
+    "dynamodb:elasticsearch",
     "elasticsearch",
     "fb:ddb-es"
   ],

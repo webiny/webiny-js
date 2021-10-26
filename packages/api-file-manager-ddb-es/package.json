@@ -5,7 +5,7 @@
   "keywords": [
     "@webiny/api-file-manager",
     "storage-operations",
-    "dynamodb",
+    "dynamodb:elasticsearch",
     "elasticsearch",
     "fm:ddb-es"
   ],

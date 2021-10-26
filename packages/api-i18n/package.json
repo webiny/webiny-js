@@ -8,6 +8,7 @@
     "directory": "packages/api-i18n"
   },
   "keywords": [
+    "package:base",
     "i18n:base"
   ],
   "author": "Webiny Ltd",

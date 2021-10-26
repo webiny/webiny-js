@@ -5,7 +5,7 @@
   "keywords": [
     "@webiny/api-headless-cms",
     "storage-operations",
-    "dynamodb",
+    "dynamodb:elasticsearch",
     "elasticsearch",
     "cms:ddb-es"
   ],

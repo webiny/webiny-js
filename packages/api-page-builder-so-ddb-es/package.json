@@ -5,7 +5,8 @@
   "keywords": [
     "@webiny/api-page-builder",
     "storage-operations",
-    "dynamodb",
+    "dynamodb:elasticsearch",
+    "elasticsearch",
     "pb:ddb-es"
   ],
   "repository": {
