@@ -7,19 +7,24 @@ import { Render, TagUrlLink } from "~/types";
 const namespace = "root";
 
 describe("Render Pages Test", () => {
+    /**
+     * With this section, we are intercepting all render handler invocations, and inspecting the passed args.
+     */
+    let issuedRenders = [];
+
+    const { handler, storageOperations } = useHandler({
+        type: "handler-client-handler-render-handler",
+        name: "handler-client-handler-render-handler",
+        invoke(args) {
+            issuedRenders.push(args);
+        }
+    });
+    beforeEach(() => {
+        issuedRenders = [];
+    });
+
     // eslint-disable-next-line
     it.skip("should render all pages with a specific tag", async () => {
-        /**
-         * With this section, we are intercepting all render handler invocations, and inspecting the passed args.
-         */
-        const issuedRenders = [];
-        const { handler, storageOperations } = useHandler({
-            type: "handler-client-handler-render-handler",
-            name: "handler-client-handler-render-handler",
-            invoke(args) {
-                issuedRenders.push(args);
-            }
-        });
         /**
          * 1. Let's first create a random render entry. It should not be taken into consideration in queue jobs
          * we're about to add below. Note that once we've create the render entry, we also create a tag-url link.
