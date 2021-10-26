@@ -3,8 +3,6 @@ import { createHandler } from "@webiny/handler-aws";
 import i18nPlugins from "@webiny/api-i18n/graphql";
 import i18nDynamoDbStorageOperations from "@webiny/api-i18n-ddb";
 import i18nContentPlugins from "@webiny/api-i18n-content/plugins";
-import adminUsersPlugins from "@webiny/api-security-admin-users";
-import securityAdminUsersDynamoDbStorageOperations from "@webiny/api-security-admin-users-so-ddb";
 import pageBuilderPlugins from "@webiny/api-page-builder/graphql";
 import pageBuilderDynamoDbElasticsearchPlugins from "@webiny/api-page-builder-so-ddb-es";
 import pageBuilderImportExportPlugins from "@webiny/api-page-builder-import-export/graphql";
@@ -34,20 +32,15 @@ export const handler = createHandler({
         elasticSearch({ endpoint: `https://${process.env.ELASTIC_SEARCH_ENDPOINT}` }),
         dbPlugins({
             table: process.env.DB_TABLE,
-            driver: new DynamoDbDriver({
-                documentClient
-            })
+            driver: new DynamoDbDriver({ documentClient })
         }),
-        securityPlugins(),
+        securityPlugins({ documentClient }),
         i18nPlugins(),
         i18nDynamoDbStorageOperations(),
         i18nContentPlugins(),
         fileManagerPlugins(),
         fileManagerDynamoDbElasticStorageOperation(),
-        // Add File storage S3 plugin for API file manager.
         fileManagerS3(),
-        adminUsersPlugins(),
-        securityAdminUsersDynamoDbStorageOperations(),
         pageBuilderPlugins(),
         pageBuilderDynamoDbElasticsearchPlugins(),
         pageBuilderImportExportPlugins({

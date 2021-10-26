@@ -7,7 +7,8 @@ const API_MAP = {
     REACT_APP_GRAPHQL_API_URL: "${apiUrl}/graphql",
     REACT_APP_API_URL: "${apiUrl}",
     REACT_APP_USER_POOL_ID: "${cognitoUserPoolId}",
-    REACT_APP_USER_POOL_WEB_CLIENT_ID: "${cognitoAppClientId}"
+    REACT_APP_USER_POOL_WEB_CLIENT_ID: "${cognitoAppClientId}",
+    REACT_APP_USER_POOL_PASSWORD_POLICY: "${cognitoUserPoolPasswordPolicy}"
 };
 
 const NO_ENV_MESSAGE = `Please specify the environment via the "--env" argument, for example: "--env dev".`;
