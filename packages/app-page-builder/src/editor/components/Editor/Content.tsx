@@ -28,7 +28,7 @@ const ContentContainer = styled("div")(({ theme }) => ({
     backgroundColor: (theme as any)?.colors?.background,
     position: "relative",
     margin: "0 auto",
-    ".webiny-pb-page-document": {
+    ".webiny-pb-page-document , pb-document": {
         overflowY: "visible", // cuts off the block selector tooltip
         overflowX: "visible",
         // We need this extra spacing so that editor content won't get cutoff
