@@ -13,8 +13,6 @@ import { BrowserRouter } from "@webiny/react-router";
 import { createAuthentication } from "@webiny/app-admin-users-cognito";
 import { createApolloClient } from "./components/apolloClient";
 import { Telemetry } from "./components/Telemetry";
-
-// Import styles which include custom theme styles
 import "./App.scss";
 
 export const App = () => (
