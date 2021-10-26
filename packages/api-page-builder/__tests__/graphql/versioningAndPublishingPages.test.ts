@@ -46,7 +46,9 @@ describe("versioning and publishing pages", () => {
             () => listPublishedPages({ sort: ["createdOn_DESC"] }),
             ([res]) => res.data.pageBuilder.listPublishedPages.data.length === 0,
             {
-                name: "list published pages after create two pages"
+                name: "list published pages after create two pages",
+                wait: 400,
+                tries: 20
             }
         );
 
@@ -54,7 +56,9 @@ describe("versioning and publishing pages", () => {
             () => listPages({ sort: ["createdOn_DESC"] }),
             ([res]) => res.data.pageBuilder.listPages.data.length === 2,
             {
-                name: "list after create two pages"
+                name: "list after create two pages",
+                wait: 400,
+                tries: 20
             }
         );
 
@@ -98,7 +102,9 @@ describe("versioning and publishing pages", () => {
             () => listPublishedPages({ sort: ["createdOn_DESC"] }),
             ([res]) => res.data.pageBuilder.listPublishedPages.data.length === 0,
             {
-                name: "list published pages after create p1v2"
+                name: "list published pages after create p1v2",
+                wait: 400,
+                tries: 20
             }
         ).then(([res]) => expect(res.data.pageBuilder.listPublishedPages.error).toBe(null));
 
@@ -106,7 +112,9 @@ describe("versioning and publishing pages", () => {
             () => listPages({ sort: ["createdOn_DESC"] }),
             ([res]) => res.data.pageBuilder.listPages.data[0].id === p1v2.id,
             {
-                name: `list pages after create p1v2: ${p1v2.id}`
+                name: `list pages after create p1v2: ${p1v2.id}`,
+                wait: 400,
+                tries: 20
             }
         ).then(([res]) => {
             expect(res.data.pageBuilder.listPages.data.length).toBe(2);
@@ -131,7 +139,9 @@ describe("versioning and publishing pages", () => {
             () => listPublishedPages({ sort: ["createdOn_DESC"] }),
             ([res]) => res.data.pageBuilder.listPublishedPages.data.length === 0,
             {
-                name: "list published pages after create p1v3"
+                name: "list published pages after create p1v3",
+                wait: 400,
+                tries: 20
             }
         ).then(([res]) => expect(res.data.pageBuilder.listPublishedPages.error).toBe(null));
 
@@ -139,7 +149,9 @@ describe("versioning and publishing pages", () => {
             () => listPages({ sort: ["createdOn_DESC"] }),
             ([res]) => res.data.pageBuilder.listPages.data[0].id === p1v3.id,
             {
-                name: "list pages after create create p1v3"
+                name: "list pages after create create p1v3",
+                wait: 400,
+                tries: 20
             }
         ).then(([res]) => {
             expect(res.data.pageBuilder.listPages.data.length).toBe(2);
@@ -176,7 +188,9 @@ describe("versioning and publishing pages", () => {
             () => listPages({ sort: ["createdOn_DESC"] }),
             ([res]) => res.data.pageBuilder.listPages.data.length === 2,
             {
-                name: "list pages after publish p1v2"
+                name: "list pages after publish p1v2",
+                wait: 400,
+                tries: 20
             }
         );
 
@@ -196,7 +210,9 @@ describe("versioning and publishing pages", () => {
             () => listPublishedPages({ sort: ["createdOn_DESC"] }),
             ([res]) => res.data.pageBuilder.listPublishedPages.data[0].id === p1v2.id,
             {
-                name: "list published pages after publish p1v2"
+                name: "list published pages after publish p1v2",
+                wait: 400,
+                tries: 20
             }
         );
 
@@ -228,7 +244,9 @@ describe("versioning and publishing pages", () => {
                 });
             },
             {
-                name: "make sure list includes new p1v4 page"
+                name: "make sure list includes new p1v4 page",
+                wait: 400,
+                tries: 20
             }
         );
 
@@ -242,7 +260,9 @@ describe("versioning and publishing pages", () => {
                 });
             },
             {
-                name: "make sure published list does not include new p1v4 page"
+                name: "make sure published list does not include new p1v4 page",
+                wait: 400,
+                tries: 20
             }
         );
 
@@ -281,7 +301,9 @@ describe("versioning and publishing pages", () => {
                 });
             },
             {
-                name: "make sure list includes new p1v4 page #2 run"
+                name: "make sure list includes new p1v4 page #2 run",
+                wait: 400,
+                tries: 20
             }
         );
 
@@ -293,7 +315,9 @@ describe("versioning and publishing pages", () => {
                 });
             },
             {
-                name: "make sure published list includes new p1v4 page"
+                name: "make sure published list includes new p1v4 page",
+                wait: 400,
+                tries: 20
             }
         );
 
@@ -349,7 +373,9 @@ describe("versioning and publishing pages", () => {
                 return res.data.pageBuilder.listPublishedPages.data.length === 0;
             },
             {
-                name: "make sure published list does not contain any pages"
+                name: "make sure published list does not contain any pages",
+                wait: 400,
+                tries: 20
             }
         );
     });
