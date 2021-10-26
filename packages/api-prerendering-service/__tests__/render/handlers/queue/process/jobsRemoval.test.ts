@@ -2,9 +2,10 @@ import useHandler from "./useHandler";
 import mocks from "./mocks/jobsRemoval";
 
 describe("Jobs Removal Test", () => {
-    const { handler, storageOperations } = useHandler();
     // eslint-disable-next-line
     it.skip("on each run, all jobs should be removed from the database", async () => {
+        const { handler, storageOperations } = useHandler();
+
         for (let i = 0; i < 3; i++) {
             await storageOperations.createQueueJob({
                 queueJob: mocks.job(String(i))
