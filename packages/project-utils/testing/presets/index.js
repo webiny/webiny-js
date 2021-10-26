@@ -1,7 +1,7 @@
 /**
  * Finds a storage operations package and creates a preset for it.
- * If nothing is sent in the STORAGE_OPERATIONS_FILTER environment variable, all storage operations packages are loaded.
- * If sent, package list is filtered by simple regex.
+ * If nothing is sent in the targetKeywords variable, all storage operations packages are loaded.
+ * If sent, package list is filtered by packageKeywords.include(targetKeyword).
  */
 const path = require("path");
 const fs = require("fs");
@@ -55,8 +55,14 @@ const removeEmptyPreset = preset => {
 };
 
 const getPackagesPresets = (targetKeywords, nameSuffix) => {
-    if (!targetKeywords || targetKeywords.length === 0) {
+    if (Array.isArray(targetKeywords) === false || targetKeywords.length === 0) {
         throw new Error(`You must pass keywords to search for in the packages.`);
+    } else if (!nameSuffix) {
+        throw new Error(
+            `You must set a nameSuffix for the targeted package keywords: ${targetKeywords.join(
+                ","
+            )}.`
+        );
     }
 
     const packages = getAllPackages(targetKeywords);
@@ -112,5 +118,4 @@ const getPackagesPresets = (targetKeywords, nameSuffix) => {
     return items;
 };
 
-module.exports = (targetKeywords, nameSuffix = "custom") =>
-    getPackagesPresets(targetKeywords, nameSuffix);
+module.exports = (targetKeywords, nameSuffix) => getPackagesPresets(targetKeywords, nameSuffix);

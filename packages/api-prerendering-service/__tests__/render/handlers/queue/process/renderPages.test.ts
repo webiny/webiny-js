@@ -7,8 +7,7 @@ import { Render, TagUrlLink } from "~/types";
 const namespace = "root";
 
 describe("Render Pages Test", () => {
-    // eslint-disable-next-line
-    it.skip("should render all pages with a specific tag", async () => {
+    it("should render all pages with a specific tag", async () => {
         /**
          * With this section, we are intercepting all render handler invocations, and inspecting the passed args.
          */

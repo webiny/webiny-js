@@ -133,7 +133,7 @@ describe("Files CRUD test", () => {
                 data.fileManager.listFiles.data[0].tags.length === 1,
             {
                 tries: 10,
-                wait: 400,
+                wait: 500,
                 name: "list files after update tags"
             }
         );

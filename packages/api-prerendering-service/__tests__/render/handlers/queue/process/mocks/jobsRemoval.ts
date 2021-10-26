@@ -7,7 +7,7 @@ const mocks = {
                 render: {
                     configuration: {
                         db: {
-                            namespace: "T#root"
+                            namespace: "root"
                         }
                     },
                     tag: {

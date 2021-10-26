@@ -9,7 +9,7 @@ const mocks = {
                 render: {
                     configuration: {
                         db: {
-                            namespace: "T#root"
+                            namespace: "root"
                         }
                     },
                     tag: {
@@ -20,7 +20,7 @@ const mocks = {
             }
         };
     },
-    renderAllJob: ({ index = "", namespace = "T#root" } = {}): QueueJob => {
+    renderAllJob: ({ index = "", namespace = "root" } = {}): QueueJob => {
         return {
             id: `${mdbid()}-${index}`,
             args: {

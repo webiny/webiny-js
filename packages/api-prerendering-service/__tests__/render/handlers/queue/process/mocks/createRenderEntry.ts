@@ -6,7 +6,7 @@ const defaults = {
             }
         },
         db: {
-            namespace: "T#root"
+            namespace: "root"
         },
         storage: {
             name: "s3-bucket-name",

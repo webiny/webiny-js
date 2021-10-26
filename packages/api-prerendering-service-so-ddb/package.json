@@ -34,7 +34,7 @@
     "@webiny/handler-aws": "^5.15.0",
     "@webiny/project-utils": "^5.15.0",
     "jest-dynalite": "^3.3.1",
-    "jest-environment-node": "^27.3.0",
+    "jest-environment-node": "^27.0.6",
     "prettier": "^2.3.2",
     "rimraf": "^3.0.2",
     "ttypescript": "^1.5.12",
