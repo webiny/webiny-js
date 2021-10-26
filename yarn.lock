@@ -9257,7 +9257,6 @@ __metadata:
     "@webiny/handler-args": ^5.16.0
     "@webiny/handler-aws": ^5.16.0
     "@webiny/handler-client": ^5.16.0
-    "@webiny/handler-db": ^5.16.0
     "@webiny/plugins": ^5.16.0
     "@webiny/project-utils": ^5.16.0
     chrome-aws-lambda: ^5.5.0

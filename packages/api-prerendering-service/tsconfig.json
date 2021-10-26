@@ -17,9 +17,6 @@
       "path": "../handler-aws"
     },
     {
-      "path": "../handler-db"
-    },
-    {
       "path": "../plugins"
     },
     {
@@ -42,8 +39,6 @@
       "@webiny/handler-aws": ["../handler-aws/src"],
       "@webiny/handler-client/*": ["../handler-client/src/*"],
       "@webiny/handler-client": ["../handler-client/src"],
-      "@webiny/handler-db/*": ["../handler-db/src/*"],
-      "@webiny/handler-db": ["../handler-db/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"],
       "@webiny/db/*": ["../db/src/*"],

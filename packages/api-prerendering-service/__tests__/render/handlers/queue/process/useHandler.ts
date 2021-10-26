@@ -1,36 +1,10 @@
-import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { createHandler } from "@webiny/handler";
-import dbPlugins from "@webiny/handler-db";
-import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import queueProcessPlugins from "~/queue/process";
 import handlerClient from "@webiny/handler-client";
 import { getStorageOperations } from "../../../../storageOperations";
 
-const defaults = {
-    db: {
-        table: process.env.DB_TABLE,
-        keys: [
-            {
-                primary: true,
-                unique: true,
-                name: "primary",
-                fields: [{ name: "PK" }, { name: "SK" }]
-            }
-        ]
-    }
-};
-
 export default (...plugins) => {
-    const dynamoDbDriver = new DynamoDbDriver({
-        documentClient: new DocumentClient({
-            convertEmptyValues: true,
-            endpoint: process.env.MOCK_DYNAMODB_ENDPOINT,
-            sslEnabled: false,
-            region: "local"
-        })
-    });
-
-    let storageOperations: any = {}; //getStorageOperations();
+    let storageOperations: any = {};
     try {
         storageOperations = getStorageOperations();
     } catch (ex) {
@@ -46,12 +20,8 @@ export default (...plugins) => {
                 flush: "handler-client-handler-flush-handler"
             },
             storageOperations
-        }),
-        dbPlugins({
-            table: process.env.DB_TABLE,
-            driver: dynamoDbDriver
         })
     );
 
-    return { handler, dynamoDbDriver, defaults, storageOperations };
+    return { handler, storageOperations };
 };
