@@ -30,7 +30,8 @@ class FormBuilderTestEnvironment extends NodeEnvironment {
         await super.setup();
 
         const elasticsearchClient = createElasticsearchClient({
-            node: `http://localhost:${ELASTICSEARCH_PORT}`
+            node: `http://localhost:${ELASTICSEARCH_PORT}`,
+            auth: {},
         });
         const documentClient = new DocumentClient({
             convertEmptyValues: true,
@@ -40,10 +41,7 @@ class FormBuilderTestEnvironment extends NodeEnvironment {
             accessKeyId: "test",
             secretAccessKey: "test"
         });
-        const elasticsearchClientContext = createElasticsearchClientContextPlugin({
-            endpoint: `http://localhost:${ELASTICSEARCH_PORT}`,
-            auth: {}
-        });
+        const elasticsearchClientContext = createElasticsearchClientContextPlugin(elasticsearchClient);
 
         /**
          * Intercept DocumentClient operations and trigger dynamoToElastic function (almost like a DynamoDB Stream trigger)
