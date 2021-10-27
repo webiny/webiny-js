@@ -1,9 +1,8 @@
-import { HandlerPlugin as DefaultHandlerPlugin, Context } from "@webiny/handler/types";
+import { HandlerPlugin as DefaultHandlerPlugin, ContextInterface } from "@webiny/handler/types";
 import { ArgsContext } from "@webiny/handler-args/types";
 import { Plugin } from "@webiny/plugins/types";
-import { DbContext } from "@webiny/handler-db/types";
 
-export type Configuration = {
+export interface Configuration {
     website?: {
         url?: string;
     };
@@ -15,16 +14,18 @@ export type Configuration = {
         folder?: string;
     };
     meta?: Record<string, any>;
-};
+}
 
-export type Args = {
+export interface Args {
     configuration?: Configuration;
     url?: string;
     path?: string;
-};
+}
 
 export type HandlerArgs = Args | Args[];
-export type HandlerContext = Context<DbContext, ArgsContext<HandlerArgs>>;
+export interface HandlerContext extends ContextInterface, ArgsContext<HandlerArgs> {
+    //
+}
 export type HandlerPlugin = DefaultHandlerPlugin<HandlerContext>;
 
 export type HookCallbackFunction = (args: {
@@ -33,8 +34,8 @@ export type HookCallbackFunction = (args: {
     args: Args;
 }) => void | Promise<void>;
 
-export type RenderHookPlugin = Plugin<{
+export interface RenderHookPlugin extends Plugin {
     type: "ps-render-hook";
     beforeRender?: HookCallbackFunction;
     afterRender?: HookCallbackFunction;
-}>;
+}
