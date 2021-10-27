@@ -54,6 +54,8 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                         });
                         return new Response(true);
                     } catch (e) {
+                        console.log(e);
+                        console.log(JSON.stringify(e.stack, null, 2));
                         return new ErrorResponse(e);
                     }
                 },

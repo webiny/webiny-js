@@ -19,7 +19,6 @@
   "dependencies": {
     "@babel/runtime": "^7.5.5",
     "@commodo/fields": "1.1.2-beta.20",
-    "@webiny/api-elasticsearch": "^5.16.0",
     "@webiny/api-file-manager": "^5.16.0",
     "@webiny/api-i18n": "^5.16.0",
     "@webiny/api-i18n-content": "^5.16.0",
@@ -52,6 +51,8 @@
     "@shelf/jest-elasticsearch": "^1.0.0",
     "@webiny/api-dynamodb-to-elasticsearch": "^5.16.0",
     "@webiny/api-file-manager-ddb": "^5.16.0",
+    "@webiny/api-security-so-ddb": "^5.16.0",
+    "@webiny/api-tenancy-so-ddb": "^5.16.0",
     "@webiny/cli": "^5.16.0",
     "@webiny/project-utils": "^5.16.0",
     "csvtojson": "^2.0.10",

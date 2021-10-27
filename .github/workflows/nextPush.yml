@@ -242,7 +242,7 @@ jobs:
           npx create-webiny-project@next test-project
           --tag next --no-interactive
           --assign-to-yarnrc '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
-          --template-options '{"region":"eu-central-1"}'
+          --template-options '{"region":"eu-central-1","storageOperations":"ddb-es"}'
 
   e2e-tests:
     needs: [cache-keys, verdaccio-publish]
@@ -299,7 +299,7 @@ jobs:
           npx create-webiny-project@next test-project
           --tag next --no-interactive
           --assign-to-yarnrc '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
-          --template-options '{"region":"eu-central-1"}'
+          --template-options '{"region":"eu-central-1","storageOperations":"ddb-es"}'
 
       - name: Cache project files
         uses: actions/cache@v2

@@ -32,7 +32,7 @@ class FormBuilderTestEnvironment extends NodeEnvironment {
             return {
                 createStorageOperations: () => {
                     return createFormBuilderStorageOperations({
-                        table: "DynamoDB",
+                        table: process.env.DB_TABLE,
                         documentClient,
                         plugins: [...dynamoDbPlugins()]
                     });
@@ -40,7 +40,7 @@ class FormBuilderTestEnvironment extends NodeEnvironment {
                 getGlobalPlugins: () => {
                     return [
                         ...dbPlugins({
-                            table: "DynamoDB",
+                            table: process.env.DB_TABLE,
                             driver: new DynamoDbDriver({
                                 documentClient
                             })

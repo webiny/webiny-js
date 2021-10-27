@@ -80,37 +80,25 @@ describe("Pages Security Test", () => {
                                     status: "draft",
                                     locked: false,
                                     publishedOn: null,
-                                    createdBy: {
-                                        id: "b",
-                                        displayName: "Bb"
-                                    }
+                                    createdBy: identityB
                                 },
                                 {
                                     status: "draft",
                                     locked: false,
                                     publishedOn: null,
-                                    createdBy: {
-                                        id: "b",
-                                        displayName: "Bb"
-                                    }
+                                    createdBy: identityB
                                 },
                                 {
                                     status: "draft",
                                     locked: false,
                                     publishedOn: null,
-                                    createdBy: {
-                                        id: "a",
-                                        displayName: "Aa"
-                                    }
+                                    createdBy: identityA
                                 },
                                 {
                                     status: "draft",
                                     locked: false,
                                     publishedOn: null,
-                                    createdBy: {
-                                        id: "a",
-                                        displayName: "Aa"
-                                    }
+                                    createdBy: identityA
                                 }
                             ],
                             error: null
@@ -132,19 +120,13 @@ describe("Pages Security Test", () => {
                     listPages: {
                         data: [
                             {
-                                createdBy: {
-                                    displayName: "Aa",
-                                    id: "a"
-                                },
+                                createdBy: identityA,
                                 status: "draft",
                                 locked: false,
                                 publishedOn: null
                             },
                             {
-                                createdBy: {
-                                    displayName: "Aa",
-                                    id: "a"
-                                },
+                                createdBy: identityA,
                                 status: "draft",
                                 locked: false,
                                 publishedOn: null
@@ -168,19 +150,13 @@ describe("Pages Security Test", () => {
                     listPages: {
                         data: [
                             {
-                                createdBy: {
-                                    displayName: "Bb",
-                                    id: "b"
-                                },
+                                createdBy: identityB,
                                 status: "draft",
                                 locked: false,
                                 publishedOn: null
                             },
                             {
-                                createdBy: {
-                                    displayName: "Bb",
-                                    id: "b"
-                                },
+                                createdBy: identityB,
                                 status: "draft",
                                 locked: false,
                                 publishedOn: null
@@ -203,11 +179,11 @@ describe("Pages Security Test", () => {
                 [{ name: "content.i18n", locales: ["de-DE", "it-IT"] }, { name: "pb.page" }],
                 identityA
             ],
-            [[{ name: "content.i18n" }, { name: "pb.page", own: true }], identityA],
+            [[{ name: "content.i18n" }, { name: "pb.page", own: true, rwd: "r" }], identityA],
             [
                 [
                     { name: "content.i18n" },
-                    { name: "pb.page", own: true },
+                    { name: "pb.page", own: true, rwd: "r" },
                     { name: "pb.category", own: true }
                 ],
                 identityA
@@ -469,10 +445,7 @@ describe("Pages Security Test", () => {
                                 status: "draft",
                                 locked: false,
                                 publishedOn: null,
-                                createdBy: {
-                                    displayName: "Aa",
-                                    id: "a"
-                                },
+                                createdBy: identityA,
                                 createdOn: /^20/
                             },
                             error: null

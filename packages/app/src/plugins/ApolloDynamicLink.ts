@@ -21,7 +21,7 @@ export class ApolloDynamicLink extends ApolloLink {
             return forward(operation);
         }
 
-        const cacheKey = linkPlugins.map(pl => pl.name).join(",");
+        const cacheKey = linkPlugins.map(pl => pl.cacheKey).join(",");
 
         if (!this.cache.has(cacheKey)) {
             this.cache.set(cacheKey, ApolloLink.from(linkPlugins.map(createLink)));

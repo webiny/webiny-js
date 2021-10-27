@@ -1,7 +1,7 @@
 module.exports = {
     tables: [
         {
-            TableName: "HeadlessCms",
+            TableName: process.env.DB_TABLE,
             KeySchema: [
                 { AttributeName: "PK", KeyType: "HASH" },
                 { AttributeName: "SK", KeyType: "RANGE" }
@@ -13,7 +13,7 @@ module.exports = {
             ProvisionedThroughput: { ReadCapacityUnits: 1, WriteCapacityUnits: 1 }
         },
         {
-            TableName: "ElasticSearchStream",
+            TableName: process.env.DB_TABLE_ELASTICSEARCH,
             KeySchema: [
                 { AttributeName: "PK", KeyType: "HASH" },
                 { AttributeName: "SK", KeyType: "RANGE" }

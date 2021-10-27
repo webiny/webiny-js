@@ -1,5 +1,5 @@
 import { Plugin } from "@webiny/plugins/types";
-import { SecurityIdentity } from "@webiny/app-security";
+import { SecurityIdentity } from "@webiny/app-security/types";
 
 export type GraphQLPlaygroundTab = {
     name: string;

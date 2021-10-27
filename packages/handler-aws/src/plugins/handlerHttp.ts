@@ -2,6 +2,13 @@ import { HttpContext } from "@webiny/handler-http/types";
 import { ContextPlugin } from "@webiny/handler/types";
 import { ArgsContext } from "@webiny/handler-args/types";
 
+const lowercaseKeys = obj => {
+    return Object.keys(obj).reduce((acc, key) => {
+        acc[key.toLowerCase()] = obj[key];
+        return acc;
+    }, {});
+};
+
 export default {
     type: "context",
     apply(context) {
@@ -15,7 +22,7 @@ export default {
         const request = {
             method: invocationArgs.httpMethod,
             body: invocationArgs.body,
-            headers: invocationArgs.headers,
+            headers: lowercaseKeys(invocationArgs.headers || {}),
             cookies: invocationArgs.cookies,
             path: {
                 base: invocationArgs.rawPath,

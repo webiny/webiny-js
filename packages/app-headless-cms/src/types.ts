@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Plugin } from "@webiny/plugins/types";
 import { ReactElement, ReactNode } from "react";
-import { BindComponent, FormRenderPropParams, Form } from "@webiny/form";
+import { BindComponent, FormRenderPropParams, FormAPI } from "@webiny/form/types";
 import { ApolloClient } from "apollo-client";
 import { IconPrefix, IconName } from "@fortawesome/fontawesome-svg-core";
 import Label from "./admin/components/ContentEntryForm/Label";
@@ -413,10 +413,10 @@ export interface CmsEditorFormSettingsPlugin extends Plugin {
     title: string;
     description: string;
     icon: React.ReactElement;
-    render(props: { Bind: BindComponent; form: Form; formData: any }): React.ReactNode;
+    render(props: { Bind: BindComponent; form: FormAPI; formData: any }): React.ReactNode;
     renderHeaderActions?(props: {
         Bind: BindComponent;
-        form: Form;
+        form: FormAPI;
         formData: any;
     }): React.ReactNode;
 }

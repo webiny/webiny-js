@@ -1,5 +1,6 @@
+// @ts-nocheck
 import { AuthenticationPlugin } from "@webiny/api-security/plugins/AuthenticationPlugin";
-import { SecurityIdentity } from "@webiny/api-security";
+import { SecurityIdentity } from "@webiny/api-security/types";
 import { CmsContext } from "~/types";
 
 export class InternalAuthenticationPlugin extends AuthenticationPlugin {
@@ -23,7 +24,7 @@ export class InternalAuthenticationPlugin extends AuthenticationPlugin {
          * This is an internal identity, which has access to `read` endpoint, all content models,
          * content entries, and all content locales.
          */
-        return new SecurityIdentity({
+        return {
             id: "read-api-key",
             displayName: "Read API key",
             type: this._identityType,
@@ -32,6 +33,6 @@ export class InternalAuthenticationPlugin extends AuthenticationPlugin {
                 { name: "cms.content*" },
                 { name: "content.i18n" }
             ]
-        });
+        };
     }
 }

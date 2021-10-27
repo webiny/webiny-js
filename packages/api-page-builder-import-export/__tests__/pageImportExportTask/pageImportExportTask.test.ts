@@ -1,6 +1,7 @@
 import useHandler from "./useHandler";
 import { PageImportExportTaskCrud, PageImportExportTaskStatus } from "~/types";
 import { initialStats } from "~/importPages/utils";
+import { defaultIdentity } from "../tenancySecurity";
 
 describe("Page builder import export task Test", () => {
     const { handler } = useHandler();
@@ -18,10 +19,7 @@ describe("Page builder import export task Test", () => {
 
         expect(result).toMatchObject({
             status: "pending",
-            createdBy: {
-                id: "mocked",
-                displayName: "m"
-            }
+            createdBy: defaultIdentity
         });
 
         // Should be able to get task by id
@@ -29,10 +27,7 @@ describe("Page builder import export task Test", () => {
         expect(result).toMatchObject({
             id: taskId,
             status: "pending",
-            createdBy: {
-                id: "mocked",
-                displayName: "m"
-            }
+            createdBy: defaultIdentity
         });
 
         // List all task
@@ -44,10 +39,7 @@ describe("Page builder import export task Test", () => {
             {
                 id: taskId,
                 status: "pending",
-                createdBy: {
-                    id: "mocked",
-                    displayName: "m"
-                }
+                createdBy: defaultIdentity
             }
         ]);
 
@@ -59,10 +51,7 @@ describe("Page builder import export task Test", () => {
         expect(result).toMatchObject({
             id: taskId,
             status: "processing",
-            createdBy: {
-                id: "mocked",
-                displayName: "m"
-            }
+            createdBy: defaultIdentity
         });
 
         // Should be able to get updated task by id
@@ -70,10 +59,7 @@ describe("Page builder import export task Test", () => {
         expect(result).toMatchObject({
             id: taskId,
             status: "processing",
-            createdBy: {
-                id: "mocked",
-                displayName: "m"
-            }
+            createdBy: defaultIdentity
         });
 
         // List all task
@@ -82,10 +68,7 @@ describe("Page builder import export task Test", () => {
             {
                 id: taskId,
                 status: "processing",
-                createdBy: {
-                    id: "mocked",
-                    displayName: "m"
-                }
+                createdBy: defaultIdentity
             }
         ]);
 
@@ -94,10 +77,7 @@ describe("Page builder import export task Test", () => {
         expect(result).toMatchObject({
             id: taskId,
             status: "processing",
-            createdBy: {
-                id: "mocked",
-                displayName: "m"
-            }
+            createdBy: defaultIdentity
         });
 
         // Should list zero entry
@@ -121,10 +101,7 @@ describe("Page builder import export task Test", () => {
 
         expect(task).toMatchObject({
             status: "pending",
-            createdBy: {
-                id: "mocked",
-                displayName: "m"
-            }
+            createdBy: defaultIdentity
         });
 
         // Should be able to get task by id
@@ -132,10 +109,7 @@ describe("Page builder import export task Test", () => {
         expect(task).toMatchObject({
             id: taskId,
             status: "pending",
-            createdBy: {
-                id: "mocked",
-                displayName: "m"
-            }
+            createdBy: defaultIdentity
         });
 
         // Should be able to create a subTask
@@ -226,10 +200,7 @@ describe("Page builder import export task Test", () => {
 
         expect(result).toMatchObject({
             status: "pending",
-            createdBy: {
-                id: "mocked",
-                displayName: "m"
-            },
+            createdBy: defaultIdentity,
             stats: {
                 [PageImportExportTaskStatus.PENDING]: 5,
                 [PageImportExportTaskStatus.PROCESSING]: 0,
@@ -247,10 +218,7 @@ describe("Page builder import export task Test", () => {
         // Should have 4 "pending" and 1 "processing"
         result = await pageImportExportTask.getTask(taskId);
         expect(result).toMatchObject({
-            createdBy: {
-                id: "mocked",
-                displayName: "m"
-            },
+            createdBy: defaultIdentity,
             stats: {
                 [PageImportExportTaskStatus.PENDING]: 4,
                 [PageImportExportTaskStatus.PROCESSING]: 1,
@@ -269,10 +237,7 @@ describe("Page builder import export task Test", () => {
         // Should have 3 "pending", 1 "failed", and 1 "processing"
         result = await pageImportExportTask.getTask(taskId);
         expect(result).toMatchObject({
-            createdBy: {
-                id: "mocked",
-                displayName: "m"
-            },
+            createdBy: defaultIdentity,
             stats: {
                 [PageImportExportTaskStatus.PENDING]: 3,
                 [PageImportExportTaskStatus.PROCESSING]: 1,

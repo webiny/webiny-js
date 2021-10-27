@@ -1,23 +1,16 @@
 {
   "extends": "../../tsconfig.build.json",
-  "include": ["./src"],
-  "exclude": [
-    "node_modules",
-    "./dist",
-    "../api-file-manager",
-    "../validation",
-    "../handler-graphql"
+  "include": ["src"],
+  "references": [
+    { "path": "../api-file-manager/tsconfig.build.json" },
+    { "path": "../handler-graphql/tsconfig.build.json" },
+    { "path": "../validation/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "rootDir": "./src",
     "outDir": "./dist",
     "declarationDir": "./dist",
-    "paths": {},
+    "paths": { "~/*": ["./src/*"] },
     "baseUrl": "."
-  },
-  "references": [
-    {
-      "path": "../api-file-manager/tsconfig.build.json"
-    }
-  ]
+  }
 }

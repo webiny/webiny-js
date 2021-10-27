@@ -1,13 +1,15 @@
 {
   "extends": "../../tsconfig.build.json",
   "include": ["src"],
-  "exclude": ["node_modules", "**/__tests__/**", "./dist", "../app", "../plugins"],
+  "references": [
+    { "path": "../app/tsconfig.build.json" },
+    { "path": "../plugins/tsconfig.build.json" }
+  ],
   "compilerOptions": {
     "rootDir": "./src",
     "outDir": "./dist",
     "declarationDir": "./dist",
-    "paths": {},
+    "paths": { "~/*": ["./src/*"] },
     "baseUrl": "."
-  },
-  "references": []
+  }
 }

@@ -5,7 +5,7 @@ import { Switch } from "@webiny/ui/Switch";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { validation } from "@webiny/validation";
 import { CmsEditorField, CmsEditorFieldTypePlugin } from "~/types";
-import { FormRenderPropParams } from "@webiny/form/Form";
+import { FormRenderPropParams } from "@webiny/form/types";
 
 import { useFieldEditor } from "~/admin/components/FieldEditor";
 import { useContentModelEditor } from "~/admin/components/ContentModelEditor/useContentModelEditor";

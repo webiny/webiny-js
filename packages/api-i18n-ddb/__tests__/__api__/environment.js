@@ -17,7 +17,7 @@ const getStorageOperationsPlugins = ({ documentClient }) => {
         return [
             ...plugins(),
             ...dbPlugins({
-                table: "I18N",
+                table: process.env.DB_TABLE,
                 driver: new DynamoDbDriver({
                     documentClient
                 })

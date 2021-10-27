@@ -30,7 +30,7 @@ context("Security -> API Key", () => {
     });
 
     it("should create, update and delete API Key", () => {
-        cy.visit(`/security/api-keys`);
+        cy.visit(`/access-management/api-keys`);
 
         // Create a API key
         const [name, description] = [uniqid("name-"), uniqid("description-")];
@@ -75,7 +75,7 @@ context("Security -> API Key", () => {
     });
 
     it("should create API key with all permissions, verify and delete it", () => {
-        cy.visit(`/security/api-keys`);
+        cy.visit(`/access-management/api-keys`);
 
         // Create a API key
         const [name, description] = [uniqid("name-"), uniqid("description-")];

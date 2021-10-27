@@ -18,7 +18,7 @@ const getStorageOperationsPlugins = ({ documentClient }) => {
             ...dynamoDbPlugins(),
             ...plugins(),
             ...dbPlugins({
-                table: "FileManager",
+                table: process.env.DB_TABLE,
                 driver: new DynamoDbDriver({
                     documentClient
                 })

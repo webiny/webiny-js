@@ -1,21 +1,17 @@
 {
   "extends": "../../tsconfig.build.json",
-  "include": ["./src"],
-  "exclude": [
-    "node_modules",
-    "./dist",
-    "../api-page-builder",
-    "../api-page-builder-so-ddb-es",
-    "../handler-graphql",
-    "../plugins"
+  "include": ["src"],
+  "references": [
+    { "path": "../api-page-builder/tsconfig.build.json" },
+    { "path": "../api-page-builder-so-ddb-es/tsconfig.build.json" },
+    { "path": "../handler-graphql/tsconfig.build.json" },
+    { "path": "../plugins/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "rootDir": "./src",
     "outDir": "./dist",
     "declarationDir": "./dist",
-    "baseUrl": ".",
-    "paths": {
-      "~/*": ["./src/*"]
-    }
+    "paths": { "~/*": ["./src/*"] },
+    "baseUrl": "."
   }
 }

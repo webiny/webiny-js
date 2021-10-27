@@ -48,7 +48,7 @@ const TargetDataModelsForm = () => {
 
     return (
         <Form data={targetDataModel} onSubmit={onSubmit}>
-            {({ data, form, Bind }) => (
+            {({ data, submit, Bind }) => (
                 <SimpleForm>
                     {loading && <CircularProgress />}
                     <SimpleFormHeader title={data.title || "New Target Data Model"} />
@@ -75,7 +75,7 @@ const TargetDataModelsForm = () => {
                     </SimpleFormContent>
                     <SimpleFormFooter>
                         <ButtonDefault onClick={cancelEditing}>Cancel</ButtonDefault>
-                        <ButtonPrimary onClick={form.submit}>Save Target Data Model</ButtonPrimary>
+                        <ButtonPrimary onClick={submit}>Save Target Data Model</ButtonPrimary>
                     </SimpleFormFooter>
                 </SimpleForm>
             )}

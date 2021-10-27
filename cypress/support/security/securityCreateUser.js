@@ -9,6 +9,8 @@ Cypress.Commands.add("securityCreateUser", variables => {
             }
         });
 
-        return client.request(CREATE_USER, variables).then(response => response.security.user.data);
+        return client
+            .request(CREATE_USER, variables)
+            .then(response => response.adminUsers.user.data);
     });
 });

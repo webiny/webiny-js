@@ -58,6 +58,7 @@ export const DATA_FIELD = /* GraphQL */ `
         createdBy {
             id
             displayName
+            type
         }
     }
 `;
@@ -91,6 +92,7 @@ const LIST_DATA_FIELD = /* GraphQL */ `
         createdBy {
             id
             displayName
+            type
         }
         settings
     }

@@ -3,7 +3,7 @@ import { Graph, alg } from "graphlib";
 import { sort, gt, lte } from "semver";
 import { useApolloClient } from "@apollo/react-hooks";
 import { plugins } from "@webiny/plugins";
-import { AdminInstallationPlugin } from "../../types";
+import { AdminInstallationPlugin } from "~/types";
 import { CircularProgress } from "@webiny/ui/Progress";
 
 const Loader = ({ children, ...props }) => (
@@ -12,7 +12,7 @@ const Loader = ({ children, ...props }) => (
     </Suspense>
 );
 
-export const useInstaller = () => {
+export const useInstaller = ({ isInstalled }) => {
     const [{ loading, installers, installerIndex, showLogin, skippingVersions }, setState] =
         useReducer((prev, next) => ({ ...prev, ...next }), {
             loading: true,
@@ -116,6 +116,14 @@ export const useInstaller = () => {
             }
             return getInstallers(installers, graph, toInstall, toUpgrade);
         }
+        toInstall.sort((a, b) => {
+            if (a.secure && !b.secure) {
+                return 1;
+            } else if (!a.secure && b.secure) {
+                return -1;
+            }
+            return 0;
+        });
         return { toInstall, toUpgrade };
     }, []);
 
@@ -149,6 +157,10 @@ export const useInstaller = () => {
 
     useEffect(() => {
         (async () => {
+            if (isInstalled) {
+                return;
+            }
+
             const allInstallers = [];
             await Promise.all(
                 plugins.byType<AdminInstallationPlugin>("admin-installation").map(async pl => {

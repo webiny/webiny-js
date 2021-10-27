@@ -1,6 +1,11 @@
-MIT License
+Copyright (c) Webiny Ltd.
 
-Copyright (c) 2018 Webiny
+Portions of this software are licensed as follows:
+
+* All content that resides under the "enterprise/" directories of this repository, is licensed under the license defined in their respective "enterprise/LICENSE" file.
+* All content that resides under the "packages/" sub-directories of this repository, is licensed under the license defined in their respective "packages/*/LICENSE" file.
+* All third party components incorporated into the Webiny Software are licensed under the original license provided by the owner of the applicable component.
+* Content outside of the above mentioned directories or restrictions above is available under the "MIT" license as defined below.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

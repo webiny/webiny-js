@@ -12,7 +12,7 @@ import styled from "@emotion/styled";
 const t = i18n.ns("app-headless-cms/admin/fields/rich-text");
 
 const getKey = (field, bind, index) => {
-    const formId = bind.index.form.state.data.id || "new";
+    const formId = bind.index.form.data.id || "new";
     return `${formId}.${field.fieldId}.${index}`;
 };
 

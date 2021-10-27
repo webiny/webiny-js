@@ -79,8 +79,8 @@ describe("predefined values", () => {
                         createdOn: expect.stringMatching(/^20/),
                         savedOn: expect.stringMatching(/^20/),
                         createdBy: {
-                            id: "123",
-                            displayName: "User 123",
+                            id: "12345678",
+                            displayName: "John Doe",
                             type: "admin"
                         },
                         meta: {
@@ -241,8 +241,8 @@ describe("predefined values", () => {
                         createdOn: expect.stringMatching(/^20/),
                         savedOn: expect.stringMatching(/^20/),
                         createdBy: {
-                            id: "123",
-                            displayName: "User 123",
+                            id: "12345678",
+                            displayName: "John Doe",
                             type: "admin"
                         },
                         meta: {
@@ -291,8 +291,8 @@ describe("predefined values", () => {
                         createdOn: expect.stringMatching(/^20/),
                         savedOn: expect.stringMatching(/^20/),
                         createdBy: {
-                            id: "123",
-                            displayName: "User 123",
+                            id: "12345678",
+                            displayName: "John Doe",
                             type: "admin"
                         },
                         meta: {

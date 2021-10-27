@@ -33,14 +33,12 @@ context("Search and Sort Security Groups", () => {
     after(() => {
         for (let i = 0; i < groups.length; i++) {
             const group = groups[i];
-            cy.securityDeleteGroup({
-                slug: group.slug
-            });
+            cy.securityDeleteGroup({ id: group.id });
         }
     });
 
     it("should be able to search group", () => {
-        cy.visit(`/security/groups`);
+        cy.visit(`/access-management/groups`);
 
         // Searching for a non existing user should result in "no records found"
         cy.findByTestId("default-data-list.search").within(() => {
@@ -82,7 +80,7 @@ context("Search and Sort Security Groups", () => {
     });
 
     it("should be able to sort groups", () => {
-        cy.visit(`/security/groups`);
+        cy.visit(`/access-management/groups`);
 
         // Sort groups from "login A -> Z"
         cy.findByTestId("default-data-list.filter").click();

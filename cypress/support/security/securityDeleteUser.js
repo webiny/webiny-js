@@ -9,6 +9,8 @@ Cypress.Commands.add("securityDeleteUser", variables => {
             }
         });
 
-        return client.request(DELETE_USER, variables).then(response => response.security.user.data);
+        return client
+            .request(DELETE_USER, variables)
+            .then(response => response.adminUsers.user.data);
     });
 });
