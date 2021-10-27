@@ -1,15 +1,10 @@
 import { createHandler } from "@webiny/handler";
 import queueProcessPlugins from "@webiny/api-prerendering-service/queue/process";
 import handlerClient from "@webiny/handler-client";
-// import { getStorageOperations } from "../../../../storageOperations";
+import { getStorageOperations } from "../../../../storageOperations";
 
 export default (...plugins) => {
-    const storageOperations: any = {};
-    // try {
-    // storageOperations = getStorageOperations();
-    // } catch (ex) {
-    //     console.log(ex.message);
-    // }
+    const storageOperations = getStorageOperations();
 
     const handler = createHandler(
         ...plugins,
