@@ -15,7 +15,9 @@ const PagesList = props => {
     );
     const pageList = components.find(cmp => cmp.componentName === component);
     const { theme } = usePageBuilder();
-    const [page, setPage] = useState(1);
+
+    // only assign to `setPage` since `page` is no longer a valid variable in `LIST_PUBLISHED_PAGES`.
+    const [, setPage] = useState(1);
     const pageAtomValue = useRecoilValue(pageAtom);
 
     if (!pageList) {
@@ -26,7 +28,7 @@ const PagesList = props => {
 
     let sort = null;
     if (vars.sortBy && vars.sortDirection) {
-        sort = { [vars.sortBy]: vars.sortDirection };
+        sort = `${vars.sortBy}_${vars.sortDirection.toUpperCase()}`;
     }
 
     const variables = {
@@ -39,7 +41,6 @@ const PagesList = props => {
             }
         },
         limit: parseInt(vars.resultsPerPage),
-        page,
         exclude: [pageAtomValue.path]
     };
 
@@ -64,6 +65,9 @@ const PagesList = props => {
 
     const listPublishedPages = get(data, "pageBuilder.listPublishedPages");
 
+    /**
+     * How to handle these two checks if `meta` field no longer has `previousPage` and `nextPage` fields?
+     */
     let prevPage = null;
     if (listPublishedPages.meta.previousPage) {
         prevPage = () => setPage(listPublishedPages.meta.previousPage);
