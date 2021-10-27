@@ -24,7 +24,7 @@ class TenancyTestEnvironment extends NodeEnvironment {
             return {
                 storageOperations: createStorageOperations({
                     documentClient,
-                    table: table => ({ ...table, name: "DynamoDB" })
+                    table: table => ({ ...table, name: process.env.DB_TABLE })
                 }),
                 plugins: []
             };
