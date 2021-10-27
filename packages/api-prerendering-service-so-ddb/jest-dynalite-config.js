@@ -8,9 +8,7 @@ module.exports = {
             ],
             AttributeDefinitions: [
                 { AttributeName: "PK", AttributeType: "S" },
-                { AttributeName: "SK", AttributeType: "S" },
-                { AttributeName: "GSI1_PK", AttributeType: "S" },
-                { AttributeName: "GSI1_SK", AttributeType: "S" }
+                { AttributeName: "SK", AttributeType: "S" }
             ],
             ProvisionedThroughput: { ReadCapacityUnits: 1, WriteCapacityUnits: 1 }
         }

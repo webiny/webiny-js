@@ -14,7 +14,8 @@ const attributesToRemove = [
     "entity",
     "_et",
     "GSI1_PK",
-    "GSI1_SK"
+    "GSI1_SK",
+    "TYPE"
 ];
 
 export const cleanupItem = <T>(
