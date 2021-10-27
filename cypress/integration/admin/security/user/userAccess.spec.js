@@ -8,7 +8,7 @@ context("Security Users", () => {
 
         // eslint-disable-next-line jest/valid-expect-in-promise
         cy.securityReadGroup({ slug: "full-access" }).then(group => {
-            cy.securityCreateUser({
+            return cy.securityCreateUser({
                 data: {
                     email: uniqid("", "@gmail.com"),
                     firstName: uniqid("first name-"),
