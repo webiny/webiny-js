@@ -4,7 +4,7 @@ import mdbid from "mdbid";
 
 describe("Render All Pages Test", () => {
     // eslint-disable-next-line
-    it.skip('should rerender all existing pages when "path: *" is present in the jobs list', async () => {
+    it('should rerender all existing pages when "path: *" is present in the jobs list', async () => {
         const { handler, storageOperations } = useHandler();
 
         for (let i = 0; i < 3; i++) {
@@ -41,7 +41,7 @@ describe("Render All Pages Test", () => {
     });
 
     // eslint-disable-next-line
-    it.skip("should have multiple render-all-pages jobs for different DB namespaces", async () => {
+    it("should have multiple render-all-pages jobs for different DB namespaces", async () => {
         const { handler, storageOperations } = useHandler();
 
         for (let i = 0; i < 3; i++) {

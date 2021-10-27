@@ -3,7 +3,7 @@ import mocks from "./mocks/jobsRemoval";
 
 describe("Jobs Removal Test", () => {
     // eslint-disable-next-line
-    it.skip("on each run, all jobs should be removed from the database", async () => {
+    it("on each run, all jobs should be removed from the database", async () => {
         const { handler, storageOperations } = useHandler();
 
         for (let i = 0; i < 3; i++) {
