@@ -1,6 +1,6 @@
 import uniqid from "uniqid";
 
-context("Security Users", async () => {
+context("Security Users", () => {
     it('should verify user access for a "full-access" user', async () => {
         let fullAccessGroupUser;
         let password = "12345678";
@@ -8,56 +8,53 @@ context("Security Users", async () => {
 
         // eslint-disable-next-line jest/valid-expect-in-promise
         cy.securityReadGroup({ slug: "full-access" }).then(group => {
-            return cy
-                .securityCreateUser({
-                    data: {
-                        email: uniqid("", "@gmail.com"),
-                        firstName: uniqid("first name-"),
-                        lastName: uniqid("last name-"),
-                        password,
-                        group: group.id
-                    }
-                })
-                .then(user => {
-                    fullAccessGroupUser = user;
-                    // Login with new user
-                    cy.login({ username: fullAccessGroupUser.email, password });
-                    cy.visit("/");
-                    // Verify the access
-                    cy.findByText(`Hi ${user.firstName} ${user.lastName}!`).should("be.visible");
-                    cy.findByText(/To get started - pick one of the actions below:/i).should(
-                        "be.visible"
-                    );
+            cy.securityCreateUser({
+                data: {
+                    email: uniqid("", "@gmail.com"),
+                    firstName: uniqid("first name-"),
+                    lastName: uniqid("last name-"),
+                    password,
+                    group: group.id
+                }
+            }).then(user => {
+                fullAccessGroupUser = user;
+                // Login with new user
+                cy.login({ username: fullAccessGroupUser.email, password });
+                cy.visit("/");
+                // Verify the access
+                cy.findByText(`Hi ${user.firstName} ${user.lastName}!`).should("be.visible");
+                cy.findByText(/To get started - pick one of the actions below:/i).should(
+                    "be.visible"
+                );
 
-                    // Should have Page Builder card
-                    cy.findByTestId("admin-welcome-screen-widget-page-builder").within(() => {
-                        cy.findByText("Page Builder").should("be.visible");
-                        cy.findByText(/Build a new Page/i).should("be.visible");
-                    });
-
-                    // Should have Form Builder card
-                    cy.findByTestId("admin-welcome-screen-widget-form-builder").within(() => {
-                        cy.findByText("Form Builder").should("be.visible");
-                        cy.findByText(/Create a new Form/i).should("be.visible");
-                    });
-
-                    // Should have Headless CMS card
-                    cy.findByTestId("admin-welcome-screen-widget-headless-cms").within(() => {
-                        cy.findByText("Headless CMS").should("be.visible");
-                        cy.findByText(/New content model/i).should("be.visible");
-                    });
-
-                    // Delete user
-                    // eslint-disable-next-line jest/valid-expect-in-promise
-                    cy.securityDeleteUser({
-                        id: fullAccessGroupUser.id
-                    }).then(data => assert.isTrue(data));
+                // Should have Page Builder card
+                cy.findByTestId("admin-welcome-screen-widget-page-builder").within(() => {
+                    cy.findByText("Page Builder").should("be.visible");
+                    cy.findByText(/Build a new Page/i).should("be.visible");
                 });
+
+                // Should have Form Builder card
+                cy.findByTestId("admin-welcome-screen-widget-form-builder").within(() => {
+                    cy.findByText("Form Builder").should("be.visible");
+                    cy.findByText(/Create a new Form/i).should("be.visible");
+                });
+
+                // Should have Headless CMS card
+                cy.findByTestId("admin-welcome-screen-widget-headless-cms").within(() => {
+                    cy.findByText("Headless CMS").should("be.visible");
+                    cy.findByText(/New content model/i).should("be.visible");
+                });
+
+                // Delete user
+                // eslint-disable-next-line jest/valid-expect-in-promise
+                cy.securityDeleteUser({
+                    id: fullAccessGroupUser.id
+                }).then(data => assert.isTrue(data));
+            });
         });
     });
 
     it('should verify user access for a "anonymous" user', () => {
-        let fullAccessGroupUser;
         let password = "12345678";
         // Create a user with `full-access` group
         // eslint-disable-next-line jest/valid-expect-in-promise
@@ -73,9 +70,8 @@ context("Security Users", async () => {
                     }
                 })
                 .then(user => {
-                    fullAccessGroupUser = user;
                     // Login with new user
-                    cy.login({ username: fullAccessGroupUser.email, password });
+                    cy.login({ username: user.email, password });
                     cy.visit("/");
                     // Verify the access
                     cy.findByText(`Hi ${user.firstName} ${user.lastName}!`).should("be.visible");
@@ -95,7 +91,7 @@ context("Security Users", async () => {
                     // Delete user
                     // eslint-disable-next-line jest/valid-expect-in-promise
                     cy.securityDeleteUser({
-                        id: fullAccessGroupUser.id
+                        id: user.id
                     }).then(data => {
                         assert.isTrue(data);
                     });
