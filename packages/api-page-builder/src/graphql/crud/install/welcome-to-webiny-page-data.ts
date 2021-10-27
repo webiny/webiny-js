@@ -1,3 +1,5 @@
+import { File } from "@webiny/api-file-manager/types";
+
 const FILE_ID_MAP = {
     HERO_BLOCK_BG_SVG: "6022814b7a77e60008f70d62",
     WEBINY_LOGO_SVG: "6022814b0df4b000088735bc",
@@ -22,7 +24,19 @@ const FILE_ID_MAP = {
     COMMUNITY_ICON_SVG: "60228148fa244d0008c47c7a"
 };
 
-export const preparePageData = ({ srcPrefix, fileIdToKeyMap }) => {
+interface PreparePageDataParams {
+    srcPrefix: string;
+    fileIdToFileMap: Record<string, File>;
+}
+
+export const preparePageData = ({ srcPrefix, fileIdToFileMap }: PreparePageDataParams) => {
+    /**
+     * By default the "srcPrefix" always ends with forward slash.
+     * But, string concatination looks ugly without forward slash,
+     * so, we're intentionally removing the trailing forward slash from it.
+     */
+    srcPrefix = srcPrefix.slice(0, -1);
+
     return {
         id: "Fv1PpPWu-",
         type: "document",
@@ -61,10 +75,10 @@ export const preparePageData = ({ srcPrefix, fileIdToKeyMap }) => {
                                 image: {
                                     file: {
                                         id: "6022814b7a77e60008f70d62",
-                                        name: "9kkxzki5x-bgwelcome-to-webiny.svg",
-                                        key: "9kkxzki5x-bgwelcome-to-webiny.svg",
+                                        name: fileIdToFileMap[FILE_ID_MAP.HERO_BLOCK_BG_SVG].name,
+                                        key: fileIdToFileMap[FILE_ID_MAP.HERO_BLOCK_BG_SVG].key,
                                         src: `${srcPrefix}/${
-                                            fileIdToKeyMap[FILE_ID_MAP.HERO_BLOCK_BG_SVG]
+                                            fileIdToFileMap[FILE_ID_MAP.HERO_BLOCK_BG_SVG].key
                                         }`,
                                         size: 1854,
                                         type: "image/svg+xml"
@@ -136,10 +150,15 @@ export const preparePageData = ({ srcPrefix, fileIdToKeyMap }) => {
                                             image: {
                                                 file: {
                                                     id: "6022814b0df4b000088735bc",
-                                                    name: "9kkxzki5a-webinylogo.svg",
-                                                    key: "9kkxzki5a-webinylogo.svg",
+                                                    name: fileIdToFileMap[
+                                                        FILE_ID_MAP.WEBINY_LOGO_SVG
+                                                    ].name,
+                                                    key: fileIdToFileMap[
+                                                        FILE_ID_MAP.WEBINY_LOGO_SVG
+                                                    ].key,
                                                     src: `${srcPrefix}/${
-                                                        fileIdToKeyMap[FILE_ID_MAP.WEBINY_LOGO_SVG]
+                                                        fileIdToFileMap[FILE_ID_MAP.WEBINY_LOGO_SVG]
+                                                            .key
                                                     }`,
                                                     size: 5053,
                                                     type: "image/svg+xml"
@@ -373,12 +392,16 @@ export const preparePageData = ({ srcPrefix, fileIdToKeyMap }) => {
                                                 image: {
                                                     file: {
                                                         id: "602282e07a77e60008f70d63",
-                                                        name: "8kkxzt99l-hero-card-bg.svg",
-                                                        key: "8kkxzt99l-hero-card-bg.svg",
+                                                        name: fileIdToFileMap[
+                                                            FILE_ID_MAP.FEATURE_CARD_BG_SVG
+                                                        ].name,
+                                                        key: fileIdToFileMap[
+                                                            FILE_ID_MAP.FEATURE_CARD_BG_SVG
+                                                        ].key,
                                                         src: `${srcPrefix}/${
-                                                            fileIdToKeyMap[
+                                                            fileIdToFileMap[
                                                                 FILE_ID_MAP.FEATURE_CARD_BG_SVG
-                                                            ]
+                                                            ].key
                                                         }`,
                                                         size: 888,
                                                         type: "image/svg+xml"
@@ -458,12 +481,16 @@ export const preparePageData = ({ srcPrefix, fileIdToKeyMap }) => {
                                                 image: {
                                                     file: {
                                                         id: "602282e07a77e60008f70d63",
-                                                        name: "8kkxzt99l-hero-card-bg.svg",
-                                                        key: "8kkxzt99l-hero-card-bg.svg",
+                                                        name: fileIdToFileMap[
+                                                            FILE_ID_MAP.FEATURE_CARD_BG_SVG
+                                                        ].name,
+                                                        key: fileIdToFileMap[
+                                                            FILE_ID_MAP.FEATURE_CARD_BG_SVG
+                                                        ].key,
                                                         src: `${srcPrefix}/${
-                                                            fileIdToKeyMap[
+                                                            fileIdToFileMap[
                                                                 FILE_ID_MAP.FEATURE_CARD_BG_SVG
-                                                            ]
+                                                            ].key
                                                         }`,
                                                         size: 888,
                                                         type: "image/svg+xml"
@@ -580,12 +607,16 @@ export const preparePageData = ({ srcPrefix, fileIdToKeyMap }) => {
                                                 image: {
                                                     file: {
                                                         id: "602282e07a77e60008f70d63",
-                                                        name: "8kkxzt99l-hero-card-bg.svg",
-                                                        key: "8kkxzt99l-hero-card-bg.svg",
+                                                        name: fileIdToFileMap[
+                                                            FILE_ID_MAP.FEATURE_CARD_BG_SVG
+                                                        ].name,
+                                                        key: fileIdToFileMap[
+                                                            FILE_ID_MAP.FEATURE_CARD_BG_SVG
+                                                        ].key,
                                                         src: `${srcPrefix}/${
-                                                            fileIdToKeyMap[
+                                                            fileIdToFileMap[
                                                                 FILE_ID_MAP.FEATURE_CARD_BG_SVG
-                                                            ]
+                                                            ].key
                                                         }`,
                                                         size: 888,
                                                         type: "image/svg+xml"
@@ -666,12 +697,16 @@ export const preparePageData = ({ srcPrefix, fileIdToKeyMap }) => {
                                                 image: {
                                                     file: {
                                                         id: "602282e07a77e60008f70d63",
-                                                        name: "8kkxzt99l-hero-card-bg.svg",
-                                                        key: "8kkxzt99l-hero-card-bg.svg",
+                                                        name: fileIdToFileMap[
+                                                            FILE_ID_MAP.FEATURE_CARD_BG_SVG
+                                                        ].name,
+                                                        key: fileIdToFileMap[
+                                                            FILE_ID_MAP.FEATURE_CARD_BG_SVG
+                                                        ].key,
                                                         src: `${srcPrefix}/${
-                                                            fileIdToKeyMap[
+                                                            fileIdToFileMap[
                                                                 FILE_ID_MAP.FEATURE_CARD_BG_SVG
-                                                            ]
+                                                            ].key
                                                         }`,
                                                         size: 888,
                                                         type: "image/svg+xml"
@@ -992,13 +1027,19 @@ export const preparePageData = ({ srcPrefix, fileIdToKeyMap }) => {
                                                             image: {
                                                                 file: {
                                                                     id: "6022814a0df4b000088735bb",
-                                                                    name: "9kkxzki4p-webinyserverlessapplicationframework.svg",
-                                                                    key: "9kkxzki4p-webinyserverlessapplicationframework.svg",
+                                                                    name: fileIdToFileMap[
+                                                                        FILE_ID_MAP
+                                                                            .WEBINY_SERVERLESS_APPLICATION_FRAMEWORK_SVG
+                                                                    ].name,
+                                                                    key: fileIdToFileMap[
+                                                                        FILE_ID_MAP
+                                                                            .WEBINY_SERVERLESS_APPLICATION_FRAMEWORK_SVG
+                                                                    ].key,
                                                                     src: `${srcPrefix}/${
-                                                                        fileIdToKeyMap[
+                                                                        fileIdToFileMap[
                                                                             FILE_ID_MAP
                                                                                 .WEBINY_SERVERLESS_APPLICATION_FRAMEWORK_SVG
-                                                                        ]
+                                                                        ].key
                                                                     }`,
                                                                     size: 3661,
                                                                     type: "image/svg+xml"
@@ -1516,13 +1557,19 @@ export const preparePageData = ({ srcPrefix, fileIdToKeyMap }) => {
                                                             image: {
                                                                 file: {
                                                                     id: "6022814891bd1300087bd24c",
-                                                                    name: "8kkxzki50-webiny-infrastructure-overview.svg",
-                                                                    key: "8kkxzki50-webiny-infrastructure-overview.svg",
+                                                                    name: fileIdToFileMap[
+                                                                        FILE_ID_MAP
+                                                                            .WEBINY_INFRASTRUCTURE_OVERVIEW_SVG
+                                                                    ].name,
+                                                                    key: fileIdToFileMap[
+                                                                        FILE_ID_MAP
+                                                                            .WEBINY_INFRASTRUCTURE_OVERVIEW_SVG
+                                                                    ].key,
                                                                     src: `${srcPrefix}/${
-                                                                        fileIdToKeyMap[
+                                                                        fileIdToFileMap[
                                                                             FILE_ID_MAP
                                                                                 .WEBINY_INFRASTRUCTURE_OVERVIEW_SVG
-                                                                        ]
+                                                                        ].key
                                                                     }`,
                                                                     size: 87624,
                                                                     type: "image/svg+xml"
@@ -1689,10 +1736,10 @@ export const preparePageData = ({ srcPrefix, fileIdToKeyMap }) => {
                                 image: {
                                     file: {
                                         id: "60228148f98841000981c723",
-                                        name: "8kkxzki0e-pink-shape.svg",
-                                        key: "8kkxzki0e-pink-shape.svg",
+                                        name: fileIdToFileMap[FILE_ID_MAP.PINK_SHAPE_SVG].name,
+                                        key: fileIdToFileMap[FILE_ID_MAP.PINK_SHAPE_SVG].key,
                                         src: `${srcPrefix}/${
-                                            fileIdToKeyMap[FILE_ID_MAP.PINK_SHAPE_SVG]
+                                            fileIdToFileMap[FILE_ID_MAP.PINK_SHAPE_SVG].key
                                         }`,
                                         size: 390,
                                         type: "image/svg+xml"
@@ -1893,12 +1940,16 @@ export const preparePageData = ({ srcPrefix, fileIdToKeyMap }) => {
                                                             image: {
                                                                 file: {
                                                                     id: "6022814bef4a940008b3ba27",
-                                                                    name: "8kkxzki4u-security.svg",
-                                                                    key: "8kkxzki4u-security.svg",
+                                                                    name: fileIdToFileMap[
+                                                                        FILE_ID_MAP.SECURITY_SVG
+                                                                    ].name,
+                                                                    key: fileIdToFileMap[
+                                                                        FILE_ID_MAP.SECURITY_SVG
+                                                                    ].key,
                                                                     src: `${srcPrefix}/${
-                                                                        fileIdToKeyMap[
+                                                                        fileIdToFileMap[
                                                                             FILE_ID_MAP.SECURITY_SVG
-                                                                        ]
+                                                                        ].key
                                                                     }`,
                                                                     size: 17711,
                                                                     type: "image/svg+xml"
@@ -2115,13 +2166,17 @@ export const preparePageData = ({ srcPrefix, fileIdToKeyMap }) => {
                                                             image: {
                                                                 file: {
                                                                     id: "6022814bef4a940008b3ba26",
-                                                                    name: "8kkxzki46-scaffolding.svg",
-                                                                    key: "8kkxzki46-scaffolding.svg",
+                                                                    name: fileIdToFileMap[
+                                                                        FILE_ID_MAP.SCAFFOLDING_SVG
+                                                                    ].name,
+                                                                    key: fileIdToFileMap[
+                                                                        FILE_ID_MAP.SCAFFOLDING_SVG
+                                                                    ].key,
                                                                     src: `${srcPrefix}/${
-                                                                        fileIdToKeyMap[
+                                                                        fileIdToFileMap[
                                                                             FILE_ID_MAP
                                                                                 .SCAFFOLDING_SVG
-                                                                        ]
+                                                                        ].key
                                                                     }`,
                                                                     size: 32856,
                                                                     type: "image/svg+xml"
@@ -2335,12 +2390,16 @@ export const preparePageData = ({ srcPrefix, fileIdToKeyMap }) => {
                                                             image: {
                                                                 file: {
                                                                     id: "60228148f98841000981c724",
-                                                                    name: "8kkxzki32-IDP.svg",
-                                                                    key: "8kkxzki32-IDP.svg",
+                                                                    name: fileIdToFileMap[
+                                                                        FILE_ID_MAP.IDP_SVG
+                                                                    ].name,
+                                                                    key: fileIdToFileMap[
+                                                                        FILE_ID_MAP.IDP_SVG
+                                                                    ].key,
                                                                     src: `${srcPrefix}/${
-                                                                        fileIdToKeyMap[
+                                                                        fileIdToFileMap[
                                                                             FILE_ID_MAP.IDP_SVG
-                                                                        ]
+                                                                        ].key
                                                                     }`,
                                                                     size: 27878,
                                                                     type: "image/svg+xml"
@@ -2553,13 +2612,17 @@ export const preparePageData = ({ srcPrefix, fileIdToKeyMap }) => {
                                                             image: {
                                                                 file: {
                                                                     id: "6022814bef4a940008b3ba28",
-                                                                    name: "8kkxzki24-environments.svg",
-                                                                    key: "8kkxzki24-environments.svg",
+                                                                    name: fileIdToFileMap[
+                                                                        FILE_ID_MAP.ENVIRONMENTS_SVG
+                                                                    ].name,
+                                                                    key: fileIdToFileMap[
+                                                                        FILE_ID_MAP.ENVIRONMENTS_SVG
+                                                                    ].key,
                                                                     src: `${srcPrefix}/${
-                                                                        fileIdToKeyMap[
+                                                                        fileIdToFileMap[
                                                                             FILE_ID_MAP
                                                                                 .ENVIRONMENTS_SVG
-                                                                        ]
+                                                                        ].key
                                                                     }`,
                                                                     size: 132767,
                                                                     type: "image/svg+xml"
@@ -2835,13 +2898,19 @@ export const preparePageData = ({ srcPrefix, fileIdToKeyMap }) => {
                                                             image: {
                                                                 file: {
                                                                     id: "602281486ed41f0008bc2dad",
-                                                                    name: "8kkxzkhzu-webiny-serverless-cms.png",
-                                                                    key: "8kkxzkhzu-webiny-serverless-cms.png",
+                                                                    name: fileIdToFileMap[
+                                                                        FILE_ID_MAP
+                                                                            .WEBINY_SERVERLESS_CMS_SVG
+                                                                    ].name,
+                                                                    key: fileIdToFileMap[
+                                                                        FILE_ID_MAP
+                                                                            .WEBINY_SERVERLESS_CMS_SVG
+                                                                    ].key,
                                                                     src: `${srcPrefix}/${
-                                                                        fileIdToKeyMap[
+                                                                        fileIdToFileMap[
                                                                             FILE_ID_MAP
                                                                                 .WEBINY_SERVERLESS_CMS_SVG
-                                                                        ]
+                                                                        ].key
                                                                     }`,
                                                                     size: 108898,
                                                                     type: "image/png"
@@ -3059,13 +3128,19 @@ export const preparePageData = ({ srcPrefix, fileIdToKeyMap }) => {
                                                             image: {
                                                                 file: {
                                                                     id: "602281486639200009fd35eb",
-                                                                    name: "8kkxzkhza-serverless-CMS-logo.svg",
-                                                                    key: "8kkxzkhza-serverless-CMS-logo.svg",
+                                                                    name: fileIdToFileMap[
+                                                                        FILE_ID_MAP
+                                                                            .SERVERLESS_CMS_LOGO_SVG
+                                                                    ].name,
+                                                                    key: fileIdToFileMap[
+                                                                        FILE_ID_MAP
+                                                                            .SERVERLESS_CMS_LOGO_SVG
+                                                                    ].key,
                                                                     src: `${srcPrefix}/${
-                                                                        fileIdToKeyMap[
+                                                                        fileIdToFileMap[
                                                                             FILE_ID_MAP
                                                                                 .SERVERLESS_CMS_LOGO_SVG
-                                                                        ]
+                                                                        ].key
                                                                     }`,
                                                                     size: 1758,
                                                                     type: "image/svg+xml"
@@ -3480,10 +3555,12 @@ export const preparePageData = ({ srcPrefix, fileIdToKeyMap }) => {
                                 image: {
                                     file: {
                                         id: "602281486639200009fd35ec",
-                                        name: "8kkxzkhvv-CMSbenefitsshape.svg",
-                                        key: "8kkxzkhvv-CMSbenefitsshape.svg",
+                                        name: fileIdToFileMap[FILE_ID_MAP.CMS_BENEFITS_SHAPE_SVG]
+                                            .name,
+                                        key: fileIdToFileMap[FILE_ID_MAP.CMS_BENEFITS_SHAPE_SVG]
+                                            .key,
                                         src: `${srcPrefix}/${
-                                            fileIdToKeyMap[FILE_ID_MAP.CMS_BENEFITS_SHAPE_SVG]
+                                            fileIdToFileMap[FILE_ID_MAP.CMS_BENEFITS_SHAPE_SVG].key
                                         }`,
                                         size: 392,
                                         type: "image/svg+xml"
@@ -3636,12 +3713,16 @@ export const preparePageData = ({ srcPrefix, fileIdToKeyMap }) => {
                                             image: {
                                                 file: {
                                                     id: "60228148fa244d0008c47c79",
-                                                    name: "9kkxzkg4t-scalable-icon.svg",
-                                                    key: "9kkxzkg4t-scalable-icon.svg",
+                                                    name: fileIdToFileMap[
+                                                        FILE_ID_MAP.SCALABLE_ICON_SVG
+                                                    ].name,
+                                                    key: fileIdToFileMap[
+                                                        FILE_ID_MAP.SCALABLE_ICON_SVG
+                                                    ].key,
                                                     src: `${srcPrefix}/${
-                                                        fileIdToKeyMap[
+                                                        fileIdToFileMap[
                                                             FILE_ID_MAP.SCALABLE_ICON_SVG
-                                                        ]
+                                                        ].key
                                                     }`,
                                                     size: 7806,
                                                     type: "image/svg+xml"
@@ -3748,12 +3829,16 @@ export const preparePageData = ({ srcPrefix, fileIdToKeyMap }) => {
                                             image: {
                                                 file: {
                                                     id: "60228145f98841000981c720",
-                                                    name: "9kkxzkg10-adaptable-icon.svg",
-                                                    key: "9kkxzkg10-adaptable-icon.svg",
+                                                    name: fileIdToFileMap[
+                                                        FILE_ID_MAP.ADAPTABLE_ICON_SVG
+                                                    ].name,
+                                                    key: fileIdToFileMap[
+                                                        FILE_ID_MAP.ADAPTABLE_ICON_SVG
+                                                    ].key,
                                                     src: `${srcPrefix}/${
-                                                        fileIdToKeyMap[
+                                                        fileIdToFileMap[
                                                             FILE_ID_MAP.ADAPTABLE_ICON_SVG
-                                                        ]
+                                                        ].key
                                                     }`,
                                                     size: 28918,
                                                     type: "image/svg+xml"
@@ -3856,10 +3941,13 @@ export const preparePageData = ({ srcPrefix, fileIdToKeyMap }) => {
                                             image: {
                                                 file: {
                                                     id: "6022814851197600081724ae",
-                                                    name: "9kkxzkg3p-cost-icon.svg",
-                                                    key: "9kkxzkg3p-cost-icon.svg",
+                                                    name: fileIdToFileMap[FILE_ID_MAP.COST_ICON_SVG]
+                                                        .name,
+                                                    key: fileIdToFileMap[FILE_ID_MAP.COST_ICON_SVG]
+                                                        .key,
                                                     src: `${srcPrefix}/${
-                                                        fileIdToKeyMap[FILE_ID_MAP.COST_ICON_SVG]
+                                                        fileIdToFileMap[FILE_ID_MAP.COST_ICON_SVG]
+                                                            .key
                                                     }`,
                                                     size: 60602,
                                                     type: "image/svg+xml"
@@ -3993,10 +4081,10 @@ export const preparePageData = ({ srcPrefix, fileIdToKeyMap }) => {
                                             image: {
                                                 file: {
                                                     id: "60228148f98841000981c724",
-                                                    name: "8kkxzki32-IDP.svg",
-                                                    key: "8kkxzki32-IDP.svg",
+                                                    name: fileIdToFileMap[FILE_ID_MAP.IDP_SVG].name,
+                                                    key: fileIdToFileMap[FILE_ID_MAP.IDP_SVG].key,
                                                     src: `${srcPrefix}/${
-                                                        fileIdToKeyMap[FILE_ID_MAP.IDP_SVG]
+                                                        fileIdToFileMap[FILE_ID_MAP.IDP_SVG].key
                                                     }`,
                                                     size: 27878,
                                                     type: "image/svg+xml"
@@ -4103,10 +4191,13 @@ export const preparePageData = ({ srcPrefix, fileIdToKeyMap }) => {
                                             image: {
                                                 file: {
                                                     id: "602281486ed41f0008bc2dac",
-                                                    name: "9kkxzkg2t-data-icon.svg",
-                                                    key: "9kkxzkg2t-data-icon.svg",
+                                                    name: fileIdToFileMap[FILE_ID_MAP.DATA_ICON_SVG]
+                                                        .name,
+                                                    key: fileIdToFileMap[FILE_ID_MAP.DATA_ICON_SVG]
+                                                        .key,
                                                     src: `${srcPrefix}/${
-                                                        fileIdToKeyMap[FILE_ID_MAP.DATA_ICON_SVG]
+                                                        fileIdToFileMap[FILE_ID_MAP.DATA_ICON_SVG]
+                                                            .key
                                                     }`,
                                                     size: 73153,
                                                     type: "image/svg+xml"
@@ -4209,12 +4300,16 @@ export const preparePageData = ({ srcPrefix, fileIdToKeyMap }) => {
                                             image: {
                                                 file: {
                                                     id: "602281486ed41f0008bc2dab",
-                                                    name: "9kkxzkg28-permission-icon.svg",
-                                                    key: "9kkxzkg28-permission-icon.svg",
+                                                    name: fileIdToFileMap[
+                                                        FILE_ID_MAP.PERMISSION_ICON_SVG
+                                                    ].name,
+                                                    key: fileIdToFileMap[
+                                                        FILE_ID_MAP.PERMISSION_ICON_SVG
+                                                    ].key,
                                                     src: `${srcPrefix}/${
-                                                        fileIdToKeyMap[
+                                                        fileIdToFileMap[
                                                             FILE_ID_MAP.PERMISSION_ICON_SVG
-                                                        ]
+                                                        ].key
                                                     }`,
                                                     size: 67402,
                                                     type: "image/svg+xml"
@@ -4461,10 +4556,13 @@ export const preparePageData = ({ srcPrefix, fileIdToKeyMap }) => {
                                             image: {
                                                 file: {
                                                     id: "60228145f98841000981c721",
-                                                    name: "9kkxzkfzt-developer.svg",
-                                                    key: "9kkxzkfzt-developer.svg",
+                                                    name: fileIdToFileMap[FILE_ID_MAP.DEVELOPER_SVG]
+                                                        .name,
+                                                    key: fileIdToFileMap[FILE_ID_MAP.DEVELOPER_SVG]
+                                                        .key,
                                                     src: `${srcPrefix}/${
-                                                        fileIdToKeyMap[FILE_ID_MAP.DEVELOPER_SVG]
+                                                        fileIdToFileMap[FILE_ID_MAP.DEVELOPER_SVG]
+                                                            .key
                                                     }`,
                                                     size: 27804,
                                                     type: "image/svg+xml"
@@ -4572,10 +4670,13 @@ export const preparePageData = ({ srcPrefix, fileIdToKeyMap }) => {
                                             image: {
                                                 file: {
                                                     id: "60228145f98841000981c71f",
-                                                    name: "9kkxzkfza-Octocat.svg",
-                                                    key: "9kkxzkfza-Octocat.svg",
+                                                    name: fileIdToFileMap[FILE_ID_MAP.OCTO_CAT_SVG]
+                                                        .name,
+                                                    key: fileIdToFileMap[FILE_ID_MAP.OCTO_CAT_SVG]
+                                                        .key,
                                                     src: `${srcPrefix}/${
-                                                        fileIdToKeyMap[FILE_ID_MAP.OCTO_CAT_SVG]
+                                                        fileIdToFileMap[FILE_ID_MAP.OCTO_CAT_SVG]
+                                                            .key
                                                     }`,
                                                     size: 30007,
                                                     type: "image/svg+xml"
@@ -4682,12 +4783,16 @@ export const preparePageData = ({ srcPrefix, fileIdToKeyMap }) => {
                                             image: {
                                                 file: {
                                                     id: "60228148fa244d0008c47c7a",
-                                                    name: "9kkxzkfx1-community-icon.png",
-                                                    key: "9kkxzkfx1-community-icon.png",
+                                                    name: fileIdToFileMap[
+                                                        FILE_ID_MAP.COMMUNITY_ICON_SVG
+                                                    ].name,
+                                                    key: fileIdToFileMap[
+                                                        FILE_ID_MAP.COMMUNITY_ICON_SVG
+                                                    ].key,
                                                     src: `${srcPrefix}/${
-                                                        fileIdToKeyMap[
+                                                        fileIdToFileMap[
                                                             FILE_ID_MAP.COMMUNITY_ICON_SVG
-                                                        ]
+                                                        ].key
                                                     }`,
                                                     size: 17382,
                                                     type: "image/png"
