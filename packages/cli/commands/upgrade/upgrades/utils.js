@@ -18,10 +18,7 @@ const validateVersion = (pkg, version) => {
         return true;
     }
     const coerced = semverCoerce(version);
-    if (coerced) {
-        return true;
-    }
-    return false;
+    return !!coerced;
 };
 /**
  * @deprecated
@@ -55,7 +52,7 @@ const insertImport = (source, name, pkg) => {
 };
 /**
  *
- * @param context {ContextInterface}
+ * @param context {CliContext}
  * @param targetPath {string}
  * @param packages {object}
  */
@@ -63,7 +60,7 @@ const addPackagesToDependencies = (context, targetPath, packages) => {
     addPackagesToDeps("dependencies", context, targetPath, packages);
 };
 /**
- * @param context {ContextInterface}
+ * @param context {CliContext}
  * @param targetPath {string}
  * @param packages {object}
  */
@@ -71,7 +68,7 @@ const addPackagesToDevDependencies = (context, targetPath, packages) => {
     addPackagesToDeps("devDependencies", context, targetPath, packages);
 };
 /**
- * @param context {ContextInterface}
+ * @param context {CliContext}
  * @param targetPath {string}
  * @param packages {object}
  */
@@ -81,7 +78,7 @@ const addPackagesToPeerDependencies = (context, targetPath, packages) => {
 /**
  *
  * @param type {string}
- * @param context {ContextInterface}
+ * @param context {CliContext}
  * @param targetPath {string}
  * @param packages {object}
  */
@@ -123,7 +120,10 @@ const addPackagesToDeps = (type, context, targetPath, packages) => {
 
     writeJson.sync(file, json);
 };
-
+/**
+ * @param files {string[]}
+ * @return {tsMorph.Project}
+ */
 const createMorphProject = files => {
     const project = new tsMorph.Project();
     for (const file of files) {
@@ -176,6 +176,8 @@ const yarnInstall = async ({ context }) => {
 
 /**
  * Run to up the versions of all packages.
+ *
+ *
  */
 const yarnUp = async ({ context, targetVersion }) => {
     const { info, error } = context;
@@ -199,6 +201,8 @@ const yarnUp = async ({ context, targetVersion }) => {
  * @param plugins {tsMorph.Node}
  * @param afterElement {String|undefined}
  * @returns {null|number}
+ *
+ * @deprecated
  */
 const findElementIndex = (plugins, afterElement) => {
     if (!afterElement) {
@@ -221,6 +225,9 @@ const findElementIndex = (plugins, afterElement) => {
  * @param source {tsMorph.SourceFile}
  * @param imports {{elementName: String, importPath: String, afterElement: String | undefined, isImportCallable: boolean, addToPlugins: boolean}[]}
  * @param file {String}
+ *
+ *
+ * @deprecated
  */
 const addImportsToSource = ({ context, source, imports, file }) => {
     const { info, warning, error } = context;
@@ -368,6 +375,345 @@ const removeWorkspaceToRootPackageJson = async (packageJsonPath, pathsToRemove) 
     await writeJson(packageJsonPath, rootPackageJson);
 };
 
+/**
+ *
+ * @param declaration {tsMorph.ImportDeclaration}
+ * @return {string | null}
+ */
+const getImportPathOnDeclaration = declaration => {
+    if (!declaration) {
+        return null;
+    }
+    const specifier = declaration.getModuleSpecifier();
+    if (!specifier) {
+        return null;
+    }
+    return specifier.getText().replace(/"/g, "");
+};
+
+/**
+ *
+ * @param name {string | string[] | Record<string, string>}
+ * @return {{name: string, alias: string | undefined}[]|undefined}
+ */
+const createNamedImports = name => {
+    if (typeof name === "string") {
+        return undefined;
+    } else if (Array.isArray(name) === true) {
+        return name.map(n => ({
+            name: n
+        }));
+    }
+    return Object.keys(name).map(key => {
+        return {
+            name: key,
+            alias: name[key]
+        };
+    });
+};
+/**
+ * It is possible to send:
+ * - string - will produce default import
+ * - string[] - will produce named imports
+ * - Record<string, string> - will produce named imports with aliases
+ *
+ * @param source {tsMorph.SourceFile}
+ * @param name {string|string[]|Record<string, string>}
+ * @param moduleSpecifier {string}
+ */
+const insertImportToSourceFile = ({ source, name, moduleSpecifier }) => {
+    const namedImports = createNamedImports(name);
+    const defaultImport = namedImports === undefined ? name : undefined;
+
+    for (const declaration of source.getImportDeclarations()) {
+        const p = getImportPathOnDeclaration(declaration);
+        if (p !== moduleSpecifier) {
+            continue;
+        }
+
+        if (defaultImport) {
+            declaration.setDefaultImport(defaultImport);
+            return;
+        }
+        /**
+         * We check the existing imports so we dont add the same one.
+         */
+        const existingNamedImports = declaration.getNamedImports().map(ni => {
+            return ni.getText();
+        });
+        declaration.addNamedImports(
+            namedImports.filter(ni => {
+                return existingNamedImports.includes(ni.name) === false;
+            })
+        );
+        return;
+    }
+
+    source.addImportDeclaration({
+        defaultImport,
+        namedImports,
+        moduleSpecifier
+    });
+};
+/**
+ *
+ * @param source {tsMorph.SourceFile}
+ * @param handler {tsMorph.Node}
+ * @return {{handlerDeclaration: VariableDeclaration, createHandlerExpression: tsMorph.Node, plugins: tsMorph.Node, arrayExpression: tsMorph.Node}}
+ */
+const getCreateHandlerExpressions = (source, handler) => {
+    /**
+     * First, we need to find handler declaration to check if it actually is ok.
+     */
+    const handlerDeclaration = source.getVariableDeclaration(handler);
+    if (!handlerDeclaration) {
+        console.log(`Missing handler expression "${handler}".`);
+        return {
+            handlerDeclaration: null,
+            createHandlerExpression: null,
+            plugins: null,
+            arrayExpression: null
+        };
+    }
+    /**
+     * Then we need the handler expression "createHandler" to check if it has plugins defined.
+     *
+     * @type {Node}
+     */
+    const createHandlerExpression = handlerDeclaration.getFirstDescendant(
+        node =>
+            tsMorph.Node.isCallExpression(node) &&
+            node.getExpression().getText() === "createHandler"
+    );
+    if (!createHandlerExpression) {
+        console.log(`Missing "createHandler" expression in the handler declaration "${handler}".`);
+        return {
+            handlerDeclaration,
+            createHandlerExpression: null,
+            plugins: null,
+            arrayExpression: null
+        };
+    }
+    /**
+     * And third check step is to determine if we need to upgrade the "createHandler".
+     */
+    const plugins = createHandlerExpression.getFirstDescendant(
+        node => tsMorph.Node.isPropertyAssignment(node) && node.getName() === "plugins"
+    );
+    if (!plugins) {
+        return {
+            handlerDeclaration,
+            createHandlerExpression,
+            plugins,
+            arrayExpression: null
+        };
+    }
+    const arrayExpression = plugins.getFirstDescendant(node =>
+        tsMorph.Node.isArrayLiteralExpression(node)
+    );
+    return {
+        handlerDeclaration,
+        createHandlerExpression,
+        plugins,
+        arrayExpression
+    };
+};
+/**
+ *
+ * @param source {tsMorph.SourceFile}
+ * @param handler {string}
+ */
+const upgradeCreateHandlerToPlugins = (source, handler) => {
+    const { createHandlerExpression, plugins } = getCreateHandlerExpressions(source, "handler");
+
+    if (plugins) {
+        return;
+    }
+
+    const args = createHandlerExpression.getArguments().map(a => a.getText());
+    if (args.length === 0) {
+        console.log(`Missing arguments in handler expression "${handler}".`);
+        return;
+    }
+    /**
+     * We need  to remove existing arguments.
+     */
+    args.forEach(() => createHandlerExpression.removeArgument(0));
+    /**
+     * And then add the new ones.
+     */
+    createHandlerExpression.addArgument(
+        `{plugins: [${args.join(",")}], http: {debug: process.env.DEBUG === "true"}}`
+    );
+};
+/**
+ *
+ * @param source {tsMorph.SourceFile}
+ * @param handler {string}
+ * @param targetPlugin {RegExp|string}
+ */
+const removePluginFromCreateHandler = (source, handler, targetPlugin) => {
+    const { plugins, arrayExpression } = getCreateHandlerExpressions(source, handler);
+
+    if (!plugins) {
+        console.log(`Missing plugins in "createHandler" expression "${handler}".`);
+        return;
+    }
+    if (!arrayExpression) {
+        console.log(`Missing array literal expression in handler "${handler}".`);
+        return;
+    }
+
+    const elements = arrayExpression.getElements();
+    const removeIndexes = elements
+        .map((element, index) => {
+            if (element.getText().match(targetPlugin) === null) {
+                return null;
+            }
+            return index;
+        })
+        .reverse()
+        .filter(index => {
+            return index !== null;
+        });
+    for (const index of removeIndexes) {
+        arrayExpression.removeElement(index);
+    }
+};
+/**
+ * @param source {tsMorph.SourceFile}
+ * @param handler {string}
+ * @param plugin {string}
+ * @param arg {string|Record<string, string>}
+ */
+const addPluginArgumentValueInCreateHandler = (source, handler, plugin, arg) => {
+    const { plugins, arrayExpression } = getCreateHandlerExpressions(source, handler);
+    if (!plugins) {
+        console.log(`Missing plugins in "createHandler" in handler "${handler}".`);
+        return;
+    } else if (!arrayExpression) {
+        console.log(`Missing array literal expression in "createHandler" in handler "${handler}".`);
+        return;
+    }
+    /**
+     * @type {tsMorph.Node}
+     */
+    const pluginExpression = arrayExpression.getElements().find(element => {
+        return element.getText().match(plugin);
+    });
+    if (!pluginExpression) {
+        console.log(
+            `Could not find plugin "${plugin}" in "createHandler" in handler "${handler}".`
+        );
+        return;
+    }
+    const pluginArguments = pluginExpression.getArguments();
+    /**
+     * When there are no plugin arguments, we need to add the new one.
+     */
+    if (pluginArguments.length === 0) {
+        /**
+         * If arg is array, we need to add as array.
+         */
+        if (Array.isArray(arg)) {
+            pluginExpression.addArgument(`[${arg.join(",")}]`);
+            return;
+        } else if (typeof arg === "string") {
+            pluginExpression.addArgument(`"${arg}"`);
+            return;
+        }
+        const createObjectArgument = args => {
+            return Object.keys(args)
+                .map(key => {
+                    return `${key}:${args[key]}`;
+                })
+                .join(",");
+        };
+        if (typeof arg === "object" && Object.keys(arg).length > 0) {
+            pluginExpression.addArgument(`{${createObjectArgument(arg)}}`);
+        }
+        return;
+    }
+    /**
+     * When there are more plugin arguments, we allow only one.
+     */
+    if (pluginArguments.length > 1) {
+        console.log(
+            `We allow to upgrade only single argument plugin intializers. Error in "${handler}", plugin "${plugin}".`
+        );
+        return;
+    }
+
+    if (typeof arg === "string" || Array.isArray(arg) === true || typeof arg !== "object") {
+        console.log(
+            `When handlers "${handler}" plugin "${plugin}" argument already exists, we allow only objects to be added to it.`
+        );
+        return;
+    }
+    const [pluginArgument] = pluginArguments;
+    /**
+     * And that plugin argument MUST be an object.
+     */
+    if (tsMorph.Node.isObjectLiteralExpression(pluginArgument) === false) {
+        console.log(
+            `We allow only to upgrade ObjectLiteralExpressions in handler "${handler}" plugin "${plugin}".`
+        );
+        return;
+    }
+
+    for (const key in arg) {
+        const prop = pluginArgument.getProperty(key);
+        if (!prop) {
+            pluginArgument.addPropertyAssignment({
+                name: key,
+                initializer: arg[key]
+            });
+            continue;
+        }
+        prop.setInitializer(arg[key]);
+    }
+};
+/**
+ * @param source {tsMorph.SourceFile}
+ * @param target {string}
+ */
+const removeImportFromSourceFile = (source, target) => {
+    const importDeclaration = source.getImportDeclaration(target);
+    if (!importDeclaration) {
+        console.log(`No import declaration with target path "${target}".`);
+        return;
+    }
+    importDeclaration.remove();
+};
+/**
+ * @param source {tsMorph.SourceFile}
+ */
+const addDynamoDbDocumentClient = source => {
+    /**
+     * If there is document client declaration, no need to proceed further.
+     */
+    const documentClient = source.getFirstDescendant(node => {
+        return tsMorph.Node.isVariableDeclaration(node) && node.getName() === "documentClient";
+    });
+    if (documentClient) {
+        return;
+    }
+
+    const importDeclarations = source.getImportDeclarations();
+    const last = importDeclarations.length;
+
+    source.insertVariableStatement(last, {
+        declarationKind: tsMorph.VariableDeclarationKind.Const,
+        declarations: [
+            {
+                name: "documentClient",
+                initializer:
+                    "new DocumentClient({convertEmptyValues: true,region: process.env.AWS_REGION})"
+            }
+        ]
+    });
+};
+
 module.exports = {
     insertImport,
     addPackagesToDependencies,
@@ -379,5 +725,11 @@ module.exports = {
     yarnUp,
     addImportsToSource,
     addWorkspaceToRootPackageJson,
-    removeWorkspaceToRootPackageJson
+    removeWorkspaceToRootPackageJson,
+    insertImportToSourceFile,
+    upgradeCreateHandlerToPlugins,
+    removePluginFromCreateHandler,
+    addPluginArgumentValueInCreateHandler,
+    removeImportFromSourceFile,
+    addDynamoDbDocumentClient
 };
