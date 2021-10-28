@@ -18,7 +18,7 @@ const getStorageOperationsPlugins = ({ documentClient }) => {
         return [
             plugins(),
             dbPlugins({
-                table: "HeadlessCms",
+                table: process.env.DB_TABLE,
                 driver: new DynamoDbDriver({
                     documentClient
                 })

@@ -1,7 +1,7 @@
 module.exports = {
     tables: [
         {
-            TableName: `PageBuilder`,
+            TableName: process.env.DB_TABLE,
             KeySchema: [
                 { AttributeName: "PK", KeyType: "HASH" },
                 { AttributeName: "SK", KeyType: "RANGE" }
@@ -13,19 +13,7 @@ module.exports = {
             ProvisionedThroughput: { ReadCapacityUnits: 1, WriteCapacityUnits: 1 }
         },
         {
-            TableName: `PageBuilderLogs`,
-            KeySchema: [
-                { AttributeName: "PK", KeyType: "HASH" },
-                { AttributeName: "SK", KeyType: "RANGE" }
-            ],
-            AttributeDefinitions: [
-                { AttributeName: "PK", AttributeType: "S" },
-                { AttributeName: "SK", AttributeType: "S" }
-            ],
-            ProvisionedThroughput: { ReadCapacityUnits: 1, WriteCapacityUnits: 1 }
-        },
-        {
-            TableName: "ElasticSearchStream",
+            TableName: process.env.DB_TABLE_ELASTICSEARCH,
             KeySchema: [
                 { AttributeName: "PK", KeyType: "HASH" },
                 { AttributeName: "SK", KeyType: "RANGE" }

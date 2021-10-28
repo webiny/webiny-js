@@ -3,9 +3,12 @@ import { ArgsContext } from "@webiny/handler-args/types";
 import { PageImportExportTaskStatus, PbPageImportExportContext } from "~/types";
 import { s3Stream } from "../s3Stream";
 import { ZipOfZip } from "../zipper";
+import { mockSecurity } from "~/mockSecurity";
+import { SecurityIdentity } from "@webiny/api-security/types";
 
 export type HandlerArgs = {
     taskId: string;
+    identity: SecurityIdentity;
 };
 
 export type HandlerResponse = {
@@ -25,7 +28,9 @@ export default (): HandlerPlugin<PbPageImportExportContext, ArgsContext<HandlerA
 
         log("RUNNING Export Pages Combine Handler");
         const { invocationArgs: args, pageBuilder } = context;
-        const { taskId } = args;
+        const { taskId, identity } = args;
+
+        mockSecurity(identity, context);
 
         try {
             const task = await pageBuilder.pageImportExportTask.getTask(taskId);

@@ -47,7 +47,8 @@ export default new ContextPlugin<PbPageImportExportContext>(context => {
                 payload: {
                     category: categorySlug,
                     data,
-                    task
+                    task,
+                    identity: context.security.getIdentity()
                 }
             });
 
@@ -105,7 +106,8 @@ export default new ContextPlugin<PbPageImportExportContext>(context => {
                 name: EXPORT_PAGES_PROCESS_HANDLER,
                 payload: {
                     taskId: task.id,
-                    subTaskIndex: 1
+                    subTaskIndex: 1,
+                    identity: context.security.getIdentity()
                 }
             });
 

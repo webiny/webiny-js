@@ -1,5 +1,5 @@
 import React from "react";
-import { FormRenderPropParams, Form } from "@webiny/form";
+import { FormRenderPropParams, FormAPI } from "@webiny/form";
 import { UIElement, UIElementConfig } from "~/ui/UIElement";
 import { FormElementRenderProps } from "~/ui/elements/form/FormElement";
 
@@ -29,7 +29,7 @@ interface BeforeChangeCallback {
 }
 
 interface AfterChange {
-    (value: any, form: Form): void;
+    (value: any, form: FormAPI): void;
 }
 
 interface GetterWithProps<T> {

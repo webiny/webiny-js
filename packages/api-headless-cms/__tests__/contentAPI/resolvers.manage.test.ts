@@ -161,8 +161,8 @@ describe("MANAGE - Resolvers", () => {
             entryId,
             createdOn: expect.stringMatching(/^20/),
             createdBy: {
-                id: "123",
-                displayName: "User 123",
+                id: "12345678",
+                displayName: "John Doe",
                 type: "admin"
             },
             savedOn: expect.stringMatching(/^20/),
@@ -249,8 +249,8 @@ describe("MANAGE - Resolvers", () => {
             entryId,
             createdOn: expect.stringMatching(/^20/),
             createdBy: {
-                id: "123",
-                displayName: "User 123",
+                id: "12345678",
+                displayName: "John Doe",
                 type: "admin"
             },
             savedOn: expect.stringMatching(/^20/),
@@ -314,8 +314,8 @@ describe("MANAGE - Resolvers", () => {
                             slug: category.slug,
                             createdOn: category.createdOn,
                             createdBy: {
-                                id: "123",
-                                displayName: "User 123",
+                                id: "12345678",
+                                displayName: "John Doe",
                                 type: "admin"
                             },
                             savedOn: publishedCategory.savedOn,
@@ -406,8 +406,8 @@ describe("MANAGE - Resolvers", () => {
             entryId: expect.any(String),
             createdOn: expect.stringMatching(/^20/),
             createdBy: {
-                id: "123",
-                displayName: "User 123",
+                id: "12345678",
+                displayName: "John Doe",
                 type: "admin"
             },
             savedOn: expect.stringMatching(/^20/),
@@ -475,8 +475,8 @@ describe("MANAGE - Resolvers", () => {
             entryId: expect.any(String),
             createdOn: expect.stringMatching(/^20/),
             createdBy: {
-                id: "123",
-                displayName: "User 123",
+                id: "12345678",
+                displayName: "John Doe",
                 type: "admin"
             },
             savedOn: expect.stringMatching(/^20/),
@@ -532,8 +532,8 @@ describe("MANAGE - Resolvers", () => {
                         savedOn: expect.stringMatching(/^20/),
                         createdOn: expect.stringMatching(/^20/),
                         createdBy: {
-                            id: "123",
-                            displayName: "User 123",
+                            id: "12345678",
+                            displayName: "John Doe",
                             type: "admin"
                         },
                         title: "Hardware",
@@ -613,8 +613,8 @@ describe("MANAGE - Resolvers", () => {
                         entryId: expect.any(String),
                         createdOn: expect.stringMatching(/^20/),
                         createdBy: {
-                            id: "123",
-                            displayName: "User 123",
+                            id: "12345678",
+                            displayName: "John Doe",
                             type: "admin"
                         },
                         savedOn: expect.stringMatching(/^20/),

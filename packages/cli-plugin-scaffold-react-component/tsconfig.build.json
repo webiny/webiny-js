@@ -1,13 +1,15 @@
 {
   "extends": "../../tsconfig.build.json",
   "include": ["src"],
-  "exclude": ["node_modules", "../cli-plugin-scaffold", "../error"],
+  "references": [
+    { "path": "../cli-plugin-scaffold/tsconfig.build.json" },
+    { "path": "../error/tsconfig.build.json" }
+  ],
   "compilerOptions": {
-    "outDir": "dist",
-    "rootDir": "src",
-    "declarationDir": "dist",
-    "paths": {},
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "declarationDir": "./dist",
+    "paths": { "~/*": ["./src/*"] },
     "baseUrl": "."
-  },
-  "references": []
+  }
 }

@@ -3,8 +3,8 @@ import uniqid from "uniqid";
 const sort = {
     NEWEST_TO_OLDEST: "createdOn:desc",
     OLDEST_TO_NEWEST: "createdOn:asc",
-    LOGIN_A_TO_Z: "login:asc",
-    LOGIN_Z_TO_A: "login:desc"
+    EMAIL_A_TO_Z: "email:asc",
+    EMAIL_Z_TO_A: "email:desc"
 };
 
 context("Search and sort security users", () => {
@@ -12,18 +12,21 @@ context("Search and sort security users", () => {
     const users = [];
 
     before(() => {
-        for (let i = 0; i < total; i++) {
-            cy.securityCreateUser({
-                data: {
-                    login: uniqid(`${i}-`, "@gmail.com"),
-                    firstName: uniqid("first name-"),
-                    lastName: uniqid("last name-"),
-                    group: "full-access"
-                }
-            }).then(user => {
-                users.push(user);
-            });
-        }
+        return cy.securityReadGroup({ slug: "full-access" }).then(group => {
+            for (let i = 0; i < total; i++) {
+                cy.securityCreateUser({
+                    data: {
+                        email: uniqid(`${i}-`, "@gmail.com"),
+                        firstName: uniqid("first name-"),
+                        lastName: uniqid("last name-"),
+                        password: "12345678",
+                        group: group.id
+                    }
+                }).then(user => {
+                    users.push(user);
+                });
+            }
+        });
     });
 
     beforeEach(() => {
@@ -34,13 +37,13 @@ context("Search and sort security users", () => {
         for (let i = 0; i < users.length; i++) {
             const user = users[i];
             cy.securityDeleteUser({
-                login: user.login
+                id: user.id
             });
         }
     });
 
     it("should able to search users", () => {
-        cy.visit(`/security/users`);
+        cy.visit(`/admin-users`);
 
         // Searching for a non existing user should result in "no records found"
         cy.findByTestId("default-data-list.search").within(() => {
@@ -50,14 +53,14 @@ context("Search and sort security users", () => {
             cy.findByText(/no records found./i).should("exist");
         });
 
-        // Searching for a particular user by "login"
+        // Searching for a particular user by "email"
         cy.findByTestId("default-data-list.search").within(() => {
             cy.findByPlaceholderText(/Search users/i)
                 .clear()
-                .type(users[0].login);
+                .type(users[0].email);
         });
         cy.findByTestId("ui.list.data-list").within(() => {
-            cy.findByText(users[0].login).should("exist");
+            cy.findByText(users[0].email).should("exist");
         });
 
         // Searching for a particular user by "first name"
@@ -67,7 +70,7 @@ context("Search and sort security users", () => {
                 .type(users[0].firstName);
         });
         cy.findByTestId("ui.list.data-list").within(() => {
-            cy.findByText(users[0].login).should("exist");
+            cy.findByText(users[0].email).should("exist");
         });
 
         // Searching for a particular user by "last name"
@@ -77,17 +80,17 @@ context("Search and sort security users", () => {
                 .type(users[0].lastName);
         });
         cy.findByTestId("ui.list.data-list").within(() => {
-            cy.findByText(users[0].login).should("exist");
+            cy.findByText(users[0].email).should("exist");
         });
     });
 
     it("should able to sort users", () => {
-        cy.visit(`/security/users`);
+        cy.visit(`/admin-users`);
 
-        // Sort users from "login A -> Z"
+        // Sort users from "email A -> Z"
         cy.findByTestId("default-data-list.filter").click();
         cy.findByTestId("ui.list.data-list").within(() => {
-            cy.get("select").select(sort.LOGIN_A_TO_Z);
+            cy.get("select").select(sort.EMAIL_A_TO_Z);
             cy.findByTestId("default-data-list.filter").click();
         });
 
@@ -95,14 +98,14 @@ context("Search and sort security users", () => {
             cy.get(".mdc-list-item")
                 .first()
                 .within(() => {
-                    cy.findByText(users[0].login).should("exist");
+                    cy.findByText(users[0].email).should("exist");
                 });
         });
 
-        // Sort users from "login Z -> A"
+        // Sort users from "email Z -> A"
         cy.findByTestId("default-data-list.filter").click();
         cy.findByTestId("ui.list.data-list").within(() => {
-            cy.get("select").select(sort.LOGIN_Z_TO_A);
+            cy.get("select").select(sort.EMAIL_Z_TO_A);
             cy.findByTestId("default-data-list.filter").click();
         });
         // We're testing it against the second element because the first one will be "Admin" user
@@ -111,7 +114,7 @@ context("Search and sort security users", () => {
                 .first()
                 .next()
                 .within(() => {
-                    cy.findByText(users[total - 1].login).should("exist");
+                    cy.findByText(users[total - 1].email).should("exist");
                 });
         });
 
@@ -127,7 +130,7 @@ context("Search and sort security users", () => {
                 .first()
                 .next()
                 .within(() => {
-                    cy.findByText(users[0].login).should("exist");
+                    cy.findByText(users[0].email).should("exist");
                 });
         });
 
@@ -142,7 +145,7 @@ context("Search and sort security users", () => {
             cy.get(".mdc-list-item")
                 .first()
                 .within(() => {
-                    cy.findByText(users[total - 1].login).should("exist");
+                    cy.findByText(users[total - 1].email).should("exist");
                 });
         });
     });

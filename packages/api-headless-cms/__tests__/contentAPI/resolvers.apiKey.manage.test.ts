@@ -7,7 +7,7 @@ import { useCategoryReadHandler } from "../utils/useCategoryReadHandler";
 
 const createIdentity = (permissions: any[] = []): SecurityIdentity => {
     return {
-        id: "api123",
+        id: "a1234567890",
         displayName: "a1234567890",
         type: "api-key",
         permissions: [
@@ -42,7 +42,7 @@ describe("MANAGE - resolvers - api key", () => {
     const API_TOKEN = "aToken";
 
     const headers = {
-        Authorization: API_TOKEN
+        authorization: API_TOKEN
     };
 
     const manageOpts = { path: "manage/en-US" };

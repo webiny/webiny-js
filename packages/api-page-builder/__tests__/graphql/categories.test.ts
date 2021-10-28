@@ -1,4 +1,5 @@
 import useGqlHandler from "./useGqlHandler";
+import { defaultIdentity } from "../tenancySecurity";
 
 describe("Categories CRUD Test", () => {
     const {
@@ -32,7 +33,7 @@ describe("Categories CRUD Test", () => {
                             data: {
                                 ...data,
                                 createdOn: /^20/,
-                                createdBy: { displayName: "m", id: "mocked" }
+                                createdBy: defaultIdentity
                             },
                             error: null
                         }
@@ -48,7 +49,7 @@ describe("Categories CRUD Test", () => {
                             data: {
                                 ...data,
                                 createdOn: /^20/,
-                                createdBy: { displayName: "m", id: "mocked" }
+                                createdBy: defaultIdentity
                             },
                             error: null
                         }
@@ -71,7 +72,7 @@ describe("Categories CRUD Test", () => {
                             data: {
                                 ...data,
                                 createdOn: /^20/,
-                                createdBy: { displayName: "m", id: "mocked" }
+                                createdBy: defaultIdentity
                             },
                             error: null
                         }
@@ -93,7 +94,7 @@ describe("Categories CRUD Test", () => {
                                 slug: "category-0-slug",
                                 name: "category-0-name-UPDATED",
                                 createdOn: /^20/,
-                                createdBy: { displayName: "m", id: "mocked" }
+                                createdBy: defaultIdentity
                             },
                             {
                                 url: "category-1-url-UPDATED",
@@ -101,7 +102,7 @@ describe("Categories CRUD Test", () => {
                                 slug: "category-1-slug",
                                 name: "category-1-name-UPDATED",
                                 createdOn: /^20/,
-                                createdBy: { displayName: "m", id: "mocked" }
+                                createdBy: defaultIdentity
                             },
                             {
                                 url: "category-2-url-UPDATED",
@@ -109,7 +110,7 @@ describe("Categories CRUD Test", () => {
                                 slug: "category-2-slug",
                                 name: "category-2-name-UPDATED",
                                 createdOn: /^20/,
-                                createdBy: { displayName: "m", id: "mocked" }
+                                createdBy: defaultIdentity
                             }
                         ],
                         error: null
@@ -136,7 +137,7 @@ describe("Categories CRUD Test", () => {
                             data: {
                                 ...data,
                                 createdOn: /^20/,
-                                createdBy: { displayName: "m", id: "mocked" }
+                                createdBy: defaultIdentity
                             },
                             error: null
                         }
@@ -233,10 +234,7 @@ describe("Categories CRUD Test", () => {
         await deleteCategory({ slug: "delete-cat" }).then(([res]) =>
             expect(res.data.pageBuilder.deleteCategory).toMatchObject({
                 data: {
-                    createdBy: {
-                        displayName: "m",
-                        id: "mocked"
-                    },
+                    createdBy: defaultIdentity,
                     layout: "layout",
                     name: "name",
                     slug: "delete-cat",

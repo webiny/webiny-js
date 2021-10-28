@@ -18,8 +18,8 @@ const DEBUG = String(process.env.DEBUG);
 const WEBINY_LOGS_FORWARD_URL = String(process.env.WEBINY_LOGS_FORWARD_URL);
 
 export default () => {
-    const dynamoDb = new DynamoDB();
     const cognito = new Cognito();
+    const dynamoDb = new DynamoDB();
     const elasticSearch = new ElasticSearch();
     const fileManager = new FileManager();
 
@@ -56,6 +56,8 @@ export default () => {
         env: {
             COGNITO_REGION: String(process.env.AWS_REGION),
             COGNITO_USER_POOL_ID: cognito.userPool.id,
+            OKTA_ISSUER: process.env.OKTA_ISSUER,
+            OKTA_CLIENT_ID: process.env.OKTA_CLIENT_ID,
             DB_TABLE: dynamoDb.table.name,
             DB_TABLE_ELASTICSEARCH: elasticSearch.table.name,
             ELASTIC_SEARCH_ENDPOINT: elasticSearch.domain.endpoint,
@@ -67,7 +69,8 @@ export default () => {
             IMPORT_PAGES_CREATE_HANDLER: pageBuilder.functions.importPages.create.arn,
             EXPORT_PAGES_PROCESS_HANDLER: pageBuilder.functions.exportPages.process.arn,
             DEBUG,
-            WEBINY_LOGS_FORWARD_URL
+            WEBINY_LOGS_FORWARD_URL,
+            NODE_OPTIONS: "--enable-source-maps"
         },
         primaryDynamodbTable: dynamoDb.table,
         elasticsearchDynamodbTable: elasticSearch.table,
@@ -80,6 +83,8 @@ export default () => {
         env: {
             COGNITO_REGION: String(process.env.AWS_REGION),
             COGNITO_USER_POOL_ID: cognito.userPool.id,
+            OKTA_ISSUER: process.env.OKTA_ISSUER,
+            OKTA_CLIENT_ID: process.env.OKTA_CLIENT_ID,
             DB_TABLE: dynamoDb.table.name,
             DB_TABLE_ELASTICSEARCH: elasticSearch.table.name,
             ELASTIC_SEARCH_ENDPOINT: elasticSearch.domain.endpoint,
@@ -133,7 +138,9 @@ export default () => {
         region: process.env.AWS_REGION,
         apiUrl: cloudfront.cloudfront.domainName.apply(value => `https://${value}`),
         cognitoUserPoolId: cognito.userPool.id,
+        cognitoUserPoolName: cognito.userPool.name,
         cognitoAppClientId: cognito.userPoolClient.id,
+        cognitoUserPoolPasswordPolicy: cognito.userPool.passwordPolicy,
         updatePbSettingsFunction: pageBuilder.functions.updateSettings.arn,
         psQueueAdd: prerenderingService.functions.queue.add.arn,
         psQueueProcess: prerenderingService.functions.queue.process.arn,

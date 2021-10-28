@@ -1,12 +1,14 @@
 import { gql } from "graphql-request";
 
 const BASE_FIELDS = `
-    login
+    id
+    email
     firstName
     lastName
     avatar
     gravatar
     group {
+        id
         slug
         name
     }
@@ -20,8 +22,8 @@ const ERROR_FIELDS = `
 `;
 
 export const CREATE_USER = gql`
-    mutation CreateUser($data: SecurityUserCreateInput!){
-        security {
+    mutation CreateUser($data: AdminUsersCreateInput!){
+        adminUsers {
             user: createUser(data: $data) {
                 data {
                     ${BASE_FIELDS}
@@ -35,9 +37,9 @@ export const CREATE_USER = gql`
 `;
 
 export const DELETE_USER = gql`
-    mutation DeleteUser($login: String!) {
-        security {
-            user: deleteUser(login: $login) {
+    mutation DeleteUser($id: ID!) {
+        adminUsers {
+            user: deleteUser(id: $id) {
                 data
                 error {
                     code
@@ -49,6 +51,7 @@ export const DELETE_USER = gql`
 `;
 
 const GROUP_BASE_FIELDS = `
+    id
     name
     slug
     description
@@ -59,7 +62,7 @@ const GROUP_BASE_FIELDS = `
 export const READ_GROUP = gql`
     query getGroup($slug: String!) {
         security {
-            group: getGroup(slug: $slug){
+            group: getGroup(where: { slug: $slug }){
                 data {
                     ${GROUP_BASE_FIELDS}
                 }
@@ -87,9 +90,9 @@ export const CREATE_GROUP = gql`
 `;
 
 export const DELETE_GROUP = gql`
-    mutation deleteGroup($slug: String!) {
+    mutation deleteGroup($id: ID!) {
         security {
-            group: deleteGroup(slug: $slug) {
+            group: deleteGroup(id: $id) {
                 data
                 error {
                     ${ERROR_FIELDS}

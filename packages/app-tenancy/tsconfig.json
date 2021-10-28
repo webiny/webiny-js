@@ -1,25 +1,26 @@
 {
   "extends": "../../tsconfig.json",
+  "include": ["src", "__tests__/**/*.ts"],
   "references": [
-    {
-      "path": "../app"
-    },
-    {
-      "path": "../app-security"
-    },
-    {
-      "path": "../plugins"
-    }
+    { "path": "../app" },
+    { "path": "../app-admin" },
+    { "path": "../plugins" },
+    { "path": "../ui" }
   ],
   "compilerOptions": {
+    "rootDirs": ["./src", "./__tests__"],
+    "outDir": "./dist",
+    "declarationDir": "./dist",
     "paths": {
       "~/*": ["./src/*"],
       "@webiny/app/*": ["../app/src/*"],
       "@webiny/app": ["../app/src"],
-      "@webiny/app-security/*": ["../app-security/src/*"],
-      "@webiny/app-security": ["../app-security/src"],
+      "@webiny/app-admin/*": ["../app-admin/src/*"],
+      "@webiny/app-admin": ["../app-admin/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
-      "@webiny/plugins": ["../plugins/src"]
+      "@webiny/plugins": ["../plugins/src"],
+      "@webiny/ui/*": ["../ui/src/*"],
+      "@webiny/ui": ["../ui/src"]
     },
     "baseUrl": "."
   }

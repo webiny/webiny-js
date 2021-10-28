@@ -1,4 +1,5 @@
 import useGqlHandler from "./useGqlHandler";
+import { defaultIdentity } from "../tenancySecurity";
 
 describe("PageElements Test", () => {
     const {
@@ -29,10 +30,7 @@ describe("PageElements Test", () => {
                         createPageElement: {
                             data: {
                                 ...data,
-                                createdBy: {
-                                    displayName: "m",
-                                    id: "mocked"
-                                },
+                                createdBy: defaultIdentity,
                                 createdOn: /^20/
                             },
                             error: null
@@ -72,10 +70,7 @@ describe("PageElements Test", () => {
                         updatePageElement: {
                             data: {
                                 ...updateData,
-                                createdBy: {
-                                    displayName: "m",
-                                    id: "mocked"
-                                },
+                                createdBy: defaultIdentity,
                                 createdOn: /^20/
                             },
                             error: null
@@ -97,10 +92,7 @@ describe("PageElements Test", () => {
                                 content: {
                                     some: "pageElement-0-content-UPDATED"
                                 },
-                                createdBy: {
-                                    displayName: "m",
-                                    id: "mocked"
-                                },
+                                createdBy: defaultIdentity,
                                 createdOn: /^20/,
                                 id: ids[0],
                                 name: "pageElement-0-name-UPDATED",
@@ -114,10 +106,7 @@ describe("PageElements Test", () => {
                                 content: {
                                     some: "pageElement-1-content-UPDATED"
                                 },
-                                createdBy: {
-                                    displayName: "m",
-                                    id: "mocked"
-                                },
+                                createdBy: defaultIdentity,
                                 createdOn: /^20/,
                                 id: ids[1],
                                 name: "pageElement-1-name-UPDATED",
@@ -131,10 +120,7 @@ describe("PageElements Test", () => {
                                 content: {
                                     some: "pageElement-2-content-UPDATED"
                                 },
-                                createdBy: {
-                                    displayName: "m",
-                                    id: "mocked"
-                                },
+                                createdBy: defaultIdentity,
                                 createdOn: /^20/,
                                 id: ids[2],
                                 name: "pageElement-2-name-UPDATED",

@@ -9,7 +9,9 @@ export interface Topic<TEvent = Event> {
 
     subscribe(cb: (event: TEvent) => void | Promise<void>): void;
 
+    subscribeOnce(cb: (event: TEvent) => void | Promise<void>): void;
+
     getSubscribers(): Subscriber<TEvent>[];
 
-    publish(event?: TEvent): Promise<void>;
+    publish(event?: TEvent): Promise<any>;
 }

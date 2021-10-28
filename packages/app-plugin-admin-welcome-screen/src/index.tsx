@@ -4,6 +4,7 @@ import { Route } from "@webiny/react-router";
 import { AdminLayout } from "@webiny/app-admin/components/AdminLayout";
 import Welcome from "./components/Welcome";
 
+// eslint-disable-next-line react/display-name
 export default () => [
     {
         name: "route-root",

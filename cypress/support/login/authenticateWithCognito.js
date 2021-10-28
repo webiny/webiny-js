@@ -37,13 +37,15 @@ export default ({ username, password }) => {
                 delete userAttributes.email_verified; // it's returned but not valid to submit
 
                 const newPassword = "12345678";
+                userAttributes.email = username;
 
                 cognitoUser.completeNewPasswordChallenge(newPassword, userAttributes, {
                     onSuccess: resolve,
                     onFailure: function (err) {
                         console.log(
                             `An error occurred while executing login command ("cognitoUser.completeNewPasswordChallenge")`,
-                            err
+                            err,
+                            userAttributes
                         );
                         reject(err);
                     }

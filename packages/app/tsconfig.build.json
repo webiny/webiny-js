@@ -1,21 +1,18 @@
 {
   "extends": "../../tsconfig.build.json",
-  "include": ["./src"],
-  "exclude": [
-    "node_modules",
-    "./dist",
-    "../plugins",
-    "../i18n",
-    "../i18n-react",
-    "../react-router",
-    "../ui"
+  "include": ["src"],
+  "references": [
+    { "path": "../i18n/tsconfig.build.json" },
+    { "path": "../i18n-react/tsconfig.build.json" },
+    { "path": "../plugins/tsconfig.build.json" },
+    { "path": "../react-router/tsconfig.build.json" },
+    { "path": "../ui/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "rootDir": "./src",
     "outDir": "./dist",
     "declarationDir": "./dist",
-    "paths": {},
+    "paths": { "~/*": ["./src/*"] },
     "baseUrl": "."
-  },
-  "references": []
+  }
 }
