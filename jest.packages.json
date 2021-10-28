@@ -1,1 +1,21 @@
-["packages/api-elasticsearch","packages/api-file-manager","packages/api-file-manager-ddb-es","packages/api-form-builder","packages/api-headless-cms","packages/api-headless-cms-ddb","packages/api-headless-cms-ddb-es","packages/api-i18n","packages/api-i18n-ddb","packages/api-page-builder","packages/api-page-builder-import-export","packages/api-prerendering-service","packages/api-security-admin-users","packages/api-upgrade","packages/db-dynamodb","packages/handler-graphql","packages/pubsub","packages/utils","packages/where-parser"]
+[
+  "packages/api-elasticsearch",
+  "packages/api-file-manager",
+  "packages/api-file-manager-ddb-es",
+  "packages/api-form-builder",
+  "packages/api-headless-cms",
+  "packages/api-headless-cms-ddb",
+  "packages/api-headless-cms-ddb-es",
+  "packages/api-i18n",
+  "packages/api-i18n-ddb",
+  "packages/api-page-builder",
+  "packages/api-page-builder-import-export",
+  "packages/api-prerendering-service",
+  "packages/api-security-admin-users",
+  "packages/api-upgrade",
+  "packages/db-dynamodb",
+  "packages/handler-graphql",
+  "packages/pubsub",
+  "packages/utils",
+  "packages/where-parser"
+]
