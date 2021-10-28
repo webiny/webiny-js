@@ -83,7 +83,8 @@ export const useGqlHandler = (args?: GQLHandlerCallableArgs) => {
                                 type: "admin"
                             },
                             description: "test",
-                            createdOn: new Date().toISOString()
+                            createdOn: new Date().toISOString(),
+                            webinyVersion: context.WEBINY_VERSION
                         };
                     };
                 }
