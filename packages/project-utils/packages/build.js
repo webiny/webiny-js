@@ -54,6 +54,8 @@ const defaults = {
         );
     },
     postbuild: () => {
+        console.log("Skipping TS...");
+        return;
         // Check if `ttypescript` is defined as a devDependency and use that instead of `typescript`.
         const pkg = require(join(process.cwd(), "package.json"));
         log.info("Generating TypeScript types...");
