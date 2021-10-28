@@ -30,10 +30,7 @@ context("Export & Import Pages", () => {
                     cy.get(`[type="checkbox"]`).check();
                 });
         });
-        /**
-         * Save image snapshot of the page preview before export so that we can compare it with importing the page.
-         */
-        cy.get(".webiny-pb-page-document").matchImageSnapshot();
+
         // Initiate page export
         cy.findByTestId("export-page-button").click();
 
@@ -106,8 +103,6 @@ context("Export & Import Pages", () => {
                     cy.findByTestId("pages-default-data-list.select-page").click({ force: true });
                 });
         });
-        // Check the image snapshot of the imported page
-        cy.get(".webiny-pb-page-document").matchImageSnapshot();
 
         // Delete the imported page
         cy.findByTestId("default-data-list").within(() => {

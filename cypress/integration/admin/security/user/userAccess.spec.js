@@ -1,7 +1,7 @@
 import uniqid from "uniqid";
 
-context("Security Users", async () => {
-    it('should verify user access for a "full-access" user', async () => {
+context("Security Users", () => {
+    it('should verify user access for a "full-access" user', () => {
         let fullAccessGroupUser;
         let password = "12345678";
         // Create a user with `full-access` group
@@ -57,7 +57,6 @@ context("Security Users", async () => {
     });
 
     it('should verify user access for a "anonymous" user', () => {
-        let fullAccessGroupUser;
         let password = "12345678";
         // Create a user with `full-access` group
         // eslint-disable-next-line jest/valid-expect-in-promise
@@ -73,9 +72,8 @@ context("Security Users", async () => {
                     }
                 })
                 .then(user => {
-                    fullAccessGroupUser = user;
                     // Login with new user
-                    cy.login({ username: fullAccessGroupUser.email, password });
+                    cy.login({ username: user.email, password });
                     cy.visit("/");
                     // Verify the access
                     cy.findByText(`Hi ${user.firstName} ${user.lastName}!`).should("be.visible");
@@ -95,7 +93,7 @@ context("Security Users", async () => {
                     // Delete user
                     // eslint-disable-next-line jest/valid-expect-in-promise
                     cy.securityDeleteUser({
-                        id: fullAccessGroupUser.id
+                        id: user.id
                     }).then(data => {
                         assert.isTrue(data);
                     });

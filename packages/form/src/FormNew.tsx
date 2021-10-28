@@ -158,9 +158,7 @@ export const Form = React.forwardRef((props: FormProps, ref) => {
     });
 
     useImperativeHandle(ref, () => ({
-        submit: () => {
-            formRef.current.submit();
-        }
+        submit: () => formRef.current.submit()
     }));
 
     const executeValidators = async (
