@@ -9472,7 +9472,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-prerendering-service-so-ddb@workspace:packages/api-prerendering-service-so-ddb":
+"@webiny/api-prerendering-service-so-ddb@5.16.0, @webiny/api-prerendering-service-so-ddb@workspace:packages/api-prerendering-service-so-ddb":
   version: 0.0.0-use.local
   resolution: "@webiny/api-prerendering-service-so-ddb@workspace:packages/api-prerendering-service-so-ddb"
   dependencies:
@@ -12492,10 +12492,9 @@ __metadata:
   dependencies:
     "@webiny/api-prerendering-service": ^5.16.0
     "@webiny/api-prerendering-service-aws": ^5.16.0
+    "@webiny/api-prerendering-service-so-ddb": 5.16.0
     "@webiny/cli": ^5.16.0
-    "@webiny/db-dynamodb": ^5.16.0
     "@webiny/handler-aws": ^5.16.0
-    "@webiny/handler-db": ^5.16.0
     "@webiny/handler-logs": ^5.16.0
     "@webiny/project-utils": ^5.16.0
   languageName: unknown
@@ -12560,10 +12559,9 @@ __metadata:
   dependencies:
     "@webiny/api-prerendering-service": ^5.16.0
     "@webiny/api-prerendering-service-aws": ^5.16.0
+    "@webiny/api-prerendering-service-so-ddb": 5.16.0
     "@webiny/cli": ^5.16.0
-    "@webiny/db-dynamodb": ^5.16.0
     "@webiny/handler-aws": ^5.16.0
-    "@webiny/handler-db": ^5.16.0
     "@webiny/handler-logs": ^5.16.0
     "@webiny/project-utils": ^5.16.0
   languageName: unknown
@@ -12589,10 +12587,9 @@ __metadata:
   resolution: "api-prerendering-service-queue-add@workspace:api/code/prerenderingService/queue/add"
   dependencies:
     "@webiny/api-prerendering-service": ^5.16.0
+    "@webiny/api-prerendering-service-so-ddb": 5.16.0
     "@webiny/cli": ^5.16.0
-    "@webiny/db-dynamodb": ^5.16.0
     "@webiny/handler-aws": ^5.16.0
-    "@webiny/handler-db": ^5.16.0
     "@webiny/handler-logs": ^5.16.0
     "@webiny/project-utils": ^5.16.0
   languageName: unknown
@@ -12603,10 +12600,9 @@ __metadata:
   resolution: "api-prerendering-service-queue-process@workspace:api/code/prerenderingService/queue/process"
   dependencies:
     "@webiny/api-prerendering-service": ^5.16.0
+    "@webiny/api-prerendering-service-so-ddb": 5.16.0
     "@webiny/cli": ^5.16.0
-    "@webiny/db-dynamodb": ^5.16.0
     "@webiny/handler-aws": ^5.16.0
-    "@webiny/handler-db": ^5.16.0
     "@webiny/handler-logs": ^5.16.0
     "@webiny/project-utils": ^5.16.0
   languageName: unknown

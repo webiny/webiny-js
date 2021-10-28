@@ -37,7 +37,9 @@ const upgradeFlush = (project, context) => {
     const source = project.getSourceFile(files.flush);
 
     addPackagesToDependencies(context, path.resolve(process.cwd(), paths.flush), {
-        "@webiny/api-page-builder-so-ddb-es": context.version
+        "@webiny/api-prerendering-service-so-ddb": context.version,
+        "@webiny/db-dynamodb": null,
+        "@webiny/handler-db": null
     });
 
     addDynamoDbDocumentClient(source);
@@ -71,7 +73,9 @@ const upgradeQueueAdd = (project, context) => {
     const source = project.getSourceFile(files.queueAdd);
 
     addPackagesToDependencies(context, path.resolve(process.cwd(), paths.queueAdd), {
-        "@webiny/api-page-builder-so-ddb-es": context.version
+        "@webiny/api-prerendering-service-so-ddb": context.version,
+        "@webiny/db-dynamodb": null,
+        "@webiny/handler-db": null
     });
 
     addDynamoDbDocumentClient(source);
@@ -106,7 +110,9 @@ const upgradeQueueProcess = (project, context) => {
     const source = project.getSourceFile(files.queueProcess);
 
     addPackagesToDependencies(context, path.resolve(process.cwd(), paths.queueProcess), {
-        "@webiny/api-page-builder-so-ddb-es": context.version
+        "@webiny/api-prerendering-service-so-ddb": context.version,
+        "@webiny/db-dynamodb": null,
+        "@webiny/handler-db": null
     });
 
     addDynamoDbDocumentClient(source);
@@ -141,7 +147,9 @@ const upgradeRender = (project, context) => {
     const source = project.getSourceFile(files.render);
 
     addPackagesToDependencies(context, path.resolve(process.cwd(), paths.render), {
-        "@webiny/api-page-builder-so-ddb-es": context.version
+        "@webiny/api-prerendering-service-so-ddb": context.version,
+        "@webiny/db-dynamodb": null,
+        "@webiny/handler-db": null
     });
 
     addDynamoDbDocumentClient(source);
