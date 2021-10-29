@@ -5,8 +5,6 @@ import { useProductManageHandler } from "../utils/useProductManageHandler";
 import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
 import { useProductReadHandler } from "../utils/useProductReadHandler";
 
-jest.setTimeout(25000);
-
 const richTextMock = [
     {
         tag: "h1",

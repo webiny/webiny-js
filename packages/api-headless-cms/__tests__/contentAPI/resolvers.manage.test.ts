@@ -8,8 +8,6 @@ import models from "./mocks/contentModels";
 import modelsWithoutValidation from "./mocks/contentModels.noValidation";
 import { useProductManageHandler } from "../utils/useProductManageHandler";
 
-jest.setTimeout(15000);
-
 interface CreateCategoriesResult {
     fruits: CmsContentEntry;
     vegetables: CmsContentEntry;
@@ -43,6 +41,8 @@ const createPermissions = ({ groups, models }: { groups?: string[]; models?: str
         locales: ["en-US"]
     }
 ];
+
+jest.setTimeout(100000);
 
 describe("MANAGE - Resolvers", () => {
     let contentModelGroup: CmsContentModelGroup;

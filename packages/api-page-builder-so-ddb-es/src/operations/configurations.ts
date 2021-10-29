@@ -3,7 +3,7 @@ import { PbContext } from "@webiny/api-page-builder/graphql/types";
 
 export default {
     db: () => ({
-        table: process.env.DB_TABLE_PAGE_BUILDER || process.env.DB_TABLE,
+        table: process.env.DB_TABLE,
         keys: [
             {
                 primary: true,
@@ -14,17 +14,19 @@ export default {
             { unique: true, name: "GSI1", fields: [{ name: "GSI1_PK" }, { name: "GSI1_SK" }] }
         ]
     }),
-    esDb: () => ({
-        table: process.env.DB_TABLE_ELASTICSEARCH,
-        keys: [
-            {
-                primary: true,
-                unique: true,
-                name: "primary",
-                fields: [{ name: "PK" }, { name: "SK" }]
-            }
-        ]
-    }),
+    esDb: () => {
+        return {
+            table: process.env.DB_TABLE_ELASTICSEARCH,
+            keys: [
+                {
+                    primary: true,
+                    unique: true,
+                    name: "primary",
+                    fields: [{ name: "PK" }, { name: "SK" }]
+                }
+            ]
+        };
+    },
     es: (context: PbContext) => {
         const tenant = context.tenancy.getCurrentTenant();
         if (!tenant) {

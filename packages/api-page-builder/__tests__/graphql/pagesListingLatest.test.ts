@@ -3,6 +3,8 @@ import { identityB } from "./mocks";
 import { Page } from "~/types";
 import { waitPage } from "./utils/waitPage";
 
+jest.setTimeout(100000);
+
 describe("listing latest pages", () => {
     const handler = useGqlHandler();
 
@@ -77,9 +79,7 @@ describe("listing latest pages", () => {
                 );
             },
             {
-                name: "list pages in create initial data",
-                tries: 20,
-                wait: 500
+                name: "list pages in create initial data"
             }
         );
 
@@ -100,9 +100,7 @@ describe("listing latest pages", () => {
                 }),
             ([res]) => res.data.pageBuilder.listPages.data[4].title === "page-c",
             {
-                name: "list pages createdOn ASC",
-                wait: 400,
-                tries: 20
+                name: "list pages createdOn ASC"
             }
         );
 
@@ -186,9 +184,7 @@ describe("listing latest pages", () => {
                 return data[0].title === "page-a" && data[9].title === "page-Z";
             },
             {
-                name: "after creating new pages with uppercase titles",
-                wait: 400,
-                tries: 20
+                name: "after creating new pages with uppercase titles"
             }
         );
 
@@ -737,9 +733,7 @@ describe("listing latest pages", () => {
                 return res.data.pageBuilder.listPages.data.length === initialData.pages.length;
             },
             {
-                name: "filtering by tags - list pages after creating initial data",
-                wait: 500,
-                tries: 30
+                name: "filtering by tags - list pages after creating initial data"
             }
         );
 

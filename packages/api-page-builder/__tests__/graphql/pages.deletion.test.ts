@@ -1,7 +1,7 @@
 import useGqlHandler from "./useGqlHandler";
 import { waitPage } from "./utils/waitPage";
 
-jest.setTimeout(25000);
+jest.setTimeout(100000);
 
 describe("deleting pages", () => {
     const handler = useGqlHandler();

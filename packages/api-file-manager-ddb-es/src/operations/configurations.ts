@@ -2,7 +2,7 @@ import { FileManagerContext } from "@webiny/api-file-manager/types";
 
 export default {
     db: () => ({
-        table: process.env.DB_TABLE_FILE_MANGER || process.env.DB_TABLE,
+        table: process.env.DB_TABLE,
         keys: [
             {
                 primary: true,

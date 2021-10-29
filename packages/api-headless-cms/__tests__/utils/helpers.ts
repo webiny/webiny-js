@@ -83,6 +83,12 @@ type UntilOptions = {
     wait?: number;
 };
 
+export const sleep = (ms = 333) => {
+    return new Promise(resolve => {
+        setTimeout(resolve, ms);
+    });
+};
+
 export const until = async (execute, until, options: UntilOptions = {}) => {
     const { name = "NO_NAME", tries = 5, wait = 300 } = options;
 

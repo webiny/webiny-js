@@ -1,6 +1,8 @@
 import useGqlHandler from "./useGqlHandler";
 import { defaultIdentity } from "../tenancySecurity";
 
+jest.setTimeout(100000);
+
 describe("Menus Test", () => {
     const { createMenu, deleteMenu, listMenus, getMenu, updateMenu } = useGqlHandler();
 
