@@ -21,14 +21,7 @@ const getOutputJson = ({ folder, env, cwd }) => {
 
         // Let's get the output after the first line break. Everything before is just yarn stuff.
         const extractedJSON = stdout.substring(stdout.indexOf("{"));
-        const values = JSON.parse(extractedJSON);
-        Object.keys(values).forEach(key => {
-            if (typeof values[key] === "object") {
-                values[key].toString = () => JSON.stringify(values[key]);
-            }
-        });
-        cache[folder + env] = values;
-        return cache[folder + env];
+        return (cache[folder + env] = JSON.parse(extractedJSON));
     } catch (e) {
         return null;
     }
