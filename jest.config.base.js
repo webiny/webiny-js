@@ -1,4 +1,3 @@
-const findUp = require("find-up");
 const { basename } = require("path");
 const merge = require("merge");
 const tsPreset = require("ts-jest/presets/js-with-babel/jest-preset");
