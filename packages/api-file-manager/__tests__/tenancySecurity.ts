@@ -33,7 +33,10 @@ export const createTenancyAndSecurity = ({ permissions, identity }: Config) => {
         }),
         createTenancyGraphQL(),
         createSecurityContext({
-            storageOperations: securityStorageOperations({ documentClient, table: process.env.DB_TABLE })
+            storageOperations: securityStorageOperations({
+                documentClient,
+                table: process.env.DB_TABLE
+            })
         }),
         createSecurityGraphQL(),
         new ContextPlugin<SecurityContext & TenancyContext>(context => {

@@ -33,7 +33,5 @@ export const until = async (execute, until, options: UntilOptions = {}) => {
         });
     }
 
-    throw new Error(
-        `[${name}] Tried ${tries} times but failed.`
-    );
+    throw new Error(`[${name}] Tried ${tries} times but failed.`);
 };

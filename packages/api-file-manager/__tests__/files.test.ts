@@ -118,7 +118,7 @@ describe("Files CRUD test", () => {
                 }
             }
         });
-        
+
         await sleep(2000);
 
         await until(

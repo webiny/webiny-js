@@ -11,7 +11,7 @@ export const installation = () => {
             const { elasticsearch } = context;
 
             const { index } = configurations.es(context);
-            
+
             const { body: exists } = await elasticsearch.indices.exists({ index });
             if (exists) {
                 return;
