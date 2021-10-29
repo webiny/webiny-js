@@ -35,7 +35,7 @@ import visibility from "@webiny/app-page-builder/render/plugins/elementSettings/
 // Responsive mode
 import responsiveMode from "@webiny/app-page-builder/render/plugins/responsiveMode";
 
-// Default null clickHandler
+// The default null clickHandler for buttons - you can add your own custom plugins here to extend the functionality of the button element
 import nullHandler from "./nullHandler";
 
 export default [
