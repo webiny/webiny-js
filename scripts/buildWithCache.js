@@ -67,7 +67,8 @@ async function build() {
                     try {
                         await config.commands.build();
                         resolve();
-                    } catch {
+                    } catch (e) {
+                        console.log(e)
                         reject("Failed build: " + currentPackage.name)
                     }
                 })

@@ -22,7 +22,7 @@ module.exports = async params => {
         await build(params);
     }
 
-    const postbuild = params.options.postbuild || defaults.postbuild;
+    const postbuild = params.options.poqstbuild || defaults.postbuild;
     if (typeof postbuild === "function") {
         await postbuild(params);
     }
@@ -40,32 +40,23 @@ const defaults = {
         log.info("Building...");
         const files = glob.sync(join(config.cwd, "src/**/*.{ts,tsx}").replace(/\\/g, "/"));
 
+        const dtsPromise = new Promise(resolve => {
+            compile(files, {
+                allowJs: true,
+                declaration: true,
+                emitDeclarationOnly: true,
+                skipLibCheck: true
+            });
 
+            resolve();
+        });
 
         const compilations = [];
 
         for (let i = 0; i < files.length; i++) {
             const file = files[i];
             compilations.push(
-                babel
-                    .transformFile(file, {
-                        sourceMaps: true,
-
-                        jsc: {
-                            parser: {
-                                syntax: "typescript"
-                            },
-                            target: "es2020",
-                            paths: {
-                                "~/*": ["./src/*"]
-                            },
-                            baseUrl: "."
-                        },
-                        module: {
-                            type: "commonjs"
-                        }
-                    })
-                    .then(results => [file, results])
+                babel.transformFileAsync(file, { cwd: config.cwd }).then(results => [file, results])
             );
         }
 
@@ -85,12 +76,7 @@ const defaults = {
         }
 
         await Promise.all(writes);
-        compile(files, {
-            allowJs: true,
-            declaration: true,
-            emitDeclarationOnly: true,
-            skipLibCheck: true
-        });
+        await dtsPromise;
     },
     postbuild: ({ config }) => {
         // // Check if `ttypescript` is defined as a devDependency and use that instead of `typescript`.
@@ -99,6 +85,7 @@ const defaults = {
         // const binary = "ttypescript" in (pkg.devDependencies || {}) ? "ttsc" : "tsc";
         // execa.sync("yarn", [binary, "-p", "tsconfig.build.json"], { stdio: "inherit" });
 
+        console.log("ajo,");
         log.info("Copying meta files...");
         copyToDist(config.cwd, "package.json");
         copyToDist(config.cwd, "LICENSE");
