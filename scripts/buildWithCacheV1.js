@@ -29,56 +29,6 @@ const META_FILE_PATH = path.join(CACHE_FOLDER_PATH, "meta.json");
 })();
 
 async function build() {
-    // Lists only packages in "packages" folder (check `lerna.json` config).
-    const packagesList = await execa("lerna", ["list", "--toposort", "--graph"]).then(
-        ({ stdout }) => JSON.parse(stdout)
-    );
-
-    const batches = [[]];
-    for (const packageName in packagesList) {
-        const dependencies = packagesList[packageName];
-        const latestBatch = batches[batches.length - 1];
-        let canEnterCurrentBatch = !dependencies.find(name => latestBatch.includes(name));
-        if (canEnterCurrentBatch) {
-            latestBatch.push(packageName);
-        } else {
-            batches.push([packageName]);
-        }
-    }
-
-    // Only build and cache of TS packages.
-    const workspacesPackages = getPackages({ includes: "/packages/" }).filter(item => item.isTs);
-
-    for (let i = 0; i < batches.length; i++) {
-        const batch = batches[i];
-        const promises = [];
-        for (let j = 0; j < batch.length; j++) {
-            const currentPackage = workspacesPackages.find(item => item.name === batch[j]);
-            if (!currentPackage) {
-                continue;
-            }
-            promises.push(
-                new Promise(async (resolve, reject) => {
-                    console.log("building", currentPackage.name);
-                    const configPath = path
-                        .join(currentPackage.packageFolder, "webiny.config")
-                        .replace(/\\/g, "/");
-                    const config = require(configPath);
-                    try {
-                        await config.commands.build();
-                        resolve();
-                    } catch {
-                        reject("Failed build: " + currentPackage.name)
-                    }
-                })
-            );
-        }
-        await Promise.all(promises);
-
-    }
-}
-
-async function build2() {
     // Only do caching of TS packages.
     const workspacesPackages = getPackages({ includes: "/packages/" }).filter(item => item.isTs);
 
