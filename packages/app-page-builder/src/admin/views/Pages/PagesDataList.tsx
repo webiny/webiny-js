@@ -56,7 +56,7 @@ const InlineLoaderWrapper = styled("div")({
 const Actions = styled("div")({
     display: "flex",
     justifyContent: "flex-end",
-    "& button:not(:first-child)": {
+    "& button:not(:first-of-type)": {
         marginLeft: 16
     }
 });
