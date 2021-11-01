@@ -1,14 +1,14 @@
+import { QueueJob } from "~/types";
+
 const mocks = {
-    job: index => {
+    job: (index: string): QueueJob => {
         return {
-            PK: "PS#Q#JOB",
-            SK: `job-id-${index}`,
-            TYPE: "ps.queue.job",
+            id: index,
             args: {
                 render: {
                     configuration: {
                         db: {
-                            namespace: "T#root"
+                            namespace: "root"
                         }
                     },
                     tag: {
