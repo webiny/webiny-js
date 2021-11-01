@@ -63,7 +63,7 @@ jobs:
         run: node scripts/buildWithCache.js --build-overrides='${{ env.BUILD_OVERRIDES }}'
 
   code-analysis:
-    needs: cache-dependencies-packages
+    needs: [cache-dependencies-packages, cache-keys]
     name: Static code analysis
     runs-on: ubuntu-latest
     steps:
@@ -121,7 +121,7 @@ jobs:
         run: node scripts/buildWithCache.js
 
   jest-tests:
-    needs: cache-dependencies-packages
+    needs: [cache-dependencies-packages, cache-keys]
     name: Jest tests
     strategy:
       fail-fast: false
@@ -156,7 +156,7 @@ jobs:
         run: yarn test
 
   verdaccio-publish:
-    needs: cache-dependencies-packages
+    needs: [cache-dependencies-packages, cache-keys]
     name: Publish to Verdaccio
     runs-on: ubuntu-latest
     steps:
