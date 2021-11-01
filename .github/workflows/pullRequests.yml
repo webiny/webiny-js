@@ -100,7 +100,7 @@ jobs:
 
   code-analysis-typescript:
     needs: cache-dependencies-packages
-    name: Static code analysis
+    name: Static code analysis (TypeScript)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/setup-node@v2
