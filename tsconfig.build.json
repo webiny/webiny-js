@@ -13,7 +13,6 @@
     "noEmit": false,
     "jsx": "preserve",
     "emitDeclarationOnly": true,
-    "skipLibCheck": true,
     "baseUrl": ".",
     "paths": {},
     "typeRoots": ["./typings", "./node_modules/@types", "@types/testing-library__cypress"],
