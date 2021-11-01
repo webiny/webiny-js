@@ -8,6 +8,21 @@ env:
   NODE_OPTIONS: --max_old_space_size=4096
 
 jobs:
+  cache-keys:
+    name: Create cache keys
+    runs-on: ubuntu-latest
+    outputs:
+      day: ${{ steps.create-cache-keys.outputs.day }}
+      ts: ${{ steps.create-timestamp.outputs.ts }}
+    steps:
+      - name: Create cache key (day)
+        id: create-cache-keys
+        run: echo "::set-output name=day::$(node --eval "console.log(new Date().getDate() + new Date().getDate())")"
+
+      - name: Create timestamp
+        id: create-timestamp
+        run: echo "::set-output name=ts::$(node --eval "console.log(new Date().getTime())")"
+
   validate-commits:
     name: Validate commit messages
     runs-on: ubuntu-latest
@@ -16,6 +31,7 @@ jobs:
       - uses: webiny/action-conventional-commits@v1.0.3
 
   cache-dependencies-packages:
+    needs: cache-keys
     name: Cache dependencies and packages
     runs-on: ubuntu-latest
     steps:
