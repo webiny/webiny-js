@@ -1,10 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
-import { useMutation, useQuery } from "@apollo/react-hooks";
-import get from "lodash/get";
-import { MenuItem } from "@webiny/ui/Menu";
-import { ListItemGraphic } from "@webiny/ui/List";
-import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
-import { Icon } from "@webiny/ui/Icon";
+import React from "react";
 import { IconButton } from "@webiny/ui/Button";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { i18n } from "@webiny/app/i18n";
