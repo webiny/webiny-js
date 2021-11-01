@@ -98,7 +98,7 @@ const tsCompile = params => {
 
                 if (params.options.debug) {
                     log.info(`${log.info.hl("tsconfig.build.json")} overridden. New config:`);
-                    console.log(readTsConfig)
+                    console.log(readTsConfig);
                 }
             }
         }
