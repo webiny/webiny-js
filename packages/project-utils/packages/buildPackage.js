@@ -82,21 +82,26 @@ const babelCompile = async ({ config }) => {
 
 const tsCompile = params => {
     return new Promise((resolve, reject) => {
-        const { config: readTsConfig } = ts.readConfigFile(
+        let { config: readTsConfig } = ts.readConfigFile(
             join(params.config.cwd, "tsconfig.build.json"),
             ts.sys.readFile
         );
 
-        if (params.options.tsConfigOverrides) {
+        if (params.options.tsConfig) {
             if (params.options.debug) {
                 log.info(
                     `Overriding retrieved ${log.info.hl(
                         "tsconfig.build.json"
                     )} file with the following:`
                 );
-                console.log(params.options.tsConfigOverrides);
+                console.log(params.options.tsConfig);
             }
-            merge(readTsConfig, params.options.tsConfigOverrides);
+
+            if (typeof params.options.tsConfig === "function") {
+                readTsConfig = params.options.tsConfig(readTsConfig);
+            } else {
+                merge(readTsConfig, params.options.tsConfig);
+            }
         }
 
         const parsedJsonConfigFile = ts.parseJsonConfigFileContent(
