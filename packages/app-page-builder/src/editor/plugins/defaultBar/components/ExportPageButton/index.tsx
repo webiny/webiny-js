@@ -33,7 +33,8 @@ export const ExportPagesButton = ({ getMultiSelected, filterArgs }) => {
                 onClick={() => {
                     showExportPageRevisionSelectorDialog({
                         onAccept: () =>
-                            showExportPageInitializeDialog({ ids: selected, filterArgs })
+                            showExportPageInitializeDialog({ ids: selected, filterArgs }),
+                        selected
                     });
                 }}
             />
