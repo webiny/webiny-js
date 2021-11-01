@@ -5,6 +5,7 @@ const { log } = require("@webiny/cli/utils");
 const babel = require("@babel/core");
 const ts = require("ttypescript");
 const glob = require("glob");
+const merge = require("lodash/merge");
 
 module.exports = async params => {
     const start = new Date();
@@ -79,18 +80,32 @@ const babelCompile = async ({ config }) => {
     return Promise.all(writes);
 };
 
-const tsCompile = ({ config }) => {
+const tsCompile = params => {
     return new Promise((resolve, reject) => {
         const { config: readTsConfig } = ts.readConfigFile(
-            join(config.cwd, "tsconfig.build.json"),
+            join(params.config.cwd, "tsconfig.build.json"),
             ts.sys.readFile
         );
 
-        const { options, fileNames, errors, projectReferences } = ts.parseJsonConfigFileContent(
+        if (params.options.tsConfigOverrides) {
+            if (params.options.debug) {
+                log.info(
+                    `Overriding retrieved ${log.info.hl(
+                        "tsconfig.build.json"
+                    )} file with the following:`
+                );
+                console.log(params.options.tsConfigOverrides);
+            }
+            merge(readTsConfig, params.options.tsConfigOverrides);
+        }
+
+        const parsedJsonConfigFile = ts.parseJsonConfigFileContent(
             readTsConfig,
             ts.sys,
-            config.cwd
+            params.config.cwd
         );
+
+        const { projectReferences, options, fileNames, errors } = parsedJsonConfigFile;
 
         const program = ts.createProgram({
             projectReferences,
