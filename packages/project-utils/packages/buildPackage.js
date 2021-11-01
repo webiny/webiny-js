@@ -8,9 +8,6 @@ const glob = require("glob");
 
 module.exports = async params => {
     const start = new Date();
-    const getDuration = () => {
-        return (new Date() - start) / 1000;
-    };
 
     const prebuild = params.options.prebuild || defaults.prebuild;
     if (typeof prebuild === "function") {
@@ -27,24 +24,29 @@ module.exports = async params => {
         await postbuild(params);
     }
 
-    log.info(`Done! Build finished in ${log.info.hl(getDuration() + "s")}.`);
+    const duration = (new Date() - start) / 1000;
+    params.options.debug === true &&
+        log.info(`Done! Build finished in ${log.info.hl(duration + "s")}.`);
+
+    return { duration };
 };
 
 const defaults = {
-    prebuild: ({ config }) => {
-        log.info("Deleting existing build files...");
+    prebuild: params => {
+        const { config } = params;
+        params.options.debug === true && log.info("Deleting existing build files...");
         rimraf.sync(join(config.cwd, "./dist"));
         rimraf.sync(join(config.cwd, "*.tsbuildinfo"));
     },
     build: async params => {
-        log.info("Building...");
+        params.options.debug === true && log.info("Building...");
         await Promise.all([tsCompile(params), babelCompile(params)]);
     },
-    postbuild: ({ config }) => {
-        log.info("Copying meta files...");
-        copyToDist(config.cwd, "package.json");
-        copyToDist(config.cwd, "LICENSE");
-        copyToDist(config.cwd, "README.md");
+    postbuild: params => {
+        params.options.debug === true && log.info("Copying meta files...");
+        copyToDist("package.json", params);
+        copyToDist("LICENSE", params);
+        copyToDist("README.md", params);
     }
 };
 
@@ -121,11 +123,11 @@ const tsCompile = ({ config }) => {
     });
 };
 
-const copyToDist = (cwd, path) => {
-    const from = join(cwd, path);
-    const to = join(cwd, "dist", path);
+const copyToDist = (path, { config, options }) => {
+    const from = join(config.cwd, path);
+    const to = join(config.cwd, "dist", path);
     if (fs.existsSync(from)) {
         fs.copyFileSync(from, to);
-        log.info(`Copied ${log.info.hl(path)}.`);
+        options.debug === true && log.info(`Copied ${log.info.hl(path)}.`);
     }
 };
