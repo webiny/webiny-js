@@ -159,11 +159,14 @@ async function build() {
 
         const batchStart = new Date();
         console.log(
-            green(`[${i + 1}/${batches.length}]` + ` ${green(batch.length)} package(s) to build...`)
+            green(`[${i + 1}/${batches.length}]`) + ` ${green(batch.length)} package(s) to build:`
         );
+
         const promises = [];
         for (let j = 0; j < batch.length; j++) {
+
             const currentPackage = workspacesPackages.find(item => item.name === batch[j]);
+            console.log(`‣ ${currentPackage.packageJson.name}`)
             promises.push(
                 new Promise(async (resolve, reject) => {
                     const configPath = path
@@ -187,7 +190,6 @@ async function build() {
                         metaJson.packages[currentPackage.packageJson.name] = { sourceHash };
 
                         writeJson.sync(META_FILE_PATH, metaJson);
-
                         resolve();
                     } catch (e) {
                         console.log(e);
