@@ -23,6 +23,8 @@ const NOT_AUTHORIZED_RESPONSE = operation => ({
     }
 });
 
+jest.setTimeout(100000);
+
 describe("Categories Security Test", () => {
     const { createCategory } = useGqlHandler({
         permissions: [{ name: "content.i18n" }, { name: "pb.*" }],

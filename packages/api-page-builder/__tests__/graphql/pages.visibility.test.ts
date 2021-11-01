@@ -1,5 +1,7 @@
 import useGqlHandler from "./useGqlHandler";
 
+jest.setTimeout(100000);
+
 describe("page visibility test", () => {
     const {
         createCategory,

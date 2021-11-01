@@ -29,6 +29,8 @@ const createBMenus = async () => {
     await handler.createMenu({ data: new Mock("list-menus-4-") });
 };
 
+jest.setTimeout(100000);
+
 describe("Menus Security Test", () => {
     const insufficientPermissions = [
         [[], null],

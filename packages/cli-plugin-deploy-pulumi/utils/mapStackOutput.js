@@ -15,7 +15,12 @@ module.exports = (output, map) => {
                 console.log(yellow(`Could not map "${valuePath}" to "${key}" - value missing.`));
                 return;
             }
-            values[key] = valuePattern.replace(replace, value);
+
+            if (typeof value === "object" && value !== null) {
+                values[key] = valuePattern.replace(replace, JSON.stringify(value));
+            } else {
+                values[key] = valuePattern.replace(replace, value);
+            }
         }
     });
 

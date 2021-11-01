@@ -5,6 +5,8 @@ import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
 import { useArticleManageHandler } from "../utils/useArticleManageHandler";
 import { useArticleReadHandler } from "../utils/useArticleReadHandler";
 
+jest.setTimeout(100000);
+
 describe("latest entries", function () {
     const manageOpts = { path: "manage/en-US" };
     const previewOpts = { path: "preview/en-US" };

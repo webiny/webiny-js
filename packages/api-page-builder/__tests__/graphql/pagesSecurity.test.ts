@@ -2,12 +2,12 @@ import useGqlHandler from "./useGqlHandler";
 import { identityA, identityB, NOT_AUTHORIZED_RESPONSE } from "./mocks";
 import mdbid from "mdbid";
 
-jest.setTimeout(15000);
-
 const defaultHandler = useGqlHandler({
     permissions: [{ name: "content.i18n" }, { name: "pb.*" }],
     identity: identityA
 });
+
+jest.setTimeout(100000);
 
 describe("Pages Security Test", () => {
     const { createCategory, until } = useGqlHandler();

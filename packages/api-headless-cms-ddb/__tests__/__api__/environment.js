@@ -13,21 +13,6 @@ if (typeof plugins !== "function") {
     throw new Error(`Loaded plugins file must export a function that returns an array of plugins.`);
 }
 
-const getStorageOperationsPlugins = ({ documentClient }) => {
-    return () => {
-        return [
-            plugins(),
-            dbPlugins({
-                table: process.env.DB_TABLE,
-                driver: new DynamoDbDriver({
-                    documentClient
-                })
-            }),
-            ...dynamoDbPlugins()
-        ];
-    };
-};
-
 class CmsTestEnvironment extends NodeEnvironment {
     async setup() {
         await super.setup();
@@ -44,9 +29,18 @@ class CmsTestEnvironment extends NodeEnvironment {
          * This is a global function that will be called inside the tests to get all relevant plugins, methods and objects.
          */
         this.global.__getStorageOperationsPlugins = () => {
-            return getStorageOperationsPlugins({
-                documentClient
-            });
+            return () => {
+                return [
+                    plugins(),
+                    dbPlugins({
+                        table: process.env.DB_TABLE,
+                        driver: new DynamoDbDriver({
+                            documentClient
+                        })
+                    }),
+                    ...dynamoDbPlugins()
+                ];
+            };
         };
     }
 }

@@ -266,7 +266,7 @@ export interface ApiKey {
     permissions: SecurityPermission[];
     createdBy: CreatedBy;
     createdOn: string;
-    webinyVersion: string;
+    webinyVersion?: string;
 }
 
 export interface ApiKeyInput {

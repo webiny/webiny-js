@@ -3,8 +3,8 @@ import uniqid from "uniqid";
 const sort = {
     NEWEST_TO_OLDEST: "createdOn:desc",
     OLDEST_TO_NEWEST: "createdOn:asc",
-    LOGIN_A_TO_Z: "email:asc",
-    LOGIN_Z_TO_A: "email:desc"
+    EMAIL_A_TO_Z: "email:asc",
+    EMAIL_Z_TO_A: "email:desc"
 };
 
 context("Search and sort security users", () => {
@@ -90,7 +90,7 @@ context("Search and sort security users", () => {
         // Sort users from "email A -> Z"
         cy.findByTestId("default-data-list.filter").click();
         cy.findByTestId("ui.list.data-list").within(() => {
-            cy.get("select").select(sort.LOGIN_A_TO_Z);
+            cy.get("select").select(sort.EMAIL_A_TO_Z);
             cy.findByTestId("default-data-list.filter").click();
         });
 
@@ -105,7 +105,7 @@ context("Search and sort security users", () => {
         // Sort users from "email Z -> A"
         cy.findByTestId("default-data-list.filter").click();
         cy.findByTestId("ui.list.data-list").within(() => {
-            cy.get("select").select(sort.LOGIN_Z_TO_A);
+            cy.get("select").select(sort.EMAIL_Z_TO_A);
             cy.findByTestId("default-data-list.filter").click();
         });
         // We're testing it against the second element because the first one will be "Admin" user

@@ -1,6 +1,6 @@
 export default {
     db: () => ({
-        table: process.env.DB_TABLE_I18N || process.env.DB_TABLE,
+        table: process.env.DB_TABLE,
         keys: [
             {
                 primary: true,

@@ -5,8 +5,6 @@ import { identityB } from "./mocks";
 
 const sort: string[] = ["createdOn_DESC"];
 
-jest.setTimeout(50000);
-
 const content = [
     {
         type: "heading",

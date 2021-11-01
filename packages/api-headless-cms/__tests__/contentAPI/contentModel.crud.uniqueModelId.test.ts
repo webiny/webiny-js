@@ -2,8 +2,6 @@ import { CmsContentModelGroup } from "../../src/types";
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
 import { hooksTracker } from "./mocks/lifecycleHooks";
 
-jest.setTimeout(15000);
-
 describe("content model test", () => {
     const manageHandlerOpts = { path: "manage/en-US" };
 

@@ -5,7 +5,7 @@ export interface UntilOptions {
 }
 
 export const until = async (execute, until, options: UntilOptions = {}) => {
-    const { name = "NO_NAME", tries = 5, wait = 300 } = options;
+    const { name = "NO_NAME", tries = 10, wait = 1000 } = options;
 
     let result;
     let triesCount = 0;
@@ -33,11 +33,5 @@ export const until = async (execute, until, options: UntilOptions = {}) => {
         });
     }
 
-    throw new Error(
-        `[${name}] Tried ${tries} times but failed. Last result that was received: ${JSON.stringify(
-            result,
-            null,
-            2
-        )}`
-    );
+    throw new Error(`[${name}] Tried ${tries} times but failed.`);
 };

@@ -10,6 +10,9 @@ const NodeEnvironment = require("jest-environment-node");
 const elasticsearchDataGzipCompression =
     require("@webiny/api-elasticsearch/plugins/GzipCompression").default;
 const { ContextPlugin } = require("@webiny/handler/plugins/ContextPlugin");
+const {
+    elasticIndexManager
+} = require("@webiny/project-utils/testing/helpers/elasticIndexManager");
 /**
  * For this to work it must load plugins that have already been built
  */
@@ -109,11 +112,7 @@ class CmsTestEnvironment extends NodeEnvironment {
             endpoint: `http://localhost:${ELASTICSEARCH_PORT}`,
             auth: {}
         });
-        const clearEsIndices = async () => {
-            return elasticsearchClient.indices.delete({
-                index: "_all"
-            });
-        };
+
         /**
          * This is a global function that will be called inside the tests to get all relevant plugins, methods and objects.
          */
@@ -124,10 +123,8 @@ class CmsTestEnvironment extends NodeEnvironment {
                 documentClient
             });
         };
-        this.global.__beforeEach = clearEsIndices;
-        this.global.__afterEach = clearEsIndices;
-        this.global.__beforeAll = clearEsIndices;
-        this.global.__afterAll = clearEsIndices;
+
+        elasticIndexManager(this.global, elasticsearchClient);
     }
 }
 

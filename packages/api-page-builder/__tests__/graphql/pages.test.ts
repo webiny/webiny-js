@@ -2,7 +2,7 @@ import useGqlHandler from "./useGqlHandler";
 import { waitPage } from "./utils/waitPage";
 import { defaultIdentity } from "../tenancySecurity";
 
-jest.setTimeout(25000);
+jest.setTimeout(100000);
 
 describe("CRUD Test", () => {
     const handler = useGqlHandler();

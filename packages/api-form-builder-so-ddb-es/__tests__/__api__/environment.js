@@ -16,6 +16,9 @@ const { getElasticsearchOperators } = require("@webiny/api-elasticsearch/operato
  * For this to work it must load plugins that have already been built
  */
 const { createFormBuilderStorageOperations } = require("../../dist/index");
+const {
+    elasticIndexManager
+} = require("@webiny/project-utils/testing/helpers/elasticIndexManager");
 
 if (typeof createFormBuilderStorageOperations !== "function") {
     throw new Error(
@@ -54,11 +57,6 @@ class FormBuilderTestEnvironment extends NodeEnvironment {
         });
         simulateStream(documentClient, createHandler(simulationContext, dynamoToElastic()));
 
-        const clearEsIndices = async () => {
-            return elasticsearchClient.indices.delete({
-                index: "_all"
-            });
-        };
         /**
          * This is a global function that will be called inside the tests to get all relevant plugins, methods and objects.
          */
@@ -94,10 +92,9 @@ class FormBuilderTestEnvironment extends NodeEnvironment {
                 }
             };
         };
-        this.global.__beforeEach = clearEsIndices;
-        this.global.__afterEach = clearEsIndices;
-        this.global.__beforeAll = clearEsIndices;
-        this.global.__afterAll = clearEsIndices;
+
+        // Each test should work with its own ES index, and only those indexes have to be deleted.
+        elasticIndexManager(this.global, elasticsearchClient);
     }
 }
 

@@ -3,7 +3,7 @@ import { identityA, identityB, NOT_AUTHORIZED_RESPONSE } from "./mocks";
 import { SecurityIdentity } from "@webiny/api-security";
 import { Page } from "~/types";
 
-jest.setTimeout(25000);
+jest.setTimeout(100000);
 
 describe("publishing workflow", () => {
     const {

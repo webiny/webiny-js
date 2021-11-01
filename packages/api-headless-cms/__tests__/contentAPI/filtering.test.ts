@@ -8,8 +8,6 @@ import { useArticleManageHandler } from "../utils/useArticleManageHandler";
 import { useArticleReadHandler } from "../utils/useArticleReadHandler";
 import { setupContentModelGroup, setupContentModels } from "../utils/setup";
 
-jest.setTimeout(25000);
-
 const appleData = {
     name: "Apple",
     isSomething: false,
@@ -54,6 +52,8 @@ const bananaData = {
     dateTimeZ: "2020-12-03T14:52:41+01:00",
     time: "11:59:01"
 };
+
+jest.setTimeout(100000);
 
 describe("filtering", () => {
     const manageOpts = { path: "manage/en-US" };
