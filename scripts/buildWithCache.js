@@ -147,9 +147,28 @@ async function build() {
     }
 
     console.log();
-    console.log(`Starting build...`);
+
     if (batches.length > 1) {
         console.log(`The build process will be performed in ${green(batches.length)} batches.`);
+    }
+
+    let buildOverrides = {};
+    if (argv.buildOverrides) {
+        try {
+            buildOverrides = JSON.parse(argv.buildOverrides);
+            if (argv.debug) {
+                console.log(
+                    `The following overrides will be passed upon calling the package's ${green(
+                        "build"
+                    )} command:`
+                );
+
+                // Stringify it just for the improved formatting.
+                console.log(green(JSON.stringify(buildOverrides, null, 2)));
+            }
+        } catch (e) {
+            console.log("Warning: could not JSON.parse passed build overrides.");
+        }
     }
 
     console.log();
@@ -173,7 +192,12 @@ async function build() {
                         .replace(/\\/g, "/");
                     const config = require(configPath);
                     try {
-                        await config.commands.build({ logs: false });
+                        await config.commands.build({
+                            logs: false,
+                            debug: false,
+                            ...buildOverrides
+                            // We don't want debug nor regular logs logged within the build command.
+                        });
 
                         // Copy and paste built code into the cache folder.
                         const cacheFolderPath = path.join(
