@@ -25,7 +25,7 @@ module.exports = async params => {
     }
 
     const duration = (new Date() - start) / 1000;
-    params.options.debug === true &&
+    params.options.logs !== false &&
         log.info(`Done! Build finished in ${log.info.hl(duration + "s")}.`);
 
     return { duration };
@@ -34,16 +34,16 @@ module.exports = async params => {
 const defaults = {
     prebuild: params => {
         const { config } = params;
-        params.options.debug === true && log.info("Deleting existing build files...");
+        params.options.logs !== false && log.info("Deleting existing build files...");
         rimraf.sync(join(config.cwd, "./dist"));
         rimraf.sync(join(config.cwd, "*.tsbuildinfo"));
     },
     build: async params => {
-        params.options.debug === true && log.info("Building...");
+        params.options.logs !== false && log.info("Building...");
         await Promise.all([tsCompile(params), babelCompile(params)]);
     },
     postbuild: params => {
-        params.options.debug === true && log.info("Copying meta files...");
+        params.options.logs !== false && log.info("Copying meta files...");
         copyToDist("package.json", params);
         copyToDist("LICENSE", params);
         copyToDist("README.md", params);
@@ -128,6 +128,6 @@ const copyToDist = (path, { config, options }) => {
     const to = join(config.cwd, "dist", path);
     if (fs.existsSync(from)) {
         fs.copyFileSync(from, to);
-        options.debug === true && log.info(`Copied ${log.info.hl(path)}.`);
+        options.logs !== false && log.info(`Copied ${log.info.hl(path)}.`);
     }
 };

@@ -164,9 +164,8 @@ async function build() {
 
         const promises = [];
         for (let j = 0; j < batch.length; j++) {
-
             const currentPackage = workspacesPackages.find(item => item.name === batch[j]);
-            console.log(`‣ ${currentPackage.packageJson.name}`)
+            console.log(`‣ ${currentPackage.packageJson.name}`);
             promises.push(
                 new Promise(async (resolve, reject) => {
                     const configPath = path
@@ -174,7 +173,7 @@ async function build() {
                         .replace(/\\/g, "/");
                     const config = require(configPath);
                     try {
-                        await config.commands.build();
+                        await config.commands.build({ logs: false });
 
                         // Copy and paste built code into the cache folder.
                         const cacheFolderPath = path.join(
