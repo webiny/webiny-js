@@ -50,15 +50,14 @@ export default (
             const { task, category, data, identity } = args;
             mockSecurity(identity, context);
             // Step 1: Read the zip file
-            const pagesDirMap = await readExtractAndUploadZipFileContents(
+            const pageImportDataList = await readExtractAndUploadZipFileContents(
                 data.zipFileKey || data.zipFileUrl
             );
             // Once we have map we can start processing each page
-            const pageKeys = Object.keys(pagesDirMap);
 
             // For each page create a sub task and invoke the process handler
-            for (let i = 0; i < pageKeys.length; i++) {
-                const pageKey = pageKeys[i];
+            for (let i = 0; i < pageImportDataList.length; i++) {
+                const pagesDirMap = pageImportDataList[i];
                 // Create sub task
                 const subtask = await pageBuilder.pageImportExportTask.createSubTask(
                     task.id,
@@ -66,11 +65,11 @@ export default (
                     {
                         status: PageImportExportTaskStatus.PENDING,
                         data: {
-                            pageKey,
+                            pageKey: pagesDirMap.key,
                             category,
                             zipFileKey: data.zipFileKey,
                             input: {
-                                fileUploadsData: pagesDirMap[pageKey]
+                                fileUploadsData: pagesDirMap
                             }
                         }
                     }
@@ -80,7 +79,7 @@ export default (
             // Update main task status
             await pageBuilder.pageImportExportTask.updateTask(task.id, {
                 status: PageImportExportTaskStatus.PROCESSING,
-                stats: initialStats(pageKeys.length)
+                stats: initialStats(pageImportDataList.length)
             });
 
             await invokeHandlerClient<ProcessHandlerArgs>({
