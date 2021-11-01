@@ -21,7 +21,6 @@ const paths = {
 const files = {
     apiGraphQL: `${paths.apiGraphQL}/src/index.ts`,
     apiHeadlessCms: `${paths.apiHeadlessCms}/src/index.ts`,
-    appAdminComponentsGetIdentityData: `${paths.appsAdminCode}/src/components/getIdentityData.ts`,
     appAdminPluginsIndex: `${paths.appsAdminCode}/src/plugins/index.ts`,
     appAdminPluginsSecurity: `${paths.appsAdminCode}/src/plugins/security.ts`,
     appAdminApp: `${paths.appsAdminCode}/src/App.tsx`,
@@ -192,10 +191,11 @@ const upgradeAdminComponents = (project, context) => {
     const { info } = context;
     info(`Upgrading ${info.hl(paths.appsAdminCode)}/src/components`);
 
+    const file = `${paths.appsAdminCode}/src/components/getIdentityData.ts`;
     /**
      * Remove the getIdentityFile
      */
-    deleteFiles(context, [files.appAdminComponentsGetIdentityData]);
+    deleteFiles(context, [file]);
 };
 
 /**
