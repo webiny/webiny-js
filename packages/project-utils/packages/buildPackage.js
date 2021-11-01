@@ -3,7 +3,7 @@ const rimraf = require("rimraf");
 const { join, dirname } = require("path");
 const { log } = require("@webiny/cli/utils");
 const babel = require("@babel/core");
-const ts = require("typescript");
+const ts = require("ttypescript");
 const glob = require("glob");
 
 module.exports = async params => {
@@ -22,7 +22,7 @@ module.exports = async params => {
         await build(params);
     }
 
-    const postbuild = params.options.poqstbuild || defaults.postbuild;
+    const postbuild = params.options.postbuild || defaults.postbuild;
     if (typeof postbuild === "function") {
         await postbuild(params);
     }
@@ -36,61 +36,89 @@ const defaults = {
         rimraf.sync(join(config.cwd, "./dist"));
         rimraf.sync(join(config.cwd, "*.tsbuildinfo"));
     },
-    build: async ({ config }) => {
+    build: async params => {
         log.info("Building...");
-        const files = glob.sync(join(config.cwd, "src/**/*.{ts,tsx}").replace(/\\/g, "/"));
-
-        const dtsPromise = new Promise(resolve => {
-            compile(files, {
-                allowJs: true,
-                declaration: true,
-                emitDeclarationOnly: true,
-                skipLibCheck: true
-            });
-
-            resolve();
-        });
-
-        const compilations = [];
-
-        for (let i = 0; i < files.length; i++) {
-            const file = files[i];
-            compilations.push(
-                babel.transformFileAsync(file, { cwd: config.cwd }).then(results => [file, results])
-            );
-        }
-
-        await Promise.all(compilations);
-
-        const writes = [];
-        for (let i = 0; i < compilations.length; i++) {
-            const [file, { code, map }] = await compilations[i];
-
-            const paths = {
-                code: file.replace("src", "dist").replace(".ts", ".js"),
-                map: file.replace("src", "dist").replace(".ts", ".js") + ".map"
-            };
-            fs.mkdirSync(dirname(paths.code), { recursive: true });
-            writes.push(fs.promises.writeFile(paths.code, code, "utf8"));
-            writes.push(paths.map, map, "utf8");
-        }
-
-        await Promise.all(writes);
-        await dtsPromise;
+        await Promise.all([tsCompile(params), babelCompile(params)]);
     },
     postbuild: ({ config }) => {
-        // // Check if `ttypescript` is defined as a devDependency and use that instead of `typescript`.
-        // const pkg = require(join(process.cwd(), "package.json"));
-        // log.info("Generating TypeScript types...");
-        // const binary = "ttypescript" in (pkg.devDependencies || {}) ? "ttsc" : "tsc";
-        // execa.sync("yarn", [binary, "-p", "tsconfig.build.json"], { stdio: "inherit" });
-
-        console.log("ajo,");
         log.info("Copying meta files...");
         copyToDist(config.cwd, "package.json");
         copyToDist(config.cwd, "LICENSE");
         copyToDist(config.cwd, "README.md");
     }
+};
+
+const babelCompile = async ({ config }) => {
+    const files = glob.sync(join(config.cwd, "src/**/*.{ts,tsx}").replace(/\\/g, "/"));
+    const compilations = [];
+
+    for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        compilations.push(
+            babel.transformFileAsync(file, { cwd: config.cwd }).then(results => [file, results])
+        );
+    }
+
+    await Promise.all(compilations);
+
+    const writes = [];
+    for (let i = 0; i < compilations.length; i++) {
+        const [file, { code, map }] = await compilations[i];
+
+        const paths = {
+            code: file.replace("src", "dist").replace(".ts", ".js"),
+            map: file.replace("src", "dist").replace(".ts", ".js") + ".map"
+        };
+        fs.mkdirSync(dirname(paths.code), { recursive: true });
+        writes.push(fs.promises.writeFile(paths.code, code, "utf8"));
+        writes.push(paths.map, map, "utf8");
+    }
+
+    return Promise.all(writes);
+};
+
+const tsCompile = ({ config }) => {
+    return new Promise((resolve, reject) => {
+        const { config: readTsConfig } = ts.readConfigFile(
+            join(config.cwd, "tsconfig.build.json"),
+            ts.sys.readFile
+        );
+
+        const { options, fileNames, errors, projectReferences } = ts.parseJsonConfigFileContent(
+            readTsConfig,
+            ts.sys,
+            config.cwd
+        );
+
+        const program = ts.createProgram({
+            projectReferences,
+            options,
+            rootNames: fileNames,
+            configFileParsingDiagnostics: errors
+        });
+
+        const { diagnostics, emitSkipped } = program.emit();
+
+        const allDiagnostics = ts.getPreEmitDiagnostics(program).concat(diagnostics, errors);
+
+        if (allDiagnostics.length) {
+            const formatHost = {
+                getCanonicalFileName: path => path,
+                getCurrentDirectory: ts.sys.getCurrentDirectory,
+                getNewLine: () => ts.sys.newLine
+            };
+            const message = ts.formatDiagnostics(allDiagnostics, formatHost);
+            if (message) {
+                return reject({ message });
+            }
+        }
+
+        if (emitSkipped) {
+            return reject({ message: "TypeScript compilation failed." });
+        }
+
+        resolve();
+    });
 };
 
 const copyToDist = (cwd, path) => {
@@ -101,17 +129,3 @@ const copyToDist = (cwd, path) => {
         log.info(`Copied ${log.info.hl(path)}.`);
     }
 };
-
-function compile(fileNames, options) {
-    // Create a Program with an in-memory emit
-    const host = ts.createCompilerHost(options);
-    host.writeFile = (fileName, contents) => {
-        const dtsPath = fileName.replace("src", "dist");
-        fs.mkdirSync(dirname(dtsPath), { recursive: true });
-        fs.writeFileSync(dtsPath, contents, "utf8");
-    };
-
-    // Prepare and emit the d.ts files
-    const program = ts.createProgram(fileNames, options, host);
-    program.emit();
-}

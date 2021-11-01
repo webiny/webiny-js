@@ -30,9 +30,11 @@ interface FunctionBuildOptions {
 }
 
 interface PackageBuildOptions {
-    prebuild?: (options: PackageBuildOptions, context: any) => Promise<void>;
-    build?: (options: PackageBuildOptions, context: any) => Promise<void>;
-    postbuild?: (options: PackageBuildOptions, context: any) => Promise<void>;
+    cwd: string;
+}
+
+interface PackageWatchOptions {
+    cwd: string;
 }
 
 export function startApp(options: AppBuildOptions, context: any): Promise<void>;
@@ -40,5 +42,5 @@ export function buildApp(options: AppBuildOptions, context: any): Promise<void>;
 export function buildFunction(options: FunctionBuildOptions, context: any): Promise<void>;
 export function watchFunction(options: FunctionBuildOptions, context: any): Promise<void>;
 export function buildPackage(options: PackageBuildOptions, context: any): Promise<void>;
-export function watchPackage(): Promise<void>;
+export function watchPackage(options: PackageWatchOptions): Promise<void>;
 export function traverseLoaders(loaders: Loader[], onLoader: (loader: Loader) => void): void;
