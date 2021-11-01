@@ -127,7 +127,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        node: [12, 14]
+        node: [14]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/setup-node@v2
@@ -148,6 +148,12 @@ jobs:
 
       - name: Install dependencies
         run: yarn --immutable
+
+      - name: List dirs
+        run: ls -alh
+
+      - name: List dirs
+        run: cd packages && ls -alh
 
       - name: Build packages
         run: node scripts/buildWithCache.js --build-overrides='${{ env.BUILD_OVERRIDES }}'
