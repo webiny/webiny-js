@@ -6,6 +6,7 @@ on:
 
 env:
   NODE_OPTIONS: --max_old_space_size=4096
+  BUILD_OVERRIDES: '{"tsConfig":{"compilerOptions":{"skipLibCheck":true}}}'
 
 jobs:
   cache-keys:
@@ -59,7 +60,7 @@ jobs:
 
       - name: Build packages
         if: steps.cached-packages.outputs.cache-hit != 'true'
-        run: node scripts/buildWithCache.js
+        run: node scripts/buildWithCache.js --build-overrides='${{ env.BUILD_OVERRIDES }}'
 
   code-analysis:
     needs: cache-dependencies-packages
@@ -97,6 +98,28 @@ jobs:
       - name: ESLint
         run: yarn eslint
 
+  code-analysis-typescript:
+    needs: cache-dependencies-packages
+    name: Static code analysis
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 12
+
+      - uses: actions/checkout@v2
+
+      - uses: actions/cache@v2
+        with:
+          path: .yarn/cache
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+
+      - name: Install dependencies
+        run: yarn --immutable
+
+      - name: Build packages (without BUILD_OVERRIDES)
+        run: node scripts/buildWithCache.js
+
   jest-tests:
     needs: cache-dependencies-packages
     name: Jest tests
@@ -127,7 +150,7 @@ jobs:
         run: yarn --immutable
 
       - name: Build packages
-        run: node scripts/buildWithCache.js
+        run: node scripts/buildWithCache.js --build-overrides='${{ env.BUILD_OVERRIDES }}'
 
       - name: Run tests
         run: yarn test
