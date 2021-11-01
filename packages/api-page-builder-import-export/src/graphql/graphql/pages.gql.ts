@@ -35,11 +35,18 @@ const plugin: GraphQLSchemaPlugin<PbPageImportExportContext> = {
                 zipFileUrl: String
             }
 
+            input PbExportPagesFilterArgs {
+                where: PbListPagesWhereInput
+                sort: [PbListPagesSort!]
+                search: PbListPagesSearchInput
+            }
+
             extend type PbMutation {
                 # Export pages
                 exportPages(
                     ids: [ID]!
                     revisionType: PbExportPageRevisionType
+                    filterArgs: PbExportPagesFilterArgs
                 ): PbExportPageResponse
 
                 # Import pages
@@ -50,11 +57,15 @@ const plugin: GraphQLSchemaPlugin<PbPageImportExportContext> = {
             PbMutation: {
                 exportPages: async (
                     _,
-                    args: { ids: string[]; revisionType: PageExportRevisionType },
+                    args: { ids: string[]; revisionType: PageExportRevisionType; filterArgs },
                     context
                 ) => {
                     return resolve(() =>
-                        context.pageBuilder.pages.exportPages(args.ids, args.revisionType)
+                        context.pageBuilder.pages.exportPages(
+                            args.ids,
+                            args.revisionType,
+                            args.filterArgs
+                        )
                     );
                 },
 
