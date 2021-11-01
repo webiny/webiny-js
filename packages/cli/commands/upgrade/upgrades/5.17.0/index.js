@@ -3,6 +3,7 @@ const glob = require("fast-glob");
 const { createMorphProject, yarnInstall, prettierFormat } = require("../utils");
 
 const apiPrerenderingService = require("./apiPrerenderingService");
+const security = require("./security");
 
 const targetVersion = "5.17.0";
 
@@ -48,7 +49,8 @@ module.exports = {
 
         const files = await glob([
             // add files here
-            ...Object.values(apiPrerenderingService.files)
+            ...Object.values(apiPrerenderingService.files),
+            ...Object.values(security.files)
             //
         ]);
 
@@ -56,10 +58,22 @@ module.exports = {
         /**
          * Upgrade the prerendering service files.
          */
+        info("Starting with prerendering service upgrade.");
         apiPrerenderingService.upgradeFlush(project, context);
         apiPrerenderingService.upgradeRender(project, context);
         apiPrerenderingService.upgradeQueueAdd(project, context);
         apiPrerenderingService.upgradeQueueProcess(project, context);
+        /**
+         * Upgrade the files for new security.
+         */
+        info("Starting with security upgrade.");
+        security.upgradeGraphQLIndex(project, context);
+        security.upgradeHeadlessCMSIndex(project, context);
+        security.upgradeAdminComponents(project, context);
+        security.upgradeAdminPlugins(project, context);
+        security.upgradeAdminSecurity(project, context);
+        security.upgradeApp(project, context);
+        security.upgradeAppWebinyConfig(project, context);
 
         info("Writing changes...");
         await project.save();

@@ -377,22 +377,6 @@ const removeWorkspaceToRootPackageJson = async (packageJsonPath, pathsToRemove) 
 
 /**
  *
- * @param declaration {tsMorph.ImportDeclaration}
- * @return {string | null}
- */
-const getImportPathOnDeclaration = declaration => {
-    if (!declaration) {
-        return null;
-    }
-    const specifier = declaration.getModuleSpecifier();
-    if (!specifier) {
-        return null;
-    }
-    return specifier.getText().replace(/"/g, "");
-};
-
-/**
- *
  * @param name {string | string[] | Record<string, string>}
  * @return {{name: string, alias: string | undefined}[]|undefined}
  */
@@ -420,17 +404,15 @@ const createNamedImports = name => {
  * @param source {tsMorph.SourceFile}
  * @param name {string|string[]|Record<string, string>}
  * @param moduleSpecifier {string}
+ * @param after {string|null}
  */
-const insertImportToSourceFile = ({ source, name, moduleSpecifier }) => {
+const insertImportToSourceFile = ({ source, name, moduleSpecifier, after = null }) => {
     const namedImports = createNamedImports(name);
     const defaultImport = namedImports === undefined ? name : undefined;
 
-    for (const declaration of source.getImportDeclarations()) {
-        const p = getImportPathOnDeclaration(declaration);
-        if (p !== moduleSpecifier) {
-            continue;
-        }
+    const declaration = source.getImportDeclaration(moduleSpecifier);
 
+    if (declaration) {
         if (defaultImport) {
             declaration.setDefaultImport(defaultImport);
             return;
@@ -447,6 +429,23 @@ const insertImportToSourceFile = ({ source, name, moduleSpecifier }) => {
             })
         );
         return;
+    }
+    /**
+     * If we want to add this import after some other import...
+     */
+    if (after) {
+        const afterDeclaration = source.getImportDeclaration(after);
+        /**
+         * If there is no target import, we will just add it at the end.
+         */
+        if (afterDeclaration) {
+            source.insertImportDeclaration(afterDeclaration.getChildIndex() + 1, {
+                defaultImport,
+                namedImports,
+                moduleSpecifier
+            });
+            return;
+        }
     }
 
     source.addImportDeclaration({
@@ -588,6 +587,7 @@ const removePluginFromCreateHandler = (source, handler, targetPlugin) => {
  */
 const addPluginArgumentValueInCreateHandler = (source, handler, plugin, arg) => {
     const { plugins, arrayExpression } = getCreateHandlerExpressions(source, handler);
+
     if (!plugins) {
         console.log(`Missing plugins in "createHandler" in handler "${handler}".`);
         return;
@@ -625,6 +625,10 @@ const addPluginArgumentValueInCreateHandler = (source, handler, plugin, arg) => 
         const createObjectArgument = args => {
             return Object.keys(args)
                 .map(key => {
+                    const value = args[key];
+                    if (value === key || !value) {
+                        return key;
+                    }
                     return `${key}:${args[key]}`;
                 })
                 .join(",");
@@ -663,14 +667,18 @@ const addPluginArgumentValueInCreateHandler = (source, handler, plugin, arg) => 
 
     for (const key in arg) {
         const prop = pluginArgument.getProperty(key);
+        const value = arg[key];
         if (!prop) {
             pluginArgument.addPropertyAssignment({
                 name: key,
-                initializer: arg[key]
+                /**
+                 * If value and key are same or value is null or undefined, do not add the initializer because it is named assign
+                 */
+                initializer: value === key || !value ? undefined : value
             });
             continue;
         }
-        prop.setInitializer(arg[key]);
+        prop.setInitializer(value);
     }
 };
 /**
@@ -700,7 +708,8 @@ const addDynamoDbDocumentClient = source => {
     }
 
     const importDeclarations = source.getImportDeclarations();
-    const last = importDeclarations.length;
+    const lastImportDeclaration = importDeclarations[importDeclarations.length - 1];
+    const last = lastImportDeclaration.getEndLineNumber();
 
     source.insertVariableStatement(last, {
         declarationKind: tsMorph.VariableDeclarationKind.Const,
@@ -712,6 +721,26 @@ const addDynamoDbDocumentClient = source => {
             }
         ]
     });
+};
+/**
+ *
+ * @param source {tsMorph.SourceFile}
+ * @param targets {({matcher: Function, info: string})[]}
+ *
+ * @return {tsMorph.ArrayLiteralExpression}
+ */
+const findNodeInSource = (source, targets) => {
+    let previous = source;
+    for (const key in targets) {
+        const node = previous.getFirstDescendant(node => {
+            return targets[key].matcher(node);
+        });
+        if (!node) {
+            return null;
+        }
+        previous = node;
+    }
+    return previous;
 };
 
 module.exports = {
@@ -731,5 +760,6 @@ module.exports = {
     removePluginFromCreateHandler,
     addPluginArgumentValueInCreateHandler,
     removeImportFromSourceFile,
-    addDynamoDbDocumentClient
+    addDynamoDbDocumentClient,
+    findNodeInSource
 };
