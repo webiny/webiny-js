@@ -1,7 +1,7 @@
 import readJson from "load-json-file";
 import writeJson from "write-json-file";
 
-import { PackageJson } from "@webiny/cli-plugin-scaffold/types";
+import { PackageJson } from "~/types";
 
 export default async (packageJsonPath, pathToAdd) => {
     // Ensure forward slashes are used.
