@@ -152,7 +152,7 @@ async function build() {
         console.log(`The build process will be performed in ${green(batches.length)} batches.`);
     }
 
-    console.log()
+    console.log();
 
     for (let i = 0; i < batches.length; i++) {
         const batch = batches[i];
