@@ -10,11 +10,24 @@ import {
 export type PagesImportExportCrud = {
     exportPages(
         ids: string[],
-        revisionType: PageExportRevisionType
+        revisionType: PageExportRevisionType,
+        filterArgs: {
+            where?: {
+                category?: string;
+                status?: string;
+                tags?: { query: string[]; rule?: "any" | "all" };
+                [key: string]: any;
+            };
+            search?: { query?: string };
+            sort?: string[];
+        }
     ): Promise<{ task: PageImportExportTask }>;
     importPages(
         category: string,
-        data: Record<string, any>
+        data: {
+            zipFileKey?: string;
+            zipFileUrl?: string;
+        }
     ): Promise<{ task: PageImportExportTask }>;
 };
 
