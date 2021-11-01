@@ -87,20 +87,19 @@ const tsCompile = params => {
             ts.sys.readFile
         );
 
-        if (params.options.tsConfig) {
-            if (params.options.debug) {
-                log.info(
-                    `Overriding retrieved ${log.info.hl(
-                        "tsconfig.build.json"
-                    )} file with the following:`
-                );
-                console.log(params.options.tsConfig);
-            }
+        const { overrides } = params.options;
+        if (overrides) {
+            if (overrides.tsConfig) {
+                if (typeof overrides.tsConfig === "function") {
+                    readTsConfig = overrides.tsConfig(readTsConfig);
+                } else {
+                    merge(readTsConfig, overrides.tsConfig);
+                }
 
-            if (typeof params.options.tsConfig === "function") {
-                readTsConfig = params.options.tsConfig(readTsConfig);
-            } else {
-                merge(readTsConfig, params.options.tsConfig);
+                if (params.options.debug) {
+                    log.info(`${log.info.hl("tsconfig.build.json")} overridden. New config:`);
+                    console.log(readTsConfig)
+                }
             }
         }
 

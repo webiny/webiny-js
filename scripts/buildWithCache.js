@@ -195,7 +195,7 @@ async function build() {
                         await config.commands.build({
                             logs: false,
                             debug: false,
-                            ...buildOverrides
+                            overrides: buildOverrides
                             // We don't want debug nor regular logs logged within the build command.
                         });
 
