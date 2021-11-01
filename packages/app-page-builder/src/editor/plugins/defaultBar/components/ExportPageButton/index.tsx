@@ -9,7 +9,7 @@ import { ReactComponent as DownloadIcon } from "../icons/file_download.svg";
 
 const t = i18n.ns("app-page-builder/editor/plugins/defaultBar/exportPageButton");
 
-export const ExportPagesButton = ({ getMultiSelected }) => {
+export const ExportPagesButton = ({ getMultiSelected, filterArgs }) => {
     const selected = getMultiSelected();
     const { showExportPageRevisionSelectorDialog } = useExportPageRevisionSelectorDialog();
     const { showExportPageInitializeDialog } = useExportPageDialog();
@@ -22,7 +22,7 @@ export const ExportPagesButton = ({ getMultiSelected }) => {
             });
         }
 
-        return t`Export pages`;
+        return t`Export all pages`;
     };
 
     return (
@@ -30,10 +30,10 @@ export const ExportPagesButton = ({ getMultiSelected }) => {
             <IconButton
                 data-testid={"export-page-button"}
                 icon={<DownloadIcon />}
-                disabled={selected.length === 0}
                 onClick={() => {
                     showExportPageRevisionSelectorDialog({
-                        onAccept: () => showExportPageInitializeDialog({ ids: selected })
+                        onAccept: () =>
+                            showExportPageInitializeDialog({ ids: selected, filterArgs })
                     });
                 }}
             />

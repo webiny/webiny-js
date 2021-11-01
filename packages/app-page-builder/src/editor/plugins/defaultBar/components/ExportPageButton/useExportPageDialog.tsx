@@ -46,7 +46,12 @@ const spinnerWrapper = css`
 
 const ExportPageLoadingDialogMessage: React.FunctionComponent<{
     ids: string[];
-}> = ({ ids }) => {
+    filterArgs: {
+        where: Record<string, any>;
+        sort: string;
+        search: { query: string };
+    };
+}> = ({ ids, filterArgs }) => {
     const { exportPage } = useExportPage();
     const {
         exportPageData: { revisionType }
@@ -56,7 +61,8 @@ const ExportPageLoadingDialogMessage: React.FunctionComponent<{
         exportPage({
             variables: {
                 ids,
-                revisionType
+                revisionType,
+                filterArgs
             }
         });
     }, []);

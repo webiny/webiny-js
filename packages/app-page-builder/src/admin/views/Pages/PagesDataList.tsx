@@ -276,7 +276,10 @@ const PagesDataList = ({ onCreatePage, canCreate, onImportPage }: PagesDataListP
                 />
             }
             multiSelectActions={
-                <ExportPagesButton getMultiSelected={multiSelectProps.getMultiSelected} />
+                <ExportPagesButton
+                    getMultiSelected={multiSelectProps.getMultiSelected}
+                    filterArgs={{ where, sort, search }}
+                />
             }
             multiSelectAll={multiSelectProps.multiSelectAll}
             isAllMultiSelected={multiSelectProps.isAllMultiSelected}
