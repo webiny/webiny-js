@@ -108,7 +108,7 @@ describe("filtering", () => {
         await until(
             () => listFruits({}).then(([data]) => data),
             ({ data }) => data.listFruits.data.length === 3,
-            { name: "list all fruits", tries: 10 }
+            { name: "list all fruits" }
         );
     };
 
@@ -698,7 +698,7 @@ describe("filtering", () => {
                 return true;
                 // return (data.listProducts.data as any[]).every(item => !!item.meta.publishedOn);
             },
-            { name: "list all products", tries: 10 }
+            { name: "list all products" }
         );
         /*************************
          * MANAGERS
@@ -1051,7 +1051,7 @@ describe("filtering", () => {
                     return !!entry.meta.publishedOn;
                 });
             },
-            { name: "list all published entries", tries: 10 }
+            { name: "list all published entries" }
         );
         /**
          * Make sure to get only the fruit entry via manage API.
@@ -1396,7 +1396,7 @@ describe("filtering", () => {
                     return !!entry.meta.publishedOn;
                 });
             },
-            { name: "list all published entries", tries: 10 }
+            { name: "list all published entries" }
         );
 
         const [listEq123Response] = await articleManager.listArticles({
@@ -1572,7 +1572,7 @@ describe("filtering", () => {
                     return !!entry.meta.publishedOn;
                 });
             },
-            { name: "list all published entries", tries: 10 }
+            { name: "list all published entries" }
         );
 
         const [listEq123Response] = await articleManager.listArticles({

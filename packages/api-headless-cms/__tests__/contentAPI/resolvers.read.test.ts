@@ -178,7 +178,10 @@ describe("READ - Resolvers", () => {
                         id: categoryId
                     }
                 }).then(([data]) => data),
-            ({ data }) => !!data.getCategory.data.id
+            ({ data }) => !!data.getCategory.data.id,
+            {
+                name: "getCategory"
+            }
         );
 
         expect(result).toEqual({
@@ -223,7 +226,7 @@ describe("READ - Resolvers", () => {
 
     test(`list entries`, async () => {
         // Use "manage" API to create and publish entries
-        const { until, createCategory, publishCategory } = useCategoryManageHandler(manageOpts);
+        const { sleep, createCategory, publishCategory } = useCategoryManageHandler(manageOpts);
 
         // Create an entry
         const [create] = await createCategory({ data: { title: "Title 1", slug: "slug-1" } });
@@ -238,12 +241,7 @@ describe("READ - Resolvers", () => {
         // See if entries are available via "read" API
         const { listCategories } = useCategoryReadHandler(readOpts);
 
-        // If this `until` resolves successfully, we know entry is accessible via the "read" API
-        await until(
-            () => listCategories().then(([data]) => data),
-            ({ data }) => data.listCategories.data.length > 0
-        );
-
+        await sleep(2000);
         const [response] = await listCategories();
 
         expect(response).toEqual({
@@ -271,7 +269,7 @@ describe("READ - Resolvers", () => {
 
     test(`list entries with specific group and model permissions`, async () => {
         // Use "manage" API to create and publish entries
-        const { until, createCategory, publishCategory } = useCategoryManageHandler(manageOpts);
+        const { sleep, createCategory, publishCategory } = useCategoryManageHandler(manageOpts);
 
         // Create an entry
         const [create] = await createCategory({ data: { title: "Title 1", slug: "slug-1" } });
@@ -292,11 +290,7 @@ describe("READ - Resolvers", () => {
             })
         });
 
-        // If this `until` resolves successfully, we know entry is accessible via the "read" API
-        await until(
-            () => listCategories().then(([data]) => data),
-            ({ data }) => data.listCategories.data.length > 0
-        );
+        await sleep(2000);
 
         const [response] = await listCategories();
 

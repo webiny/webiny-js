@@ -25,6 +25,8 @@ const content = [
     }
 ];
 
+jest.setTimeout(100000);
+
 describe("pages simple actions", () => {
     const handler = useGqlHandler();
 

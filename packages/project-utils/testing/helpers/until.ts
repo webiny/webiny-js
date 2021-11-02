@@ -1,14 +1,21 @@
+import { sleep } from "./sleep";
+
 export interface UntilOptions {
     name?: string;
     tries?: number;
     wait?: number;
+    debounce?: number;
 }
 
 export const until = async (execute, until, options: UntilOptions = {}) => {
-    const { name = "NO_NAME", tries = 10, wait = 1000 } = options;
+    const { name = "NO_NAME", tries = 10, wait = 1000, debounce = 1000 } = options;
 
     let result;
     let triesCount = 0;
+
+    if (debounce > 0) {
+        await sleep(debounce);
+    }
 
     while (true) {
         result = await execute();
@@ -28,9 +35,7 @@ export const until = async (execute, until, options: UntilOptions = {}) => {
         }
 
         // Wait.
-        await new Promise((resolve: any) => {
-            setTimeout(() => resolve(), wait);
-        });
+        await sleep(wait);
     }
 
     throw new Error(`[${name}] Tried ${tries} times but failed.`);
