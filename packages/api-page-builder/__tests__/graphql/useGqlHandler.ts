@@ -1,6 +1,6 @@
 import { createHandler } from "@webiny/handler-aws";
 import graphqlHandler from "@webiny/handler-graphql";
-import pageBuilderPlugins from "~/graphql";
+import pageBuilderPlugins from "@webiny/api-page-builder/graphql";
 import i18nContext from "@webiny/api-i18n/graphql/context";
 import i18nDynamoDbStorageOperations from "@webiny/api-i18n-ddb";
 import i18nContentPlugins from "@webiny/api-i18n-content/plugins";
@@ -43,7 +43,7 @@ import {
     OEMBED_DATA
 } from "./graphql/pages";
 
-import { SecurityIdentity } from "@webiny/api-security";
+import { SecurityIdentity } from "@webiny/api-security/types";
 import {
     CREATE_CATEGORY,
     DELETE_CATEGORY,
@@ -55,7 +55,7 @@ import {
 import { GET_SETTINGS, GET_DEFAULT_SETTINGS, UPDATE_SETTINGS } from "./graphql/settings";
 import path from "path";
 import fs from "fs";
-import { UntilOptions } from "@webiny/project-utils/testing/helpers/until";
+import { until } from "@webiny/project-utils/testing/helpers/until";
 import { createTenancyAndSecurity } from "../tenancySecurity";
 
 interface Params {
@@ -149,48 +149,17 @@ export default ({ permissions, identity, plugins }: Params = {}) => {
         invoke,
         // Helpers.
         sleep,
-        until: async (execute, until, options: UntilOptions = {}) => {
-            const { name = "NO_NAME", tries = 5, wait = 300 } = options;
-
-            let result;
-            let triesCount = 0;
-
-            while (true) {
-                result = await execute();
-
-                let done;
-                try {
-                    done = await until(result);
-                } catch {}
-
-                if (done) {
-                    return result;
-                }
-
-                triesCount++;
-                if (triesCount === tries) {
-                    break;
-                }
-
-                // Wait.
-                await new Promise((resolve: any) => {
-                    setTimeout(() => resolve(), wait);
-                });
-            }
-
-            throw new Error(
-                `[${name}] Tried ${tries} times but failed. Last result that was received: ${JSON.stringify(
-                    result,
-                    null,
-                    2
-                )}`
-            );
-        },
+        until,
 
         // GraphQL queries and mutations.
         // Install.
-        async install(variables) {
-            return invoke({ body: { query: INSTALL, variables } });
+        async install(variables: any = { insertDemoData: false, name: "Test" }) {
+            return invoke({
+                body: {
+                    query: INSTALL,
+                    variables
+                }
+            });
         },
 
         async isInstalled(variables = {}) {

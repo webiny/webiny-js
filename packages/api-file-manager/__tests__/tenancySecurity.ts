@@ -23,7 +23,7 @@ interface Config {
     identity?: SecurityIdentity;
 }
 
-export const createTenancyAndSecurity = ({ permissions, identity }: Config = {}) => {
+export const createTenancyAndSecurity = ({ permissions, identity }: Config) => {
     return [
         createTenancyContext({
             storageOperations: tenancyStorageOperations({

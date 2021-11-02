@@ -8,7 +8,7 @@ export interface Params {
 
 export const createTable = ({ table, documentClient }: Params) => {
     return new Table({
-        name: table || process.env.DB_TABLE_SECURITY || process.env.DB_TABLE,
+        name: table || process.env.DB_TABLE,
         partitionKey: "PK",
         sortKey: "SK",
         DocumentClient: documentClient,

@@ -24,6 +24,8 @@ const fileCData = {
     tags: ["art", "sketch", "webiny", "file-c"]
 };
 
+jest.setTimeout(100000);
+
 describe("Files CRUD test", () => {
     const { createFile, updateFile, createFiles, getFile, listFiles, listTags, until } =
         useGqlHandler();
@@ -78,22 +80,6 @@ describe("Files CRUD test", () => {
             }
         });
 
-        // Let's update File tags.
-        const [update2] = await updateFile({
-            id: fileAId,
-            data: { tags: [...fileAData.tags, "design"] }
-        });
-        expect(update2).toEqual({
-            data: {
-                fileManager: {
-                    updateFile: {
-                        data: { ...fileAData, tags: [...fileAData.tags, "design"] },
-                        error: null
-                    }
-                }
-            }
-        });
-
         // Only update "tags"
         const [update3] = await updateFile({
             id: fileAId,
@@ -116,15 +102,14 @@ describe("Files CRUD test", () => {
 
         await until(
             () => listFiles().then(([data]) => data),
-            ({ data }) =>
-                Array.isArray(data.fileManager.listFiles.data) &&
-                data.fileManager.listFiles.data.length === 1 &&
-                data.fileManager.listFiles.data[0].tags.length === 1,
-            {
-                tries: 10,
-                wait: 400,
-                name: "list files after update tags"
-            }
+            ({ data }) => {
+                const file = data.fileManager.listFiles.data.find(f => f.id === fileAId);
+                if (!file) {
+                    return false;
+                }
+                return file.tags.length === 1 && file.tags[0] === "sketch";
+            },
+            { name: "list files after update tags", debounce: 3000, wait: 3000 }
         );
 
         // Let's create multiple files
@@ -168,7 +153,7 @@ describe("Files CRUD test", () => {
             ({ data }) => {
                 return data.fileManager.listFiles.data.length === 2;
             },
-            { name: "list all files", tries: 10 }
+            { name: "list all files" }
         );
 
         // Let's get a all files
@@ -346,7 +331,7 @@ describe("Files CRUD test", () => {
             ({ data }) => {
                 return data.fileManager.listFiles.data.length === 3;
             },
-            { name: "list all files", tries: 20 }
+            { name: "list all files" }
         );
 
         const [cResponse] = await listFiles({

@@ -3,6 +3,8 @@ import useUpdateSettingsHandler from "../updateSettings/useHandler";
 import { Page } from "~/types";
 import { waitPage } from "./utils/waitPage";
 
+jest.setTimeout(100000);
+
 describe("page full URL test", () => {
     const handler = useGqlHandler();
 
@@ -14,10 +16,12 @@ describe("page full URL test", () => {
         listPages,
         listPublishedPages,
         updatePage,
+        install,
         until
     } = handler;
 
     const createInitialData = async () => {
+        await install();
         const pages: Page[] = [];
         await createCategory({
             data: {
@@ -48,7 +52,6 @@ describe("page full URL test", () => {
 
     test("full URL must be returned correctly", async () => {
         const initialPages = await createInitialData();
-
         await updateSettings({ data: { websiteUrl: "https://domain.com" } });
 
         const [listPagesAfterUpdateSettingsResponse] = await until(
@@ -112,9 +115,7 @@ describe("page full URL test", () => {
                 }),
             ([res]) => res.data.pageBuilder.listPages.data.length === 3,
             {
-                name: "list pages after first settings update",
-                wait: 500,
-                tries: 30
+                name: "list pages after first settings update"
             }
         );
 
@@ -138,9 +139,7 @@ describe("page full URL test", () => {
             ([res]) =>
                 res.data.pageBuilder.listPages.data[0].url.startsWith("https://updated-domain"),
             {
-                name: "list pages after domain change",
-                wait: 500,
-                tries: 30
+                name: "list pages after domain change"
             }
         );
 
@@ -166,9 +165,7 @@ describe("page full URL test", () => {
             listPages,
             ([res]) => res.data.pageBuilder.listPages.data.length === 3,
             {
-                name: "List pages after update empty settings",
-                wait: 500,
-                tries: 30
+                name: "List pages after update empty settings"
             }
         );
 
@@ -191,9 +188,7 @@ describe("page full URL test", () => {
                 }),
             ([res]) => res.data.pageBuilder.listPublishedPages.data.length === 3,
             {
-                name: "list pages after published pages",
-                wait: 500,
-                tries: 30
+                name: "list pages after published pages"
             }
         );
 

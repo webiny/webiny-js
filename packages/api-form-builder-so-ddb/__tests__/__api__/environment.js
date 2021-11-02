@@ -17,6 +17,7 @@ if (typeof createFormBuilderStorageOperations !== "function") {
 class FormBuilderTestEnvironment extends NodeEnvironment {
     async setup() {
         await super.setup();
+
         const documentClient = new DocumentClient({
             convertEmptyValues: true,
             endpoint: process.env.MOCK_DYNAMODB_ENDPOINT || "http://localhost:8001",

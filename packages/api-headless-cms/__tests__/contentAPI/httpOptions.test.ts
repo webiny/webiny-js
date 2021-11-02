@@ -1,7 +1,5 @@
 import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
 
-jest.setTimeout(15000);
-
 describe("HTTP Options request", () => {
     const manageOpts = { path: "manage/en-US" };
 

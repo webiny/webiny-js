@@ -13,11 +13,13 @@ export async function exportPage(
     const files = extractFilesFromPageData(page.content);
     // Filter files
     const filesAvailableForDownload = [];
+    const uniqueFileKeys = new Map<string, boolean>();
     for (let i = 0; i < files.length; i++) {
         const file = files[i];
         // Check file accessibility
-        if (await s3Stream.isFileAccessible(file.key)) {
+        if ((await s3Stream.isFileAccessible(file.key)) && !uniqueFileKeys.has(file.key)) {
             filesAvailableForDownload.push(file);
+            uniqueFileKeys.set(file.key, true);
         }
     }
 
@@ -70,8 +72,12 @@ export function extractFilesFromPageData(
     const tuple = Object.entries(data);
     for (let i = 0; i < tuple.length; i++) {
         const [key, value] = tuple[i];
+        // TODO: @ashutosh extract it to plugins, so that, we can handle cases for other components too.
         if (key === "file" && value) {
             files.push(value);
+        } else if (key === "images" && Array.isArray(value)) {
+            // Handle case for "images-list" component
+            files.push(...value);
         } else {
             extractFilesFromPageData(value, files);
         }

@@ -44,7 +44,11 @@ export const createTenancyAndSecurity = ({ setupGraphQL, permissions, identity }
         }),
         setupGraphQL ? createSecurityGraphQL() : null,
         new ContextPlugin<Context>(context => {
-            context.tenancy.setCurrentTenant({ id: "root", name: "Root" });
+            context.tenancy.setCurrentTenant({
+                id: "root",
+                name: "Root",
+                webinyVersion: context.WEBINY_VERSION
+            });
 
             context.security.addAuthenticator(async () => {
                 return (

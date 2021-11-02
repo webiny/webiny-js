@@ -35,7 +35,7 @@
     "node-fetch": "^2.6.1",
     "stream": "^0.0.2",
     "uniqid": "^5.2.0",
-    "unzipper": "0.10.11"
+    "yauzl": "^2.10.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",

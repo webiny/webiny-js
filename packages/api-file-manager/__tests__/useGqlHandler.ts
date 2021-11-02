@@ -5,6 +5,7 @@ import i18nContext from "@webiny/api-i18n/graphql/context";
 import i18nDynamoDbStorageOperations from "@webiny/api-i18n-ddb";
 import i18nContentPlugins from "@webiny/api-i18n-content/plugins";
 import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
+import { until } from "@webiny/project-utils/testing/helpers/until";
 import filesPlugins from "~/plugins";
 
 // Graphql
@@ -24,7 +25,6 @@ import {
     UPDATE_SETTINGS
 } from "./graphql/fileManagerSettings";
 import { SecurityIdentity, SecurityPermission } from "@webiny/api-security/types";
-import { until } from "./helpers";
 import { FilePhysicalStoragePlugin } from "~/plugins/definitions/FilePhysicalStoragePlugin";
 
 export interface UseGqlHandlerParams {
@@ -46,21 +46,12 @@ export default (params: UseGqlHandlerParams = {}) => {
             `A product of "__getStorageOperationsPlugins" must be a function to initialize storage operations.`
         );
     }
-    const tenant = { id: "root", name: "Root", parent: null };
     // Creates the actual handler. Feel free to add additional plugins if needed.
     const handler = createHandler(
         storageOperations(),
         i18nDynamoDbStorageOperations(),
         graphqlHandlerPlugins(),
         ...createTenancyAndSecurity({ permissions, identity }),
-        {
-            type: "context",
-            apply(context) {
-                context.tenancy.getCurrentTenant = () => {
-                    return tenant;
-                };
-            }
-        },
         i18nContext(),
         i18nContentPlugins(),
         mockLocalesPlugins(),
@@ -94,7 +85,6 @@ export default (params: UseGqlHandlerParams = {}) => {
     };
 
     return {
-        tenant,
         until,
         handler,
         invoke,

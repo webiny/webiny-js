@@ -5,8 +5,6 @@ import { identityB } from "./mocks";
 
 const sort: string[] = ["createdOn_DESC"];
 
-jest.setTimeout(50000);
-
 const content = [
     {
         type: "heading",
@@ -26,6 +24,8 @@ const content = [
         ]
     }
 ];
+
+jest.setTimeout(100000);
 
 describe("pages simple actions", () => {
     const handler = useGqlHandler();

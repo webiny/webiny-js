@@ -3,6 +3,7 @@ const { DynamoDbDriver } = require("@webiny/db-dynamodb");
 const dynamoDbPlugins = require("@webiny/db-dynamodb/plugins").default;
 const { DocumentClient } = require("aws-sdk/clients/dynamodb");
 const NodeEnvironment = require("jest-environment-node");
+
 /**
  * For this to work it must load plugins that have already been built
  */
@@ -11,21 +12,6 @@ const plugins = require("../../dist/index").default;
 if (typeof plugins !== "function") {
     throw new Error(`Loaded plugins file must export a function that returns an array of plugins.`);
 }
-
-const getStorageOperationsPlugins = ({ documentClient }) => {
-    return () => {
-        return [
-            ...dynamoDbPlugins(),
-            ...plugins(),
-            ...dbPlugins({
-                table: process.env.DB_TABLE,
-                driver: new DynamoDbDriver({
-                    documentClient
-                })
-            })
-        ];
-    };
-};
 
 class FileManagerTestEnvironment extends NodeEnvironment {
     async setup() {
@@ -43,9 +29,18 @@ class FileManagerTestEnvironment extends NodeEnvironment {
          * This is a global function that will be called inside the tests to get all relevant plugins, methods and objects.
          */
         this.global.__getStorageOperationsPlugins = () => {
-            return getStorageOperationsPlugins({
-                documentClient
-            });
+            return () => {
+                return [
+                    ...dynamoDbPlugins(),
+                    ...plugins(),
+                    ...dbPlugins({
+                        table: process.env.DB_TABLE,
+                        driver: new DynamoDbDriver({
+                            documentClient
+                        })
+                    })
+                ];
+            };
         };
     }
 }

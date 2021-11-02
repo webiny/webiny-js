@@ -5,6 +5,9 @@
       "path": "../../../../../packages/api-prerendering-service"
     },
     {
+      "path": "../../../../../packages/api-prerendering-service-so-ddb"
+    },
+    {
       "path": "../../../../../packages/handler-aws"
     },
     {

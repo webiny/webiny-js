@@ -10,7 +10,7 @@ export const createTable = (params: Params): Table => {
     const { tableName, documentClient } = params;
 
     return new Table({
-        name: tableName || process.env.DB_TABLE_FORM_BUILDER || process.env.DB_TABLE,
+        name: tableName || process.env.DB_TABLE,
         partitionKey: "PK",
         sortKey: "SK",
         DocumentClient: documentClient

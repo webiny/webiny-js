@@ -1,6 +1,8 @@
 import useGqlHandler from "./useGqlHandler";
 import { defaultIdentity } from "../tenancySecurity";
 
+jest.setTimeout(100000);
+
 describe("Categories CRUD Test", () => {
     const {
         createCategory,

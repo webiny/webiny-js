@@ -28,7 +28,7 @@ interface Configurations {
 
 const configurations: Configurations = {
     db: () => ({
-        table: process.env.DB_TABLE_HEADLESS_CMS || process.env.DB_TABLE,
+        table: process.env.DB_TABLE,
         keys: [
             {
                 primary: true,
@@ -39,8 +39,7 @@ const configurations: Configurations = {
         ]
     }),
     esDb: () => ({
-        table:
-            process.env.DB_TABLE_HEADLESS_CMS_ELASTICSEARCH || process.env.DB_TABLE_ELASTICSEARCH,
+        table: process.env.DB_TABLE_ELASTICSEARCH,
         keys: [
             {
                 primary: true,

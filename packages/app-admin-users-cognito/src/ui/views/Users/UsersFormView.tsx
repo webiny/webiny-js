@@ -132,7 +132,15 @@ export class UsersFormView extends UIView {
                 name: "email",
                 label: "Email",
                 validators: () => validation.create("required,email"),
-                beforeChange: (value: string, cb) => cb(value.toLowerCase())
+                beforeChange: (value: string, cb) => cb(value.toLowerCase()),
+                isDisabled: () => {
+                    const { isNewUser } = this.getUserFormHook();
+                    if (isNewUser) {
+                        return false;
+                    }
+
+                    return process.env.REACT_APP_ADMIN_USER_CAN_CHANGE_EMAIL === "false";
+                }
             })
         );
 

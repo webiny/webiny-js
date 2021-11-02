@@ -8,8 +8,6 @@ import { useArticleManageHandler } from "../utils/useArticleManageHandler";
 import { useArticleReadHandler } from "../utils/useArticleReadHandler";
 import { setupContentModelGroup, setupContentModels } from "../utils/setup";
 
-jest.setTimeout(25000);
-
 const appleData = {
     name: "Apple",
     isSomething: false,
@@ -54,6 +52,8 @@ const bananaData = {
     dateTimeZ: "2020-12-03T14:52:41+01:00",
     time: "11:59:01"
 };
+
+jest.setTimeout(100000);
 
 describe("filtering", () => {
     const manageOpts = { path: "manage/en-US" };
@@ -108,7 +108,7 @@ describe("filtering", () => {
         await until(
             () => listFruits({}).then(([data]) => data),
             ({ data }) => data.listFruits.data.length === 3,
-            { name: "list all fruits", tries: 10 }
+            { name: "list all fruits" }
         );
     };
 
@@ -698,7 +698,7 @@ describe("filtering", () => {
                 return true;
                 // return (data.listProducts.data as any[]).every(item => !!item.meta.publishedOn);
             },
-            { name: "list all products", tries: 10 }
+            { name: "list all products" }
         );
         /*************************
          * MANAGERS
@@ -1051,7 +1051,7 @@ describe("filtering", () => {
                     return !!entry.meta.publishedOn;
                 });
             },
-            { name: "list all published entries", tries: 10 }
+            { name: "list all published entries" }
         );
         /**
          * Make sure to get only the fruit entry via manage API.
@@ -1396,7 +1396,7 @@ describe("filtering", () => {
                     return !!entry.meta.publishedOn;
                 });
             },
-            { name: "list all published entries", tries: 10 }
+            { name: "list all published entries" }
         );
 
         const [listEq123Response] = await articleManager.listArticles({
@@ -1572,7 +1572,7 @@ describe("filtering", () => {
                     return !!entry.meta.publishedOn;
                 });
             },
-            { name: "list all published entries", tries: 10 }
+            { name: "list all published entries" }
         );
 
         const [listEq123Response] = await articleManager.listArticles({

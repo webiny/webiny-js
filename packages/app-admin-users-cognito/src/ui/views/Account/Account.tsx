@@ -65,6 +65,8 @@ const UserAccountForm = () => {
 
     const user = currentUser.loading ? {} : currentUser.data.adminUsers.user.data;
 
+    const emailIsDisabled = process.env.REACT_APP_ADMIN_USER_CAN_CHANGE_EMAIL === "false";
+
     return (
         <Grid>
             <Cell span={3} />
@@ -106,6 +108,7 @@ const UserAccountForm = () => {
                                                 <Input
                                                     value={data.email}
                                                     label={t`Email`}
+                                                    disabled={emailIsDisabled}
                                                     description={
                                                         "Email is your unique identifier used to login!"
                                                     }
