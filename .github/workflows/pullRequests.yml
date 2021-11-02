@@ -31,6 +31,7 @@ jobs:
         run: echo "::set-output name=ts::$(node --eval "console.log(new Date().getTime())")"
 
   cache-dependencies-packages:
+    needs: [cache-keys]
     name: Cache dependencies and packages
     runs-on: ubuntu-latest
     outputs:
@@ -56,7 +57,7 @@ jobs:
         id: cached-packages
         with:
           path: .webiny/cached-packages
-          key: cached-packages-${{ runner.os }}-${{ github.ref }}-v2
+          key: ${{ runner.os }}-${{ needs.cache-keys.outputs.day }}-${{ secrets.RANDOM_CACHE_KEY_SUFFIX }}
 
       - name: Install dependencies
         if: steps.yarn-cache.outputs.cache-hit != 'true' || steps.cached-packages.outputs.cache-hit != 'true'
@@ -67,7 +68,7 @@ jobs:
         run: node scripts/buildWithCache.js
 
   code-analysis:
-    needs: cache-dependencies-packages
+    needs: [cache-dependencies-packages, cache-keys]
     name: Static code analysis
     runs-on: ubuntu-latest
     steps:
@@ -85,7 +86,7 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: .webiny/cached-packages
-          key: cached-packages-${{ runner.os }}-${{ github.ref }}-v2
+          key: ${{ runner.os }}-${{ needs.cache-keys.outputs.day }}-${{ secrets.RANDOM_CACHE_KEY_SUFFIX }}
 
       - name: Install dependencies
         run: yarn --immutable
@@ -103,7 +104,7 @@ jobs:
         run: yarn eslint
 
   jest-tests:
-    needs: cache-dependencies-packages
+    needs: [cache-dependencies-packages, cache-keys]
     name: ${{ matrix.package }} (${{ matrix.os }}, Node v${{ matrix.node }})
     strategy:
       fail-fast: false
@@ -127,7 +128,7 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: .webiny/cached-packages
-          key: cached-packages-${{ runner.os }}-${{ github.ref }}-v2
+          key: ${{ runner.os }}-${{ needs.cache-keys.outputs.day }}-${{ secrets.RANDOM_CACHE_KEY_SUFFIX }}
 
       - name: Install dependencies
         run: yarn --immutable
@@ -139,7 +140,7 @@ jobs:
         run: yarn test packages/${{ matrix.package }}
 
   verdaccio-publish:
-    needs: cache-dependencies-packages
+    needs: [cache-dependencies-packages, cache-keys]
     name: Publish to Verdaccio
     runs-on: ubuntu-latest
     steps:
@@ -161,7 +162,7 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: .webiny/cached-packages
-          key: cached-packages-${{ runner.os }}-${{ github.ref }}-v2
+          key: ${{ runner.os }}-${{ needs.cache-keys.outputs.day }}-${{ secrets.RANDOM_CACHE_KEY_SUFFIX }}
 
       - name: Install dependencies
         run: yarn --immutable
