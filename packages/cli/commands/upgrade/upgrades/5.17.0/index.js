@@ -68,6 +68,7 @@ module.exports = {
          */
         info("Starting with security upgrade.");
         security.upgradeGraphQLIndex(project, context);
+        security.upgradePageImportExport(project, context);
         security.upgradeHeadlessCMSIndex(project, context);
         security.upgradeAdminComponents(project, context);
         security.upgradeAdminPlugins(project, context);
