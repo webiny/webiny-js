@@ -53,7 +53,6 @@ const ExportPageLoadingDialogMessage: React.FunctionComponent<{
     } = usePageBuilder();
 
     useEffect(() => {
-        console.log({ revisionType, ids });
         exportPage({
             variables: {
                 ids,

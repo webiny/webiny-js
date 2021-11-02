@@ -122,7 +122,7 @@ export default new ContextPlugin<PbContext>(async context => {
                 // 3. Create page blocks.
 
                 // Upload page data images
-                const fileIdToKeyMap = await savePageAssets({ context });
+                const fileIdToFileMap = await savePageAssets({ context });
 
                 // 4. Create initial menu.
                 const mainMenu = await pageBuilder.menus.get("main-menu");
@@ -141,7 +141,7 @@ export default new ContextPlugin<PbContext>(async context => {
 
                 const welcomeToWebinyPageContent = preparePageData({
                     srcPrefix: fmSettings && fmSettings.srcPrefix,
-                    fileIdToKeyMap
+                    fileIdToFileMap: fileIdToFileMap
                 });
 
                 const initialPagesData = [

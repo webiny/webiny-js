@@ -1,8 +1,8 @@
-import { HandlerArgs as RenderHandlerArgs } from "../render/types";
-import { HandlerArgs as FlushHandlerArgs } from "../flush/types";
-import { HandlerArgs as QueueHandlerArgs } from "../queue/add/types";
+import { HandlerArgs as RenderHandlerArgs } from "~/render/types";
+import { HandlerArgs as FlushHandlerArgs } from "~/flush/types";
+import { HandlerArgs as QueueHandlerArgs } from "~/queue/add/types";
 
-export type PrerenderingServiceClientContext = {
+export interface PrerenderingServiceClientContext {
     prerenderingServiceClient: {
         render(args: RenderHandlerArgs): Promise<void>;
         flush(args: FlushHandlerArgs): Promise<void>;
@@ -11,9 +11,9 @@ export type PrerenderingServiceClientContext = {
             process(): Promise<void>;
         };
     };
-};
+}
 
-export type PrerenderingServiceClientArgs = {
+export interface PrerenderingServiceClientArgs {
     handlers: {
         queue: {
             add: string;
@@ -22,4 +22,4 @@ export type PrerenderingServiceClientArgs = {
         render: string;
         flush: string;
     };
-};
+}

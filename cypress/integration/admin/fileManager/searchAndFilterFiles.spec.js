@@ -221,7 +221,9 @@ context("File Manager - Update file details", () => {
          * Make sure tags are indexed in elastic search before continue.
          */
         cy.waitUntil(() => cy.fmListTags().then(tags => tags.length === 2), {
-            description: `Wait until tags are indexed`
+            description: `Wait until tags are indexed`,
+            timeout: 2000,
+            interval: 2000
         });
 
         openFileDetails(1);
@@ -231,7 +233,9 @@ context("File Manager - Update file details", () => {
          * Make sure tags are indexed in elastic search before continue.
          */
         cy.waitUntil(() => cy.fmListTags().then(tags => tags.length === 3), {
-            description: `Wait until tags are indexed`
+            description: `Wait until tags are indexed`,
+            timeout: 2000,
+            interval: 2000
         });
 
         /**

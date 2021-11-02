@@ -38,7 +38,7 @@ import {
     EXPORT_FORM_SUBMISSIONS
 } from "./graphql/formSubmission";
 import { SecurityPermission } from "@webiny/api-security/types";
-import { until } from "./helpers";
+import { until } from "@webiny/project-utils/testing/helpers/until";
 import { createTenancyAndSecurity } from "./tenancySecurity";
 
 export interface UseGqlHandlerParams {

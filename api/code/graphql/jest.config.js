@@ -16,7 +16,7 @@ if (TEST_TYPE !== "unit") {
     log.info(`${log.info.hl("api/code/graphql")}: Assigning environment variables...`);
     const stackOutput = getStackOutput({ folder: "api", env: DEPLOY_ENVIRONMENT });
 
-    if (stackOutput) {
+    if (stackOutput && Object.keys(stackOutput).length > 0) {
         // Assign received values as environment variables.
         Object.assign(process.env, {
             // We assign `region`, `dynamoDbTable`, and `apiUrl` as AWS_REGION, DB_TABLE, and API_URL

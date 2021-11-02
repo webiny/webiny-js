@@ -4,7 +4,7 @@ import csv from "csvtojson";
 import useGqlHandler from "./useGqlHandler";
 import { fields, formSubmissionDataA, formSubmissionDataB } from "./mocks/form.mocks";
 
-jest.setTimeout(60000);
+jest.setTimeout(100000);
 
 describe('Form Builder "Form" Test', () => {
     const {
@@ -91,9 +91,7 @@ describe('Form Builder "Form" Test', () => {
             () => listForms().then(([data]) => data),
             ({ data }) => data.formBuilder.listForms.data[0].name === newData.name,
             {
-                name: "list forms after update revision",
-                wait: 500,
-                tries: 20
+                name: "list forms after update revision"
             }
         );
 
@@ -114,9 +112,7 @@ describe('Form Builder "Form" Test', () => {
             () => listForms().then(([data]) => data),
             ({ data }) => data.formBuilder.listForms.data.length > 0,
             {
-                name: "after create form",
-                wait: 500,
-                tries: 20
+                name: "after create form"
             }
         );
 
@@ -131,9 +127,7 @@ describe('Form Builder "Form" Test', () => {
             () => listForms().then(([data]) => data),
             ({ data }) => data.formBuilder.listForms.data[0].id === id3,
             {
-                name: "after create revisions",
-                wait: 500,
-                tries: 20
+                name: "after create revisions"
             }
         );
 
@@ -160,9 +154,7 @@ describe('Form Builder "Form" Test', () => {
             () => listForms().then(([data]) => data),
             ({ data }) => data.formBuilder.listForms.data[0].id === id2,
             {
-                name: "after delete revision 3",
-                wait: 500,
-                tries: 20
+                name: "after delete revision 3"
             }
         );
 
@@ -209,9 +201,7 @@ describe('Form Builder "Form" Test', () => {
             () => listForms().then(([data]) => data),
             ({ data }) => data.formBuilder.listForms.data.length === 0,
             {
-                name: "list after delete form",
-                wait: 500,
-                tries: 20
+                name: "list after delete form"
             }
         );
 
@@ -232,9 +222,7 @@ describe('Form Builder "Form" Test', () => {
             () => listForms().then(([data]) => data),
             ({ data }) => data.formBuilder.listForms.data[0].id === id,
             {
-                name: "list forms after publish revision",
-                wait: 500,
-                tries: 20
+                name: "list forms after publish revision"
             }
         );
 
@@ -305,6 +293,8 @@ describe('Form Builder "Form" Test', () => {
 
         await publishRevision({ revision: id });
 
+        await new Promise(res => setTimeout(res, 2000));
+
         // Create form submissions
         const [createSubmission1Response] = await createFormSubmission({
             revision: id,
@@ -321,6 +311,8 @@ describe('Form Builder "Form" Test', () => {
                 }
             }
         });
+
+        await new Promise(res => setTimeout(res, 2000));
 
         const [createSubmission2Response] = await createFormSubmission({
             revision: id,
@@ -342,9 +334,7 @@ describe('Form Builder "Form" Test', () => {
             () => listFormSubmissions({ form: id, sort: "savedOn_ASC" }).then(([data]) => data),
             ({ data }) => data.formBuilder.listFormSubmissions.data.length === 2,
             {
-                name: "after create submission",
-                wait: 500,
-                tries: 200
+                name: "after create submission"
             }
         );
 

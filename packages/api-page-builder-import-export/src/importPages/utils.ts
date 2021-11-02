@@ -1,10 +1,13 @@
-import unzipper from "unzipper";
 import uniqueId from "uniqid";
 import S3 from "aws-sdk/clients/s3";
 import dotProp from "dot-prop-immutable";
-import fs from "fs-extra";
+import { createWriteStream } from "fs";
+import { ensureDirSync } from "fs-extra";
+import { promisify } from "util";
+import { pipeline } from "stream";
 import fetch from "node-fetch";
 import path from "path";
+import yauzl from "yauzl";
 import chunk from "lodash/chunk";
 import loadJson from "load-json-file";
 import { FileInput } from "@webiny/api-file-manager/types";
@@ -13,6 +16,8 @@ import { deleteFile } from "@webiny/api-page-builder/graphql/crud/install/utils/
 import { PageImportExportTaskStatus } from "~/types";
 import { PbPageImportExportContext } from "~/graphql/types";
 import { s3Stream } from "~/exportPages/s3Stream";
+
+const streamPipeline = promisify(pipeline);
 
 const INSTALL_DIR = "/tmp";
 const INSTALL_EXTRACT_DIR = path.join(INSTALL_DIR, "apiPageBuilderImportPage");
@@ -158,7 +163,7 @@ export async function importPage({
 
     // Making Directory for page in which we're going to extract the page data file.
     const PAGE_EXTRACT_DIR = path.join(INSTALL_EXTRACT_DIR, pageKey);
-    fs.ensureDirSync(PAGE_EXTRACT_DIR);
+    ensureDirSync(PAGE_EXTRACT_DIR);
 
     const pageDataFileKey = dotProp.get(fileUploadsData, `data`);
     const PAGE_DATA_FILE_PATH = path.join(PAGE_EXTRACT_DIR, path.basename(pageDataFileKey));
@@ -169,7 +174,7 @@ export async function importPage({
         s3Stream
             .readStream(pageDataFileKey)
             .on("error", reject)
-            .pipe(fs.createWriteStream(PAGE_DATA_FILE_PATH))
+            .pipe(createWriteStream(PAGE_DATA_FILE_PATH))
             .on("error", reject)
             .on("finish", resolve);
     });
@@ -257,18 +262,27 @@ function getOldFileKey(key: string) {
 }
 
 const FILE_CONTENT_TYPE = "application/octet-stream";
-const ZIP_EXTENSION = ".zip";
+
+function getFileNameWithoutExt(fileName: string): string {
+    return path.basename(fileName).replace(path.extname(fileName), "");
+}
+
+interface PageImportData {
+    assets: Record<string, string>;
+    data: string;
+    key: string;
+}
 
 /**
  * Function will read the given zip file from S3 via stream, extract its content and upload it to S3 bucket.
  * @param zipFileKey
- * @return dataMap S3 file keys for all uploaded assets group by page.
+ * @return PageImportData S3 file keys for all uploaded assets group by page.
  */
 export async function readExtractAndUploadZipFileContents(
     zipFileKey: string
-): Promise<Record<string, any>> {
+): Promise<PageImportData[]> {
     const log = console.log;
-    let dataMap = {};
+    const pageImportDataList = [];
     let readStream;
     // Check whether it is a URL
     if (zipFileKey.startsWith("http")) {
@@ -287,88 +301,45 @@ export async function readExtractAndUploadZipFileContents(
 
         readStream = s3Stream.readStream(zipFileKey);
     }
-    /**
-     * Note:
-     * The page export file (zip) itself contains one or more zip files that contains the export data for individual pages.
-     * So, we need to perform unzip operation twice, once for top level zip and then for inner zip containing page data.
-     */
+
     const uniquePath = uniqueId("IMPORT_PAGES/");
-    // Extract top level zip file.
-    const zip = readStream.pipe(unzipper.Parse({ forceStream: true }));
-    const pageDataZipUploadPromises = [];
-    // Process each entry in the zip file.
-    for await (const entry of zip) {
-        const filePath = entry.path;
-        log(`Processing zip file "${filePath}" from top level zip.`);
-        const type = entry.type; // 'Directory' or 'File'
+    const zipFileName = path.basename(zipFileKey);
+    // Read export file and download it in the disk
+    const ZIP_FILE_PATH = path.join(INSTALL_DIR, zipFileName);
 
-        if (type === "File" && filePath.endsWith(ZIP_EXTENSION)) {
-            const newKey = `${uniquePath}/${filePath}`;
+    const writeStream = createWriteStream(ZIP_FILE_PATH);
+    await streamPipeline(readStream, writeStream);
+    log(`Downloaded file "${zipFileName}" at ${ZIP_FILE_PATH}`);
 
-            const { streamPassThrough, streamPassThroughUploadPromise: promise } =
-                s3Stream.writeStream(newKey, ZIP_CONTENT_TYPE);
-            entry.pipe(streamPassThrough);
-            /**
-             * Note: We're not simply awaiting the promise inside async-iterator because
-             * the streams returned by "unzipper.Parse()" doesn't work reliably that way.
-             *
-             * https://github.com/ZJONSSON/node-unzipper/issues/193#issuecomment-654990068
-             */
-            pageDataZipUploadPromises.push(promise);
-            console.log(`Successfully queued file "${filePath}" for upload.`);
-        } else {
-            entry.autodrain();
-        }
+    // Extract the downloaded zip file
+    const zipFilePaths = await extractZipToDisk(ZIP_FILE_PATH);
+
+    log(`Removing ZIP file "${zipFileKey}" from ${ZIP_FILE_PATH}`);
+    await deleteFile(ZIP_FILE_PATH);
+
+    // Extract each page zip and upload their content's to S3
+    for (let i = 0; i < zipFilePaths.length; i++) {
+        const currentPath = zipFilePaths[i];
+        const dataMap = await extractZipAndUploadToS3(currentPath, uniquePath);
+        pageImportDataList.push(dataMap);
     }
+    log("Removing all ZIP files located at ", path.dirname(zipFilePaths[0]));
+    await deleteFile(path.dirname(zipFilePaths[0]));
 
-    const zipKeys = await Promise.all(pageDataZipUploadPromises).then(results =>
-        results.map(({ Key }) => Key)
-    );
-
-    const pagesDataUploadPromises = [];
-    // Process each zip file.
-    for (let i = 0; i < zipKeys.length; i++) {
-        const zipKey = zipKeys[i];
-        const uniquePageKey = path.basename(zipKey).replace(path.extname(zipKey), "");
-
-        const zip = s3Stream.readStream(zipKey).pipe(unzipper.Parse({ forceStream: true }));
-        // Process each entry in the zip file.
-        for await (const entry of zip) {
-            const filePath = entry.path;
-
-            console.log(`Processing page file ${filePath}`);
-            const type = entry.type; // 'Directory' or 'File'
-
-            if (type === "File") {
-                const newKey = `${uniquePath}/${uniquePageKey}/${filePath}`;
-
-                dataMap = prepareMap({ map: dataMap, filePath, newKey });
-
-                const { streamPassThrough, streamPassThroughUploadPromise: promise } =
-                    s3Stream.writeStream(newKey, FILE_CONTENT_TYPE);
-                entry.pipe(streamPassThrough);
-                /**
-                 * Note: We're not simply awaiting the promise inside async-iterator because
-                 * the streams returned by "unzipper.Parse()" doesn't work reliably that way.
-                 *
-                 * https://github.com/ZJONSSON/node-unzipper/issues/193#issuecomment-654990068
-                 */
-                pagesDataUploadPromises.push(promise);
-                console.log(`Successfully queued  page file "${filePath}" for upload.`);
-            } else {
-                entry.autodrain();
-            }
-        }
-    }
-
-    await Promise.all(pageDataZipUploadPromises);
-
-    return dataMap;
+    return pageImportDataList;
 }
 
 const ASSETS_DIR_NAME = "/assets";
 
-function prepareMap({ map, filePath, newKey }) {
+function preparePageDataDirMap({
+    map,
+    filePath,
+    newKey
+}: {
+    map: PageImportData;
+    filePath: string;
+    newKey: string;
+}): PageImportData {
     const dirname = path.dirname(filePath);
     const fileName = path.basename(filePath);
     /*
@@ -380,11 +351,10 @@ function prepareMap({ map, filePath, newKey }) {
     const isAsset = dirname.endsWith(ASSETS_DIR_NAME);
 
     if (isAsset) {
-        const folder = dirname.replace(ASSETS_DIR_NAME, "");
-        map = dotProp.set(map, `${folder}.assets.${oldKey}`, newKey);
+        map = dotProp.set(map, `assets.${oldKey}`, newKey);
     } else {
         // We only need to know the newKey for data file.
-        map = dotProp.set(map, `${dirname}.data`, newKey);
+        map = dotProp.set(map, `data`, newKey);
     }
 
     return map;
@@ -416,4 +386,143 @@ export function initialStats(total) {
         [PageImportExportTaskStatus.FAILED]: 0,
         total
     };
+}
+
+function extractZipToDisk(exportFileZipPath: string): Promise<string[]> {
+    return new Promise((resolve, reject) => {
+        const pageZipFilePaths = [];
+        const uniqueFolderNameForExport = getFileNameWithoutExt(exportFileZipPath);
+        const EXPORT_FILE_EXTRACTION_PATH = path.join(INSTALL_DIR, uniqueFolderNameForExport);
+        // Make sure DIR exists
+        ensureDirSync(EXPORT_FILE_EXTRACTION_PATH);
+
+        yauzl.open(exportFileZipPath, { lazyEntries: true }, function (err, zipFile) {
+            if (err) {
+                console.warn("ERROR: Failed to extract zip: ", exportFileZipPath, err);
+                reject(err);
+            }
+
+            console.info(`The ZIP file contains ${zipFile.entryCount} entries.`);
+
+            zipFile.on("end", function (err) {
+                if (err) {
+                    console.warn("ERROR: Failed on END event for file: ", exportFileZipPath, err);
+                    reject(err);
+                }
+                resolve(pageZipFilePaths);
+            });
+
+            zipFile.readEntry();
+
+            zipFile.on("entry", function (entry) {
+                console.info(`Processing entry: "${entry.fileName}"`);
+                if (/\/$/.test(entry.fileName)) {
+                    // Directory file names end with '/'.
+                    // Note that entries for directories themselves are optional.
+                    // An entry's fileName implicitly requires its parent directories to exist.
+                    zipFile.readEntry();
+                } else {
+                    // file entry
+                    zipFile.openReadStream(entry, function (err, readStream) {
+                        if (err) {
+                            console.warn(
+                                "ERROR: Failed to openReadStream for file: ",
+                                entry.fileName,
+                                err
+                            );
+                            reject(err);
+                        }
+
+                        const filePath = path.join(EXPORT_FILE_EXTRACTION_PATH, entry.fileName);
+
+                        readStream.on("end", function () {
+                            pageZipFilePaths.push(filePath);
+                            zipFile.readEntry();
+                        });
+
+                        streamPipeline(readStream, createWriteStream(filePath));
+                    });
+                }
+            });
+        });
+    });
+}
+
+function extractZipAndUploadToS3(
+    pageDataZipFilePath: string,
+    uniquePath: string
+): Promise<PageImportData> {
+    return new Promise((resolve, reject) => {
+        const filePaths = [];
+        const fileUploadPromises = [];
+        const uniquePageKey = getFileNameWithoutExt(pageDataZipFilePath);
+        let dataMap: PageImportData = {
+            key: uniquePageKey,
+            assets: {},
+            data: ""
+        };
+        yauzl.open(pageDataZipFilePath, { lazyEntries: true }, function (err, zipFile) {
+            if (err) {
+                console.warn("ERROR: Failed to extract zip: ", pageDataZipFilePath, err);
+                reject(err);
+            }
+            console.info(`The ZIP file contains ${zipFile.entryCount} entries.`);
+            zipFile.on("end", function (err) {
+                if (err) {
+                    console.warn('ERROR: Failed on "END" for file: ', pageDataZipFilePath, err);
+                    reject(err);
+                }
+
+                Promise.all(fileUploadPromises).then(res => {
+                    res.forEach(r => {
+                        console.info("Done uploading... ", r);
+                    });
+                    resolve(dataMap);
+                });
+            });
+
+            zipFile.readEntry();
+
+            zipFile.on("entry", function (entry) {
+                console.info(`Processing entry: "${entry.fileName}"`);
+                if (/\/$/.test(entry.fileName)) {
+                    // Directory file names end with '/'.
+                    // Note that entries for directories themselves are optional.
+                    // An entry's fileName implicitly requires its parent directories to exist.
+                    zipFile.readEntry();
+                } else {
+                    // file entry
+                    zipFile.openReadStream(entry, function (err, readStream) {
+                        if (err) {
+                            console.warn(
+                                "ERROR: Failed while performing [openReadStream] for file: ",
+                                entry.fileName,
+                                err
+                            );
+                            reject(err);
+                        }
+                        readStream.on("end", function () {
+                            filePaths.push(entry.fileName);
+                            zipFile.readEntry();
+                        });
+
+                        const newKey = `${uniquePath}/${uniquePageKey}/${entry.fileName}`;
+                        // Modify in place
+                        dataMap = preparePageDataDirMap({
+                            map: dataMap,
+                            filePath: entry.fileName,
+                            newKey
+                        });
+
+                        const { streamPassThrough, streamPassThroughUploadPromise: promise } =
+                            s3Stream.writeStream(newKey, FILE_CONTENT_TYPE);
+
+                        streamPipeline(readStream, streamPassThrough).then(() => {
+                            fileUploadPromises.push(promise);
+                        });
+                    });
+                }
+            });
+        });
+    });
 }

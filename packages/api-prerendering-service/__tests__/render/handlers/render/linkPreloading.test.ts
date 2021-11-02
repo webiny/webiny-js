@@ -1,4 +1,4 @@
-import render from "@webiny/api-prerendering-service/render/renderUrl";
+import render from "~/render/renderUrl";
 import prettier from "prettier";
 
 const BASE_HTML = `<!DOCTYPE html>
@@ -24,6 +24,8 @@ const BASE_HTML = `<!DOCTYPE html>
 describe(`Link Preloading Test`, () => {
     it("should insert preloading attributes to CSS/JS links", async () => {
         const [[html], meta] = await render("https://some-url.com", {
+            context: {} as any,
+            args: {},
             configuration: {},
             renderUrlFunction: () => {
                 return {
