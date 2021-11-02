@@ -4,7 +4,6 @@ const { DocumentClient } = require("aws-sdk/clients/dynamodb");
 const elasticsearchClientContextPlugin = require("@webiny/api-elasticsearch").default;
 const { createHandler } = require("@webiny/handler-aws");
 const dynamoToElastic = require("@webiny/api-dynamodb-to-elasticsearch/handler").default;
-const { Client } = require("@elastic/elasticsearch");
 const { simulateStream } = require("@webiny/project-utils/testing/dynamodb");
 const NodeEnvironment = require("jest-environment-node");
 const elasticsearchDataGzipCompression =
@@ -13,6 +12,7 @@ const { ContextPlugin } = require("@webiny/handler/plugins/ContextPlugin");
 const {
     elasticIndexManager
 } = require("@webiny/project-utils/testing/helpers/elasticIndexManager");
+const { createElasticsearchClient } = require("@webiny/api-elasticsearch/client");
 /**
  * For this to work it must load plugins that have already been built
  */
@@ -28,8 +28,9 @@ class FileManagerTestEnvironment extends NodeEnvironment {
     async setup() {
         await super.setup();
 
-        const elasticsearchClient = new Client({
-            node: `http://localhost:${ELASTICSEARCH_PORT}`
+        const elasticsearchClient = createElasticsearchClient({
+            node: `http://localhost:${ELASTICSEARCH_PORT}`,
+            auth: {}
         });
         const documentClient = new DocumentClient({
             convertEmptyValues: true,
@@ -39,10 +40,7 @@ class FileManagerTestEnvironment extends NodeEnvironment {
             accessKeyId: "test",
             secretAccessKey: "test"
         });
-        const elasticsearchClientContext = elasticsearchClientContextPlugin({
-            endpoint: `http://localhost:${ELASTICSEARCH_PORT}`,
-            auth: {}
-        });
+        const elasticsearchClientContext = elasticsearchClientContextPlugin(elasticsearchClient);
 
         /**
          * Intercept DocumentClient operations and trigger dynamoToElastic function (almost like a DynamoDB Stream trigger)
@@ -66,7 +64,7 @@ class FileManagerTestEnvironment extends NodeEnvironment {
                     })
                 });
                 return [
-                    elasticsearchDataGzipCompression(),
+                    //elasticsearchDataGzipCompression(),
                     ...pluginsValue,
                     ...dbPluginsValue,
                     elasticsearchClientContext
