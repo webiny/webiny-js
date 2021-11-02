@@ -49,6 +49,15 @@ const processBatchWrite = async (documentClient, handler, params) => {
                 records.push(
                     createDynamoStreamRecord("REMOVE", { Keys: DeleteRequest.Key, OldImage: Item })
                 );
+            } else if (!Item) {
+                throw new Error(
+                    `Missing record in the elasticsearch table "${process.env.DB_TABLE_ELASTICSEARCH}" with key "${DeleteRequest.Key}".`
+                );
+            } else if (!Item.index) {
+                const { PK, SK } = Item;
+                throw new Error(
+                    `Missing index value on the record in the elasticsearch table "${process.env.DB_TABLE_ELASTICSEARCH}" with keys PK "${PK}" and SK "${SK}".`
+                );
             }
         }
 
