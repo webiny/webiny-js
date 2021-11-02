@@ -369,6 +369,9 @@ export class PageStorageOperationsDdbEs implements PageStorageOperations {
                 ex.code || "BATCH_WRITE_RECORDS_ERROR"
             );
         }
+        if (esItems.length === 0) {
+            return [page, previousLatestPage];
+        }
         try {
             await batchWriteAll({
                 table: this.esTable,
@@ -442,12 +445,19 @@ export class PageStorageOperationsDdbEs implements PageStorageOperations {
             this.esEntity.deleteBatch({
                 PK: partitionKey,
                 SK: this.createLatestSortKey()
-            }),
-            this.esEntity.deleteBatch({
-                PK: partitionKey,
-                SK: this.createPublishedSortKey()
             })
         ];
+        /**
+         * Delete published record if it is published.
+         */
+        if (publishedPathEntryDeleted) {
+            esItems.push(
+                this.esEntity.deleteBatch({
+                    PK: partitionKey,
+                    SK: this.createPublishedSortKey()
+                })
+            );
+        }
 
         try {
             await batchWriteAll({

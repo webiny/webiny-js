@@ -46,13 +46,14 @@ const processBatchWrite = async (documentClient, handler, params) => {
                 .promise();
 
             if (!Item) {
+                const { PK, SK } = DeleteRequest.Key;
                 throw new Error(
-                    `Missing record in the elasticsearch table "${process.env.DB_TABLE_ELASTICSEARCH}" with key "${DeleteRequest.Key}".`
+                    `Missing record in the elasticsearch table "${process.env.DB_TABLE_ELASTICSEARCH}" with keys PK "${PK}" and SK "${SK}". Make sure that record you are deleting is stored in the Elasticsearch table.`
                 );
             } else if (!Item.index) {
                 const { PK, SK } = Item;
                 throw new Error(
-                    `Missing index value on the record in the elasticsearch table "${process.env.DB_TABLE_ELASTICSEARCH}" with keys PK "${PK}" and SK "${SK}".`
+                    `Missing index value on the record in the elasticsearch table "${process.env.DB_TABLE_ELASTICSEARCH}" with keys PK "${PK}" and SK "${SK}". Make sure that you stored Elasticsearch entry in the Elasticsearch table.`
                 );
             }
             records.push(

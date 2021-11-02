@@ -193,21 +193,52 @@ describe("Categories CRUD Test", () => {
             message: "Cannot delete category because some pages are linked to it."
         };
 
-        await deleteCategory({ slug: "delete-cat" }).then(([res]) =>
-            expect(res.data.pageBuilder.deleteCategory.error).toEqual(error)
-        );
+        const [deleteCategoryDeleteCatResult] = await deleteCategory({ slug: "delete-cat" });
+
+        expect(deleteCategoryDeleteCatResult).toEqual({
+            data: {
+                pageBuilder: {
+                    deleteCategory: {
+                        data: null,
+                        error
+                    }
+                }
+            }
+        });
 
         await deletePage({ id: p1.id });
 
-        await deleteCategory({ slug: "delete-cat" }).then(([res]) =>
-            expect(res.data.pageBuilder.deleteCategory.error).toEqual(error)
-        );
+        const [deleteCategoryDeleteCatAfterDeletePage1Result] = await deleteCategory({
+            slug: "delete-cat"
+        });
+
+        expect(deleteCategoryDeleteCatAfterDeletePage1Result).toEqual({
+            data: {
+                pageBuilder: {
+                    deleteCategory: {
+                        data: null,
+                        error
+                    }
+                }
+            }
+        });
 
         await deletePage({ id: p2.id });
 
-        await deleteCategory({ slug: "delete-cat" }).then(([res]) =>
-            expect(res.data.pageBuilder.deleteCategory.error).toEqual(error)
-        );
+        const [deleteCategoryDeleteCatAfterDeletePage2Result] = await deleteCategory({
+            slug: "delete-cat"
+        });
+
+        expect(deleteCategoryDeleteCatAfterDeletePage2Result).toEqual({
+            data: {
+                pageBuilder: {
+                    deleteCategory: {
+                        data: null,
+                        error
+                    }
+                }
+            }
+        });
 
         const [deletePageResponse] = await deletePage({ id: p3.id });
 
@@ -228,10 +259,16 @@ describe("Categories CRUD Test", () => {
             }
         });
 
-        await until(listPages, ([res]) => res.data.pageBuilder.listPages.data.length === 0, {
-            tries: 10,
-            name: "list pages after delete"
-        });
+        await until(
+            listPages,
+            ([res]) => {
+                return res.data.pageBuilder.listPages.data.length === 0;
+            },
+            {
+                tries: 10,
+                name: "list pages after delete"
+            }
+        );
 
         await deleteCategory({ slug: "delete-cat" }).then(([res]) =>
             expect(res.data.pageBuilder.deleteCategory).toMatchObject({
