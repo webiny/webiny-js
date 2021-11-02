@@ -18,6 +18,8 @@ jobs:
           node-version: 12
 
       - uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
 
       - name: List dirs
         run: ls -alh
