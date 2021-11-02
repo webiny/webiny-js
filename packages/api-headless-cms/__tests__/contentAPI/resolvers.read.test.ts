@@ -457,7 +457,7 @@ describe("READ - Resolvers", () => {
                     limit: 1
                 }).then(([data]) => data),
             ({ data }) => data.listCategories.data[0].id === animals.id,
-            { name: "list entries with limit after", wait: 500 }
+            { name: "list entries with limit after" }
         );
 
         expect(firstResult).toEqual({
@@ -1171,7 +1171,7 @@ describe("READ - Resolvers", () => {
                     where: {}
                 }).then(([data]) => data),
             ({ data }) => data.listProducts.data.length === 3,
-            { name: "list all products in vegetables categories - range", tries: 10, wait: 1000 }
+            { name: "list all products in vegetables categories - range" }
         );
 
         const [response] = await listProducts({
@@ -1260,9 +1260,7 @@ describe("READ - Resolvers", () => {
             () => listProducts({}).then(([data]) => data),
             ({ data }) => data.listProducts.data.length === 3,
             {
-                name: "list all products in vegetables categories - sort title",
-                tries: 10,
-                wait: 1000
+                name: "list all products in vegetables categories - sort title"
             }
         );
 
@@ -1367,9 +1365,7 @@ describe("READ - Resolvers", () => {
             () => listProducts({}).then(([data]) => data),
             ({ data }) => data.listProducts.data.length === 3,
             {
-                name: "list all products in vegetables categories - sort price",
-                tries: 10,
-                wait: 1000
+                name: "list all products in vegetables categories - sort price"
             }
         );
 

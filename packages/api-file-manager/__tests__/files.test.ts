@@ -109,7 +109,7 @@ describe("Files CRUD test", () => {
                 }
                 return file.tags.length === 1 && file.tags[0] === "sketch";
             },
-            { name: "list files after update tags", debounce: 3000, wait: 3000 }
+            { name: "list files after update tags" }
         );
 
         // Let's create multiple files

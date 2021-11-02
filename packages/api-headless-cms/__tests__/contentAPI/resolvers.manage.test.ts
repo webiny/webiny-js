@@ -7,6 +7,7 @@ import { useCategoryReadHandler } from "../utils/useCategoryReadHandler";
 import models from "./mocks/contentModels";
 import modelsWithoutValidation from "./mocks/contentModels.noValidation";
 import { useProductManageHandler } from "../utils/useProductManageHandler";
+import { sleep } from "@webiny/project-utils/testing/helpers/sleep";
 
 interface CreateCategoriesResult {
     fruits: CmsContentEntry;
@@ -574,7 +575,7 @@ describe("MANAGE - Resolvers", () => {
                 }
                 return entry.id === newEntry.id && entry.savedOn === newEntry.savedOn;
             },
-            { name: "list after create revision", wait: 500, tries: 10 }
+            { name: "list after create revision" }
         );
 
         expect(response).toEqual({
@@ -706,7 +707,7 @@ describe("MANAGE - Resolvers", () => {
         await until(
             () => listCategories().then(([data]) => data),
             ({ data }) => data.listCategories.data[0].id === id2,
-            { name: "delete latest revision", wait: 500, tries: 10 }
+            { name: "delete latest revision" }
         );
 
         // Make sure revision #2 is now "latest"

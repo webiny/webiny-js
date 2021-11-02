@@ -253,18 +253,14 @@ describe("Forms Submission Security Test", () => {
             () => handlerA.listFormSubmissions({ form: formA.id }).then(([data]) => data),
             ({ data }) => data.formBuilder.listFormSubmissions.data.length === 3,
             {
-                name: "list form A submissions",
-                wait: 500,
-                tries: 20
+                name: "list form A submissions"
             }
         );
         await handlerA.until(
             () => handlerA.listFormSubmissions({ form: formB.id }).then(([data]) => data),
             ({ data }) => data.formBuilder.listFormSubmissions.data.length === 2,
             {
-                name: "list form B submissions",
-                wait: 500,
-                tries: 20
+                name: "list form B submissions"
             }
         );
 

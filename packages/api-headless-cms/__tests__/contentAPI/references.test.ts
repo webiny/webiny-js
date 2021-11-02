@@ -377,9 +377,7 @@ describe("entry references", () => {
                 });
             },
             {
-                name: "list all published articles",
-                tries: 20,
-                wait: 400
+                name: "list all published articles"
             }
         );
 
@@ -462,9 +460,7 @@ describe("entry references", () => {
                 return entries.length === 0;
             },
             {
-                name: "list all categories after delete",
-                tries: 20,
-                wait: 400
+                name: "list all categories after delete"
             }
         );
 
