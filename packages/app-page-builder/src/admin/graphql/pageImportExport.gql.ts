@@ -18,9 +18,17 @@ stats {
 }`;
 
 export const IMPORT_PAGES = gql`
-    mutation PbImportPage($category: String!, $data: PbImportPageInput!) {
+    mutation PbImportPage(
+        $category: String!,
+        $zipFileKey: String,
+        $zipFileUrl: String
+    ) {
         pageBuilder {
-            importPages(category: $category, data: $data) {
+            importPages(
+                category: $category,
+                zipFileKey: $zipFileKey,
+                zipFileUrl: $zipFileUrl
+            ) {
                 data {
                     task {
                         id
@@ -37,12 +45,20 @@ export const IMPORT_PAGES = gql`
 
 export const EXPORT_PAGES = gql`
     mutation PbExportPages(
-        $ids: [ID]!,
-        $revisionType: PbExportPageRevisionType,
-        $filterArgs: PbExportPagesFilterArgs
+        $ids: [ID!],
+        $revisionType: PbExportPageRevisionType!,
+        $where: PbListPagesWhereInput,
+        $sort: [PbListPagesSort!],
+        $search: PbListPagesSearchInput
     ) {
         pageBuilder {
-            exportPages(ids: $ids, revisionType: $revisionType, filterArgs: $filterArgs) {
+            exportPages(
+                ids: $ids,
+                revisionType: $revisionType,
+                where: $where,
+                sort: $sort,
+                search: $search
+            ) {
                 data {
                     task {
                         id
