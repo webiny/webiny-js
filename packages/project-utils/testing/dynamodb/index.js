@@ -45,11 +45,7 @@ const processBatchWrite = async (documentClient, handler, params) => {
                 .get({ Key: DeleteRequest.Key, TableName: process.env.DB_TABLE_ELASTICSEARCH })
                 .promise();
 
-            if (Item && Item.index) {
-                records.push(
-                    createDynamoStreamRecord("REMOVE", { Keys: DeleteRequest.Key, OldImage: Item })
-                );
-            } else if (!Item) {
+            if (!Item) {
                 throw new Error(
                     `Missing record in the elasticsearch table "${process.env.DB_TABLE_ELASTICSEARCH}" with key "${DeleteRequest.Key}".`
                 );
@@ -59,6 +55,9 @@ const processBatchWrite = async (documentClient, handler, params) => {
                     `Missing index value on the record in the elasticsearch table "${process.env.DB_TABLE_ELASTICSEARCH}" with keys PK "${PK}" and SK "${SK}".`
                 );
             }
+            records.push(
+                createDynamoStreamRecord("REMOVE", { Keys: DeleteRequest.Key, OldImage: Item })
+            );
         }
 
         if (PutRequest) {
