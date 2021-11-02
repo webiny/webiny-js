@@ -24,3 +24,14 @@ jobs:
 
       - name: List dirs
         run: cd packages && ls -alh
+
+      - name: Create project-files artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: project-files
+          retention-days: 1
+          path: |
+            .
+            !node_modules/**/*
+            !**/node_modules/**/*
+            !.yarn/cache/**/*
