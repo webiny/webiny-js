@@ -2,11 +2,13 @@
 const fs = require("fs");
 const path = require("path");
 
+const SKIP_PACKAGES = ["i18n"];
+
 /**
- * Because of CI/CD and the need to skip install of any extra dependencies,
- * we decided to stay away from using a glob library.
+ * Because of CI/CD and the need to skip the installation of any extra
+ * dependencies, we decided to stay away from using a glob-like library.
  * @param folder
- * @returns {*[]}
+ * @returns boolean
  */
 function hasTestFiles(folder) {
     if (!fs.existsSync(folder)) {
@@ -31,10 +33,14 @@ function hasTestFiles(folder) {
 const allPackages = fs.readdirSync("packages");
 const packagesWithTests = [];
 for (let i = 0; i < allPackages.length; i++) {
-    const current = allPackages[i];
-    const testsFolder = path.join("packages", current, "__tests__");
+    const packageName = allPackages[i];
+    if (SKIP_PACKAGES.includes(packageName)) {
+        continue;
+    }
+
+    const testsFolder = path.join("packages", packageName, "__tests__");
     if (hasTestFiles(testsFolder)) {
-        packagesWithTests.push(current);
+        packagesWithTests.push(packageName);
     }
 }
 
