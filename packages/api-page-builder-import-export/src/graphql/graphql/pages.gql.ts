@@ -1,5 +1,5 @@
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
-import { PageExportRevisionType } from "~/types";
+import { ExportPagesParams, ImportPagesParams } from "~/types";
 import { PbPageImportExportContext } from "../types";
 import resolve from "./utils/resolve";
 
@@ -30,53 +30,32 @@ const plugin: GraphQLSchemaPlugin<PbPageImportExportContext> = {
                 latest
             }
 
-            input PbImportPageInput {
-                zipFileKey: String
-                zipFileUrl: String
-            }
-
-            input PbExportPagesFilterArgs {
-                where: PbListPagesWhereInput
-                sort: [PbListPagesSort!]
-                search: PbListPagesSearchInput
-            }
-
             extend type PbMutation {
                 # Export pages
                 exportPages(
-                    ids: [ID]!
-                    revisionType: PbExportPageRevisionType
-                    filterArgs: PbExportPagesFilterArgs
+                    ids: [ID!]
+                    revisionType: PbExportPageRevisionType!
+                    where: PbListPagesWhereInput
+                    sort: [PbListPagesSort!]
+                    search: PbListPagesSearchInput
                 ): PbExportPageResponse
 
                 # Import pages
-                importPages(category: String!, data: PbImportPageInput!): PbImportPageResponse
+                importPages(
+                    category: String!
+                    zipFileKey: String
+                    zipFileUrl: String
+                ): PbImportPageResponse
             }
         `,
         resolvers: {
             PbMutation: {
-                exportPages: async (
-                    _,
-                    args: { ids: string[]; revisionType: PageExportRevisionType; filterArgs },
-                    context
-                ) => {
-                    return resolve(() =>
-                        context.pageBuilder.pages.exportPages(
-                            args.ids,
-                            args.revisionType,
-                            args.filterArgs
-                        )
-                    );
+                exportPages: async (_, args: ExportPagesParams, context) => {
+                    return resolve(() => context.pageBuilder.pages.exportPages(args));
                 },
 
-                importPages: async (
-                    _,
-                    args: { category: string; data: Record<string, any> },
-                    context
-                ) => {
-                    return resolve(() =>
-                        context.pageBuilder.pages.importPages(args.category, args.data)
-                    );
+                importPages: async (_, args: ImportPagesParams, context) => {
+                    return resolve(() => context.pageBuilder.pages.importPages(args));
                 }
             }
         }

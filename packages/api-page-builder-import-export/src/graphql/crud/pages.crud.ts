@@ -19,7 +19,7 @@ const IMPORT_PAGES_CREATE_HANDLER = process.env.IMPORT_PAGES_CREATE_HANDLER;
 
 export default new ContextPlugin<PbPageImportExportContext>(context => {
     const importExportCrud: PagesImportExportCrud = {
-        async importPages(categorySlug, data) {
+        async importPages({ category: categorySlug, zipFileKey, zipFileUrl }) {
             await checkBasePermissions(context, PERMISSION_NAME, {
                 rwd: "w"
             });
@@ -35,7 +35,8 @@ export default new ContextPlugin<PbPageImportExportContext>(context => {
                 status: PageImportExportTaskStatus.PENDING,
                 input: {
                     category: categorySlug,
-                    data
+                    zipFileKey,
+                    zipFileUrl
                 }
             });
 
@@ -44,7 +45,8 @@ export default new ContextPlugin<PbPageImportExportContext>(context => {
                 name: IMPORT_PAGES_CREATE_HANDLER,
                 payload: {
                     category: categorySlug,
-                    data,
+                    zipFileKey,
+                    zipFileUrl,
                     task,
                     identity: context.security.getIdentity()
                 }
@@ -55,13 +57,13 @@ export default new ContextPlugin<PbPageImportExportContext>(context => {
             };
         },
 
-        async exportPages(initialPageIds, revisionType, filterArgs) {
+        async exportPages({ ids: initialPageIds, revisionType, where, sort, search }) {
             await checkBasePermissions(context, PERMISSION_NAME, {
                 rwd: "w"
             });
             let pageIds = initialPageIds;
-            // It means we want to export all pages
-            if (initialPageIds.length === 0) {
+            // If no ids are provided then it means we want to export all pages
+            if (!initialPageIds || (Array.isArray(initialPageIds) && initialPageIds.length === 0)) {
                 pageIds = [];
                 let pages = [];
                 let meta = { hasMoreItems: true, cursor: null };
@@ -69,7 +71,9 @@ export default new ContextPlugin<PbPageImportExportContext>(context => {
                 while (meta.hasMoreItems) {
                     [pages, meta] = await context.pageBuilder.pages.listLatest({
                         after: meta.cursor,
-                        ...filterArgs
+                        where: where,
+                        sort: sort,
+                        search: search
                     });
                     // Save page ids
                     pages.forEach(page => pageIds.push(page.id));
