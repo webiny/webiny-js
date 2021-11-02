@@ -23,7 +23,7 @@ const META_FILE_PATH = path.join(CACHE_FOLDER_PATH, "meta.json");
         console.log(`Done! Finished in ${green(duration + "s")}.`);
     } catch (e) {
         console.log(red("An error occurred while executing the command:"));
-        console.log(e);
+        console.log(e.message);
         process.exit(1);
     }
 })();
@@ -107,7 +107,7 @@ async function build() {
         console.log("Running build for the following packages:");
         for (let i = 0; i < packagesNoCache.length; i++) {
             const item = packagesNoCache[i];
-            console.log(`- ${green(item.packageJson.name)}`);
+            console.log(`‣ ${green(item.packageJson.name)}`);
         }
     }
 
@@ -150,6 +150,7 @@ async function build() {
             batches.length > 1 ? "batches" : "batch"
         }.`
     );
+    console.log();
 
     let buildOverrides = {};
     if (argv.buildOverrides) {
@@ -176,13 +177,13 @@ async function build() {
 
         const batchStart = new Date();
         console.log(
-            green(`[${i + 1}/${batches.length}]`) + ` ${green(batch.length)} package(s) to build:`
+            green(`[${i + 1}/${batches.length}]`) + ` Building ${green(batch.length)} package(s)...`
         );
 
         const promises = [];
         for (let j = 0; j < batch.length; j++) {
             const currentPackage = workspacesPackages.find(item => item.name === batch[j]);
-            console.log(`‣ ${currentPackage.packageJson.name}`);
+            console.log(`‣ ${green(currentPackage.packageJson.name)}`);
             promises.push(
                 new Promise(async (resolve, reject) => {
                     const configPath = path
@@ -213,17 +214,39 @@ async function build() {
                         writeJson.sync(META_FILE_PATH, metaJson);
                         resolve();
                     } catch (e) {
-                        console.log(e);
-                        reject("Failed build: " + currentPackage.name);
+                        reject({
+                            error: e,
+                            package: currentPackage
+                        });
                     }
                 })
             );
         }
-        await Promise.all(promises);
 
+        const results = await Promise.allSettled(promises);
         const duration = (new Date() - batchStart) / 1000;
-        console.log(`Batch completed in ${green(duration + "s")}.`);
-        console.log("");
+        const rejected = results.filter(item => item.status === "rejected");
+
+        console.log();
+        if (rejected.length === 0) {
+            console.log(`Batch ${green(i + 1)} completed in ${green(duration + "s")}.`);
+            console.log();
+            continue;
+        }
+
+        console.log(`Batch ${red(i + 1)} failed to complete.`);
+        console.log();
+        console.log("The following errors occurred while processing the batch:");
+        for (let j = 0; j < rejected.length; j++) {
+            const { reason } = rejected[j];
+            j > 0 && console.log();
+            console.log(`‣ ${red(reason.package.packageJson.name)}`);
+            console.log(reason.error.message);
+        }
+
+        throw new Error(
+            `Failed to process batch ${red(i + 1)}. Check the above logs for more information.`
+        );
     }
 }
 
