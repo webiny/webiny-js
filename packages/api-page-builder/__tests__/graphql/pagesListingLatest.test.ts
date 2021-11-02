@@ -29,7 +29,7 @@ describe("listing latest pages", () => {
             }
         });
         if (createCategoryResponse.data.pageBuilder.createCategory.error) {
-            throw new Error(createCategoryResponse.data.pageBuilder.createCategory.error);
+            throw new Error(createCategoryResponse.data.pageBuilder.createCategory.error.message);
         }
         return createCategoryResponse.data.pageBuilder.createCategory.data;
     };
@@ -164,7 +164,7 @@ describe("listing latest pages", () => {
         for (const letter of letters) {
             const [res] = await createPage({ category: "category" });
             if (res.data.pageBuilder.createPage.error) {
-                throw new Error(res.data.pageBuilder.createPage.error);
+                throw new Error(res.data.pageBuilder.createPage.error.message);
             }
             const page = res.data.pageBuilder.createPage.data;
             await waitPage(handler, page);
