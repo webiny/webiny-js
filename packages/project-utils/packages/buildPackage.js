@@ -125,7 +125,7 @@ const tsCompile = params => {
         if (allDiagnostics.length) {
             const formatHost = {
                 getCanonicalFileName: path => path,
-                getCurrentDirectory: ts.sys.getCurrentDirectory,
+                getCurrentDirectory: () => params.config.cwd,
                 getNewLine: () => ts.sys.newLine
             };
             const message = ts.formatDiagnostics(allDiagnostics, formatHost);
