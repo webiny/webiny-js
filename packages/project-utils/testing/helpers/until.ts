@@ -8,7 +8,7 @@ export interface UntilOptions {
 }
 
 export const until = async (execute, until, options: UntilOptions = {}) => {
-    const { name = "NO_NAME", tries = 10, wait = 1000, debounce = 1000 } = options;
+    const { name = "NO_NAME", tries = 10, wait = 1000, debounce = 0 } = options;
 
     let result;
     let triesCount = 0;

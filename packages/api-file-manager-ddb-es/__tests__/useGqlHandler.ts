@@ -6,7 +6,6 @@ import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import dbPlugins from "@webiny/handler-db";
 import dynamoDbPlugins from "@webiny/db-dynamodb/plugins";
-import { Client } from "@elastic/elasticsearch";
 import { simulateStream } from "@webiny/project-utils/testing/dynamodb";
 import elasticsearchClientContextPlugin from "@webiny/api-elasticsearch";
 import { createHandler } from "@webiny/handler-aws";
@@ -38,6 +37,7 @@ import { until } from "@webiny/project-utils/testing/helpers/until";
 import { FilePhysicalStoragePlugin } from "@webiny/api-file-manager/plugins/definitions/FilePhysicalStoragePlugin";
 import { createTenancyAndSecurity } from "./tenancySecurity";
 import { SecurityIdentity } from "@webiny/api-security/types";
+import { createElasticsearchClient } from "@webiny/api-elasticsearch/client";
 
 type UseGqlHandlerParams = {
     permissions?: SecurityPermission[];
@@ -48,8 +48,9 @@ export default (params?: UseGqlHandlerParams) => {
     const { permissions, identity } = params || {};
 
     const ELASTICSEARCH_PORT = process.env.ELASTICSEARCH_PORT || "9200";
-    const elasticsearchClient = new Client({
-        node: `http://localhost:${ELASTICSEARCH_PORT}`
+    const elasticsearchClient = createElasticsearchClient({
+        node: `http://localhost:${ELASTICSEARCH_PORT}`,
+        auth: {}
     });
     const documentClient = new DocumentClient({
         convertEmptyValues: true,
@@ -59,9 +60,7 @@ export default (params?: UseGqlHandlerParams) => {
         accessKeyId: "test",
         secretAccessKey: "test"
     });
-    const elasticsearchClientContext = elasticsearchClientContextPlugin({
-        endpoint: `http://localhost:${ELASTICSEARCH_PORT}`
-    });
+    const elasticsearchClientContext = elasticsearchClientContextPlugin(elasticsearchClient);
     const clearElasticsearch = async () => {
         return elasticsearchClient.indices.delete({
             index: "_all"

@@ -41,6 +41,7 @@ import { batchWriteAll } from "@webiny/db-dynamodb/utils/batchWrite";
 import { getESLatestPageData, getESPublishedPageData } from "./helpers";
 import lodashGet from "lodash/get";
 import { getZeroPaddedVersionNumber } from "@webiny/api-page-builder/utils/zeroPaddedVersionNumber";
+import { get } from "@webiny/db-dynamodb/utils/get";
 
 const getElasticsearchClient = (context: any): Client => {
     const ctx = context as Partial<ElasticsearchContext>;
@@ -368,6 +369,9 @@ export class PageStorageOperationsDdbEs implements PageStorageOperations {
                 ex.code || "BATCH_WRITE_RECORDS_ERROR"
             );
         }
+        if (esItems.length === 0) {
+            return [page, previousLatestPage];
+        }
         try {
             await batchWriteAll({
                 table: this.esTable,
@@ -441,12 +445,19 @@ export class PageStorageOperationsDdbEs implements PageStorageOperations {
             this.esEntity.deleteBatch({
                 PK: partitionKey,
                 SK: this.createLatestSortKey()
-            }),
-            this.esEntity.deleteBatch({
-                PK: partitionKey,
-                SK: this.createPublishedSortKey()
             })
         ];
+        /**
+         * Delete published record if it is published.
+         */
+        if (publishedPathEntryDeleted) {
+            esItems.push(
+                this.esEntity.deleteBatch({
+                    PK: partitionKey,
+                    SK: this.createPublishedSortKey()
+                })
+            );
+        }
 
         try {
             await batchWriteAll({
@@ -560,14 +571,25 @@ export class PageStorageOperationsDdbEs implements PageStorageOperations {
             );
         } else {
             /**
-             * Delete published record if not visible
+             * We need to check if record is in the Elasticsearch table.
              */
-            esItems.push(
-                this.esEntity.deleteBatch({
-                    PK: this.createPartitionKey(page.pid),
-                    SK: this.createPublishedSortKey()
-                })
-            );
+            const keys = {
+                PK: this.createPartitionKey(page.pid),
+                SK: this.createPublishedSortKey()
+            };
+            const esRecord = await get({
+                entity: this.esEntity,
+                keys
+            });
+            /**
+             * And if it is, delete it.
+             */
+            if (esRecord) {
+                /**
+                 * Delete published record if not visible
+                 */
+                esItems.push(this.esEntity.deleteBatch(keys));
+            }
         }
         /**
          * Update or insert published path.
@@ -602,6 +624,12 @@ export class PageStorageOperationsDdbEs implements PageStorageOperations {
                 ex.message || "Could not update all the page records when publishing.",
                 ex.code || "UPDATE_RECORDS_ERROR"
             );
+        }
+        /**
+         * No point in continuing if there are no items in Elasticsearch data
+         */
+        if (esItems.length === 0) {
+            return page;
         }
         try {
             await batchWriteAll({

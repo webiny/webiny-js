@@ -12,7 +12,7 @@ const processDelete = async (documentClient, handler, params) => {
         return;
     }
 
-    handler(
+    await handler(
         createDynamoStreamEvent(createDynamoStreamRecord("REMOVE", { Keys: Key, OldImage: Item }))
     );
 };
@@ -23,7 +23,8 @@ const processPut = async (documentClient, handler, params) => {
     }
 
     const { PK, SK } = params.Item;
-    handler(
+
+    await handler(
         createDynamoStreamEvent(
             createDynamoStreamRecord("INSERT", { Keys: { PK, SK }, NewImage: params.Item })
         )
@@ -44,11 +45,20 @@ const processBatchWrite = async (documentClient, handler, params) => {
                 .get({ Key: DeleteRequest.Key, TableName: process.env.DB_TABLE_ELASTICSEARCH })
                 .promise();
 
-            if (Item && Item.index) {
-                records.push(
-                    createDynamoStreamRecord("REMOVE", { Keys: DeleteRequest.Key, OldImage: Item })
+            if (!Item) {
+                const { PK, SK } = DeleteRequest.Key;
+                throw new Error(
+                    `Missing record in the elasticsearch table "${process.env.DB_TABLE_ELASTICSEARCH}" with keys PK "${PK}" and SK "${SK}". Make sure that record you are deleting is stored in the Elasticsearch table.`
+                );
+            } else if (!Item.index) {
+                const { PK, SK } = Item;
+                throw new Error(
+                    `Missing index value on the record in the elasticsearch table "${process.env.DB_TABLE_ELASTICSEARCH}" with keys PK "${PK}" and SK "${SK}". Make sure that you stored Elasticsearch entry in the Elasticsearch table.`
                 );
             }
+            records.push(
+                createDynamoStreamRecord("REMOVE", { Keys: DeleteRequest.Key, OldImage: Item })
+            );
         }
 
         if (PutRequest) {
@@ -61,7 +71,7 @@ const processBatchWrite = async (documentClient, handler, params) => {
             );
         }
     }
-    handler(createDynamoStreamEvent(...records));
+    await handler(createDynamoStreamEvent(...records));
 };
 
 const processParams = async (documentClient, handler, method, params) => {
