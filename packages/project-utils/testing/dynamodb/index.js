@@ -12,7 +12,7 @@ const processDelete = async (documentClient, handler, params) => {
         return;
     }
 
-    handler(
+    await handler(
         createDynamoStreamEvent(createDynamoStreamRecord("REMOVE", { Keys: Key, OldImage: Item }))
     );
 };
@@ -23,7 +23,8 @@ const processPut = async (documentClient, handler, params) => {
     }
 
     const { PK, SK } = params.Item;
-    handler(
+
+    await handler(
         createDynamoStreamEvent(
             createDynamoStreamRecord("INSERT", { Keys: { PK, SK }, NewImage: params.Item })
         )
@@ -61,7 +62,7 @@ const processBatchWrite = async (documentClient, handler, params) => {
             );
         }
     }
-    handler(createDynamoStreamEvent(...records));
+    await handler(createDynamoStreamEvent(...records));
 };
 
 const processParams = async (documentClient, handler, method, params) => {
