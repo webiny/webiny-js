@@ -99,8 +99,7 @@ async function build() {
         return;
     }
 
-    // Wait three seconds, just in case the dev changes his/her mind. :)
-    // await new Promise(resolve => setTimeout(resolve, 3000));
+    console.log();
 
     if (packagesNoCache.length > 10) {
         console.log(`Running build for ${green(packagesNoCache.length)} packages.`);
@@ -110,7 +109,6 @@ async function build() {
             const item = packagesNoCache[i];
             console.log(`- ${green(item.packageJson.name)}`);
         }
-        console.log();
     }
 
     // Building all packages - we're respecting the dependency graph.
@@ -147,10 +145,11 @@ async function build() {
     }
 
     console.log();
-
-    if (batches.length > 1) {
-        console.log(`The build process will be performed in ${green(batches.length)} batches.`);
-    }
+    console.log(
+        `The build process will be performed in ${green(batches.length)} ${
+            batches.length > 1 ? "batches" : "batch"
+        }.`
+    );
 
     let buildOverrides = {};
     if (argv.buildOverrides) {
@@ -169,9 +168,8 @@ async function build() {
         } catch (e) {
             console.log("Warning: could not JSON.parse passed build overrides.");
         }
+        console.log();
     }
-
-    console.log();
 
     for (let i = 0; i < batches.length; i++) {
         const batch = batches[i];
