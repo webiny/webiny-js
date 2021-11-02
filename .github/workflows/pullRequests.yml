@@ -104,7 +104,7 @@ jobs:
 
   jest-tests:
     needs: cache-dependencies-packages
-    name: Jest - ${{ matrix.package }} (${{ matrix.os }}, ${{ matrix.node }})
+    name: ${{ matrix.package }} (${{ matrix.os }}, Node v${{ matrix.node }})
     strategy:
       fail-fast: false
       matrix:
