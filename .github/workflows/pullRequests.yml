@@ -165,10 +165,8 @@ jobs:
           node-version: 12
 
       - uses: actions/checkout@v2
-        # Prevents the detached HEAD problem (https://github.com/actions/checkout/issues/124)
         with:
           fetch-depth: 0
-          ref: ${{ github.event.pull_request.head.ref }}
 
       - uses: actions/cache@v2
         with:
