@@ -9,7 +9,9 @@ const {
     insertImportToSourceFile,
     removePluginFromCreateHandler,
     addDynamoDbDocumentClient,
-    findNodeInSource
+    findNodeInSource,
+    findDefaultExport,
+    findReturnStatement
 } = require("../utils");
 
 const paths = {
@@ -17,7 +19,9 @@ const paths = {
     apiHeadlessCms: "api/code/headlessCMS",
     apiPageBuilderExport: "api/code/pageBuilder/exportPages",
     apiPageBuilderImport: "api/code/pageBuilder/importPages",
-    appsAdminCode: "apps/admin/code"
+    appsAdminCode: "apps/admin/code",
+    apiPulumiDev: "api/pulumi/dev",
+    apiPulumiProd: "api/pulumi/prod"
 };
 
 const files = {
@@ -34,7 +38,9 @@ const files = {
     apiPageExportCombineIndex: `${paths.apiPageBuilderExport}/combine/src/index.ts`,
     apiPageExportCombineSecurity: `${paths.apiPageBuilderExport}/combine/src/security.ts`,
     apiPageExportProcessIndex: `${paths.apiPageBuilderExport}/process/src/index.ts`,
-    apiPageExportProcessSecurity: `${paths.apiPageBuilderExport}/process/src/security.ts`
+    apiPageExportProcessSecurity: `${paths.apiPageBuilderExport}/process/src/security.ts`,
+    apiPulumiDevIndex: `${paths.apiPulumiDev}/index.ts`,
+    apiPulumiProdIndex: `${paths.apiPulumiProd}/index.ts`
 };
 
 /**
@@ -523,6 +529,72 @@ const upgradeAppWebinyConfig = (project, context) => {
     insertReactAppUserCanChangeEmail(source, "start");
     insertReactAppUserCanChangeEmail(source, "build");
 };
+/**
+ * @param project {tsMorph.Project}
+ * @param context {CliContext}
+ * @param file {string}
+ */
+const upgradePulumi = (project, context, file) => {
+    const { info, error } = context;
+    info(`Upgrading ${info.hl(file)}`);
+
+    const source = project.getSourceFile(file);
+    if (!source) {
+        error(`Could not locate file "${file}".`);
+        return;
+    }
+    /**
+     * We need to find the default export return statement
+     */
+    const defaultExport = findDefaultExport(source);
+    if (!defaultExport) {
+        error(`Could not locate default export in file "${file}".`);
+        return;
+    }
+
+    const returnStatement = findReturnStatement(defaultExport);
+    if (!returnStatement) {
+        error(`Could not locate return statement in default export in file "${file}".`);
+        return;
+    }
+    /**
+     * @type {ObjectLiteralExpression}
+     */
+    const obj = returnStatement.getFirstDescendant(node =>
+        tsMorph.Node.isObjectLiteralExpression(node)
+    );
+    if (!obj) {
+        error(
+            `Could not locate object expression return statement in default export in file "${file}".`
+        );
+        return;
+    }
+
+    const prop = obj.getProperty("cognitoUserPoolPasswordPolicy");
+    if (!prop) {
+        obj.addPropertyAssignment({
+            name: "cognitoUserPoolPasswordPolicy",
+            initializer: "cognito.userPool.passwordPolicy"
+        });
+        return;
+    }
+    prop.setInitializer("cognito.userPool.passwordPolicy");
+};
+
+/**
+ * @param project {tsMorph.Project}
+ * @param context {CliContext}
+ */
+const upgradePulumiDev = (project, context) => {
+    return upgradePulumi(project, context, files.apiPulumiDevIndex);
+};
+/**
+ * @param project {tsMorph.Project}
+ * @param context {CliContext}
+ */
+const upgradePulumiProd = (project, context) => {
+    return upgradePulumi(project, context, files.apiPulumiProdIndex);
+};
 
 module.exports = {
     files,
@@ -533,5 +605,7 @@ module.exports = {
     upgradeAdminPlugins,
     upgradeAdminSecurity,
     upgradeApp,
-    upgradeAppWebinyConfig
+    upgradeAppWebinyConfig,
+    upgradePulumiDev,
+    upgradePulumiProd
 };
