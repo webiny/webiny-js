@@ -19,7 +19,6 @@ jobs:
       jest-packages: ${{ steps.list-jest-packages.outputs.jest-packages }}
       ts: ${{ steps.get-timestamp.outputs.ts }}
       webiny-version: ${{ steps.get-webiny-version.outputs.webiny-version }}
-    needs: init
     steps:
       - uses: actions/setup-node@v2
         with:
