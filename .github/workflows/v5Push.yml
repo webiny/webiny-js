@@ -1,12 +1,8 @@
 name: v5 Branch - Push
 
-#on:
-#  push:
-#    branches: [v5]
-
 on:
-  pull_request:
-    branches: [next, v5]
+  push:
+    branches: [v5]
 
 env:
   NODE_OPTIONS: --max_old_space_size=4096
