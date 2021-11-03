@@ -15,33 +15,27 @@ jobs:
       - uses: actions/checkout@v2
       - uses: webiny/action-conventional-commits@v1.0.3
 
-  cache-keys:
-    name: Create cache keys
-    runs-on: ubuntu-latest
-    outputs:
-      day: ${{ steps.create-cache-keys.outputs.day }}
-      ts: ${{ steps.create-timestamp.outputs.ts }}
-    steps:
-      - name: Create cache key (day)
-        id: create-cache-keys
-        run: echo "::set-output name=day::$(node --eval "console.log(new Date().getDate() + new Date().getDate())")"
-
-      - name: Create timestamp
-        id: create-timestamp
-        run: echo "::set-output name=ts::$(node --eval "console.log(new Date().getTime())")"
-
-  cache-dependencies-packages:
-    needs: [cache-keys]
-    name: Cache dependencies and packages
+  init:
+    name: Init
     runs-on: ubuntu-latest
     outputs:
       jest-packages: ${{ steps.create-jest-packages.outputs.jest-packages }}
+      day: ${{ steps.create-day.outputs.day }}
+      ts: ${{ steps.create-timestamp.outputs.ts }}
     steps:
       - uses: actions/setup-node@v2
         with:
           node-version: 12
 
       - uses: actions/checkout@v2
+
+      - name: Create cache key (day)
+        id: create-day
+        run: echo "::set-output name=day::$(node --eval "console.log(new Date().getDate() + new Date().getDate())")"
+
+      - name: Create timestamp
+        id: create-timestamp
+        run: echo "::set-output name=ts::$(node --eval "console.log(new Date().getTime())")"
 
       - name: Create packages list
         id: create-jest-packages
@@ -57,7 +51,7 @@ jobs:
         id: cached-packages
         with:
           path: .webiny/cached-packages
-          key: ${{ runner.os }}-${{ needs.cache-keys.outputs.day }}-${{ secrets.RANDOM_CACHE_KEY_SUFFIX }}
+          key: ${{ runner.os }}-${{ steps.create-day.outputs.day }}-${{ secrets.RANDOM_CACHE_KEY_SUFFIX }}
 
       - name: Install dependencies
         if: steps.yarn-cache.outputs.cache-hit != 'true' || steps.cached-packages.outputs.cache-hit != 'true'
@@ -68,7 +62,7 @@ jobs:
         run: node scripts/buildWithCache.js
 
   code-analysis:
-    needs: [cache-dependencies-packages, cache-keys]
+    needs: init
     name: Static code analysis
     runs-on: ubuntu-latest
     steps:
@@ -86,7 +80,7 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: .webiny/cached-packages
-          key: ${{ runner.os }}-${{ needs.cache-keys.outputs.day }}-${{ secrets.RANDOM_CACHE_KEY_SUFFIX }}
+          key: ${{ runner.os }}-${{ needs.init.outputs.day }}-${{ secrets.RANDOM_CACHE_KEY_SUFFIX }}
 
       - name: Install dependencies
         run: yarn --immutable
@@ -104,14 +98,14 @@ jobs:
         run: yarn eslint
 
   jest-tests:
-    needs: [cache-dependencies-packages, cache-keys]
+    needs: init
     name: ${{ matrix.package }} (${{ matrix.os }}, Node v${{ matrix.node }})
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
         node: [14]
-        package: ${{ fromJson(needs.cache-dependencies-packages.outputs.jest-packages) }}
+        package: ${{ fromJson(needs.init.outputs.jest-packages) }}
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/setup-node@v2
@@ -128,7 +122,7 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: .webiny/cached-packages
-          key: ${{ runner.os }}-${{ needs.cache-keys.outputs.day }}-${{ secrets.RANDOM_CACHE_KEY_SUFFIX }}
+          key: ${{ runner.os }}-${{ needs.init.outputs.day }}-${{ secrets.RANDOM_CACHE_KEY_SUFFIX }}
 
       - name: Install dependencies
         run: yarn --immutable
@@ -140,7 +134,7 @@ jobs:
         run: yarn test ${{ matrix.package }}
 
   verdaccio-publish:
-    needs: [cache-dependencies-packages, cache-keys]
+    needs: init
     name: Publish to Verdaccio
     runs-on: ubuntu-latest
     steps:
@@ -162,7 +156,7 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: .webiny/cached-packages
-          key: ${{ runner.os }}-${{ needs.cache-keys.outputs.day }}-${{ secrets.RANDOM_CACHE_KEY_SUFFIX }}
+          key: ${{ runner.os }}-${{ needs.init.outputs.day }}-${{ secrets.RANDOM_CACHE_KEY_SUFFIX }}
 
       - name: Install dependencies
         run: yarn --immutable
