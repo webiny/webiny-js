@@ -75,6 +75,8 @@ module.exports = {
         security.upgradeAdminSecurity(project, context);
         security.upgradeApp(project, context);
         security.upgradeAppWebinyConfig(project, context);
+        security.upgradePulumiDev(project, context);
+        security.upgradePulumiProd(project, context);
 
         info("Writing changes...");
         await project.save();
