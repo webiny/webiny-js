@@ -24,7 +24,7 @@ jobs:
 
       - name: Get day of the month
         id: get-day
-        run: echo "::set-output name=day::$(node --eval "console.log(new Date().getDate() + new Date().getDate())")"
+        run: echo "::set-output name=day::$(node --eval "console.log(new Date().getDate())")"
 
       - name: Get timestamp
         id: get-timestamp
