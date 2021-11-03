@@ -752,7 +752,7 @@ const findDefaultExport = parent => {
         if (tsMorph.Node.isExportAssignment(node) === false) {
             return false;
         }
-        return node.getText().startsWith("export default (");
+        return node.getText().startsWith("export default ");
     });
     return exp || null;
 };
