@@ -187,6 +187,16 @@ export const migration = (context: Context) => {
             };
         });
 
+        // Cognito users already exist, and we should not abort user creation when Cognito throws an error.
+        const originalPublish = adminUsers.onUserBeforeCreate.publish;
+        adminUsers.onUserBeforeCreate.publish = async event => {
+            try {
+                await originalPublish(event);
+            } catch (err) {
+                // Ignore error
+            }
+        };
+
         for (const user of newUsers) {
             await adminUsers.createUser(user);
         }
