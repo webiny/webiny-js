@@ -1,12 +1,33 @@
-#!/usr/bin/env node
+/**
+ * Note: do not use any 3rd party libraries because we need this script
+ * to be executed in our CI/CD, as fast as possible.
+ */
+
 const fs = require("fs");
 const path = require("path");
 
-const SKIP_PACKAGES = ["i18n"];
+const CUSTOM_HANDLERS = {
+    // Skip "i18n" package.
+    i18n: () => [],
+
+    // Split "api-page-builder" tests into batches of
+    "api-page-builder": () => {
+        return [
+            "packages/api-page-builder/* --keyword=pb:ddb --keyword=pb:base",
+            "packages/api-page-builder/* --keyword=pb:ddb-es --keyword=pb:base"
+        ];
+    },
+    // Split "api-headless-cms" tests into batches of
+    "api-headless-cms": () => {
+        return [
+            "packages/api-page-builder/* --keyword=cms:ddb --keyword=cms:base",
+            "packages/api-page-builder/* --keyword=cms:ddb-es --keyword=cms:base"
+        ];
+    }
+};
 
 /**
- * Because of CI/CD and the need to skip the installation of any extra
- * dependencies, we decided to stay away from using a glob-like library.
+
  * @param folder
  * @returns boolean
  */
@@ -34,13 +55,14 @@ const allPackages = fs.readdirSync("packages");
 const packagesWithTests = [];
 for (let i = 0; i < allPackages.length; i++) {
     const packageName = allPackages[i];
-    if (SKIP_PACKAGES.includes(packageName)) {
-        continue;
-    }
 
-    const testsFolder = path.join("packages", packageName, "__tests__");
-    if (hasTestFiles(testsFolder)) {
-        packagesWithTests.push(packageName);
+    if (typeof CUSTOM_HANDLERS[packageName] === "function") {
+        packagesWithTests.push(...CUSTOM_HANDLERS[packageName]());
+    } else {
+        const testsFolder = path.join("packages", packageName, "__tests__");
+        if (hasTestFiles(testsFolder)) {
+            packagesWithTests.push(`packages/${packageName}`);
+        }
     }
 }
 
