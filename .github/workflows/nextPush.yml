@@ -9,7 +9,7 @@ env:
 
 jobs:
   init:
-    name: Cache dependencies and packages
+    name: Init
     runs-on: ubuntu-latest
     outputs:
       jest-packages: ${{ steps.get-jest-packages.outputs.jest-packages }}
