@@ -20,8 +20,8 @@ const CUSTOM_HANDLERS = {
     // Split "api-headless-cms" tests into batches of
     "api-headless-cms": () => {
         return [
-            "packages/api-page-builder/* --keyword=cms:ddb --keyword=cms:base",
-            "packages/api-page-builder/* --keyword=cms:ddb-es --keyword=cms:base"
+            "packages/api-headless-cms/* --keyword=cms:ddb --keyword=cms:base",
+            "packages/api-headless-cms/* --keyword=cms:ddb-es --keyword=cms:base"
         ];
     }
 };
