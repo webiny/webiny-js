@@ -742,6 +742,31 @@ const findNodeInSource = (source, targets) => {
     }
     return previous;
 };
+/**
+ * @param parent {tsMorph.Node}
+ *
+ * @return {tsMorph.Node}
+ */
+const findDefaultExport = parent => {
+    const exp = parent.getFirstDescendant(node => {
+        if (tsMorph.Node.isExportAssignment(node) === false) {
+            return false;
+        }
+        return node.getText().startsWith("export default (");
+    });
+    return exp || null;
+};
+/**
+ * @param parent {tsMorph.Node}
+ *
+ * @return {tsMorph.Node}
+ */
+const findReturnStatement = parent => {
+    const stmt = parent.getFirstDescendant(node => {
+        return tsMorph.Node.isReturnStatement(node);
+    });
+    return stmt || null;
+};
 
 module.exports = {
     insertImport,
@@ -761,5 +786,7 @@ module.exports = {
     addPluginArgumentValueInCreateHandler,
     removeImportFromSourceFile,
     addDynamoDbDocumentClient,
-    findNodeInSource
+    findNodeInSource,
+    findDefaultExport,
+    findReturnStatement
 };
