@@ -1,8 +1,8 @@
 name: Next Branch - Push
 
 on:
-  push:
-    branches: [next]
+  pull_request:
+    branches: [next, v5]
 
 env:
   NODE_OPTIONS: --max_old_space_size=4096
@@ -26,6 +26,8 @@ jobs:
   cache-dependencies-packages:
     name: Cache dependencies and packages
     runs-on: ubuntu-latest
+    outputs:
+      jest-packages: ${{ steps.create-jest-packages.outputs.jest-packages }}
     needs: cache-keys
     steps:
       - uses: actions/setup-node@v2
@@ -33,6 +35,10 @@ jobs:
           node-version: 12
 
       - uses: actions/checkout@v2
+
+      - name: Create packages list
+        id: create-jest-packages
+        run: echo "::set-output name=jest-packages::$(node scripts/listPackagesWithTests.js)"
 
       - uses: actions/cache@v2
         id: yarn-cache
@@ -91,13 +97,14 @@ jobs:
         run: yarn eslint
 
   jest-tests:
-    needs: [cache-keys, cache-dependencies-packages]
-    name: Jest tests
+    needs: [cache-dependencies-packages, cache-keys]
+    name: ${{ matrix.package }} (${{ matrix.os }}, Node v${{ matrix.node }})
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        node: [12, 14]
+        node: [14]
+        package: ${{ fromJson(needs.cache-dependencies-packages.outputs.jest-packages) }}
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/setup-node@v2
@@ -111,19 +118,19 @@ jobs:
           path: .yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
 
-      - name: Install dependencies
-        run: yarn --immutable
-
       - uses: actions/cache@v2
         with:
           path: .webiny/cached-packages
           key: ${{ runner.os }}-${{ needs.cache-keys.outputs.day }}-${{ secrets.RANDOM_CACHE_KEY_SUFFIX }}
 
+      - name: Install dependencies
+        run: yarn --immutable
+
       - name: Build packages
         run: node scripts/buildWithCache.js
 
       - name: Run tests
-        run: yarn test
+        run: yarn test ${{ matrix.package }}
 
   verdaccio-publish:
     needs: [cache-keys, cache-dependencies-packages]
