@@ -12,7 +12,7 @@ jobs:
     name: Init
     runs-on: ubuntu-latest
     outputs:
-      jest-packages: ${{ steps.get-jest-packages.outputs.jest-packages }}
+      jest-packages: ${{ steps.list-jest-packages.outputs.jest-packages }}
       day: ${{ steps.get-day.outputs.day }}
       ts: ${{ steps.get-timestamp.outputs.ts }}
     steps:
@@ -31,7 +31,7 @@ jobs:
         run: echo "::set-output name=ts::$(node --eval "console.log(new Date().getTime())")"
 
       - name: List packages with Jest tests
-        id: get-jest-packages
+        id: list-jest-packages
         run: echo "::set-output name=jest-packages::$(node scripts/listPackagesWithTests.js)"
 
       - uses: actions/cache@v2
