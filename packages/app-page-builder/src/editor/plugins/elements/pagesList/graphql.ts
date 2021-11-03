@@ -5,10 +5,17 @@ export const LIST_PUBLISHED_PAGES = gql`
         $where: PbListPublishedPagesWhereInput
         $limit: Int
         $sort: [PbListPagesSort!]
+        $after: String
         $exclude: [String]
     ) {
         pageBuilder {
-            listPublishedPages(where: $where, sort: $sort, limit: $limit, exclude: $exclude) {
+            listPublishedPages(
+                where: $where
+                sort: $sort
+                limit: $limit
+                exclude: $exclude
+                after: $after
+            ) {
                 data {
                     id
                     title
@@ -33,6 +40,8 @@ export const LIST_PUBLISHED_PAGES = gql`
                 }
                 meta {
                     totalCount
+                    cursor
+                    hasMoreItems
                 }
             }
         }

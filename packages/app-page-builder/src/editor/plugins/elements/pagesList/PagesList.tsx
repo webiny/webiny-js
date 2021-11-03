@@ -15,9 +15,8 @@ const PagesList = props => {
     );
     const pageList = components.find(cmp => cmp.componentName === component);
     const { theme } = usePageBuilder();
-
-    // only assign to `setPage` since `page` is no longer a valid variable in `LIST_PUBLISHED_PAGES`.
-    const [, setPage] = useState(1);
+    const [cursors, setCursors] = useState([null]);
+    const [page, setPage] = useState(0);
     const pageAtomValue = useRecoilValue(pageAtom);
 
     if (!pageList) {
@@ -41,6 +40,7 @@ const PagesList = props => {
             }
         },
         limit: parseInt(vars.resultsPerPage),
+        after: cursors[page],
         exclude: [pageAtomValue.path]
     };
 
@@ -65,17 +65,19 @@ const PagesList = props => {
 
     const listPublishedPages = get(data, "pageBuilder.listPublishedPages");
 
-    /**
-     * How to handle these two checks if `meta` field no longer has `previousPage` and `nextPage` fields?
-     */
     let prevPage = null;
-    if (listPublishedPages.meta.previousPage) {
-        prevPage = () => setPage(listPublishedPages.meta.previousPage);
+    if (page >= 1) {
+        prevPage = () => {
+            setPage(page => page - 1);
+        };
     }
 
     let nextPage = null;
-    if (listPublishedPages.meta.nextPage) {
-        nextPage = () => setPage(listPublishedPages.meta.nextPage);
+    if (listPublishedPages.meta.cursor) {
+        nextPage = () => {
+            setCursors(cursors => [...cursors, listPublishedPages.meta.cursor]);
+            setPage(page => page + 1);
+        };
     }
 
     return (

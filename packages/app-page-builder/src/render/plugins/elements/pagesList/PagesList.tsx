@@ -29,7 +29,8 @@ const PagesListRender = props => {
     );
     const pageList = components.find(cmp => cmp.componentName === component);
     const { theme } = usePageBuilder();
-    const [, setPage] = useState(1); // only assign to `setPage` since `page` is no longer a valid variable in `LIST_PUBLISHED_PAGES`
+    const [cursors, setCursors] = useState([null]);
+    const [page, setPage] = useState(0);
     const { location } = useRouter();
 
     // Extract page id from URL.
@@ -63,6 +64,7 @@ const PagesListRender = props => {
             }
         },
         limit: parseInt(vars.resultsPerPage),
+        after: cursors[page],
         /**
          * When rendering page preview inside admin app there will be no page path/slug present in URL.
          * In that case we'll use the extracted page id from URL.
@@ -90,17 +92,19 @@ const PagesListRender = props => {
 
     const listPublishedPages = get(data, "pageBuilder.listPublishedPages");
 
-    /**
-     * How to handle these two checks if `meta` field no longer has `previousPage` and `nextPage` fields?
-     */
     let prevPage = null;
-    if (listPublishedPages.meta.previousPage) {
-        prevPage = () => setPage(listPublishedPages.meta.previousPage);
+    if (page >= 1) {
+        prevPage = () => {
+            setPage(page => page - 1);
+        };
     }
 
     let nextPage = null;
-    if (listPublishedPages.meta.nextPage) {
-        nextPage = () => setPage(listPublishedPages.meta.nextPage);
+    if (listPublishedPages.meta.cursor) {
+        nextPage = () => {
+            setCursors(cursors => [...cursors, listPublishedPages.meta.cursor]);
+            setPage(page => page + 1);
+        };
     }
 
     return (
