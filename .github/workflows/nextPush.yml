@@ -11,9 +11,7 @@ on:
 
 env:
   NODE_OPTIONS: --max_old_space_size=4096
-  DAY: ${{ date +%Y%m%d }}
-  TS: ${{ date +%s }}
-  PACKAGES_CACHE_KEY: ${{ runner.os }}-${{ date +%Y%m%d }}-${{ secrets.RANDOM_CACHE_KEY_SUFFIX }}
+  DAY: ${{ echo "$HOME/.local/bin" >> $GITHUB_PATH }}
 
 jobs:
   init:
