@@ -1,6 +1,6 @@
 import * as React from "react";
 import { useSecurity } from "..";
-import { SecureRouteErrorPlugin } from "../types";
+import { SecureRouteErrorPlugin } from "~/types";
 import { plugins } from "@webiny/plugins";
 
 export default ({

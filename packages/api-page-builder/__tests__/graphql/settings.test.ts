@@ -1,7 +1,7 @@
 import useGqlHandler from "./useGqlHandler";
 import useHandler from "./../updateSettings/useHandler";
 
-jest.setTimeout(15000);
+jest.setTimeout(100000);
 
 describe("Settings Test", () => {
     const {

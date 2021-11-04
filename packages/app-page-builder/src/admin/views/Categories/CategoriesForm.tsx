@@ -131,7 +131,8 @@ const CategoriesForm = ({ canCreate }: CategoriesFormProps) => {
         }
 
         if (pbMenuPermission.own) {
-            return loadedCategory?.createdBy?.id === identity.login;
+            const identityId = identity.id || identity.login;
+            return loadedCategory?.createdBy?.id === identityId;
         }
 
         if (typeof pbMenuPermission.rwd === "string") {

@@ -26,6 +26,7 @@ export default [
                 type PbCreatedBy {
                     id: ID
                     displayName: String
+                    type: String
                 }
 
                 type PbError {

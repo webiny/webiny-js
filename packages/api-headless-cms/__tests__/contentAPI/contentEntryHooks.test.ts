@@ -2,8 +2,7 @@ import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
 import { contentEntryHooks, hooksTracker } from "./mocks/lifecycleHooks";
 import models from "./mocks/contentModels";
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
-import { CmsContentModelGroup } from "../../src/types";
-import { SecurityIdentity } from "@webiny/api-security";
+import { CmsContentModelGroup } from "~/types";
 
 describe("contentEntryHooks", () => {
     let contentModelGroup: CmsContentModelGroup;
@@ -198,8 +197,10 @@ describe("contentEntryHooks", () => {
     });
 
     test("should execute hooks on delete revision", async () => {
-        const { createCategory, createCategoryFrom, deleteCategory, sleep } =
-            useCategoryManageHandler(manageOpts, [contentEntryHooks()]);
+        const { createCategory, createCategoryFrom, deleteCategory } = useCategoryManageHandler(
+            manageOpts,
+            [contentEntryHooks()]
+        );
 
         const [createResponse] = await createCategory({
             data: {
@@ -214,9 +215,6 @@ describe("contentEntryHooks", () => {
         await createCategoryFrom({
             revision: id
         });
-
-        // wait for data to be come available
-        await sleep(1000);
 
         hooksTracker.reset();
 
@@ -254,7 +252,7 @@ describe("contentEntryHooks", () => {
     });
 
     test("should execute hooks on delete whole entry and its versions", async () => {
-        const { createCategory, deleteCategory, sleep } = useCategoryManageHandler(manageOpts, [
+        const { createCategory, deleteCategory } = useCategoryManageHandler(manageOpts, [
             contentEntryHooks()
         ]);
 
@@ -264,8 +262,6 @@ describe("contentEntryHooks", () => {
                 slug: "category"
             }
         });
-
-        await sleep(2000);
 
         const { id: revisionId } = createResponse.data.createCategory.data;
 
@@ -427,11 +423,11 @@ describe("contentEntryHooks", () => {
         const { requestCategoryChanges } = useCategoryManageHandler(
             {
                 ...manageOpts,
-                identity: new SecurityIdentity({
+                identity: {
                     id: "1234",
                     displayName: "User 1234",
                     type: "admin"
-                })
+                }
             },
             [contentEntryHooks()]
         );

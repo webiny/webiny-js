@@ -1,26 +1,24 @@
-import cognitoSecurity from "@webiny/app-security-admin-users-cognito";
-import adminUsers from "@webiny/app-security-admin-users/plugins";
-import accountDetails from "@webiny/app-security-admin-users/plugins/userMenu/accountDetails";
-import signOut from "@webiny/app-security-admin-users/plugins/userMenu/signOut";
-import userImage from "@webiny/app-security-admin-users/plugins/userMenu/userImage";
-import userInfo from "@webiny/app-security-admin-users/plugins/userMenu/userInfo";
-import { getIdentityData } from "../components/getIdentityData";
+import accessManagement from "@webiny/app-security-access-management";
+import { plugins as adminUsersCognito } from "@webiny/app-admin-users-cognito";
+import accountDetails from "@webiny/app-admin-users-cognito/plugins/userMenu/accountDetails";
+import signOut from "@webiny/app-admin-users-cognito/plugins/userMenu/signOut";
+import userImage from "@webiny/app-admin-users-cognito/plugins/userMenu/userImage";
+import userInfo from "@webiny/app-admin-users-cognito/plugins/userMenu/userInfo";
+
+// import accountDetails from "@webiny/app-admin-okta/plugins/userMenu/accountDetails";
+// import signOut from "@webiny/app-admin-okta/plugins/userMenu/signOut";
+// import userImage from "@webiny/app-admin-okta/plugins/userMenu/userImage";
+// import userInfo from "@webiny/app-admin-okta/plugins/userMenu/userInfo";
 
 export default [
     /**
-     * Configures Amplify, adds Cognito related UI fields, and attaches Authorization header
-     * on every GraphQL request using the authenticated identity.
+     * Access Management (Groups, API keys)
      */
-    cognitoSecurity({
-        region: process.env.REACT_APP_USER_POOL_REGION,
-        userPoolId: process.env.REACT_APP_USER_POOL_ID,
-        userPoolWebClientId: process.env.REACT_APP_USER_POOL_WEB_CLIENT_ID,
-        getIdentityData
-    }),
+    accessManagement(),
     /**
-     * Add user management module to admin app.
+     * Admin Users management.
      */
-    adminUsers(),
+    adminUsersCognito(),
     /**
      * User menu plugins
      */

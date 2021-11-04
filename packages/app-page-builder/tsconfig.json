@@ -1,5 +1,6 @@
 {
   "extends": "../../tsconfig.json",
+  "include": ["src", "__tests__/**/*.ts"],
   "references": [
     { "path": "../app" },
     { "path": "../app-admin" },
@@ -15,7 +16,9 @@
     { "path": "../validation" }
   ],
   "compilerOptions": {
-    "baseUrl": ".",
+    "rootDirs": ["./src", "./__tests__"],
+    "outDir": "./dist",
+    "declarationDir": "./dist",
     "paths": {
       "~/*": ["./src/*"],
       "@webiny/app/*": ["../app/src/*"],
@@ -30,8 +33,8 @@
       "@webiny/app-plugin-admin-welcome-screen": ["../app-plugin-admin-welcome-screen/src"],
       "@webiny/app-security/*": ["../app-security/src/*"],
       "@webiny/app-security": ["../app-security/src"],
-      "@webiny/app-tenancy/*": ["../app-security-tenancy/src/*"],
-      "@webiny/app-tenancy": ["../app-security-tenancy/src"],
+      "@webiny/app-tenancy/*": ["../app-tenancy/src/*"],
+      "@webiny/app-tenancy": ["../app-tenancy/src"],
       "@webiny/form/*": ["../form/src/*"],
       "@webiny/form": ["../form/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
@@ -42,6 +45,7 @@
       "@webiny/ui": ["../ui/src"],
       "@webiny/validation/*": ["../validation/src/*"],
       "@webiny/validation": ["../validation/src"]
-    }
+    },
+    "baseUrl": "."
   }
 }

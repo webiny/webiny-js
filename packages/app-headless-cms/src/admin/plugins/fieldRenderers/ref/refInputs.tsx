@@ -6,7 +6,7 @@ import { i18n } from "@webiny/app/i18n";
 const t = i18n.ns("app-headless-cms/admin/fields/ref");
 
 const getKey = (field, bind) => {
-    return bind.form.state.data.id + "." + field.fieldId;
+    return bind.form.data.id + "." + field.fieldId;
 };
 
 const plugin: CmsEditorFieldRendererPlugin = {

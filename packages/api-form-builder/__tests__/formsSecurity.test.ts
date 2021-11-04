@@ -1,6 +1,5 @@
-import { SecurityIdentity } from "@webiny/api-security";
 import useGqlHandler from "./useGqlHandler";
-import { SecurityPermission } from "@webiny/api-security/types";
+import { SecurityIdentity, SecurityPermission } from "@webiny/api-security/types";
 
 function Mock(prefix = "") {
     this.name = `${prefix}name`;
@@ -33,19 +32,17 @@ const NOT_AUTHORIZED_RESPONSE = operation => ({
     }
 });
 
-const identityA = new SecurityIdentity({
+const identityA: SecurityIdentity = {
     id: "a",
-    login: "a",
     type: "test",
     displayName: "Aa"
-});
+};
 
-const identityB = new SecurityIdentity({
+const identityB: SecurityIdentity = {
     id: "b",
-    login: "b",
     type: "test",
     displayName: "Bb"
-});
+};
 
 describe("Forms Security Test", () => {
     const defaultHandler = useGqlHandler({
@@ -75,9 +72,7 @@ describe("Forms Security Test", () => {
             () => listForms().then(([data]) => data),
             ({ data }) => data.formBuilder.listForms.data.length > 0,
             {
-                name: "list forms after create",
-                wait: 500,
-                tries: 20
+                name: "list forms after create"
             }
         );
 
@@ -114,9 +109,7 @@ describe("Forms Security Test", () => {
                     data.formBuilder.listForms.data[0].id === formB2Id &&
                     data.formBuilder.listForms.data[3].id === formA1Id,
                 {
-                    name: `list forms with sufficient permissions ${i}`,
-                    wait: 500,
-                    tries: 20
+                    name: `list forms with sufficient permissions ${i}`
                 }
             );
 

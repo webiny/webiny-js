@@ -31,7 +31,7 @@ import { Cell, Grid } from "@webiny/ui/Grid";
 import { Select } from "@webiny/ui/Select";
 import usePermission from "../../../hooks/usePermission";
 import { useForms } from "./useForms";
-import { deserializeSorters, serializeSorters } from "~/admin/views/utils";
+import { deserializeSorters, serializeSorters } from "../utils";
 
 const t = i18n.namespace("FormsApp.FormsDataList");
 const rightAlign = css({
@@ -205,59 +205,56 @@ const FormsDataList = (props: FormsDataListProps) => {
         >
             {({ data = [] }) => (
                 <List data-testid="default-data-list">
-                    {data.map(form => (
-                        <ListItem key={form.id} className={listItemMinHeight}>
-                            <ListItemText
-                                onClick={() => {
-                                    query.set("id", form.id);
-                                    history.push({ search: query.toString() });
-                                }}
-                            >
-                                {form.name}
-                                {form.createdBy && (
-                                    <ListItemTextSecondary>
-                                        {form.createdBy.firstName && (
-                                            <>
-                                                {t`Created by: {user}.`({
-                                                    user: form.createdBy.firstName
-                                                })}{" "}
-                                            </>
-                                        )}
+                    {data.map(form => {
+                        const name = form.createdBy.firstName || form.createdBy.displayName;
+                        return (
+                            <ListItem key={form.id} className={listItemMinHeight}>
+                                <ListItemText
+                                    onClick={() => {
+                                        query.set("id", form.id);
+                                        history.push({ search: query.toString() });
+                                    }}
+                                >
+                                    {form.name}
+                                    {form.createdBy && (
+                                        <ListItemTextSecondary>
+                                            {<>{t`Created by: {user}.`({ user: name })} </>}
 
-                                        {t`Last modified: {time}.`({
-                                            time: <TimeAgo datetime={form.savedOn} />
-                                        })}
-                                    </ListItemTextSecondary>
-                                )}
-                            </ListItemText>
-                            <ListItemMeta className={rightAlign}>
-                                <Typography use={"subtitle2"}>
-                                    {upperFirst(form.status)} (v{form.version})
-                                </Typography>
-                                <ListActions>
-                                    {canEdit(form) && <EditIcon onClick={editRecord(form)} />}
-                                    {canDelete(form) && (
-                                        <ConfirmationDialog
-                                            title={"Confirmation required!"}
-                                            message={
-                                                "This will delete the form and all of its revisions. Are you sure you want to continue?"
-                                            }
-                                        >
-                                            {({ showConfirmation }) => (
-                                                <DeleteIcon
-                                                    onClick={() =>
-                                                        showConfirmation(async () =>
-                                                            deleteRecord(form)
-                                                        )
-                                                    }
-                                                />
-                                            )}
-                                        </ConfirmationDialog>
+                                            {t`Last modified: {time}.`({
+                                                time: <TimeAgo datetime={form.savedOn} />
+                                            })}
+                                        </ListItemTextSecondary>
                                     )}
-                                </ListActions>
-                            </ListItemMeta>
-                        </ListItem>
-                    ))}
+                                </ListItemText>
+                                <ListItemMeta className={rightAlign}>
+                                    <Typography use={"subtitle2"}>
+                                        {upperFirst(form.status)} (v{form.version})
+                                    </Typography>
+                                    <ListActions>
+                                        {canEdit(form) && <EditIcon onClick={editRecord(form)} />}
+                                        {canDelete(form) && (
+                                            <ConfirmationDialog
+                                                title={"Confirmation required!"}
+                                                message={
+                                                    "This will delete the form and all of its revisions. Are you sure you want to continue?"
+                                                }
+                                            >
+                                                {({ showConfirmation }) => (
+                                                    <DeleteIcon
+                                                        onClick={() =>
+                                                            showConfirmation(async () =>
+                                                                deleteRecord(form)
+                                                            )
+                                                        }
+                                                    />
+                                                )}
+                                            </ConfirmationDialog>
+                                        )}
+                                    </ListActions>
+                                </ListItemMeta>
+                            </ListItem>
+                        );
+                    })}
                 </List>
             )}
         </DataList>

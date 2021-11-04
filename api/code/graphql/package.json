@@ -6,6 +6,8 @@
     "watch": "yarn webiny run watch"
   },
   "dependencies": {
+    "@webiny/api-admin-users-cognito": "^5.16.0",
+    "@webiny/api-admin-users-cognito-so-ddb": "^5.16.0",
     "@webiny/api-elasticsearch": "^5.16.0",
     "@webiny/api-file-manager": "^5.16.0",
     "@webiny/api-file-manager-ddb-es": "^5.16.0",
@@ -23,11 +25,10 @@
     "@webiny/api-page-builder-so-ddb-es": "^5.16.0",
     "@webiny/api-prerendering-service": "^5.16.0",
     "@webiny/api-security": "^5.16.0",
-    "@webiny/api-security-admin-users": "^5.16.0",
-    "@webiny/api-security-admin-users-cognito": "^5.16.0",
-    "@webiny/api-security-admin-users-so-ddb": "^5.16.0",
-    "@webiny/api-security-cognito-authentication": "^5.16.0",
+    "@webiny/api-security-cognito": "^5.16.0",
+    "@webiny/api-security-so-ddb": "^5.16.0",
     "@webiny/api-tenancy": "^5.16.0",
+    "@webiny/api-tenancy-so-ddb": "^5.16.0",
     "@webiny/cli": "^5.16.0",
     "@webiny/db-dynamodb": "^5.16.0",
     "@webiny/handler": "^5.16.0",

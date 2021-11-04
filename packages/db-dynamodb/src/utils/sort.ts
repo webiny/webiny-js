@@ -59,11 +59,11 @@ interface Params<T> {
     /**
      * Fields we can sort by.
      */
-    fields: FieldPlugin[];
+    fields?: FieldPlugin[];
 }
 
 export const sortItems = <T extends any = any>(params: Params<T>): T[] => {
-    const { items, sort: initialSort = [], fields } = params;
+    const { items, sort: initialSort = [], fields = [] } = params;
     /**
      * Skip sorting if nothing was passed to sort by or nothing to sort.
      */

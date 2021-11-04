@@ -35,7 +35,7 @@
     "node-fetch": "^2.6.1",
     "stream": "^0.0.2",
     "uniqid": "^5.2.0",
-    "unzipper": "0.10.11"
+    "yauzl": "^2.10.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",
@@ -49,6 +49,9 @@
     "@webiny/api-dynamodb-to-elasticsearch": "^5.16.0",
     "@webiny/api-file-manager-ddb-es": "^5.16.0",
     "@webiny/api-i18n-ddb": "^5.16.0",
+    "@webiny/api-security-so-ddb": "^5.16.0",
+    "@webiny/api-tenancy": "^5.16.0",
+    "@webiny/api-tenancy-so-ddb": "^5.16.0",
     "@webiny/cli": "^5.16.0",
     "@webiny/db": "^5.16.0",
     "@webiny/project-utils": "^5.16.0",

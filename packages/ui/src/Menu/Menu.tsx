@@ -1,5 +1,4 @@
 import * as React from "react";
-import ReactDOM from "react-dom";
 import {
     Menu as BaseMenu,
     MenuProps as RmwcMenuProps,
@@ -51,20 +50,6 @@ type State = {
     menuIsOpen: boolean;
 };
 
-let el = null;
-const getElement = () => {
-    if (!el) {
-        el = document.createElement("div");
-        el.id = "menu-container";
-        el.style.position = "fixed";
-        el.style.top = "0";
-        el.style.zIndex = "10";
-        document.body.appendChild(el);
-    }
-
-    return el;
-};
-
 /**
  * Use Menu component to display a list of choices, once the handler is triggered.
  */
@@ -81,21 +66,6 @@ class Menu extends React.Component<MenuProps, State> {
     anchorRef = React.createRef();
     menuRef = React.createRef();
 
-    componentDidUpdate() {
-        if (!this.menuRef.current || !this.anchorRef.current) {
-            return;
-        }
-
-        const menu: any = this.menuRef.current;
-
-        // @ts-ignore
-        const anchorRect = this.anchorRef.current.getBoundingClientRect();
-
-        menu.style.position = "absolute";
-        menu.style.left = anchorRect.left - 60 + "px";
-        menu.style.top = anchorRect.top + "px";
-    }
-
     openMenu = () => {
         this.setState({ menuIsOpen: true }, () => this.props.onOpen && this.props.onOpen());
     };
@@ -105,19 +75,17 @@ class Menu extends React.Component<MenuProps, State> {
     };
 
     renderMenuWithPortal = () => {
-        return ReactDOM.createPortal(
-            <div ref={this.menuRef as React.RefObject<HTMLDivElement>}>
-                <BaseMenu
-                    anchorCorner={this.props.anchor}
-                    open={this.state.menuIsOpen}
-                    className={this.props.className}
-                    onClose={this.closeMenu}
-                    onSelect={this.props.onSelect}
-                >
-                    {this.props.children}
-                </BaseMenu>
-            </div>,
-            getElement()
+        return (
+            <BaseMenu
+                anchorCorner={this.props.anchor}
+                open={this.state.menuIsOpen}
+                className={this.props.className}
+                onClose={this.closeMenu}
+                onSelect={this.props.onSelect}
+                hoistToBody={true}
+            >
+                {this.props.children}
+            </BaseMenu>
         );
     };
 

@@ -1,4 +1,7 @@
 import useGqlHandler from "./useGqlHandler";
+import { defaultIdentity } from "../tenancySecurity";
+
+jest.setTimeout(100000);
 
 describe("Categories CRUD Test", () => {
     const {
@@ -32,7 +35,7 @@ describe("Categories CRUD Test", () => {
                             data: {
                                 ...data,
                                 createdOn: /^20/,
-                                createdBy: { displayName: "m", id: "mocked" }
+                                createdBy: defaultIdentity
                             },
                             error: null
                         }
@@ -48,7 +51,7 @@ describe("Categories CRUD Test", () => {
                             data: {
                                 ...data,
                                 createdOn: /^20/,
-                                createdBy: { displayName: "m", id: "mocked" }
+                                createdBy: defaultIdentity
                             },
                             error: null
                         }
@@ -71,7 +74,7 @@ describe("Categories CRUD Test", () => {
                             data: {
                                 ...data,
                                 createdOn: /^20/,
-                                createdBy: { displayName: "m", id: "mocked" }
+                                createdBy: defaultIdentity
                             },
                             error: null
                         }
@@ -93,7 +96,7 @@ describe("Categories CRUD Test", () => {
                                 slug: "category-0-slug",
                                 name: "category-0-name-UPDATED",
                                 createdOn: /^20/,
-                                createdBy: { displayName: "m", id: "mocked" }
+                                createdBy: defaultIdentity
                             },
                             {
                                 url: "category-1-url-UPDATED",
@@ -101,7 +104,7 @@ describe("Categories CRUD Test", () => {
                                 slug: "category-1-slug",
                                 name: "category-1-name-UPDATED",
                                 createdOn: /^20/,
-                                createdBy: { displayName: "m", id: "mocked" }
+                                createdBy: defaultIdentity
                             },
                             {
                                 url: "category-2-url-UPDATED",
@@ -109,7 +112,7 @@ describe("Categories CRUD Test", () => {
                                 slug: "category-2-slug",
                                 name: "category-2-name-UPDATED",
                                 createdOn: /^20/,
-                                createdBy: { displayName: "m", id: "mocked" }
+                                createdBy: defaultIdentity
                             }
                         ],
                         error: null
@@ -136,7 +139,7 @@ describe("Categories CRUD Test", () => {
                             data: {
                                 ...data,
                                 createdOn: /^20/,
-                                createdBy: { displayName: "m", id: "mocked" }
+                                createdBy: defaultIdentity
                             },
                             error: null
                         }
@@ -190,21 +193,52 @@ describe("Categories CRUD Test", () => {
             message: "Cannot delete category because some pages are linked to it."
         };
 
-        await deleteCategory({ slug: "delete-cat" }).then(([res]) =>
-            expect(res.data.pageBuilder.deleteCategory.error).toEqual(error)
-        );
+        const [deleteCategoryDeleteCatResult] = await deleteCategory({ slug: "delete-cat" });
+
+        expect(deleteCategoryDeleteCatResult).toEqual({
+            data: {
+                pageBuilder: {
+                    deleteCategory: {
+                        data: null,
+                        error
+                    }
+                }
+            }
+        });
 
         await deletePage({ id: p1.id });
 
-        await deleteCategory({ slug: "delete-cat" }).then(([res]) =>
-            expect(res.data.pageBuilder.deleteCategory.error).toEqual(error)
-        );
+        const [deleteCategoryDeleteCatAfterDeletePage1Result] = await deleteCategory({
+            slug: "delete-cat"
+        });
+
+        expect(deleteCategoryDeleteCatAfterDeletePage1Result).toEqual({
+            data: {
+                pageBuilder: {
+                    deleteCategory: {
+                        data: null,
+                        error
+                    }
+                }
+            }
+        });
 
         await deletePage({ id: p2.id });
 
-        await deleteCategory({ slug: "delete-cat" }).then(([res]) =>
-            expect(res.data.pageBuilder.deleteCategory.error).toEqual(error)
-        );
+        const [deleteCategoryDeleteCatAfterDeletePage2Result] = await deleteCategory({
+            slug: "delete-cat"
+        });
+
+        expect(deleteCategoryDeleteCatAfterDeletePage2Result).toEqual({
+            data: {
+                pageBuilder: {
+                    deleteCategory: {
+                        data: null,
+                        error
+                    }
+                }
+            }
+        });
 
         const [deletePageResponse] = await deletePage({ id: p3.id });
 
@@ -225,18 +259,21 @@ describe("Categories CRUD Test", () => {
             }
         });
 
-        await until(listPages, ([res]) => res.data.pageBuilder.listPages.data.length === 0, {
-            tries: 10,
-            name: "list pages after delete"
-        });
+        await until(
+            listPages,
+            ([res]) => {
+                return res.data.pageBuilder.listPages.data.length === 0;
+            },
+            {
+                tries: 10,
+                name: "list pages after delete"
+            }
+        );
 
         await deleteCategory({ slug: "delete-cat" }).then(([res]) =>
             expect(res.data.pageBuilder.deleteCategory).toMatchObject({
                 data: {
-                    createdBy: {
-                        displayName: "m",
-                        id: "mocked"
-                    },
+                    createdBy: defaultIdentity,
                     layout: "layout",
                     name: "name",
                     slug: "delete-cat",

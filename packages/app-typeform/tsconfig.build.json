@@ -1,13 +1,16 @@
 {
   "extends": "../../tsconfig.build.json",
-  "include": ["./src"],
-  "exclude": ["node_modules", "../app-page-builder", "../validation", "../app"],
+  "include": ["src"],
+  "references": [
+    { "path": "../app/tsconfig.build.json" },
+    { "path": "../app-page-builder/tsconfig.build.json" },
+    { "path": "../validation/tsconfig.build.json" }
+  ],
   "compilerOptions": {
     "rootDir": "./src",
     "outDir": "./dist",
     "declarationDir": "./dist",
-    "paths": {},
+    "paths": { "~/*": ["./src/*"] },
     "baseUrl": "."
-  },
-  "references": []
+  }
 }

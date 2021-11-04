@@ -1,5 +1,7 @@
 import { pick } from "lodash";
-import { SecurityIdentity } from "@webiny/api-security";
+import { SecurityIdentity } from "@webiny/api-security/types";
+export { until } from "@webiny/project-utils/testing/helpers/until";
+export { sleep } from "@webiny/project-utils/testing/helpers/sleep";
 
 export interface PermissionsArg {
     name: string;
@@ -10,13 +12,13 @@ export interface PermissionsArg {
 }
 
 export const identity = {
-    id: "123",
-    displayName: "User 123",
+    id: "12345678",
+    displayName: "John Doe",
     type: "admin"
 };
 
 const getSecurityIdentity = () => {
-    return new SecurityIdentity(identity);
+    return identity;
 };
 
 export const createPermissions = (permissions: PermissionsArg[]): PermissionsArg[] => {
@@ -75,48 +77,4 @@ export const getModelCreateInputObject = model => {
         "lockedFields",
         "titleFieldId"
     ]);
-};
-
-type UntilOptions = {
-    name?: string;
-    tries?: number;
-    wait?: number;
-};
-
-export const until = async (execute, until, options: UntilOptions = {}) => {
-    const { name = "NO_NAME", tries = 5, wait = 300 } = options;
-
-    let result;
-    let triesCount = 0;
-
-    while (true) {
-        result = await execute();
-
-        let done;
-        try {
-            done = await until(result);
-        } catch {}
-
-        if (done) {
-            return result;
-        }
-
-        triesCount++;
-        if (triesCount === tries) {
-            break;
-        }
-
-        // Wait.
-        await new Promise((resolve: any) => {
-            setTimeout(() => resolve(), wait);
-        });
-    }
-
-    throw new Error(
-        `[${name}] Tried ${tries} times but failed. Last result that was received: ${JSON.stringify(
-            result,
-            null,
-            2
-        )}`
-    );
 };

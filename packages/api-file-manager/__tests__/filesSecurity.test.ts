@@ -1,6 +1,5 @@
-import { SecurityIdentity } from "@webiny/api-security";
 import useGqlHandler from "./useGqlHandler";
-import { SecurityPermission } from "@webiny/api-security/types";
+import { SecurityPermission, SecurityIdentity } from "@webiny/api-security/types";
 
 jest.setTimeout(10000);
 
@@ -36,19 +35,17 @@ const NOT_AUTHORIZED_RESPONSE = operation => ({
     }
 });
 
-const identityA = new SecurityIdentity({
+const identityA: SecurityIdentity = {
     id: "a",
-    login: "a",
     type: "test",
     displayName: "Aa"
-});
+};
 
-const identityB = new SecurityIdentity({
+const identityB: SecurityIdentity = {
     id: "b",
-    login: "b",
     type: "test",
     displayName: "Bb"
-});
+};
 
 type IdentityPermissions = Array<[SecurityPermission[], SecurityIdentity]>;
 

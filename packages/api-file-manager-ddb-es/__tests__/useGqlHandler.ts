@@ -6,18 +6,14 @@ import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import dbPlugins from "@webiny/handler-db";
 import dynamoDbPlugins from "@webiny/db-dynamodb/plugins";
-import { Client } from "@elastic/elasticsearch";
 import { simulateStream } from "@webiny/project-utils/testing/dynamodb";
 import elasticsearchClientContextPlugin from "@webiny/api-elasticsearch";
 import { createHandler } from "@webiny/handler-aws";
 import graphqlHandlerPlugins from "@webiny/handler-graphql";
-import tenancyPlugins from "@webiny/api-tenancy";
-import securityPlugins from "@webiny/api-security";
 import i18nContext from "@webiny/api-i18n/graphql/context";
 import i18nDynamoDbStorageOperations from "@webiny/api-i18n-ddb";
 import i18nContentPlugins from "@webiny/api-i18n-content/plugins";
 import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
-import { SecurityIdentity } from "@webiny/api-security";
 
 /**
  * Load some test stuff from the api-file-manager
@@ -39,6 +35,9 @@ import {
 import { SecurityPermission } from "@webiny/api-security/types";
 import { until } from "@webiny/project-utils/testing/helpers/until";
 import { FilePhysicalStoragePlugin } from "@webiny/api-file-manager/plugins/definitions/FilePhysicalStoragePlugin";
+import { createTenancyAndSecurity } from "./tenancySecurity";
+import { SecurityIdentity } from "@webiny/api-security/types";
+import { createElasticsearchClient } from "@webiny/api-elasticsearch/client";
 
 type UseGqlHandlerParams = {
     permissions?: SecurityPermission[];
@@ -49,8 +48,9 @@ export default (params?: UseGqlHandlerParams) => {
     const { permissions, identity } = params || {};
 
     const ELASTICSEARCH_PORT = process.env.ELASTICSEARCH_PORT || "9200";
-    const elasticsearchClient = new Client({
-        node: `http://localhost:${ELASTICSEARCH_PORT}`
+    const elasticsearchClient = createElasticsearchClient({
+        node: `http://localhost:${ELASTICSEARCH_PORT}`,
+        auth: {}
     });
     const documentClient = new DocumentClient({
         convertEmptyValues: true,
@@ -60,9 +60,7 @@ export default (params?: UseGqlHandlerParams) => {
         accessKeyId: "test",
         secretAccessKey: "test"
     });
-    const elasticsearchClientContext = elasticsearchClientContextPlugin({
-        endpoint: `http://localhost:${ELASTICSEARCH_PORT}`
-    });
+    const elasticsearchClientContext = elasticsearchClientContextPlugin(elasticsearchClient);
     const clearElasticsearch = async () => {
         return elasticsearchClient.indices.delete({
             index: "_all"
@@ -112,23 +110,14 @@ export default (params?: UseGqlHandlerParams) => {
     // Creates the actual handler. Feel free to add additional plugins if needed.
     const handler = createHandler(
         dbPlugins({
-            table: "FileManager",
+            table: process.env.DB_TABLE,
             driver: new DynamoDbDriver({
                 documentClient
             })
         }),
         dynamoDbPlugins(),
+        ...createTenancyAndSecurity({ permissions, identity }),
         graphqlHandlerPlugins(),
-        tenancyPlugins(),
-        securityPlugins(),
-        {
-            type: "context",
-            apply(context) {
-                context.tenancy.getCurrentTenant = () => {
-                    return tenant;
-                };
-            }
-        },
         i18nContext(),
         i18nDynamoDbStorageOperations(),
         i18nContentPlugins(),
@@ -137,24 +126,6 @@ export default (params?: UseGqlHandlerParams) => {
         richTextFieldPlugin(),
         fileManagerPlugins(),
         fileManagerDdbEsPlugins(),
-        {
-            type: "security-authorization",
-            name: "security-authorization",
-            getPermissions: () => permissions || [{ name: "*" }]
-        },
-        {
-            type: "security-authentication",
-            authenticate: () => {
-                return (
-                    identity ||
-                    new SecurityIdentity({
-                        id: "mocked",
-                        displayName: "m",
-                        type: "admin"
-                    })
-                );
-            }
-        },
         /**
          * Mock physical file storage plugin.
          */

@@ -4,12 +4,15 @@ const { DocumentClient } = require("aws-sdk/clients/dynamodb");
 const elasticsearchClientContextPlugin = require("@webiny/api-elasticsearch").default;
 const { createHandler } = require("@webiny/handler-aws");
 const dynamoToElastic = require("@webiny/api-dynamodb-to-elasticsearch/handler").default;
-const { Client } = require("@elastic/elasticsearch");
 const { simulateStream } = require("@webiny/project-utils/testing/dynamodb");
 const NodeEnvironment = require("jest-environment-node");
 const elasticsearchDataGzipCompression =
     require("@webiny/api-elasticsearch/plugins/GzipCompression").default;
 const { ContextPlugin } = require("@webiny/handler/plugins/ContextPlugin");
+const {
+    elasticIndexManager
+} = require("@webiny/project-utils/testing/helpers/elasticIndexManager");
+const { createElasticsearchClient } = require("@webiny/api-elasticsearch/client");
 /**
  * For this to work it must load plugins that have already been built
  */
@@ -21,30 +24,13 @@ if (typeof plugins !== "function") {
 
 const ELASTICSEARCH_PORT = process.env.ELASTICSEARCH_PORT || "9200";
 
-const getStorageOperationsPlugins = ({ documentClient, elasticsearchClientContext }) => {
-    return () => {
-        const pluginsValue = plugins();
-        const dbPluginsValue = dbPlugins({
-            table: "FileManager",
-            driver: new DynamoDbDriver({
-                documentClient
-            })
-        });
-        return [
-            elasticsearchDataGzipCompression(),
-            ...pluginsValue,
-            ...dbPluginsValue,
-            elasticsearchClientContext
-        ];
-    };
-};
-
 class FileManagerTestEnvironment extends NodeEnvironment {
     async setup() {
         await super.setup();
 
-        const elasticsearchClient = new Client({
-            node: `http://localhost:${ELASTICSEARCH_PORT}`
+        const elasticsearchClient = createElasticsearchClient({
+            node: `http://localhost:${ELASTICSEARCH_PORT}`,
+            auth: {}
         });
         const documentClient = new DocumentClient({
             convertEmptyValues: true,
@@ -54,10 +40,7 @@ class FileManagerTestEnvironment extends NodeEnvironment {
             accessKeyId: "test",
             secretAccessKey: "test"
         });
-        const elasticsearchClientContext = elasticsearchClientContextPlugin({
-            endpoint: `http://localhost:${ELASTICSEARCH_PORT}`,
-            auth: {}
-        });
+        const elasticsearchClientContext = elasticsearchClientContextPlugin(elasticsearchClient);
 
         /**
          * Intercept DocumentClient operations and trigger dynamoToElastic function (almost like a DynamoDB Stream trigger)
@@ -68,29 +51,28 @@ class FileManagerTestEnvironment extends NodeEnvironment {
         });
         simulateStream(documentClient, createHandler(simulationContext, dynamoToElastic()));
 
-        const clearEsIndices = async () => {
-            return elasticsearchClient.indices.delete({
-                index: "_all"
-            });
-        };
         /**
          * This is a global function that will be called inside the tests to get all relevant plugins, methods and objects.
          */
         this.global.__getStorageOperationsPlugins = () => {
-            return getStorageOperationsPlugins({
-                elasticsearchClientContext,
-                documentClient
-            });
+            return () => {
+                const pluginsValue = plugins();
+                const dbPluginsValue = dbPlugins({
+                    table: process.env.DB_TABLE,
+                    driver: new DynamoDbDriver({
+                        documentClient
+                    })
+                });
+                return [
+                    //elasticsearchDataGzipCompression(),
+                    ...pluginsValue,
+                    ...dbPluginsValue,
+                    elasticsearchClientContext
+                ];
+            };
         };
-        this.global.__beforeEach = async () => {
-            await clearEsIndices();
-            return elasticsearchClient.indices.create({
-                index: "root-file-manager"
-            });
-        };
-        this.global.__afterEach = clearEsIndices;
-        this.global.__beforeAll = clearEsIndices;
-        this.global.__afterAll = clearEsIndices;
+
+        elasticIndexManager(this.global, elasticsearchClient);
     }
 }
 

@@ -7,8 +7,6 @@ import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
 import { useReviewReadHandler } from "../utils/useReviewReadHandler";
 import { useAuthorManageHandler } from "../utils/useAuthorManageHandler";
 
-jest.setTimeout(25000);
-
 describe("refField", () => {
     const manageOpts = { path: "manage/en-US" };
     const readOpts = { path: "read/en-US" };
@@ -184,8 +182,8 @@ describe("refField", () => {
                         id: review.id,
                         createdOn: review.createdOn,
                         createdBy: {
-                            id: "123",
-                            displayName: "User 123",
+                            id: "12345678",
+                            displayName: "John Doe",
                             type: "admin"
                         },
                         savedOn: publishedReview.savedOn,
@@ -239,8 +237,8 @@ describe("refField", () => {
                             },
                             createdOn: review.createdOn,
                             createdBy: {
-                                id: "123",
-                                displayName: "User 123",
+                                id: "12345678",
+                                displayName: "John Doe",
                                 type: "admin"
                             },
                             id: review.id,

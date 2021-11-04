@@ -9,7 +9,7 @@ describe("connection timeouts test", () => {
     // eventually does end, and doesn't end up keeping a Lambda function alive until its timeout.
     test("should throw error if invalid endpoint specified", async () => {
         const db = new Db({
-            table: "PageBuilder",
+            table: process.env.DB_TABLE,
             driver: new DynamoDbDriver({
                 documentClient: new DocumentClient({
                     convertEmptyValues: true,

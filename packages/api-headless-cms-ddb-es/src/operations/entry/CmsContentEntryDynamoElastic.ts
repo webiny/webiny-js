@@ -349,21 +349,13 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
         /**
          * Delete records of given entry revision.
          */
-        batch
-            .delete({
-                ...configurations.db(),
-                query: {
-                    PK: primaryKey,
-                    SK: this.getSortKeyRevision(entryToDelete.id)
-                }
-            })
-            .delete({
-                ...configurations.esDb(),
-                query: {
-                    PK: primaryKey,
-                    SK: this.getSortKeyRevision(entryToDelete.id)
-                }
-            });
+        batch.delete({
+            ...configurations.db(),
+            query: {
+                PK: primaryKey,
+                SK: this.getSortKeyRevision(entryToDelete.id)
+            }
+        });
         /**
          * If revision we are deleting is the published one as well, we need to delete those records as well.
          */

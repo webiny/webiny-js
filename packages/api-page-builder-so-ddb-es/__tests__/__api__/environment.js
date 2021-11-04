@@ -4,12 +4,15 @@ const { DocumentClient } = require("aws-sdk/clients/dynamodb");
 const elasticsearchClientContextPlugin = require("@webiny/api-elasticsearch").default;
 const { createHandler } = require("@webiny/handler-aws");
 const dynamoToElastic = require("@webiny/api-dynamodb-to-elasticsearch/handler").default;
-const { Client } = require("@elastic/elasticsearch");
+const { createElasticsearchClient } = require("@webiny/api-elasticsearch/client");
 const { simulateStream } = require("@webiny/project-utils/testing/dynamodb");
 const NodeEnvironment = require("jest-environment-node");
 const elasticsearchDataGzipCompression =
     require("@webiny/api-elasticsearch/plugins/GzipCompression").default;
 const { ContextPlugin } = require("@webiny/handler/plugins/ContextPlugin");
+const {
+    elasticIndexManager
+} = require("@webiny/project-utils/testing/helpers/elasticIndexManager");
 const dynamoDbPlugins = require("@webiny/db-dynamodb/plugins").default;
 /**
  * For this to work it must load plugins that have already been built
@@ -26,7 +29,7 @@ const getStorageOperationsPlugins = ({ documentClient, elasticsearchClientContex
     return () => {
         const pluginsValue = plugins();
         const dbPluginsValue = dbPlugins({
-            table: "PageBuilder",
+            table: process.env.DB_TABLE,
             driver: new DynamoDbDriver({
                 documentClient
             })
@@ -45,8 +48,9 @@ class PageBuilderTestEnvironment extends NodeEnvironment {
     async setup() {
         await super.setup();
 
-        const elasticsearchClient = new Client({
-            node: `http://localhost:${ELASTICSEARCH_PORT}`
+        const elasticsearchClient = createElasticsearchClient({
+            node: `http://localhost:${ELASTICSEARCH_PORT}`,
+            auth: {}
         });
         const documentClient = new DocumentClient({
             convertEmptyValues: true,
@@ -56,10 +60,7 @@ class PageBuilderTestEnvironment extends NodeEnvironment {
             accessKeyId: "test",
             secretAccessKey: "test"
         });
-        const elasticsearchClientContext = elasticsearchClientContextPlugin({
-            endpoint: `http://localhost:${ELASTICSEARCH_PORT}`,
-            auth: {}
-        });
+        const elasticsearchClientContext = elasticsearchClientContextPlugin(elasticsearchClient);
 
         /**
          * Intercept DocumentClient operations and trigger dynamoToElastic function (almost like a DynamoDB Stream trigger)
@@ -70,11 +71,6 @@ class PageBuilderTestEnvironment extends NodeEnvironment {
         });
         simulateStream(documentClient, createHandler(simulationContext, dynamoToElastic()));
 
-        const clearEsIndices = async () => {
-            return elasticsearchClient.indices.delete({
-                index: "_all"
-            });
-        };
         /**
          * This is a global function that will be called inside the tests to get all relevant plugins, methods and objects.
          */
@@ -84,10 +80,8 @@ class PageBuilderTestEnvironment extends NodeEnvironment {
                 documentClient
             });
         };
-        this.global.__beforeEach = clearEsIndices;
-        this.global.__afterEach = clearEsIndices;
-        this.global.__beforeAll = clearEsIndices;
-        this.global.__afterAll = clearEsIndices;
+
+        elasticIndexManager(this.global, elasticsearchClient);
     }
 }
 

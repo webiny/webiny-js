@@ -18,6 +18,9 @@
       "path": "../../../packages/api-security"
     },
     {
+      "path": "../../../packages/api-security-okta"
+    },
+    {
       "path": "../../../packages/api-i18n-content"
     },
     {
@@ -36,13 +39,10 @@
       "path": "../../../packages/api-tenancy"
     },
     {
-      "path": "../../../packages/api-security-admin-users"
+      "path": "../../../packages/api-admin-users-cognito"
     },
     {
-      "path": "../../../packages/api-security-admin-users-cognito"
-    },
-    {
-      "path": "../../../packages/api-security-admin-users-so-ddb"
+      "path": "../../../packages/api-admin-users-cognito-so-ddb"
     },
     {
       "path": "../../../packages/api-headless-cms"
@@ -156,14 +156,8 @@
       "@webiny/api-headless-cms": ["../../../packages/api-headless-cms/src"],
       "@webiny/api-headless-cms-ddb-es/*": ["../../../packages/api-headless-cms-ddb-es/src/*"],
       "@webiny/api-headless-cms-ddb-es": ["../../../packages/api-headless-cms-ddb-es/src"],
-      "@webiny/api-security-admin-users/*": ["../../../packages/api-security-admin-users/src/*"],
-      "@webiny/api-security-admin-users": ["../../../packages/api-security-admin-users/src"],
-      "@webiny/api-security-admin-users-cognito/*": [
-        "../../../packages/api-security-admin-users-cognito/src/*"
-      ],
-      "@webiny/api-security-admin-users-cognito": [
-        "../../../packages/api-security-admin-users-cognito/src"
-      ],
+      "@webiny/api-admin-users-cognito/*": ["../../../packages/api-admin-users-cognito/src/*"],
+      "@webiny/api-admin-users-cognito": ["../../../packages/api-admin-users-cognito/src"],
       "@webiny/api-security-cognito-authentication": [
         "../../../packages/api-security-cognito-authentication/src"
       ]

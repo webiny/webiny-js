@@ -376,7 +376,9 @@ describe("entry references", () => {
                     return !!entry.meta.publishedOn;
                 });
             },
-            { name: "list all published articles", tries: 10 }
+            {
+                name: "list all published articles"
+            }
         );
 
         const [listManageResponse] = await articleManager.listArticles();
@@ -457,7 +459,9 @@ describe("entry references", () => {
                 const entries = data?.listCategories?.data || [];
                 return entries.length === 0;
             },
-            { name: "list all categories after delete", tries: 10 }
+            {
+                name: "list all categories after delete"
+            }
         );
 
         const [listAfterDeleteManageResponse] = await articleManager.listArticles();

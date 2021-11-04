@@ -1,19 +1,17 @@
 {
   "extends": "../../tsconfig.build.json",
-  "include": ["./src"],
-  "exclude": [
-    "node_modules",
-    "../api-prerendering-service",
-    "../handler",
-    "../handler-args",
-    "../plugins"
+  "include": ["src"],
+  "references": [
+    { "path": "../api-prerendering-service/tsconfig.build.json" },
+    { "path": "../handler/tsconfig.build.json" },
+    { "path": "../handler-args/tsconfig.build.json" },
+    { "path": "../plugins/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "rootDir": "./src",
     "outDir": "./dist",
     "declarationDir": "./dist",
-    "paths": {},
+    "paths": { "~/*": ["./src/*"] },
     "baseUrl": "."
-  },
-  "references": []
+  }
 }

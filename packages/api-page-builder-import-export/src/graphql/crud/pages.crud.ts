@@ -2,7 +2,11 @@ import Error from "@webiny/error";
 import { NotFoundError } from "@webiny/handler-graphql";
 import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
 import checkBasePermissions from "@webiny/api-page-builder/graphql/crud/utils/checkBasePermissions";
-import { PageImportExportTaskStatus, PbPageImportExportContext } from "~/types";
+import {
+    PageImportExportTaskStatus,
+    PagesImportExportCrud,
+    PbPageImportExportContext
+} from "~/types";
 import { invokeHandlerClient } from "~/importPages/client";
 import { HandlerArgs as CreateHandlerArgs } from "~/importPages/create";
 import { initialStats, zeroPad } from "~/importPages/utils";
@@ -14,14 +18,8 @@ const EXPORT_PAGES_PROCESS_HANDLER = process.env.EXPORT_PAGES_PROCESS_HANDLER;
 const IMPORT_PAGES_CREATE_HANDLER = process.env.IMPORT_PAGES_CREATE_HANDLER;
 
 export default new ContextPlugin<PbPageImportExportContext>(context => {
-    const importExportCrud = {
-        async importPages(
-            categorySlug: string,
-            data: {
-                zipFileKey?: string;
-                zipFileUrl?: string;
-            }
-        ) {
+    const importExportCrud: PagesImportExportCrud = {
+        async importPages({ category: categorySlug, zipFileKey, zipFileUrl }) {
             await checkBasePermissions(context, PERMISSION_NAME, {
                 rwd: "w"
             });
@@ -37,7 +35,8 @@ export default new ContextPlugin<PbPageImportExportContext>(context => {
                 status: PageImportExportTaskStatus.PENDING,
                 input: {
                     category: categorySlug,
-                    data
+                    zipFileKey,
+                    zipFileUrl
                 }
             });
 
@@ -46,8 +45,10 @@ export default new ContextPlugin<PbPageImportExportContext>(context => {
                 name: IMPORT_PAGES_CREATE_HANDLER,
                 payload: {
                     category: categorySlug,
-                    data,
-                    task
+                    zipFileKey,
+                    zipFileUrl,
+                    task,
+                    identity: context.security.getIdentity()
                 }
             });
 
@@ -56,14 +57,33 @@ export default new ContextPlugin<PbPageImportExportContext>(context => {
             };
         },
 
-        async exportPages(pageIds: string[], revisionType) {
+        async exportPages({ ids: initialPageIds, revisionType, where, sort, search }) {
             await checkBasePermissions(context, PERMISSION_NAME, {
                 rwd: "w"
             });
+            let pageIds = initialPageIds;
+            // If no ids are provided then it means we want to export all pages
+            if (!initialPageIds || (Array.isArray(initialPageIds) && initialPageIds.length === 0)) {
+                pageIds = [];
+                let pages = [];
+                let meta = { hasMoreItems: true, cursor: null };
+                // Paginate pages
+                while (meta.hasMoreItems) {
+                    [pages, meta] = await context.pageBuilder.pages.listLatest({
+                        after: meta.cursor,
+                        where: where,
+                        sort: sort,
+                        search: search
+                    });
+                    // Save page ids
+                    pages.forEach(page => pageIds.push(page.id));
+                }
+            }
+
             if (pageIds.length === 0) {
                 throw new Error(
-                    "Cannot export page(s) - no page ID(s) were provided.",
-                    "EMPTY_PAGE_IDS_PROVIDED"
+                    "Cannot export pages - no pages found for provided inputs.",
+                    "EMPTY_EXPORT_NO_PAGES_FOUND"
                 );
             }
 
@@ -105,7 +125,8 @@ export default new ContextPlugin<PbPageImportExportContext>(context => {
                 name: EXPORT_PAGES_PROCESS_HANDLER,
                 payload: {
                     taskId: task.id,
-                    subTaskIndex: 1
+                    subTaskIndex: 1,
+                    identity: context.security.getIdentity()
                 }
             });
 

@@ -2,7 +2,7 @@ import useGqlHandler from "./useGqlHandler";
 import { waitPage } from "./utils/waitPage";
 import { Page } from "~/types";
 
-jest.setTimeout(30000);
+jest.setTimeout(100000);
 
 describe("getting published pages", () => {
     const handler = useGqlHandler();
@@ -72,9 +72,7 @@ describe("getting published pages", () => {
                 return published && data[0].title === "page-c";
             },
             {
-                name: "list published pages after update and publish",
-                tries: 30,
-                wait: 500
+                name: "list published pages after update and publish"
             }
         );
 

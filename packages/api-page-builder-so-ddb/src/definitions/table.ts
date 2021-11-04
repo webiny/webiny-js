@@ -18,7 +18,7 @@ export interface Params {
 export const defineTable = (params: Params): Table => {
     const { context, indexes } = params;
     return new Table({
-        name: process.env.DB_TABLE_PAGE_BUILDER || getTable(context),
+        name: process.env.DB_TABLE || getTable(context),
         partitionKey: "PK",
         sortKey: "SK",
         DocumentClient: getDocumentClient(context),

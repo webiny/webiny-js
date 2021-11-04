@@ -34,7 +34,9 @@ describe("date validators", () => {
             const result = await gtePlugin.validator.validate({
                 value,
                 validator,
-                context
+                context,
+                field: {} as any,
+                contentModel: {} as any
             });
             expect(result).toEqual(true);
         }
@@ -56,7 +58,9 @@ describe("date validators", () => {
             const result = await gtePlugin.validator.validate({
                 value,
                 validator,
-                context
+                context,
+                field: {} as any,
+                contentModel: {} as any
             });
             expect(result).toEqual(false);
         }
@@ -78,7 +82,9 @@ describe("date validators", () => {
             const result = await ltePlugin.validator.validate({
                 value,
                 validator,
-                context
+                context,
+                field: {} as any,
+                contentModel: {} as any
             });
             expect(result).toEqual(true);
         }
@@ -100,7 +106,9 @@ describe("date validators", () => {
             const result = await ltePlugin.validator.validate({
                 value,
                 validator,
-                context
+                context,
+                field: {} as any,
+                contentModel: {} as any
             });
             expect(result).toEqual(false);
         }
@@ -124,7 +132,9 @@ describe("date validators", () => {
             const result = await gtePlugin.validator.validate({
                 value,
                 validator,
-                context
+                context,
+                field: {} as any,
+                contentModel: {} as any
             });
             expect(result).toEqual(true);
         }
@@ -146,7 +156,9 @@ describe("date validators", () => {
             const result = await gtePlugin.validator.validate({
                 value,
                 validator,
-                context
+                context,
+                field: {} as any,
+                contentModel: {} as any
             });
             expect(result).toEqual(false);
         }
@@ -170,7 +182,9 @@ describe("date validators", () => {
             const result = await ltePlugin.validator.validate({
                 value,
                 validator,
-                context
+                context,
+                field: {} as any,
+                contentModel: {} as any
             });
             expect(result).toEqual(true);
         }
@@ -194,7 +208,9 @@ describe("date validators", () => {
             const result = await ltePlugin.validator.validate({
                 value,
                 validator,
-                context
+                context,
+                field: {} as any,
+                contentModel: {} as any
             });
             expect(result).toEqual(false);
         }

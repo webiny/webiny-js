@@ -7,8 +7,7 @@ import { useCategoryReadHandler } from "../utils/useCategoryReadHandler";
 import models from "./mocks/contentModels";
 import modelsWithoutValidation from "./mocks/contentModels.noValidation";
 import { useProductManageHandler } from "../utils/useProductManageHandler";
-
-jest.setTimeout(15000);
+import { sleep } from "@webiny/project-utils/testing/helpers/sleep";
 
 interface CreateCategoriesResult {
     fruits: CmsContentEntry;
@@ -43,6 +42,8 @@ const createPermissions = ({ groups, models }: { groups?: string[]; models?: str
         locales: ["en-US"]
     }
 ];
+
+jest.setTimeout(100000);
 
 describe("MANAGE - Resolvers", () => {
     let contentModelGroup: CmsContentModelGroup;
@@ -161,8 +162,8 @@ describe("MANAGE - Resolvers", () => {
             entryId,
             createdOn: expect.stringMatching(/^20/),
             createdBy: {
-                id: "123",
-                displayName: "User 123",
+                id: "12345678",
+                displayName: "John Doe",
                 type: "admin"
             },
             savedOn: expect.stringMatching(/^20/),
@@ -249,8 +250,8 @@ describe("MANAGE - Resolvers", () => {
             entryId,
             createdOn: expect.stringMatching(/^20/),
             createdBy: {
-                id: "123",
-                displayName: "User 123",
+                id: "12345678",
+                displayName: "John Doe",
                 type: "admin"
             },
             savedOn: expect.stringMatching(/^20/),
@@ -314,8 +315,8 @@ describe("MANAGE - Resolvers", () => {
                             slug: category.slug,
                             createdOn: category.createdOn,
                             createdBy: {
-                                id: "123",
-                                displayName: "User 123",
+                                id: "12345678",
+                                displayName: "John Doe",
                                 type: "admin"
                             },
                             savedOn: publishedCategory.savedOn,
@@ -406,8 +407,8 @@ describe("MANAGE - Resolvers", () => {
             entryId: expect.any(String),
             createdOn: expect.stringMatching(/^20/),
             createdBy: {
-                id: "123",
-                displayName: "User 123",
+                id: "12345678",
+                displayName: "John Doe",
                 type: "admin"
             },
             savedOn: expect.stringMatching(/^20/),
@@ -475,8 +476,8 @@ describe("MANAGE - Resolvers", () => {
             entryId: expect.any(String),
             createdOn: expect.stringMatching(/^20/),
             createdBy: {
-                id: "123",
-                displayName: "User 123",
+                id: "12345678",
+                displayName: "John Doe",
                 type: "admin"
             },
             savedOn: expect.stringMatching(/^20/),
@@ -532,8 +533,8 @@ describe("MANAGE - Resolvers", () => {
                         savedOn: expect.stringMatching(/^20/),
                         createdOn: expect.stringMatching(/^20/),
                         createdBy: {
-                            id: "123",
-                            displayName: "User 123",
+                            id: "12345678",
+                            displayName: "John Doe",
                             type: "admin"
                         },
                         title: "Hardware",
@@ -574,7 +575,7 @@ describe("MANAGE - Resolvers", () => {
                 }
                 return entry.id === newEntry.id && entry.savedOn === newEntry.savedOn;
             },
-            { name: "list after create revision", wait: 500, tries: 10 }
+            { name: "list after create revision" }
         );
 
         expect(response).toEqual({
@@ -613,8 +614,8 @@ describe("MANAGE - Resolvers", () => {
                         entryId: expect.any(String),
                         createdOn: expect.stringMatching(/^20/),
                         createdBy: {
-                            id: "123",
-                            displayName: "User 123",
+                            id: "12345678",
+                            displayName: "John Doe",
                             type: "admin"
                         },
                         savedOn: expect.stringMatching(/^20/),
@@ -706,7 +707,7 @@ describe("MANAGE - Resolvers", () => {
         await until(
             () => listCategories().then(([data]) => data),
             ({ data }) => data.listCategories.data[0].id === id2,
-            { name: "delete latest revision", wait: 500, tries: 10 }
+            { name: "delete latest revision" }
         );
 
         // Make sure revision #2 is now "latest"

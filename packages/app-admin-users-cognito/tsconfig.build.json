@@ -1,0 +1,24 @@
+{
+  "extends": "../../tsconfig.build.json",
+  "include": ["src"],
+  "references": [
+    { "path": "../app/tsconfig.build.json" },
+    { "path": "../app-admin/tsconfig.build.json" },
+    { "path": "../app-admin-cognito/tsconfig.build.json" },
+    { "path": "../app-security/tsconfig.build.json" },
+    { "path": "../app-security-access-management/tsconfig.build.json" },
+    { "path": "../app-tenancy/tsconfig.build.json" },
+    { "path": "../form/tsconfig.build.json" },
+    { "path": "../plugins/tsconfig.build.json" },
+    { "path": "../react-router/tsconfig.build.json" },
+    { "path": "../ui/tsconfig.build.json" },
+    { "path": "../validation/tsconfig.build.json" }
+  ],
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "declarationDir": "./dist",
+    "paths": { "~/*": ["./src/*"] },
+    "baseUrl": "."
+  }
+}

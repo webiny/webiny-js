@@ -18,9 +18,7 @@ export const waitPage = async (handler: Handler, page: Page) => {
             });
         },
         {
-            name: `waiting for page ${pageIdentifier}`,
-            wait: 500,
-            tries: 30
+            name: `waiting for page ${pageIdentifier}`
         }
     );
 };

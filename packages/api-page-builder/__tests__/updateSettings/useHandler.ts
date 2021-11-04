@@ -1,6 +1,7 @@
 import { createHandler } from "@webiny/handler-aws";
 import graphqlHandler from "@webiny/handler-graphql";
 import pageBuilderPlugins from "../../src/updateSettings";
+import { createTenancyAndSecurity } from "../tenancySecurity";
 
 interface Params {
     plugins?: any;
@@ -21,21 +22,7 @@ export default (params: Params = {}) => {
     const handler = createHandler(
         storageOperations(),
         graphqlHandler(),
-        {
-            type: "context",
-            apply: context => {
-                if (context.tenancy) {
-                    return;
-                }
-                context.tenancy = {
-                    getCurrentTenant: () => {
-                        return {
-                            id: "root"
-                        };
-                    }
-                };
-            }
-        },
+        ...createTenancyAndSecurity(),
         {
             type: "context",
             apply: context => {

@@ -4,8 +4,6 @@ import { useContentGqlHandler } from "../utils/useContentGqlHandler";
 import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
 import models from "./mocks/contentModels";
 
-jest.setTimeout(15000);
-
 describe("Request review", () => {
     let contentModelGroup: CmsContentModelGroup;
 

@@ -3,7 +3,7 @@ import { identityA, identityB, NOT_AUTHORIZED_RESPONSE } from "./mocks";
 import { SecurityIdentity } from "@webiny/api-security";
 import { Page } from "~/types";
 
-jest.setTimeout(25000);
+jest.setTimeout(100000);
 
 describe("publishing workflow", () => {
     const {
@@ -130,9 +130,7 @@ describe("publishing workflow", () => {
             listPages,
             ([res]) => res.data.pageBuilder.listPages.data[2].status === "reviewRequested",
             {
-                name: "after request review and get that page was done",
-                wait: 400,
-                tries: 30
+                name: "after request review and get that page was done"
             }
         );
 
