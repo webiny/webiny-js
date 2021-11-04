@@ -23,6 +23,7 @@ const getOutputJson = ({ folder, env, cwd }) => {
         const extractedJSON = stdout.substring(stdout.indexOf("{"));
         return (cache[folder + env] = JSON.parse(extractedJSON));
     } catch (e) {
+        console.log('e', e)
         return null;
     }
 };
