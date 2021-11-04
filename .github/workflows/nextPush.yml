@@ -21,7 +21,8 @@ jobs:
       cypress-folders: ${{ steps.list-cypress-folders.outputs.cypress-folders }}
       jest-packages: ${{ steps.list-jest-packages.outputs.jest-packages }}
       day: ${{ steps.get-day.outputs.day }}
-      ts: ${{ steps.get-timestamp.outputs.ts }}
+      ts: "1636034831607"
+#      ts: ${{ steps.get-timestamp.outputs.ts }}
     steps:
       - uses: actions/setup-node@v2
         with:
@@ -105,41 +106,41 @@ jobs:
       - name: ESLint
         run: yarn eslint
 
-  jest-tests:
-    needs: init
-    name: ${{ matrix.package }} (${{ matrix.os }}, Node v${{ matrix.node }})
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest]
-        node: [14]
-        package: ${{ fromJson(needs.init.outputs.jest-packages) }}
-    runs-on: ${{ matrix.os }}
-    steps:
-      - uses: actions/setup-node@v2
-        with:
-          node-version: ${{ matrix.node }}
-
-      - uses: actions/checkout@v2
-
-      - uses: actions/cache@v2
-        with:
-          path: .yarn/cache
-          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-
-      - uses: actions/cache@v2
-        with:
-          path: .webiny/cached-packages
-          key: packages-cache-${{ steps.get-timestamp.outputs.ts }}
-
-      - name: Install dependencies
-        run: yarn --immutable
-
-      - name: Build packages
-        run: node scripts/buildWithCache.js
-
-      - name: Run tests
-        run: yarn test ${{ matrix.package }}
+#  jest-tests:
+#    needs: init
+#    name: ${{ matrix.package }} (${{ matrix.os }}, Node v${{ matrix.node }})
+#    strategy:
+#      fail-fast: false
+#      matrix:
+#        os: [ubuntu-latest]
+#        node: [14]
+#        package: ${{ fromJson(needs.init.outputs.jest-packages) }}
+#    runs-on: ${{ matrix.os }}
+#    steps:
+#      - uses: actions/setup-node@v2
+#        with:
+#          node-version: ${{ matrix.node }}
+#
+#      - uses: actions/checkout@v2
+#
+#      - uses: actions/cache@v2
+#        with:
+#          path: .yarn/cache
+#          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+#
+#      - uses: actions/cache@v2
+#        with:
+#          path: .webiny/cached-packages
+#          key: packages-cache-${{ steps.get-timestamp.outputs.ts }}
+#
+#      - name: Install dependencies
+#        run: yarn --immutable
+#
+#      - name: Build packages
+#        run: node scripts/buildWithCache.js
+#
+#      - name: Run tests
+#        run: yarn test ${{ matrix.package }}
 
   verdaccio-publish:
     needs: init
@@ -333,6 +334,14 @@ jobs:
             !test-project/**/node_modules/**/*
             !test-project/.yarn/cache/**/*
 
+      - name: Print CLI version
+        working-directory: test-project
+        run: yarn webiny --version
+
+      - name: Reduce prerendering service's process-queue schedule
+        working-directory: test-project
+        run: sed -i 's/5 minutes/1 minute/g' api/pulumi/dev/prerenderingService.ts
+
       - name: Create project-files artifact
         uses: actions/upload-artifact@v2
         with:
@@ -343,14 +352,6 @@ jobs:
             !test-project/node_modules/**/*
             !test-project/**/node_modules/**/*
             !test-project/.yarn/cache/**/*
-
-      - name: Print CLI version
-        working-directory: test-project
-        run: yarn webiny --version
-
-      - name: Reduce prerendering service's process-queue schedule
-        working-directory: test-project
-        run: sed -i '' 's/5 minutes/1 minute/g' api/pulumi/dev/prerenderingService.ts
 
       - name: Deploy API
         working-directory: test-project
