@@ -6,12 +6,14 @@ on:
 
 env:
   NODE_OPTIONS: --max_old_space_size=4096
+  AWS_REGION: eu-central-1
 
 jobs:
   init:
     name: Init
     runs-on: ubuntu-latest
     outputs:
+      cypress-folders: ${{ steps.list-cypress-folders.outputs.cypress-folders }}
       jest-packages: ${{ steps.list-jest-packages.outputs.jest-packages }}
       ts: ${{ steps.get-timestamp.outputs.ts }}
       webiny-version: ${{ steps.get-webiny-version.outputs.webiny-version }}
@@ -33,6 +35,10 @@ jobs:
       - name: List packages with Jest tests
         id: list-jest-packages
         run: echo "::set-output name=jest-packages::$(node scripts/listPackagesWithTests.js)"
+
+      - name: List Cypress tests folders
+        id: list-cypress-folders
+        run: echo "::set-output name=cypress-folders::$(node scripts/listCypressTestsFolders.js)"
 
       - uses: actions/cache@v2
         id: yarn-cache
@@ -124,7 +130,7 @@ jobs:
         run: node scripts/buildWithCache.js
 
       - name: Run tests
-        run: yarn test
+        run: yarn test ${{ matrix.package }}
 
   verdaccio-publish:
     needs: init
@@ -243,15 +249,14 @@ jobs:
           npx create-webiny-project@next test-project
           --tag next --no-interactive
           --assign-to-yarnrc '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
-          --template-options '{"region":"eu-central-1","storageOperations":"ddb-es"}'
+          --template-options '{"region":"${{ env.AWS_REGION }}","storageOperations":"ddb-es"}'
 
-  e2e-tests:
+  deploy-webiny-project:
     needs: [init, verdaccio-publish]
-    name: End-to-end tests
+    name: Deploy Webiny project
     runs-on: ubuntu-latest
     environment: next
     env:
-      NODE_OPTIONS: --max_old_space_size=4096
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       AWS_ELASTIC_SEARCH_DOMAIN_NAME: ${{ secrets.AWS_ELASTIC_SEARCH_DOMAIN_NAME }}
@@ -259,7 +264,6 @@ jobs:
       PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
       PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
       WEBINY_PULUMI_BACKEND: ${{ secrets.WEBINY_PULUMI_BACKEND }}_${{ needs.init.outputs.ts }}
-      GH_TOKEN: ${{ secrets.GH_TOKEN }}
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
     steps:
       - uses: actions/setup-node@v2
@@ -300,23 +304,12 @@ jobs:
           npx create-webiny-project@next test-project
           --tag next --no-interactive
           --assign-to-yarnrc '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
-          --template-options '{"region":"eu-central-1","storageOperations":"ddb-es"}'
+          --template-options '{"region":"${{ env.AWS_REGION }}","storageOperations":"ddb-es"}'
 
       - name: Cache project files
         uses: actions/cache@v2
         with:
           key: project-files-${{ needs.init.outputs.ts }}
-          path: |
-            test-project/
-            !test-project/node_modules/**/*
-            !test-project/**/node_modules/**/*
-            !test-project/.yarn/cache/**/*
-
-      - name: Create project-files artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: project-files
-          retention-days: 1
           path: |
             test-project/
             !test-project/node_modules/**/*
@@ -331,6 +324,17 @@ jobs:
         working-directory: test-project
         run: sed -i 's/5 minutes/1 minute/g' api/pulumi/dev/prerenderingService.ts
 
+      - name: Create project-files artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: project-files
+          retention-days: 1
+          path: |
+            test-project/
+            !test-project/node_modules/**/*
+            !test-project/**/node_modules/**/*
+            !test-project/.yarn/cache/**/*
+
       - name: Deploy API
         working-directory: test-project
         run: yarn webiny deploy api --env dev --debug
@@ -343,45 +347,45 @@ jobs:
         working-directory: test-project
         run: yarn webiny deploy apps/website --env dev --debug
 
+  cypress-tests-admin-area-installation:
+    needs: [init, deploy-webiny-project]
+    name: Cypress Tests - Admin Area Installation
+    runs-on: ubuntu-latest
+    environment: next
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_ELASTIC_SEARCH_DOMAIN_NAME: ${{ secrets.AWS_ELASTIC_SEARCH_DOMAIN_NAME }}
+      ELASTIC_SEARCH_INDEX_PREFIX: ${{ needs.init.outputs.ts }}_
+      PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
+      PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
+      WEBINY_PULUMI_BACKEND: ${{ secrets.WEBINY_PULUMI_BACKEND }}_${{ needs.init.outputs.ts }}
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+
+    steps:
       - uses: actions/checkout@v2
-        with:
-          path: webiny-js
 
       - uses: actions/cache@v2
         with:
           path: .webiny/cached-packages
           key: ${{ runner.os }}-${{ needs.init.outputs.webiny-version }}-${{ secrets.RANDOM_CACHE_KEY_SUFFIX }}
 
-      - name: Move .webiny to webiny-js/.webiny
-        run: mv .webiny webiny-js/.webiny
-
       - uses: actions/cache@v2
         with:
           path: .yarn/cache
-          key: yarn-${{ runner.os }}-${{ hashFiles('webiny-js/**/yarn.lock') }}
-
-      - name: Move .yarn to webiny-js/.yarn
-        run: mv .yarn webiny-js/.yarn
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
 
       - name: Install dependencies
-        working-directory: webiny-js
         run: yarn --immutable
 
       - name: Build packages
-        working-directory: webiny-js
         run: node scripts/buildWithCache.js
 
       - name: Set up Cypress config
-        working-directory: webiny-js
-        run: yarn setup-cypress --project-folder ../test-project
+        run: yarn setup-cypress
 
       - name: Cypress - run installation wizard test
-        working-directory: webiny-js
         run: yarn cypress run --spec "cypress/integration/adminInstallation/**/*.spec.js"
-
-      - name: Cypress - run the rest of Admin Area tests
-        working-directory: webiny-js
-        run: yarn cypress run --spec "cypress/integration/admin/**/*.spec.js"
 
       - name: Upload screenshots to Slack
         uses: trymbill/cypress-slack-video-upload-action@v1.3.0
@@ -389,15 +393,65 @@ jobs:
         with:
           token: ${{ secrets.SLACK_TOKEN }}
           channels: C027VQG8080
-          workdir: webiny-js/cypress
-          message-text: Cypress tests failed! Scrennshots have been placed in this thread, good luck.
+          workdir: cypress
+          message-text: Cypress tests failed! Screenshots have been placed in this thread, good luck.
 
-      - name: Trigger cleanup
-        if: always()
-        run: npx https://gist.github.com/doitadrian/6a3fa9f6b0e450ab88e3a5ba23f4e789 --event e2e-cleanup --payload "{\"ref\":\"${{ github.ref }}\",\"ts\":\"${{ needs.init.outputs.ts }}\",\"workflow\":\"${{ github.workflow }}\",\"commit\":\"${{ github.sha }}\"}"
+  cypress-tests-admin-area:
+    needs: [init, cypress-tests-admin-area-installation]
+    name: ${{ matrix.cypress-folder }} (${{ matrix.os }}, Node v${{ matrix.node }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ ubuntu-latest ]
+        node: [ 14 ]
+        cypress-folder: ${{ fromJson(needs.init.outputs.cypress-folders) }}
+    runs-on: ubuntu-latest
+    environment: next
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_ELASTIC_SEARCH_DOMAIN_NAME: ${{ secrets.AWS_ELASTIC_SEARCH_DOMAIN_NAME }}
+      ELASTIC_SEARCH_INDEX_PREFIX: ${{ needs.init.outputs.ts }}_
+      PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
+      PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
+      WEBINY_PULUMI_BACKEND: ${{ secrets.WEBINY_PULUMI_BACKEND }}_${{ needs.init.outputs.ts }}
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/cache@v2
+        with:
+          path: .webiny/cached-packages
+          key: ${{ runner.os }}-${{ needs.init.outputs.webiny-version }}-${{ secrets.RANDOM_CACHE_KEY_SUFFIX }}
+
+      - uses: actions/cache@v2
+        with:
+          path: .yarn/cache
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+
+      - name: Install dependencies
+        run: yarn --immutable
+
+      - name: Build packages
+        run: node scripts/buildWithCache.js
+
+      - name: Set up Cypress config
+        run: yarn setup-cypress
+
+      - name: Cypress - run "${{ matrix.cypress-folder }}" tests
+        run: yarn cypress run --spec "${{ matrix.cypress-folder }}"
+
+      - name: Upload screenshots to Slack
+        uses: trymbill/cypress-slack-video-upload-action@v1.3.0
+        if: failure()
+        with:
+          token: ${{ secrets.SLACK_TOKEN }}
+          channels: C027VQG8080
+          workdir: cypress
+          message-text: Cypress tests failed! Screenshots have been placed in this thread, good luck.
 
   npm-release-beta:
-    needs: [init, code-analysis, jest-tests, e2e-tests]
+    needs: [init, code-analysis, jest-tests, cypress-tests-admin-area]
     name: NPM release ("beta" tag)
     runs-on: ubuntu-latest
     env:
