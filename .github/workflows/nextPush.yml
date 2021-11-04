@@ -258,7 +258,7 @@ jobs:
           npx create-webiny-project@next test-project
           --tag next --no-interactive
           --assign-to-yarnrc '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
-          --template-options '{"region":"eu-central-1","storageOperations":"ddb-es"}'
+          --template-options '{"region":"${{ env.AWS_REGION }}","storageOperations":"ddb-es"}'
 
   deploy-webiny-project:
     needs: [init, verdaccio-publish]
@@ -313,7 +313,7 @@ jobs:
           npx create-webiny-project@next test-project
           --tag next --no-interactive
           --assign-to-yarnrc '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
-          --template-options '{"region":"eu-central-1","storageOperations":"ddb-es"}'
+          --template-options '{"region":"${{ env.AWS_REGION }}","storageOperations":"ddb-es"}'
 
       - name: Cache project files
         uses: actions/cache@v2
