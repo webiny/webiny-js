@@ -393,8 +393,8 @@ jobs:
       - name: Install dependencies
         run: yarn --immutable
 
-      - name: Build packages
-        run: node scripts/buildWithCache.js
+#      - name: Build packages
+#        run: node scripts/buildWithCache.js
 
       - name: Set up Cypress config
         run: yarn setup-cypress
@@ -451,11 +451,9 @@ jobs:
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
 
       - name: Install dependencies
-        working-directory: webiny-js
         run: yarn --immutable
 
 #      - name: Build packages
-#        working-directory: webiny-js
 #        run: node scripts/buildWithCache.js
 
       - name: Set up Cypress config
