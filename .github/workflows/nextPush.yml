@@ -105,41 +105,41 @@ jobs:
       - name: ESLint
         run: yarn eslint
 
-#  jest-tests:
-#    needs: init
-#    name: ${{ matrix.package }} (${{ matrix.os }}, Node v${{ matrix.node }})
-#    strategy:
-#      fail-fast: false
-#      matrix:
-#        os: [ubuntu-latest]
-#        node: [14]
-#        package: ${{ fromJson(needs.init.outputs.jest-packages) }}
-#    runs-on: ${{ matrix.os }}
-#    steps:
-#      - uses: actions/setup-node@v2
-#        with:
-#          node-version: ${{ matrix.node }}
-#
-#      - uses: actions/checkout@v2
-#
-#      - uses: actions/cache@v2
-#        with:
-#          path: .yarn/cache
-#          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-#
-#      - uses: actions/cache@v2
-#        with:
-#          path: .webiny/cached-packages
-#          key: packages-cache-${{ steps.get-timestamp.outputs.ts }}
-#
-#      - name: Install dependencies
-#        run: yarn --immutable
-#
-#      - name: Build packages
-#        run: node scripts/buildWithCache.js
-#
-#      - name: Run tests
-#        run: yarn test ${{ matrix.package }}
+  jest-tests:
+    needs: init
+    name: ${{ matrix.package }} (${{ matrix.os }}, Node v${{ matrix.node }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        node: [14]
+        package: ${{ fromJson(needs.init.outputs.jest-packages) }}
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node }}
+
+      - uses: actions/checkout@v2
+
+      - uses: actions/cache@v2
+        with:
+          path: .yarn/cache
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+
+      - uses: actions/cache@v2
+        with:
+          path: .webiny/cached-packages
+          key: packages-cache-${{ steps.get-timestamp.outputs.ts }}
+
+      - name: Install dependencies
+        run: yarn --immutable
+
+      - name: Build packages
+        run: node scripts/buildWithCache.js
+
+      - name: Run tests
+        run: yarn test ${{ matrix.package }}
 
   verdaccio-publish:
     needs: init
@@ -150,15 +150,9 @@ jobs:
         with:
           node-version: 12
 
-#      - uses: actions/checkout@v2
-#        with:
-#          fetch-depth: 0
-
       - uses: actions/checkout@v2
-        # Prevents the detached HEAD problem (https://github.com/actions/checkout/issues/124)
         with:
           fetch-depth: 0
-          ref: ${{ github.event.pull_request.head.ref }}
 
       - uses: actions/cache@v2
         with:
@@ -364,10 +358,6 @@ jobs:
         working-directory: test-project
         run: yarn webiny deploy apps/website --env dev --debug
 
-      - name: Trigger cleanup
-        if: failure()
-        run: npx https://gist.github.com/doitadrian/6a3fa9f6b0e450ab88e3a5ba23f4e789 --event e2e-cleanup --payload "{\"ts\":\"${{ needs.init.outputs.ts }}\",\"workflow\":\"${{ github.workflow }}\",\"commit\":\"${{ github.sha }}\"}"
-
   cypress-tests-admin-area-installation:
     needs: [init, deploy-webiny-project]
     name: Cypress Tests - Admin Area Installation
@@ -404,9 +394,6 @@ jobs:
       - name: Build packages
         run: node scripts/buildWithCache.js
 
-      - name: OUTPUT
-        run: yarn webiny output api --env dev
-
       - name: Set up Cypress config
         run: yarn setup-cypress
 
@@ -421,10 +408,6 @@ jobs:
           channels: C027VQG8080
           workdir: cypress
           message-text: Cypress tests failed! Screenshots have been placed in this thread, good luck.
-
-      - name: Trigger cleanup
-        if: failure()
-        run: npx https://gist.github.com/doitadrian/6a3fa9f6b0e450ab88e3a5ba23f4e789 --event e2e-cleanup --payload "{\"ts\":\"${{ needs.init.outputs.ts }}\",\"workflow\":\"${{ github.workflow }}\",\"commit\":\"${{ github.sha }}\"}"
 
   cypress-tests-admin-area:
     needs: [init, cypress-tests-admin-area-installation]
@@ -481,7 +464,3 @@ jobs:
           channels: C027VQG8080
           workdir: cypress
           message-text: Cypress tests failed! Screenshots have been placed in this thread, good luck.
-
-      - name: Trigger cleanup
-        if: always()
-        run: npx https://gist.github.com/doitadrian/6a3fa9f6b0e450ab88e3a5ba23f4e789 --event e2e-cleanup --payload "{\"ts\":\"${{ needs.init.outputs.ts }}\",\"workflow\":\"${{ github.workflow }}\",\"commit\":\"${{ github.sha }}\"}"
