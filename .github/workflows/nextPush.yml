@@ -360,7 +360,7 @@ jobs:
         run: yarn webiny deploy apps/website --env dev --debug
 
   cypress-tests-admin-area-installation:
-    needs: deploy-webiny-project
+    needs: [init, deploy-webiny-project]
     name: Cypress Tests - Admin Area Installation
     runs-on: ubuntu-latest
     environment: next
@@ -415,7 +415,7 @@ jobs:
         run: npx https://gist.github.com/doitadrian/6a3fa9f6b0e450ab88e3a5ba23f4e789 --event e2e-cleanup --payload "{\"ts\":\"${{ needs.init.outputs.ts }}\",\"workflow\":\"${{ github.workflow }}\",\"commit\":\"${{ github.sha }}\"}"
 
   cypress-tests-admin-area:
-    needs: cypress-tests-admin-area-installation
+    needs: [init, deploy-webiny-project]
     name: ${{ matrix.cypress-folder }} (${{ matrix.os }}, Node v${{ matrix.node }})
     strategy:
       fail-fast: false
