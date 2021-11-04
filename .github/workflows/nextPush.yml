@@ -454,9 +454,9 @@ jobs:
         working-directory: webiny-js
         run: yarn --immutable
 
-      - name: Build packages
-        working-directory: webiny-js
-        run: node scripts/buildWithCache.js
+#      - name: Build packages
+#        working-directory: webiny-js
+#        run: node scripts/buildWithCache.js
 
       - name: Set up Cypress config
         run: yarn setup-cypress
