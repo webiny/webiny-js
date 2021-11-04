@@ -365,7 +365,7 @@ jobs:
         run: npx https://gist.github.com/doitadrian/6a3fa9f6b0e450ab88e3a5ba23f4e789 --event e2e-cleanup --payload "{\"ts\":\"${{ needs.init.outputs.ts }}\",\"workflow\":\"${{ github.workflow }}\",\"commit\":\"${{ github.sha }}\"}"
 
   cypress-tests-admin-area-installation:
-    needs: [init]
+    needs: [init, deploy-webiny-project]
     name: Cypress Tests - Admin Area Installation
     runs-on: ubuntu-latest
     environment: next
