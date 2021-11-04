@@ -21,8 +21,7 @@ jobs:
       cypress-folders: ${{ steps.list-cypress-folders.outputs.cypress-folders }}
       jest-packages: ${{ steps.list-jest-packages.outputs.jest-packages }}
       day: ${{ steps.get-day.outputs.day }}
-      ts: "1636034831607"
-#      ts: ${{ steps.get-timestamp.outputs.ts }}
+      ts: ${{ steps.get-timestamp.outputs.ts }}
     steps:
       - uses: actions/setup-node@v2
         with:
