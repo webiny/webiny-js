@@ -35,7 +35,7 @@ jobs:
       - name: Get timestamp
         id: get-timestamp
         # run: echo "::set-output name=ts::$(node --eval "console.log(new Date().getTime())")"
-        run: echo "::set-output name=ts::$(node --eval "console.log('1636010244312'")"
+        run: echo "::set-output name=ts::$(node --eval "console.log('1636010244312')")"
 
       - name: List packages with Jest tests
         id: list-jest-packages
