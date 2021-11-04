@@ -35,8 +35,7 @@ jobs:
 
       - name: Get timestamp
         id: get-timestamp
-        # run: echo "::set-output name=ts::$(node --eval "console.log(new Date().getTime())")"
-        run: echo "::set-output name=ts::$(node --eval "console.log('1636010244312')")"
+        run: echo "::set-output name=ts::$(node --eval "console.log(new Date().getTime())")"
 
       - name: List packages with Jest tests
         id: list-jest-packages
@@ -66,300 +65,304 @@ jobs:
         if: steps.cached-packages.outputs.cache-hit != 'true'
         run: node scripts/buildWithCache.js
 
-#  code-analysis:
-#    needs: init
-#    name: Static code analysis
-#    runs-on: ubuntu-latest
-#    steps:
-#      - uses: actions/setup-node@v2
-#        with:
-#          node-version: 12
-#
+  code-analysis:
+    needs: init
+    name: Static code analysis
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 12
+
+      - uses: actions/checkout@v2
+
+      - uses: actions/cache@v2
+        with:
+          path: .yarn/cache
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+
+      - uses: actions/cache@v2
+        with:
+          path: .webiny/cached-packages
+          key: ${{ runner.os }}-${{ needs.init.outputs.day }}-${{ secrets.RANDOM_CACHE_KEY_SUFFIX }}
+
+      - name: Install dependencies
+        run: yarn --immutable
+
+      - name: Check code formatting
+        run: yarn prettier:check
+
+      - name: Check dependencies
+        run: yarn adio
+
+      - name: Check TS configs
+        run: yarn check-ts-configs
+
+      - name: ESLint
+        run: yarn eslint
+
+  jest-tests:
+    needs: init
+    name: ${{ matrix.package }} (${{ matrix.os }}, Node v${{ matrix.node }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        node: [14]
+        package: ${{ fromJson(needs.init.outputs.jest-packages) }}
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node }}
+
+      - uses: actions/checkout@v2
+
+      - uses: actions/cache@v2
+        with:
+          path: .yarn/cache
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+
+      - uses: actions/cache@v2
+        with:
+          path: .webiny/cached-packages
+          key: ${{ runner.os }}-${{ needs.init.outputs.day }}-${{ secrets.RANDOM_CACHE_KEY_SUFFIX }}
+
+      - name: Install dependencies
+        run: yarn --immutable
+
+      - name: Build packages
+        run: node scripts/buildWithCache.js
+
+      - name: Run tests
+        run: yarn test ${{ matrix.package }}
+
+  verdaccio-publish:
+    needs: init
+    name: Publish to Verdaccio
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 12
+
 #      - uses: actions/checkout@v2
-#
-#      - uses: actions/cache@v2
-#        with:
-#          path: .yarn/cache
-#          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-#
-#      - uses: actions/cache@v2
-#        with:
-#          path: .webiny/cached-packages
-#          key: ${{ runner.os }}-${{ needs.init.outputs.day }}-${{ secrets.RANDOM_CACHE_KEY_SUFFIX }}
-#
-#      - name: Install dependencies
-#        run: yarn --immutable
-#
-#      - name: Check code formatting
-#        run: yarn prettier:check
-#
-#      - name: Check dependencies
-#        run: yarn adio
-#
-#      - name: Check TS configs
-#        run: yarn check-ts-configs
-#
-#      - name: ESLint
-#        run: yarn eslint
-#
-#  jest-tests:
-#    needs: init
-#    name: ${{ matrix.package }} (${{ matrix.os }}, Node v${{ matrix.node }})
-#    strategy:
-#      fail-fast: false
-#      matrix:
-#        os: [ubuntu-latest]
-#        node: [14]
-#        package: ${{ fromJson(needs.init.outputs.jest-packages) }}
-#    runs-on: ${{ matrix.os }}
-#    steps:
-#      - uses: actions/setup-node@v2
-#        with:
-#          node-version: ${{ matrix.node }}
-#
-#      - uses: actions/checkout@v2
-#
-#      - uses: actions/cache@v2
-#        with:
-#          path: .yarn/cache
-#          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-#
-#      - uses: actions/cache@v2
-#        with:
-#          path: .webiny/cached-packages
-#          key: ${{ runner.os }}-${{ needs.init.outputs.day }}-${{ secrets.RANDOM_CACHE_KEY_SUFFIX }}
-#
-#      - name: Install dependencies
-#        run: yarn --immutable
-#
-#      - name: Build packages
-#        run: node scripts/buildWithCache.js
-#
-#      - name: Run tests
-#        run: yarn test ${{ matrix.package }}
-#
-#  verdaccio-publish:
-#    needs: init
-#    name: Publish to Verdaccio
-#    runs-on: ubuntu-latest
-#    steps:
-#      - uses: actions/setup-node@v2
-#        with:
-#          node-version: 12
-#
-##      - uses: actions/checkout@v2
-##        with:
-##          fetch-depth: 0
-#
-#      - uses: actions/checkout@v2
-#        # Prevents the detached HEAD problem (https://github.com/actions/checkout/issues/124)
 #        with:
 #          fetch-depth: 0
-#          ref: ${{ github.event.pull_request.head.ref }}
-#
-#      - uses: actions/cache@v2
-#        with:
-#          path: .yarn/cache
-#          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-#
-#      - uses: actions/cache@v2
-#        with:
-#          path: .webiny/cached-packages
-#          key: ${{ runner.os }}-${{ needs.init.outputs.day }}-${{ secrets.RANDOM_CACHE_KEY_SUFFIX }}
-#
-#      - name: Install dependencies
-#        run: yarn --immutable
-#
-#      - name: Build packages
-#        run: node scripts/buildWithCache.js
-#
-#      - name: Start Verdaccio local server
-#        run: npx pm2 start verdaccio -- -c .verdaccio.yaml
-#
-#      - name: Create ".npmrc" file in the project root, with a dummy auth token
-#        run: echo '//localhost:4873/:_authToken="dummy-auth-token"' > .npmrc
-#
-#      - name: Configure NPM to use local registry
-#        run: npm config set registry http://localhost:4873
-#
-#      - name: Set git email
-#        run: git config --global user.email "webiny-bot@webiny.com"
-#
-#      - name: Set git username
-#        run: git config --global user.name "webiny-bot"
-#
-#      - name: Version packages (no push, no changelog)
-#        run: yarn lerna:version:verdaccio
-#
-#      - name: Release to Verdaccio
-#        run: yarn lerna:publish:verdaccio
-#
-#      - name: Cache Verdaccio files
-#        uses: actions/cache@v2
-#        with:
-#          key: verdaccio-files-${{ needs.init.outputs.ts }}
-#          path: |
-#            .verdaccio/
-#            .verdaccio.yaml
-#
-#      - name: Create verdaccio-files artifact
-#        uses: actions/upload-artifact@v2
-#        with:
-#          name: verdaccio-files
-#          retention-days: 1
-#          path: |
-#            .verdaccio/
-#            .verdaccio.yaml
-#
-#  test-create-webiny-project:
-#    needs: [init, verdaccio-publish]
-#    name: Test "create-webiny-project" (different operating systems)
-#    strategy:
-#      fail-fast: false
-#      matrix:
-#        os: [ubuntu-latest]
-#        node: [12, 14]
-#    runs-on: ${{ matrix.os }}
-#    env:
-#      YARN_ENABLE_IMMUTABLE_INSTALLS: false
-#    steps:
-#      - uses: actions/setup-node@v2
-#        with:
-#          node-version: ${{ matrix.node }}
-#
-#      - name: Retrieve cached Verdaccio files
-#        uses: actions/cache@v2
-#        with:
-#          key: verdaccio-files-${{ needs.init.outputs.ts }}
-#          path: |
-#            .verdaccio/
-#            .verdaccio.yaml
-#
-#      - name: Move cached Verdaccio files into verdaccio-files folder
-#        run: mkdir verdaccio-files && mv .verdaccio verdaccio-files/.verdaccio && mv .verdaccio.yaml verdaccio-files/.verdaccio.yaml
-#
-#      - name: Start Verdaccio local server
-#        working-directory: verdaccio-files
-#        run: yarn add pm2 verdaccio && npx pm2 start verdaccio -- -c .verdaccio.yaml
-#
-#      - name: Configure NPM to use local registry
-#        run: npm config set registry http://localhost:4873
-#
-#      - name: Set git email (needed for create-webiny-project)
-#        run: git config --global user.email "webiny-bot@webiny.com"
-#
-#      - name: Set git username (needed for create-webiny-project)
-#        run: git config --global user.name "webiny-bot"
-#
-#      - name: Disable Webiny telemetry
-#        run: >
-#          mkdir ~/.webiny &&
-#          echo '{ "id": "ci", "telemetry": false }' > ~/.webiny/config
-#
-#      - name: Create a new Webiny project
-#        run: >
-#          npx create-webiny-project@next test-project
-#          --tag next --no-interactive
-#          --assign-to-yarnrc '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
-#          --template-options '{"region":"eu-central-1","storageOperations":"ddb-es"}'
-#
-#  deploy-webiny-project:
-#    needs: [init, verdaccio-publish]
-#    name: Deploy Webiny project
-#    runs-on: ubuntu-latest
-#    environment: next
-#    env:
-#      NODE_OPTIONS: --max_old_space_size=4096
-#      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-#      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-#      AWS_ELASTIC_SEARCH_DOMAIN_NAME: ${{ secrets.AWS_ELASTIC_SEARCH_DOMAIN_NAME }}
-#      ELASTIC_SEARCH_INDEX_PREFIX: ${{ needs.init.outputs.ts }}_
-#      PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
-#      PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
-#      WEBINY_PULUMI_BACKEND: ${{ secrets.WEBINY_PULUMI_BACKEND }}_${{ needs.init.outputs.ts }}
-#      GH_TOKEN: ${{ secrets.GH_TOKEN }}
-#      YARN_ENABLE_IMMUTABLE_INSTALLS: false
-#    steps:
-#      - uses: actions/setup-node@v2
-#        with:
-#          node-version: 12
-#
-#      - name: Retrieve cached Verdaccio files
-#        uses: actions/cache@v2
-#        with:
-#          key: verdaccio-files-${{ needs.init.outputs.ts }}
-#          path: |
-#            .verdaccio/
-#            .verdaccio.yaml
-#
-#      - name: Move cached Verdaccio files into verdaccio-files folder
-#        run: mkdir verdaccio-files && mv .verdaccio verdaccio-files/.verdaccio && mv .verdaccio.yaml verdaccio-files/.verdaccio.yaml
-#
-#      - name: Start Verdaccio local server
-#        working-directory: verdaccio-files
-#        run: yarn add pm2 verdaccio && npx pm2 start verdaccio -- -c .verdaccio.yaml
-#
-#      - name: Configure NPM to use local registry (for `npx create-webiny-project`)
-#        run: npm config set registry http://localhost:4873
-#
-#      - name: Set git email (needed for create-webiny-project)
-#        run: git config --global user.email "webiny-bot@webiny.com"
-#
-#      - name: Set git username (needed for create-webiny-project)
-#        run: git config --global user.name "webiny-bot"
-#
-#      - name: Disable Webiny telemetry
-#        run: >
-#          mkdir ~/.webiny &&
-#          echo '{ "id": "ci", "telemetry": false }' > ~/.webiny/config
-#
-#      - name: Create a new Webiny project
-#        run: >
-#          npx create-webiny-project@next test-project
-#          --tag next --no-interactive
-#          --assign-to-yarnrc '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
-#          --template-options '{"region":"eu-central-1","storageOperations":"ddb-es"}'
-#
-#      - name: Cache project files
-#        uses: actions/cache@v2
-#        with:
-#          key: project-files-${{ needs.init.outputs.ts }}
-#          path: |
-#            test-project/
-#            !test-project/node_modules/**/*
-#            !test-project/**/node_modules/**/*
-#            !test-project/.yarn/cache/**/*
-#
-#      - name: Create project-files artifact
-#        uses: actions/upload-artifact@v2
-#        with:
-#          name: project-files
-#          retention-days: 1
-#          path: |
-#            test-project/
-#            !test-project/node_modules/**/*
-#            !test-project/**/node_modules/**/*
-#            !test-project/.yarn/cache/**/*
-#
-#      - name: Print CLI version
-#        working-directory: test-project
-#        run: yarn webiny --version
-#
-#      - name: Reduce prerendering service's process-queue schedule
-#        working-directory: test-project
-#        run: sed -i 's/5 minutes/1 minute/g' api/pulumi/dev/prerenderingService.ts
-#
-#      - name: Deploy API
-#        working-directory: test-project
-#        run: yarn webiny deploy api --env dev --debug
-#
-#      - name: Deploy Admin Area
-#        working-directory: test-project
-#        run: yarn webiny deploy apps/admin --env dev --debug
-#
-#      - name: Deploy Website
-#        working-directory: test-project
-#        run: yarn webiny deploy apps/website --env dev --debug
+
+      - uses: actions/checkout@v2
+        # Prevents the detached HEAD problem (https://github.com/actions/checkout/issues/124)
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.ref }}
+
+      - uses: actions/cache@v2
+        with:
+          path: .yarn/cache
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+
+      - uses: actions/cache@v2
+        with:
+          path: .webiny/cached-packages
+          key: ${{ runner.os }}-${{ needs.init.outputs.day }}-${{ secrets.RANDOM_CACHE_KEY_SUFFIX }}
+
+      - name: Install dependencies
+        run: yarn --immutable
+
+      - name: Build packages
+        run: node scripts/buildWithCache.js
+
+      - name: Start Verdaccio local server
+        run: npx pm2 start verdaccio -- -c .verdaccio.yaml
+
+      - name: Create ".npmrc" file in the project root, with a dummy auth token
+        run: echo '//localhost:4873/:_authToken="dummy-auth-token"' > .npmrc
+
+      - name: Configure NPM to use local registry
+        run: npm config set registry http://localhost:4873
+
+      - name: Set git email
+        run: git config --global user.email "webiny-bot@webiny.com"
+
+      - name: Set git username
+        run: git config --global user.name "webiny-bot"
+
+      - name: Version packages (no push, no changelog)
+        run: yarn lerna:version:verdaccio
+
+      - name: Release to Verdaccio
+        run: yarn lerna:publish:verdaccio
+
+      - name: Cache Verdaccio files
+        uses: actions/cache@v2
+        with:
+          key: verdaccio-files-${{ needs.init.outputs.ts }}
+          path: |
+            .verdaccio/
+            .verdaccio.yaml
+
+      - name: Create verdaccio-files artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: verdaccio-files
+          retention-days: 1
+          path: |
+            .verdaccio/
+            .verdaccio.yaml
+
+  test-create-webiny-project:
+    needs: [init, verdaccio-publish]
+    name: Test "create-webiny-project" (different operating systems)
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        node: [12, 14]
+    runs-on: ${{ matrix.os }}
+    env:
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    steps:
+      - uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node }}
+
+      - name: Retrieve cached Verdaccio files
+        uses: actions/cache@v2
+        with:
+          key: verdaccio-files-${{ needs.init.outputs.ts }}
+          path: |
+            .verdaccio/
+            .verdaccio.yaml
+
+      - name: Move cached Verdaccio files into verdaccio-files folder
+        run: mkdir verdaccio-files && mv .verdaccio verdaccio-files/.verdaccio && mv .verdaccio.yaml verdaccio-files/.verdaccio.yaml
+
+      - name: Start Verdaccio local server
+        working-directory: verdaccio-files
+        run: yarn add pm2 verdaccio && npx pm2 start verdaccio -- -c .verdaccio.yaml
+
+      - name: Configure NPM to use local registry
+        run: npm config set registry http://localhost:4873
+
+      - name: Set git email (needed for create-webiny-project)
+        run: git config --global user.email "webiny-bot@webiny.com"
+
+      - name: Set git username (needed for create-webiny-project)
+        run: git config --global user.name "webiny-bot"
+
+      - name: Disable Webiny telemetry
+        run: >
+          mkdir ~/.webiny &&
+          echo '{ "id": "ci", "telemetry": false }' > ~/.webiny/config
+
+      - name: Create a new Webiny project
+        run: >
+          npx create-webiny-project@next test-project
+          --tag next --no-interactive
+          --assign-to-yarnrc '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
+          --template-options '{"region":"eu-central-1","storageOperations":"ddb-es"}'
+
+  deploy-webiny-project:
+    needs: [init, verdaccio-publish]
+    name: Deploy Webiny project
+    runs-on: ubuntu-latest
+    environment: next
+    env:
+      NODE_OPTIONS: --max_old_space_size=4096
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_ELASTIC_SEARCH_DOMAIN_NAME: ${{ secrets.AWS_ELASTIC_SEARCH_DOMAIN_NAME }}
+      ELASTIC_SEARCH_INDEX_PREFIX: ${{ needs.init.outputs.ts }}_
+      PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
+      PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
+      WEBINY_PULUMI_BACKEND: ${{ secrets.WEBINY_PULUMI_BACKEND }}_${{ needs.init.outputs.ts }}
+      GH_TOKEN: ${{ secrets.GH_TOKEN }}
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    steps:
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 12
+
+      - name: Retrieve cached Verdaccio files
+        uses: actions/cache@v2
+        with:
+          key: verdaccio-files-${{ needs.init.outputs.ts }}
+          path: |
+            .verdaccio/
+            .verdaccio.yaml
+
+      - name: Move cached Verdaccio files into verdaccio-files folder
+        run: mkdir verdaccio-files && mv .verdaccio verdaccio-files/.verdaccio && mv .verdaccio.yaml verdaccio-files/.verdaccio.yaml
+
+      - name: Start Verdaccio local server
+        working-directory: verdaccio-files
+        run: yarn add pm2 verdaccio && npx pm2 start verdaccio -- -c .verdaccio.yaml
+
+      - name: Configure NPM to use local registry (for `npx create-webiny-project`)
+        run: npm config set registry http://localhost:4873
+
+      - name: Set git email (needed for create-webiny-project)
+        run: git config --global user.email "webiny-bot@webiny.com"
+
+      - name: Set git username (needed for create-webiny-project)
+        run: git config --global user.name "webiny-bot"
+
+      - name: Disable Webiny telemetry
+        run: >
+          mkdir ~/.webiny &&
+          echo '{ "id": "ci", "telemetry": false }' > ~/.webiny/config
+
+      - name: Create a new Webiny project
+        run: >
+          npx create-webiny-project@next test-project
+          --tag next --no-interactive
+          --assign-to-yarnrc '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
+          --template-options '{"region":"eu-central-1","storageOperations":"ddb-es"}'
+
+      - name: Cache project files
+        uses: actions/cache@v2
+        with:
+          key: project-files-${{ needs.init.outputs.ts }}
+          path: |
+            test-project/
+            !test-project/node_modules/**/*
+            !test-project/**/node_modules/**/*
+            !test-project/.yarn/cache/**/*
+
+      - name: Create project-files artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: project-files
+          retention-days: 1
+          path: |
+            test-project/
+            !test-project/node_modules/**/*
+            !test-project/**/node_modules/**/*
+            !test-project/.yarn/cache/**/*
+
+      - name: Print CLI version
+        working-directory: test-project
+        run: yarn webiny --version
+
+      - name: Reduce prerendering service's process-queue schedule
+        working-directory: test-project
+        run: sed -i '' 's/5 minutes/1 minute/g' api/pulumi/dev/prerenderingService.ts
+
+      - name: Deploy API
+        working-directory: test-project
+        run: yarn webiny deploy api --env dev --debug
+
+      - name: Deploy Admin Area
+        working-directory: test-project
+        run: yarn webiny deploy apps/admin --env dev --debug
+
+      - name: Deploy Website
+        working-directory: test-project
+        run: yarn webiny deploy apps/website --env dev --debug
+
+      - name: Trigger cleanup
+        if: failure()
+        run: npx https://gist.github.com/doitadrian/6a3fa9f6b0e450ab88e3a5ba23f4e789 --event e2e-cleanup --payload "{\"ts\":\"${{ needs.init.outputs.ts }}\",\"workflow\":\"${{ github.workflow }}\",\"commit\":\"${{ github.sha }}\"}"
 
   cypress-tests-admin-area-installation:
     needs: [init]
