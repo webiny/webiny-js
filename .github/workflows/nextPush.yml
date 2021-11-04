@@ -393,8 +393,8 @@ jobs:
       - name: Install dependencies
         run: yarn --immutable
 
-#      - name: Build packages
-#        run: node scripts/buildWithCache.js
+      - name: Build packages
+        run: node scripts/buildWithCache.js
 
       - name: Set up Cypress config
         run: yarn setup-cypress
@@ -453,8 +453,8 @@ jobs:
       - name: Install dependencies
         run: yarn --immutable
 
-#      - name: Build packages
-#        run: node scripts/buildWithCache.js
+      - name: Build packages
+        run: node scripts/buildWithCache.js
 
       - name: Set up Cypress config
         run: yarn setup-cypress
