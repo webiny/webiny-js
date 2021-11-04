@@ -39,7 +39,6 @@ module.exports = async (inputs, context) => {
             }
         });
     } catch (e) {
-        console.log('e', e)
         stackExists = false;
     }
 
