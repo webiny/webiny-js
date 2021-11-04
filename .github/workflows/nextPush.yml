@@ -11,7 +11,6 @@ on:
 
 env:
   NODE_OPTIONS: --max_old_space_size=4096
-  DAY: ${{ echo "$HOME/.local/bin" >> $GITHUB_PATH }}
 
 jobs:
   init:
