@@ -52,18 +52,22 @@ jobs:
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
 
       - uses: actions/cache@v2
-        id: cached-packages
+        id: global-daily-packages-cache
         with:
           path: .webiny/cached-packages
           key: ${{ runner.os }}-${{ steps.get-day.outputs.day }}-${{ secrets.RANDOM_CACHE_KEY_SUFFIX }}
 
       - name: Install dependencies
-        if: steps.yarn-cache.outputs.cache-hit != 'true' || steps.cached-packages.outputs.cache-hit != 'true'
         run: yarn --immutable
 
       - name: Build packages
-        if: steps.cached-packages.outputs.cache-hit != 'true'
         run: node scripts/buildWithCache.js
+
+      - uses: actions/cache@v2
+        id: packages-cache
+        with:
+          path: .webiny/cached-packages
+          key: packages-cache-${{ steps.get-timestamp.outputs.ts }}
 
   code-analysis:
     needs: init
@@ -84,7 +88,7 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: .webiny/cached-packages
-          key: ${{ runner.os }}-${{ needs.init.outputs.day }}-${{ secrets.RANDOM_CACHE_KEY_SUFFIX }}
+          key: packages-cache-${{ steps.get-timestamp.outputs.ts }}
 
       - name: Install dependencies
         run: yarn --immutable
@@ -126,7 +130,7 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: .webiny/cached-packages
-          key: ${{ runner.os }}-${{ needs.init.outputs.day }}-${{ secrets.RANDOM_CACHE_KEY_SUFFIX }}
+          key: packages-cache-${{ steps.get-timestamp.outputs.ts }}
 
       - name: Install dependencies
         run: yarn --immutable
@@ -164,7 +168,7 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: .webiny/cached-packages
-          key: ${{ runner.os }}-${{ needs.init.outputs.day }}-${{ secrets.RANDOM_CACHE_KEY_SUFFIX }}
+          key: packages-cache-${{ steps.get-timestamp.outputs.ts }}
 
       - name: Install dependencies
         run: yarn --immutable
@@ -387,7 +391,7 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: .webiny/cached-packages
-          key: ${{ runner.os }}-${{ needs.init.outputs.day }}-${{ secrets.RANDOM_CACHE_KEY_SUFFIX }}
+          key: packages-cache-${{ steps.get-timestamp.outputs.ts }}
 
       - uses: actions/cache@v2
         with:
@@ -450,7 +454,7 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: .webiny/cached-packages
-          key: ${{ runner.os }}-${{ needs.init.outputs.day }}-${{ secrets.RANDOM_CACHE_KEY_SUFFIX }}
+          key: packages-cache-${{ steps.get-timestamp.outputs.ts }}
 
       - uses: actions/cache@v2
         with:
