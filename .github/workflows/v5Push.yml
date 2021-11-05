@@ -63,16 +63,11 @@ jobs:
         with:
           node-version: 12
 
-      #      - uses: actions/checkout@v2
-      #        with:
-      #          fetch-depth: 0
-      #          path: branch-v5
-
       - uses: actions/checkout@v2
         with:
-          fetch-depth: 0
+          #  fetch-depth: 10
           path: branch-v5
-          # Prevents the detached HEAD problem (https://github.com/actions/checkout/issues/124)
+          # DELETE - Prevents the detached HEAD problem (https://github.com/actions/checkout/issues/124)
           ref: ${{ github.event.pull_request.head.ref }}
 
       - uses: actions/cache@v2
@@ -130,11 +125,11 @@ jobs:
             branch-v5/.verdaccio/
             branch-v5/.verdaccio.yaml
 
-      # Create a new Webiny project, deploy it, and complete the installation wizard.
-#      - name: Disable Webiny telemetry
-#        run: >
-#          mkdir ~/.webiny &&
-#          echo '{ "id": "ci", "telemetry": false }' > ~/.webiny/config
+        # Create a new Webiny project, deploy it, and complete the installation wizard.
+      - name: Disable Webiny telemetry
+        run: >
+          mkdir ~/.webiny &&
+          echo '{ "id": "ci", "telemetry": false }' > ~/.webiny/config
 
       - name: Create directory
         run: mkdir xyz
@@ -217,17 +212,9 @@ jobs:
       WEBINY_PULUMI_BACKEND: ${{ secrets.WEBINY_PULUMI_BACKEND }}_${{ needs.init.outputs.ts }}
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
     steps:
-      #      - uses: actions/checkout@v2
-      #        with:
-      #          fetch-depth: 0
-      #          path: branch-v5
-
       - uses: actions/checkout@v2
         with:
-          fetch-depth: 0
           path: branch-v5
-          # Prevents the detached HEAD problem (https://github.com/actions/checkout/issues/124)
-          ref: ${{ github.event.pull_request.head.ref }}
 
       - uses: actions/cache@v2
         with:
@@ -263,3 +250,105 @@ jobs:
           channels: C027VQG8080
           workdir: branch-v5/cypress
           message-text: Cypress tests failed! Screenshots have been placed in this thread, good luck.
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 12
+
+      - uses: actions/checkout@v2
+
+      - uses: actions/cache@v2
+        id: yarn-cache
+        with:
+          path: .yarn/cache
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+
+      - uses: actions/cache@v2
+        id: cached-packages
+        with:
+          path: .webiny/cached-packages
+          key: ${{ runner.os }}-${{ steps.get-webiny-version.outputs.webiny-version }}-${{ secrets.RANDOM_CACHE_KEY_SUFFIX }}
+
+      - name: Install dependencies
+        if: steps.yarn-cache.outputs.cache-hit != 'true' || steps.cached-packages.outputs.cache-hit != 'true'
+        run: yarn --immutable
+
+      - name: Build packages
+        if: steps.cached-packages.outputs.cache-hit != 'true'
+        run: node scripts/buildWithCache.js
+
+  code-analysis:
+    needs: build
+    name: Static code analysis
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 12
+
+      - uses: actions/checkout@v2
+
+      - uses: actions/cache@v2
+        with:
+          path: .yarn/cache
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+
+      - uses: actions/cache@v2
+        with:
+          path: .webiny/cached-packages
+          key: ${{ runner.os }}-${{ needs.build.outputs.webiny-version }}-${{ secrets.RANDOM_CACHE_KEY_SUFFIX }}
+
+      - name: Install dependencies
+        run: yarn --immutable
+
+      - name: Check code formatting
+        run: yarn prettier:check
+
+      - name: Check dependencies
+        run: yarn adio
+
+      - name: Check TS configs
+        run: yarn check-ts-configs
+
+      - name: ESLint
+        run: yarn eslint
+
+  jest-tests:
+    needs: build
+    name: ${{ matrix.package }} (${{ matrix.os }}, Node v${{ matrix.node }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        node: [14]
+        package: ${{ fromJson(needs.build.outputs.jest-packages) }}
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node }}
+
+      - uses: actions/checkout@v2
+
+      - uses: actions/cache@v2
+        with:
+          path: .yarn/cache
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+
+      - name: Install dependencies
+        run: yarn --immutable
+
+      - uses: actions/cache@v2
+        with:
+          path: .webiny/cached-packages
+          key: ${{ runner.os }}-${{ needs.build.outputs.webiny-version }}-${{ secrets.RANDOM_CACHE_KEY_SUFFIX }}
+
+      - name: Build packages
+        run: node scripts/buildWithCache.js
+
+      - name: Run tests
+        run: yarn test ${{ matrix.package }}
