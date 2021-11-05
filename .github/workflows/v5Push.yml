@@ -85,7 +85,7 @@ jobs:
         id: cached-packages
         with:
           path: webiny-js/.webiny/cached-packages
-          key: ${{ runner.os }}-${{ steps.get-webiny-version.outputs.webiny-version }}-${{ secrets.RANDOM_CACHE_KEY_SUFFIX }}
+          key: ${{ runner.os }}-${{ needs.init.outputs.webiny-version }}-${{ secrets.RANDOM_CACHE_KEY_SUFFIX }}
 
       - name: Install dependencies
         working-directory: webiny-js
