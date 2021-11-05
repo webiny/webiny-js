@@ -236,7 +236,16 @@ jobs:
         run: mkdir -p xyz/test-project/.yarn/cache
 
       - name: Copy cache files from webiny-js repository
-        run: cp -rf branch-v5/.yarn/cache xyz/test-project/.yarn/cache
+        run: cp -rf branch-v5/.yarn/cache xyz/test-project/.yarn/cache/
+
+      - name: Copy cache files from webiny-js repository 1
+        run: ls -alh xyz/test-project
+
+      - name: Copy cache files from webiny-js repository 2
+        run: ls -alh xyz/test-project/.yarn
+
+      - name: Copy cache files from webiny-js repository 3
+        run: ls -alh xyz/test-project/.yarn/cache
 
       - name: Create a new Webiny project
         working-directory: xyz
@@ -249,3 +258,12 @@ jobs:
       - name: Print CLI version
         working-directory: xyz/test-project
         run: yarn webiny --version
+
+      - name: Copy cache files from webiny-js repository 1
+        run: ls -alh xyz/test-project
+
+      - name: Copy cache files from webiny-js repository 2
+        run: ls -alh xyz/test-project/.yarn
+
+      - name: Copy cache files from webiny-js repository 3
+        run: ls -alh xyz/test-project/.yarn/cache
