@@ -405,6 +405,13 @@ Thanks goes to these wonderful people:
                         <sub><b>Nelson Chen</b></sub>
                     </a>
                     <br />
+                </td></tr><tr><td align="center">
+                    <a href="https://github.com/dibenso">
+                        <img src="https://avatars.githubusercontent.com/u/11963087?v=4" width="100px;" alt="Dillon Benson"/>
+                        <br />
+                        <sub><b>Dillon Benson</b></sub>
+                    </a>
+                    <br />
                 </td></tr>
 </table>
 <!-- markdownlint-enable -->
