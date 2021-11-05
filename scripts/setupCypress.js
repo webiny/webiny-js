@@ -10,7 +10,8 @@ const args = {
     env: argv.env || "dev",
     force: argv.force || false,
     localhost: argv.localhost || false,
-    projectFolder: argv.projectFolder || null
+    projectFolder: argv.projectFolder || null,
+    pretty: argv.pretty !== false
 };
 
 /**
@@ -93,5 +94,11 @@ const args = {
     );
 
     console.log(`Created config:`);
-    console.log(JSON.stringify(cypressConfig, null, 4));
+
+    if (args.pretty) {
+        console.log(JSON.stringify(cypressConfig, null, 4));
+    } else {
+        console.log(JSON.stringify(cypressConfig));
+    }
+
 })();
