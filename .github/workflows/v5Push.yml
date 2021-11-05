@@ -137,7 +137,6 @@ jobs:
 
       # Create a new Webiny project, deploy it, and complete the installation wizard.
       - name: Disable Webiny telemetry
-        working-directory: test-project
         run: >
           mkdir ~/.webiny &&
           echo '{ "id": "ci", "telemetry": false }' > ~/.webiny/config
