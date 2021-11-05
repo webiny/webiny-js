@@ -148,8 +148,8 @@ jobs:
       - name: Run tests
         run: yarn test ${{ matrix.package }}
 
-  init-e2e:
-    name: Init E2E
+  e2e-init:
+    name: Init (E2E)
     runs-on: ubuntu-latest
     outputs:
       cypress-folders: ${{ steps.list-cypress-folders.outputs.cypress-folders }}
@@ -178,9 +178,9 @@ jobs:
         id: list-cypress-folders
         run: echo "::set-output name=cypress-folders::$(node scripts/listCypressTestsFolders.js)"
 
-  e2e:
-    needs: init-e2e
-    name: Build, deploy, install
+  e2e-project-setup:
+    needs: e2e-init
+    name: Project setup (E2E)
     runs-on: ubuntu-latest
     outputs:
       cypress-config: ${{ steps.save-cypress-config.outputs.cypress-config }}
@@ -189,10 +189,10 @@ jobs:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       AWS_ELASTIC_SEARCH_DOMAIN_NAME: ${{ secrets.AWS_ELASTIC_SEARCH_DOMAIN_NAME }}
-      ELASTIC_SEARCH_INDEX_PREFIX: ${{ needs.init-e2e.outputs.ts }}_
+      ELASTIC_SEARCH_INDEX_PREFIX: ${{ needs.e2e-init.outputs.ts }}_
       PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
       PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
-      WEBINY_PULUMI_BACKEND: ${{ secrets.WEBINY_PULUMI_BACKEND }}_${{ needs.init-e2e.outputs.ts }}
+      WEBINY_PULUMI_BACKEND: ${{ secrets.WEBINY_PULUMI_BACKEND }}_${{ needs.e2e-init.outputs.ts }}
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
     steps:
       - uses: actions/setup-node@v2
@@ -216,7 +216,7 @@ jobs:
         id: cached-packages
         with:
           path: branch-v5/.webiny/cached-packages
-          key: ${{ runner.os }}-${{ needs.init-e2e.outputs.webiny-version }}-${{ secrets.RANDOM_CACHE_KEY_SUFFIX }}
+          key: ${{ runner.os }}-${{ needs.e2e-init.outputs.webiny-version }}-${{ secrets.RANDOM_CACHE_KEY_SUFFIX }}
 
       - name: Install dependencies
         working-directory: branch-v5
@@ -334,25 +334,25 @@ jobs:
           workdir: branch-v5/cypress
           message-text: Could not complete Admin Area installation wizard. Screenshots have been placed in this thread, good luck.
 
-  cypress-tests-admin-area:
-    needs: [init-e2e, e2e]
+  e2e-cypress:
+    needs: [e2e-init, e2e-project-setup]
     name: ${{ matrix.cypress-folder }} (${{ matrix.os }}, Node v${{ matrix.node }})
     strategy:
       fail-fast: false
       matrix:
         os: [ ubuntu-latest ]
         node: [ 14 ]
-        cypress-folder: ${{ fromJson(needs.init-e2e.outputs.cypress-folders) }}
+        cypress-folder: ${{ fromJson(needs.e2e-init.outputs.cypress-folders) }}
     runs-on: ubuntu-latest
     environment: next
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       AWS_ELASTIC_SEARCH_DOMAIN_NAME: ${{ secrets.AWS_ELASTIC_SEARCH_DOMAIN_NAME }}
-      ELASTIC_SEARCH_INDEX_PREFIX: ${{ needs.init-e2e.outputs.ts }}_
+      ELASTIC_SEARCH_INDEX_PREFIX: ${{ needs.e2e-init.outputs.ts }}_
       PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
       PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
-      WEBINY_PULUMI_BACKEND: ${{ secrets.WEBINY_PULUMI_BACKEND }}_${{ needs.init-e2e.outputs.ts }}
+      WEBINY_PULUMI_BACKEND: ${{ secrets.WEBINY_PULUMI_BACKEND }}_${{ needs.e2e-init.outputs.ts }}
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
     steps:
       - uses: actions/checkout@v2
@@ -362,7 +362,7 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: branch-v5/.webiny/cached-packages
-          key: ${{ runner.os }}-${{ needs.init-e2e.outputs.webiny-version }}-${{ secrets.RANDOM_CACHE_KEY_SUFFIX }}
+          key: ${{ runner.os }}-${{ needs.e2e-init.outputs.webiny-version }}-${{ secrets.RANDOM_CACHE_KEY_SUFFIX }}
 
       - uses: actions/cache@v2
         with:
@@ -379,7 +379,7 @@ jobs:
 
       - name: Set up Cypress config
         working-directory: branch-v5
-        run: echo '${{ needs.e2e.outputs.cypress-config }}' > cypress.json
+        run: echo '${{ needs.e2e-project-setup.outputs.cypress-config }}' > cypress.json
 
       - name: Cypress - run "${{ matrix.cypress-folder }}" tests
         working-directory: branch-v5
@@ -395,7 +395,7 @@ jobs:
           message-text: Cypress tests failed! Screenshots have been placed in this thread, good luck.
 
 #  npm-release-beta:
-#    needs: [init, code-analysis, jest-tests, cypress-tests-admin-area]
+#    needs: [init, code-analysis, jest-tests, e2e-cypress]
 #    name: NPM release ("beta" tag)
 #    runs-on: ubuntu-latest
 #    env:
