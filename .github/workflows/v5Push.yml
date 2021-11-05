@@ -79,7 +79,7 @@ jobs:
       - uses: actions/cache@v2
         id: yarn-cache
         with:
-          path: .yarn/cache
+          path: webiny-js/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('webiny-js/**/yarn.lock') }}
 
       - uses: actions/cache@v2
@@ -184,7 +184,7 @@ jobs:
       # Run the installation wizard.
       - name: Set up Cypress config
         working-directory: webiny-js
-        run: yarn setup-cypress --project-folder ../test-project
+        run: yarn setup-cypress
 
       - name: Cypress - run installation wizard test
         working-directory: webiny-js
@@ -196,7 +196,7 @@ jobs:
         with:
           token: ${{ secrets.SLACK_TOKEN }}
           channels: C027VQG8080
-          workdir: cypress
+          workdir: webiny-js/cypress
           message-text: Could not complete Admin Area installation wizard. Screenshots have been placed in this thread, good luck.
 
   cypress-tests-admin-area:
@@ -220,28 +220,42 @@ jobs:
       WEBINY_PULUMI_BACKEND: ${{ secrets.WEBINY_PULUMI_BACKEND }}_${{ needs.init.outputs.ts }}
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
     steps:
+      #      - uses: actions/checkout@v2
+      #        with:
+      #          fetch-depth: 0
+      #          path: webiny-js
+
       - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          path: webiny-js
+          # Prevents the detached HEAD problem (https://github.com/actions/checkout/issues/124)
+          ref: ${{ github.event.pull_request.head.ref }}
 
       - uses: actions/cache@v2
         with:
-          path: .webiny/cached-packages
+          path: webiny-js/.webiny/cached-packages
           key: ${{ runner.os }}-${{ needs.init.outputs.webiny-version }}-${{ secrets.RANDOM_CACHE_KEY_SUFFIX }}
 
       - uses: actions/cache@v2
         with:
-          path: .yarn/cache
+          path: webiny-js/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
 
       - name: Install dependencies
+        working-directory: webiny-js
         run: yarn --immutable
 
       - name: Build packages
+        working-directory: webiny-js
         run: node scripts/buildWithCache.js
 
       - name: Set up Cypress config
+        working-directory: webiny-js
         run: yarn setup-cypress
 
       - name: Cypress - run "${{ matrix.cypress-folder }}" tests
+        working-directory: webiny-js
         run: yarn cypress run --spec "${{ matrix.cypress-folder }}"
 
       - name: Upload screenshots to Slack
@@ -250,5 +264,5 @@ jobs:
         with:
           token: ${{ secrets.SLACK_TOKEN }}
           channels: C027VQG8080
-          workdir: cypress
+          workdir: webiny-js/cypress
           message-text: Cypress tests failed! Screenshots have been placed in this thread, good luck.
