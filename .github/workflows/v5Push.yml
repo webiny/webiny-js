@@ -29,5 +29,5 @@ jobs:
 
       - name: str
         id: str
-        run: echo "::set-output name=str::$(${{ steps.get.output }})")"
+        run: echo "::set-output name=str::${{ steps.get }}"
 
