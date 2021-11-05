@@ -142,6 +142,7 @@ jobs:
           echo '{ "id": "ci", "telemetry": false }' > ~/.webiny/config
 
       - name: Create a new Webiny project
+        working-directory: xyz
         run: >
           npx create-webiny-project@next test-project
           --tag next --no-interactive
@@ -149,11 +150,11 @@ jobs:
           --template-options '{"region":"${{ env.AWS_REGION }}","storageOperations":"ddb-es"}'
 
       - name: Print CLI version
-        working-directory: test-project
+        working-directory: xyz/test-project
         run: yarn webiny --version
 
       - name: Reduce prerendering service's process-queue schedule
-        working-directory: test-project
+        working-directory: xyz/test-project
         run: sed -i 's/5 minutes/1 minute/g' api/pulumi/dev/prerenderingService.ts
 
       - name: Create project-files artifact
@@ -168,15 +169,15 @@ jobs:
             !test-project/.yarn/cache/**/*
 
       - name: Deploy API
-        working-directory: test-project
+        working-directory: xyz/test-project
         run: yarn webiny deploy api --env dev --debug
 
       - name: Deploy Admin Area
-        working-directory: test-project
+        working-directory: xyz/test-project
         run: yarn webiny deploy apps/admin --env dev --debug
 
       - name: Deploy Website
-        working-directory: test-project
+        working-directory: xyz/test-project
         run: yarn webiny deploy apps/website --env dev --debug
 
       # Run the installation wizard.
