@@ -25,9 +25,9 @@ jobs:
 
       - name: get
         id: get
-        run: echo "This is a string."
+        run: echo "CYPRESS_CONFIG={...}" >> $GITHUB_ENV
 
       - name: str
         id: str
-        run: echo "::set-output name=str::${{ steps.get.run }}"
+        run: echo ${{ env.CYPRESS_CONFIG }}
 
