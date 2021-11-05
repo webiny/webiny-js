@@ -89,12 +89,10 @@ jobs:
 
       - name: Install dependencies
         working-directory: branch-v5
-        if: steps.yarn-cache.outputs.cache-hit != 'true' || steps.cached-packages.outputs.cache-hit != 'true'
         run: yarn --immutable
 
       - name: Build packages
         working-directory: branch-v5
-        if: steps.cached-packages.outputs.cache-hit != 'true'
         run: node scripts/buildWithCache.js
 
       # Publish built packages to Verdaccio.
