@@ -136,6 +136,9 @@ jobs:
 #          mkdir ~/.webiny &&
 #          echo '{ "id": "ci", "telemetry": false }' > ~/.webiny/config
 
+      - name: Create directory
+        run: mkdir xyz
+
       - name: Create a new Webiny project
         working-directory: xyz
         run: >
