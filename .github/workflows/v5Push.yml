@@ -13,6 +13,141 @@ env:
   AWS_REGION: eu-central-1
 
 jobs:
+  init:
+    name: Init
+    runs-on: ubuntu-latest
+    outputs:
+      jest-packages: ${{ steps.list-jest-packages.outputs.jest-packages }}
+      ts: ${{ steps.get-timestamp.outputs.ts }}
+      webiny-version: ${{ steps.get-webiny-version.outputs.webiny-version }}
+    steps:
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 12
+
+      - uses: actions/checkout@v2
+
+      - name: Get current version of Webiny
+        id: get-webiny-version
+        run: echo "::set-output name=webiny-version::$(node --eval "console.log(require('./lerna.json').version)")"
+
+      - name: Get timestamp
+        id: get-timestamp
+        run: echo "::set-output name=ts::$(node --eval "console.log(new Date().getTime())")"
+
+      - name: List packages with Jest tests
+        id: list-jest-packages
+        run: echo "::set-output name=jest-packages::$(node scripts/listPackagesWithTests.js)"
+
+  build:
+    needs: init
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 12
+
+      - uses: actions/checkout@v2
+
+      - uses: actions/cache@v2
+        id: yarn-cache
+        with:
+          path: .yarn/cache
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+
+      - uses: actions/cache@v2
+        id: cached-packages
+        with:
+          path: .webiny/cached-packages
+          key: ${{ runner.os }}-${{ needs.init.outputs.webiny-version }}-${{ secrets.RANDOM_CACHE_KEY_SUFFIX }}
+
+      - name: Install dependencies
+        if: steps.yarn-cache.outputs.cache-hit != 'true' || steps.cached-packages.outputs.cache-hit != 'true'
+        run: yarn --immutable
+
+      - name: Build packages
+        if: steps.cached-packages.outputs.cache-hit != 'true'
+        run: node scripts/buildWithCache.js
+
+      - uses: actions/cache@v2
+        id: packages-cache
+        with:
+          path: .webiny/cached-packages
+          key: packages-cache-${{ needs.init.outputs.ts }}
+
+  code-analysis:
+    needs: [init, build]
+    name: Static code analysis
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 12
+
+      - uses: actions/checkout@v2
+
+      - uses: actions/cache@v2
+        with:
+          path: .yarn/cache
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+
+      - uses: actions/cache@v2
+        with:
+          path: .webiny/cached-packages
+          key: packages-cache-${{ needs.init.outputs.ts }}
+
+      - name: Install dependencies
+        run: yarn --immutable
+
+      - name: Check code formatting
+        run: yarn prettier:check
+
+      - name: Check dependencies
+        run: yarn adio
+
+      - name: Check TS configs
+        run: yarn check-ts-configs
+
+      - name: ESLint
+        run: yarn eslint
+
+  jest-tests:
+    needs: [init, build]
+    name: ${{ matrix.package }} (${{ matrix.os }}, Node v${{ matrix.node }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        node: [14]
+        package: ${{ fromJson(needs.init.outputs.jest-packages) }}
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node }}
+
+      - uses: actions/checkout@v2
+
+      - uses: actions/cache@v2
+        with:
+          path: .yarn/cache
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+
+      - name: Install dependencies
+        run: yarn --immutable
+
+      - uses: actions/cache@v2
+        with:
+          path: .webiny/cached-packages
+          key: packages-cache-${{ needs.init.outputs.ts }}
+
+      - name: Build packages
+        run: node scripts/buildWithCache.js
+
+      - name: Run tests
+        run: yarn test ${{ matrix.package }}
+
   e2e-init:
     name: Init (E2E)
     runs-on: ubuntu-latest
@@ -39,7 +174,7 @@ jobs:
         id: list-cypress-folders
         run: echo "::set-output name=cypress-folders::$(node scripts/listCypressTestsFolders.js)"
 
-  e2e-project-setup-1:
+  e2e-project-setup:
     needs: e2e-init
     name: Project setup (E2E)
     runs-on: ubuntu-latest
