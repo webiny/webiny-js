@@ -180,7 +180,7 @@ jobs:
 
   e2e:
     needs: init-e2e
-    name: End-to-end tests
+    name: Build, deploy, install
     runs-on: ubuntu-latest
     outputs:
       cypress-config: ${{ steps.save-cypress-config.outputs.cypress-config }}
