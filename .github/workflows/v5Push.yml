@@ -397,7 +397,7 @@ jobs:
 
       - name: Set up Cypress config
         working-directory: branch-v5
-        run: echo "${{ needs.e2e.outputs.cypress-config }}" > cypress.json
+        run: echo '${{ needs.e2e.outputs.cypress-config }}' > cypress.json
 
       - name: Cypress - run "${{ matrix.cypress-folder }}" tests
         working-directory: branch-v5
