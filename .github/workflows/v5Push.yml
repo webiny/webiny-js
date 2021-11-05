@@ -66,7 +66,7 @@ jobs:
       #      - uses: actions/checkout@v2
       #        with:
       #          fetch-depth: 0
-      #          path: webiny-js
+      #          path: branch-v5
 
       - uses: actions/checkout@v2
         with:
@@ -220,39 +220,39 @@ jobs:
       #      - uses: actions/checkout@v2
       #        with:
       #          fetch-depth: 0
-      #          path: webiny-js
+      #          path: branch-v5
 
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
-          path: webiny-js
+          path: branch-v5
           # Prevents the detached HEAD problem (https://github.com/actions/checkout/issues/124)
           ref: ${{ github.event.pull_request.head.ref }}
 
       - uses: actions/cache@v2
         with:
-          path: webiny-js/.webiny/cached-packages
+          path: branch-v5/.webiny/cached-packages
           key: ${{ runner.os }}-${{ needs.init.outputs.webiny-version }}-${{ secrets.RANDOM_CACHE_KEY_SUFFIX }}
 
       - uses: actions/cache@v2
         with:
-          path: webiny-js/.yarn/cache
-          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          path: branch-v5/.yarn/cache
+          key: yarn-${{ runner.os }}-${{ hashFiles('branch-v5/**/yarn.lock') }}
 
       - name: Install dependencies
-        working-directory: webiny-js
+        working-directory: branch-v5
         run: yarn --immutable
 
       - name: Build packages
-        working-directory: webiny-js
+        working-directory: branch-v5
         run: node scripts/buildWithCache.js
 
       - name: Set up Cypress config
-        working-directory: webiny-js
+        working-directory: branch-v5
         run: yarn setup-cypress
 
       - name: Cypress - run "${{ matrix.cypress-folder }}" tests
-        working-directory: webiny-js
+        working-directory: branch-v5
         run: yarn cypress run --spec "${{ matrix.cypress-folder }}"
 
       - name: Upload screenshots to Slack
@@ -261,5 +261,5 @@ jobs:
         with:
           token: ${{ secrets.SLACK_TOKEN }}
           channels: C027VQG8080
-          workdir: webiny-js/cypress
+          workdir: branch-v5/cypress
           message-text: Cypress tests failed! Screenshots have been placed in this thread, good luck.
