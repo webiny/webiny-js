@@ -334,7 +334,7 @@ jobs:
           workdir: branch-v5/cypress
           message-text: Could not complete Admin Area installation wizard. Screenshots have been placed in this thread, good luck.
 
-  e2e-cypress:
+  e2e-cypress-tests:
     needs: [e2e-init, e2e-project-setup]
     name: ${{ matrix.cypress-folder }} (${{ matrix.os }}, Node v${{ matrix.node }})
     strategy:
@@ -395,7 +395,7 @@ jobs:
           message-text: Cypress tests failed! Screenshots have been placed in this thread, good luck.
 
 #  npm-release-beta:
-#    needs: [init, code-analysis, jest-tests, e2e-cypress]
+#    needs: [init, code-analysis, jest-tests, e2e-cypress-tests]
 #    name: NPM release ("beta" tag)
 #    runs-on: ubuntu-latest
 #    env:
