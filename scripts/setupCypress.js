@@ -11,7 +11,8 @@ const args = {
     force: argv.force || false,
     localhost: argv.localhost || false,
     projectFolder: argv.projectFolder || null,
-    pretty: argv.pretty !== false
+    pretty: argv.pretty !== false,
+    json: argv.json
 };
 
 /**
@@ -87,13 +88,15 @@ const args = {
 
     await writeJson(cypressConfigPath, cypressConfig);
 
-    console.log(
-        `${green("✔")} Created ${green(
-            "cypress.json"
-        )} config file! To open Cypress, just run ${green("cypress open")} in your terminal.`
-    );
+    if (!args.json) {
+        console.log(
+            `${green("✔")} Created ${green(
+                "cypress.json"
+            )} config file! To open Cypress, just run ${green("cypress open")} in your terminal.`
+        );
 
-    console.log(`Created config:`);
+        console.log(`Created config:`);
+    }
 
     if (args.pretty) {
         console.log(JSON.stringify(cypressConfig, null, 4));
