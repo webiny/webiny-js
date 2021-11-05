@@ -170,10 +170,6 @@ jobs:
         id: get-timestamp
         run: echo "::set-output name=ts::$(node --eval "console.log(new Date().getTime())")"
 
-      - name: List packages with Jest tests
-        id: list-jest-packages
-        run: echo "::set-output name=jest-packages::$(node scripts/listPackagesWithTests.js)"
-
       - name: List Cypress tests folders
         id: list-cypress-folders
         run: echo "::set-output name=cypress-folders::$(node scripts/listCypressTestsFolders.js)"
