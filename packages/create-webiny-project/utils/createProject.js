@@ -34,8 +34,14 @@ module.exports = async function createProject({
 
     if (fs.existsSync(projectRoot)) {
         if (!force) {
-            console.log(`Cannot continue because the target folder ${red(projectName)} already exists.`);
-            console.log(`If you still wish to proceed, run the same command with the ${red('--force')} flag.`);
+            console.log(
+                `Cannot continue because the target folder ${red(projectName)} already exists.`
+            );
+            console.log(
+                `If you still wish to proceed, run the same command with the ${red(
+                    "--force"
+                )} flag.`
+            );
             process.exit(1);
         }
     }
