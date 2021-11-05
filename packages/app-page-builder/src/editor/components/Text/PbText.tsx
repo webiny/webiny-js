@@ -28,7 +28,8 @@ const PbText: React.FunctionComponent<TextElementProps> = ({
     const [activeElementId, setActiveElementAtomValue] = useRecoilState(activeElementAtom);
     const { getUpdateValue } = useUpdateHandlers({
         element,
-        dataNamespace: DATA_NAMESPACE
+        dataNamespace: DATA_NAMESPACE,
+        debounce: false
     });
 
     const fallbackValue = useMemo(
