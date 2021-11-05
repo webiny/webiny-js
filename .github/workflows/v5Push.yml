@@ -63,39 +63,14 @@ jobs:
         if: steps.cached-packages.outputs.cache-hit != 'true'
         run: node scripts/buildWithCache.js
 
-  build:
-    needs: init
-    name: Build
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/setup-node@v2
-        with:
-          node-version: 12
-
-      - uses: actions/checkout@v2
-
       - uses: actions/cache@v2
-        id: yarn-cache
-        with:
-          path: .yarn/cache
-          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-
-      - uses: actions/cache@v2
-        id: cached-packages
+        id: packages-cache
         with:
           path: .webiny/cached-packages
-          key: ${{ runner.os }}-${{ needs.init.outputs.webiny-version }}-${{ secrets.RANDOM_CACHE_KEY_SUFFIX }}
-
-      - name: Install dependencies
-        if: steps.yarn-cache.outputs.cache-hit != 'true' || steps.cached-packages.outputs.cache-hit != 'true'
-        run: yarn --immutable
-
-      - name: Build packages
-        if: steps.cached-packages.outputs.cache-hit != 'true'
-        run: node scripts/buildWithCache.js
+          key: packages-cache-${{ steps.get-timestamp.outputs.ts }}
 
   code-analysis:
-    needs: [init, build]
+    needs: init
     name: Static code analysis
     runs-on: ubuntu-latest
     steps:
@@ -113,7 +88,7 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: .webiny/cached-packages
-          key: ${{ runner.os }}-${{ needs.init.outputs.webiny-version }}-${{ secrets.RANDOM_CACHE_KEY_SUFFIX }}
+          key: packages-cache-${{ needs.init.outputs.ts }}
 
       - name: Install dependencies
         run: yarn --immutable
@@ -131,7 +106,7 @@ jobs:
         run: yarn eslint
 
   jest-tests:
-    needs: [init, build]
+    needs: init
     name: ${{ matrix.package }} (${{ matrix.os }}, Node v${{ matrix.node }})
     strategy:
       fail-fast: false
@@ -158,7 +133,7 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: .webiny/cached-packages
-          key: ${{ runner.os }}-${{ needs.init.outputs.webiny-version }}-${{ secrets.RANDOM_CACHE_KEY_SUFFIX }}
+          key: packages-cache-${{ needs.init.outputs.ts }}
 
       - name: Build packages
         run: node scripts/buildWithCache.js
