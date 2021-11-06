@@ -46,13 +46,13 @@ jobs:
           key: ${{ runner.os }}-${{ steps.get-day.outputs.day }}-${{ secrets.RANDOM_CACHE_KEY_SUFFIX }}
 
       - uses: actions/cache@v2
-        id: cached-packages
+        id: cached-packages2
         with:
           path: branch-v5/.webiny/cached-packages
           key: ${{ runner.os }}-${{ steps.get-day.outputs.day }}-${{ secrets.RANDOM_CACHE_KEY_SUFFIX }}
 
       - uses: actions/cache@v2
-        id: cached-packages
+        id: cached-packages3
         with:
           path: branch-XYZ/.webiny/cached-packages
           key: ${{ runner.os }}-${{ steps.get-day.outputs.day }}-${{ secrets.RANDOM_CACHE_KEY_SUFFIX }}
