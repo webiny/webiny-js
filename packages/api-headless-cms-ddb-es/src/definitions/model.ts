@@ -1,9 +1,16 @@
-import { Table, Entity } from "dynamodb-toolbox";
-import { CmsContext } from "@webiny/api-headless-cms/types";
-export default (params: { table: Table; context: CmsContext }): Entity<any> => {
-    const { table } = params;
+import { Entity, Table } from "dynamodb-toolbox";
+import { Attributes } from "~/types";
+
+export interface Params {
+    table: Table;
+    entityName: string;
+    attributes: Attributes;
+}
+
+export const createModelEntity = (params: Params): Entity<any> => {
+    const { table, attributes, entityName } = params;
     return new Entity({
-        name: "ContentModel",
+        name: entityName,
         table,
         attributes: {
             PK: {
@@ -53,7 +60,8 @@ export default (params: { table: Table; context: CmsContext }): Entity<any> => {
             },
             titleFieldId: {
                 type: "string"
-            }
+            },
+            ...(attributes || {})
         }
     });
 };

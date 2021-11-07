@@ -1,16 +1,16 @@
-import { createSettingsCrud } from "./settings.crud";
-import { createSystemCrud } from "./system.crud";
-import { CmsContext, HeadlessCmsStorageOperations } from "~/types";
 import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
+import { CmsContext, HeadlessCmsStorageOperations } from "~/types";
 import { createModelGroupsCrud } from "~/content/plugins/crud/contentModelGroup.crud";
 import { createModelsCrud } from "~/content/plugins/crud/contentModel.crud";
+import { createContentEntryCrud } from "~/content/plugins/crud/contentEntry.crud";
 import WebinyError from "@webiny/error";
+import { createSystemCrud } from "~/plugins/crud/system.crud";
+import { createSettingsCrud } from "~/plugins/crud/settings.crud";
 
 export interface Params {
     storageOperations: HeadlessCmsStorageOperations;
 }
-
-export const createAdminCruds = (params: Params) => {
+export const createContentCruds = (params: Params) => {
     const { storageOperations } = params;
     return new ContextPlugin<CmsContext>(async context => {
         /**
@@ -19,7 +19,7 @@ export const createAdminCruds = (params: Params) => {
          */
         if (!context.cms) {
             throw new WebinyError(
-                `Missing initial "cms" on the context. Make sure that you set it up before creating Admin CRUDs.`,
+                `Missing initial "cms" on the context. Make sure that you set it up before creating Content CRUDs.`,
                 "MALFORMED_CONTEXT_ERROR"
             );
         }
@@ -63,12 +63,14 @@ export const createAdminCruds = (params: Params) => {
                 getTenant,
                 getIdentity,
                 storageOperations
+            }),
+            entries: createContentEntryCrud({
+                context,
+                getLocale,
+                getTenant,
+                getIdentity,
+                storageOperations
             })
         };
-
-        if (!storageOperations.init) {
-            return;
-        }
-        await storageOperations.init(context.cms);
     });
 };

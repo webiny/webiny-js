@@ -1,5 +1,5 @@
 import { Plugin } from "@webiny/plugins";
-import { CmsContentModel } from "../../types";
+import { CmsContentModel } from "~/types";
 
 export class ContentModelPlugin extends Plugin {
     public static readonly type = "cms-content-model";

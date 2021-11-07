@@ -2,29 +2,31 @@ import Error from "@webiny/error";
 import {
     CmsContentEntry,
     CmsContentModel,
-    CmsContext,
     CmsModelFieldToGraphQLPlugin
 } from "@webiny/api-headless-cms/types";
 import { CmsContentIndexEntry, CmsModelFieldToElasticsearchPlugin } from "~/types";
+import { PluginsContainer } from "@webiny/plugins";
 
-interface SetupEntriesIndexHelpersArgs {
-    context: CmsContext;
+interface SetupEntriesIndexHelpersParams {
+    plugins: PluginsContainer;
 }
 
-interface ExtractEntriesFromIndexArgs extends SetupEntriesIndexHelpersArgs {
+interface ExtractEntriesFromIndexParams extends SetupEntriesIndexHelpersParams {
     model: CmsContentModel;
     entries: CmsContentIndexEntry[];
 }
 
-interface PrepareElasticsearchDataArgs extends SetupEntriesIndexHelpersArgs {
+interface PrepareElasticsearchDataParams extends SetupEntriesIndexHelpersParams {
     model: CmsContentModel;
     storageEntry: CmsContentEntry;
 }
 
-export const prepareEntryToIndex = (args: PrepareElasticsearchDataArgs): CmsContentIndexEntry => {
-    const { context, storageEntry, model } = args;
+export const prepareEntryToIndex = (
+    params: PrepareElasticsearchDataParams
+): CmsContentIndexEntry => {
+    const { plugins, storageEntry, model } = params;
     const { fieldIndexPlugins, defaultIndexFieldPlugin, fieldTypePlugins } =
-        setupEntriesIndexHelpers({ context });
+        setupEntriesIndexHelpers({ plugins });
 
     function getFieldIndexPlugin(fieldType: string) {
         return fieldIndexPlugins[fieldType] || defaultIndexFieldPlugin;
@@ -54,7 +56,7 @@ export const prepareEntryToIndex = (args: PrepareElasticsearchDataArgs): CmsCont
         // TODO: remove this `if` once we convert this plugin to proper plugin class
         if (targetFieldPlugin && targetFieldPlugin.toIndex) {
             const { value, rawValue } = targetFieldPlugin.toIndex({
-                context,
+                plugins,
                 model,
                 field,
                 value: storageEntry.values[field.fieldId],
@@ -78,8 +80,10 @@ export const prepareEntryToIndex = (args: PrepareElasticsearchDataArgs): CmsCont
     } as CmsContentIndexEntry;
 };
 
-const setupEntriesIndexHelpers = ({ context }: SetupEntriesIndexHelpersArgs) => {
-    const plugins = context.plugins.byType<CmsModelFieldToElasticsearchPlugin>(
+const setupEntriesIndexHelpers = ({
+    plugins: pluginsContainer
+}: SetupEntriesIndexHelpersParams) => {
+    const plugins = pluginsContainer.byType<CmsModelFieldToElasticsearchPlugin>(
         "cms-model-field-to-elastic-search"
     );
 
@@ -94,7 +98,7 @@ const setupEntriesIndexHelpers = ({ context }: SetupEntriesIndexHelpersArgs) => 
     const defaultIndexFieldPlugin = plugins.find(plugin => plugin.fieldType === "*");
 
     // CmsModelFieldToGraphQLPlugin plugins
-    const fieldTypePlugins: Record<string, CmsModelFieldToGraphQLPlugin> = context.plugins
+    const fieldTypePlugins: Record<string, CmsModelFieldToGraphQLPlugin> = pluginsContainer
         .byType<CmsModelFieldToGraphQLPlugin>("cms-model-field-to-graphql")
         .reduce((plugins, plugin) => ({ ...plugins, [plugin.fieldType]: plugin }), {});
 
@@ -106,12 +110,12 @@ const setupEntriesIndexHelpers = ({ context }: SetupEntriesIndexHelpersArgs) => 
 };
 
 export const extractEntriesFromIndex = ({
-    context,
+    plugins,
     entries,
     model
-}: ExtractEntriesFromIndexArgs): CmsContentEntry[] => {
+}: ExtractEntriesFromIndexParams): CmsContentEntry[] => {
     const { fieldIndexPlugins, defaultIndexFieldPlugin, fieldTypePlugins } =
-        setupEntriesIndexHelpers({ context });
+        setupEntriesIndexHelpers({ plugins });
 
     function getFieldIndexPlugin(fieldType: string) {
         return fieldIndexPlugins[fieldType] || defaultIndexFieldPlugin;
@@ -138,7 +142,7 @@ export const extractEntriesFromIndex = ({
             if (targetFieldPlugin && targetFieldPlugin.fromIndex) {
                 try {
                     indexValues[field.fieldId] = targetFieldPlugin.fromIndex({
-                        context,
+                        plugins,
                         model,
                         field,
                         getFieldIndexPlugin,

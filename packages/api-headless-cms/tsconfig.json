@@ -16,6 +16,7 @@
     { "path": "../handler-graphql" },
     { "path": "../handler-http" },
     { "path": "../plugins" },
+    { "path": "../pubsub" },
     { "path": "../validation" },
     { "path": "../api-security-so-ddb" },
     { "path": "../api-tenancy-so-ddb" }
@@ -42,6 +43,8 @@
       "@webiny/api-upgrade": ["../api-upgrade/src"],
       "@webiny/error/*": ["../error/src/*"],
       "@webiny/error": ["../error/src"],
+      "@webiny/pubsub/*": ["../pubsub/src/*"],
+      "@webiny/pubsub": ["../pubsub/src"],
       "@webiny/handler/*": ["../handler/src/*"],
       "@webiny/handler": ["../handler/src"],
       "@webiny/handler-aws/*": ["../handler-aws/src/*"],

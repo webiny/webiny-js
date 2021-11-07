@@ -1,12 +1,12 @@
 import {
     CmsContentModelHookPluginArgs,
     CmsContentModelStorageOperations,
-    CmsContentModelStorageOperationsAfterDeleteArgs,
+    CmsContentModelStorageOperationsAfterDeleteParams,
     CmsContext
 } from "../../../../types";
 import { runContentModelLifecycleHooks } from "./runContentModelLifecycleHooks";
 
-interface Args extends CmsContentModelStorageOperationsAfterDeleteArgs {
+interface Args extends CmsContentModelStorageOperationsAfterDeleteParams {
     context: CmsContext;
     storageOperations: CmsContentModelStorageOperations;
 }

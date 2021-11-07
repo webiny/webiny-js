@@ -1,10 +1,10 @@
 import {
     CmsContentModelGroupStorageOperations,
-    CmsContentModelGroupStorageOperationsCreateArgs,
-    CmsContentModelGroupStorageOperationsDeleteArgs,
-    CmsContentModelGroupStorageOperationsGetArgs,
-    CmsContentModelGroupStorageOperationsListArgs,
-    CmsContentModelGroupStorageOperationsUpdateArgs,
+    CmsContentModelGroupStorageOperationsCreateParams,
+    CmsContentModelGroupStorageOperationsDeleteParams,
+    CmsContentModelGroupStorageOperationsGetParams,
+    CmsContentModelGroupStorageOperationsListParams,
+    CmsContentModelGroupStorageOperationsUpdateParams,
     CmsContext
 } from "@webiny/api-headless-cms/types";
 import WebinyError from "@webiny/error";
@@ -85,7 +85,7 @@ export default class CmsContentModelGroupDynamo implements CmsContentModelGroupS
         });
     }
 
-    public async create({ data }: CmsContentModelGroupStorageOperationsCreateArgs) {
+    public async create({ data }: CmsContentModelGroupStorageOperationsCreateParams) {
         const dbData = {
             PK: this.partitionKey,
             SK: data.id,
@@ -114,7 +114,7 @@ export default class CmsContentModelGroupDynamo implements CmsContentModelGroupS
             );
         }
     }
-    public async delete({ group }: CmsContentModelGroupStorageOperationsDeleteArgs) {
+    public async delete({ group }: CmsContentModelGroupStorageOperationsDeleteParams) {
         const { id } = group;
         try {
             const result = await this._entity.delete({
@@ -141,7 +141,7 @@ export default class CmsContentModelGroupDynamo implements CmsContentModelGroupS
         }
         return true;
     }
-    public async get({ id }: CmsContentModelGroupStorageOperationsGetArgs) {
+    public async get({ id }: CmsContentModelGroupStorageOperationsGetParams) {
         const response = await this._entity.get({
             PK: this.partitionKey,
             SK: id
@@ -152,7 +152,7 @@ export default class CmsContentModelGroupDynamo implements CmsContentModelGroupS
         }
         return response.Item;
     }
-    public async list({ where, limit }: CmsContentModelGroupStorageOperationsListArgs) {
+    public async list({ where, limit }: CmsContentModelGroupStorageOperationsListParams) {
         let groups;
         try {
             const result = await this._entity.query(
@@ -192,7 +192,7 @@ export default class CmsContentModelGroupDynamo implements CmsContentModelGroupS
         return groups.filter(whereFilterFactory(where));
     }
 
-    public async update({ group, data }: CmsContentModelGroupStorageOperationsUpdateArgs) {
+    public async update({ group, data }: CmsContentModelGroupStorageOperationsUpdateParams) {
         const dbData = {
             PK: this.partitionKey,
             SK: group.id,

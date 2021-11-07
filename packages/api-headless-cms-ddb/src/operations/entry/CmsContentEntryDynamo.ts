@@ -4,18 +4,18 @@ import {
     CmsContentEntry,
     CmsContentEntryListWhere,
     CmsContentEntryStorageOperations,
-    CmsContentEntryStorageOperationsCreateArgs,
-    CmsContentEntryStorageOperationsCreateRevisionFromArgs,
-    CmsContentEntryStorageOperationsDeleteArgs,
-    CmsContentEntryStorageOperationsDeleteRevisionArgs,
-    CmsContentEntryStorageOperationsGetArgs,
+    CmsContentEntryStorageOperationsCreateParams,
+    CmsContentEntryStorageOperationsCreateRevisionFromParams,
+    CmsContentEntryStorageOperationsDeleteParams,
+    CmsContentEntryStorageOperationsDeleteRevisionParams,
+    CmsContentEntryStorageOperationsGetParams,
     CmsContentEntryStorageOperationsListArgs,
     CmsContentEntryStorageOperationsListResponse,
-    CmsContentEntryStorageOperationsPublishArgs,
-    CmsContentEntryStorageOperationsRequestChangesArgs,
-    CmsContentEntryStorageOperationsRequestReviewArgs,
-    CmsContentEntryStorageOperationsUnpublishArgs,
-    CmsContentEntryStorageOperationsUpdateArgs,
+    CmsContentEntryStorageOperationsPublishParams,
+    CmsContentEntryStorageOperationsRequestChangesParams,
+    CmsContentEntryStorageOperationsRequestReviewParams,
+    CmsContentEntryStorageOperationsUnpublishParams,
+    CmsContentEntryStorageOperationsUpdateParams,
     CmsContentModel,
     CmsContext,
     CONTENT_ENTRY_STATUS
@@ -114,7 +114,7 @@ export class CmsContentEntryDynamo implements CmsContentEntryStorageOperations {
 
     public async create(
         model: CmsContentModel,
-        args: CmsContentEntryStorageOperationsCreateArgs
+        args: CmsContentEntryStorageOperationsCreateParams
     ): Promise<CmsContentEntry> {
         const { entry, storageEntry } = args;
 
@@ -161,7 +161,7 @@ export class CmsContentEntryDynamo implements CmsContentEntryStorageOperations {
 
     public async createRevisionFrom(
         model: CmsContentModel,
-        args: CmsContentEntryStorageOperationsCreateRevisionFromArgs
+        args: CmsContentEntryStorageOperationsCreateRevisionFromParams
     ) {
         const { originalEntry, entry, storageEntry, latestEntry } = args;
 
@@ -212,7 +212,7 @@ export class CmsContentEntryDynamo implements CmsContentEntryStorageOperations {
 
     public async delete(
         model: CmsContentModel,
-        args: CmsContentEntryStorageOperationsDeleteArgs
+        args: CmsContentEntryStorageOperationsDeleteParams
     ): Promise<void> {
         const { entry } = args;
         const partitionKey = this.getPartitionKey(entry.id);
@@ -242,7 +242,7 @@ export class CmsContentEntryDynamo implements CmsContentEntryStorageOperations {
 
     public async deleteRevision(
         model: CmsContentModel,
-        args: CmsContentEntryStorageOperationsDeleteRevisionArgs
+        args: CmsContentEntryStorageOperationsDeleteRevisionParams
     ): Promise<void> {
         const { entryToDelete, entryToSetAsLatest, storageEntryToSetAsLatest } = args;
         const partitionKey = this.getPartitionKey(entryToDelete.id);
@@ -295,7 +295,7 @@ export class CmsContentEntryDynamo implements CmsContentEntryStorageOperations {
 
     public async get(
         model: CmsContentModel,
-        args: CmsContentEntryStorageOperationsGetArgs
+        args: CmsContentEntryStorageOperationsGetParams
     ): Promise<CmsContentEntry | null> {
         const { items } = await this.list(model, {
             ...(args || {}),
@@ -400,7 +400,7 @@ export class CmsContentEntryDynamo implements CmsContentEntryStorageOperations {
     }
     public async update(
         model: CmsContentModel,
-        args: CmsContentEntryStorageOperationsUpdateArgs
+        args: CmsContentEntryStorageOperationsUpdateParams
     ): Promise<CmsContentEntry> {
         const { originalEntry, entry, storageEntry } = args;
         const partitionKey = this.getPartitionKey(originalEntry.id);
@@ -459,7 +459,7 @@ export class CmsContentEntryDynamo implements CmsContentEntryStorageOperations {
 
     public async publish(
         model: CmsContentModel,
-        args: CmsContentEntryStorageOperationsPublishArgs
+        args: CmsContentEntryStorageOperationsPublishParams
     ): Promise<CmsContentEntry> {
         const { entry, storageEntry } = args;
 
@@ -540,7 +540,7 @@ export class CmsContentEntryDynamo implements CmsContentEntryStorageOperations {
 
     public async unpublish(
         model: CmsContentModel,
-        args: CmsContentEntryStorageOperationsUnpublishArgs
+        args: CmsContentEntryStorageOperationsUnpublishParams
     ): Promise<CmsContentEntry> {
         const { entry, storageEntry } = args;
 
@@ -601,7 +601,7 @@ export class CmsContentEntryDynamo implements CmsContentEntryStorageOperations {
 
     public async requestChanges(
         model: CmsContentModel,
-        args: CmsContentEntryStorageOperationsRequestChangesArgs
+        args: CmsContentEntryStorageOperationsRequestChangesParams
     ): Promise<CmsContentEntry> {
         const { entry, storageEntry, originalEntry } = args;
 
@@ -657,7 +657,7 @@ export class CmsContentEntryDynamo implements CmsContentEntryStorageOperations {
 
     public async requestReview(
         model: CmsContentModel,
-        args: CmsContentEntryStorageOperationsRequestReviewArgs
+        args: CmsContentEntryStorageOperationsRequestReviewParams
     ): Promise<CmsContentEntry> {
         const { entry, storageEntry, originalEntry } = args;
 

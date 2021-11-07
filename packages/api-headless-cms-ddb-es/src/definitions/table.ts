@@ -1,25 +1,20 @@
-import { CmsContext } from "@webiny/api-headless-cms/types";
-import WebinyError from "@webiny/error";
-import configurations from "../configurations";
+import { TableModifier } from "~/types";
+import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { Table } from "dynamodb-toolbox";
 
-export default (context: CmsContext): Table => {
-    const { db } = context;
-    const driver = db.driver as any;
-    if (!driver || !driver.documentClient) {
-        throw new WebinyError(
-            `Missing documentDriver on the context.db.driver property.`,
-            "DOCUMENT_CLIENT_ERROR"
-        );
-    }
-    const tableName = configurations.db().table;
-    if (!tableName && !db.table) {
-        throw new WebinyError(`Missing table on the context.db property.`, "TABLE_NAME_ERROR");
-    }
-    return new Table({
-        name: tableName || db.table,
+export interface Params {
+    table: TableModifier;
+    documentClient: DocumentClient;
+}
+export const createTable = ({ table, documentClient }: Params): Table => {
+    const tableConfig = {
+        name: process.env.DB_TABLE_HEADLESS_CMS || process.env.DB_TABLE,
         partitionKey: "PK",
         sortKey: "SK",
-        DocumentClient: driver.documentClient
-    });
+        DocumentClient: documentClient
+    };
+
+    const config = typeof table === "function" ? table(tableConfig) : tableConfig;
+
+    return new Table(config);
 };

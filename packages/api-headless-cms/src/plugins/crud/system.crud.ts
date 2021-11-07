@@ -2,11 +2,21 @@ import crypto from "crypto";
 import { NotAuthorizedError } from "@webiny/api-security";
 import { getApplicablePlugin } from "@webiny/api-upgrade";
 import { UpgradePlugin } from "@webiny/api-upgrade/types";
-import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
 import WebinyError from "@webiny/error";
 import { InstallationPlugin } from "~/plugins/InstallationPlugin";
 import { executeCallbacks } from "~/utils";
-import { CmsContext, CmsSystemStorageOperationsProviderPlugin } from "~/types";
+import {
+    AfterInstallTopic,
+    BeforeInstallTopic,
+    CmsContext,
+    CmsSystem,
+    CmsSystemContext,
+    HeadlessCmsStorageOperations
+} from "~/types";
+import { Tenant } from "@webiny/api-tenancy/types";
+import { I18NLocale } from "@webiny/api-i18n/types";
+import { SecurityIdentity } from "@webiny/api-security/types";
+import { createTopic } from "@webiny/pubsub";
 
 const initialContentModelGroup = {
     name: "Ungrouped",
@@ -15,150 +25,166 @@ const initialContentModelGroup = {
     icon: "fas/star"
 };
 
-export default new ContextPlugin<CmsContext>(async context => {
-    /**
-     * If cms is not defined on the context, do not continue, but log it.
-     */
-    if (!context.cms) {
-        return;
-    }
+export interface Params {
+    getTenant: () => Tenant;
+    getLocale: () => I18NLocale;
+    storageOperations: HeadlessCmsStorageOperations;
+    context: CmsContext;
+    getIdentity: () => SecurityIdentity;
+}
+export const createSystemCrud = (params: Params): CmsSystemContext => {
+    const { getTenant, getLocale, storageOperations, context, getIdentity } = params;
 
-    const pluginType = "cms-system-storage-operations-provider";
-    const providerPlugins =
-        context.plugins.byType<CmsSystemStorageOperationsProviderPlugin>(pluginType);
-    const providerPlugin = providerPlugins[providerPlugins.length - 1];
-    if (!providerPlugin) {
-        throw new WebinyError(`Missing "${pluginType}" plugin.`, "PLUGIN_NOT_FOUND", {
-            type: pluginType
-        });
-    }
-
-    const storageOperations = await providerPlugin.provide({
-        context
-    });
+    const onBeforeInstall = createTopic<BeforeInstallTopic>();
+    const onAfterInstall = createTopic<AfterInstallTopic>();
 
     const createReadAPIKey = () => {
         return crypto.randomBytes(Math.ceil(48 / 2)).toString("hex");
     };
 
-    context.cms = {
-        ...context.cms,
-        system: {
-            async getVersion() {
-                if (!context.tenancy.getCurrentTenant()) {
-                    return null;
-                }
+    const getVersion = async () => {
+        if (!getTenant()) {
+            return null;
+        }
 
-                const system = await storageOperations.get();
+        const system = await storageOperations.system.get({
+            tenant: getTenant().id
+        });
 
-                return system ? system.version : null;
-            },
-            async setVersion(version: string) {
-                const system = await storageOperations.get();
-                if (!system) {
-                    await storageOperations.create({
-                        version
-                    });
-                    return;
-                }
-                await storageOperations.update({
-                    version
-                });
-            },
-            getReadAPIKey: async () => {
-                const system = await storageOperations.get();
+        return system ? system.version : null;
+    };
 
-                if (!system) {
-                    return null;
-                }
+    const setVersion = async (version: string) => {
+        const original = await storageOperations.system.get({
+            tenant: getTenant().id
+        });
+        const system: CmsSystem = {
+            ...(original || {}),
+            version,
+            locale: getLocale().code,
+            tenant: getTenant().id
+        };
+        if (!original) {
+            await storageOperations.system.create({
+                system
+            });
+            return;
+        }
+        await storageOperations.system.update({
+            original,
+            system
+        });
+    };
 
-                if (!system.readAPIKey) {
-                    const apiKey = createReadAPIKey();
-                    await context.cms.system.setReadAPIKey(apiKey);
-                    return apiKey;
-                }
+    return {
+        onBeforeInstall,
+        onAfterInstall,
+        getVersion,
+        setVersion,
+        getReadAPIKey: async () => {
+            const original = await storageOperations.system.get({
+                tenant: getTenant().id
+            });
 
-                return system.readAPIKey;
-            },
-            setReadAPIKey: async apiKey => {
-                await storageOperations.update({
-                    readAPIKey: apiKey
-                });
-            },
-            install: async (): Promise<void> => {
-                const identity = context.security.getIdentity();
-                if (!identity) {
-                    throw new NotAuthorizedError();
-                }
-
-                const version = await context.cms.system.getVersion();
-                if (version) {
-                    return;
-                }
-
-                const installationPlugins = context.plugins.byType<InstallationPlugin>(
-                    InstallationPlugin.type
-                );
-
-                await executeCallbacks<InstallationPlugin["beforeInstall"]>(
-                    installationPlugins,
-                    "beforeInstall",
-                    {
-                        context
-                    }
-                );
-
-                // Add default content model group.
-                try {
-                    await context.cms.groups.create(initialContentModelGroup);
-                } catch (ex) {
-                    throw new WebinyError(
-                        ex.message,
-                        "CMS_INSTALLATION_CONTENT_MODEL_GROUP_ERROR",
-                        {
-                            group: initialContentModelGroup
-                        }
-                    );
-                }
-
-                await executeCallbacks<InstallationPlugin["afterInstall"]>(
-                    installationPlugins,
-                    "afterInstall",
-                    {
-                        context
-                    }
-                );
-
-                // Set app version
-                await context.cms.system.setVersion(context.WEBINY_VERSION);
-
-                // Set internal API key to access Read API
-                await context.cms.system.setReadAPIKey(createReadAPIKey());
-            },
-            async upgrade(version) {
-                const identity = context.security.getIdentity();
-                if (!identity) {
-                    throw new NotAuthorizedError();
-                }
-
-                const upgradePlugins = context.plugins
-                    .byType<UpgradePlugin>("api-upgrade")
-                    .filter(pl => pl.app === "headless-cms");
-
-                const plugin = getApplicablePlugin({
-                    deployedVersion: context.WEBINY_VERSION,
-                    installedAppVersion: await this.getVersion(),
-                    upgradePlugins,
-                    upgradeToVersion: version
-                });
-
-                await plugin.apply(context);
-
-                // Store new app version
-                await context.cms.system.setVersion(version);
-
-                return true;
+            if (!original) {
+                return null;
             }
+
+            if (!original.readAPIKey) {
+                const readAPIKey = createReadAPIKey();
+                const system: CmsSystem = {
+                    ...original,
+                    readAPIKey
+                };
+                await storageOperations.system.update({
+                    original,
+                    system
+                });
+                return readAPIKey;
+            }
+
+            return original.readAPIKey;
+        },
+        install: async (): Promise<void> => {
+            const identity = getIdentity();
+            if (!identity) {
+                throw new NotAuthorizedError();
+            }
+
+            const version = await getVersion();
+            if (version) {
+                return;
+            }
+
+            const installationPlugins = context.plugins.byType<InstallationPlugin>(
+                InstallationPlugin.type
+            );
+
+            await executeCallbacks<InstallationPlugin["beforeInstall"]>(
+                installationPlugins,
+                "beforeInstall",
+                {
+                    context: context
+                }
+            );
+
+            /**
+             * Add default content model group.
+             */
+            try {
+                await context.cms.groups.create(initialContentModelGroup);
+            } catch (ex) {
+                throw new WebinyError(ex.message, "CMS_INSTALLATION_CONTENT_MODEL_GROUP_ERROR", {
+                    group: initialContentModelGroup
+                });
+            }
+
+            await executeCallbacks<InstallationPlugin["afterInstall"]>(
+                installationPlugins,
+                "afterInstall",
+                {
+                    context: context
+                }
+            );
+
+            const system: CmsSystem = {
+                version,
+                readAPIKey: createReadAPIKey(),
+                locale: getLocale().code,
+                tenant: getTenant().id
+            };
+            /**
+             * We need to create the system data.
+             */
+            await storageOperations.system.create({
+                system
+            });
+        },
+        async upgrade(version) {
+            const identity = getIdentity();
+            if (!identity) {
+                throw new NotAuthorizedError();
+            }
+
+            const upgradePlugins = context.plugins
+                .byType<UpgradePlugin>("api-upgrade")
+                .filter(pl => pl.app === "headless-cms");
+
+            const plugin = getApplicablePlugin({
+                deployedVersion: context.WEBINY_VERSION,
+                installedAppVersion: await this.getVersion(),
+                upgradePlugins,
+                upgradeToVersion: version
+            });
+
+            await plugin.apply(context);
+
+            /**
+             * Store new app version.
+             */
+            await setVersion(version);
+
+            return true;
         }
     };
-});
+};

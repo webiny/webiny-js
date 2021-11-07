@@ -1,7 +1,7 @@
 import { boolean } from "boolean";
 import { GraphQLSchema } from "graphql";
 import { makeExecutableSchema } from "@graphql-tools/schema";
-import { CmsContext } from "../types";
+import { CmsContext } from "~/types";
 import { I18NLocale } from "@webiny/api-i18n/types";
 import { NotAuthorizedError, NotAuthorizedResponse } from "@webiny/api-security";
 import { PluginCollection } from "@webiny/plugins/types";

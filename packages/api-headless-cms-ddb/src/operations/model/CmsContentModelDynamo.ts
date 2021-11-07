@@ -1,10 +1,10 @@
 import {
     CmsContentModel,
     CmsContentModelStorageOperations,
-    CmsContentModelStorageOperationsCreateArgs,
-    CmsContentModelStorageOperationsDeleteArgs,
-    CmsContentModelStorageOperationsGetArgs,
-    CmsContentModelStorageOperationsUpdateArgs,
+    CmsContentModelStorageOperationsCreateParams,
+    CmsContentModelStorageOperationsDeleteParams,
+    CmsContentModelStorageOperationsGetParams,
+    CmsContentModelStorageOperationsUpdateParams,
     CmsContext
 } from "@webiny/api-headless-cms/types";
 import WebinyError from "@webiny/error";
@@ -110,7 +110,7 @@ export default class CmsContentModelDynamo implements CmsContentModelStorageOper
     }
 
     public async create(
-        args: CmsContentModelStorageOperationsCreateArgs
+        args: CmsContentModelStorageOperationsCreateParams
     ): Promise<CmsContentModel> {
         const { data } = args;
         try {
@@ -133,7 +133,7 @@ export default class CmsContentModelDynamo implements CmsContentModelStorageOper
         }
     }
 
-    public async delete(args: CmsContentModelStorageOperationsDeleteArgs): Promise<boolean> {
+    public async delete(args: CmsContentModelStorageOperationsDeleteParams): Promise<boolean> {
         const { model } = args;
         try {
             await this._entity.delete({
@@ -148,7 +148,7 @@ export default class CmsContentModelDynamo implements CmsContentModelStorageOper
         return true;
     }
     public async get(
-        args: CmsContentModelStorageOperationsGetArgs
+        args: CmsContentModelStorageOperationsGetParams
     ): Promise<CmsContentModel | null> {
         const { id } = args;
         try {
@@ -198,7 +198,7 @@ export default class CmsContentModelDynamo implements CmsContentModelStorageOper
     }
 
     public async update(
-        args: CmsContentModelStorageOperationsUpdateArgs
+        args: CmsContentModelStorageOperationsUpdateParams
     ): Promise<CmsContentModel> {
         const { model, data } = args;
         const dbData = {

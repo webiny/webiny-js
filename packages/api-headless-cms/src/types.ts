@@ -12,6 +12,8 @@ import { SecurityPermission } from "@webiny/api-security/types";
 import { HttpContext } from "@webiny/handler-http/types";
 import { DbContext } from "@webiny/handler-db/types";
 import { FileManagerContext } from "@webiny/api-file-manager/types";
+import { UpgradePlugin } from "@webiny/api-upgrade/types";
+import { Topic } from "@webiny/pubsub/types";
 
 interface BaseCmsValuesObject {
     /**
@@ -40,6 +42,9 @@ interface BaseCmsValuesObject {
     PREVIEW: boolean;
 }
 
+export interface HeadlessCms extends BaseCmsValuesObject, CmsCrudContextObject {
+    storageOperations: HeadlessCmsStorageOperations;
+}
 /**
  * @description This combines all contexts used in the CMS into a single one.
  *
@@ -53,7 +58,7 @@ export interface CmsContext
         FileManagerContext,
         BaseI18NContentContext,
         TenancyContext {
-    cms: BaseCmsValuesObject & CmsCrudContextObject;
+    cms: HeadlessCms;
 }
 
 interface CmsContentModelFieldPredefinedValuesValue {
@@ -299,7 +304,7 @@ export interface CmsContentModel {
     /**
      * Locale this model belongs to.
      */
-    locale?: string;
+    locale: string;
     /**
      * Content model group reference object.
      */
@@ -353,6 +358,10 @@ export interface CmsContentModel {
      * It is picked as first available text field. Or user can select own field.
      */
     titleFieldId: string;
+    /**
+     * TODO migration
+     */
+    tenant: string;
 }
 
 /**
@@ -661,6 +670,11 @@ export interface CmsSettings {
      * Last content model change. Used to cache GraphQL schema.
      */
     contentModelLastChange: Date;
+    /**
+     * TODO migration
+     */
+    tenant: string;
+    locale: string;
 }
 
 /**
@@ -692,13 +706,29 @@ export interface CmsSettingsContext {
     getContentModelLastChange: () => Promise<Date>;
 }
 
+export interface BeforeInstallTopic {
+    tenant: string;
+}
+
+export interface AfterInstallTopic {
+    tenant: string;
+}
+
 export type CmsSystemContext = {
     getVersion: () => Promise<string>;
     setVersion: (version: string) => Promise<void>;
     getReadAPIKey(): Promise<string>;
-    setReadAPIKey(apiKey: string): Promise<void>;
+    /**
+     * Moved to storageOperations.update
+     */
+    // setReadAPIKey(apiKey: string): Promise<void>;
     install: () => Promise<void>;
     upgrade: (version: string) => Promise<boolean>;
+    /**
+     * Events
+     */
+    onBeforeInstall: Topic<BeforeInstallTopic>;
+    onAfterInstall: Topic<AfterInstallTopic>;
 };
 
 /**
@@ -749,7 +779,7 @@ export interface CmsContentModelGroup {
     /**
      * Locale this group belongs to.
      */
-    locale?: string;
+    locale: string;
     /**
      * Description for the group.
      */
@@ -765,11 +795,19 @@ export interface CmsContentModelGroup {
     /**
      * Date group was created on.
      */
-    createdOn?: Date;
+    createdOn?: string;
     /**
      * Date group was created or changed on.
      */
-    savedOn?: Date;
+    savedOn?: string;
+    /**
+     * Which Webiny version was this record stored with.
+     */
+    webinyVersion: string;
+    /**
+     * TODO migration
+     */
+    tenant: string;
 }
 
 /**
@@ -779,8 +817,61 @@ export interface CmsContentModelGroup {
  * @category GraphQL args
  */
 export interface CmsContentModelGroupListArgs {
-    where?: Record<string, any>;
-    limit?: number;
+    where: {
+        tenant: string;
+        locale: string;
+        [key: string]: any;
+    };
+}
+
+/**
+ * @category ContentModelGroup
+ * @category Topic
+ */
+export interface BeforeGroupCreateTopic {
+    group: CmsContentModelGroup;
+}
+
+/**
+ * @category ContentModelGroup
+ * @category Topic
+ */
+export interface AfterGroupCreateTopic {
+    group: CmsContentModelGroup;
+}
+
+/**
+ * @category ContentModelGroup
+ * @category Topic
+ */
+export interface BeforeGroupUpdateTopic {
+    original: CmsContentModelGroup;
+    group: CmsContentModelGroup;
+}
+
+/**
+ * @category ContentModelGroup
+ * @category Topic
+ */
+export interface AfterGroupUpdateTopic {
+    original: CmsContentModelGroup;
+    group: CmsContentModelGroup;
+}
+
+/**
+ * @category ContentModelGroup
+ * @category Topic
+ */
+export interface BeforeGroupDeleteTopic {
+    group: CmsContentModelGroup;
+}
+
+/**
+ * @category ContentModelGroup
+ * @category Topic
+ */
+export interface AfterGroupDeleteTopic {
+    group: CmsContentModelGroup;
 }
 
 /**
@@ -827,6 +918,15 @@ export interface CmsContentModelGroupContext {
      * Delete content model group by given id.
      */
     delete: (id: string) => Promise<boolean>;
+    /**
+     * Events.
+     */
+    onBeforeCreate: Topic<BeforeGroupCreateTopic>;
+    onAfterCreate: Topic<AfterGroupCreateTopic>;
+    onBeforeUpdate: Topic<BeforeGroupUpdateTopic>;
+    onAfterUpdate: Topic<AfterGroupUpdateTopic>;
+    onBeforeDelete: Topic<BeforeGroupDeleteTopic>;
+    onAfterDelete: Topic<AfterGroupDeleteTopic>;
 }
 
 /**
@@ -1121,6 +1221,31 @@ export interface CmsContentModelManager {
     delete: (id: string) => Promise<void>;
 }
 
+export interface BeforeCreateModelTopic {
+    input: Partial<CmsContentModel>;
+    model: CmsContentModel;
+}
+export interface AfterCreateModelTopic {
+    input: Partial<CmsContentModel>;
+    model: CmsContentModel;
+}
+export interface BeforeUpdateModelTopic {
+    input: Partial<CmsContentModel>;
+    original: CmsContentModel;
+    model: CmsContentModel;
+}
+export interface AfterUpdateModelTopic {
+    input: Partial<CmsContentModel>;
+    original: CmsContentModel;
+    model: CmsContentModel;
+}
+export interface BeforeDeleteModelTopic {
+    model: CmsContentModel;
+}
+export interface AfterDeleteModelTopic {
+    model: CmsContentModel;
+}
+
 /**
  * Content model in the context.
  *
@@ -1197,6 +1322,15 @@ export interface CmsContentModelContext {
      * @see CmsContentModelManager
      */
     getManagers: () => Map<string, CmsContentModelManager>;
+    /**
+     * Events.
+     */
+    onBeforeCreate: Topic<BeforeCreateModelTopic>;
+    onAfterCreate: Topic<AfterCreateModelTopic>;
+    onBeforeUpdate: Topic<BeforeUpdateModelTopic>;
+    onAfterUpdate: Topic<AfterUpdateModelTopic>;
+    onBeforeDelete: Topic<BeforeDeleteModelTopic>;
+    onAfterDelete: Topic<AfterDeleteModelTopic>;
 }
 
 /**
@@ -1218,6 +1352,14 @@ type CmsContentEntryStatus =
  * @category GraphQL args
  */
 export interface CmsContentEntryListWhere {
+    /**
+     * Required fields.
+     */
+    tenant: string;
+    locale: string;
+    /**
+     * Fields.
+     */
     id?: string;
     id_in?: string[];
     id_not?: string;
@@ -1288,7 +1430,7 @@ export type CmsContentEntryListSort = string[];
  * @category GraphQL args
  */
 export interface CmsContentEntryGetArgs {
-    where?: CmsContentEntryListWhere;
+    where: CmsContentEntryListWhere;
     sort?: CmsContentEntryListSort;
 }
 
@@ -1299,7 +1441,7 @@ export interface CmsContentEntryGetArgs {
  * @category GraphQL args
  */
 export interface CmsContentEntryListArgs {
-    where?: CmsContentEntryListWhere;
+    where: CmsContentEntryListWhere;
     sort?: CmsContentEntryListSort;
     limit?: number;
     after?: string;
@@ -1326,6 +1468,42 @@ export interface CmsContentEntryMeta {
     totalCount: number;
 }
 
+export interface BeforeCreateEntryTopic {
+    tenant: string;
+    locale: string;
+    input: Partial<CmsContentEntry>;
+    entry: CmsContentEntry;
+}
+export interface AfterCreateEntryTopic {
+    tenant: string;
+    locale: string;
+    input: Partial<CmsContentEntry>;
+    entry: CmsContentEntry;
+}
+export interface BeforeUpdateEntryTopic {
+    tenant: string;
+    locale: string;
+    input: Partial<CmsContentEntry>;
+    original: CmsContentEntry;
+    entry: CmsContentEntry;
+}
+export interface AfterUpdateEntryTopic {
+    tenant: string;
+    locale: string;
+    input: Partial<CmsContentEntry>;
+    original: CmsContentEntry;
+    entry: CmsContentEntry;
+}
+export interface BeforeDeleteEntryTopic {
+    tenant: string;
+    locale: string;
+    entry: CmsContentEntry;
+}
+export interface AfterDeleteEntryTopic {
+    tenant: string;
+    locale: string;
+    entry: CmsContentEntry;
+}
 /**
  * Content entry CRUD methods in the context.
  *
@@ -1426,6 +1604,15 @@ export interface CmsContentEntryContext {
      * Get all entry revisions.
      */
     getEntryRevisions: (model: CmsContentModel, id: string) => Promise<CmsContentEntry[]>;
+    /**
+     * Events.
+     */
+    onBeforeCreate: Topic<BeforeCreateEntryTopic>;
+    onAfterCreate: Topic<AfterCreateEntryTopic>;
+    onBeforeUpdate: Topic<BeforeUpdateEntryTopic>;
+    onAfterUpdate: Topic<AfterUpdateEntryTopic>;
+    onBeforeDelete: Topic<BeforeDeleteEntryTopic>;
+    onAfterDelete: Topic<AfterDeleteEntryTopic>;
 }
 
 /**
@@ -2187,84 +2374,64 @@ export interface CmsContentEntryHookPlugin extends Plugin {
     afterRequestReview?: (args: CmsContentEntryAfterRequestReviewHookArgs) => void;
 }
 
-interface CmsStorageOperationsProvider<A = any, T = any> extends Plugin {
-    provide: (args: A) => Promise<T>;
-}
-
-/**
- * Arguments for the group storage operations provider method.
- */
-interface CmsContentModelGroupStorageOperationsProviderArgs {
-    context: CmsContext;
-}
-
-/**
- * A plugin that provides the group storage operations implementation.
- */
-export interface CmsContentModelGroupStorageOperationsProvider
-    extends CmsStorageOperationsProvider<
-        CmsContentModelGroupStorageOperationsProviderArgs,
-        CmsContentModelGroupStorageOperations
-    > {
-    /**
-     * A plugin type.
-     */
-    type: "cms-content-model-group-storage-operations-provider";
-}
-
-export interface CmsContentModelGroupStorageOperationsGetArgs {
+export interface CmsContentModelGroupStorageOperationsGetParams {
     id: string;
+    tenant: string;
+    locale: string;
 }
 
-export interface CmsContentModelGroupStorageOperationsListArgs<
-    T extends Record<string, any> = Record<string, any>
-> {
-    where?: T;
-    limit?: number;
+export interface CmsContentModelGroupStorageOperationsListWhereParams {
+    tenant: string;
+    locale: string;
+    [key: string]: any;
+}
+export interface CmsContentModelGroupStorageOperationsListParams {
+    where: CmsContentModelGroupStorageOperationsListWhereParams;
+    sort?: string[];
 }
 
-export interface CmsContentModelGroupStorageOperationsBeforeCreateArgs {
+export interface CmsContentModelGroupStorageOperationsBeforeCreateParams {
     input: CmsContentModelGroupCreateInput;
-    data: CmsContentModelGroup;
+    group: CmsContentModelGroup;
 }
 
-export interface CmsContentModelGroupStorageOperationsCreateArgs {
+export interface CmsContentModelGroupStorageOperationsCreateParams {
     input: CmsContentModelGroupCreateInput;
-    data: CmsContentModelGroup;
+    group: CmsContentModelGroup;
 }
 
-export interface CmsContentModelGroupStorageOperationsAfterCreateArgs {
+export interface CmsContentModelGroupStorageOperationsAfterCreateParams {
     input: CmsContentModelGroupCreateInput;
     group: CmsContentModelGroup;
 }
 
 export interface CmsContentModelGroupStorageOperationsBeforeUpdateArgs {
+    original: CmsContentModelGroup;
     group: CmsContentModelGroup;
-    data: Partial<CmsContentModelGroup>;
     input: CmsContentModelGroupUpdateInput;
 }
 
-export interface CmsContentModelGroupStorageOperationsUpdateArgs {
+export interface CmsContentModelGroupStorageOperationsUpdateParams {
+    original: CmsContentModelGroup;
     group: CmsContentModelGroup;
-    data: Partial<CmsContentModelGroup>;
     input: CmsContentModelGroupUpdateInput;
 }
 
-export interface CmsContentModelGroupStorageOperationsAfterUpdateArgs {
+export interface CmsContentModelGroupStorageOperationsAfterUpdateParams {
+    original: CmsContentModelGroup;
     group: CmsContentModelGroup;
-    data: Partial<CmsContentModelGroup>;
     input: CmsContentModelGroupUpdateInput;
 }
 
-export interface CmsContentModelGroupStorageOperationsBeforeDeleteArgs {
+export interface CmsContentModelGroupStorageOperationsBeforeDeleteParams {
     group: CmsContentModelGroup;
 }
 
-export interface CmsContentModelGroupStorageOperationsDeleteArgs {
+export interface CmsContentModelGroupStorageOperationsDeleteParams {
     group: CmsContentModelGroup;
 }
 
-export interface CmsContentModelGroupStorageOperationsAfterDeleteArgs {
+export interface CmsContentModelGroupStorageOperationsAfterDeleteParams {
     group: CmsContentModelGroup;
 }
 
@@ -2278,128 +2445,120 @@ export interface CmsContentModelGroupStorageOperations {
      * Gets content model group by given id.
      */
     get: (
-        args: CmsContentModelGroupStorageOperationsGetArgs
+        params: CmsContentModelGroupStorageOperationsGetParams
     ) => Promise<CmsContentModelGroup | null>;
     /**
      * List all content model groups. Filterable via params.
      */
-    list: (args?: CmsContentModelGroupStorageOperationsListArgs) => Promise<CmsContentModelGroup[]>;
+    list: (
+        params: CmsContentModelGroupStorageOperationsListParams
+    ) => Promise<CmsContentModelGroup[]>;
     /**
      * A hook to be run before the create method.
      */
-    beforeCreate?: (args: CmsContentModelGroupStorageOperationsBeforeCreateArgs) => Promise<void>;
+    // beforeCreate?: (
+    //     params: CmsContentModelGroupStorageOperationsBeforeCreateParams
+    // ) => Promise<void>;
     /**
      * Create a new content model group.
      */
     create: (
-        args: CmsContentModelGroupStorageOperationsCreateArgs
+        params: CmsContentModelGroupStorageOperationsCreateParams
     ) => Promise<CmsContentModelGroup>;
     /**
      * A hook to be run after the create method.
      */
-    afterCreate?: (args: CmsContentModelGroupStorageOperationsAfterCreateArgs) => Promise<void>;
+    // afterCreate?: (params: CmsContentModelGroupStorageOperationsAfterCreateParams) => Promise<void>;
     /**
      * A hook to be run before the update method.
      */
-    beforeUpdate?: (args: CmsContentModelGroupStorageOperationsBeforeUpdateArgs) => Promise<void>;
+    // beforeUpdate?: (params: CmsContentModelGroupStorageOperationsBeforeUpdateArgs) => Promise<void>;
     /**
      * Update existing content model group.
      */
     update: (
-        args: CmsContentModelGroupStorageOperationsUpdateArgs
+        params: CmsContentModelGroupStorageOperationsUpdateParams
     ) => Promise<CmsContentModelGroup>;
     /**
      * A hook to be run after the update method.
      */
-    afterUpdate?: (args: CmsContentModelGroupStorageOperationsAfterUpdateArgs) => Promise<void>;
+    // afterUpdate?: (params: CmsContentModelGroupStorageOperationsAfterUpdateParams) => Promise<void>;
     /**
      * A hook to be run before the delete method.
      */
-    beforeDelete?: (args: CmsContentModelGroupStorageOperationsBeforeDeleteArgs) => Promise<void>;
+    // beforeDelete?: (
+    //     params: CmsContentModelGroupStorageOperationsBeforeDeleteParams
+    // ) => Promise<void>;
     /**
      * Delete the content model group.
      */
-    delete: (args: CmsContentModelGroupStorageOperationsDeleteArgs) => Promise<boolean>;
+    delete: (
+        params: CmsContentModelGroupStorageOperationsDeleteParams
+    ) => Promise<CmsContentModelGroup>;
     /**
      * A hook to be run after the delete method.
      */
-    afterDelete?: (args: CmsContentModelGroupStorageOperationsAfterDeleteArgs) => Promise<void>;
+    // afterDelete?: (params: CmsContentModelGroupStorageOperationsAfterDeleteParams) => Promise<void>;
 }
 
-/**
- * Arguments for the model storage operations provider method.
- */
-interface CmsContentModelStorageOperationsProviderArgs {
-    context: CmsContext;
+export interface CmsContentModelStorageOperationsGetParams {
+    tenant: string;
+    locale: string;
+    modelId: string;
 }
 
-/**
- * A plugin that provides the model storage operations implementation.
- */
-export interface CmsContentModelStorageOperationsProvider
-    extends CmsStorageOperationsProvider<
-        CmsContentModelStorageOperationsProviderArgs,
-        CmsContentModelStorageOperations
-    > {
-    /**
-     * A plugin type.
-     */
-    type: "cms-content-model-storage-operations-provider";
+export interface CmsContentModelStorageOperationsListWhereParams {
+    tenant: string;
+    locale: string;
+    [key: string]: string;
 }
 
-export interface CmsContentModelStorageOperationsGetArgs {
-    id: string;
+export interface CmsContentModelStorageOperationsListParams {
+    where: CmsContentModelStorageOperationsListWhereParams;
 }
 
-export interface CmsContentModelStorageOperationsListArgs<
-    T extends Record<string, any> = Record<string, any>
-> {
-    where?: T;
-    limit?: number;
-}
-
-export interface CmsContentModelStorageOperationsBeforeCreateArgs {
+export interface CmsContentModelStorageOperationsBeforeCreateParams {
     input: CmsContentModelCreateInput;
     data: CmsContentModel;
 }
 
-export interface CmsContentModelStorageOperationsCreateArgs {
-    input: CmsContentModelCreateInput;
-    data: CmsContentModel;
-}
-
-export interface CmsContentModelStorageOperationsAfterCreateArgs {
+export interface CmsContentModelStorageOperationsCreateParams {
     input: CmsContentModelCreateInput;
     model: CmsContentModel;
 }
 
-export interface CmsContentModelStorageOperationsBeforeUpdateArgs {
+export interface CmsContentModelStorageOperationsAfterCreateParams {
+    input: CmsContentModelCreateInput;
     model: CmsContentModel;
-    data: Partial<CmsContentModel>;
+}
+
+export interface CmsContentModelStorageOperationsBeforeUpdateParams {
+    original: CmsContentModel;
+    model: CmsContentModel;
     input: CmsContentModelUpdateInput;
 }
 
-export interface CmsContentModelStorageOperationsUpdateArgs {
+export interface CmsContentModelStorageOperationsUpdateParams {
+    original: CmsContentModel;
     model: CmsContentModel;
-    data: Partial<CmsContentModel>;
     input: CmsContentModelUpdateInput;
 }
 
-export interface CmsContentModelStorageOperationsAfterUpdateArgs {
+export interface CmsContentModelStorageOperationsAfterUpdateParams {
+    original: CmsContentModel;
     model: CmsContentModel;
-    data: Partial<CmsContentModel>;
     input: CmsContentModelUpdateInput;
 }
 
-export interface CmsContentModelStorageOperationsBeforeDeleteArgs {
+export interface CmsContentModelStorageOperationsBeforeDeleteParams {
     model: CmsContentModel;
 }
 
-export interface CmsContentModelStorageOperationsDeleteArgs {
+export interface CmsContentModelStorageOperationsDeleteParams {
     model: CmsContentModel;
 }
 
-export interface CmsContentModelStorageOperationsAfterDeleteArgs {
+export interface CmsContentModelStorageOperationsAfterDeleteParams {
     model: CmsContentModel;
 }
 
@@ -2412,86 +2571,63 @@ export interface CmsContentModelStorageOperations {
     /**
      * Gets content model by given id.
      */
-    get: (args: CmsContentModelStorageOperationsGetArgs) => Promise<CmsContentModel | null>;
+    get: (params: CmsContentModelStorageOperationsGetParams) => Promise<CmsContentModel | null>;
     /**
      * List all content models. Filterable via params.
      */
-    list: (args?: CmsContentModelStorageOperationsListArgs) => Promise<CmsContentModel[]>;
+    list: (params: CmsContentModelStorageOperationsListParams) => Promise<CmsContentModel[]>;
     /**
      * A hook to be run before the create method.
      */
-    beforeCreate?: (args: CmsContentModelStorageOperationsBeforeCreateArgs) => Promise<void>;
+    // beforeCreate?: (params: CmsContentModelStorageOperationsBeforeCreateParams) => Promise<void>;
     /**
      * Create a new content model.
      */
-    create: (args: CmsContentModelStorageOperationsCreateArgs) => Promise<CmsContentModel>;
+    create: (params: CmsContentModelStorageOperationsCreateParams) => Promise<CmsContentModel>;
     /**
      * A hook to be run after the create method.
      */
-    afterCreate?: (args: CmsContentModelStorageOperationsAfterCreateArgs) => Promise<void>;
+    // afterCreate?: (params: CmsContentModelStorageOperationsAfterCreateParams) => Promise<void>;
     /**
      * A hook to be run before the update method.
      */
-    beforeUpdate?: (args: CmsContentModelStorageOperationsBeforeUpdateArgs) => Promise<void>;
+    // beforeUpdate?: (params: CmsContentModelStorageOperationsBeforeUpdateParams) => Promise<void>;
     /**
      * Update existing content model.
      */
-    update: (args: CmsContentModelStorageOperationsUpdateArgs) => Promise<CmsContentModel>;
+    update: (params: CmsContentModelStorageOperationsUpdateParams) => Promise<CmsContentModel>;
     /**
      * A hook to be run after the update method.
      */
-    afterUpdate?: (args: CmsContentModelStorageOperationsAfterUpdateArgs) => Promise<void>;
+    // afterUpdate?: (params: CmsContentModelStorageOperationsAfterUpdateParams) => Promise<void>;
     /**
      * A hook to be run before the delete method.
      */
-    beforeDelete?: (args: CmsContentModelStorageOperationsBeforeDeleteArgs) => Promise<void>;
+    // beforeDelete?: (params: CmsContentModelStorageOperationsBeforeDeleteParams) => Promise<void>;
     /**
      * Delete the content model.
      */
-    delete: (args: CmsContentModelStorageOperationsDeleteArgs) => Promise<boolean>;
+    delete: (params: CmsContentModelStorageOperationsDeleteParams) => Promise<CmsContentModel>;
     /**
      * A hook to be run after the delete method.
      */
-    afterDelete?: (args: CmsContentModelStorageOperationsAfterDeleteArgs) => Promise<void>;
+    // afterDelete?: (params: CmsContentModelStorageOperationsAfterDeleteParams) => Promise<void>;
 }
 
-/**
- * Arguments for the entry storage provider method.
- */
-interface CmsContentEntryStorageOperationsProviderArgs {
-    context: CmsContext;
-}
-
-/**
- * A plugin that provides the entry storage operations implementation.
- */
-export interface CmsContentEntryStorageOperationsProvider
-    extends CmsStorageOperationsProvider<
-        CmsContentEntryStorageOperationsProviderArgs,
-        CmsContentEntryStorageOperations
-    > {
-    /**
-     * A plugin type.
-     */
-    type: "cms-content-entry-storage-operations-provider";
-}
-
-export interface CmsContentEntryStorageOperationsGetArgs {
-    where?: CmsContentEntryListWhere;
+export interface CmsContentEntryStorageOperationsGetParams {
+    where: CmsContentEntryListWhere;
     sort?: CmsContentEntryListSort;
     limit?: number;
 }
 
-export interface CmsContentEntryStorageOperationsListArgs<
-    T extends Record<string, any> = Record<string, any>
-> {
-    where?: T;
+export interface CmsContentEntryStorageOperationsListArgs {
+    where: CmsContentEntryListWhere;
     sort?: CmsContentEntryListSort;
     limit?: number;
     after?: string;
 }
 
-export interface CmsContentEntryStorageOperationsCreateArgs<
+export interface CmsContentEntryStorageOperationsCreateParams<
     T extends CmsStorageContentEntry = CmsStorageContentEntry
 > {
     /**
@@ -2508,7 +2644,7 @@ export interface CmsContentEntryStorageOperationsCreateArgs<
     storageEntry: T;
 }
 
-export interface CmsContentEntryStorageOperationsCreateRevisionFromArgs<
+export interface CmsContentEntryStorageOperationsCreateRevisionFromParams<
     T extends CmsStorageContentEntry = CmsStorageContentEntry
 > {
     /**
@@ -2537,7 +2673,7 @@ export interface CmsContentEntryStorageOperationsCreateRevisionFromArgs<
     storageEntry: T;
 }
 
-export interface CmsContentEntryStorageOperationsUpdateArgs<
+export interface CmsContentEntryStorageOperationsUpdateParams<
     T extends CmsStorageContentEntry = CmsStorageContentEntry
 > {
     /**
@@ -2562,7 +2698,7 @@ export interface CmsContentEntryStorageOperationsUpdateArgs<
     storageEntry: T;
 }
 
-export interface CmsContentEntryStorageOperationsDeleteRevisionArgs<
+export interface CmsContentEntryStorageOperationsDeleteRevisionParams<
     T extends CmsStorageContentEntry = CmsStorageContentEntry
 > {
     /**
@@ -2583,7 +2719,7 @@ export interface CmsContentEntryStorageOperationsDeleteRevisionArgs<
     storageEntryToSetAsLatest?: T;
 }
 
-export interface CmsContentEntryStorageOperationsDeleteArgs<
+export interface CmsContentEntryStorageOperationsDeleteParams<
     T extends CmsStorageContentEntry = CmsStorageContentEntry
 > {
     /**
@@ -2596,7 +2732,7 @@ export interface CmsContentEntryStorageOperationsDeleteArgs<
     storageEntry: T;
 }
 
-export interface CmsContentEntryStorageOperationsPublishArgs<
+export interface CmsContentEntryStorageOperationsPublishParams<
     T extends CmsStorageContentEntry = CmsStorageContentEntry
 > {
     /**
@@ -2618,7 +2754,7 @@ export interface CmsContentEntryStorageOperationsPublishArgs<
     storageEntry: T;
 }
 
-export interface CmsContentEntryStorageOperationsUnpublishArgs<
+export interface CmsContentEntryStorageOperationsUnpublishParams<
     T extends CmsStorageContentEntry = CmsStorageContentEntry
 > {
     /**
@@ -2639,7 +2775,7 @@ export interface CmsContentEntryStorageOperationsUnpublishArgs<
     storageEntry: T;
 }
 
-export interface CmsContentEntryStorageOperationsRequestChangesArgs<
+export interface CmsContentEntryStorageOperationsRequestChangesParams<
     T extends CmsStorageContentEntry = CmsStorageContentEntry
 > {
     /**
@@ -2660,7 +2796,7 @@ export interface CmsContentEntryStorageOperationsRequestChangesArgs<
     originalStorageEntry: T;
 }
 
-export interface CmsContentEntryStorageOperationsRequestReviewArgs<
+export interface CmsContentEntryStorageOperationsRequestReviewParams<
     T extends CmsStorageContentEntry = CmsStorageContentEntry
 > {
     /**
@@ -2679,6 +2815,60 @@ export interface CmsContentEntryStorageOperationsRequestReviewArgs<
      * Original entry to be updated, directly from storage, with the transformations.
      */
     originalStorageEntry: T;
+}
+
+export interface CmsContentEntryStorageOperationsGetAllRevisionsParams {
+    ids: readonly string[];
+    tenant: string;
+    locale: string;
+}
+
+export interface CmsContentEntryStorageOperationsGetByIdsParams {
+    ids: readonly string[];
+    tenant: string;
+    locale: string;
+}
+
+export interface CmsContentEntryStorageOperationsGetLatestByIdsParams {
+    ids: readonly string[];
+    tenant: string;
+    locale: string;
+}
+
+export interface CmsContentEntryStorageOperationsGetPublishedByIdsParams {
+    ids: readonly string[];
+    tenant: string;
+    locale: string;
+}
+
+export interface CmsContentEntryStorageOperationsGetRevisionsParams {
+    id: string;
+    tenant: string;
+    locale: string;
+}
+
+export interface CmsContentEntryStorageOperationsGetRevisionParams {
+    id: string;
+    tenant: string;
+    locale: string;
+}
+
+export interface CmsContentEntryStorageOperationsGetPublishedRevisionParams {
+    id: string;
+    tenant: string;
+    locale: string;
+}
+export interface CmsContentEntryStorageOperationsGetLatestRevisionParams {
+    id: string;
+    tenant: string;
+    locale: string;
+}
+
+export interface CmsContentEntryStorageOperationsGetPreviousRevisionParams {
+    entryId: string;
+    version: number;
+    tenant: string;
+    locale: string;
 }
 
 export interface CmsContentEntryStorageOperationsListResponse<
@@ -2717,50 +2907,72 @@ export interface CmsContentEntryStorageOperations<
     /**
      * Get all the entries of the ids.
      */
-    getByIds: (model: CmsContentModel, ids: readonly string[]) => Promise<T[]>;
+    getByIds: (
+        model: CmsContentModel,
+        params: CmsContentEntryStorageOperationsGetByIdsParams
+    ) => Promise<T[]>;
     /**
      * Get all the published entries of the ids.
      */
-    getPublishedByIds: (model: CmsContentModel, ids: readonly string[]) => Promise<T[]>;
+    getPublishedByIds: (
+        model: CmsContentModel,
+        params: CmsContentEntryStorageOperationsGetPublishedByIdsParams
+    ) => Promise<T[]>;
     /**
      * Get all the latest entries of the ids.
      */
-    getLatestByIds: (model: CmsContentModel, ids: readonly string[]) => Promise<T[]>;
+    getLatestByIds: (
+        model: CmsContentModel,
+        params: CmsContentEntryStorageOperationsGetLatestByIdsParams
+    ) => Promise<T[]>;
     /**
      * Get all revisions of the given entry id.
      */
-    getRevisions: (model: CmsContentModel, id: string) => Promise<T[]>;
+    getRevisions: (
+        model: CmsContentModel,
+        params: CmsContentEntryStorageOperationsGetRevisionsParams
+    ) => Promise<T[]>;
     /**
      * Get all revisions of all of the given IDs.
      */
-    getAllRevisionsByIds: (model: CmsContentModel, ids: readonly string[]) => Promise<T[]>;
+    getAllRevisionsByIds: (
+        model: CmsContentModel,
+        params: CmsContentEntryStorageOperationsGetAllRevisionsParams
+    ) => Promise<T[]>;
     /**
      * Get the entry by the given revision id.
      */
-    getRevisionById: (model: CmsContentModel, id: string) => Promise<T | null>;
+    getRevisionById: (
+        model: CmsContentModel,
+        params: CmsContentEntryStorageOperationsGetRevisionParams
+    ) => Promise<T | null>;
     /**
      * Get the published entry by given entryId.
      */
-    getPublishedRevisionByEntryId: (model: CmsContentModel, entryId: string) => Promise<T | null>;
+    getPublishedRevisionByEntryId: (
+        model: CmsContentModel,
+        params: CmsContentEntryStorageOperationsGetPublishedRevisionParams
+    ) => Promise<T | null>;
     /**
      * Get the latest entry by given entryId.
      */
-    getLatestRevisionByEntryId: (model: CmsContentModel, entryId: string) => Promise<T | null>;
+    getLatestRevisionByEntryId: (
+        model: CmsContentModel,
+        params: CmsContentEntryStorageOperationsGetLatestRevisionParams
+    ) => Promise<T | null>;
     /**
      * Get the revision of the entry before given one.
      */
     getPreviousRevision: (
         model: CmsContentModel,
-        entryId: string,
-        version: number
+        params: CmsContentEntryStorageOperationsGetPreviousRevisionParams
     ) => Promise<T | null>;
-
     /**
      * Gets entry by given args.
      */
     get: (
         model: CmsContentModel,
-        args: CmsContentEntryStorageOperationsGetArgs
+        args: CmsContentEntryStorageOperationsGetParams
     ) => Promise<T | null>;
     /**
      * List all entries. Filterable via params.
@@ -2774,63 +2986,63 @@ export interface CmsContentEntryStorageOperations<
      */
     create: (
         model: CmsContentModel,
-        args: CmsContentEntryStorageOperationsCreateArgs<T>
+        params: CmsContentEntryStorageOperationsCreateParams<T>
     ) => Promise<T>;
     /**
      * Create a new entry from existing one.
      */
     createRevisionFrom: (
         model: CmsContentModel,
-        args: CmsContentEntryStorageOperationsCreateRevisionFromArgs<T>
+        params: CmsContentEntryStorageOperationsCreateRevisionFromParams<T>
     ) => Promise<T>;
     /**
      * Update existing entry.
      */
     update: (
         model: CmsContentModel,
-        args: CmsContentEntryStorageOperationsUpdateArgs<T>
+        params: CmsContentEntryStorageOperationsUpdateParams<T>
     ) => Promise<T>;
     /**
      * Delete the entry revision.
      */
     deleteRevision: (
         model: CmsContentModel,
-        args: CmsContentEntryStorageOperationsDeleteRevisionArgs<T>
+        params: CmsContentEntryStorageOperationsDeleteRevisionParams<T>
     ) => Promise<void>;
     /**
      * Delete the entry.
      */
     delete: (
         model: CmsContentModel,
-        args: CmsContentEntryStorageOperationsDeleteArgs<T>
+        params: CmsContentEntryStorageOperationsDeleteParams<T>
     ) => Promise<void>;
     /**
      * Publish the entry.
      */
     publish: (
         model: CmsContentModel,
-        args: CmsContentEntryStorageOperationsPublishArgs<T>
+        params: CmsContentEntryStorageOperationsPublishParams<T>
     ) => Promise<T>;
     /**
      * Unpublish the entry.
      */
     unpublish: (
         model: CmsContentModel,
-        args: CmsContentEntryStorageOperationsUnpublishArgs<T>
+        params: CmsContentEntryStorageOperationsUnpublishParams<T>
     ) => Promise<T>;
     /**
      * Request changes the entry.
      */
     requestChanges: (
         model: CmsContentModel,
-        args: CmsContentEntryStorageOperationsRequestChangesArgs<T>
+        params: CmsContentEntryStorageOperationsRequestChangesParams<T>
     ) => Promise<T>;
     /**
      * Request review the entry.
      */
     requestReview: (
         model: CmsContentModel,
-        args: CmsContentEntryStorageOperationsRequestReviewArgs<T>
+        params: CmsContentEntryStorageOperationsRequestReviewParams<T>
     ) => Promise<CmsContentEntry>;
 }
 
@@ -2842,71 +3054,83 @@ export enum CONTENT_ENTRY_STATUS {
     REVIEW_REQUESTED = "reviewRequested"
 }
 
-interface CmsSettingsStorageOperationsProviderArgs {
-    context: CmsContext;
+export interface CmsSettingsStorageOperationsGetParams {
+    locale: string;
+    tenant: string;
 }
-/**
- * A plugin that provides the settings storage operations implementation.
- */
-export interface CmsSettingsStorageOperationsProviderPlugin
-    extends CmsStorageOperationsProvider<
-        CmsSettingsStorageOperationsProviderArgs,
-        CmsSettingsStorageOperations
-    > {
-    /**
-     * A plugin type.
-     */
-    type: "cms-settings-storage-operations-provider";
+
+export interface CmsSettingsStorageOperationsCreateParams {
+    settings: CmsSettings;
+}
+
+export interface CmsSettingsStorageOperationsUpdateParams {
+    original: CmsSettings;
+    settings: CmsSettings;
 }
 
 export interface CmsSettingsStorageOperations {
     /**
      * Get the settings from the storage.
      */
-    get: () => Promise<CmsSettings | null>;
+    get: (params: CmsSettingsStorageOperationsGetParams) => Promise<CmsSettings | null>;
     /**
      * Create settings in the storage.
      */
-    create: (data: CmsSettings) => Promise<void>;
+    create: (params: CmsSettingsStorageOperationsCreateParams) => Promise<CmsSettings>;
     /**
      * Update the settings in the storage.
      */
-    update: (data: CmsSettings) => Promise<void>;
-}
-
-interface CmsSystemStorageOperationsProviderArgs {
-    context: CmsContext;
-}
-/**
- * A plugin that provides the system storage operations implementation.
- */
-export interface CmsSystemStorageOperationsProviderPlugin
-    extends CmsStorageOperationsProvider<
-        CmsSystemStorageOperationsProviderArgs,
-        CmsSystemStorageOperations
-    > {
-    /**
-     * A plugin type.
-     */
-    type: "cms-system-storage-operations-provider";
+    update: (params: CmsSettingsStorageOperationsUpdateParams) => Promise<CmsSettings>;
 }
 
 export interface CmsSystem {
     version?: string;
     readAPIKey?: string;
+    /**
+     * TODO migration
+     */
+    locale: string;
+    tenant: string;
+}
+
+export interface CmsSystemStorageOperationsGetParams {
+    tenant: string;
+}
+
+export interface CmsSystemStorageOperationsCreateParams {
+    system: CmsSystem;
+}
+
+export interface CmsSystemStorageOperationsUpdateParams {
+    system: CmsSystem;
+    original: CmsSystem;
 }
 
 export interface CmsSystemStorageOperations {
     /**
      * Get the system data.
      */
-    get: () => Promise<CmsSystem | null>;
+    get: (params: CmsSystemStorageOperationsGetParams) => Promise<CmsSystem | null>;
     /**
      * Create the system info in the storage.
      */
-    create: (data: CmsSystem) => Promise<void>;
+    create: (params: CmsSystemStorageOperationsCreateParams) => Promise<CmsSystem>;
     /**
      * Update the system info in the storage.
      */
-    update: (data: CmsSystem) => Promise<void>;
+    update: (params: CmsSystemStorageOperationsUpdateParams) => Promise<CmsSystem>;
+}
+
+export interface HeadlessCmsStorageOperations {
+    system: CmsSystemStorageOperations;
+    settings: CmsSettingsStorageOperations;
+    groups: CmsContentModelGroupStorageOperations;
+    models: CmsContentModelStorageOperations;
+    entries: CmsContentEntryStorageOperations;
+
+    init?: (cms: HeadlessCms) => Promise<void>;
+    /**
+     * An upgrade to run if necessary.
+     */
+    upgrade?: UpgradePlugin | null;
 }

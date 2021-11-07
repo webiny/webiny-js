@@ -1,6 +1,6 @@
 import {
     CmsContentModelStorageOperations,
-    CmsContentModelStorageOperationsBeforeUpdateArgs,
+    CmsContentModelStorageOperationsBeforeUpdateParams,
     CmsContentModelField,
     CmsContentModelUpdateHookPluginArgs,
     CmsContext,
@@ -11,7 +11,7 @@ import WebinyError from "@webiny/error";
 import { runContentModelLifecycleHooks } from "./runContentModelLifecycleHooks";
 import { ContentModelPlugin } from "~/content/plugins/ContentModelPlugin";
 
-interface Args extends CmsContentModelStorageOperationsBeforeUpdateArgs {
+interface Args extends CmsContentModelStorageOperationsBeforeUpdateParams {
     context: CmsContext;
     storageOperations: CmsContentModelStorageOperations;
 }

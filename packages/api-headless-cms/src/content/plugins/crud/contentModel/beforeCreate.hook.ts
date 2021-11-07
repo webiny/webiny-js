@@ -2,7 +2,7 @@ import {
     CmsContentModel,
     CmsContentModelCreateHookPluginArgs,
     CmsContentModelStorageOperations,
-    CmsContentModelStorageOperationsBeforeCreateArgs,
+    CmsContentModelStorageOperationsBeforeCreateParams,
     CmsContext
 } from "../../../../types";
 import camelCase from "lodash/camelCase";
@@ -94,7 +94,7 @@ const createNewModelId = (existingModels: string[], model: CmsContentModel): str
     }
 };
 
-interface Args extends CmsContentModelStorageOperationsBeforeCreateArgs {
+interface Args extends CmsContentModelStorageOperationsBeforeCreateParams {
     context: CmsContext;
     storageOperations: CmsContentModelStorageOperations;
 }

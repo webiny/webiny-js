@@ -10,7 +10,7 @@ import {
     CreatedBy,
     CmsContentModelGroupPermission,
     CmsContentModelGroup
-} from "./types";
+} from "~/types";
 
 export const hasRwd = (permission, rwd) => {
     if (typeof permission.rwd !== "string") {

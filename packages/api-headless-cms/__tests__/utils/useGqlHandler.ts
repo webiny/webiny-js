@@ -28,6 +28,7 @@ import {
  */
 import i18nDynamoDbStorageOperations from "@webiny/api-i18n-ddb";
 import { createTenancyAndSecurity } from "./tenancySecurity";
+import { getStorageOperations } from "./storageOperations";
 
 export interface GQLHandlerCallableArgs {
     setupTenancyAndSecurityGraphQL?: boolean;
@@ -35,26 +36,28 @@ export interface GQLHandlerCallableArgs {
     identity?: SecurityIdentity;
     plugins?: any[];
     path: string;
+    createHeadlessCmsApp: (params: any) => any[];
 }
 
-export const useGqlHandler = (args?: GQLHandlerCallableArgs) => {
-    // @ts-ignore
-    const storageOperationsPlugins = __getStorageOperationsPlugins();
-    if (typeof storageOperationsPlugins !== "function") {
-        throw new Error(`There is no global "storageOperationsPlugins" function.`);
-    }
+export const useGqlHandler = (args: GQLHandlerCallableArgs) => {
+    const ops = getStorageOperations();
+
     const tenant = { id: "root", name: "Root", parent: null };
     const {
         permissions,
         identity,
         plugins = [],
         path,
-        setupTenancyAndSecurityGraphQL
-    } = args || {};
+        setupTenancyAndSecurityGraphQL,
+        createHeadlessCmsApp
+    } = args;
 
     const handler = createHandler({
         plugins: [
-            storageOperationsPlugins(),
+            ...ops.plugins,
+            ...createHeadlessCmsApp({
+                storageOperations: ops.storageOperations
+            }),
             ...createTenancyAndSecurity({
                 setupGraphQL: setupTenancyAndSecurityGraphQL,
                 permissions: createPermissions(permissions),

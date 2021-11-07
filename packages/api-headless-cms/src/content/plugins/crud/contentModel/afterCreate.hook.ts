@@ -1,12 +1,12 @@
 import {
     CmsContentModelCreateHookPluginArgs,
     CmsContentModelStorageOperations,
-    CmsContentModelStorageOperationsAfterCreateArgs,
+    CmsContentModelStorageOperationsAfterCreateParams,
     CmsContext
 } from "../../../../types";
 import { runContentModelLifecycleHooks } from "./runContentModelLifecycleHooks";
 
-interface Args extends CmsContentModelStorageOperationsAfterCreateArgs {
+interface Args extends CmsContentModelStorageOperationsAfterCreateParams {
     context: CmsContext;
     storageOperations: CmsContentModelStorageOperations;
 }

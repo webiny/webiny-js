@@ -1,14 +1,14 @@
 import {
     CmsContentModelHookPluginArgs,
     CmsContentModelStorageOperations,
-    CmsContentModelStorageOperationsBeforeDeleteArgs,
+    CmsContentModelStorageOperationsBeforeDeleteParams,
     CmsContext
 } from "../../../../types";
 import WebinyError from "@webiny/error";
 import { runContentModelLifecycleHooks } from "./runContentModelLifecycleHooks";
 import { ContentModelPlugin } from "@webiny/api-headless-cms/content/plugins/ContentModelPlugin";
 
-interface Args extends CmsContentModelStorageOperationsBeforeDeleteArgs {
+interface Args extends CmsContentModelStorageOperationsBeforeDeleteParams {
     context: CmsContext;
     storageOperations: CmsContentModelStorageOperations;
 }

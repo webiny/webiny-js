@@ -115,6 +115,11 @@ class CmsTestEnvironment extends NodeEnvironment {
          * This is a global function that will be called inside the tests to get all relevant plugins, methods and objects.
          */
         this.global.__getStorageOperationsPlugins = () => {
+            return {
+                createStorageOperations: () => {},
+                getPlugins: () => {}
+            };
+
             return getStorageOperationsPlugins({
                 elasticsearchClient,
                 elasticsearchClientContext,
