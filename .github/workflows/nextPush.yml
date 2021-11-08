@@ -221,7 +221,7 @@ jobs:
       - uses: actions/cache@v2
         id: cached-packages
         with:
-          path: branch-next/.webiny/cached-packages
+          path: .webiny/cached-packages
           key: ${{ runner.os }}-${{ needs.e2e-init.outputs.day }}-${{ secrets.RANDOM_CACHE_KEY_SUFFIX }}
 
       - name: Install dependencies
