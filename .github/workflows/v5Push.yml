@@ -124,7 +124,7 @@ jobs:
         run: node scripts/buildWithCache.js
 
       - name: Run tests
-        run: yarn test
+        run: yarn test ${{ matrix.package }}
 
   verdaccio-publish:
     needs: init
