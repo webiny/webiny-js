@@ -7,7 +7,7 @@ export interface Params {
     onBeforeUpdate: Topic<BeforeGroupUpdateTopic>;
     plugins: PluginsContainer;
 }
-export const assignBeforeUpdate = (params: Params) => {
+export const assignBeforeGroupUpdate = (params: Params) => {
     const { onBeforeUpdate, plugins } = params;
 
     onBeforeUpdate.subscribe(({ group }) => {

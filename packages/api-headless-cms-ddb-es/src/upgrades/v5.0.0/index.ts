@@ -136,6 +136,7 @@ const plugin = (): UpgradePlugin<CmsContext> => ({
 
         for (const locale of locales) {
             const [models] = await db.read<CmsContentModel>({
+                // @ts-ignore
                 ...configurations.db(),
                 query: { PK: `T#root#L#${locale.code}#CMS#CM`, SK: { $gt: " " } }
             });
@@ -195,6 +196,7 @@ const plugin = (): UpgradePlugin<CmsContext> => ({
                     .create(
                         ...items.map(item => {
                             return {
+                                // @ts-ignore
                                 ...configurations.esDb(),
                                 data: item
                             };
@@ -212,6 +214,7 @@ const plugin = (): UpgradePlugin<CmsContext> => ({
                     .create(
                         ...items.map(model => {
                             return {
+                                // @ts-ignore
                                 ...configurations.db(),
                                 data: {
                                     ...model,

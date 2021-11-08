@@ -14,7 +14,7 @@ import {
     CmsContentEntryStorageOperationsGetPublishedByIdsParams,
     CmsContentEntryStorageOperationsGetRevisionParams,
     CmsContentEntryStorageOperationsGetRevisionsParams,
-    CmsContentEntryStorageOperationsListArgs,
+    CmsContentEntryStorageOperationsListParams,
     CmsContentEntryStorageOperationsPublishParams,
     CmsContentEntryStorageOperationsRequestChangesParams,
     CmsContentEntryStorageOperationsRequestReviewParams,
@@ -54,10 +54,10 @@ import { cleanupItem } from "@webiny/db-dynamodb/utils/cleanup";
 const createType = (): string => {
     return "cms.entry";
 };
-const createLatestType = (): string => {
+export const createLatestType = (): string => {
     return `${createType()}.l`;
 };
-const createPublishedType = (): string => {
+export const createPublishedType = (): string => {
     return `${createType()}.p`;
 };
 
@@ -560,7 +560,7 @@ export const createEntriesStorageOperations = (
 
     const list = async (
         model: CmsContentModel,
-        params: CmsContentEntryStorageOperationsListArgs
+        params: CmsContentEntryStorageOperationsListParams
     ) => {
         const limit = createLimit(params.limit, 50);
         const body = createElasticsearchQueryBody({

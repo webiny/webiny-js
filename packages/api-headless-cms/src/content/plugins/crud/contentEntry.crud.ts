@@ -7,35 +7,37 @@ import {
     CmsContentModel,
     CmsContext,
     CmsStorageContentEntry,
-    HeadlessCmsStorageOperations
+    HeadlessCmsStorageOperations,
+    BeforeCreateEntryTopic,
+    AfterCreateEntryTopic,
+    BeforeUpdateEntryTopic,
+    AfterUpdateEntryTopic,
+    AfterDeleteEntryTopic,
+    BeforeDeleteEntryTopic,
+    CmsContentEntryStorageOperationsListParams,
+    CmsContentEntryListParams,
+    BeforeCreateRevisionEntryTopic,
+    AfterCreateRevisionEntryTopic,
+    BeforePublishEntryTopic,
+    AfterPublishEntryTopic,
+    BeforeUnpublishEntryTopic,
+    AfterUnpublishEntryTopic,
+    BeforeRequestChangesEntryTopic,
+    AfterRequestChangesEntryTopic,
+    BeforeRequestReviewEntryTopic,
+    AfterRequestReviewEntryTopic
 } from "~/types";
 import * as utils from "~/utils";
 import { validateModelEntryData } from "./contentEntry/entryDataValidation";
-import {
-    afterCreateHook,
-    afterDeleteHook,
-    afterDeleteRevisionHook,
-    afterPublishHook,
-    afterRequestChangesHook,
-    afterRequestReviewHook,
-    afterUpdateHook,
-    afterUnpublishHook,
-    beforeCreateHook,
-    beforeDeleteHook,
-    beforeDeleteRevisionHook,
-    beforePublishHook,
-    beforeRequestChangesHook,
-    beforeRequestReviewHook,
-    beforeUpdateHook,
-    beforeUnpublishHook,
-    beforeCreateRevisionFromHook,
-    afterCreateRevisionFromHook
-} from "./contentEntry/hooks";
 import WebinyError from "@webiny/error";
 import { entryFromStorageTransform, entryToStorageTransform } from "../utils/entryStorage";
 import { I18NLocale } from "@webiny/api-i18n/types";
 import { Tenant } from "@webiny/api-tenancy/types";
 import { SecurityIdentity } from "@webiny/api-security/types";
+import { createTopic } from "@webiny/pubsub";
+import { assignBeforeEntryCreate } from "./contentEntry/beforeCreate";
+import { assignBeforeEntryUpdate } from "./contentEntry/beforeUpdate";
+import { createIdentifier } from "@webiny/utils";
 
 export const STATUS_DRAFT = "draft";
 export const STATUS_PUBLISHED = "published";
@@ -92,7 +94,10 @@ const createEntryId = (version: number): EntryIdResult => {
     return {
         entryId,
         version,
-        id: `${entryId}#${utils.zeroPad(version)}`
+        id: createIdentifier({
+            id: entryId,
+            version
+        })
     };
 };
 
@@ -111,7 +116,10 @@ const increaseEntryIdVersion = (id: string): EntryIdResult => {
     return {
         entryId,
         version: ver,
-        id: `${entryId}#${utils.zeroPad(ver)}`
+        id: createIdentifier({
+            id: entryId,
+            version: ver
+        })
     };
 };
 
@@ -124,7 +132,35 @@ export interface Params {
 }
 
 export const createContentEntryCrud = (params: Params): CmsContentEntryContext => {
-    const { storageOperations, context } = params;
+    const { storageOperations, context, getTenant, getLocale, getIdentity } = params;
+
+    const onBeforeCreate = createTopic<BeforeCreateEntryTopic>();
+    const onAfterCreate = createTopic<AfterCreateEntryTopic>();
+    const onBeforeCreateRevision = createTopic<BeforeCreateRevisionEntryTopic>();
+    const onAfterCreateRevision = createTopic<AfterCreateRevisionEntryTopic>();
+    const onBeforeUpdate = createTopic<BeforeUpdateEntryTopic>();
+    const onAfterUpdate = createTopic<AfterUpdateEntryTopic>();
+    const onBeforePublish = createTopic<BeforePublishEntryTopic>();
+    const onAfterPublish = createTopic<AfterPublishEntryTopic>();
+    const onBeforeUnpublish = createTopic<BeforeUnpublishEntryTopic>();
+    const onAfterUnpublish = createTopic<AfterUnpublishEntryTopic>();
+    const onBeforeRequestChanges = createTopic<BeforeRequestChangesEntryTopic>();
+    const onAfterRequestChanges = createTopic<AfterRequestChangesEntryTopic>();
+    const onBeforeRequestReview = createTopic<BeforeRequestReviewEntryTopic>();
+    const onAfterRequestReview = createTopic<AfterRequestReviewEntryTopic>();
+    const onBeforeDelete = createTopic<BeforeDeleteEntryTopic>();
+    const onAfterDelete = createTopic<AfterDeleteEntryTopic>();
+    /**
+     * We need to assign some default behaviors.
+     */
+    assignBeforeEntryCreate({
+        context,
+        onBeforeCreate
+    });
+    assignBeforeEntryUpdate({
+        context,
+        onBeforeUpdate
+    });
 
     const checkEntryPermissions = (check: {
         rwd?: string;
@@ -139,23 +175,19 @@ export const createContentEntryCrud = (params: Params): CmsContentEntryContext =
     const deleteEntry = async (params: DeleteEntryParams): Promise<void> => {
         const { model, entry, storageEntry } = params;
         try {
-            await beforeDeleteHook({
-                context,
-                model,
+            await onBeforeDelete.publish({
                 entry,
-                storageEntry,
-                storageOperations: storageOperations.entries
+                model
             });
+
             await storageOperations.entries.delete(model, {
                 entry,
                 storageEntry
             });
-            await afterDeleteHook({
-                context,
-                model,
+
+            await onAfterDelete.publish({
                 entry,
-                storageEntry,
-                storageOperations: storageOperations.entries
+                model
             });
         } catch (ex) {
             throw new WebinyError(
@@ -174,12 +206,32 @@ export const createContentEntryCrud = (params: Params): CmsContentEntryContext =
         const permission = await checkEntryPermissions({ rwd: "r" });
         await utils.checkModelAccess(context, model);
 
-        const entries = await storageOperations.entries.getByIds(model, ids);
+        const entries = await storageOperations.entries.getByIds(model, {
+            tenant: getTenant().id,
+            locale: getLocale().code,
+            ids
+        });
 
         return entries.filter(entry => utils.validateOwnership(context, permission, entry));
     };
 
     return {
+        onBeforeCreate,
+        onAfterCreate,
+        onBeforeCreateRevision,
+        onAfterCreateRevision,
+        onBeforeUpdate,
+        onAfterUpdate,
+        onBeforeDelete,
+        onAfterDelete,
+        onBeforePublish,
+        onAfterPublish,
+        onBeforeUnpublish,
+        onAfterUnpublish,
+        onBeforeRequestChanges,
+        onAfterRequestChanges,
+        onBeforeRequestReview,
+        onAfterRequestReview,
         operations: storageOperations.entries,
         /**
          * Get entries by exact revision IDs from the database.
@@ -202,7 +254,11 @@ export const createContentEntryCrud = (params: Params): CmsContentEntryContext =
             const permission = await checkEntryPermissions({ rwd: "r" });
             await utils.checkModelAccess(context, model);
 
-            const entries = await storageOperations.entries.getPublishedByIds(model, ids);
+            const entries = await storageOperations.entries.getPublishedByIds(model, {
+                tenant: getTenant().id,
+                locale: getLocale().code,
+                ids
+            });
 
             return entries.filter(entry => utils.validateOwnership(context, permission, entry));
         },
@@ -213,13 +269,21 @@ export const createContentEntryCrud = (params: Params): CmsContentEntryContext =
             const permission = await checkEntryPermissions({ rwd: "r" });
             await utils.checkModelAccess(context, model);
 
-            const entries = await storageOperations.entries.getLatestByIds(model, ids);
+            const entries = await storageOperations.entries.getLatestByIds(model, {
+                tenant: getTenant().id,
+                locale: getLocale().code,
+                ids
+            });
 
             return entries.filter(entry => utils.validateOwnership(context, permission, entry));
         },
 
         getEntryRevisions: async (model, entryId) => {
-            return storageOperations.entries.getRevisions(model, entryId);
+            return storageOperations.entries.getRevisions(model, {
+                tenant: getTenant().id,
+                locale: getLocale().code,
+                id: entryId
+            });
         },
         get: async (model, args) => {
             await checkEntryPermissions({ rwd: "r" });
@@ -234,18 +298,20 @@ export const createContentEntryCrud = (params: Params): CmsContentEntryContext =
             }
             return items[0];
         },
-        list: async (model: CmsContentModel, args) => {
+        list: async (model: CmsContentModel, params) => {
             const permission = await checkEntryPermissions({ rwd: "r" });
             await utils.checkModelAccess(context, model);
 
-            const { where = {} } = args || {};
+            const where: CmsContentEntryListParams["where"] = params.where || {};
             /**
              * Possibly only get records which are owned by current user.
              * Or if searching for the owner set that value - in the case that user can see other entries than their own.
              */
-            const ownedBy = permission.own ? context.security.getIdentity().id : where.ownedBy;
-            const listWhere = {
-                ...where
+            const ownedBy = permission.own ? getIdentity().id : where.ownedBy;
+            const listWhere: CmsContentEntryStorageOperationsListParams["where"] = {
+                ...where,
+                tenant: where.tenant || getTenant().id,
+                locale: where.locale || getLocale().code
             };
             if (ownedBy !== undefined) {
                 listWhere.ownedBy = ownedBy;
@@ -253,7 +319,7 @@ export const createContentEntryCrud = (params: Params): CmsContentEntryContext =
 
             const { hasMoreItems, totalCount, cursor, items } =
                 await storageOperations.entries.list(model, {
-                    ...args,
+                    ...params,
                     where: listWhere
                 });
 
@@ -269,22 +335,26 @@ export const createContentEntryCrud = (params: Params): CmsContentEntryContext =
 
             return [items, meta];
         },
-        listLatest: async function (model, args = {}) {
+        listLatest: async function (model, params) {
+            const where = params ? params.where : {};
+
             return context.cms.entries.list(model, {
                 sort: ["createdOn_DESC"],
-                ...args,
+                ...(params || {}),
                 where: {
-                    ...(args.where || {}),
+                    ...where,
                     latest: true
                 }
             });
         },
-        listPublished: async function (model, args = {}) {
+        listPublished: async function (model, params) {
+            const where = params ? params.where : {};
+
             return context.cms.entries.list(model, {
                 sort: ["createdOn_DESC"],
-                ...args,
+                ...(params || {}),
                 where: {
-                    ...(args.where || {}),
+                    ...where,
                     published: true
                 }
             });
@@ -330,30 +400,26 @@ export const createContentEntryCrud = (params: Params): CmsContentEntryContext =
 
             let storageEntry: CmsStorageContentEntry = null;
             try {
-                await beforeCreateHook({
-                    model,
-                    input,
+                await onBeforeCreate.publish({
                     entry,
-                    context,
-                    storageOperations: storageOperations.entries
+                    input,
+                    model
                 });
+
                 storageEntry = await entryToStorageTransform(context, model, entry);
                 const result = await storageOperations.entries.create(model, {
                     input,
                     entry,
                     storageEntry
                 });
-                await afterCreateHook({
-                    model,
-                    input,
+
+                await onAfterCreate.publish({
                     entry,
-                    /**
-                     * Pass the result because storage operations might have changed something (saved date, etc...)
-                     */
                     storageEntry: result,
-                    context,
-                    storageOperations: storageOperations.entries
+                    model,
+                    input
                 });
+
                 return result;
             } catch (ex) {
                 throw new WebinyError(
@@ -382,13 +448,18 @@ export const createContentEntryCrud = (params: Params): CmsContentEntryContext =
              */
             const [uniqueId] = sourceId.split("#");
 
-            const originalStorageEntry = await storageOperations.entries.getRevisionById(
-                model,
-                sourceId
-            );
+            const originalStorageEntry = await storageOperations.entries.getRevisionById(model, {
+                tenant: getTenant().id,
+                locale: getLocale().code,
+                id: sourceId
+            });
             const latestStorageEntry = await storageOperations.entries.getLatestRevisionByEntryId(
                 model,
-                uniqueId
+                {
+                    tenant: getTenant().id,
+                    locale: getLocale().code,
+                    id: uniqueId
+                }
             );
 
             if (!originalStorageEntry) {
@@ -442,16 +513,9 @@ export const createContentEntryCrud = (params: Params): CmsContentEntryContext =
             let storageEntry: CmsStorageContentEntry = undefined;
 
             try {
-                await beforeCreateRevisionFromHook({
-                    context,
-                    model,
+                await onBeforeCreateRevision.publish({
                     entry,
-                    storageEntry,
-                    originalEntry,
-                    originalStorageEntry,
-                    latestEntry,
-                    latestStorageEntry,
-                    storageOperations: storageOperations.entries
+                    model
                 });
 
                 storageEntry = await entryToStorageTransform(context, model, entry);
@@ -464,19 +528,11 @@ export const createContentEntryCrud = (params: Params): CmsContentEntryContext =
                     latestEntry,
                     latestStorageEntry
                 });
-                await afterCreateRevisionFromHook({
-                    context,
-                    model,
-                    originalEntry,
-                    originalStorageEntry,
-                    latestEntry,
-                    latestStorageEntry,
+
+                await onAfterCreateRevision.publish({
                     entry,
-                    /**
-                     * Passing result due to storage operations might have changed something on the entry.
-                     */
-                    storageEntry: result,
-                    storageOperations: storageOperations.entries
+                    model,
+                    storageEntry: result
                 });
                 return result;
             } catch (ex) {
@@ -509,7 +565,11 @@ export const createContentEntryCrud = (params: Params): CmsContentEntryContext =
             /**
              * The entry we are going to update.
              */
-            const originalStorageEntry = await storageOperations.entries.getRevisionById(model, id);
+            const originalStorageEntry = await storageOperations.entries.getRevisionById(model, {
+                tenant: getTenant().id,
+                locale: getLocale().code,
+                id
+            });
 
             if (!originalStorageEntry) {
                 throw new NotFoundError(`Entry "${id}" of model "${model.modelId}" was not found.`);
@@ -551,15 +611,13 @@ export const createContentEntryCrud = (params: Params): CmsContentEntryContext =
             let storageEntry: CmsStorageContentEntry = undefined;
 
             try {
-                await beforeUpdateHook({
-                    context,
+                await onBeforeUpdate.publish({
+                    entry,
                     model,
                     input,
-                    entry,
-                    originalEntry,
-                    originalStorageEntry,
-                    storageOperations: storageOperations.entries
+                    original: originalEntry
                 });
+
                 storageEntry = await entryToStorageTransform(context, model, entry);
 
                 const result = await storageOperations.entries.update(model, {
@@ -569,15 +627,13 @@ export const createContentEntryCrud = (params: Params): CmsContentEntryContext =
                     storageEntry,
                     input
                 });
-                await afterUpdateHook({
-                    context,
-                    model,
-                    input,
+
+                await onAfterUpdate.publish({
                     entry,
                     storageEntry: result,
-                    originalEntry,
-                    originalStorageEntry,
-                    storageOperations: storageOperations.entries
+                    model,
+                    input,
+                    original: originalEntry
                 });
                 return result;
             } catch (ex) {
@@ -600,18 +656,27 @@ export const createContentEntryCrud = (params: Params): CmsContentEntryContext =
 
             const [entryId, version] = revisionId.split("#");
 
-            const storageEntryToDelete = await storageOperations.entries.getRevisionById(
-                model,
-                revisionId
-            );
+            const storageEntryToDelete = await storageOperations.entries.getRevisionById(model, {
+                tenant: getTenant().id,
+                locale: getLocale().code,
+                id: revisionId
+            });
             const latestStorageEntry = await storageOperations.entries.getLatestRevisionByEntryId(
                 model,
-                entryId
+                {
+                    tenant: getTenant().id,
+                    locale: getLocale().code,
+                    id: entryId
+                }
             );
             const previousStorageEntry = await storageOperations.entries.getPreviousRevision(
                 model,
-                entryId,
-                parseInt(version)
+                {
+                    tenant: getTenant().id,
+                    locale: getLocale().code,
+                    entryId,
+                    version: parseInt(version)
+                }
             );
 
             if (!storageEntryToDelete) {
@@ -654,15 +719,11 @@ export const createContentEntryCrud = (params: Params): CmsContentEntryContext =
             }
 
             try {
-                await beforeDeleteRevisionHook({
-                    context,
-                    model,
-                    storageOperations: storageOperations.entries,
-                    entryToDelete,
-                    storageEntryToDelete,
-                    entryToSetAsLatest,
-                    storageEntryToSetAsLatest
+                await onBeforeDelete.publish({
+                    entry: entryToDelete,
+                    model
                 });
+
                 await storageOperations.entries.deleteRevision(model, {
                     entryToDelete,
                     storageEntryToDelete,
@@ -670,14 +731,9 @@ export const createContentEntryCrud = (params: Params): CmsContentEntryContext =
                     storageEntryToSetAsLatest
                 });
 
-                await afterDeleteRevisionHook({
-                    context,
-                    model,
-                    storageOperations: storageOperations.entries,
-                    entryToDelete,
-                    storageEntryToDelete,
-                    entryToSetAsLatest,
-                    storageEntryToSetAsLatest
+                await onAfterDelete.publish({
+                    entry: entryToDelete,
+                    model
                 });
             } catch (ex) {
                 throw new WebinyError(ex.message, ex.code || "DELETE_REVISION_ERROR", {
@@ -693,10 +749,11 @@ export const createContentEntryCrud = (params: Params): CmsContentEntryContext =
             const permission = await checkEntryPermissions({ rwd: "d" });
             await utils.checkModelAccess(context, model);
 
-            const storageEntry = await storageOperations.entries.getLatestRevisionByEntryId(
-                model,
-                entryId
-            );
+            const storageEntry = await storageOperations.entries.getLatestRevisionByEntryId(model, {
+                tenant: getTenant().id,
+                locale: getLocale().code,
+                id: entryId
+            });
 
             if (!storageEntry) {
                 throw new NotFoundError(`Entry "${entryId}" was not found!`);
@@ -716,7 +773,11 @@ export const createContentEntryCrud = (params: Params): CmsContentEntryContext =
             const permission = await checkEntryPermissions({ pw: "p" });
             await utils.checkModelAccess(context, model);
 
-            const originalStorageEntry = await storageOperations.entries.getRevisionById(model, id);
+            const originalStorageEntry = await storageOperations.entries.getRevisionById(model, {
+                tenant: getTenant().id,
+                locale: getLocale().code,
+                id
+            });
 
             if (!originalStorageEntry) {
                 throw new NotFoundError(
@@ -744,14 +805,11 @@ export const createContentEntryCrud = (params: Params): CmsContentEntryContext =
             let storageEntry: CmsStorageContentEntry = undefined;
 
             try {
-                await beforePublishHook({
-                    context,
-                    storageOperations: storageOperations.entries,
-                    model,
+                await onBeforePublish.publish({
                     entry,
-                    originalEntry,
-                    originalStorageEntry
+                    model
                 });
+
                 storageEntry = await entryToStorageTransform(context, model, entry);
                 const result = await storageOperations.entries.publish(model, {
                     entry,
@@ -759,14 +817,11 @@ export const createContentEntryCrud = (params: Params): CmsContentEntryContext =
                     originalEntry,
                     originalStorageEntry
                 });
-                await afterPublishHook({
-                    context,
-                    storageOperations: storageOperations.entries,
-                    model,
-                    originalEntry,
-                    originalStorageEntry,
+
+                await onAfterPublish.publish({
                     entry,
-                    storageEntry: result
+                    storageEntry: result,
+                    model
                 });
                 return result;
             } catch (ex) {
@@ -785,7 +840,11 @@ export const createContentEntryCrud = (params: Params): CmsContentEntryContext =
         requestChanges: async (model, id) => {
             const permission = await checkEntryPermissions({ pw: "c" });
 
-            const originalStorageEntry = await storageOperations.entries.getRevisionById(model, id);
+            const originalStorageEntry = await storageOperations.entries.getRevisionById(model, {
+                tenant: getTenant().id,
+                locale: getLocale().code,
+                id
+            });
 
             if (!originalStorageEntry) {
                 throw new NotFoundError(`Entry "${id}" of model "${model.modelId}" was not found.`);
@@ -822,13 +881,9 @@ export const createContentEntryCrud = (params: Params): CmsContentEntryContext =
             let storageEntry: CmsStorageContentEntry = undefined;
 
             try {
-                await beforeRequestChangesHook({
-                    context,
-                    model,
-                    originalEntry,
-                    originalStorageEntry,
+                await onBeforeRequestChanges.publish({
                     entry,
-                    storageOperations: storageOperations.entries
+                    model
                 });
 
                 storageEntry = await entryToStorageTransform(context, model, entry);
@@ -839,15 +894,13 @@ export const createContentEntryCrud = (params: Params): CmsContentEntryContext =
                     entry,
                     storageEntry
                 });
-                await afterRequestChangesHook({
-                    context,
-                    model,
-                    originalEntry,
-                    originalStorageEntry,
+
+                await onAfterRequestChanges.publish({
                     entry,
                     storageEntry: result,
-                    storageOperations: storageOperations.entries
+                    model
                 });
+
                 return result;
             } catch (ex) {
                 throw new WebinyError(
@@ -864,10 +917,18 @@ export const createContentEntryCrud = (params: Params): CmsContentEntryContext =
             const permission = await checkEntryPermissions({ pw: "r" });
             const [entryId] = id.split("#");
 
-            const originalStorageEntry = await storageOperations.entries.getRevisionById(model, id);
+            const originalStorageEntry = await storageOperations.entries.getRevisionById(model, {
+                tenant: getTenant().id,
+                locale: getLocale().code,
+                id
+            });
             const latestEntryRevision = await storageOperations.entries.getLatestRevisionByEntryId(
                 model,
-                entryId
+                {
+                    tenant: getTenant().id,
+                    locale: getLocale().code,
+                    id: entryId
+                }
             );
 
             if (!originalStorageEntry) {
@@ -903,13 +964,9 @@ export const createContentEntryCrud = (params: Params): CmsContentEntryContext =
             let storageEntry: CmsStorageContentEntry = undefined;
 
             try {
-                await beforeRequestReviewHook({
-                    context,
-                    model,
-                    originalEntry,
-                    originalStorageEntry,
+                await onBeforeRequestReview.publish({
                     entry,
-                    storageOperations: storageOperations.entries
+                    model
                 });
 
                 storageEntry = await entryToStorageTransform(context, model, entry);
@@ -920,15 +977,13 @@ export const createContentEntryCrud = (params: Params): CmsContentEntryContext =
                     entry,
                     storageEntry
                 });
-                await afterRequestReviewHook({
-                    context,
-                    model,
-                    originalEntry,
-                    originalStorageEntry,
+
+                await onAfterRequestReview.publish({
                     entry,
                     storageEntry: result,
-                    storageOperations: storageOperations.entries
+                    model
                 });
+
                 return result;
             } catch (ex) {
                 throw new WebinyError(
@@ -947,7 +1002,11 @@ export const createContentEntryCrud = (params: Params): CmsContentEntryContext =
             const [entryId] = id.split("#");
 
             const originalStorageEntry =
-                await storageOperations.entries.getPublishedRevisionByEntryId(model, entryId);
+                await storageOperations.entries.getPublishedRevisionByEntryId(model, {
+                    tenant: getTenant().id,
+                    locale: getLocale().code,
+                    id: entryId
+                });
 
             if (!originalStorageEntry) {
                 throw new NotFoundError(`Entry "${id}" of model "${model.modelId}" was not found.`);
@@ -975,13 +1034,9 @@ export const createContentEntryCrud = (params: Params): CmsContentEntryContext =
             let storageEntry: CmsStorageContentEntry = undefined;
 
             try {
-                await beforeUnpublishHook({
-                    context,
-                    model,
-                    originalEntry,
-                    originalStorageEntry,
+                await onBeforeUnpublish.publish({
                     entry,
-                    storageOperations: storageOperations.entries
+                    model
                 });
 
                 storageEntry = await entryToStorageTransform(context, model, entry);
@@ -992,15 +1047,13 @@ export const createContentEntryCrud = (params: Params): CmsContentEntryContext =
                     entry,
                     storageEntry
                 });
-                await afterUnpublishHook({
-                    context,
-                    model,
-                    originalEntry,
-                    originalStorageEntry,
+
+                await onAfterUnpublish.publish({
                     entry,
                     storageEntry: result,
-                    storageOperations: storageOperations.entries
+                    model
                 });
+
                 return result;
             } catch (ex) {
                 throw new WebinyError(

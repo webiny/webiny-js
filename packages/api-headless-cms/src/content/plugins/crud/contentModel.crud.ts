@@ -27,6 +27,12 @@ import { Tenant } from "@webiny/api-tenancy/types";
 import { I18NLocale } from "@webiny/api-i18n/types";
 import { SecurityIdentity } from "@webiny/api-security/types";
 import { createTopic } from "@webiny/pubsub";
+import { assignBeforeModelCreate } from "./contentModel/beforeCreate";
+import { assignBeforeModelUpdate } from "./contentModel/beforeUpdate";
+import { assignBeforeModelDelete } from "./contentModel/beforeDelete";
+import { assignAfterModelCreate } from "./contentModel/afterCreate";
+import { assignAfterModelUpdate } from "./contentModel/afterUpdate";
+import { assignAfterModelDelete } from "./contentModel/afterDelete";
 
 export interface Params {
     getTenant: () => Tenant;
@@ -141,6 +147,36 @@ export const createModelsCrud = (params: Params): CmsContentModelContext => {
     const onAfterUpdate = createTopic<AfterUpdateModelTopic>();
     const onBeforeDelete = createTopic<BeforeDeleteModelTopic>();
     const onAfterDelete = createTopic<AfterDeleteModelTopic>();
+    /**
+     * We need to assign some default behaviors.
+     */
+    assignBeforeModelCreate({
+        onBeforeCreate,
+        plugins: context.plugins,
+        storageOperations
+    });
+    assignAfterModelCreate({
+        context,
+        onAfterCreate
+    });
+    assignBeforeModelUpdate({
+        onBeforeUpdate,
+        plugins: context.plugins,
+        storageOperations
+    });
+    assignAfterModelUpdate({
+        context,
+        onAfterUpdate
+    });
+    assignBeforeModelDelete({
+        onBeforeDelete,
+        plugins: context.plugins,
+        storageOperations
+    });
+    assignAfterModelDelete({
+        context,
+        onAfterDelete
+    });
 
     return {
         onBeforeCreate,

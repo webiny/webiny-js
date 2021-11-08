@@ -9,7 +9,7 @@ export interface Params {
     plugins: PluginsContainer;
     storageOperations: HeadlessCmsStorageOperations;
 }
-export const assignBeforeDelete = (params: Params) => {
+export const assignBeforeGroupDelete = (params: Params) => {
     const { onBeforeDelete, plugins, storageOperations } = params;
 
     onBeforeDelete.subscribe(async params => {

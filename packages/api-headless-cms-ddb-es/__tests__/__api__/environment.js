@@ -16,9 +16,9 @@ const { createElasticsearchClient } = require("@webiny/api-elasticsearch/client"
 /**
  * For this to work it must load plugins that have already been built
  */
-const plugins = require("../../dist/index").default;
+const { createStorageOperations } = require("../../dist/index");
 
-if (typeof plugins !== "function") {
+if (typeof createStorageOperations !== "function") {
     throw new Error(`Loaded plugins file must export a function that returns an array of plugins.`);
 }
 
@@ -116,8 +116,17 @@ class CmsTestEnvironment extends NodeEnvironment {
          */
         this.global.__getStorageOperationsPlugins = () => {
             return {
-                createStorageOperations: () => {},
-                getPlugins: () => {}
+                createStorageOperations: () => {
+                    return createStorageOperations({
+                        documentClient,
+                        elasticsearch: elasticsearchClient,
+                        table: table => ({ ...table, name: process.env.DB_TABLE }),
+                        esTable: table => ({ ...table, name: process.env.DB_TABLE_ELASTICSEARCH })
+                    });
+                },
+                getPlugins: () => {
+                    return [];
+                }
             };
 
             return getStorageOperationsPlugins({

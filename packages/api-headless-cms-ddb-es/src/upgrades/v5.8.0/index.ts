@@ -1,9 +1,11 @@
 import { UpgradePlugin } from "@webiny/api-upgrade/types";
 import { CmsContentEntry, CmsContentModel, CmsContext } from "@webiny/api-headless-cms/types";
 import configurations from "../../configurations";
+// @ts-ignore
 import { TYPE_ENTRY_LATEST } from "../../operations/entry/CmsContentEntryDynamoElastic";
 import WebinyError from "@webiny/error";
 import lodashChunk from "lodash.chunk";
+// @ts-ignore
 import definitions from "../../definitions";
 import { Entity } from "dynamodb-toolbox";
 import { Client } from "@elastic/elasticsearch";
@@ -202,6 +204,7 @@ export default (): UpgradePlugin<CmsContext> => ({
                             }
                         }
                     },
+                    // @ts-ignore
                     model
                 );
                 esIndices.push({

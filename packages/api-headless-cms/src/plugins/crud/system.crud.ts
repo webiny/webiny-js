@@ -3,8 +3,6 @@ import { NotAuthorizedError } from "@webiny/api-security";
 import { getApplicablePlugin } from "@webiny/api-upgrade";
 import { UpgradePlugin } from "@webiny/api-upgrade/types";
 import WebinyError from "@webiny/error";
-import { InstallationPlugin } from "~/plugins/InstallationPlugin";
-import { executeCallbacks } from "~/utils";
 import {
     AfterInstallTopic,
     BeforeInstallTopic,
@@ -116,17 +114,9 @@ export const createSystemCrud = (params: Params): CmsSystemContext => {
                 return;
             }
 
-            const installationPlugins = context.plugins.byType<InstallationPlugin>(
-                InstallationPlugin.type
-            );
-
-            await executeCallbacks<InstallationPlugin["beforeInstall"]>(
-                installationPlugins,
-                "beforeInstall",
-                {
-                    context: context
-                }
-            );
+            await onBeforeInstall.publish({
+                tenant: getTenant().id
+            });
 
             /**
              * Add default content model group.
@@ -139,13 +129,9 @@ export const createSystemCrud = (params: Params): CmsSystemContext => {
                 });
             }
 
-            await executeCallbacks<InstallationPlugin["afterInstall"]>(
-                installationPlugins,
-                "afterInstall",
-                {
-                    context: context
-                }
-            );
+            await onAfterInstall.publish({
+                tenant: getTenant().id
+            });
 
             const system: CmsSystem = {
                 version,

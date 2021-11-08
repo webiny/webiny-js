@@ -1,11 +1,7 @@
-import settingsOperationsProvider, { createSettingsStorageOperations } from "./operations/settings";
-import systemOperationsProvider, { createSystemStorageOperations } from "./operations/system";
-import contentModelGroupStorageOperationsProvider from "./operations/modelGroup";
-import contentModelStorageOperationsProvider, {
-    createModelsStorageOperations
-} from "./operations/model";
-import contentEntryStorageOperationsProvider from "./operations/entry";
-import upgrades from "./upgrades";
+import { createSettingsStorageOperations } from "./operations/settings";
+import { createSystemStorageOperations } from "./operations/system";
+import { createModelsStorageOperations } from "./operations/model";
+import { createEntriesStorageOperations } from "./operations/entry";
 import elasticsearchPlugins from "./elasticsearch";
 import dynamoDbPlugins from "./dynamoDb";
 import { ENTITIES, StorageOperationsFactory } from "~/types";
@@ -24,17 +20,6 @@ import { PluginsContainer } from "@webiny/plugins";
 import { createGroupsStorageOperations } from "~/operations/group";
 import { getElasticsearchOperators } from "@webiny/api-elasticsearch/operators";
 import { elasticsearchFields as cmsEntryElasticsearchFields } from "~/operations/entry/elasticsearchFields";
-
-export default () => [
-    settingsOperationsProvider(),
-    systemOperationsProvider(),
-    contentModelGroupStorageOperationsProvider(),
-    contentModelStorageOperationsProvider(),
-    contentEntryStorageOperationsProvider(),
-    upgrades(),
-    elasticsearchPlugins(),
-    dynamoDbPlugins()
-];
 
 export const createStorageOperations: StorageOperationsFactory = params => {
     const {
@@ -104,7 +89,15 @@ export const createStorageOperations: StorageOperationsFactory = params => {
         /**
          * Elasticsearch operators.
          */
-        getElasticsearchOperators()
+        getElasticsearchOperators(),
+        /**
+         * Field plugins for DynamoDB.
+         */
+        dynamoDbPlugins(),
+        /**
+         * Field plugins for Elasticsearch.
+         */
+        elasticsearchPlugins()
     ]);
 
     return {
@@ -134,7 +127,9 @@ export const createStorageOperations: StorageOperationsFactory = params => {
         }),
         entries: createEntriesStorageOperations({
             entity: entities.entries,
-            esEntity: entities.entriesEs
+            esEntity: entities.entriesEs,
+            plugins,
+            elasticsearch
         })
     };
 };

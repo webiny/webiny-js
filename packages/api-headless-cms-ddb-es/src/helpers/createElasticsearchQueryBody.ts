@@ -3,16 +3,12 @@ import { operatorPluginsList } from "./operatorPluginsList";
 import { transformValueForSearch } from "./transformValueForSearch";
 import { searchPluginsList } from "./searchPluginsList";
 import {
-    CmsContentEntryListArgs,
+    CmsContentEntryListParams,
     CmsContentEntryListSort,
     CmsContentEntryListWhere,
     CmsContentModel
 } from "@webiny/api-headless-cms/types";
 import { ElasticsearchQueryBuilderValueSearchPlugin, ElasticsearchQueryPlugin } from "~/types";
-import {
-    TYPE_ENTRY_LATEST,
-    TYPE_ENTRY_PUBLISHED
-} from "~/operations/entry/CmsContentEntryDynamoElastic";
 import {
     SearchBody as esSearchBody,
     Sort as esSort,
@@ -24,11 +20,12 @@ import { createModelFields, ModelField, ModelFields } from "./fields";
 import { CmsEntryElasticsearchFieldPlugin } from "~/plugins/CmsEntryElasticsearchFieldPlugin";
 import { parseWhereKey } from "@webiny/api-elasticsearch/where";
 import { PluginsContainer } from "@webiny/plugins";
+import { createLatestType, createPublishedType } from "~/operations/entry";
 
 interface CreateElasticsearchParams {
     plugins: PluginsContainer;
     model: CmsContentModel;
-    args: CmsContentEntryListArgs;
+    args: CmsContentEntryListParams;
     parentPath?: string;
 }
 
@@ -113,13 +110,13 @@ const createInitialQueryValue = (
     if (where.published === true) {
         query.must.push({
             term: {
-                "__type.keyword": TYPE_ENTRY_PUBLISHED
+                "__type.keyword": createPublishedType()
             }
         });
     } else if (where.latest === true) {
         query.must.push({
             term: {
-                "__type.keyword": TYPE_ENTRY_LATEST
+                "__type.keyword": createLatestType()
             }
         });
     }

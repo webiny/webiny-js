@@ -1182,18 +1182,18 @@ export interface CmsContentModelManager {
     /**
      * List entries in this content model.
      */
-    list: (args?: CmsContentEntryListArgs) => Promise<[CmsContentEntry[], CmsContentEntryMeta]>;
+    list: (args?: CmsContentEntryListParams) => Promise<[CmsContentEntry[], CmsContentEntryMeta]>;
     /**
      * List only published entries in the content model.
      */
     listPublished: (
-        args?: CmsContentEntryListArgs
+        args?: CmsContentEntryListParams
     ) => Promise<[CmsContentEntry[], CmsContentEntryMeta]>;
     /**
      * List latest entries in the content model. Used for administration.
      */
     listLatest: (
-        args?: CmsContentEntryListArgs
+        args?: CmsContentEntryListParams
     ) => Promise<[CmsContentEntry[], CmsContentEntryMeta]>;
     /**
      * Get a list of published entries by the ID list.
@@ -1353,11 +1353,6 @@ type CmsContentEntryStatus =
  */
 export interface CmsContentEntryListWhere {
     /**
-     * Required fields.
-     */
-    tenant: string;
-    locale: string;
-    /**
      * Fields.
      */
     id?: string;
@@ -1440,7 +1435,7 @@ export interface CmsContentEntryGetArgs {
  * @category ContentEntry
  * @category GraphQL args
  */
-export interface CmsContentEntryListArgs {
+export interface CmsContentEntryListParams {
     where: CmsContentEntryListWhere;
     sort?: CmsContentEntryListSort;
     limit?: number;
@@ -1469,40 +1464,93 @@ export interface CmsContentEntryMeta {
 }
 
 export interface BeforeCreateEntryTopic {
-    tenant: string;
-    locale: string;
     input: Partial<CmsContentEntry>;
     entry: CmsContentEntry;
+    model: CmsContentModel;
 }
 export interface AfterCreateEntryTopic {
-    tenant: string;
-    locale: string;
     input: Partial<CmsContentEntry>;
     entry: CmsContentEntry;
+    model: CmsContentModel;
+    storageEntry: CmsContentEntry;
 }
+
+export interface BeforeCreateRevisionEntryTopic {
+    entry: CmsContentEntry;
+    model: CmsContentModel;
+}
+
+export interface AfterCreateRevisionEntryTopic {
+    entry: CmsContentEntry;
+    model: CmsContentModel;
+    storageEntry: CmsContentEntry;
+}
+
 export interface BeforeUpdateEntryTopic {
-    tenant: string;
-    locale: string;
     input: Partial<CmsContentEntry>;
     original: CmsContentEntry;
     entry: CmsContentEntry;
+    model: CmsContentModel;
 }
 export interface AfterUpdateEntryTopic {
-    tenant: string;
-    locale: string;
     input: Partial<CmsContentEntry>;
     original: CmsContentEntry;
     entry: CmsContentEntry;
+    model: CmsContentModel;
+    storageEntry: CmsContentEntry;
 }
-export interface BeforeDeleteEntryTopic {
-    tenant: string;
-    locale: string;
+
+export interface BeforePublishEntryTopic {
     entry: CmsContentEntry;
+    model: CmsContentModel;
+}
+
+export interface AfterPublishEntryTopic {
+    entry: CmsContentEntry;
+    model: CmsContentModel;
+    storageEntry: CmsContentEntry;
+}
+
+export interface BeforeUnpublishEntryTopic {
+    entry: CmsContentEntry;
+    model: CmsContentModel;
+}
+
+export interface AfterUnpublishEntryTopic {
+    entry: CmsContentEntry;
+    model: CmsContentModel;
+    storageEntry: CmsContentEntry;
+}
+
+export interface BeforeRequestChangesEntryTopic {
+    entry: CmsContentEntry;
+    model: CmsContentModel;
+}
+
+export interface AfterRequestChangesEntryTopic {
+    entry: CmsContentEntry;
+    model: CmsContentModel;
+    storageEntry: CmsContentEntry;
+}
+
+export interface BeforeRequestReviewEntryTopic {
+    entry: CmsContentEntry;
+    model: CmsContentModel;
+}
+
+export interface AfterRequestReviewEntryTopic {
+    entry: CmsContentEntry;
+    model: CmsContentModel;
+    storageEntry: CmsContentEntry;
+}
+
+export interface BeforeDeleteEntryTopic {
+    entry: CmsContentEntry;
+    model: CmsContentModel;
 }
 export interface AfterDeleteEntryTopic {
-    tenant: string;
-    locale: string;
     entry: CmsContentEntry;
+    model: CmsContentModel;
 }
 /**
  * Content entry CRUD methods in the context.
@@ -1532,21 +1580,21 @@ export interface CmsContentEntryContext {
      */
     list: (
         model: CmsContentModel,
-        args?: CmsContentEntryListArgs
+        params?: CmsContentEntryListParams
     ) => Promise<[CmsContentEntry[], CmsContentEntryMeta]>;
     /**
      * Lists latest entries. Used for manage API.
      */
     listLatest: (
         model: CmsContentModel,
-        args?: CmsContentEntryListArgs
+        params?: CmsContentEntryListParams
     ) => Promise<[CmsContentEntry[], CmsContentEntryMeta]>;
     /**
      * List published entries. Used for read API.
      */
     listPublished: (
         model: CmsContentModel,
-        args?: CmsContentEntryListArgs
+        params?: CmsContentEntryListParams
     ) => Promise<[CmsContentEntry[], CmsContentEntryMeta]>;
     /**
      * List published entries by IDs.
@@ -1609,10 +1657,20 @@ export interface CmsContentEntryContext {
      */
     onBeforeCreate: Topic<BeforeCreateEntryTopic>;
     onAfterCreate: Topic<AfterCreateEntryTopic>;
+    onBeforeCreateRevision: Topic<BeforeCreateRevisionEntryTopic>;
+    onAfterCreateRevision: Topic<AfterCreateRevisionEntryTopic>;
     onBeforeUpdate: Topic<BeforeUpdateEntryTopic>;
     onAfterUpdate: Topic<AfterUpdateEntryTopic>;
     onBeforeDelete: Topic<BeforeDeleteEntryTopic>;
     onAfterDelete: Topic<AfterDeleteEntryTopic>;
+    onBeforePublish: Topic<BeforePublishEntryTopic>;
+    onAfterPublish: Topic<AfterPublishEntryTopic>;
+    onBeforeUnpublish: Topic<BeforeUnpublishEntryTopic>;
+    onAfterUnpublish: Topic<AfterUnpublishEntryTopic>;
+    onBeforeRequestChanges: Topic<BeforeRequestChangesEntryTopic>;
+    onAfterRequestChanges: Topic<AfterRequestChangesEntryTopic>;
+    onBeforeRequestReview: Topic<BeforeRequestReviewEntryTopic>;
+    onAfterRequestReview: Topic<AfterRequestReviewEntryTopic>;
 }
 
 /**
@@ -2620,7 +2678,7 @@ export interface CmsContentEntryStorageOperationsGetParams {
     limit?: number;
 }
 
-export interface CmsContentEntryStorageOperationsListArgs {
+export interface CmsContentEntryStorageOperationsListParams {
     where: CmsContentEntryListWhere;
     sort?: CmsContentEntryListSort;
     limit?: number;
@@ -2972,14 +3030,14 @@ export interface CmsContentEntryStorageOperations<
      */
     get: (
         model: CmsContentModel,
-        args: CmsContentEntryStorageOperationsGetParams
+        params: CmsContentEntryStorageOperationsGetParams
     ) => Promise<T | null>;
     /**
      * List all entries. Filterable via params.
      */
     list: (
         model: CmsContentModel,
-        args?: CmsContentEntryStorageOperationsListArgs
+        params: CmsContentEntryStorageOperationsListParams
     ) => Promise<CmsContentEntryStorageOperationsListResponse<T>>;
     /**
      * Create a new entry.

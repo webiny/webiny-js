@@ -9,7 +9,7 @@ import {
     CmsContentEntryStorageOperationsDeleteParams,
     CmsContentEntryStorageOperationsDeleteRevisionParams,
     CmsContentEntryStorageOperationsGetParams,
-    CmsContentEntryStorageOperationsListArgs,
+    CmsContentEntryStorageOperationsListParams,
     CmsContentEntryStorageOperationsListResponse,
     CmsContentEntryStorageOperationsPublishParams,
     CmsContentEntryStorageOperationsRequestChangesParams,
@@ -309,7 +309,7 @@ export class CmsContentEntryDynamo implements CmsContentEntryStorageOperations {
 
     public async list(
         model: CmsContentModel,
-        args: CmsContentEntryStorageOperationsListArgs
+        args: CmsContentEntryStorageOperationsListParams
     ): Promise<CmsContentEntryStorageOperationsListResponse> {
         const { limit: initialLimit, where: originalWhere, after, sort } = args;
         /**

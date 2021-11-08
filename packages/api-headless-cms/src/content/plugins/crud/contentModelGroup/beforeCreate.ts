@@ -11,7 +11,7 @@ export interface Params {
     plugins: PluginsContainer;
     storageOperations: HeadlessCmsStorageOperations;
 }
-export const assignBeforeCreate = (params: Params) => {
+export const assignBeforeGroupCreate = (params: Params) => {
     const { onBeforeCreate, plugins, storageOperations } = params;
 
     onBeforeCreate.subscribe(async params => {

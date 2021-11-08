@@ -1,5 +1,5 @@
 import { CmsContentModelDateTimeField } from "@webiny/api-headless-cms/types";
-import { CmsModelFieldToElasticsearchPlugin } from "../../types";
+import { CmsModelFieldToElasticsearchPlugin } from "~/types";
 
 const convertTimeToNumber = (time?: string): number | null => {
     if (!time) {

@@ -24,9 +24,9 @@ import { Tenant } from "@webiny/api-tenancy/types";
 import { I18NLocale } from "@webiny/api-i18n/types";
 import { SecurityIdentity } from "@webiny/api-security/types";
 import { createTopic } from "@webiny/pubsub";
-import { assignBeforeUpdate } from "~/content/plugins/crud/contentModelGroup/beforeUpdate";
-import { assignBeforeCreate } from "~/content/plugins/crud/contentModelGroup/beforeCreate";
-import { assignBeforeDelete } from "~/content/plugins/crud/contentModelGroup/beforeDelete";
+import { assignBeforeGroupUpdate } from "~/content/plugins/crud/contentModelGroup/beforeUpdate";
+import { assignBeforeGroupCreate } from "~/content/plugins/crud/contentModelGroup/beforeCreate";
+import { assignBeforeGroupDelete } from "~/content/plugins/crud/contentModelGroup/beforeDelete";
 
 const CreateContentModelGroupModel = withFields({
     name: string({ validation: validation.create("required,maxLength:100") }),
@@ -110,21 +110,18 @@ export const createModelGroupsCrud = (params: Params): CmsContentModelGroupConte
     const onAfterDelete = createTopic<AfterGroupDeleteTopic>();
 
     /**
-     * We need to assign some initial events on our topics.
-     * - before create
-     * - before update
-     * - before delete
+     * We need to assign some default behaviors.
      */
-    assignBeforeCreate({
+    assignBeforeGroupCreate({
         onBeforeCreate,
         plugins: context.plugins,
         storageOperations
     });
-    assignBeforeUpdate({
+    assignBeforeGroupUpdate({
         onBeforeUpdate,
         plugins: context.plugins
     });
-    assignBeforeDelete({
+    assignBeforeGroupDelete({
         onBeforeDelete,
         plugins: context.plugins,
         storageOperations
