@@ -127,7 +127,7 @@ jobs:
       - name: Install dependencies
         run: yarn --immutable
 
-      - name: Build packages (without BUILD_OVERRIDES)
+      - name: Build packages (full)
         run: node scripts/buildWithCache.js
 
   jest-tests:
