@@ -1,15 +1,12 @@
 import React from "react";
 import { Menu } from "@webiny/ui/Menu";
 import { IconButton } from "@webiny/ui/Button";
-import { ReactComponent as MoreVerticalIcon } from "../../../assets/icons/more_vert.svg";
 import { plugins } from "@webiny/plugins";
 import { css } from "emotion";
-import { PbEditorDefaultBarRightPageOptionsPlugin } from "../../../../types";
+import { ReactComponent as MoreVerticalIcon } from "~/editor/assets/icons/more_vert.svg";
+import { PbEditorDefaultBarRightPageOptionsPlugin } from "~/types";
 
 const menuStyles = css({
-    width: 220,
-    right: -105,
-    left: "auto !important",
     ".disabled": {
         opacity: 0.5,
         pointerEvents: "none"
