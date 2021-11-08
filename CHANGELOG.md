@@ -3,6 +3,68 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.17.0](https://github.com/webiny/webiny-js/compare/v5.17.0-beta.2...v5.17.0) (2021-11-08)
+
+**Note:** Version bump only for package webiny-js
+
+
+
+
+
+# [5.17.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.17.0-beta.1...v5.17.0-beta.2) (2021-11-08)
+
+
+### Bug Fixes
+
+* **app-page-builder:** fix menu styles ([9dbcf62](https://github.com/webiny/webiny-js/commit/9dbcf62c5c2d598ff281ccee980bfd99c36fa772))
+* package versions ([a5dc392](https://github.com/webiny/webiny-js/commit/a5dc3926fcfcc4cc4a30a0b0482b2d6620aebe92))
+* **cwp-template-aws:** set ddb-es as default storage operations ([3ab1524](https://github.com/webiny/webiny-js/commit/3ab1524e3da3f379948ab4b7bd794fbebe2d3e5a))
+
+
+
+
+
+# [5.17.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.16.0...v5.17.0-beta.1) (2021-11-08)
+
+
+### Bug Fixes
+
+* **api-admin-users-cognito:** catch and ignore errors during migration ([112830f](https://github.com/webiny/webiny-js/commit/112830f356b97ab2b09c37af366199c13354aded))
+* **api-form-builder:** improve test assertions ([602494f](https://github.com/webiny/webiny-js/commit/602494fde9b53d18675812f17e568a5266238c57))
+* **app-admin-users-cognito:** add REACT_APP_ADMIN_USER_CAN_CHANGE_EMAIL ([d6c50cc](https://github.com/webiny/webiny-js/commit/d6c50cccfaf37c185cf03d4842cdff7f8a51cd95))
+* **app-page-builder:** fix Broken sort settings field for List of Pages ([#1997](https://github.com/webiny/webiny-js/issues/1997)) ([61225b3](https://github.com/webiny/webiny-js/commit/61225b3c21de0ecf7439372767a0077f87799182)), closes [#1994](https://github.com/webiny/webiny-js/issues/1994)
+* **app-page-builder:** fix incorrect width applied to Grid element inside editor ([#2007](https://github.com/webiny/webiny-js/issues/2007)) ([f87635e](https://github.com/webiny/webiny-js/commit/f87635e744866107c3a6b86e7b7048531dc77b7f))
+* **app-page-builder:** use debounce in updateElementAction inside Text element ([b09fb30](https://github.com/webiny/webiny-js/commit/b09fb30ecc916ec4eeb02bee85ef03d57b624db6))
+* **app-security:** handle cases when identity is not available ([d6578fe](https://github.com/webiny/webiny-js/commit/d6578fead121b9dff8aadf7d214df84726bec300))
+* **cli:** add migration for page import/export ([0bc1e4e](https://github.com/webiny/webiny-js/commit/0bc1e4ef312ecf14ed1004eea620c82eb3d07e48))
+* **cwp-template-aws:** add missing ELASTIC_SEARCH_INDEX_PREFIX variable ([6cec25a](https://github.com/webiny/webiny-js/commit/6cec25a1c460a2b7feaea138cc06901b1c2bcd26))
+* **cwp-template-aws:** disable storage ops selection ([0835c9b](https://github.com/webiny/webiny-js/commit/0835c9bfd8b83dd49b79ece87a58be9997cb9bc3))
+* **cwp-template-aws:** improve import naming ([078eb8a](https://github.com/webiny/webiny-js/commit/078eb8a95240e3d70cf9e9bcd11ff44c4fc476d3))
+* **cypress:** improve test assertions ([3efaf3b](https://github.com/webiny/webiny-js/commit/3efaf3b9113b4ae279d6df681bc49fbea93ba79e))
+* **cypress:** remove async from userAccess test ([aea68cc](https://github.com/webiny/webiny-js/commit/aea68ccf964e885466455e90a73ca958f6169f6b))
+* **cypress:** return promise within another promise ([1fc36dc](https://github.com/webiny/webiny-js/commit/1fc36dc676f230d8b5b59193db85cdf4534776ad))
+* **form:** return from form API object ([2335aae](https://github.com/webiny/webiny-js/commit/2335aae3fcc0518dff69c2841a1408457f41b472))
+* **project-utils:** await handlers in dynamodb to elastic simulation ([#2002](https://github.com/webiny/webiny-js/issues/2002)) ([473d1ae](https://github.com/webiny/webiny-js/commit/473d1ae50d1e7fc058ac8f1aaf520c9cc2ecbbd0))
+* **ui:** use hostToBody prop in Menu in case of renderMenuWithPortal ([3d3fc81](https://github.com/webiny/webiny-js/commit/3d3fc810690feb083fe9913e63d4b3b564036796))
+* improve jest test setup ([303f15e](https://github.com/webiny/webiny-js/commit/303f15eba2f377b7477c0f21970259707e7a9020))
+* remove obsolete files ([59c5dea](https://github.com/webiny/webiny-js/commit/59c5dead517f4942b73f9a038486bd5c4d315b1c))
+* table names in multiple test configurations ([#1995](https://github.com/webiny/webiny-js/issues/1995)) ([83d6ff5](https://github.com/webiny/webiny-js/commit/83d6ff5be8de91cef9aca63ead199a8c00283957))
+* throw error with message [no ci] ([2ca8a92](https://github.com/webiny/webiny-js/commit/2ca8a927dd8a196e291e79979053663275e0ddca))
+* update CWP template ([4e63c3c](https://github.com/webiny/webiny-js/commit/4e63c3c1e12b6ad091dc767a52393509223c6d79))
+* update cypress tests (cognito and flakyness) ([32cee07](https://github.com/webiny/webiny-js/commit/32cee07890163a331be8b26f219dd2c6d40aa439))
+
+
+### Features
+
+* **api-prerendering-service:** DynamoDB storage operations with upgrade ([#1996](https://github.com/webiny/webiny-js/issues/1996)) ([1d3602e](https://github.com/webiny/webiny-js/commit/1d3602e22015a956403cce7687d3d846826724ae))
+* **app-page-builder:** add debounce in updateElementAction params ([86b4460](https://github.com/webiny/webiny-js/commit/86b446072f1d375e44f8085e520fff8ab2b54ec0))
+* **cli:** upgrade pulumi in 5.17.0 ([#2004](https://github.com/webiny/webiny-js/issues/2004)) ([70e304b](https://github.com/webiny/webiny-js/commit/70e304b865e311a81f250426ba324c6df08cfc94))
+* new security and multi-tenancy ([#1993](https://github.com/webiny/webiny-js/issues/1993)) ([99ecfca](https://github.com/webiny/webiny-js/commit/99ecfca45011cb0f6476c3bc5c883c56a055aaa0))
+
+
+
+
+
 # [5.16.0](https://github.com/webiny/webiny-js/compare/v5.16.0-beta.4...v5.16.0) (2021-10-21)
 
 **Note:** Version bump only for package webiny-js
