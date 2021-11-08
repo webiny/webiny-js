@@ -1,18 +1,20 @@
-import { useEventActionHandler } from "../../hooks/useEventActionHandler";
-import { UpdateElementActionEvent } from "../../recoil/actions";
-import { UpdateElementActionArgsType } from "../../recoil/actions/updateElement/types";
-import { PbEditorElement } from "../../../types";
 import { useMemo } from "react";
 import lodashSet from "lodash/set";
 import lodashMerge from "lodash/merge";
 import { useHandler } from "@webiny/app/hooks/useHandler";
+import { useEventActionHandler } from "~/editor/hooks/useEventActionHandler";
+import { UpdateElementActionEvent } from "~/editor/recoil/actions";
+import { UpdateElementActionArgsType } from "~/editor/recoil/actions/updateElement/types";
+import { SaveRevisionActionArgsType } from "~/editor/recoil/actions/saveRevision/types";
+import { PbEditorElement } from "~/types";
+
 export type PostModifyElementArgs = {
     name: string;
     newValue: any;
     element: PbEditorElement;
     newElement: PbEditorElement;
 };
-type UpdateHandlersPropsType = {
+type UpdateHandlersPropsType = SaveRevisionActionArgsType & {
     element: PbEditorElement;
     dataNamespace: string;
     postModifyElement?: (args: PostModifyElementArgs) => void;
@@ -50,7 +52,9 @@ const useUpdateHandlers: UseUpdateHandlersType = props => {
                 historyUpdated[propName] = newValue;
                 updateElement({
                     element: newElement,
-                    history: true
+                    history: true,
+                    debounce: props.debounce,
+                    onFinish: props.onFinish
                 });
             }
         };
