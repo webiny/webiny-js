@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.17.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.17.0-beta.1...v5.17.0-beta.2) (2021-11-08)
+
+
+### Bug Fixes
+
+* **app-page-builder:** fix menu styles ([9dbcf62](https://github.com/webiny/webiny-js/commit/9dbcf62c5c2d598ff281ccee980bfd99c36fa772))
+
+
+
+
+
 # [5.17.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.16.0...v5.17.0-beta.1) (2021-11-08)
 
 

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.17.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.17.0-beta.1...v5.17.0-beta.2) (2021-11-08)
+
+
+### Bug Fixes
+
+* **cwp-template-aws:** set ddb-es as default storage operations ([3ab1524](https://github.com/webiny/webiny-js/commit/3ab1524e3da3f379948ab4b7bd794fbebe2d3e5a))
+
+
+
+
+
 # [5.17.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.16.0...v5.17.0-beta.1) (2021-11-08)
 
 
