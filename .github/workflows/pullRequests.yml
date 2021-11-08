@@ -99,7 +99,6 @@ jobs:
         run: yarn eslint
 
   code-analysis-typescript:
-    needs: cache-dependencies-packages
     name: Static code analysis (TypeScript)
     runs-on: ubuntu-latest
     steps:
