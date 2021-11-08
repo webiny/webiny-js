@@ -7,15 +7,28 @@ import {
     PageImportExportTaskStorageOperationsListParams
 } from "~/types";
 
+export interface ExportPagesParams {
+    ids?: string[];
+    revisionType: PageExportRevisionType;
+    where?: {
+        category?: string;
+        status?: string;
+        tags?: { query: string[]; rule?: "any" | "all" };
+        [key: string]: any;
+    };
+    search?: { query?: string };
+    sort?: string[];
+}
+
+export interface ImportPagesParams {
+    category: string;
+    zipFileKey?: string;
+    zipFileUrl?: string;
+}
+
 export type PagesImportExportCrud = {
-    exportPages(
-        ids: string[],
-        revisionType: PageExportRevisionType
-    ): Promise<{ task: PageImportExportTask }>;
-    importPages(
-        category: string,
-        data: Record<string, any>
-    ): Promise<{ task: PageImportExportTask }>;
+    exportPages(params: ExportPagesParams): Promise<{ task: PageImportExportTask }>;
+    importPages(params: ImportPagesParams): Promise<{ task: PageImportExportTask }>;
 };
 
 type PageImportExportTaskCreateData = Omit<PageImportExportTask, "id" | "createdOn" | "createdBy">;

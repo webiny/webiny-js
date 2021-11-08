@@ -6,7 +6,7 @@ import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
 import { ApiKey, SecurityIdentity } from "@webiny/api-security/types";
 import apiKeyAuthentication from "@webiny/api-security/plugins/apiKeyAuthentication";
 import apiKeyAuthorization from "@webiny/api-security/plugins/apiKeyAuthorization";
-import { createPermissions, until, PermissionsArg } from "./helpers";
+import { createPermissions, until, sleep, PermissionsArg } from "./helpers";
 import { INSTALL_MUTATION, IS_INSTALLED_QUERY } from "./graphql/settings";
 import {
     CREATE_CONTENT_MODEL_GROUP_MUTATION,
@@ -136,11 +136,7 @@ export const useGqlHandler = (args?: GQLHandlerCallableArgs) => {
 
     return {
         until,
-        sleep: (ms = 333) => {
-            return new Promise(resolve => {
-                setTimeout(resolve, ms);
-            });
-        },
+        sleep,
         handler,
         invoke,
         async introspect() {

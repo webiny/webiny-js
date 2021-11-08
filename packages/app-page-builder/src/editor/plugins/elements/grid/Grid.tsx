@@ -2,8 +2,8 @@ import React, { CSSProperties } from "react";
 import kebabCase from "lodash/kebabCase";
 import styled from "@emotion/styled";
 import { css } from "emotion";
-import { PbEditorElement, DisplayMode } from "../../../../types";
-import Element from "../../../components/Element";
+import { PbEditorElement, DisplayMode } from "~/types";
+import Element from "~/editor/components/Element";
 
 const StyledGrid = styled("div")({
     display: "flex",
@@ -32,6 +32,18 @@ const Grid: React.FunctionComponent<GridPropsType> = ({
     const containerStyle = elementStyle || {};
     // Use per-device style
     const alignItems = elementStyle[`--${kebabCase(displayMode)}-align-items`];
+    const gridStyles = {
+        alignItems,
+        /**
+         * The "max-width" property is being assigned to "Grid" element from grid's width setting value,
+         * which works fine for the page preview and website application.
+         * But, not in page editor, because, inside page editor the wrapper component is responsible
+         * for setting up the "width" due to current design choices.
+         * So, here we're overriding this property value so that it'll look identical to website and
+         * don't confuse the user.
+         */
+        maxWidth: "100%"
+    };
     return (
         <StyledGrid
             className={combineClassNames(
@@ -39,9 +51,7 @@ const Grid: React.FunctionComponent<GridPropsType> = ({
                 "webiny-pb-layout-grid-container " + css(containerStyle as any)
             )}
             {...elementAttributes}
-            style={{
-                alignItems
-            }}
+            style={gridStyles}
         >
             {element.elements.map((child: PbEditorElement) => {
                 return (

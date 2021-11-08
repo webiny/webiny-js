@@ -9,13 +9,19 @@ const {
     insertImportToSourceFile,
     removePluginFromCreateHandler,
     addDynamoDbDocumentClient,
-    findNodeInSource
+    findNodeInSource,
+    findDefaultExport,
+    findReturnStatement
 } = require("../utils");
 
 const paths = {
     apiGraphQL: "api/code/graphql",
     apiHeadlessCms: "api/code/headlessCMS",
-    appsAdminCode: "apps/admin/code"
+    apiPageBuilderExport: "api/code/pageBuilder/exportPages",
+    apiPageBuilderImport: "api/code/pageBuilder/importPages",
+    appsAdminCode: "apps/admin/code",
+    apiPulumiDev: "api/pulumi/dev",
+    apiPulumiProd: "api/pulumi/prod"
 };
 
 const files = {
@@ -24,7 +30,17 @@ const files = {
     appAdminPluginsIndex: `${paths.appsAdminCode}/src/plugins/index.ts`,
     appAdminPluginsSecurity: `${paths.appsAdminCode}/src/plugins/security.ts`,
     appAdminApp: `${paths.appsAdminCode}/src/App.tsx`,
-    appAdminWebinyConfig: `${paths.appsAdminCode}/webiny.config.ts`
+    appAdminWebinyConfig: `${paths.appsAdminCode}/webiny.config.ts`,
+    apiPageImportCreateIndex: `${paths.apiPageBuilderImport}/create/src/index.ts`,
+    apiPageImportCreateSecurity: `${paths.apiPageBuilderImport}/create/src/security.ts`,
+    apiPageImportProcessIndex: `${paths.apiPageBuilderImport}/process/src/index.ts`,
+    apiPageImportProcessSecurity: `${paths.apiPageBuilderImport}/process/src/security.ts`,
+    apiPageExportCombineIndex: `${paths.apiPageBuilderExport}/combine/src/index.ts`,
+    apiPageExportCombineSecurity: `${paths.apiPageBuilderExport}/combine/src/security.ts`,
+    apiPageExportProcessIndex: `${paths.apiPageBuilderExport}/process/src/index.ts`,
+    apiPageExportProcessSecurity: `${paths.apiPageBuilderExport}/process/src/security.ts`,
+    apiPulumiDevIndex: `${paths.apiPulumiDev}/index.ts`,
+    apiPulumiProdIndex: `${paths.apiPulumiProd}/index.ts`
 };
 
 /**
@@ -181,6 +197,75 @@ const upgradeHeadlessCMSIndex = (project, context) => {
         "handler",
         "securityAdminUsersDynamoDbStorageOperations()"
     );
+};
+
+/**
+ * @param project {tsMorph.Project}
+ * @param context {CliContext}
+ */
+const upgradePageImportExport = (project, context) => {
+    const { info } = context;
+    info(`Upgrading api/code/pageBuilder`);
+
+    /**
+     * Just copy new index.ts and security.ts files.
+     */
+    const copyFileTargets = [
+        {
+            source: `node_modules/@webiny/cwp-template-aws/template/ddb-es/${paths.apiPageBuilderImport}/create/src/index.ts`,
+            destination: `${paths.apiPageBuilderImport}/create/src/index.ts`
+        },
+        {
+            source: `node_modules/@webiny/cwp-template-aws/template/ddb-es/${paths.apiPageBuilderImport}/create/src/security.ts`,
+            destination: `${paths.apiPageBuilderImport}/create/src/security.ts`
+        },
+        {
+            source: `node_modules/@webiny/cwp-template-aws/template/ddb-es/${paths.apiPageBuilderImport}/process/src/index.ts`,
+            destination: `${paths.apiPageBuilderImport}/process/src/index.ts`
+        },
+        {
+            source: `node_modules/@webiny/cwp-template-aws/template/ddb-es/${paths.apiPageBuilderImport}/process/src/security.ts`,
+            destination: `${paths.apiPageBuilderImport}/process/src/security.ts`
+        },
+        {
+            source: `node_modules/@webiny/cwp-template-aws/template/ddb-es/${paths.apiPageBuilderExport}/combine/src/index.ts`,
+            destination: `${paths.apiPageBuilderExport}/combine/src/index.ts`
+        },
+        {
+            source: `node_modules/@webiny/cwp-template-aws/template/ddb-es/${paths.apiPageBuilderExport}/combine/src/security.ts`,
+            destination: `${paths.apiPageBuilderExport}/combine/src/security.ts`
+        },
+        {
+            source: `node_modules/@webiny/cwp-template-aws/template/ddb-es/${paths.apiPageBuilderExport}/process/src/index.ts`,
+            destination: `${paths.apiPageBuilderExport}/process/src/index.ts`
+        },
+        {
+            source: `node_modules/@webiny/cwp-template-aws/template/ddb-es/${paths.apiPageBuilderExport}/process/src/security.ts`,
+            destination: `${paths.apiPageBuilderExport}/process/src/security.ts`
+        }
+    ];
+    copyFiles(context, copyFileTargets, false);
+    /**
+     * API GraphQL package.json
+     */
+    const packages = {
+        /**
+         * To be added
+         */
+        "@webiny/api-tenancy-so-ddb": context.version,
+        "@webiny/api-security-so-ddb": context.version,
+        /**
+         * To be removed
+         */
+        "@webiny/api-security-admin-users": null,
+        "@webiny/api-security-admin-users-cognito": null,
+        "@webiny/api-security-admin-users-so-ddb": null,
+        "@webiny/api-security-cognito-authentication": null
+    };
+    addPackagesToDependencies(context, `${paths.apiPageBuilderExport}/combine`, packages);
+    addPackagesToDependencies(context, `${paths.apiPageBuilderExport}/process`, packages);
+    addPackagesToDependencies(context, `${paths.apiPageBuilderImport}/create`, packages);
+    addPackagesToDependencies(context, `${paths.apiPageBuilderImport}/process`, packages);
 };
 
 /**
@@ -444,14 +529,83 @@ const upgradeAppWebinyConfig = (project, context) => {
     insertReactAppUserCanChangeEmail(source, "start");
     insertReactAppUserCanChangeEmail(source, "build");
 };
+/**
+ * @param project {tsMorph.Project}
+ * @param context {CliContext}
+ * @param file {string}
+ */
+const upgradePulumi = (project, context, file) => {
+    const { info, error } = context;
+    info(`Upgrading ${info.hl(file)}`);
+
+    const source = project.getSourceFile(file);
+    if (!source) {
+        error(`Could not locate file "${file}".`);
+        return;
+    }
+    /**
+     * We need to find the default export return statement
+     */
+    const defaultExport = findDefaultExport(source);
+    if (!defaultExport) {
+        error(`Could not locate default export in file "${file}".`);
+        return;
+    }
+
+    const returnStatement = findReturnStatement(defaultExport);
+    if (!returnStatement) {
+        error(`Could not locate return statement in default export in file "${file}".`);
+        return;
+    }
+    /**
+     * @type {ObjectLiteralExpression}
+     */
+    const obj = returnStatement.getFirstDescendant(node =>
+        tsMorph.Node.isObjectLiteralExpression(node)
+    );
+    if (!obj) {
+        error(
+            `Could not locate object expression return statement in default export in file "${file}".`
+        );
+        return;
+    }
+
+    const prop = obj.getProperty("cognitoUserPoolPasswordPolicy");
+    if (!prop) {
+        obj.addPropertyAssignment({
+            name: "cognitoUserPoolPasswordPolicy",
+            initializer: "cognito.userPool.passwordPolicy"
+        });
+        return;
+    }
+    prop.setInitializer("cognito.userPool.passwordPolicy");
+};
+
+/**
+ * @param project {tsMorph.Project}
+ * @param context {CliContext}
+ */
+const upgradePulumiDev = (project, context) => {
+    return upgradePulumi(project, context, files.apiPulumiDevIndex);
+};
+/**
+ * @param project {tsMorph.Project}
+ * @param context {CliContext}
+ */
+const upgradePulumiProd = (project, context) => {
+    return upgradePulumi(project, context, files.apiPulumiProdIndex);
+};
 
 module.exports = {
     files,
     upgradeGraphQLIndex,
     upgradeHeadlessCMSIndex,
+    upgradePageImportExport,
     upgradeAdminComponents,
     upgradeAdminPlugins,
     upgradeAdminSecurity,
     upgradeApp,
-    upgradeAppWebinyConfig
+    upgradeAppWebinyConfig,
+    upgradePulumiDev,
+    upgradePulumiProd
 };

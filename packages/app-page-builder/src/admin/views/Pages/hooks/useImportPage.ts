@@ -1,5 +1,4 @@
 import { useCallback } from "react";
-import pick from "lodash/pick";
 import get from "lodash/get";
 import { useMutation } from "@apollo/react-hooks";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
@@ -19,13 +18,7 @@ const useImportPage = ({ setLoadingLabel, clearLoadingLabel, closeDialog }) => {
             const res = await importPage({
                 variables: {
                     category,
-                    data: pick(
-                        {
-                            zipFileKey: fileKey,
-                            zipFileUrl: fileKey
-                        },
-                        [fileKey.startsWith("http") ? "zipFileUrl" : "zipFileKey"]
-                    )
+                    [fileKey.startsWith("http") ? "zipFileUrl" : "zipFileKey"]: fileKey
                 }
             });
 

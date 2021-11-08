@@ -15,7 +15,8 @@ const PagesList = props => {
     );
     const pageList = components.find(cmp => cmp.componentName === component);
     const { theme } = usePageBuilder();
-    const [page, setPage] = useState(1);
+    const [cursors, setCursors] = useState([null]);
+    const [page, setPage] = useState(0);
     const pageAtomValue = useRecoilValue(pageAtom);
 
     if (!pageList) {
@@ -26,7 +27,7 @@ const PagesList = props => {
 
     let sort = null;
     if (vars.sortBy && vars.sortDirection) {
-        sort = { [vars.sortBy]: vars.sortDirection };
+        sort = `${vars.sortBy}_${vars.sortDirection.toUpperCase()}`;
     }
 
     const variables = {
@@ -39,7 +40,7 @@ const PagesList = props => {
             }
         },
         limit: parseInt(vars.resultsPerPage),
-        page,
+        after: cursors[page],
         exclude: [pageAtomValue.path]
     };
 
@@ -65,13 +66,18 @@ const PagesList = props => {
     const listPublishedPages = get(data, "pageBuilder.listPublishedPages");
 
     let prevPage = null;
-    if (listPublishedPages.meta.previousPage) {
-        prevPage = () => setPage(listPublishedPages.meta.previousPage);
+    if (page >= 1) {
+        prevPage = () => {
+            setPage(page => page - 1);
+        };
     }
 
     let nextPage = null;
-    if (listPublishedPages.meta.nextPage) {
-        nextPage = () => setPage(listPublishedPages.meta.nextPage);
+    if (listPublishedPages.meta.cursor) {
+        nextPage = () => {
+            setCursors(cursors => [...cursors, listPublishedPages.meta.cursor]);
+            setPage(page => page + 1);
+        };
     }
 
     return (

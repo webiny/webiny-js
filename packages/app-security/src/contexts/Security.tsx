@@ -15,6 +15,10 @@ export const SecurityProvider = props => {
 
     const getPermission = useCallback(
         <T extends SecurityPermission = SecurityPermission>(name: string): T => {
+            if (!identity) {
+                return null;
+            }
+
             const perms = identity.permissions || [];
             const exactMatch = perms.find(p => p.name === name);
             if (exactMatch) {
@@ -29,11 +33,13 @@ export const SecurityProvider = props => {
 
     const value = useMemo(
         () => ({
-            identity: {
-                ...identity,
-                // For backwards compatibility, expose the `getPermission` method on the `identity` object.
-                getPermission: getPermission as any
-            },
+            identity: identity
+                ? {
+                      ...identity,
+                      // For backwards compatibility, expose the `getPermission` method on the `identity` object.
+                      getPermission: getPermission as any
+                  }
+                : null,
             setIdentity,
             getPermission
         }),

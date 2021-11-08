@@ -33,12 +33,6 @@ export interface UseGqlHandlerParams {
     plugins?: any;
 }
 
-const sleep = (ms = 333) => {
-    return new Promise(resolve => {
-        setTimeout(resolve, ms);
-    });
-};
-
 export default (params: UseGqlHandlerParams = {}) => {
     const { permissions, identity, plugins = [] } = params;
     // @ts-ignore
@@ -92,7 +86,6 @@ export default (params: UseGqlHandlerParams = {}) => {
 
     return {
         until,
-        sleep,
         handler,
         invoke,
         // Files

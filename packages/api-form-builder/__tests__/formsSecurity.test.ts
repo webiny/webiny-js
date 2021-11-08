@@ -72,9 +72,7 @@ describe("Forms Security Test", () => {
             () => listForms().then(([data]) => data),
             ({ data }) => data.formBuilder.listForms.data.length > 0,
             {
-                name: "list forms after create",
-                wait: 500,
-                tries: 20
+                name: "list forms after create"
             }
         );
 
@@ -111,9 +109,7 @@ describe("Forms Security Test", () => {
                     data.formBuilder.listForms.data[0].id === formB2Id &&
                     data.formBuilder.listForms.data[3].id === formA1Id,
                 {
-                    name: `list forms with sufficient permissions ${i}`,
-                    wait: 500,
-                    tries: 20
+                    name: `list forms with sufficient permissions ${i}`
                 }
             );
 

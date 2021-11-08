@@ -13,10 +13,8 @@ import { mockSecurity } from "~/mockSecurity";
 
 export type HandlerArgs = {
     category: string;
-    data: {
-        zipFileKey?: string;
-        zipFileUrl?: string;
-    };
+    zipFileKey?: string;
+    zipFileUrl?: string;
     task: PageImportExportTask;
     identity: SecurityIdentity;
 };
@@ -47,11 +45,11 @@ export default (
         try {
             log("RUNNING Import Pages Create");
             const { invocationArgs: args, pageBuilder } = context;
-            const { task, category, data, identity } = args;
+            const { task, category, zipFileKey, zipFileUrl, identity } = args;
             mockSecurity(identity, context);
             // Step 1: Read the zip file
             const pageImportDataList = await readExtractAndUploadZipFileContents(
-                data.zipFileKey || data.zipFileUrl
+                zipFileKey || zipFileUrl
             );
             // Once we have map we can start processing each page
 
@@ -67,7 +65,8 @@ export default (
                         data: {
                             pageKey: pagesDirMap.key,
                             category,
-                            zipFileKey: data.zipFileKey,
+                            zipFileKey,
+                            zipFileUrl,
                             input: {
                                 fileUploadsData: pagesDirMap
                             }

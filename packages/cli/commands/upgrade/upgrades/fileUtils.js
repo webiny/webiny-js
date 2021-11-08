@@ -35,8 +35,9 @@ const createFullFile = file => {
  *
  * @param context {CliContext}
  * @param initialTargets {{source: string, destination: string}[]}
+ * @param createBackup: {boolean}
  */
-const copyFiles = (context, initialTargets) => {
+const copyFiles = (context, initialTargets, createBackup = true) => {
     context.info("Copying files...");
     /**
      * First check if source and target files exist and create a backup file name.
@@ -48,12 +49,14 @@ const copyFiles = (context, initialTargets) => {
          * No need to check target.destination because it might not exist.
          */
         checkFiles([target.source]);
-        let backup;
-        try {
-            backup = createBackupFileName(target.destination);
-        } catch (ex) {
-            context.error(ex.message);
-            process.exit(1);
+        let backup = false;
+        if (createBackup) {
+            try {
+                backup = createBackupFileName(target.destination);
+            } catch (ex) {
+                context.error(ex.message);
+                process.exit(1);
+            }
         }
 
         targets.push({
@@ -67,24 +70,28 @@ const copyFiles = (context, initialTargets) => {
      * - make backups of the targets files
      * - copy new files to their destinations
      */
-    const backups = [];
-    context.info("Creating backups...");
-    for (const target of targets) {
-        const destination = createFullFile(target.destination);
-        if (!fs.existsSync(destination)) {
-            continue;
-        }
-        try {
-            fs.copyFileSync(destination, createFullFile(target.backup));
-            context.info(`Backed up "${target.destination}" to "${target.backup}".`);
-            backups.push(target.backup);
-        } catch (ex) {
-            context.error(`Could not create backup "${target.destination}" to "${target.backup}".`);
-            for (const backup of backups) {
-                context.info(`Removing created backup "${backup}".`);
-                fs.unlinkSync(createFullFile(backup));
+    if (createBackup) {
+        const backups = [];
+        context.info("Creating backups...");
+        for (const target of targets) {
+            const destination = createFullFile(target.destination);
+            if (!fs.existsSync(destination)) {
+                continue;
             }
-            process.exit(1);
+            try {
+                fs.copyFileSync(destination, createFullFile(target.backup));
+                context.info(`Backed up "${target.destination}" to "${target.backup}".`);
+                backups.push(target.backup);
+            } catch (ex) {
+                context.error(
+                    `Could not create backup "${target.destination}" to "${target.backup}".`
+                );
+                for (const backup of backups) {
+                    context.info(`Removing created backup "${backup}".`);
+                    fs.unlinkSync(createFullFile(backup));
+                }
+                process.exit(1);
+            }
         }
     }
 
@@ -101,6 +108,9 @@ const copyFiles = (context, initialTargets) => {
         } catch (ex) {
             context.error(`Could not copy new file "${target.source}" to "${target.destination}".`);
             for (const file of files) {
+                if (!file.backup) {
+                    continue;
+                }
                 context.info(`Restoring backup file "${file.backup}" to "${file.destination}".`);
                 fs.copyFileSync(createFullFile(file.backup), createFullFile(file.destination));
                 fs.unlinkSync(createFullFile(file.backup));

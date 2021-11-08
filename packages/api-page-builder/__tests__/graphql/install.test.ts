@@ -1,8 +1,6 @@
 import useGqlHandler from "./useGqlHandler";
 import { defaultIdentity } from "../tenancySecurity";
 
-jest.setTimeout(100000);
-
 describe("Install Test", () => {
     const handler = useGqlHandler();
 
@@ -111,9 +109,7 @@ describe("Install Test", () => {
                 return data.length === 1 && data[0].status === "published";
             },
             {
-                name: "list pages after listing categories",
-                wait: 500,
-                tries: 30
+                name: "list pages after listing categories"
             }
         );
         expect(listPagesAfterInstallResponse.data.pageBuilder.listPages.data[0].title).toBe(
@@ -130,9 +126,7 @@ describe("Install Test", () => {
                 return data.length === 1 && data[0].status === "published";
             },
             {
-                name: "list published pages after listing categories",
-                wait: 500,
-                tries: 30
+                name: "list published pages after listing categories"
             }
         );
 

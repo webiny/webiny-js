@@ -1,6 +1,6 @@
 import { createHandler } from "@webiny/handler-aws";
 import graphqlHandler from "@webiny/handler-graphql";
-import pageBuilderPlugins from "~/graphql";
+import pageBuilderPlugins from "@webiny/api-page-builder/graphql";
 import i18nContext from "@webiny/api-i18n/graphql/context";
 import i18nDynamoDbStorageOperations from "@webiny/api-i18n-ddb";
 import i18nContentPlugins from "@webiny/api-i18n-content/plugins";
@@ -138,22 +138,14 @@ export default ({ permissions, identity, plugins }: Params = {}) => {
         return [JSON.parse(response.body), response];
     };
 
-    const sleep = (ms = 333) => {
-        return new Promise(resolve => {
-            setTimeout(() => resolve(undefined), ms);
-        });
-    };
-
     return {
         handler,
         invoke,
         // Helpers.
-        sleep,
         until,
-
         // GraphQL queries and mutations.
         // Install.
-        async install(variables = { insertDemoData: false, name: "Test" }) {
+        async install(variables: any = { insertDemoData: false, name: "Test" }) {
             return invoke({
                 body: {
                     query: INSTALL,
