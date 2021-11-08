@@ -25,7 +25,7 @@ import {
 } from "./contentModel/hooks";
 import { NotAuthorizedError } from "@webiny/api-security";
 import WebinyError from "@webiny/error";
-import { ContentModelPlugin } from "@webiny/api-headless-cms/content/plugins/ContentModelPlugin";
+import { ContentModelPlugin } from "~/content/plugins/ContentModelPlugin";
 
 export default (): ContextPlugin<CmsContext> => ({
     type: "context",

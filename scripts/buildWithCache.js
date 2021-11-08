@@ -7,6 +7,7 @@ const path = require("path");
 const loadJson = require("load-json-file");
 const writeJson = require("write-json-file");
 const { green, red } = require("chalk");
+const argv = require("yargs").argv;
 
 const CACHE_FOLDER_PATH = ".webiny/cached-packages";
 const META_FILE_PATH = path.join(CACHE_FOLDER_PATH, "meta.json");
@@ -22,15 +23,12 @@ const META_FILE_PATH = path.join(CACHE_FOLDER_PATH, "meta.json");
         console.log(`Done! Finished in ${green(duration + "s")}.`);
     } catch (e) {
         console.log(red("An error occurred while executing the command:"));
-        console.log(e);
+        console.log(e.message);
         process.exit(1);
     }
 })();
 
 async function build() {
-    // Only do caching of TS packages.
-    const workspacesPackages = getPackages({ includes: "/packages/" }).filter(item => item.isTs);
-
     let metaJson = { packages: {} };
     try {
         metaJson = loadJson.sync(META_FILE_PATH);
@@ -39,26 +37,31 @@ async function build() {
     const packagesNoCache = [];
     const packagesUseCache = [];
 
+    const workspacesPackages = getPackages({ includes: "/packages/" }).filter(item => item.isTs);
+
     console.log(`There is a total of ${green(workspacesPackages.length)} packages.`);
+    const useCache = argv.hasOwnProperty("cache") ? argv.cache : true;
 
     // 1. Determine for which packages we can use the cached built code, and for which we need to execute build.
-    for (let i = 0; i < workspacesPackages.length; i++) {
-        const workspacePackage = workspacesPackages[i];
+    if (!useCache) {
+        workspacesPackages.forEach(pkg => packagesNoCache.push(pkg));
+    } else {
+        for (const workspacePackage of workspacesPackages) {
+            const cacheFolderPath = getPackageCacheFolderPath(workspacePackage);
+            if (!fs.existsSync(cacheFolderPath)) {
+                packagesNoCache.push(workspacePackage);
+                continue;
+            }
 
-        const cacheFolderPath = getPackageCacheFolderPath(workspacePackage);
-        if (!fs.existsSync(cacheFolderPath)) {
-            packagesNoCache.push(workspacePackage);
-            continue;
-        }
+            const sourceHash = await getPackageSourceHash(workspacePackage);
 
-        const sourceHash = await getPackageSourceHash(workspacePackage);
+            const packageMeta = metaJson.packages[workspacePackage.packageJson.name] || {};
 
-        const packageMeta = metaJson.packages[workspacePackage.packageJson.name] || {};
-
-        if (packageMeta.sourceHash === sourceHash) {
-            packagesUseCache.push(workspacePackage);
-        } else {
-            packagesNoCache.push(workspacePackage);
+            if (packageMeta.sourceHash === sourceHash) {
+                packagesUseCache.push(workspacePackage);
+            } else {
+                packagesNoCache.push(workspacePackage);
+            }
         }
     }
 
@@ -66,6 +69,9 @@ async function build() {
     if (packagesUseCache.length) {
         if (packagesUseCache.length > 10) {
             console.log(`Using cache for ${green(packagesUseCache.length)} packages.`);
+            console.log(
+                `To build all packages regardless of cache, use the ${green("--no-cache")} flag.`
+            );
         } else {
             console.log("Using cache for following packages:");
             for (let i = 0; i < packagesUseCache.length; i++) {
@@ -80,7 +86,11 @@ async function build() {
             fs.copySync(cacheFolderPath, path.join(workspacePackage.packageFolder, "dist"));
         }
     } else {
-        console.log("Cache is empty, all packages need to be built.");
+        if (useCache) {
+            console.log("Cache is empty, all packages need to be built.");
+        } else {
+            console.log("Skipping cache.");
+        }
     }
 
     // 3. Where needed, let's build and update the cache.
@@ -89,8 +99,7 @@ async function build() {
         return;
     }
 
-    // Wait three seconds, just in case the dev changes his/her mind. :)
-    await new Promise(resolve => setTimeout(resolve, 3000));
+    console.log();
 
     if (packagesNoCache.length > 10) {
         console.log(`Running build for ${green(packagesNoCache.length)} packages.`);
@@ -98,49 +107,146 @@ async function build() {
         console.log("Running build for the following packages:");
         for (let i = 0; i < packagesNoCache.length; i++) {
             const item = packagesNoCache[i];
-            console.log(`- ${green(item.packageJson.name)}`);
+            console.log(`‣ ${green(item.packageJson.name)}`);
+        }
+    }
+
+    // Building all packages - we're respecting the dependency graph.
+    // Note: lists only packages in "packages" folder (check `lerna.json` config).
+    const rawPackagesList = await execa("lerna", ["list", "--toposort", "--graph", "--all"]).then(
+        ({ stdout }) => JSON.parse(stdout)
+    );
+
+    const packagesList = {};
+    for (const packageName in rawPackagesList) {
+        // If in cache, skip.
+        if (packagesUseCache.find(item => item.name === packageName)) {
+            continue;
+        }
+
+        // If not a TS package, skip.
+        if (!workspacesPackages.find(item => item.name === packageName)) {
+            continue;
+        }
+
+        packagesList[packageName] = rawPackagesList[packageName];
+    }
+
+    const batches = [[]];
+    for (const packageName in packagesList) {
+        const dependencies = packagesList[packageName];
+        const latestBatch = batches[batches.length - 1];
+        let canEnterCurrentBatch = !dependencies.find(name => latestBatch.includes(name));
+        if (canEnterCurrentBatch) {
+            latestBatch.push(packageName);
+        } else {
+            batches.push([packageName]);
+        }
+    }
+
+    console.log();
+    console.log(
+        `The build process will be performed in ${green(batches.length)} ${
+            batches.length > 1 ? "batches" : "batch"
+        }.`
+    );
+    console.log();
+
+    let buildOverrides = {};
+    if (argv.buildOverrides) {
+        try {
+            buildOverrides = JSON.parse(argv.buildOverrides);
+            if (argv.debug) {
+                console.log(
+                    `The following overrides will be passed upon calling the package's ${green(
+                        "build"
+                    )} command:`
+                );
+
+                // Stringify it just for the improved formatting.
+                console.log(green(JSON.stringify(buildOverrides, null, 2)));
+            }
+        } catch (e) {
+            console.log("Warning: could not JSON.parse passed build overrides.");
         }
         console.log();
     }
 
-    const isFullBuild = packagesNoCache.length === workspacesPackages.length;
-    let error;
-    try {
-        if (isFullBuild) {
-            fullBuild(packagesNoCache);
-        } else {
-            partialBuild(packagesNoCache);
-        }
-    } catch (e) {
-        // Don't do anything.
-        error = e;
-    }
+    for (let i = 0; i < batches.length; i++) {
+        const batch = batches[i];
 
-    if (error) {
-        console.log("Packages partially built, updating cache where possible...");
-    } else {
-        console.log("Packages built, updating cache...");
-    }
-
-    for (let i = 0; i < packagesNoCache.length; i++) {
-        const workspacePackage = packagesNoCache[i];
-        const success = fs.existsSync(
-            path.join(workspacePackage.packageFolder, "dist", "package.json")
+        const batchStart = new Date();
+        console.log(
+            green(`[${i + 1}/${batches.length}]`) + ` Building ${green(batch.length)} package(s)...`
         );
 
-        if (success) {
-            const cacheFolderPath = path.join(CACHE_FOLDER_PATH, workspacePackage.packageJson.name);
-            fs.copySync(path.join(workspacePackage.packageFolder, "dist"), cacheFolderPath);
+        const promises = [];
+        for (let j = 0; j < batch.length; j++) {
+            const currentPackage = workspacesPackages.find(item => item.name === batch[j]);
+            console.log(`‣ ${green(currentPackage.packageJson.name)}`);
+            promises.push(
+                new Promise(async (resolve, reject) => {
+                    const configPath = path
+                        .join(currentPackage.packageFolder, "webiny.config")
+                        .replace(/\\/g, "/");
+                    const config = require(configPath);
+                    try {
+                        await config.commands.build({
+                            logs: false,
+                            debug: false,
+                            overrides: buildOverrides
+                            // We don't want debug nor regular logs logged within the build command.
+                        });
 
-            const sourceHash = await getPackageSourceHash(workspacePackage);
-            metaJson.packages[workspacePackage.packageJson.name] = { sourceHash };
+                        // Copy and paste built code into the cache folder.
+                        const cacheFolderPath = path.join(
+                            CACHE_FOLDER_PATH,
+                            currentPackage.packageJson.name
+                        );
+                        fs.copySync(
+                            path.join(currentPackage.packageFolder, "dist"),
+                            cacheFolderPath
+                        );
+
+                        const sourceHash = await getPackageSourceHash(currentPackage);
+                        metaJson.packages[currentPackage.packageJson.name] = { sourceHash };
+
+                        writeJson.sync(META_FILE_PATH, metaJson);
+                        resolve();
+                    } catch (e) {
+                        reject({
+                            error: e,
+                            package: currentPackage
+                        });
+                    }
+                })
+            );
         }
-    }
 
-    writeJson.sync(META_FILE_PATH, metaJson);
+        const results = await Promise.allSettled(promises);
+        const duration = (new Date() - batchStart) / 1000;
+        const rejected = results.filter(item => item.status === "rejected");
 
-    if (error) {
-        throw error;
+        console.log();
+        if (rejected.length === 0) {
+            console.log(`Batch ${green(i + 1)} completed in ${green(duration + "s")}.`);
+            console.log();
+            continue;
+        }
+
+        console.log(`Batch ${red(i + 1)} failed to complete.`);
+        console.log();
+        console.log("The following errors occurred while processing the batch:");
+        for (let j = 0; j < rejected.length; j++) {
+            const { reason } = rejected[j];
+            j > 0 && console.log();
+            console.log(`‣ ${red(reason.package.packageJson.name)}`);
+            console.log(reason.error.message);
+        }
+
+        throw new Error(
+            `Failed to process batch ${red(i + 1)}. Check the above logs for more information.`
+        );
     }
 }
 
@@ -156,40 +262,4 @@ async function getPackageSourceHash(workspacePackage) {
     });
 
     return hash;
-}
-
-function fullBuild(workspacePackages) {
-    execa.sync(
-        "yarn",
-        [
-            "lerna",
-            "run",
-            "build",
-            "--stream",
-            ...workspacePackages.reduce((current, item) => {
-                current.push("--scope", item.packageJson.name);
-                return current;
-            }, [])
-        ],
-        {
-            stdio: "inherit"
-        }
-    );
-}
-
-function partialBuild(workspacePackages) {
-    const topologicallySortedPackagesList = JSON.parse(
-        execa.sync("yarn", ["lerna", "list", "--toposort", "--json"]).stdout
-    );
-
-    for (let i = 0; i < topologicallySortedPackagesList.length; i++) {
-        const pckg = topologicallySortedPackagesList[i];
-        if (workspacePackages.find(item => item.packageJson.name === pckg.name)) {
-            console.log(`Building ${green(pckg.name)}...`);
-            execa.sync("yarn", ["build"], {
-                stdio: "inherit",
-                cwd: pckg.location
-            });
-        }
-    }
 }

@@ -61,6 +61,7 @@ export interface Params {
 }
 
 export abstract class ElasticsearchFieldPlugin extends Plugin {
+    public static readonly type: string = "elasticsearch.fieldDefinition";
     public static readonly ALL: string = "*";
 
     private readonly _field: string;

@@ -6,8 +6,24 @@ on:
 
 env:
   NODE_OPTIONS: --max_old_space_size=4096
+  BUILD_OVERRIDES: '{"tsConfig":{"compilerOptions":{"skipLibCheck":true}}}'
 
 jobs:
+  cache-keys:
+    name: Create cache keys
+    runs-on: ubuntu-latest
+    outputs:
+      day: ${{ steps.create-cache-keys.outputs.day }}
+      ts: ${{ steps.create-timestamp.outputs.ts }}
+    steps:
+      - name: Create cache key (day)
+        id: create-cache-keys
+        run: echo "::set-output name=day::$(node --eval "console.log(new Date().getDate() + new Date().getDate())")"
+
+      - name: Create timestamp
+        id: create-timestamp
+        run: echo "::set-output name=ts::$(node --eval "console.log(new Date().getTime())")"
+
   validate-commits:
     name: Validate commit messages
     runs-on: ubuntu-latest
@@ -16,6 +32,7 @@ jobs:
       - uses: webiny/action-conventional-commits@v1.0.3
 
   cache-dependencies-packages:
+    needs: cache-keys
     name: Cache dependencies and packages
     runs-on: ubuntu-latest
     steps:
@@ -35,7 +52,7 @@ jobs:
         id: cached-packages
         with:
           path: .webiny/cached-packages
-          key: cached-packages-${{ runner.os }}-${{ github.ref }}-v2
+          key: ${{ runner.os }}-${{ needs.cache-keys.outputs.day }}-${{ secrets.RANDOM_CACHE_KEY_SUFFIX }}
 
       - name: Install dependencies
         if: steps.yarn-cache.outputs.cache-hit != 'true' || steps.cached-packages.outputs.cache-hit != 'true'
@@ -43,10 +60,10 @@ jobs:
 
       - name: Build packages
         if: steps.cached-packages.outputs.cache-hit != 'true'
-        run: node scripts/buildWithCache.js
+        run: node scripts/buildWithCache.js --build-overrides='${{ env.BUILD_OVERRIDES }}'
 
   code-analysis:
-    needs: cache-dependencies-packages
+    needs: [cache-dependencies-packages, cache-keys]
     name: Static code analysis
     runs-on: ubuntu-latest
     steps:
@@ -64,7 +81,7 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: .webiny/cached-packages
-          key: cached-packages-${{ runner.os }}-${{ github.ref }}-v2
+          key: ${{ runner.os }}-${{ needs.cache-keys.outputs.day }}-${{ secrets.RANDOM_CACHE_KEY_SUFFIX }}
 
       - name: Install dependencies
         run: yarn --immutable
@@ -81,8 +98,30 @@ jobs:
       - name: ESLint
         run: yarn eslint
 
-  jest-tests:
+  code-analysis-typescript:
     needs: cache-dependencies-packages
+    name: Static code analysis (TypeScript)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 12
+
+      - uses: actions/checkout@v2
+
+      - uses: actions/cache@v2
+        with:
+          path: .yarn/cache
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+
+      - name: Install dependencies
+        run: yarn --immutable
+
+      - name: Build packages (without BUILD_OVERRIDES)
+        run: node scripts/buildWithCache.js
+
+  jest-tests:
+    needs: [cache-dependencies-packages, cache-keys]
     name: Jest tests
     strategy:
       fail-fast: false
@@ -105,19 +144,19 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: .webiny/cached-packages
-          key: cached-packages-${{ runner.os }}-${{ github.ref }}-v2
+          key: ${{ runner.os }}-${{ needs.cache-keys.outputs.day }}-${{ secrets.RANDOM_CACHE_KEY_SUFFIX }}
 
       - name: Install dependencies
         run: yarn --immutable
 
       - name: Build packages
-        run: node scripts/buildWithCache.js
+        run: node scripts/buildWithCache.js --build-overrides='${{ env.BUILD_OVERRIDES }}'
 
       - name: Run tests
         run: yarn test
 
   verdaccio-publish:
-    needs: cache-dependencies-packages
+    needs: [cache-dependencies-packages, cache-keys]
     name: Publish to Verdaccio
     runs-on: ubuntu-latest
     steps:
@@ -126,9 +165,10 @@ jobs:
           node-version: 12
 
       - uses: actions/checkout@v2
-        # Prevents the detached HEAD problem (https://github.com/actions/checkout/issues/124)
         with:
+          # We want to make sure all commits are present and that the next release version is calculated correctly.
           fetch-depth: 0
+          # Fixes Lerna's detached HEAD issue (https://github.com/lerna/lerna/issues/2443).
           ref: ${{ github.event.pull_request.head.ref }}
 
       - uses: actions/cache@v2
@@ -139,13 +179,13 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: .webiny/cached-packages
-          key: cached-packages-${{ runner.os }}-${{ github.ref }}-v2
+          key: ${{ runner.os }}-${{ needs.cache-keys.outputs.day }}-${{ secrets.RANDOM_CACHE_KEY_SUFFIX }}
 
       - name: Install dependencies
         run: yarn --immutable
 
       - name: Build packages
-        run: node scripts/buildWithCache.js
+        run: node scripts/buildWithCache.js --build-overrides='${{ env.BUILD_OVERRIDES }}'
 
       - name: Start Verdaccio local server
         run: npx pm2 start verdaccio -- -c .verdaccio.yaml
@@ -221,7 +261,7 @@ jobs:
           npx create-webiny-project@next test-project
           --tag next --no-interactive
           --assign-to-yarnrc '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
-          --template-options '{"region":"eu-central-1"}'
+          --template-options '{"region":"eu-central-1","storageOperations":"ddb-es"}'
 
       - name: Build "api" project application
         working-directory: test-project

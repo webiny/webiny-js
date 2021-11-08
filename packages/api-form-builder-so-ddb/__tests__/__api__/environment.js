@@ -17,6 +17,7 @@ if (typeof createFormBuilderStorageOperations !== "function") {
 class FormBuilderTestEnvironment extends NodeEnvironment {
     async setup() {
         await super.setup();
+
         const documentClient = new DocumentClient({
             convertEmptyValues: true,
             endpoint: process.env.MOCK_DYNAMODB_ENDPOINT || "http://localhost:8001",
@@ -32,7 +33,7 @@ class FormBuilderTestEnvironment extends NodeEnvironment {
             return {
                 createStorageOperations: () => {
                     return createFormBuilderStorageOperations({
-                        table: "DynamoDB",
+                        table: process.env.DB_TABLE,
                         documentClient,
                         plugins: [...dynamoDbPlugins()]
                     });
@@ -40,7 +41,7 @@ class FormBuilderTestEnvironment extends NodeEnvironment {
                 getGlobalPlugins: () => {
                     return [
                         ...dbPlugins({
-                            table: "DynamoDB",
+                            table: process.env.DB_TABLE,
                             driver: new DynamoDbDriver({
                                 documentClient
                             })

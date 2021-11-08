@@ -63,6 +63,8 @@ const grahamData = {
     time: "11:59:01"
 };
 
+jest.setTimeout(100000);
+
 describe("sorting + cursor", () => {
     const manageOpts = { path: "manage/en-US" };
     const readOpts = { path: "read/en-US" };

@@ -1,6 +1,6 @@
 import useGqlHandler from "./useGqlHandler";
 
-jest.setTimeout(15000);
+jest.setTimeout(100000);
 
 describe("listing tags used by pages", () => {
     const { createCategory, createPage, listPages, updatePage, listPageTags, until } =

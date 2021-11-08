@@ -1,4 +1,7 @@
 import useGqlHandler from "./useGqlHandler";
+import { defaultIdentity } from "../tenancySecurity";
+
+jest.setTimeout(100000);
 
 describe("Install Test", () => {
     const handler = useGqlHandler();
@@ -91,10 +94,7 @@ describe("Install Test", () => {
                                 url: "/static/",
                                 name: "Static",
                                 layout: "static",
-                                createdBy: {
-                                    id: "mocked",
-                                    displayName: "m"
-                                }
+                                createdBy: defaultIdentity
                             }
                         ],
                         error: null

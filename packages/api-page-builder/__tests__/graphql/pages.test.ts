@@ -1,7 +1,8 @@
 import useGqlHandler from "./useGqlHandler";
 import { waitPage } from "./utils/waitPage";
+import { defaultIdentity } from "../tenancySecurity";
 
-jest.setTimeout(25000);
+jest.setTimeout(100000);
 
 describe("CRUD Test", () => {
     const handler = useGqlHandler();
@@ -58,7 +59,7 @@ describe("CRUD Test", () => {
                                 version: 1,
                                 editor: "page-builder",
                                 createdOn: expect.stringMatching(/^20/),
-                                createdBy: { displayName: "m", id: "mocked" }
+                                createdBy: defaultIdentity
                             },
                             error: null
                         }
@@ -81,7 +82,7 @@ describe("CRUD Test", () => {
                                 },
                                 editor: "page-builder",
                                 createdOn: expect.stringMatching(/^20/),
-                                createdBy: { displayName: "m", id: "mocked" }
+                                createdBy: defaultIdentity
                             },
                             error: null
                         }
@@ -137,10 +138,7 @@ describe("CRUD Test", () => {
                                 category: {
                                     slug: "slug"
                                 },
-                                createdBy: {
-                                    displayName: "m",
-                                    id: "mocked"
-                                },
+                                createdBy: defaultIdentity,
                                 createdOn: expect.stringMatching(/^20/),
                                 savedOn: expect.stringMatching(/^20/),
                                 id: ids[2],
@@ -160,10 +158,7 @@ describe("CRUD Test", () => {
                                 category: {
                                     slug: "slug"
                                 },
-                                createdBy: {
-                                    displayName: "m",
-                                    id: "mocked"
-                                },
+                                createdBy: defaultIdentity,
                                 createdOn: expect.stringMatching(/^20/),
                                 savedOn: expect.stringMatching(/^20/),
                                 id: ids[1],
@@ -183,10 +178,7 @@ describe("CRUD Test", () => {
                                 category: {
                                     slug: "slug"
                                 },
-                                createdBy: {
-                                    displayName: "m",
-                                    id: "mocked"
-                                },
+                                createdBy: defaultIdentity,
                                 createdOn: expect.stringMatching(/^20/),
                                 savedOn: expect.stringMatching(/^20/),
                                 id: ids[0],
@@ -222,7 +214,7 @@ describe("CRUD Test", () => {
                                     id,
                                     editor: "page-builder",
                                     createdOn: expect.stringMatching(/^20/),
-                                    createdBy: { displayName: "m", id: "mocked" }
+                                    createdBy: defaultIdentity
                                 }
                             },
                             error: null
@@ -283,7 +275,7 @@ describe("CRUD Test", () => {
                             id: page.id,
                             editor: "page-builder",
                             createdOn: expect.stringMatching(/^20/),
-                            createdBy: { displayName: "m", id: "mocked" }
+                            createdBy: defaultIdentity
                         },
                         error: null
                     }

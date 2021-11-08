@@ -1,5 +1,5 @@
 import { pick } from "lodash";
-import { SecurityIdentity } from "@webiny/api-security";
+import { SecurityIdentity } from "@webiny/api-security/types";
 
 export interface PermissionsArg {
     name: string;
@@ -10,13 +10,13 @@ export interface PermissionsArg {
 }
 
 export const identity = {
-    id: "123",
-    displayName: "User 123",
+    id: "12345678",
+    displayName: "John Doe",
     type: "admin"
 };
 
 const getSecurityIdentity = () => {
-    return new SecurityIdentity(identity);
+    return identity;
 };
 
 export const createPermissions = (permissions: PermissionsArg[]): PermissionsArg[] => {
@@ -81,6 +81,12 @@ type UntilOptions = {
     name?: string;
     tries?: number;
     wait?: number;
+};
+
+export const sleep = (ms = 333) => {
+    return new Promise(resolve => {
+        setTimeout(resolve, ms);
+    });
 };
 
 export const until = async (execute, until, options: UntilOptions = {}) => {

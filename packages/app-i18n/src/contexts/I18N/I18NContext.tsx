@@ -46,7 +46,7 @@ export type I18NProviderProps = {
 
 const updateLocaleStorage = currentLocales => {
     localStorage.setItem(
-        "wby_i18n_locale",
+        "webiny_i18n_locale",
         currentLocales.reduce(
             (current, { context, locale }) => `${current}${context}:${locale};`,
             ""
@@ -64,9 +64,9 @@ export const I18NProvider = (props: I18NProviderProps) => {
 
             // wby_i18n_locale: "default:en-US;content:en-US;"
             const parsedLocales = {};
-            if (localStorage.getItem("wby_i18n_locale")) {
+            if (localStorage.getItem("webiny_i18n_locale")) {
                 localStorage
-                    .getItem("wby_i18n_locale")
+                    .getItem("webiny_i18n_locale")
                     .split(";")
                     .filter(Boolean)
                     .forEach(item => {

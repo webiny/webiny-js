@@ -135,23 +135,20 @@ export class FormView extends UIView<FormViewConfig> {
         const submitButton = new ButtonElement<FormElementRenderProps>("submit", {
             type: "primary",
             label: "Save",
-            onClick: props => {
-                props.formProps.submit();
-            }
+            onClick: props => props.formProps.submit()
         });
 
         submitButton.moveToTheEndOf(footer);
 
-        if (this.config.onCancel) {
-            const cancelButton = footer.addElement(
-                new ButtonElement("cancel", {
-                    type: "default",
-                    label: "Cancel",
-                    onClick: () => this.config.onCancel()
-                })
-            );
+        const cancelButton = footer.addElement(
+            new ButtonElement("cancel", {
+                type: "default",
+                label: "Cancel",
+                onClick: () => this.config.onCancel(),
+                shouldRender: () => typeof this.config.onCancel === "function"
+            })
+        );
 
-            cancelButton.moveToTheBeginningOf(footer);
-        }
+        cancelButton.moveToTheBeginningOf(footer);
     }
 }

@@ -2,13 +2,14 @@ import chunk from "lodash/chunk";
 import loadJson from "load-json-file";
 import fs from "fs-extra";
 import path from "path";
+import { File } from "@webiny/api-file-manager/types";
 import sleep from "./sleep";
 import downloadInstallationFiles from "./downloadInstallFiles";
 import { PbContext } from "~/graphql/types";
 
 const FILES_COUNT_IN_EACH_BATCH = 15;
 
-export default async ({ context }) => {
+export default async ({ context }): Promise<Record<string, File>> => {
     /**
      * This function contains logic of file download from S3.
      * Current we're not mocking zip file download from S3 in tests at the moment.
@@ -26,7 +27,7 @@ export default async ({ context }) => {
 
     try {
         // Save uploaded file key against static id for later use.
-        const fileIdToKeyMap = {};
+        const fileIdToFileMap = {};
         // Contains all parallel file saving chunks.
         const chunksProcesses = [];
 
@@ -45,7 +46,7 @@ export default async ({ context }) => {
                         for (let j = 0; j < filesChunk.length; j++) {
                             const currentFile = filesChunk[j];
                             // Initialize the value
-                            fileIdToKeyMap[currentFile.id] = currentFile.type;
+                            fileIdToFileMap[currentFile.id] = currentFile.type;
                             try {
                                 const buffer = fs.readFileSync(
                                     path.join(
@@ -79,7 +80,7 @@ export default async ({ context }) => {
                         const fileUploadResults = await Promise.all(s3UploadProcess);
                         // Save File key against static ID
                         fileUploadResults.forEach((item, index) => {
-                            fileIdToKeyMap[filesChunk[index].id] = item.key;
+                            fileIdToFileMap[filesChunk[index].id] = item;
                         });
 
                         // @ts-ignore
@@ -94,9 +95,9 @@ export default async ({ context }) => {
         }
 
         await Promise.all(chunksProcesses);
-        return fileIdToKeyMap;
+        return fileIdToFileMap;
     } catch (e) {
-        return console.log(`[savePageAssets]: error occurred: ${e.stack}`);
+        console.log(`[savePageAssets]: error occurred: ${e.stack}`);
     }
 };
 

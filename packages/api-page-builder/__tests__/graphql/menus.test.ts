@@ -1,4 +1,7 @@
 import useGqlHandler from "./useGqlHandler";
+import { defaultIdentity } from "../tenancySecurity";
+
+jest.setTimeout(100000);
 
 describe("Menus Test", () => {
     const { createMenu, deleteMenu, listMenus, getMenu, updateMenu } = useGqlHandler();
@@ -21,10 +24,7 @@ describe("Menus Test", () => {
                         createMenu: {
                             data: {
                                 ...data,
-                                createdBy: {
-                                    displayName: "m",
-                                    id: "mocked"
-                                },
+                                createdBy: defaultIdentity,
                                 createdOn: expect.stringMatching(/^20/)
                             },
                             error: null
@@ -59,10 +59,7 @@ describe("Menus Test", () => {
                         updateMenu: {
                             data: {
                                 ...updatedData,
-                                createdBy: {
-                                    displayName: "m",
-                                    id: "mocked"
-                                },
+                                createdBy: defaultIdentity,
                                 createdOn: expect.stringMatching(/^20/)
                             },
                             error: null
@@ -88,10 +85,7 @@ describe("Menus Test", () => {
                                 ],
                                 slug: "menu-0-slug",
                                 title: "menu-0-title-UPDATED",
-                                createdBy: {
-                                    displayName: "m",
-                                    id: "mocked"
-                                },
+                                createdBy: defaultIdentity,
                                 createdOn: expect.stringMatching(/^20/)
                             },
                             {
@@ -103,10 +97,7 @@ describe("Menus Test", () => {
                                 ],
                                 slug: "menu-1-slug",
                                 title: "menu-1-title-UPDATED",
-                                createdBy: {
-                                    displayName: "m",
-                                    id: "mocked"
-                                },
+                                createdBy: defaultIdentity,
                                 createdOn: expect.stringMatching(/^20/)
                             },
                             {
@@ -118,10 +109,7 @@ describe("Menus Test", () => {
                                 ],
                                 slug: "menu-2-slug",
                                 title: "menu-2-title-UPDATED",
-                                createdBy: {
-                                    displayName: "m",
-                                    id: "mocked"
-                                },
+                                createdBy: defaultIdentity,
                                 createdOn: expect.stringMatching(/^20/)
                             }
                         ],

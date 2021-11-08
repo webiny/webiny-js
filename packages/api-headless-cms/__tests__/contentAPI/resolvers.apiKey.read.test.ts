@@ -7,7 +7,7 @@ import { SecurityIdentity } from "@webiny/api-security/types";
 
 const createIdentity = (permissions: any[] = []): SecurityIdentity => {
     return {
-        id: "api123",
+        id: "a1234567890",
         displayName: "API",
         type: "api-key",
         permissions: [
@@ -118,7 +118,7 @@ describe("READ - resolvers - api key", () => {
             }
         };
         const headers = {
-            Authorization: API_TOKEN
+            authorization: API_TOKEN
         };
         // If this `until` resolves successfully, we know entry is accessible via the "read" API
         await until(
@@ -176,7 +176,7 @@ describe("READ - resolvers - api key", () => {
             }
         };
         const headers = {
-            Authorization: API_TOKEN
+            authorization: API_TOKEN
         };
         // If this `until` resolves successfully, we know entry is accessible via the "read" API
         await until(
@@ -238,7 +238,7 @@ describe("READ - resolvers - api key", () => {
             }
         };
         const headers = {
-            Authorization: API_TOKEN
+            authorization: API_TOKEN
         };
         // If this `until` resolves successfully, we know entry is accessible via the "read" API
         await until(
@@ -296,7 +296,7 @@ describe("READ - resolvers - api key", () => {
             }
         };
         const headers = {
-            Authorization: API_TOKEN
+            authorization: API_TOKEN
         };
         // If this `until` resolves successfully, we know entry is accessible via the "read" API
         await until(
@@ -362,7 +362,7 @@ describe("READ - resolvers - api key", () => {
             }
         };
         const headers = {
-            Authorization: API_TOKEN
+            authorization: API_TOKEN
         };
         // If this `until` resolves successfully, we know entry is accessible via the "read" API
         await until(
@@ -427,7 +427,7 @@ describe("READ - resolvers - api key", () => {
                 }
             };
             const headers = {
-                Authorization: API_TOKEN
+                authorization: API_TOKEN
             };
             // If this `until` resolves successfully, we know entry is accessible via the "read" API
             await until(

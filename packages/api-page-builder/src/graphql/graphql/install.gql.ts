@@ -7,6 +7,7 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
     schema: {
         typeDefs: /* GraphQL */ `
             input PbInstallInput {
+                insertDemoData: Boolean
                 websiteUrl: String
                 name: String!
             }
@@ -50,7 +51,7 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                     try {
                         await context.pageBuilder.system.install({
                             name: args.data.name,
-                            insertDemoData: true
+                            insertDemoData: "insertDemoData" in args ? args.insertDemoData : true
                         });
                         return new Response(true);
                     } catch (e) {

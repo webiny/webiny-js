@@ -4,7 +4,7 @@ import csv from "csvtojson";
 import useGqlHandler from "./useGqlHandler";
 import { fields, formSubmissionDataA, formSubmissionDataB } from "./mocks/form.mocks";
 
-jest.setTimeout(60000);
+jest.setTimeout(100000);
 
 describe('Form Builder "Form" Test', () => {
     const {
@@ -75,7 +75,7 @@ describe('Form Builder "Form" Test', () => {
         expect(data[0].id).toEqual(id);
     });
 
-    test("should update form and return new data from DB and Elastic", async () => {
+    test("should update form and return new data from storage", async () => {
         const [create] = await createForm({ data: { name: "contact-us" } });
         const { id } = create.data.formBuilder.createForm.data;
 
@@ -91,9 +91,7 @@ describe('Form Builder "Form" Test', () => {
             () => listForms().then(([data]) => data),
             ({ data }) => data.formBuilder.listForms.data[0].name === newData.name,
             {
-                name: "list forms after update revision",
-                wait: 500,
-                tries: 20
+                name: "list forms after update revision"
             }
         );
 
@@ -114,9 +112,7 @@ describe('Form Builder "Form" Test', () => {
             () => listForms().then(([data]) => data),
             ({ data }) => data.formBuilder.listForms.data.length > 0,
             {
-                name: "after create form",
-                wait: 500,
-                tries: 20
+                name: "after create form"
             }
         );
 
@@ -127,18 +123,14 @@ describe('Form Builder "Form" Test', () => {
         const [create3] = await createRevisionFrom({ revision: id });
         const { id: id3 } = create3.data.formBuilder.createRevisionFrom.data;
 
-        // Wait until the new revision is indexed in Elastic as "latest"
         await until(
             () => listForms().then(([data]) => data),
             ({ data }) => data.formBuilder.listForms.data[0].id === id3,
             {
-                name: "after create revisions",
-                wait: 500,
-                tries: 20
+                name: "after create revisions"
             }
         );
 
-        // Check that the form is inserted into Elastic
         const [list] = await listForms();
         const { data: data1 } = list.data.formBuilder.listForms;
         expect(data1.length).toBe(1);
@@ -158,14 +150,11 @@ describe('Form Builder "Form" Test', () => {
             }
         });
 
-        // Wait until the previous revision is indexed in Elastic as "latest"
         await until(
             () => listForms().then(([data]) => data),
             ({ data }) => data.formBuilder.listForms.data[0].id === id2,
             {
-                name: "after delete revision 3",
-                wait: 500,
-                tries: 20
+                name: "after delete revision 3"
             }
         );
 
@@ -212,9 +201,7 @@ describe('Form Builder "Form" Test', () => {
             () => listForms().then(([data]) => data),
             ({ data }) => data.formBuilder.listForms.data.length === 0,
             {
-                name: "list after delete form",
-                wait: 500,
-                tries: 20
+                name: "list after delete form"
             }
         );
 
@@ -235,9 +222,7 @@ describe('Form Builder "Form" Test', () => {
             () => listForms().then(([data]) => data),
             ({ data }) => data.formBuilder.listForms.data[0].id === id,
             {
-                name: "list forms after publish revision",
-                wait: 500,
-                tries: 20
+                name: "list forms after publish revision"
             }
         );
 
@@ -308,6 +293,8 @@ describe('Form Builder "Form" Test', () => {
 
         await publishRevision({ revision: id });
 
+        await new Promise(res => setTimeout(res, 2000));
+
         // Create form submissions
         const [createSubmission1Response] = await createFormSubmission({
             revision: id,
@@ -325,6 +312,8 @@ describe('Form Builder "Form" Test', () => {
             }
         });
 
+        await new Promise(res => setTimeout(res, 2000));
+
         const [createSubmission2Response] = await createFormSubmission({
             revision: id,
             data: formSubmissionDataB.data,
@@ -341,14 +330,11 @@ describe('Form Builder "Form" Test', () => {
             }
         });
 
-        // Wait until propagated to Elastic...
         await until(
             () => listFormSubmissions({ form: id, sort: "savedOn_ASC" }).then(([data]) => data),
             ({ data }) => data.formBuilder.listFormSubmissions.data.length === 2,
             {
-                name: "after create submission",
-                wait: 500,
-                tries: 200
+                name: "after create submission"
             }
         );
 

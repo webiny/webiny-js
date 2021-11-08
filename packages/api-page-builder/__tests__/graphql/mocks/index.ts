@@ -1,4 +1,4 @@
-import { SecurityIdentity } from "@webiny/api-security";
+import { SecurityIdentity } from "@webiny/api-security/types";
 
 export const NOT_AUTHORIZED_RESPONSE = operation => ({
     data: {
@@ -15,16 +15,14 @@ export const NOT_AUTHORIZED_RESPONSE = operation => ({
     }
 });
 
-export const identityA = new SecurityIdentity({
-    id: "a",
-    login: "a",
+export const identityA: SecurityIdentity = {
+    id: "12345678",
     type: "test",
-    displayName: "Aa"
-});
+    displayName: "John Doe"
+};
 
-export const identityB = new SecurityIdentity({
-    id: "b",
-    login: "b",
+export const identityB: SecurityIdentity = {
+    id: "87654321",
     type: "test",
-    displayName: "Bb"
-});
+    displayName: "Jane Doe"
+};

@@ -1,12 +1,11 @@
+import { createTenancyAndSecurity } from "./tenancySecurity";
 import { createHandler } from "@webiny/handler-aws";
 import graphqlHandlerPlugins from "@webiny/handler-graphql";
-import tenancyPlugins from "@webiny/api-tenancy";
-import securityPlugins from "@webiny/api-security";
 import i18nContext from "@webiny/api-i18n/graphql/context";
 import i18nDynamoDbStorageOperations from "@webiny/api-i18n-ddb";
 import i18nContentPlugins from "@webiny/api-i18n-content/plugins";
 import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
-import { SecurityIdentity } from "@webiny/api-security";
+import { until } from "@webiny/project-utils/testing/helpers/until";
 import filesPlugins from "~/plugins";
 
 // Graphql
@@ -25,8 +24,7 @@ import {
     GET_SETTINGS,
     UPDATE_SETTINGS
 } from "./graphql/fileManagerSettings";
-import { SecurityPermission } from "@webiny/api-security/types";
-import { until } from "./helpers";
+import { SecurityIdentity, SecurityPermission } from "@webiny/api-security/types";
 import { FilePhysicalStoragePlugin } from "~/plugins/definitions/FilePhysicalStoragePlugin";
 
 export interface UseGqlHandlerParams {
@@ -35,7 +33,13 @@ export interface UseGqlHandlerParams {
     plugins?: any;
 }
 
-export default (params?: UseGqlHandlerParams) => {
+const sleep = (ms = 333) => {
+    return new Promise(resolve => {
+        setTimeout(resolve, ms);
+    });
+};
+
+export default (params: UseGqlHandlerParams = {}) => {
     const { permissions, identity, plugins = [] } = params;
     // @ts-ignore
     if (typeof __getStorageOperationsPlugins !== "function") {
@@ -48,44 +52,16 @@ export default (params?: UseGqlHandlerParams) => {
             `A product of "__getStorageOperationsPlugins" must be a function to initialize storage operations.`
         );
     }
-    const tenant = { id: "root", name: "Root", parent: null };
     // Creates the actual handler. Feel free to add additional plugins if needed.
     const handler = createHandler(
         storageOperations(),
         i18nDynamoDbStorageOperations(),
         graphqlHandlerPlugins(),
-        tenancyPlugins(),
-        securityPlugins(),
-        {
-            type: "context",
-            apply(context) {
-                context.tenancy.getCurrentTenant = () => {
-                    return tenant;
-                };
-            }
-        },
+        ...createTenancyAndSecurity({ permissions, identity }),
         i18nContext(),
         i18nContentPlugins(),
         mockLocalesPlugins(),
         filesPlugins(),
-        {
-            type: "security-authorization",
-            name: "security-authorization",
-            getPermissions: () => permissions || [{ name: "*" }]
-        },
-        {
-            type: "security-authentication",
-            authenticate: () => {
-                return (
-                    identity ||
-                    new SecurityIdentity({
-                        id: "mocked",
-                        displayName: "m",
-                        type: "admin"
-                    })
-                );
-            }
-        },
         /**
          * Mock physical file storage plugin.
          */
@@ -115,8 +91,8 @@ export default (params?: UseGqlHandlerParams) => {
     };
 
     return {
-        tenant,
         until,
+        sleep,
         handler,
         invoke,
         // Files

@@ -15,8 +15,6 @@ const getTypeObject = (schema, type) => {
     return schema.types.find(t => t.name === type);
 };
 
-jest.setTimeout(15000);
-
 const createPermissions = ({ models, groups }: { models?: string[]; groups?: string[] }) => [
     {
         name: "cms.settings"
@@ -45,6 +43,8 @@ const createPermissions = ({ models, groups }: { models?: string[]; groups?: str
         locales: ["en-US"]
     }
 ];
+
+jest.setTimeout(100000);
 
 describe("content model test", () => {
     const readHandlerOpts = { path: "read/en-US" };

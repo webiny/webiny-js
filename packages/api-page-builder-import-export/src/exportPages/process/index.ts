@@ -10,10 +10,13 @@ import { invokeHandlerClient } from "~/importPages/client";
 import { NotFoundError } from "@webiny/handler-graphql";
 import { exportPage } from "~/exportPages/utils";
 import { HandlerArgs as ExtractHandlerArgs } from "../combine";
+import { mockSecurity } from "~/mockSecurity";
+import { SecurityIdentity } from "@webiny/api-security/types";
 
 export type HandlerArgs = {
     taskId: string;
     subTaskIndex: number;
+    identity?: SecurityIdentity;
 };
 
 export type HandlerResponse = {
@@ -43,9 +46,13 @@ export default (
         let noPendingTask = true;
         let prevStatusOfSubTask = PageImportExportTaskStatus.PENDING;
 
+        // Disable authorization; this is necessary because we call Page Builder CRUD methods which include authorization checks
+        // and this Lambda is invoked internally, without credentials.
         log("RUNNING Export Pages Process Handler");
         const { invocationArgs: args, pageBuilder } = context;
-        const { taskId, subTaskIndex } = args;
+        const { taskId, subTaskIndex, identity } = args;
+
+        mockSecurity(identity, context);
 
         try {
             /*
@@ -179,7 +186,8 @@ export default (
                     context,
                     name: configuration.handlers.combine,
                     payload: {
-                        taskId
+                        taskId,
+                        identity: context.security.getIdentity()
                     }
                 });
             } else {
@@ -190,7 +198,8 @@ export default (
                     name: configuration.handlers.process,
                     payload: {
                         taskId,
-                        subTaskIndex: subTaskIndex + 1
+                        subTaskIndex: subTaskIndex + 1,
+                        identity: context.security.getIdentity()
                     }
                 });
             }

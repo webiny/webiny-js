@@ -2,15 +2,13 @@ import path from "path";
 import fs from "fs";
 import { createHandler } from "@webiny/handler-aws";
 import graphqlHandlerPlugins from "@webiny/handler-graphql";
-import tenancyPlugins from "@webiny/api-tenancy";
-import securityPlugins from "@webiny/api-security";
 import fileManagerPlugins from "@webiny/api-file-manager/plugins";
 import fileManagerDynamoDbPlugins from "@webiny/api-file-manager-ddb";
 import i18nContext from "@webiny/api-i18n/graphql/context";
 import i18nDynamoDbStorageOperations from "@webiny/api-i18n-ddb";
 import i18nContentPlugins from "@webiny/api-i18n-content/plugins";
 import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
-import { SecurityIdentity } from "@webiny/api-security";
+import { SecurityIdentity } from "@webiny/api-security/types";
 import { createFormBuilder } from "~/index";
 // Graphql
 import { INSTALL as INSTALL_FILE_MANAGER } from "./graphql/fileManagerSettings";
@@ -40,26 +38,19 @@ import {
     EXPORT_FORM_SUBMISSIONS
 } from "./graphql/formSubmission";
 import { SecurityPermission } from "@webiny/api-security/types";
-import { Tenant } from "@webiny/api-tenancy/types";
-import { until } from "./helpers";
-
-const defaultTenant = { id: "root", name: "Root", parent: null };
+import { until } from "@webiny/project-utils/testing/helpers/until";
+import { createTenancyAndSecurity } from "./tenancySecurity";
 
 export interface UseGqlHandlerParams {
     permissions?: SecurityPermission[];
     identity?: SecurityIdentity;
     plugins?: any;
-    tenant?: Tenant;
 }
 
-const defaultIdentity = new SecurityIdentity({
-    id: "mocked",
-    displayName: "Mocked Identity",
-    type: "admin"
-});
+const defaultIdentity = { id: "12345678", type: "admin", displayName: "John Doe" };
 
 export default (params: UseGqlHandlerParams = {}) => {
-    const { permissions, identity, tenant, plugins = [] } = params;
+    const { permissions, identity, plugins = [] } = params;
     // @ts-ignore
     if (typeof __getStorageOperations !== "function") {
         throw new Error(`There is no global "__getStorageOperations" function.`);
@@ -78,16 +69,7 @@ export default (params: UseGqlHandlerParams = {}) => {
     const handler = createHandler(
         ...plugins,
         graphqlHandlerPlugins(),
-        tenancyPlugins(),
-        securityPlugins(),
-        {
-            type: "context",
-            apply(context) {
-                context.tenancy.getCurrentTenant = () => {
-                    return tenant || defaultTenant;
-                };
-            }
-        },
+        ...createTenancyAndSecurity({ permissions, identity: identity || defaultIdentity }),
         i18nContext(),
         i18nDynamoDbStorageOperations(),
         i18nContentPlugins(),
@@ -101,15 +83,6 @@ export default (params: UseGqlHandlerParams = {}) => {
         createFormBuilder({
             storageOperations: createStorageOperations()
         }),
-        {
-            type: "security-authorization",
-            name: "security-authorization",
-            getPermissions: () => permissions || [{ name: "*" }]
-        },
-        {
-            type: "security-authentication",
-            authenticate: () => identity || defaultIdentity
-        },
         {
             type: "api-file-manager-storage",
             name: "api-file-manager-storage",

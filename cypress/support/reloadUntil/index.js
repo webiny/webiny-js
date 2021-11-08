@@ -15,6 +15,7 @@ Cypress.Commands.add("reloadUntil", (callback, options = {}) => {
         function check() {
             retries++;
             return cy.then(async response => {
+                await sleep(REPEAT_WAIT_BETWEEN_RETRIES);
                 const result = await callback(response);
                 try {
                     if (!result) {
@@ -33,7 +34,6 @@ Cypress.Commands.add("reloadUntil", (callback, options = {}) => {
                                 );
                             }
                             cy.log(`Assertion repeat ${repeat} / ${options.repeat}.`);
-                            await sleep(REPEAT_WAIT_BETWEEN_RETRIES);
                             return cy
                                 .log(`Reloading (attempt #${retries + 1})...`)
                                 .reload()

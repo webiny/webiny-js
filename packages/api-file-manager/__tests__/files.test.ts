@@ -1,13 +1,5 @@
 import useGqlHandler from "./useGqlHandler";
-import { SecurityIdentity } from "@webiny/api-security";
 import testFiles from "./data";
-
-const identityA = new SecurityIdentity({
-    id: "a",
-    login: "a",
-    type: "test",
-    displayName: "Aa"
-});
 
 const LONG_STRING = "pneumonoultramicroscopicsilicovolcanoconiosispneumonoultramicroscopi";
 const fileAData = {
@@ -32,12 +24,11 @@ const fileCData = {
     tags: ["art", "sketch", "webiny", "file-c"]
 };
 
+jest.setTimeout(100000);
+
 describe("Files CRUD test", () => {
-    const { createFile, updateFile, createFiles, getFile, listFiles, listTags, until } =
-        useGqlHandler({
-            permissions: [{ name: "*" }],
-            identity: identityA
-        });
+    const { createFile, updateFile, createFiles, getFile, listFiles, listTags, until, sleep } =
+        useGqlHandler();
 
     test("should create, read, update and delete files", async () => {
         const [create] = await createFile({ data: fileAData });
@@ -94,6 +85,7 @@ describe("Files CRUD test", () => {
             id: fileAId,
             data: { tags: [...fileAData.tags, "design"] }
         });
+
         expect(update2).toEqual({
             data: {
                 fileManager: {
@@ -104,6 +96,8 @@ describe("Files CRUD test", () => {
                 }
             }
         });
+
+        await sleep(2000);
 
         // Only update "tags"
         const [update3] = await updateFile({
@@ -125,16 +119,20 @@ describe("Files CRUD test", () => {
             }
         });
 
+        await sleep(2000);
+
         await until(
             () => listFiles().then(([data]) => data),
-            ({ data }) =>
-                Array.isArray(data.fileManager.listFiles.data) &&
-                data.fileManager.listFiles.data.length === 1 &&
-                data.fileManager.listFiles.data[0].tags.length === 1,
+            ({ data }) => {
+                const file = data.fileManager.listFiles.data.find(f => f.id === fileAId);
+                if (!file) {
+                    return false;
+                }
+                return file.tags.length === 1 && file.tags[0] === "sketch";
+            },
             {
-                tries: 10,
-                wait: 400,
-                name: "list files after update tags"
+                name: "list files after update tags",
+                wait: 3000
             }
         );
 
@@ -179,7 +177,7 @@ describe("Files CRUD test", () => {
             ({ data }) => {
                 return data.fileManager.listFiles.data.length === 2;
             },
-            { name: "list all files", tries: 10 }
+            { name: "list all files" }
         );
 
         // Let's get a all files
@@ -357,7 +355,7 @@ describe("Files CRUD test", () => {
             ({ data }) => {
                 return data.fileManager.listFiles.data.length === 3;
             },
-            { name: "list all files", tries: 20 }
+            { name: "list all files" }
         );
 
         const [cResponse] = await listFiles({

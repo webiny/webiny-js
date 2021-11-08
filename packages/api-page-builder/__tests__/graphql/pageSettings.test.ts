@@ -1,5 +1,7 @@
 import useGqlHandler from "./useGqlHandler";
 
+jest.setTimeout(100000);
+
 describe("Page Settings Test", () => {
     const { createCategory, createPage, getPage, updatePage } = useGqlHandler();
 

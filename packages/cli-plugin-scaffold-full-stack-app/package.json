@@ -21,7 +21,6 @@
     "@webiny/cli-plugin-scaffold-graphql-api": "^5.16.0",
     "case": "^1.6.3",
     "chalk": "^4.1.0",
-    "execa": "^5.0.0",
     "ncp": "^2.0.0",
     "replace-in-path": "^1.1.0",
     "terminal-link": "^2.1.1"

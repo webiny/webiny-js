@@ -10,6 +10,9 @@ const NodeEnvironment = require("jest-environment-node");
 const elasticsearchDataGzipCompression =
     require("@webiny/api-elasticsearch/plugins/GzipCompression").default;
 const { ContextPlugin } = require("@webiny/handler/plugins/ContextPlugin");
+const {
+    elasticIndexManager
+} = require("@webiny/project-utils/testing/helpers/elasticIndexManager");
 const dynamoDbPlugins = require("@webiny/db-dynamodb/plugins").default;
 /**
  * For this to work it must load plugins that have already been built
@@ -26,7 +29,7 @@ const getStorageOperationsPlugins = ({ documentClient, elasticsearchClientContex
     return () => {
         const pluginsValue = plugins();
         const dbPluginsValue = dbPlugins({
-            table: "PageBuilder",
+            table: process.env.DB_TABLE,
             driver: new DynamoDbDriver({
                 documentClient
             })
@@ -70,11 +73,6 @@ class PageBuilderTestEnvironment extends NodeEnvironment {
         });
         simulateStream(documentClient, createHandler(simulationContext, dynamoToElastic()));
 
-        const clearEsIndices = async () => {
-            return elasticsearchClient.indices.delete({
-                index: "_all"
-            });
-        };
         /**
          * This is a global function that will be called inside the tests to get all relevant plugins, methods and objects.
          */
@@ -84,10 +82,8 @@ class PageBuilderTestEnvironment extends NodeEnvironment {
                 documentClient
             });
         };
-        this.global.__beforeEach = clearEsIndices;
-        this.global.__afterEach = clearEsIndices;
-        this.global.__beforeAll = clearEsIndices;
-        this.global.__afterAll = clearEsIndices;
+
+        elasticIndexManager(this.global, elasticsearchClient);
     }
 }
 

@@ -3,10 +3,7 @@ const merge = require("merge");
 const tsPreset = require("ts-jest/presets/js-with-babel/jest-preset");
 const { version } = require("@webiny/cli/package.json");
 
-process.env.DB_TABLE_ELASTICSEARCH = "ElasticSearchStream";
-process.env.WEBINY_VERSION = version;
-
-module.exports = ({ path }, presets = []) => {
+module.exports = function ({ path }, presets = []) {
     const name = basename(path);
 
     // Enables us to run tests of only a specific type (for example "integration" or "e2e").
@@ -42,3 +39,59 @@ module.exports = ({ path }, presets = []) => {
         coverageReporters: ["html"]
     });
 };
+
+process.env.DB_TABLE = "DynamoDB";
+process.env.DB_TABLE_ELASTICSEARCH = "ElasticsearchStream";
+process.env.WEBINY_VERSION = version;
+
+const createDynaliteTables = () => {
+    return {
+        tables: [
+            {
+                TableName: process.env.DB_TABLE,
+                KeySchema: [
+                    { AttributeName: "PK", KeyType: "HASH" },
+                    { AttributeName: "SK", KeyType: "RANGE" }
+                ],
+                AttributeDefinitions: [
+                    { AttributeName: "PK", AttributeType: "S" },
+                    { AttributeName: "SK", AttributeType: "S" },
+                    { AttributeName: "GSI1_PK", AttributeType: "S" },
+                    { AttributeName: "GSI1_SK", AttributeType: "S" }
+                ],
+                ProvisionedThroughput: { ReadCapacityUnits: 1, WriteCapacityUnits: 1 },
+                GlobalSecondaryIndexes: [
+                    {
+                        IndexName: "GSI1",
+                        KeySchema: [
+                            { AttributeName: "GSI1_PK", KeyType: "HASH" },
+                            { AttributeName: "GSI1_SK", KeyType: "RANGE" }
+                        ],
+                        Projection: {
+                            ProjectionType: "ALL"
+                        },
+                        ProvisionedThroughput: {
+                            ReadCapacityUnits: 1,
+                            WriteCapacityUnits: 1
+                        }
+                    }
+                ]
+            },
+            {
+                TableName: process.env.DB_TABLE_ELASTICSEARCH,
+                KeySchema: [
+                    { AttributeName: "PK", KeyType: "HASH" },
+                    { AttributeName: "SK", KeyType: "RANGE" }
+                ],
+                AttributeDefinitions: [
+                    { AttributeName: "PK", AttributeType: "S" },
+                    { AttributeName: "SK", AttributeType: "S" }
+                ],
+                ProvisionedThroughput: { ReadCapacityUnits: 1, WriteCapacityUnits: 1 }
+            }
+        ],
+        basePort: 8000
+    };
+};
+
+module.exports.createDynaliteTables = createDynaliteTables;

@@ -16,6 +16,9 @@ const { getElasticsearchOperators } = require("@webiny/api-elasticsearch/operato
  * For this to work it must load plugins that have already been built
  */
 const { createFormBuilderStorageOperations } = require("../../dist/index");
+const {
+    elasticIndexManager
+} = require("@webiny/project-utils/testing/helpers/elasticIndexManager");
 
 if (typeof createFormBuilderStorageOperations !== "function") {
     throw new Error(
@@ -30,7 +33,8 @@ class FormBuilderTestEnvironment extends NodeEnvironment {
         await super.setup();
 
         const elasticsearchClient = createElasticsearchClient({
-            node: `http://localhost:${ELASTICSEARCH_PORT}`
+            node: `http://localhost:${ELASTICSEARCH_PORT}`,
+            auth: {}
         });
         const documentClient = new DocumentClient({
             convertEmptyValues: true,
@@ -40,10 +44,8 @@ class FormBuilderTestEnvironment extends NodeEnvironment {
             accessKeyId: "test",
             secretAccessKey: "test"
         });
-        const elasticsearchClientContext = createElasticsearchClientContextPlugin({
-            endpoint: `http://localhost:${ELASTICSEARCH_PORT}`,
-            auth: {}
-        });
+        const elasticsearchClientContext =
+            createElasticsearchClientContextPlugin(elasticsearchClient);
 
         /**
          * Intercept DocumentClient operations and trigger dynamoToElastic function (almost like a DynamoDB Stream trigger)
@@ -54,11 +56,6 @@ class FormBuilderTestEnvironment extends NodeEnvironment {
         });
         simulateStream(documentClient, createHandler(simulationContext, dynamoToElastic()));
 
-        const clearEsIndices = async () => {
-            return elasticsearchClient.indices.delete({
-                index: "_all"
-            });
-        };
         /**
          * This is a global function that will be called inside the tests to get all relevant plugins, methods and objects.
          */
@@ -66,8 +63,8 @@ class FormBuilderTestEnvironment extends NodeEnvironment {
             return {
                 createStorageOperations: () => {
                     return createFormBuilderStorageOperations({
-                        table: "DynamoDB",
-                        esTable: "ElasticSearchStream",
+                        table: process.env.DB_TABLE,
+                        esTable: process.env.DB_TABLE_ELASTICSEARCH,
                         documentClient,
                         // TODO need to insert elasticsearch client
                         elasticsearch: elasticsearchClient,
@@ -82,7 +79,7 @@ class FormBuilderTestEnvironment extends NodeEnvironment {
                     return [
                         elasticsearchClientContext,
                         ...dbPlugins({
-                            table: "DynamoDB",
+                            table: process.env.DB_TABLE,
                             driver: new DynamoDbDriver({
                                 documentClient
                             })
@@ -94,10 +91,9 @@ class FormBuilderTestEnvironment extends NodeEnvironment {
                 }
             };
         };
-        this.global.__beforeEach = clearEsIndices;
-        this.global.__afterEach = clearEsIndices;
-        this.global.__beforeAll = clearEsIndices;
-        this.global.__afterAll = clearEsIndices;
+
+        // Each test should work with its own ES index, and only those indexes have to be deleted.
+        elasticIndexManager(this.global, elasticsearchClient);
     }
 }
 

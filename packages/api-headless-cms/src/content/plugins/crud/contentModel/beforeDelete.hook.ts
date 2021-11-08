@@ -6,7 +6,7 @@ import {
 } from "../../../../types";
 import WebinyError from "@webiny/error";
 import { runContentModelLifecycleHooks } from "./runContentModelLifecycleHooks";
-import { ContentModelPlugin } from "@webiny/api-headless-cms/content/plugins/ContentModelPlugin";
+import { ContentModelPlugin } from "~/content/plugins/ContentModelPlugin";
 
 interface Args extends CmsContentModelStorageOperationsBeforeDeleteArgs {
     context: CmsContext;

@@ -6,8 +6,6 @@ import { useCategoryReadHandler } from "../utils/useCategoryReadHandler";
 import { useProductManageHandler } from "../utils/useProductManageHandler";
 import { useProductReadHandler } from "../utils/useProductReadHandler";
 
-jest.setTimeout(25000);
-
 const createPermissions = ({ groups, models }: { groups?: string[]; models?: string[] }) => [
     {
         name: "cms.settings"
@@ -79,6 +77,8 @@ const categoryManagerHelper = async manageOpts => {
         publishCategory
     };
 };
+
+jest.setTimeout(100000);
 
 describe("READ - Resolvers", () => {
     let contentModelGroup: CmsContentModelGroup;

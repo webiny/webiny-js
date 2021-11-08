@@ -1,17 +1,15 @@
 import { createHandler } from "@webiny/handler-aws";
 import graphqlHandler from "@webiny/handler-graphql";
-import pageBuilderPlugins from "../../src/graphql";
-import securityPlugins from "@webiny/api-security";
+import pageBuilderPlugins from "~/graphql";
 import i18nContext from "@webiny/api-i18n/graphql/context";
 import i18nDynamoDbStorageOperations from "@webiny/api-i18n-ddb";
 import i18nContentPlugins from "@webiny/api-i18n-content/plugins";
 import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
-
 import fileManagerPlugins from "@webiny/api-file-manager/plugins";
 import fileManagerDdbEsPlugins from "@webiny/api-file-manager-ddb-es";
 import prerenderingServicePlugins from "@webiny/api-prerendering-service/client";
 
-import prerenderingHookPlugins from "../../src/prerendering/hooks";
+import prerenderingHookPlugins from "~/prerendering/hooks";
 
 import { INSTALL, IS_INSTALLED } from "./graphql/install";
 import {
@@ -45,7 +43,7 @@ import {
     OEMBED_DATA
 } from "./graphql/pages";
 
-import { SecurityIdentity } from "@webiny/api-security";
+import { SecurityIdentity } from "@webiny/api-security/types";
 import {
     CREATE_CATEGORY,
     DELETE_CATEGORY,
@@ -57,19 +55,16 @@ import {
 import { GET_SETTINGS, GET_DEFAULT_SETTINGS, UPDATE_SETTINGS } from "./graphql/settings";
 import path from "path";
 import fs from "fs";
-import { Tenant } from "@webiny/api-tenancy/types";
-import { UntilOptions } from "@webiny/project-utils/testing/helpers/until";
-
-const defaultTenant = { id: "root", name: "Root", parent: null };
+import { until } from "@webiny/project-utils/testing/helpers/until";
+import { createTenancyAndSecurity } from "../tenancySecurity";
 
 interface Params {
     permissions?: any;
     identity?: SecurityIdentity;
-    tenant?: Tenant;
     plugins?: any[];
 }
 
-export default ({ permissions, identity, tenant, plugins }: Params = {}) => {
+export default ({ permissions, identity, plugins }: Params = {}) => {
     // @ts-ignore
     if (typeof __getStorageOperationsPlugins !== "function") {
         throw new Error(`There is no global "__getStorageOperationsPlugins" function.`);
@@ -87,28 +82,7 @@ export default ({ permissions, identity, tenant, plugins }: Params = {}) => {
         // TODO figure out a way to load these automatically
         fileManagerDdbEsPlugins(),
         graphqlHandler(),
-        {
-            type: "context",
-            apply: context => {
-                if (context.tenancy) {
-                    return;
-                }
-                context.tenancy = {
-                    getRootTenant: () => defaultTenant,
-                    getTenantById: (id: string) => {
-                        return {
-                            id,
-                            name: id.toUpperCase(),
-                            parent: null
-                        };
-                    },
-                    getCurrentTenant: () => {
-                        return tenant || defaultTenant;
-                    }
-                };
-            }
-        },
-        securityPlugins(),
+        ...createTenancyAndSecurity({ permissions, identity }),
         i18nContext(),
         i18nDynamoDbStorageOperations(),
         i18nContentPlugins(),
@@ -126,21 +100,6 @@ export default ({ permissions, identity, tenant, plugins }: Params = {}) => {
                 }
             }
         }),
-        {
-            type: "security-authorization",
-            name: "security-authorization",
-            getPermissions: () => permissions || [{ name: "*" }]
-        },
-        {
-            type: "security-authentication",
-            authenticate: () =>
-                identity ||
-                new SecurityIdentity({
-                    id: "mocked",
-                    displayName: "m",
-                    type: "a"
-                })
-        },
         {
             type: "api-file-manager-storage",
             name: "api-file-manager-storage",
@@ -190,48 +149,17 @@ export default ({ permissions, identity, tenant, plugins }: Params = {}) => {
         invoke,
         // Helpers.
         sleep,
-        until: async (execute, until, options: UntilOptions = {}) => {
-            const { name = "NO_NAME", tries = 5, wait = 300 } = options;
-
-            let result;
-            let triesCount = 0;
-
-            while (true) {
-                result = await execute();
-
-                let done;
-                try {
-                    done = await until(result);
-                } catch {}
-
-                if (done) {
-                    return result;
-                }
-
-                triesCount++;
-                if (triesCount === tries) {
-                    break;
-                }
-
-                // Wait.
-                await new Promise((resolve: any) => {
-                    setTimeout(() => resolve(), wait);
-                });
-            }
-
-            throw new Error(
-                `[${name}] Tried ${tries} times but failed. Last result that was received: ${JSON.stringify(
-                    result,
-                    null,
-                    2
-                )}`
-            );
-        },
+        until,
 
         // GraphQL queries and mutations.
         // Install.
-        async install(variables) {
-            return invoke({ body: { query: INSTALL, variables } });
+        async install(variables = { insertDemoData: false, name: "Test" }) {
+            return invoke({
+                body: {
+                    query: INSTALL,
+                    variables
+                }
+            });
         },
 
         async isInstalled(variables = {}) {

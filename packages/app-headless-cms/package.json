@@ -53,7 +53,7 @@
     "react-dnd": "^9.3.4",
     "react-dnd-html5-backend": "^9.3.4",
     "react-dom": "^16.14.0",
-    "react-helmet": "^5.2.0",
+    "react-helmet": "^5.2.1",
     "react-hotkeyz": "^1.0.4",
     "react-virtualized": "^9.21.2",
     "shortid": "^2.2.14",

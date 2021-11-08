@@ -10,6 +10,9 @@ const NodeEnvironment = require("jest-environment-node");
 const elasticsearchDataGzipCompression =
     require("@webiny/api-elasticsearch/plugins/GzipCompression").default;
 const { ContextPlugin } = require("@webiny/handler/plugins/ContextPlugin");
+const {
+    elasticIndexManager
+} = require("@webiny/project-utils/testing/helpers/elasticIndexManager");
 /**
  * For this to work it must load plugins that have already been built
  */
@@ -20,24 +23,6 @@ if (typeof plugins !== "function") {
 }
 
 const ELASTICSEARCH_PORT = process.env.ELASTICSEARCH_PORT || "9200";
-
-const getStorageOperationsPlugins = ({ documentClient, elasticsearchClientContext }) => {
-    return () => {
-        const pluginsValue = plugins();
-        const dbPluginsValue = dbPlugins({
-            table: "FileManager",
-            driver: new DynamoDbDriver({
-                documentClient
-            })
-        });
-        return [
-            elasticsearchDataGzipCompression(),
-            ...pluginsValue,
-            ...dbPluginsValue,
-            elasticsearchClientContext
-        ];
-    };
-};
 
 class FileManagerTestEnvironment extends NodeEnvironment {
     async setup() {
@@ -68,29 +53,28 @@ class FileManagerTestEnvironment extends NodeEnvironment {
         });
         simulateStream(documentClient, createHandler(simulationContext, dynamoToElastic()));
 
-        const clearEsIndices = async () => {
-            return elasticsearchClient.indices.delete({
-                index: "_all"
-            });
-        };
         /**
          * This is a global function that will be called inside the tests to get all relevant plugins, methods and objects.
          */
         this.global.__getStorageOperationsPlugins = () => {
-            return getStorageOperationsPlugins({
-                elasticsearchClientContext,
-                documentClient
-            });
+            return () => {
+                const pluginsValue = plugins();
+                const dbPluginsValue = dbPlugins({
+                    table: process.env.DB_TABLE,
+                    driver: new DynamoDbDriver({
+                        documentClient
+                    })
+                });
+                return [
+                    elasticsearchDataGzipCompression(),
+                    ...pluginsValue,
+                    ...dbPluginsValue,
+                    elasticsearchClientContext
+                ];
+            };
         };
-        this.global.__beforeEach = async () => {
-            await clearEsIndices();
-            return elasticsearchClient.indices.create({
-                index: "root-file-manager"
-            });
-        };
-        this.global.__afterEach = clearEsIndices;
-        this.global.__beforeAll = clearEsIndices;
-        this.global.__afterAll = clearEsIndices;
+
+        elasticIndexManager(this.global, elasticsearchClient);
     }
 }
 

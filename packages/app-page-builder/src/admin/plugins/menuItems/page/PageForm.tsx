@@ -33,12 +33,8 @@ const LinkForm = ({ data, onSubmit, onCancel }) => {
                                             {...rest}
                                             onChange={(value, selection) => {
                                                 onChange(value);
-                                                if (!data.title) {
-                                                    form.setState(state => {
-                                                        if (selection) {
-                                                            state.data.title = selection.title;
-                                                        }
-                                                    });
+                                                if (!data.title && selection) {
+                                                    form.setValue("title", selection.title);
                                                 }
                                             }}
                                             label="Page"
