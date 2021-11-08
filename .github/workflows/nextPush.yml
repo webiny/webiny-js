@@ -201,13 +201,13 @@ jobs:
           ref: ${{ github.event.pull_request.head.ref }}
 
       - uses: actions/cache@v2
-        id: yarn-cache
+        id: yarn-cache-org
         with:
           path: .yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
 
       - uses: actions/cache@v2
-        id: global-daily-packages-cache
+        id: global-daily-packages-cache-org
         with:
           path: .webiny/cached-packages
           key: ${{ runner.os }}-${{ needs.init.outputs.day }}-${{ secrets.RANDOM_CACHE_KEY_SUFFIX }}
