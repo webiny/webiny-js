@@ -196,7 +196,7 @@ jobs:
       - uses: actions/checkout@v2
         with:
           #  fetch-depth: 10
-          path: branch-next
+          path: next
           # DELETE - Prevents the detached HEAD problem (https://github.com/actions/checkout/issues/124)
           ref: ${{ github.event.pull_request.head.ref }}
 
