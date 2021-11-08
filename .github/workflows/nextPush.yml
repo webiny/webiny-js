@@ -201,50 +201,38 @@ jobs:
           ref: ${{ github.event.pull_request.head.ref }}
 
       - uses: actions/cache@v2
-        id: yarn-cache-org
-        with:
-          path: .yarn/cache
-          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-
-      - uses: actions/cache@v2
-        id: global-daily-packages-cache-org
-        with:
-          path: .webiny/cached-packages
-          key: ${{ runner.os }}-${{ needs.e2e-init.outputs.day }}-${{ secrets.RANDOM_CACHE_KEY_SUFFIX }}
-
-      - uses: actions/cache@v2
         id: yarn-cache
         with:
-          path: branch-next/.yarn/cache
-          key: yarn-${{ runner.os }}-${{ hashFiles('branch-next/**/yarn.lock') }}
+          path: next/.yarn/cache
+          key: yarn-${{ runner.os }}-${{ hashFiles('next/**/yarn.lock') }}
 
       - uses: actions/cache@v2
         id: cached-packages
         with:
-          path: .webiny/cached-packages
+          path: next/.webiny/cached-packages
           key: ${{ runner.os }}-${{ needs.e2e-init.outputs.day }}-${{ secrets.RANDOM_CACHE_KEY_SUFFIX }}
 
       - name: Install dependencies
-        working-directory: branch-next
+        working-directory: next
         run: yarn --immutable
 
       - name: Build packages
-        working-directory: branch-next
+        working-directory: next
         run: node scripts/buildWithCache.js
 
       - uses: actions/cache@v2
         id: packages-cache
         with:
-          path: branch-next/.webiny/cached-packages
+          path: next/.webiny/cached-packages
           key: packages-cache-${{ needs.e2e-init.outputs.ts }}
 
       # Publish built packages to Verdaccio.
       - name: Start Verdaccio local server
-        working-directory: branch-next
+        working-directory: next
         run: npx pm2 start verdaccio -- -c .verdaccio.yaml
 
       - name: Create ".npmrc" file in the project root, with a dummy auth token
-        working-directory: branch-next
+        working-directory: next
         run: echo '//localhost:4873/:_authToken="dummy-auth-token"' > .npmrc
 
       - name: Configure NPM to use local registry
@@ -257,11 +245,11 @@ jobs:
         run: git config --global user.name "webiny-bot"
 
       - name: Version packages (no push, no changelog)
-        working-directory: branch-next
+        working-directory: next
         run: yarn lerna:version:verdaccio
 
       - name: Release to Verdaccio
-        working-directory: branch-next
+        working-directory: next
         run: yarn lerna:publish:verdaccio
 
       - name: Create verdaccio-files artifact
@@ -270,8 +258,8 @@ jobs:
           name: verdaccio-files
           retention-days: 1
           path: |
-            branch-next/.verdaccio/
-            branch-next/.verdaccio.yaml
+            next/.verdaccio/
+            next/.verdaccio.yaml
 
         # Create a new Webiny project, deploy it, and complete the installation wizard.
       - name: Disable Webiny telemetry
@@ -323,18 +311,18 @@ jobs:
 
       # Generates a new cypress.json config.
       - name: Create Cypress config
-        working-directory: branch-next
+        working-directory: next
         run: yarn setup-cypress
 
       # We also want to store the generated Cypress config as a job output.
       # This way we don't have to generate it again (which may take ~30s).
       - name: Save Cypress config
         id: save-cypress-config
-        working-directory: branch-next
+        working-directory: next
         run: echo "::set-output name=cypress-config::$(cat cypress.json | tr -d ' \t\n\r')"
 
       - name: Cypress - run installation wizard test
-        working-directory: branch-next
+        working-directory: next
         run: yarn cypress run --spec "cypress/integration/adminInstallation/**/*.spec.js"
 
       - name: Upload screenshots to Slack
@@ -343,7 +331,7 @@ jobs:
         with:
           token: ${{ secrets.SLACK_TOKEN }}
           channels: C027VQG8080
-          workdir: branch-next/cypress
+          workdir: next/cypress
           message-text: Could not complete Admin Area installation wizard. Screenshots have been placed in this thread, good luck.
 
   e2e-cypress-tests:
@@ -369,32 +357,32 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
-          path: branch-next
+          path: next
 
       - uses: actions/cache@v2
         with:
-          path: branch-next/.webiny/cached-packages
+          path: next/.webiny/cached-packages
           key: packages-cache-${{ needs.e2e-init.outputs.ts }}
 
       - uses: actions/cache@v2
         with:
-          path: branch-next/.yarn/cache
-          key: yarn-${{ runner.os }}-${{ hashFiles('branch-next/**/yarn.lock') }}
+          path: next/.yarn/cache
+          key: yarn-${{ runner.os }}-${{ hashFiles('next/**/yarn.lock') }}
 
       - name: Install dependencies
-        working-directory: branch-next
+        working-directory: next
         run: yarn --immutable
 
       - name: Build packages
-        working-directory: branch-next
+        working-directory: next
         run: node scripts/buildWithCache.js
 
       - name: Set up Cypress config
-        working-directory: branch-next
+        working-directory: next
         run: echo '${{ needs.e2e-project-setup.outputs.cypress-config }}' > cypress.json
 
       - name: Cypress - run "${{ matrix.cypress-folder }}" tests
-        working-directory: branch-next
+        working-directory: next
         run: yarn cypress run --spec "${{ matrix.cypress-folder }}"
 
       - name: Upload screenshots to Slack
@@ -403,5 +391,5 @@ jobs:
         with:
           token: ${{ secrets.SLACK_TOKEN }}
           channels: C027VQG8080
-          workdir: branch-next/cypress
+          workdir: next/cypress
           message-text: Cypress tests failed! Screenshots have been placed in this thread, good luck.
