@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.17.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.16.0...v5.17.0-beta.1) (2021-11-08)
+
+
+### Bug Fixes
+
+* **cli:** add migration for page import/export ([0bc1e4e](https://github.com/webiny/webiny-js/commit/0bc1e4ef312ecf14ed1004eea620c82eb3d07e48))
+
+
+### Features
+
+* **api-prerendering-service:** DynamoDB storage operations with upgrade ([#1996](https://github.com/webiny/webiny-js/issues/1996)) ([1d3602e](https://github.com/webiny/webiny-js/commit/1d3602e22015a956403cce7687d3d846826724ae))
+* **cli:** upgrade pulumi in 5.17.0 ([#2004](https://github.com/webiny/webiny-js/issues/2004)) ([70e304b](https://github.com/webiny/webiny-js/commit/70e304b865e311a81f250426ba324c6df08cfc94))
+* new security and multi-tenancy ([#1993](https://github.com/webiny/webiny-js/issues/1993)) ([99ecfca](https://github.com/webiny/webiny-js/commit/99ecfca45011cb0f6476c3bc5c883c56a055aaa0))
+
+
+
+
+
 # [5.16.0](https://github.com/webiny/webiny-js/compare/v5.16.0-beta.4...v5.16.0) (2021-10-21)
 
 **Note:** Version bump only for package @webiny/cli

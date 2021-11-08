@@ -3,6 +3,27 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.17.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.16.0...v5.17.0-beta.1) (2021-11-08)
+
+
+### Bug Fixes
+
+* **cwp-template-aws:** add missing ELASTIC_SEARCH_INDEX_PREFIX variable ([6cec25a](https://github.com/webiny/webiny-js/commit/6cec25a1c460a2b7feaea138cc06901b1c2bcd26))
+* **cwp-template-aws:** disable storage ops selection ([0835c9b](https://github.com/webiny/webiny-js/commit/0835c9bfd8b83dd49b79ece87a58be9997cb9bc3))
+* **cwp-template-aws:** improve import naming ([078eb8a](https://github.com/webiny/webiny-js/commit/078eb8a95240e3d70cf9e9bcd11ff44c4fc476d3))
+* remove obsolete files ([59c5dea](https://github.com/webiny/webiny-js/commit/59c5dead517f4942b73f9a038486bd5c4d315b1c))
+* update CWP template ([4e63c3c](https://github.com/webiny/webiny-js/commit/4e63c3c1e12b6ad091dc767a52393509223c6d79))
+
+
+### Features
+
+* **api-prerendering-service:** DynamoDB storage operations with upgrade ([#1996](https://github.com/webiny/webiny-js/issues/1996)) ([1d3602e](https://github.com/webiny/webiny-js/commit/1d3602e22015a956403cce7687d3d846826724ae))
+* new security and multi-tenancy ([#1993](https://github.com/webiny/webiny-js/issues/1993)) ([99ecfca](https://github.com/webiny/webiny-js/commit/99ecfca45011cb0f6476c3bc5c883c56a055aaa0))
+
+
+
+
+
 # [5.16.0](https://github.com/webiny/webiny-js/compare/v5.16.0-beta.4...v5.16.0) (2021-10-21)
 
 **Note:** Version bump only for package @webiny/cwp-template-aws

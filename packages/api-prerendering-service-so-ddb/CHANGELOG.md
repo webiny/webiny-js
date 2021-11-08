@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.17.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.16.0...v5.17.0-beta.1) (2021-11-08)
+
+
+### Features
+
+* **api-prerendering-service:** DynamoDB storage operations with upgrade ([#1996](https://github.com/webiny/webiny-js/issues/1996)) ([1d3602e](https://github.com/webiny/webiny-js/commit/1d3602e22015a956403cce7687d3d846826724ae))
+
+
+
+
+
 # [5.15.0](https://github.com/webiny/webiny-js/compare/v5.15.0-beta.3...v5.15.0) (2021-09-30)
 
 **Note:** Version bump only for package @webiny/api-prerendering-service
