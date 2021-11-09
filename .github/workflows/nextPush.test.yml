@@ -6,6 +6,7 @@ on:
 
 env:
   NODE_OPTIONS: --max_old_space_size=4096
+  UV_THREADPOOL_SIZE: 2
   AWS_REGION: eu-central-1
   BUILD_OVERRIDES: '{"tsConfig":{"compilerOptions":{"skipLibCheck":true}}}'
 
@@ -210,6 +211,10 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: 12
+
+      - name: How many cores?
+        working-directory: next
+        run: node --eval "console.log(require('os').cpus().length)"
 
       - uses: actions/checkout@v2
         with:
