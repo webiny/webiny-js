@@ -37,7 +37,8 @@ module.exports = async (inputs, context) => {
     const t = new Date();
 
     if (build) {
-        console.log('building...')
+        context.info(`Building ${context.info.hl(projectApplication.packages.length)} packages:`);
+        projectApplication.packages.forEach(item => console.log(`‣ ${item.name} (${item.paths.root})`))
         const promises = [];
 
         for (let i = 0; i < projectApplication.packages.length; i++) {
@@ -53,7 +54,6 @@ module.exports = async (inputs, context) => {
                     worker.on("message", message => {
                         try {
                             const { error } = JSON.parse(message);
-                            console.log('done', current)
                             resolve({
                                 package: current,
                                 error
@@ -91,8 +91,6 @@ module.exports = async (inputs, context) => {
             }
         }
 
-        console.log(errors)
-
         if (errors.length) {
             throw Error(
                 `An error occurred while building the ${context.error.hl(
@@ -101,6 +99,8 @@ module.exports = async (inputs, context) => {
             );
         }
         console.log("Build Time:", (new Date() - t) / 1000 + "s");
+    } else {
+        context.success("Skipping building of packages...");
     }
 
     process.exit();
