@@ -57,7 +57,7 @@ const babelCompile = async ({ config }) => {
     // We want to have the same behaviour that the Babel CLI's "--copy-files" flag provides.
     const files = glob.sync(join(config.cwd, "src/**/*.*").replace(/\\/g, "/"), { nodir: true });
     const compilations = [];
-    const copyTasks = [];
+    const copies = [];
 
     for (let i = 0; i < files.length; i++) {
         const file = files[i];
@@ -66,10 +66,25 @@ const babelCompile = async ({ config }) => {
                 babel.transformFileAsync(file, { cwd: config.cwd }).then(results => [file, results])
             );
         } else {
-            copyTasks.push(file);
+            copies.push(
+                new Promise((resolve, reject) => {
+                    try {
+                        const destPath = file.replace("src", "dist");
+                        if (!fs.existsSync(dirname(destPath))) {
+                            fs.mkdirSync(dirname(destPath), { recursive: true });
+                        }
+
+                        fs.copyFileSync(file, destPath);
+                        resolve();
+                    } catch (e) {
+                        reject(e);
+                    }
+                })
+            );
         }
     }
 
+    // At this point, just wait for compilations to be completed so we can proceed with writing the files ASAP.
     await Promise.all(compilations);
 
     const writes = [];
@@ -85,14 +100,7 @@ const babelCompile = async ({ config }) => {
         writes.push(paths.map, map, "utf8");
     }
 
-    const copies = [];
-    for (let i = 0; i < copyTasks.length; i++) {
-        const file = copyTasks[i];
-        const destPath = file.replace("src", "dist");
-        fs.mkdirSync(dirname(destPath), { recursive: true });
-        copies.push(fs.promises.copyFile(file, destPath));
-    }
-
+    // Wait until all files have been written to disk.
     return Promise.all([...writes, ...copies]);
 };
 
