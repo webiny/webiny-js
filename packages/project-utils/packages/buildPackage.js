@@ -1,6 +1,6 @@
 const fs = require("fs");
 const rimraf = require("rimraf");
-const { join, dirname } = require("path");
+const { join, dirname, extname } = require("path");
 const { log } = require("@webiny/cli/utils");
 const babel = require("@babel/core");
 const ts = require("ttypescript");
@@ -51,15 +51,23 @@ const defaults = {
     }
 };
 
+const BABEL_COMPILE_EXTENSIONS = [".js", ".jsx", ".ts", ".tsx"];
 const babelCompile = async ({ config }) => {
-    const files = glob.sync(join(config.cwd, "src/**/*.{js,jsx,ts,tsx}").replace(/\\/g, "/"));
+    // We're passing "*.*" just because we want to copy all files that cannot be compiled.
+    // We want to have the same behaviour that the Babel CLI's "--copy-files" flag provides.
+    const files = glob.sync(join(config.cwd, "src/**/*.*").replace(/\\/g, "/"), { nodir: true });
     const compilations = [];
+    const copyTasks = [];
 
     for (let i = 0; i < files.length; i++) {
         const file = files[i];
-        compilations.push(
-            babel.transformFileAsync(file, { cwd: config.cwd }).then(results => [file, results])
-        );
+        if (BABEL_COMPILE_EXTENSIONS.includes(extname(file))) {
+            compilations.push(
+                babel.transformFileAsync(file, { cwd: config.cwd }).then(results => [file, results])
+            );
+        } else {
+            copyTasks.push(file);
+        }
     }
 
     await Promise.all(compilations);
@@ -77,7 +85,15 @@ const babelCompile = async ({ config }) => {
         writes.push(paths.map, map, "utf8");
     }
 
-    return Promise.all(writes);
+    const copies = [];
+    for (let i = 0; i < copyTasks.length; i++) {
+        const file = copyTasks[i];
+        const destPath = file.replace("src", "dist");
+        fs.mkdirSync(dirname(destPath), { recursive: true });
+        copies.push(fs.promises.copyFile(file, destPath));
+    }
+
+    return Promise.all([...writes, ...copies]);
 };
 
 const tsCompile = params => {
