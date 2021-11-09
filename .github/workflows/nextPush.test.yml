@@ -213,6 +213,7 @@ jobs:
 
       - uses: actions/checkout@v2
         with:
+          path: next
           # We want to make sure all commits are present and that the next release version is calculated correctly.
           fetch-depth: 0
           # Fixes Lerna's detached HEAD issue (https://github.com/lerna/lerna/issues/2443).
