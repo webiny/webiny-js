@@ -1,19 +1,8 @@
-import { buildFunction, watchFunction } from "@webiny/project-utils";
+import { createBuildFunction, createWatchFunction } from "@webiny/project-utils";
 
 export default {
     commands: {
-        build: (options, context) =>
-            buildFunction(
-                {
-                    ...options,
-                    output: {
-                        path: __dirname + "/build",
-                        filename: "handler.js"
-                    },
-                    entry: __dirname + "/src/index.ts"
-                },
-                context
-            ),
-        watch: watchFunction
+        build: createBuildFunction({ cwd: __dirname }),
+        watch: createWatchFunction({ cwd: __dirname })
     }
 };

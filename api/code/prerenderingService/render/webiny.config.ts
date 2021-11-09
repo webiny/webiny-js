@@ -1,36 +1,13 @@
-import { buildFunction, watchFunction } from "@webiny/project-utils";
+import { createBuildFunction, createWatchFunction } from "@webiny/project-utils";
+
+const webpack = config => {
+    (config.externals as any).push("chrome-aws-lambda");
+    return config;
+};
 
 export default {
     commands: {
-        build: (options, context) =>
-            buildFunction(
-                {
-                    ...options,
-                    webpack(config) {
-                        // @ts-ignore
-                        config.externals.push("chrome-aws-lambda");
-                        return config;
-                    },
-                    output: {
-                        path: __dirname + "/build",
-                        filename: "handler.js"
-                    },
-                    entry: __dirname + "/src/index.ts"
-                },
-                context
-            ),
-        watch(options, context) {
-            return watchFunction(
-                {
-                    ...options,
-                    webpack(config) {
-                        // @ts-ignore
-                        config.externals.push("chrome-aws-lambda");
-                        return config;
-                    }
-                },
-                context
-            );
-        }
+        build: createBuildFunction({ cwd: __dirname, overrides: { webpack } }),
+        watch: createWatchFunction({ cwd: __dirname, overrides: { webpack } })
     }
 };
