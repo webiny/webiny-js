@@ -130,9 +130,7 @@ describe("publishing workflow", () => {
             listPages,
             ([res]) => res.data.pageBuilder.listPages.data[2].status === "reviewRequested",
             {
-                name: "after request review and get that page was done",
-                wait: 400,
-                tries: 30
+                name: "after request review and get that page was done"
             }
         );
 

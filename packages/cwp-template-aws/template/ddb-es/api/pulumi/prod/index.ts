@@ -99,6 +99,11 @@ export default () => {
             DB_TABLE: dynamoDb.table.name,
             DB_TABLE_ELASTICSEARCH: elasticsearch.table.name,
             ELASTIC_SEARCH_ENDPOINT: elasticsearch.domain.endpoint,
+
+            // Not required. Useful for testing purposes / ephemeral environments.
+            // https://www.webiny.com/docs/key-topics/ci-cd/testing/slow-ephemeral-environments
+            ELASTIC_SEARCH_INDEX_PREFIX: process.env.ELASTIC_SEARCH_INDEX_PREFIX,
+
             S3_BUCKET: fileManager.bucket.id,
             DEBUG,
             WEBINY_LOGS_FORWARD_URL

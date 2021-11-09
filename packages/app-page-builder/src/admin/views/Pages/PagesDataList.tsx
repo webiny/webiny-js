@@ -56,7 +56,7 @@ const InlineLoaderWrapper = styled("div")({
 const Actions = styled("div")({
     display: "flex",
     justifyContent: "flex-end",
-    "& button:not(:first-child)": {
+    "& button:not(:first-of-type)": {
         marginLeft: 16
     }
 });
@@ -276,7 +276,12 @@ const PagesDataList = ({ onCreatePage, canCreate, onImportPage }: PagesDataListP
                 />
             }
             multiSelectActions={
-                <ExportPagesButton getMultiSelected={multiSelectProps.getMultiSelected} />
+                <ExportPagesButton
+                    getMultiSelected={multiSelectProps.getMultiSelected}
+                    where={where}
+                    sort={sort}
+                    search={search}
+                />
             }
             multiSelectAll={multiSelectProps.multiSelectAll}
             isAllMultiSelected={multiSelectProps.isAllMultiSelected}

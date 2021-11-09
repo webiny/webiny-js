@@ -6,27 +6,40 @@ on:
 
 env:
   NODE_OPTIONS: --max_old_space_size=4096
+  AWS_REGION: eu-central-1
+  BUILD_OVERRIDES: '{"tsConfig":{"compilerOptions":{"skipLibCheck":true}}}'
 
 jobs:
-  cache-keys:
-    name: Create cache keys
+  init:
+    name: Init
     runs-on: ubuntu-latest
     outputs:
-      day: ${{ steps.create-cache-keys.outputs.day }}
-      ts: ${{ steps.create-timestamp.outputs.ts }}
+      jest-packages: ${{ steps.list-jest-packages.outputs.jest-packages }}
+      day: ${{ steps.get-day.outputs.day }}
+      ts: ${{ steps.get-timestamp.outputs.ts }}
     steps:
-      - name: Create cache key (day)
-        id: create-cache-keys
-        run: echo "::set-output name=day::$(node --eval "console.log(new Date().getDate() + new Date().getDate())")"
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 12
 
-      - name: Create timestamp
-        id: create-timestamp
+      - uses: actions/checkout@v2
+
+      - name: Get day of the month
+        id: get-day
+        run: echo "::set-output name=day::$(node --eval "console.log(new Date().getDate())")"
+
+      - name: Get timestamp
+        id: get-timestamp
         run: echo "::set-output name=ts::$(node --eval "console.log(new Date().getTime())")"
 
-  cache-dependencies-packages:
-    name: Cache dependencies and packages
+      - name: List packages with Jest tests
+        id: list-jest-packages
+        run: echo "::set-output name=jest-packages::$(node scripts/listPackagesWithTests.js)"
+
+  build:
+    needs: init
+    name: Build
     runs-on: ubuntu-latest
-    needs: cache-keys
     steps:
       - uses: actions/setup-node@v2
         with:
@@ -41,21 +54,25 @@ jobs:
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
 
       - uses: actions/cache@v2
-        id: cached-packages
+        id: global-daily-packages-cache
         with:
           path: .webiny/cached-packages
-          key: ${{ runner.os }}-${{ needs.cache-keys.outputs.day }}-${{ secrets.RANDOM_CACHE_KEY_SUFFIX }}
+          key: ${{ runner.os }}-${{ needs.init.outputs.day }}-${{ secrets.RANDOM_CACHE_KEY_SUFFIX }}
 
       - name: Install dependencies
-        if: steps.yarn-cache.outputs.cache-hit != 'true' || steps.cached-packages.outputs.cache-hit != 'true'
         run: yarn --immutable
 
       - name: Build packages
-        if: steps.cached-packages.outputs.cache-hit != 'true'
-        run: node scripts/buildWithCache.js
+        run: node scripts/buildWithCache.js --build-overrides='${{ env.BUILD_OVERRIDES }}'
+
+      - uses: actions/cache@v2
+        id: packages-cache
+        with:
+          path: .webiny/cached-packages
+          key: packages-cache-${{ needs.init.outputs.ts }}
 
   code-analysis:
-    needs: [cache-keys, cache-dependencies-packages]
+    needs: [init, build]
     name: Static code analysis
     runs-on: ubuntu-latest
     steps:
@@ -73,7 +90,7 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: .webiny/cached-packages
-          key: ${{ runner.os }}-${{ needs.cache-keys.outputs.day }}-${{ secrets.RANDOM_CACHE_KEY_SUFFIX }}
+          key: packages-cache-${{ needs.init.outputs.ts }}
 
       - name: Install dependencies
         run: yarn --immutable
@@ -90,14 +107,36 @@ jobs:
       - name: ESLint
         run: yarn eslint
 
+  code-analysis-typescript:
+    name: Static code analysis (TypeScript)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 12
+
+      - uses: actions/checkout@v2
+
+      - uses: actions/cache@v2
+        with:
+          path: .yarn/cache
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+
+      - name: Install dependencies
+        run: yarn --immutable
+
+      - name: Build packages (full)
+        run: node scripts/buildWithCache.js
+
   jest-tests:
-    needs: [cache-keys, cache-dependencies-packages]
-    name: Jest tests
+    needs: [init, build]
+    name: ${{ matrix.package }} (${{ matrix.os }}, Node v${{ matrix.node }})
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        node: [12, 14]
+        node: [14]
+        package: ${{ fromJson(needs.init.outputs.jest-packages) }}
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/setup-node@v2
@@ -117,18 +156,56 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: .webiny/cached-packages
-          key: ${{ runner.os }}-${{ needs.cache-keys.outputs.day }}-${{ secrets.RANDOM_CACHE_KEY_SUFFIX }}
+          key: packages-cache-${{ needs.init.outputs.ts }}
 
       - name: Build packages
-        run: node scripts/buildWithCache.js
+        run: node scripts/buildWithCache.js --build-overrides='${{ env.BUILD_OVERRIDES }}'
 
       - name: Run tests
-        run: yarn test
+        run: yarn test ${{ matrix.package }}
 
-  verdaccio-publish:
-    needs: [cache-keys, cache-dependencies-packages]
-    name: Publish to Verdaccio
+  e2e-init:
+    name: Init (E2E)
     runs-on: ubuntu-latest
+    outputs:
+      day: ${{ steps.get-day.outputs.day }}
+      ts: ${{ steps.get-timestamp.outputs.ts }}
+      cypress-folders: ${{ steps.list-cypress-folders.outputs.cypress-folders }}
+    steps:
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 12
+
+      - uses: actions/checkout@v2
+
+      - name: Get day of the month
+        id: get-day
+        run: echo "::set-output name=day::$(node --eval "console.log(new Date().getDate())")"
+
+      - name: Get timestamp
+        id: get-timestamp
+        run: echo "::set-output name=ts::$(node --eval "console.log(new Date().getTime())")"
+
+      - name: List Cypress tests folders
+        id: list-cypress-folders
+        run: echo "::set-output name=cypress-folders::$(node scripts/listCypressTestsFolders.js)"
+
+  e2e-project-setup:
+    needs: e2e-init
+    name: Project setup (E2E)
+    runs-on: ubuntu-latest
+    outputs:
+      cypress-config: ${{ steps.save-cypress-config.outputs.cypress-config }}
+    environment: next
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_ELASTIC_SEARCH_DOMAIN_NAME: ${{ secrets.AWS_ELASTIC_SEARCH_DOMAIN_NAME }}
+      ELASTIC_SEARCH_INDEX_PREFIX: ${{ needs.e2e-init.outputs.ts }}_
+      PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
+      PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
+      WEBINY_PULUMI_BACKEND: ${{ secrets.WEBINY_PULUMI_BACKEND }}_${{ needs.e2e-init.outputs.ts }}
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
     steps:
       - uses: actions/setup-node@v2
         with:
@@ -136,28 +213,43 @@ jobs:
 
       - uses: actions/checkout@v2
         with:
+          # We want to make sure all commits are present and that the next release version is calculated correctly.
           fetch-depth: 0
+          path: next
 
       - uses: actions/cache@v2
+        id: yarn-cache
         with:
-          path: .yarn/cache
-          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          path: next/.yarn/cache
+          key: yarn-${{ runner.os }}-${{ hashFiles('next/**/yarn.lock') }}
 
       - uses: actions/cache@v2
+        id: cached-packages
         with:
-          path: .webiny/cached-packages
-          key: ${{ runner.os }}-${{ needs.cache-keys.outputs.day }}-${{ secrets.RANDOM_CACHE_KEY_SUFFIX }}
+          path: next/.webiny/cached-packages
+          key: ${{ runner.os }}-${{ needs.e2e-init.outputs.day }}-${{ secrets.RANDOM_CACHE_KEY_SUFFIX }}
 
       - name: Install dependencies
+        working-directory: next
         run: yarn --immutable
 
       - name: Build packages
-        run: node scripts/buildWithCache.js
+        working-directory: next
+        run: node scripts/buildWithCache.js --build-overrides='${{ env.BUILD_OVERRIDES }}'
 
+      - uses: actions/cache@v2
+        id: packages-cache
+        with:
+          path: next/.webiny/cached-packages
+          key: packages-cache-${{ needs.e2e-init.outputs.ts }}
+
+      # Publish built packages to Verdaccio.
       - name: Start Verdaccio local server
+        working-directory: next
         run: npx pm2 start verdaccio -- -c .verdaccio.yaml
 
       - name: Create ".npmrc" file in the project root, with a dummy auth token
+        working-directory: next
         run: echo '//localhost:4873/:_authToken="dummy-auth-token"' > .npmrc
 
       - name: Configure NPM to use local registry
@@ -170,18 +262,12 @@ jobs:
         run: git config --global user.name "webiny-bot"
 
       - name: Version packages (no push, no changelog)
+        working-directory: next
         run: yarn lerna:version:verdaccio
 
       - name: Release to Verdaccio
+        working-directory: next
         run: yarn lerna:publish:verdaccio
-
-      - name: Cache Verdaccio files
-        uses: actions/cache@v2
-        with:
-          key: verdaccio-files-${{ needs.cache-keys.outputs.ts }}
-          path: |
-            .verdaccio/
-            .verdaccio.yaml
 
       - name: Create verdaccio-files artifact
         uses: actions/upload-artifact@v2
@@ -189,127 +275,33 @@ jobs:
           name: verdaccio-files
           retention-days: 1
           path: |
-            .verdaccio/
-            .verdaccio.yaml
+            next/.verdaccio/
+            next/.verdaccio.yaml
 
-  test-create-webiny-project:
-    needs: [cache-keys, verdaccio-publish]
-    name: Test "create-webiny-project" (different operating systems)
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest]
-        node: [12, 14]
-    runs-on: ${{ matrix.os }}
-    env:
-      YARN_ENABLE_IMMUTABLE_INSTALLS: false
-    steps:
-      - uses: actions/setup-node@v2
-        with:
-          node-version: ${{ matrix.node }}
-
-      - name: Retrieve cached Verdaccio files
-        uses: actions/cache@v2
-        with:
-          key: verdaccio-files-${{ needs.cache-keys.outputs.ts }}
-          path: |
-            .verdaccio/
-            .verdaccio.yaml
-
-      - name: Move cached Verdaccio files into verdaccio-files folder
-        run: mkdir verdaccio-files && mv .verdaccio verdaccio-files/.verdaccio && mv .verdaccio.yaml verdaccio-files/.verdaccio.yaml
-
-      - name: Start Verdaccio local server
-        working-directory: verdaccio-files
-        run: yarn add pm2 verdaccio && npx pm2 start verdaccio -- -c .verdaccio.yaml
-
-      - name: Configure NPM to use local registry
-        run: npm config set registry http://localhost:4873
-
-      - name: Set git email (needed for create-webiny-project)
-        run: git config --global user.email "webiny-bot@webiny.com"
-
-      - name: Set git username (needed for create-webiny-project)
-        run: git config --global user.name "webiny-bot"
-
+        # Create a new Webiny project, deploy it, and complete the installation wizard.
       - name: Disable Webiny telemetry
         run: >
           mkdir ~/.webiny &&
           echo '{ "id": "ci", "telemetry": false }' > ~/.webiny/config
 
+      - name: Create directory
+        run: mkdir xyz
+
       - name: Create a new Webiny project
+        working-directory: xyz
         run: >
           npx create-webiny-project@next test-project
           --tag next --no-interactive
           --assign-to-yarnrc '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
-          --template-options '{"region":"eu-central-1","storageOperations":"ddb-es"}'
+          --template-options '{"region":"${{ env.AWS_REGION }}","storageOperations":"ddb-es"}'
 
-  e2e-tests:
-    needs: [cache-keys, verdaccio-publish]
-    name: End-to-end tests
-    runs-on: ubuntu-latest
-    environment: next
-    env:
-      NODE_OPTIONS: --max_old_space_size=4096
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      AWS_ELASTIC_SEARCH_DOMAIN_NAME: ${{ secrets.AWS_ELASTIC_SEARCH_DOMAIN_NAME }}
-      ELASTIC_SEARCH_INDEX_PREFIX: ${{ needs.cache-keys.outputs.ts }}_
-      PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
-      PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
-      WEBINY_PULUMI_BACKEND: ${{ secrets.WEBINY_PULUMI_BACKEND }}_${{ needs.cache-keys.outputs.ts }}
-      GH_TOKEN: ${{ secrets.GH_TOKEN }}
-      YARN_ENABLE_IMMUTABLE_INSTALLS: false
-    steps:
-      - uses: actions/setup-node@v2
-        with:
-          node-version: 12
+      - name: Print CLI version
+        working-directory: xyz/test-project
+        run: yarn webiny --version
 
-      - name: Retrieve cached Verdaccio files
-        uses: actions/cache@v2
-        with:
-          key: verdaccio-files-${{ needs.cache-keys.outputs.ts }}
-          path: |
-            .verdaccio/
-            .verdaccio.yaml
-
-      - name: Move cached Verdaccio files into verdaccio-files folder
-        run: mkdir verdaccio-files && mv .verdaccio verdaccio-files/.verdaccio && mv .verdaccio.yaml verdaccio-files/.verdaccio.yaml
-
-      - name: Start Verdaccio local server
-        working-directory: verdaccio-files
-        run: yarn add pm2 verdaccio && npx pm2 start verdaccio -- -c .verdaccio.yaml
-
-      - name: Configure NPM to use local registry (for `npx create-webiny-project`)
-        run: npm config set registry http://localhost:4873
-
-      - name: Set git email (needed for create-webiny-project)
-        run: git config --global user.email "webiny-bot@webiny.com"
-
-      - name: Set git username (needed for create-webiny-project)
-        run: git config --global user.name "webiny-bot"
-
-      - name: Disable Webiny telemetry
-        run: >
-          mkdir ~/.webiny &&
-          echo '{ "id": "ci", "telemetry": false }' > ~/.webiny/config
-
-      - name: Create a new Webiny project
-        run: >
-          npx create-webiny-project@next test-project
-          --tag next --no-interactive
-          --assign-to-yarnrc '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
-          --template-options '{"region":"eu-central-1","storageOperations":"ddb-es"}'
-
-      - name: Cache project files
-        uses: actions/cache@v2
-        with:
-          key: project-files-${{ needs.cache-keys.outputs.ts }}
-          path: |
-            test-project/
-            !test-project/node_modules/**/*
-            !test-project/**/node_modules/**/*
-            !test-project/.yarn/cache/**/*
+      - name: Reduce prerendering service's process-queue schedule
+        working-directory: xyz/test-project
+        run: sed -i 's/5 minutes/1 minute/g' api/pulumi/dev/prerenderingService.ts
 
       - name: Create project-files artifact
         uses: actions/upload-artifact@v2
@@ -317,70 +309,38 @@ jobs:
           name: project-files
           retention-days: 1
           path: |
-            test-project/
-            !test-project/node_modules/**/*
-            !test-project/**/node_modules/**/*
-            !test-project/.yarn/cache/**/*
-
-      - name: Print CLI version
-        working-directory: test-project
-        run: yarn webiny --version
-
-      - name: Reduce prerendering service's process-queue schedule
-        working-directory: test-project
-        run: sed -i 's/5 minutes/1 minute/g' api/pulumi/dev/prerenderingService.ts
+            xyz/test-project/
+            !xyz/test-project/node_modules/**/*
+            !xyz/test-project/**/node_modules/**/*
+            !xyz/test-project/.yarn/cache/**/*
 
       - name: Deploy API
-        working-directory: test-project
-        run: yarn webiny deploy api --env dev --debug
+        working-directory: xyz/test-project
+        run: yarn webiny deploy api --env dev
 
       - name: Deploy Admin Area
-        working-directory: test-project
-        run: yarn webiny deploy apps/admin --env dev --debug
+        working-directory: xyz/test-project
+        run: yarn webiny deploy apps/admin --env dev
 
       - name: Deploy Website
-        working-directory: test-project
-        run: yarn webiny deploy apps/website --env dev --debug
+        working-directory: xyz/test-project
+        run: yarn webiny deploy apps/website --env dev
 
-      - uses: actions/checkout@v2
-        with:
-          path: webiny-js
+      # Generates a new cypress.json config.
+      - name: Create Cypress config
+        working-directory: next
+        run: yarn setup-cypress
 
-      - uses: actions/cache@v2
-        with:
-          path: .webiny/cached-packages
-          key: ${{ runner.os }}-${{ needs.cache-keys.outputs.day }}-${{ secrets.RANDOM_CACHE_KEY_SUFFIX }}
-
-      - name: Move .webiny to webiny-js/.webiny
-        run: mv .webiny webiny-js/.webiny
-
-      - uses: actions/cache@v2
-        with:
-          path: .yarn/cache
-          key: yarn-${{ runner.os }}-${{ hashFiles('webiny-js/**/yarn.lock') }}
-
-      - name: Move .yarn to webiny-js/.yarn
-        run: mv .yarn webiny-js/.yarn
-
-      - name: Install dependencies
-        working-directory: webiny-js
-        run: yarn --immutable
-
-      - name: Build packages
-        working-directory: webiny-js
-        run: node scripts/buildWithCache.js
-
-      - name: Set up Cypress config
-        working-directory: webiny-js
-        run: yarn setup-cypress --project-folder ../test-project
+      # We also want to store the generated Cypress config as a job output.
+      # This way we don't have to generate it again (which may take ~30s).
+      - name: Save Cypress config
+        id: save-cypress-config
+        working-directory: next
+        run: echo "::set-output name=cypress-config::$(cat cypress.json | tr -d ' \t\n\r')"
 
       - name: Cypress - run installation wizard test
-        working-directory: webiny-js
+        working-directory: next
         run: yarn cypress run --spec "cypress/integration/adminInstallation/**/*.spec.js"
-
-      - name: Cypress - run the rest of Admin Area tests
-        working-directory: webiny-js
-        run: yarn cypress run --spec "cypress/integration/admin/**/*.spec.js"
 
       - name: Upload screenshots to Slack
         uses: trymbill/cypress-slack-video-upload-action@v1.3.0
@@ -388,9 +348,65 @@ jobs:
         with:
           token: ${{ secrets.SLACK_TOKEN }}
           channels: C027VQG8080
-          workdir: webiny-js/cypress
-          message-text: Cypress tests failed! Screenshots have been placed in this thread, good luck.
+          workdir: next/cypress
+          message-text: Could not complete Admin Area installation wizard. Screenshots have been placed in this thread, good luck.
 
-      - name: Trigger cleanup
-        if: always()
-        run: npx https://gist.github.com/doitadrian/6a3fa9f6b0e450ab88e3a5ba23f4e789 --event e2e-cleanup --payload "{\"ts\":\"${{ needs.cache-keys.outputs.ts }}\",\"workflow\":\"${{ github.workflow }}\",\"commit\":\"${{ github.sha }}\"}"
+  e2e-cypress-tests:
+    needs: [e2e-init, e2e-project-setup]
+    name: ${{ matrix.cypress-folder }} (${{ matrix.os }}, Node v${{ matrix.node }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ ubuntu-latest ]
+        node: [ 14 ]
+        cypress-folder: ${{ fromJson(needs.e2e-init.outputs.cypress-folders) }}
+    runs-on: ubuntu-latest
+    environment: next
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_ELASTIC_SEARCH_DOMAIN_NAME: ${{ secrets.AWS_ELASTIC_SEARCH_DOMAIN_NAME }}
+      ELASTIC_SEARCH_INDEX_PREFIX: ${{ needs.e2e-init.outputs.ts }}_
+      PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
+      PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
+      WEBINY_PULUMI_BACKEND: ${{ secrets.WEBINY_PULUMI_BACKEND }}_${{ needs.e2e-init.outputs.ts }}
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          path: next
+
+      - uses: actions/cache@v2
+        with:
+          path: next/.webiny/cached-packages
+          key: packages-cache-${{ needs.e2e-init.outputs.ts }}
+
+      - uses: actions/cache@v2
+        with:
+          path: next/.yarn/cache
+          key: yarn-${{ runner.os }}-${{ hashFiles('next/**/yarn.lock') }}
+
+      - name: Install dependencies
+        working-directory: next
+        run: yarn --immutable
+
+      - name: Build packages
+        working-directory: next
+        run: node scripts/buildWithCache.js --build-overrides='${{ env.BUILD_OVERRIDES }}'
+
+      - name: Set up Cypress config
+        working-directory: next
+        run: echo '${{ needs.e2e-project-setup.outputs.cypress-config }}' > cypress.json
+
+      - name: Cypress - run "${{ matrix.cypress-folder }}" tests
+        working-directory: next
+        run: yarn cypress run --spec "${{ matrix.cypress-folder }}"
+
+      - name: Upload screenshots to Slack
+        uses: trymbill/cypress-slack-video-upload-action@v1.3.0
+        if: failure()
+        with:
+          token: ${{ secrets.SLACK_TOKEN }}
+          channels: C027VQG8080
+          workdir: next/cypress
+          message-text: Cypress tests failed! Screenshots have been placed in this thread, good luck.

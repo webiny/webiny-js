@@ -68,12 +68,15 @@ module.exports = {
          */
         info("Starting with security upgrade.");
         security.upgradeGraphQLIndex(project, context);
+        security.upgradePageImportExport(project, context);
         security.upgradeHeadlessCMSIndex(project, context);
         security.upgradeAdminComponents(project, context);
         security.upgradeAdminPlugins(project, context);
         security.upgradeAdminSecurity(project, context);
         security.upgradeApp(project, context);
         security.upgradeAppWebinyConfig(project, context);
+        security.upgradePulumiDev(project, context);
+        security.upgradePulumiProd(project, context);
 
         info("Writing changes...");
         await project.save();

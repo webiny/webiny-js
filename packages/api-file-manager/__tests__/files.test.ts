@@ -27,7 +27,7 @@ const fileCData = {
 jest.setTimeout(100000);
 
 describe("Files CRUD test", () => {
-    const { createFile, updateFile, createFiles, getFile, listFiles, listTags, until, sleep } =
+    const { createFile, updateFile, createFiles, getFile, listFiles, listTags, until } =
         useGqlHandler();
 
     test("should create, read, update and delete files", async () => {
@@ -80,25 +80,6 @@ describe("Files CRUD test", () => {
             }
         });
 
-        // Let's update File tags.
-        const [update2] = await updateFile({
-            id: fileAId,
-            data: { tags: [...fileAData.tags, "design"] }
-        });
-
-        expect(update2).toEqual({
-            data: {
-                fileManager: {
-                    updateFile: {
-                        data: { ...fileAData, tags: [...fileAData.tags, "design"] },
-                        error: null
-                    }
-                }
-            }
-        });
-
-        await sleep(2000);
-
         // Only update "tags"
         const [update3] = await updateFile({
             id: fileAId,
@@ -119,8 +100,6 @@ describe("Files CRUD test", () => {
             }
         });
 
-        await sleep(2000);
-
         await until(
             () => listFiles().then(([data]) => data),
             ({ data }) => {
@@ -130,10 +109,7 @@ describe("Files CRUD test", () => {
                 }
                 return file.tags.length === 1 && file.tags[0] === "sketch";
             },
-            {
-                name: "list files after update tags",
-                wait: 3000
-            }
+            { name: "list files after update tags" }
         );
 
         // Let's create multiple files

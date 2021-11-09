@@ -16,6 +16,7 @@ const NOT_APPLICABLE = gray("N/A");
 
 module.exports = async function createProject({
     projectName,
+    force,
     template,
     tag,
     log,
@@ -32,8 +33,17 @@ module.exports = async function createProject({
     projectName = path.basename(projectRoot);
 
     if (fs.existsSync(projectRoot)) {
-        console.log(`\nSorry, target folder ${red(projectName)} already exists!`);
-        process.exit(1);
+        if (!force) {
+            console.log(
+                `Cannot continue because the target folder ${red(projectName)} already exists.`
+            );
+            console.log(
+                `If you still wish to proceed, run the same command with the ${red(
+                    "--force"
+                )} flag.`
+            );
+            process.exit(1);
+        }
     }
 
     // Before create any files, check if there are yarn.lock or package.json anywhere up in the tree.

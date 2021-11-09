@@ -1,26 +1,23 @@
 module.exports.elasticIndexManager = (global, elasticsearchClient) => {
-    const prefixes = [];
-
     const clearEsIndices = async () => {
-        if (!prefixes.length) {
-            return;
-        }
-
-        return elasticsearchClient.indices.delete({
-            index: prefixes.map(p => `${p}-*`).join(",")
+        await elasticsearchClient.indices.delete({
+            index: "_all"
         });
     };
 
     global.__beforeEach = async () => {
-        const prefix = `${Date.now()}-`;
-        prefixes.push(prefix);
-        process.env.ELASTIC_SEARCH_INDEX_PREFIX = prefix;
-        await new Promise(res => setTimeout(res, 5000));
+        await clearEsIndices();
     };
 
-    global.__beforeAll = clearEsIndices;
+    global.__afterEach = async () => {
+        await clearEsIndices();
+    };
+
+    global.__beforeAll = async () => {
+        await clearEsIndices();
+    };
+
     global.__afterAll = async () => {
         await clearEsIndices();
-        await new Promise(res => setTimeout(res, 5000));
     };
 };

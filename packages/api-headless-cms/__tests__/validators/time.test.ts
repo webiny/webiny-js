@@ -35,7 +35,9 @@ describe("time validators", () => {
         const result = await gtePlugin.validator.validate({
             value,
             validator,
-            context
+            context,
+            field: {} as any,
+            contentModel: {} as any
         });
         expect(result).toEqual(true);
     });
@@ -58,7 +60,9 @@ describe("time validators", () => {
             const result = await gtePlugin.validator.validate({
                 value,
                 validator,
-                context
+                context,
+                field: {} as any,
+                contentModel: {} as any
             });
             expect(result).toEqual(false);
         }
@@ -83,7 +87,9 @@ describe("time validators", () => {
             const result = await ltePlugin.validator.validate({
                 value,
                 validator,
-                context
+                context,
+                field: {} as any,
+                contentModel: {} as any
             });
             expect(result).toEqual(true);
         }
@@ -106,7 +112,9 @@ describe("time validators", () => {
             const result = await ltePlugin.validator.validate({
                 value,
                 validator,
-                context
+                context,
+                field: {} as any,
+                contentModel: {} as any
             });
             expect(result).toEqual(false);
         }
@@ -122,12 +130,16 @@ describe("time validators", () => {
         const lteValid = await ltePlugin.validator.validate({
             value,
             validator: lteValidator,
-            context
+            context,
+            field: {} as any,
+            contentModel: {} as any
         });
         const gteValid = await gtePlugin.validator.validate({
             value,
             validator: gteValidator,
-            context
+            context,
+            field: {} as any,
+            contentModel: {} as any
         });
         return lteValid && gteValid;
     };

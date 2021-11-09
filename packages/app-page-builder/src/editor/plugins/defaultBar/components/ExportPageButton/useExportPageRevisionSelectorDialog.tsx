@@ -6,6 +6,7 @@ import { Typography } from "@webiny/ui/Typography";
 import { Cell, Grid } from "@webiny/ui/Grid";
 import { Radio, RadioGroup } from "@webiny/ui/Radio";
 import { Form } from "@webiny/form";
+import { Alert } from "@webiny/ui/Alert";
 import { usePageBuilder } from "~/hooks/usePageBuilder";
 
 const t = i18n.ns("app-page-builder/editor/plugins/defaultBar/exportPageButton");
@@ -14,13 +15,19 @@ const confirmationMessageStyles = css`
     width: 600px;
 `;
 
-const ExportPageDialogMessage: React.FunctionComponent = () => {
+const gridStyles = css`
+    &.mdc-layout-grid {
+        padding-top: 0;
+    }
+`;
+
+const ExportPageDialogMessage: React.FC<{ selected: string[] }> = ({ selected }) => {
     const { exportPageData } = usePageBuilder();
     const { revisionType: value, setRevisionType: setValue } = exportPageData;
 
     return (
         <div className={confirmationMessageStyles}>
-            <Grid style={{ paddingTop: 0 }}>
+            <Grid className={gridStyles}>
                 <Cell span={12}>
                     <Typography
                         use={"subtitle1"}
@@ -60,6 +67,15 @@ const ExportPageDialogMessage: React.FunctionComponent = () => {
                     </Form>
                 </Cell>
             </Grid>
+            {selected.length === 0 && (
+                <Grid className={gridStyles}>
+                    <Cell span={12}>
+                        <Alert title={t`Note:`} type={"info"}>
+                            {t`You're about to export all pages. This operation might take a few minutes to complete.`}
+                        </Alert>
+                    </Cell>
+                </Grid>
+            )}
         </div>
     );
 };
@@ -68,8 +84,8 @@ const useExportPageRevisionSelectorDialog = () => {
     const { showDialog, hideDialog } = useDialog();
 
     return {
-        showExportPageRevisionSelectorDialog: ({ onAccept }) => {
-            showDialog(<ExportPageDialogMessage />, {
+        showExportPageRevisionSelectorDialog: ({ onAccept, selected }) => {
+            showDialog(<ExportPageDialogMessage selected={selected} />, {
                 title: t`Select Page Revision`,
                 actions: {
                     cancel: { label: t`Cancel` },

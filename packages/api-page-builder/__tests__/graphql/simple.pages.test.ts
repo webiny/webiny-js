@@ -25,6 +25,8 @@ const content = [
     }
 ];
 
+jest.setTimeout(100000);
+
 describe("pages simple actions", () => {
     const handler = useGqlHandler();
 
@@ -312,9 +314,7 @@ describe("pages simple actions", () => {
                 return page.status === "published";
             },
             {
-                name: "list pages after published",
-                wait: 500,
-                tries: 30
+                name: "list pages after published"
             }
         );
 
@@ -487,9 +487,7 @@ describe("pages simple actions", () => {
                 return page.status === "unpublished";
             },
             {
-                name: "list pages after unpublished",
-                wait: 1000,
-                tries: 30
+                name: "list pages after unpublished"
             }
         );
 
@@ -502,9 +500,7 @@ describe("pages simple actions", () => {
                 return response.data.pageBuilder.listPublishedPages.data.length === 0;
             },
             {
-                name: "list published pages after unpublished",
-                wait: 1000,
-                tries: 30
+                name: "list published pages after unpublished"
             }
         );
 

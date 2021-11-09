@@ -44,9 +44,14 @@ const spinnerWrapper = css`
     height: 180px;
 `;
 
-const ExportPageLoadingDialogMessage: React.FunctionComponent<{
-    ids: string[];
-}> = ({ ids }) => {
+export interface ExportPagesDialogProps {
+    ids?: string[];
+    where?: Record<string, any>;
+    sort?: string;
+    search?: { query: string };
+}
+
+const ExportPageLoadingDialogMessage: React.FC<ExportPagesDialogProps> = props => {
     const { exportPage } = useExportPage();
     const {
         exportPageData: { revisionType }
@@ -55,8 +60,8 @@ const ExportPageLoadingDialogMessage: React.FunctionComponent<{
     useEffect(() => {
         exportPage({
             variables: {
-                ids,
-                revisionType
+                revisionType,
+                ...props
             }
         });
     }, []);
