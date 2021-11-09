@@ -29,16 +29,35 @@ interface FunctionBuildOptions {
     babel?: (config: BabelConfig) => BabelConfig;
 }
 
-interface PackageBuildOptions {
-    prebuild?: (options: PackageBuildOptions, context: any) => Promise<void>;
-    build?: (options: PackageBuildOptions, context: any) => Promise<void>;
-    postbuild?: (options: PackageBuildOptions, context: any) => Promise<void>;
+interface CreateBuildPackageOptions {
+    cwd: string;
+}
+
+interface CreateWatchPackageOptions {
+    cwd: string;
+}
+
+interface BuildPackageOptions {
+    [key: string]: any;
+    logs?: boolean;
+    debug?: boolean;
+    overrides?: {
+        tsConfig?: Record<string, any> | ((tsConfig: Record<string, any>) => Record<string, any>);
+    };
+}
+
+interface WatchPackageOptions {
+    [key: string]: any;
 }
 
 export function startApp(options: AppBuildOptions, context: any): Promise<void>;
 export function buildApp(options: AppBuildOptions, context: any): Promise<void>;
 export function buildFunction(options: FunctionBuildOptions, context: any): Promise<void>;
 export function watchFunction(options: FunctionBuildOptions, context: any): Promise<void>;
-export function buildPackage(options: PackageBuildOptions, context: any): Promise<void>;
-export function watchPackage(): Promise<void>;
+
+export function createBuildPackage(options: CreateBuildPackageOptions): Promise<void>;
+export function createWatchPackage(options: CreateWatchPackageOptions): Promise<void>;
+export function buildPackage(options: BuildPackageOptions, context: any): Promise<void>;
+export function watchPackage(options: WatchPackageOptions): Promise<void>;
+
 export function traverseLoaders(loaders: Loader[], onLoader: (loader: Loader) => void): void;
