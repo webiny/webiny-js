@@ -52,7 +52,7 @@ const defaults = {
 };
 
 const babelCompile = async ({ config }) => {
-    const files = glob.sync(join(config.cwd, "src/**/*.{ts,tsx}").replace(/\\/g, "/"));
+    const files = glob.sync(join(config.cwd, "src/**/*.{js,jsx,ts,tsx}").replace(/\\/g, "/"));
     const compilations = [];
 
     for (let i = 0; i < files.length; i++) {
