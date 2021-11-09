@@ -8,7 +8,6 @@ const loadJson = require("load-json-file");
 const writeJson = require("write-json-file");
 const { green, red } = require("chalk");
 const argv = require("yargs").argv;
-const { Worker } = require("worker_threads");
 
 const CACHE_FOLDER_PATH = ".webiny/cached-packages";
 const META_FILE_PATH = path.join(CACHE_FOLDER_PATH, "meta.json");
@@ -186,45 +185,45 @@ async function build() {
             const currentPackage = workspacesPackages.find(item => item.name === batch[j]);
             console.log(`‣ ${green(currentPackage.packageJson.name)}`);
             promises.push(
-                new Promise(resolve => {
-                    const worker = new Worker(
-                        path.join(__dirname, "buildWithCache/buildPackage.js")
-                    );
-                    worker.on("message", message => {
-                        try {
-                            const { error } = JSON.parse(message);
-                            resolve({
-                                package: currentPackage,
-                                error
-                            });
-                        } catch (e) {
-                            resolve({
-                                package: currentPackage,
-                                result: {
-                                    message: `Could not parse received build result (JSON): ${message}`
-                                }
-                            });
-                        }
-                    });
-
-                    worker.on("error", () => {
-                        resolve({
-                            package: currentPackage,
-                            result: {
-                                message: `An unknown error occurred.`
-                            }
+                new Promise(async (resolve, reject) => {
+                    const configPath = path
+                        .join(currentPackage.packageFolder, "webiny.config")
+                        .replace(/\\/g, "/");
+                    const config = require(configPath);
+                    try {
+                        await config.commands.build({
+                            logs: false,
+                            debug: false,
+                            overrides: buildOverrides
+                            // We don't want debug nor regular logs logged within the build command.
                         });
-                    });
 
-                    worker.postMessage(
-                        JSON.stringify({ metaJson, currentPackage, CACHE_FOLDER_PATH, META_FILE_PATH, buildOverrides })
-                    );
+                        // Copy and paste built code into the cache folder.
+                        const cacheFolderPath = path.join(
+                            CACHE_FOLDER_PATH,
+                            currentPackage.packageJson.name
+                        );
+                        fs.copySync(
+                            path.join(currentPackage.packageFolder, "dist"),
+                            cacheFolderPath
+                        );
+
+                        const sourceHash = await getPackageSourceHash(currentPackage);
+                        metaJson.packages[currentPackage.packageJson.name] = { sourceHash };
+
+                        writeJson.sync(META_FILE_PATH, metaJson);
+                        resolve();
+                    } catch (e) {
+                        reject({
+                            error: e,
+                            package: currentPackage
+                        });
+                    }
                 })
             );
         }
 
         const results = await Promise.allSettled(promises);
-        console.log(results[0].value.error)
         const duration = (new Date() - batchStart) / 1000;
         const rejected = results.filter(item => item.status === "rejected");
 
