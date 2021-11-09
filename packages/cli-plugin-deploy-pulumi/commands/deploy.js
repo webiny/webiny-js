@@ -2,6 +2,7 @@ const path = require("path");
 const { green } = require("chalk");
 const { loadEnvVariables, getPulumi, processHooks, login, notify } = require("../utils");
 const { getProjectApplication } = require("@webiny/cli/utils");
+const { Worker } = require("worker_threads");
 
 module.exports = async (inputs, context) => {
     const { env, folder, build } = inputs;
@@ -35,58 +36,74 @@ module.exports = async (inputs, context) => {
 
     const t = new Date();
 
-    const libPaths = [
-        "/Users/adrian/dev/webiny-js/api/code/dynamoToElastic",
-        "/Users/adrian/dev/webiny-js/api/code/fileManager/download",
-        "/Users/adrian/dev/webiny-js/api/code/fileManager/manage",
-        "/Users/adrian/dev/webiny-js/api/code/fileManager/transform",
-        "/Users/adrian/dev/webiny-js/api/code/graphql",
-        "/Users/adrian/dev/webiny-js/api/code/headlessCMS",
-        "/Users/adrian/dev/webiny-js/api/code/pageBuilder/updateSettings",
-        "/Users/adrian/dev/webiny-js/api/code/pageBuilder/importPages/create",
-        "/Users/adrian/dev/webiny-js/api/code/pageBuilder/importPages/process",
-        "/Users/adrian/dev/webiny-js/api/code/pageBuilder/exportPages/combine",
-        "/Users/adrian/dev/webiny-js/api/code/pageBuilder/exportPages/process",
-        "/Users/adrian/dev/webiny-js/api/code/prerenderingService/render",
-        "/Users/adrian/dev/webiny-js/api/code/prerenderingService/flush",
-        "/Users/adrian/dev/webiny-js/api/code/prerenderingService/queue/add",
-        "/Users/adrian/dev/webiny-js/api/code/prerenderingService/queue/process"
-    ];
+    if (build) {
+        console.log('building...')
+        const promises = [];
 
-    const promises = []
-    for (let i = 0; i < libPaths.length; i++) {
-        const libPath = libPaths[i];
-        // TODO: JS backwards compatibility here too
-        const wbyConfigTs = require(libPath + "/webiny.config.ts");
-        // await wbyConfigTs.default.commands.build({}, context);
-        promises.push(wbyConfigTs.default.commands.build({}, context));
+        for (let i = 0; i < projectApplication.packages.length; i++) {
+            const current = projectApplication.packages[i];
+            const config = current.config;
+            if (!(typeof config.commands.build === "function")) {
+                continue;
+            }
+
+            promises.push(
+                new Promise(resolve => {
+                    const worker = new Worker(path.join(__dirname, "deploy/worker.js"));
+                    worker.on("message", message => {
+                        try {
+                            const { error } = JSON.parse(message);
+                            console.log('done', current)
+                            resolve({
+                                package: current,
+                                error
+                            });
+                        } catch (e) {
+                            resolve({
+                                package: current,
+                                result: {
+                                    message: `Could not parse received build result (JSON): ${message}`
+                                }
+                            });
+                        }
+                    });
+
+                    worker.on("error", () => {
+                        resolve({
+                            package: current,
+                            result: {
+                                message: `An unknown error occurred.`
+                            }
+                        });
+                    });
+
+                    worker.postMessage(JSON.stringify(current));
+                })
+            );
+        }
+
+        const results = await Promise.allSettled(promises);
+        const errors = [];
+        for (let i = 0; i < results.length; i++) {
+            const { value: result } = results[i];
+            if (result.error) {
+                errors.push(result);
+            }
+        }
+
+        console.log(errors)
+
+        if (errors.length) {
+            throw Error(
+                `An error occurred while building the ${context.error.hl(
+                    projectApplication.name
+                )} project application. Check the above logs for more information.`
+            );
+        }
+        console.log("Build Time:", (new Date() - t) / 1000 + "s");
     }
 
-    await Promise.all(promises);
-
-    /*if (build) {
-        const t = new Date();
-        await execa(
-            "yarn",
-            [
-                "webiny",
-                "workspaces",
-                "run",
-                "build",
-                "--folder",
-                projectApplication.root,
-                "--env",
-                inputs.env,
-                "--debug",
-                Boolean(inputs.debug)
-            ],
-            {
-                stdio: "inherit"
-            }
-        );
-    }*/
-
-    console.log("Build Time:", (new Date() - t) / 1000 + "s");
+    process.exit();
 
     await login(projectApplication);
 
