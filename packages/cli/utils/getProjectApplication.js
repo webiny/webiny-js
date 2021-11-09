@@ -43,11 +43,16 @@ module.exports = args => {
             );
 
             return webinyConfigs.map(config => {
+                const dirPath = dirname(config);
+                const packageJson = require(join(dirPath, "package.json"));
                 return {
+                    name: packageJson.name,
                     paths: {
                         root: dirname(config),
+                        packageJson: join(dirPath, "package.json"),
                         config
                     },
+                    packageJson,
                     get config() {
                         return require(config).default || require(config);
                     }
