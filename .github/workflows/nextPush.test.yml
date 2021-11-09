@@ -213,7 +213,6 @@ jobs:
           node-version: 12
 
       - name: How many cores?
-        working-directory: next
         run: node --eval "console.log(require('os').cpus().length)"
 
       - uses: actions/checkout@v2
