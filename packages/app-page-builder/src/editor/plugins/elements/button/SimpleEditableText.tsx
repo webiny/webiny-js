@@ -33,7 +33,6 @@ const SimpleEditableText: React.FunctionComponent<SimpleTextPropsType> = ({
                 return false;
             }
             value.current = elementValue;
-            onChange(elementValue);
         },
         [onChange]
     );
@@ -42,6 +41,7 @@ const SimpleEditableText: React.FunctionComponent<SimpleTextPropsType> = ({
         if (!onBlur) {
             return;
         }
+        onChange(value.current);
         onBlur();
     }, [onBlur]);
 
