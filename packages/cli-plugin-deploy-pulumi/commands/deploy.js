@@ -59,7 +59,7 @@ module.exports = async (inputs, context) => {
         // TODO: JS backwards compatibility here too
         const wbyConfigTs = require(libPath + "/webiny.config.ts");
         // await wbyConfigTs.default.commands.build({}, context);
-         promises.push(wbyConfigTs.default.commands.build({}, context));
+        promises.push(wbyConfigTs.default.commands.build({}, context));
     }
 
     await Promise.all(promises);

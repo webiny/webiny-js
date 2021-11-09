@@ -1,15 +1,21 @@
 const path = require("path");
 
-const defaults = {
-    outputPath: "build",
+const getDefaults = cwd => ({
+    outputPath: path.join(cwd, "build"),
     outputFilename: "handler.js"
-};
+});
 
-const setupOutput = output => {
+const getOutput = params => {
+    let output = null;
+    if (params.config.overrides && params.config.overrides.output) {
+        output = params.config.overrides.output;
+    }
+
     if (!output) {
         output = {};
     }
 
+    const defaults = getDefaults(params.config.cwd);
     if (!output.path) {
         output.path = defaults.outputPath;
     }
@@ -23,4 +29,9 @@ const setupOutput = output => {
     return output;
 };
 
-module.exports = { setupOutput };
+const getEntry = params => {
+    const overrides = params.config.overrides || {};
+    return overrides.entry || path.join(params.config.cwd, "src/index");
+};
+
+module.exports = { getOutput, getEntry };

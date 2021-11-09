@@ -6,6 +6,14 @@ const { version } = require("@webiny/project-utils/package.json");
 module.exports = ({ entry, output, debug = false, babelOptions, define }) => {
     const definitions = define ? JSON.parse(define) : {};
 
+    const prs = {
+        output: {
+            path: __dirname + "/build",
+            filename: "handler.js"
+        },
+        entry: __dirname + "/src/index.ts"
+    };
+
     return {
         entry: path.resolve(entry),
         target: "node",
@@ -29,8 +37,7 @@ module.exports = ({ entry, output, debug = false, babelOptions, define }) => {
             new webpack.DefinePlugin({
                 "process.env.WEBINY_VERSION": JSON.stringify(process.env.WEBINY_VERSION || version),
                 ...definitions
-            }),
-            new WebpackBar({ name: path.basename(process.cwd()) })
+            })
         ],
         // Run babel on all .js files and skip those in node_modules
         module: {

@@ -15,20 +15,40 @@ interface AppBuildOptions {
     babel?: (config: BabelConfig) => BabelConfig;
 }
 
-interface FunctionBuildOutput {
-    path?: string;
-    filename?: string;
-}
+export function startApp(options: AppBuildOptions, context: any): Promise<void>;
+export function buildApp(options: AppBuildOptions, context: any): Promise<void>;
 
-interface FunctionBuildOptions {
-    entry?: string;
-    output?: FunctionBuildOutput;
+// Functions.
+interface FunctionOptions {
+    [key: string]: any;
+    logs?: boolean;
     debug?: boolean;
-    define?: DefinePluginOptions;
-    webpack?: (config: WebpackConfig) => WebpackConfig;
-    babel?: (config: BabelConfig) => BabelConfig;
+    overrides?: {
+        entry?: string;
+        output?: {
+            path?: string;
+            filename?: string;
+        };
+        define?: DefinePluginOptions;
+        webpack?: (config: WebpackConfig) => WebpackConfig;
+        babel?: (config: BabelConfig) => BabelConfig;
+    };
 }
 
+interface CreateBuildFunctionOptions extends FunctionOptions {
+    cwd: string;
+}
+
+interface CreateWatchFunctionOptions extends FunctionOptions {
+    cwd: string;
+}
+
+export function createBuildFunction(options: CreateBuildFunctionOptions): Promise<void>;
+export function buildFunction(options: FunctionOptions, context: any): Promise<void>;
+export function createWatchFunction(options: CreateWatchFunctionOptions): Promise<void>;
+export function watchFunction(options: FunctionOptions, context: any): Promise<void>;
+
+// Packages.
 interface CreateBuildPackageOptions {
     cwd: string;
 }
@@ -49,11 +69,6 @@ interface BuildPackageOptions {
 interface WatchPackageOptions {
     [key: string]: any;
 }
-
-export function startApp(options: AppBuildOptions, context: any): Promise<void>;
-export function buildApp(options: AppBuildOptions, context: any): Promise<void>;
-export function buildFunction(options: FunctionBuildOptions, context: any): Promise<void>;
-export function watchFunction(options: FunctionBuildOptions, context: any): Promise<void>;
 
 export function createBuildPackage(options: CreateBuildPackageOptions): Promise<void>;
 export function createWatchPackage(options: CreateWatchPackageOptions): Promise<void>;

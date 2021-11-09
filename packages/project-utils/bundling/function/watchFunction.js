@@ -2,8 +2,8 @@ module.exports = (options, context) => {
     const { boolean } = require("boolean");
     const webpack = require("webpack");
     let babelOptions = require("./babelrc");
-    const { setupOutput } = require("./utils");
-    const output = setupOutput(options.output);
+    const { getOutputProperty } = require("./utils");
+    const output = getOutputProperty(options.output);
 
     // Customize babelOptions
     if (typeof options.babel === "function") {
