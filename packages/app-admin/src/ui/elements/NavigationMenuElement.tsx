@@ -9,6 +9,7 @@ export interface NavigationMenuElementConfig extends UIElementConfig {
     onClick?: Function;
     testId?: string;
     rel?: string;
+    target?: string;
 }
 
 const LOCAL_STORAGE_KEY = "webiny_apps_menu_sections";
