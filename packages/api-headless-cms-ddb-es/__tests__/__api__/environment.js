@@ -13,6 +13,9 @@ const {
     elasticIndexManager
 } = require("@webiny/project-utils/testing/helpers/elasticIndexManager");
 const { createElasticsearchClient } = require("@webiny/api-elasticsearch/client");
+
+const modelFieldToGraphQLPlugins =
+    require("@webiny/api-headless-cms/content/plugins/graphqlFields").default;
 /**
  * For this to work it must load plugins that have already been built
  */
@@ -24,31 +27,26 @@ if (typeof createStorageOperations !== "function") {
 
 const ELASTICSEARCH_PORT = process.env.ELASTICSEARCH_PORT || "9200";
 
-const getStorageOperationsPlugins = ({
-    elasticsearchClient,
-    documentClient,
-    elasticsearchClientContext
-}) => {
-    /**
-     * Intercept DocumentClient operations and trigger dynamoToElastic function (almost like a DynamoDB Stream trigger)
-     */
-    const simulationContext = new ContextPlugin(async context => {
-        context.plugins.register([elasticsearchDataGzipCompression()]);
-        await elasticsearchClientContext.apply(context);
-    });
-    simulateStream(documentClient, createHandler(simulationContext, dynamoToElastic()));
+class CmsTestEnvironment extends NodeEnvironment {
+    async setup() {
+        await super.setup();
 
-    return () => {
-        return [
+        const elasticsearchClient = createElasticsearchClient({
+            node: `http://localhost:${ELASTICSEARCH_PORT}`,
+            auth: {}
+        });
+        const documentClient = new DocumentClient({
+            convertEmptyValues: true,
+            endpoint: process.env.MOCK_DYNAMODB_ENDPOINT || "http://localhost:8001",
+            sslEnabled: false,
+            region: "local",
+            accessKeyId: "test",
+            secretAccessKey: "test"
+        });
+        const elasticsearchClientContext = elasticsearchClientContextPlugin(elasticsearchClient);
+
+        const plugins = [
             elasticsearchDataGzipCompression(),
-            plugins(),
-            dbPlugins({
-                table: process.env.DB_TABLE,
-                driver: new DynamoDbDriver({
-                    documentClient
-                })
-            }),
-            elasticsearchClientContext,
             {
                 type: "context",
                 async apply() {
@@ -88,52 +86,47 @@ const getStorageOperationsPlugins = ({
                         }
                     });
                 }
-            }
+            },
+            /**
+             * TODO remove when all apps are created with their own storage operations factory and drivers.
+             */
+            dbPlugins({
+                table: process.env.DB_TABLE,
+                driver: new DynamoDbDriver({
+                    documentClient
+                })
+            })
         ];
-    };
-};
 
-class CmsTestEnvironment extends NodeEnvironment {
-    async setup() {
-        await super.setup();
-
-        const elasticsearchClient = createElasticsearchClient({
-            node: `http://localhost:${ELASTICSEARCH_PORT}`,
-            auth: {}
+        /**
+         * Intercept DocumentClient operations and trigger dynamoToElastic function (almost like a DynamoDB Stream trigger)
+         */
+        const simulationContext = new ContextPlugin(async context => {
+            context.plugins.register([elasticsearchDataGzipCompression()]);
+            await elasticsearchClientContext.apply(context);
         });
-        const documentClient = new DocumentClient({
-            convertEmptyValues: true,
-            endpoint: process.env.MOCK_DYNAMODB_ENDPOINT || "http://localhost:8001",
-            sslEnabled: false,
-            region: "local",
-            accessKeyId: "test",
-            secretAccessKey: "test"
-        });
-        const elasticsearchClientContext = elasticsearchClientContextPlugin(elasticsearchClient);
+        simulateStream(documentClient, createHandler(simulationContext, dynamoToElastic()));
 
         /**
          * This is a global function that will be called inside the tests to get all relevant plugins, methods and objects.
          */
-        this.global.__getStorageOperationsPlugins = () => {
+        this.global.__getCreateStorageOperations = () => {
             return {
-                createStorageOperations: () => {
+                createStorageOperations: params => {
+                    const { plugins: testPlugins = [] } = params;
                     return createStorageOperations({
                         documentClient,
                         elasticsearch: elasticsearchClient,
+                        modelFieldToGraphQLPlugins: modelFieldToGraphQLPlugins(),
                         table: table => ({ ...table, name: process.env.DB_TABLE }),
-                        esTable: table => ({ ...table, name: process.env.DB_TABLE_ELASTICSEARCH })
+                        esTable: table => ({ ...table, name: process.env.DB_TABLE_ELASTICSEARCH }),
+                        plugins: testPlugins.concat([elasticsearchDataGzipCompression()])
                     });
                 },
                 getPlugins: () => {
-                    return [];
+                    return plugins;
                 }
             };
-
-            return getStorageOperationsPlugins({
-                elasticsearchClient,
-                elasticsearchClientContext,
-                documentClient
-            });
         };
 
         elasticIndexManager(this.global, elasticsearchClient);

@@ -3,7 +3,6 @@ import { CmsContext, HeadlessCmsStorageOperations } from "~/types";
 import { createModelGroupsCrud } from "~/content/plugins/crud/contentModelGroup.crud";
 import { createModelsCrud } from "~/content/plugins/crud/contentModel.crud";
 import { createContentEntryCrud } from "~/content/plugins/crud/contentEntry.crud";
-import WebinyError from "@webiny/error";
 import { createSystemCrud } from "~/plugins/crud/system.crud";
 import { createSettingsCrud } from "~/plugins/crud/settings.crud";
 
@@ -18,10 +17,10 @@ export const createContentCruds = (params: Params) => {
          * It is to make sure that we load setup context before the CRUD init in our internal code.
          */
         if (!context.cms) {
-            throw new WebinyError(
-                `Missing initial "cms" on the context. Make sure that you set it up before creating Content CRUDs.`,
-                "MALFORMED_CONTEXT_ERROR"
+            console.log(
+                `Missing initial "cms" on the context. Make sure that you set it up before creating Content CRUDs.`
             );
+            return;
         }
         const getLocale = () => {
             return context.i18n.getCurrentLocale();
@@ -35,42 +34,43 @@ export const createContentCruds = (params: Params) => {
             return context.tenancy.getCurrentTenant();
         };
 
-        context.cms = {
-            ...context.cms,
-            system: createSystemCrud({
-                context,
-                getTenant,
-                getLocale,
-                getIdentity,
-                storageOperations
-            }),
-            settings: createSettingsCrud({
-                context,
-                getTenant,
-                getLocale,
-                storageOperations
-            }),
-            groups: createModelGroupsCrud({
-                context,
-                getTenant,
-                getLocale,
-                getIdentity,
-                storageOperations
-            }),
-            models: createModelsCrud({
-                context,
-                getLocale,
-                getTenant,
-                getIdentity,
-                storageOperations
-            }),
-            entries: createContentEntryCrud({
-                context,
-                getLocale,
-                getTenant,
-                getIdentity,
-                storageOperations
-            })
-        };
+        if (storageOperations.plugins && storageOperations.plugins.length > 0) {
+            context.plugins.register(storageOperations.plugins);
+        }
+
+        context.cms.system = createSystemCrud({
+            context,
+            getTenant,
+            getLocale,
+            getIdentity,
+            storageOperations
+        });
+        context.cms.settings = createSettingsCrud({
+            context,
+            getTenant,
+            getLocale,
+            storageOperations
+        });
+        context.cms.groups = createModelGroupsCrud({
+            context,
+            getTenant,
+            getLocale,
+            getIdentity,
+            storageOperations
+        });
+        context.cms.models = createModelsCrud({
+            context,
+            getLocale,
+            getTenant,
+            getIdentity,
+            storageOperations
+        });
+        context.cms.entries = createContentEntryCrud({
+            context,
+            getLocale,
+            getTenant,
+            getIdentity,
+            storageOperations
+        });
     });
 };

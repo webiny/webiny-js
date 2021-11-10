@@ -258,8 +258,9 @@ export interface StorageOperationsFactoryParams {
     elasticsearch: Client;
     table: TableModifier;
     esTable: TableModifier;
+    modelFieldToGraphQLPlugins: CmsModelFieldToGraphQLPlugin[];
     attributes?: Record<ENTITIES, Attributes>;
-    plugins?: Plugin[];
+    plugins?: Plugin[] | Plugin[][];
 }
 
 export interface HeadlessCmsStorageOperations extends BaseHeadlessCmsStorageOperations {

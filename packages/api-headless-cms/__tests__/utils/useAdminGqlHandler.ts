@@ -1,10 +1,11 @@
-import { GQLHandlerCallableArgs, useGqlHandler } from "./useGqlHandler";
+import { GQLHandlerCallableParams, useGqlHandler } from "./useGqlHandler";
 import { createAdminHeadlessCms } from "~/plugins";
 
-export const useAdminGqlHandler = (args: GQLHandlerCallableArgs) => {
+export const useAdminGqlHandler = (
+    params: Omit<GQLHandlerCallableParams, "createHeadlessCmsApp">
+) => {
     return useGqlHandler({
-        ...args,
-        path: args.path || "",
+        ...params,
         setupTenancyAndSecurityGraphQL: true,
         plugins: [],
         createHeadlessCmsApp: createAdminHeadlessCms

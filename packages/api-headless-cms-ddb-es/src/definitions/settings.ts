@@ -34,6 +34,15 @@ export const createSettingsEntity = (params: Params): Entity<any> => {
             srcPrefix: {
                 type: "string"
             },
+            contentModelLastChange: {
+                type: "string"
+            },
+            tenant: {
+                type: "string"
+            },
+            locale: {
+                type: "string"
+            },
             ...(attributes || {})
         }
     });

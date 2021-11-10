@@ -4,7 +4,6 @@ import {
     CmsContentModelContext,
     CmsContentModelManager,
     CmsContentModelPermission,
-    CmsContentModelUpdateInput,
     HeadlessCmsStorageOperations,
     BeforeCreateModelTopic,
     AfterCreateModelTopic,
@@ -70,16 +69,44 @@ export const createModelsCrud = (params: Params): CmsContentModelContext => {
         return utils.checkPermissions(context, "cms.contentModel", { rwd: check });
     };
 
+    const getContentModelsAsPlugins = (): CmsContentModel[] => {
+        const tenant = getTenant().id;
+        const locale = getLocale().code;
+
+        return (
+            context.plugins
+                .byType<ContentModelPlugin>(ContentModelPlugin.type)
+                /**
+                 * We need to filter out models that are not for this tenant or locale.
+                 * If it does not have tenant or locale define, it is for every locale and tenant
+                 */
+                .filter(plugin => {
+                    const { tenant: t, locale: l } = plugin.contentModel;
+                    if (t && t !== tenant) {
+                        return false;
+                    } else if (l && l !== locale) {
+                        return false;
+                    }
+                    return true;
+                })
+                .map<CmsContentModel>(plugin => {
+                    return {
+                        ...plugin.contentModel,
+                        tenant,
+                        locale,
+                        webinyVersion: context.WEBINY_VERSION
+                    };
+                })
+        );
+    };
+
     const modelsGet = async (modelId: string): Promise<CmsContentModel> => {
-        const pluginModel: ContentModelPlugin = context.plugins
-            .byType<ContentModelPlugin>(ContentModelPlugin.type)
-            .find(plugin => plugin.contentModel.modelId === modelId);
+        const pluginModel: CmsContentModel = getContentModelsAsPlugins().find(
+            model => model.modelId === modelId
+        );
 
         if (pluginModel) {
-            /**
-             * TODO figure out TS does not recognize CmsContentModel from ContentModelPlugin
-             */
-            return pluginModel.contentModel as CmsContentModel;
+            return pluginModel;
         }
 
         const databaseModel = await storageOperations.models.get({
@@ -98,11 +125,9 @@ export const createModelsCrud = (params: Params): CmsContentModelContext => {
     const modelsList = async (): Promise<CmsContentModel[]> => {
         const databaseModels = await loaders.listModels.load("listModels");
 
-        const pluginsModels: CmsContentModel[] = context.plugins
-            .byType<ContentModelPlugin>(ContentModelPlugin.type)
-            .map<CmsContentModel>(plugin => plugin.contentModel as CmsContentModel);
+        const pluginsModels = getContentModelsAsPlugins();
 
-        return [...databaseModels, ...pluginsModels];
+        return databaseModels.concat(pluginsModels);
     };
 
     const listOperations = async () => {
@@ -239,7 +264,8 @@ export const createModelsCrud = (params: Params): CmsContentModelContext => {
                 savedOn: new Date().toISOString(),
                 fields: [],
                 lockedFields: [],
-                layout: []
+                layout: [],
+                webinyVersion: context.WEBINY_VERSION
             };
 
             await onBeforeCreate.publish({
@@ -265,35 +291,33 @@ export const createModelsCrud = (params: Params): CmsContentModelContext => {
          * Method does not check for permissions or ownership.
          * @internal
          */
-        async updateModel(model, data) {
-            const input = data as unknown as CmsContentModelUpdateInput;
-            // await beforeUpdateHook({
-            //     context,
-            //     storageOperations: storageOperations.models,
-            //     model,
-            //     data,
-            //     input
-            // });
+        async updateModel(params) {
+            const { model: initialModel, original } = params;
 
-            // await onBeforeUpdate.publish({
-            //     model,
-            // })
+            const model: CmsContentModel = {
+                ...initialModel,
+                webinyVersion: context.WEBINY_VERSION
+            };
+
+            await onBeforeUpdate.publish({
+                input: {} as any,
+                original,
+                model
+            });
 
             const resultModel = await storageOperations.models.update({
-                original: model,
+                original,
                 model,
-                input
+                input: {} as any
             });
 
             await updateManager(context, resultModel);
 
-            // await afterUpdateHook({
-            //     context,
-            //     storageOperations: storageOperations.models,
-            //     model: resultModel,
-            //     data,
-            //     input
-            // });
+            await onAfterUpdate.publish({
+                input: {} as any,
+                original,
+                model: resultModel
+            });
 
             return resultModel;
         },
@@ -325,6 +349,7 @@ export const createModelsCrud = (params: Params): CmsContentModelContext => {
             const model: CmsContentModel = {
                 ...original,
                 ...input,
+                webinyVersion: context.WEBINY_VERSION,
                 fields: modelFields,
                 savedOn: new Date().toISOString()
             };
@@ -370,7 +395,7 @@ export const createModelsCrud = (params: Params): CmsContentModelContext => {
                     ex.code || "CONTENT_MODEL_DELETE_ERROR",
                     {
                         error: ex,
-                        model
+                        modelId: model.modelId
                     }
                 );
             }

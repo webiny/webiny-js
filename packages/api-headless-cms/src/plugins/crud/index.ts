@@ -4,7 +4,6 @@ import { CmsContext, HeadlessCmsStorageOperations } from "~/types";
 import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
 import { createModelGroupsCrud } from "~/content/plugins/crud/contentModelGroup.crud";
 import { createModelsCrud } from "~/content/plugins/crud/contentModel.crud";
-import WebinyError from "@webiny/error";
 
 export interface Params {
     storageOperations: HeadlessCmsStorageOperations;
@@ -18,10 +17,10 @@ export const createAdminCruds = (params: Params) => {
          * It is to make sure that we load setup context before the CRUD init in our internal code.
          */
         if (!context.cms) {
-            throw new WebinyError(
-                `Missing initial "cms" on the context. Make sure that you set it up before creating Admin CRUDs.`,
-                "MALFORMED_CONTEXT_ERROR"
+            console.log(
+                `Missing initial "cms" on the context. Make sure that you set it up before creating Admin CRUDs.`
             );
+            return;
         }
         const getLocale = () => {
             return context.i18n.getCurrentLocale();
@@ -34,6 +33,10 @@ export const createAdminCruds = (params: Params) => {
         const getTenant = () => {
             return context.tenancy.getCurrentTenant();
         };
+
+        if (storageOperations.plugins && storageOperations.plugins.length > 0) {
+            context.plugins.register(storageOperations.plugins);
+        }
 
         context.cms = {
             ...context.cms,

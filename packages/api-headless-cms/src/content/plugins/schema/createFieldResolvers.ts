@@ -64,8 +64,7 @@ export function createFieldResolversFactory({ endpointType, models, model, field
 
                     return await resolver(isRoot ? parent.values : parent, args, context, info);
                 } catch (err) {
-                    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                    const a = err;
+                    console.log(err.message);
                 }
             };
         }

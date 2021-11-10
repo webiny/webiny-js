@@ -33,7 +33,11 @@ export const prepareEntryToIndex = (
     }
 
     function getFieldTypePlugin(fieldType: string) {
-        return fieldTypePlugins[fieldType];
+        const pl = fieldTypePlugins[fieldType];
+        if (pl) {
+            return pl;
+        }
+        throw new Error(`Missing field type plugin "${fieldType}". Prepare entry for index.`);
     }
 
     // These objects will contain values processed by field index plugins
@@ -46,31 +50,28 @@ export const prepareEntryToIndex = (
             continue;
         }
 
-        const fieldTypePlugin = getFieldTypePlugin(field.type);
-        if (!fieldTypePlugin) {
-            throw new Error(`Missing field type plugin "${field.type}".`);
-        }
-
         const targetFieldPlugin = getFieldIndexPlugin(field.type);
 
         // TODO: remove this `if` once we convert this plugin to proper plugin class
-        if (targetFieldPlugin && targetFieldPlugin.toIndex) {
-            const { value, rawValue } = targetFieldPlugin.toIndex({
-                plugins,
-                model,
-                field,
-                value: storageEntry.values[field.fieldId],
-                getFieldIndexPlugin,
-                getFieldTypePlugin
-            });
+        if (!targetFieldPlugin || !targetFieldPlugin.toIndex) {
+            continue;
+        }
 
-            if (typeof value !== "undefined") {
-                values[field.fieldId] = value;
-            }
+        const { value, rawValue } = targetFieldPlugin.toIndex({
+            plugins,
+            model,
+            field,
+            value: storageEntry.values[field.fieldId],
+            getFieldIndexPlugin,
+            getFieldTypePlugin
+        });
 
-            if (typeof rawValue !== "undefined") {
-                rawValues[field.fieldId] = rawValue;
-            }
+        if (typeof value !== "undefined") {
+            values[field.fieldId] = value;
+        }
+
+        if (typeof rawValue !== "undefined") {
+            rawValues[field.fieldId] = rawValue;
         }
     }
     return {
@@ -135,34 +136,37 @@ export const extractEntriesFromIndex = ({
         for (const field of model.fields) {
             const fieldTypePlugin = fieldTypePlugins[field.type];
             if (!fieldTypePlugin) {
-                throw new Error(`Missing field type plugin "${field.type}".`);
+                throw new Error(
+                    `Missing field type plugin "${field.type}". Extract entries from index.`
+                );
             }
 
             const targetFieldPlugin = getFieldIndexPlugin(field.type);
-            if (targetFieldPlugin && targetFieldPlugin.fromIndex) {
-                try {
-                    indexValues[field.fieldId] = targetFieldPlugin.fromIndex({
-                        plugins,
-                        model,
+            if (!targetFieldPlugin || !targetFieldPlugin.fromIndex) {
+                continue;
+            }
+            try {
+                indexValues[field.fieldId] = targetFieldPlugin.fromIndex({
+                    plugins,
+                    model,
+                    field,
+                    getFieldIndexPlugin,
+                    getFieldTypePlugin,
+                    value: entry.values[field.fieldId],
+                    /**
+                     * Possibly no rawValues so we must check for the existence of the field.
+                     */
+                    rawValue: entry.rawValues ? entry.rawValues[field.fieldId] : null
+                });
+            } catch (ex) {
+                throw new Error(
+                    ex.message || "Could not transform entry field from index.",
+                    ex.code || "FIELD_FROM_INDEX_ERROR",
+                    {
                         field,
-                        getFieldIndexPlugin,
-                        getFieldTypePlugin,
-                        value: entry.values[field.fieldId],
-                        /**
-                         * Possibly no rawValues so we must check for the existence of the field.
-                         */
-                        rawValue: entry.rawValues ? entry.rawValues[field.fieldId] : null
-                    });
-                } catch (ex) {
-                    throw new Error(
-                        ex.message || "Could not transform entry field from index.",
-                        ex.code || "FIELD_FROM_INDEX_ERROR",
-                        {
-                            field,
-                            entry
-                        }
-                    );
-                }
+                        entry
+                    }
+                );
             }
         }
         list.push({ ...entry, values: indexValues });

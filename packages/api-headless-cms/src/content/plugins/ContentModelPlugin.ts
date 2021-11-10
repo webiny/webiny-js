@@ -1,5 +1,11 @@
 import { Plugin } from "@webiny/plugins";
-import { CmsContentModel } from "~/types";
+import { CmsContentModel as CmsContentModelBase } from "~/types";
+
+export interface CmsContentModel
+    extends Omit<CmsContentModelBase, "locale" | "tenant" | "webinyVersion"> {
+    locale?: string;
+    tenant?: string;
+}
 
 export class ContentModelPlugin extends Plugin {
     public static readonly type = "cms-content-model";

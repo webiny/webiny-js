@@ -47,7 +47,7 @@ interface CreateElasticsearchQueryArgs {
     searchPlugins: Record<string, ElasticsearchQueryBuilderValueSearchPlugin>;
 }
 
-const specialFields = ["published", "latest"];
+const specialFields = ["published", "latest", "locale", "tenant"];
 const noKeywordFields = ["date", "number", "boolean"];
 
 const createElasticsearchSortParams = (args: CreateElasticsearchSortParams): esSort => {
@@ -104,6 +104,16 @@ const createInitialQueryValue = (
     if (sharedIndex) {
         query.must.push({ term: { "tenant.keyword": where.tenant } });
     }
+    delete where["tenant"];
+
+    if (where.locale) {
+        query.must.push({
+            term: {
+                "locale.keyword": where.locale
+            }
+        });
+    }
+    delete where["locale"];
     /**
      * We must transform published and latest where args into something that is understandable by our Elasticsearch
      */
@@ -196,8 +206,15 @@ const hasKeyword = (modelField: ModelField): boolean => {
 const execElasticsearchBuildQueryPlugins = (
     params: CreateElasticsearchQueryArgs
 ): ElasticsearchBoolQueryConfig => {
-    const { where, modelFields, parentPath, plugins, searchPlugins } = params;
-    const query = createInitialQueryValue(params);
+    const { where: initialWhere, modelFields, parentPath, plugins, searchPlugins } = params;
+
+    const where: CmsContentEntryListWhere = {
+        ...initialWhere
+    };
+    const query = createInitialQueryValue({
+        ...params,
+        where
+    });
 
     /**
      * Always remove special fields, as these do not exist in Elasticsearch.
@@ -206,7 +223,7 @@ const execElasticsearchBuildQueryPlugins = (
         delete where[sf];
     }
 
-    if (!where || Object.keys(where).length === 0) {
+    if (Object.keys(where).length === 0) {
         return query;
     }
 

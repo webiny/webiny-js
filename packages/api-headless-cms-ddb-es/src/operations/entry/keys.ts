@@ -1,4 +1,4 @@
-import { parseIdentifier } from "@webiny/utils";
+import { parseIdentifier, zeroPad } from "@webiny/utils";
 
 export interface PartitionKeyParams {
     id: string;
@@ -15,7 +15,7 @@ export interface SortKeyParams {
     version: number;
 }
 export const createRevisionSortKey = (params: SortKeyParams): string => {
-    return `REV#${params.version}`;
+    return `REV#${zeroPad(params.version)}`;
 };
 
 export const createLatestSortKey = (): string => {

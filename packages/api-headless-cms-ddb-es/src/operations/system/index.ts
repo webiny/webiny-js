@@ -18,7 +18,7 @@ interface PartitionKeyParams {
     tenant: string;
 }
 const createPartitionKey = ({ tenant }: PartitionKeyParams): string => {
-    return `T#${tenant}#SYSTEM`;
+    return `T#${tenant.toLowerCase()}#SYSTEM`;
 };
 const createSortKey = (): string => {
     return "CMS";

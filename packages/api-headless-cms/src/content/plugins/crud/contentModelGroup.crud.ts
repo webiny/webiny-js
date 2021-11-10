@@ -3,7 +3,7 @@ import { validation } from "@webiny/validation";
 import mdbid from "mdbid";
 import {
     CmsContentModelGroupContext,
-    CmsContentModelGroupListArgs,
+    CmsContentModelGroupListParams,
     CmsContentModelGroupPermission,
     CmsContentModelGroup,
     CmsContext,
@@ -84,7 +84,7 @@ export const createModelGroupsCrud = (params: Params): CmsContentModelGroupConte
         return group;
     };
 
-    const groupsList = async (args: CmsContentModelGroupListArgs) => {
+    const groupsList = async (args: CmsContentModelGroupListParams) => {
         const { where } = args;
         try {
             const pluginsGroups: CmsContentModelGroup[] = context.plugins

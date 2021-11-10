@@ -1,4 +1,9 @@
-export const getStorageOperations = () => {
+import { Plugin } from "@webiny/plugins/types";
+
+export interface Params {
+    plugins?: Plugin[] | Plugin[][];
+}
+export const getStorageOperations = (params: Params) => {
     // @ts-ignore
     if (typeof __getCreateStorageOperations !== "function") {
         throw new Error(`There is no global "__getCreateStorageOperations" function.`);
@@ -21,7 +26,9 @@ export const getStorageOperations = () => {
         );
     }
     return {
-        storageOperations: createStorageOperations(),
+        storageOperations: createStorageOperations({
+            plugins: params.plugins || []
+        }),
         plugins: getPlugins()
     };
 };

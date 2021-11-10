@@ -119,7 +119,7 @@ export const createModelsStorageOperations = (params: Params): CmsContentModelSt
         const keys = createKeys(model);
 
         try {
-            await entity.update({
+            await entity.put({
                 ...model,
                 ...keys,
                 TYPE: createType()

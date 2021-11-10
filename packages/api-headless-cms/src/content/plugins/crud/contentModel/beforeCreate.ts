@@ -115,7 +115,7 @@ export const assignBeforeModelCreate = (params: Params) => {
                 `Cannot create "${model.modelId}" content model because one is already registered via a plugin.`,
                 "CONTENT_MODEL_CREATE_ERROR",
                 {
-                    model
+                    modelId: model.modelId
                 }
             );
         }

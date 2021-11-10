@@ -25,7 +25,9 @@ import {
     BeforeRequestChangesEntryTopic,
     AfterRequestChangesEntryTopic,
     BeforeRequestReviewEntryTopic,
-    AfterRequestReviewEntryTopic
+    AfterRequestReviewEntryTopic,
+    BeforeDeleteRevisionEntryTopic,
+    AfterDeleteRevisionEntryTopic
 } from "~/types";
 import * as utils from "~/utils";
 import { validateModelEntryData } from "./contentEntry/entryDataValidation";
@@ -150,6 +152,8 @@ export const createContentEntryCrud = (params: Params): CmsContentEntryContext =
     const onAfterRequestReview = createTopic<AfterRequestReviewEntryTopic>();
     const onBeforeDelete = createTopic<BeforeDeleteEntryTopic>();
     const onAfterDelete = createTopic<AfterDeleteEntryTopic>();
+    const onBeforeDeleteRevision = createTopic<BeforeDeleteRevisionEntryTopic>();
+    const onAfterDeleteRevision = createTopic<AfterDeleteRevisionEntryTopic>();
     /**
      * We need to assign some default behaviors.
      */
@@ -224,6 +228,8 @@ export const createContentEntryCrud = (params: Params): CmsContentEntryContext =
         onAfterUpdate,
         onBeforeDelete,
         onAfterDelete,
+        onBeforeDeleteRevision,
+        onAfterDeleteRevision,
         onBeforePublish,
         onAfterPublish,
         onBeforeUnpublish,
@@ -694,8 +700,7 @@ export const createContentEntryCrud = (params: Params): CmsContentEntryContext =
             );
             /**
              * If targeted record is the latest entry record and there is no previous one, we need to run full delete with hooks.
-             * At this point deleteEntry hooks are not fired.
-             * TODO determine if not running the deleteRevision hooks is ok.
+             * At this point deleteRevision hooks are not fired.
              */
             if (entryToDelete.id === latestEntryRevisionId && !previousStorageEntry) {
                 return await deleteEntry({
@@ -719,7 +724,7 @@ export const createContentEntryCrud = (params: Params): CmsContentEntryContext =
             }
 
             try {
-                await onBeforeDelete.publish({
+                await onBeforeDeleteRevision.publish({
                     entry: entryToDelete,
                     model
                 });
@@ -731,7 +736,7 @@ export const createContentEntryCrud = (params: Params): CmsContentEntryContext =
                     storageEntryToSetAsLatest
                 });
 
-                await onAfterDelete.publish({
+                await onAfterDeleteRevision.publish({
                     entry: entryToDelete,
                     model
                 });
@@ -773,9 +778,12 @@ export const createContentEntryCrud = (params: Params): CmsContentEntryContext =
             const permission = await checkEntryPermissions({ pw: "p" });
             await utils.checkModelAccess(context, model);
 
+            const tenant = getTenant().id;
+            const locale = getLocale().code;
+
             const originalStorageEntry = await storageOperations.entries.getRevisionById(model, {
-                tenant: getTenant().id,
-                locale: getLocale().code,
+                tenant,
+                locale,
                 id
             });
 
@@ -829,6 +837,7 @@ export const createContentEntryCrud = (params: Params): CmsContentEntryContext =
                     ex.message || "Could not publish entry.",
                     ex.code || "PUBLISH_ERROR",
                     {
+                        error: ex,
                         entry,
                         storageEntry,
                         originalEntry,

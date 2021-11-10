@@ -24,7 +24,7 @@ export const assignBeforeModelDelete = (params: Params) => {
                 "Content models defined via plugins cannot be deleted.",
                 "CONTENT_MODEL_DELETE_ERROR",
                 {
-                    model
+                    modelId: model.modelId
                 }
             );
         }

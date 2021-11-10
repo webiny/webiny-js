@@ -22,6 +22,7 @@ import {
     LIST_CONTENT_MODELS_QUERY,
     UPDATE_CONTENT_MODEL_MUTATION
 } from "./graphql/contentModel";
+import { Plugin } from "@webiny/plugins/types";
 
 /**
  * Unfortunately at we need to import the api-i18n-ddb package manually
@@ -30,19 +31,25 @@ import i18nDynamoDbStorageOperations from "@webiny/api-i18n-ddb";
 import { createTenancyAndSecurity } from "./tenancySecurity";
 import { getStorageOperations } from "./storageOperations";
 
-export interface GQLHandlerCallableArgs {
+export interface GQLHandlerCallableParams {
     setupTenancyAndSecurityGraphQL?: boolean;
     permissions?: PermissionsArg[];
     identity?: SecurityIdentity;
-    plugins?: any[];
+    plugins?: Plugin[];
     path: string;
     createHeadlessCmsApp: (params: any) => any[];
 }
 
-export const useGqlHandler = (args: GQLHandlerCallableArgs) => {
-    const ops = getStorageOperations();
+export const useGqlHandler = (params: GQLHandlerCallableParams) => {
+    const ops = getStorageOperations({
+        plugins: params.plugins || []
+    });
 
-    const tenant = { id: "root", name: "Root", parent: null };
+    const tenant = {
+        id: "root",
+        name: "Root",
+        parent: null
+    };
     const {
         permissions,
         identity,
@@ -50,14 +57,15 @@ export const useGqlHandler = (args: GQLHandlerCallableArgs) => {
         path,
         setupTenancyAndSecurityGraphQL,
         createHeadlessCmsApp
-    } = args;
+    } = params;
+
+    const app = createHeadlessCmsApp({
+        storageOperations: ops.storageOperations
+    });
 
     const handler = createHandler({
         plugins: [
             ...ops.plugins,
-            ...createHeadlessCmsApp({
-                storageOperations: ops.storageOperations
-            }),
             ...createTenancyAndSecurity({
                 setupGraphQL: setupTenancyAndSecurityGraphQL,
                 permissions: createPermissions(permissions),
@@ -118,6 +126,7 @@ export const useGqlHandler = (args: GQLHandlerCallableArgs) => {
             i18nDynamoDbStorageOperations(),
             i18nContentPlugins(),
             mockLocalesPlugins(),
+            ...app,
             plugins
         ],
         http: { debug: true }

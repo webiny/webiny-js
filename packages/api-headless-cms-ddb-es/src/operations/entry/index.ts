@@ -148,6 +148,9 @@ export const createEntriesStorageOperations = (
                 table: entity.table,
                 items
             });
+            dataLoaders.clearAll({
+                model
+            });
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not insert entry data into the DynamoDB table.",
@@ -159,6 +162,7 @@ export const createEntriesStorageOperations = (
                 }
             );
         }
+
         try {
             await esEntity.put({
                 ...latestKeys,
@@ -223,6 +227,9 @@ export const createEntriesStorageOperations = (
                 table: entity.table,
                 items
             });
+            dataLoaders.clearAll({
+                model
+            });
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not create revision from given entry in the DynamoDB table.",
@@ -279,8 +286,6 @@ export const createEntriesStorageOperations = (
          * We need the latest entry to check if it needs to be updated.
          */
         const [latestStorageEntry] = await dataLoaders.getLatestRevisionByEntryId({
-            tenant: originalEntry.tenant,
-            locale: originalEntry.locale,
             model,
             ids: [originalEntry.id]
         });
@@ -323,9 +328,7 @@ export const createEntriesStorageOperations = (
                 table: entity.table,
                 items
             });
-            dataLoaders.clearAllEntryRevisions({
-                tenant: originalEntry.tenant,
-                locale: originalEntry.locale,
+            dataLoaders.clearAll({
                 model
             });
         } catch (ex) {
@@ -343,7 +346,9 @@ export const createEntriesStorageOperations = (
         if (!elasticsearchLatestData) {
             return storageEntry;
         }
-        const { index: esIndex } = configurations.es({ model });
+        const { index: esIndex } = configurations.es({
+            model
+        });
         try {
             await esEntity.put({
                 ...latestKeys,
@@ -407,6 +412,9 @@ export const createEntriesStorageOperations = (
                 table: entity.table,
                 items: deleteItems
             });
+            dataLoaders.clearAll({
+                model
+            });
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not delete entry records from DynamoDB table.",
@@ -451,8 +459,6 @@ export const createEntriesStorageOperations = (
          */
         const [publishedStorageEntry] = await dataLoaders.getPublishedRevisionByEntryId({
             model,
-            tenant: entryToDelete.tenant,
-            locale: entryToDelete.locale,
             ids: [entryToDelete.id]
         });
         /**
@@ -520,6 +526,10 @@ export const createEntriesStorageOperations = (
             await batchWriteAll({
                 table: entity.table,
                 items
+            });
+
+            dataLoaders.clearAll({
+                model
             });
         } catch (ex) {
             throw new WebinyError(
@@ -642,8 +652,6 @@ export const createEntriesStorageOperations = (
          */
         const [publishedStorageEntry] = await dataLoaders.getPublishedRevisionByEntryId({
             model,
-            tenant: entry.tenant,
-            locale: entry.locale,
             ids: [entry.id]
         });
 
@@ -701,8 +709,6 @@ export const createEntriesStorageOperations = (
              */
             const [previouslyPublishedEntry] = await dataLoaders.getRevisionById({
                 model,
-                tenant: publishedStorageEntry.tenant,
-                locale: publishedStorageEntry.locale,
                 ids: [publishedStorageEntry.id]
             });
 
@@ -745,8 +751,6 @@ export const createEntriesStorageOperations = (
          */
         const [latestStorageEntry] = await dataLoaders.getLatestRevisionByEntryId({
             model,
-            tenant: storageEntry.tenant,
-            locale: storageEntry.locale,
             ids: [entry.id]
         });
 
@@ -757,20 +761,25 @@ export const createEntriesStorageOperations = (
             /**
              * Need to decompress the data from Elasticsearch DynamoDB table.
              */
-            const latestEsEntryDataDecompressed = await decompress(plugins, latestEsEntry.data);
+            const latestEsEntryDataDecompressed: CmsContentEntry = (await decompress(
+                plugins,
+                latestEsEntry.data
+            )) as any;
 
-            esItems.push({
-                index,
-                PK: createPartitionKey(latestEsEntry),
-                SK: createLatestSortKey(),
-                data: {
-                    ...latestEsEntryDataDecompressed,
-                    status: CONTENT_ENTRY_STATUS.PUBLISHED,
-                    locked: true,
-                    savedOn: entry.savedOn,
-                    publishedOn: entry.publishedOn
-                }
-            });
+            esItems.push(
+                esEntity.putBatch({
+                    index,
+                    PK: createPartitionKey(latestEsEntryDataDecompressed),
+                    SK: createLatestSortKey(),
+                    data: {
+                        ...latestEsEntryDataDecompressed,
+                        status: CONTENT_ENTRY_STATUS.PUBLISHED,
+                        locked: true,
+                        savedOn: entry.savedOn,
+                        publishedOn: entry.publishedOn
+                    }
+                })
+            );
         }
 
         const preparedEntryData = prepareEntryToIndex({
@@ -800,17 +809,15 @@ export const createEntriesStorageOperations = (
                 table: entity.table,
                 items
             });
-            dataLoaders.clearAllEntryRevisions({
-                model,
-                tenant: entry.tenant,
-                locale: entry.locale,
-                entry
+            dataLoaders.clearAll({
+                model
             });
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not store publish entry records in DynamoDB table.",
                 ex.code || "PUBLISH_ERROR",
                 {
+                    error: ex,
                     entry,
                     latestStorageEntry,
                     publishedStorageEntry
@@ -829,8 +836,9 @@ export const createEntriesStorageOperations = (
             throw new WebinyError(
                 ex.message ||
                     "Could not store publish entry records in DynamoDB Elasticsearch table.",
-                ex.code || "PUBLISH_ERROR",
+                ex.code || "PUBLISH_ES_ERROR",
                 {
+                    error: ex,
                     entry,
                     latestStorageEntry,
                     publishedStorageEntry
@@ -851,8 +859,6 @@ export const createEntriesStorageOperations = (
          */
         const [latestStorageEntry] = await dataLoaders.getLatestRevisionByEntryId({
             model,
-            tenant: entry.tenant,
-            locale: entry.locale,
             ids: [entry.id]
         });
 
@@ -910,11 +916,8 @@ export const createEntriesStorageOperations = (
                 table: entity.table,
                 items
             });
-            dataLoaders.clearAllEntryRevisions({
-                model,
-                tenant: entry.tenant,
-                locale: entry.locale,
-                entry
+            dataLoaders.clearAll({
+                model
             });
         } catch (ex) {
             throw new WebinyError(
@@ -959,8 +962,6 @@ export const createEntriesStorageOperations = (
          */
         const [latestStorageEntry] = await dataLoaders.getLatestRevisionByEntryId({
             model,
-            tenant: entry.tenant,
-            locale: entry.locale,
             ids: [entry.id]
         });
 
@@ -989,6 +990,9 @@ export const createEntriesStorageOperations = (
                 PK: partitionKey,
                 SK: createRevisionSortKey(entry),
                 TYPE: createType()
+            });
+            dataLoaders.clearAll({
+                model
             });
         } catch (ex) {
             throw new WebinyError(
@@ -1041,8 +1045,6 @@ export const createEntriesStorageOperations = (
          */
         const [latestStorageEntry] = await dataLoaders.getLatestRevisionByEntryId({
             model,
-            tenant: entry.tenant,
-            locale: entry.locale,
             ids: [entry.id]
         });
 
@@ -1086,6 +1088,9 @@ export const createEntriesStorageOperations = (
             await batchWriteAll({
                 table: entity.table,
                 items
+            });
+            dataLoaders.clearAll({
+                model
             });
         } catch (ex) {
             throw new WebinyError(
@@ -1133,8 +1138,6 @@ export const createEntriesStorageOperations = (
     ) => {
         return await dataLoaders.getAllEntryRevisions({
             model,
-            tenant: params.tenant,
-            locale: params.tenant,
             ids: params.ids
         });
     };
@@ -1145,8 +1148,6 @@ export const createEntriesStorageOperations = (
     ) => {
         const result = await dataLoaders.getLatestRevisionByEntryId({
             model,
-            tenant: params.tenant,
-            locale: params.tenant,
             ids: [params.id]
         });
         if (result.length === 0) {
@@ -1160,8 +1161,6 @@ export const createEntriesStorageOperations = (
     ) => {
         const result = await dataLoaders.getPublishedRevisionByEntryId({
             model,
-            tenant: params.tenant,
-            locale: params.tenant,
             ids: [params.id]
         });
         if (result.length === 0) {
@@ -1176,8 +1175,6 @@ export const createEntriesStorageOperations = (
     ) => {
         const result = await dataLoaders.getRevisionById({
             model,
-            tenant: params.tenant,
-            locale: params.tenant,
             ids: [params.id]
         });
         if (result.length === 0) {
@@ -1192,8 +1189,6 @@ export const createEntriesStorageOperations = (
     ) => {
         return await dataLoaders.getAllEntryRevisions({
             model,
-            tenant: params.tenant,
-            locale: params.locale,
             ids: [params.id]
         });
     };
@@ -1204,8 +1199,6 @@ export const createEntriesStorageOperations = (
     ) => {
         return dataLoaders.getRevisionById({
             model,
-            tenant: params.tenant,
-            locale: params.locale,
             ids: params.ids
         });
     };
@@ -1216,8 +1209,6 @@ export const createEntriesStorageOperations = (
     ) => {
         return dataLoaders.getLatestRevisionByEntryId({
             model,
-            tenant: params.tenant,
-            locale: params.locale,
             ids: params.ids
         });
     };
@@ -1228,8 +1219,6 @@ export const createEntriesStorageOperations = (
     ) => {
         return dataLoaders.getPublishedRevisionByEntryId({
             model,
-            tenant: params.tenant,
-            locale: params.locale,
             ids: params.ids
         });
     };

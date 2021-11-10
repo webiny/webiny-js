@@ -1,9 +1,10 @@
+import dynamoDbValueFilters from "@webiny/db-dynamodb/plugins/filters";
+import elasticsearchPlugins from "./elasticsearch";
+import dynamoDbPlugins from "./dynamoDb";
 import { createSettingsStorageOperations } from "./operations/settings";
 import { createSystemStorageOperations } from "./operations/system";
 import { createModelsStorageOperations } from "./operations/model";
 import { createEntriesStorageOperations } from "./operations/entry";
-import elasticsearchPlugins from "./elasticsearch";
-import dynamoDbPlugins from "./dynamoDb";
 import { ENTITIES, StorageOperationsFactory } from "~/types";
 import { createTable } from "~/definitions/table";
 import { createElasticsearchTable } from "~/definitions/tableElasticsearch";
@@ -15,7 +16,6 @@ import { createSystemEntity } from "~/definitions/system";
 import { createSettingsEntity } from "~/definitions/settings";
 import { HeadlessCms } from "@webiny/api-headless-cms/types";
 import { createElasticsearchTemplate } from "~/operations/system/createElasticsearchTemplate";
-import dynamoDbValueFilters from "@webiny/db-dynamodb/plugins/filters";
 import { PluginsContainer } from "@webiny/plugins";
 import { createGroupsStorageOperations } from "~/operations/group";
 import { getElasticsearchOperators } from "@webiny/api-elasticsearch/operators";
@@ -28,7 +28,8 @@ export const createStorageOperations: StorageOperationsFactory = params => {
         esTable,
         documentClient,
         elasticsearch,
-        plugins: pluginsInput = []
+        plugins: customPlugins,
+        modelFieldToGraphQLPlugins
     } = params;
 
     const tableInstance = createTable({
@@ -75,9 +76,13 @@ export const createStorageOperations: StorageOperationsFactory = params => {
 
     const plugins = new PluginsContainer([
         /**
-         * User defined plugins.
+         * User defined custom plugins.
          */
-        pluginsInput || [],
+        ...(customPlugins || []),
+        /**
+         * Plugins of type CmsModelFieldToGraphQLPlugin.
+         */
+        modelFieldToGraphQLPlugins,
         /**
          * Elasticsearch field definitions for the entry record.
          */
@@ -108,6 +113,13 @@ export const createStorageOperations: StorageOperationsFactory = params => {
                 });
             });
         },
+        plugins: [
+            /**
+             * Field plugins for DynamoDB.
+             * We must pass them to the base application.
+             */
+            dynamoDbPlugins()
+        ],
         getEntities: () => entities,
         getTable: () => tableInstance,
         getEsTable: () => tableElasticsearchInstance,

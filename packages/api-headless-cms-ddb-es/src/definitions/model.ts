@@ -20,46 +20,62 @@ export const createModelEntity = (params: Params): Entity<any> => {
                 sortKey: true
             },
             TYPE: {
-                type: "string"
+                type: "string",
+                required: true
             },
             webinyVersion: {
-                type: "string"
+                type: "string",
+                required: true
             },
             name: {
-                type: "string"
+                type: "string",
+                required: true
             },
             modelId: {
-                type: "string"
+                type: "string",
+                required: true
             },
             locale: {
-                type: "string"
+                type: "string",
+                required: true
             },
             group: {
-                type: "map"
+                type: "map",
+                required: true
             },
             description: {
                 type: "string"
             },
             createdOn: {
-                type: "string"
+                type: "string",
+                required: true
             },
             savedOn: {
-                type: "string"
+                type: "string",
+                required: true
             },
             createdBy: {
-                type: "map"
+                type: "map",
+                required: true
             },
             fields: {
-                type: "list"
+                type: "list",
+                required: true
             },
             layout: {
-                type: "list"
+                type: "list",
+                required: true
             },
             lockedFields: {
-                type: "list"
+                type: "list",
+                required: true
             },
             titleFieldId: {
                 type: "string"
+            },
+            tenant: {
+                type: "string",
+                required: true
             },
             ...(attributes || {})
         }

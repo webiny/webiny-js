@@ -1,6 +1,7 @@
-import { CmsContentEntryHookPlugin, CmsContentModelHookPlugin } from "../../../src/types";
+import { CmsContext } from "~/types";
+import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
 
-class HooksTracker {
+class PubSubTracker {
     private _tracked: Record<string, number> = {};
 
     public track(name: string): void {
@@ -23,86 +24,86 @@ class HooksTracker {
     }
 }
 
-export const hooksTracker = new HooksTracker();
+export const pubSubTracker = new PubSubTracker();
 
-export const contentModelHooks = (): CmsContentModelHookPlugin => ({
-    type: "cms-content-model-hook",
-    name: "contentModelDummyHooks",
-    beforeCreate: async () => {
-        hooksTracker.track("contentModel:beforeCreate");
-    },
-    afterCreate: async () => {
-        hooksTracker.track("contentModel:afterCreate");
-    },
-    beforeUpdate: async () => {
-        hooksTracker.track("contentModel:beforeUpdate");
-    },
-    afterUpdate: async () => {
-        hooksTracker.track("contentModel:afterUpdate");
-    },
-    beforeDelete: async () => {
-        hooksTracker.track("contentModel:beforeDelete");
-    },
-    afterDelete: async () => {
-        hooksTracker.track("contentModel:afterDelete");
-    }
-});
+export const assignModelEvents = () => {
+    return new ContextPlugin<CmsContext>(async context => {
+        context.cms.models.onBeforeCreate.subscribe(() => {
+            pubSubTracker.track("contentModel:beforeCreate");
+        });
+        context.cms.models.onAfterCreate.subscribe(() => {
+            pubSubTracker.track("contentModel:afterCreate");
+        });
+        context.cms.models.onBeforeUpdate.subscribe(() => {
+            pubSubTracker.track("contentModel:beforeUpdate");
+        });
+        context.cms.models.onAfterUpdate.subscribe(() => {
+            pubSubTracker.track("contentModel:afterUpdate");
+        });
+        context.cms.models.onBeforeDelete.subscribe(() => {
+            pubSubTracker.track("contentModel:beforeDelete");
+        });
+        context.cms.models.onAfterDelete.subscribe(() => {
+            pubSubTracker.track("contentModel:afterDelete");
+        });
+    });
+};
 
-export const contentEntryHooks = (): CmsContentEntryHookPlugin => ({
-    type: "cms-content-entry-hook",
-    name: "contentEntryDummyHooks",
-    beforeCreate: async () => {
-        hooksTracker.track("contentEntry:beforeCreate");
-    },
-    afterCreate: async () => {
-        hooksTracker.track("contentEntry:afterCreate");
-    },
-    beforeCreateRevisionFrom: async () => {
-        hooksTracker.track("contentEntry:beforeCreateRevisionFrom");
-    },
-    afterCreateRevisionFrom: async () => {
-        hooksTracker.track("contentEntry:afterCreateRevisionFrom");
-    },
-    beforeUpdate: async () => {
-        hooksTracker.track("contentEntry:beforeUpdate");
-    },
-    afterUpdate: async () => {
-        hooksTracker.track("contentEntry:afterUpdate");
-    },
-    beforeDeleteRevision: async () => {
-        hooksTracker.track("contentEntry:beforeDeleteRevision");
-    },
-    afterDeleteRevision: async () => {
-        hooksTracker.track("contentEntry:afterDeleteRevision");
-    },
-    beforeDelete: async () => {
-        hooksTracker.track("contentEntry:beforeDelete");
-    },
-    afterDelete: async () => {
-        hooksTracker.track("contentEntry:afterDelete");
-    },
-    beforePublish: async () => {
-        hooksTracker.track("contentEntry:beforePublish");
-    },
-    afterPublish: async () => {
-        hooksTracker.track("contentEntry:afterPublish");
-    },
-    beforeUnpublish: async () => {
-        hooksTracker.track("contentEntry:beforeUnpublish");
-    },
-    afterUnpublish: async () => {
-        hooksTracker.track("contentEntry:afterUnpublish");
-    },
-    beforeRequestChanges: async () => {
-        hooksTracker.track("contentEntry:beforeRequestChanges");
-    },
-    afterRequestChanges: async () => {
-        hooksTracker.track("contentEntry:afterRequestChanges");
-    },
-    beforeRequestReview: async () => {
-        hooksTracker.track("contentEntry:beforeRequestReview");
-    },
-    afterRequestReview: async () => {
-        hooksTracker.track("contentEntry:afterRequestReview");
-    }
-});
+export const assignEntryEvents = () => {
+    return new ContextPlugin<CmsContext>((context: CmsContext) => {
+        context.cms.entries.onBeforeCreate.subscribe(() => {
+            pubSubTracker.track("contentEntry:beforeCreate");
+        });
+        context.cms.entries.onAfterCreate.subscribe(() => {
+            pubSubTracker.track("contentEntry:afterCreate");
+        });
+        context.cms.entries.onBeforeCreateRevision.subscribe(() => {
+            pubSubTracker.track("contentEntry:beforeCreateRevisionFrom");
+        });
+        context.cms.entries.onAfterCreateRevision.subscribe(() => {
+            pubSubTracker.track("contentEntry:afterCreateRevisionFrom");
+        });
+        context.cms.entries.onBeforeUpdate.subscribe(() => {
+            pubSubTracker.track("contentEntry:beforeUpdate");
+        });
+        context.cms.entries.onAfterUpdate.subscribe(() => {
+            pubSubTracker.track("contentEntry:afterUpdate");
+        });
+        context.cms.entries.onBeforeDelete.subscribe(() => {
+            pubSubTracker.track("contentEntry:beforeDelete");
+        });
+        context.cms.entries.onAfterDelete.subscribe(() => {
+            pubSubTracker.track("contentEntry:afterDelete");
+        });
+        context.cms.entries.onBeforeDeleteRevision.subscribe(() => {
+            pubSubTracker.track("contentEntry:beforeDeleteRevision");
+        });
+        context.cms.entries.onAfterDeleteRevision.subscribe(() => {
+            pubSubTracker.track("contentEntry:afterDeleteRevision");
+        });
+        context.cms.entries.onBeforePublish.subscribe(() => {
+            pubSubTracker.track("contentEntry:beforePublish");
+        });
+        context.cms.entries.onAfterPublish.subscribe(() => {
+            pubSubTracker.track("contentEntry:afterPublish");
+        });
+        context.cms.entries.onBeforeUnpublish.subscribe(() => {
+            pubSubTracker.track("contentEntry:beforeUnpublish");
+        });
+        context.cms.entries.onAfterUnpublish.subscribe(() => {
+            pubSubTracker.track("contentEntry:afterUnpublish");
+        });
+        context.cms.entries.onBeforeRequestReview.subscribe(() => {
+            pubSubTracker.track("contentEntry:beforeRequestReview");
+        });
+        context.cms.entries.onAfterRequestReview.subscribe(() => {
+            pubSubTracker.track("contentEntry:afterRequestReview");
+        });
+        context.cms.entries.onBeforeRequestChanges.subscribe(() => {
+            pubSubTracker.track("contentEntry:beforeRequestChanges");
+        });
+        context.cms.entries.onAfterRequestChanges.subscribe(() => {
+            pubSubTracker.track("contentEntry:afterRequestChanges");
+        });
+    });
+};

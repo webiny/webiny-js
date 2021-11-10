@@ -38,7 +38,7 @@ const createCategoryItem = async ({ manager, from = null, publish, data }) => {
     const [publishResponse] = await manager.publishCategory({
         revision: category.id
     });
-    if (!publishResponse?.data?.publishCategory?.data?.id) {
+    if (publishResponse?.data?.publishCategory?.error) {
         console.log(publishResponse?.data?.publishCategory?.error?.message);
         throw new Error("Could not publish category.");
     }
@@ -78,7 +78,7 @@ const createArticleItem = async ({ manager, from = null, publish, data }) => {
     const [publishResponse] = await manager.publishArticle({
         revision: article.id
     });
-    if (!publishResponse?.data?.publishArticle?.data?.id) {
+    if (publishResponse?.data?.publishArticle?.error) {
         console.log(publishResponse?.data?.publishArticle?.error?.message);
         throw new Error("Could not publish article.");
     }
@@ -225,7 +225,7 @@ describe("entry references", () => {
         await until(
             () => articleManager.listArticles().then(([data]) => data),
             ({ data }) => {
-                const entries = data?.listArticles?.data || [];
+                const entries = data.listArticles.data || [];
                 if (entries.length !== 3) {
                     return false;
                 }
