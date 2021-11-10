@@ -21,7 +21,7 @@ import { createFieldModels } from "./contentModel/createFieldModels";
 import { validateLayout } from "./contentModel/validateLayout";
 import { NotAuthorizedError } from "@webiny/api-security";
 import WebinyError from "@webiny/error";
-import { ContentModelPlugin } from "@webiny/api-headless-cms/content/plugins/ContentModelPlugin";
+import { ContentModelPlugin } from "~/content/plugins/ContentModelPlugin";
 import { Tenant } from "@webiny/api-tenancy/types";
 import { I18NLocale } from "@webiny/api-i18n/types";
 import { SecurityIdentity } from "@webiny/api-security/types";
