@@ -84,7 +84,8 @@ export const handler = createHandler({
             storageOperations: createHeadlessCmsStorageOperations({
                 documentClient,
                 elasticsearch: elasticsearchClient,
-                modelFieldToGraphQLPlugins: headlessCmsModelFieldToGraphQLPlugins()
+                modelFieldToGraphQLPlugins: headlessCmsModelFieldToGraphQLPlugins(),
+                plugins: [elasticsearchDataGzipCompression()]
             }),
             setupGraphQL: true
         }),
