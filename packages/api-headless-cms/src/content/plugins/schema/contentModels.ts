@@ -1,5 +1,5 @@
 import { ErrorResponse, Response } from "@webiny/handler-graphql";
-import { CmsContentModelCreateInput, CmsContentModelUpdateInput, CmsContext } from "../../../types";
+import { CmsContentModelCreateInput, CmsContentModelUpdateInput, CmsContext } from "~/types";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSchemaPlugin";
 import { Resolvers } from "@webiny/handler-graphql/types";
 import { ContentModelPlugin } from "~/content/plugins/ContentModelPlugin";

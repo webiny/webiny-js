@@ -1,4 +1,4 @@
-import { CmsContentModelManager, CmsContentModel, CmsContext } from "../../../types";
+import { CmsContentModelManager, CmsContentModel, CmsContext } from "~/types";
 
 export class DefaultContentModelManager implements CmsContentModelManager {
     private readonly _context: CmsContext;

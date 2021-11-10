@@ -1,4 +1,4 @@
-import { CmsModelFieldPatternValidatorPlugin } from "../../../../types";
+import { CmsModelFieldPatternValidatorPlugin } from "~/types";
 
 const plugin: CmsModelFieldPatternValidatorPlugin = {
     type: "cms-model-field-validator-pattern",

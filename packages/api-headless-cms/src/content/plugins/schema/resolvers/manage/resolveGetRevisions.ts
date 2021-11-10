@@ -1,8 +1,5 @@
 import { ErrorResponse, Response } from "@webiny/handler-graphql/responses";
-import {
-    CmsContentEntryResolverFactory as ResolverFactory,
-    CmsContentEntry
-} from "../../../../../types";
+import { CmsContentEntryResolverFactory as ResolverFactory, CmsContentEntry } from "~/types";
 
 export const resolveGetRevisions: ResolverFactory =
     ({ model }) =>

@@ -1,10 +1,19 @@
-import graphql from "./graphql";
+import { createGraphQLPlugin } from "./graphql";
 import { createAdminCruds, Params as CreateAdminCrudsParams } from "./crud";
 import context from "./context";
 import upgrades from "./upgrades";
 
-export type Params = CreateAdminCrudsParams;
+export interface Params extends CreateAdminCrudsParams {
+    setupGraphQL?: boolean;
+}
 
 export const createAdminHeadlessCms = (params: Params) => {
-    return [context(), createAdminCruds(params), graphql(), upgrades()];
+    const plugins: any = [context(), createAdminCruds(params), upgrades()];
+    /**
+     * By default we include the GraphQL.
+     */
+    if (params.setupGraphQL !== false) {
+        plugins.push(createGraphQLPlugin());
+    }
+    return plugins;
 };

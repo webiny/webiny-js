@@ -1,4 +1,4 @@
-import { CmsContentModelField, CmsModelFieldToGraphQLPlugin } from "../../../types";
+import { CmsContentModelField, CmsModelFieldToGraphQLPlugin } from "~/types";
 
 const fieldGraphQLTypes = {
     time: "Time",

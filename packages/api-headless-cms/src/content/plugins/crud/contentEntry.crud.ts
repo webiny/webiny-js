@@ -32,7 +32,6 @@ import {
 import * as utils from "~/utils";
 import { validateModelEntryData } from "./contentEntry/entryDataValidation";
 import WebinyError from "@webiny/error";
-import { entryFromStorageTransform, entryToStorageTransform } from "../utils/entryStorage";
 import { I18NLocale } from "@webiny/api-i18n/types";
 import { Tenant } from "@webiny/api-tenancy/types";
 import { SecurityIdentity } from "@webiny/api-security/types";
@@ -40,6 +39,10 @@ import { createTopic } from "@webiny/pubsub";
 import { assignBeforeEntryCreate } from "./contentEntry/beforeCreate";
 import { assignBeforeEntryUpdate } from "./contentEntry/beforeUpdate";
 import { createIdentifier, parseIdentifier } from "@webiny/utils";
+import {
+    entryFromStorageTransform,
+    entryToStorageTransform
+} from "~/content/plugins/utils/entryStorage";
 
 export const STATUS_DRAFT = "draft";
 export const STATUS_PUBLISHED = "published";

@@ -12,14 +12,14 @@ import { HeadlessCmsStorageOperations } from "~/types";
 
 export interface Params {
     storageOperations: HeadlessCmsStorageOperations;
+    setupGraphQL?: boolean;
     debug?: boolean;
 }
 export const createContentHeadlessCms = (params: Params) => {
-    return [
+    const plugins: any = [
         contextSetup(),
         modelManager(),
         createContentCruds(params),
-        graphQLHandlerFactory(params),
         fieldTypePlugins(),
         validatorsPlugins(),
         defaultStoragePlugin(),
@@ -27,4 +27,11 @@ export const createContentHeadlessCms = (params: Params) => {
         // new InternalAuthenticationPlugin("read-api-key"),
         // new InternalAuthorizationPlugin("read-api-key")
     ];
+    /**
+     * By default we include the GraphQL.
+     */
+    if (params.setupGraphQL !== false) {
+        plugins.push(graphQLHandlerFactory(params));
+    }
+    return plugins;
 };

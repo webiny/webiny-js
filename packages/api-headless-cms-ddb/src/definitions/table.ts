@@ -1,26 +1,26 @@
-import { CmsContext } from "@webiny/api-headless-cms/types";
+import { TableModifier } from "~/types";
+import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { Table } from "dynamodb-toolbox";
-import configurations from "~/configurations";
-import { getDocumentClient, getTable } from "~/operations/helpers";
 
-interface IndexParams {
-    partitionKey: string;
-    sortKey: string;
+export interface Params {
+    table: TableModifier;
+    documentClient: DocumentClient;
 }
-
-interface Params {
-    context: CmsContext;
-    indexes: {
-        [key: string]: IndexParams;
-    };
-}
-
-export const createTable = ({ context, indexes }: Params) => {
-    return new Table({
-        name: configurations.db().table || getTable(context),
+export const createTable = ({ table, documentClient }: Params): Table => {
+    const tableConfig = {
+        name: process.env.DB_TABLE_HEADLESS_CMS || process.env.DB_TABLE,
         partitionKey: "PK",
         sortKey: "SK",
-        DocumentClient: getDocumentClient(context),
-        indexes
-    });
+        DocumentClient: documentClient,
+        indexes: {
+            GSI1: {
+                partitionKey: "GSI1_PK",
+                sortKey: "GSI1_SK"
+            }
+        }
+    };
+
+    const config = typeof table === "function" ? table(tableConfig) : tableConfig;
+
+    return new Table(config);
 };

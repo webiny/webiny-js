@@ -1,5 +1,5 @@
-import { CmsContentEntry, CmsContext, CmsModelFieldToGraphQLPlugin } from "../../../types";
-import { createReadTypeName } from "../utils/createTypeName";
+import { CmsContentEntry, CmsContext, CmsModelFieldToGraphQLPlugin } from "~/types";
+import { createReadTypeName } from "~/content/plugins/utils/createTypeName";
 
 const createUnionTypeName = (model, field) => {
     return `${createReadTypeName(model.modelId)}${createReadTypeName(field.fieldId)}`;
@@ -70,7 +70,7 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
                         // Get model manager, to get access to CRUD methods
                         const model = await cms.getModel(modelId);
 
-                        let entries: CmsContentEntry[] = [];
+                        let entries: CmsContentEntry[];
                         // `read` API works with `published` data
                         if (cms.READ) {
                             entries = await model.getPublishedByIds([entryId]);
@@ -91,7 +91,7 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
                 // Get model manager, to get access to CRUD methods
                 const model = await cms.getModel(value.modelId);
 
-                let revisions: CmsContentEntry[] = [];
+                let revisions: CmsContentEntry[];
                 // `read` API works with `published` data
                 if (cms.READ) {
                     revisions = await model.getPublishedByIds([value.entryId]);

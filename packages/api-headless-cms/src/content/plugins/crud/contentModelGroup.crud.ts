@@ -16,7 +16,7 @@ import {
     BeforeGroupDeleteTopic,
     AfterGroupDeleteTopic
 } from "~/types";
-import * as utils from "../../../utils";
+import * as utils from "~/utils";
 import { NotFoundError } from "@webiny/handler-graphql";
 import WebinyError from "@webiny/error";
 import { ContentModelGroupPlugin } from "~/content/plugins/ContentModelGroupPlugin";

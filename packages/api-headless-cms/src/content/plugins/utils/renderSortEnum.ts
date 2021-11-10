@@ -1,4 +1,4 @@
-import { CmsFieldTypePlugins, CmsContentModel } from "../../../types";
+import { CmsFieldTypePlugins, CmsContentModel } from "~/types";
 import get from "lodash/get";
 
 interface RenderSortEnum {

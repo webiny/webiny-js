@@ -1,9 +1,9 @@
 import { CmsContentModel, CmsFieldTypePlugins, CmsContext } from "~/types";
-import { createReadTypeName, createTypeName } from "../utils/createTypeName";
 import { resolveGet } from "./resolvers/read/resolveGet";
 import { resolveList } from "./resolvers/read/resolveList";
-import { pluralizedTypeName } from "../utils/pluralizedTypeName";
 import { createFieldResolversFactory } from "~/content/plugins/schema/createFieldResolvers";
+import { createReadTypeName, createTypeName } from "~/content/plugins/utils/createTypeName";
+import { pluralizedTypeName } from "~/content/plugins/utils/pluralizedTypeName";
 
 export interface CreateReadResolvers {
     (params: {

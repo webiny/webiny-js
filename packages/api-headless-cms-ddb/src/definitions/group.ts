@@ -6,48 +6,44 @@ export interface Params {
     entityName: string;
     attributes: Attributes;
 }
-export const createEntryEntity = (params: Params): Entity<any> => {
-    const { table, entityName, attributes } = params;
+export const createGroupEntity = (params: Params): Entity<any> => {
+    const { table, attributes, entityName } = params;
     return new Entity({
         name: entityName,
         table,
         attributes: {
             PK: {
-                type: "string",
                 partitionKey: true
             },
             SK: {
-                type: "string",
                 sortKey: true
             },
-            GSI1_PK: {
-                type: "string"
-            },
-            GSI1_SK: {
-                type: "string"
-            },
             TYPE: {
-                type: "string"
-            },
-            __type: {
                 type: "string"
             },
             webinyVersion: {
                 type: "string"
             },
-            tenant: {
-                type: "string"
-            },
-            entryId: {
-                type: "string"
-            },
             id: {
                 type: "string"
             },
-            createdBy: {
-                type: "map"
+            name: {
+                type: "string"
             },
-            ownedBy: {
+            slug: {
+                type: "string"
+            },
+            locale: {
+                type: "string"
+            },
+            description: {
+                type: "string"
+            },
+            icon: {
+                type: "string"
+            },
+
+            createdBy: {
                 type: "map"
             },
             createdOn: {
@@ -56,26 +52,8 @@ export const createEntryEntity = (params: Params): Entity<any> => {
             savedOn: {
                 type: "string"
             },
-            modelId: {
+            tenant: {
                 type: "string"
-            },
-            locale: {
-                type: "string"
-            },
-            publishedOn: {
-                type: "string"
-            },
-            version: {
-                type: "number"
-            },
-            locked: {
-                type: "boolean"
-            },
-            status: {
-                type: "string"
-            },
-            values: {
-                type: "map"
             },
             ...(attributes || {})
         }

@@ -5,7 +5,7 @@ import { createReadSDL } from "./createReadSDL";
 import { createManageResolvers } from "./createManageResolvers";
 import { createReadResolvers } from "./createReadResolvers";
 import { createPreviewResolvers } from "./createPreviewResolvers";
-import { getSchemaFromFieldPlugins } from "../utils/getSchemaFromFieldPlugins";
+import { getSchemaFromFieldPlugins } from "~/content/plugins/utils/getSchemaFromFieldPlugins";
 
 export const generateSchemaPlugins = async (
     context: CmsContext

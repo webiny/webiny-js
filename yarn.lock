@@ -9074,6 +9074,7 @@ __metadata:
     "@webiny/handler-db": ^5.17.0
     "@webiny/plugins": ^5.17.0
     "@webiny/project-utils": ^5.17.0
+    "@webiny/utils": ^5.17.0
     aws-sdk: 2.868.0
     dataloader: ^2.0.0
     dot-prop: ^5.3.0

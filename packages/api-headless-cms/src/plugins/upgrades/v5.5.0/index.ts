@@ -1,7 +1,7 @@
 import WebinyError from "@webiny/error";
 import { UpgradePlugin } from "@webiny/api-upgrade/types";
-import { CmsContext } from "../../../types";
-import { migrateCMSPermissions } from "../../../migrateCMSPermissions";
+import { CmsContext } from "~/types";
+import { migrateCMSPermissions } from "~/migrateCMSPermissions";
 import { isCmsContentPermission } from "./helpers";
 
 const plugin: UpgradePlugin<CmsContext> = {
