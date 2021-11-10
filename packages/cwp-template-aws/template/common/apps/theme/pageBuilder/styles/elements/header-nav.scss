@@ -123,7 +123,7 @@
 
     &__mobile-site-name {
       position: fixed;
-      width: 100%;
+      width: calc(100% - 25px);
       right: -25px;
       top: 28px;
       z-index: 12;
