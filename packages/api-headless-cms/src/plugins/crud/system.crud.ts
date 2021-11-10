@@ -12,7 +12,6 @@ import {
     HeadlessCmsStorageOperations
 } from "~/types";
 import { Tenant } from "@webiny/api-tenancy/types";
-import { I18NLocale } from "@webiny/api-i18n/types";
 import { SecurityIdentity } from "@webiny/api-security/types";
 import { createTopic } from "@webiny/pubsub";
 
@@ -25,13 +24,12 @@ const initialContentModelGroup = {
 
 export interface Params {
     getTenant: () => Tenant;
-    getLocale: () => I18NLocale;
     storageOperations: HeadlessCmsStorageOperations;
     context: CmsContext;
     getIdentity: () => SecurityIdentity;
 }
 export const createSystemCrud = (params: Params): CmsSystemContext => {
-    const { getTenant, getLocale, storageOperations, context, getIdentity } = params;
+    const { getTenant, storageOperations, context, getIdentity } = params;
 
     const onBeforeInstall = createTopic<BeforeInstallTopic>();
     const onAfterInstall = createTopic<AfterInstallTopic>();
@@ -59,7 +57,6 @@ export const createSystemCrud = (params: Params): CmsSystemContext => {
         const system: CmsSystem = {
             ...(original || {}),
             version,
-            locale: getLocale().code,
             tenant: getTenant().id
         };
         if (!original) {
@@ -134,9 +131,8 @@ export const createSystemCrud = (params: Params): CmsSystemContext => {
             });
 
             const system: CmsSystem = {
-                version,
+                version: context.WEBINY_VERSION,
                 readAPIKey: createReadAPIKey(),
-                locale: getLocale().code,
                 tenant: getTenant().id
             };
             /**

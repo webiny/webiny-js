@@ -1,7 +1,7 @@
-import { Plugin } from "@webiny/plugins/types";
+import { Plugin, PluginCollection } from "@webiny/plugins/types";
 
 export interface Params {
-    plugins?: Plugin[] | Plugin[][];
+    plugins?: Plugin | Plugin[] | Plugin[][] | PluginCollection;
 }
 export const getStorageOperations = (params: Params) => {
     // @ts-ignore

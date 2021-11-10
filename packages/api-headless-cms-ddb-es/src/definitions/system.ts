@@ -22,6 +22,15 @@ export const createSystemEntity = (params: Params): Entity<any> => {
             version: {
                 type: "string"
             },
+            locale: {
+                type: "string"
+            },
+            tenant: {
+                type: "string"
+            },
+            readAPIKey: {
+                type: "string"
+            },
             ...(attributes || {})
         }
     });

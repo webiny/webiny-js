@@ -3,7 +3,6 @@ import { createSystemCrud } from "./system.crud";
 import { CmsContext, HeadlessCmsStorageOperations } from "~/types";
 import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
 import { createModelGroupsCrud } from "~/content/plugins/crud/contentModelGroup.crud";
-import { createModelsCrud } from "~/content/plugins/crud/contentModel.crud";
 
 export interface Params {
     storageOperations: HeadlessCmsStorageOperations;
@@ -41,7 +40,6 @@ export const createAdminCruds = (params: Params) => {
         context.cms.system = createSystemCrud({
             context,
             getTenant,
-            getLocale,
             getIdentity,
             storageOperations
         });
@@ -55,13 +53,6 @@ export const createAdminCruds = (params: Params) => {
             context,
             getTenant,
             getLocale,
-            getIdentity,
-            storageOperations
-        });
-        context.cms.models = createModelsCrud({
-            context,
-            getLocale,
-            getTenant,
             getIdentity,
             storageOperations
         });

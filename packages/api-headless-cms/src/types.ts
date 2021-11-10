@@ -2563,7 +2563,6 @@ export interface CmsSystem {
     /**
      * TODO migration
      */
-    locale: string;
     tenant: string;
 }
 

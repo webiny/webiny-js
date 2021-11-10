@@ -41,7 +41,6 @@ export const createContentCruds = (params: Params) => {
         context.cms.system = createSystemCrud({
             context,
             getTenant,
-            getLocale,
             getIdentity,
             storageOperations
         });
@@ -72,5 +71,10 @@ export const createContentCruds = (params: Params) => {
             getIdentity,
             storageOperations
         });
+
+        if (!storageOperations.init) {
+            return;
+        }
+        await storageOperations.init(context.cms);
     });
 };

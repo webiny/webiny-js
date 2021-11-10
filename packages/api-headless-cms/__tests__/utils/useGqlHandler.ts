@@ -22,7 +22,7 @@ import {
     LIST_CONTENT_MODELS_QUERY,
     UPDATE_CONTENT_MODEL_MUTATION
 } from "./graphql/contentModel";
-import { Plugin } from "@webiny/plugins/types";
+import { Plugin, PluginCollection } from "@webiny/plugins/types";
 
 /**
  * Unfortunately at we need to import the api-i18n-ddb package manually
@@ -35,14 +35,15 @@ export interface GQLHandlerCallableParams {
     setupTenancyAndSecurityGraphQL?: boolean;
     permissions?: PermissionsArg[];
     identity?: SecurityIdentity;
-    plugins?: Plugin[];
+    plugins?: Plugin | Plugin[] | Plugin[][] | PluginCollection;
+    storageOperationPlugins?: Plugin | Plugin[] | Plugin[][] | PluginCollection;
     path: string;
     createHeadlessCmsApp: (params: any) => any[];
 }
 
 export const useGqlHandler = (params: GQLHandlerCallableParams) => {
     const ops = getStorageOperations({
-        plugins: params.plugins || []
+        plugins: params.storageOperationPlugins || []
     });
 
     const tenant = {

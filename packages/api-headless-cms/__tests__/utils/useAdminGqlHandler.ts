@@ -1,3 +1,4 @@
+import graphQLHandlerPlugins from "@webiny/handler-graphql";
 import { GQLHandlerCallableParams, useGqlHandler } from "./useGqlHandler";
 import { createAdminHeadlessCms } from "~/plugins";
 
@@ -7,7 +8,7 @@ export const useAdminGqlHandler = (
     return useGqlHandler({
         ...params,
         setupTenancyAndSecurityGraphQL: true,
-        plugins: [],
+        plugins: [graphQLHandlerPlugins()],
         createHeadlessCmsApp: createAdminHeadlessCms
     });
 };
