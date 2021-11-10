@@ -256,8 +256,8 @@ export interface TableModifier {
 export interface StorageOperationsFactoryParams {
     documentClient: DocumentClient;
     elasticsearch: Client;
-    table: TableModifier;
-    esTable: TableModifier;
+    table?: TableModifier;
+    esTable?: TableModifier;
     modelFieldToGraphQLPlugins: CmsModelFieldToGraphQLPlugin[];
     attributes?: Record<ENTITIES, Attributes>;
     plugins?: Plugin[] | Plugin[][];

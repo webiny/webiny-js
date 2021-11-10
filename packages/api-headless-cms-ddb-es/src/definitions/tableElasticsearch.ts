@@ -3,7 +3,7 @@ import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { Table } from "dynamodb-toolbox";
 
 export interface Params {
-    table: TableModifier;
+    table?: TableModifier;
     documentClient: DocumentClient;
 }
 export const createElasticsearchTable = ({ table, documentClient }: Params): Table => {

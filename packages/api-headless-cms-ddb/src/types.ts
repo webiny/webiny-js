@@ -84,7 +84,7 @@ export interface TableModifier {
 
 export interface StorageOperationsFactoryParams {
     documentClient: DocumentClient;
-    table: TableModifier;
+    table?: TableModifier;
     modelFieldToGraphQLPlugins: CmsModelFieldToGraphQLPlugin[];
     attributes?: Record<ENTITIES, Attributes>;
     plugins?: Plugin[] | Plugin[][];

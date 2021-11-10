@@ -6,15 +6,16 @@ import i18nContentPlugins from "@webiny/api-i18n-content/plugins";
 import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import dynamoDbPlugins from "@webiny/db-dynamodb/plugins";
-import elasticSearch from "@webiny/api-elasticsearch";
-import headlessCmsPlugins from "@webiny/api-headless-cms/content";
-import headlessCmsDynamoDbElasticStorageOperation from "@webiny/api-headless-cms-ddb-es";
+import { createContentHeadlessCms } from "@webiny/api-headless-cms/content";
+import { createStorageOperations as createHeadlessCmsStorageOperations } from "@webiny/api-headless-cms-ddb-es";
+import headlessCmsModelFieldToGraphQLPlugins from "@webiny/api-headless-cms/content/plugins/graphqlFields";
 import securityPlugins from "./security";
 import logsPlugins from "@webiny/handler-logs";
 import elasticsearchDataGzipCompression from "@webiny/api-elasticsearch/plugins/GzipCompression";
 
 // Imports plugins created via scaffolding utilities.
 import scaffoldsPlugins from "./plugins/scaffolds";
+import { createElasticsearchClient } from "@webiny/api-elasticsearch/client";
 
 const debug = process.env.DEBUG === "true";
 
@@ -23,11 +24,14 @@ const documentClient = new DocumentClient({
     region: process.env.AWS_REGION
 });
 
+const elasticsearchClient = createElasticsearchClient({
+    endpoint: `https://${process.env.ELASTIC_SEARCH_ENDPOINT}`
+});
+
 export const handler = createHandler({
     plugins: [
         dynamoDbPlugins(),
         logsPlugins(),
-        elasticSearch({ endpoint: `https://${process.env.ELASTIC_SEARCH_ENDPOINT}` }),
         dbPlugins({
             table: process.env.DB_TABLE,
             driver: new DynamoDbDriver({ documentClient })
@@ -36,8 +40,14 @@ export const handler = createHandler({
         i18nPlugins(),
         i18nDynamoDbStorageOperations(),
         i18nContentPlugins(),
-        headlessCmsPlugins({ debug }),
-        headlessCmsDynamoDbElasticStorageOperation(),
+        createContentHeadlessCms({
+            debug,
+            storageOperations: createHeadlessCmsStorageOperations({
+                documentClient,
+                elasticsearch: elasticsearchClient,
+                modelFieldToGraphQLPlugins: headlessCmsModelFieldToGraphQLPlugins()
+            })
+        }),
         scaffoldsPlugins(),
         elasticsearchDataGzipCompression()
     ],
