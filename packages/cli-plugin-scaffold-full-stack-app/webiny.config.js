@@ -1,33 +1,18 @@
 const util = require("util");
-const fs = require("fs");
-const execa = require("execa");
-const { watchPackage, buildPackage } = require("@webiny/project-utils");
+const path = require("path");
 const ncpBase = require("ncp");
 const ncp = util.promisify(ncpBase.ncp);
 
+const { createWatchPackage, createBuildPackage } = require("@webiny/project-utils");
+
 module.exports = {
     commands: {
-        watch: watchPackage,
-        build: (options, context) => {
-            return buildPackage(
-                {
-                    ...options,
-                    postbuild: () => {
-                        context.info("Generating TypeScript types...");
-                        execa.sync("yarn", ["tsc", "-p", "tsconfig.build.json"], {
-                            stdio: "inherit"
-                        });
-
-                        context.info("Copying meta files...");
-                        fs.copyFileSync("package.json", "./dist/package.json");
-                        fs.copyFileSync("LICENSE", "./dist/LICENSE");
-                        fs.copyFileSync("README.md", "./dist/README.md");
-
-                        return ncp("templates", "./dist/templates");
-                    }
-                },
-                context
-            );
-        }
+        build: async (options, context) => {
+            await createBuildPackage({ cwd: __dirname })(options, context);
+            const from = path.join(__dirname, "templates");
+            const to = path.join(__dirname, "dist/templates");
+            await ncp(from, to);
+        },
+        watch: createWatchPackage({ cwd: __dirname })
     }
 };
