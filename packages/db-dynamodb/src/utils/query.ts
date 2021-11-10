@@ -88,15 +88,18 @@ const query = async <T>(params: QueryParams): Promise<QueryResult<T>> => {
 /**
  * Will run the query to fetch the first possible item from the database.
  */
-export const queryOne = async <T>(params: QueryOneParams): Promise<T | null> => {
-    const { items } = await query<T>({
+export const queryOne = async <T>(params: QueryOneParams): Promise<DbItem<T> | null> => {
+    const { items } = await query<DbItem<T>>({
         ...params,
         options: {
             ...(params.options || {}),
             limit: 1
         }
     });
-    return items[0] || null;
+    if (items.length === 0) {
+        return null;
+    }
+    return items.shift();
 };
 /**
  * Will run the query to fetch the results no matter how much iterations it needs to go through.

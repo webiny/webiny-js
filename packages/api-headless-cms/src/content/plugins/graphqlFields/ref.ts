@@ -70,11 +70,15 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
                         // Get model manager, to get access to CRUD methods
                         const model = await cms.getModel(modelId);
 
-                        const entries: CmsContentEntry[] = cms.READ
-                            ? // `read` API works with `published` data
-                              await model.getPublishedByIds([entryId])
-                            : // `preview` and `manage` with `latest` data
-                              await model.getLatestByIds([entryId]);
+                        let entries: CmsContentEntry[] = [];
+                        // `read` API works with `published` data
+                        if (cms.READ) {
+                            entries = await model.getPublishedByIds([entryId]);
+                        }
+                        // `preview` and `manage` with `latest` data
+                        else {
+                            entries = await model.getLatestByIds([entryId]);
+                        }
 
                         return appendTypename(entries, modelIdToTypeName.get(modelId));
                     });
@@ -87,11 +91,16 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
                 // Get model manager, to get access to CRUD methods
                 const model = await cms.getModel(value.modelId);
 
-                const revisions = cms.READ
-                    ? // `read` API works with `published` data
-                      await model.getPublishedByIds([value.entryId])
-                    : // `preview` API works with `latest` data
-                      await model.getLatestByIds([value.entryId]);
+                let revisions: CmsContentEntry[] = [];
+                // `read` API works with `published` data
+                if (cms.READ) {
+                    revisions = await model.getPublishedByIds([value.entryId]);
+                }
+                // `preview` API works with `latest` data
+                else {
+                    revisions = await model.getLatestByIds([value.entryId]);
+                }
+
                 /**
                  * If there are no revisions we must return null.
                  */

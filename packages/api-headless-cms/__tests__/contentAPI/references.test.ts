@@ -491,8 +491,24 @@ describe("entry references", () => {
             }
         });
 
-        const [listAfterDeleteReadResponse] = await articleRead.listArticles();
-        expect(listAfterDeleteReadResponse).toEqual({
+        const articleRead2 = useArticleReadHandler(readOpts);
+
+        const [getAfterDelete2ReadResponse] = await articleRead2.getArticle({
+            where: {
+                id: techArticle.id
+            }
+        });
+        expect(getAfterDelete2ReadResponse).toEqual({
+            data: {
+                getArticle: {
+                    data: extractReadArticle(techArticle),
+                    error: null
+                }
+            }
+        });
+
+        const [listAfterDelete2ReadResponse] = await articleRead2.listArticles();
+        expect(listAfterDelete2ReadResponse).toEqual({
             data: {
                 listArticles: {
                     data: [extractReadArticle(techArticle)],
@@ -501,20 +517,6 @@ describe("entry references", () => {
                         hasMoreItems: false,
                         totalCount: 1
                     },
-                    error: null
-                }
-            }
-        });
-
-        const [getAfterDeleteReadResponse] = await articleRead.getArticle({
-            where: {
-                id: techArticle.id
-            }
-        });
-        expect(getAfterDeleteReadResponse).toEqual({
-            data: {
-                getArticle: {
-                    data: extractReadArticle(techArticle),
                     error: null
                 }
             }

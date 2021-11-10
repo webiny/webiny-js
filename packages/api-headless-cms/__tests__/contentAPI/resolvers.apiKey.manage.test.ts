@@ -112,7 +112,7 @@ describe("MANAGE - resolvers - api key", () => {
             getCategory,
             listCategories,
             deleteCategory
-        } = await useCategoryManageHandler({
+        } = useCategoryManageHandler({
             ...manageOpts,
             identity
         });
@@ -339,7 +339,9 @@ describe("MANAGE - resolvers - api key", () => {
          */
         await until(
             () => listCategories({}, headers).then(([data]) => data),
-            ({ data }) => data.listCategories.data.length === 0,
+            ({ data }) => {
+                return data.listCategories.data.length === 0;
+            },
             { name: "after delete list categories" }
         );
 

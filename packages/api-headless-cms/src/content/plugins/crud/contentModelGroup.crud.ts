@@ -51,17 +51,48 @@ export interface Params {
 export const createModelGroupsCrud = (params: Params): CmsContentModelGroupContext => {
     const { getTenant, getIdentity, getLocale, storageOperations, context } = params;
 
+    const getContentModelGroupsAsPlugins = (): CmsContentModelGroup[] => {
+        const tenant = getTenant().id;
+        const locale = getLocale().code;
+
+        return (
+            context.plugins
+                .byType<ContentModelGroupPlugin>(ContentModelGroupPlugin.type)
+                /**
+                 * We need to filter out groups that are not for this tenant or locale.
+                 * If it does not have tenant or locale define, it is for every locale and tenant
+                 */
+                .filter(plugin => {
+                    const { tenant: t, locale: l } = plugin.contentModelGroup;
+                    if (t && t !== tenant) {
+                        return false;
+                    } else if (l && l !== locale) {
+                        return false;
+                    }
+                    return true;
+                })
+                .map(plugin => {
+                    return {
+                        ...plugin.contentModelGroup,
+                        tenant,
+                        locale,
+                        webinyVersion: context.WEBINY_VERSION
+                    };
+                })
+        );
+    };
+
     const checkPermissions = (check: string): Promise<CmsContentModelGroupPermission> => {
         return utils.checkPermissions(context, "cms.contentModelGroup", { rwd: check });
     };
 
     const groupsGet = async (id: string) => {
-        const groupPlugin: ContentModelGroupPlugin = context.plugins
-            .byType<ContentModelGroupPlugin>(ContentModelGroupPlugin.type)
-            .find((item: ContentModelGroupPlugin) => item.contentModelGroup.id === id);
+        const groupPlugin: CmsContentModelGroup = getContentModelGroupsAsPlugins().find(
+            group => group.id === id
+        );
 
         if (groupPlugin) {
-            return groupPlugin.contentModelGroup;
+            return groupPlugin;
         }
 
         let group: CmsContentModelGroup | null = null;
@@ -84,16 +115,14 @@ export const createModelGroupsCrud = (params: Params): CmsContentModelGroupConte
         return group;
     };
 
-    const groupsList = async (args: CmsContentModelGroupListParams) => {
-        const { where } = args;
+    const groupsList = async (params: CmsContentModelGroupListParams) => {
+        const { where } = params || {};
         try {
-            const pluginsGroups: CmsContentModelGroup[] = context.plugins
-                .byType<ContentModelGroupPlugin>(ContentModelGroupPlugin.type)
-                .map<CmsContentModelGroup>(plugin => plugin.contentModelGroup);
+            const pluginsGroups = getContentModelGroupsAsPlugins();
 
             const databaseGroups = await storageOperations.groups.list({ where });
 
-            return [...databaseGroups, ...pluginsGroups];
+            return pluginsGroups.concat(databaseGroups);
         } catch (ex) {
             throw new WebinyError(ex.message, ex.code || "LIST_ERROR", {
                 ...(ex.data || {}),
@@ -151,9 +180,19 @@ export const createModelGroupsCrud = (params: Params): CmsContentModelGroupConte
             return group;
         },
         list: async params => {
+            const { where } = params || {};
+
+            const { tenant, locale } = where || {};
             const permission = await checkPermissions("r");
 
-            const response = await groupsList(params);
+            const response = await groupsList({
+                ...(params || {}),
+                where: {
+                    ...(where || {}),
+                    tenant: tenant || getTenant().id,
+                    locale: locale || getLocale().code
+                }
+            });
 
             return response.filter(group => {
                 if (!utils.validateOwnership(context, permission, group)) {

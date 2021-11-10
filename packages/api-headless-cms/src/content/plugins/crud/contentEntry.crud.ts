@@ -39,7 +39,7 @@ import { SecurityIdentity } from "@webiny/api-security/types";
 import { createTopic } from "@webiny/pubsub";
 import { assignBeforeEntryCreate } from "./contentEntry/beforeCreate";
 import { assignBeforeEntryUpdate } from "./contentEntry/beforeUpdate";
-import { createIdentifier } from "@webiny/utils";
+import { createIdentifier, parseIdentifier } from "@webiny/utils";
 
 export const STATUS_DRAFT = "draft";
 export const STATUS_PUBLISHED = "published";
@@ -254,7 +254,7 @@ export const createContentEntryCrud = (params: Params): CmsContentEntryContext =
             return entry;
         },
         /**
-         * Get latest published revisions by entry IDs.
+         * Get published revisions by entry IDs.
          */
         getPublishedByIds: async (model: CmsContentModel, ids: string[]) => {
             const permission = await checkEntryPermissions({ rwd: "r" });
@@ -660,7 +660,7 @@ export const createContentEntryCrud = (params: Params): CmsContentEntryContext =
             const permission = await checkEntryPermissions({ rwd: "d" });
             await utils.checkModelAccess(context, model);
 
-            const [entryId, version] = revisionId.split("#");
+            const { id: entryId, version } = parseIdentifier(revisionId);
 
             const storageEntryToDelete = await storageOperations.entries.getRevisionById(model, {
                 tenant: getTenant().id,
@@ -681,7 +681,7 @@ export const createContentEntryCrud = (params: Params): CmsContentEntryContext =
                     tenant: getTenant().id,
                     locale: getLocale().code,
                     entryId,
-                    version: parseInt(version)
+                    version
                 }
             );
 

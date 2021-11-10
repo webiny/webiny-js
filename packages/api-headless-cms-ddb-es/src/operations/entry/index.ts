@@ -1227,15 +1227,29 @@ export const createEntriesStorageOperations = (
         model: CmsContentModel,
         params: CmsContentEntryStorageOperationsGetPreviousRevisionParams
     ) => {
+        const { tenant, locale, entryId, version } = params;
         const queryParams: QueryOneParams = {
             entity,
             partitionKey: createPartitionKey({
-                tenant: params.tenant,
-                locale: params.locale,
-                id: params.entryId
+                tenant,
+                locale,
+                id: entryId
             }),
             options: {
-                lt: `REV#${zeroPad(params.version)}`,
+                lt: `REV#${zeroPad(version)}`,
+                /**
+                 * We need to have extra checks because DynamoDB will return published or latest record if there is no REV# record.
+                 */
+                filters: [
+                    {
+                        attr: "TYPE",
+                        eq: createType()
+                    },
+                    {
+                        attr: "version",
+                        lt: version
+                    }
+                ],
                 reverse: true
             }
         };

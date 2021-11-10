@@ -38,36 +38,33 @@ export const createAdminCruds = (params: Params) => {
             context.plugins.register(storageOperations.plugins);
         }
 
-        context.cms = {
-            ...context.cms,
-            system: createSystemCrud({
-                context,
-                getTenant,
-                getLocale,
-                getIdentity,
-                storageOperations
-            }),
-            settings: createSettingsCrud({
-                context,
-                getTenant,
-                getLocale,
-                storageOperations
-            }),
-            groups: createModelGroupsCrud({
-                context,
-                getTenant,
-                getLocale,
-                getIdentity,
-                storageOperations
-            }),
-            models: createModelsCrud({
-                context,
-                getLocale,
-                getTenant,
-                getIdentity,
-                storageOperations
-            })
-        };
+        context.cms.system = createSystemCrud({
+            context,
+            getTenant,
+            getLocale,
+            getIdentity,
+            storageOperations
+        });
+        context.cms.settings = createSettingsCrud({
+            context,
+            getTenant,
+            getLocale,
+            storageOperations
+        });
+        context.cms.groups = createModelGroupsCrud({
+            context,
+            getTenant,
+            getLocale,
+            getIdentity,
+            storageOperations
+        });
+        context.cms.models = createModelsCrud({
+            context,
+            getLocale,
+            getTenant,
+            getIdentity,
+            storageOperations
+        });
 
         if (!storageOperations.init) {
             return;

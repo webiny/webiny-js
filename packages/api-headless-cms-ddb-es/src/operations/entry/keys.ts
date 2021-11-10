@@ -8,7 +8,7 @@ export interface PartitionKeyParams {
 export const createPartitionKey = (params: PartitionKeyParams): string => {
     const { tenant, locale, id: initialId } = params;
     const { id } = parseIdentifier(initialId);
-    return `T#${tenant}#L#${locale}#CMS#${id}`;
+    return `T#${tenant}#L#${locale}#CMS#CME#${id}`;
 };
 
 export interface SortKeyParams {

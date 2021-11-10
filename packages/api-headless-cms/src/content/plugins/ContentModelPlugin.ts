@@ -8,7 +8,7 @@ export interface CmsContentModel
 }
 
 export class ContentModelPlugin extends Plugin {
-    public static readonly type = "cms-content-model";
+    public static readonly type: string = "cms-content-model";
     contentModel: CmsContentModel;
 
     constructor(contentModel: CmsContentModel) {
