@@ -252,7 +252,7 @@ export const createModelsCrud = (params: Params): CmsContentModelContext => {
             await createdData.validate();
             const input = await createdData.toJSON();
 
-            const group = await context.cms.groups.noAuth().get(input.group);
+            const group = await context.cms.groups.noAuthGroup().get(input.group);
             if (!group) {
                 throw new NotFoundError(`There is no group "${input.group}".`);
             }
@@ -353,7 +353,7 @@ export const createModelsCrud = (params: Params): CmsContentModelContext => {
                 return {} as any;
             }
             if (input.group) {
-                const group = await context.cms.groups.noAuth().get(input.group);
+                const group = await context.cms.groups.noAuthGroup().get(input.group);
                 if (!group) {
                     throw new NotFoundError(`There is no group "${input.group}".`);
                 }

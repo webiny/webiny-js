@@ -888,7 +888,7 @@ export interface CmsContentModelGroupContext {
     /**
      * A function defining usage of a method without authenticating the user.
      */
-    noAuth: () => {
+    noAuthGroup: () => {
         /**
          * Gets content model group by given id.
          */
@@ -901,32 +901,35 @@ export interface CmsContentModelGroupContext {
     /**
      * Gets content model group by given id.
      */
-    get: (id: string) => Promise<CmsContentModelGroup | null>;
+    getGroup: (id: string) => Promise<CmsContentModelGroup | null>;
     /**
      * List all content model groups. Filterable via params.
      */
-    list: (params?: CmsContentModelGroupListParams) => Promise<CmsContentModelGroup[]>;
+    listGroups: (params?: CmsContentModelGroupListParams) => Promise<CmsContentModelGroup[]>;
     /**
      * Create a new content model group.
      */
-    create: (data: CmsContentModelGroupCreateInput) => Promise<CmsContentModelGroup>;
+    createGroup: (data: CmsContentModelGroupCreateInput) => Promise<CmsContentModelGroup>;
     /**
      * Update existing content model group.
      */
-    update: (id: string, data: CmsContentModelGroupUpdateInput) => Promise<CmsContentModelGroup>;
+    updateGroup: (
+        id: string,
+        data: CmsContentModelGroupUpdateInput
+    ) => Promise<CmsContentModelGroup>;
     /**
      * Delete content model group by given id.
      */
-    delete: (id: string) => Promise<boolean>;
+    deleteGroup: (id: string) => Promise<boolean>;
     /**
      * Events.
      */
-    onBeforeCreate: Topic<BeforeGroupCreateTopic>;
-    onAfterCreate: Topic<AfterGroupCreateTopic>;
-    onBeforeUpdate: Topic<BeforeGroupUpdateTopic>;
-    onAfterUpdate: Topic<AfterGroupUpdateTopic>;
-    onBeforeDelete: Topic<BeforeGroupDeleteTopic>;
-    onAfterDelete: Topic<AfterGroupDeleteTopic>;
+    onBeforeGroupCreate: Topic<BeforeGroupCreateTopic>;
+    onAfterGroupCreate: Topic<AfterGroupCreateTopic>;
+    onBeforeGroupUpdate: Topic<BeforeGroupUpdateTopic>;
+    onAfterGroupUpdate: Topic<AfterGroupUpdateTopic>;
+    onBeforeGroupDelete: Topic<BeforeGroupDeleteTopic>;
+    onAfterGroupDelete: Topic<AfterGroupDeleteTopic>;
 }
 
 /**

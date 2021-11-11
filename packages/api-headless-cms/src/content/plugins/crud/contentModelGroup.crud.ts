@@ -179,20 +179,20 @@ export const createModelGroupsCrud = (params: Params): CmsContentModelGroupConte
     });
 
     return {
-        onBeforeCreate,
-        onAfterCreate,
-        onBeforeUpdate,
-        onAfterUpdate,
-        onBeforeDelete,
-        onAfterDelete,
+        onBeforeGroupCreate: onBeforeCreate,
+        onAfterGroupCreate: onAfterCreate,
+        onBeforeGroupUpdate: onBeforeUpdate,
+        onAfterGroupUpdate: onAfterUpdate,
+        onBeforeGroupDelete: onBeforeDelete,
+        onAfterGroupDelete: onAfterDelete,
         operations: storageOperations.groups,
-        noAuth: () => {
+        noAuthGroup: () => {
             return {
                 get: groupsGet,
                 list: groupsList
             };
         },
-        get: async id => {
+        getGroup: async id => {
             const permission = await checkPermissions("r");
 
             const group = await groupsGet(id);
@@ -201,7 +201,7 @@ export const createModelGroupsCrud = (params: Params): CmsContentModelGroupConte
 
             return group;
         },
-        list: async params => {
+        listGroups: async params => {
             const { where } = params || {};
 
             const { tenant, locale } = where || {};
@@ -223,7 +223,7 @@ export const createModelGroupsCrud = (params: Params): CmsContentModelGroupConte
                 return utils.validateGroupAccess(context, permission, group);
             });
         },
-        create: async inputData => {
+        createGroup: async inputData => {
             await checkPermissions("w");
 
             const createdData = new CreateContentModelGroupModel().populate({
@@ -278,7 +278,7 @@ export const createModelGroupsCrud = (params: Params): CmsContentModelGroupConte
                 );
             }
         },
-        update: async (id, inputData) => {
+        updateGroup: async (id, inputData) => {
             const permission = await checkPermissions("w");
 
             const original = await groupsGet(id);
@@ -334,7 +334,7 @@ export const createModelGroupsCrud = (params: Params): CmsContentModelGroupConte
                 });
             }
         },
-        delete: async id => {
+        deleteGroup: async id => {
             const permission = await checkPermissions("d");
 
             const group = await groupsGet(id);
