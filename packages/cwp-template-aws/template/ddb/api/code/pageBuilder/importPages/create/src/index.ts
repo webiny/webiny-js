@@ -36,7 +36,7 @@ export const handler = createHandler({
         pageBuilderPlugins(),
         pageBuilderDynamoDbPlugins(),
         pageBuilderImportExportPlugins({
-            storageOperations: createStorageOperations({ documentClient })
+            storageOperations: createPageBuilderStorageOperations({ documentClient })
         }),
         importPagesCreatePlugins({
             handlers: {

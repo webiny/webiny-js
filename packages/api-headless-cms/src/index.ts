@@ -14,9 +14,7 @@ import {
     graphQLHandlerFactory
 } from "~/content/graphQLHandlerFactory";
 
-export interface AdminContextParams extends CreateAdminCrudsParams {
-    // empty for now
-}
+export type AdminContextParams = CreateAdminCrudsParams;
 
 export const createAdminHeadlessCmsContext = (params: AdminContextParams) => {
     return [context(), createAdminCruds(params), upgrades()];
@@ -26,9 +24,7 @@ export const createAdminHeadlessCmsGraphQL = () => {
     return createGraphQLPlugin();
 };
 
-export interface ContentContextParams extends CreateContentCrudsParams {
-    // empty for now
-}
+export type ContentContextParams = CreateContentCrudsParams;
 export const createContentHeadlessCmsContext = (params: ContentContextParams) => {
     return [
         contextSetup(),
