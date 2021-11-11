@@ -719,20 +719,16 @@ export interface AfterInstallTopic {
 }
 
 export type CmsSystemContext = {
-    getVersion: () => Promise<string>;
-    setVersion: (version: string) => Promise<void>;
+    getSystemVersion: () => Promise<string>;
+    setSystemVersion: (version: string) => Promise<void>;
     getReadAPIKey(): Promise<string>;
-    /**
-     * Moved to storageOperations.update
-     */
-    // setReadAPIKey(apiKey: string): Promise<void>;
-    install: () => Promise<void>;
-    upgrade: (version: string) => Promise<boolean>;
+    installSystem: () => Promise<void>;
+    upgradeSystem: (version: string) => Promise<boolean>;
     /**
      * Events
      */
-    onBeforeInstall: Topic<BeforeInstallTopic>;
-    onAfterInstall: Topic<AfterInstallTopic>;
+    onBeforeSystemInstall: Topic<BeforeInstallTopic>;
+    onAfterSystemInstall: Topic<AfterInstallTopic>;
 };
 
 /**

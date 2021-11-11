@@ -72,10 +72,10 @@ export const createSystemCrud = (params: Params): CmsSystemContext => {
     };
 
     return {
-        onBeforeInstall,
-        onAfterInstall,
-        getVersion,
-        setVersion,
+        onBeforeSystemInstall: onBeforeInstall,
+        onAfterSystemInstall: onAfterInstall,
+        getSystemVersion: getVersion,
+        setSystemVersion: setVersion,
         getReadAPIKey: async () => {
             const original = await storageOperations.system.get({
                 tenant: getTenant().id
@@ -100,7 +100,7 @@ export const createSystemCrud = (params: Params): CmsSystemContext => {
 
             return original.readAPIKey;
         },
-        install: async (): Promise<void> => {
+        installSystem: async (): Promise<void> => {
             const identity = getIdentity();
             if (!identity) {
                 throw new NotAuthorizedError();
@@ -142,7 +142,7 @@ export const createSystemCrud = (params: Params): CmsSystemContext => {
                 system
             });
         },
-        async upgrade(version) {
+        async upgradeSystem(version) {
             const identity = getIdentity();
             if (!identity) {
                 throw new NotAuthorizedError();
