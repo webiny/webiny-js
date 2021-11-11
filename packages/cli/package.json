@@ -1,6 +1,6 @@
 {
   "name": "@webiny/cli",
-  "version": "5.17.2-beta.0",
+  "version": "5.17.2",
   "main": "index.js",
   "bin": {
     "webiny": "./bin.js"
@@ -13,7 +13,7 @@
   "author": "Pavel Denisjuk <pavel@webiny.com>",
   "description": "A tool to bootstrap a Webiny project.",
   "dependencies": {
-    "@webiny/telemetry": "^5.17.2-beta.0",
+    "@webiny/telemetry": "^5.17.2",
     "boolean": "3.1.4",
     "camelcase": "5.3.1",
     "chalk": "4.1.2",
@@ -36,8 +36,8 @@
     "yargs": "14.2.3"
   },
   "devDependencies": {
-    "@webiny/handler": "^5.17.2-beta.0",
-    "@webiny/plugins": "^5.17.2-beta.0"
+    "@webiny/handler": "^5.17.2",
+    "@webiny/plugins": "^5.17.2"
   },
   "license": "MIT",
   "publishConfig": {
