@@ -24,13 +24,8 @@ function random(length = 32) {
 }
 
 const setup = async args => {
-    const {
-        isGitAvailable,
-        projectRoot,
-        projectName,
-        templateOptions = {}
-    } = args;
-    const { region = getDefaultRegion(), storageOperations = 'ddb-es' } = templateOptions;
+    const { isGitAvailable, projectRoot, projectName, templateOptions = {} } = args;
+    const { region = getDefaultRegion(), storageOperations = "ddb-es" } = templateOptions;
     /**
      * We need to check for the existence of the common and storageOperations folders to continue.
      */
