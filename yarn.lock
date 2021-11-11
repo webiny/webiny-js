@@ -11068,7 +11068,7 @@ __metadata:
     "@webiny/project-utils": ^5.17.0
     boolean: ^3.0.1
     graphql: ^14.4.2
-    graphql-scalars: ^1.7.0
+    graphql-scalars: 1.12.0
     graphql-tag: ^2.10.3
     jest: ^26.6.3
     jest-mock-console: ^1.0.0
@@ -21626,14 +21626,14 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"graphql-scalars@npm:^1.7.0":
-  version: 1.13.1
-  resolution: "graphql-scalars@npm:1.13.1"
+"graphql-scalars@npm:1.12.0":
+  version: 1.12.0
+  resolution: "graphql-scalars@npm:1.12.0"
   dependencies:
     tslib: ~2.3.0
   peerDependencies:
-    graphql: ^0.8.0 || ^0.9.0 || ^0.10.0 || ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0 || ^16.0.0
-  checksum: 476e0fb997c04c2bc2348e2d11fae9f4ea5da062cae1f71fb647580576dd6010bedba9443856ca0b1620dc4adffb22994299933aa74ece1a5c8cd007ec5e41a6
+    graphql: ^0.8.0 || ^0.9.0 || ^0.10.0 || ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0
+  checksum: fcfac99f8ebbf23117b1602c7677f5ea2c52020fd86051c79bfa44a64e293418da97e66e31538212113067ce32f540d0dff3d9ff4136798af2d7957a61772f9b
   languageName: node
   linkType: hard
 
