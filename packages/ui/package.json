@@ -1,6 +1,6 @@
 {
   "name": "@webiny/ui",
-  "version": "5.17.0",
+  "version": "5.17.1",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -82,7 +82,7 @@
     "@storybook/addon-links": "^5.0.5",
     "@storybook/react": "^5.2.8",
     "@webiny/cli": "^5.17.0",
-    "@webiny/form": "^5.17.0",
+    "@webiny/form": "^5.17.1",
     "@webiny/project-utils": "^5.17.0",
     "@webiny/storybook-utils": "^5.17.0",
     "@webiny/validation": "^5.17.0",

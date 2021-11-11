@@ -1,6 +1,6 @@
 {
   "name": "@webiny/app-security-access-management",
-  "version": "5.17.0",
+  "version": "5.17.1",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -15,13 +15,13 @@
   "dependencies": {
     "@apollo/react-hooks": "^3.1.5",
     "@emotion/styled": "^10.0.17",
-    "@webiny/app": "^5.17.0",
-    "@webiny/app-admin": "^5.17.0",
-    "@webiny/app-security": "^5.17.0",
-    "@webiny/form": "^5.17.0",
+    "@webiny/app": "^5.17.1",
+    "@webiny/app-admin": "^5.17.1",
+    "@webiny/app-security": "^5.17.1",
+    "@webiny/form": "^5.17.1",
     "@webiny/plugins": "^5.17.0",
     "@webiny/react-router": "^5.17.0",
-    "@webiny/ui": "^5.17.0",
+    "@webiny/ui": "^5.17.1",
     "@webiny/validation": "^5.17.0",
     "emotion": "^10.0.17",
     "graphql-tag": "^2.12.5",

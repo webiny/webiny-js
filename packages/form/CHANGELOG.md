@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.17.1](https://github.com/webiny/webiny-js/compare/v5.17.0...v5.17.1) (2021-11-11)
+
+
+### Bug Fixes
+
+* **form:** use getFormRef to expose FormAPI ([44a380b](https://github.com/webiny/webiny-js/commit/44a380b8267fbc3c8cb51221c6eeb50e549455c4))
+
+
+
+
+
 # [5.17.0](https://github.com/webiny/webiny-js/compare/v5.17.0-beta.2...v5.17.0) (2021-11-08)
 
 **Note:** Version bump only for package @webiny/form

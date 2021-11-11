@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.17.1](https://github.com/webiny/webiny-js/compare/v5.17.0...v5.17.1) (2021-11-11)
+
+
+### Bug Fixes
+
+* **app-headless-cms:** add missing TS types ([f5b0ef2](https://github.com/webiny/webiny-js/commit/f5b0ef2573c387cc5f31001ed458e1e152fcf663))
+
+
+
+
+
 # [5.17.0](https://github.com/webiny/webiny-js/compare/v5.17.0-beta.2...v5.17.0) (2021-11-08)
 
 **Note:** Version bump only for package @webiny/app-headless-cms

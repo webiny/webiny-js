@@ -1,6 +1,6 @@
 {
   "name": "@webiny/app-security",
-  "version": "5.17.0",
+  "version": "5.17.1",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -13,7 +13,7 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@webiny/app": "^5.17.0",
+    "@webiny/app": "^5.17.1",
     "@webiny/plugins": "^5.17.0",
     "minimatch": "^3.0.4",
     "react": "^16.14.0",
