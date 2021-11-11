@@ -74,7 +74,7 @@ const DynamicSection = ({
                         </Cell>
 
                         {/* Now we skip the first item, because we already rendered it above, and proceed with all other items. */}
-                        {bindFieldValue.slice(1).map((item, index) => {
+                        {bindFieldValue.slice(1).map((_, index) => {
                             /* We simply increase index, and as you type, the appropriate indexes in the parent array will be updated. */
                             const realIndex = index + 1;
                             const BindField = getBind(realIndex);

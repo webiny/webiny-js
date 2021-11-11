@@ -61,7 +61,7 @@ export const createPublishedType = (): string => {
     return `${createType()}.p`;
 };
 
-const getEntryData = (plugins: PluginsContainer, entry: CmsContentEntry) => {
+const getEntryData = (entry: CmsContentEntry) => {
     return {
         ...lodashOmit(entry, ["PK", "SK", "published", "latest"]),
         TYPE: createType(),
@@ -71,7 +71,7 @@ const getEntryData = (plugins: PluginsContainer, entry: CmsContentEntry) => {
 
 const getESLatestEntryData = async (plugins: PluginsContainer, entry: CmsContentEntry) => {
     return compress(plugins, {
-        ...getEntryData(plugins, entry),
+        ...getEntryData(entry),
         latest: true,
         TYPE: createLatestType(),
         __type: createLatestType()
@@ -80,7 +80,7 @@ const getESLatestEntryData = async (plugins: PluginsContainer, entry: CmsContent
 
 const getESPublishedEntryData = async (plugins: PluginsContainer, entry: CmsContentEntry) => {
     return compress(plugins, {
-        ...getEntryData(plugins, entry),
+        ...getEntryData(entry),
         published: true,
         TYPE: createPublishedType(),
         __type: createPublishedType()

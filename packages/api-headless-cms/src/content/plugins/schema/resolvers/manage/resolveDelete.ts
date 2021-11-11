@@ -3,7 +3,7 @@ import { CmsContentEntryResolverFactory as ResolverFactory } from "~/types";
 
 export const resolveDelete: ResolverFactory =
     ({ model }) =>
-    async (root, { revision }, { cms }) => {
+    async (_, { revision }, { cms }) => {
         try {
             if (revision.includes("#")) {
                 await cms.entries.deleteEntryRevision(model, revision);

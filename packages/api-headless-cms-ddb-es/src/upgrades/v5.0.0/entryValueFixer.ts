@@ -67,7 +67,7 @@ const fixDateTime = (field: CmsContentModelField, dateTime: any): any => {
     }
 };
 
-const fixNumber = (field: CmsContentModelField, value: any) => {
+const fixNumber = (_: CmsContentModelField, value: any) => {
     if (value === undefined || value === null) {
         return null;
     }
@@ -106,7 +106,7 @@ const fixFieldValues = (
 };
 
 export const entryValueFixer = (
-    model: CmsContentModel,
+    _: CmsContentModel,
     finder: ModelFieldFinder,
     target: CmsContentIndexEntry
 ): CmsContentEntry => {

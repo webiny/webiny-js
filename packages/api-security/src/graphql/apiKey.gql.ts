@@ -43,7 +43,7 @@ export default new GraphQLSchemaPlugin<SecurityContext>({
     `,
     resolvers: {
         SecurityQuery: {
-            async listApiKeys(_, args, context) {
+            async listApiKeys(_, __, context) {
                 try {
                     const apiKeys = await context.security.listApiKeys();
 

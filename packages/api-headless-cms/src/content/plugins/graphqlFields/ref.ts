@@ -44,7 +44,7 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
                 modelIdToTypeName.set(item.modelId, createReadTypeName(item.modelId));
             }
 
-            return async (parent, args, context: CmsContext) => {
+            return async (parent, _, context: CmsContext) => {
                 const { cms } = context;
 
                 // Get field value for this entry

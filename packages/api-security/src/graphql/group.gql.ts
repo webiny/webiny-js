@@ -67,7 +67,7 @@ export default new GraphQLSchemaPlugin<SecurityContext>({
                     return new ErrorResponse(e);
                 }
             },
-            listGroups: async (_, args, context) => {
+            listGroups: async (_, __, context) => {
                 try {
                     const groupList = await context.security.listGroups();
 

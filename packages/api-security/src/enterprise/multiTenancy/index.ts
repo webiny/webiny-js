@@ -77,15 +77,15 @@ export const applyMultiTenancyGraphQLPlugins = (
             `,
             resolvers: {
                 TenancyQuery: {
-                    async getDefaultTenant(_, args, context) {
+                    async getDefaultTenant(_, __, context) {
                         return new Response(await getDefaultTenant(context));
                     }
                 },
                 SecurityIdentity: {
-                    defaultTenant(_, args, context) {
+                    defaultTenant(_, __, context) {
                         return getDefaultTenant(context);
                     },
-                    currentTenant(identity, args, context) {
+                    currentTenant(_, __, context) {
                         return context.tenancy.getCurrentTenant();
                     }
                 }

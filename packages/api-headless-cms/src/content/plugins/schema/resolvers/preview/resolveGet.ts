@@ -4,7 +4,7 @@ import { NotFoundError } from "@webiny/handler-graphql";
 
 export const resolveGet: ResolverFactory =
     ({ model }) =>
-    async (root, args, context) => {
+    async (_, args, context) => {
         try {
             const [[entry]] = await context.cms.entries.listLatestEntries(model, {
                 ...args,

@@ -16,7 +16,7 @@ const getElementParentById = async (state, id): Promise<PbEditorElement> => {
 
 export const deleteElementAction: EventActionCallable<DeleteElementActionArgsType> = async (
     state,
-    meta,
+    _,
     args
 ) => {
     const { element } = args;

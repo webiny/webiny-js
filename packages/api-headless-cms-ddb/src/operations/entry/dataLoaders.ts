@@ -319,25 +319,4 @@ export class DataLoadersHandler {
             loader.clearAll();
         }
     }
-    /**
-     * Helper to clear the cache for certain data loader.
-     * If entry is passed then clear target key only.
-     */
-    private clear(name: string, params: ClearLoaderParams): void {
-        const { entry } = params;
-        const loader = this.getLoader(name, params);
-        if (!entry) {
-            loader.clearAll();
-            return;
-        }
-        loader.clear(entry.id);
-        const { tenant, locale } = params.model;
-        loader.clear(
-            createPartitionKey({
-                tenant,
-                locale,
-                id: entry.id
-            })
-        );
-    }
 }

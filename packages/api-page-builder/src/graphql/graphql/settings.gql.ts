@@ -128,12 +128,12 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
         `,
         resolvers: {
             PbSettingsResponse: {
-                id: (settings, args, context) => {
+                id: (_, __, context) => {
                     return context.pageBuilder.settings.getSettingsCacheKey();
                 }
             },
             PbDefaultSettingsResponse: {
-                id: (settings, args, context) => {
+                id: (_, __, context) => {
                     return context.pageBuilder.settings.getSettingsCacheKey({
                         tenant: false,
                         locale: false
@@ -141,21 +141,21 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                 }
             },
             PbQuery: {
-                getCurrentSettings: async (_, args, context) => {
+                getCurrentSettings: async (_, __, context) => {
                     try {
                         return new Response(await context.pageBuilder.settings.getCurrent());
                     } catch (err) {
                         return new ErrorResponse(err);
                     }
                 },
-                getSettings: async (_, args, context) => {
+                getSettings: async (_, __, context) => {
                     try {
                         return new Response(await context.pageBuilder.settings.get());
                     } catch (err) {
                         return new ErrorResponse(err);
                     }
                 },
-                getDefaultSettings: async (_, args, context) => {
+                getDefaultSettings: async (_, __, context) => {
                     try {
                         return new Response(await context.pageBuilder.settings.getDefault());
                     } catch (err) {

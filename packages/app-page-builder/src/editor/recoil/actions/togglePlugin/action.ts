@@ -4,7 +4,7 @@ import { EventActionCallable } from "../../../../types";
 
 export const togglePluginAction: EventActionCallable<TogglePluginActionArgsType> = (
     state,
-    meta,
+    _,
     args
 ) => {
     const { name, params = {}, closeOtherInGroup = false } = args;

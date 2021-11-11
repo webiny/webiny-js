@@ -40,7 +40,7 @@ export default new GraphQLSchemaPlugin<Context>({
     `,
     resolvers: {
         TenancyQuery: {
-            getTenant: async (root, { where }, context) => {
+            getTenant: async (_, { where }, context) => {
                 // TODO: add permission checks
                 const tenant = await context.tenancy.getTenantById(where.id);
 
@@ -54,7 +54,7 @@ export default new GraphQLSchemaPlugin<Context>({
 
                 return new Response(tenant);
             },
-            listTenants: async (root, args, context) => {
+            listTenants: async (_, __, context) => {
                 // TODO: add permission checks
                 const tenant = context.tenancy.getCurrentTenant();
                 const tenants = await context.tenancy.listTenants({ parent: tenant.id });
@@ -62,7 +62,7 @@ export default new GraphQLSchemaPlugin<Context>({
             }
         },
         TenancyMutation: {
-            createTenant: async (root, args, context) => {
+            createTenant: async (_, args, context) => {
                 // TODO: add permission checks
                 const tenant = context.tenancy.getCurrentTenant();
                 const newTenant = await context.tenancy.createTenant({
@@ -74,7 +74,7 @@ export default new GraphQLSchemaPlugin<Context>({
 
                 return new Response(newTenant);
             },
-            updateTenant: async (root, args, context) => {
+            updateTenant: async (_, args, context) => {
                 // TODO: add permission checks
                 const tenantToUpdate = await context.tenancy.getTenantById(args.id);
                 if (!tenantToUpdate) {
@@ -88,7 +88,7 @@ export default new GraphQLSchemaPlugin<Context>({
 
                 return new Response(updatedTenant);
             },
-            deleteTenant: async (root, args, context) => {
+            deleteTenant: async (_, args, context) => {
                 // TODO: add permission checks
                 const tenantToUpdate = await context.tenancy.getTenantById(args.id);
                 if (!tenantToUpdate) {

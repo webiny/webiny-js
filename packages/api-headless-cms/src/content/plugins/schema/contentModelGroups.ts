@@ -72,15 +72,15 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
     if (context.cms.MANAGE) {
         resolvers = {
             CmsContentModelGroup: {
-                contentModels: async (group, args, context) => {
+                contentModels: async (group, _, context) => {
                     const models = await context.cms.models.silentAuthModel().list();
                     return models.filter(m => m.group.id === group.id);
                 },
-                totalContentModels: async (group, args, context) => {
+                totalContentModels: async (group, _, context) => {
                     const models = await context.cms.models.silentAuthModel().list();
                     return models.filter(m => m.group === group.id).length;
                 },
-                plugin: async (group, args, context: CmsContext) => {
+                plugin: async (group, _, context: CmsContext) => {
                     const groupPlugin: ContentModelGroupPlugin = context.plugins
                         .byType<ContentModelGroupPlugin>(ContentModelGroupPlugin.type)
                         .find(

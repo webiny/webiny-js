@@ -62,7 +62,7 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                         return context.pageBuilder.menus.getPublic(args.slug);
                     });
                 },
-                listMenus: async (_, args, context) => {
+                listMenus: async (_, __, context) => {
                     return resolve(() => {
                         return context.pageBuilder.menus.list();
                     });

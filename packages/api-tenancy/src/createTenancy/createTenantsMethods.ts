@@ -24,7 +24,7 @@ function createTenantLoaders(storageOperations: TenancyStorageOperations) {
 
         const tenants = await storageOperations.getTenantsByIds(ids);
 
-        return ids.map((id, index) => tenants[index]);
+        return ids.map((_, index) => tenants[index]);
     };
 
     return {
