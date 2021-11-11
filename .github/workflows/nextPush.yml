@@ -359,7 +359,7 @@ jobs:
 
   e2e-cypress-tests:
     needs: [e2e-init, e2e-project-setup]
-    name: ${{ matrix.cypress-folder }} (${{ matrix.os }}, Node v${{ matrix.node }})
+    name: ${{ matrix.cypress-folder }} (${{ matrix.storageOperations }}, ${{ matrix.os }}, Node v${{ matrix.node }})
     strategy:
       fail-fast: false
       matrix:
