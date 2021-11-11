@@ -28,10 +28,9 @@ const setup = async args => {
         isGitAvailable,
         projectRoot,
         projectName,
-        templateOptions = {},
-        storageOperations = "ddb-es"
+        templateOptions = {}
     } = args;
-    const { region = getDefaultRegion() } = templateOptions;
+    const { region = getDefaultRegion(), storageOperations = 'ddb-es' } = templateOptions;
     /**
      * We need to check for the existence of the common and storageOperations folders to continue.
      */
@@ -39,6 +38,7 @@ const setup = async args => {
         console.log("Missing storage operations parameter.");
         process.exit(1);
     }
+
     const commonTemplate = path.join(__dirname, `template/common`);
     const storageOperationsTemplate = path.join(__dirname, `template/${storageOperations}`);
     if (!fs.existsSync(commonTemplate)) {
