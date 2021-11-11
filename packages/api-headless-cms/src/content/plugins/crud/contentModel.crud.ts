@@ -5,12 +5,12 @@ import {
     CmsContentModelManager,
     CmsContentModelPermission,
     HeadlessCmsStorageOperations,
-    BeforeModelCreateTopic,
-    AfterModelCreateTopic,
-    BeforeModelUpdateTopic,
-    AfterModelUpdateTopic,
-    BeforeModelDeleteTopic,
-    AfterModelDeleteTopic
+    BeforeModelCreateTopicParams,
+    AfterModelCreateTopicParams,
+    BeforeModelUpdateTopicParams,
+    AfterModelUpdateTopicParams,
+    BeforeModelDeleteTopicParams,
+    AfterModelDeleteTopicParams
 } from "~/types";
 import * as utils from "~/utils";
 import DataLoader from "dataloader";
@@ -178,12 +178,12 @@ export const createModelsCrud = (params: Params): CmsContentModelContext => {
 
     context.cms.getModelManager = getManager;
 
-    const onBeforeCreate = createTopic<BeforeModelCreateTopic>();
-    const onAfterCreate = createTopic<AfterModelCreateTopic>();
-    const onBeforeUpdate = createTopic<BeforeModelUpdateTopic>();
-    const onAfterUpdate = createTopic<AfterModelUpdateTopic>();
-    const onBeforeDelete = createTopic<BeforeModelDeleteTopic>();
-    const onAfterDelete = createTopic<AfterModelDeleteTopic>();
+    const onBeforeCreate = createTopic<BeforeModelCreateTopicParams>();
+    const onAfterCreate = createTopic<AfterModelCreateTopicParams>();
+    const onBeforeUpdate = createTopic<BeforeModelUpdateTopicParams>();
+    const onAfterUpdate = createTopic<AfterModelUpdateTopicParams>();
+    const onBeforeDelete = createTopic<BeforeModelDeleteTopicParams>();
+    const onAfterDelete = createTopic<AfterModelDeleteTopicParams>();
     /**
      * We need to assign some default behaviors.
      */

@@ -1,6 +1,6 @@
 import { Topic } from "@webiny/pubsub/types";
 import {
-    BeforeModelUpdateTopic,
+    BeforeModelUpdateTopicParams,
     CmsContentModelField,
     CmsModelFieldToGraphQLPlugin,
     CmsModelLockedFieldPlugin,
@@ -65,7 +65,7 @@ const getContentModelTitleFieldId = (
 };
 
 export interface Params {
-    onBeforeUpdate: Topic<BeforeModelUpdateTopic>;
+    onBeforeUpdate: Topic<BeforeModelUpdateTopicParams>;
     storageOperations: HeadlessCmsStorageOperations;
     plugins: PluginsContainer;
 }

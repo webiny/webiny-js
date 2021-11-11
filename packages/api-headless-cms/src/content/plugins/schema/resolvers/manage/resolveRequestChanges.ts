@@ -7,7 +7,7 @@ export const resolveRequestChanges: ResolveRequestChanges =
     ({ model }) =>
     async (root, args, { cms }) => {
         try {
-            const entry = await cms.entries.requestChanges(model, args.revision);
+            const entry = await cms.entries.requestEntryChanges(model, args.revision);
 
             return new Response(entry);
         } catch (e) {

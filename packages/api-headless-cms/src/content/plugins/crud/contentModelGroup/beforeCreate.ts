@@ -1,4 +1,4 @@
-import { BeforeGroupCreateTopic, HeadlessCmsStorageOperations } from "~/types";
+import { BeforeGroupCreateTopicParams, HeadlessCmsStorageOperations } from "~/types";
 import { Topic } from "@webiny/pubsub/types";
 import { ContentModelGroupPlugin } from "~/content/plugins/ContentModelGroupPlugin";
 import { PluginsContainer } from "@webiny/plugins";
@@ -7,7 +7,7 @@ import WebinyError from "@webiny/error";
 import shortid from "shortid";
 
 export interface Params {
-    onBeforeCreate: Topic<BeforeGroupCreateTopic>;
+    onBeforeCreate: Topic<BeforeGroupCreateTopicParams>;
     plugins: PluginsContainer;
     storageOperations: HeadlessCmsStorageOperations;
 }

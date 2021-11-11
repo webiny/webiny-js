@@ -8,26 +8,26 @@ import {
     CmsContext,
     CmsStorageContentEntry,
     HeadlessCmsStorageOperations,
-    BeforeCreateEntryTopic,
-    AfterCreateEntryTopic,
-    BeforeUpdateEntryTopic,
-    AfterUpdateEntryTopic,
-    AfterDeleteEntryTopic,
-    BeforeDeleteEntryTopic,
+    BeforeEntryCreateTopicParams,
+    AfterEntryCreateTopicParams,
+    BeforeEntryUpdateTopicParams,
+    AfterEntryUpdateTopicParams,
+    AfterEntryDeleteTopicParams,
+    BeforeEntryDeleteTopicParams,
     CmsContentEntryStorageOperationsListParams,
     CmsContentEntryListParams,
-    BeforeCreateRevisionEntryTopic,
-    AfterCreateRevisionEntryTopic,
-    BeforePublishEntryTopic,
-    AfterPublishEntryTopic,
-    BeforeUnpublishEntryTopic,
-    AfterUnpublishEntryTopic,
-    BeforeRequestChangesEntryTopic,
-    AfterRequestChangesEntryTopic,
-    BeforeRequestReviewEntryTopic,
-    AfterRequestReviewEntryTopic,
-    BeforeDeleteRevisionEntryTopic,
-    AfterDeleteRevisionEntryTopic
+    BeforeEntryRevisionCreateTopicParams,
+    AfterEntryRevisionCreateTopicParams,
+    BeforeEntryPublishTopicParams,
+    AfterEntryPublishTopicParams,
+    BeforeEntryUnpublishTopicParams,
+    AfterEntryUnpublishTopicParams,
+    BeforeEntryRequestChangesTopicParams,
+    AfterEntryRequestChangesTopicParams,
+    BeforeEntryRequestReviewTopicParams,
+    AfterEntryRequestReviewTopicParams,
+    BeforeEntryRevisionDeleteTopicParams,
+    AfterEntryRevisionDeleteTopicParams
 } from "~/types";
 import * as utils from "~/utils";
 import { validateModelEntryData } from "./contentEntry/entryDataValidation";
@@ -139,24 +139,24 @@ export interface Params {
 export const createContentEntryCrud = (params: Params): CmsContentEntryContext => {
     const { storageOperations, context, getTenant, getLocale, getIdentity } = params;
 
-    const onBeforeCreate = createTopic<BeforeCreateEntryTopic>();
-    const onAfterCreate = createTopic<AfterCreateEntryTopic>();
-    const onBeforeCreateRevision = createTopic<BeforeCreateRevisionEntryTopic>();
-    const onAfterCreateRevision = createTopic<AfterCreateRevisionEntryTopic>();
-    const onBeforeUpdate = createTopic<BeforeUpdateEntryTopic>();
-    const onAfterUpdate = createTopic<AfterUpdateEntryTopic>();
-    const onBeforePublish = createTopic<BeforePublishEntryTopic>();
-    const onAfterPublish = createTopic<AfterPublishEntryTopic>();
-    const onBeforeUnpublish = createTopic<BeforeUnpublishEntryTopic>();
-    const onAfterUnpublish = createTopic<AfterUnpublishEntryTopic>();
-    const onBeforeRequestChanges = createTopic<BeforeRequestChangesEntryTopic>();
-    const onAfterRequestChanges = createTopic<AfterRequestChangesEntryTopic>();
-    const onBeforeRequestReview = createTopic<BeforeRequestReviewEntryTopic>();
-    const onAfterRequestReview = createTopic<AfterRequestReviewEntryTopic>();
-    const onBeforeDelete = createTopic<BeforeDeleteEntryTopic>();
-    const onAfterDelete = createTopic<AfterDeleteEntryTopic>();
-    const onBeforeDeleteRevision = createTopic<BeforeDeleteRevisionEntryTopic>();
-    const onAfterDeleteRevision = createTopic<AfterDeleteRevisionEntryTopic>();
+    const onBeforeCreate = createTopic<BeforeEntryCreateTopicParams>();
+    const onAfterCreate = createTopic<AfterEntryCreateTopicParams>();
+    const onBeforeCreateRevision = createTopic<BeforeEntryRevisionCreateTopicParams>();
+    const onAfterCreateRevision = createTopic<AfterEntryRevisionCreateTopicParams>();
+    const onBeforeUpdate = createTopic<BeforeEntryUpdateTopicParams>();
+    const onAfterUpdate = createTopic<AfterEntryUpdateTopicParams>();
+    const onBeforePublish = createTopic<BeforeEntryPublishTopicParams>();
+    const onAfterPublish = createTopic<AfterEntryPublishTopicParams>();
+    const onBeforeUnpublish = createTopic<BeforeEntryUnpublishTopicParams>();
+    const onAfterUnpublish = createTopic<AfterEntryUnpublishTopicParams>();
+    const onBeforeRequestChanges = createTopic<BeforeEntryRequestChangesTopicParams>();
+    const onAfterRequestChanges = createTopic<AfterEntryRequestChangesTopicParams>();
+    const onBeforeRequestReview = createTopic<BeforeEntryRequestReviewTopicParams>();
+    const onAfterRequestReview = createTopic<AfterEntryRequestReviewTopicParams>();
+    const onBeforeDelete = createTopic<BeforeEntryDeleteTopicParams>();
+    const onAfterDelete = createTopic<AfterEntryDeleteTopicParams>();
+    const onBeforeDeleteRevision = createTopic<BeforeEntryRevisionDeleteTopicParams>();
+    const onAfterDeleteRevision = createTopic<AfterEntryRevisionDeleteTopicParams>();
     /**
      * We need to assign some default behaviors.
      */
@@ -223,33 +223,33 @@ export const createContentEntryCrud = (params: Params): CmsContentEntryContext =
     };
 
     return {
-        onBeforeCreate,
-        onAfterCreate,
-        onBeforeCreateRevision,
-        onAfterCreateRevision,
-        onBeforeUpdate,
-        onAfterUpdate,
-        onBeforeDelete,
-        onAfterDelete,
-        onBeforeDeleteRevision,
-        onAfterDeleteRevision,
-        onBeforePublish,
-        onAfterPublish,
-        onBeforeUnpublish,
-        onAfterUnpublish,
-        onBeforeRequestChanges,
-        onAfterRequestChanges,
-        onBeforeRequestReview,
-        onAfterRequestReview,
+        onBeforeEntryCreate: onBeforeCreate,
+        onAfterEntryCreate: onAfterCreate,
+        onBeforeEntryRevisionCreate: onBeforeCreateRevision,
+        onAfterEntryRevisionCreate: onAfterCreateRevision,
+        onBeforeEntryUpdate: onBeforeUpdate,
+        onAfterEntryUpdate: onAfterUpdate,
+        onBeforeEntryDelete: onBeforeDelete,
+        onAfterEntryDelete: onAfterDelete,
+        onBeforeEntryRevisionDelete: onBeforeDeleteRevision,
+        onAfterEntryRevisionDelete: onAfterDeleteRevision,
+        onBeforeEntryPublish: onBeforePublish,
+        onAfterEntryPublish: onAfterPublish,
+        onBeforeEntryUnpublish: onBeforeUnpublish,
+        onAfterEntryUnpublish: onAfterUnpublish,
+        onBeforeEntryRequestChanges: onBeforeRequestChanges,
+        onAfterEntryRequestChanges: onAfterRequestChanges,
+        onBeforeEntryRequestReview: onBeforeRequestReview,
+        onAfterEntryRequestReview: onAfterRequestReview,
         operations: storageOperations.entries,
         /**
          * Get entries by exact revision IDs from the database.
          */
-        getByIds: getEntriesByIds,
+        getEntriesByIds: getEntriesByIds,
         /**
          * Get a single entry by revision ID from the database.
          */
-        getById: async (model, id) => {
+        getEntryById: async (model, id) => {
             const [entry] = await getEntriesByIds(model, [id]);
             if (!entry) {
                 throw new NotFoundError(`Entry by ID "${id}" not found.`);
@@ -259,7 +259,7 @@ export const createContentEntryCrud = (params: Params): CmsContentEntryContext =
         /**
          * Get published revisions by entry IDs.
          */
-        getPublishedByIds: async (model: CmsContentModel, ids: string[]) => {
+        getPublishedEntriesByIds: async (model: CmsContentModel, ids: string[]) => {
             const permission = await checkEntryPermissions({ rwd: "r" });
             await utils.checkModelAccess(context, model);
 
@@ -274,7 +274,7 @@ export const createContentEntryCrud = (params: Params): CmsContentEntryContext =
         /**
          * Get latest revisions by entry IDs.
          */
-        getLatestByIds: async (model: CmsContentModel, ids: string[]) => {
+        getLatestEntriesByIds: async (model: CmsContentModel, ids: string[]) => {
             const permission = await checkEntryPermissions({ rwd: "r" });
             await utils.checkModelAccess(context, model);
 
@@ -294,10 +294,10 @@ export const createContentEntryCrud = (params: Params): CmsContentEntryContext =
                 id: entryId
             });
         },
-        get: async (model, args) => {
+        getEntry: async (model, args) => {
             await checkEntryPermissions({ rwd: "r" });
 
-            const [items] = await context.cms.entries.list(model, {
+            const [items] = await context.cms.entries.listEntries(model, {
                 ...args,
                 limit: 1
             });
@@ -307,7 +307,7 @@ export const createContentEntryCrud = (params: Params): CmsContentEntryContext =
             }
             return items[0];
         },
-        list: async (model: CmsContentModel, params) => {
+        listEntries: async (model: CmsContentModel, params) => {
             const permission = await checkEntryPermissions({ rwd: "r" });
             await utils.checkModelAccess(context, model);
 
@@ -344,10 +344,10 @@ export const createContentEntryCrud = (params: Params): CmsContentEntryContext =
 
             return [items, meta];
         },
-        listLatest: async function (model, params) {
+        listLatestEntries: async function (model, params) {
             const where = params ? params.where : {};
 
-            return context.cms.entries.list(model, {
+            return context.cms.entries.listEntries(model, {
                 sort: ["createdOn_DESC"],
                 ...(params || {}),
                 where: {
@@ -356,10 +356,10 @@ export const createContentEntryCrud = (params: Params): CmsContentEntryContext =
                 }
             });
         },
-        listPublished: async function (model, params) {
+        listPublishedEntries: async function (model, params) {
             const where = params ? params.where : {};
 
-            return context.cms.entries.list(model, {
+            return context.cms.entries.listEntries(model, {
                 sort: ["createdOn_DESC"],
                 ...(params || {}),
                 where: {
@@ -368,7 +368,7 @@ export const createContentEntryCrud = (params: Params): CmsContentEntryContext =
                 }
             });
         },
-        create: async (model, inputData) => {
+        createEntry: async (model, inputData) => {
             await checkEntryPermissions({ rwd: "w" });
             await utils.checkModelAccess(context, model);
 
@@ -443,7 +443,7 @@ export const createContentEntryCrud = (params: Params): CmsContentEntryContext =
                 );
             }
         },
-        createRevisionFrom: async (model, sourceId, inputData = {}) => {
+        createEntryRevisionFrom: async (model, sourceId, inputData = {}) => {
             const permission = await checkEntryPermissions({ rwd: "w" });
             await utils.checkModelAccess(context, model);
 
@@ -558,7 +558,7 @@ export const createContentEntryCrud = (params: Params): CmsContentEntryContext =
                 );
             }
         },
-        update: async (model, id, inputData) => {
+        updateEntry: async (model, id, inputData) => {
             const permission = await checkEntryPermissions({ rwd: "w" });
             await utils.checkModelAccess(context, model);
 
@@ -659,7 +659,7 @@ export const createContentEntryCrud = (params: Params): CmsContentEntryContext =
                 );
             }
         },
-        deleteRevision: async (model, revisionId) => {
+        deleteEntryRevision: async (model, revisionId) => {
             const permission = await checkEntryPermissions({ rwd: "d" });
             await utils.checkModelAccess(context, model);
 
@@ -777,7 +777,7 @@ export const createContentEntryCrud = (params: Params): CmsContentEntryContext =
                 storageEntry
             });
         },
-        publish: async (model, id) => {
+        publishEntry: async (model, id) => {
             const permission = await checkEntryPermissions({ pw: "p" });
             await utils.checkModelAccess(context, model);
 
@@ -849,7 +849,7 @@ export const createContentEntryCrud = (params: Params): CmsContentEntryContext =
                 );
             }
         },
-        requestChanges: async (model, id) => {
+        requestEntryChanges: async (model, id) => {
             const permission = await checkEntryPermissions({ pw: "c" });
 
             const originalStorageEntry = await storageOperations.entries.getRevisionById(model, {
@@ -925,7 +925,7 @@ export const createContentEntryCrud = (params: Params): CmsContentEntryContext =
                 );
             }
         },
-        requestReview: async (model, id) => {
+        requestEntryReview: async (model, id) => {
             const permission = await checkEntryPermissions({ pw: "r" });
             const [entryId] = id.split("#");
 
@@ -1008,7 +1008,7 @@ export const createContentEntryCrud = (params: Params): CmsContentEntryContext =
                 );
             }
         },
-        unpublish: async (model, id) => {
+        unpublishEntry: async (model, id) => {
             const permission = await checkEntryPermissions({ pw: "u" });
 
             const [entryId] = id.split("#");

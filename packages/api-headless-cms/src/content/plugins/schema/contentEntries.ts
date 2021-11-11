@@ -103,7 +103,7 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
                         return new NotAuthorizedResponse({ data: { modelId } });
                     }
 
-                    const [entry] = await context.cms.entries.getByIds(model, [entryId]);
+                    const [entry] = await context.cms.entries.getEntriesByIds(model, [entryId]);
 
                     return new Response({
                         id: entry.id,
@@ -128,7 +128,7 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
                     const getters = entriesByModel.map(async ({ modelId, entryId }) => {
                         // Get model manager, to get access to CRUD methods
                         const model = models.find(m => m.modelId === modelId);
-                        const entries = await context.cms.entries.getByIds(model, [entryId]);
+                        const entries = await context.cms.entries.getEntriesByIds(model, [entryId]);
                         return entries.map(entry => ({
                             id: entry.id,
                             model: {

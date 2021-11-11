@@ -1,4 +1,8 @@
-import { BeforeModelCreateTopic, CmsContentModel, HeadlessCmsStorageOperations } from "~/types";
+import {
+    BeforeModelCreateTopicParams,
+    CmsContentModel,
+    HeadlessCmsStorageOperations
+} from "~/types";
 import { Topic } from "@webiny/pubsub/types";
 import { PluginsContainer } from "@webiny/plugins";
 import { ContentModelPlugin } from "~/content/plugins/ContentModelPlugin";
@@ -96,7 +100,7 @@ const createNewModelId = (existingModels: string[], model: CmsContentModel): str
 };
 
 export interface Params {
-    onBeforeCreate: Topic<BeforeModelCreateTopic>;
+    onBeforeCreate: Topic<BeforeModelCreateTopicParams>;
     storageOperations: HeadlessCmsStorageOperations;
     plugins: PluginsContainer;
 }

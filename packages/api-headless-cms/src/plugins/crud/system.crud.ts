@@ -4,8 +4,8 @@ import { getApplicablePlugin } from "@webiny/api-upgrade";
 import { UpgradePlugin } from "@webiny/api-upgrade/types";
 import WebinyError from "@webiny/error";
 import {
-    AfterInstallTopic,
-    BeforeInstallTopic,
+    AfterInstallTopicParams,
+    BeforeInstallTopicParams,
     CmsContext,
     CmsSystem,
     CmsSystemContext,
@@ -31,8 +31,8 @@ export interface Params {
 export const createSystemCrud = (params: Params): CmsSystemContext => {
     const { getTenant, storageOperations, context, getIdentity } = params;
 
-    const onBeforeInstall = createTopic<BeforeInstallTopic>();
-    const onAfterInstall = createTopic<AfterInstallTopic>();
+    const onBeforeInstall = createTopic<BeforeInstallTopicParams>();
+    const onAfterInstall = createTopic<AfterInstallTopicParams>();
 
     const createReadAPIKey = () => {
         return crypto.randomBytes(Math.ceil(48 / 2)).toString("hex");

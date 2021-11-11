@@ -710,11 +710,11 @@ export interface CmsSettingsContext {
     getContentModelLastChange: () => Promise<Date>;
 }
 
-export interface BeforeInstallTopic {
+export interface BeforeInstallTopicParams {
     tenant: string;
 }
 
-export interface AfterInstallTopic {
+export interface AfterInstallTopicParams {
     tenant: string;
 }
 
@@ -727,8 +727,8 @@ export type CmsSystemContext = {
     /**
      * Events
      */
-    onBeforeSystemInstall: Topic<BeforeInstallTopic>;
-    onAfterSystemInstall: Topic<AfterInstallTopic>;
+    onBeforeSystemInstall: Topic<BeforeInstallTopicParams>;
+    onAfterSystemInstall: Topic<AfterInstallTopicParams>;
 };
 
 /**
@@ -828,7 +828,7 @@ export interface CmsContentModelGroupListParams {
  * @category ContentModelGroup
  * @category Topic
  */
-export interface BeforeGroupCreateTopic {
+export interface BeforeGroupCreateTopicParams {
     group: CmsContentModelGroup;
 }
 
@@ -836,7 +836,7 @@ export interface BeforeGroupCreateTopic {
  * @category ContentModelGroup
  * @category Topic
  */
-export interface AfterGroupCreateTopic {
+export interface AfterGroupCreateTopicParams {
     group: CmsContentModelGroup;
 }
 
@@ -844,7 +844,7 @@ export interface AfterGroupCreateTopic {
  * @category ContentModelGroup
  * @category Topic
  */
-export interface BeforeGroupUpdateTopic {
+export interface BeforeGroupUpdateTopicParams {
     original: CmsContentModelGroup;
     group: CmsContentModelGroup;
 }
@@ -853,7 +853,7 @@ export interface BeforeGroupUpdateTopic {
  * @category ContentModelGroup
  * @category Topic
  */
-export interface AfterGroupUpdateTopic {
+export interface AfterGroupUpdateTopicParams {
     original: CmsContentModelGroup;
     group: CmsContentModelGroup;
 }
@@ -862,7 +862,7 @@ export interface AfterGroupUpdateTopic {
  * @category ContentModelGroup
  * @category Topic
  */
-export interface BeforeGroupDeleteTopic {
+export interface BeforeGroupDeleteTopicParams {
     group: CmsContentModelGroup;
 }
 
@@ -870,7 +870,7 @@ export interface BeforeGroupDeleteTopic {
  * @category ContentModelGroup
  * @category Topic
  */
-export interface AfterGroupDeleteTopic {
+export interface AfterGroupDeleteTopicParams {
     group: CmsContentModelGroup;
 }
 
@@ -924,12 +924,12 @@ export interface CmsContentModelGroupContext {
     /**
      * Events.
      */
-    onBeforeGroupCreate: Topic<BeforeGroupCreateTopic>;
-    onAfterGroupCreate: Topic<AfterGroupCreateTopic>;
-    onBeforeGroupUpdate: Topic<BeforeGroupUpdateTopic>;
-    onAfterGroupUpdate: Topic<AfterGroupUpdateTopic>;
-    onBeforeGroupDelete: Topic<BeforeGroupDeleteTopic>;
-    onAfterGroupDelete: Topic<AfterGroupDeleteTopic>;
+    onBeforeGroupCreate: Topic<BeforeGroupCreateTopicParams>;
+    onAfterGroupCreate: Topic<AfterGroupCreateTopicParams>;
+    onBeforeGroupUpdate: Topic<BeforeGroupUpdateTopicParams>;
+    onAfterGroupUpdate: Topic<AfterGroupUpdateTopicParams>;
+    onBeforeGroupDelete: Topic<BeforeGroupDeleteTopicParams>;
+    onAfterGroupDelete: Topic<AfterGroupDeleteTopicParams>;
 }
 
 /**
@@ -1224,28 +1224,28 @@ export interface CmsContentModelManager {
     delete: (id: string) => Promise<void>;
 }
 
-export interface BeforeModelCreateTopic {
+export interface BeforeModelCreateTopicParams {
     input: Partial<CmsContentModel>;
     model: CmsContentModel;
 }
-export interface AfterModelCreateTopic {
+export interface AfterModelCreateTopicParams {
     input: Partial<CmsContentModel>;
     model: CmsContentModel;
 }
-export interface BeforeModelUpdateTopic {
-    input: Partial<CmsContentModel>;
-    original: CmsContentModel;
-    model: CmsContentModel;
-}
-export interface AfterModelUpdateTopic {
+export interface BeforeModelUpdateTopicParams {
     input: Partial<CmsContentModel>;
     original: CmsContentModel;
     model: CmsContentModel;
 }
-export interface BeforeModelDeleteTopic {
+export interface AfterModelUpdateTopicParams {
+    input: Partial<CmsContentModel>;
+    original: CmsContentModel;
     model: CmsContentModel;
 }
-export interface AfterModelDeleteTopic {
+export interface BeforeModelDeleteTopicParams {
+    model: CmsContentModel;
+}
+export interface AfterModelDeleteTopicParams {
     model: CmsContentModel;
 }
 
@@ -1330,12 +1330,12 @@ export interface CmsContentModelContext {
     /**
      * Events.
      */
-    onBeforeModelCreate: Topic<BeforeModelCreateTopic>;
-    onAfterModelCreate: Topic<AfterModelCreateTopic>;
-    onBeforeModelUpdate: Topic<BeforeModelUpdateTopic>;
-    onAfterModelUpdate: Topic<AfterModelUpdateTopic>;
-    onBeforeModelDelete: Topic<BeforeModelDeleteTopic>;
-    onAfterModelDelete: Topic<AfterModelDeleteTopic>;
+    onBeforeModelCreate: Topic<BeforeModelCreateTopicParams>;
+    onAfterModelCreate: Topic<AfterModelCreateTopicParams>;
+    onBeforeModelUpdate: Topic<BeforeModelUpdateTopicParams>;
+    onAfterModelUpdate: Topic<AfterModelUpdateTopicParams>;
+    onBeforeModelDelete: Topic<BeforeModelDeleteTopicParams>;
+    onAfterModelDelete: Topic<AfterModelDeleteTopicParams>;
 }
 
 /**
@@ -1468,101 +1468,101 @@ export interface CmsContentEntryMeta {
     totalCount: number;
 }
 
-export interface BeforeCreateEntryTopic {
+export interface BeforeEntryCreateTopicParams {
     input: Partial<CmsContentEntry>;
     entry: CmsContentEntry;
     model: CmsContentModel;
 }
-export interface AfterCreateEntryTopic {
+export interface AfterEntryCreateTopicParams {
     input: Partial<CmsContentEntry>;
     entry: CmsContentEntry;
     model: CmsContentModel;
     storageEntry: CmsContentEntry;
 }
 
-export interface BeforeCreateRevisionEntryTopic {
+export interface BeforeEntryRevisionCreateTopicParams {
     entry: CmsContentEntry;
     model: CmsContentModel;
 }
 
-export interface AfterCreateRevisionEntryTopic {
+export interface AfterEntryRevisionCreateTopicParams {
     entry: CmsContentEntry;
     model: CmsContentModel;
     storageEntry: CmsContentEntry;
 }
 
-export interface BeforeUpdateEntryTopic {
-    input: Partial<CmsContentEntry>;
-    original: CmsContentEntry;
-    entry: CmsContentEntry;
-    model: CmsContentModel;
-}
-export interface AfterUpdateEntryTopic {
+export interface BeforeEntryUpdateTopicParams {
     input: Partial<CmsContentEntry>;
     original: CmsContentEntry;
     entry: CmsContentEntry;
     model: CmsContentModel;
-    storageEntry: CmsContentEntry;
 }
-
-export interface BeforePublishEntryTopic {
-    entry: CmsContentEntry;
-    model: CmsContentModel;
-}
-
-export interface AfterPublishEntryTopic {
+export interface AfterEntryUpdateTopicParams {
+    input: Partial<CmsContentEntry>;
+    original: CmsContentEntry;
     entry: CmsContentEntry;
     model: CmsContentModel;
     storageEntry: CmsContentEntry;
 }
 
-export interface BeforeUnpublishEntryTopic {
+export interface BeforeEntryPublishTopicParams {
     entry: CmsContentEntry;
     model: CmsContentModel;
 }
 
-export interface AfterUnpublishEntryTopic {
+export interface AfterEntryPublishTopicParams {
     entry: CmsContentEntry;
     model: CmsContentModel;
     storageEntry: CmsContentEntry;
 }
 
-export interface BeforeRequestChangesEntryTopic {
+export interface BeforeEntryUnpublishTopicParams {
     entry: CmsContentEntry;
     model: CmsContentModel;
 }
 
-export interface AfterRequestChangesEntryTopic {
+export interface AfterEntryUnpublishTopicParams {
     entry: CmsContentEntry;
     model: CmsContentModel;
     storageEntry: CmsContentEntry;
 }
 
-export interface BeforeRequestReviewEntryTopic {
+export interface BeforeEntryRequestChangesTopicParams {
     entry: CmsContentEntry;
     model: CmsContentModel;
 }
 
-export interface AfterRequestReviewEntryTopic {
+export interface AfterEntryRequestChangesTopicParams {
     entry: CmsContentEntry;
     model: CmsContentModel;
     storageEntry: CmsContentEntry;
 }
 
-export interface BeforeDeleteEntryTopic {
-    entry: CmsContentEntry;
-    model: CmsContentModel;
-}
-export interface AfterDeleteEntryTopic {
+export interface BeforeEntryRequestReviewTopicParams {
     entry: CmsContentEntry;
     model: CmsContentModel;
 }
 
-export interface BeforeDeleteRevisionEntryTopic {
+export interface AfterEntryRequestReviewTopicParams {
+    entry: CmsContentEntry;
+    model: CmsContentModel;
+    storageEntry: CmsContentEntry;
+}
+
+export interface BeforeEntryDeleteTopicParams {
     entry: CmsContentEntry;
     model: CmsContentModel;
 }
-export interface AfterDeleteRevisionEntryTopic {
+export interface AfterEntryDeleteTopicParams {
+    entry: CmsContentEntry;
+    model: CmsContentModel;
+}
+
+export interface BeforeEntryRevisionDeleteTopicParams {
+    entry: CmsContentEntry;
+    model: CmsContentModel;
+}
+export interface AfterEntryRevisionDeleteTopicParams {
     entry: CmsContentEntry;
     model: CmsContentModel;
 }
@@ -1581,55 +1581,58 @@ export interface CmsContentEntryContext {
     /**
      * Get a single content entry for a model.
      */
-    get: (
+    getEntry: (
         model: CmsContentModel,
         params: CmsContentEntryGetParams
     ) => Promise<CmsContentEntry | null>;
     /**
      * Get a list of entries for a model by a given ID (revision).
      */
-    getByIds: (model: CmsContentModel, revisions: string[]) => Promise<CmsContentEntry[] | null>;
+    getEntriesByIds: (
+        model: CmsContentModel,
+        revisions: string[]
+    ) => Promise<CmsContentEntry[] | null>;
     /**
      * Get the entry for a model by a given ID.
      */
-    getById: (model: CmsContentModel, revision: string) => Promise<CmsContentEntry>;
+    getEntryById: (model: CmsContentModel, revision: string) => Promise<CmsContentEntry>;
     /**
      * List entries for a model. Internal method used by get, listLatest and listPublished.
      */
-    list: (
+    listEntries: (
         model: CmsContentModel,
         params?: CmsContentEntryListParams
     ) => Promise<[CmsContentEntry[], CmsContentEntryMeta]>;
     /**
      * Lists latest entries. Used for manage API.
      */
-    listLatest: (
+    listLatestEntries: (
         model: CmsContentModel,
         params?: CmsContentEntryListParams
     ) => Promise<[CmsContentEntry[], CmsContentEntryMeta]>;
     /**
      * List published entries. Used for read API.
      */
-    listPublished: (
+    listPublishedEntries: (
         model: CmsContentModel,
         params?: CmsContentEntryListParams
     ) => Promise<[CmsContentEntry[], CmsContentEntryMeta]>;
     /**
      * List published entries by IDs.
      */
-    getPublishedByIds: (model: CmsContentModel, ids: string[]) => Promise<CmsContentEntry[]>;
+    getPublishedEntriesByIds: (model: CmsContentModel, ids: string[]) => Promise<CmsContentEntry[]>;
     /**
      * List latest entries by IDs.
      */
-    getLatestByIds: (model: CmsContentModel, ids: string[]) => Promise<CmsContentEntry[]>;
+    getLatestEntriesByIds: (model: CmsContentModel, ids: string[]) => Promise<CmsContentEntry[]>;
     /**
      * Create a new content entry.
      */
-    create: (model: CmsContentModel, data: Record<string, any>) => Promise<CmsContentEntry>;
+    createEntry: (model: CmsContentModel, data: Record<string, any>) => Promise<CmsContentEntry>;
     /**
      * Create a new entry from already existing entry.
      */
-    createRevisionFrom: (
+    createEntryRevisionFrom: (
         model: CmsContentModel,
         id: string,
         data: Record<string, any>
@@ -1637,7 +1640,7 @@ export interface CmsContentEntryContext {
     /**
      * Update existing entry.
      */
-    update: (
+    updateEntry: (
         model: CmsContentModel,
         id: string,
         data?: Record<string, any>
@@ -1645,7 +1648,7 @@ export interface CmsContentEntryContext {
     /**
      * Delete only a certain revision of the entry.
      */
-    deleteRevision: (model: CmsContentModel, id: string) => Promise<void>;
+    deleteEntryRevision: (model: CmsContentModel, id: string) => Promise<void>;
     /**
      * Delete entry with all its revisions.
      */
@@ -1653,19 +1656,19 @@ export interface CmsContentEntryContext {
     /**
      * Publish entry.
      */
-    publish: (model: CmsContentModel, id: string) => Promise<CmsContentEntry>;
+    publishEntry: (model: CmsContentModel, id: string) => Promise<CmsContentEntry>;
     /**
      * Unpublish entry.
      */
-    unpublish: (model: CmsContentModel, id: string) => Promise<CmsContentEntry>;
+    unpublishEntry: (model: CmsContentModel, id: string) => Promise<CmsContentEntry>;
     /**
      * Request a review for the entry.
      */
-    requestReview: (model: CmsContentModel, id: string) => Promise<CmsContentEntry>;
+    requestEntryReview: (model: CmsContentModel, id: string) => Promise<CmsContentEntry>;
     /**
      * Request changes for the entry.
      */
-    requestChanges: (model: CmsContentModel, id: string) => Promise<CmsContentEntry>;
+    requestEntryChanges: (model: CmsContentModel, id: string) => Promise<CmsContentEntry>;
     /**
      * Get all entry revisions.
      */
@@ -1673,24 +1676,24 @@ export interface CmsContentEntryContext {
     /**
      * Events.
      */
-    onBeforeCreate: Topic<BeforeCreateEntryTopic>;
-    onAfterCreate: Topic<AfterCreateEntryTopic>;
-    onBeforeCreateRevision: Topic<BeforeCreateRevisionEntryTopic>;
-    onAfterCreateRevision: Topic<AfterCreateRevisionEntryTopic>;
-    onBeforeUpdate: Topic<BeforeUpdateEntryTopic>;
-    onAfterUpdate: Topic<AfterUpdateEntryTopic>;
-    onBeforeDelete: Topic<BeforeDeleteEntryTopic>;
-    onAfterDelete: Topic<AfterDeleteEntryTopic>;
-    onBeforeDeleteRevision: Topic<BeforeDeleteRevisionEntryTopic>;
-    onAfterDeleteRevision: Topic<AfterDeleteRevisionEntryTopic>;
-    onBeforePublish: Topic<BeforePublishEntryTopic>;
-    onAfterPublish: Topic<AfterPublishEntryTopic>;
-    onBeforeUnpublish: Topic<BeforeUnpublishEntryTopic>;
-    onAfterUnpublish: Topic<AfterUnpublishEntryTopic>;
-    onBeforeRequestChanges: Topic<BeforeRequestChangesEntryTopic>;
-    onAfterRequestChanges: Topic<AfterRequestChangesEntryTopic>;
-    onBeforeRequestReview: Topic<BeforeRequestReviewEntryTopic>;
-    onAfterRequestReview: Topic<AfterRequestReviewEntryTopic>;
+    onBeforeEntryCreate: Topic<BeforeEntryCreateTopicParams>;
+    onAfterEntryCreate: Topic<AfterEntryCreateTopicParams>;
+    onBeforeEntryRevisionCreate: Topic<BeforeEntryRevisionCreateTopicParams>;
+    onAfterEntryRevisionCreate: Topic<AfterEntryRevisionCreateTopicParams>;
+    onBeforeEntryUpdate: Topic<BeforeEntryUpdateTopicParams>;
+    onAfterEntryUpdate: Topic<AfterEntryUpdateTopicParams>;
+    onBeforeEntryDelete: Topic<BeforeEntryDeleteTopicParams>;
+    onAfterEntryDelete: Topic<AfterEntryDeleteTopicParams>;
+    onBeforeEntryRevisionDelete: Topic<BeforeEntryRevisionDeleteTopicParams>;
+    onAfterEntryRevisionDelete: Topic<AfterEntryRevisionDeleteTopicParams>;
+    onBeforeEntryPublish: Topic<BeforeEntryPublishTopicParams>;
+    onAfterEntryPublish: Topic<AfterEntryPublishTopicParams>;
+    onBeforeEntryUnpublish: Topic<BeforeEntryUnpublishTopicParams>;
+    onAfterEntryUnpublish: Topic<AfterEntryUnpublishTopicParams>;
+    onBeforeEntryRequestChanges: Topic<BeforeEntryRequestChangesTopicParams>;
+    onAfterEntryRequestChanges: Topic<AfterEntryRequestChangesTopicParams>;
+    onBeforeEntryRequestReview: Topic<BeforeEntryRequestReviewTopicParams>;
+    onAfterEntryRequestReview: Topic<AfterEntryRequestReviewTopicParams>;
 }
 
 /**

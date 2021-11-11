@@ -9,12 +9,12 @@ import {
     CmsContext,
     HeadlessCmsStorageOperations,
     CmsContentModelGroupCreateInput,
-    BeforeGroupCreateTopic,
-    AfterGroupCreateTopic,
-    BeforeGroupUpdateTopic,
-    AfterGroupUpdateTopic,
-    BeforeGroupDeleteTopic,
-    AfterGroupDeleteTopic
+    BeforeGroupCreateTopicParams,
+    AfterGroupCreateTopicParams,
+    BeforeGroupUpdateTopicParams,
+    AfterGroupUpdateTopicParams,
+    BeforeGroupDeleteTopicParams,
+    AfterGroupDeleteTopicParams
 } from "~/types";
 import * as utils from "~/utils";
 import { NotFoundError } from "@webiny/handler-graphql";
@@ -153,12 +153,12 @@ export const createModelGroupsCrud = (params: Params): CmsContentModelGroupConte
         }
     };
 
-    const onBeforeCreate = createTopic<BeforeGroupCreateTopic>();
-    const onAfterCreate = createTopic<AfterGroupCreateTopic>();
-    const onBeforeUpdate = createTopic<BeforeGroupUpdateTopic>();
-    const onAfterUpdate = createTopic<AfterGroupUpdateTopic>();
-    const onBeforeDelete = createTopic<BeforeGroupDeleteTopic>();
-    const onAfterDelete = createTopic<AfterGroupDeleteTopic>();
+    const onBeforeCreate = createTopic<BeforeGroupCreateTopicParams>();
+    const onAfterCreate = createTopic<AfterGroupCreateTopicParams>();
+    const onBeforeUpdate = createTopic<BeforeGroupUpdateTopicParams>();
+    const onAfterUpdate = createTopic<AfterGroupUpdateTopicParams>();
+    const onBeforeDelete = createTopic<BeforeGroupDeleteTopicParams>();
+    const onAfterDelete = createTopic<AfterGroupDeleteTopicParams>();
 
     /**
      * We need to assign some default behaviors.

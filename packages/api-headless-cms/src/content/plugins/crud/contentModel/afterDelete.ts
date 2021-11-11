@@ -1,8 +1,8 @@
-import { AfterModelDeleteTopic, CmsContext } from "~/types";
+import { AfterModelDeleteTopicParams, CmsContext } from "~/types";
 import { Topic } from "@webiny/pubsub/types";
 
 export interface Params {
-    onAfterDelete: Topic<AfterModelDeleteTopic>;
+    onAfterDelete: Topic<AfterModelDeleteTopicParams>;
     context: CmsContext;
 }
 export const assignAfterModelDelete = (params: Params) => {

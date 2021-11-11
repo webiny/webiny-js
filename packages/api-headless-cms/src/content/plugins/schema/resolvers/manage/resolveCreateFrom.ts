@@ -7,7 +7,7 @@ export const resolveCreateFrom: ResolveCreateFrom =
     ({ model }) =>
     async (root, args, { cms }) => {
         try {
-            const newRevision = await cms.entries.createRevisionFrom(
+            const newRevision = await cms.entries.createEntryRevisionFrom(
                 model,
                 args.revision,
                 args.data || {}

@@ -7,7 +7,7 @@ export const resolveRequestReview: ResolveRequestReview =
     ({ model }) =>
     async (root, args, { cms }) => {
         try {
-            const entry = await cms.entries.requestReview(model, args.revision);
+            const entry = await cms.entries.requestEntryReview(model, args.revision);
 
             return new Response(entry);
         } catch (e) {
