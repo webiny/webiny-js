@@ -154,11 +154,11 @@ export const createGroupsStorageOperations = (
         }
     };
     const list = async (params: CmsContentModelGroupStorageOperationsListParams) => {
-        const { sort, where } = params;
+        const { sort, where: initialWhere } = params;
 
         const queryAllParams: QueryAllParams = {
             entity,
-            partitionKey: createPartitionKey(where),
+            partitionKey: createPartitionKey(initialWhere),
             options: {
                 gte: " "
             }
@@ -175,10 +175,16 @@ export const createGroupsStorageOperations = (
                     error: ex,
                     ...params,
                     sort,
-                    where
+                    where: initialWhere
                 }
             );
         }
+
+        const where: CmsContentModelGroupStorageOperationsListParams["where"] = {
+            ...initialWhere
+        };
+        delete where["tenant"];
+        delete where["locale"];
 
         const filteredItems = filterItems({
             items: records,
@@ -186,7 +192,8 @@ export const createGroupsStorageOperations = (
             fields: [],
             plugins
         });
-        if (!sort || sort.length === 0) {
+
+        if (!sort || sort.length === 0 || filteredItems.length === 0) {
             return filteredItems;
         }
         return sortItems({

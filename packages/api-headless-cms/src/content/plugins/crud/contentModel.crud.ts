@@ -51,7 +51,15 @@ export const createModelsCrud = (params: Params): CmsContentModelContext => {
                     locale: getLocale().code
                 }
             });
-            return [models];
+            return [
+                models.map(model => {
+                    return {
+                        ...model,
+                        tenant: model.tenant || getTenant().id,
+                        locale: model.locale || getLocale().code
+                    };
+                })
+            ];
         })
     };
 
@@ -109,17 +117,21 @@ export const createModelsCrud = (params: Params): CmsContentModelContext => {
             return pluginModel;
         }
 
-        const databaseModel = await storageOperations.models.get({
+        const model = await storageOperations.models.get({
             tenant: getTenant().id,
             locale: getLocale().code,
             modelId
         });
 
-        if (!databaseModel) {
+        if (!model) {
             throw new NotFoundError(`Content model "${modelId}" was not found!`);
         }
 
-        return databaseModel;
+        return {
+            ...model,
+            tenant: model.tenant || getTenant().id,
+            locale: model.locale || getLocale().code
+        };
     };
 
     const modelsList = async (): Promise<CmsContentModel[]> => {
@@ -278,6 +290,8 @@ export const createModelsCrud = (params: Params): CmsContentModelContext => {
                 model
             });
 
+            loaders.listModels.clearAll();
+
             await updateManager(context, model);
 
             await onAfterCreate.publish({
@@ -296,6 +310,8 @@ export const createModelsCrud = (params: Params): CmsContentModelContext => {
 
             const model: CmsContentModel = {
                 ...initialModel,
+                tenant: initialModel.tenant || getTenant().id,
+                locale: initialModel.locale || getLocale().code,
                 webinyVersion: context.WEBINY_VERSION
             };
 
@@ -312,6 +328,8 @@ export const createModelsCrud = (params: Params): CmsContentModelContext => {
             });
 
             await updateManager(context, resultModel);
+
+            loaders.listModels.clearAll();
 
             await onAfterUpdate.publish({
                 input: {} as any,
@@ -349,6 +367,8 @@ export const createModelsCrud = (params: Params): CmsContentModelContext => {
             const model: CmsContentModel = {
                 ...original,
                 ...input,
+                tenant: original.tenant || getTenant().id,
+                locale: original.locale || getLocale().code,
                 webinyVersion: context.WEBINY_VERSION,
                 fields: modelFields,
                 savedOn: new Date().toISOString()

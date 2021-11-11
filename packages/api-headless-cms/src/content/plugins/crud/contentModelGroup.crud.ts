@@ -94,12 +94,14 @@ export const createModelGroupsCrud = (params: Params): CmsContentModelGroupConte
         if (groupPlugin) {
             return groupPlugin;
         }
+        const tenant = getTenant().id;
+        const locale = getLocale().code;
 
         let group: CmsContentModelGroup | null = null;
         try {
             group = await storageOperations.groups.get({
-                tenant: getTenant().id,
-                locale: getLocale().code,
+                tenant,
+                locale,
                 id
             });
         } catch (ex) {
@@ -112,17 +114,37 @@ export const createModelGroupsCrud = (params: Params): CmsContentModelGroupConte
             throw new NotFoundError(`Content model group "${id}" was not found!`);
         }
 
-        return group;
+        return {
+            ...group,
+            tenant: group.tenant || tenant,
+            locale: group.locale || locale
+        };
     };
 
     const groupsList = async (params: CmsContentModelGroupListParams) => {
         const { where } = params || {};
+        const tenant = getTenant().id;
+        const locale = getLocale().code;
         try {
             const pluginsGroups = getContentModelGroupsAsPlugins();
 
-            const databaseGroups = await storageOperations.groups.list({ where });
+            const databaseGroups = await storageOperations.groups.list({
+                where: {
+                    ...(where || {}),
+                    tenant: where ? where.tenant : tenant,
+                    locale: where ? where.locale : locale
+                }
+            });
 
-            return pluginsGroups.concat(databaseGroups);
+            return pluginsGroups.concat(
+                databaseGroups.map(group => {
+                    return {
+                        ...group,
+                        tenant: group.tenant || tenant,
+                        locale: group.locale || locale
+                    };
+                })
+            );
         } catch (ex) {
             throw new WebinyError(ex.message, ex.code || "LIST_ERROR", {
                 ...(ex.data || {}),
@@ -280,6 +302,7 @@ export const createModelGroupsCrud = (params: Params): CmsContentModelGroupConte
             const group: CmsContentModelGroup = {
                 ...original,
                 ...updatedDataJson,
+                locale: getLocale().code,
                 tenant: getTenant().id,
                 savedOn: new Date().toISOString()
             };

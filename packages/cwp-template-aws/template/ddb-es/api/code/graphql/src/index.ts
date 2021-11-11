@@ -81,6 +81,7 @@ export const handler = createHandler({
             })
         }),
         createAdminHeadlessCms({
+            setupGraphQL: true,
             storageOperations: createHeadlessCmsStorageOperations({
                 documentClient,
                 elasticsearch: elasticsearchClient,

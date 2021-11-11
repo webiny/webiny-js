@@ -39,6 +39,7 @@ export const handler = createHandler({
         i18nDynamoDbStorageOperations(),
         i18nContentPlugins(),
         createContentHeadlessCms({
+            setupGraphQL: true,
             storageOperations: createHeadlessCmsStorageOperations({
                 documentClient,
                 elasticsearch,

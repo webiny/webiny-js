@@ -42,6 +42,7 @@ export const handler = createHandler({
         i18nContentPlugins(),
         createContentHeadlessCms({
             debug,
+            setupGraphQL: true,
             storageOperations: createHeadlessCmsStorageOperations({
                 documentClient,
                 elasticsearch: elasticsearchClient,
