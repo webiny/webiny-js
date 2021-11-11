@@ -3,7 +3,7 @@
   "version": "5.17.0",
   "license": "MIT",
   "dependencies": {
-    "@webiny/global-config": "^5.17.0",
+    "@webiny/global-config": "5.17.0",
     "form-data": "3.0.0",
     "node-fetch": "2.6.1"
   },
