@@ -1,6 +1,6 @@
 {
   "name": "@webiny/api-upgrade",
-  "version": "5.17.0",
+  "version": "5.17.1",
   "main": "index.js",
   "types": "types.ts",
   "license": "MIT",

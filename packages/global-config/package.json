@@ -1,6 +1,6 @@
 {
   "name": "@webiny/global-config",
-  "version": "5.17.0",
+  "version": "5.17.1",
   "main": "index.js",
   "license": "MIT",
   "dependencies": {

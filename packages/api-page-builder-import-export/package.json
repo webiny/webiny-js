@@ -1,6 +1,6 @@
 {
   "name": "@webiny/api-page-builder-import-export",
-  "version": "5.17.0",
+  "version": "5.17.1",
   "main": "index.js",
   "keywords": [
     "pbie:base"

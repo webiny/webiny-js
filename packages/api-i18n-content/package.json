@@ -1,6 +1,6 @@
 {
   "name": "@webiny/api-i18n-content",
-  "version": "5.17.0",
+  "version": "5.17.1",
   "main": "index.js",
   "repository": {
     "type": "git",

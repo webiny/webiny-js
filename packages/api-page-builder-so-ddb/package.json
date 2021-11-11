@@ -1,6 +1,6 @@
 {
   "name": "@webiny/api-page-builder-so-ddb",
-  "version": "5.17.0",
+  "version": "5.17.1",
   "main": "index.js",
   "keywords": [
     "@webiny/api-page-builder",

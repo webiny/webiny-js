@@ -1,6 +1,6 @@
 {
   "name": "@webiny/api-i18n-ddb",
-  "version": "5.17.0",
+  "version": "5.17.1",
   "main": "index.js",
   "keywords": [
     "@webiny/api-i18n",

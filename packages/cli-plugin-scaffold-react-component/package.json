@@ -1,6 +1,6 @@
 {
   "name": "@webiny/cli-plugin-scaffold-react-component",
-  "version": "5.17.0",
+  "version": "5.17.1",
   "description": "Generate a simple React component package.",
   "main": "index.js",
   "types": "index.d.ts",
