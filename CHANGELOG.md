@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.17.2-beta.0](https://github.com/webiny/webiny-js/compare/v5.17.1...v5.17.2-beta.0) (2021-11-11)
+
+
+### Bug Fixes
+
+* force same version on all packages ([9cbae8b](https://github.com/webiny/webiny-js/commit/9cbae8b050900546eb17932c23a609593211c1c8))
+* lock graphql-scalars to 1.12.0 ([9bccd97](https://github.com/webiny/webiny-js/commit/9bccd977f5ee884532584ba234622bea5e5cac19))
+
+
+
+
+
 ## [5.17.1](https://github.com/webiny/webiny-js/compare/v5.17.0...v5.17.1) (2021-11-11)
 
 
