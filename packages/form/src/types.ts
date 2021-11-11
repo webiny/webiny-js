@@ -11,6 +11,7 @@ export interface FormAPI {
     submit: (event?: React.SyntheticEvent<any, any>) => Promise<void>;
     setValue: FormSetValue;
     validate: () => void;
+    validateInput: (name: string) => Promise<boolean | any>;
 }
 
 export type BindComponentRenderProp = {
