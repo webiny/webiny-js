@@ -1,6 +1,6 @@
 const execa = require("execa");
 
-module.exports = () => {
+module.exports = params => {
     return execa.sync(
         "yarn",
         [
@@ -15,7 +15,8 @@ module.exports = () => {
             "--watch"
         ],
         {
-            stdio: "inherit"
+            stdio: "inherit",
+            cwd: params.config.cwd
         }
     );
 };

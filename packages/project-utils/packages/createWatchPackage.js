@@ -1,4 +1,4 @@
-const watchPackage = require("./buildPackage");
+const watchPackage = require("./watchPackage");
 
 module.exports =
     config =>
