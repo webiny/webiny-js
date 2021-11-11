@@ -12,10 +12,10 @@ import { resolveDelete } from "./resolvers/manage/resolveDelete";
 import { resolvePublish } from "./resolvers/manage/resolvePublish";
 import { resolveUnpublish } from "./resolvers/manage/resolveUnpublish";
 import { resolveCreateFrom } from "./resolvers/manage/resolveCreateFrom";
-import { createManageTypeName, createTypeName } from "../utils/createTypeName";
-import { pluralizedTypeName } from "../utils/pluralizedTypeName";
-import { getEntryTitle } from "../utils/getEntryTitle";
 import { createFieldResolversFactory } from "~/content/plugins/schema/createFieldResolvers";
+import { createManageTypeName, createTypeName } from "~/content/plugins/utils/createTypeName";
+import { pluralizedTypeName } from "~/content/plugins/utils/pluralizedTypeName";
+import { getEntryTitle } from "~/content/plugins/utils/getEntryTitle";
 
 interface CreateManageResolvers {
     (params: {
@@ -40,7 +40,7 @@ export const createManageResolvers: CreateManageResolvers = ({
         fieldTypePlugins
     });
 
-    const manageResolvers = {
+    return {
         Query: {
             [`get${typeName}`]: resolveGet({ model }),
             [`get${typeName}Revisions`]: resolveGetRevisions({ model }),
@@ -83,6 +83,4 @@ export const createManageResolvers: CreateManageResolvers = ({
             }
         }
     };
-
-    return manageResolvers;
 };

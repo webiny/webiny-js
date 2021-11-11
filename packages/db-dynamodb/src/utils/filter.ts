@@ -11,6 +11,9 @@ export interface Params<T extends any = any> {
     plugins: PluginsContainer;
     items: T[];
     where: Record<string, any>;
+    /**
+     * An array of fields that require some special operation.
+     */
     fields: FieldPlugin[];
 }
 

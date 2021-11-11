@@ -1,4 +1,4 @@
-import { CmsContentModel, CmsContext, CmsFieldTypePlugins } from "../../../types";
+import { CmsContentModel, CmsContext, CmsFieldTypePlugins } from "~/types";
 import { GraphQLSchemaDefinition } from "@webiny/handler-graphql/types";
 
 interface RenderTypesFromFieldPlugins {

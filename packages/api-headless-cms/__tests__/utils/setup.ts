@@ -40,9 +40,9 @@ const setupContentModel = async (
     if (createResponse.errors) {
         console.error(`[setupContentModel] ${createResponse.errors[0].message}`);
         process.exit(1);
-    } else if (createResponse.data.createContentModel.data.error) {
+    } else if (createResponse.data.createContentModel.error) {
         console.error(
-            `[setupContentModel] ${createResponse.data.createContentModel.data.error.message}`
+            `[setupContentModel] ${createResponse.data.createContentModel.error.message}`
         );
         process.exit(1);
     }
@@ -57,9 +57,9 @@ const setupContentModel = async (
     if (updateResponse.errors) {
         console.error(`[setupContentModel] ${updateResponse.errors[0].message}`);
         process.exit(1);
-    } else if (updateResponse.data.updateContentModel.data.error) {
+    } else if (updateResponse.data.updateContentModel.error) {
         console.error(
-            `[setupContentModel] ${updateResponse.data.updateContentModel.data.error.message}`
+            `[setupContentModel] ${updateResponse.data.updateContentModel.error.message}`
         );
         process.exit(1);
     }

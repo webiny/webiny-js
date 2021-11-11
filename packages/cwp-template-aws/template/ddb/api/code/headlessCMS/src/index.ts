@@ -6,9 +6,13 @@ import i18nContentPlugins from "@webiny/api-i18n-content/plugins";
 import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import dynamoDbPlugins from "@webiny/db-dynamodb/plugins";
-import headlessCmsPlugins from "@webiny/api-headless-cms/content";
 import securityPlugins from "./security";
-import headlessCmsDynamoDbStorageOperations from "@webiny/api-headless-cms-ddb";
+import {
+    createContentHeadlessCmsContext,
+    createContentHeadlessCmsGraphQL
+} from "@webiny/api-headless-cms";
+import { createStorageOperations as createHeadlessCmsStorageOperations } from "@webiny/api-headless-cms-ddb";
+import headlessCmsModelFieldToGraphQLPlugins from "@webiny/api-headless-cms/content/plugins/graphqlFields";
 import logsPlugins from "@webiny/handler-logs";
 
 // Imports plugins created via scaffolding utilities.
@@ -33,8 +37,13 @@ export const handler = createHandler({
         i18nPlugins(),
         i18nDynamoDbStorageOperations(),
         i18nContentPlugins(),
-        headlessCmsPlugins({ debug }),
-        headlessCmsDynamoDbStorageOperations(),
+        createContentHeadlessCmsContext({
+            storageOperations: createHeadlessCmsStorageOperations({
+                documentClient,
+                modelFieldToGraphQLPlugins: headlessCmsModelFieldToGraphQLPlugins()
+            })
+        }),
+        createContentHeadlessCmsGraphQL({ debug }),
         scaffoldsPlugins()
     ],
     http: { debug }

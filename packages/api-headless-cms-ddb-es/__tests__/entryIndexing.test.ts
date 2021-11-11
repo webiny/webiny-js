@@ -139,7 +139,7 @@ describe("entryIndexing", () => {
         const entryToIndex = prepareEntryToIndex({
             storageEntry: mockInputEntry as any,
             model: mockModel,
-            context: { plugins } as any
+            plugins
         });
 
         expect(entryToIndex).toEqual(mockIndexedEntry);
@@ -148,7 +148,7 @@ describe("entryIndexing", () => {
     test("should extract original entry from indexed data", () => {
         const [entryFromIndex] = extractEntriesFromIndex({
             model: mockModel,
-            context: { plugins } as any,
+            plugins,
             entries: [mockIndexedEntry as any]
         });
 

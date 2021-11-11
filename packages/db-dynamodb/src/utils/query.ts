@@ -21,6 +21,14 @@ export interface QueryResult<T> {
     items: T[];
 }
 
+type DbItem<T> = T & {
+    PK: string;
+    SK: string;
+    TYPE: string;
+    GSI1_PK?: string;
+    GSI1_SK?: string;
+};
+
 /**
  * Will run query only once. Pass the previous to run the query again to fetch new data.
  * It returns the result and the items it found.
@@ -80,22 +88,25 @@ const query = async <T>(params: QueryParams): Promise<QueryResult<T>> => {
 /**
  * Will run the query to fetch the first possible item from the database.
  */
-export const queryOne = async <T>(params: QueryOneParams): Promise<T | null> => {
-    const { items } = await query<T>({
+export const queryOne = async <T>(params: QueryOneParams): Promise<DbItem<T> | null> => {
+    const { items } = await query<DbItem<T>>({
         ...params,
         options: {
             ...(params.options || {}),
             limit: 1
         }
     });
-    return items[0] || null;
+    if (items.length === 0) {
+        return null;
+    }
+    return items.shift();
 };
 /**
  * Will run the query to fetch the results no matter how much iterations it needs to go through.
  */
-export const queryAll = async <T>(params: QueryAllParams): Promise<T[]> => {
-    const items: T[] = [];
-    let results: QueryResult<T>;
+export const queryAll = async <T>(params: QueryAllParams): Promise<DbItem<T>[]> => {
+    const items: DbItem<T>[] = [];
+    let results: QueryResult<DbItem<T>>;
     let previousResult: any = undefined;
     while ((results = await query({ ...params, previous: previousResult }))) {
         items.push(...results.items);

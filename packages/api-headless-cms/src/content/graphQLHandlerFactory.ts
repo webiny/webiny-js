@@ -1,7 +1,7 @@
 import { boolean } from "boolean";
 import { GraphQLSchema } from "graphql";
 import { makeExecutableSchema } from "@graphql-tools/schema";
-import { CmsContext } from "../types";
+import { CmsContext } from "~/types";
 import { I18NLocale } from "@webiny/api-i18n/types";
 import { NotAuthorizedError, NotAuthorizedResponse } from "@webiny/api-security";
 import { PluginCollection } from "@webiny/plugins/types";
@@ -10,7 +10,7 @@ import processRequestBody from "@webiny/handler-graphql/processRequestBody";
 import buildSchemaPlugins from "./plugins/buildSchemaPlugins";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins";
 
-interface CreateGraphQLHandlerOptions {
+export interface CreateGraphQLHandlerOptions {
     debug?: boolean;
 }
 interface SchemaCache {

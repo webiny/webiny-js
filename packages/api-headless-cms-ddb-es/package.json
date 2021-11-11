@@ -31,6 +31,7 @@
     "@webiny/handler-aws": "^5.17.0",
     "@webiny/handler-db": "^5.17.0",
     "@webiny/plugins": "^5.17.0",
+    "@webiny/utils": "^5.17.0",
     "dataloader": "^2.0.0",
     "dynamodb-toolbox": "^0.3.4",
     "jsonpack": "^1.1.5",

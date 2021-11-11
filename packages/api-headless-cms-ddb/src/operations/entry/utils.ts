@@ -72,8 +72,8 @@ const transformValue = (value: any, transform: (value: any) => any): any => {
     return transform(value);
 };
 
-const createFilters = (args: CreateFiltersArgs): ItemFilter[] => {
-    const { where, plugins, fields } = args;
+const createFilters = (params: CreateFiltersArgs): ItemFilter[] => {
+    const { where, plugins, fields } = params;
     const filterPlugins = getMappedPlugins<ValueFilterPlugin>({
         plugins,
         type: ValueFilterPlugin.type,
@@ -156,8 +156,8 @@ const createFilters = (args: CreateFiltersArgs): ItemFilter[] => {
     });
 };
 
-export const filterItems = (args: FilterItemsArgs): CmsContentEntry[] => {
-    const { items, where, plugins, fields } = args;
+export const filterItems = (params: FilterItemsArgs): CmsContentEntry[] => {
+    const { items, where, plugins, fields } = params;
 
     const filters = createFilters({
         plugins,
@@ -221,8 +221,8 @@ interface SortEntryItemsArgs {
     fields: ModelFieldRecords;
 }
 
-export const sortEntryItems = (args: SortEntryItemsArgs): CmsContentEntry[] => {
-    const { items, sort = [], fields } = args;
+export const sortEntryItems = (params: SortEntryItemsArgs): CmsContentEntry[] => {
+    const { items, sort = [], fields } = params;
     if (items.length <= 1) {
         return items;
     } else if (sort.length === 0) {
@@ -270,12 +270,12 @@ export const sortEntryItems = (args: SortEntryItemsArgs): CmsContentEntry[] => {
     return newItems.reverse();
 };
 
-const getMappedPlugins = <T extends Plugin>(args: {
+const getMappedPlugins = <T extends Plugin>(params: {
     plugins: PluginsContainer;
     type: string;
     property: string;
 }): Record<string, T> => {
-    const { plugins: pluginsContainer, type, property } = args;
+    const { plugins: pluginsContainer, type, property } = params;
     const plugins = pluginsContainer.byType<T>(type);
     if (plugins.length === 0) {
         throw new WebinyError(`There are no plugins of type "${type}".`, "PLUGINS_ERROR", {

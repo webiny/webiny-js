@@ -127,7 +127,8 @@ const models: CmsContentModel[] = [
                     name: "renderer"
                 }
             }
-        ]
+        ],
+        tenant: "root"
     },
     // product
     {
@@ -605,7 +606,8 @@ const models: CmsContentModel[] = [
                     name: "renderer"
                 }
             }
-        ]
+        ],
+        tenant: "root"
     },
     // product review
     {
@@ -706,7 +708,8 @@ const models: CmsContentModel[] = [
                     name: "renderer"
                 }
             }
-        ]
+        ],
+        tenant: "root"
     },
     // author
     {
@@ -747,7 +750,8 @@ const models: CmsContentModel[] = [
                     name: "renderer"
                 }
             }
-        ]
+        ],
+        tenant: "root"
     },
     // fruit
     {
@@ -1192,7 +1196,8 @@ const models: CmsContentModel[] = [
                     name: "renderer"
                 }
             }
-        ]
+        ],
+        tenant: "root"
     },
     // bug
     {
@@ -1321,7 +1326,8 @@ const models: CmsContentModel[] = [
                     name: "renderer"
                 }
             }
-        ]
+        ],
+        tenant: "root"
     },
     {
         createdOn: new Date(),
@@ -1416,7 +1422,8 @@ const models: CmsContentModel[] = [
                     models: [{ modelId: "category" }]
                 }
             }
-        ]
+        ],
+        tenant: "root"
     }
 ];
 

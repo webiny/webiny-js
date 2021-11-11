@@ -1,11 +1,11 @@
 import {
     CmsContentModel,
     CmsContentModelField,
-    CmsContext,
     CmsModelFieldToGraphQLPlugin
 } from "@webiny/api-headless-cms/types";
 import WebinyError from "@webiny/error";
 import { CmsModelFieldToElasticsearchPlugin } from "~/types";
+import { PluginsContainer } from "@webiny/plugins";
 
 type ModelFieldPath = string | ((value: string) => string);
 export interface ModelField {
@@ -145,9 +145,12 @@ export const systemFields = {
 /*
  * Create an object with key fieldType and options for that field
  */
-export const createModelFields = (context: CmsContext, model: CmsContentModel): ModelFields => {
+export const createModelFields = (
+    plugins: PluginsContainer,
+    model: CmsContentModel
+): ModelFields => {
     // collect all unmappedType from elastic plugins
-    const unmappedTypes: UnmappedFieldTypes = context.plugins
+    const unmappedTypes: UnmappedFieldTypes = plugins
         .byType<CmsModelFieldToElasticsearchPlugin>("cms-model-field-to-elastic-search")
         .reduce((acc, plugin) => {
             if (!plugin.unmappedType) {
@@ -159,7 +162,7 @@ export const createModelFields = (context: CmsContext, model: CmsContentModel): 
     /**
      * collect all field types from the plugins
      */
-    const fieldTypePlugins: FieldTypePlugins = context.plugins
+    const fieldTypePlugins: FieldTypePlugins = plugins
         .byType<CmsModelFieldToGraphQLPlugin>("cms-model-field-to-graphql")
         .reduce((types, plugin) => {
             const { fieldType, isSearchable, isSortable } = plugin;

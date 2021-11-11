@@ -1,6 +1,5 @@
 import { useContentGqlHandler } from "./useContentGqlHandler";
-import { GQLHandlerCallableArgs } from "./useGqlHandler";
-import { Plugin } from "@webiny/plugins/types";
+import { GQLHandlerCallableParams } from "./useGqlHandler";
 
 const categoryFields = `
     id
@@ -168,10 +167,9 @@ const requestCategoryReviewMutation = /* GraphQL */ `
 `;
 
 export const useCategoryManageHandler = (
-    options: GQLHandlerCallableArgs,
-    plugins: Plugin[] = []
+    params: Omit<GQLHandlerCallableParams, "createHeadlessCmsApp">
 ) => {
-    const contentHandler = useContentGqlHandler(options, plugins);
+    const contentHandler = useContentGqlHandler(params);
 
     return {
         ...contentHandler,

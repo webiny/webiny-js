@@ -4,12 +4,22 @@ import {
     CmsContentModel,
     CmsContentModelField,
     CmsContext,
-    CmsModelFieldToGraphQLPlugin
+    CmsModelFieldToGraphQLPlugin,
+    HeadlessCmsStorageOperations as BaseHeadlessCmsStorageOperations
 } from "@webiny/api-headless-cms/types";
 import {
     ElasticsearchBoolQueryConfig,
     ElasticsearchQueryOperator
 } from "@webiny/api-elasticsearch/types";
+import { DynamoDBTypes, TableConstructor } from "dynamodb-toolbox/dist/classes/Table";
+import { DocumentClient } from "aws-sdk/clients/dynamodb";
+import {
+    EntityAttributeConfig,
+    EntityCompositeAttributes
+} from "dynamodb-toolbox/dist/classes/Entity";
+import { Client } from "@elastic/elasticsearch";
+import { Entity, Table } from "dynamodb-toolbox";
+import { PluginsContainer } from "@webiny/plugins";
 
 /**
  * Definition for arguments of the ElasticsearchQueryBuilderPlugin.apply method.
@@ -35,7 +45,6 @@ export interface ElasticsearchQueryBuilderArgsPlugin {
 interface ElasticsearchQueryPluginArgs {
     query: ElasticsearchBoolQueryConfig;
     model: CmsContentModel;
-    context: CmsContext;
 }
 
 /**
@@ -83,7 +92,6 @@ export interface ElasticsearchQueryBuilderPlugin extends Plugin {
 interface ElasticsearchQueryBuilderValueSearchPluginArgs {
     field: CmsContentModelField;
     value: any;
-    context: CmsContext;
 }
 
 /**
@@ -135,8 +143,8 @@ export interface CmsContentIndexEntry extends CmsContentEntry {
  * @category Elasticsearch
  * @category ContentEntry
  */
-interface CmsModelFieldToElasticsearchToArgs {
-    context: CmsContext;
+interface CmsModelFieldToElasticsearchToParams {
+    plugins: PluginsContainer;
     model: CmsContentModel;
     field: CmsContentModelField;
     value: any;
@@ -150,8 +158,8 @@ interface CmsModelFieldToElasticsearchToArgs {
  * @category Elasticsearch
  * @category ContentEntry
  */
-interface CmsModelFieldToElasticsearchFromArgs {
-    context: CmsContext;
+interface CmsModelFieldToElasticsearchFromParams {
+    plugins: PluginsContainer;
     model: CmsContentModel;
     field: CmsContentModelField;
     value: any;
@@ -214,7 +222,7 @@ export interface CmsModelFieldToElasticsearchPlugin extends Plugin {
      * }
      * ```
      */
-    toIndex?: (params: CmsModelFieldToElasticsearchToArgs) => ToIndexValue;
+    toIndex?: (params: CmsModelFieldToElasticsearchToParams) => ToIndexValue;
     /**
      * This is meant to revert a transformation done in the `toIndex` method.
      * You have access to "value" or a "rawValue", depending on what you returned from `toIndex`.
@@ -225,5 +233,45 @@ export interface CmsModelFieldToElasticsearchPlugin extends Plugin {
      * }
      * ```
      */
-    fromIndex?: (params: CmsModelFieldToElasticsearchFromArgs) => any;
+    fromIndex?: (params: CmsModelFieldToElasticsearchFromParams) => any;
+}
+
+export type AttributeDefinition = DynamoDBTypes | EntityAttributeConfig | EntityCompositeAttributes;
+
+export type Attributes = Record<string, AttributeDefinition>;
+
+export enum ENTITIES {
+    SYSTEM = "CmsSystem",
+    SETTINGS = "CmsSettings",
+    GROUPS = "CmsGroups",
+    MODELS = "CmsModels",
+    ENTRIES = "CmsEntries",
+    ENTRIES_ES = "CmsEntriesElasticsearch"
+}
+
+export interface TableModifier {
+    (table: TableConstructor): TableConstructor;
+}
+
+export interface StorageOperationsFactoryParams {
+    documentClient: DocumentClient;
+    elasticsearch: Client;
+    table?: TableModifier;
+    esTable?: TableModifier;
+    modelFieldToGraphQLPlugins: CmsModelFieldToGraphQLPlugin[];
+    attributes?: Record<ENTITIES, Attributes>;
+    plugins?: Plugin[] | Plugin[][];
+}
+
+export interface HeadlessCmsStorageOperations extends BaseHeadlessCmsStorageOperations {
+    getTable: () => Table;
+    getEsTable: () => Table;
+    getEntities: () => Record<
+        "system" | "settings" | "groups" | "models" | "entries" | "entriesEs",
+        Entity<any>
+    >;
+}
+
+export interface StorageOperationsFactory {
+    (params: StorageOperationsFactoryParams): HeadlessCmsStorageOperations;
 }

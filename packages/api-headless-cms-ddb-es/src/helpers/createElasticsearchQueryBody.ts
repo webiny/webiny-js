@@ -3,17 +3,12 @@ import { operatorPluginsList } from "./operatorPluginsList";
 import { transformValueForSearch } from "./transformValueForSearch";
 import { searchPluginsList } from "./searchPluginsList";
 import {
-    CmsContentEntryListArgs,
+    CmsContentEntryListParams,
     CmsContentEntryListSort,
     CmsContentEntryListWhere,
-    CmsContentModel,
-    CmsContext
+    CmsContentModel
 } from "@webiny/api-headless-cms/types";
 import { ElasticsearchQueryBuilderValueSearchPlugin, ElasticsearchQueryPlugin } from "~/types";
-import {
-    TYPE_ENTRY_LATEST,
-    TYPE_ENTRY_PUBLISHED
-} from "~/operations/entry/CmsContentEntryDynamoElastic";
 import {
     SearchBody as esSearchBody,
     Sort as esSort,
@@ -24,16 +19,18 @@ import { createSort } from "@webiny/api-elasticsearch/sort";
 import { createModelFields, ModelField, ModelFields } from "./fields";
 import { CmsEntryElasticsearchFieldPlugin } from "~/plugins/CmsEntryElasticsearchFieldPlugin";
 import { parseWhereKey } from "@webiny/api-elasticsearch/where";
+import { PluginsContainer } from "@webiny/plugins";
+import { createLatestType, createPublishedType } from "~/operations/entry";
 
 interface CreateElasticsearchParams {
-    context: CmsContext;
+    plugins: PluginsContainer;
     model: CmsContentModel;
-    args: CmsContentEntryListArgs;
+    args: CmsContentEntryListParams;
     parentPath?: string;
 }
 
 interface CreateElasticsearchSortParams {
-    context: CmsContext;
+    plugins: PluginsContainer;
     sort?: CmsContentEntryListSort;
     modelFields: ModelFields;
     parentPath?: string;
@@ -43,18 +40,18 @@ interface CreateElasticsearchSortParams {
 
 interface CreateElasticsearchQueryArgs {
     model: CmsContentModel;
-    context: CmsContext;
+    plugins: PluginsContainer;
     where: CmsContentEntryListWhere;
     modelFields: ModelFields;
     parentPath?: string;
     searchPlugins: Record<string, ElasticsearchQueryBuilderValueSearchPlugin>;
 }
 
-const specialFields = ["published", "latest"];
+const specialFields = ["published", "latest", "locale", "tenant"];
 const noKeywordFields = ["date", "number", "boolean"];
 
 const createElasticsearchSortParams = (args: CreateElasticsearchSortParams): esSort => {
-    const { context, sort, modelFields, parentPath, searchPlugins } = args;
+    const { sort, modelFields, parentPath, searchPlugins } = args;
 
     if (!sort || sort.length === 0) {
         return undefined;
@@ -72,7 +69,6 @@ const createElasticsearchSortParams = (args: CreateElasticsearchSortParams): esS
             searchable: modelField.isSearchable,
             field: modelField.field.fieldId,
             path: createFieldPath({
-                context,
                 parentPath,
                 modelField: modelField,
                 searchPlugin
@@ -94,7 +90,7 @@ const createElasticsearchSortParams = (args: CreateElasticsearchSortParams): esS
 const createInitialQueryValue = (
     args: CreateElasticsearchQueryArgs
 ): ElasticsearchBoolQueryConfig => {
-    const { where, context } = args;
+    const { where } = args;
 
     const query: ElasticsearchBoolQueryConfig = {
         must: [],
@@ -106,22 +102,31 @@ const createInitialQueryValue = (
     // When ES index is shared between tenants, we need to filter records by tenant ID
     const sharedIndex = process.env.ELASTICSEARCH_SHARED_INDEXES === "true";
     if (sharedIndex) {
-        const tenant = context.tenancy.getCurrentTenant();
-        query.must.push({ term: { "tenant.keyword": tenant.id } });
+        query.must.push({ term: { "tenant.keyword": where.tenant } });
     }
+    delete where["tenant"];
+
+    if (where.locale) {
+        query.must.push({
+            term: {
+                "locale.keyword": where.locale
+            }
+        });
+    }
+    delete where["locale"];
     /**
      * We must transform published and latest where args into something that is understandable by our Elasticsearch
      */
     if (where.published === true) {
         query.must.push({
             term: {
-                "__type.keyword": TYPE_ENTRY_PUBLISHED
+                "__type.keyword": createPublishedType()
             }
         });
     } else if (where.latest === true) {
         query.must.push({
             term: {
-                "__type.keyword": TYPE_ENTRY_LATEST
+                "__type.keyword": createLatestType()
             }
         });
     }
@@ -150,20 +155,17 @@ const createInitialQueryValue = (
 interface CreateFieldPathParams {
     modelField: ModelField;
     searchPlugin?: ElasticsearchQueryBuilderValueSearchPlugin;
-    context: CmsContext;
     parentPath?: string;
 }
 const createFieldPath = ({
     modelField,
     searchPlugin,
-    context,
     parentPath
 }: CreateFieldPathParams): string => {
     let path;
     if (searchPlugin && typeof searchPlugin.createPath === "function") {
         path = searchPlugin.createPath({
-            field: modelField.field,
-            context
+            field: modelField.field
         });
     } else if (typeof modelField.path === "function") {
         path = modelField.path(modelField.field.fieldId);
@@ -202,10 +204,17 @@ const hasKeyword = (modelField: ModelField): boolean => {
  * Iterate through where keys and apply plugins where necessary
  */
 const execElasticsearchBuildQueryPlugins = (
-    args: CreateElasticsearchQueryArgs
+    params: CreateElasticsearchQueryArgs
 ): ElasticsearchBoolQueryConfig => {
-    const { where, modelFields, parentPath, context, searchPlugins } = args;
-    const query = createInitialQueryValue(args);
+    const { where: initialWhere, modelFields, parentPath, plugins, searchPlugins } = params;
+
+    const where: CmsContentEntryListWhere = {
+        ...initialWhere
+    };
+    const query = createInitialQueryValue({
+        ...params,
+        where
+    });
 
     /**
      * Always remove special fields, as these do not exist in Elasticsearch.
@@ -214,11 +223,11 @@ const execElasticsearchBuildQueryPlugins = (
         delete where[sf];
     }
 
-    if (!where || Object.keys(where).length === 0) {
+    if (Object.keys(where).length === 0) {
         return query;
     }
 
-    const operatorPlugins = operatorPluginsList(context);
+    const operatorPlugins = operatorPluginsList(plugins);
 
     for (const key in where) {
         if (where.hasOwnProperty(key) === false) {
@@ -251,12 +260,10 @@ const execElasticsearchBuildQueryPlugins = (
         const value = transformValueForSearch({
             plugins: searchPlugins,
             field: cmsField,
-            value: where[key],
-            context
+            value: where[key]
         });
 
         const fieldPath = createFieldPath({
-            context,
             searchPlugin: fieldSearchPlugin,
             modelField,
             parentPath: parentPath
@@ -274,25 +281,24 @@ const execElasticsearchBuildQueryPlugins = (
 };
 
 export const createElasticsearchQueryBody = (params: CreateElasticsearchParams): esSearchBody => {
-    const { context, model, args, parentPath = null } = params;
+    const { plugins, model, args, parentPath = null } = params;
     const { where, after, limit, sort } = args;
 
-    const modelFields = createModelFields(context, model);
-    const searchPlugins = searchPluginsList(context);
+    const modelFields = createModelFields(plugins, model);
+    const searchPlugins = searchPluginsList(plugins);
 
     const query = execElasticsearchBuildQueryPlugins({
         model,
-        context,
+        plugins,
         where,
         modelFields,
         parentPath,
         searchPlugins
     });
 
-    const queryPlugins =
-        context.plugins.byType<ElasticsearchQueryPlugin>("cms-elasticsearch-query");
+    const queryPlugins = plugins.byType<ElasticsearchQueryPlugin>("cms-elasticsearch-query");
     for (const pl of queryPlugins) {
-        pl.modify({ query, model, context });
+        pl.modify({ query, model });
     }
 
     return {
@@ -305,7 +311,7 @@ export const createElasticsearchQueryBody = (params: CreateElasticsearchParams):
             }
         },
         sort: createElasticsearchSortParams({
-            context,
+            plugins,
             sort,
             modelFields,
             parentPath,

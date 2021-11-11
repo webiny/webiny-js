@@ -4,11 +4,11 @@ import {
     CmsContentModelFieldValidation,
     CmsContext,
     CmsModelFieldValidatorPlugin,
-    CmsModelFieldValidatorValidateArgs
+    CmsModelFieldValidatorValidateParams
 } from "~/types";
 import WebinyError from "@webiny/error";
 
-type PluginValidationCallable = (params: CmsModelFieldValidatorValidateArgs) => Promise<boolean>;
+type PluginValidationCallable = (params: CmsModelFieldValidatorValidateParams) => Promise<boolean>;
 type PluginValidationList = Record<string, PluginValidationCallable[]>;
 type InputData = Record<string, any>;
 

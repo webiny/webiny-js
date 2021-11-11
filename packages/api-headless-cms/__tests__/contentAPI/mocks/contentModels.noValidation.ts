@@ -1,6 +1,6 @@
 import shortId from "shortid";
 import contentModelGroup from "./contentModelGroup";
-import { CmsContentModel } from "../../../src/types";
+import { CmsContentModel } from "~/types";
 
 const ids = {
     field11: shortId.generate(),
@@ -58,7 +58,9 @@ const models: CmsContentModel[] = [
                     name: "renderer"
                 }
             }
-        ]
+        ],
+        locale: "en-US",
+        tenant: "root"
     }
 ];
 
