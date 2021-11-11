@@ -30,7 +30,11 @@ import { Plugin, PluginCollection } from "@webiny/plugins/types";
 import i18nDynamoDbStorageOperations from "@webiny/api-i18n-ddb";
 import { createTenancyAndSecurity } from "./tenancySecurity";
 import { getStorageOperations } from "./storageOperations";
+import { HeadlessCmsStorageOperations } from "~/types";
 
+export interface CreateHeadlessCmsAppParams {
+    storageOperations: HeadlessCmsStorageOperations;
+}
 export interface GQLHandlerCallableParams {
     setupTenancyAndSecurityGraphQL?: boolean;
     permissions?: PermissionsArg[];
@@ -38,7 +42,7 @@ export interface GQLHandlerCallableParams {
     plugins?: Plugin | Plugin[] | Plugin[][] | PluginCollection;
     storageOperationPlugins?: Plugin | Plugin[] | Plugin[][] | PluginCollection;
     path: string;
-    createHeadlessCmsApp: (params: any) => any[];
+    createHeadlessCmsApp: (params: CreateHeadlessCmsAppParams) => any[];
 }
 
 export const useGqlHandler = (params: GQLHandlerCallableParams) => {

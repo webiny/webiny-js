@@ -27,7 +27,7 @@
     "@webiny/error": "^5.17.0",
     "@webiny/handler-db": "^5.17.0",
     "@webiny/utils": "^5.17.0",
-    "aws-sdk": "2.868.0",
+    "aws-sdk": "^2.971.0",
     "dataloader": "^2.0.0",
     "dot-prop": "^5.3.0",
     "dynamodb-toolbox": "^0.3.3",

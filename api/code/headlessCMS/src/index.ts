@@ -6,7 +6,10 @@ import i18nContentPlugins from "@webiny/api-i18n-content/plugins";
 import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import dynamoDbPlugins from "@webiny/db-dynamodb/plugins";
-import { createContentHeadlessCms } from "@webiny/api-headless-cms/content";
+import {
+    createContentHeadlessCmsContext,
+    createContentHeadlessCmsGraphQL
+} from "@webiny/api-headless-cms";
 import { createStorageOperations as createHeadlessCmsStorageOperations } from "@webiny/api-headless-cms-ddb-es";
 import headlessCmsModelFieldToGraphQLPlugins from "@webiny/api-headless-cms/content/plugins/graphqlFields";
 import securityPlugins from "./security";
@@ -40,9 +43,10 @@ export const handler = createHandler({
         i18nPlugins(),
         i18nDynamoDbStorageOperations(),
         i18nContentPlugins(),
-        createContentHeadlessCms({
-            debug,
-            setupGraphQL: true,
+        createContentHeadlessCmsGraphQL({
+            debug
+        }),
+        createContentHeadlessCmsContext({
             storageOperations: createHeadlessCmsStorageOperations({
                 documentClient,
                 elasticsearch: elasticsearchClient,

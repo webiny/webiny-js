@@ -1,5 +1,5 @@
 import { GQLHandlerCallableParams, useGqlHandler } from "./useGqlHandler";
-import { createContentHeadlessCms } from "~/content";
+import { createContentHeadlessCmsContext, createContentHeadlessCmsGraphQL } from "~/index";
 
 export const useContentGqlHandler = (
     params: Omit<GQLHandlerCallableParams, "createHeadlessCmsApp">
@@ -7,6 +7,7 @@ export const useContentGqlHandler = (
     return useGqlHandler({
         ...params,
         setupTenancyAndSecurityGraphQL: false,
-        createHeadlessCmsApp: createContentHeadlessCms
+        plugins: (params.plugins || []).concat([createContentHeadlessCmsGraphQL()]),
+        createHeadlessCmsApp: createContentHeadlessCmsContext
     });
 };

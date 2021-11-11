@@ -10,7 +10,7 @@ import processRequestBody from "@webiny/handler-graphql/processRequestBody";
 import buildSchemaPlugins from "./plugins/buildSchemaPlugins";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins";
 
-interface CreateGraphQLHandlerOptions {
+export interface CreateGraphQLHandlerOptions {
     debug?: boolean;
 }
 interface SchemaCache {
