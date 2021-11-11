@@ -5,7 +5,7 @@ type ResolveUpdate = ResolverFactory<any, { revision: string; data: Record<strin
 
 export const resolveUpdate: ResolveUpdate =
     ({ model }) =>
-    async (root, args, { cms }) => {
+    async (_, args, { cms }) => {
         try {
             const entry = await cms.entries.updateEntry(model, args.revision, args.data);
 

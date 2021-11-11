@@ -5,7 +5,7 @@ type ResolveCreate = ResolverFactory<any, { data: Record<string, any> }>;
 
 export const resolveCreate: ResolveCreate =
     ({ model }) =>
-    async (root, args, { cms }) => {
+    async (_, args, { cms }) => {
         try {
             const entry = await cms.entries.createEntry(model, args.data);
 

@@ -41,7 +41,7 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
             }
         },
         CmsContentModel: {
-            plugin: async (model, args, context) => {
+            plugin: async (model, _, context) => {
                 const modelPlugin: ContentModelPlugin = context.plugins
                     .byType<ContentModelPlugin>(ContentModelPlugin.type)
                     .find(

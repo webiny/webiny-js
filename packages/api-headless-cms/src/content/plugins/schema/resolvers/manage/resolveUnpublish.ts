@@ -3,7 +3,7 @@ import { CmsContentEntryResolverFactory as ResolverFactory } from "~/types";
 
 export const resolveUnpublish: ResolverFactory =
     ({ model }) =>
-    async (root, args, context) => {
+    async (_, args, context) => {
         try {
             const entry = await context.cms.entries.unpublishEntry(model, args.revision);
             return new Response(entry);

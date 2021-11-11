@@ -26,12 +26,12 @@ export default new GraphQLSchemaPlugin<Context>({
     `,
     resolvers: {
         AdminUsersQuery: {
-            version: async (root, args, context) => {
+            version: async (_, __, context) => {
                 return await context.adminUsers.getVersion();
             }
         },
         AdminUsersMutation: {
-            install: async (root, args, context) => {
+            install: async (_, args, context) => {
                 try {
                     context.security.disableAuthorization();
                     await context.adminUsers.install(args.data);

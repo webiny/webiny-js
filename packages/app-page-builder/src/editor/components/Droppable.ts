@@ -57,7 +57,7 @@ const Droppable = (props: DroppableProps) => {
             isOver: monitor.isOver() && monitor.isOver({ shallow: true }),
             item: monitor.getItem()
         }),
-        drop(item, monitor) {
+        drop(_, monitor) {
             if (typeof onDrop === "function") {
                 onDrop(monitor.getItem());
             }

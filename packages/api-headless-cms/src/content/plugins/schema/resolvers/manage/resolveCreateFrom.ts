@@ -5,7 +5,7 @@ type ResolveCreateFrom = ResolverFactory<any, { revision: string; data: Record<s
 
 export const resolveCreateFrom: ResolveCreateFrom =
     ({ model }) =>
-    async (root, args, { cms }) => {
+    async (_, args, { cms }) => {
         try {
             const newRevision = await cms.entries.createEntryRevisionFrom(
                 model,

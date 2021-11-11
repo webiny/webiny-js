@@ -26,12 +26,12 @@ export default new GraphQLSchemaPlugin<Context>({
     `,
     resolvers: {
         SecurityIdentity: {
-            permissions(identity, args, context) {
+            permissions(_, __, context) {
                 return context.security.getPermissions();
             }
         },
         SecurityMutation: {
-            login: async (root, args, context) => {
+            login: async (_, __, context) => {
                 const identity = context.security.getIdentity();
                 if (identity) {
                     try {

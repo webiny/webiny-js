@@ -3,7 +3,7 @@ import { CmsContentEntryResolverFactory as ResolverFactory, CmsContentEntry } fr
 
 export const resolveGetByIds: ResolverFactory =
     ({ model }) =>
-    async (root, args, { cms }) => {
+    async (_, args, { cms }) => {
         try {
             const response: CmsContentEntry[] = await cms.entries.getEntriesByIds(
                 model,

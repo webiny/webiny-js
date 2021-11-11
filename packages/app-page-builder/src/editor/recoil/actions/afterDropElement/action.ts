@@ -15,7 +15,7 @@ const getElementTypePlugin = (type: string): PbEditorPageElementPlugin => {
 
 export const afterDropElementAction: EventActionCallable<AfterDropElementActionArgsType> = (
     state,
-    meta,
+    _,
     args
 ) => {
     const { element } = args;

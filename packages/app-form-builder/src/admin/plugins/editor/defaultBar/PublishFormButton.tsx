@@ -42,7 +42,7 @@ const PublishFormButton = () => {
                                 variables: {
                                     revision: data.id
                                 },
-                                update(cache, { data }) {
+                                update(_, { data }) {
                                     const { data: revision, error } =
                                         data.formBuilder.publishRevision || {};
 

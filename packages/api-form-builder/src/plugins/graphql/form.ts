@@ -311,10 +311,10 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
         `,
         resolvers: {
             FbForm: {
-                overallStats: (form, args, { formBuilder }) => {
+                overallStats: (form, _, { formBuilder }) => {
                     return formBuilder.getFormStats(form.id);
                 },
-                settings: async (form, args, { formBuilder }) => {
+                settings: async (form, _, { formBuilder }) => {
                     const settings = await formBuilder.getSettings({ auth: false });
 
                     return {
@@ -345,7 +345,7 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                         return new ErrorResponse(e);
                     }
                 },
-                listForms: async (_, args, { formBuilder }) => {
+                listForms: async (_, __, { formBuilder }) => {
                     try {
                         const forms = await formBuilder.listForms();
 
@@ -355,7 +355,7 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                     }
                 },
                 getPublishedForm: async (
-                    root,
+                    _,
                     args: { revision: string; parent: string },
                     { formBuilder }
                 ) => {
@@ -496,7 +496,7 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                         return new ErrorResponse(e);
                     }
                 },
-                createFormSubmission: async (root: any, args, { formBuilder }) => {
+                createFormSubmission: async (_: any, args, { formBuilder }) => {
                     const { revision, data, reCaptchaResponseToken, meta = {} } = args;
 
                     try {
@@ -512,7 +512,7 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                         return new ErrorResponse(e);
                     }
                 },
-                exportFormSubmissions: async (root: any, args, { formBuilder, fileManager }) => {
+                exportFormSubmissions: async (_: any, args, { formBuilder, fileManager }) => {
                     const { form } = args;
 
                     try {

@@ -17,7 +17,7 @@ export const cloneElement = async (state, element: PbEditorElement): Promise<PbE
 
 export const cloneElementAction: EventActionCallable<CloneElementActionArgsType> = async (
     state,
-    meta,
+    _,
     { element }
 ) => {
     const parent = await state.getElementById(element.parent);
