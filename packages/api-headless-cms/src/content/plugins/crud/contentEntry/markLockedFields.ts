@@ -55,7 +55,7 @@ export const markLockedFields = async ({ model, context }: Args): Promise<void> 
     const newLockedFields = existingLockedFields.concat(lockedFields);
 
     try {
-        await context.cms.models.updateModel({
+        await context.cms.models.updateModelDirect({
             original: model,
             model: {
                 ...model,

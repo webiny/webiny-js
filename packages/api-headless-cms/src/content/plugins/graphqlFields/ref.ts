@@ -68,7 +68,7 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
                     });
                     const getters = entriesByModel.map(async ({ modelId, entryId }) => {
                         // Get model manager, to get access to CRUD methods
-                        const model = await cms.getModel(modelId);
+                        const model = await cms.getModelManager(modelId);
 
                         let entries: CmsContentEntry[];
                         // `read` API works with `published` data
@@ -89,7 +89,7 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
                 }
 
                 // Get model manager, to get access to CRUD methods
-                const model = await cms.getModel(value.modelId);
+                const model = await cms.getModelManager(value.modelId);
 
                 let revisions: CmsContentEntry[];
                 // `read` API works with `published` data

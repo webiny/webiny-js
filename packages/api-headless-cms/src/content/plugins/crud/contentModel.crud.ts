@@ -5,12 +5,12 @@ import {
     CmsContentModelManager,
     CmsContentModelPermission,
     HeadlessCmsStorageOperations,
-    BeforeCreateModelTopic,
-    AfterCreateModelTopic,
-    BeforeUpdateModelTopic,
-    AfterUpdateModelTopic,
-    BeforeDeleteModelTopic,
-    AfterDeleteModelTopic
+    BeforeModelCreateTopic,
+    AfterModelCreateTopic,
+    BeforeModelUpdateTopic,
+    AfterModelUpdateTopic,
+    BeforeModelDeleteTopic,
+    AfterModelDeleteTopic
 } from "~/types";
 import * as utils from "~/utils";
 import DataLoader from "dataloader";
@@ -176,14 +176,14 @@ export const createModelsCrud = (params: Params): CmsContentModelContext => {
         return await updateManager(context, model);
     };
 
-    context.cms.getModel = getManager;
+    context.cms.getModelManager = getManager;
 
-    const onBeforeCreate = createTopic<BeforeCreateModelTopic>();
-    const onAfterCreate = createTopic<AfterCreateModelTopic>();
-    const onBeforeUpdate = createTopic<BeforeUpdateModelTopic>();
-    const onAfterUpdate = createTopic<AfterUpdateModelTopic>();
-    const onBeforeDelete = createTopic<BeforeDeleteModelTopic>();
-    const onAfterDelete = createTopic<AfterDeleteModelTopic>();
+    const onBeforeCreate = createTopic<BeforeModelCreateTopic>();
+    const onAfterCreate = createTopic<AfterModelCreateTopic>();
+    const onBeforeUpdate = createTopic<BeforeModelUpdateTopic>();
+    const onAfterUpdate = createTopic<AfterModelUpdateTopic>();
+    const onBeforeDelete = createTopic<BeforeModelDeleteTopic>();
+    const onAfterDelete = createTopic<AfterModelDeleteTopic>();
     /**
      * We need to assign some default behaviors.
      */
@@ -216,20 +216,20 @@ export const createModelsCrud = (params: Params): CmsContentModelContext => {
     });
 
     return {
-        onBeforeCreate,
-        onAfterCreate,
-        onBeforeUpdate,
-        onAfterUpdate,
-        onBeforeDelete,
-        onAfterDelete,
+        onBeforeModelCreate: onBeforeCreate,
+        onAfterModelCreate: onAfterCreate,
+        onBeforeModelUpdate: onBeforeUpdate,
+        onAfterModelUpdate: onAfterUpdate,
+        onBeforeModelDelete: onBeforeDelete,
+        onAfterModelDelete: onAfterDelete,
         operations: storageOperations.models,
-        noAuth: () => {
+        noAuthModel: () => {
             return {
                 get: modelsGet,
                 list: modelsList
             };
         },
-        silentAuth: () => {
+        silentAuthModel: () => {
             return {
                 list: async () => {
                     try {
@@ -243,9 +243,9 @@ export const createModelsCrud = (params: Params): CmsContentModelContext => {
                 }
             };
         },
-        get,
-        list: listOperations,
-        async create(inputData) {
+        getModel: get,
+        listModels: listOperations,
+        async createModel(inputData) {
             await checkModelPermissions("w");
 
             const createdData = new CreateContentModelModel().populate(inputData);
@@ -305,7 +305,7 @@ export const createModelsCrud = (params: Params): CmsContentModelContext => {
          * Method does not check for permissions or ownership.
          * @internal
          */
-        async updateModel(params) {
+        async updateModelDirect(params) {
             const { model: initialModel, original } = params;
 
             const model: CmsContentModel = {
@@ -339,7 +339,7 @@ export const createModelsCrud = (params: Params): CmsContentModelContext => {
 
             return resultModel;
         },
-        async update(modelId, inputData) {
+        async updateModel(modelId, inputData) {
             await checkModelPermissions("w");
 
             // Get a model record; this will also perform ownership validation.
@@ -396,7 +396,7 @@ export const createModelsCrud = (params: Params): CmsContentModelContext => {
 
             return resultModel;
         },
-        async delete(modelId) {
+        async deleteModel(modelId) {
             await checkModelPermissions("d");
 
             const model = await get(modelId);

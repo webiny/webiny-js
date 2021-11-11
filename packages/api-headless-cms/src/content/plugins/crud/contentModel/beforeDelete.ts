@@ -1,11 +1,11 @@
 import { Topic } from "@webiny/pubsub/types";
-import { BeforeDeleteModelTopic, HeadlessCmsStorageOperations } from "~/types";
+import { BeforeModelDeleteTopic, HeadlessCmsStorageOperations } from "~/types";
 import { PluginsContainer } from "@webiny/plugins";
 import WebinyError from "@webiny/error";
 import { ContentModelPlugin } from "~/content/plugins/ContentModelPlugin";
 
 export interface Params {
-    onBeforeDelete: Topic<BeforeDeleteModelTopic>;
+    onBeforeDelete: Topic<BeforeModelDeleteTopic>;
     storageOperations: HeadlessCmsStorageOperations;
     plugins: PluginsContainer;
 }

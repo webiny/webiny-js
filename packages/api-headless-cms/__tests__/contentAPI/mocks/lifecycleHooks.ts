@@ -31,22 +31,22 @@ export const assignModelEvents = () => {
         if (!context.cms) {
             throw new Error("Missing cms on context.");
         }
-        context.cms.models.onBeforeCreate.subscribe(async () => {
+        context.cms.models.onBeforeModelCreate.subscribe(async () => {
             pubSubTracker.track("contentModel:beforeCreate");
         });
-        context.cms.models.onAfterCreate.subscribe(async () => {
+        context.cms.models.onAfterModelCreate.subscribe(async () => {
             pubSubTracker.track("contentModel:afterCreate");
         });
-        context.cms.models.onBeforeUpdate.subscribe(async () => {
+        context.cms.models.onBeforeModelUpdate.subscribe(async () => {
             pubSubTracker.track("contentModel:beforeUpdate");
         });
-        context.cms.models.onAfterUpdate.subscribe(async () => {
+        context.cms.models.onAfterModelUpdate.subscribe(async () => {
             pubSubTracker.track("contentModel:afterUpdate");
         });
-        context.cms.models.onBeforeDelete.subscribe(async () => {
+        context.cms.models.onBeforeModelDelete.subscribe(async () => {
             pubSubTracker.track("contentModel:beforeDelete");
         });
-        context.cms.models.onAfterDelete.subscribe(async () => {
+        context.cms.models.onAfterModelDelete.subscribe(async () => {
             pubSubTracker.track("contentModel:afterDelete");
         });
     });

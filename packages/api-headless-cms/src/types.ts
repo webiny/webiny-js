@@ -1224,28 +1224,28 @@ export interface CmsContentModelManager {
     delete: (id: string) => Promise<void>;
 }
 
-export interface BeforeCreateModelTopic {
+export interface BeforeModelCreateTopic {
     input: Partial<CmsContentModel>;
     model: CmsContentModel;
 }
-export interface AfterCreateModelTopic {
+export interface AfterModelCreateTopic {
     input: Partial<CmsContentModel>;
     model: CmsContentModel;
 }
-export interface BeforeUpdateModelTopic {
-    input: Partial<CmsContentModel>;
-    original: CmsContentModel;
-    model: CmsContentModel;
-}
-export interface AfterUpdateModelTopic {
+export interface BeforeModelUpdateTopic {
     input: Partial<CmsContentModel>;
     original: CmsContentModel;
     model: CmsContentModel;
 }
-export interface BeforeDeleteModelTopic {
+export interface AfterModelUpdateTopic {
+    input: Partial<CmsContentModel>;
+    original: CmsContentModel;
     model: CmsContentModel;
 }
-export interface AfterDeleteModelTopic {
+export interface BeforeModelDeleteTopic {
+    model: CmsContentModel;
+}
+export interface AfterModelDeleteTopic {
     model: CmsContentModel;
 }
 
@@ -1268,7 +1268,7 @@ export interface CmsContentModelContext {
     /**
      * A function defining usage of a method without authenticating the user.
      */
-    noAuth: () => {
+    noAuthModel: () => {
         /**
          * Get a single content model.
          */
@@ -1281,7 +1281,7 @@ export interface CmsContentModelContext {
     /**
      * A function defining usage of a method with authenticating the user but not throwing an error.
      */
-    silentAuth: () => {
+    silentAuthModel: () => {
         /**
          * Get all content models.
          */
@@ -1290,15 +1290,15 @@ export interface CmsContentModelContext {
     /**
      * Get a single content model.
      */
-    get: (modelId: string) => Promise<CmsContentModel | null>;
+    getModel: (modelId: string) => Promise<CmsContentModel | null>;
     /**
      * Get all content models.
      */
-    list: () => Promise<CmsContentModel[]>;
+    listModels: () => Promise<CmsContentModel[]>;
     /**
      * Create a content model.
      */
-    create: (data: CmsContentModelCreateInput) => Promise<CmsContentModel>;
+    createModel: (data: CmsContentModelCreateInput) => Promise<CmsContentModel>;
     /**
      * Update content model without data validation. Used internally.
      *
@@ -1307,15 +1307,15 @@ export interface CmsContentModelContext {
      *
      * @hidden
      */
-    updateModel: (params: CmsContentModelUpdateInternalParams) => Promise<CmsContentModel>;
+    updateModelDirect: (params: CmsContentModelUpdateInternalParams) => Promise<CmsContentModel>;
     /**
      * Update content model.
      */
-    update: (modelId: string, data: CmsContentModelUpdateInput) => Promise<CmsContentModel>;
+    updateModel: (modelId: string, data: CmsContentModelUpdateInput) => Promise<CmsContentModel>;
     /**
      * Delete content model. Should not allow deletion if there are entries connected to it.
      */
-    delete: (modelId: string) => Promise<void>;
+    deleteModel: (modelId: string) => Promise<void>;
     /**
      * Get a instance of CmsContentModelManager for given content modelId.
      *
@@ -1330,12 +1330,12 @@ export interface CmsContentModelContext {
     /**
      * Events.
      */
-    onBeforeCreate: Topic<BeforeCreateModelTopic>;
-    onAfterCreate: Topic<AfterCreateModelTopic>;
-    onBeforeUpdate: Topic<BeforeUpdateModelTopic>;
-    onAfterUpdate: Topic<AfterUpdateModelTopic>;
-    onBeforeDelete: Topic<BeforeDeleteModelTopic>;
-    onAfterDelete: Topic<AfterDeleteModelTopic>;
+    onBeforeModelCreate: Topic<BeforeModelCreateTopic>;
+    onAfterModelCreate: Topic<AfterModelCreateTopic>;
+    onBeforeModelUpdate: Topic<BeforeModelUpdateTopic>;
+    onAfterModelUpdate: Topic<AfterModelUpdateTopic>;
+    onBeforeModelDelete: Topic<BeforeModelDeleteTopic>;
+    onAfterModelDelete: Topic<AfterModelDeleteTopic>;
 }
 
 /**
@@ -1714,7 +1714,7 @@ interface CmsCrudContextObject {
     /**
      * Fetch the content entry manager. It calls content entry methods internally, with given model as the target.
      */
-    getModel: (modelId: string) => Promise<CmsContentModelManager>;
+    getModelManager: (modelId: string) => Promise<CmsContentModelManager>;
     /**
      * Content entry CRUD methods.
      */

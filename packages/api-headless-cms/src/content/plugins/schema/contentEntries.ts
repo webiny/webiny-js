@@ -57,13 +57,13 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
             Query: {
                 async searchContentEntries(_, args, context) {
                     const { modelIds, query, limit = 10 } = args;
-                    const models = await context.cms.models.list();
+                    const models = await context.cms.models.listModels();
 
                     const getters = models
                         .filter(model => modelIds.includes(model.modelId))
                         .map(async model => {
                             const latest = query === "__latest__";
-                            const modelManager = await context.cms.getModel(model.modelId);
+                            const modelManager = await context.cms.getModelManager(model.modelId);
                             const [items] = await modelManager.listLatest({
                                 limit,
                                 where: latest
@@ -96,7 +96,7 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
                 },
                 async getContentEntry(_, args, context) {
                     const { modelId, entryId } = args.entry;
-                    const models = await context.cms.models.list();
+                    const models = await context.cms.models.listModels();
                     const model = models.find(m => m.modelId === modelId);
 
                     if (!model) {
@@ -116,7 +116,7 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
                     });
                 },
                 async getContentEntries(_, args, context) {
-                    const models = await context.cms.models.list();
+                    const models = await context.cms.models.listModels();
                     const entriesByModel = args.entries.map((ref, index) => {
                         return {
                             entryId: ref.entryId,
