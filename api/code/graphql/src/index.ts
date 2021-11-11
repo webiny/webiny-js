@@ -83,7 +83,6 @@ export const handler = createHandler({
                 elasticsearch: elasticsearchClient
             })
         }),
-        createAdminHeadlessCmsGraphQL(),
         createAdminHeadlessCmsContext({
             storageOperations: createHeadlessCmsStorageOperations({
                 documentClient,
@@ -92,6 +91,7 @@ export const handler = createHandler({
                 plugins: [elasticsearchDataGzipCompression()]
             })
         }),
+        createAdminHeadlessCmsGraphQL(),
         scaffoldsPlugins(),
         elasticsearchDataGzipCompression()
     ],

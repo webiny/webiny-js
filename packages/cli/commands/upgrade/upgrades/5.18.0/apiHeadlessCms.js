@@ -34,8 +34,8 @@ const upgradeGraphQL = (project, context) => {
 
     insertImportToSourceFile({
         source,
-        name: ["createAdminHeadlessCms"],
-        moduleSpecifier: "@webiny/api-headless-cms/plugins",
+        name: ["createAdminHeadlessCmsContext", "createAdminHeadlessCmsGraphQL"],
+        moduleSpecifier: "@webiny/api-headless-cms",
         after: "@webiny/api-form-builder-so-ddb-es"
     });
     insertImportToSourceFile({
@@ -44,7 +44,7 @@ const upgradeGraphQL = (project, context) => {
             createStorageOperations: "createHeadlessCmsStorageOperations"
         },
         moduleSpecifier: "@webiny/api-headless-cms-ddb-es",
-        after: "@webiny/api-headless-cms/plugins"
+        after: "@webiny/api-headless-cms"
     });
 
     insertImportToSourceFile({
@@ -64,8 +64,7 @@ const upgradeGraphQL = (project, context) => {
     addPluginToCreateHandler({
         source,
         handler: "handler",
-        value: `createAdminHeadlessCms({
-            setupGraphQL: true,
+        value: `createAdminHeadlessCmsContext({
             storageOperations: createHeadlessCmsStorageOperations({
                 documentClient,
                 elasticsearch: elasticsearchClient,
@@ -74,6 +73,13 @@ const upgradeGraphQL = (project, context) => {
             })
         })`,
         after: new RegExp("createFormBuilder")
+    });
+
+    addPluginToCreateHandler({
+        source,
+        handler: "handler",
+        value: `createAdminHeadlessCmsGraphQL()`,
+        after: new RegExp("createAdminHeadlessCmsContext")
     });
 };
 /**
@@ -100,8 +106,8 @@ const upgradeHeadlessCMS = (project, context) => {
 
     insertImportToSourceFile({
         source,
-        name: ["createContentHeadlessCms"],
-        moduleSpecifier: "@webiny/api-headless-cms/content",
+        name: ["createContentHeadlessCmsContext", "createContentHeadlessCmsGraphQL"],
+        moduleSpecifier: "@webiny/api-headless-cms",
         after: "@webiny/handler-logs"
     });
     insertImportToSourceFile({
@@ -110,7 +116,7 @@ const upgradeHeadlessCMS = (project, context) => {
             createStorageOperations: "createHeadlessCmsStorageOperations"
         },
         moduleSpecifier: "@webiny/api-headless-cms-ddb-es",
-        after: "@webiny/api-headless-cms/content"
+        after: "@webiny/api-headless-cms"
     });
     insertImportToSourceFile({
         source,
@@ -134,8 +140,7 @@ const upgradeHeadlessCMS = (project, context) => {
     addPluginToCreateHandler({
         source,
         handler: "handler",
-        value: `createContentHeadlessCms({
-            setupGraphQL: true,
+        value: `createContentHeadlessCmsContext({
             storageOperations: createHeadlessCmsStorageOperations({
                 documentClient,
                 elasticsearch: elasticsearchClient,
@@ -145,6 +150,13 @@ const upgradeHeadlessCMS = (project, context) => {
         })`,
         after: new RegExp("createFormBuilder")
     });
+    addPluginToCreateHandler({
+        source,
+        handler: "handler",
+        value: `createContentHeadlessCmsGraphQL({debug})`,
+        after: new RegExp("createContentHeadlessCmsContext")
+    });
+
     addPluginToCreateHandler({
         source,
         handler: "handler",
