@@ -23,7 +23,7 @@ export const createSettingsCrud = (params: Params): CmsSettingsContext => {
     };
 
     return {
-        noAuth: () => {
+        noAuthSettings: () => {
             return {
                 get: async () => {
                     return await storageOperations.settings.get({
@@ -33,7 +33,7 @@ export const createSettingsCrud = (params: Params): CmsSettingsContext => {
                 }
             };
         },
-        get: async (): Promise<CmsSettings | null> => {
+        getSettings: async (): Promise<CmsSettings | null> => {
             await checkPermissions();
             return await storageOperations.settings.get({
                 tenant: getTenant().id,

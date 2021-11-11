@@ -690,7 +690,7 @@ export interface CmsSettingsContext {
     /**
      * A function defining usage of a method without authenticating the user.
      */
-    noAuth: () => {
+    noAuthSettings: () => {
         /**
          * Gets settings model from the database.
          */
@@ -699,7 +699,7 @@ export interface CmsSettingsContext {
     /**
      * Gets settings model from the database.
      */
-    get: () => Promise<CmsSettings | null>;
+    getSettings: () => Promise<CmsSettings | null>;
     /**
      * Updates settings model with a new date.
      */
