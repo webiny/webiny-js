@@ -1,6 +1,6 @@
 import { Plugin } from "@webiny/plugins/types";
 import {
-    CmsContentModelField,
+    CmsModelField,
     CmsModelFieldToGraphQLPlugin,
     HeadlessCmsStorageOperations as BaseHeadlessCmsStorageOperations
 } from "@webiny/api-headless-cms/types";
@@ -16,7 +16,7 @@ interface CmsFieldFilterValueTransformParams {
     /**
      * A field which value we are transforming.
      */
-    field: CmsContentModelField;
+    field: CmsModelField;
     value: any;
 }
 
@@ -39,7 +39,7 @@ interface CmsFieldFilterPathParams {
     /**
      * A field for which we are creating the value path.
      */
-    field: CmsContentModelField;
+    field: CmsModelField;
     /**
      * If value is an array we will need index position.
      * It is up to the developer to add.

@@ -1,10 +1,10 @@
 import WebinyError from "@webiny/error";
-import { CmsContentEntry, CmsContentModel, CmsContext, CmsModelLockedFieldPlugin } from "~/types";
+import { CmsEntry, CmsModel, CmsContext, CmsModelLockedFieldPlugin } from "~/types";
 import { ContentModelPlugin } from "~/content/plugins/ContentModelPlugin";
 
 interface Args {
-    model: CmsContentModel;
-    entry: CmsContentEntry;
+    model: CmsModel;
+    entry: CmsEntry;
     context: CmsContext;
 }
 export const markLockedFields = async ({ model, context }: Args): Promise<void> => {

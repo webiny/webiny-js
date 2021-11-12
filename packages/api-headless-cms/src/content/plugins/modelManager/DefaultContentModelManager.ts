@@ -1,10 +1,10 @@
-import { CmsContentModelManager, CmsContentModel, CmsContext } from "~/types";
+import { CmsModelManager, CmsModel, CmsContext } from "~/types";
 
-export class DefaultContentModelManager implements CmsContentModelManager {
+export class DefaultContentModelManager implements CmsModelManager {
     private readonly _context: CmsContext;
-    private readonly _model: CmsContentModel;
+    private readonly _model: CmsModel;
 
-    public constructor(context: CmsContext, model: CmsContentModel) {
+    public constructor(context: CmsContext, model: CmsModel) {
         this._context = context;
         this._model = model;
     }

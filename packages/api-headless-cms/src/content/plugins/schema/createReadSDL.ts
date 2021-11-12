@@ -1,4 +1,4 @@
-import { CmsContentModel, CmsFieldTypePlugins } from "~/types";
+import { CmsModel, CmsFieldTypePlugins } from "~/types";
 import { createReadTypeName, createTypeName } from "~/content/plugins/utils/createTypeName";
 import { renderListFilterFields } from "~/content/plugins/utils/renderListFilterFields";
 import { renderSortEnum } from "~/content/plugins/utils/renderSortEnum";
@@ -7,7 +7,7 @@ import { renderGetFilterFields } from "~/content/plugins/utils/renderGetFilterFi
 import { pluralizedTypeName } from "~/content/plugins/utils/pluralizedTypeName";
 
 interface CreateManageSDL {
-    (params: { model: CmsContentModel; fieldTypePlugins: CmsFieldTypePlugins }): string;
+    (params: { model: CmsModel; fieldTypePlugins: CmsFieldTypePlugins }): string;
 }
 
 export const createReadSDL: CreateManageSDL = ({ model, fieldTypePlugins }): string => {

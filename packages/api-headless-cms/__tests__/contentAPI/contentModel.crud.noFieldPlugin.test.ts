@@ -1,4 +1,4 @@
-import { CmsContentModelGroup, CmsModelFieldToGraphQLPlugin } from "~/types";
+import { CmsGroup, CmsModelFieldToGraphQLPlugin } from "~/types";
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
 
 const customFieldPlugin = (): CmsModelFieldToGraphQLPlugin => ({
@@ -31,7 +31,7 @@ describe("content model test no field plugin", () => {
 
     const { createContentModelGroupMutation } = useContentGqlHandler(manageHandlerOpts);
 
-    let contentModelGroup: CmsContentModelGroup;
+    let contentModelGroup: CmsGroup;
 
     beforeEach(async () => {
         const [createCMG] = await createContentModelGroupMutation({

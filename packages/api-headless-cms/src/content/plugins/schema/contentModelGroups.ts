@@ -1,16 +1,12 @@
 import { ErrorResponse, Response } from "@webiny/handler-graphql";
 
-import {
-    CmsContentModelGroupCreateInput,
-    CmsContentModelGroupUpdateInput,
-    CmsContext
-} from "~/types";
+import { CmsGroupCreateInput, CmsGroupUpdateInput, CmsContext } from "~/types";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSchemaPlugin";
 import { Resolvers } from "@webiny/handler-graphql/types";
 import { ContentModelGroupPlugin } from "~/content/plugins/ContentModelGroupPlugin";
 
 interface CreateContentModelGroupArgs {
-    data: CmsContentModelGroupCreateInput;
+    data: CmsGroupCreateInput;
 }
 
 interface ReadContentModelGroupArgs {
@@ -18,7 +14,7 @@ interface ReadContentModelGroupArgs {
 }
 
 interface UpdateContentModelGroupArgs extends ReadContentModelGroupArgs {
-    data: CmsContentModelGroupUpdateInput;
+    data: CmsGroupUpdateInput;
 }
 
 interface DeleteContentModelGroupArgs {

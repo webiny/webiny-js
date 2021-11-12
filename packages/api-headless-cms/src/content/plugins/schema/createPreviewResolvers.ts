@@ -1,4 +1,4 @@
-import { CmsContentModel, CmsFieldTypePlugins, CmsContext } from "~/types";
+import { CmsModel, CmsFieldTypePlugins, CmsContext } from "~/types";
 import { resolveGet } from "./resolvers/preview/resolveGet";
 import { resolveList } from "./resolvers/preview/resolveList";
 import { createFieldResolversFactory } from "~/content/plugins/schema/createFieldResolvers";
@@ -7,8 +7,8 @@ import { pluralizedTypeName } from "~/content/plugins/utils/pluralizedTypeName";
 
 export interface CreateReadResolvers {
     (params: {
-        models: CmsContentModel[];
-        model: CmsContentModel;
+        models: CmsModel[];
+        model: CmsModel;
         context: CmsContext;
         fieldTypePlugins: CmsFieldTypePlugins;
     }): any;

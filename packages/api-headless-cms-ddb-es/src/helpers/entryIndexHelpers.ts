@@ -1,10 +1,6 @@
 import Error from "@webiny/error";
-import {
-    CmsContentEntry,
-    CmsContentModel,
-    CmsModelFieldToGraphQLPlugin
-} from "@webiny/api-headless-cms/types";
-import { CmsContentIndexEntry, CmsModelFieldToElasticsearchPlugin } from "~/types";
+import { CmsEntry, CmsModel, CmsModelFieldToGraphQLPlugin } from "@webiny/api-headless-cms/types";
+import { CmsIndexEntry, CmsModelFieldToElasticsearchPlugin } from "~/types";
 import { PluginsContainer } from "@webiny/plugins";
 
 interface SetupEntriesIndexHelpersParams {
@@ -12,18 +8,16 @@ interface SetupEntriesIndexHelpersParams {
 }
 
 interface ExtractEntriesFromIndexParams extends SetupEntriesIndexHelpersParams {
-    model: CmsContentModel;
-    entries: CmsContentIndexEntry[];
+    model: CmsModel;
+    entries: CmsIndexEntry[];
 }
 
 interface PrepareElasticsearchDataParams extends SetupEntriesIndexHelpersParams {
-    model: CmsContentModel;
-    storageEntry: CmsContentEntry;
+    model: CmsModel;
+    storageEntry: CmsEntry;
 }
 
-export const prepareEntryToIndex = (
-    params: PrepareElasticsearchDataParams
-): CmsContentIndexEntry => {
+export const prepareEntryToIndex = (params: PrepareElasticsearchDataParams): CmsIndexEntry => {
     const { plugins, storageEntry, model } = params;
     const { fieldIndexPlugins, defaultIndexFieldPlugin, fieldTypePlugins } =
         setupEntriesIndexHelpers({ plugins });
@@ -78,7 +72,7 @@ export const prepareEntryToIndex = (
         ...storageEntry,
         values,
         rawValues
-    } as CmsContentIndexEntry;
+    } as CmsIndexEntry;
 };
 
 const setupEntriesIndexHelpers = ({
@@ -114,7 +108,7 @@ export const extractEntriesFromIndex = ({
     plugins,
     entries,
     model
-}: ExtractEntriesFromIndexParams): CmsContentEntry[] => {
+}: ExtractEntriesFromIndexParams): CmsEntry[] => {
     const { fieldIndexPlugins, defaultIndexFieldPlugin, fieldTypePlugins } =
         setupEntriesIndexHelpers({ plugins });
 
@@ -126,7 +120,7 @@ export const extractEntriesFromIndex = ({
         return fieldTypePlugins[fieldType];
     }
 
-    const list: CmsContentEntry[] = [];
+    const list: CmsEntry[] = [];
 
     for (const entry of entries) {
         // This object will contain values processed by field index plugins

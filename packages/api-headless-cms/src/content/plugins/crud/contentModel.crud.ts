@@ -1,9 +1,9 @@
 import {
     CmsContext,
-    CmsContentModel,
-    CmsContentModelContext,
-    CmsContentModelManager,
-    CmsContentModelPermission,
+    CmsModel,
+    CmsModelContext,
+    CmsModelManager,
+    CmsModelPermission,
     HeadlessCmsStorageOperations,
     BeforeModelCreateTopicParams,
     AfterModelCreateTopicParams,
@@ -40,7 +40,7 @@ export interface Params {
     context: CmsContext;
     getIdentity: () => SecurityIdentity;
 }
-export const createModelsCrud = (params: Params): CmsContentModelContext => {
+export const createModelsCrud = (params: Params): CmsModelContext => {
     const { getTenant, getIdentity, getLocale, storageOperations, context } = params;
 
     const loaders = {
@@ -63,21 +63,21 @@ export const createModelsCrud = (params: Params): CmsContentModelContext => {
         })
     };
 
-    const managers = new Map<string, CmsContentModelManager>();
+    const managers = new Map<string, CmsModelManager>();
     const updateManager = async (
         context: CmsContext,
-        model: CmsContentModel
-    ): Promise<CmsContentModelManager> => {
+        model: CmsModel
+    ): Promise<CmsModelManager> => {
         const manager = await contentModelManagerFactory(context, model);
         managers.set(model.modelId, manager);
         return manager;
     };
 
-    const checkModelPermissions = (check: string): Promise<CmsContentModelPermission> => {
+    const checkModelPermissions = (check: string): Promise<CmsModelPermission> => {
         return utils.checkPermissions(context, "cms.contentModel", { rwd: check });
     };
 
-    const getContentModelsAsPlugins = (): CmsContentModel[] => {
+    const getContentModelsAsPlugins = (): CmsModel[] => {
         const tenant = getTenant().id;
         const locale = getLocale().code;
 
@@ -97,7 +97,7 @@ export const createModelsCrud = (params: Params): CmsContentModelContext => {
                     }
                     return true;
                 })
-                .map<CmsContentModel>(plugin => {
+                .map<CmsModel>(plugin => {
                     return {
                         ...plugin.contentModel,
                         tenant,
@@ -108,8 +108,8 @@ export const createModelsCrud = (params: Params): CmsContentModelContext => {
         );
     };
 
-    const modelsGet = async (modelId: string): Promise<CmsContentModel> => {
-        const pluginModel: CmsContentModel = getContentModelsAsPlugins().find(
+    const modelsGet = async (modelId: string): Promise<CmsModel> => {
+        const pluginModel: CmsModel = getContentModelsAsPlugins().find(
             model => model.modelId === modelId
         );
 
@@ -134,7 +134,7 @@ export const createModelsCrud = (params: Params): CmsContentModelContext => {
         };
     };
 
-    const modelsList = async (): Promise<CmsContentModel[]> => {
+    const modelsList = async (): Promise<CmsModel[]> => {
         const databaseModels = await loaders.listModels.load("listModels");
 
         const pluginsModels = getContentModelsAsPlugins();
@@ -164,7 +164,7 @@ export const createModelsCrud = (params: Params): CmsContentModelContext => {
         return model;
     };
 
-    const getManager = async (modelId: string): Promise<CmsContentModelManager> => {
+    const getManager = async (modelId: string): Promise<CmsModelManager> => {
         if (managers.has(modelId)) {
             return managers.get(modelId);
         }
@@ -220,12 +220,6 @@ export const createModelsCrud = (params: Params): CmsContentModelContext => {
         onAfterModelUpdate: onAfterUpdate,
         onBeforeModelDelete: onBeforeDelete,
         onAfterModelDelete: onAfterDelete,
-        noAuthModel: () => {
-            return {
-                get: modelsGet,
-                list: modelsList
-            };
-        },
         silentAuthModel: () => {
             return {
                 list: async () => {
@@ -249,13 +243,15 @@ export const createModelsCrud = (params: Params): CmsContentModelContext => {
             await createdData.validate();
             const input = await createdData.toJSON();
 
-            const group = await context.cms.noAuthGroup().get(input.group);
+            context.security.disableAuthorization();
+            const group = await context.cms.getGroup(input.group);
+            context.security.enableAuthorization();
             if (!group) {
                 throw new NotFoundError(`There is no group "${input.group}".`);
             }
 
             const identity = getIdentity();
-            const model: CmsContentModel = {
+            const model: CmsModel = {
                 ...input,
                 titleFieldId: "id",
                 locale: getLocale().code,
@@ -305,7 +301,7 @@ export const createModelsCrud = (params: Params): CmsContentModelContext => {
         async updateModelDirect(params) {
             const { model: initialModel, original } = params;
 
-            const model: CmsContentModel = {
+            const model: CmsModel = {
                 ...initialModel,
                 tenant: initialModel.tenant || getTenant().id,
                 locale: initialModel.locale || getLocale().code,
@@ -350,7 +346,9 @@ export const createModelsCrud = (params: Params): CmsContentModelContext => {
                 return {} as any;
             }
             if (input.group) {
-                const group = await context.cms.noAuthGroup().get(input.group);
+                context.security.disableAuthorization();
+                const group = await context.cms.getGroup(input.group);
+                context.security.enableAuthorization();
                 if (!group) {
                     throw new NotFoundError(`There is no group "${input.group}".`);
                 }
@@ -361,7 +359,7 @@ export const createModelsCrud = (params: Params): CmsContentModelContext => {
             }
             const modelFields = await createFieldModels(original, inputData);
             validateLayout(input, modelFields);
-            const model: CmsContentModel = {
+            const model: CmsModel = {
                 ...original,
                 ...input,
                 tenant: original.tenant || getTenant().id,

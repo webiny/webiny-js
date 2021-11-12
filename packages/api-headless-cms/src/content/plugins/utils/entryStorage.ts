@@ -1,8 +1,8 @@
 import Error from "@webiny/error";
 import {
-    CmsContentEntry,
-    CmsContentModel,
-    CmsContentModelField,
+    CmsEntry,
+    CmsModel,
+    CmsModelField,
     CmsContext,
     CmsModelFieldToStoragePlugin
 } from "~/types";
@@ -44,10 +44,10 @@ const getStoragePluginFactory: GetStoragePluginFactory = context => {
  */
 const entryStorageTransform = async (
     context: CmsContext,
-    model: CmsContentModel,
+    model: CmsModel,
     operation: "toStorage" | "fromStorage",
-    entry: CmsContentEntry
-): Promise<CmsContentEntry> => {
+    entry: CmsEntry
+): Promise<CmsEntry> => {
     const getStoragePlugin = getStoragePluginFactory(context);
 
     const transformedValues: Record<string, any> = {};
@@ -77,9 +77,9 @@ const entryStorageTransform = async (
  */
 export const entryToStorageTransform = async (
     context: CmsContext,
-    model: CmsContentModel,
-    entry: CmsContentEntry
-): Promise<CmsContentEntry> => {
+    model: CmsModel,
+    entry: CmsEntry
+): Promise<CmsEntry> => {
     return entryStorageTransform(context, model, "toStorage", entry);
 };
 
@@ -88,9 +88,9 @@ export const entryToStorageTransform = async (
  */
 export const entryFromStorageTransform = async (
     context: CmsContext,
-    model: CmsContentModel,
-    entry?: CmsContentEntry & Record<string, any>
-): Promise<CmsContentEntry> => {
+    model: CmsModel,
+    entry?: CmsEntry & Record<string, any>
+): Promise<CmsEntry> => {
     if (!entry) {
         return null;
     }
@@ -99,8 +99,8 @@ export const entryFromStorageTransform = async (
 
 interface EntryFieldFromStorageTransformParams {
     context: CmsContext;
-    model: CmsContentModel;
-    field: CmsContentModelField;
+    model: CmsModel;
+    field: CmsModelField;
     value: any;
 }
 /*

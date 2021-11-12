@@ -1,7 +1,7 @@
-import { CmsContentEntry } from "~/types";
+import { CmsEntry } from "~/types";
 
 export const commonFieldResolvers = () => ({
-    id: (entry: CmsContentEntry) => entry.id || null,
-    createdBy: (entry: CmsContentEntry) => entry.createdBy || null,
-    ownedBy: (entry: CmsContentEntry) => entry.ownedBy || null
+    id: (entry: CmsEntry) => entry.id || null,
+    createdBy: (entry: CmsEntry) => entry.createdBy || null,
+    ownedBy: (entry: CmsEntry) => entry.ownedBy || null
 });

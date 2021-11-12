@@ -9,6 +9,6 @@ export const assignAfterModelUpdate = (params: Params) => {
     const { onAfterUpdate, context } = params;
 
     onAfterUpdate.subscribe(async () => {
-        await context.cms.updateContentModelLastChange();
+        await context.cms.updateModelLastChange();
     });
 };

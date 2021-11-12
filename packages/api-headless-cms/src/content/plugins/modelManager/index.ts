@@ -1,7 +1,7 @@
-import { ContentModelManagerPlugin } from "~/types";
+import { ModelManagerPlugin } from "~/types";
 import { DefaultContentModelManager } from "./DefaultContentModelManager";
 
-const plugin: ContentModelManagerPlugin = {
+const plugin: ModelManagerPlugin = {
     type: "cms-content-model-manager",
     name: "content-model-manager-default",
     create: async (context, model) => {

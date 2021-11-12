@@ -1,4 +1,4 @@
-import { CmsContentModelDateTimeField } from "@webiny/api-headless-cms/types";
+import { CmsModelDateTimeField } from "@webiny/api-headless-cms/types";
 import { CmsModelFieldToElasticsearchPlugin } from "~/types";
 
 const convertTimeToNumber = (time?: string): number | null => {
@@ -30,7 +30,7 @@ const convertNumberToTime = (value?: number): string | null => {
 
 const convertValueFromIndex = (
     value: string | number,
-    field: CmsContentModelDateTimeField
+    field: CmsModelDateTimeField
 ): string | null => {
     const type = field.settings.type;
     if (type === "time") {
@@ -46,7 +46,7 @@ const convertValueFromIndex = (
     return new Date(value).toISOString();
 };
 
-const convertValueToIndex = (value: string, field: CmsContentModelDateTimeField) => {
+const convertValueToIndex = (value: string, field: CmsModelDateTimeField) => {
     if (!value) {
         return null;
     } else if (field.settings.type === "time") {
@@ -63,12 +63,12 @@ export default (): CmsModelFieldToElasticsearchPlugin => ({
         return "date";
     },
     toIndex({ field, value }) {
-        const dateValue = convertValueToIndex(value, field as CmsContentModelDateTimeField);
+        const dateValue = convertValueToIndex(value, field as CmsModelDateTimeField);
         return {
             value: dateValue
         };
     },
     fromIndex({ field, value }) {
-        return convertValueFromIndex(value, field as CmsContentModelDateTimeField);
+        return convertValueFromIndex(value, field as CmsModelDateTimeField);
     }
 });

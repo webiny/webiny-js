@@ -1,7 +1,7 @@
 import { Topic } from "@webiny/pubsub/types";
 import {
     BeforeModelUpdateTopicParams,
-    CmsContentModelField,
+    CmsModelField,
     CmsModelFieldToGraphQLPlugin,
     CmsModelLockedFieldPlugin,
     HeadlessCmsStorageOperations
@@ -14,10 +14,7 @@ const defaultTitleFieldId = "id";
 
 const allowedTitleFieldTypes = ["text", "number"];
 
-const getContentModelTitleFieldId = (
-    fields: CmsContentModelField[],
-    titleFieldId?: string
-): string => {
+const getContentModelTitleFieldId = (fields: CmsModelField[], titleFieldId?: string): string => {
     // if there is no title field defined either in input data or existing content model data
     // we will take first text field that has no multiple values enabled
     // or if initial titleFieldId is the default one also try to find first available text field

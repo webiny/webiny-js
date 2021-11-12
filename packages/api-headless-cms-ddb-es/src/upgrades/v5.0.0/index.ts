@@ -8,15 +8,15 @@ import {
 } from "./helpers";
 
 import { paginateBatch } from "../utils";
-import { CmsContentIndexEntry } from "../../types";
-import { CmsContentModel, CmsContext } from "@webiny/api-headless-cms/types";
+import { CmsIndexEntry } from "../../types";
+import { CmsModel, CmsContext } from "@webiny/api-headless-cms/types";
 import configurations from "../../configurations";
 import { Client } from "@elastic/elasticsearch";
 
 interface Hit {
     _id: string;
     _index: string;
-    _source: CmsContentIndexEntry;
+    _source: CmsIndexEntry;
 }
 
 const plugin = (): UpgradePlugin<CmsContext> => ({
@@ -135,7 +135,7 @@ const plugin = (): UpgradePlugin<CmsContext> => ({
         const esOperations = [];
 
         for (const locale of locales) {
-            const [models] = await db.read<CmsContentModel>({
+            const [models] = await db.read<CmsModel>({
                 // @ts-ignore
                 ...configurations.db(),
                 query: { PK: `T#root#L#${locale.code}#CMS#CM`, SK: { $gt: " " } }
@@ -144,7 +144,7 @@ const plugin = (): UpgradePlugin<CmsContext> => ({
             // Sleep for 2 seconds
             await new Promise(resolve => setTimeout(resolve, 2000));
 
-            const modelsById: Record<string, CmsContentModel> = models.reduce((acc, model) => {
+            const modelsById: Record<string, CmsModel> = models.reduce((acc, model) => {
                 acc[model.modelId] = model;
                 return acc;
             }, {});

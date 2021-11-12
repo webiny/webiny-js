@@ -2,10 +2,10 @@ import WebinyError from "@webiny/error";
 import lodashSortBy from "lodash.sortby";
 import dotProp from "dot-prop";
 import {
-    CmsContentEntry,
-    CmsContentEntryListWhere,
-    CmsContentModel,
-    CmsContentModelField
+    CmsEntry,
+    CmsEntryListWhere,
+    CmsModel,
+    CmsModelField
 } from "@webiny/api-headless-cms/types";
 import { Plugin } from "@webiny/plugins/types";
 import { CmsFieldFilterPathPlugin, CmsFieldFilterValueTransformPlugin } from "~/types";
@@ -14,7 +14,7 @@ import { ValueFilterPlugin } from "@webiny/db-dynamodb/plugins/definitions/Value
 import { PluginsContainer } from "@webiny/plugins";
 
 interface ModelField {
-    def: CmsContentModelField;
+    def: CmsModelField;
     valueTransformer: (value: any) => any;
     valuePath: string;
     isSystemField?: boolean;
@@ -24,7 +24,7 @@ type ModelFieldRecords = Record<string, ModelField>;
 
 interface CreateFiltersArgs {
     plugins: PluginsContainer;
-    where: CmsContentEntryListWhere;
+    where: CmsEntryListWhere;
     fields: ModelFieldRecords;
 }
 
@@ -38,8 +38,8 @@ interface ItemFilter {
 }
 
 interface FilterItemsArgs {
-    items: CmsContentEntry[];
-    where: CmsContentEntryListWhere;
+    items: CmsEntry[];
+    where: CmsEntryListWhere;
     plugins: PluginsContainer;
     fields: ModelFieldRecords;
 }
@@ -156,7 +156,7 @@ const createFilters = (params: CreateFiltersArgs): ItemFilter[] => {
     });
 };
 
-export const filterItems = (params: FilterItemsArgs): CmsContentEntry[] => {
+export const filterItems = (params: FilterItemsArgs): CmsEntry[] => {
     const { items, where, plugins, fields } = params;
 
     const filters = createFilters({
@@ -216,12 +216,12 @@ const extractSort = (
 };
 
 interface SortEntryItemsArgs {
-    items: CmsContentEntry[];
+    items: CmsEntry[];
     sort: string[];
     fields: ModelFieldRecords;
 }
 
-export const sortEntryItems = (params: SortEntryItemsArgs): CmsContentEntry[] => {
+export const sortEntryItems = (params: SortEntryItemsArgs): CmsEntry[] => {
     const { items, sort = [], fields } = params;
     if (items.length <= 1) {
         return items;
@@ -304,7 +304,7 @@ export const buildModelFields = ({
     model
 }: {
     plugins: PluginsContainer;
-    model: CmsContentModel;
+    model: CmsModel;
 }) => {
     const transformValuePlugins = getMappedPlugins<CmsFieldFilterValueTransformPlugin>({
         plugins,

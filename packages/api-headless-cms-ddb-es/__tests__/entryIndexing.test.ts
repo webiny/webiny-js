@@ -1,7 +1,7 @@
 import { PluginsContainer } from "@webiny/plugins";
 import indexingPlugins from "~/elasticsearch/indexing";
 import cmsFieldTypePlugins from "@webiny/api-headless-cms/content/plugins/graphqlFields";
-import { CmsContentEntry } from "@webiny/api-headless-cms/types";
+import { CmsEntry } from "@webiny/api-headless-cms/types";
 import { extractEntriesFromIndex, prepareEntryToIndex } from "~/helpers";
 
 const mockRichTextValue = [
@@ -70,7 +70,7 @@ const mockModel: any = {
     ]
 };
 
-const mockInputEntry: Partial<CmsContentEntry> = {
+const mockInputEntry: Partial<CmsEntry> = {
     values: {
         notAffectedNumber: 1,
         notAffectedString: "some text",
@@ -98,7 +98,7 @@ const mockInputEntry: Partial<CmsContentEntry> = {
     }
 };
 
-const mockIndexedEntry: Partial<CmsContentEntry> & Record<string, any> = {
+const mockIndexedEntry: Partial<CmsEntry> & Record<string, any> = {
     values: {
         notAffectedNumber: 1,
         notAffectedString: "some text",

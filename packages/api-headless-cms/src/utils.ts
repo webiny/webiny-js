@@ -3,12 +3,12 @@ import { NotAuthorizedError } from "@webiny/api-security";
 import { SecurityPermission } from "@webiny/api-security/types";
 
 import {
-    CmsContentModelPermission,
-    CmsContentModel,
+    CmsModelPermission,
+    CmsModel,
     CmsContext,
     CreatedBy,
-    CmsContentModelGroupPermission,
-    CmsContentModelGroup
+    CmsGroupPermission,
+    CmsGroup
 } from "~/types";
 
 export const hasRwd = (permission, rwd) => {
@@ -151,10 +151,7 @@ export const validateOwnership = (
  * model access is checking for both specific model or group access
  * if permission has specific models set as access pattern then groups will not matter (although both can be set)
  */
-export const checkModelAccess = async (
-    context: CmsContext,
-    model: CmsContentModel
-): Promise<void> => {
+export const checkModelAccess = async (context: CmsContext, model: CmsModel): Promise<void> => {
     if (await validateModelAccess(context, model)) {
         return;
     }
@@ -166,16 +163,16 @@ export const checkModelAccess = async (
 };
 export const validateModelAccess = async (
     context: CmsContext,
-    model: CmsContentModel
+    model: CmsModel
 ): Promise<boolean> => {
-    const modelGroupPermission: CmsContentModelGroupPermission = await checkPermissions(
+    const modelGroupPermission: CmsGroupPermission = await checkPermissions(
         context,
         "cms.contentModelGroup",
         { rwd: "r" }
     );
     const { groups } = modelGroupPermission;
 
-    const modelPermission: CmsContentModelPermission = await checkPermissions(
+    const modelPermission: CmsModelPermission = await checkPermissions(
         context,
         "cms.contentModel",
         {
@@ -212,8 +209,8 @@ export const validateModelAccess = async (
 };
 export const validateGroupAccess = (
     context: CmsContext,
-    permission: CmsContentModelGroupPermission,
-    group: CmsContentModelGroup
+    permission: CmsGroupPermission,
+    group: CmsGroup
 ): boolean => {
     const { groups } = permission;
     // when no groups defined on permission

@@ -1,5 +1,5 @@
 import { Plugin } from "@webiny/plugins";
-import { CmsContentModelGroup as BaseCmsContentModelGroup } from "~/types";
+import { CmsGroup as BaseCmsContentModelGroup } from "~/types";
 
 export interface CmsContentModelGroup
     extends Omit<BaseCmsContentModelGroup, "locale" | "tenant" | "webinyVersion"> {

@@ -1,5 +1,5 @@
 import { Response } from "@webiny/handler-graphql";
-import { CmsContentEntry, CmsContext } from "~/types";
+import { CmsEntry, CmsContext } from "~/types";
 import { NotAuthorizedResponse } from "@webiny/api-security";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSchemaPlugin";
 import { getEntryTitle } from "~/content/plugins/utils/getEntryTitle";
@@ -71,7 +71,7 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
                                     : { [`${model.titleFieldId}_contains`]: query }
                             });
 
-                            return items.map((entry: CmsContentEntry) => ({
+                            return items.map((entry: CmsEntry) => ({
                                 id: entry.id,
                                 model: {
                                     modelId: model.modelId,

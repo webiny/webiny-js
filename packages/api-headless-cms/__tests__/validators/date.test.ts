@@ -1,8 +1,8 @@
 import dateLtePlugin from "../../src/content/plugins/validators/dateLte";
 import dateGtePlugin from "../../src/content/plugins/validators/dateGte";
-import { CmsContentModelFieldValidation } from "../../src/types";
+import { CmsModelFieldValidation } from "../../src/types";
 
-const createValidator = (args): CmsContentModelFieldValidation => {
+const createValidator = (args): CmsModelFieldValidation => {
     return {
         name: "test-validator",
         message: "test validation message",

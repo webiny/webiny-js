@@ -9,6 +9,6 @@ export const assignAfterModelCreate = (params: Params) => {
     const { onAfterCreate, context } = params;
 
     onAfterCreate.subscribe(async () => {
-        await context.cms.updateContentModelLastChange();
+        await context.cms.updateModelLastChange();
     });
 };

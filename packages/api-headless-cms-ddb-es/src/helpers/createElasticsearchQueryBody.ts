@@ -3,10 +3,10 @@ import { operatorPluginsList } from "./operatorPluginsList";
 import { transformValueForSearch } from "./transformValueForSearch";
 import { searchPluginsList } from "./searchPluginsList";
 import {
-    CmsContentEntryListParams,
-    CmsContentEntryListSort,
-    CmsContentEntryListWhere,
-    CmsContentModel
+    CmsEntryListParams,
+    CmsEntryListSort,
+    CmsEntryListWhere,
+    CmsModel
 } from "@webiny/api-headless-cms/types";
 import { ElasticsearchQueryBuilderValueSearchPlugin, ElasticsearchQueryPlugin } from "~/types";
 import {
@@ -24,24 +24,24 @@ import { createLatestType, createPublishedType } from "~/operations/entry";
 
 interface CreateElasticsearchParams {
     plugins: PluginsContainer;
-    model: CmsContentModel;
-    args: CmsContentEntryListParams;
+    model: CmsModel;
+    args: CmsEntryListParams;
     parentPath?: string;
 }
 
 interface CreateElasticsearchSortParams {
     plugins: PluginsContainer;
-    sort?: CmsContentEntryListSort;
+    sort?: CmsEntryListSort;
     modelFields: ModelFields;
     parentPath?: string;
-    model: CmsContentModel;
+    model: CmsModel;
     searchPlugins: Record<string, ElasticsearchQueryBuilderValueSearchPlugin>;
 }
 
 interface CreateElasticsearchQueryArgs {
-    model: CmsContentModel;
+    model: CmsModel;
     plugins: PluginsContainer;
-    where: CmsContentEntryListWhere;
+    where: CmsEntryListWhere;
     modelFields: ModelFields;
     parentPath?: string;
     searchPlugins: Record<string, ElasticsearchQueryBuilderValueSearchPlugin>;
@@ -208,7 +208,7 @@ const execElasticsearchBuildQueryPlugins = (
 ): ElasticsearchBoolQueryConfig => {
     const { where: initialWhere, modelFields, parentPath, plugins, searchPlugins } = params;
 
-    const where: CmsContentEntryListWhere = {
+    const where: CmsEntryListWhere = {
         ...initialWhere
     };
     const query = createInitialQueryValue({

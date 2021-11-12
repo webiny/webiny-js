@@ -1,7 +1,7 @@
-import { CmsContentModelGroup } from "~/types";
+import { CmsGroup } from "~/types";
 import models from "../contentAPI/mocks/contentModels";
 
-export const setupContentModelGroup = async (manager: any): Promise<CmsContentModelGroup> => {
+export const setupContentModelGroup = async (manager: any): Promise<CmsGroup> => {
     const [response] = await manager.createContentModelGroupMutation({
         data: {
             name: "Group",
@@ -19,11 +19,7 @@ export const setupContentModelGroup = async (manager: any): Promise<CmsContentMo
     return response.data.createContentModelGroup.data;
 };
 
-const setupContentModel = async (
-    manager: any,
-    contentModelGroup: CmsContentModelGroup,
-    name: string
-) => {
+const setupContentModel = async (manager: any, contentModelGroup: CmsGroup, name: string) => {
     const model = models.find(m => m.modelId === name);
     if (!model) {
         console.log(`[setupContentModel] There is no model "${name}" defined.`);
@@ -67,7 +63,7 @@ const setupContentModel = async (
 };
 export const setupContentModels = async (
     manager: any,
-    contentModelGroup: CmsContentModelGroup,
+    contentModelGroup: CmsGroup,
     modelsList: string[]
 ): Promise<Record<string, any>> => {
     const items = modelsList.reduce((acc, m) => {

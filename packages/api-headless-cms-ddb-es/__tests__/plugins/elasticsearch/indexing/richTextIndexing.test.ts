@@ -1,5 +1,5 @@
 import richTextIndexingPlugin from "~/elasticsearch/indexing/richTextIndexing";
-import { CmsContentModelField } from "@webiny/api-headless-cms/types";
+import { CmsModelField } from "@webiny/api-headless-cms/types";
 
 const mockValue = [
     {
@@ -10,7 +10,7 @@ const mockValue = [
 const mockContext: any = {};
 const mockModel: any = {};
 
-const mockField: CmsContentModelField = {
+const mockField: CmsModelField = {
     id: "textField",
     type: "text",
     label: "Text",

@@ -1,11 +1,11 @@
 import Error from "@webiny/error";
-import { CmsContentModelGroup } from "~/types";
+import { CmsGroup } from "~/types";
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
 import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
 import models from "./mocks/contentModels";
 
 describe("Request review", () => {
-    let contentModelGroup: CmsContentModelGroup;
+    let contentModelGroup: CmsGroup;
 
     const manageOpts = { path: "manage/en-US" };
 

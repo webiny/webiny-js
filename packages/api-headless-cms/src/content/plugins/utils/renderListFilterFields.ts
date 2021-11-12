@@ -1,9 +1,9 @@
-import { CmsFieldTypePlugins, CmsContentModel } from "~/types";
+import { CmsFieldTypePlugins, CmsModel } from "~/types";
 import get from "lodash/get";
 
 interface RenderListFilterFields {
     (params: {
-        model: CmsContentModel;
+        model: CmsModel;
         type: "read" | "manage";
         fieldTypePlugins: CmsFieldTypePlugins;
     }): string;

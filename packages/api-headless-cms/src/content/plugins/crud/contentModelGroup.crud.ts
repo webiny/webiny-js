@@ -2,13 +2,13 @@ import { withFields, string } from "@commodo/fields";
 import { validation } from "@webiny/validation";
 import mdbid from "mdbid";
 import {
-    CmsContentModelGroupContext,
-    CmsContentModelGroupListParams,
-    CmsContentModelGroupPermission,
-    CmsContentModelGroup,
+    CmsGroupContext,
+    CmsGroupListParams,
+    CmsGroupPermission,
+    CmsGroup,
     CmsContext,
     HeadlessCmsStorageOperations,
-    CmsContentModelGroupCreateInput,
+    CmsGroupCreateInput,
     BeforeGroupCreateTopicParams,
     AfterGroupCreateTopicParams,
     BeforeGroupUpdateTopicParams,
@@ -48,10 +48,10 @@ export interface Params {
     context: CmsContext;
     getIdentity: () => SecurityIdentity;
 }
-export const createModelGroupsCrud = (params: Params): CmsContentModelGroupContext => {
+export const createModelGroupsCrud = (params: Params): CmsGroupContext => {
     const { getTenant, getIdentity, getLocale, storageOperations, context } = params;
 
-    const getContentModelGroupsAsPlugins = (): CmsContentModelGroup[] => {
+    const getContentModelGroupsAsPlugins = (): CmsGroup[] => {
         const tenant = getTenant().id;
         const locale = getLocale().code;
 
@@ -82,12 +82,12 @@ export const createModelGroupsCrud = (params: Params): CmsContentModelGroupConte
         );
     };
 
-    const checkPermissions = (check: string): Promise<CmsContentModelGroupPermission> => {
+    const checkPermissions = (check: string): Promise<CmsGroupPermission> => {
         return utils.checkPermissions(context, "cms.contentModelGroup", { rwd: check });
     };
 
     const groupsGet = async (id: string) => {
-        const groupPlugin: CmsContentModelGroup = getContentModelGroupsAsPlugins().find(
+        const groupPlugin: CmsGroup = getContentModelGroupsAsPlugins().find(
             group => group.id === id
         );
 
@@ -97,7 +97,7 @@ export const createModelGroupsCrud = (params: Params): CmsContentModelGroupConte
         const tenant = getTenant().id;
         const locale = getLocale().code;
 
-        let group: CmsContentModelGroup | null = null;
+        let group: CmsGroup | null = null;
         try {
             group = await storageOperations.groups.get({
                 tenant,
@@ -121,7 +121,7 @@ export const createModelGroupsCrud = (params: Params): CmsContentModelGroupConte
         };
     };
 
-    const groupsList = async (params: CmsContentModelGroupListParams) => {
+    const groupsList = async (params: CmsGroupListParams) => {
         const { where } = params || {};
         const tenant = getTenant().id;
         const locale = getLocale().code;
@@ -185,12 +185,6 @@ export const createModelGroupsCrud = (params: Params): CmsContentModelGroupConte
         onAfterGroupUpdate: onAfterUpdate,
         onBeforeGroupDelete: onBeforeDelete,
         onAfterGroupDelete: onAfterDelete,
-        noAuthGroup: () => {
-            return {
-                get: groupsGet,
-                list: groupsList
-            };
-        },
         getGroup: async id => {
             const permission = await checkPermissions("r");
 
@@ -230,13 +224,12 @@ export const createModelGroupsCrud = (params: Params): CmsContentModelGroupConte
                 slug: inputData.slug ? utils.toSlug(inputData.slug) : ""
             });
             await createdData.validate();
-            const input: CmsContentModelGroupCreateInput & { slug: string } =
-                await createdData.toJSON();
+            const input: CmsGroupCreateInput & { slug: string } = await createdData.toJSON();
 
             const identity = getIdentity();
 
             const id = mdbid();
-            const group: CmsContentModelGroup = {
+            const group: CmsGroup = {
                 ...input,
                 id,
                 tenant: getTenant().id,
@@ -287,7 +280,7 @@ export const createModelGroupsCrud = (params: Params): CmsContentModelGroupConte
             const input = new UpdateContentModelGroupModel().populate(inputData);
             await input.validate();
 
-            const updatedDataJson: Partial<CmsContentModelGroup> = await input.toJSON({
+            const updatedDataJson: Partial<CmsGroup> = await input.toJSON({
                 onlyDirty: true
             });
 
@@ -298,7 +291,7 @@ export const createModelGroupsCrud = (params: Params): CmsContentModelGroupConte
                 return original;
             }
 
-            const group: CmsContentModelGroup = {
+            const group: CmsGroup = {
                 ...original,
                 ...updatedDataJson,
                 locale: getLocale().code,

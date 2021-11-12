@@ -1,5 +1,5 @@
 import Error from "@webiny/error";
-import { CmsContentEntry, CmsContentModelGroup } from "~/types";
+import { CmsEntry, CmsGroup } from "~/types";
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
 import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
 import { useCategoryReadHandler } from "../utils/useCategoryReadHandler";
@@ -8,10 +8,10 @@ import modelsWithoutValidation from "./mocks/contentModels.noValidation";
 import { useProductManageHandler } from "../utils/useProductManageHandler";
 
 interface CreateCategoriesResult {
-    fruits: CmsContentEntry;
-    vegetables: CmsContentEntry;
-    animals: CmsContentEntry;
-    trees: CmsContentEntry;
+    fruits: CmsEntry;
+    vegetables: CmsEntry;
+    animals: CmsEntry;
+    trees: CmsEntry;
 }
 
 const createPermissions = ({ groups, models }: { groups?: string[]; models?: string[] }) => [
@@ -44,7 +44,7 @@ const createPermissions = ({ groups, models }: { groups?: string[]; models?: str
 jest.setTimeout(100000);
 
 describe("MANAGE - Resolvers", () => {
-    let contentModelGroup: CmsContentModelGroup;
+    let contentModelGroup: CmsGroup;
 
     const manageOpts = { path: "manage/en-US" };
     const readOpts = { path: "read/en-US" };

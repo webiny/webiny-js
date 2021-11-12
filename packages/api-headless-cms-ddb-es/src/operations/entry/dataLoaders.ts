@@ -1,5 +1,5 @@
 import DataLoader from "dataloader";
-import { CmsContentEntry, CmsContentModel } from "@webiny/api-headless-cms/types";
+import { CmsEntry, CmsModel } from "@webiny/api-headless-cms/types";
 import WebinyError from "@webiny/error";
 import { Entity } from "dynamodb-toolbox";
 import { queryAll, QueryAllParams } from "@webiny/db-dynamodb/utils/query";
@@ -16,8 +16,8 @@ import { batchReadAll } from "@webiny/db-dynamodb/utils/batchRead";
 const getAllEntryRevisions = (params: LoaderParams) => {
     const { entity, model } = params;
     const { tenant, locale } = model;
-    return new DataLoader<string, CmsContentEntry[]>(async ids => {
-        const results: CmsContentEntry[][] = [];
+    return new DataLoader<string, CmsEntry[]>(async ids => {
+        const results: CmsEntry[][] = [];
         for (const id of ids) {
             const queryAllParams: QueryAllParams = {
                 entity,
@@ -30,7 +30,7 @@ const getAllEntryRevisions = (params: LoaderParams) => {
                     beginsWith: "REV#"
                 }
             };
-            const items = await queryAll<CmsContentEntry>(queryAllParams);
+            const items = await queryAll<CmsEntry>(queryAllParams);
             const entries = cleanupItems(entity, items);
             results.push(entries);
         }
@@ -43,7 +43,7 @@ const getRevisionById = (params: LoaderParams) => {
     const { entity, model } = params;
     const { locale, tenant } = model;
 
-    return new DataLoader<string, CmsContentEntry[]>(async (ids: readonly string[]) => {
+    return new DataLoader<string, CmsEntry[]>(async (ids: readonly string[]) => {
         const queries = ids.reduce((collection, id) => {
             const partitionKey = createPartitionKey({
                 tenant,
@@ -67,7 +67,7 @@ const getRevisionById = (params: LoaderParams) => {
             return collection;
         }, {});
 
-        const records = await batchReadAll<CmsContentEntry>({
+        const records = await batchReadAll<CmsEntry>({
             table: entity.table,
             items: Object.values(queries)
         });
@@ -87,7 +87,7 @@ const getPublishedRevisionByEntryId = (params: LoaderParams) => {
 
     const publishedKey = createPublishedSortKey();
 
-    return new DataLoader<string, CmsContentEntry[]>(async ids => {
+    return new DataLoader<string, CmsEntry[]>(async ids => {
         const queries = ids.reduce((collection, id) => {
             const partitionKey = createPartitionKey({
                 tenant,
@@ -104,7 +104,7 @@ const getPublishedRevisionByEntryId = (params: LoaderParams) => {
             return collection;
         }, {});
 
-        const records = await batchReadAll<CmsContentEntry>({
+        const records = await batchReadAll<CmsEntry>({
             table: entity.table,
             items: Object.values(queries)
         });
@@ -125,7 +125,7 @@ const getLatestRevisionByEntryId = (params: LoaderParams) => {
 
     const latestKey = createLatestSortKey();
 
-    return new DataLoader<string, CmsContentEntry[]>(async ids => {
+    return new DataLoader<string, CmsEntry[]>(async ids => {
         const queries = ids.reduce((collection, id) => {
             const partitionKey = createPartitionKey({
                 tenant,
@@ -142,7 +142,7 @@ const getLatestRevisionByEntryId = (params: LoaderParams) => {
             return collection;
         }, {});
 
-        const records = await batchReadAll<CmsContentEntry>({
+        const records = await batchReadAll<CmsEntry>({
             table: entity.table,
             items: Object.values(queries)
         });
@@ -166,36 +166,36 @@ const dataLoaders: Record<Loaders, any> = {
 
 export interface GetAllEntryRevisionsParams {
     ids: readonly string[];
-    model: CmsContentModel;
+    model: CmsModel;
 }
 
 export interface GetRevisionByIdParams {
     ids: readonly string[];
-    model: CmsContentModel;
+    model: CmsModel;
 }
 
 export interface GetPublishedRevisionByEntryIdParams {
     ids: readonly string[];
-    model: CmsContentModel;
+    model: CmsModel;
 }
 
 export interface GetLatestRevisionByEntryIdParams {
     ids: readonly string[];
-    model: CmsContentModel;
+    model: CmsModel;
 }
 
 interface LoaderParams {
     entity: Entity<any>;
-    model: CmsContentModel;
+    model: CmsModel;
 }
 
 interface GetLoaderParams {
-    model: CmsContentModel;
+    model: CmsModel;
 }
 
 interface ClearLoaderParams {
-    model: CmsContentModel;
-    entry?: CmsContentEntry;
+    model: CmsModel;
+    entry?: CmsEntry;
 }
 
 type Loaders =
@@ -217,9 +217,7 @@ export class DataLoadersHandler {
         this.entity = params.entity;
     }
 
-    public async getAllEntryRevisions(
-        params: GetAllEntryRevisionsParams
-    ): Promise<CmsContentEntry[]> {
+    public async getAllEntryRevisions(params: GetAllEntryRevisionsParams): Promise<CmsEntry[]> {
         return await this.loadMany("getAllEntryRevisions", params, params.ids);
     }
 
@@ -227,7 +225,7 @@ export class DataLoadersHandler {
         this.clear("getAllEntryRevisions", params);
     }
 
-    public async getRevisionById(params: GetRevisionByIdParams): Promise<CmsContentEntry[]> {
+    public async getRevisionById(params: GetRevisionByIdParams): Promise<CmsEntry[]> {
         return await this.loadMany("getRevisionById", params, params.ids);
     }
 
@@ -237,7 +235,7 @@ export class DataLoadersHandler {
 
     public async getPublishedRevisionByEntryId(
         params: GetPublishedRevisionByEntryIdParams
-    ): Promise<CmsContentEntry[]> {
+    ): Promise<CmsEntry[]> {
         return await this.loadMany("getPublishedRevisionByEntryId", params, params.ids);
     }
     public clearPublishedRevisionByEntryId(params: ClearLoaderParams): void {
@@ -246,7 +244,7 @@ export class DataLoadersHandler {
 
     public async getLatestRevisionByEntryId(
         params: GetLatestRevisionByEntryIdParams
-    ): Promise<CmsContentEntry[]> {
+    ): Promise<CmsEntry[]> {
         return await this.loadMany("getLatestRevisionByEntryId", params, params.ids);
     }
 
@@ -279,7 +277,7 @@ export class DataLoadersHandler {
         loader: string,
         params: GetLoaderParams,
         ids: readonly string[]
-    ): Promise<CmsContentEntry[]> {
+    ): Promise<CmsEntry[]> {
         let results;
         try {
             results = await this.getLoader(loader, params).loadMany(ids);

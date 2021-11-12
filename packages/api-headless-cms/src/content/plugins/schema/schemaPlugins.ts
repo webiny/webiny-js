@@ -21,7 +21,9 @@ export const generateSchemaPlugins = async (
         }, {});
 
     // Load model data
-    const models = await cms.noAuthModel().list();
+    context.security.disableAuthorization();
+    const models = await cms.listModels();
+    context.security.enableAuthorization();
 
     const schemas = getSchemaFromFieldPlugins({ models, fieldTypePlugins, type: cms.type });
 

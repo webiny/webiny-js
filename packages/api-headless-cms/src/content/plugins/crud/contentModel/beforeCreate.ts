@@ -1,8 +1,4 @@
-import {
-    BeforeModelCreateTopicParams,
-    CmsContentModel,
-    HeadlessCmsStorageOperations
-} from "~/types";
+import { BeforeModelCreateTopicParams, CmsModel, HeadlessCmsStorageOperations } from "~/types";
 import { Topic } from "@webiny/pubsub/types";
 import { PluginsContainer } from "@webiny/plugins";
 import { ContentModelPlugin } from "~/content/plugins/ContentModelPlugin";
@@ -75,7 +71,7 @@ const isAllowedModelId = (modelId: string) => {
     return !DISALLOWED_MODEL_IDS.includes(modelId);
 };
 
-const createNewModelId = (existingModels: string[], model: CmsContentModel): string => {
+const createNewModelId = (existingModels: string[], model: CmsModel): string => {
     const modelIdCamelCase = camelCase(model.name);
     let counter = 0;
     while (true) {

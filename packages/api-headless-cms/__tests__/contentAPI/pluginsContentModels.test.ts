@@ -1,6 +1,6 @@
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
 import { until } from "./../utils/helpers";
-import { CmsContentModelGroup } from "~/types";
+import { CmsGroup } from "~/types";
 import { ContentModelPlugin } from "~/content/plugins/ContentModelPlugin";
 
 const contentModelPlugin = new ContentModelPlugin({
@@ -149,7 +149,7 @@ describe("content model plugins", () => {
             }
         });
 
-        const group: CmsContentModelGroup = createGroupResponse.data.createContentModelGroup.data;
+        const group: CmsGroup = createGroupResponse.data.createContentModelGroup.data;
 
         const [createContentModelResponse] = await createContentModelMutation({
             data: {

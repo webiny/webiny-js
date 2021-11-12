@@ -1,11 +1,11 @@
 import {
-    CmsContentModel,
-    CmsContentModelStorageOperations,
-    CmsContentModelStorageOperationsCreateParams,
-    CmsContentModelStorageOperationsDeleteParams,
-    CmsContentModelStorageOperationsGetParams,
-    CmsContentModelStorageOperationsListParams,
-    CmsContentModelStorageOperationsUpdateParams
+    CmsModel,
+    CmsModelStorageOperations,
+    CmsModelStorageOperationsCreateParams,
+    CmsModelStorageOperationsDeleteParams,
+    CmsModelStorageOperationsGetParams,
+    CmsModelStorageOperationsListParams,
+    CmsModelStorageOperationsUpdateParams
 } from "@webiny/api-headless-cms/types";
 import { Entity } from "dynamodb-toolbox";
 import configurations from "~/configurations";
@@ -50,10 +50,10 @@ export interface Params {
     entity: Entity<any>;
     elasticsearch: Client;
 }
-export const createModelsStorageOperations = (params: Params): CmsContentModelStorageOperations => {
+export const createModelsStorageOperations = (params: Params): CmsModelStorageOperations => {
     const { entity, elasticsearch } = params;
 
-    const create = async (params: CmsContentModelStorageOperationsCreateParams) => {
+    const create = async (params: CmsModelStorageOperationsCreateParams) => {
         const { model } = params;
 
         const { index } = configurations.es({
@@ -113,7 +113,7 @@ export const createModelsStorageOperations = (params: Params): CmsContentModelSt
         throw error;
     };
 
-    const update = async (params: CmsContentModelStorageOperationsUpdateParams) => {
+    const update = async (params: CmsModelStorageOperationsUpdateParams) => {
         const { original, model } = params;
 
         const keys = createKeys(model);
@@ -139,7 +139,7 @@ export const createModelsStorageOperations = (params: Params): CmsContentModelSt
         }
     };
 
-    const deleteModel = async (params: CmsContentModelStorageOperationsDeleteParams) => {
+    const deleteModel = async (params: CmsModelStorageOperationsDeleteParams) => {
         const { model } = params;
         const keys = createKeys(model);
 
@@ -159,11 +159,11 @@ export const createModelsStorageOperations = (params: Params): CmsContentModelSt
         }
     };
 
-    const get = async (params: CmsContentModelStorageOperationsGetParams) => {
+    const get = async (params: CmsModelStorageOperationsGetParams) => {
         const keys = createKeys(params);
 
         try {
-            const item = await getRecord<CmsContentModel>({
+            const item = await getRecord<CmsModel>({
                 entity,
                 keys
             });
@@ -180,7 +180,7 @@ export const createModelsStorageOperations = (params: Params): CmsContentModelSt
         }
     };
 
-    const list = async (params: CmsContentModelStorageOperationsListParams) => {
+    const list = async (params: CmsModelStorageOperationsListParams) => {
         const { where } = params;
         const queryAllParams: QueryAllParams = {
             entity,
@@ -190,7 +190,7 @@ export const createModelsStorageOperations = (params: Params): CmsContentModelSt
             }
         };
         try {
-            const items = await queryAll<CmsContentModel>(queryAllParams);
+            const items = await queryAll<CmsModel>(queryAllParams);
 
             return cleanupItems(entity, items);
         } catch (ex) {

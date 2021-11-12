@@ -1,5 +1,5 @@
 import refPath from "../../../../src/dynamoDb/path/ref";
-import { CmsContentModelField } from "@webiny/api-headless-cms/types";
+import { CmsModelField } from "@webiny/api-headless-cms/types";
 
 describe("dynamodb path ref", () => {
     it("should get the ref path", () => {
@@ -8,7 +8,7 @@ describe("dynamodb path ref", () => {
         const result = plugin.createPath({
             field: {
                 fieldId: "authors"
-            } as CmsContentModelField
+            } as CmsModelField
         });
 
         expect(result).toEqual("authors.entryId");
@@ -24,7 +24,7 @@ describe("dynamodb path ref", () => {
             const result = plugin.createPath({
                 field: {
                     fieldId: "authors"
-                } as CmsContentModelField,
+                } as CmsModelField,
                 index
             });
 

@@ -1,6 +1,6 @@
 import mergeWith from "lodash/mergeWith";
 import isEmpty from "lodash/isEmpty";
-import { CmsContentModel } from "./types";
+import { CmsModel } from "./types";
 
 type Group = {
     [code: string]: string[];
@@ -26,7 +26,7 @@ enum AccessTypes {
 
 export const migrateCMSPermissions = async (
     permissions: CMSPermission[],
-    getModel: (modelId: string) => Promise<CmsContentModel>
+    getModel: (modelId: string) => Promise<CmsModel>
 ): Promise<CMSPermission[]> => {
     // First we've to know whether is a "full" access or "custom" access.
     const fullAccess = permissions.find(permission => permission.name === AccessTypes.FULL);

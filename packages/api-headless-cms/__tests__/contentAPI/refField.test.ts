@@ -1,5 +1,5 @@
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
-import { CmsContentEntry, CmsContentModelGroup } from "~/types";
+import { CmsEntry, CmsGroup } from "~/types";
 import models from "./mocks/contentModels";
 import { useReviewManageHandler } from "../utils/useReviewManageHandler";
 import { useProductManageHandler } from "../utils/useProductManageHandler";
@@ -19,7 +19,7 @@ describe("refField", () => {
 
     // This function is not directly within `beforeEach` as we don't always setup the same content model.
     // We call this function manually at the beginning of each test, where needed.
-    const setupContentModelGroup = async (): Promise<CmsContentModelGroup> => {
+    const setupContentModelGroup = async (): Promise<CmsGroup> => {
         const [createCMG] = await createContentModelGroupMutation({
             data: {
                 name: "Group",
@@ -31,7 +31,7 @@ describe("refField", () => {
         return createCMG.data.createContentModelGroup.data;
     };
 
-    const setupContentModel = async (contentModelGroup: CmsContentModelGroup, name: string) => {
+    const setupContentModel = async (contentModelGroup: CmsGroup, name: string) => {
         const model = models.find(m => m.modelId === name);
         // Create initial record
         const [create] = await createContentModelMutation({
@@ -59,7 +59,7 @@ describe("refField", () => {
         });
         return update.data.updateContentModel.data;
     };
-    const setupContentModels = async (contentModelGroup: CmsContentModelGroup) => {
+    const setupContentModels = async (contentModelGroup: CmsGroup) => {
         const models = {
             category: null,
             product: null,
@@ -82,10 +82,10 @@ describe("refField", () => {
                 slug: "vegetables"
             }
         });
-        return createCategoryResponse.data.createCategory.data as CmsContentEntry;
+        return createCategoryResponse.data.createCategory.data as CmsEntry;
     };
 
-    const createProduct = async (category: CmsContentEntry) => {
+    const createProduct = async (category: CmsEntry) => {
         const { createProduct, publishProduct } = useProductManageHandler({
             ...manageOpts
         });

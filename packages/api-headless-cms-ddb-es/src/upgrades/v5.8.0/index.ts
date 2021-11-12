@@ -1,5 +1,5 @@
 import { UpgradePlugin } from "@webiny/api-upgrade/types";
-import { CmsContentEntry, CmsContentModel, CmsContext } from "@webiny/api-headless-cms/types";
+import { CmsEntry, CmsModel, CmsContext } from "@webiny/api-headless-cms/types";
 import configurations from "../../configurations";
 // @ts-ignore
 import { TYPE_ENTRY_LATEST } from "../../operations/entry/CmsContentEntryDynamoElastic";
@@ -33,7 +33,7 @@ interface ElasticCmsContentEntry {
     index: string;
     PK: string;
     SK: string;
-    data: CmsContentEntry;
+    data: CmsEntry;
 }
 
 const sleep = async (ms = 2000): Promise<void> => {
@@ -188,7 +188,7 @@ export default (): UpgradePlugin<CmsContext> => ({
             /**
              * Need all the models to build the elasticsearch indexes
              */
-            const models = await executeQuery<CmsContentModel>(
+            const models = await executeQuery<CmsModel>(
                 // TODO determine if required to loop through the tenants
                 modelEntity.query(`T#root#L#${locale.code}#CMS#CM`)
             );
@@ -291,7 +291,7 @@ export default (): UpgradePlugin<CmsContext> => ({
          * We can use a scan but at that point all the records in the table would be read,
          * which is possibly expensive if there are a lot of records from the other applications (file manager, form builder, ...)
          */
-        const regularEntries = await fetchEntries<CmsContentEntry>({
+        const regularEntries = await fetchEntries<CmsEntry>({
             records: entryRecords,
             entity: entryEntity
         });

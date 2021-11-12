@@ -1,9 +1,9 @@
 import { ElasticsearchQuerySearchValuePlugins } from "./searchPluginsList";
-import { CmsContentModelField } from "@webiny/api-headless-cms/types";
+import { CmsModelField } from "@webiny/api-headless-cms/types";
 
 interface Params {
     plugins: ElasticsearchQuerySearchValuePlugins;
-    field: CmsContentModelField;
+    field: CmsModelField;
     value: any;
 }
 
