@@ -38,39 +38,42 @@ export const createContentCruds = (params: Params) => {
             context.plugins.register(storageOperations.plugins);
         }
 
-        context.cms.system = createSystemCrud({
-            context,
-            getTenant,
-            getIdentity,
-            storageOperations
-        });
-        context.cms.settings = createSettingsCrud({
-            context,
-            getTenant,
-            getLocale,
-            storageOperations
-        });
-        context.cms.groups = createModelGroupsCrud({
-            context,
-            getTenant,
-            getLocale,
-            getIdentity,
-            storageOperations
-        });
-        context.cms.models = createModelsCrud({
-            context,
-            getLocale,
-            getTenant,
-            getIdentity,
-            storageOperations
-        });
-        context.cms.entries = createContentEntryCrud({
-            context,
-            getLocale,
-            getTenant,
-            getIdentity,
-            storageOperations
-        });
+        context.cms = {
+            ...context.cms,
+            ...createSystemCrud({
+                context,
+                getTenant,
+                getIdentity,
+                storageOperations
+            }),
+            ...createSettingsCrud({
+                context,
+                getTenant,
+                getLocale,
+                storageOperations
+            }),
+            ...createModelGroupsCrud({
+                context,
+                getTenant,
+                getLocale,
+                getIdentity,
+                storageOperations
+            }),
+            ...createModelsCrud({
+                context,
+                getLocale,
+                getTenant,
+                getIdentity,
+                storageOperations
+            }),
+            ...createContentEntryCrud({
+                context,
+                getLocale,
+                getTenant,
+                getIdentity,
+                storageOperations
+            })
+        };
 
         if (!storageOperations.init) {
             return;

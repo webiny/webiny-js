@@ -185,7 +185,6 @@ export const createModelGroupsCrud = (params: Params): CmsContentModelGroupConte
         onAfterGroupUpdate: onAfterUpdate,
         onBeforeGroupDelete: onBeforeDelete,
         onAfterGroupDelete: onAfterDelete,
-        operations: storageOperations.groups,
         noAuthGroup: () => {
             return {
                 get: groupsGet,

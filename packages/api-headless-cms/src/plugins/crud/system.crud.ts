@@ -119,7 +119,7 @@ export const createSystemCrud = (params: Params): CmsSystemContext => {
              * Add default content model group.
              */
             try {
-                await context.cms.groups.createGroup(initialContentModelGroup);
+                await context.cms.createGroup(initialContentModelGroup);
             } catch (ex) {
                 throw new WebinyError(ex.message, "CMS_INSTALLATION_CONTENT_MODEL_GROUP_ERROR", {
                     group: initialContentModelGroup

@@ -176,8 +176,6 @@ export const createModelsCrud = (params: Params): CmsContentModelContext => {
         return await updateManager(context, model);
     };
 
-    context.cms.getModelManager = getManager;
-
     const onBeforeCreate = createTopic<BeforeModelCreateTopicParams>();
     const onAfterCreate = createTopic<AfterModelCreateTopicParams>();
     const onBeforeUpdate = createTopic<BeforeModelUpdateTopicParams>();
@@ -222,7 +220,6 @@ export const createModelsCrud = (params: Params): CmsContentModelContext => {
         onAfterModelUpdate: onAfterUpdate,
         onBeforeModelDelete: onBeforeDelete,
         onAfterModelDelete: onAfterDelete,
-        operations: storageOperations.models,
         noAuthModel: () => {
             return {
                 get: modelsGet,
@@ -252,7 +249,7 @@ export const createModelsCrud = (params: Params): CmsContentModelContext => {
             await createdData.validate();
             const input = await createdData.toJSON();
 
-            const group = await context.cms.groups.noAuthGroup().get(input.group);
+            const group = await context.cms.noAuthGroup().get(input.group);
             if (!group) {
                 throw new NotFoundError(`There is no group "${input.group}".`);
             }
@@ -353,7 +350,7 @@ export const createModelsCrud = (params: Params): CmsContentModelContext => {
                 return {} as any;
             }
             if (input.group) {
-                const group = await context.cms.groups.noAuthGroup().get(input.group);
+                const group = await context.cms.noAuthGroup().get(input.group);
                 if (!group) {
                     throw new NotFoundError(`There is no group "${input.group}".`);
                 }
@@ -426,7 +423,7 @@ export const createModelsCrud = (params: Params): CmsContentModelContext => {
 
             managers.delete(model.modelId);
         },
-        getManager,
+        getModelManager: getManager,
         getManagers: () => managers
     };
 };

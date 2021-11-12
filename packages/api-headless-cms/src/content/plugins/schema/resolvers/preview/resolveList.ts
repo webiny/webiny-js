@@ -9,8 +9,10 @@ export const resolveList: ResolverFactory =
     ({ model }) =>
     async (_, args, { cms }) => {
         try {
-            const response: [CmsContentEntry[], CmsContentEntryMeta] =
-                await cms.entries.listLatestEntries(model, args);
+            const response: [CmsContentEntry[], CmsContentEntryMeta] = await cms.listLatestEntries(
+                model,
+                args
+            );
 
             return new ListResponse(...response);
         } catch (e) {

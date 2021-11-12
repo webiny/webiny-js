@@ -241,7 +241,6 @@ export const createContentEntryCrud = (params: Params): CmsContentEntryContext =
         onAfterEntryRequestChanges: onAfterRequestChanges,
         onBeforeEntryRequestReview: onBeforeRequestReview,
         onAfterEntryRequestReview: onAfterRequestReview,
-        operations: storageOperations.entries,
         /**
          * Get entries by exact revision IDs from the database.
          */
@@ -297,7 +296,7 @@ export const createContentEntryCrud = (params: Params): CmsContentEntryContext =
         getEntry: async (model, args) => {
             await checkEntryPermissions({ rwd: "r" });
 
-            const [items] = await context.cms.entries.listEntries(model, {
+            const [items] = await context.cms.listEntries(model, {
                 ...args,
                 limit: 1
             });
@@ -347,7 +346,7 @@ export const createContentEntryCrud = (params: Params): CmsContentEntryContext =
         listLatestEntries: async function (model, params) {
             const where = params ? params.where : {};
 
-            return context.cms.entries.listEntries(model, {
+            return context.cms.listEntries(model, {
                 sort: ["createdOn_DESC"],
                 ...(params || {}),
                 where: {
@@ -359,7 +358,7 @@ export const createContentEntryCrud = (params: Params): CmsContentEntryContext =
         listPublishedEntries: async function (model, params) {
             const where = params ? params.where : {};
 
-            return context.cms.entries.listEntries(model, {
+            return context.cms.listEntries(model, {
                 sort: ["createdOn_DESC"],
                 ...(params || {}),
                 where: {

@@ -10,7 +10,7 @@ export const resolveList: ResolverFactory =
     async (_, args, { cms }) => {
         try {
             const response: [CmsContentEntry[], CmsContentEntryMeta] =
-                await cms.entries.listPublishedEntries(model, args);
+                await cms.listPublishedEntries(model, args);
 
             return new ListResponse(...response);
         } catch (e) {

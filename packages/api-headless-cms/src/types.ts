@@ -882,10 +882,6 @@ export interface AfterGroupDeleteTopicParams {
  */
 export interface CmsContentModelGroupContext {
     /**
-     * Plain operations on the storage level.
-     */
-    operations: CmsContentModelGroupStorageOperations;
-    /**
      * A function defining usage of a method without authenticating the user.
      */
     noAuthGroup: () => {
@@ -1262,10 +1258,6 @@ export interface CmsContentModelUpdateInternalParams {
  */
 export interface CmsContentModelContext {
     /**
-     * Plain operations on the storage level.
-     */
-    operations: CmsContentModelStorageOperations;
-    /**
      * A function defining usage of a method without authenticating the user.
      */
     noAuthModel: () => {
@@ -1321,7 +1313,7 @@ export interface CmsContentModelContext {
      *
      * @see CmsContentModelManager
      */
-    getManager: (modelId: string) => Promise<CmsContentModelManager>;
+    getModelManager: (modelId: string) => Promise<CmsContentModelManager>;
     /**
      * Get all content model managers mapped by modelId.
      * @see CmsContentModelManager
@@ -1575,10 +1567,6 @@ export interface AfterEntryRevisionDeleteTopicParams {
  */
 export interface CmsContentEntryContext {
     /**
-     * Plain operations on the storage level.
-     */
-    operations: CmsContentEntryStorageOperations;
-    /**
      * Get a single content entry for a model.
      */
     getEntry: (
@@ -1701,31 +1689,13 @@ export interface CmsContentEntryContext {
  *
  * @category Context
  */
-interface CmsCrudContextObject {
-    /**
-     * Settings CRUD methods.
-     */
-    settings: CmsSettingsContext;
-    /**
-     * Content model group CRUD methods.
-     */
-    groups: CmsContentModelGroupContext;
-    /**
-     * Content model CRUD methods.
-     */
-    models: CmsContentModelContext;
-    /**
-     * Fetch the content entry manager. It calls content entry methods internally, with given model as the target.
-     */
-    getModelManager: (modelId: string) => Promise<CmsContentModelManager>;
-    /**
-     * Content entry CRUD methods.
-     */
-    entries: CmsContentEntryContext;
-    /**
-     * System CRUD methods
-     */
-    system: CmsSystemContext;
+interface CmsCrudContextObject
+    extends CmsSettingsContext,
+        CmsSystemContext,
+        CmsContentModelGroupContext,
+        CmsContentModelContext,
+        CmsContentEntryContext {
+    storageOperations: HeadlessCmsStorageOperations;
 }
 
 /**

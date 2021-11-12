@@ -25,7 +25,7 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
         Query: {
             getContentModel: async (_: unknown, args: ReadContentModelArgs, context) => {
                 try {
-                    const model = await context.cms.models.getModel(args.modelId);
+                    const model = await context.cms.getModel(args.modelId);
                     return new Response(model);
                 } catch (e) {
                     return new ErrorResponse(e);
@@ -33,7 +33,7 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
             },
             listContentModels: async (_: unknown, __: unknown, context: CmsContext) => {
                 try {
-                    const model = await context.cms.models.listModels();
+                    const model = await context.cms.listModels();
                     return new Response(model);
                 } catch (e) {
                     return new ErrorResponse(e);
@@ -58,7 +58,7 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
         resolvers.Mutation = {
             createContentModel: async (_: unknown, args: CreateContentModelArgs, context) => {
                 try {
-                    const model = await context.cms.models.createModel(args.data);
+                    const model = await context.cms.createModel(args.data);
                     return new Response(model);
                 } catch (e) {
                     return new ErrorResponse(e);
@@ -67,7 +67,7 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
             updateContentModel: async (_: unknown, args: UpdateContentModelArgs, context) => {
                 const { modelId, data } = args;
                 try {
-                    const model = await context.cms.models.updateModel(modelId, data);
+                    const model = await context.cms.updateModel(modelId, data);
                     return new Response(model);
                 } catch (e) {
                     return new ErrorResponse(e);
@@ -76,7 +76,7 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
             deleteContentModel: async (_: unknown, args: DeleteContentModelArgs, context) => {
                 const { modelId } = args;
                 try {
-                    await context.cms.models.deleteModel(modelId);
+                    await context.cms.deleteModel(modelId);
                     return new Response(true);
                 } catch (e) {
                     return new ErrorResponse(e);

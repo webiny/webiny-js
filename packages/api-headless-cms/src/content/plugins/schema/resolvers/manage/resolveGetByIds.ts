@@ -5,10 +5,7 @@ export const resolveGetByIds: ResolverFactory =
     ({ model }) =>
     async (_, args, { cms }) => {
         try {
-            const response: CmsContentEntry[] = await cms.entries.getEntriesByIds(
-                model,
-                args.revisions
-            );
+            const response: CmsContentEntry[] = await cms.getEntriesByIds(model, args.revisions);
 
             return new Response(response);
         } catch (e) {

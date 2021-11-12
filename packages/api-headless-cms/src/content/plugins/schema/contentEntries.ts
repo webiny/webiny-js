@@ -57,7 +57,7 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
             Query: {
                 async searchContentEntries(_, args, context) {
                     const { modelIds, query, limit = 10 } = args;
-                    const models = await context.cms.models.listModels();
+                    const models = await context.cms.listModels();
 
                     const getters = models
                         .filter(model => modelIds.includes(model.modelId))
@@ -96,14 +96,14 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
                 },
                 async getContentEntry(_, args, context) {
                     const { modelId, entryId } = args.entry;
-                    const models = await context.cms.models.listModels();
+                    const models = await context.cms.listModels();
                     const model = models.find(m => m.modelId === modelId);
 
                     if (!model) {
                         return new NotAuthorizedResponse({ data: { modelId } });
                     }
 
-                    const [entry] = await context.cms.entries.getEntriesByIds(model, [entryId]);
+                    const [entry] = await context.cms.getEntriesByIds(model, [entryId]);
 
                     return new Response({
                         id: entry.id,
@@ -116,7 +116,7 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
                     });
                 },
                 async getContentEntries(_, args, context) {
-                    const models = await context.cms.models.listModels();
+                    const models = await context.cms.listModels();
                     const entriesByModel = args.entries.map((ref, index) => {
                         return {
                             entryId: ref.entryId,
@@ -128,7 +128,7 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
                     const getters = entriesByModel.map(async ({ modelId, entryId }) => {
                         // Get model manager, to get access to CRUD methods
                         const model = models.find(m => m.modelId === modelId);
-                        const entries = await context.cms.entries.getEntriesByIds(model, [entryId]);
+                        const entries = await context.cms.getEntriesByIds(model, [entryId]);
                         return entries.map(entry => ({
                             id: entry.id,
                             model: {

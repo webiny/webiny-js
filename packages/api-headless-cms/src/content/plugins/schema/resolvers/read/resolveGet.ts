@@ -6,7 +6,7 @@ export const resolveGet: ResolverFactory =
     ({ model }) =>
     async (_, args, context) => {
         try {
-            const [[entry]] = await context.cms.entries.listPublishedEntries(model, {
+            const [[entry]] = await context.cms.listPublishedEntries(model, {
                 ...args,
                 limit: 1
             });

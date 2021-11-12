@@ -7,7 +7,7 @@ export const resolveCreate: ResolveCreate =
     ({ model }) =>
     async (_, args, { cms }) => {
         try {
-            const entry = await cms.entries.createEntry(model, args.data);
+            const entry = await cms.createEntry(model, args.data);
 
             return new Response(entry);
         } catch (e) {

@@ -73,11 +73,11 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
         resolvers = {
             CmsContentModelGroup: {
                 contentModels: async (group, _, context) => {
-                    const models = await context.cms.models.silentAuthModel().list();
+                    const models = await context.cms.silentAuthModel().list();
                     return models.filter(m => m.group.id === group.id);
                 },
                 totalContentModels: async (group, _, context) => {
-                    const models = await context.cms.models.silentAuthModel().list();
+                    const models = await context.cms.silentAuthModel().list();
                     return models.filter(m => m.group === group.id).length;
                 },
                 plugin: async (group, _, context: CmsContext) => {
@@ -95,7 +95,7 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
                 getContentModelGroup: async (_, args: ReadContentModelGroupArgs, context) => {
                     try {
                         const { id } = args;
-                        const model = await context.cms.groups.getGroup(id);
+                        const model = await context.cms.getGroup(id);
                         return new Response(model);
                     } catch (e) {
                         return new ErrorResponse(e);
@@ -103,7 +103,7 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
                 },
                 listContentModelGroups: async (_, __, context) => {
                     try {
-                        const models = await context.cms.groups.listGroups();
+                        const models = await context.cms.listGroups();
                         return new Response(models);
                     } catch (e) {
                         return new ErrorResponse(e);
@@ -113,7 +113,7 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
             Mutation: {
                 createContentModelGroup: async (_, args: CreateContentModelGroupArgs, context) => {
                     try {
-                        const model = await context.cms.groups.createGroup(args.data);
+                        const model = await context.cms.createGroup(args.data);
                         return new Response(model);
                     } catch (e) {
                         return new ErrorResponse(e);
@@ -121,7 +121,7 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
                 },
                 updateContentModelGroup: async (_, args: UpdateContentModelGroupArgs, context) => {
                     try {
-                        const group = await context.cms.groups.updateGroup(args.id, args.data);
+                        const group = await context.cms.updateGroup(args.id, args.data);
                         return new Response(group);
                     } catch (e) {
                         return new ErrorResponse(e);
@@ -129,7 +129,7 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
                 },
                 deleteContentModelGroup: async (_, args: DeleteContentModelGroupArgs, context) => {
                     try {
-                        await context.cms.groups.deleteGroup(args.id);
+                        await context.cms.deleteGroup(args.id);
                         return new Response(true);
                     } catch (e) {
                         return new ErrorResponse(e);

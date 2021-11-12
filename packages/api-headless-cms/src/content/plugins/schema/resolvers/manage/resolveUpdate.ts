@@ -7,7 +7,7 @@ export const resolveUpdate: ResolveUpdate =
     ({ model }) =>
     async (_, args, { cms }) => {
         try {
-            const entry = await cms.entries.updateEntry(model, args.revision, args.data);
+            const entry = await cms.updateEntry(model, args.revision, args.data);
 
             return new Response(entry);
         } catch (e) {
