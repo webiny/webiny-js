@@ -51,11 +51,10 @@ module.exports = async ({
 
             promises.push(
                 new Promise(async resolve => {
+                    // We also replace "\" with "/", which can occur on Windows' CMD or Powershell.
+                    // https://github.com/webiny/webiny-js/issues/1701#issuecomment-860123555
+                    const key = relative(root, path).replace(/\\/g, "/");
                     try {
-                        // We also replace "\" with "/", which can occur on Windows' CMD or Powershell.
-                        // https://github.com/webiny/webiny-js/issues/1701#issuecomment-860123555
-                        const key = relative(root, path).replace(/\\/g, "/");
-
                         // Get file checksum so that we can check if a file needs to be uploaded or not.
                         const checksum = await getFileChecksum(path);
 
