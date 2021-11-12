@@ -382,7 +382,7 @@ export const Form = React.forwardRef((props: FormProps, ref) => {
         inputs.current[name] = { defaultValue, validators, afterChange };
 
         return {
-            form: formRef.current,
+            form: getFormRef(),
             disabled: isDisabled(),
             validate: getValidateFn(name),
             validation: getValidationState(name),
@@ -395,6 +395,7 @@ export const Form = React.forwardRef((props: FormProps, ref) => {
         data: state.data,
         setValue,
         validate,
+        validateInput,
         submit
     });
 

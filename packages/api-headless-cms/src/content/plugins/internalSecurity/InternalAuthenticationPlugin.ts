@@ -16,7 +16,7 @@ export class InternalAuthenticationPlugin extends AuthenticationPlugin {
         const { headers } = context.http.request;
         const header = headers["Authorization"] || headers["authorization"];
         const apiKey = header ? header.split(" ").pop() : null;
-        if (!apiKey || apiKey !== (await context.cms.system.getReadAPIKey())) {
+        if (!apiKey || apiKey !== (await context.cms.getReadAPIKey())) {
             return;
         }
 

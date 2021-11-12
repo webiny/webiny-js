@@ -1,37 +1,37 @@
 import Error from "@webiny/error";
-import {
-    CmsContentEntry,
-    CmsContentModel,
-    CmsContext,
-    CmsModelFieldToGraphQLPlugin
-} from "@webiny/api-headless-cms/types";
-import { CmsContentIndexEntry, CmsModelFieldToElasticsearchPlugin } from "~/types";
+import { CmsEntry, CmsModel, CmsModelFieldToGraphQLPlugin } from "@webiny/api-headless-cms/types";
+import { CmsIndexEntry, CmsModelFieldToElasticsearchPlugin } from "~/types";
+import { PluginsContainer } from "@webiny/plugins";
 
-interface SetupEntriesIndexHelpersArgs {
-    context: CmsContext;
+interface SetupEntriesIndexHelpersParams {
+    plugins: PluginsContainer;
 }
 
-interface ExtractEntriesFromIndexArgs extends SetupEntriesIndexHelpersArgs {
-    model: CmsContentModel;
-    entries: CmsContentIndexEntry[];
+interface ExtractEntriesFromIndexParams extends SetupEntriesIndexHelpersParams {
+    model: CmsModel;
+    entries: CmsIndexEntry[];
 }
 
-interface PrepareElasticsearchDataArgs extends SetupEntriesIndexHelpersArgs {
-    model: CmsContentModel;
-    storageEntry: CmsContentEntry;
+interface PrepareElasticsearchDataParams extends SetupEntriesIndexHelpersParams {
+    model: CmsModel;
+    storageEntry: CmsEntry;
 }
 
-export const prepareEntryToIndex = (args: PrepareElasticsearchDataArgs): CmsContentIndexEntry => {
-    const { context, storageEntry, model } = args;
+export const prepareEntryToIndex = (params: PrepareElasticsearchDataParams): CmsIndexEntry => {
+    const { plugins, storageEntry, model } = params;
     const { fieldIndexPlugins, defaultIndexFieldPlugin, fieldTypePlugins } =
-        setupEntriesIndexHelpers({ context });
+        setupEntriesIndexHelpers({ plugins });
 
     function getFieldIndexPlugin(fieldType: string) {
         return fieldIndexPlugins[fieldType] || defaultIndexFieldPlugin;
     }
 
     function getFieldTypePlugin(fieldType: string) {
-        return fieldTypePlugins[fieldType];
+        const pl = fieldTypePlugins[fieldType];
+        if (pl) {
+            return pl;
+        }
+        throw new Error(`Missing field type plugin "${fieldType}". Prepare entry for index.`);
     }
 
     // These objects will contain values processed by field index plugins
@@ -44,42 +44,41 @@ export const prepareEntryToIndex = (args: PrepareElasticsearchDataArgs): CmsCont
             continue;
         }
 
-        const fieldTypePlugin = getFieldTypePlugin(field.type);
-        if (!fieldTypePlugin) {
-            throw new Error(`Missing field type plugin "${field.type}".`);
-        }
-
         const targetFieldPlugin = getFieldIndexPlugin(field.type);
 
         // TODO: remove this `if` once we convert this plugin to proper plugin class
-        if (targetFieldPlugin && targetFieldPlugin.toIndex) {
-            const { value, rawValue } = targetFieldPlugin.toIndex({
-                context,
-                model,
-                field,
-                value: storageEntry.values[field.fieldId],
-                getFieldIndexPlugin,
-                getFieldTypePlugin
-            });
+        if (!targetFieldPlugin || !targetFieldPlugin.toIndex) {
+            continue;
+        }
 
-            if (typeof value !== "undefined") {
-                values[field.fieldId] = value;
-            }
+        const { value, rawValue } = targetFieldPlugin.toIndex({
+            plugins,
+            model,
+            field,
+            value: storageEntry.values[field.fieldId],
+            getFieldIndexPlugin,
+            getFieldTypePlugin
+        });
 
-            if (typeof rawValue !== "undefined") {
-                rawValues[field.fieldId] = rawValue;
-            }
+        if (typeof value !== "undefined") {
+            values[field.fieldId] = value;
+        }
+
+        if (typeof rawValue !== "undefined") {
+            rawValues[field.fieldId] = rawValue;
         }
     }
     return {
         ...storageEntry,
         values,
         rawValues
-    } as CmsContentIndexEntry;
+    } as CmsIndexEntry;
 };
 
-const setupEntriesIndexHelpers = ({ context }: SetupEntriesIndexHelpersArgs) => {
-    const plugins = context.plugins.byType<CmsModelFieldToElasticsearchPlugin>(
+const setupEntriesIndexHelpers = ({
+    plugins: pluginsContainer
+}: SetupEntriesIndexHelpersParams) => {
+    const plugins = pluginsContainer.byType<CmsModelFieldToElasticsearchPlugin>(
         "cms-model-field-to-elastic-search"
     );
 
@@ -94,7 +93,7 @@ const setupEntriesIndexHelpers = ({ context }: SetupEntriesIndexHelpersArgs) => 
     const defaultIndexFieldPlugin = plugins.find(plugin => plugin.fieldType === "*");
 
     // CmsModelFieldToGraphQLPlugin plugins
-    const fieldTypePlugins: Record<string, CmsModelFieldToGraphQLPlugin> = context.plugins
+    const fieldTypePlugins: Record<string, CmsModelFieldToGraphQLPlugin> = pluginsContainer
         .byType<CmsModelFieldToGraphQLPlugin>("cms-model-field-to-graphql")
         .reduce((plugins, plugin) => ({ ...plugins, [plugin.fieldType]: plugin }), {});
 
@@ -106,12 +105,12 @@ const setupEntriesIndexHelpers = ({ context }: SetupEntriesIndexHelpersArgs) => 
 };
 
 export const extractEntriesFromIndex = ({
-    context,
+    plugins,
     entries,
     model
-}: ExtractEntriesFromIndexArgs): CmsContentEntry[] => {
+}: ExtractEntriesFromIndexParams): CmsEntry[] => {
     const { fieldIndexPlugins, defaultIndexFieldPlugin, fieldTypePlugins } =
-        setupEntriesIndexHelpers({ context });
+        setupEntriesIndexHelpers({ plugins });
 
     function getFieldIndexPlugin(fieldType: string) {
         return fieldIndexPlugins[fieldType] || defaultIndexFieldPlugin;
@@ -121,7 +120,7 @@ export const extractEntriesFromIndex = ({
         return fieldTypePlugins[fieldType];
     }
 
-    const list: CmsContentEntry[] = [];
+    const list: CmsEntry[] = [];
 
     for (const entry of entries) {
         // This object will contain values processed by field index plugins
@@ -131,34 +130,37 @@ export const extractEntriesFromIndex = ({
         for (const field of model.fields) {
             const fieldTypePlugin = fieldTypePlugins[field.type];
             if (!fieldTypePlugin) {
-                throw new Error(`Missing field type plugin "${field.type}".`);
+                throw new Error(
+                    `Missing field type plugin "${field.type}". Extract entries from index.`
+                );
             }
 
             const targetFieldPlugin = getFieldIndexPlugin(field.type);
-            if (targetFieldPlugin && targetFieldPlugin.fromIndex) {
-                try {
-                    indexValues[field.fieldId] = targetFieldPlugin.fromIndex({
-                        context,
-                        model,
+            if (!targetFieldPlugin || !targetFieldPlugin.fromIndex) {
+                continue;
+            }
+            try {
+                indexValues[field.fieldId] = targetFieldPlugin.fromIndex({
+                    plugins,
+                    model,
+                    field,
+                    getFieldIndexPlugin,
+                    getFieldTypePlugin,
+                    value: entry.values[field.fieldId],
+                    /**
+                     * Possibly no rawValues so we must check for the existence of the field.
+                     */
+                    rawValue: entry.rawValues ? entry.rawValues[field.fieldId] : null
+                });
+            } catch (ex) {
+                throw new Error(
+                    ex.message || "Could not transform entry field from index.",
+                    ex.code || "FIELD_FROM_INDEX_ERROR",
+                    {
                         field,
-                        getFieldIndexPlugin,
-                        getFieldTypePlugin,
-                        value: entry.values[field.fieldId],
-                        /**
-                         * Possibly no rawValues so we must check for the existence of the field.
-                         */
-                        rawValue: entry.rawValues ? entry.rawValues[field.fieldId] : null
-                    });
-                } catch (ex) {
-                    throw new Error(
-                        ex.message || "Could not transform entry field from index.",
-                        ex.code || "FIELD_FROM_INDEX_ERROR",
-                        {
-                            field,
-                            entry
-                        }
-                    );
-                }
+                        entry
+                    }
+                );
             }
         }
         list.push({ ...entry, values: indexValues });

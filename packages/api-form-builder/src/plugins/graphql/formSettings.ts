@@ -43,7 +43,7 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
         `,
         resolvers: {
             FbQuery: {
-                async getSettings(_, args, { formBuilder }) {
+                async getSettings(_, __, { formBuilder }) {
                     try {
                         const settings = await formBuilder.getSettings({
                             throwOnNotFound: true

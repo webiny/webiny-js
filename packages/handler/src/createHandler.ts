@@ -31,7 +31,7 @@ export default (...plugins) =>
         return result;
     };
 
-async function handle(args, context: Context) {
+async function handle(_: any, context: Context) {
     try {
         const contextPlugins = context.plugins.byType<ContextPlugin>("context");
         for (let i = 0; i < contextPlugins.length; i++) {

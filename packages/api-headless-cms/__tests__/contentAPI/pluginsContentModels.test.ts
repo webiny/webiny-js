@@ -1,11 +1,12 @@
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
-import { ContentModelPlugin } from "@webiny/api-headless-cms/content/plugins/ContentModelPlugin";
 import { until } from "./../utils/helpers";
+import { CmsGroup } from "~/types";
+import { CmsModelPlugin } from "~/content/plugins/CmsModelPlugin";
 
-const contentModelPlugin = new ContentModelPlugin({
+const contentModelPlugin = new CmsModelPlugin({
     name: "Product",
     modelId: "product",
-    locale: "en-us",
+    locale: "en-US",
     group: {
         id: "ecommerce",
         name: "E-Commerce"
@@ -36,6 +37,7 @@ const contentModelPlugin = new ContentModelPlugin({
 
 const FIELDS_FRAGMENT = /* GraphQL */ `
     fragment ProductFields on Product {
+        id
         name
         sku
         price
@@ -98,6 +100,21 @@ const LIST_PRODUCTS = /* GraphQL */ `
     }
 `;
 
+const GET_PRODUCT = /* GraphQL */ `
+    ${FIELDS_FRAGMENT}
+    ${ERROR_FRAGMENT}
+    query GetProduct($revision: ID!) {
+        getProduct(revision: $revision) {
+            data {
+                ...ProductFields
+            }
+            error {
+                ...ErrorFields
+            }
+        }
+    }
+`;
+
 describe("content model plugins", () => {
     test("must not be able to create, update, or delete a content model that was registered via plugins", async () => {
         const {
@@ -105,97 +122,107 @@ describe("content model plugins", () => {
             createContentModelGroupMutation,
             updateContentModelMutation,
             deleteContentModelMutation
-        } = useContentGqlHandler(
-            {
-                path: "manage/en-US"
-            },
-            [contentModelPlugin]
-        );
+        } = useContentGqlHandler({
+            path: "manage/en-US",
+            plugins: [contentModelPlugin]
+        });
 
-        const group = await createContentModelGroupMutation({
+        const [createGroupResponse] = await createContentModelGroupMutation({
             data: {
                 name: "Group",
                 slug: "group",
                 icon: "ico/ico",
                 description: "description"
             }
-        }).then(([response]) => response.data.createContentModelGroup.data);
+        });
+        expect(createGroupResponse).toMatchObject({
+            data: {
+                createContentModelGroup: {
+                    data: {
+                        name: "Group",
+                        slug: "group",
+                        icon: "ico/ico",
+                        description: "description"
+                    },
+                    error: null
+                }
+            }
+        });
 
-        await createContentModelMutation({
+        const group: CmsGroup = createGroupResponse.data.createContentModelGroup.data;
+
+        const [createContentModelResponse] = await createContentModelMutation({
             data: {
                 name: "product",
                 modelId: "product",
                 group: group.id
             }
-        }).then(([response]) =>
-            expect(response).toEqual({
-                data: {
-                    createContentModel: {
-                        data: null,
-                        error: {
-                            code: "CONTENT_MODEL_CREATE_ERROR",
-                            data: {
-                                modelId: "product"
-                            },
-                            message:
-                                'Cannot create "product" content model because one is already registered via a plugin.'
-                        }
+        });
+
+        expect(createContentModelResponse).toEqual({
+            data: {
+                createContentModel: {
+                    data: null,
+                    error: {
+                        code: "CONTENT_MODEL_CREATE_ERROR",
+                        data: {
+                            modelId: "product"
+                        },
+                        message:
+                            'Cannot create "product" content model because one is already registered via a plugin.'
                     }
                 }
-            })
-        );
+            }
+        });
 
-        await updateContentModelMutation({
+        const [updateContentModelResponse] = await updateContentModelMutation({
             modelId: "product",
             data: {
                 name: "product-updated",
                 layout: [],
                 fields: []
             }
-        }).then(([response]) =>
-            expect(response).toEqual({
-                data: {
-                    updateContentModel: {
-                        data: null,
-                        error: {
-                            code: "CONTENT_MODEL_UPDATE_ERROR",
-                            data: {
-                                modelId: "product"
-                            },
-                            message: "Content models defined via plugins cannot be updated."
-                        }
-                    }
-                }
-            })
-        );
+        });
 
-        await deleteContentModelMutation({
-            modelId: "product"
-        }).then(([response]) =>
-            expect(response).toEqual({
-                data: {
-                    deleteContentModel: {
-                        data: null,
-                        error: {
-                            code: "CONTENT_MODEL_DELETE_ERROR",
-                            data: {
-                                modelId: "product"
-                            },
-                            message: "Content models defined via plugins cannot be deleted."
-                        }
+        expect(updateContentModelResponse).toEqual({
+            data: {
+                updateContentModel: {
+                    data: null,
+                    error: {
+                        code: "CONTENT_MODEL_UPDATE_ERROR",
+                        data: {
+                            modelId: "product"
+                        },
+                        message: "Content models defined via plugins cannot be updated."
                     }
                 }
-            })
-        );
+            }
+        });
+
+        const [deleteContentModelResponse] = await deleteContentModelMutation({
+            modelId: "product"
+        });
+        expect(deleteContentModelResponse).toEqual({
+            data: {
+                deleteContentModel: {
+                    data: null,
+                    error: {
+                        code: "CONTENT_MODEL_DELETE_ERROR",
+                        data: {
+                            modelId: "product"
+                        },
+                        message: "Content models defined via plugins cannot be deleted."
+                    }
+                }
+            }
+        });
     });
 
     test("content model must be returned in the content models list and get queries", async () => {
-        const { listContentModelsQuery, getContentModelQuery } = useContentGqlHandler(
-            {
-                path: "manage/en-US"
-            },
-            [contentModelPlugin]
-        );
+        const { listContentModelsQuery, getContentModelQuery } = useContentGqlHandler({
+            path: "manage/en-US",
+            plugins: [contentModelPlugin]
+        });
 
         await getContentModelQuery({ modelId: "product" }).then(([response]) =>
             expect(response).toEqual({
@@ -339,91 +366,128 @@ describe("content model plugins", () => {
     });
 
     test("must be able to perform basic CRUD operations with content models registered via plugin", async () => {
-        const { invoke } = useContentGqlHandler(
-            {
-                path: "manage/en-US"
-            },
-            [contentModelPlugin]
-        );
+        const { invoke } = useContentGqlHandler({
+            path: "manage/en-US",
+            plugins: [contentModelPlugin]
+        });
 
         // Let's get a string schema JSON and do text-based assertions.
         const products = [];
         for (let i = 0; i < 3; i++) {
-            products.push(
-                await invoke({
-                    body: {
-                        query: CREATE_PRODUCT,
-                        variables: {
-                            data: { name: `product-${i}`, sku: `sku-${i}`, price: i * 100 }
+            const [createResponse] = await invoke({
+                body: {
+                    query: CREATE_PRODUCT,
+                    variables: {
+                        data: {
+                            name: `product-${i}`,
+                            sku: `sku-${i}`,
+                            price: i * 100
                         }
                     }
-                }).then(([response]) => response)
-            );
+                }
+            });
+            expect(createResponse).toMatchObject({
+                data: {
+                    createProduct: {
+                        data: {
+                            name: `product-${i}`,
+                            sku: `sku-${i}`,
+                            price: i * 100
+                        },
+                        error: null
+                    }
+                }
+            });
+            products.push(createResponse.data.createProduct.data);
         }
 
         await until(
             () => invoke({ body: { query: LIST_PRODUCTS } }),
-            ([response]) => response.data.listProducts.data.length === 3
+            ([response]) => response.data.listProducts.data.length === 3,
+            {
+                name: "list after create products"
+            }
         );
 
-        await invoke({ body: { query: LIST_PRODUCTS } }).then(([response]) =>
-            expect(response).toEqual({
+        for (const product of products) {
+            const [getProductResponse] = await invoke({
+                body: {
+                    query: GET_PRODUCT,
+                    variables: {
+                        revision: product.id
+                    }
+                }
+            });
+            expect(getProductResponse).toMatchObject({
                 data: {
-                    listProducts: {
-                        data: [
-                            {
-                                meta: {
-                                    status: "draft"
-                                },
-                                name: "product-2",
-                                price: 200,
-                                sku: "sku-2"
-                            },
-                            {
-                                meta: {
-                                    status: "draft"
-                                },
-                                name: "product-1",
-                                price: 100,
-                                sku: "sku-1"
-                            },
-                            {
-                                meta: {
-                                    status: "draft"
-                                },
-                                name: "product-0",
-                                price: 0,
-                                sku: "sku-0"
-                            }
-                        ],
+                    getProduct: {
+                        data: {
+                            id: product.id
+                        },
                         error: null
                     }
                 }
-            })
-        );
+            });
+        }
 
-        // Get ID of every created product.
-        const productsIds = await invoke({
-            body: {
-                query: /* GraphQL */ `
-                    query ListProducts {
-                        listProducts {
-                            data {
-                                id
-                            }
+        const [listProductsResponse] = await invoke({ body: { query: LIST_PRODUCTS } });
+
+        expect(listProductsResponse).toEqual({
+            data: {
+                listProducts: {
+                    data: [
+                        {
+                            id: expect.any(String),
+                            meta: {
+                                status: "draft"
+                            },
+                            name: "product-2",
+                            price: 200,
+                            sku: "sku-2"
+                        },
+                        {
+                            id: expect.any(String),
+                            meta: {
+                                status: "draft"
+                            },
+                            name: "product-1",
+                            price: 100,
+                            sku: "sku-1"
+                        },
+                        {
+                            id: expect.any(String),
+                            meta: {
+                                status: "draft"
+                            },
+                            name: "product-0",
+                            price: 0,
+                            sku: "sku-0"
                         }
-                    }
-                `
+                    ],
+                    error: null
+                }
             }
-        }).then(([response]) => response.data.listProducts.data.map(item => item.id));
+        });
+
+        const productsIds = listProductsResponse.data.listProducts.data.map(p => p.id);
 
         // Let's try to publish all three entries.
-        for (let i = 0; i < productsIds.length; i++) {
-            await invoke({
+        for (const id of productsIds) {
+            const [publishResponse] = await invoke({
                 body: {
                     query: PUBLISH_PRODUCT,
                     variables: {
-                        revision: productsIds[i]
+                        revision: id
+                    }
+                }
+            });
+            expect(publishResponse).toMatchObject({
+                data: {
+                    publishProduct: {
+                        data: {
+                            id
+                        },
+                        error: null
                     }
                 }
             });
@@ -432,55 +496,55 @@ describe("content model plugins", () => {
         await until(
             () => invoke({ body: { query: LIST_PRODUCTS } }),
             ([response]) => {
-                const [p1, p2, p3] = response.data.listProducts.data;
-                return (
-                    p1.meta.status === "published" &&
-                    p2.meta.status === "published" &&
-                    p3.meta.status === "published"
-                );
+                return response.data.listProducts.data.every(p => p.meta.status === "published");
+            },
+            {
+                name: "list products after published"
             }
         );
 
         // The list should contain three products, all published.
-        await invoke({
+        const [listProductsAfterPublishResponse] = await invoke({
             body: {
                 query: LIST_PRODUCTS
             }
-        }).then(([response]) =>
-            expect(response).toEqual({
-                data: {
-                    listProducts: {
-                        data: [
-                            {
-                                meta: {
-                                    status: "published"
-                                },
-                                name: "product-2",
-                                price: 200,
-                                sku: "sku-2"
+        });
+        expect(listProductsAfterPublishResponse).toEqual({
+            data: {
+                listProducts: {
+                    data: [
+                        {
+                            id: expect.any(String),
+                            meta: {
+                                status: "published"
                             },
-                            {
-                                meta: {
-                                    status: "published"
-                                },
-                                name: "product-1",
-                                price: 100,
-                                sku: "sku-1"
+                            name: "product-2",
+                            price: 200,
+                            sku: "sku-2"
+                        },
+                        {
+                            id: expect.any(String),
+                            meta: {
+                                status: "published"
                             },
-                            {
-                                meta: {
-                                    status: "published"
-                                },
-                                name: "product-0",
-                                price: 0,
-                                sku: "sku-0"
-                            }
-                        ],
-                        error: null
-                    }
+                            name: "product-1",
+                            price: 100,
+                            sku: "sku-1"
+                        },
+                        {
+                            id: expect.any(String),
+                            meta: {
+                                status: "published"
+                            },
+                            name: "product-0",
+                            price: 0,
+                            sku: "sku-0"
+                        }
+                    ],
+                    error: null
                 }
-            })
-        );
+            }
+        });
     });
 
     test(`"plugin" GraphQL field must have the correct value`, async () => {
@@ -488,12 +552,10 @@ describe("content model plugins", () => {
             createContentModelMutation,
             createContentModelGroupMutation,
             listContentModelsQuery
-        } = useContentGqlHandler(
-            {
-                path: "manage/en-US"
-            },
-            [contentModelPlugin]
-        );
+        } = useContentGqlHandler({
+            path: "manage/en-US",
+            plugins: [contentModelPlugin]
+        });
 
         const group = await createContentModelGroupMutation({
             data: {

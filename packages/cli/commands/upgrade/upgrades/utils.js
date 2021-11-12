@@ -458,7 +458,7 @@ const insertImportToSourceFile = ({ source, name, moduleSpecifier, after = null 
  *
  * @param source {tsMorph.SourceFile}
  * @param handler {tsMorph.Node}
- * @return {{handlerDeclaration: VariableDeclaration, createHandlerExpression: tsMorph.Node, plugins: tsMorph.Node, arrayExpression: tsMorph.Node}}
+ * @return {{handlerDeclaration: VariableDeclaration, createHandlerExpression: tsMorph.Node, plugins: tsMorph.Node, arrayExpression: tsMorph.ArrayLiteralExpression}}
  */
 const getCreateHandlerExpressions = (source, handler) => {
     /**
@@ -578,6 +578,40 @@ const removePluginFromCreateHandler = (source, handler, targetPlugin) => {
     for (const index of removeIndexes) {
         arrayExpression.removeElement(index);
     }
+};
+
+/**
+ * @param params {{source: tsMorph.SourceFile, handler: string, plugin: string, after: string|undefined|null}}
+ */
+const addPluginToCreateHandler = params => {
+    const { source, handler, value, after } = params;
+    const { plugins, arrayExpression } = getCreateHandlerExpressions(source, handler);
+
+    if (!plugins) {
+        console.log(`Missing plugins in "createHandler" expression "${handler}".`);
+        return;
+    }
+    if (!arrayExpression) {
+        console.log(`Missing array literal expression in handler "${handler}".`);
+        return;
+    }
+    /**
+     * @type tsMorph.Expression[]
+     */
+    const elements = arrayExpression.getElements();
+    let index = elements.length;
+    if (after) {
+        const re = after instanceof RegExp ? after : new RegExp(after);
+        for (const i in elements) {
+            const element = elements[i];
+            if (element.getText().match(re) === null) {
+                continue;
+            }
+            index = Number(i) + 1;
+            break;
+        }
+    }
+    arrayExpression.insertElement(index, value);
 };
 /**
  * @param source {tsMorph.SourceFile}
@@ -723,6 +757,46 @@ const addDynamoDbDocumentClient = source => {
     });
 };
 /**
+ * @param source {tsMorph.SourceFile}
+ */
+const addElasticsearchClient = source => {
+    /**
+     * If there is elasticsearchClient declaration, no need to proceed further.
+     */
+    const elasticsearchClient = source.getFirstDescendant(node => {
+        return tsMorph.Node.isVariableDeclaration(node) && node.getName() === "elasticsearchClient";
+    });
+    if (elasticsearchClient) {
+        return;
+    }
+
+    const createElasticsearchClientImport = source.getImportDeclaration(node => {
+        return node.getModuleSpecifierValue() === "@webiny/api-elasticsearch/client";
+    });
+    if (!createElasticsearchClientImport) {
+        insertImportToSourceFile({
+            source,
+            name: ["createElasticsearchClient"],
+            moduleSpecifier: "@webiny/api-elasticsearch/client"
+        });
+    }
+
+    const importDeclarations = source.getImportDeclarations();
+    const lastImportDeclaration = importDeclarations[importDeclarations.length - 1];
+    const last = lastImportDeclaration.getEndLineNumber();
+
+    source.insertVariableStatement(last, {
+        declarationKind: tsMorph.VariableDeclarationKind.Const,
+        declarations: [
+            {
+                name: "elasticsearchClient",
+                initializer:
+                    "createElasticsearchClient({endpoint: `https://${process.env.ELASTIC_SEARCH_ENDPOINT}`})"
+            }
+        ]
+    });
+};
+/**
  *
  * @param source {tsMorph.SourceFile}
  * @param targets {({matcher: Function, info: string})[]}
@@ -783,9 +857,11 @@ module.exports = {
     insertImportToSourceFile,
     upgradeCreateHandlerToPlugins,
     removePluginFromCreateHandler,
+    addPluginToCreateHandler,
     addPluginArgumentValueInCreateHandler,
     removeImportFromSourceFile,
     addDynamoDbDocumentClient,
+    addElasticsearchClient,
     findNodeInSource,
     findDefaultExport,
     findReturnStatement

@@ -1,11 +1,11 @@
-import { CmsContentModelGroup } from "../../src/types";
+import { CmsGroup } from "~/types";
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
 import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
 import { useCategoryReadHandler } from "../utils/useCategoryReadHandler";
 import models from "./mocks/contentModels";
 
 describe("Endpoint access", () => {
-    let contentModelGroup: CmsContentModelGroup;
+    let contentModelGroup: CmsGroup;
 
     const manageOpts = { path: "manage/en-US" };
     const readOpts = { path: "read/en-US" };

@@ -12,7 +12,7 @@ interface Props {
     gridClassName?: string;
 }
 
-const getFieldById = (fields, id) => fields.find(field => field.id === id);
+const getFieldById = (fields, id): CmsEditorField => fields.find(field => field.id === id);
 
 export const Fields = ({ Bind, fields, layout, contentModel, gridClassName }: Props) => {
     return (

@@ -1,7 +1,7 @@
 import prettier from "prettier";
 import contentModels from "./mocks/contentModels";
-import graphQLFieldPlugins from "../../src/content/plugins/graphqlFields";
-import { createManageSDL } from "../../src/content/plugins/schema/createManageSDL";
+import graphQLFieldPlugins from "~/content/plugins/graphqlFields";
+import { createManageSDL } from "~/content/plugins/schema/createManageSDL";
 import categoryManage from "./snapshots/category.manage";
 import productManage from "./snapshots/product.manage";
 import reviewManage from "./snapshots/review.manage";

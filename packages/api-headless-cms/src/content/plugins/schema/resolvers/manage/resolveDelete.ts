@@ -1,14 +1,14 @@
 import { Response, ErrorResponse } from "@webiny/handler-graphql/responses";
-import { CmsContentEntryResolverFactory as ResolverFactory } from "../../../../../types";
+import { CmsEntryResolverFactory as ResolverFactory } from "~/types";
 
 export const resolveDelete: ResolverFactory =
     ({ model }) =>
-    async (root, { revision }, { cms }) => {
+    async (_, { revision }, { cms }) => {
         try {
             if (revision.includes("#")) {
-                await cms.entries.deleteRevision(model, revision);
+                await cms.deleteEntryRevision(model, revision);
             } else {
-                await cms.entries.deleteEntry(model, revision);
+                await cms.deleteEntry(model, revision);
             }
 
             return new Response(true);

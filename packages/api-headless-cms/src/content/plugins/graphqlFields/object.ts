@@ -1,5 +1,5 @@
 import upperFirst from "lodash/upperFirst";
-import { CmsContentModelField, CmsModelFieldToGraphQLPlugin } from "~/types";
+import { CmsModelField, CmsModelFieldToGraphQLPlugin } from "~/types";
 import { renderField } from "~/content/plugins/utils/renderFields";
 import { renderInputField } from "~/content/plugins/utils/renderInputFields";
 import { createManageTypeName, createTypeName } from "~/content/plugins/utils/createTypeName";
@@ -10,7 +10,7 @@ const typeFromField = ({ typeOfType, model, type, field, fieldTypePlugins }) => 
     const mTypeName = createManageTypeName(typeName);
 
     // `field` is an "object" field
-    const fields = field.settings.fields as CmsContentModelField[];
+    const fields = field.settings.fields as CmsModelField[];
     const fieldTypeName = `${mTypeName}_${upperFirst(field.fieldId)}`;
 
     const typeFields = [];

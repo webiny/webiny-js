@@ -1,11 +1,11 @@
 import { Response, ErrorResponse } from "@webiny/handler-graphql/responses";
-import { CmsContentEntryResolverFactory as ResolverFactory } from "../../../../../types";
+import { CmsEntryResolverFactory as ResolverFactory } from "~/types";
 
 export const resolveUnpublish: ResolverFactory =
     ({ model }) =>
-    async (root, args, context) => {
+    async (_, args, context) => {
         try {
-            const entry = await context.cms.entries.unpublish(model, args.revision);
+            const entry = await context.cms.unpublishEntry(model, args.revision);
             return new Response(entry);
         } catch (e) {
             return new ErrorResponse(e);

@@ -1,13 +1,13 @@
 import {
     CmsFieldTypePlugins,
-    CmsContentModel,
+    CmsModel,
     CmsModelFieldDefinition,
     CmsModelFieldToGraphQLPlugin
 } from "~/types";
 
 interface RenderFields {
     (params: {
-        model: CmsContentModel;
+        model: CmsModel;
         type: string;
         fieldTypePlugins: CmsFieldTypePlugins;
     }): CmsModelFieldDefinition[];

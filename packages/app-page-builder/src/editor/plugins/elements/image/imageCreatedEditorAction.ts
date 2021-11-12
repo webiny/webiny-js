@@ -20,8 +20,8 @@ const clickOnImageWithRetries = (element: PbEditorElement, retryNumber: number) 
 };
 
 export const imageCreatedEditorAction: CreateElementEventActionCallable = (
-    state,
-    meta,
+    _,
+    __,
     { element, source }
 ) => {
     if (element.type !== "image") {

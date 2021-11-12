@@ -1,10 +1,10 @@
-import { CmsContentModelFieldInput, CmsContentModelGroup } from "../../src/types";
+import { CmsModelFieldInput, CmsGroup } from "~/types";
 import mdbid from "mdbid";
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
 import * as helpers from "../utils/helpers";
 import models from "./mocks/contentModels";
 import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
-import { contentModelHooks, hooksTracker } from "./mocks/lifecycleHooks";
+import { pubSubTracker, assignModelEvents } from "./mocks/lifecycleHooks";
 import { useBugManageHandler } from "../utils/useBugManageHandler";
 
 const getTypeFields = type => {
@@ -52,7 +52,7 @@ describe("content model test", () => {
 
     const { createContentModelGroupMutation } = useContentGqlHandler(manageHandlerOpts);
 
-    let contentModelGroup: CmsContentModelGroup;
+    let contentModelGroup: CmsGroup;
 
     beforeEach(async () => {
         const [createCMG] = await createContentModelGroupMutation({
@@ -65,7 +65,7 @@ describe("content model test", () => {
         });
         contentModelGroup = createCMG.data.createContentModelGroup.data;
         // we need to reset this since we are using a singleton
-        hooksTracker.reset();
+        pubSubTracker.reset();
     });
 
     test("base schema should only contain relevant queries and mutations", async () => {
@@ -434,7 +434,7 @@ describe("content model test", () => {
 
         const contentModel = createResponse.data.createContentModel.data;
 
-        const textField: CmsContentModelFieldInput = {
+        const textField: CmsModelFieldInput = {
             id: mdbid(),
             fieldId: "textField",
             label: "Text field",
@@ -453,7 +453,7 @@ describe("content model test", () => {
             validation: [],
             listValidation: []
         };
-        const numberField: CmsContentModelFieldInput = {
+        const numberField: CmsModelFieldInput = {
             id: mdbid(),
             fieldId: "numberField",
             label: "Number field",
@@ -523,7 +523,7 @@ describe("content model test", () => {
 
         const contentModel = createResponse.data.createContentModel.data;
 
-        const field: CmsContentModelFieldInput = {
+        const field: CmsModelFieldInput = {
             id: mdbid(),
             fieldId: "field1",
             label: "Field 1",
@@ -569,9 +569,10 @@ describe("content model test", () => {
     });
 
     test("should execute hooks on create", async () => {
-        const { createContentModelMutation } = useContentGqlHandler(manageHandlerOpts, [
-            contentModelHooks()
-        ]);
+        const { createContentModelMutation } = useContentGqlHandler({
+            ...manageHandlerOpts,
+            plugins: [assignModelEvents()]
+        });
 
         const [response] = await createContentModelMutation({
             data: {
@@ -589,19 +590,19 @@ describe("content model test", () => {
                 }
             }
         });
-        expect(hooksTracker.isExecutedOnce("contentModel:beforeCreate")).toEqual(true);
-        expect(hooksTracker.isExecutedOnce("contentModel:afterCreate")).toEqual(true);
-        expect(hooksTracker.isExecutedOnce("contentModel:beforeUpdate")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentModel:afterUpdate")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentModel:beforeDelete")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentModel:afterDelete")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentModel:beforeCreate")).toEqual(true);
+        expect(pubSubTracker.isExecutedOnce("contentModel:afterCreate")).toEqual(true);
+        expect(pubSubTracker.isExecutedOnce("contentModel:beforeUpdate")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentModel:afterUpdate")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentModel:beforeDelete")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentModel:afterDelete")).toEqual(false);
     });
 
     test("should execute hooks on update", async () => {
-        const { createContentModelMutation, updateContentModelMutation } = useContentGqlHandler(
-            manageHandlerOpts,
-            [contentModelHooks()]
-        );
+        const { createContentModelMutation, updateContentModelMutation } = useContentGqlHandler({
+            ...manageHandlerOpts,
+            plugins: [assignModelEvents()]
+        });
 
         const [createResponse] = await createContentModelMutation({
             data: {
@@ -612,7 +613,7 @@ describe("content model test", () => {
         });
         const { modelId } = createResponse.data.createContentModel.data;
         // need to reset because hooks for create have been fired
-        hooksTracker.reset();
+        pubSubTracker.reset();
 
         const [response] = await updateContentModelMutation({
             modelId,
@@ -632,19 +633,19 @@ describe("content model test", () => {
             }
         });
 
-        expect(hooksTracker.isExecutedOnce("contentModel:beforeCreate")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentModel:afterCreate")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentModel:beforeUpdate")).toEqual(true);
-        expect(hooksTracker.isExecutedOnce("contentModel:afterUpdate")).toEqual(true);
-        expect(hooksTracker.isExecutedOnce("contentModel:beforeDelete")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentModel:afterDelete")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentModel:beforeCreate")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentModel:afterCreate")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentModel:beforeUpdate")).toEqual(true);
+        expect(pubSubTracker.isExecutedOnce("contentModel:afterUpdate")).toEqual(true);
+        expect(pubSubTracker.isExecutedOnce("contentModel:beforeDelete")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentModel:afterDelete")).toEqual(false);
     });
 
     test("should execute hooks on delete", async () => {
-        const { createContentModelMutation, deleteContentModelMutation } = useContentGqlHandler(
-            manageHandlerOpts,
-            [contentModelHooks()]
-        );
+        const { createContentModelMutation, deleteContentModelMutation } = useContentGqlHandler({
+            ...manageHandlerOpts,
+            plugins: [assignModelEvents()]
+        });
 
         const [createResponse] = await createContentModelMutation({
             data: {
@@ -655,7 +656,7 @@ describe("content model test", () => {
         });
         const { modelId } = createResponse.data.createContentModel.data;
         // need to reset because hooks for create have been fired
-        hooksTracker.reset();
+        pubSubTracker.reset();
 
         const [response] = await deleteContentModelMutation({
             modelId
@@ -670,12 +671,12 @@ describe("content model test", () => {
             }
         });
 
-        expect(hooksTracker.isExecutedOnce("contentModel:beforeCreate")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentModel:afterCreate")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentModel:beforeUpdate")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentModel:afterUpdate")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentModel:beforeDelete")).toEqual(true);
-        expect(hooksTracker.isExecutedOnce("contentModel:afterDelete")).toEqual(true);
+        expect(pubSubTracker.isExecutedOnce("contentModel:beforeCreate")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentModel:afterCreate")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentModel:beforeUpdate")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentModel:afterUpdate")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentModel:beforeDelete")).toEqual(true);
+        expect(pubSubTracker.isExecutedOnce("contentModel:afterDelete")).toEqual(true);
     });
 
     test("should refresh the schema when added new field", async () => {
@@ -792,11 +793,10 @@ describe("content model test", () => {
             createdContentModels.push(createResponse.data.createContentModel.data);
         }
 
-        const { listContentModelsQuery: listModels } = useContentGqlHandler(
-            Object.assign({}, manageHandlerOpts, {
-                permissions: createPermissions({ models: [createdContentModels[0].modelId] })
-            })
-        );
+        const { listContentModelsQuery: listModels } = useContentGqlHandler({
+            ...manageHandlerOpts,
+            permissions: createPermissions({ models: [createdContentModels[0].modelId] })
+        });
 
         const [response] = await listModels();
 
@@ -823,11 +823,10 @@ describe("content model test", () => {
             models: [createdContentModels[0].modelId],
             groups: ["some-group-id"]
         });
-        const { getContentModelQuery: getModel } = useContentGqlHandler(
-            Object.assign({}, manageHandlerOpts, {
-                permissions: permissions
-            })
-        );
+        const { getContentModelQuery: getModel } = useContentGqlHandler({
+            ...manageHandlerOpts,
+            permissions
+        });
         // Should return an error while getting a model without required group permission.
         const [response] = await getModel({
             modelId: createdContentModels[0].modelId
@@ -836,7 +835,7 @@ describe("content model test", () => {
         expect(response.data.getContentModel.data).toEqual(null);
         expect(response.data.getContentModel.error).toEqual({
             code: "SECURITY_NOT_AUTHORIZED",
-            data: { reason: 'Not allowed to access model "testContentModelInstance0".' },
+            data: { reason: 'Not allowed to access model "testContentModel0".' },
             message: "Not authorized!"
         });
     });
@@ -862,11 +861,10 @@ describe("content model test", () => {
             models: [createdContentModels[0].modelId],
             groups: [contentModelGroup.id]
         });
-        const { getContentModelQuery: getModelB } = useContentGqlHandler(
-            Object.assign({}, manageHandlerOpts, {
-                permissions: permissions
-            })
-        );
+        const { getContentModelQuery: getModelB } = useContentGqlHandler({
+            ...manageHandlerOpts,
+            permissions
+        });
         // Should return an error while getting a model without required group permission.
         const [response] = await getModelB({
             modelId: createdContentModels[0].modelId

@@ -1,12 +1,12 @@
 import get from "lodash/get";
 import set from "lodash/set";
-import { CmsContentModelField, CmsContext, CmsModelFieldToGraphQLCreateResolver } from "~/types";
+import { CmsModelField, CmsContext, CmsModelFieldToGraphQLCreateResolver } from "~/types";
 import { entryFieldFromStorageTransform } from "~/content/plugins/utils/entryStorage";
 import { Resolvers } from "@webiny/handler-graphql/types";
 
 interface CreateFieldResolvers {
     graphQLType: string;
-    fields: CmsContentModelField[];
+    fields: CmsModelField[];
     isRoot: boolean;
     extraResolvers?: Resolvers<any>;
 }
@@ -47,26 +47,21 @@ export function createFieldResolversFactory({ endpointType, models, model, field
             const { fieldId } = field;
 
             fieldResolvers[fieldId] = async (parent, args, context: CmsContext, info) => {
-                try {
-                    // Get transformed value (eg. data decompression)
-                    const transformedValue = await entryFieldFromStorageTransform({
-                        context,
-                        model,
-                        field,
-                        value: isRoot ? parent.values[fieldId] : parent[fieldId]
-                    });
+                // Get transformed value (eg. data decompression)
+                const transformedValue = await entryFieldFromStorageTransform({
+                    context,
+                    model,
+                    field,
+                    value: isRoot ? parent.values[fieldId] : parent[fieldId]
+                });
 
-                    set(isRoot ? parent.values : parent, fieldId, transformedValue);
+                set(isRoot ? parent.values : parent, fieldId, transformedValue);
 
-                    if (!resolver) {
-                        return isRoot ? parent.values[fieldId] : parent[fieldId];
-                    }
-
-                    return await resolver(isRoot ? parent.values : parent, args, context, info);
-                } catch (err) {
-                    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                    const a = err;
+                if (!resolver) {
+                    return isRoot ? parent.values[fieldId] : parent[fieldId];
                 }
+
+                return await resolver(isRoot ? parent.values : parent, args, context, info);
             };
         }
 

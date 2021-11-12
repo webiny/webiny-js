@@ -1,253 +1,287 @@
 import DataLoader from "dataloader";
-import { CmsContentEntry, CmsContentModel, CmsContext } from "@webiny/api-headless-cms/types";
+import { CmsEntry, CmsModel } from "@webiny/api-headless-cms/types";
 import WebinyError from "@webiny/error";
-import { CmsContentEntryDynamo } from "./CmsContentEntryDynamo";
+import { Entity } from "dynamodb-toolbox";
+import { queryAll, QueryAllParams } from "@webiny/db-dynamodb/utils/query";
+import {
+    createLatestSortKey,
+    createPartitionKey,
+    createPublishedSortKey,
+    createRevisionSortKey
+} from "./keys";
+import { cleanupItems } from "@webiny/db-dynamodb/utils/cleanup";
+import { parseIdentifier } from "@webiny/utils";
+import { batchReadAll } from "@webiny/db-dynamodb/utils/batchRead";
 
-/**
- * *** GLOBAL NOTE ***
- * When records are received from the batch get, we get them in all sorts of order.
- * What we need for DataLoader to work properly we must have id > records order.
- * So in the order IDs got into the DataLoader, its records must go out in the same order / bundle.
- */
-
-const flatResponses = (responses: Record<string, CmsContentEntry[]>): CmsContentEntry[] => {
-    const entries = [];
-    const values = Object.values(responses);
-    for (const items of values) {
-        entries.push(...items);
-    }
-    return entries;
-};
-
-const executeBatchGet = async (storageOperations: CmsContentEntryDynamo, batch: any[]) => {
-    const items = [];
-    const result = await storageOperations.table.batchGet(batch);
-    if (!result) {
-        return items;
-    }
-    if (result.Responses) {
-        items.push(...flatResponses(result.Responses));
-    }
-    if (typeof result.next === "function") {
-        let previous = result;
-        let nResult;
-        while ((nResult = await previous.next())) {
-            items.push(...flatResponses(nResult.Responses));
-            previous = nResult;
-            if (!nResult || typeof nResult.next !== "function") {
-                return items;
-            }
-        }
-    }
-
-    return items;
-};
-
-const getAllEntryRevisions = (
-    context: CmsContext,
-    model: CmsContentModel,
-    storageOperations: CmsContentEntryDynamo
-) => {
-    return new DataLoader<string, CmsContentEntry[]>(async ids => {
-        const promises = ids.map(id => {
-            const partitionKey = storageOperations.getPartitionKey(id);
-            return storageOperations.runQuery({
-                partitionKey,
+const getAllEntryRevisions = (params: LoaderParams) => {
+    const { entity, model } = params;
+    const { tenant, locale } = model;
+    return new DataLoader<string, CmsEntry[]>(async ids => {
+        const results: CmsEntry[][] = [];
+        for (const id of ids) {
+            const queryAllParams: QueryAllParams = {
+                entity,
+                partitionKey: createPartitionKey({
+                    tenant,
+                    locale,
+                    id
+                }),
                 options: {
                     beginsWith: "REV#"
                 }
-            });
-        });
+            };
+            const items = await queryAll<CmsEntry>(queryAllParams);
+            const entries = cleanupItems(entity, items);
+            results.push(entries);
+        }
 
-        return Promise.all(promises);
+        return results;
     });
 };
 
-const getRevisionById = (
-    context: CmsContext,
-    model: CmsContentModel,
-    storageOperations: CmsContentEntryDynamo
-) => {
-    return new DataLoader<string, CmsContentEntry>(async ids => {
-        const batch = ids.reduce((collection, id) => {
-            const partitionKey = storageOperations.getPartitionKey(id);
-            const sortKey = storageOperations.getSortKeyRevision(id);
+const getRevisionById = (params: LoaderParams) => {
+    const { entity, model } = params;
+    const { locale, tenant } = model;
+
+    return new DataLoader<string, CmsEntry[]>(async (ids: readonly string[]) => {
+        const queries = ids.reduce((collection, id) => {
+            const partitionKey = createPartitionKey({
+                tenant,
+                locale,
+                id
+            });
+            const { version } = parseIdentifier(id);
+            const sortKey = createRevisionSortKey({
+                version
+            });
             const keys = `${partitionKey}__${sortKey}`;
             if (collection[keys]) {
                 return collection;
             }
-            collection[keys] = storageOperations.entity.getBatch({
+
+            collection[keys] = entity.getBatch({
                 PK: partitionKey,
                 SK: sortKey
             });
+
             return collection;
         }, {});
 
-        const items = await executeBatchGet(storageOperations, Object.values(batch));
+        const records = await batchReadAll<CmsEntry>({
+            table: entity.table,
+            items: Object.values(queries)
+        });
+        const items = cleanupItems(entity, records);
 
         return ids.map(id => {
             return items.filter(item => {
-                const partitionKey = storageOperations.getPartitionKey(id);
-                const sortKey = storageOperations.getSortKeyRevision(id);
-                return item.PK === partitionKey && item.SK === sortKey;
+                return id === item.id;
             });
-        }) as any;
+        });
     });
 };
 
-const getPublishedRevisionByEntryId = (
-    context: CmsContext,
-    model: CmsContentModel,
-    storageOperations: CmsContentEntryDynamo
-) => {
-    return new DataLoader<string, CmsContentEntry>(async ids => {
-        const sortKey = storageOperations.getSortKeyPublished();
-        const batch = ids.reduce((collection, id) => {
-            const partitionKey = storageOperations.getPartitionKey(id);
+const getPublishedRevisionByEntryId = (params: LoaderParams) => {
+    const { entity, model } = params;
+    const { locale, tenant } = model;
+
+    const publishedKey = createPublishedSortKey();
+
+    return new DataLoader<string, CmsEntry[]>(async ids => {
+        const queries = ids.reduce((collection, id) => {
+            const partitionKey = createPartitionKey({
+                tenant,
+                locale,
+                id
+            });
             if (collection[partitionKey]) {
                 return collection;
             }
-            collection[partitionKey] = storageOperations.entity.getBatch({
+            collection[partitionKey] = entity.getBatch({
                 PK: partitionKey,
-                SK: sortKey
+                SK: publishedKey
             });
             return collection;
         }, {});
 
-        const items = await executeBatchGet(storageOperations, Object.values(batch));
+        const records = await batchReadAll<CmsEntry>({
+            table: entity.table,
+            items: Object.values(queries)
+        });
+        const items = cleanupItems(entity, records);
+
         return ids.map(id => {
+            const { id: entryId } = parseIdentifier(id);
             return items.filter(item => {
-                const partitionKey = storageOperations.getPartitionKey(id);
-                return item.PK === partitionKey && item.SK === sortKey;
+                return entryId === item.entryId;
             });
-        }) as any;
+        });
     });
 };
 
-const getLatestRevisionByEntryId = (
-    context: CmsContext,
-    model: CmsContentModel,
-    storageOperations: CmsContentEntryDynamo
-) => {
-    return new DataLoader<string, CmsContentEntry>(async ids => {
-        const sortKey = storageOperations.getSortKeyLatest();
-        const batch = ids.reduce((collection, id) => {
-            const partitionKey = storageOperations.getPartitionKey(id);
+const getLatestRevisionByEntryId = (params: LoaderParams) => {
+    const { entity, model } = params;
+    const { locale, tenant } = model;
+
+    const latestKey = createLatestSortKey();
+
+    return new DataLoader<string, CmsEntry[]>(async ids => {
+        const queries = ids.reduce((collection, id) => {
+            const partitionKey = createPartitionKey({
+                tenant,
+                locale,
+                id
+            });
             if (collection[partitionKey]) {
                 return collection;
             }
-            collection[partitionKey] = storageOperations.entity.getBatch({
+            collection[partitionKey] = entity.getBatch({
                 PK: partitionKey,
-                SK: sortKey
+                SK: latestKey
             });
             return collection;
         }, {});
 
-        const items = await executeBatchGet(storageOperations, Object.values(batch));
+        const records = await batchReadAll<CmsEntry>({
+            table: entity.table,
+            items: Object.values(queries)
+        });
+        const items = cleanupItems(entity, records);
+
         return ids.map(id => {
+            const { id: entryId } = parseIdentifier(id);
             return items.filter(item => {
-                const partitionKey = storageOperations.getPartitionKey(id);
-                return item.PK === partitionKey && item.SK === sortKey;
+                return entryId === item.entryId;
             });
-        }) as any;
+        });
     });
 };
 
-const dataLoaders = {
+const dataLoaders: Record<Loaders, any> = {
     getAllEntryRevisions,
     getRevisionById,
     getPublishedRevisionByEntryId,
     getLatestRevisionByEntryId
 };
 
+export interface GetAllEntryRevisionsParams {
+    ids: readonly string[];
+    model: CmsModel;
+}
+
+export interface GetRevisionByIdParams {
+    ids: readonly string[];
+    model: CmsModel;
+}
+
+export interface GetPublishedRevisionByEntryIdParams {
+    ids: readonly string[];
+    model: CmsModel;
+}
+
+export interface GetLatestRevisionByEntryIdParams {
+    ids: readonly string[];
+    model: CmsModel;
+}
+
+interface LoaderParams {
+    entity: Entity<any>;
+    model: CmsModel;
+}
+
+interface GetLoaderParams {
+    model: CmsModel;
+}
+
+interface ClearLoaderParams {
+    model: CmsModel;
+    entry?: CmsEntry;
+}
+
+type Loaders =
+    | "getAllEntryRevisions"
+    | "getRevisionById"
+    | "getPublishedRevisionByEntryId"
+    | "getLatestRevisionByEntryId";
+
+const loaderNames = Object.keys(dataLoaders) as Loaders[];
+
+export interface Params {
+    entity: Entity<any>;
+}
 export class DataLoadersHandler {
-    private readonly _loaders: Map<string, DataLoader<any, any>> = new Map();
-    private readonly _context: CmsContext;
-    private readonly _storageOperations: CmsContentEntryDynamo;
+    private readonly loaders: Map<string, DataLoader<any, any>> = new Map();
+    private readonly entity: Entity<any>;
 
-    public constructor(context: CmsContext, storageOperations: CmsContentEntryDynamo) {
-        this._context = context;
-        this._storageOperations = storageOperations;
+    public constructor(params) {
+        this.entity = params.entity;
     }
 
-    public async getAllEntryRevisions(
-        model: CmsContentModel,
-        ids: readonly string[]
-    ): Promise<CmsContentEntry[]> {
-        return await this.loadMany("getAllEntryRevisions", model, ids);
+    public async getAllEntryRevisions(params: GetAllEntryRevisionsParams): Promise<CmsEntry[]> {
+        return await this.loadMany("getAllEntryRevisions", params, params.ids);
     }
 
-    public clearAllEntryRevisions(model: CmsContentModel, entry?: CmsContentEntry): void {
-        this.clear("getAllEntryRevisions", model, entry);
-    }
-
-    public async getRevisionById(
-        model: CmsContentModel,
-        ids: readonly string[]
-    ): Promise<CmsContentEntry[]> {
-        return await this.loadMany("getRevisionById", model, ids);
-    }
-
-    public clearRevisionById(model: CmsContentModel, entry?: CmsContentEntry): void {
-        this.clear("getRevisionById", model, entry);
+    public async getRevisionById(params: GetRevisionByIdParams): Promise<CmsEntry[]> {
+        return await this.loadMany("getRevisionById", params, params.ids);
     }
 
     public async getPublishedRevisionByEntryId(
-        model: CmsContentModel,
-        ids: readonly string[]
-    ): Promise<CmsContentEntry[]> {
-        return await this.loadMany("getPublishedRevisionByEntryId", model, ids);
-    }
-    public clearPublishedRevisionByEntryId(model: CmsContentModel, entry?: CmsContentEntry): void {
-        this.clear("getPublishedRevisionByEntryId", model, entry);
+        params: GetPublishedRevisionByEntryIdParams
+    ): Promise<CmsEntry[]> {
+        return await this.loadMany("getPublishedRevisionByEntryId", params, params.ids);
     }
 
     public async getLatestRevisionByEntryId(
-        model: CmsContentModel,
-        ids: readonly string[]
-    ): Promise<CmsContentEntry[]> {
-        return await this.loadMany("getLatestRevisionByEntryId", model, ids);
+        params: GetLatestRevisionByEntryIdParams
+    ): Promise<CmsEntry[]> {
+        return await this.loadMany("getLatestRevisionByEntryId", params, params.ids);
     }
 
-    public clearLatestRevisionByEntryId(model: CmsContentModel, entry?: CmsContentEntry): void {
-        this.clear("getLatestRevisionByEntryId", model, entry);
-    }
-
-    private getLoader(name: string, model: CmsContentModel): DataLoader<any, any> {
+    private getLoader(name: string, params: GetLoaderParams): DataLoader<any, any> {
         if (!dataLoaders[name]) {
             throw new WebinyError("Unknown data loader.", "UNKNOWN_DATA_LOADER", {
                 name
             });
         }
-        const loaderKey = `${name}-${model.modelId}`;
-        if (!this._loaders.has(loaderKey)) {
-            this._loaders.set(
+        const { model } = params;
+        const { tenant, locale } = model;
+        const loaderKey = `${name}-${tenant}-${locale}-${model.modelId}`;
+        if (!this.loaders.has(loaderKey)) {
+            this.loaders.set(
                 loaderKey,
-                dataLoaders[name](this._context, model, this._storageOperations)
+                dataLoaders[name]({
+                    ...params,
+                    entity: this.entity
+                })
             );
         }
-        return this._loaders.get(loaderKey);
+        return this.loaders.get(loaderKey);
     }
 
     private async loadMany(
         loader: string,
-        model: CmsContentModel,
+        params: GetLoaderParams,
         ids: readonly string[]
-    ): Promise<CmsContentEntry[]> {
+    ): Promise<CmsEntry[]> {
         let results;
         try {
-            results = await this.getLoader(loader, model).loadMany(ids);
+            results = await this.getLoader(loader, params).loadMany(ids);
             if (Array.isArray(results) === true) {
                 return results.reduce((acc, res) => {
                     if (Array.isArray(res) === false) {
-                        if (res?.message) {
+                        if (res && res.message) {
                             throw new WebinyError(res.message, res.code, {
                                 ...res,
                                 data: JSON.stringify(res.data || {})
                             });
                         }
                         throw new WebinyError(
-                            "Result from the data loader must be an array of arrays which contain requested items."
+                            "Result from the data loader must be an array of arrays which contain requested items.",
+                            "DATA_LOADER_RESULTS_ERROR",
+                            {
+                                ...params,
+                                loader
+                            }
                         );
                     }
                     acc.push(...res);
@@ -259,10 +293,10 @@ export class DataLoadersHandler {
                 ex.message || "Data loader error.",
                 ex.code || "DATA_LOADER_ERROR",
                 {
+                    error: ex,
+                    ...params,
                     loader,
-                    ids,
-                    model,
-                    data: ex.data || {}
+                    ids
                 }
             );
         }
@@ -276,17 +310,11 @@ export class DataLoadersHandler {
             }
         );
     }
-    /**
-     * Helper to clear the cache for certain data loader.
-     * If entry is passed then clear target key only.
-     */
-    private clear(name: string, model: CmsContentModel, entry?: CmsContentEntry): void {
-        const loader = this.getLoader(name, model);
-        if (!entry) {
+
+    public clearAll(params: Omit<ClearLoaderParams, "entry">): void {
+        for (const name of loaderNames) {
+            const loader = this.getLoader(name, params);
             loader.clearAll();
-            return;
         }
-        loader.clear(entry.id);
-        loader.clear(this._storageOperations.getPartitionKey(entry.id));
     }
 }

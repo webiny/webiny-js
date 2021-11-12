@@ -1,5 +1,5 @@
 import { SecurityIdentity } from "@webiny/api-security/types";
-import { CmsContentModelGroup } from "../../src/types";
+import { CmsGroup } from "~/types";
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
 import models from "./mocks/contentModels";
 import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
@@ -37,7 +37,7 @@ const createIdentity = (permissions: any[] = []): SecurityIdentity => {
 };
 
 describe("MANAGE - resolvers - api key", () => {
-    let contentModelGroup: CmsContentModelGroup;
+    let contentModelGroup: CmsGroup;
 
     const API_TOKEN = "aToken";
 
@@ -112,7 +112,7 @@ describe("MANAGE - resolvers - api key", () => {
             getCategory,
             listCategories,
             deleteCategory
-        } = await useCategoryManageHandler({
+        } = useCategoryManageHandler({
             ...manageOpts,
             identity
         });
@@ -339,7 +339,9 @@ describe("MANAGE - resolvers - api key", () => {
          */
         await until(
             () => listCategories({}, headers).then(([data]) => data),
-            ({ data }) => data.listCategories.data.length === 0,
+            ({ data }) => {
+                return data.listCategories.data.length === 0;
+            },
             { name: "after delete list categories" }
         );
 

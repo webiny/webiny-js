@@ -1,10 +1,10 @@
-import { CmsContentModelField } from "@webiny/api-headless-cms/types";
+import { CmsModelField } from "@webiny/api-headless-cms/types";
 
-const createSystemField = (field: Partial<CmsContentModelField>): CmsContentModelField => {
-    return field as CmsContentModelField;
+const createSystemField = (field: Partial<CmsModelField>): CmsModelField => {
+    return field as CmsModelField;
 };
 
-export const systemFields: Record<string, CmsContentModelField> = {
+export const systemFields: Record<string, CmsModelField> = {
     id: createSystemField({
         id: "id",
         type: "text",

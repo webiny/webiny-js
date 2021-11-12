@@ -1,28 +1,28 @@
 import {
-    CmsContentModel,
-    CmsContentModelField,
-    CmsContentModelFieldValidation,
+    CmsModel,
+    CmsModelField,
+    CmsModelFieldValidation,
     CmsContext,
     CmsModelFieldValidatorPlugin,
-    CmsModelFieldValidatorValidateArgs
+    CmsModelFieldValidatorValidateParams
 } from "~/types";
 import WebinyError from "@webiny/error";
 
-type PluginValidationCallable = (params: CmsModelFieldValidatorValidateArgs) => Promise<boolean>;
+type PluginValidationCallable = (params: CmsModelFieldValidatorValidateParams) => Promise<boolean>;
 type PluginValidationList = Record<string, PluginValidationCallable[]>;
 type InputData = Record<string, any>;
 
 interface ValidateArgs {
     validatorList: PluginValidationList;
-    field: CmsContentModelField;
-    contentModel: CmsContentModel;
+    field: CmsModelField;
+    contentModel: CmsModel;
     data: InputData;
     context: CmsContext;
 }
 
 const validateValue = async (
     args: ValidateArgs,
-    fieldValidators: CmsContentModelFieldValidation[],
+    fieldValidators: CmsModelFieldValidation[],
     value: any
 ): Promise<string | null> => {
     if (!fieldValidators) {
@@ -57,10 +57,7 @@ const validateValue = async (
     return null;
 };
 
-const validatePredefinedValue = (
-    field: CmsContentModelField,
-    value: any | any[]
-): string | null => {
+const validatePredefinedValue = (field: CmsModelField, value: any | any[]): string | null => {
     const { enabled = false, values: predefinedValues = [] } = field.predefinedValues || {};
     if (!enabled) {
         return null;
@@ -123,7 +120,7 @@ const execValidation = async (args: ValidateArgs): Promise<string | null> => {
 
 export const validateModelEntryData = async (
     context: CmsContext,
-    contentModel: CmsContentModel,
+    contentModel: CmsModel,
     data: InputData
 ) => {
     /**

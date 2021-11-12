@@ -1,7 +1,7 @@
 import WebinyError from "@webiny/error";
 import { UpgradePlugin } from "@webiny/api-upgrade/types";
-import { CmsContext } from "../../../types";
-import { migrateCMSPermissions } from "../../../migrateCMSPermissions";
+import { CmsContext } from "~/types";
+import { migrateCMSPermissions } from "~/migrateCMSPermissions";
 import { isCmsContentPermission } from "./helpers";
 
 const plugin: UpgradePlugin<CmsContext> = {
@@ -45,7 +45,7 @@ const plugin: UpgradePlugin<CmsContext> = {
                 // Migrate CMS permissions
                 const newCMSContentPermissions = await migrateCMSPermissions(
                     CmsContentPermissions,
-                    cms.models.get
+                    cms.getModel
                 );
 
                 const newPermissions = [...restPermissions, ...newCMSContentPermissions];
@@ -97,7 +97,7 @@ const plugin: UpgradePlugin<CmsContext> = {
                 // Migrate CMS permissions.
                 const newCMSContentPermissions = await migrateCMSPermissions(
                     CmsContentPermissions,
-                    cms.models.get
+                    cms.getModel
                 );
 
                 const newPermissions = [...restPermissions, ...newCMSContentPermissions];

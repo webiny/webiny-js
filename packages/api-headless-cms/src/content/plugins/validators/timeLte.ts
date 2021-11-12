@@ -1,5 +1,5 @@
 import { validation } from "@webiny/validation";
-import { CmsModelFieldValidatorPlugin } from "../../../types";
+import { CmsModelFieldValidatorPlugin } from "~/types";
 
 export default (): CmsModelFieldValidatorPlugin => ({
     type: "cms-model-field-validator",

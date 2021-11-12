@@ -1,19 +1,14 @@
 import pReduce from "p-reduce";
 import pMap from "p-map";
-import {
-    CmsContentModel,
-    CmsContentModelField,
-    CmsContext,
-    CmsModelFieldToStoragePlugin
-} from "~/types";
+import { CmsModel, CmsModelField, CmsContext, CmsModelFieldToStoragePlugin } from "~/types";
 
 interface ProcessValue {
     (params: {
-        fields: CmsContentModelField[];
+        fields: CmsModelField[];
         sourceValue: Record<string, any>;
         getStoragePlugin: (fieldType: string) => CmsModelFieldToStoragePlugin;
         context: CmsContext;
-        model: CmsContentModel;
+        model: CmsModel;
         operation: string;
     }): Promise<Record<string, any>>;
 }
@@ -52,7 +47,7 @@ export default (): CmsModelFieldToStoragePlugin => ({
             return null;
         }
 
-        const fields = field.settings.fields as CmsContentModelField[];
+        const fields = field.settings.fields as CmsModelField[];
 
         if (field.multipleValues) {
             return pMap(value as Record<string, any>[], value =>
@@ -81,7 +76,7 @@ export default (): CmsModelFieldToStoragePlugin => ({
             return null;
         }
 
-        const fields = field.settings.fields as CmsContentModelField[];
+        const fields = field.settings.fields as CmsModelField[];
 
         if (field.multipleValues) {
             const mValues = await pMap(value as Record<string, any>[], value =>

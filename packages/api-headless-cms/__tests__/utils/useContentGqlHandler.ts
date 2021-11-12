@@ -1,11 +1,13 @@
-import { GQLHandlerCallableArgs, useGqlHandler } from "./useGqlHandler";
-import { Plugin } from "@webiny/plugins/types";
-import contentPlugins from "../../src/content";
+import { GQLHandlerCallableParams, useGqlHandler } from "./useGqlHandler";
+import { createContentHeadlessCmsContext, createContentHeadlessCmsGraphQL } from "~/index";
 
-export const useContentGqlHandler = (args: GQLHandlerCallableArgs, plugins: Plugin[] = []) => {
+export const useContentGqlHandler = (
+    params: Omit<GQLHandlerCallableParams, "createHeadlessCmsApp">
+) => {
     return useGqlHandler({
-        ...args,
+        ...params,
         setupTenancyAndSecurityGraphQL: false,
-        plugins: contentPlugins().concat(plugins)
+        plugins: (params.plugins || []).concat([createContentHeadlessCmsGraphQL()]),
+        createHeadlessCmsApp: createContentHeadlessCmsContext
     });
 };

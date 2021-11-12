@@ -1,16 +1,14 @@
 import { ListResponse, ListErrorResponse } from "@webiny/handler-graphql/responses";
-import {
-    CmsContentEntryMeta,
-    CmsContentEntryResolverFactory as ResolverFactory,
-    CmsContentEntry
-} from "../../../../../types";
+import { CmsEntryMeta, CmsEntryResolverFactory as ResolverFactory, CmsEntry } from "~/types";
 
 export const resolveList: ResolverFactory =
     ({ model }) =>
-    async (root, args, { cms }) => {
+    async (_, args, { cms }) => {
         try {
-            const response: [CmsContentEntry[], CmsContentEntryMeta] =
-                await cms.entries.listPublished(model, args);
+            const response: [CmsEntry[], CmsEntryMeta] = await cms.listPublishedEntries(
+                model,
+                args
+            );
 
             return new ListResponse(...response);
         } catch (e) {

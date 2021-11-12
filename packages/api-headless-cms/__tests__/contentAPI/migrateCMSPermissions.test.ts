@@ -1,4 +1,4 @@
-import { migrateCMSPermissions } from "../../src/migrateCMSPermissions";
+import { migrateCMSPermissions } from "~/migrateCMSPermissions";
 import * as mocked from "./mocks/cmsContentPermissions";
 
 describe("migrate CMS permissions from v5.4.0 to v5.5.0", () => {

@@ -173,7 +173,7 @@ export const useRevision = ({ revision }: UseRevisionProps) => {
                 await client.mutate({
                     mutation: REQUEST_REVIEW,
                     variables: { revision: id || revision.id },
-                    update(cache, { data }) {
+                    update(_, { data }) {
                         const { error } = data.content;
                         if (error) {
                             return showSnackbar(error.message);
@@ -190,7 +190,7 @@ export const useRevision = ({ revision }: UseRevisionProps) => {
                 await client.mutate({
                     mutation: REQUEST_CHANGES,
                     variables: { revision: id || revision.id },
-                    update(cache, { data }) {
+                    update(_, { data }) {
                         const { error } = data.content;
                         if (error) {
                             return showSnackbar(error.message);
