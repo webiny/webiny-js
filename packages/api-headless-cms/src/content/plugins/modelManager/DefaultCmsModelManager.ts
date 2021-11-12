@@ -1,6 +1,6 @@
 import { CmsModelManager, CmsModel, CmsContext } from "~/types";
 
-export class DefaultContentModelManager implements CmsModelManager {
+export class DefaultCmsModelManager implements CmsModelManager {
     private readonly _context: CmsContext;
     private readonly _model: CmsModel;
 

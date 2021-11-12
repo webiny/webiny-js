@@ -14,7 +14,7 @@ export const contentModelManagerFactory = async (context: CmsContext, model: Cms
     }
     const plugin = pluginsByType.find(plugin => plugin.name === defaultName);
     if (!plugin) {
-        throw new Error("There is no default plugin to create ContentModelManager");
+        throw new Error("There is no default plugin to create CmsModelManager");
     }
     return await plugin.create(context, model);
 };

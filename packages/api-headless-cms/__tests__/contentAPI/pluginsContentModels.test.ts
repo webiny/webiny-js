@@ -1,9 +1,9 @@
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
 import { until } from "./../utils/helpers";
 import { CmsGroup } from "~/types";
-import { ContentModelPlugin } from "~/content/plugins/ContentModelPlugin";
+import { CmsModelPlugin } from "~/content/plugins/CmsModelPlugin";
 
-const contentModelPlugin = new ContentModelPlugin({
+const contentModelPlugin = new CmsModelPlugin({
     name: "Product",
     modelId: "product",
     locale: "en-US",

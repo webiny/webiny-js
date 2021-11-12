@@ -1,7 +1,7 @@
 import { BeforeModelCreateTopicParams, CmsModel, HeadlessCmsStorageOperations } from "~/types";
 import { Topic } from "@webiny/pubsub/types";
 import { PluginsContainer } from "@webiny/plugins";
-import { ContentModelPlugin } from "~/content/plugins/ContentModelPlugin";
+import { CmsModelPlugin } from "~/content/plugins/CmsModelPlugin";
 import WebinyError from "@webiny/error";
 import camelCase from "lodash/camelCase";
 import pluralize from "pluralize";
@@ -106,9 +106,9 @@ export const assignBeforeModelCreate = (params: Params) => {
     onBeforeCreate.subscribe(async params => {
         const { model } = params;
 
-        const modelPlugin: ContentModelPlugin = plugins
-            .byType<ContentModelPlugin>(ContentModelPlugin.type)
-            .find((item: ContentModelPlugin) => item.contentModel.modelId === model.modelId);
+        const modelPlugin: CmsModelPlugin = plugins
+            .byType<CmsModelPlugin>(CmsModelPlugin.type)
+            .find((item: CmsModelPlugin) => item.contentModel.modelId === model.modelId);
 
         if (modelPlugin) {
             throw new WebinyError(

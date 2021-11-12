@@ -19,7 +19,7 @@ import {
 import * as utils from "~/utils";
 import { NotFoundError } from "@webiny/handler-graphql";
 import WebinyError from "@webiny/error";
-import { ContentModelGroupPlugin } from "~/content/plugins/ContentModelGroupPlugin";
+import { CmsGroupPlugin } from "~/content/plugins/CmsGroupPlugin";
 import { Tenant } from "@webiny/api-tenancy/types";
 import { I18NLocale } from "@webiny/api-i18n/types";
 import { SecurityIdentity } from "@webiny/api-security/types";
@@ -51,13 +51,13 @@ export interface Params {
 export const createModelGroupsCrud = (params: Params): CmsGroupContext => {
     const { getTenant, getIdentity, getLocale, storageOperations, context } = params;
 
-    const getContentModelGroupsAsPlugins = (): CmsGroup[] => {
+    const getGroupsAsPlugins = (): CmsGroup[] => {
         const tenant = getTenant().id;
         const locale = getLocale().code;
 
         return (
             context.plugins
-                .byType<ContentModelGroupPlugin>(ContentModelGroupPlugin.type)
+                .byType<CmsGroupPlugin>(CmsGroupPlugin.type)
                 /**
                  * We need to filter out groups that are not for this tenant or locale.
                  * If it does not have tenant or locale define, it is for every locale and tenant
@@ -87,9 +87,7 @@ export const createModelGroupsCrud = (params: Params): CmsGroupContext => {
     };
 
     const groupsGet = async (id: string) => {
-        const groupPlugin: CmsGroup = getContentModelGroupsAsPlugins().find(
-            group => group.id === id
-        );
+        const groupPlugin: CmsGroup = getGroupsAsPlugins().find(group => group.id === id);
 
         if (groupPlugin) {
             return groupPlugin;
@@ -111,7 +109,7 @@ export const createModelGroupsCrud = (params: Params): CmsGroupContext => {
             });
         }
         if (!group) {
-            throw new NotFoundError(`Content model group "${id}" was not found!`);
+            throw new NotFoundError(`Cms Group "${id}" was not found!`);
         }
 
         return {
@@ -126,7 +124,7 @@ export const createModelGroupsCrud = (params: Params): CmsGroupContext => {
         const tenant = getTenant().id;
         const locale = getLocale().code;
         try {
-            const pluginsGroups = getContentModelGroupsAsPlugins();
+            const pluginsGroups = getGroupsAsPlugins();
 
             const databaseGroups = await storageOperations.groups.list({
                 where: {

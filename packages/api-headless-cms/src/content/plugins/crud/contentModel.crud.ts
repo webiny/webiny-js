@@ -21,7 +21,7 @@ import { createFieldModels } from "./contentModel/createFieldModels";
 import { validateLayout } from "./contentModel/validateLayout";
 import { NotAuthorizedError } from "@webiny/api-security";
 import WebinyError from "@webiny/error";
-import { ContentModelPlugin } from "~/content/plugins/ContentModelPlugin";
+import { CmsModelPlugin } from "~/content/plugins/CmsModelPlugin";
 import { Tenant } from "@webiny/api-tenancy/types";
 import { I18NLocale } from "@webiny/api-i18n/types";
 import { SecurityIdentity } from "@webiny/api-security/types";
@@ -77,13 +77,13 @@ export const createModelsCrud = (params: Params): CmsModelContext => {
         return utils.checkPermissions(context, "cms.contentModel", { rwd: check });
     };
 
-    const getContentModelsAsPlugins = (): CmsModel[] => {
+    const getModelsAsPlugins = (): CmsModel[] => {
         const tenant = getTenant().id;
         const locale = getLocale().code;
 
         return (
             context.plugins
-                .byType<ContentModelPlugin>(ContentModelPlugin.type)
+                .byType<CmsModelPlugin>(CmsModelPlugin.type)
                 /**
                  * We need to filter out models that are not for this tenant or locale.
                  * If it does not have tenant or locale define, it is for every locale and tenant
@@ -109,9 +109,7 @@ export const createModelsCrud = (params: Params): CmsModelContext => {
     };
 
     const modelsGet = async (modelId: string): Promise<CmsModel> => {
-        const pluginModel: CmsModel = getContentModelsAsPlugins().find(
-            model => model.modelId === modelId
-        );
+        const pluginModel: CmsModel = getModelsAsPlugins().find(model => model.modelId === modelId);
 
         if (pluginModel) {
             return pluginModel;
@@ -137,7 +135,7 @@ export const createModelsCrud = (params: Params): CmsModelContext => {
     const modelsList = async (): Promise<CmsModel[]> => {
         const databaseModels = await loaders.listModels.load("listModels");
 
-        const pluginsModels = getContentModelsAsPlugins();
+        const pluginsModels = getModelsAsPlugins();
 
         return databaseModels.concat(pluginsModels);
     };

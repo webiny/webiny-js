@@ -1,11 +1,11 @@
 import { ModelManagerPlugin } from "~/types";
-import { DefaultContentModelManager } from "./DefaultContentModelManager";
+import { DefaultCmsModelManager } from "./DefaultCmsModelManager";
 
 const plugin: ModelManagerPlugin = {
     type: "cms-content-model-manager",
     name: "content-model-manager-default",
     create: async (context, model) => {
-        return new DefaultContentModelManager(context, model);
+        return new DefaultCmsModelManager(context, model);
     }
 };
 

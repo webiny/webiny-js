@@ -1,7 +1,7 @@
 import { Topic } from "@webiny/pubsub/types";
 import { BeforeGroupDeleteTopicParams, HeadlessCmsStorageOperations } from "~/types";
 import { PluginsContainer } from "@webiny/plugins";
-import { ContentModelGroupPlugin } from "~/content/plugins/ContentModelGroupPlugin";
+import { CmsGroupPlugin } from "~/content/plugins/CmsGroupPlugin";
 import WebinyError from "@webiny/error";
 
 export interface Params {
@@ -15,12 +15,12 @@ export const assignBeforeGroupDelete = (params: Params) => {
     onBeforeDelete.subscribe(async params => {
         const { group } = params;
 
-        const groupPlugin: ContentModelGroupPlugin = plugins
-            .byType<ContentModelGroupPlugin>(ContentModelGroupPlugin.type)
-            .find((item: ContentModelGroupPlugin) => item.contentModelGroup.slug === group.slug);
+        const groupPlugin: CmsGroupPlugin = plugins
+            .byType<CmsGroupPlugin>(CmsGroupPlugin.type)
+            .find((item: CmsGroupPlugin) => item.contentModelGroup.slug === group.slug);
 
         if (groupPlugin) {
-            throw new Error(`Content model groups defined via plugins cannot be deleted.`);
+            throw new Error(`Cms Groups defined via plugins cannot be deleted.`);
         }
 
         const models = await storageOperations.models.list({

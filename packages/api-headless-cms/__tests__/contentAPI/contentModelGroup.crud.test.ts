@@ -53,7 +53,7 @@ const createPermissions = groups => [
     }
 ];
 
-describe("Content model group crud test", () => {
+describe("Cms Group crud test", () => {
     const {
         getContentModelGroupQuery,
         listContentModelGroupsQuery,
@@ -186,7 +186,7 @@ describe("Content model group crud test", () => {
                 getContentModelGroup: {
                     data: null,
                     error: {
-                        message: `Content model group "nonExistingId" was not found!`,
+                        message: `Cms Group "nonExistingId" was not found!`,
                         code: "NOT_FOUND",
                         data: null
                     }
@@ -208,7 +208,7 @@ describe("Content model group crud test", () => {
                 updateContentModelGroup: {
                     data: null,
                     error: {
-                        message: `Content model group "nonExistingIdUpdate" was not found!`,
+                        message: `Cms Group "nonExistingIdUpdate" was not found!`,
                         code: "NOT_FOUND",
                         data: null
                     }
@@ -226,7 +226,7 @@ describe("Content model group crud test", () => {
                 deleteContentModelGroup: {
                     data: null,
                     error: {
-                        message: `Content model group "nonExistingIdDelete" was not found!`,
+                        message: `Cms Group "nonExistingIdDelete" was not found!`,
                         code: "NOT_FOUND",
                         data: null
                     }
@@ -325,7 +325,7 @@ describe("Content model group crud test", () => {
                 createContentModelGroup: {
                     data: null,
                     error: {
-                        message: `Content model group with the slug "content-model-group" already exists.`,
+                        message: `Cms Group with the slug "content-model-group" already exists.`,
                         code: "SLUG_ALREADY_EXISTS",
                         data: expect.any(Object)
                     }
