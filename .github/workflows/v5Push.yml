@@ -167,7 +167,7 @@ jobs:
         run: yarn test ${{ matrix.package }}
 
   e2e-wby-cms-ddb-init:
-    name: Init (E2E)
+    name: E2E (DDB) - Init
     runs-on: ubuntu-latest
     outputs:
       cypress-folders: ${{ steps.list-cypress-folders.outputs.cypress-folders }}
@@ -193,8 +193,8 @@ jobs:
         run: echo "::set-output name=cypress-folders::$(node scripts/listCypressTestsFolders.js)"
 
   e2e-wby-cms-ddb-project-setup:
+    name: E2E (DDB) - Project setup
     needs: e2e-wby-cms-ddb-init
-    name: Project setup (E2E)
     runs-on: ubuntu-latest
     outputs:
       cypress-config: ${{ steps.save-cypress-config.outputs.cypress-config }}
@@ -348,8 +348,8 @@ jobs:
           message-text: Could not complete Admin Area installation wizard. Screenshots have been placed in this thread, good luck.
 
   e2e-wby-cms-ddb-cypress-tests:
-    needs: [e2e-wby-cms-ddb-init, e2e-wby-cms-ddb-project-setup]
     name: ${{ matrix.cypress-folder }} (${{ matrix.os }}, Node v${{ matrix.node }})
+    needs: [e2e-wby-cms-ddb-init, e2e-wby-cms-ddb-project-setup]
     strategy:
       fail-fast: false
       matrix:
@@ -406,7 +406,7 @@ jobs:
           message-text: Cypress tests failed! Screenshots have been placed in this thread, good luck.
 
   e2e-wby-cms-ddb-es-init:
-    name: Init (E2E)
+    name: E2E (DDB+ES) - Init
     runs-on: ubuntu-latest
     outputs:
       cypress-folders: ${{ steps.list-cypress-folders.outputs.cypress-folders }}
@@ -432,8 +432,8 @@ jobs:
         run: echo "::set-output name=cypress-folders::$(node scripts/listCypressTestsFolders.js)"
 
   e2e-wby-cms-ddb-es-project-setup:
+    name: E2E (DDB+ES) - Project setup
     needs: e2e-wby-cms-ddb-es-init
-    name: Project setup (E2E)
     runs-on: ubuntu-latest
     outputs:
       cypress-config: ${{ steps.save-cypress-config.outputs.cypress-config }}
@@ -589,8 +589,8 @@ jobs:
           message-text: Could not complete Admin Area installation wizard. Screenshots have been placed in this thread, good luck.
 
   e2e-wby-cms-ddb-es-cypress-tests:
-    needs: [e2e-wby-cms-ddb-es-init, e2e-wby-cms-ddb-es-project-setup]
     name: ${{ matrix.cypress-folder }} (${{ matrix.os }}, Node v${{ matrix.node }})
+    needs: [e2e-wby-cms-ddb-es-init, e2e-wby-cms-ddb-es-project-setup]
     strategy:
       fail-fast: false
       matrix:
@@ -675,29 +675,29 @@ jobs:
           path: .webiny/cached-packages
           key: packages-cache-${{ needs.init.outputs.ts }}
 
-#      - name: Install dependencies
-#        run: yarn --immutable
-#
-#      - name: Build packages
-#        run: yarn build
-#
-#      - name: Create ".npmrc" file in the project root
-#        run: echo "//registry.npmjs.org/:_authToken=\${NPM_TOKEN}" > .npmrc
-#
-#      - name: Set git email
-#        run: git config --global user.email "webiny-bot@webiny.com"
-#
-#      - name: Set git username
-#        run: git config --global user.name "webiny-bot"
-#
-#      - name: Create a release on GitHub
-#        run: yarn lerna:version:beta
-#
-#      - name: Release packages to NPM
-#        run: yarn lerna:publish:beta
-#
-#      - name: Update package versions in the sample project applications' packages
-#        run: 'yarn webiny-versions && yarn prettier:fix && git add . && git commit --m "chore: update package versions (webiny-versions)" --no-verify && git push'
-#
-#      - name: Update and commit "yarn.lock" file
-#        run: 'yarn && git add yarn.lock && git commit --m "chore: update yarn.lock" --no-verify && git push'
+      - name: Install dependencies
+        run: yarn --immutable
+
+      - name: Build packages
+        run: yarn build
+
+      - name: Create ".npmrc" file in the project root
+        run: echo "//registry.npmjs.org/:_authToken=\${NPM_TOKEN}" > .npmrc
+
+      - name: Set git email
+        run: git config --global user.email "webiny-bot@webiny.com"
+
+      - name: Set git username
+        run: git config --global user.name "webiny-bot"
+
+      - name: Create a release on GitHub
+        run: yarn lerna:version:beta
+
+      - name: Release packages to NPM
+        run: yarn lerna:publish:beta
+
+      - name: Update package versions in the sample project applications' packages
+        run: 'yarn webiny-versions && yarn prettier:fix && git add . && git commit --m "chore: update package versions (webiny-versions)" --no-verify && git push'
+
+      - name: Update and commit "yarn.lock" file
+        run: 'yarn && git add yarn.lock && git commit --m "chore: update yarn.lock" --no-verify && git push'
