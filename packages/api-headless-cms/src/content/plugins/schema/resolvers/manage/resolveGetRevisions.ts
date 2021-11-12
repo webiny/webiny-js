@@ -5,10 +5,7 @@ export const resolveGetRevisions: ResolverFactory =
     ({ model }) =>
     async (_, args, { cms }) => {
         try {
-            const revisions: CmsContentEntry[] = await cms.entries.getEntryRevisions(
-                model,
-                args.id
-            );
+            const revisions: CmsContentEntry[] = await cms.getEntryRevisions(model, args.id);
 
             return new Response(revisions.sort((a, b) => b.version - a.version));
         } catch (e) {

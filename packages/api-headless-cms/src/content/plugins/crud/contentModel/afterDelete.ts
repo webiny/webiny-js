@@ -9,6 +9,6 @@ export const assignAfterModelDelete = (params: Params) => {
     const { onAfterDelete, context } = params;
 
     onAfterDelete.subscribe(async () => {
-        await context.cms.settings.updateContentModelLastChange();
+        await context.cms.updateContentModelLastChange();
     });
 };

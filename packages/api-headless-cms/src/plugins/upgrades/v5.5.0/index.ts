@@ -45,7 +45,7 @@ const plugin: UpgradePlugin<CmsContext> = {
                 // Migrate CMS permissions
                 const newCMSContentPermissions = await migrateCMSPermissions(
                     CmsContentPermissions,
-                    cms.models.getModel
+                    cms.getModel
                 );
 
                 const newPermissions = [...restPermissions, ...newCMSContentPermissions];
@@ -97,7 +97,7 @@ const plugin: UpgradePlugin<CmsContext> = {
                 // Migrate CMS permissions.
                 const newCMSContentPermissions = await migrateCMSPermissions(
                     CmsContentPermissions,
-                    cms.models.getModel
+                    cms.getModel
                 );
 
                 const newPermissions = [...restPermissions, ...newCMSContentPermissions];

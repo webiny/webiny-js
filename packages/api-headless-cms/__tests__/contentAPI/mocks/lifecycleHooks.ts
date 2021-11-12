@@ -31,22 +31,22 @@ export const assignModelEvents = () => {
         if (!context.cms) {
             throw new Error("Missing cms on context.");
         }
-        context.cms.models.onBeforeModelCreate.subscribe(async () => {
+        context.cms.onBeforeModelCreate.subscribe(async () => {
             pubSubTracker.track("contentModel:beforeCreate");
         });
-        context.cms.models.onAfterModelCreate.subscribe(async () => {
+        context.cms.onAfterModelCreate.subscribe(async () => {
             pubSubTracker.track("contentModel:afterCreate");
         });
-        context.cms.models.onBeforeModelUpdate.subscribe(async () => {
+        context.cms.onBeforeModelUpdate.subscribe(async () => {
             pubSubTracker.track("contentModel:beforeUpdate");
         });
-        context.cms.models.onAfterModelUpdate.subscribe(async () => {
+        context.cms.onAfterModelUpdate.subscribe(async () => {
             pubSubTracker.track("contentModel:afterUpdate");
         });
-        context.cms.models.onBeforeModelDelete.subscribe(async () => {
+        context.cms.onBeforeModelDelete.subscribe(async () => {
             pubSubTracker.track("contentModel:beforeDelete");
         });
-        context.cms.models.onAfterModelDelete.subscribe(async () => {
+        context.cms.onAfterModelDelete.subscribe(async () => {
             pubSubTracker.track("contentModel:afterDelete");
         });
     });
@@ -57,58 +57,58 @@ export const assignEntryEvents = () => {
         if (!context.cms) {
             throw new Error("Missing cms on context.");
         }
-        context.cms.entries.onBeforeEntryCreate.subscribe(async () => {
+        context.cms.onBeforeEntryCreate.subscribe(async () => {
             pubSubTracker.track("contentEntry:beforeCreate");
         });
-        context.cms.entries.onAfterEntryCreate.subscribe(async () => {
+        context.cms.onAfterEntryCreate.subscribe(async () => {
             pubSubTracker.track("contentEntry:afterCreate");
         });
-        context.cms.entries.onBeforeEntryRevisionCreate.subscribe(async () => {
+        context.cms.onBeforeEntryRevisionCreate.subscribe(async () => {
             pubSubTracker.track("contentEntry:beforeCreateRevisionFrom");
         });
-        context.cms.entries.onAfterEntryRevisionCreate.subscribe(async () => {
+        context.cms.onAfterEntryRevisionCreate.subscribe(async () => {
             pubSubTracker.track("contentEntry:afterCreateRevisionFrom");
         });
-        context.cms.entries.onBeforeEntryUpdate.subscribe(async () => {
+        context.cms.onBeforeEntryUpdate.subscribe(async () => {
             pubSubTracker.track("contentEntry:beforeUpdate");
         });
-        context.cms.entries.onAfterEntryUpdate.subscribe(async () => {
+        context.cms.onAfterEntryUpdate.subscribe(async () => {
             pubSubTracker.track("contentEntry:afterUpdate");
         });
-        context.cms.entries.onBeforeEntryDelete.subscribe(async () => {
+        context.cms.onBeforeEntryDelete.subscribe(async () => {
             pubSubTracker.track("contentEntry:beforeDelete");
         });
-        context.cms.entries.onAfterEntryDelete.subscribe(async () => {
+        context.cms.onAfterEntryDelete.subscribe(async () => {
             pubSubTracker.track("contentEntry:afterDelete");
         });
-        context.cms.entries.onBeforeEntryRevisionDelete.subscribe(async () => {
+        context.cms.onBeforeEntryRevisionDelete.subscribe(async () => {
             pubSubTracker.track("contentEntry:beforeDeleteRevision");
         });
-        context.cms.entries.onAfterEntryRevisionDelete.subscribe(async () => {
+        context.cms.onAfterEntryRevisionDelete.subscribe(async () => {
             pubSubTracker.track("contentEntry:afterDeleteRevision");
         });
-        context.cms.entries.onBeforeEntryPublish.subscribe(async () => {
+        context.cms.onBeforeEntryPublish.subscribe(async () => {
             pubSubTracker.track("contentEntry:beforePublish");
         });
-        context.cms.entries.onAfterEntryPublish.subscribe(async () => {
+        context.cms.onAfterEntryPublish.subscribe(async () => {
             pubSubTracker.track("contentEntry:afterPublish");
         });
-        context.cms.entries.onBeforeEntryUnpublish.subscribe(async () => {
+        context.cms.onBeforeEntryUnpublish.subscribe(async () => {
             pubSubTracker.track("contentEntry:beforeUnpublish");
         });
-        context.cms.entries.onAfterEntryUnpublish.subscribe(async () => {
+        context.cms.onAfterEntryUnpublish.subscribe(async () => {
             pubSubTracker.track("contentEntry:afterUnpublish");
         });
-        context.cms.entries.onBeforeEntryRequestReview.subscribe(async () => {
+        context.cms.onBeforeEntryRequestReview.subscribe(async () => {
             pubSubTracker.track("contentEntry:beforeRequestReview");
         });
-        context.cms.entries.onAfterEntryRequestReview.subscribe(async () => {
+        context.cms.onAfterEntryRequestReview.subscribe(async () => {
             pubSubTracker.track("contentEntry:afterRequestReview");
         });
-        context.cms.entries.onBeforeEntryRequestChanges.subscribe(async () => {
+        context.cms.onBeforeEntryRequestChanges.subscribe(async () => {
             pubSubTracker.track("contentEntry:beforeRequestChanges");
         });
-        context.cms.entries.onAfterEntryRequestChanges.subscribe(async () => {
+        context.cms.onAfterEntryRequestChanges.subscribe(async () => {
             pubSubTracker.track("contentEntry:afterRequestChanges");
         });
     });

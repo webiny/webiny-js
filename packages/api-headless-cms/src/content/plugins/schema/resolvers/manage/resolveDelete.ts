@@ -6,9 +6,9 @@ export const resolveDelete: ResolverFactory =
     async (_, { revision }, { cms }) => {
         try {
             if (revision.includes("#")) {
-                await cms.entries.deleteEntryRevision(model, revision);
+                await cms.deleteEntryRevision(model, revision);
             } else {
-                await cms.entries.deleteEntry(model, revision);
+                await cms.deleteEntry(model, revision);
             }
 
             return new Response(true);
