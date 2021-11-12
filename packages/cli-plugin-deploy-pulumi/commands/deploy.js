@@ -55,9 +55,6 @@ module.exports = async (inputs, context) => {
         );
     }
 
-    console.log("Total Duration: ", getDuration());
-    process.exit();
-
     await login(projectApplication);
 
     const pulumi = await getPulumi({
