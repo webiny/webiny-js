@@ -6,6 +6,9 @@
     "watch": "yarn webiny run watch"
   },
   "dependencies": {
+    "@webiny/api-file-manager": "latest",
+    "@webiny/api-file-manager-ddb": "latest",
+    "@webiny/api-file-manager-s3": "latest",
     "@webiny/api-i18n": "latest",
     "@webiny/api-i18n-content": "latest",
     "@webiny/api-i18n-ddb": "latest",
