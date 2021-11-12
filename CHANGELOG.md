@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.17.3-beta.0](https://github.com/webiny/webiny-js/compare/v5.17.2...v5.17.3-beta.0) (2021-11-12)
+
+
+### Bug Fixes
+
+* **api-page-builder-import-export:** export page settings ([#2023](https://github.com/webiny/webiny-js/issues/2023)) ([3b51bca](https://github.com/webiny/webiny-js/commit/3b51bcad251154ece0ef2c9d2dad8ae2063ccca5))
+
+
+
+
+
 ## [5.17.2](https://github.com/webiny/webiny-js/compare/v5.17.2-beta.0...v5.17.2) (2021-11-11)
 
 **Note:** Version bump only for package webiny-js
