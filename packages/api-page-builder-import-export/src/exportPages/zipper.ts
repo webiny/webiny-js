@@ -95,7 +95,6 @@ const PAGE_EXPORT_BASENAME = `WEBINY_PAGE_EXPORT.zip`;
 
 export class ZipOfZip {
     private readonly archiveFormat = "zip";
-    private readonly filesDirName = "assets";
     private readonly archiveFileName: string;
     keys: string[];
 
