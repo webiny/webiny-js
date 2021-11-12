@@ -19,7 +19,6 @@ export default {
                 const modules = await Promise.allSettled([
                     import("@webiny/cli-plugin-workspaces"),
                     import("@webiny/cli-plugin-deploy-pulumi"),
-                    import("@webiny/api-page-builder/cli"),
                     import("@webiny/cwp-template-aws/cli"),
                     import("@webiny/cli-plugin-scaffold"),
                     import("@webiny/cli-plugin-scaffold-full-stack-app"),
@@ -28,7 +27,9 @@ export default {
                     import("@webiny/cli-plugin-scaffold-admin-app-module"),
                     import("@webiny/cli-plugin-scaffold-react-app"),
                     import("@webiny/cli-plugin-scaffold-react-component"),
-                    import("@webiny/cli-plugin-scaffold-ci")
+                    import("@webiny/cli-plugin-scaffold-ci"),
+                    import("./apps/admin/cli"),
+                    import("./apps/website/cli")
                 ]);
 
                 return [
@@ -37,7 +38,10 @@ export default {
                             // Use only "fulfilled" imports.
                             if (m.status === "fulfilled") {
                                 try {
-                                    return m.value.default();
+                                    if (typeof m.value.default === "function") {
+                                        return m.value.default();
+                                    }
+                                    return m.value.default;
                                 } catch {
                                     // This one is most likely not built yet.
                                     return null;
@@ -53,7 +57,7 @@ export default {
                                 return;
                             }
 
-                           /* if (args.inputs.build === false) {
+                            /* if (args.inputs.build === false) {
                                 context.info(
                                     `"--no-build" argument detected - skipping React application upload and prerendering.`
                                 );

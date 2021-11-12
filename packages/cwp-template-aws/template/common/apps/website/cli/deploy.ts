@@ -4,17 +4,17 @@ const path = require("path");
 const fs = require("fs");
 
 /**
- * This plugin uploads the Admin Area React application to the deployed Amazon S3 bucket.
- * The plugin is executed right after the Admin Area React application has been successfully built
+ * This plugin uploads the Website React application to the deployed Amazon S3 bucket.
+ * The plugin is executed right after the Website React application has been successfully built
  * and relevant cloud infrastructure resources have been deployed (via `webiny deploy` command).
  * https://www.webiny.com/docs/how-to-guides/deployment/deploy-your-project/
  */
 export default {
     type: "hook-after-deploy",
-    name: "hook-after-deploy-admin",
+    name: "hook-after-deploy-website",
     async hook(params, context) {
-        // Only handle Admin Area React application.
-        if (params.projectApplication.id !== "admin") {
+        // Only handle Website React application.
+        if (params.projectApplication.id !== "website") {
             return;
         }
 
@@ -33,14 +33,14 @@ export default {
         }
 
         const start = new Date().getTime();
-        const adminOutput = getStackOutput({
-            folder: "apps/admin",
+        const websiteOutput = getStackOutput({
+            folder: "apps/website",
             env: params.env
         });
 
         await uploadFolderToS3({
             path: buildFolderPath,
-            bucket: adminOutput.appStorage,
+            bucket: websiteOutput.appStorage,
             onFileUploadSuccess: ({ paths }) => {
                 context.success(paths.relative);
             },
