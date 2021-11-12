@@ -1,6 +1,5 @@
 import cliWorkspaces from "@webiny/cli-plugin-workspaces";
 import cliPulumiDeploy from "@webiny/cli-plugin-deploy-pulumi";
-import cliPageBuilder from "@webiny/api-page-builder/cli";
 import cliAwsTemplate from "@webiny/cwp-template-aws/cli";
 
 // Scaffolds.
@@ -24,7 +23,6 @@ export default {
         plugins: [
             cliWorkspaces(),
             cliPulumiDeploy(),
-            cliPageBuilder(),
             cliAwsTemplate(),
 
             // Scaffolds.
