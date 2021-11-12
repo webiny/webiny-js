@@ -1,5 +1,5 @@
 import { SecurityIdentity } from "@webiny/api-security/types";
-import { CmsContentModelGroup } from "~/types";
+import { CmsGroup } from "~/types";
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
 import models from "./mocks/contentModels";
 import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
@@ -37,7 +37,7 @@ const createIdentity = (permissions: any[] = []): SecurityIdentity => {
 };
 
 describe("MANAGE - resolvers - api key", () => {
-    let contentModelGroup: CmsContentModelGroup;
+    let contentModelGroup: CmsGroup;
 
     const API_TOKEN = "aToken";
 

@@ -23,16 +23,6 @@ export const createSettingsCrud = (params: Params): CmsSettingsContext => {
     };
 
     return {
-        noAuthSettings: () => {
-            return {
-                get: async () => {
-                    return await storageOperations.settings.get({
-                        tenant: getTenant().id,
-                        locale: getLocale().code
-                    });
-                }
-            };
-        },
         getSettings: async (): Promise<CmsSettings | null> => {
             await checkPermissions();
             return await storageOperations.settings.get({
@@ -40,7 +30,7 @@ export const createSettingsCrud = (params: Params): CmsSettingsContext => {
                 locale: getLocale().code
             });
         },
-        updateContentModelLastChange: async (): Promise<void> => {
+        updateModelLastChange: async (): Promise<void> => {
             const original = await storageOperations.settings.get({
                 tenant: getTenant().id,
                 locale: getLocale().code
@@ -63,7 +53,7 @@ export const createSettingsCrud = (params: Params): CmsSettingsContext => {
                 settings
             });
         },
-        getContentModelLastChange: async (): Promise<Date> => {
+        getModelLastChange: async (): Promise<Date> => {
             try {
                 const settings = await storageOperations.settings.get({
                     tenant: getTenant().id,

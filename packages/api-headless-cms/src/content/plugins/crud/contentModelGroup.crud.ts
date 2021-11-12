@@ -2,13 +2,13 @@ import { withFields, string } from "@commodo/fields";
 import { validation } from "@webiny/validation";
 import mdbid from "mdbid";
 import {
-    CmsContentModelGroupContext,
-    CmsContentModelGroupListParams,
-    CmsContentModelGroupPermission,
-    CmsContentModelGroup,
+    CmsGroupContext,
+    CmsGroupListParams,
+    CmsGroupPermission,
+    CmsGroup,
     CmsContext,
     HeadlessCmsStorageOperations,
-    CmsContentModelGroupCreateInput,
+    CmsGroupCreateInput,
     BeforeGroupCreateTopicParams,
     AfterGroupCreateTopicParams,
     BeforeGroupUpdateTopicParams,
@@ -19,7 +19,7 @@ import {
 import * as utils from "~/utils";
 import { NotFoundError } from "@webiny/handler-graphql";
 import WebinyError from "@webiny/error";
-import { ContentModelGroupPlugin } from "~/content/plugins/ContentModelGroupPlugin";
+import { CmsGroupPlugin } from "~/content/plugins/CmsGroupPlugin";
 import { Tenant } from "@webiny/api-tenancy/types";
 import { I18NLocale } from "@webiny/api-i18n/types";
 import { SecurityIdentity } from "@webiny/api-security/types";
@@ -48,16 +48,16 @@ export interface Params {
     context: CmsContext;
     getIdentity: () => SecurityIdentity;
 }
-export const createModelGroupsCrud = (params: Params): CmsContentModelGroupContext => {
+export const createModelGroupsCrud = (params: Params): CmsGroupContext => {
     const { getTenant, getIdentity, getLocale, storageOperations, context } = params;
 
-    const getContentModelGroupsAsPlugins = (): CmsContentModelGroup[] => {
+    const getGroupsAsPlugins = (): CmsGroup[] => {
         const tenant = getTenant().id;
         const locale = getLocale().code;
 
         return (
             context.plugins
-                .byType<ContentModelGroupPlugin>(ContentModelGroupPlugin.type)
+                .byType<CmsGroupPlugin>(CmsGroupPlugin.type)
                 /**
                  * We need to filter out groups that are not for this tenant or locale.
                  * If it does not have tenant or locale define, it is for every locale and tenant
@@ -82,14 +82,12 @@ export const createModelGroupsCrud = (params: Params): CmsContentModelGroupConte
         );
     };
 
-    const checkPermissions = (check: string): Promise<CmsContentModelGroupPermission> => {
+    const checkPermissions = (check: string): Promise<CmsGroupPermission> => {
         return utils.checkPermissions(context, "cms.contentModelGroup", { rwd: check });
     };
 
     const groupsGet = async (id: string) => {
-        const groupPlugin: CmsContentModelGroup = getContentModelGroupsAsPlugins().find(
-            group => group.id === id
-        );
+        const groupPlugin: CmsGroup = getGroupsAsPlugins().find(group => group.id === id);
 
         if (groupPlugin) {
             return groupPlugin;
@@ -97,7 +95,7 @@ export const createModelGroupsCrud = (params: Params): CmsContentModelGroupConte
         const tenant = getTenant().id;
         const locale = getLocale().code;
 
-        let group: CmsContentModelGroup | null = null;
+        let group: CmsGroup | null = null;
         try {
             group = await storageOperations.groups.get({
                 tenant,
@@ -111,7 +109,7 @@ export const createModelGroupsCrud = (params: Params): CmsContentModelGroupConte
             });
         }
         if (!group) {
-            throw new NotFoundError(`Content model group "${id}" was not found!`);
+            throw new NotFoundError(`Cms Group "${id}" was not found!`);
         }
 
         return {
@@ -121,12 +119,12 @@ export const createModelGroupsCrud = (params: Params): CmsContentModelGroupConte
         };
     };
 
-    const groupsList = async (params: CmsContentModelGroupListParams) => {
+    const groupsList = async (params: CmsGroupListParams) => {
         const { where } = params || {};
         const tenant = getTenant().id;
         const locale = getLocale().code;
         try {
-            const pluginsGroups = getContentModelGroupsAsPlugins();
+            const pluginsGroups = getGroupsAsPlugins();
 
             const databaseGroups = await storageOperations.groups.list({
                 where: {
@@ -185,12 +183,6 @@ export const createModelGroupsCrud = (params: Params): CmsContentModelGroupConte
         onAfterGroupUpdate: onAfterUpdate,
         onBeforeGroupDelete: onBeforeDelete,
         onAfterGroupDelete: onAfterDelete,
-        noAuthGroup: () => {
-            return {
-                get: groupsGet,
-                list: groupsList
-            };
-        },
         getGroup: async id => {
             const permission = await checkPermissions("r");
 
@@ -230,13 +222,12 @@ export const createModelGroupsCrud = (params: Params): CmsContentModelGroupConte
                 slug: inputData.slug ? utils.toSlug(inputData.slug) : ""
             });
             await createdData.validate();
-            const input: CmsContentModelGroupCreateInput & { slug: string } =
-                await createdData.toJSON();
+            const input: CmsGroupCreateInput & { slug: string } = await createdData.toJSON();
 
             const identity = getIdentity();
 
             const id = mdbid();
-            const group: CmsContentModelGroup = {
+            const group: CmsGroup = {
                 ...input,
                 id,
                 tenant: getTenant().id,
@@ -287,7 +278,7 @@ export const createModelGroupsCrud = (params: Params): CmsContentModelGroupConte
             const input = new UpdateContentModelGroupModel().populate(inputData);
             await input.validate();
 
-            const updatedDataJson: Partial<CmsContentModelGroup> = await input.toJSON({
+            const updatedDataJson: Partial<CmsGroup> = await input.toJSON({
                 onlyDirty: true
             });
 
@@ -298,7 +289,7 @@ export const createModelGroupsCrud = (params: Params): CmsContentModelGroupConte
                 return original;
             }
 
-            const group: CmsContentModelGroup = {
+            const group: CmsGroup = {
                 ...original,
                 ...updatedDataJson,
                 locale: getLocale().code,

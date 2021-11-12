@@ -1,4 +1,4 @@
-import { CmsContentModelFieldInput, CmsContentModelGroup } from "~/types";
+import { CmsModelFieldInput, CmsGroup } from "~/types";
 import mdbid from "mdbid";
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
 import * as helpers from "../utils/helpers";
@@ -52,7 +52,7 @@ describe("content model test", () => {
 
     const { createContentModelGroupMutation } = useContentGqlHandler(manageHandlerOpts);
 
-    let contentModelGroup: CmsContentModelGroup;
+    let contentModelGroup: CmsGroup;
 
     beforeEach(async () => {
         const [createCMG] = await createContentModelGroupMutation({
@@ -434,7 +434,7 @@ describe("content model test", () => {
 
         const contentModel = createResponse.data.createContentModel.data;
 
-        const textField: CmsContentModelFieldInput = {
+        const textField: CmsModelFieldInput = {
             id: mdbid(),
             fieldId: "textField",
             label: "Text field",
@@ -453,7 +453,7 @@ describe("content model test", () => {
             validation: [],
             listValidation: []
         };
-        const numberField: CmsContentModelFieldInput = {
+        const numberField: CmsModelFieldInput = {
             id: mdbid(),
             fieldId: "numberField",
             label: "Number field",
@@ -523,7 +523,7 @@ describe("content model test", () => {
 
         const contentModel = createResponse.data.createContentModel.data;
 
-        const field: CmsContentModelFieldInput = {
+        const field: CmsModelFieldInput = {
             id: mdbid(),
             fieldId: "field1",
             label: "Field 1",

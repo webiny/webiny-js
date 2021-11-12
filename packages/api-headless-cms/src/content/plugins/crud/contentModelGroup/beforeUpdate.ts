@@ -1,6 +1,6 @@
 import { Topic } from "@webiny/pubsub/types";
 import { BeforeGroupUpdateTopicParams } from "~/types";
-import { ContentModelGroupPlugin } from "~/content/plugins/ContentModelGroupPlugin";
+import { CmsGroupPlugin } from "~/content/plugins/CmsGroupPlugin";
 import { PluginsContainer } from "@webiny/plugins";
 
 export interface Params {
@@ -11,12 +11,12 @@ export const assignBeforeGroupUpdate = (params: Params) => {
     const { onBeforeUpdate, plugins } = params;
 
     onBeforeUpdate.subscribe(({ group }) => {
-        const groupPlugin: ContentModelGroupPlugin = plugins
-            .byType<ContentModelGroupPlugin>(ContentModelGroupPlugin.type)
-            .find((item: ContentModelGroupPlugin) => item.contentModelGroup.slug === group.slug);
+        const groupPlugin: CmsGroupPlugin = plugins
+            .byType<CmsGroupPlugin>(CmsGroupPlugin.type)
+            .find((item: CmsGroupPlugin) => item.contentModelGroup.slug === group.slug);
         if (!groupPlugin) {
             return;
         }
-        throw new Error(`Content model groups defined via plugins cannot be updated.`);
+        throw new Error(`Cms Groups defined via plugins cannot be updated.`);
     });
 };

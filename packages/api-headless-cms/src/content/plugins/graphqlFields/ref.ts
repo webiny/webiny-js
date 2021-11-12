@@ -1,4 +1,4 @@
-import { CmsContentEntry, CmsContext, CmsModelFieldToGraphQLPlugin } from "~/types";
+import { CmsEntry, CmsContext, CmsModelFieldToGraphQLPlugin } from "~/types";
 import { createReadTypeName } from "~/content/plugins/utils/createTypeName";
 
 const createUnionTypeName = (model, field) => {
@@ -14,7 +14,7 @@ const createListFilters = ({ field }) => {
     `;
 };
 
-const appendTypename = (entries: CmsContentEntry[], typename: string) => {
+const appendTypename = (entries: CmsEntry[], typename: string) => {
     return entries.map(item => {
         item["__typename"] = typename;
         return item;
@@ -70,7 +70,7 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
                         // Get model manager, to get access to CRUD methods
                         const model = await cms.getModelManager(modelId);
 
-                        let entries: CmsContentEntry[];
+                        let entries: CmsEntry[];
                         // `read` API works with `published` data
                         if (cms.READ) {
                             entries = await model.getPublishedByIds([entryId]);
@@ -91,7 +91,7 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
                 // Get model manager, to get access to CRUD methods
                 const model = await cms.getModelManager(value.modelId);
 
-                let revisions: CmsContentEntry[];
+                let revisions: CmsEntry[];
                 // `read` API works with `published` data
                 if (cms.READ) {
                     revisions = await model.getPublishedByIds([value.entryId]);

@@ -1,12 +1,12 @@
 import mdbid from "mdbid";
 import { NotFoundError } from "@webiny/handler-graphql";
 import {
-    CmsContentEntryContext,
-    CmsContentEntryPermission,
-    CmsContentEntry,
-    CmsContentModel,
+    CmsEntryContext,
+    CmsEntryPermission,
+    CmsEntry,
+    CmsModel,
     CmsContext,
-    CmsStorageContentEntry,
+    CmsStorageEntry,
     HeadlessCmsStorageOperations,
     BeforeEntryCreateTopicParams,
     AfterEntryCreateTopicParams,
@@ -14,8 +14,8 @@ import {
     AfterEntryUpdateTopicParams,
     AfterEntryDeleteTopicParams,
     BeforeEntryDeleteTopicParams,
-    CmsContentEntryStorageOperationsListParams,
-    CmsContentEntryListParams,
+    CmsEntryStorageOperationsListParams,
+    CmsEntryListParams,
     BeforeEntryRevisionCreateTopicParams,
     AfterEntryRevisionCreateTopicParams,
     BeforeEntryPublishTopicParams,
@@ -50,10 +50,7 @@ export const STATUS_UNPUBLISHED = "unpublished";
 export const STATUS_CHANGES_REQUESTED = "changesRequested";
 export const STATUS_REVIEW_REQUESTED = "reviewRequested";
 
-const cleanInputData = (
-    model: CmsContentModel,
-    inputData: Record<string, any>
-): Record<string, any> => {
+const cleanInputData = (model: CmsModel, inputData: Record<string, any>): Record<string, any> => {
     return model.fields.reduce((acc, field) => {
         acc[field.fieldId] = inputData[field.fieldId];
         return acc;
@@ -61,7 +58,7 @@ const cleanInputData = (
 };
 
 const cleanUpdatedInputData = (
-    model: CmsContentModel,
+    model: CmsModel,
     input: Record<string, any>
 ): Record<string, any> => {
     return model.fields.reduce((acc, field) => {
@@ -74,9 +71,9 @@ const cleanUpdatedInputData = (
 };
 
 interface DeleteEntryParams {
-    model: CmsContentModel;
-    entry: CmsContentEntry;
-    storageEntry: CmsStorageContentEntry;
+    model: CmsModel;
+    entry: CmsEntry;
+    storageEntry: CmsStorageEntry;
 }
 
 interface EntryIdResult {
@@ -136,7 +133,7 @@ export interface Params {
     getIdentity: () => SecurityIdentity;
 }
 
-export const createContentEntryCrud = (params: Params): CmsContentEntryContext => {
+export const createContentEntryCrud = (params: Params): CmsEntryContext => {
     const { storageOperations, context, getTenant, getLocale, getIdentity } = params;
 
     const onBeforeCreate = createTopic<BeforeEntryCreateTopicParams>();
@@ -172,7 +169,7 @@ export const createContentEntryCrud = (params: Params): CmsContentEntryContext =
     const checkEntryPermissions = (check: {
         rwd?: string;
         pw?: string;
-    }): Promise<CmsContentEntryPermission> => {
+    }): Promise<CmsEntryPermission> => {
         return utils.checkPermissions(context, "cms.contentEntry", check);
     };
 
@@ -209,7 +206,7 @@ export const createContentEntryCrud = (params: Params): CmsContentEntryContext =
     /**
      * A helper to get entries by revision IDs
      */
-    const getEntriesByIds = async (model: CmsContentModel, ids: string[]) => {
+    const getEntriesByIds = async (model: CmsModel, ids: string[]) => {
         const permission = await checkEntryPermissions({ rwd: "r" });
         await utils.checkModelAccess(context, model);
 
@@ -258,7 +255,7 @@ export const createContentEntryCrud = (params: Params): CmsContentEntryContext =
         /**
          * Get published revisions by entry IDs.
          */
-        getPublishedEntriesByIds: async (model: CmsContentModel, ids: string[]) => {
+        getPublishedEntriesByIds: async (model: CmsModel, ids: string[]) => {
             const permission = await checkEntryPermissions({ rwd: "r" });
             await utils.checkModelAccess(context, model);
 
@@ -273,7 +270,7 @@ export const createContentEntryCrud = (params: Params): CmsContentEntryContext =
         /**
          * Get latest revisions by entry IDs.
          */
-        getLatestEntriesByIds: async (model: CmsContentModel, ids: string[]) => {
+        getLatestEntriesByIds: async (model: CmsModel, ids: string[]) => {
             const permission = await checkEntryPermissions({ rwd: "r" });
             await utils.checkModelAccess(context, model);
 
@@ -306,17 +303,17 @@ export const createContentEntryCrud = (params: Params): CmsContentEntryContext =
             }
             return items[0];
         },
-        listEntries: async (model: CmsContentModel, params) => {
+        listEntries: async (model: CmsModel, params) => {
             const permission = await checkEntryPermissions({ rwd: "r" });
             await utils.checkModelAccess(context, model);
 
-            const where: CmsContentEntryListParams["where"] = params.where || {};
+            const where: CmsEntryListParams["where"] = params.where || {};
             /**
              * Possibly only get records which are owned by current user.
              * Or if searching for the owner set that value - in the case that user can see other entries than their own.
              */
             const ownedBy = permission.own ? getIdentity().id : where.ownedBy;
-            const listWhere: CmsContentEntryStorageOperationsListParams["where"] = {
+            const listWhere: CmsEntryStorageOperationsListParams["where"] = {
                 ...where,
                 tenant: where.tenant || getTenant().id,
                 locale: where.locale || getLocale().code
@@ -389,7 +386,7 @@ export const createContentEntryCrud = (params: Params): CmsContentEntryContext =
 
             const { id, entryId, version } = createEntryId(1);
 
-            const entry: CmsContentEntry = {
+            const entry: CmsEntry = {
                 webinyVersion: context.WEBINY_VERSION,
                 tenant: context.tenancy.getCurrentTenant().id,
                 entryId,
@@ -406,7 +403,7 @@ export const createContentEntryCrud = (params: Params): CmsContentEntryContext =
                 values: input
             };
 
-            let storageEntry: CmsStorageContentEntry = null;
+            let storageEntry: CmsStorageEntry = null;
             try {
                 await onBeforeCreate.publish({
                     entry,
@@ -501,7 +498,7 @@ export const createContentEntryCrud = (params: Params): CmsContentEntryContext =
             const latestId = latestStorageEntry ? latestStorageEntry.id : sourceId;
             const { id, version: nextVersion } = increaseEntryIdVersion(latestId);
 
-            const entry: CmsContentEntry = {
+            const entry: CmsEntry = {
                 ...originalEntry,
                 id,
                 version: nextVersion,
@@ -518,7 +515,7 @@ export const createContentEntryCrud = (params: Params): CmsContentEntryContext =
                 values
             };
 
-            let storageEntry: CmsStorageContentEntry = undefined;
+            let storageEntry: CmsStorageEntry = undefined;
 
             try {
                 await onBeforeCreateRevision.publish({
@@ -601,7 +598,7 @@ export const createContentEntryCrud = (params: Params): CmsContentEntryContext =
             /**
              * We always send the full entry to the hooks and storage operations update.
              */
-            const entry: CmsContentEntry = {
+            const entry: CmsEntry = {
                 ...originalEntry,
                 savedOn: new Date().toISOString(),
                 values: {
@@ -616,7 +613,7 @@ export const createContentEntryCrud = (params: Params): CmsContentEntryContext =
                 }
             };
 
-            let storageEntry: CmsStorageContentEntry = undefined;
+            let storageEntry: CmsStorageEntry = undefined;
 
             try {
                 await onBeforeUpdate.publish({
@@ -714,8 +711,8 @@ export const createContentEntryCrud = (params: Params): CmsContentEntryContext =
             /**
              * If targeted record is latest entry revision, set the previous one as the new latest
              */
-            let entryToSetAsLatest: CmsContentEntry = null;
-            let storageEntryToSetAsLatest: CmsStorageContentEntry = null;
+            let entryToSetAsLatest: CmsEntry = null;
+            let storageEntryToSetAsLatest: CmsStorageEntry = null;
             if (entryToDelete.id === latestEntryRevisionId) {
                 entryToSetAsLatest = await entryFromStorageTransform(
                     context,
@@ -804,7 +801,7 @@ export const createContentEntryCrud = (params: Params): CmsContentEntryContext =
             );
 
             const currentDate = new Date().toISOString();
-            const entry: CmsContentEntry = {
+            const entry: CmsEntry = {
                 ...originalEntry,
                 status: STATUS_PUBLISHED,
                 locked: true,
@@ -812,7 +809,7 @@ export const createContentEntryCrud = (params: Params): CmsContentEntryContext =
                 publishedOn: currentDate
             };
 
-            let storageEntry: CmsStorageContentEntry = undefined;
+            let storageEntry: CmsStorageEntry = undefined;
 
             try {
                 await onBeforePublish.publish({
@@ -884,12 +881,12 @@ export const createContentEntryCrud = (params: Params): CmsContentEntryContext =
 
             utils.checkOwnership(context, permission, originalEntry);
 
-            const entry: CmsContentEntry = {
+            const entry: CmsEntry = {
                 ...originalEntry,
                 status: STATUS_CHANGES_REQUESTED
             };
 
-            let storageEntry: CmsStorageContentEntry = undefined;
+            let storageEntry: CmsStorageEntry = undefined;
 
             try {
                 await onBeforeRequestChanges.publish({
@@ -967,12 +964,12 @@ export const createContentEntryCrud = (params: Params): CmsContentEntryContext =
 
             utils.checkOwnership(context, permission, originalEntry);
 
-            const entry: CmsContentEntry = {
+            const entry: CmsEntry = {
                 ...originalEntry,
                 status: STATUS_REVIEW_REQUESTED
             };
 
-            let storageEntry: CmsStorageContentEntry = undefined;
+            let storageEntry: CmsStorageEntry = undefined;
 
             try {
                 await onBeforeRequestReview.publish({
@@ -1037,12 +1034,12 @@ export const createContentEntryCrud = (params: Params): CmsContentEntryContext =
                 originalStorageEntry
             );
 
-            const entry: CmsContentEntry = {
+            const entry: CmsEntry = {
                 ...originalEntry,
                 status: STATUS_UNPUBLISHED
             };
 
-            let storageEntry: CmsStorageContentEntry = undefined;
+            let storageEntry: CmsStorageEntry = undefined;
 
             try {
                 await onBeforeUnpublish.publish({

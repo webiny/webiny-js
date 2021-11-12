@@ -1,11 +1,11 @@
 import {
-    CmsContentModelGroup,
-    CmsContentModelGroupStorageOperations,
-    CmsContentModelGroupStorageOperationsCreateParams,
-    CmsContentModelGroupStorageOperationsDeleteParams,
-    CmsContentModelGroupStorageOperationsGetParams,
-    CmsContentModelGroupStorageOperationsListParams,
-    CmsContentModelGroupStorageOperationsUpdateParams
+    CmsGroup,
+    CmsGroupStorageOperations,
+    CmsGroupStorageOperationsCreateParams,
+    CmsGroupStorageOperationsDeleteParams,
+    CmsGroupStorageOperationsGetParams,
+    CmsGroupStorageOperationsListParams,
+    CmsGroupStorageOperationsUpdateParams
 } from "@webiny/api-headless-cms/types";
 import { Entity } from "dynamodb-toolbox";
 import WebinyError from "@webiny/error";
@@ -53,9 +53,7 @@ export interface Params {
     entity: Entity<any>;
     plugins: PluginsContainer;
 }
-export const createGroupsStorageOperations = (
-    params: Params
-): CmsContentModelGroupStorageOperations => {
+export const createGroupsStorageOperations = (params: Params): CmsGroupStorageOperations => {
     const { entity, plugins } = params;
 
     const filteringPlugins = plugins.byType<ValueFilterPlugin>(ValueFilterPlugin.type);
@@ -66,7 +64,7 @@ export const createGroupsStorageOperations = (
         );
     }
 
-    const create = async (params: CmsContentModelGroupStorageOperationsCreateParams) => {
+    const create = async (params: CmsGroupStorageOperationsCreateParams) => {
         const { group } = params;
         const keys = createKeys(group);
         try {
@@ -88,7 +86,7 @@ export const createGroupsStorageOperations = (
             );
         }
     };
-    const update = async (params: CmsContentModelGroupStorageOperationsUpdateParams) => {
+    const update = async (params: CmsGroupStorageOperationsUpdateParams) => {
         const { group, original } = params;
         const keys = createKeys(group);
         try {
@@ -111,7 +109,7 @@ export const createGroupsStorageOperations = (
             );
         }
     };
-    const deleteGroup = async (params: CmsContentModelGroupStorageOperationsDeleteParams) => {
+    const deleteGroup = async (params: CmsGroupStorageOperationsDeleteParams) => {
         const { group } = params;
         // TODO make sure that group has locale and tenant on it - add it in the crud just in case
         const keys = createKeys(group);
@@ -131,11 +129,11 @@ export const createGroupsStorageOperations = (
             );
         }
     };
-    const get = async (params: CmsContentModelGroupStorageOperationsGetParams) => {
+    const get = async (params: CmsGroupStorageOperationsGetParams) => {
         const keys = createKeys(params);
 
         try {
-            const group = await getRecord<CmsContentModelGroup>({
+            const group = await getRecord<CmsGroup>({
                 entity,
                 keys
             });
@@ -153,7 +151,7 @@ export const createGroupsStorageOperations = (
             );
         }
     };
-    const list = async (params: CmsContentModelGroupStorageOperationsListParams) => {
+    const list = async (params: CmsGroupStorageOperationsListParams) => {
         const { sort, where: initialWhere } = params;
 
         const queryAllParams: QueryAllParams = {
@@ -164,7 +162,7 @@ export const createGroupsStorageOperations = (
             }
         };
 
-        let records: CmsContentModelGroup[] = [];
+        let records: CmsGroup[] = [];
         try {
             records = await queryAll(queryAllParams);
         } catch (ex) {
@@ -180,7 +178,7 @@ export const createGroupsStorageOperations = (
             );
         }
 
-        const where: CmsContentModelGroupStorageOperationsListParams["where"] = {
+        const where: CmsGroupStorageOperationsListParams["where"] = {
             ...initialWhere
         };
         delete where["tenant"];

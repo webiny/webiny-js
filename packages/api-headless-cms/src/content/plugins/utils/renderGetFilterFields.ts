@@ -1,8 +1,8 @@
-import { CmsFieldTypePlugins, CmsContentModel } from "~/types";
+import { CmsFieldTypePlugins, CmsModel } from "~/types";
 import get from "lodash/get";
 
 interface RenderGetFilterFields {
-    (params: { model: CmsContentModel; fieldTypePlugins: CmsFieldTypePlugins }): string;
+    (params: { model: CmsModel; fieldTypePlugins: CmsFieldTypePlugins }): string;
 }
 
 export const renderGetFilterFields: RenderGetFilterFields = ({ model, fieldTypePlugins }) => {

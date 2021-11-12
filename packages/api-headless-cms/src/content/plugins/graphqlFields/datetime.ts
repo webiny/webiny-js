@@ -1,4 +1,4 @@
-import { CmsContentModelField, CmsModelFieldToGraphQLPlugin } from "~/types";
+import { CmsModelField, CmsModelFieldToGraphQLPlugin } from "~/types";
 
 const fieldGraphQLTypes = {
     time: "Time",
@@ -7,7 +7,7 @@ const fieldGraphQLTypes = {
     date: "Date"
 };
 
-const getFieldGraphQLType = (field: CmsContentModelField): string => {
+const getFieldGraphQLType = (field: CmsModelField): string => {
     const type = field.settings.type;
     if (!type || !fieldGraphQLTypes[type]) {
         return "DateTime";

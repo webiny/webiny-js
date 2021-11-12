@@ -1,4 +1,4 @@
-import { CmsContentModelGroup } from "~/types";
+import { CmsGroup } from "~/types";
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
 import { pubSubTracker } from "./mocks/lifecycleHooks";
 
@@ -7,7 +7,7 @@ describe("content model test reserved model ids", () => {
 
     const { createContentModelGroupMutation } = useContentGqlHandler(manageHandlerOpts);
 
-    let contentModelGroup: CmsContentModelGroup;
+    let contentModelGroup: CmsGroup;
 
     beforeEach(async () => {
         const [createCMG] = await createContentModelGroupMutation({

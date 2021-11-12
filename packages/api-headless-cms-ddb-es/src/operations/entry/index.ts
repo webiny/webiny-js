@@ -1,26 +1,26 @@
 import {
-    CmsContentEntry,
-    CmsContentEntryStorageOperations,
-    CmsContentEntryStorageOperationsCreateParams,
-    CmsContentEntryStorageOperationsCreateRevisionFromParams,
-    CmsContentEntryStorageOperationsDeleteParams,
-    CmsContentEntryStorageOperationsDeleteRevisionParams,
-    CmsContentEntryStorageOperationsGetAllRevisionsParams,
-    CmsContentEntryStorageOperationsGetByIdsParams,
-    CmsContentEntryStorageOperationsGetLatestByIdsParams,
-    CmsContentEntryStorageOperationsGetLatestRevisionParams,
-    CmsContentEntryStorageOperationsGetParams,
-    CmsContentEntryStorageOperationsGetPreviousRevisionParams,
-    CmsContentEntryStorageOperationsGetPublishedByIdsParams,
-    CmsContentEntryStorageOperationsGetRevisionParams,
-    CmsContentEntryStorageOperationsGetRevisionsParams,
-    CmsContentEntryStorageOperationsListParams,
-    CmsContentEntryStorageOperationsPublishParams,
-    CmsContentEntryStorageOperationsRequestChangesParams,
-    CmsContentEntryStorageOperationsRequestReviewParams,
-    CmsContentEntryStorageOperationsUnpublishParams,
-    CmsContentEntryStorageOperationsUpdateParams,
-    CmsContentModel,
+    CmsEntry,
+    CmsEntryStorageOperations,
+    CmsEntryStorageOperationsCreateParams,
+    CmsEntryStorageOperationsCreateRevisionFromParams,
+    CmsEntryStorageOperationsDeleteParams,
+    CmsEntryStorageOperationsDeleteRevisionParams,
+    CmsEntryStorageOperationsGetAllRevisionsParams,
+    CmsEntryStorageOperationsGetByIdsParams,
+    CmsEntryStorageOperationsGetLatestByIdsParams,
+    CmsEntryStorageOperationsGetLatestRevisionParams,
+    CmsEntryStorageOperationsGetParams,
+    CmsEntryStorageOperationsGetPreviousRevisionParams,
+    CmsEntryStorageOperationsGetPublishedByIdsParams,
+    CmsEntryStorageOperationsGetRevisionParams,
+    CmsEntryStorageOperationsGetRevisionsParams,
+    CmsEntryStorageOperationsListParams,
+    CmsEntryStorageOperationsPublishParams,
+    CmsEntryStorageOperationsRequestChangesParams,
+    CmsEntryStorageOperationsRequestReviewParams,
+    CmsEntryStorageOperationsUnpublishParams,
+    CmsEntryStorageOperationsUpdateParams,
+    CmsModel,
     CONTENT_ENTRY_STATUS
 } from "@webiny/api-headless-cms/types";
 import {
@@ -61,7 +61,7 @@ export const createPublishedType = (): string => {
     return `${createType()}.p`;
 };
 
-const getEntryData = (entry: CmsContentEntry) => {
+const getEntryData = (entry: CmsEntry) => {
     return {
         ...lodashOmit(entry, ["PK", "SK", "published", "latest"]),
         TYPE: createType(),
@@ -69,7 +69,7 @@ const getEntryData = (entry: CmsContentEntry) => {
     };
 };
 
-const getESLatestEntryData = async (plugins: PluginsContainer, entry: CmsContentEntry) => {
+const getESLatestEntryData = async (plugins: PluginsContainer, entry: CmsEntry) => {
     return compress(plugins, {
         ...getEntryData(entry),
         latest: true,
@@ -78,7 +78,7 @@ const getESLatestEntryData = async (plugins: PluginsContainer, entry: CmsContent
     });
 };
 
-const getESPublishedEntryData = async (plugins: PluginsContainer, entry: CmsContentEntry) => {
+const getESPublishedEntryData = async (plugins: PluginsContainer, entry: CmsEntry) => {
     return compress(plugins, {
         ...getEntryData(entry),
         published: true,
@@ -93,19 +93,14 @@ export interface Params {
     elasticsearch: Client;
     plugins: PluginsContainer;
 }
-export const createEntriesStorageOperations = (
-    params: Params
-): CmsContentEntryStorageOperations => {
+export const createEntriesStorageOperations = (params: Params): CmsEntryStorageOperations => {
     const { entity, esEntity, elasticsearch, plugins } = params;
 
     const dataLoaders = new DataLoadersHandler({
         entity
     });
 
-    const create = async (
-        model: CmsContentModel,
-        params: CmsContentEntryStorageOperationsCreateParams
-    ) => {
+    const create = async (model: CmsModel, params: CmsEntryStorageOperationsCreateParams) => {
         const { entry, storageEntry } = params;
 
         const esEntry = prepareEntryToIndex({
@@ -185,8 +180,8 @@ export const createEntriesStorageOperations = (
     };
 
     const createRevisionFrom = async (
-        model: CmsContentModel,
-        params: CmsContentEntryStorageOperationsCreateRevisionFromParams
+        model: CmsModel,
+        params: CmsEntryStorageOperationsCreateRevisionFromParams
     ) => {
         const { originalEntry, entry, storageEntry } = params;
         const revisionKeys = {
@@ -268,10 +263,7 @@ export const createEntriesStorageOperations = (
         return storageEntry;
     };
 
-    const update = async (
-        model: CmsContentModel,
-        params: CmsContentEntryStorageOperationsUpdateParams
-    ) => {
+    const update = async (model: CmsModel, params: CmsEntryStorageOperationsUpdateParams) => {
         const { originalEntry, entry, storageEntry } = params;
         const revisionKeys = {
             PK: createPartitionKey(entry),
@@ -369,15 +361,12 @@ export const createEntriesStorageOperations = (
         return storageEntry;
     };
 
-    const deleteEntry = async (
-        model: CmsContentModel,
-        params: CmsContentEntryStorageOperationsDeleteParams
-    ) => {
+    const deleteEntry = async (model: CmsModel, params: CmsEntryStorageOperationsDeleteParams) => {
         const { entry } = params;
 
         const partitionKey = createPartitionKey(entry);
 
-        const items = await queryAll<CmsContentEntry>({
+        const items = await queryAll<CmsEntry>({
             entity,
             partitionKey,
             options: {
@@ -385,7 +374,7 @@ export const createEntriesStorageOperations = (
             }
         });
 
-        const esItems = await queryAll<CmsContentEntry>({
+        const esItems = await queryAll<CmsEntry>({
             entity: esEntity,
             partitionKey,
             options: {
@@ -444,8 +433,8 @@ export const createEntriesStorageOperations = (
     };
 
     const deleteRevision = async (
-        model: CmsContentModel,
-        params: CmsContentEntryStorageOperationsDeleteRevisionParams
+        model: CmsModel,
+        params: CmsEntryStorageOperationsDeleteRevisionParams
     ) => {
         const { entryToDelete, entryToSetAsLatest, storageEntryToSetAsLatest } = params;
 
@@ -568,10 +557,7 @@ export const createEntriesStorageOperations = (
         }
     };
 
-    const list = async (
-        model: CmsContentModel,
-        params: CmsContentEntryStorageOperationsListParams
-    ) => {
+    const list = async (model: CmsModel, params: CmsEntryStorageOperationsListParams) => {
         const limit = createLimit(params.limit, 50);
         const body = createElasticsearchQueryBody({
             model,
@@ -627,10 +613,7 @@ export const createEntriesStorageOperations = (
         };
     };
 
-    const get = async (
-        model: CmsContentModel,
-        params: CmsContentEntryStorageOperationsGetParams
-    ) => {
+    const get = async (model: CmsModel, params: CmsEntryStorageOperationsGetParams) => {
         const { items } = await list(model, {
             ...params,
             limit: 1
@@ -641,10 +624,7 @@ export const createEntriesStorageOperations = (
         return items.shift();
     };
 
-    const publish = async (
-        model: CmsContentModel,
-        params: CmsContentEntryStorageOperationsPublishParams
-    ) => {
+    const publish = async (model: CmsModel, params: CmsEntryStorageOperationsPublishParams) => {
         const { entry, storageEntry } = params;
 
         /**
@@ -761,7 +741,7 @@ export const createEntriesStorageOperations = (
             /**
              * Need to decompress the data from Elasticsearch DynamoDB table.
              */
-            const latestEsEntryDataDecompressed: CmsContentEntry = (await decompress(
+            const latestEsEntryDataDecompressed: CmsEntry = (await decompress(
                 plugins,
                 latestEsEntry.data
             )) as any;
@@ -848,10 +828,7 @@ export const createEntriesStorageOperations = (
         return storageEntry;
     };
 
-    const unpublish = async (
-        model: CmsContentModel,
-        params: CmsContentEntryStorageOperationsUnpublishParams
-    ) => {
+    const unpublish = async (model: CmsModel, params: CmsEntryStorageOperationsUnpublishParams) => {
         const { entry, storageEntry } = params;
 
         /**
@@ -952,8 +929,8 @@ export const createEntriesStorageOperations = (
     };
 
     const requestReview = async (
-        model: CmsContentModel,
-        params: CmsContentEntryStorageOperationsRequestReviewParams
+        model: CmsModel,
+        params: CmsEntryStorageOperationsRequestReviewParams
     ) => {
         const { entry, storageEntry, originalEntry } = params;
 
@@ -1035,8 +1012,8 @@ export const createEntriesStorageOperations = (
     };
 
     const requestChanges = async (
-        model: CmsContentModel,
-        params: CmsContentEntryStorageOperationsRequestChangesParams
+        model: CmsModel,
+        params: CmsEntryStorageOperationsRequestChangesParams
     ) => {
         const { entry, storageEntry, originalEntry } = params;
 
@@ -1133,8 +1110,8 @@ export const createEntriesStorageOperations = (
     };
 
     const getAllRevisionsByIds = async (
-        model: CmsContentModel,
-        params: CmsContentEntryStorageOperationsGetAllRevisionsParams
+        model: CmsModel,
+        params: CmsEntryStorageOperationsGetAllRevisionsParams
     ) => {
         return await dataLoaders.getAllEntryRevisions({
             model,
@@ -1143,8 +1120,8 @@ export const createEntriesStorageOperations = (
     };
 
     const getLatestRevisionByEntryId = async (
-        model: CmsContentModel,
-        params: CmsContentEntryStorageOperationsGetLatestRevisionParams
+        model: CmsModel,
+        params: CmsEntryStorageOperationsGetLatestRevisionParams
     ) => {
         const result = await dataLoaders.getLatestRevisionByEntryId({
             model,
@@ -1156,8 +1133,8 @@ export const createEntriesStorageOperations = (
         return result.shift();
     };
     const getPublishedRevisionByEntryId = async (
-        model: CmsContentModel,
-        params: CmsContentEntryStorageOperationsGetLatestRevisionParams
+        model: CmsModel,
+        params: CmsEntryStorageOperationsGetLatestRevisionParams
     ) => {
         const result = await dataLoaders.getPublishedRevisionByEntryId({
             model,
@@ -1170,8 +1147,8 @@ export const createEntriesStorageOperations = (
     };
 
     const getRevisionById = async (
-        model: CmsContentModel,
-        params: CmsContentEntryStorageOperationsGetRevisionParams
+        model: CmsModel,
+        params: CmsEntryStorageOperationsGetRevisionParams
     ) => {
         const result = await dataLoaders.getRevisionById({
             model,
@@ -1184,8 +1161,8 @@ export const createEntriesStorageOperations = (
     };
 
     const getRevisions = async (
-        model: CmsContentModel,
-        params: CmsContentEntryStorageOperationsGetRevisionsParams
+        model: CmsModel,
+        params: CmsEntryStorageOperationsGetRevisionsParams
     ) => {
         return await dataLoaders.getAllEntryRevisions({
             model,
@@ -1193,10 +1170,7 @@ export const createEntriesStorageOperations = (
         });
     };
 
-    const getByIds = async (
-        model: CmsContentModel,
-        params: CmsContentEntryStorageOperationsGetByIdsParams
-    ) => {
+    const getByIds = async (model: CmsModel, params: CmsEntryStorageOperationsGetByIdsParams) => {
         return dataLoaders.getRevisionById({
             model,
             ids: params.ids
@@ -1204,8 +1178,8 @@ export const createEntriesStorageOperations = (
     };
 
     const getLatestByIds = async (
-        model: CmsContentModel,
-        params: CmsContentEntryStorageOperationsGetLatestByIdsParams
+        model: CmsModel,
+        params: CmsEntryStorageOperationsGetLatestByIdsParams
     ) => {
         return dataLoaders.getLatestRevisionByEntryId({
             model,
@@ -1214,8 +1188,8 @@ export const createEntriesStorageOperations = (
     };
 
     const getPublishedByIds = async (
-        model: CmsContentModel,
-        params: CmsContentEntryStorageOperationsGetPublishedByIdsParams
+        model: CmsModel,
+        params: CmsEntryStorageOperationsGetPublishedByIdsParams
     ) => {
         return dataLoaders.getPublishedRevisionByEntryId({
             model,
@@ -1224,8 +1198,8 @@ export const createEntriesStorageOperations = (
     };
 
     const getPreviousRevision = async (
-        model: CmsContentModel,
-        params: CmsContentEntryStorageOperationsGetPreviousRevisionParams
+        model: CmsModel,
+        params: CmsEntryStorageOperationsGetPreviousRevisionParams
     ) => {
         const { tenant, locale, entryId, version } = params;
         const queryParams: QueryOneParams = {
@@ -1255,7 +1229,7 @@ export const createEntriesStorageOperations = (
         };
 
         try {
-            const result = await queryOne<CmsContentEntry>(queryParams);
+            const result = await queryOne<CmsEntry>(queryParams);
 
             return cleanupItem(entity, result);
         } catch (ex) {

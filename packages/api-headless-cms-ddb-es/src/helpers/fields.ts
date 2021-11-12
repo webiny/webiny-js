@@ -1,6 +1,6 @@
 import {
-    CmsContentModel,
-    CmsContentModelField,
+    CmsModel,
+    CmsModelField,
     CmsModelFieldToGraphQLPlugin
 } from "@webiny/api-headless-cms/types";
 import WebinyError from "@webiny/error";
@@ -15,24 +15,24 @@ export interface ModelField {
     isSortable: boolean;
     type: string;
     isSystemField?: boolean;
-    field: CmsContentModelField;
+    field: CmsModelField;
     path?: ModelFieldPath;
 }
 
 export type ModelFields = Record<string, ModelField>;
 
 type UnmappedFieldTypes = {
-    [type: string]: (field: CmsContentModelField) => string | undefined;
+    [type: string]: (field: CmsModelField) => string | undefined;
 };
 
 interface FieldTypePlugin {
-    unmappedType?: (field: CmsContentModelField) => string | undefined;
+    unmappedType?: (field: CmsModelField) => string | undefined;
     isSearchable: boolean;
     isSortable: boolean;
 }
 type FieldTypePlugins = Record<string, FieldTypePlugin>;
 
-const createSystemField = (field: Partial<CmsContentModelField>): CmsContentModelField => {
+const createSystemField = (field: Partial<CmsModelField>): CmsModelField => {
     if (!field.fieldId) {
         throw new WebinyError(
             `When creating system field it must have a "entryId".`,
@@ -50,7 +50,7 @@ const createSystemField = (field: Partial<CmsContentModelField>): CmsContentMode
             }
         );
     }
-    return field as unknown as CmsContentModelField;
+    return field as unknown as CmsModelField;
 };
 
 export const systemFields = {
@@ -145,10 +145,7 @@ export const systemFields = {
 /*
  * Create an object with key fieldType and options for that field
  */
-export const createModelFields = (
-    plugins: PluginsContainer,
-    model: CmsContentModel
-): ModelFields => {
+export const createModelFields = (plugins: PluginsContainer, model: CmsModel): ModelFields => {
     // collect all unmappedType from elastic plugins
     const unmappedTypes: UnmappedFieldTypes = plugins
         .byType<CmsModelFieldToElasticsearchPlugin>("cms-model-field-to-elastic-search")

@@ -1,27 +1,23 @@
 import { ErrorResponse, Response } from "@webiny/handler-graphql";
 
-import {
-    CmsContentModelGroupCreateInput,
-    CmsContentModelGroupUpdateInput,
-    CmsContext
-} from "~/types";
+import { CmsGroupCreateInput, CmsGroupUpdateInput, CmsContext } from "~/types";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSchemaPlugin";
 import { Resolvers } from "@webiny/handler-graphql/types";
-import { ContentModelGroupPlugin } from "~/content/plugins/ContentModelGroupPlugin";
+import { CmsGroupPlugin } from "~/content/plugins/CmsGroupPlugin";
 
-interface CreateContentModelGroupArgs {
-    data: CmsContentModelGroupCreateInput;
+interface CreateCmsGroupArgs {
+    data: CmsGroupCreateInput;
 }
 
-interface ReadContentModelGroupArgs {
+interface ReadCmsGroupArgs {
     id: string;
 }
 
-interface UpdateContentModelGroupArgs extends ReadContentModelGroupArgs {
-    data: CmsContentModelGroupUpdateInput;
+interface UpdateCmsGroupArgs extends ReadCmsGroupArgs {
+    data: CmsGroupUpdateInput;
 }
 
-interface DeleteContentModelGroupArgs {
+interface DeleteCmsGroupArgs {
     id: string;
 }
 
@@ -81,18 +77,15 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
                     return models.filter(m => m.group === group.id).length;
                 },
                 plugin: async (group, _, context: CmsContext) => {
-                    const groupPlugin: ContentModelGroupPlugin = context.plugins
-                        .byType<ContentModelGroupPlugin>(ContentModelGroupPlugin.type)
-                        .find(
-                            (item: ContentModelGroupPlugin) =>
-                                item.contentModelGroup.id === group.id
-                        );
+                    const groupPlugin: CmsGroupPlugin = context.plugins
+                        .byType<CmsGroupPlugin>(CmsGroupPlugin.type)
+                        .find((item: CmsGroupPlugin) => item.contentModelGroup.id === group.id);
 
                     return Boolean(groupPlugin);
                 }
             },
             Query: {
-                getContentModelGroup: async (_, args: ReadContentModelGroupArgs, context) => {
+                getContentModelGroup: async (_, args: ReadCmsGroupArgs, context) => {
                     try {
                         const { id } = args;
                         const model = await context.cms.getGroup(id);
@@ -111,7 +104,7 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
                 }
             },
             Mutation: {
-                createContentModelGroup: async (_, args: CreateContentModelGroupArgs, context) => {
+                createContentModelGroup: async (_, args: CreateCmsGroupArgs, context) => {
                     try {
                         const model = await context.cms.createGroup(args.data);
                         return new Response(model);
@@ -119,7 +112,7 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
                         return new ErrorResponse(e);
                     }
                 },
-                updateContentModelGroup: async (_, args: UpdateContentModelGroupArgs, context) => {
+                updateContentModelGroup: async (_, args: UpdateCmsGroupArgs, context) => {
                     try {
                         const group = await context.cms.updateGroup(args.id, args.data);
                         return new Response(group);
@@ -127,7 +120,7 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
                         return new ErrorResponse(e);
                     }
                 },
-                deleteContentModelGroup: async (_, args: DeleteContentModelGroupArgs, context) => {
+                deleteContentModelGroup: async (_, args: DeleteCmsGroupArgs, context) => {
                     try {
                         await context.cms.deleteGroup(args.id);
                         return new Response(true);

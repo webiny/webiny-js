@@ -46,7 +46,7 @@ const schemaList = new Map<string, SchemaCache>();
 
 const generateCacheKey = async (args: Args): Promise<string> => {
     const { context, locale, type } = args;
-    const lastModelChange = await context.cms.getContentModelLastChange();
+    const lastModelChange = await context.cms.getModelLastChange();
     return [locale.code, type, lastModelChange.toISOString()].join("#");
 };
 

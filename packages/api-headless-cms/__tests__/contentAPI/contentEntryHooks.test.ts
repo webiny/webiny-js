@@ -2,10 +2,10 @@ import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
 import { assignEntryEvents, pubSubTracker } from "./mocks/lifecycleHooks";
 import models from "./mocks/contentModels";
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
-import { CmsContentModelGroup } from "~/types";
+import { CmsGroup } from "~/types";
 
 describe("contentEntryHooks", () => {
-    let contentModelGroup: CmsContentModelGroup;
+    let contentModelGroup: CmsGroup;
     const manageOpts = { path: "manage/en-US" };
 
     const {

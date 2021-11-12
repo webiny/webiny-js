@@ -1,6 +1,6 @@
 import shortId from "shortid";
 import contentModelGroup from "./contentModelGroup";
-import { CmsContentModel } from "~/types";
+import { CmsModel } from "~/types";
 
 const ids = {
     // product category
@@ -57,7 +57,7 @@ const ids = {
     field704: shortId.generate()
 };
 
-const models: CmsContentModel[] = [
+const models: CmsModel[] = [
     // category
     {
         createdOn: new Date(),

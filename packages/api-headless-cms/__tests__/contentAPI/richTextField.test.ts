@@ -1,5 +1,5 @@
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
-import { CmsContentEntry, CmsContentModelGroup } from "~/types";
+import { CmsEntry, CmsGroup } from "~/types";
 import models from "./mocks/contentModels";
 import { useProductManageHandler } from "../utils/useProductManageHandler";
 import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
@@ -42,7 +42,7 @@ describe("richTextField", () => {
 
     // This function is not directly within `beforeEach` as we don't always setup the same content model.
     // We call this function manually at the beginning of each test, where needed.
-    const setupContentModelGroup = async (): Promise<CmsContentModelGroup> => {
+    const setupContentModelGroup = async (): Promise<CmsGroup> => {
         const [createCMG] = await createContentModelGroupMutation({
             data: {
                 name: "Group",
@@ -54,7 +54,7 @@ describe("richTextField", () => {
         return createCMG.data.createContentModelGroup.data;
     };
 
-    const setupContentModel = async (contentModelGroup: CmsContentModelGroup, name: string) => {
+    const setupContentModel = async (contentModelGroup: CmsGroup, name: string) => {
         const model = models.find(m => m.modelId === name);
         // Create initial record
         const [create] = await createContentModelMutation({
@@ -79,7 +79,7 @@ describe("richTextField", () => {
         });
         return update.data.updateContentModel.data;
     };
-    const setupContentModels = async (contentModelGroup: CmsContentModelGroup) => {
+    const setupContentModels = async (contentModelGroup: CmsGroup) => {
         const models = {
             category: null,
             product: null,
@@ -102,7 +102,7 @@ describe("richTextField", () => {
                 slug: "vegetables"
             }
         });
-        const category = createCategoryResponse.data.createCategory.data as CmsContentEntry;
+        const category = createCategoryResponse.data.createCategory.data as CmsEntry;
 
         await publishCategory({
             revision: category.id

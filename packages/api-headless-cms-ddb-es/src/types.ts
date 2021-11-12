@@ -1,8 +1,8 @@
 import { Plugin } from "@webiny/plugins/types";
 import {
-    CmsContentEntry,
-    CmsContentModel,
-    CmsContentModelField,
+    CmsEntry,
+    CmsModel,
+    CmsModelField,
     CmsContext,
     CmsModelFieldToGraphQLPlugin,
     HeadlessCmsStorageOperations as BaseHeadlessCmsStorageOperations
@@ -44,7 +44,7 @@ export interface ElasticsearchQueryBuilderArgsPlugin {
  */
 interface ElasticsearchQueryPluginArgs {
     query: ElasticsearchBoolQueryConfig;
-    model: CmsContentModel;
+    model: CmsModel;
 }
 
 /**
@@ -90,7 +90,7 @@ export interface ElasticsearchQueryBuilderPlugin extends Plugin {
  * @see ElasticsearchQueryBuilderValueSearchPlugin.transform
  */
 interface ElasticsearchQueryBuilderValueSearchPluginArgs {
-    field: CmsContentModelField;
+    field: CmsModelField;
     value: any;
 }
 
@@ -119,9 +119,9 @@ export interface ElasticsearchQueryBuilderValueSearchPlugin extends Plugin {
  * A definition of the entry that is being prepared for the Elasticsearch.
  *
  * @category Elasticsearch
- * @category ContentEntry
+ * @category CmsEntry
  */
-export interface CmsContentIndexEntry extends CmsContentEntry {
+export interface CmsIndexEntry extends CmsEntry {
     /**
      * Values that are not going to be indexed.
      */
@@ -141,12 +141,12 @@ export interface CmsContentIndexEntry extends CmsContentEntry {
  * Arguments for the method that is transforming content entry in its original form to the one we are storing to the Elasticsearch.
  *
  * @category Elasticsearch
- * @category ContentEntry
+ * @category CmsEntry
  */
 interface CmsModelFieldToElasticsearchToParams {
     plugins: PluginsContainer;
-    model: CmsContentModel;
-    field: CmsContentModelField;
+    model: CmsModel;
+    field: CmsModelField;
     value: any;
     getFieldIndexPlugin(fieldType: string): CmsModelFieldToElasticsearchPlugin;
     getFieldTypePlugin(fieldType: string): CmsModelFieldToGraphQLPlugin;
@@ -156,12 +156,12 @@ interface CmsModelFieldToElasticsearchToParams {
  * Arguments for the method that is transforming content entry from Elasticsearch into the original one.
  *
  * @category Elasticsearch
- * @category ContentEntry
+ * @category CmsEntry
  */
 interface CmsModelFieldToElasticsearchFromParams {
     plugins: PluginsContainer;
-    model: CmsContentModel;
-    field: CmsContentModelField;
+    model: CmsModel;
+    field: CmsModelField;
     value: any;
     rawValue: any;
     getFieldIndexPlugin(fieldType: string): CmsModelFieldToElasticsearchPlugin;
@@ -184,7 +184,7 @@ interface ToIndexValue {
  *
  * @category Plugin
  * @category ContentModelField
- * @category ContentEntry
+ * @category CmsEntry
  * @category Elasticsearch
  */
 export interface CmsModelFieldToElasticsearchPlugin extends Plugin {
@@ -208,7 +208,7 @@ export interface CmsModelFieldToElasticsearchPlugin extends Plugin {
      * unmappedType: "date"
      * ```
      */
-    unmappedType?: (field: CmsContentModelField) => string;
+    unmappedType?: (field: CmsModelField) => string;
     /**
      * This is meant to do some transformation of the entry, preferably only to fieldType it was defined for. Nothing is stopping you to do anything you want to other fields, but try to separate field transformations.
      * It returns `Partial<CmsContentIndexEntryType>`. Always return a top-level property of the entry since it is merged via spread operator.

@@ -1,15 +1,15 @@
 import WebinyError from "@webiny/error";
-import { CmsContentEntry, CmsContentModel, CmsContext, CmsModelLockedFieldPlugin } from "~/types";
-import { ContentModelPlugin } from "~/content/plugins/ContentModelPlugin";
+import { CmsEntry, CmsModel, CmsContext, CmsModelLockedFieldPlugin } from "~/types";
+import { CmsModelPlugin } from "~/content/plugins/CmsModelPlugin";
 
 interface Args {
-    model: CmsContentModel;
-    entry: CmsContentEntry;
+    model: CmsModel;
+    entry: CmsEntry;
     context: CmsContext;
 }
 export const markLockedFields = async ({ model, context }: Args): Promise<void> => {
     // If the model is registered via a plugin, we don't need do process anything.
-    const plugins = context.plugins.byType<ContentModelPlugin>(ContentModelPlugin.type);
+    const plugins = context.plugins.byType<CmsModelPlugin>(CmsModelPlugin.type);
     if (plugins.find(plugin => plugin.contentModel.modelId === model.modelId)) {
         return;
     }

@@ -1,11 +1,11 @@
-import { CmsContentModel } from "@webiny/api-headless-cms/types";
+import { CmsModel } from "@webiny/api-headless-cms/types";
 
 interface ElasticsearchConfig {
     index: string;
 }
 
 interface CmsElasticsearchParams {
-    model: CmsContentModel;
+    model: CmsModel;
 }
 interface Configurations {
     es: (params: CmsElasticsearchParams) => ElasticsearchConfig;

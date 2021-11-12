@@ -1,22 +1,22 @@
-import { CmsContentModel, CmsContentModelField } from "@webiny/api-headless-cms/types";
+import { CmsModel, CmsModelField } from "@webiny/api-headless-cms/types";
 
 interface MappedModels {
     [modelId: string]: {
         id: {
-            [fieldId: string]: CmsContentModelField;
+            [fieldId: string]: CmsModelField;
         };
         type: {
-            [fieldType: string]: CmsContentModelField[];
+            [fieldType: string]: CmsModelField[];
         };
     };
 }
 
 export interface ModelFieldFinder {
-    findById: (model: CmsContentModel | string, fieldId: string) => CmsContentModelField;
-    findByType: (model: CmsContentModel | string, type: string) => CmsContentModelField[];
+    findById: (model: CmsModel | string, fieldId: string) => CmsModelField;
+    findByType: (model: CmsModel | string, type: string) => CmsModelField[];
 }
 
-export const createFieldFinder = (models: CmsContentModel[]): ModelFieldFinder => {
+export const createFieldFinder = (models: CmsModel[]): ModelFieldFinder => {
     const modelsList: MappedModels = {};
     for (const model of models) {
         const values = {

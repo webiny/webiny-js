@@ -1,6 +1,6 @@
 import { BeforeGroupCreateTopicParams, HeadlessCmsStorageOperations } from "~/types";
 import { Topic } from "@webiny/pubsub/types";
-import { ContentModelGroupPlugin } from "~/content/plugins/ContentModelGroupPlugin";
+import { CmsGroupPlugin } from "~/content/plugins/CmsGroupPlugin";
 import { PluginsContainer } from "@webiny/plugins";
 import { toSlug } from "~/utils";
 import WebinyError from "@webiny/error";
@@ -27,7 +27,7 @@ export const assignBeforeGroupCreate = (params: Params) => {
             });
             if (groups.length > 0) {
                 throw new WebinyError(
-                    `Content model group with the slug "${group.slug}" already exists.`,
+                    `Cms Group with the slug "${group.slug}" already exists.`,
                     "SLUG_ALREADY_EXISTS"
                 );
             }
@@ -48,9 +48,9 @@ export const assignBeforeGroupCreate = (params: Params) => {
             }
         }
 
-        const groupPlugin: ContentModelGroupPlugin = plugins
-            .byType<ContentModelGroupPlugin>(ContentModelGroupPlugin.type)
-            .find((item: ContentModelGroupPlugin) => item.contentModelGroup.slug === group.slug);
+        const groupPlugin: CmsGroupPlugin = plugins
+            .byType<CmsGroupPlugin>(CmsGroupPlugin.type)
+            .find((item: CmsGroupPlugin) => item.contentModelGroup.slug === group.slug);
 
         if (groupPlugin) {
             throw new Error(

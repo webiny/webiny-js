@@ -1,5 +1,5 @@
 import { ErrorResponse, Response } from "@webiny/handler-graphql/responses";
-import { CmsContentEntryResolverFactory as ResolverFactory } from "~/types";
+import { CmsEntryResolverFactory as ResolverFactory } from "~/types";
 
 export const resolveGet: ResolverFactory =
     ({ model }) =>

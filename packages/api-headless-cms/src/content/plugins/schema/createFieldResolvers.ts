@@ -1,12 +1,12 @@
 import get from "lodash/get";
 import set from "lodash/set";
-import { CmsContentModelField, CmsContext, CmsModelFieldToGraphQLCreateResolver } from "~/types";
+import { CmsModelField, CmsContext, CmsModelFieldToGraphQLCreateResolver } from "~/types";
 import { entryFieldFromStorageTransform } from "~/content/plugins/utils/entryStorage";
 import { Resolvers } from "@webiny/handler-graphql/types";
 
 interface CreateFieldResolvers {
     graphQLType: string;
-    fields: CmsContentModelField[];
+    fields: CmsModelField[];
     isRoot: boolean;
     extraResolvers?: Resolvers<any>;
 }

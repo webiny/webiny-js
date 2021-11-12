@@ -1,4 +1,4 @@
-import { CmsContentModel, CmsContentModelGroup } from "~/types";
+import { CmsModel, CmsGroup } from "~/types";
 import models from "./mocks/contentModels";
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
 import { useBugManageHandler } from "../utils/useBugManageHandler";
@@ -12,7 +12,7 @@ describe("predefined values", () => {
         createContentModelGroupMutation
     } = useContentGqlHandler(manageOpts);
 
-    const setupContentModelGroup = async (): Promise<CmsContentModelGroup> => {
+    const setupContentModelGroup = async (): Promise<CmsGroup> => {
         const [createCMG] = await createContentModelGroupMutation({
             data: {
                 name: "Group",
@@ -25,9 +25,9 @@ describe("predefined values", () => {
     };
 
     const setupBugModel = async (
-        contentModelGroup: CmsContentModelGroup,
+        contentModelGroup: CmsGroup,
         overrides: Record<string, any> = {}
-    ): Promise<CmsContentModel> => {
+    ): Promise<CmsModel> => {
         const model = models.find(m => m.modelId === "bug");
         // Create initial record
         const [create] = await createContentModelMutation({
