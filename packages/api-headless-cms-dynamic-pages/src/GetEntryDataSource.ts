@@ -11,9 +11,9 @@ interface Config {
 
 export class GetEntryDataSource extends DataSource<Config, CmsContext> {
     async loadData(variables, config: Config, context: CmsContext) {
-        const apiKey = await context.cms.system.getReadAPIKey();
+        const apiKey = await context.cms.getReadAPIKey();
 
-        const res = await fetch(config.url, {
+        return await fetch(config.url, {
             method: "POST",
             headers: { "Content-Type": "application/json", Authorization: apiKey },
             body: JSON.stringify({
@@ -21,7 +21,5 @@ export class GetEntryDataSource extends DataSource<Config, CmsContext> {
                 variables: interpolateVariables(config.variables, variables)
             })
         }).then(res => res.json());
-
-        return res;
     }
 }
