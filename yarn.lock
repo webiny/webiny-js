@@ -80,29 +80,29 @@ __metadata:
   linkType: hard
 
 "@aws-amplify/auth@npm:^4.0.2, @aws-amplify/auth@npm:^4.3.10":
-  version: 4.3.13
-  resolution: "@aws-amplify/auth@npm:4.3.13"
+  version: 4.3.14
+  resolution: "@aws-amplify/auth@npm:4.3.14"
   dependencies:
-    "@aws-amplify/cache": 4.0.25
-    "@aws-amplify/core": 4.3.5
+    "@aws-amplify/cache": 4.0.26
+    "@aws-amplify/core": 4.3.6
     amazon-cognito-identity-js: 5.2.3
     crypto-js: ^4.1.1
-  checksum: 1e2225b6c76ac2ca6a67702c94c2701ae5b154523410cd23d4371d7a1c7abaadfdc82d61c58e53b92d6db2c6a74871b7edc7eb99436e84a1f6c06852662e3803
+  checksum: 55333c7e77547316a9556a2320126160acf38cf6e24f4612b14f6ef52059002a69479bee92c7f7d297075ce41280e34fccf0608bf4caf456538304bd1627632a
   languageName: node
   linkType: hard
 
-"@aws-amplify/cache@npm:4.0.25":
-  version: 4.0.25
-  resolution: "@aws-amplify/cache@npm:4.0.25"
+"@aws-amplify/cache@npm:4.0.26":
+  version: 4.0.26
+  resolution: "@aws-amplify/cache@npm:4.0.26"
   dependencies:
-    "@aws-amplify/core": 4.3.5
-  checksum: 173dd803297f52245d515b8c424b01eb36c2ab3ebf17fdf543bbb32c0f05527d7be300abd8fa24cdecf3de1e1dc61fdb76aa2303e56465746b295702261af571
+    "@aws-amplify/core": 4.3.6
+  checksum: 4b0d3185abc03fa821763487d0c53b6eda96bd5ae37a7266f62b7f2fa6228e41c9bebfdeca917af63ff8ff8f66bb3349914b8e39d5145ac49c73f1a10ac591ac
   languageName: node
   linkType: hard
 
-"@aws-amplify/core@npm:4.3.5":
-  version: 4.3.5
-  resolution: "@aws-amplify/core@npm:4.3.5"
+"@aws-amplify/core@npm:4.3.6":
+  version: 4.3.6
+  resolution: "@aws-amplify/core@npm:4.3.6"
   dependencies:
     "@aws-crypto/sha256-js": 1.0.0-alpha.0
     "@aws-sdk/client-cloudwatch-logs": 3.6.1
@@ -112,7 +112,7 @@ __metadata:
     "@aws-sdk/util-hex-encoding": 3.6.1
     universal-cookie: ^4.0.4
     zen-observable-ts: 0.8.19
-  checksum: 8d240d877031c688c66ee0225e2217362ae79f375dee4d2044dce116c965d9c4bc2b6f77e451fe5678726f5d0aa526fb57d0b8273321d67163c77476ba5636cf
+  checksum: 016d7db940b5142b4e0d0d8576cb3fea8a2b07c456231d4fc31e49b5a8f219b2d8e87f6692e50affe4789528fe6c19d43573d1a342d340ff81f6dcf613ed50fb
   languageName: node
   linkType: hard
 
@@ -14957,9 +14957,9 @@ __metadata:
   linkType: hard
 
 "caniuse-lite@npm:^1.0.0, caniuse-lite@npm:^1.0.30000981, caniuse-lite@npm:^1.0.30000989, caniuse-lite@npm:^1.0.30001035, caniuse-lite@npm:^1.0.30001109, caniuse-lite@npm:^1.0.30001274":
-  version: 1.0.30001279
-  resolution: "caniuse-lite@npm:1.0.30001279"
-  checksum: c0330577718e4221caae92a1bee8131f546668001840cf66455d5aa6050797f44709865779c5cdcba7cbf32527004a743dc2879497d23f60478f8bbb203cfeeb
+  version: 1.0.30001280
+  resolution: "caniuse-lite@npm:1.0.30001280"
+  checksum: 5794b22f4254927f095e83c65e89ddfc63065c7ed16e6544555a3252ee3d16e48f8a7846713dc64869c52e1abe9a2a93161804b40c2097d1abc9aaa0155a0b65
   languageName: node
   linkType: hard
 
