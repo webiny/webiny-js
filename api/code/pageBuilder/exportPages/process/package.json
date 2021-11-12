@@ -7,6 +7,9 @@
   },
   "dependencies": {
     "@webiny/api-elasticsearch": "^5.17.0",
+    "@webiny/api-file-manager": "^5.17.0",
+    "@webiny/api-file-manager-ddb-es": "^5.17.0",
+    "@webiny/api-file-manager-s3": "^5.17.0",
     "@webiny/api-i18n": "^5.17.0",
     "@webiny/api-i18n-content": "^5.17.0",
     "@webiny/api-i18n-ddb": "^5.17.0",
