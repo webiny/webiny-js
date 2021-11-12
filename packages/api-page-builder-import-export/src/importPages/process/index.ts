@@ -38,13 +38,11 @@ export default (
         let noPendingTask = true;
         let prevStatusOfSubTask = PageImportExportTaskStatus.PENDING;
 
-        // Disable authorization; this is necessary because we call Page Builder CRUD methods which include authorization checks
-        // and this Lambda is invoked internally, without credentials.
-
         log("RUNNING Import Page Queue Process");
         const { invocationArgs: args, pageBuilder } = context;
         const { taskId, subTaskIndex, identity } = args;
-
+        // Disable authorization; this is necessary because we call Page Builder CRUD methods which include authorization checks
+        // and this Lambda is invoked internally, without credentials.
         mockSecurity(identity, context);
 
         try {
@@ -102,7 +100,8 @@ export default (
             // Update page with data
             pbPage = await context.pageBuilder.pages.update(pbPage.id, {
                 content: page.content,
-                title: page.title
+                title: page.title,
+                settings: page.settings
             });
 
             // TODO: Publish page

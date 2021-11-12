@@ -46,12 +46,11 @@ export default (
         let noPendingTask = true;
         let prevStatusOfSubTask = PageImportExportTaskStatus.PENDING;
 
+        log("RUNNING Export Pages Process Handler");
+        const { invocationArgs: args, pageBuilder, fileManager } = context;
+        const { taskId, subTaskIndex, identity } = args;
         // Disable authorization; this is necessary because we call Page Builder CRUD methods which include authorization checks
         // and this Lambda is invoked internally, without credentials.
-        log("RUNNING Export Pages Process Handler");
-        const { invocationArgs: args, pageBuilder } = context;
-        const { taskId, subTaskIndex, identity } = args;
-
         mockSecurity(identity, context);
 
         try {
@@ -126,7 +125,7 @@ export default (
 
             log(`Extracting page data and uploading to storage...`);
             // Extract Page
-            const pageDataZip = await exportPage(page, exportPagesDataKey);
+            const pageDataZip = await exportPage(page, exportPagesDataKey, fileManager);
             log(`Finish uploading zip...`);
             // Update task record in DB
             subTask = await pageBuilder.pageImportExportTask.updateSubTask(taskId, subTask.id, {
