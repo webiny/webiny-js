@@ -1,16 +1,18 @@
 const inquirer = require("inquirer");
 const setup = require("./setup");
-
-// const choices = {
-//     ddb: {
-//         value: "ddb",
-//         name: "DynamoDB"
-//     },
-//     ddbEs: {
-//         value: "ddb-es",
-//         name: "DynamoDB + Elasticsearch"
-//     }
-// };
+/**
+ * @type {{name: string, value: string}[]}}
+ */
+const storageOperationChoices = [
+    {
+        value: "ddb",
+        name: "DynamoDB (small projects)"
+    },
+    {
+        value: "ddb-es",
+        name: "DynamoDB + Elasticsearch (medium and large projects)"
+    }
+];
 
 const runInquirer = async cwp => {
     if (!cwp.interactive) {
@@ -54,20 +56,20 @@ const runInquirer = async cwp => {
         }
     ]);
 
-    // const { storageOperations } = await inquirer.prompt([
-    //     {
-    //         type: "list",
-    //         name: "storageOperations",
-    //         default: "ddb",
-    //         message: `Please choose which storage operations do you want to use with your Webiny project:`,
-    //         choices: Object.values(choices)
-    //     }
-    // ]);
+    const { storageOperations } = await inquirer.prompt([
+        {
+            type: "list",
+            name: "storageOperations",
+            default: "ddb",
+            message: `Please choose which storage operations do you want to use with your Webiny project:`,
+            choices: storageOperationChoices
+        }
+    ]);
 
     return setup({
         ...cwp,
         templateOptions,
-        storageOperations: "ddb-es"
+        storageOperations
     });
 };
 
