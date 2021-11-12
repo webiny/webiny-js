@@ -14,9 +14,7 @@ export default {
         }
 
         if (args.inputs.build === false) {
-            context.info(
-                `"--no-build" argument detected - skipping Website re-rendering.`
-            );
+            context.info(`"--no-build" argument detected - skipping Website re-rendering.`);
             return;
         }
 

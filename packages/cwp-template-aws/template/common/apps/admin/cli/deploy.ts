@@ -19,9 +19,7 @@ export default {
         }
 
         if (params.inputs.build === false) {
-            context.info(
-                `"--no-build" argument detected - skipping React application upload.`
-            );
+            context.info(`"--no-build" argument detected - skipping React application upload.`);
             return;
         }
 
