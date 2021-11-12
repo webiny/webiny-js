@@ -215,7 +215,7 @@ jobs:
         with:
           # We want to make sure all commits are present and that the next release version is calculated correctly.
           fetch-depth: 0
-          path: next
+          path: v5
           # Fixes Lerna's detached HEAD issue (https://github.com/lerna/lerna/issues/2443).
           ref: ${{ github.event.pull_request.head.ref }}
 
@@ -456,7 +456,7 @@ jobs:
         with:
           # We want to make sure all commits are present and that the next release version is calculated correctly.
           fetch-depth: 0
-          path: next
+          path: v5
           # Fixes Lerna's detached HEAD issue (https://github.com/lerna/lerna/issues/2443).
           ref: ${{ github.event.pull_request.head.ref }}
 
