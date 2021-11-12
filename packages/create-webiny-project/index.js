@@ -32,6 +32,12 @@ yargs.command(
         yargs.positional("project-name", {
             describe: "Project name"
         });
+        yargs.option("force", {
+            describe: "All project creation within an existing folder",
+            default: false,
+            type: "boolean",
+            demandOption: false
+        });
         yargs.option("template", {
             describe: `Name of template to use, if no template is provided it will default to "aws" template`,
             alias: "t",

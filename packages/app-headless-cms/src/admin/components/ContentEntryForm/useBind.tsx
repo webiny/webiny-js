@@ -1,6 +1,7 @@
 import React, { useRef, useCallback, cloneElement } from "react";
-import { BindComponentRenderProp } from "@webiny/form";
+import { BindComponent, BindComponentRenderProp } from "@webiny/form";
 import { createValidators } from "./functions/createValidators";
+import { CmsEditorField } from "~/types";
 
 interface FieldBindProps extends BindComponentRenderProp {
     appendValue: (value: any) => void;
@@ -9,7 +10,12 @@ interface FieldBindProps extends BindComponentRenderProp {
     removeValue: (index: number) => void;
 }
 
-export function useBind({ Bind: ParentBind, field }) {
+interface UseBindProps {
+    field: CmsEditorField;
+    Bind: BindComponent & { parentName?: string };
+}
+
+export function useBind({ Bind: ParentBind, field }: UseBindProps) {
     const memoizedBindComponents = useRef({});
 
     return useCallback(

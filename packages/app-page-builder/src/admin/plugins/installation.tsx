@@ -41,7 +41,8 @@ const INSTALL = gql`
     }
 `;
 
-// eslint-disable-next-line
+/* eslint-disable */
+// @ts-ignore
 const installationSteps = {
     1: t`Creating page categories...`,
     2: t`Creating page blocks...`,
@@ -49,6 +50,7 @@ const installationSteps = {
     4: t`Creating menus...`,
     5: t`Finalizing...`
 };
+/* eslint-enable */
 
 const PBInstaller = ({ onInstalled }) => {
     const client = useApolloClient();

@@ -1,5 +1,5 @@
 import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
-import { contentEntryHooks, hooksTracker } from "./mocks/lifecycleHooks";
+import { assignEntryEvents, pubSubTracker } from "./mocks/lifecycleHooks";
 import models from "./mocks/contentModels";
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
 import { CmsContentModelGroup } from "~/types";
@@ -58,11 +58,14 @@ describe("contentEntryHooks", () => {
 
     beforeEach(async () => {
         await setupContentModel();
-        hooksTracker.reset();
+        pubSubTracker.reset();
     });
 
     test("should execute hooks on create", async () => {
-        const { createCategory } = useCategoryManageHandler(manageOpts, [contentEntryHooks()]);
+        const { createCategory } = useCategoryManageHandler({
+            ...manageOpts,
+            plugins: [assignEntryEvents()]
+        });
 
         const [response] = await createCategory({
             data: {
@@ -80,28 +83,31 @@ describe("contentEntryHooks", () => {
             }
         });
 
-        expect(hooksTracker.isExecutedOnce("contentEntry:beforeCreate")).toEqual(true);
-        expect(hooksTracker.isExecutedOnce("contentEntry:afterCreate")).toEqual(true);
-        expect(hooksTracker.isExecutedOnce("contentEntry:beforeCreateRevisionFrom")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:afterCreateRevisionFrom")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:beforeUpdate")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:afterUpdate")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:beforeDelete")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:afterDelete")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:beforePublish")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:afterPublish")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:beforeUnpublish")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:afterUnpublish")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:beforeRequestChanges")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:afterRequestChanges")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:beforeRequestReview")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:afterRequestReview")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:beforeCreate")).toEqual(true);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:afterCreate")).toEqual(true);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:beforeCreateRevisionFrom")).toEqual(
+            false
+        );
+        expect(pubSubTracker.isExecutedOnce("contentEntry:afterCreateRevisionFrom")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:beforeUpdate")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:afterUpdate")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:beforeDelete")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:afterDelete")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:beforePublish")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:afterPublish")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:beforeUnpublish")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:afterUnpublish")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:beforeRequestChanges")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:afterRequestChanges")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:beforeRequestReview")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:afterRequestReview")).toEqual(false);
     });
 
     test("should execute hooks on create from revision", async () => {
-        const { createCategory, createCategoryFrom } = useCategoryManageHandler(manageOpts, [
-            contentEntryHooks()
-        ]);
+        const { createCategory, createCategoryFrom } = useCategoryManageHandler({
+            ...manageOpts,
+            plugins: [assignEntryEvents()]
+        });
 
         const [createResponse] = await createCategory({
             data: {
@@ -112,7 +118,7 @@ describe("contentEntryHooks", () => {
 
         const { id } = createResponse.data.createCategory.data;
 
-        hooksTracker.reset();
+        pubSubTracker.reset();
 
         const [response] = await createCategoryFrom({
             revision: id
@@ -127,28 +133,29 @@ describe("contentEntryHooks", () => {
             }
         });
 
-        expect(hooksTracker.isExecutedOnce("contentEntry:beforeCreate")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:afterCreate")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:beforeCreateRevisionFrom")).toEqual(true);
-        expect(hooksTracker.isExecutedOnce("contentEntry:afterCreateRevisionFrom")).toEqual(true);
-        expect(hooksTracker.isExecutedOnce("contentEntry:beforeUpdate")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:afterUpdate")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:beforeDelete")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:afterDelete")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:beforePublish")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:afterPublish")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:beforeUnpublish")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:afterUnpublish")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:beforeRequestChanges")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:afterRequestChanges")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:beforeRequestReview")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:afterRequestReview")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:beforeCreate")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:afterCreate")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:beforeCreateRevisionFrom")).toEqual(true);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:afterCreateRevisionFrom")).toEqual(true);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:beforeUpdate")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:afterUpdate")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:beforeDelete")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:afterDelete")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:beforePublish")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:afterPublish")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:beforeUnpublish")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:afterUnpublish")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:beforeRequestChanges")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:afterRequestChanges")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:beforeRequestReview")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:afterRequestReview")).toEqual(false);
     });
 
     test("should execute hooks on update", async () => {
-        const { createCategory, updateCategory } = useCategoryManageHandler(manageOpts, [
-            contentEntryHooks()
-        ]);
+        const { createCategory, updateCategory } = useCategoryManageHandler({
+            ...manageOpts,
+            plugins: [assignEntryEvents()]
+        });
 
         const [createResponse] = await createCategory({
             data: {
@@ -159,7 +166,7 @@ describe("contentEntryHooks", () => {
 
         const { id } = createResponse.data.createCategory.data;
 
-        hooksTracker.reset();
+        pubSubTracker.reset();
 
         const [response] = await updateCategory({
             revision: id,
@@ -178,29 +185,31 @@ describe("contentEntryHooks", () => {
             }
         });
 
-        expect(hooksTracker.isExecutedOnce("contentEntry:beforeCreate")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:afterCreate")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:beforeCreateRevisionFrom")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:afterCreateRevisionFrom")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:beforeUpdate")).toEqual(true);
-        expect(hooksTracker.isExecutedOnce("contentEntry:afterUpdate")).toEqual(true);
-        expect(hooksTracker.isExecutedOnce("contentEntry:beforeDelete")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:afterDelete")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:beforePublish")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:afterPublish")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:beforeUnpublish")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:afterUnpublish")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:beforeRequestChanges")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:afterRequestChanges")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:beforeRequestReview")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:afterRequestReview")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:beforeCreate")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:afterCreate")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:beforeCreateRevisionFrom")).toEqual(
+            false
+        );
+        expect(pubSubTracker.isExecutedOnce("contentEntry:afterCreateRevisionFrom")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:beforeUpdate")).toEqual(true);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:afterUpdate")).toEqual(true);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:beforeDelete")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:afterDelete")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:beforePublish")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:afterPublish")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:beforeUnpublish")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:afterUnpublish")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:beforeRequestChanges")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:afterRequestChanges")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:beforeRequestReview")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:afterRequestReview")).toEqual(false);
     });
 
     test("should execute hooks on delete revision", async () => {
-        const { createCategory, createCategoryFrom, deleteCategory } = useCategoryManageHandler(
-            manageOpts,
-            [contentEntryHooks()]
-        );
+        const { createCategory, createCategoryFrom, deleteCategory } = useCategoryManageHandler({
+            ...manageOpts,
+            plugins: [assignEntryEvents()]
+        });
 
         const [createResponse] = await createCategory({
             data: {
@@ -216,7 +225,7 @@ describe("contentEntryHooks", () => {
             revision: id
         });
 
-        hooksTracker.reset();
+        pubSubTracker.reset();
 
         const [response] = await deleteCategory({
             revision: id
@@ -231,30 +240,33 @@ describe("contentEntryHooks", () => {
             }
         });
 
-        expect(hooksTracker.isExecutedOnce("contentEntry:beforeCreate")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:afterCreate")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:beforeCreateRevisionFrom")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:afterCreateRevisionFrom")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:beforeUpdate")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:afterUpdate")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:beforeDeleteRevision")).toEqual(true);
-        expect(hooksTracker.isExecutedOnce("contentEntry:afterDeleteRevision")).toEqual(true);
-        expect(hooksTracker.isExecutedOnce("contentEntry:beforeDelete")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:afterDelete")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:beforePublish")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:afterPublish")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:beforeUnpublish")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:afterUnpublish")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:beforeRequestChanges")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:afterRequestChanges")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:beforeRequestReview")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:afterRequestReview")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:beforeCreate")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:afterCreate")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:beforeCreateRevisionFrom")).toEqual(
+            false
+        );
+        expect(pubSubTracker.isExecutedOnce("contentEntry:afterCreateRevisionFrom")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:beforeUpdate")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:afterUpdate")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:beforeDeleteRevision")).toEqual(true);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:afterDeleteRevision")).toEqual(true);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:beforeDelete")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:afterDelete")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:beforePublish")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:afterPublish")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:beforeUnpublish")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:afterUnpublish")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:beforeRequestChanges")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:afterRequestChanges")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:beforeRequestReview")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:afterRequestReview")).toEqual(false);
     });
 
     test("should execute hooks on delete whole entry and its versions", async () => {
-        const { createCategory, deleteCategory } = useCategoryManageHandler(manageOpts, [
-            contentEntryHooks()
-        ]);
+        const { createCategory, deleteCategory } = useCategoryManageHandler({
+            ...manageOpts,
+            plugins: [assignEntryEvents()]
+        });
 
         const [createResponse] = await createCategory({
             data: {
@@ -267,7 +279,7 @@ describe("contentEntryHooks", () => {
 
         const id = revisionId.split("#").shift();
 
-        hooksTracker.reset();
+        pubSubTracker.reset();
 
         const [response] = await deleteCategory({
             revision: id
@@ -282,30 +294,33 @@ describe("contentEntryHooks", () => {
             }
         });
 
-        expect(hooksTracker.isExecutedOnce("contentEntry:beforeCreate")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:afterCreate")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:beforeCreateRevisionFrom")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:afterCreateRevisionFrom")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:beforeUpdate")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:afterUpdate")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:beforeDeleteRevision")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:afterDeleteRevision")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:beforeDelete")).toEqual(true);
-        expect(hooksTracker.isExecutedOnce("contentEntry:afterDelete")).toEqual(true);
-        expect(hooksTracker.isExecutedOnce("contentEntry:beforePublish")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:afterPublish")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:beforeUnpublish")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:afterUnpublish")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:beforeRequestChanges")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:afterRequestChanges")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:beforeRequestReview")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:afterRequestReview")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:beforeCreate")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:afterCreate")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:beforeCreateRevisionFrom")).toEqual(
+            false
+        );
+        expect(pubSubTracker.isExecutedOnce("contentEntry:afterCreateRevisionFrom")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:beforeUpdate")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:afterUpdate")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:beforeDeleteRevision")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:afterDeleteRevision")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:beforeDelete")).toEqual(true);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:afterDelete")).toEqual(true);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:beforePublish")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:afterPublish")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:beforeUnpublish")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:afterUnpublish")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:beforeRequestChanges")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:afterRequestChanges")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:beforeRequestReview")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:afterRequestReview")).toEqual(false);
     });
 
     test("should execute hooks on publish", async () => {
-        const { createCategory, publishCategory } = useCategoryManageHandler(manageOpts, [
-            contentEntryHooks()
-        ]);
+        const { createCategory, publishCategory } = useCategoryManageHandler({
+            ...manageOpts,
+            plugins: [assignEntryEvents()]
+        });
 
         const [createResponse] = await createCategory({
             data: {
@@ -316,7 +331,7 @@ describe("contentEntryHooks", () => {
 
         const { id } = createResponse.data.createCategory.data;
 
-        hooksTracker.reset();
+        pubSubTracker.reset();
 
         const [response] = await publishCategory({
             revision: id
@@ -331,31 +346,33 @@ describe("contentEntryHooks", () => {
             }
         });
 
-        expect(hooksTracker.isExecutedOnce("contentEntry:beforeCreate")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:afterCreate")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:beforeCreateRevisionFrom")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:afterCreateRevisionFrom")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:beforeUpdate")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:afterUpdate")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:beforeDeleteRevision")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:afterDeleteRevision")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:beforeDelete")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:afterDelete")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:beforePublish")).toEqual(true);
-        expect(hooksTracker.isExecutedOnce("contentEntry:afterPublish")).toEqual(true);
-        expect(hooksTracker.isExecutedOnce("contentEntry:beforeUnpublish")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:afterUnpublish")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:beforeRequestChanges")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:afterRequestChanges")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:beforeRequestReview")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:afterRequestReview")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:beforeCreate")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:afterCreate")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:beforeCreateRevisionFrom")).toEqual(
+            false
+        );
+        expect(pubSubTracker.isExecutedOnce("contentEntry:afterCreateRevisionFrom")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:beforeUpdate")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:afterUpdate")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:beforeDeleteRevision")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:afterDeleteRevision")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:beforeDelete")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:afterDelete")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:beforePublish")).toEqual(true);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:afterPublish")).toEqual(true);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:beforeUnpublish")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:afterUnpublish")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:beforeRequestChanges")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:afterRequestChanges")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:beforeRequestReview")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:afterRequestReview")).toEqual(false);
     });
 
     test("should execute hooks on unpublish", async () => {
-        const { createCategory, unpublishCategory, publishCategory } = useCategoryManageHandler(
-            manageOpts,
-            [contentEntryHooks()]
-        );
+        const { createCategory, unpublishCategory, publishCategory } = useCategoryManageHandler({
+            ...manageOpts,
+            plugins: [assignEntryEvents()]
+        });
 
         const [createResponse] = await createCategory({
             data: {
@@ -370,7 +387,7 @@ describe("contentEntryHooks", () => {
             revision: id
         });
 
-        hooksTracker.reset();
+        pubSubTracker.reset();
 
         const [response] = await unpublishCategory({
             revision: id
@@ -385,24 +402,26 @@ describe("contentEntryHooks", () => {
             }
         });
 
-        expect(hooksTracker.isExecutedOnce("contentEntry:beforeCreate")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:afterCreate")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:beforeCreateRevisionFrom")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:afterCreateRevisionFrom")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:beforeUpdate")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:afterUpdate")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:beforeDeleteRevision")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:afterDeleteRevision")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:beforeDelete")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:afterDelete")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:beforePublish")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:afterPublish")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:beforeUnpublish")).toEqual(true);
-        expect(hooksTracker.isExecutedOnce("contentEntry:afterUnpublish")).toEqual(true);
-        expect(hooksTracker.isExecutedOnce("contentEntry:beforeRequestChanges")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:afterRequestChanges")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:beforeRequestReview")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:afterRequestReview")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:beforeCreate")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:afterCreate")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:beforeCreateRevisionFrom")).toEqual(
+            false
+        );
+        expect(pubSubTracker.isExecutedOnce("contentEntry:afterCreateRevisionFrom")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:beforeUpdate")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:afterUpdate")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:beforeDeleteRevision")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:afterDeleteRevision")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:beforeDelete")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:afterDelete")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:beforePublish")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:afterPublish")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:beforeUnpublish")).toEqual(true);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:afterUnpublish")).toEqual(true);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:beforeRequestChanges")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:afterRequestChanges")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:beforeRequestReview")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:afterRequestReview")).toEqual(false);
     });
 
     test("should execute hooks on request changes", async () => {
@@ -420,17 +439,15 @@ describe("contentEntryHooks", () => {
         await requestCategoryReview({
             revision: id
         });
-        const { requestCategoryChanges } = useCategoryManageHandler(
-            {
-                ...manageOpts,
-                identity: {
-                    id: "1234",
-                    displayName: "User 1234",
-                    type: "admin"
-                }
+        const { requestCategoryChanges } = useCategoryManageHandler({
+            ...manageOpts,
+            identity: {
+                id: "1234",
+                displayName: "User 1234",
+                type: "admin"
             },
-            [contentEntryHooks()]
-        );
+            plugins: [assignEntryEvents()]
+        });
 
         const [response] = await requestCategoryChanges({
             revision: id
@@ -445,30 +462,33 @@ describe("contentEntryHooks", () => {
             }
         });
 
-        expect(hooksTracker.isExecutedOnce("contentEntry:beforeCreate")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:afterCreate")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:beforeCreateRevisionFrom")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:afterCreateRevisionFrom")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:beforeUpdate")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:afterUpdate")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:beforeDeleteRevision")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:afterDeleteRevision")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:beforeDelete")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:afterDelete")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:beforePublish")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:afterPublish")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:beforeUnpublish")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:afterUnpublish")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:beforeRequestChanges")).toEqual(true);
-        expect(hooksTracker.isExecutedOnce("contentEntry:afterRequestChanges")).toEqual(true);
-        expect(hooksTracker.isExecutedOnce("contentEntry:beforeRequestReview")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:afterRequestReview")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:beforeCreate")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:afterCreate")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:beforeCreateRevisionFrom")).toEqual(
+            false
+        );
+        expect(pubSubTracker.isExecutedOnce("contentEntry:afterCreateRevisionFrom")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:beforeUpdate")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:afterUpdate")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:beforeDeleteRevision")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:afterDeleteRevision")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:beforeDelete")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:afterDelete")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:beforePublish")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:afterPublish")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:beforeUnpublish")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:afterUnpublish")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:beforeRequestChanges")).toEqual(true);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:afterRequestChanges")).toEqual(true);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:beforeRequestReview")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:afterRequestReview")).toEqual(false);
     });
 
     test("should execute hooks on request review", async () => {
-        const { createCategory, requestCategoryReview } = useCategoryManageHandler(manageOpts, [
-            contentEntryHooks()
-        ]);
+        const { createCategory, requestCategoryReview } = useCategoryManageHandler({
+            ...manageOpts,
+            plugins: [assignEntryEvents()]
+        });
 
         const [createResponse] = await createCategory({
             data: {
@@ -478,7 +498,7 @@ describe("contentEntryHooks", () => {
         });
 
         const { id } = createResponse.data.createCategory.data;
-        hooksTracker.reset();
+        pubSubTracker.reset();
 
         const [response] = await requestCategoryReview({
             revision: id
@@ -493,23 +513,25 @@ describe("contentEntryHooks", () => {
             }
         });
 
-        expect(hooksTracker.isExecutedOnce("contentEntry:beforeCreate")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:afterCreate")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:beforeCreateRevisionFrom")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:afterCreateRevisionFrom")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:beforeUpdate")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:afterUpdate")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:beforeDeleteRevision")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:afterDeleteRevision")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:beforeDelete")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:afterDelete")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:beforePublish")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:afterPublish")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:beforeUnpublish")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:afterUnpublish")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:beforeRequestChanges")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:afterRequestChanges")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:beforeRequestReview")).toEqual(true);
-        expect(hooksTracker.isExecutedOnce("contentEntry:afterRequestReview")).toEqual(true);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:beforeCreate")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:afterCreate")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:beforeCreateRevisionFrom")).toEqual(
+            false
+        );
+        expect(pubSubTracker.isExecutedOnce("contentEntry:afterCreateRevisionFrom")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:beforeUpdate")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:afterUpdate")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:beforeDeleteRevision")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:afterDeleteRevision")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:beforeDelete")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:afterDelete")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:beforePublish")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:afterPublish")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:beforeUnpublish")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:afterUnpublish")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:beforeRequestChanges")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:afterRequestChanges")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:beforeRequestReview")).toEqual(true);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:afterRequestReview")).toEqual(true);
     });
 });

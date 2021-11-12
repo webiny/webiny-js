@@ -1,5 +1,5 @@
 import { ErrorResponse, Response } from "@webiny/handler-graphql";
-import { CmsContentModelCreateInput, CmsContentModelUpdateInput, CmsContext } from "../../../types";
+import { CmsContentModelCreateInput, CmsContentModelUpdateInput, CmsContext } from "~/types";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSchemaPlugin";
 import { Resolvers } from "@webiny/handler-graphql/types";
 import { ContentModelPlugin } from "~/content/plugins/ContentModelPlugin";
@@ -25,7 +25,7 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
         Query: {
             getContentModel: async (_: unknown, args: ReadContentModelArgs, context) => {
                 try {
-                    const model = await context.cms.models.get(args.modelId);
+                    const model = await context.cms.getModel(args.modelId);
                     return new Response(model);
                 } catch (e) {
                     return new ErrorResponse(e);
@@ -33,7 +33,7 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
             },
             listContentModels: async (_: unknown, __: unknown, context: CmsContext) => {
                 try {
-                    const model = await context.cms.models.list();
+                    const model = await context.cms.listModels();
                     return new Response(model);
                 } catch (e) {
                     return new ErrorResponse(e);
@@ -41,7 +41,7 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
             }
         },
         CmsContentModel: {
-            plugin: async (model, args, context) => {
+            plugin: async (model, _, context) => {
                 const modelPlugin: ContentModelPlugin = context.plugins
                     .byType<ContentModelPlugin>(ContentModelPlugin.type)
                     .find(
@@ -58,7 +58,7 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
         resolvers.Mutation = {
             createContentModel: async (_: unknown, args: CreateContentModelArgs, context) => {
                 try {
-                    const model = await context.cms.models.create(args.data);
+                    const model = await context.cms.createModel(args.data);
                     return new Response(model);
                 } catch (e) {
                     return new ErrorResponse(e);
@@ -67,7 +67,7 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
             updateContentModel: async (_: unknown, args: UpdateContentModelArgs, context) => {
                 const { modelId, data } = args;
                 try {
-                    const model = await context.cms.models.update(modelId, data);
+                    const model = await context.cms.updateModel(modelId, data);
                     return new Response(model);
                 } catch (e) {
                     return new ErrorResponse(e);
@@ -76,7 +76,7 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
             deleteContentModel: async (_: unknown, args: DeleteContentModelArgs, context) => {
                 const { modelId } = args;
                 try {
-                    await context.cms.models.delete(modelId);
+                    await context.cms.deleteModel(modelId);
                     return new Response(true);
                 } catch (e) {
                     return new ErrorResponse(e);

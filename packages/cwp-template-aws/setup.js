@@ -29,7 +29,7 @@ const setup = async args => {
         projectRoot,
         projectName,
         templateOptions = {},
-        storageOperations = "ddb"
+        storageOperations = "ddb-es"
     } = args;
     const { region = getDefaultRegion() } = templateOptions;
     /**

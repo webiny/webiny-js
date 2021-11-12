@@ -3,9 +3,9 @@ import gql from "graphql-tag";
 export const LIST_PUBLISHED_PAGES = gql`
     query ListPublishedPages(
         $where: PbListPublishedPagesWhereInput
-        $sort: PbListPagesSortInput
         $limit: Int
-        $page: Int
+        $sort: [PbListPagesSort!]
+        $after: String
         $exclude: [String]
     ) {
         pageBuilder {
@@ -13,8 +13,8 @@ export const LIST_PUBLISHED_PAGES = gql`
                 where: $where
                 sort: $sort
                 limit: $limit
-                page: $page
                 exclude: $exclude
+                after: $after
             ) {
                 data {
                     id
@@ -39,13 +39,9 @@ export const LIST_PUBLISHED_PAGES = gql`
                     }
                 }
                 meta {
-                    from
-                    to
-                    page
-                    nextPage
-                    previousPage
                     totalCount
-                    totalPages
+                    cursor
+                    hasMoreItems
                 }
             }
         }

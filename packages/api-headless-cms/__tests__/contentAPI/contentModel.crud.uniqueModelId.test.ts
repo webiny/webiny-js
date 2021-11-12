@@ -1,6 +1,6 @@
-import { CmsContentModelGroup } from "../../src/types";
+import { CmsContentModelGroup } from "~/types";
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
-import { hooksTracker } from "./mocks/lifecycleHooks";
+import { pubSubTracker } from "./mocks/lifecycleHooks";
 
 describe("content model test", () => {
     const manageHandlerOpts = { path: "manage/en-US" };
@@ -20,7 +20,7 @@ describe("content model test", () => {
         });
         contentModelGroup = createCMG.data.createContentModelGroup.data;
         // we need to reset this since we are using a singleton
-        hooksTracker.reset();
+        pubSubTracker.reset();
     });
 
     test("should not allow creation of a model with an existing modelId", async () => {

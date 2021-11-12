@@ -1,6 +1,6 @@
-import { CmsContentModel } from "../../../src/types";
+import { CmsContentModel } from "~/types";
 
-export const mockedGetModel = modelId => {
+export const mockedGetModel = (modelId: string) => {
     switch (modelId) {
         case iPhoneContentModelId:
             return Promise.resolve({

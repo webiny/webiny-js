@@ -1,12 +1,13 @@
-import { Table, Entity } from "dynamodb-toolbox";
+import { Entity, Table } from "dynamodb-toolbox";
+import { Attributes } from "~/types";
 
-interface Params {
+export interface Params {
     table: Table;
+    entityName: string;
+    attributes: Attributes;
 }
-
-const entityName = "ContentEntry";
-
-export const createEntryEntity = ({ table }: Params) => {
+export const createEntryEntity = (params: Params): Entity<any> => {
+    const { table, entityName, attributes } = params;
     return new Entity({
         name: entityName,
         table,
@@ -26,6 +27,9 @@ export const createEntryEntity = ({ table }: Params) => {
                 type: "string"
             },
             TYPE: {
+                type: "string"
+            },
+            __type: {
                 type: "string"
             },
             webinyVersion: {
@@ -72,7 +76,8 @@ export const createEntryEntity = ({ table }: Params) => {
             },
             values: {
                 type: "map"
-            }
+            },
+            ...(attributes || {})
         }
     });
 };

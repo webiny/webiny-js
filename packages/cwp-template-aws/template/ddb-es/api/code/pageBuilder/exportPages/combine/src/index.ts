@@ -6,7 +6,7 @@ import i18nContentPlugins from "@webiny/api-i18n-content/plugins";
 import pageBuilderPlugins from "@webiny/api-page-builder/graphql";
 import pageBuilderDynamoDbElasticsearchPlugins from "@webiny/api-page-builder-so-ddb-es";
 import pageBuilderImportExportPlugins from "@webiny/api-page-builder-import-export/graphql";
-import { createStorageOperations } from "@webiny/api-page-builder-import-export-so-ddb";
+import { createStorageOperations as createPageBuilderStorageOperations } from "@webiny/api-page-builder-import-export-so-ddb";
 import exportPagesCombinePlugins from "@webiny/api-page-builder-import-export/exportPages/combine";
 import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
@@ -38,7 +38,7 @@ export const handler = createHandler({
         pageBuilderPlugins(),
         pageBuilderDynamoDbElasticsearchPlugins(),
         pageBuilderImportExportPlugins({
-            storageOperations: createStorageOperations({ documentClient })
+            storageOperations: createPageBuilderStorageOperations({ documentClient })
         }),
         exportPagesCombinePlugins()
     ],

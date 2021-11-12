@@ -30,7 +30,7 @@ const ReactMediumEditor = ({
     const elementRef = React.useRef();
     const editorRef = React.useRef<MediumEditor.MediumEditor>();
 
-    const handleChange = (data, editable) => {
+    const handleChange = (_, editable) => {
         if (typeof onChange === "function") {
             onChange(editable.innerHTML);
         }

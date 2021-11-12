@@ -149,7 +149,7 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
             plugins: this.getFileIndexTransformPlugins(),
             file
         });
-        const esCompressedData = await compress(this.context, esData);
+        const esCompressedData = await compress(this.context.plugins, esData);
         const esItem: EsFileItem = {
             ...keys,
             index: this.esIndex,
@@ -187,7 +187,7 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
             plugins: this.getFileIndexTransformPlugins(),
             file
         });
-        const esCompressedData = await compress(this.context, esData);
+        const esCompressedData = await compress(this.context.plugins, esData);
         const esItem: EsFileItem = {
             ...keys,
             index: this.esIndex,
@@ -248,7 +248,7 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
                         ...file
                     })
                 );
-                const esCompressedData = await compress(this.context, file);
+                const esCompressedData = await compress(this.context.plugins, file);
                 batches.push(
                     this._esEntity.putBatch({
                         ...keys,

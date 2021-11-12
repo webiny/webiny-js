@@ -1,5 +1,5 @@
 import { identity } from "../utils/helpers";
-import { toSlug } from "../../src/utils";
+import { toSlug } from "~/utils";
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
 
 enum TestHelperEnum {

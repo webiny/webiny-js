@@ -1,4 +1,4 @@
-import { CmsContentModel, CmsContentModelGroup } from "../../src/types";
+import { CmsContentModel, CmsContentModelGroup } from "~/types";
 import models from "./mocks/contentModels";
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
 import { useBugManageHandler } from "../utils/useBugManageHandler";

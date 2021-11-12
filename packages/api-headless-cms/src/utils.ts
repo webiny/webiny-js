@@ -1,5 +1,4 @@
 import slugify from "slugify";
-import { Plugin } from "@webiny/plugins/types";
 import { NotAuthorizedError } from "@webiny/api-security";
 import { SecurityPermission } from "@webiny/api-security/types";
 
@@ -10,7 +9,7 @@ import {
     CreatedBy,
     CmsContentModelGroupPermission,
     CmsContentModelGroup
-} from "./types";
+} from "~/types";
 
 export const hasRwd = (permission, rwd) => {
     if (typeof permission.rwd !== "string") {
@@ -239,35 +238,6 @@ export const toSlug = text => {
     });
 };
 
-export const zeroPad = version => `${version}`.padStart(4, "0");
-
-export const createCmsPK = (context: CmsContext) => {
-    const { tenancy, cms } = context;
-
-    const tenant = tenancy.getCurrentTenant();
-    if (!tenant) {
-        throw new Error("Tenant missing.");
-    }
-
-    const locale = cms.getLocale();
-    if (!locale) {
-        throw new Error("Locale missing.");
-    }
-
-    return `T#${tenant.id}#L#${locale.code}#CMS`;
-};
-
-export const paginateBatch = async <T = Record<string, any>>(
-    items: T[],
-    perPage: number,
-    execute: (items: T[]) => Promise<any>
-) => {
-    const pages = Math.ceil(items.length / perPage);
-    for (let i = 0; i < pages; i++) {
-        await execute(items.slice(i * perPage, i * perPage + perPage));
-    }
-};
-
 export const filterAsync = async <T = Record<string, any>>(
     items: T[],
     predicate: (T) => Promise<boolean>
@@ -283,20 +253,4 @@ export const filterAsync = async <T = Record<string, any>>(
     }
 
     return filteredItems;
-};
-
-type CallbackFallback = (args: any) => void | Promise<void>;
-
-export const executeCallbacks = async <
-    TCallbackFunction extends CallbackFallback = CallbackFallback
->(
-    plugins: Plugin[],
-    hook: string,
-    args: Parameters<TCallbackFunction>[0]
-) => {
-    for (const plugin of plugins) {
-        if (typeof plugin[hook] === "function") {
-            await plugin[hook](args);
-        }
-    }
 };

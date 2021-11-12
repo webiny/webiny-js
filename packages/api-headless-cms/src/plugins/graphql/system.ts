@@ -1,5 +1,5 @@
 import { ErrorResponse, Response } from "@webiny/handler-graphql";
-import { CmsContext } from "../../types";
+import { CmsContext } from "~/types";
 
 export default {
     typeDefs: /* GraphQL */ `
@@ -20,7 +20,7 @@ export default {
         CmsQuery: {
             version: async (_, __, context: CmsContext) => {
                 try {
-                    return context.cms.system.getVersion();
+                    return context.cms.getSystemVersion();
                 } catch (e) {
                     return new ErrorResponse(e);
                 }
@@ -29,7 +29,7 @@ export default {
         CmsMutation: {
             install: async (_, __, { cms }: CmsContext) => {
                 try {
-                    const version = await cms.system.getVersion();
+                    const version = await cms.getSystemVersion();
                     if (version) {
                         return new ErrorResponse({
                             code: "CMS_INSTALLATION_ERROR",
@@ -37,7 +37,7 @@ export default {
                         });
                     }
 
-                    await cms.system.install();
+                    await cms.installSystem();
                     return new Response(true);
                 } catch (e) {
                     return new ErrorResponse(e);
@@ -45,7 +45,7 @@ export default {
             },
             upgrade: async (_, { version }, { cms }: CmsContext) => {
                 try {
-                    await cms.system.upgrade(version);
+                    await cms.upgradeSystem(version);
                     return new Response(true);
                 } catch (e) {
                     return new ErrorResponse(e);

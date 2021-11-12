@@ -1,4 +1,4 @@
-import { CmsContentEntry, CmsContentModel } from "../../../types";
+import { CmsContentEntry, CmsContentModel } from "~/types";
 
 export function getEntryTitle(model: CmsContentModel, entry: CmsContentEntry) {
     if (!model.titleFieldId) {

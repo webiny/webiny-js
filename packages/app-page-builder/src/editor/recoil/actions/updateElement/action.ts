@@ -4,9 +4,9 @@ import { flattenElements } from "~/editor/helpers";
 import { UpdateElementActionArgsType } from "./types";
 
 export const updateElementAction: EventActionCallable<UpdateElementActionArgsType> = (
-    state,
+    _,
     { client },
-    { element, history, triggerUpdateElementTree }
+    { element, history, triggerUpdateElementTree, debounce, onFinish }
 ) => {
     const actions = [];
     if (history === true) {
@@ -15,7 +15,7 @@ export const updateElementAction: EventActionCallable<UpdateElementActionArgsTyp
                 "You cannot save revision while updating if you do not pass client arg."
             );
         }
-        actions.push(new SaveRevisionActionEvent());
+        actions.push(new SaveRevisionActionEvent({ debounce, onFinish }));
     }
     // Add "UpdateElementTreeActionEvent" to actions.
     if (triggerUpdateElementTree) {

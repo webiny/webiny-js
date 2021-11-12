@@ -1,4 +1,4 @@
-import { CmsContentModelField, CmsContentModel } from "../../../../types";
+import { CmsContentModelField, CmsContentModel } from "~/types";
 
 export const validateLayout = (
     { layout }: CmsContentModel,

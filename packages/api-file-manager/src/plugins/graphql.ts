@@ -169,7 +169,7 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
         `,
         resolvers: {
             File: {
-                async src(file, args, context: FileManagerContext) {
+                async src(file, _, context: FileManagerContext) {
                     const settings = await context.fileManager.settings.getSettings();
                     return settings.srcPrefix + file.key;
                 }
@@ -199,7 +199,7 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
                         return new ErrorResponse(error);
                     }
                 },
-                async version(_, args, context) {
+                async version(_, __, context) {
                     const { i18nContent, tenancy, fileManager } = context;
                     if (!tenancy.getCurrentTenant() || !i18nContent.getLocale()) {
                         return null;
@@ -207,7 +207,7 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
 
                     return await fileManager.system.getVersion();
                 },
-                async getSettings(_, args, context) {
+                async getSettings(_, __, context) {
                     return resolve(() => context.fileManager.settings.getSettings());
                 }
             },

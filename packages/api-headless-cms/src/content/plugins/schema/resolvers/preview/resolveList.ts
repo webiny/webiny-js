@@ -3,13 +3,13 @@ import {
     CmsContentEntryMeta,
     CmsContentEntryResolverFactory as ResolverFactory,
     CmsContentEntry
-} from "../../../../../types";
+} from "~/types";
 
 export const resolveList: ResolverFactory =
     ({ model }) =>
-    async (root, args, { cms }) => {
+    async (_, args, { cms }) => {
         try {
-            const response: [CmsContentEntry[], CmsContentEntryMeta] = await cms.entries.listLatest(
+            const response: [CmsContentEntry[], CmsContentEntryMeta] = await cms.listLatestEntries(
                 model,
                 args
             );

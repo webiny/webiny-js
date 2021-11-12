@@ -1,5 +1,5 @@
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
-import { CmsContentModelGroup } from "../../src/types";
+import { CmsContentModelGroup } from "~/types";
 import models from "./mocks/contentModels";
 import { useFruitManageHandler } from "../utils/useFruitManageHandler";
 
