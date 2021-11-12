@@ -6,11 +6,11 @@ const setup = require("./setup");
 const storageOperationChoices = [
     {
         value: "ddb",
-        name: "DynamoDB (small projects)"
+        name: "DynamoDB (for small and medium sized projects)"
     },
     {
         value: "ddb-es",
-        name: "DynamoDB + Elasticsearch (medium and large projects)"
+        name: "DynamoDB + Elasticsearch (for larger projects)"
     }
 ];
 
@@ -53,23 +53,19 @@ const runInquirer = async cwp => {
                 { value: "me-south-1", name: "me-south-1 (Middle East, Bahrain)" },
                 { value: "sa-east-1", name: "sa-east-1 (South America, São Paulo)" }
             ]
-        }
-    ]);
-
-    const { storageOperations } = await inquirer.prompt([
+        },
         {
             type: "list",
             name: "storageOperations",
             default: "ddb",
-            message: `Please choose which storage operations do you want to use with your Webiny project:`,
+            message: `Please choose the database you wish to use with your Webiny project:`,
             choices: storageOperationChoices
         }
     ]);
 
     return setup({
         ...cwp,
-        templateOptions,
-        storageOperations
+        templateOptions
     });
 };
 
