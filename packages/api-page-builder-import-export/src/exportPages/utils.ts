@@ -26,7 +26,7 @@ async function getFilteredFiles(files: ImageFile[]) {
 }
 
 export interface ExportedPageData {
-    page: Pick<Page, "content" | "title" | "version" | "status" | "settings">;
+    page: Pick<Page, "content" | "title" | "version" | "status" | "settings" | "path">;
     files: ImageFile[];
 }
 
@@ -57,6 +57,7 @@ export async function exportPage(
         page: {
             content: page.content,
             title: page.title,
+            path: page.path,
             version: page.version,
             status: page.status,
             settings: page.settings

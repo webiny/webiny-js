@@ -101,6 +101,7 @@ export default (
             pbPage = await context.pageBuilder.pages.update(pbPage.id, {
                 content: page.content,
                 title: page.title,
+                path: page.path,
                 settings: page.settings
             });
 
