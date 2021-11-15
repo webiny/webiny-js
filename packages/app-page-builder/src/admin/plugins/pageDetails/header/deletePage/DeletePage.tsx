@@ -6,7 +6,7 @@ import { useConfirmationDialog } from "@webiny/app-admin/hooks/useConfirmationDi
 import { useDialog } from "@webiny/app-admin/hooks/useDialog";
 import { IconButton } from "@webiny/ui/Button";
 import { Tooltip } from "@webiny/ui/Tooltip";
-import { ReactComponent as DeleteIcon } from "../../../../assets/delete.svg";
+import { ReactComponent as DeleteIcon } from "~/admin/assets/delete.svg";
 import { DELETE_PAGE } from "~/admin/graphql/pages";
 import { i18n } from "@webiny/app/i18n";
 import usePermission from "~/hooks/usePermission";
@@ -81,7 +81,7 @@ const DeletePage = props => {
     }
 
     return (
-        <Tooltip content={"Delete"} placement={"top"}>
+        <Tooltip content={"Delete Page"} placement={"top"}>
             <IconButton
                 icon={<DeleteIcon />}
                 onClick={confirmDelete}

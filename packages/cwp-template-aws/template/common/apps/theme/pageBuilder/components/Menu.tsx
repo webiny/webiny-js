@@ -16,6 +16,10 @@ declare global {
     }
 }
 
+export const hasMenuItems = data => {
+    return Boolean(data && Array.isArray(data.items) && data.items.length);
+};
+
 export const GET_PUBLIC_MENU = gql`
     query GetPublicMenu($slug: String!) {
         pageBuilder {

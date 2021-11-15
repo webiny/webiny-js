@@ -520,7 +520,8 @@ export default new ContextPlugin<PbContext>(async context => {
             const settings = await context.pageBuilder.settings.getCurrent();
             const pages = settings && settings.pages ? settings.pages : {};
             for (const key in pages) {
-                if (pages[key] === page.pid) {
+                // We don't allow delete operation for "published" version of special pages.
+                if (pages[key] === page.pid && page.status === "published") {
                     throw new WebinyError(
                         `Cannot delete page because it's set as ${key}.`,
                         "DELETE_PAGE_ERROR"

@@ -11,7 +11,8 @@ export default () => {
                 label: "Documentation",
                 icon: <DocsIcon />,
                 path: "https://docs.webiny.com/",
-                rel: "noopener noreferrer"
+                rel: "noopener noreferrer",
+                target: "_blank"
             })
         );
     });
