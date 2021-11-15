@@ -1,4 +1,4 @@
-import { CmsContentModelGroup } from "~/types";
+import { CmsGroup } from "~/types";
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
 import models from "./mocks/contentModels";
 import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
@@ -81,7 +81,7 @@ const categoryManagerHelper = async manageOpts => {
 jest.setTimeout(100000);
 
 describe("READ - Resolvers", () => {
-    let contentModelGroup: CmsContentModelGroup;
+    let contentModelGroup: CmsGroup;
 
     const manageOpts = { path: "manage/en-US" };
     const readOpts = { path: "read/en-US" };
@@ -92,7 +92,7 @@ describe("READ - Resolvers", () => {
         createContentModelGroupMutation
     } = useContentGqlHandler(manageOpts);
 
-    const setupModel = async (name: string, group: CmsContentModelGroup) => {
+    const setupModel = async (name: string, group: CmsGroup) => {
         const targetModel = models.find(m => m.modelId === name);
 
         // Create initial record

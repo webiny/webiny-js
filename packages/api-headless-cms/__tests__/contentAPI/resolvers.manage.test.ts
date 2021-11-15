@@ -1,19 +1,17 @@
-/* eslint-disable */
 import Error from "@webiny/error";
-import { CmsContentEntry, CmsContentModelGroup } from "~/types";
+import { CmsEntry, CmsGroup } from "~/types";
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
 import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
 import { useCategoryReadHandler } from "../utils/useCategoryReadHandler";
 import models from "./mocks/contentModels";
 import modelsWithoutValidation from "./mocks/contentModels.noValidation";
 import { useProductManageHandler } from "../utils/useProductManageHandler";
-import { sleep } from "@webiny/project-utils/testing/helpers/sleep";
 
 interface CreateCategoriesResult {
-    fruits: CmsContentEntry;
-    vegetables: CmsContentEntry;
-    animals: CmsContentEntry;
-    trees: CmsContentEntry;
+    fruits: CmsEntry;
+    vegetables: CmsEntry;
+    animals: CmsEntry;
+    trees: CmsEntry;
 }
 
 const createPermissions = ({ groups, models }: { groups?: string[]; models?: string[] }) => [
@@ -46,7 +44,7 @@ const createPermissions = ({ groups, models }: { groups?: string[]; models?: str
 jest.setTimeout(100000);
 
 describe("MANAGE - Resolvers", () => {
-    let contentModelGroup: CmsContentModelGroup;
+    let contentModelGroup: CmsGroup;
 
     const manageOpts = { path: "manage/en-US" };
     const readOpts = { path: "read/en-US" };
@@ -669,6 +667,7 @@ describe("MANAGE - Resolvers", () => {
 
         const [revision1] = await createCategory({ data: { title: "Hardware", slug: "hardware" } });
 
+        const rev1Category = revision1.data.createCategory.data;
         const { id } = revision1.data.createCategory.data;
 
         await until(
@@ -679,9 +678,39 @@ describe("MANAGE - Resolvers", () => {
 
         // Create 2 more revisions
         const [revision2] = await createCategoryFrom({ revision: id });
-        const { id: id2 } = revision2.data.createCategoryFrom.data;
+
+        expect(revision2).toMatchObject({
+            data: {
+                createCategoryFrom: {
+                    data: {
+                        id: `${rev1Category.entryId}#0002`,
+                        meta: {
+                            version: 2
+                        }
+                    },
+                    error: null
+                }
+            }
+        });
+
+        const rev2Category = revision2.data.createCategoryFrom.data;
+        const { id: id2 } = rev2Category;
 
         const [revision3] = await createCategoryFrom({ revision: id });
+
+        expect(revision3).toMatchObject({
+            data: {
+                createCategoryFrom: {
+                    data: {
+                        id: `${rev2Category.entryId}#0003`,
+                        meta: {
+                            version: 3
+                        }
+                    },
+                    error: null
+                }
+            }
+        });
         const { id: id3 } = revision3.data.createCategoryFrom.data;
 
         // Wait until the new revision is indexed

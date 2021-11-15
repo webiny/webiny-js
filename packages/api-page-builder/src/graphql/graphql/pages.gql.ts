@@ -280,13 +280,13 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                     const [uniquePageId] = page.id.split("#");
                     return uniquePageId;
                 },
-                category: async (page: Page, args, context) => {
+                category: async (page: Page, _, context) => {
                     return context.pageBuilder.categories.get(page.category);
                 },
-                revisions: async (page: Page, args, context) => {
+                revisions: async (page: Page, _, context) => {
                     return context.pageBuilder.pages.listPageRevisions(page.id);
                 },
-                url: async (page: Page, args, context) => {
+                url: async (page: Page, _, context) => {
                     const settings = await context.pageBuilder.settings.getCurrent();
                     const websiteUrl = lodashGet(settings, "websiteUrl") || "";
                     return websiteUrl + page.path;
@@ -297,10 +297,10 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                     const [uniquePageId] = page.id.split("#");
                     return uniquePageId;
                 },
-                category: async (page: Page, args, context) => {
+                category: async (page: Page, _, context) => {
                     return context.pageBuilder.categories.get(page.category, { auth: false });
                 },
-                url: async (page: Page, args, context) => {
+                url: async (page: Page, _, context) => {
                     const settings = await context.pageBuilder.settings.getCurrent();
                     const websiteUrl = lodashGet(settings, "websiteUrl") || "";
                     return websiteUrl + page.path;

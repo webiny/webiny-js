@@ -1,4 +1,4 @@
-import { CmsContentModelGroup } from "../../src/types";
+import { CmsGroup } from "~/types";
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
 import models from "./mocks/contentModels";
 import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
@@ -31,7 +31,7 @@ const createIdentity = (permissions: any[] = []): SecurityIdentity => {
 };
 
 describe("READ - resolvers - api key", () => {
-    let contentModelGroup: CmsContentModelGroup;
+    let contentModelGroup: CmsGroup;
 
     const API_TOKEN = "aToken";
 

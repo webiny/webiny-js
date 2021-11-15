@@ -5,10 +5,10 @@ import classNames from "classnames";
 import kebabCase from "lodash/kebabCase";
 import merge from "lodash/merge";
 import set from "lodash/set";
-import { PbEditorElement } from "../../../../types";
-import { useEventActionHandler } from "../../../hooks/useEventActionHandler";
-import { UpdateElementActionEvent } from "../../../recoil/actions";
-import { elementByIdSelector, uiAtom } from "../../../recoil/modules";
+import { PbEditorElement } from "~/types";
+import { useEventActionHandler } from "~/editor/hooks/useEventActionHandler";
+import { UpdateElementActionEvent } from "~/editor/recoil/actions";
+import { elementByIdSelector, uiAtom } from "~/editor/recoil/modules";
 import SimpleEditableText from "./SimpleEditableText";
 
 const buttonEditStyle = css({
@@ -65,7 +65,8 @@ const ButtonContainer: React.FunctionComponent<ButtonContainerPropsType> = ({
         eventActionHandler.trigger(
             new UpdateElementActionEvent({
                 element: newElement,
-                history: true
+                history: true,
+                debounce: false
             })
         );
     }, [elementId, element.data]);

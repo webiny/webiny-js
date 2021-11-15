@@ -4,7 +4,7 @@ import { flattenElements } from "~/editor/helpers";
 import { UpdateElementActionArgsType } from "./types";
 
 export const updateElementAction: EventActionCallable<UpdateElementActionArgsType> = (
-    state,
+    _,
     { client },
     { element, history, triggerUpdateElementTree, debounce, onFinish }
 ) => {

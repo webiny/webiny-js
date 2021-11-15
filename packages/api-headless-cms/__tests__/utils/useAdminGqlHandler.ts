@@ -1,13 +1,14 @@
 import graphQLHandlerPlugins from "@webiny/handler-graphql";
-import { GQLHandlerCallableArgs, useGqlHandler } from "./useGqlHandler";
-import cmsPlugins from "../../src/plugins";
-import contentModelGroup from "../../src/content/plugins/crud/contentModelGroup.crud";
+import { GQLHandlerCallableParams, useGqlHandler } from "./useGqlHandler";
+import { createAdminHeadlessCmsContext, createAdminHeadlessCmsGraphQL } from "~/index";
 
-export const useAdminGqlHandler = (args: GQLHandlerCallableArgs) => {
+export const useAdminGqlHandler = (
+    params: Omit<GQLHandlerCallableParams, "createHeadlessCmsApp">
+) => {
     return useGqlHandler({
-        ...args,
-        path: args.path || "",
+        ...params,
         setupTenancyAndSecurityGraphQL: true,
-        plugins: [graphQLHandlerPlugins(), cmsPlugins(), contentModelGroup()]
+        plugins: [graphQLHandlerPlugins(), createAdminHeadlessCmsGraphQL()],
+        createHeadlessCmsApp: createAdminHeadlessCmsContext
     });
 };

@@ -58,11 +58,8 @@ export const createQueueJobStorageOperations = (
             );
         }
     };
-
-    const listQueueJobs = async (
-        // eslint-disable-next-line
-        params: PrerenderingServiceStorageOperationsListQueueJobsParams
-    ) => {
+    // eslint-disable-next-line
+    const listQueueJobs = async (_: PrerenderingServiceStorageOperationsListQueueJobsParams) => {
         const queryAllParams: QueryAllParams = {
             entity,
             partitionKey: createQueueJobPartitionKey(),

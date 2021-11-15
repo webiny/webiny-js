@@ -19,7 +19,8 @@ describe("HTTP Options request", () => {
                     "Access-Control-Allow-Headers": "*",
                     "Access-Control-Allow-Methods": "OPTIONS,POST",
                     "Access-Control-Allow-Origin": "*",
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
+                    "Cache-Control": "public, max-age=30758400"
                 },
                 isBase64Encoded: undefined,
                 statusCode: 204

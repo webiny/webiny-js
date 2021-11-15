@@ -1,13 +1,15 @@
 import WebinyError from "@webiny/error";
-import { ElasticsearchQueryBuilderValueSearchPlugin } from "../types";
-import { CmsContext } from "@webiny/api-headless-cms/types";
+import { ElasticsearchQueryBuilderValueSearchPlugin } from "~/types";
+import { PluginsContainer } from "@webiny/plugins";
 
 export interface ElasticsearchQuerySearchValuePlugins {
     [fieldType: string]: ElasticsearchQueryBuilderValueSearchPlugin;
 }
 
-export const searchPluginsList = (context: CmsContext): ElasticsearchQuerySearchValuePlugins => {
-    return context.plugins
+export const searchPluginsList = (
+    plugins: PluginsContainer
+): ElasticsearchQuerySearchValuePlugins => {
+    return plugins
         .byType<ElasticsearchQueryBuilderValueSearchPlugin>(
             "cms-elastic-search-query-builder-value-search"
         )

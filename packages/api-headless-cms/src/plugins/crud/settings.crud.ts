@@ -1,89 +1,78 @@
-import { ContextPlugin } from "@webiny/handler/types";
-import * as utils from "../../utils";
+import * as utils from "~/utils";
 import {
     CmsContext,
-    CmsSettingsContext,
     CmsSettingsPermission,
     CmsSettings,
-    CmsSettingsStorageOperationsProviderPlugin
+    HeadlessCmsStorageOperations,
+    CmsSettingsContext
 } from "~/types";
-import WebinyError from "@webiny/error";
+import { Tenant } from "@webiny/api-tenancy/types";
+import { I18NLocale } from "@webiny/api-i18n/types";
 
-export default {
-    type: "context",
-    name: "context-settings-crud",
-    apply: async context => {
-        /**
-         * If cms is not defined on the context, do not continue, but log it.
-         */
-        if (!context.cms) {
-            return;
-        }
-        const pluginType = "cms-settings-storage-operations-provider";
-        const providerPlugins =
-            context.plugins.byType<CmsSettingsStorageOperationsProviderPlugin>(pluginType);
-        const providerPlugin = providerPlugins[providerPlugins.length - 1];
-        if (!providerPlugin) {
-            throw new WebinyError(`Missing "${pluginType}" plugin.`, "PLUGIN_NOT_FOUND", {
-                type: pluginType
+export interface Params {
+    getTenant: () => Tenant;
+    getLocale: () => I18NLocale;
+    storageOperations: HeadlessCmsStorageOperations;
+    context: CmsContext;
+}
+export const createSettingsCrud = (params: Params): CmsSettingsContext => {
+    const { storageOperations, context, getTenant, getLocale } = params;
+
+    const checkPermissions = (): Promise<CmsSettingsPermission> => {
+        return utils.checkPermissions(context, "cms.settings");
+    };
+
+    return {
+        getSettings: async (): Promise<CmsSettings | null> => {
+            await checkPermissions();
+            return await storageOperations.settings.get({
+                tenant: getTenant().id,
+                locale: getLocale().code
             });
-        }
+        },
+        updateModelLastChange: async (): Promise<void> => {
+            const original = await storageOperations.settings.get({
+                tenant: getTenant().id,
+                locale: getLocale().code
+            });
 
-        const storageOperations = await providerPlugin.provide({
-            context
-        });
+            const settings: CmsSettings = {
+                ...(original || {}),
+                contentModelLastChange: new Date(),
+                tenant: getTenant().id,
+                locale: getLocale().code
+            };
 
-        const checkPermissions = (): Promise<CmsSettingsPermission> => {
-            return utils.checkPermissions(context, "cms.settings");
-        };
-
-        const settings: CmsSettingsContext = {
-            noAuth: () => {
-                return {
-                    get: async () => {
-                        return await storageOperations.get();
-                    }
-                };
-            },
-            get: async (): Promise<CmsSettings | null> => {
-                await checkPermissions();
-                return await storageOperations.get();
-            },
-            updateContentModelLastChange: async (): Promise<void> => {
-                const data: CmsSettings = {
-                    contentModelLastChange: new Date()
-                };
-
-                const settings = await storageOperations.get();
-                if (!settings) {
-                    await storageOperations.create(data);
-                    return;
-                }
-
-                await storageOperations.update(data);
-            },
-            getContentModelLastChange: async (): Promise<Date> => {
-                try {
-                    const settings = await storageOperations.get();
-                    if (!settings || !settings.contentModelLastChange) {
-                        return new Date();
-                    }
-                    return settings.contentModelLastChange;
-                } catch (ex) {
-                    console.log({
-                        error: {
-                            message: ex.message,
-                            code: ex.code || "COULD_NOT_FETCH_CONTENT_MODEL_LAST_CHANGE",
-                            data: ex
-                        }
-                    });
-                }
-                return new Date();
+            if (!original) {
+                await storageOperations.settings.create({ settings });
+                return;
             }
-        };
-        context.cms = {
-            ...(context.cms || ({} as any)),
-            settings
-        };
-    }
-} as ContextPlugin<CmsContext>;
+
+            await storageOperations.settings.update({
+                original,
+                settings
+            });
+        },
+        getModelLastChange: async (): Promise<Date> => {
+            try {
+                const settings = await storageOperations.settings.get({
+                    tenant: getTenant().id,
+                    locale: getLocale().code
+                });
+                if (!settings || !settings.contentModelLastChange) {
+                    return new Date();
+                }
+                return settings.contentModelLastChange;
+            } catch (ex) {
+                console.log({
+                    error: {
+                        message: ex.message,
+                        code: ex.code || "COULD_NOT_FETCH_CONTENT_MODEL_LAST_CHANGE",
+                        data: ex
+                    }
+                });
+            }
+            return new Date();
+        }
+    };
+};

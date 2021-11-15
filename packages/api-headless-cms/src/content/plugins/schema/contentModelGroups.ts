@@ -1,27 +1,23 @@
 import { ErrorResponse, Response } from "@webiny/handler-graphql";
 
-import {
-    CmsContentModelGroupCreateInput,
-    CmsContentModelGroupUpdateInput,
-    CmsContext
-} from "~/types";
+import { CmsGroupCreateInput, CmsGroupUpdateInput, CmsContext } from "~/types";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSchemaPlugin";
 import { Resolvers } from "@webiny/handler-graphql/types";
-import { ContentModelGroupPlugin } from "~/content/plugins/ContentModelGroupPlugin";
+import { CmsGroupPlugin } from "~/content/plugins/CmsGroupPlugin";
 
-interface CreateContentModelGroupArgs {
-    data: CmsContentModelGroupCreateInput;
+interface CreateCmsGroupArgs {
+    data: CmsGroupCreateInput;
 }
 
-interface ReadContentModelGroupArgs {
+interface ReadCmsGroupArgs {
     id: string;
 }
 
-interface UpdateContentModelGroupArgs extends ReadContentModelGroupArgs {
-    data: CmsContentModelGroupUpdateInput;
+interface UpdateCmsGroupArgs extends ReadCmsGroupArgs {
+    data: CmsGroupUpdateInput;
 }
 
-interface DeleteContentModelGroupArgs {
+interface DeleteCmsGroupArgs {
     id: string;
 }
 
@@ -72,30 +68,27 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
     if (context.cms.MANAGE) {
         resolvers = {
             CmsContentModelGroup: {
-                contentModels: async (group, args, context) => {
-                    const models = await context.cms.models.silentAuth().list();
+                contentModels: async (group, _, context) => {
+                    const models = await context.cms.silentAuthModel().list();
                     return models.filter(m => m.group.id === group.id);
                 },
-                totalContentModels: async (group, args, context) => {
-                    const models = await context.cms.models.silentAuth().list();
+                totalContentModels: async (group, _, context) => {
+                    const models = await context.cms.silentAuthModel().list();
                     return models.filter(m => m.group === group.id).length;
                 },
-                plugin: async (group, args, context: CmsContext) => {
-                    const groupPlugin: ContentModelGroupPlugin = context.plugins
-                        .byType<ContentModelGroupPlugin>(ContentModelGroupPlugin.type)
-                        .find(
-                            (item: ContentModelGroupPlugin) =>
-                                item.contentModelGroup.id === group.id
-                        );
+                plugin: async (group, _, context: CmsContext) => {
+                    const groupPlugin: CmsGroupPlugin = context.plugins
+                        .byType<CmsGroupPlugin>(CmsGroupPlugin.type)
+                        .find((item: CmsGroupPlugin) => item.contentModelGroup.id === group.id);
 
                     return Boolean(groupPlugin);
                 }
             },
             Query: {
-                getContentModelGroup: async (_, args: ReadContentModelGroupArgs, context) => {
+                getContentModelGroup: async (_, args: ReadCmsGroupArgs, context) => {
                     try {
                         const { id } = args;
-                        const model = await context.cms.groups.get(id);
+                        const model = await context.cms.getGroup(id);
                         return new Response(model);
                     } catch (e) {
                         return new ErrorResponse(e);
@@ -103,7 +96,7 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
                 },
                 listContentModelGroups: async (_, __, context) => {
                     try {
-                        const models = await context.cms.groups.list();
+                        const models = await context.cms.listGroups();
                         return new Response(models);
                     } catch (e) {
                         return new ErrorResponse(e);
@@ -111,25 +104,25 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
                 }
             },
             Mutation: {
-                createContentModelGroup: async (_, args: CreateContentModelGroupArgs, context) => {
+                createContentModelGroup: async (_, args: CreateCmsGroupArgs, context) => {
                     try {
-                        const model = await context.cms.groups.create(args.data);
+                        const model = await context.cms.createGroup(args.data);
                         return new Response(model);
                     } catch (e) {
                         return new ErrorResponse(e);
                     }
                 },
-                updateContentModelGroup: async (_, args: UpdateContentModelGroupArgs, context) => {
+                updateContentModelGroup: async (_, args: UpdateCmsGroupArgs, context) => {
                     try {
-                        const group = await context.cms.groups.update(args.id, args.data);
+                        const group = await context.cms.updateGroup(args.id, args.data);
                         return new Response(group);
                     } catch (e) {
                         return new ErrorResponse(e);
                     }
                 },
-                deleteContentModelGroup: async (_, args: DeleteContentModelGroupArgs, context) => {
+                deleteContentModelGroup: async (_, args: DeleteCmsGroupArgs, context) => {
                     try {
-                        await context.cms.groups.delete(args.id);
+                        await context.cms.deleteGroup(args.id);
                         return new Response(true);
                     } catch (e) {
                         return new ErrorResponse(e);

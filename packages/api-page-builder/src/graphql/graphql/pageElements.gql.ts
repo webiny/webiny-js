@@ -55,7 +55,7 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                         return context.pageBuilder.pageElements.get(args.id);
                     });
                 },
-                listPageElements: async (_, args, context) => {
+                listPageElements: async (_, __, context) => {
                     return resolve(() => {
                         return context.pageBuilder.pageElements.list();
                     });

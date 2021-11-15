@@ -11,13 +11,23 @@ describe("Settings crud test", () => {
         ...manageOpts
     });
 
-    const { installMutation } = useAdminGqlHandler({
+    const { introspect, installMutation } = useAdminGqlHandler({
         ...manageOpts
     });
 
     const { isInstalledQuery, installMutation: installMutationNoPermission } = useAdminGqlHandler({
         ...manageOpts,
         permissions: []
+    });
+
+    test("graphql schema must not produce error", async () => {
+        const [response] = await introspect();
+
+        expect(response).toEqual({
+            data: {
+                __schema: expect.any(Object)
+            }
+        });
     });
 
     test("cms is not installed yet", async () => {
@@ -32,7 +42,18 @@ describe("Settings crud test", () => {
     });
 
     test("cms is being installed", async () => {
-        await installMutation();
+        const [installResponse] = await installMutation();
+
+        expect(installResponse).toEqual({
+            data: {
+                cms: {
+                    install: {
+                        data: true,
+                        error: null
+                    }
+                }
+            }
+        });
 
         const [response] = await isInstalledQuery();
         expect(response).toEqual({

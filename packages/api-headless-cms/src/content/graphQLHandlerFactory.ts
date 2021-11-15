@@ -1,7 +1,7 @@
 import { boolean } from "boolean";
 import { GraphQLSchema } from "graphql";
 import { makeExecutableSchema } from "@graphql-tools/schema";
-import { CmsContext } from "../types";
+import { CmsContext } from "~/types";
 import { I18NLocale } from "@webiny/api-i18n/types";
 import { NotAuthorizedError, NotAuthorizedResponse } from "@webiny/api-security";
 import { PluginCollection } from "@webiny/plugins/types";
@@ -10,7 +10,7 @@ import processRequestBody from "@webiny/handler-graphql/processRequestBody";
 import buildSchemaPlugins from "./plugins/buildSchemaPlugins";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins";
 
-interface CreateGraphQLHandlerOptions {
+export interface CreateGraphQLHandlerOptions {
     debug?: boolean;
 }
 interface SchemaCache {
@@ -35,6 +35,8 @@ const DEFAULT_HEADERS = {
     "Content-Type": "application/json"
 };
 
+const DEFAULT_CACHE_MAX_AGE = 30758400; // 1 year
+
 const respond = (http, result: unknown) => {
     return http.response({
         body: JSON.stringify(result),
@@ -46,7 +48,7 @@ const schemaList = new Map<string, SchemaCache>();
 
 const generateCacheKey = async (args: Args): Promise<string> => {
     const { context, locale, type } = args;
-    const lastModelChange = await context.cms.settings.getContentModelLastChange();
+    const lastModelChange = await context.cms.getModelLastChange();
     return [locale.code, type, lastModelChange.toISOString()].join("#");
 };
 
@@ -131,7 +133,10 @@ export const graphQLHandlerFactory = (
                 if (http.request.method === "OPTIONS") {
                     return http.response({
                         statusCode: 204,
-                        headers: DEFAULT_HEADERS
+                        headers: {
+                            ...DEFAULT_HEADERS,
+                            "Cache-Control": "public, max-age=" + DEFAULT_CACHE_MAX_AGE
+                        }
                     });
                 }
 

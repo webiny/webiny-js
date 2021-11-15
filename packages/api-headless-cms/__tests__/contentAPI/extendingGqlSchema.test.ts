@@ -26,12 +26,10 @@ const graphqlSchemaPlugin = new GraphQLSchemaPlugin({
 
 describe("content model test no field plugin", () => {
     test("prevent content model update if a backend plugin for a field does not exist", async () => {
-        const { invoke } = useContentGqlHandler(
-            {
-                path: "manage/en-US"
-            },
-            [graphqlSchemaPlugin]
-        );
+        const { invoke } = useContentGqlHandler({
+            path: "manage/en-US",
+            plugins: [graphqlSchemaPlugin]
+        });
 
         expect(
             await invoke({

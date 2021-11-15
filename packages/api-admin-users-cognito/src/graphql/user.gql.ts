@@ -103,7 +103,7 @@ export default new GraphQLSchemaPlugin<AdminUsersContext & SecurityContext & Ten
     `,
     resolvers: {
         AdminUserIdentity: {
-            async profile(identity, args, context) {
+            async profile(identity, _, context) {
                 const profile = await context.adminUsers.getUser({ where: { id: identity.id } });
 
                 if (profile) {
@@ -126,7 +126,7 @@ export default new GraphQLSchemaPlugin<AdminUsersContext & SecurityContext & Ten
             gravatar(user: AdminUser) {
                 return "https://www.gravatar.com/avatar/" + md5(user.email);
             },
-            group(user, args, context) {
+            group(user, _, context) {
                 return context.security.getGroup({ where: { id: user.group } });
             }
         },
@@ -144,7 +144,7 @@ export default new GraphQLSchemaPlugin<AdminUsersContext & SecurityContext & Ten
                     return new ErrorResponse(e);
                 }
             },
-            getCurrentUser: async (_, args, context) => {
+            getCurrentUser: async (_, __, context) => {
                 const identity = context.security.getIdentity();
 
                 if (!identity) {
@@ -158,7 +158,7 @@ export default new GraphQLSchemaPlugin<AdminUsersContext & SecurityContext & Ten
 
                 return new Response(user);
             },
-            listUsers: async (_, args, context) => {
+            listUsers: async (_, __, context) => {
                 try {
                     const userList = await context.adminUsers.listUsers();
 
@@ -201,7 +201,7 @@ export default new GraphQLSchemaPlugin<AdminUsersContext & SecurityContext & Ten
                 }
             },
             updateUser: async (
-                root,
+                _,
                 { data, id }: { id: string; data: UpdateUserInput },
                 { adminUsers }
             ) => {
@@ -213,7 +213,7 @@ export default new GraphQLSchemaPlugin<AdminUsersContext & SecurityContext & Ten
                     return new ErrorResponse(e);
                 }
             },
-            deleteUser: async (root, { id }: { id: string }, context) => {
+            deleteUser: async (_, { id }: { id: string }, context) => {
                 try {
                     await context.adminUsers.deleteUser(id);
 

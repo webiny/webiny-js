@@ -16,12 +16,12 @@ export default new GraphQLSchemaPlugin<SecurityContext>({
     `,
     resolvers: {
         SecurityQuery: {
-            version: async (root, args, context) => {
+            version: async (_, __, context) => {
                 return await context.security.getVersion();
             }
         },
         SecurityMutation: {
-            install: async (root, args, context) => {
+            install: async (_, __, context) => {
                 try {
                     await context.security.install();
                     return new Response(true);

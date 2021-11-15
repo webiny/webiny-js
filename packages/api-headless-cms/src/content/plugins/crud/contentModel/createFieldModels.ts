@@ -1,15 +1,11 @@
-import {
-    CmsContentModelField,
-    CmsContentModel,
-    CmsContentModelUpdateInput
-} from "../../../../types";
+import { CmsModelField, CmsModel, CmsModelUpdateInput } from "~/types";
 import { ContentModelFieldModel } from "./models";
 
 export const createFieldModels = async (
-    model: CmsContentModel,
-    data: CmsContentModelUpdateInput
-): Promise<CmsContentModelField[]> => {
-    const fields: CmsContentModelField[] = [];
+    _: CmsModel,
+    data: CmsModelUpdateInput
+): Promise<CmsModelField[]> => {
+    const fields: CmsModelField[] = [];
     for (const field of data.fields) {
         const fieldData = new ContentModelFieldModel().populate(field);
         await fieldData.validate();

@@ -2,10 +2,10 @@ import WebinyError from "@webiny/error";
 import lodashSortBy from "lodash.sortby";
 import dotProp from "dot-prop";
 import {
-    CmsContentEntry,
-    CmsContentEntryListWhere,
-    CmsContentModel,
-    CmsContentModelField
+    CmsEntry,
+    CmsEntryListWhere,
+    CmsModel,
+    CmsModelField
 } from "@webiny/api-headless-cms/types";
 import { Plugin } from "@webiny/plugins/types";
 import { CmsFieldFilterPathPlugin, CmsFieldFilterValueTransformPlugin } from "~/types";
@@ -14,7 +14,7 @@ import { ValueFilterPlugin } from "@webiny/db-dynamodb/plugins/definitions/Value
 import { PluginsContainer } from "@webiny/plugins";
 
 interface ModelField {
-    def: CmsContentModelField;
+    def: CmsModelField;
     valueTransformer: (value: any) => any;
     valuePath: string;
     isSystemField?: boolean;
@@ -24,7 +24,7 @@ type ModelFieldRecords = Record<string, ModelField>;
 
 interface CreateFiltersArgs {
     plugins: PluginsContainer;
-    where: CmsContentEntryListWhere;
+    where: CmsEntryListWhere;
     fields: ModelFieldRecords;
 }
 
@@ -38,8 +38,8 @@ interface ItemFilter {
 }
 
 interface FilterItemsArgs {
-    items: CmsContentEntry[];
-    where: CmsContentEntryListWhere;
+    items: CmsEntry[];
+    where: CmsEntryListWhere;
     plugins: PluginsContainer;
     fields: ModelFieldRecords;
 }
@@ -72,8 +72,8 @@ const transformValue = (value: any, transform: (value: any) => any): any => {
     return transform(value);
 };
 
-const createFilters = (args: CreateFiltersArgs): ItemFilter[] => {
-    const { where, plugins, fields } = args;
+const createFilters = (params: CreateFiltersArgs): ItemFilter[] => {
+    const { where, plugins, fields } = params;
     const filterPlugins = getMappedPlugins<ValueFilterPlugin>({
         plugins,
         type: ValueFilterPlugin.type,
@@ -156,8 +156,8 @@ const createFilters = (args: CreateFiltersArgs): ItemFilter[] => {
     });
 };
 
-export const filterItems = (args: FilterItemsArgs): CmsContentEntry[] => {
-    const { items, where, plugins, fields } = args;
+export const filterItems = (params: FilterItemsArgs): CmsEntry[] => {
+    const { items, where, plugins, fields } = params;
 
     const filters = createFilters({
         plugins,
@@ -216,13 +216,13 @@ const extractSort = (
 };
 
 interface SortEntryItemsArgs {
-    items: CmsContentEntry[];
+    items: CmsEntry[];
     sort: string[];
     fields: ModelFieldRecords;
 }
 
-export const sortEntryItems = (args: SortEntryItemsArgs): CmsContentEntry[] => {
-    const { items, sort = [], fields } = args;
+export const sortEntryItems = (params: SortEntryItemsArgs): CmsEntry[] => {
+    const { items, sort = [], fields } = params;
     if (items.length <= 1) {
         return items;
     } else if (sort.length === 0) {
@@ -270,12 +270,12 @@ export const sortEntryItems = (args: SortEntryItemsArgs): CmsContentEntry[] => {
     return newItems.reverse();
 };
 
-const getMappedPlugins = <T extends Plugin>(args: {
+const getMappedPlugins = <T extends Plugin>(params: {
     plugins: PluginsContainer;
     type: string;
     property: string;
 }): Record<string, T> => {
-    const { plugins: pluginsContainer, type, property } = args;
+    const { plugins: pluginsContainer, type, property } = params;
     const plugins = pluginsContainer.byType<T>(type);
     if (plugins.length === 0) {
         throw new WebinyError(`There are no plugins of type "${type}".`, "PLUGINS_ERROR", {
@@ -304,7 +304,7 @@ export const buildModelFields = ({
     model
 }: {
     plugins: PluginsContainer;
-    model: CmsContentModel;
+    model: CmsModel;
 }) => {
     const transformValuePlugins = getMappedPlugins<CmsFieldFilterValueTransformPlugin>({
         plugins,

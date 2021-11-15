@@ -19,7 +19,7 @@ class Logo extends React.Component<any> {
 
     state = { display: "desktop" };
 
-    shouldComponentUpdate(props, state) {
+    shouldComponentUpdate(_, state) {
         return !isEqual(state, this.state);
     }
 

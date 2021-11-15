@@ -1,4 +1,3 @@
-import { pick } from "lodash";
 import { SecurityIdentity } from "@webiny/api-security/types";
 export { until } from "@webiny/project-utils/testing/helpers/until";
 export { sleep } from "@webiny/project-utils/testing/helpers/sleep";
@@ -63,18 +62,4 @@ export const createIdentity = (identity?: SecurityIdentity) => {
         return getSecurityIdentity();
     }
     return identity;
-};
-
-export const getModelCreateInputObject = model => {
-    return pick(model, [
-        "name",
-        "modelId",
-        "group",
-        "description",
-        "createdBy",
-        "fields",
-        "layout",
-        "lockedFields",
-        "titleFieldId"
-    ]);
 };

@@ -1,6 +1,7 @@
 const fs = require("fs");
 const rimraf = require("rimraf");
-const { join, dirname, extname } = require("path");
+const { join, dirname, extname, relative, parse } = require("path");
+const { log } = require("@webiny/cli/utils");
 const babel = require("@babel/core");
 const ts = require("ttypescript");
 const glob = require("glob");
@@ -24,9 +25,28 @@ module.exports = async options => {
 
     const duration = (new Date() - start) / 1000;
     options.logs !== false &&
-        console.log(`Done! Build finished in ${console.log.hl(duration + "s")}.`);
+    console.log(`Done! Build finished in ${console.log.hl(duration + "s")}.`);
 
     return { duration };
+};
+
+const BABEL_COMPILE_EXTENSIONS = [".js", ".jsx", ".ts", ".tsx"];
+
+// Returns final "dist" paths for given given origin ".ts" / ".tsx" file path.
+const getDistFilePaths = ({ file, cwd }) => {
+    const { dir, name } = parse(file);
+
+    const relativeDir = relative(cwd, dir);
+
+    const code = join(cwd, relativeDir.replace("src", "dist"), name + ".js");
+    const map = join(cwd, relativeDir.replace("src", "dist"), name + ".js.map");
+    return { code, map };
+};
+
+// Returns final "dist" paths for given given origin ".ts" / ".tsx" file path.
+const getDistCopyFilePath = ({ file, cwd }) => {
+    const relativeDir = relative(cwd, file);
+    return join(cwd, relativeDir.replace("src", "dist"));
 };
 
 const babelCompile = async ({ config }) => {
@@ -46,7 +66,7 @@ const babelCompile = async ({ config }) => {
             copies.push(
                 new Promise((resolve, reject) => {
                     try {
-                        const destPath = file.replace("src", "dist");
+                        const destPath = getDistCopyFilePath({ file, cwd: config.cwd });
                         if (!fs.existsSync(dirname(destPath))) {
                             fs.mkdirSync(dirname(destPath), { recursive: true });
                         }
@@ -68,10 +88,7 @@ const babelCompile = async ({ config }) => {
     for (let i = 0; i < compilations.length; i++) {
         const [file, { code, map }] = await compilations[i];
 
-        const paths = {
-            code: file.replace("src", "dist").replace(".ts", ".js"),
-            map: file.replace("src", "dist").replace(".ts", ".js") + ".map"
-        };
+        const paths = getDistFilePaths({ file, cwd: config.cwd });
         fs.mkdirSync(dirname(paths.code), { recursive: true });
         writes.push(fs.promises.writeFile(paths.code, code, "utf8"));
         writes.push(paths.map, map, "utf8");

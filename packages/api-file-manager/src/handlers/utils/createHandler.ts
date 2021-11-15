@@ -6,13 +6,17 @@ const baseHeaders = {
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Credentials": true
 };
+const DEFAULT_CACHE_MAX_AGE = 30758400; // 1 year
 
 export default handler => async event => {
     if (event.httpMethod === "OPTIONS") {
         return {
             body: "",
             statusCode: 204,
-            headers: baseHeaders
+            headers: {
+                ...baseHeaders,
+                "Cache-Control": "public, max-age=" + DEFAULT_CACHE_MAX_AGE
+            }
         };
     }
 

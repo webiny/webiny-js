@@ -34,7 +34,7 @@ export interface FormBuilderStorageOperationsFactoryParams {
     table?: string;
     esTable?: string;
     attributes?: Record<ENTITIES, Attributes>;
-    plugins?: Plugin;
+    plugins?: Plugin[];
 }
 
 export interface FormBuilderSystemCreateKeysParams {

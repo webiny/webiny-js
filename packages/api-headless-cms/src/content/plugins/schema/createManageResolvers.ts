@@ -1,4 +1,4 @@
-import { CmsContentModel, CmsFieldTypePlugins, CmsContext } from "~/types";
+import { CmsModel, CmsFieldTypePlugins, CmsContext } from "~/types";
 import { commonFieldResolvers } from "./resolvers/commonFieldResolvers";
 import { resolveGet } from "./resolvers/manage/resolveGet";
 import { resolveList } from "./resolvers/manage/resolveList";
@@ -12,15 +12,15 @@ import { resolveDelete } from "./resolvers/manage/resolveDelete";
 import { resolvePublish } from "./resolvers/manage/resolvePublish";
 import { resolveUnpublish } from "./resolvers/manage/resolveUnpublish";
 import { resolveCreateFrom } from "./resolvers/manage/resolveCreateFrom";
-import { createManageTypeName, createTypeName } from "../utils/createTypeName";
-import { pluralizedTypeName } from "../utils/pluralizedTypeName";
-import { getEntryTitle } from "../utils/getEntryTitle";
 import { createFieldResolversFactory } from "~/content/plugins/schema/createFieldResolvers";
+import { createManageTypeName, createTypeName } from "~/content/plugins/utils/createTypeName";
+import { pluralizedTypeName } from "~/content/plugins/utils/pluralizedTypeName";
+import { getEntryTitle } from "~/content/plugins/utils/getEntryTitle";
 
 interface CreateManageResolvers {
     (params: {
-        models: CmsContentModel[];
-        model: CmsContentModel;
+        models: CmsModel[];
+        model: CmsModel;
         context: CmsContext;
         fieldTypePlugins: CmsFieldTypePlugins;
     }): any;
@@ -40,7 +40,7 @@ export const createManageResolvers: CreateManageResolvers = ({
         fieldTypePlugins
     });
 
-    const manageResolvers = {
+    return {
         Query: {
             [`get${typeName}`]: resolveGet({ model }),
             [`get${typeName}Revisions`]: resolveGetRevisions({ model }),
@@ -76,13 +76,11 @@ export const createManageResolvers: CreateManageResolvers = ({
             status(entry) {
                 return entry.status;
             },
-            async revisions(entry, args, context: CmsContext) {
+            async revisions(entry, _, context: CmsContext) {
                 const entryId = entry.id.split("#")[0];
-                const revisions = await context.cms.entries.getEntryRevisions(model, entryId);
+                const revisions = await context.cms.getEntryRevisions(model, entryId);
                 return revisions.sort((a, b) => b.version - a.version);
             }
         }
     };
-
-    return manageResolvers;
 };

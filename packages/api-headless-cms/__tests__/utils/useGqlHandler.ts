@@ -22,39 +22,55 @@ import {
     LIST_CONTENT_MODELS_QUERY,
     UPDATE_CONTENT_MODEL_MUTATION
 } from "./graphql/contentModel";
+import { Plugin, PluginCollection } from "@webiny/plugins/types";
 
 /**
  * Unfortunately at we need to import the api-i18n-ddb package manually
  */
 import i18nDynamoDbStorageOperations from "@webiny/api-i18n-ddb";
 import { createTenancyAndSecurity } from "./tenancySecurity";
+import { getStorageOperations } from "./storageOperations";
+import { HeadlessCmsStorageOperations } from "~/types";
 
-export interface GQLHandlerCallableArgs {
+export interface CreateHeadlessCmsAppParams {
+    storageOperations: HeadlessCmsStorageOperations;
+}
+export interface GQLHandlerCallableParams {
     setupTenancyAndSecurityGraphQL?: boolean;
     permissions?: PermissionsArg[];
     identity?: SecurityIdentity;
-    plugins?: any[];
+    plugins?: Plugin | Plugin[] | Plugin[][] | PluginCollection;
+    storageOperationPlugins?: Plugin | Plugin[] | Plugin[][] | PluginCollection;
     path: string;
+    createHeadlessCmsApp: (params: CreateHeadlessCmsAppParams) => any[];
 }
 
-export const useGqlHandler = (args?: GQLHandlerCallableArgs) => {
-    // @ts-ignore
-    const storageOperationsPlugins = __getStorageOperationsPlugins();
-    if (typeof storageOperationsPlugins !== "function") {
-        throw new Error(`There is no global "storageOperationsPlugins" function.`);
-    }
-    const tenant = { id: "root", name: "Root", parent: null };
+export const useGqlHandler = (params: GQLHandlerCallableParams) => {
+    const ops = getStorageOperations({
+        plugins: params.storageOperationPlugins || []
+    });
+
+    const tenant = {
+        id: "root",
+        name: "Root",
+        parent: null
+    };
     const {
         permissions,
         identity,
         plugins = [],
         path,
-        setupTenancyAndSecurityGraphQL
-    } = args || {};
+        setupTenancyAndSecurityGraphQL,
+        createHeadlessCmsApp
+    } = params;
+
+    const app = createHeadlessCmsApp({
+        storageOperations: ops.storageOperations
+    });
 
     const handler = createHandler({
         plugins: [
-            storageOperationsPlugins(),
+            ...ops.plugins,
             ...createTenancyAndSecurity({
                 setupGraphQL: setupTenancyAndSecurityGraphQL,
                 permissions: createPermissions(permissions),
@@ -115,6 +131,7 @@ export const useGqlHandler = (args?: GQLHandlerCallableArgs) => {
             i18nDynamoDbStorageOperations(),
             i18nContentPlugins(),
             mockLocalesPlugins(),
+            ...app,
             plugins
         ],
         http: { debug: true }

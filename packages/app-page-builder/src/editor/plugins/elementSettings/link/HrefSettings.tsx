@@ -4,14 +4,11 @@ import { merge } from "dot-prop-immutable";
 import { Switch } from "@webiny/ui/Switch";
 import { Form } from "@webiny/form";
 import { validation } from "@webiny/validation";
-import { withActiveElement } from "../../../components";
-import { DelayedOnChange } from "../../../components/DelayedOnChange";
-import { useEventActionHandler } from "../../../hooks/useEventActionHandler";
-import { UpdateElementActionEvent } from "../../../recoil/actions";
-import {
-    PbEditorPageElementSettingsRenderComponentProps,
-    PbEditorElement
-} from "../../../../types";
+import { withActiveElement } from "~/editor/components";
+import { DelayedOnChange } from "~/editor/components/DelayedOnChange";
+import { useEventActionHandler } from "~/editor/hooks/useEventActionHandler";
+import { UpdateElementActionEvent } from "~/editor/recoil/actions";
+import { PbEditorPageElementSettingsRenderComponentProps, PbEditorElement } from "~/types";
 // Components
 import Accordion from "../components/Accordion";
 import Wrapper from "../components/Wrapper";
@@ -49,6 +46,10 @@ const LinkSettingsComponent: React.FunctionComponent<
     };
 
     const updateSettings = data => {
+        // Skip update if nothing is change.
+        if (data.newTab === newTab && data.href === href) {
+            return;
+        }
         const attrKey = `data.link`;
         const newElement: PbEditorElement = merge(element, attrKey, data);
         updateElement(newElement);

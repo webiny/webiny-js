@@ -24,14 +24,8 @@ function random(length = 32) {
 }
 
 const setup = async args => {
-    const {
-        isGitAvailable,
-        projectRoot,
-        projectName,
-        templateOptions = {},
-        storageOperations = "ddb-es"
-    } = args;
-    const { region = getDefaultRegion() } = templateOptions;
+    const { isGitAvailable, projectRoot, projectName, templateOptions = {} } = args;
+    const { region = getDefaultRegion(), storageOperations = "ddb" } = templateOptions;
     /**
      * We need to check for the existence of the common and storageOperations folders to continue.
      */
@@ -39,6 +33,7 @@ const setup = async args => {
         console.log("Missing storage operations parameter.");
         process.exit(1);
     }
+
     const commonTemplate = path.join(__dirname, `template/common`);
     const storageOperationsTemplate = path.join(__dirname, `template/${storageOperations}`);
     if (!fs.existsSync(commonTemplate)) {
