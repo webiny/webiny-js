@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.17.3](https://github.com/webiny/webiny-js/compare/v5.17.3-beta.0...v5.17.3) (2021-11-15)
+
+**Note:** Version bump only for package @webiny/cli-plugin-deploy-pulumi
+
+
+
+
+
 ## [5.17.3-beta.0](https://github.com/webiny/webiny-js/compare/v5.17.2...v5.17.3-beta.0) (2021-11-12)
 
 **Note:** Version bump only for package @webiny/cli-plugin-deploy-pulumi
