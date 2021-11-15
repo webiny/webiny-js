@@ -10855,8 +10855,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/cli@workspace:packages/cli"
   dependencies:
-    "@webiny/handler": ^5.17.0
-    "@webiny/plugins": ^5.17.0
     "@webiny/telemetry": ^5.17.0
     boolean: ^3.0.2
     camelcase: 5.3.1
@@ -11284,6 +11282,7 @@ __metadata:
     scheduler: 0.19.1
     style-loader: 1.0.0
     terser-webpack-plugin: 2.2.1
+    ts-loader: ^5.0.0
     ts-pnp: 1.1.5
     ttypescript: ^1.5.12
     url: 0.11.0
@@ -15084,7 +15083,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chalk@npm:2.4.2, chalk@npm:^2.0.0, chalk@npm:^2.0.1, chalk@npm:^2.1.0, chalk@npm:^2.3.1, chalk@npm:^2.3.2, chalk@npm:^2.4.1, chalk@npm:^2.4.2":
+"chalk@npm:2.4.2, chalk@npm:^2.0.0, chalk@npm:^2.0.1, chalk@npm:^2.1.0, chalk@npm:^2.3.0, chalk@npm:^2.3.1, chalk@npm:^2.3.2, chalk@npm:^2.4.1, chalk@npm:^2.4.2":
   version: 2.4.2
   resolution: "chalk@npm:2.4.2"
   dependencies:
@@ -18652,7 +18651,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"enhanced-resolve@npm:^4.1.0, enhanced-resolve@npm:^4.5.0":
+"enhanced-resolve@npm:^4.0.0, enhanced-resolve@npm:^4.1.0, enhanced-resolve@npm:^4.5.0":
   version: 4.5.0
   resolution: "enhanced-resolve@npm:4.5.0"
   dependencies:
@@ -33810,7 +33809,7 @@ resolve@^2.0.0-next.3:
   languageName: node
   linkType: hard
 
-"semver@npm:2 || 3 || 4 || 5, semver@npm:2.x || 3.x || 4 || 5, semver@npm:^5.3.0, semver@npm:^5.4.1, semver@npm:^5.5.0, semver@npm:^5.5.1, semver@npm:^5.6.0, semver@npm:^5.7.0, semver@npm:^5.7.1":
+"semver@npm:2 || 3 || 4 || 5, semver@npm:2.x || 3.x || 4 || 5, semver@npm:^5.0.1, semver@npm:^5.3.0, semver@npm:^5.4.1, semver@npm:^5.5.0, semver@npm:^5.5.1, semver@npm:^5.6.0, semver@npm:^5.7.0, semver@npm:^5.7.1":
   version: 5.7.1
   resolution: "semver@npm:5.7.1"
   bin:
@@ -36129,6 +36128,21 @@ resolve@^2.0.0-next.3:
   bin:
     ts-jest: cli.js
   checksum: 6f65ad4fe67ab3f0fd4c7f9954acbee863af05b2b3f88dd0f490bbcdc58002960fac908b2cb9f009ec14da6fe13cb00a39e291260d6e555abe72448d1c0a017f
+  languageName: node
+  linkType: hard
+
+"ts-loader@npm:^5.0.0":
+  version: 5.4.5
+  resolution: "ts-loader@npm:5.4.5"
+  dependencies:
+    chalk: ^2.3.0
+    enhanced-resolve: ^4.0.0
+    loader-utils: ^1.0.2
+    micromatch: ^3.1.4
+    semver: ^5.0.1
+  peerDependencies:
+    typescript: "*"
+  checksum: 87b77b91062c97cd7b89067df5531a0c2657480eabe40746f826ff4571e68ec2f399b73706dcdd58555879547f8f0c359b5ae3c618668df877a920f2c91328ac
   languageName: node
   linkType: hard
 
