@@ -1,7 +1,6 @@
 const fs = require("fs");
 const rimraf = require("rimraf");
 const { join, dirname, extname, relative, parse } = require("path");
-const { log } = require("@webiny/cli/utils");
 const babel = require("@babel/core");
 const ts = require("ttypescript");
 const glob = require("glob");
@@ -10,10 +9,10 @@ const merge = require("lodash/merge");
 module.exports = async options => {
     const start = new Date();
 
-    const { config } = options;
+    const { cwd } = options;
     options.logs !== false && console.log("Deleting existing build files...");
-    rimraf.sync(join(config.cwd, "./dist"));
-    rimraf.sync(join(config.cwd, "*.tsbuildinfo"));
+    rimraf.sync(join(cwd, "./dist"));
+    rimraf.sync(join(cwd, "*.tsbuildinfo"));
 
     options.logs !== false && console.log("Building...");
     await Promise.all([tsCompile(options), babelCompile(options)]);
@@ -24,8 +23,7 @@ module.exports = async options => {
     copyToDist("README.md", options);
 
     const duration = (new Date() - start) / 1000;
-    options.logs !== false &&
-    console.log(`Done! Build finished in ${console.log.hl(duration + "s")}.`);
+    options.logs !== false && console.log(`Done! Build finished in ${duration + "s"}.`);
 
     return { duration };
 };
@@ -49,10 +47,10 @@ const getDistCopyFilePath = ({ file, cwd }) => {
     return join(cwd, relativeDir.replace("src", "dist"));
 };
 
-const babelCompile = async ({ config }) => {
+const babelCompile = async ({ cwd }) => {
     // We're passing "*.*" just because we want to copy all files that cannot be compiled.
     // We want to have the same behaviour that the Babel CLI's "--copy-files" flag provides.
-    const files = glob.sync(join(config.cwd, "src/**/*.*").replace(/\\/g, "/"), { nodir: true });
+    const files = glob.sync(join(cwd, "src/**/*.*").replace(/\\/g, "/"), { nodir: true });
     const compilations = [];
     const copies = [];
 
@@ -60,13 +58,13 @@ const babelCompile = async ({ config }) => {
         const file = files[i];
         if (BABEL_COMPILE_EXTENSIONS.includes(extname(file))) {
             compilations.push(
-                babel.transformFileAsync(file, { cwd: config.cwd }).then(results => [file, results])
+                babel.transformFileAsync(file, { cwd }).then(results => [file, results])
             );
         } else {
             copies.push(
                 new Promise((resolve, reject) => {
                     try {
-                        const destPath = getDistCopyFilePath({ file, cwd: config.cwd });
+                        const destPath = getDistCopyFilePath({ file, cwd });
                         if (!fs.existsSync(dirname(destPath))) {
                             fs.mkdirSync(dirname(destPath), { recursive: true });
                         }
@@ -88,7 +86,7 @@ const babelCompile = async ({ config }) => {
     for (let i = 0; i < compilations.length; i++) {
         const [file, { code, map }] = await compilations[i];
 
-        const paths = getDistFilePaths({ file, cwd: config.cwd });
+        const paths = getDistFilePaths({ file, cwd });
         fs.mkdirSync(dirname(paths.code), { recursive: true });
         writes.push(fs.promises.writeFile(paths.code, code, "utf8"));
         writes.push(paths.map, map, "utf8");
@@ -98,14 +96,13 @@ const babelCompile = async ({ config }) => {
     return Promise.all([...writes, ...copies]);
 };
 
-const tsCompile = params => {
+const tsCompile = ({ cwd, overrides, debug }) => {
     return new Promise((resolve, reject) => {
         let { config: readTsConfig } = ts.readConfigFile(
-            join(params.config.cwd, "tsconfig.build.json"),
+            join(cwd, "tsconfig.build.json"),
             ts.sys.readFile
         );
 
-        const { overrides } = params.options;
         if (overrides) {
             if (overrides.tsConfig) {
                 if (typeof overrides.tsConfig === "function") {
@@ -114,18 +111,14 @@ const tsCompile = params => {
                     merge(readTsConfig, overrides.tsConfig);
                 }
 
-                if (params.options.debug) {
-                    console.log(`${console.log.hl("tsconfig.build.json")} overridden. New config:`);
+                if (debug) {
+                    console.log(`"tsconfig.build.json" overridden. New config:`);
                     console.log(readTsConfig);
                 }
             }
         }
 
-        const parsedJsonConfigFile = ts.parseJsonConfigFileContent(
-            readTsConfig,
-            ts.sys,
-            params.config.cwd
-        );
+        const parsedJsonConfigFile = ts.parseJsonConfigFileContent(readTsConfig, ts.sys, cwd);
 
         const { projectReferences, options, fileNames, errors } = parsedJsonConfigFile;
 
@@ -143,7 +136,7 @@ const tsCompile = params => {
         if (allDiagnostics.length) {
             const formatHost = {
                 getCanonicalFileName: path => path,
-                getCurrentDirectory: () => params.config.cwd,
+                getCurrentDirectory: () => cwd,
                 getNewLine: () => ts.sys.newLine
             };
             const message = ts.formatDiagnostics(allDiagnostics, formatHost);
@@ -160,11 +153,11 @@ const tsCompile = params => {
     });
 };
 
-const copyToDist = (path, { config, options }) => {
-    const from = join(config.cwd, path);
-    const to = join(config.cwd, "dist", path);
+const copyToDist = (path, { cwd, logs }) => {
+    const from = join(cwd, path);
+    const to = join(cwd, "dist", path);
     if (fs.existsSync(from)) {
         fs.copyFileSync(from, to);
-        options.logs !== false && console.log(`Copied ${console.log.hl(path)}.`);
+        logs !== false && console.log(`Copied ${path}.`);
     }
 };
