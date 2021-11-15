@@ -2,7 +2,7 @@ const path = require("path");
 const { green } = require("chalk");
 const { loadEnvVariables, getPulumi, processHooks, login, notify } = require("../utils");
 const { getProjectApplication } = require("@webiny/cli/utils");
-const { Worker } = require("worker_threads");
+const buildPackages = require("./deploy/buildPackages");
 
 module.exports = async (inputs, context) => {
     const { env, folder, build } = inputs;
@@ -35,104 +35,12 @@ module.exports = async (inputs, context) => {
     await loadEnvVariables(inputs, context);
 
     if (build) {
-        context.info(
-            `Building ${context.info.hl(projectApplication.packages.length)} packages(s)...`
-        );
-        console.log();
-
-        const promises = [];
-
-        for (let i = 0; i < projectApplication.packages.length; i++) {
-            const current = projectApplication.packages[i];
-            const config = current.config;
-            if (!(typeof config.commands.build === "function")) {
-                continue;
-            }
-
-            const start = new Date();
-
-            promises.push(
-                new Promise(resolve => {
-                    const worker = new Worker(path.join(__dirname, "deploy/worker.js"));
-                    worker.on("message", message => {
-                        try {
-                            const { error } = JSON.parse(message);
-                            if (error) {
-                                context.error(
-                                    `An error occurred while building ${context.error.hl(
-                                        current.name
-                                    )}:`
-                                );
-                                console.log(error);
-                            } else {
-                                const duration = (new Date() - start) / 1000 + "s";
-                                context.success(`${current.name} (${context.success.hl(duration)})`);
-                            }
-
-                            resolve({
-                                package: current,
-                                error
-                            });
-                        } catch (e) {
-                            context.error(
-                                `An error occurred while building ${context.error.hl(
-                                    current.name
-                                )}:`
-                            );
-                            console.log(e.message);
-
-                            resolve({
-                                package: current,
-                                result: {
-                                    message: `Could not parse received build result (JSON): ${message}`
-                                }
-                            });
-                        }
-                    });
-
-                    worker.on("error", () => {
-                        context.error(
-                            `An unknown error occurred while building ${context.error.hl(
-                                current.name
-                            )}:`
-                        );
-
-                        resolve({
-                            package: current,
-                            result: {
-                                message: `An unknown error occurred.`
-                            }
-                        });
-                    });
-
-                    worker.postMessage(JSON.stringify(current));
-                })
-            );
-        }
-
-        const results = await Promise.allSettled(promises);
-        const errorsCount = results.find(item => item.value.error);
-
-        console.log()
-
-        if (errorsCount) {
-            throw new Error(
-                `Failed to build all packages (${context.error.hl(errorsCount)} error(s) occurred).`
-            );
-        }
-
-        const duration = (new Date() - start) / 1000 + "s";
-        context.success(
-            `Successfully built ${context.success.hl(
-                projectApplication.packages.length
-            )} package(s) in ${context.success.hl(duration)}.`
-        );
+        await buildPackages({ projectApplication, inputs, context });
     } else {
-        context.success("Skipping building of packages...");
+        context.success("Skipping building of packages.");
     }
 
-    console.log()
-    process.exit(1);
+    console.log();
 
     await login(projectApplication);
 
@@ -166,8 +74,11 @@ module.exports = async (inputs, context) => {
         context.info(`Running "hook-before-deploy" hook...`);
         await processHooks("hook-before-deploy", hookDeployArgs);
 
+        context.success(`Hook "hook-before-deploy" completed.`);
+
         const continuing = inputs.preview ? `Previewing deployment...` : `Deploying...`;
-        context.success(`Hook "hook-before-deploy" completed. ${continuing}`);
+        console.log();
+        context.info(continuing);
     }
 
     console.log();

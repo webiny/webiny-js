@@ -13,14 +13,12 @@ parentPort.on("message", async params => {
         const { options, package: pckg } = JSON.parse(params);
         const config = require(pckg.paths.config).default || require(pckg.paths.config);
 
-        const hasBuildCommand = config.commands && typeof config.commands.build === "function";
-        if (!hasBuildCommand) {
-            throw new Error("Build command not found.");
+        const hasWatchCommand = config.commands && typeof config.commands.watch === "function";
+        if (!hasWatchCommand) {
+            throw new Error("watch command not found.");
         }
 
-        await config.commands.build(options);
-        parentPort.postMessage(JSON.stringify({ type: "success" }));
-        process.exit(0);
+        await config.commands.watch(options);
     } catch (e) {
         console.log(e.stack);
         parentPort.postMessage(JSON.stringify({ type: "error", message: e.message }));
