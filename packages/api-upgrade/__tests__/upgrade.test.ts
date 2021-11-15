@@ -1,6 +1,6 @@
 import Error from "@webiny/error";
-import { UpgradePlugin } from "../src/types";
-import { getApplicablePlugin } from "../src";
+import { UpgradePlugin } from "~/types";
+import { getApplicablePlugin } from "~/index";
 
 describe("api upgrade", () => {
     it("should throw UPGRADE_NOT_AVAILABLE", async () => {
