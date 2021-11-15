@@ -23,6 +23,7 @@ const fruitFields = `
     time
     isSomething
     rating
+    description
 `;
 
 const errorFields = `

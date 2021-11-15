@@ -14,6 +14,8 @@ import {
     graphQLHandlerFactory
 } from "~/content/graphQLHandlerFactory";
 
+import { StorageTransformPlugin } from "~/content/plugins/storage/StorageTransformPlugin";
+
 export type AdminContextParams = CreateAdminCrudsParams;
 
 export const createAdminHeadlessCmsContext = (params: AdminContextParams) => {
@@ -42,3 +44,5 @@ export type ContentGraphQLParams = CreateGraphQLHandlerOptions;
 export const createContentHeadlessCmsGraphQL = (params?: ContentGraphQLParams) => {
     return graphQLHandlerFactory(params);
 };
+
+export { StorageTransformPlugin };
