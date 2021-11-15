@@ -1,7 +1,7 @@
 const execa = require("execa");
 
-module.exports = () => {
-    return execa.sync(
+module.exports = options => {
+    const watchCommand = execa(
         "yarn",
         [
             "babel",
@@ -15,7 +15,24 @@ module.exports = () => {
             "--watch"
         ],
         {
-            stdio: "inherit"
+            cwd: options.cwd,
+            env: { FORCE_COLOR: true }
         }
     );
+
+    watchCommand.stdout.on("data", data => {
+        if (options.logs) {
+            const line = data.toString();
+            console.log(line);
+        }
+    });
+
+    watchCommand.stderr.on("data", data => {
+        if (options.logs) {
+            const line = data.toString();
+            console.log(line);
+        }
+    });
+
+    return watchCommand;
 };

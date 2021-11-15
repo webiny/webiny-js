@@ -1,3 +1,7 @@
-module.exports = config => (options, context) => {
-    return require("./buildApp")({ config, options, context });
+const buildApp = require("./buildApp");
+const { prepareOptions } = require("../../utils");
+
+module.exports = config => async options => {
+    const preparedOptions = prepareOptions({ config, options });
+    return buildApp(preparedOptions);
 };

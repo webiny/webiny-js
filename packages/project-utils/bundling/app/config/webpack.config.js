@@ -63,12 +63,14 @@ const sassLoader = {
 
 // This is the production and development configuration.
 // It is focused on developer experience, fast rebuilds, and a minimal bundle.
-module.exports = function (webpackEnv, { paths, babelCustomizer }) {
+module.exports = function (webpackEnv, { paths, options }) {
     const isEnvDevelopment = webpackEnv === "development";
     const isEnvProduction = webpackEnv === "production";
 
     const modules = require("./modules")({ paths });
 
+    const { logs, overrides } = options;
+    let babelCustomizer = overrides.babel;
     if (!babelCustomizer) {
         babelCustomizer = v => v;
     }
@@ -666,7 +668,7 @@ module.exports = function (webpackEnv, { paths, babelCustomizer }) {
                     // The formatter is invoked directly in WebpackDevServerUtils during development
                     formatter: isEnvProduction ? typescriptFormatter : undefined
                 }),
-            new WebpackBar({ name: path.basename(paths.appPath) })
+            logs && new WebpackBar({ name: path.basename(paths.appPath) })
         ].filter(Boolean),
         // Some libraries import Node modules but don't use them in the browser.
         // Tell Webpack to provide empty mocks for them so importing them works.

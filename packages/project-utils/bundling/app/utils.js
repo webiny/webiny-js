@@ -3,7 +3,7 @@ const { getProject } = require("@webiny/cli/utils");
 const { isEnabled } = require("@webiny/telemetry/cli");
 const { globalConfig } = require("@webiny/global-config");
 
-export const applyDefaults = () => {
+module.exports.applyDefaults = () => {
     let telemetry;
     const config = getProject().config;
     if (config.cli && config.cli.telemetry === false) {

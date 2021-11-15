@@ -1,57 +1,34 @@
 const fs = require("fs");
 const rimraf = require("rimraf");
 const { join, dirname, extname } = require("path");
-const { log } = require("@webiny/cli/utils");
 const babel = require("@babel/core");
 const ts = require("ttypescript");
 const glob = require("glob");
 const merge = require("lodash/merge");
 
-module.exports = async params => {
+module.exports = async options => {
     const start = new Date();
 
-    const prebuild = params.options.prebuild || defaults.prebuild;
-    if (typeof prebuild === "function") {
-        await prebuild(params);
-    }
+    const { config } = options;
+    options.logs !== false && console.log("Deleting existing build files...");
+    rimraf.sync(join(config.cwd, "./dist"));
+    rimraf.sync(join(config.cwd, "*.tsbuildinfo"));
 
-    const build = params.options.build || defaults.build;
-    if (typeof build === "function") {
-        await build(params);
-    }
+    options.logs !== false && console.log("Building...");
+    await Promise.all([tsCompile(options), babelCompile(options)]);
 
-    const postbuild = params.options.postbuild || defaults.postbuild;
-    if (typeof postbuild === "function") {
-        await postbuild(params);
-    }
+    options.logs !== false && console.log("Copying meta files...");
+    copyToDist("package.json", options);
+    copyToDist("LICENSE", options);
+    copyToDist("README.md", options);
 
     const duration = (new Date() - start) / 1000;
-    params.options.logs !== false &&
-        log.info(`Done! Build finished in ${log.info.hl(duration + "s")}.`);
+    options.logs !== false &&
+        console.log(`Done! Build finished in ${console.log.hl(duration + "s")}.`);
 
     return { duration };
 };
 
-const defaults = {
-    prebuild: params => {
-        const { config } = params;
-        params.options.logs !== false && log.info("Deleting existing build files...");
-        rimraf.sync(join(config.cwd, "./dist"));
-        rimraf.sync(join(config.cwd, "*.tsbuildinfo"));
-    },
-    build: async params => {
-        params.options.logs !== false && log.info("Building...");
-        await Promise.all([tsCompile(params), babelCompile(params)]);
-    },
-    postbuild: params => {
-        params.options.logs !== false && log.info("Copying meta files...");
-        copyToDist("package.json", params);
-        copyToDist("LICENSE", params);
-        copyToDist("README.md", params);
-    }
-};
-
-const BABEL_COMPILE_EXTENSIONS = [".js", ".jsx", ".ts", ".tsx"];
 const babelCompile = async ({ config }) => {
     // We're passing "*.*" just because we want to copy all files that cannot be compiled.
     // We want to have the same behaviour that the Babel CLI's "--copy-files" flag provides.
@@ -121,7 +98,7 @@ const tsCompile = params => {
                 }
 
                 if (params.options.debug) {
-                    log.info(`${log.info.hl("tsconfig.build.json")} overridden. New config:`);
+                    console.log(`${console.log.hl("tsconfig.build.json")} overridden. New config:`);
                     console.log(readTsConfig);
                 }
             }
@@ -171,6 +148,6 @@ const copyToDist = (path, { config, options }) => {
     const to = join(config.cwd, "dist", path);
     if (fs.existsSync(from)) {
         fs.copyFileSync(from, to);
-        options.logs !== false && log.info(`Copied ${log.info.hl(path)}.`);
+        options.logs !== false && console.log(`Copied ${console.log.hl(path)}.`);
     }
 };

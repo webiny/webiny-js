@@ -1,46 +1,28 @@
-module.exports = (options, context) => {
-    const { boolean } = require("boolean");
+module.exports = options => {
     const webpack = require("webpack");
-    let babelOptions = require("./babelrc");
-    const { getOutputProperty } = require("./utils");
-    const output = getOutputProperty(options.output);
 
-    // Customize babelOptions
-    if (typeof options.babel === "function") {
-        babelOptions = options.babel(babelOptions);
-    }
+    const { overrides } = options;
 
     // Load base webpack config
-    let webpackConfig = require("./webpack.watch.config")({
-        entry: options.entry || "./src/index",
-        output,
-        debug: boolean(options.debug),
-        babelOptions,
-        define: options.define
-    });
+    let webpackConfig = require("./createWatchConfig")(options);
 
-    // Customize webpack config
-    if (typeof options.webpack === "function") {
-        webpackConfig = options.webpack(webpackConfig);
+    // Customize Webpack config.
+    if (typeof overrides.webpack === "function") {
+        webpackConfig = overrides.webpack(webpackConfig);
     }
 
     return new Promise(async (resolve, reject) => {
-        context.log(`Start bundling`);
-
+        options.logs && console.log("Compiling...");
         return webpack(webpackConfig).watch({}, async (err, stats) => {
             if (err) {
                 return reject(err);
             }
 
-            if (stats.hasErrors()) {
-                const info = stats.toJson();
-
-                if (stats.hasErrors()) {
-                    console.error(info.errors);
-                }
+            if (!stats.hasErrors()) {
+                options.logs && console.log("Compiled successfully.");
+            } else {
+                options.logs && console.log(stats.toString("errors-warnings"));
             }
-
-            context.log(`Finished bundling! Watching for changes...`);
         });
     });
 };

@@ -1,5 +1,10 @@
 import { Configuration as WebpackConfig, DefinePlugin, Loader } from "webpack";
 
+export function traverseLoaders(loaders: Loader[], onLoader: (loader: Loader) => void): void;
+
+// Build commands.
+export type BuildCommand<TOptions = Record<string, any>> = (options: TOptions) => Promise<void>;
+
 interface BabelConfig {
     [key: string]: any;
 }
@@ -8,19 +13,25 @@ interface DefinePluginOptions {
     [key: string]: DefinePlugin.CodeValueObject;
 }
 
-interface AppBuildOptions {
-    entry?: string;
+// Build commands - apps.
+interface BuildAppConfig {
+    cwd: string;
     openBrowser?: boolean;
-    webpack?: (config: WebpackConfig) => WebpackConfig;
-    babel?: (config: BabelConfig) => BabelConfig;
+    overrides?: {
+        entry?: string;
+        openBrowser?: boolean;
+        webpack?: (config: WebpackConfig) => WebpackConfig;
+        babel?: (config: BabelConfig) => BabelConfig;
+    };
 }
 
-export function startApp(options: AppBuildOptions, context: any): Promise<void>;
-export function buildApp(options: AppBuildOptions, context: any): Promise<void>;
+export function createBuildApp(options: BuildAppConfig): BuildCommand;
+export function createWatchApp(options: BuildAppConfig): BuildCommand;
 
-// Functions.
-interface FunctionOptions {
+// Build commands - functions.
+interface BuildFunctionConfig {
     [key: string]: any;
+    cwd: string;
     logs?: boolean;
     debug?: boolean;
     overrides?: {
@@ -35,30 +46,13 @@ interface FunctionOptions {
     };
 }
 
-interface CreateBuildFunctionOptions extends FunctionOptions {
-    cwd: string;
-}
+export function createBuildFunction(options: BuildFunctionConfig): BuildCommand;
+export function createWatchFunction(options: BuildFunctionConfig): BuildCommand;
 
-interface CreateWatchFunctionOptions extends FunctionOptions {
-    cwd: string;
-}
-
-export function createBuildFunction(options: CreateBuildFunctionOptions): Promise<void>;
-export function buildFunction(options: FunctionOptions, context: any): Promise<void>;
-export function createWatchFunction(options: CreateWatchFunctionOptions): Promise<void>;
-export function watchFunction(options: FunctionOptions, context: any): Promise<void>;
-
-// Packages.
-interface CreateBuildPackageOptions {
-    cwd: string;
-}
-
-interface CreateWatchPackageOptions {
-    cwd: string;
-}
-
-interface BuildPackageOptions {
+// Build commands - packages.
+interface BuildPackageConfig {
     [key: string]: any;
+    cwd: string;
     logs?: boolean;
     debug?: boolean;
     overrides?: {
@@ -66,13 +60,5 @@ interface BuildPackageOptions {
     };
 }
 
-interface WatchPackageOptions {
-    [key: string]: any;
-}
-
-export function createBuildPackage(options: CreateBuildPackageOptions): Promise<void>;
-export function createWatchPackage(options: CreateWatchPackageOptions): Promise<void>;
-export function buildPackage(options: BuildPackageOptions, context: any): Promise<void>;
-export function watchPackage(options: WatchPackageOptions): Promise<void>;
-
-export function traverseLoaders(loaders: Loader[], onLoader: (loader: Loader) => void): void;
+export function createBuildPackage(options: BuildPackageConfig): BuildCommand;
+export function createWatchPackage(options: BuildPackageConfig): BuildCommand;

@@ -5,17 +5,17 @@ const getDefaults = cwd => ({
     outputFilename: "handler.js"
 });
 
-const getOutput = params => {
+const getOutput = ({ cwd, overrides }) => {
     let output = null;
-    if (params.config.overrides && params.config.overrides.output) {
-        output = params.config.overrides.output;
+    if (overrides && overrides.output) {
+        output = overrides.output;
     }
 
     if (!output) {
         output = {};
     }
 
-    const defaults = getDefaults(params.config.cwd);
+    const defaults = getDefaults(cwd);
     if (!output.path) {
         output.path = defaults.outputPath;
     }
@@ -29,9 +29,8 @@ const getOutput = params => {
     return output;
 };
 
-const getEntry = params => {
-    const overrides = params.config.overrides || {};
-    return overrides.entry || path.join(params.config.cwd, "src/index");
+const getEntry = ({ cwd, overrides }) => {
+    return overrides.entry || path.join(cwd, "src/index");
 };
 
 module.exports = { getOutput, getEntry };
