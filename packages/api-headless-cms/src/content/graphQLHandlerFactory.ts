@@ -35,6 +35,8 @@ const DEFAULT_HEADERS = {
     "Content-Type": "application/json"
 };
 
+const DEFAULT_CACHE_MAX_AGE = 30758400; // 1 year
+
 const respond = (http, result: unknown) => {
     return http.response({
         body: JSON.stringify(result),
@@ -131,7 +133,10 @@ export const graphQLHandlerFactory = (
                 if (http.request.method === "OPTIONS") {
                     return http.response({
                         statusCode: 204,
-                        headers: DEFAULT_HEADERS
+                        headers: {
+                            ...DEFAULT_HEADERS,
+                            "Cache-Control": "public, max-age=" + DEFAULT_CACHE_MAX_AGE
+                        }
                     });
                 }
 

@@ -14,6 +14,8 @@ const DEFAULT_HEADERS = {
     "Access-Control-Allow-Methods": "OPTIONS,POST"
 };
 
+const DEFAULT_CACHE_MAX_AGE = 30758400; // 1 year
+
 export default (options: HandlerGraphQLOptions = {}): PluginCollection => {
     let schema;
 
@@ -33,7 +35,10 @@ export default (options: HandlerGraphQLOptions = {}): PluginCollection => {
                 if (http.request.method === "OPTIONS") {
                     return http.response({
                         statusCode: 204,
-                        headers: DEFAULT_HEADERS
+                        headers: {
+                            ...DEFAULT_HEADERS,
+                            "Cache-Control": "public, max-age=" + DEFAULT_CACHE_MAX_AGE
+                        }
                     });
                 }
 
