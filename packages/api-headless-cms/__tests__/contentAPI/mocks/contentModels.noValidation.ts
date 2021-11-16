@@ -2,6 +2,8 @@ import shortId from "shortid";
 import contentModelGroup from "./contentModelGroup";
 import { CmsModel } from "~/types";
 
+const { version: webinyVersion } = require("@webiny/cli/package.json");
+
 const ids = {
     field11: shortId.generate(),
     field12: shortId.generate()
@@ -60,7 +62,8 @@ const models: CmsModel[] = [
             }
         ],
         locale: "en-US",
-        tenant: "root"
+        tenant: "root",
+        webinyVersion
     }
 ];
 

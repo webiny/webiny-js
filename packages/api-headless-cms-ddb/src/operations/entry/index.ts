@@ -26,7 +26,7 @@ import {
     CONTENT_ENTRY_STATUS
 } from "@webiny/api-headless-cms/types";
 import { Entity } from "dynamodb-toolbox";
-import { filterItems, buildModelFields, sortEntryItems } from "./utils";
+import { filterItems, buildModelFields, sortEntryItems, FilterItemFromStorage } from "./utils";
 import {
     createGSIPartitionKey,
     createGSISortKey,
@@ -46,6 +46,7 @@ import { cleanupItem, cleanupItems } from "@webiny/db-dynamodb/utils/cleanup";
 import { PluginsContainer } from "@webiny/plugins";
 import { decodeCursor, encodeCursor } from "@webiny/utils/cursor";
 import { zeroPad } from "@webiny/utils/zeroPad";
+import { StorageTransformPlugin } from "@webiny/api-headless-cms";
 
 const createType = (): string => {
     return "cms.entry";
@@ -67,6 +68,31 @@ export const createEntriesStorageOperations = (params: Params): CmsEntryStorageO
     const dataLoaders = new DataLoadersHandler({
         entity
     });
+
+    const storageTransformPlugins = plugins
+        .byType<StorageTransformPlugin>(StorageTransformPlugin.type)
+        .reduce((collection, plugin) => {
+            collection[plugin.fieldType] = plugin;
+            return collection;
+        }, {} as Record<string, StorageTransformPlugin>);
+
+    const createStorageTransformCallable = (model: CmsModel): FilterItemFromStorage => {
+        return (field, value) => {
+            const plugin: StorageTransformPlugin = storageTransformPlugins[field.type];
+            if (!plugin) {
+                return value;
+            }
+            return plugin.fromStorage({
+                model,
+                field,
+                value,
+                getStoragePlugin(fieldType: string): StorageTransformPlugin<any> {
+                    return storageTransformPlugins[fieldType] || storageTransformPlugins["*"];
+                },
+                plugins
+            });
+        };
+    };
 
     const create = async (model: CmsModel, args: CmsEntryStorageOperationsCreateParams) => {
         const { entry, storageEntry } = args;
@@ -506,6 +532,14 @@ export const createEntriesStorageOperations = (params: Params): CmsEntryStorageO
                 options: queryAllParams.options
             });
         }
+        if (records.length === 0) {
+            return {
+                hasMoreItems: false,
+                totalCount: 0,
+                cursor: null,
+                items: []
+            };
+        }
         const where: CmsEntryStorageOperationsListParams["where"] = {
             ...originalWhere
         };
@@ -525,11 +559,12 @@ export const createEntriesStorageOperations = (params: Params): CmsEntryStorageO
          * Filter the read items via the code.
          * It will build the filters out of the where input and transform the values it is using.
          */
-        const filteredItems = filterItems({
+        const filteredItems = await filterItems({
             items: records,
             where,
             plugins,
-            fields: modelFields
+            fields: modelFields,
+            fromStorage: createStorageTransformCallable(model)
         });
 
         const totalCount = filteredItems.length;

@@ -2,8 +2,9 @@ import { useContentGqlHandler } from "../utils/useContentGqlHandler";
 import { useFruitManageHandler } from "../utils/useFruitManageHandler";
 import { setupContentModelGroup, setupContentModels } from "../utils/setup";
 import { useFruitReadHandler } from "../utils/useFruitReadHandler";
+import { Fruit } from "./mocks/contentModels";
 
-const appleData = {
+const appleData: Fruit = {
     name: "A’p ` pl ' e",
     isSomething: false,
     rating: 400,
@@ -15,10 +16,11 @@ const appleData = {
     date: "2020-12-15",
     dateTime: new Date("2020-12-15T12:12:21").toISOString(),
     dateTimeZ: "2020-12-15T14:52:41+01:00",
-    time: "11:39:58"
+    time: "11:39:58",
+    description: ""
 };
 
-const strawberryData = {
+const strawberryData: Fruit = {
     name: "Straw `er ' ry",
     isSomething: true,
     rating: 500,
@@ -30,10 +32,11 @@ const strawberryData = {
     date: "2020-12-18",
     dateTime: new Date("2020-12-19T12:12:21").toISOString(),
     dateTimeZ: "2020-12-25T14:52:41+01:00",
-    time: "12:44:55"
+    time: "12:44:55",
+    description: ""
 };
 
-const bananaData = {
+const bananaData: Fruit = {
     name: "Ban ` a 'na",
     isSomething: false,
     rating: 450,
@@ -45,10 +48,11 @@ const bananaData = {
     date: "2020-12-03",
     dateTime: new Date("2020-12-03T12:12:21").toISOString(),
     dateTimeZ: "2020-12-03T14:52:41+01:00",
-    time: "11:59:01"
+    time: "11:59:01",
+    description: ""
 };
 
-const grahamData = {
+const grahamData: Fruit = {
     name: "Graham O’Keeffe",
     isSomething: false,
     rating: 450,
@@ -60,7 +64,8 @@ const grahamData = {
     date: "2020-12-03",
     dateTime: new Date("2020-12-03T12:12:21").toISOString(),
     dateTimeZ: "2020-12-03T14:52:41+01:00",
-    time: "11:59:01"
+    time: "11:59:01",
+    description: ""
 };
 
 jest.setTimeout(100000);
@@ -122,7 +127,10 @@ describe("sorting + cursor", () => {
         await until(
             () => listFruits({}).then(([data]) => data),
             ({ data }) => data.listFruits.data.length === 4,
-            { name: "list all fruits", tries: 10 }
+            {
+                name: `list all fruits - ${name}`,
+                tries: 10
+            }
         );
     };
 

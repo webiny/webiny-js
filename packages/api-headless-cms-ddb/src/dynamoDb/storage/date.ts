@@ -1,33 +1,26 @@
 import WebinyError from "@webiny/error";
-import {
-    CmsModelDateTimeField,
-    CmsModelFieldToStoragePlugin
-} from "@webiny/api-headless-cms/types";
+import { StorageTransformPlugin } from "@webiny/api-headless-cms/content/plugins/storage/StorageTransformPlugin";
 
 const excludeTypes = ["time", "dateTimeWithTimezone"];
 
-export default (): CmsModelFieldToStoragePlugin<Date | string, string> => ({
-    type: "cms-model-field-to-storage",
-    name: "cms-model-field-to-storage-datetime",
+const plugin = new StorageTransformPlugin({
     fieldType: "datetime",
-    async fromStorage({ field, value }) {
-        const { type } = (field as CmsModelDateTimeField).settings;
+    fromStorage: async ({ value, field }) => {
+        const { type } = field.settings || {};
         if (!value || !type || excludeTypes.includes(type)) {
             return value;
         }
         try {
             return new Date(value);
         } catch {
+            console.log(`Could not transform from storage for field type`);
             return value;
         }
     },
-    async toStorage({ value, field }) {
-        const { type } = (field as CmsModelDateTimeField).settings;
+    toStorage: async ({ value, field }) => {
+        const { type } = field.settings || {};
         if (!value || !type || excludeTypes.includes(type)) {
-            if (value && (value as Date).toISOString) {
-                return (value as Date).toISOString();
-            }
-            return value as string;
+            return value;
         }
         if ((value as any).toISOString) {
             return (value as Date).toISOString();
@@ -40,3 +33,7 @@ export default (): CmsModelFieldToStoragePlugin<Date | string, string> => ({
         });
     }
 });
+
+export default () => {
+    return plugin;
+};

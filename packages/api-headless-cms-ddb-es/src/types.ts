@@ -147,6 +147,13 @@ interface CmsModelFieldToElasticsearchToParams {
     plugins: PluginsContainer;
     model: CmsModel;
     field: CmsModelField;
+    /**
+     * Raw value on the entry - before prepare for storage.
+     */
+    rawValue: any;
+    /**
+     * Value prepared for storage received from base api-headless-cms package.
+     */
     value: any;
     getFieldIndexPlugin(fieldType: string): CmsModelFieldToElasticsearchPlugin;
     getFieldTypePlugin(fieldType: string): CmsModelFieldToGraphQLPlugin;

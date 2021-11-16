@@ -2,6 +2,25 @@ import shortId from "shortid";
 import contentModelGroup from "./contentModelGroup";
 import { CmsModel } from "~/types";
 
+const { version: webinyVersion } = require("@webiny/cli/package.json");
+
+export interface Fruit {
+    id?: string;
+    name: string;
+    isSomething: boolean;
+    rating: number;
+    numbers: number[];
+    email: string;
+    url: string;
+    lowerCase: string;
+    upperCase: string;
+    date: string;
+    dateTime: string;
+    dateTimeZ: string;
+    time: string;
+    description: string;
+}
+
 const ids = {
     // product category
     field11: shortId.generate(),
@@ -45,6 +64,7 @@ const ids = {
     field510: shortId.generate(),
     field511: shortId.generate(),
     field512: shortId.generate(),
+    field513: shortId.generate(),
     // bug
     field601: shortId.generate(),
     field602: shortId.generate(),
@@ -128,7 +148,8 @@ const models: CmsModel[] = [
                 }
             }
         ],
-        tenant: "root"
+        tenant: "root",
+        webinyVersion
     },
     // product
     {
@@ -607,7 +628,8 @@ const models: CmsModel[] = [
                 }
             }
         ],
-        tenant: "root"
+        tenant: "root",
+        webinyVersion
     },
     // product review
     {
@@ -709,7 +731,8 @@ const models: CmsModel[] = [
                 }
             }
         ],
-        tenant: "root"
+        tenant: "root",
+        webinyVersion
     },
     // author
     {
@@ -751,7 +774,8 @@ const models: CmsModel[] = [
                 }
             }
         ],
-        tenant: "root"
+        tenant: "root",
+        webinyVersion
     },
     // fruit
     {
@@ -779,7 +803,8 @@ const models: CmsModel[] = [
             [ids.field509],
             [ids.field510],
             [ids.field511],
-            [ids.field512]
+            [ids.field512],
+            [ids.field513]
         ],
         fields: [
             // required, minLength, maxLength
@@ -1195,9 +1220,29 @@ const models: CmsModel[] = [
                 renderer: {
                     name: "renderer"
                 }
+            },
+            {
+                id: ids.field513,
+                multipleValues: false,
+                helpText: "",
+                label: "Description",
+                type: "long-text",
+                fieldId: "description",
+                validation: [],
+                settings: {},
+                listValidation: [],
+                placeholderText: "Description",
+                predefinedValues: {
+                    enabled: false,
+                    values: []
+                },
+                renderer: {
+                    name: "renderer"
+                }
             }
         ],
-        tenant: "root"
+        tenant: "root",
+        webinyVersion
     },
     // bug
     {
@@ -1327,7 +1372,8 @@ const models: CmsModel[] = [
                 }
             }
         ],
-        tenant: "root"
+        tenant: "root",
+        webinyVersion
     },
     {
         createdOn: new Date(),
@@ -1423,7 +1469,8 @@ const models: CmsModel[] = [
                 }
             }
         ],
-        tenant: "root"
+        tenant: "root",
+        webinyVersion
     }
 ];
 

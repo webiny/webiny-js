@@ -126,12 +126,13 @@ describe("objectIndexing", () => {
         const plugin = objectIndexing();
         const result = plugin.toIndex({
             value: input,
-            field: objectField,
+            rawValue: input,
+            field: objectField as any,
             getFieldIndexPlugin,
             getFieldTypePlugin,
-            context: {},
-            model: {}
-        } as any);
+            plugins: {} as any,
+            model: {} as any
+        });
 
         expect(result.value).toEqual(expectedValue);
         expect(result.rawValue).toEqual(expectedRawValue);
@@ -142,12 +143,12 @@ describe("objectIndexing", () => {
         const result = plugin.fromIndex({
             value: expectedValue,
             rawValue: expectedRawValue,
-            field: objectField,
+            field: objectField as any,
             getFieldIndexPlugin,
             getFieldTypePlugin,
-            context: {},
-            model: {}
-        } as any);
+            plugins: {} as any,
+            model: {} as any
+        });
 
         expect(result).toEqual(input);
     });

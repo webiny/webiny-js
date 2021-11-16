@@ -106,6 +106,7 @@ export const createEntriesStorageOperations = (params: Params): CmsEntryStorageO
         const esEntry = prepareEntryToIndex({
             plugins,
             model,
+            entry: lodashCloneDeep(entry),
             storageEntry: lodashCloneDeep(storageEntry)
         });
 
@@ -196,6 +197,7 @@ export const createEntriesStorageOperations = (params: Params): CmsEntryStorageO
         const esEntry = prepareEntryToIndex({
             plugins,
             model,
+            entry: lodashCloneDeep(entry),
             storageEntry: lodashCloneDeep(storageEntry)
         });
 
@@ -310,6 +312,7 @@ export const createEntriesStorageOperations = (params: Params): CmsEntryStorageO
             const esEntry = prepareEntryToIndex({
                 plugins,
                 model,
+                entry: lodashCloneDeep(entry),
                 storageEntry: lodashCloneDeep(storageEntry)
             });
 
@@ -486,6 +489,7 @@ export const createEntriesStorageOperations = (params: Params): CmsEntryStorageO
             const esEntry = prepareEntryToIndex({
                 plugins,
                 model,
+                entry: lodashCloneDeep(entryToSetAsLatest),
                 storageEntry: lodashCloneDeep(storageEntryToSetAsLatest)
             });
 
@@ -765,6 +769,7 @@ export const createEntriesStorageOperations = (params: Params): CmsEntryStorageO
         const preparedEntryData = prepareEntryToIndex({
             plugins,
             model,
+            entry: lodashCloneDeep(entry),
             storageEntry: lodashCloneDeep(storageEntry)
         });
         /**
@@ -871,6 +876,7 @@ export const createEntriesStorageOperations = (params: Params): CmsEntryStorageO
             const preparedEntryData = prepareEntryToIndex({
                 plugins,
                 model,
+                entry: lodashCloneDeep(entry),
                 storageEntry: lodashCloneDeep(storageEntry)
             });
 
@@ -955,6 +961,7 @@ export const createEntriesStorageOperations = (params: Params): CmsEntryStorageO
             const preparedEntryData = prepareEntryToIndex({
                 plugins,
                 model,
+                entry: lodashCloneDeep(entry),
                 storageEntry: lodashCloneDeep(storageEntry)
             });
 
@@ -1055,6 +1062,7 @@ export const createEntriesStorageOperations = (params: Params): CmsEntryStorageO
             const preparedEntryData = prepareEntryToIndex({
                 plugins,
                 model,
+                entry: lodashCloneDeep(entry),
                 storageEntry: lodashCloneDeep(storageEntry)
             });
 

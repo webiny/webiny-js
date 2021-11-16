@@ -1,21 +1,16 @@
 import Error from "@webiny/error";
-import {
-    CmsEntry,
-    CmsModel,
-    CmsModelField,
-    CmsContext,
-    CmsModelFieldToStoragePlugin
-} from "~/types";
+import { CmsEntry, CmsModel, CmsModelField, CmsContext } from "~/types";
+import { StorageTransformPlugin } from "~/content/plugins/storage/StorageTransformPlugin";
 
 interface GetStoragePluginFactory {
-    (context: CmsContext): (fieldType: string) => CmsModelFieldToStoragePlugin<any>;
+    (context: CmsContext): (fieldType: string) => StorageTransformPlugin<any>;
 }
 
 const getStoragePluginFactory: GetStoragePluginFactory = context => {
-    let defaultStoragePlugin: CmsModelFieldToStoragePlugin;
+    let defaultStoragePlugin: StorageTransformPlugin;
 
     const plugins = context.plugins
-        .byType<CmsModelFieldToStoragePlugin>("cms-model-field-to-storage")
+        .byType<StorageTransformPlugin>(StorageTransformPlugin.type)
         // we reverse plugins because we want to get latest added only
         .reverse()
         .reduce((collection, plugin) => {
@@ -25,8 +20,10 @@ const getStoragePluginFactory: GetStoragePluginFactory = context => {
                 return collection;
             }
 
-            // either existing plugin added or plugin fieldType does not exist in current model
-            // this is to iterate a bit less later
+            /**
+             * either existing plugin added or plugin fieldType does not exist in current model
+             * this is to iterate a bit less later
+             */
             if (!collection[plugin.fieldType]) {
                 collection[plugin.fieldType] = plugin;
             }
@@ -61,7 +58,7 @@ const entryStorageTransform = async (
         }
 
         transformedValues[field.fieldId] = await plugin[operation]({
-            context,
+            plugins: context.plugins,
             model,
             field,
             value: entry.values[field.fieldId],
@@ -122,7 +119,7 @@ export const entryFieldFromStorageTransform = async (
     }
 
     return plugin.fromStorage({
-        context,
+        plugins: context.plugins,
         model,
         field,
         value,
