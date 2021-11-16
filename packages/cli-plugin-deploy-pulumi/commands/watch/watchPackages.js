@@ -87,13 +87,13 @@ module.exports = async ({ inputs, output, context }) => {
                         context.error(current.name);
                         log(message);
                         log();
-                        return resolve({
-                            package: current,
-                            error: message
-                        });
+                    } else if (type === "warning") {
+                        context.warning(current.name);
+                        log(message);
+                        log();
+                    } else {
+                        log(current.name, message);
                     }
-
-                    log(current.name, message);
                 });
 
                 worker.on("error", () => {
