@@ -14,7 +14,7 @@ const NO_API_MESSAGE = env => {
 
 export default {
     commands: {
-        async watch(options, context) {
+        async watch(options) {
             invariant(options.env, NO_ENV_MESSAGE);
 
             const output = getStackOutput({ folder: "api", env: options.env, map: API_MAP });
@@ -23,9 +23,9 @@ export default {
             Object.assign(process.env, output);
 
             const watch = createWatchApp({ cwd: __dirname });
-            await watch(options, context);
+            await watch(options);
         },
-        async build(options, context) {
+        async build(options) {
             invariant(options.env, NO_ENV_MESSAGE);
 
             const output = getStackOutput({ folder: "api", env: options.env, map: API_MAP });
@@ -34,7 +34,7 @@ export default {
             Object.assign(process.env, output);
 
             const build = createBuildApp({ cwd: __dirname });
-            await build(options, context);
+            await build(options);
         }
     }
 };

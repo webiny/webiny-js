@@ -1,14 +1,14 @@
 import invariant from "invariant";
-import { getStackOutput } from "@webiny/cli-plugin-deploy-pulumi/utils";
 import { createWatchApp, createBuildApp } from "@webiny/project-utils";
+import { getStackOutput } from "@webiny/cli-plugin-deploy-pulumi/utils";
 
 const API_MAP = {
+    REACT_APP_USER_POOL_REGION: "${region}",
     REACT_APP_GRAPHQL_API_URL: "${apiUrl}/graphql",
     REACT_APP_API_URL: "${apiUrl}",
-    REACT_APP_USER_POOL_REGION: "${region}",
     REACT_APP_USER_POOL_ID: "${cognitoUserPoolId}",
-    REACT_APP_USER_POOL_PASSWORD_POLICY: "${cognitoUserPoolPasswordPolicy}",
-    REACT_APP_USER_POOL_WEB_CLIENT_ID: "${cognitoAppClientId}"
+    REACT_APP_USER_POOL_WEB_CLIENT_ID: "${cognitoAppClientId}",
+    REACT_APP_USER_POOL_PASSWORD_POLICY: "${cognitoUserPoolPasswordPolicy}"
 };
 
 const NO_ENV_MESSAGE = `Please specify the environment via the "--env" argument, for example: "--env dev".`;
@@ -18,7 +18,7 @@ const NO_API_MESSAGE = env => {
 
 export default {
     commands: {
-        async watch(options, context) {
+        async watch(options) {
             invariant(options.env, NO_ENV_MESSAGE);
 
             const output = getStackOutput({ folder: "api", env: options.env, map: API_MAP });
@@ -27,9 +27,9 @@ export default {
             Object.assign(process.env, output);
 
             const watch = createWatchApp({ cwd: __dirname });
-            await watch(options, context);
+            await watch(options);
         },
-        async build(options, context) {
+        async build(options) {
             invariant(options.env, NO_ENV_MESSAGE);
 
             const output = getStackOutput({ folder: "api", env: options.env, map: API_MAP });
@@ -38,7 +38,7 @@ export default {
             Object.assign(process.env, output);
 
             const build = createBuildApp({ cwd: __dirname });
-            await build(options, context);
+            await build(options);
         }
     }
 };
