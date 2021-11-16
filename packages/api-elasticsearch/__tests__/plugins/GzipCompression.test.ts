@@ -1,8 +1,7 @@
 import gzipCompressionPlugin from "~/plugins/GzipCompression";
 import { CompressionPlugin } from "~/plugins/definition/CompressionPlugin";
 
-const text = "Regular text.";
-const compressedText = "H4sIAAAAAAAAE1MKSk0vzUksUihJrSjRUwIAFvjosg8AAAA=";
+const text = "Regular text that we will test in the compress and decompress.";
 
 describe("gzip compression", () => {
     let plugin: CompressionPlugin;
@@ -11,21 +10,16 @@ describe("gzip compression", () => {
         plugin = gzipCompressionPlugin();
     });
 
-    it("should compress given text value", async () => {
-        const result = await plugin.compress(text);
+    it("should compress and decompress given text value", async () => {
+        const compressed = await plugin.compress(text);
 
-        expect(result).toEqual({
+        expect(compressed).toEqual({
             compression: "gzip",
-            value: compressedText
-        });
-    });
-
-    it("should decompress given text value", async () => {
-        const result = await plugin.decompress({
-            value: compressedText,
-            compression: "gzip"
+            value: expect.any(String)
         });
 
-        expect(result).toEqual(text);
+        const decompressed = await plugin.decompress(compressed);
+
+        expect(decompressed).toEqual(text);
     });
 });
