@@ -2,7 +2,7 @@ const { dirname, basename, join } = require("path");
 const findUp = require("find-up");
 const getProject = require("./getProject");
 const { importModule } = require("./importModule");
-const glob = require("glob");
+const glob = require("fast-glob");
 
 const appConfigs = ["webiny.application.js", "webiny.application.ts"];
 
