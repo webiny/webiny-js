@@ -12,12 +12,6 @@ parentPort.on("message", async params => {
     try {
         const { options, package: pckg } = JSON.parse(params);
         const config = require(pckg.paths.config).default || require(pckg.paths.config);
-
-        const hasWatchCommand = config.commands && typeof config.commands.watch === "function";
-        if (!hasWatchCommand) {
-            throw new Error("watch command not found.");
-        }
-
         await config.commands.watch(options);
     } catch (e) {
         console.log(e.stack);
