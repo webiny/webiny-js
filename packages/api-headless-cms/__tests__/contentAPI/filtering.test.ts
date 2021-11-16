@@ -7,23 +7,7 @@ import { useProductReadHandler } from "../utils/useProductReadHandler";
 import { useArticleManageHandler } from "../utils/useArticleManageHandler";
 import { useArticleReadHandler } from "../utils/useArticleReadHandler";
 import { setupContentModelGroup, setupContentModels } from "../utils/setup";
-
-interface Fruit {
-    id?: string;
-    name: string;
-    isSomething: boolean;
-    rating: number;
-    numbers: number[];
-    email: string;
-    url: string;
-    lowerCase: string;
-    upperCase: string;
-    date: string;
-    dateTime: string;
-    dateTimeZ: string;
-    time: string;
-    description: string;
-}
+import { Fruit } from "./mocks/contentModels";
 
 const appleData: Fruit = {
     name: "Apple",
@@ -98,15 +82,12 @@ describe("filtering", () => {
             revision: createdFruit.id
         });
 
-        const fruit = publish.data.publishFruit.data;
+        const fruit: Fruit = publish.data.publishFruit.data;
 
-        return Object.keys(fruit).reduce((acc, key) => {
-            if (filterOutFields.includes(key)) {
-                return acc;
-            }
-            acc[key] = fruit[key];
-            return acc;
-        }, {} as Fruit);
+        for (const field of filterOutFields) {
+            delete fruit[field];
+        }
+        return fruit;
     };
 
     const createFruits = async () => {
@@ -1719,7 +1700,7 @@ describe("filtering", () => {
         });
         const { listFruits } = handler;
 
-        // await waitFruits("should filter fruits by description", handler);
+        await waitFruits("should filter fruits by description", handler);
 
         const [fruitsContainsResponse] = await listFruits({
             where: {

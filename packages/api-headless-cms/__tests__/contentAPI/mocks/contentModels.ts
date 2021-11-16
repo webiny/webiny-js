@@ -4,6 +4,23 @@ import { CmsModel } from "~/types";
 
 const { version: webinyVersion } = require("@webiny/cli/package.json");
 
+export interface Fruit {
+    id?: string;
+    name: string;
+    isSomething: boolean;
+    rating: number;
+    numbers: number[];
+    email: string;
+    url: string;
+    lowerCase: string;
+    upperCase: string;
+    date: string;
+    dateTime: string;
+    dateTimeZ: string;
+    time: string;
+    description: string;
+}
+
 const ids = {
     // product category
     field11: shortId.generate(),
