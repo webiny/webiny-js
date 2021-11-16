@@ -34,6 +34,7 @@ const checkErrors = (result: any) => {
             }
             continue;
         }
+        console.log(item.error);
         throw new WebinyError(err, "DYNAMODB_TO_ELASTICSEARCH_ERROR", item);
     }
 };

@@ -1,6 +1,7 @@
-import { UpgradePlugin } from "./types";
+import { UpgradePlugin } from "~/types";
 import Error from "@webiny/error";
 import { gt, lt, coerce } from "semver";
+
 interface RunUpgradeArgs {
     /**
      * Version of Webiny that is currently deployed (context.WEBINY_VERSION).
@@ -72,3 +73,5 @@ export function getApplicablePlugin(args: RunUpgradeArgs): UpgradePlugin {
 
     return upgrade;
 }
+
+export { UpgradePlugin };

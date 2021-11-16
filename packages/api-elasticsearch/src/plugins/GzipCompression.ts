@@ -1,28 +1,5 @@
 import { CompressionPlugin } from "~/plugins/definition/CompressionPlugin";
-import zlib from "zlib";
-
-export const gzip = (input: zlib.InputType, options?: zlib.ZlibOptions): Promise<Buffer> => {
-    return new Promise(function (resolve, reject) {
-        zlib.gzip(input, options, function (error, result) {
-            if (!error) {
-                resolve(result);
-            } else {
-                reject(error);
-            }
-        });
-    });
-};
-export const ungzip = (input: zlib.InputType, options?: zlib.ZlibOptions): Promise<Buffer> => {
-    return new Promise(function (resolve, reject) {
-        zlib.gunzip(input, options, function (error, result) {
-            if (!error) {
-                resolve(result);
-            } else {
-                reject(error);
-            }
-        });
-    });
-};
+import { compress as gzip, decompress as ungzip } from "@webiny/utils/compression/gzip";
 
 const GZIP = "gzip";
 const TO_STORAGE_ENCODING = "base64";

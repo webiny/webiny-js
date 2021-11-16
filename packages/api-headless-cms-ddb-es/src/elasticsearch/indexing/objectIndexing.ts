@@ -10,6 +10,7 @@ interface ProcessToIndex {
     (params: {
         fields: CmsModelField[];
         value: Record<string, any>;
+        rawValue: Record<string, any>;
         getFieldIndexPlugin: (fieldType: string) => CmsModelFieldToElasticsearchPlugin;
         getFieldTypePlugin: (fieldType: string) => CmsModelFieldToGraphQLPlugin;
         plugins: PluginsContainer;
@@ -32,6 +33,7 @@ interface ProcessFromIndex {
 const processToIndex: ProcessToIndex = ({
     fields,
     value: sourceValue,
+    rawValue: sourceRawValue,
     getFieldIndexPlugin,
     getFieldTypePlugin,
     plugins,
@@ -43,6 +45,7 @@ const processToIndex: ProcessToIndex = ({
             model,
             field,
             value: sourceValue[field.fieldId],
+            rawValue: sourceRawValue[field.fieldId],
             getFieldIndexPlugin,
             getFieldTypePlugin,
             plugins
@@ -96,8 +99,16 @@ export default (): CmsModelFieldToElasticsearchPlugin => ({
     type: "cms-model-field-to-elastic-search",
     name: "cms-model-field-to-elastic-search-object",
     fieldType: "object",
-    toIndex({ plugins, model, field, value, getFieldIndexPlugin, getFieldTypePlugin }) {
-        if (!value) {
+    toIndex({
+        plugins,
+        model,
+        field,
+        value: initialValue,
+        rawValue: initialRawValue,
+        getFieldIndexPlugin,
+        getFieldTypePlugin
+    }) {
+        if (!initialValue) {
             return { value: null };
         }
 
@@ -107,37 +118,38 @@ export default (): CmsModelFieldToElasticsearchPlugin => ({
          * In "object" field, value is either an object or an array of objects.
          */
         if (field.multipleValues) {
-            const values = value.reduce(
-                (acc, item) => {
-                    const { value, rawValue } = processToIndex({
-                        value: item,
-                        getFieldIndexPlugin,
-                        getFieldTypePlugin,
-                        model,
-                        plugins,
-                        fields
-                    });
+            const result = {
+                value: [],
+                rawValue: []
+            };
+            for (const key in initialValue) {
+                const { value, rawValue } = processToIndex({
+                    value: initialValue[key],
+                    rawValue: initialRawValue[key],
+                    getFieldIndexPlugin,
+                    getFieldTypePlugin,
+                    model,
+                    plugins,
+                    fields
+                });
+                if (Object.keys(value).length > 0) {
+                    result.value.push(value);
+                }
 
-                    if (Object.keys(value).length > 0) {
-                        acc.value.push(value);
-                    }
-
-                    if (Object.keys(rawValue).length > 0) {
-                        acc.rawValue.push(rawValue);
-                    }
-                    return acc;
-                },
-                { value: [], rawValue: [] }
-            );
+                if (Object.keys(rawValue).length > 0) {
+                    result.rawValue.push(rawValue);
+                }
+            }
 
             return {
-                value: values.value.length > 0 ? values.value : undefined,
-                rawValue: values.rawValue.length > 0 ? values.rawValue : undefined
+                value: result.value.length > 0 ? result.value : undefined,
+                rawValue: result.rawValue.length > 0 ? result.rawValue : undefined
             };
         }
 
         return processToIndex({
-            value,
+            value: initialValue,
+            rawValue: initialRawValue,
             getFieldIndexPlugin,
             getFieldTypePlugin,
             model,

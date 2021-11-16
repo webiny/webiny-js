@@ -7,8 +7,9 @@ import { useProductReadHandler } from "../utils/useProductReadHandler";
 import { useArticleManageHandler } from "../utils/useArticleManageHandler";
 import { useArticleReadHandler } from "../utils/useArticleReadHandler";
 import { setupContentModelGroup, setupContentModels } from "../utils/setup";
+import { Fruit } from "./mocks/contentModels";
 
-const appleData = {
+const appleData: Fruit = {
     name: "Apple",
     isSomething: false,
     rating: 400,
@@ -20,10 +21,11 @@ const appleData = {
     date: "2020-12-15",
     dateTime: new Date("2020-12-15T12:12:21").toISOString(),
     dateTimeZ: "2020-12-15T14:52:41+01:00",
-    time: "11:39:58"
+    time: "11:39:58",
+    description: "fruit named apple"
 };
 
-const strawberryData = {
+const strawberryData: Fruit = {
     name: "Strawberry",
     isSomething: true,
     rating: 500,
@@ -35,10 +37,11 @@ const strawberryData = {
     date: "2020-12-18",
     dateTime: new Date("2020-12-19T12:12:21").toISOString(),
     dateTimeZ: "2020-12-25T14:52:41+01:00",
-    time: "12:44:55"
+    time: "12:44:55",
+    description: "strawberry named fruit"
 };
 
-const bananaData = {
+const bananaData: Fruit = {
     name: "Banana",
     isSomething: false,
     rating: 450,
@@ -50,7 +53,8 @@ const bananaData = {
     date: "2020-12-03",
     dateTime: new Date("2020-12-03T12:12:21").toISOString(),
     dateTimeZ: "2020-12-03T14:52:41+01:00",
-    time: "11:59:01"
+    time: "11:59:01",
+    description: "fruit banana named"
 };
 
 jest.setTimeout(100000);
@@ -67,7 +71,7 @@ describe("filtering", () => {
 
     const filterOutFields = ["meta"];
 
-    const createAndPublishFruit = async (data: any) => {
+    const createAndPublishFruit = async (data: any): Promise<Fruit> => {
         const [response] = await createFruit({
             data
         });
@@ -78,15 +82,12 @@ describe("filtering", () => {
             revision: createdFruit.id
         });
 
-        const fruit = publish.data.publishFruit.data;
+        const fruit: Fruit = publish.data.publishFruit.data;
 
-        return Object.keys(fruit).reduce((acc, key) => {
-            if (filterOutFields.includes(key)) {
-                return acc;
-            }
-            acc[key] = fruit[key];
-            return acc;
-        }, {});
+        for (const field of filterOutFields) {
+            delete fruit[field];
+        }
+        return fruit;
     };
 
     const createFruits = async () => {
@@ -108,7 +109,7 @@ describe("filtering", () => {
         await until(
             () => listFruits({}).then(([data]) => data),
             ({ data }) => data.listFruits.data.length === 3,
-            { name: "list all fruits" }
+            { name: `list all fruits - ${name}` }
         );
     };
 
@@ -692,11 +693,7 @@ describe("filtering", () => {
         await until(
             () => productReader.listProducts({}).then(([data]) => data),
             ({ data }) => {
-                if (data.listProducts.data.length !== 4) {
-                    return false;
-                }
-                return true;
-                // return (data.listProducts.data as any[]).every(item => !!item.meta.publishedOn);
+                return data.listProducts.data.length === 4;
             },
             { name: "list all products" }
         );
@@ -1690,6 +1687,113 @@ describe("filtering", () => {
                         totalCount: 0,
                         cursor: null
                     },
+                    error: null
+                }
+            }
+        });
+    });
+
+    it("should filter fruits by description", async () => {
+        const { apple, banana, strawberry } = await setupFruits();
+        const handler = useFruitReadHandler({
+            ...readOpts
+        });
+        const { listFruits } = handler;
+
+        await waitFruits("should filter fruits by description", handler);
+
+        const [fruitsContainsResponse] = await listFruits({
+            where: {
+                description_contains: "fruit"
+            },
+            sort: ["createdOn_ASC"]
+        });
+
+        expect(fruitsContainsResponse).toMatchObject({
+            data: {
+                listFruits: {
+                    data: [
+                        {
+                            id: apple.id,
+                            name: apple.name,
+                            description: apple.description
+                        },
+                        {
+                            id: strawberry.id,
+                            name: strawberry.name,
+                            description: strawberry.description
+                        },
+                        {
+                            id: banana.id,
+                            name: banana.name,
+                            description: banana.description
+                        }
+                    ],
+                    error: null
+                }
+            }
+        });
+
+        const [fruitNotContainsResponse] = await listFruits({
+            where: {
+                description_not_contains: "fruit"
+            },
+            sort: ["createdOn_ASC"]
+        });
+
+        expect(fruitNotContainsResponse).toMatchObject({
+            data: {
+                listFruits: {
+                    data: [],
+                    error: null
+                }
+            }
+        });
+
+        const [bananaContainsResponse] = await listFruits({
+            where: {
+                description_contains: "banana"
+            },
+            sort: ["createdOn_ASC"]
+        });
+
+        expect(bananaContainsResponse).toMatchObject({
+            data: {
+                listFruits: {
+                    data: [
+                        {
+                            id: banana.id,
+                            name: banana.name,
+                            description: banana.description
+                        }
+                    ],
+                    error: null
+                }
+            }
+        });
+
+        const [appleNotContainsResponse] = await listFruits({
+            where: {
+                description_not_contains: "apple"
+            },
+            sort: ["createdOn_ASC"]
+        });
+
+        expect(appleNotContainsResponse).toMatchObject({
+            data: {
+                listFruits: {
+                    data: [
+                        {
+                            id: strawberry.id,
+                            name: strawberry.name,
+                            description: strawberry.description
+                        },
+                        {
+                            id: banana.id,
+                            name: banana.name,
+                            description: banana.description
+                        }
+                    ],
                     error: null
                 }
             }
