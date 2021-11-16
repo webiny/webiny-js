@@ -98,13 +98,14 @@ module.exports = async options => {
         }
 
         log("File sizes after gzip:\n");
-        options.logs && printFileSizesAfterBuild(
-            stats,
-            previousFileSizes,
-            paths.appBuild,
-            WARN_AFTER_BUNDLE_GZIP_SIZE,
-            WARN_AFTER_CHUNK_GZIP_SIZE
-        );
+        options.logs &&
+            printFileSizesAfterBuild(
+                stats,
+                previousFileSizes,
+                paths.appBuild,
+                WARN_AFTER_BUNDLE_GZIP_SIZE,
+                WARN_AFTER_CHUNK_GZIP_SIZE
+            );
         log();
     } catch (err) {
         const tscCompileOnError = process.env.TSC_COMPILE_ON_ERROR === "true";

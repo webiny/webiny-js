@@ -40,7 +40,7 @@ module.exports = options => {
             new webpack.DefinePlugin({
                 "process.env.WEBINY_VERSION": JSON.stringify(process.env.WEBINY_VERSION || version),
                 ...definitions
-            }),
+            })
         ].filter(Boolean),
         // Run babel on all .js files and skip those in node_modules
         module: {
