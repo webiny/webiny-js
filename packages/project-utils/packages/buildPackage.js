@@ -103,18 +103,16 @@ const tsCompile = ({ cwd, overrides, debug }) => {
             ts.sys.readFile
         );
 
-        if (overrides) {
-            if (overrides.tsConfig) {
-                if (typeof overrides.tsConfig === "function") {
-                    readTsConfig = overrides.tsConfig(readTsConfig);
-                } else {
-                    merge(readTsConfig, overrides.tsConfig);
-                }
+        if (overrides.tsConfig) {
+            if (typeof overrides.tsConfig === "function") {
+                readTsConfig = overrides.tsConfig(readTsConfig);
+            } else {
+                merge(readTsConfig, overrides.tsConfig);
+            }
 
-                if (debug) {
-                    console.log(`"tsconfig.build.json" overridden. New config:`);
-                    console.log(readTsConfig);
-                }
+            if (debug) {
+                console.log(`"tsconfig.build.json" overridden. New config:`);
+                console.log(readTsConfig);
             }
         }
 
