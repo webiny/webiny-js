@@ -10,13 +10,13 @@ export default (): CmsModelFieldToElasticsearchPlugin => ({
          * And we want to store prepared value into rawValue so it is not indexed.
          */
         return {
-            value: rawValue ? encodeURIComponent(rawValue) : null
+            value: rawValue ? encodeURIComponent(rawValue) : ""
         };
     },
     /**
      * When extracting from index, we can return the value that was stored to be searched - and then no decompression will be required.
      */
     fromIndex({ value }) {
-        return value ? decodeURIComponent(value) : null;
+        return value ? decodeURIComponent(value) : "";
     }
 });
