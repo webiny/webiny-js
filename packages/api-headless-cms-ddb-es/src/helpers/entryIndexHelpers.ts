@@ -14,11 +14,12 @@ interface ExtractEntriesFromIndexParams extends SetupEntriesIndexHelpersParams {
 
 interface PrepareElasticsearchDataParams extends SetupEntriesIndexHelpersParams {
     model: CmsModel;
+    entry: CmsEntry;
     storageEntry: CmsEntry;
 }
 
 export const prepareEntryToIndex = (params: PrepareElasticsearchDataParams): CmsIndexEntry => {
-    const { plugins, storageEntry, model } = params;
+    const { plugins, storageEntry, entry, model } = params;
     const { fieldIndexPlugins, defaultIndexFieldPlugin, fieldTypePlugins } =
         setupEntriesIndexHelpers({ plugins });
 
@@ -55,6 +56,7 @@ export const prepareEntryToIndex = (params: PrepareElasticsearchDataParams): Cms
             plugins,
             model,
             field,
+            rawValue: entry.values[field.fieldId],
             value: storageEntry.values[field.fieldId],
             getFieldIndexPlugin,
             getFieldTypePlugin
