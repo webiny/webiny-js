@@ -1,10 +1,23 @@
-const path = require("path");
-const webpack = require("webpack");
-const WebpackBar = require("webpackbar");
-const { version } = require("@webiny/project-utils/package.json");
+module.exports = options => {
+    const path = require("path");
+    const webpack = require("webpack");
+    const WebpackBar = require("webpackbar");
+    const { version } = require("@webiny/project-utils/package.json");
 
-module.exports = ({ entry, output, debug = false, babelOptions, define }) => {
-    const definitions = define ? JSON.parse(define) : {};
+    const { getOutput, getEntry } = require("./utils");
+    const output = getOutput(options);
+    const entry = getEntry(options);
+
+    const { cwd, overrides } = options;
+
+    let babelOptions = require("./babelrc");
+
+    // Customize Babel options.
+    if (typeof overrides.babel === "function") {
+        babelOptions = overrides.babel(babelOptions);
+    }
+
+    const definitions = overrides.define ? JSON.parse(overrides.define) : {};
 
     return {
         entry: path.resolve(entry),
@@ -15,7 +28,7 @@ module.exports = ({ entry, output, debug = false, babelOptions, define }) => {
             filename: output.filename
         },
         // Generate sourcemaps for proper error messages
-        devtool: debug ? "source-map" : false,
+        devtool: options.debug ? "source-map" : false,
         externals: [/^aws-sdk/],
         mode: "production",
         optimization: {
@@ -30,8 +43,8 @@ module.exports = ({ entry, output, debug = false, babelOptions, define }) => {
                 "process.env.WEBINY_VERSION": JSON.stringify(process.env.WEBINY_VERSION || version),
                 ...definitions
             }),
-            new WebpackBar({ name: path.basename(process.cwd()) })
-        ],
+            options.logs && new WebpackBar({ name: path.basename(cwd) })
+        ].filter(Boolean),
         // Run babel on all .js files and skip those in node_modules
         module: {
             exprContextCritical: false,

@@ -10603,7 +10603,6 @@ __metadata:
     open: ^8.0.6
     ora: 4.1.1
     rimraf: ^3.0.2
-    tree-kill: ^1.2.2
     ws: ^7.4.5
   languageName: unknown
   linkType: soft
@@ -10858,8 +10857,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/cli@workspace:packages/cli"
   dependencies:
-    "@webiny/handler": ^5.17.0
-    "@webiny/plugins": ^5.17.0
     "@webiny/telemetry": ^5.17.0
     boolean: ^3.0.2
     camelcase: 5.3.1
@@ -11251,7 +11248,6 @@ __metadata:
     babel-plugin-lodash: 3.3.4
     babel-plugin-named-asset-import: 0.3.7
     babel-preset-react-app: 9.1.2
-    boolean: 3.0.2
     camelcase: 5.3.1
     case-sensitive-paths-webpack-plugin: 2.2.0
     chalk: 4.1.0
@@ -14205,13 +14201,6 @@ __metadata:
   version: 1.0.0
   resolution: "boolbase@npm:1.0.0"
   checksum: 3e25c80ef626c3a3487c73dbfc70ac322ec830666c9ad915d11b701142fab25ec1e63eff2c450c74347acfd2de854ccde865cd79ef4db1683f7c7b046ea43bb0
-  languageName: node
-  linkType: hard
-
-"boolean@npm:3.0.2":
-  version: 3.0.2
-  resolution: "boolean@npm:3.0.2"
-  checksum: 6ab3755ab786b3531e3bfff73c4a1f3777560e1d69912c175d8f7ed75cfce0b20de339c56880fc6da50707b4982547b023ac6eea33b670b5c799231e52032291
   languageName: node
   linkType: hard
 
@@ -36046,15 +36035,6 @@ resolve@^2.0.0-next.3:
   version: 0.0.3
   resolution: "tr46@npm:0.0.3"
   checksum: 726321c5eaf41b5002e17ffbd1fb7245999a073e8979085dacd47c4b4e8068ff5777142fc6726d6ca1fd2ff16921b48788b87225cbc57c72636f6efa8efbffe3
-  languageName: node
-  linkType: hard
-
-"tree-kill@npm:^1.2.2":
-  version: 1.2.2
-  resolution: "tree-kill@npm:1.2.2"
-  bin:
-    tree-kill: cli.js
-  checksum: 49117f5f410d19c84b0464d29afb9642c863bc5ba40fcb9a245d474c6d5cc64d1b177a6e6713129eb346b40aebb9d4631d967517f9fbe8251c35b21b13cd96c7
   languageName: node
   linkType: hard
 

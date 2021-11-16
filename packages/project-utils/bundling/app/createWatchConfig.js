@@ -1,6 +1,8 @@
-module.exports = async (options = {}) => {
-    const path = require("path");
-    const appIndexJs = options.entry || path.resolve("src", "index.tsx");
+const path = require("path");
+
+module.exports = async options => {
+    const { overrides, cwd } = options;
+    const appIndexJs = overrides.entry || path.resolve(cwd, "src", "index.tsx");
 
     if (typeof options.openBrowser === "undefined") {
         options.openBrowser = true;
@@ -26,7 +28,8 @@ module.exports = async (options = {}) => {
         prepareUrls
     } = require("react-dev-utils/WebpackDevServerUtils");
     const openBrowserTab = require("react-dev-utils/openBrowser");
-    const paths = require("./config/paths")({ appIndexJs });
+
+    const paths = require("./config/paths")({ appIndexJs, cwd });
     const configFactory = require("./config/webpack.config");
     const createDevServerConfig = require("./config/webpackDevServer.config");
 
@@ -60,10 +63,10 @@ module.exports = async (options = {}) => {
     // We require that you explicitly set browsers and do not fall back to browsers list defaults.
     const { checkBrowsers } = require("react-dev-utils/browsersHelper");
 
-    let config = configFactory("development", { paths, babelCustomizer: options.babel });
+    let buildConfig = configFactory("development", { paths, options });
 
-    if (typeof options.webpack === "function") {
-        config = options.webpack(config);
+    if (typeof overrides.webpack === "function") {
+        buildConfig = overrides.webpack(buildConfig);
     }
 
     try {
@@ -86,7 +89,7 @@ module.exports = async (options = {}) => {
         // Create a webpack compiler that is configured with custom messages.
         const compiler = createCompiler({
             appName,
-            config,
+            config: buildConfig,
             devSocket,
             urls,
             useYarn,

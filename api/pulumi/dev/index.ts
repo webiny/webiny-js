@@ -69,8 +69,7 @@ export default () => {
             IMPORT_PAGES_CREATE_HANDLER: pageBuilder.functions.importPages.create.arn,
             EXPORT_PAGES_PROCESS_HANDLER: pageBuilder.functions.exportPages.process.arn,
             DEBUG,
-            WEBINY_LOGS_FORWARD_URL,
-            NODE_OPTIONS: "--enable-source-maps"
+            WEBINY_LOGS_FORWARD_URL
         },
         primaryDynamodbTable: dynamoDb.table,
         elasticsearchDynamodbTable: elasticSearch.table,

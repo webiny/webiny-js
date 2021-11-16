@@ -5,7 +5,7 @@ const getLogType = type => {
         case "log":
             return type;
         case "info":
-            return `${chalk.blue(type)}`;
+            return `${chalk.blueBright(type)}`;
         case "error":
             return `${chalk.red(type)}`;
         case "warning":
@@ -56,7 +56,7 @@ const functions = {
 functions.log.highlight = chalk.highlight;
 functions.log.hl = chalk.highlight;
 functions.info.highlight = chalk.blue;
-functions.info.hl = chalk.blue;
+functions.info.hl = chalk.blueBright;
 functions.success.highlight = chalk.green;
 functions.success.hl = chalk.green;
 functions.debug.highlight = chalk.gray;

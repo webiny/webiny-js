@@ -1,6 +1,5 @@
 const fs = require("fs");
 const path = require("path");
-const chalk = require("chalk");
 const { importModule, getProject, PluginsContainer, log, localStorage } = require("./utils");
 
 const project = getProject();
@@ -117,7 +116,7 @@ class Context {
         }
 
         if (!fs.existsSync(filePath)) {
-            debug && this.info(chalk.yellow(`No environment file found on ${filePath}.`));
+            debug && this.debug(`No environment file found on ${this.debug.hl(filePath)}.`);
             return;
         }
 

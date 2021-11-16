@@ -8,13 +8,23 @@ const formatWebpackMessages = require("react-dev-utils/formatWebpackMessages");
 const FileSizeReporter = require("react-dev-utils/FileSizeReporter");
 const printBuildError = require("react-dev-utils/printBuildError");
 const { checkBrowsers } = require("react-dev-utils/browsersHelper");
+const { applyDefaults } = require("./utils");
 
-module.exports = async (options = {}) => {
-    const appIndexJs = options.entry || path.resolve("src", "index.tsx");
-    const paths = require("./config/paths")({ appIndexJs });
+module.exports = async options => {
+    applyDefaults();
 
-    if (options.output) {
-        paths.appBuild = path.resolve(options.output);
+    process.env.NODE_ENV = "production";
+
+    const { cwd, overrides } = options;
+
+    const log = options.logs ? console.log : () => undefined;
+
+    const appIndexJs = overrides.entry || path.resolve(cwd, "src", "index.tsx");
+
+    const paths = require("./config/paths")({ appIndexJs, cwd });
+
+    if (overrides.output) {
+        paths.appBuild = path.resolve(overrides.output);
     }
 
     // Makes the script crash on unhandled rejections instead of silently
@@ -45,10 +55,10 @@ module.exports = async (options = {}) => {
     await checkBrowsers(paths.appPath, isInteractive);
 
     // Generate configuration
-    let config = configFactory("production", { paths, babelCustomizer: options.babel });
+    let config = configFactory("production", { paths, options });
 
     if (typeof options.webpack === "function") {
-        config = options.webpack(config);
+        config = overrides.webpack(config);
     }
 
     // First, read the current file sizes in build directory.
@@ -64,45 +74,51 @@ module.exports = async (options = {}) => {
 
     // Start the webpack build
     try {
-        const { stats, previousFileSizes, warnings } = await build(config, existingFileSizes);
+        const { stats, previousFileSizes, warnings } = await build({
+            config,
+            previousFileSizes: existingFileSizes,
+            options,
+            log
+        });
         if (warnings.length) {
-            console.log(chalk.yellow("Compiled with warnings.\n"));
-            console.log(warnings.join("\n\n"));
-            console.log(
+            log(chalk.yellow("Compiled with warnings.\n"));
+            log(warnings.join("\n\n"));
+            log(
                 "\nSearch for the " +
                     chalk.underline(chalk.yellow("keywords")) +
                     " to learn more about each warning."
             );
-            console.log(
+            log(
                 "To ignore, add " +
                     chalk.cyan("// eslint-disable-next-line") +
                     " to the line before.\n"
             );
         } else {
-            console.log(chalk.green("Compiled successfully.\n"));
+            log(chalk.green("Compiled successfully.\n"));
         }
 
-        console.log("File sizes after gzip:\n");
-        printFileSizesAfterBuild(
-            stats,
-            previousFileSizes,
-            paths.appBuild,
-            WARN_AFTER_BUNDLE_GZIP_SIZE,
-            WARN_AFTER_CHUNK_GZIP_SIZE
-        );
-        console.log();
+        log("File sizes after gzip:\n");
+        options.logs &&
+            printFileSizesAfterBuild(
+                stats,
+                previousFileSizes,
+                paths.appBuild,
+                WARN_AFTER_BUNDLE_GZIP_SIZE,
+                WARN_AFTER_CHUNK_GZIP_SIZE
+            );
+        log();
     } catch (err) {
         const tscCompileOnError = process.env.TSC_COMPILE_ON_ERROR === "true";
         if (tscCompileOnError) {
-            console.log(
+            log(
                 chalk.yellow(
                     "Compiled with the following type errors (you may want to check these before deploying your app):\n"
                 )
             );
             printBuildError(err);
         } else {
-            console.log(err);
-            console.log(chalk.red("Failed to compile.\n"));
+            log(err);
+            log(chalk.red("Failed to compile.\n"));
             printBuildError(err);
             process.exit(1);
         }
@@ -110,10 +126,9 @@ module.exports = async (options = {}) => {
 };
 
 // Create the production build and print the deployment instructions.
-function build(config, previousFileSizes) {
-    console.log("Creating an optimized production build...");
-
+function build({ config, previousFileSizes, log }) {
     const compiler = webpack(config);
+
     return new Promise((resolve, reject) => {
         compiler.run((err, stats) => {
             let messages;
@@ -156,7 +171,7 @@ function build(config, previousFileSizes) {
                 (typeof process.env.CI !== "string" || process.env.CI.toLowerCase() !== "false") &&
                 messages.warnings.length
             ) {
-                console.log(
+                log(
                     chalk.yellow(
                         "\nTreating warnings as errors because process.env.CI = true.\n" +
                             "Most CI servers set it automatically.\n"

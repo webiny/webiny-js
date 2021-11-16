@@ -192,10 +192,10 @@ async function build() {
                     const config = require(configPath);
                     try {
                         await config.commands.build({
+                            // We don't want debug nor regular logs logged within the build command.
                             logs: false,
                             debug: false,
                             overrides: buildOverrides
-                            // We don't want debug nor regular logs logged within the build command.
                         });
 
                         // Copy and paste built code into the cache folder.

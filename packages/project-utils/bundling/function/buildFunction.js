@@ -1,34 +1,24 @@
 const formatWebpackMessages = require("react-dev-utils/formatWebpackMessages");
+const { getDuration } = require("../../utils");
+const chalk = require("chalk");
 
-module.exports = (options, context) => {
-    const { boolean } = require("boolean");
+module.exports = options => {
+    const duration = getDuration();
+    const path = require("path");
+
+    const { overrides, logs, cwd } = options;
+
+    logs && console.log(`Compiling ${chalk.green(path.basename(cwd))}...`);
+
+    let webpackConfig = require("./createBuildConfig")(options);
+
+    // Customize Webpack config.
+    if (typeof overrides.webpack === "function") {
+        webpackConfig = overrides.webpack(webpackConfig);
+    }
+
     const webpack = require("webpack");
-    let babelOptions = require("./babelrc");
-    const { setupOutput } = require("./utils");
-    const output = setupOutput(options.output);
-
-    // Customize babelOptions
-    if (typeof options.babel === "function") {
-        babelOptions = options.babel(babelOptions);
-    }
-
-    // Load base webpack config
-    let webpackConfig = require("./webpack.build.config")({
-        entry: options.entry || "./src/index",
-        output,
-        debug: boolean(options.debug),
-        babelOptions,
-        define: options.define
-    });
-
-    // Customize webpack config
-    if (typeof options.webpack === "function") {
-        webpackConfig = options.webpack(webpackConfig);
-    }
-
     return new Promise(async (resolve, reject) => {
-        context.log(`Start bundling`);
-
         return webpack(webpackConfig).run(async (err, stats) => {
             let messages = {};
 
@@ -60,7 +50,7 @@ module.exports = (options, context) => {
                 return reject(new Error(messages.errors.join("\n\n")));
             }
 
-            context.log(`Finished bundling`);
+            logs && console.log(`Compiled successfully in ${chalk.green(duration()) + "s"}.`);
             resolve();
         });
     });
