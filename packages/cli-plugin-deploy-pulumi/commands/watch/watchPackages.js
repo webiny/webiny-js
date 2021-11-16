@@ -17,7 +17,13 @@ const parseMessage = message => {
 };
 
 module.exports = async ({ inputs, output, context }) => {
-    const packages = await getPackages(inputs);
+    const packages = await getPackages(inputs, context);
+
+    if (inputs.debug) {
+        context.debug("The following packages will be watched for changes:");
+        packages.forEach(item => console.log("‣ " + item.name));
+    }
+
     const { env, debug, logs } = inputs;
     const multipleWatches = packages.length > 1;
     if (multipleWatches) {
