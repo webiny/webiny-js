@@ -167,14 +167,22 @@ const getPackages = async inputs => {
                 ? path.join(root, "webiny.config.ts")
                 : path.join(root, "webiny.config.js");
 
-            packages.push({
-                name: packageName,
-                config: require(configPath).default || require(configPath),
-                paths: {
-                    root,
-                    config: configPath
+            try {
+                const pckg = {
+                    name: packageName,
+                    config: require(configPath).default || require(configPath),
+                    paths: {
+                        root,
+                        config: configPath
+                    }
+                };
+
+                if (pckg.config.commands && typeof pckg.config.commands.watch === "function") {
+                    packages.push(pckg);
                 }
-            });
+            } catch {
+                // Do nothing.
+            }
         }
 
         return packages;
