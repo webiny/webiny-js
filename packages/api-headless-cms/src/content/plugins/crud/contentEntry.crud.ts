@@ -14,7 +14,6 @@ import {
     AfterEntryUpdateTopicParams,
     AfterEntryDeleteTopicParams,
     BeforeEntryDeleteTopicParams,
-    CmsEntryStorageOperationsListParams,
     CmsEntryListParams,
     BeforeEntryRevisionCreateTopicParams,
     AfterEntryRevisionCreateTopicParams,
@@ -27,7 +26,10 @@ import {
     BeforeEntryRequestReviewTopicParams,
     AfterEntryRequestReviewTopicParams,
     BeforeEntryRevisionDeleteTopicParams,
-    AfterEntryRevisionDeleteTopicParams
+    AfterEntryRevisionDeleteTopicParams,
+    BeforeEntryGetTopicParams,
+    BeforeEntryListTopicParams,
+    CmsEntryListWhere
 } from "~/types";
 import * as utils from "~/utils";
 import { validateModelEntryData } from "./contentEntry/entryDataValidation";
@@ -154,6 +156,8 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
     const onAfterDelete = createTopic<AfterEntryDeleteTopicParams>();
     const onBeforeDeleteRevision = createTopic<BeforeEntryRevisionDeleteTopicParams>();
     const onAfterDeleteRevision = createTopic<AfterEntryRevisionDeleteTopicParams>();
+    const onBeforeGet = createTopic<BeforeEntryGetTopicParams>();
+    const onBeforeList = createTopic<BeforeEntryListTopicParams>();
     /**
      * We need to assign some default behaviors.
      */
@@ -238,6 +242,8 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
         onAfterEntryRequestChanges: onAfterRequestChanges,
         onBeforeEntryRequestReview: onBeforeRequestReview,
         onAfterEntryRequestReview: onAfterRequestReview,
+        onBeforeEntryGet: onBeforeGet,
+        onBeforeEntryList: onBeforeList,
         /**
          * Get entries by exact revision IDs from the database.
          */
@@ -290,11 +296,19 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
                 id: entryId
             });
         },
-        getEntry: async (model, args) => {
+        getEntry: async (model, params) => {
             await checkEntryPermissions({ rwd: "r" });
 
+            const { where, sort } = params;
+
+            await onBeforeGet.publish({
+                where,
+                model
+            });
+
             const [items] = await context.cms.listEntries(model, {
-                ...args,
+                where,
+                sort,
                 limit: 1
             });
 
@@ -313,7 +327,7 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
              * Or if searching for the owner set that value - in the case that user can see other entries than their own.
              */
             const ownedBy = permission.own ? getIdentity().id : where.ownedBy;
-            const listWhere: CmsEntryStorageOperationsListParams["where"] = {
+            const listWhere: CmsEntryListWhere = {
                 ...where,
                 tenant: where.tenant || getTenant().id,
                 locale: where.locale || getLocale().code
@@ -321,6 +335,11 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
             if (ownedBy !== undefined) {
                 listWhere.ownedBy = ownedBy;
             }
+
+            await onBeforeList.publish({
+                where: listWhere,
+                model
+            });
 
             const { hasMoreItems, totalCount, cursor, items } =
                 await storageOperations.entries.list(model, {
