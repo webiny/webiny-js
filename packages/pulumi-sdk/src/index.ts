@@ -38,16 +38,19 @@ export const FLAG_NON_INTERACTIVE = "--non-interactive";
 export class Pulumi {
     options: Options;
     pulumiFolder: string;
+    pulumiDownloadFolder: string;
     pulumiBinaryPath: string;
     constructor(options: Options = {}) {
         this.options = options;
 
-        this.pulumiFolder = path.join(
+        this.pulumiDownloadFolder = path.join(
             options.pulumiFolder || process.cwd(),
             "pulumi-cli",
             os.platform()
         );
-        this.pulumiBinaryPath = path.join(this.pulumiFolder, "pulumi", "pulumi");
+
+        this.pulumiFolder = path.join(this.pulumiDownloadFolder, "pulumi");
+        this.pulumiBinaryPath = path.join(this.pulumiFolder, "pulumi");
     }
 
     run(rawArgs: RunArgs) {
@@ -84,16 +87,32 @@ export class Pulumi {
         set(args.execa, "env.PULUMI_SKIP_UPDATE_CHECK", "true");
         set(args.execa, "env.PULUMI_HOME", this.pulumiFolder);
 
-        return execa(this.pulumiBinaryPath, [...args.command, ...finalArgs, FLAG_NON_INTERACTIVE], {
-            ...args.execa
-        });
+        const execaArgs = {
+            ...args.execa,
+            env: {
+                ...(args.execa.env || {}),
+                /**
+                 * Do to an issue with Pulumi https://github.com/pulumi/pulumi/issues/8374, and even though this
+                 * commit suggests it should already work like that https://github.com/pulumi/pulumi/commit/c878916901a997a9c0ffcbed23560e19e224a6f1,
+                 * we need to specify the exact location of our Pulumi binaries, using the PATH environment variable, so it can correctly resolve
+                 * plugins necessary for custom resources and dynamic providers to work.
+                 */
+                PATH: `${process.env.PATH};${this.pulumiFolder}`
+            }
+        };
+
+        return execa(
+            this.pulumiBinaryPath,
+            [...args.command, ...finalArgs, FLAG_NON_INTERACTIVE],
+            execaArgs
+        );
     }
 
     async install(rawArgs?: InstallArgs): Promise<boolean> {
         const args = merge({}, this.options, rawArgs);
 
         const installed = await downloadBinaries(
-            this.pulumiFolder,
+            this.pulumiDownloadFolder,
             args.beforePulumiInstall,
             args.afterPulumiInstall
         );
