@@ -1,4 +1,5 @@
 import * as aws from "@pulumi/aws";
+import * as pulumi from "@pulumi/pulumi";
 
 class Delivery {
     bucket: aws.s3.Bucket;
@@ -12,6 +13,48 @@ class Delivery {
                 errorDocument: "_NOT_FOUND_PAGE_/index.html"
             }
         });
+
+        const role = new aws.iam.Role("tenant-router-role", {
+            assumeRolePolicy: {
+                Version: "2012-10-17",
+                Statement: [
+                    {
+                        Action: "sts:AssumeRole",
+                        Principal: aws.iam.Principals.LambdaPrincipal,
+                        Effect: "Allow"
+                    },
+                    {
+                        Action: "sts:AssumeRole",
+                        Principal: aws.iam.Principals.EdgeLambdaPrincipal,
+                        Effect: "Allow"
+                    }
+                ]
+            }
+        });
+
+        new aws.iam.RolePolicyAttachment(`tenant-router-role-policy-attachment`, {
+            role,
+            policyArn: aws.iam.ManagedPolicies.AWSLambdaBasicExecutionRole
+        });
+
+        // Some resources _must_ be put in us-east-1, such as Lambda at Edge.
+        const awsUsEast1 = new aws.Provider("us-east-1", { region: "us-east-1" });
+
+        const tenantRouter = new aws.lambda.Function(
+            "tenant-router",
+            {
+                publish: true,
+                runtime: "nodejs14.x",
+                handler: "index.handler",
+                role: role.arn,
+                timeout: 5,
+                memorySize: 128,
+                code: new pulumi.asset.AssetArchive({
+                    ".": new pulumi.asset.FileArchive("./tenantRouter")
+                })
+            },
+            { provider: awsUsEast1 }
+        );
 
         this.cloudfront = new aws.cloudfront.Distribution("delivery", {
             enabled: true,
@@ -63,6 +106,18 @@ class Delivery {
             defaultCacheBehavior: {
                 compress: true,
                 targetOriginId: this.bucket.arn,
+                lambdaFunctionAssociations: [
+                    {
+                        eventType: "origin-request",
+                        includeBody: false,
+                        lambdaArn: pulumi.interpolate`${tenantRouter.qualifiedArn}`
+                    },
+                    {
+                        eventType: "viewer-request",
+                        includeBody: false,
+                        lambdaArn: pulumi.interpolate`${tenantRouter.qualifiedArn}`
+                    }
+                ],
                 viewerProtocolPolicy: "redirect-to-https",
                 allowedMethods: ["GET", "HEAD", "OPTIONS"],
                 cachedMethods: ["GET", "HEAD", "OPTIONS"],
