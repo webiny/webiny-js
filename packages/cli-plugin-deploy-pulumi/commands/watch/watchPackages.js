@@ -38,29 +38,7 @@ module.exports = async ({ inputs, output, context }) => {
         });
     }
 
-    const log = (packageName, message) => {
-        let prefix = "";
-        if (multipleWatches) {
-            prefix = chalk.hex(getRandomColorForString(packageName))(packageName) + ": ";
-        }
-
-        if (Array.isArray(message)) {
-            message = message.filter(Boolean);
-            if (message.length) {
-                const [first, ...rest] = message;
-                output.log({
-                    type: "build",
-                    message: prefix + first,
-                    ...rest
-                });
-            }
-        } else {
-            output.log({
-                type: "build",
-                message: prefix + message
-            });
-        }
-    };
+    const log = createLog({ multipleWatches, output, context });
 
     const promises = [];
     for (let i = 0; i < packages.length; i++) {
@@ -84,20 +62,17 @@ module.exports = async ({ inputs, output, context }) => {
                     const { type, message } = parseMessage(threadMessage);
 
                     if (type === "error") {
-                        context.error(current.name);
-                        log(message);
-                        log();
-                    } else if (type === "warning") {
-                        context.warning(current.name);
-                        log(message);
-                        log();
+                        log(current.name, message, "error");
+                    } else if (type === "warn") {
+                        log(current.name, message);
                     } else {
                         log(current.name, message);
                     }
                 });
 
                 worker.on("error", () => {
-                    context.error(
+                    log(
+                        current.name,
                         `An unknown error occurred while watching ${context.error.hl(
                             current.name
                         )}:`
@@ -187,4 +162,38 @@ const getPackages = async inputs => {
 
         return packages;
     });
+};
+
+const createLog = ({ multipleWatches, output, context }) => {
+    return (packageName, message, type) => {
+        let prefix = "";
+        if (multipleWatches) {
+            prefix = chalk.hex(getRandomColorForString(packageName))(packageName) + ": ";
+        }
+
+        let send;
+        if (Array.isArray(message)) {
+            message = message.filter(Boolean);
+            if (message.length) {
+                const [first, ...rest] = message;
+                send = [prefix + first, ...rest].join(" ");
+            }
+        } else {
+            send = prefix + message;
+        }
+
+        if (type) {
+            if (type === "error") {
+                send = context.error.hl(send);
+            }
+            if (type === "warn") {
+                send = context.warning.hl(send);
+            }
+        }
+
+        output.log({
+            type: "build",
+            message: send
+        });
+    };
 };

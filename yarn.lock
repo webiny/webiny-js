@@ -11228,6 +11228,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/project-utils@workspace:packages/project-utils"
   dependencies:
+    "@babel/cli": ^7.5.5
     "@babel/core": 7.12.10
     "@babel/plugin-proposal-class-properties": 7.12.1
     "@babel/plugin-syntax-object-rest-spread": 7.8.3
@@ -11250,7 +11251,6 @@ __metadata:
     css-loader: 3.2.0
     eslint: 6.8.0
     eslint-loader: 3.0.2
-    execa: ^5.0.0
     file-loader: 4.3.0
     fs-extra: 8.1.0
     get-yarn-workspaces: 1.0.2
