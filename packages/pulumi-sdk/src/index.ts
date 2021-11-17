@@ -92,7 +92,7 @@ export class Pulumi {
             env: {
                 ...(args.execa.env || {}),
                 /**
-                 * Do to an issue with Pulumi https://github.com/pulumi/pulumi/issues/8374, and even though this
+                 * Due to an issue with Pulumi https://github.com/pulumi/pulumi/issues/8374, and even though this
                  * commit suggests it should already work like that https://github.com/pulumi/pulumi/commit/c878916901a997a9c0ffcbed23560e19e224a6f1,
                  * we need to specify the exact location of our Pulumi binaries, using the PATH environment variable, so it can correctly resolve
                  * plugins necessary for custom resources and dynamic providers to work.
