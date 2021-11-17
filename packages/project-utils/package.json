@@ -13,8 +13,8 @@
     "Adrian Smijulj <adrian@webiny.com>"
   ],
   "dependencies": {
-    "@babel/core": "7.12.10",
     "@babel/cli": "^7.5.5",
+    "@babel/core": "7.12.10",
     "@babel/plugin-proposal-class-properties": "7.12.1",
     "@babel/plugin-syntax-object-rest-spread": "7.8.3",
     "@babel/preset-env": "7.12.11",
