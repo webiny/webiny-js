@@ -3,14 +3,9 @@ import {
     CmsEntry,
     CmsModel,
     CmsModelField,
-    CmsContext,
     CmsModelFieldToGraphQLPlugin,
     HeadlessCmsStorageOperations as BaseHeadlessCmsStorageOperations
 } from "@webiny/api-headless-cms/types";
-import {
-    ElasticsearchBoolQueryConfig,
-    ElasticsearchQueryOperator
-} from "@webiny/api-elasticsearch/types";
 import { DynamoDBTypes, TableConstructor } from "dynamodb-toolbox/dist/classes/Table";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import {
@@ -20,69 +15,6 @@ import {
 import { Client } from "@elastic/elasticsearch";
 import { Entity, Table } from "dynamodb-toolbox";
 import { PluginsContainer } from "@webiny/plugins";
-
-/**
- * Definition for arguments of the ElasticsearchQueryBuilderPlugin.apply method.
- *
- * @see ElasticsearchQueryBuilderPlugin.apply
- *
- * @category Plugin
- * @category Elasticsearch
- */
-export interface ElasticsearchQueryBuilderArgsPlugin {
-    field: string;
-    value: any;
-    context: CmsContext;
-    parentObject?: string;
-    originalField?: string;
-}
-
-/**
- * Arguments for ElasticsearchQueryPlugin.
- *
- * @see ElasticsearchQueryPlugin.modify
- */
-interface ElasticsearchQueryPluginArgs {
-    query: ElasticsearchBoolQueryConfig;
-    model: CmsModel;
-}
-
-/**
- * A plugin definition to modify Elasticsearch query.
- *
- * @category Plugin
- * @category Elasticsearch
- */
-export interface ElasticsearchQueryPlugin extends Plugin {
-    type: "cms-elasticsearch-query";
-    modify: (args: ElasticsearchQueryPluginArgs) => void;
-}
-
-/**
- * A plugin definition to build Elasticsearch query.
- *
- * @category Plugin
- * @category Elasticsearch
- */
-export interface ElasticsearchQueryBuilderPlugin extends Plugin {
-    /**
-     * A plugin type.
-     */
-    type: "cms-elastic-search-query-builder";
-    /**
-     * Name of the plugin. Name it for better debugging experience.
-     */
-    name: string;
-    /**
-     * Target operator.
-     */
-    operator: ElasticsearchQueryOperator;
-    /**
-     * Method used to modify received query object.
-     * Has access to whole query object so it can remove something added by other plugins.
-     */
-    apply: (query: ElasticsearchBoolQueryConfig, args: ElasticsearchQueryBuilderArgsPlugin) => void;
-}
 
 /**
  * Arguments for ElasticsearchQueryBuilderValueSearchPlugin.

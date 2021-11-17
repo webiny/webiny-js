@@ -7,19 +7,21 @@ export interface ModifyQueryParams {
     where: Record<string, any>;
 }
 
-interface Callable {
-    (params: ModifyQueryParams): void;
+export interface ModifyQueryCallable<T extends ModifyQueryParams> {
+    (params: T): void;
 }
 
-export abstract class ElasticsearchQueryModifierPlugin extends Plugin {
-    private readonly callable?: Callable;
+export abstract class ElasticsearchQueryModifierPlugin<
+    T extends ModifyQueryParams = ModifyQueryParams
+> extends Plugin {
+    private readonly callable?: ModifyQueryCallable<T>;
 
-    public constructor(callable?: Callable) {
+    public constructor(callable?: ModifyQueryCallable<T>) {
         super();
         this.callable = callable;
     }
 
-    public modifyQuery(params: ModifyQueryParams): void {
+    public modifyQuery(params: T): void {
         if (typeof this.callable !== "function") {
             throw new WebinyError(
                 `Missing modification for the query.`,

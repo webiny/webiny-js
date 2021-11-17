@@ -6,19 +6,21 @@ export interface ModifyBodyParams {
     body: SearchBody;
 }
 
-interface Callable {
-    (params: ModifyBodyParams): void;
+export interface ModifyBodyCallable<T extends ModifyBodyParams> {
+    (params: T): void;
 }
 
-export abstract class ElasticsearchBodyModifierPlugin extends Plugin {
-    private readonly callable?: Callable;
+export abstract class ElasticsearchBodyModifierPlugin<
+    T extends ModifyBodyParams = ModifyBodyParams
+> extends Plugin {
+    private readonly callable?: ModifyBodyCallable<T>;
 
-    public constructor(callable?: Callable) {
+    public constructor(callable?: ModifyBodyCallable<T>) {
         super();
         this.callable = callable;
     }
 
-    public modifyBody(params: ModifyBodyParams): void {
+    public modifyBody(params: T): void {
         if (typeof this.callable !== "function") {
             throw new WebinyError(
                 `Missing modification for the body.`,

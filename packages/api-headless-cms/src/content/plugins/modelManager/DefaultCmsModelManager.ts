@@ -21,8 +21,8 @@ export class DefaultCmsModelManager implements CmsModelManager {
         return this._context.cms.deleteEntry(this._model, id);
     }
 
-    public async get(args) {
-        return this._context.cms.getEntry(this._model, args);
+    public async get(id: string) {
+        return this._context.cms.getEntryById(this._model, id);
     }
 
     public async list(args) {
