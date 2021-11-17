@@ -252,7 +252,14 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
          * Get a single entry by revision ID from the database.
          */
         getEntryById: async (model, id) => {
-            const [entry] = await getEntriesByIds(model, [id]);
+            const where = {
+                id
+            };
+            await onBeforeGet.publish({
+                where,
+                model
+            });
+            const [entry] = await getEntriesByIds(model, [where.id]);
             if (!entry) {
                 throw new NotFoundError(`Entry by ID "${id}" not found.`);
             }

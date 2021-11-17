@@ -1176,7 +1176,7 @@ export interface CmsModelManager {
     /**
      * Get an entry filtered by given params. Will always get one.
      */
-    get: (params?: CmsEntryGetParams) => Promise<CmsEntry>;
+    get: (id: string) => Promise<CmsEntry>;
     /**
      * Create a entry.
      */
