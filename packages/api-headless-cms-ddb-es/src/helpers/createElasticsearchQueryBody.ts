@@ -8,7 +8,7 @@ import {
     CmsEntryListWhere,
     CmsModel
 } from "@webiny/api-headless-cms/types";
-import { ElasticsearchQueryBuilderValueSearchPlugin, ElasticsearchQueryPlugin } from "~/types";
+import { ElasticsearchQueryBuilderValueSearchPlugin } from "~/types";
 import {
     SearchBody as esSearchBody,
     Sort as esSort,
@@ -21,6 +21,9 @@ import { CmsEntryElasticsearchFieldPlugin } from "~/plugins/CmsEntryElasticsearc
 import { parseWhereKey } from "@webiny/api-elasticsearch/where";
 import { PluginsContainer } from "@webiny/plugins";
 import { createLatestType, createPublishedType } from "~/operations/entry";
+import { CmsEntryElasticsearchQueryModifierPlugin } from "~/plugins/CmsEntryElasticsearchQueryModifierPlugin";
+import { CmsEntryElasticsearchSortModifierPlugin } from "~/plugins/CmsEntryElasticsearchSortModifierPlugin";
+import { CmsEntryElasticsearchBodyModifierPlugin } from "~/plugins/CmsEntryElasticsearchBodyModifierPlugin";
 
 interface CreateElasticsearchParams {
     plugins: PluginsContainer;
@@ -282,7 +285,7 @@ const execElasticsearchBuildQueryPlugins = (
 
 export const createElasticsearchQueryBody = (params: CreateElasticsearchParams): esSearchBody => {
     const { plugins, model, args, parentPath = null } = params;
-    const { where, after, limit, sort } = args;
+    const { where, after, limit, sort: initialSort } = args;
 
     const modelFields = createModelFields(plugins, model);
     const searchPlugins = searchPluginsList(plugins);
@@ -296,12 +299,41 @@ export const createElasticsearchQueryBody = (params: CreateElasticsearchParams):
         searchPlugins
     });
 
-    const queryPlugins = plugins.byType<ElasticsearchQueryPlugin>("cms-elasticsearch-query");
+    const queryPlugins = plugins
+        .byType<CmsEntryElasticsearchQueryModifierPlugin>(
+            CmsEntryElasticsearchQueryModifierPlugin.type
+        )
+        .filter(pl => {
+            return !pl.modelId || pl.modelId === model.modelId;
+        });
     for (const pl of queryPlugins) {
-        pl.modify({ query, model });
+        pl.modifyQuery({ query, model, where });
     }
 
-    return {
+    const sort = createElasticsearchSortParams({
+        plugins,
+        sort: initialSort,
+        modelFields,
+        parentPath,
+        model,
+        searchPlugins
+    });
+
+    const sortPlugins = plugins
+        .byType<CmsEntryElasticsearchSortModifierPlugin>(
+            CmsEntryElasticsearchSortModifierPlugin.type
+        )
+        .filter(pl => {
+            return !pl.modelId || pl.modelId === model.modelId;
+        });
+    for (const pl of sortPlugins) {
+        pl.modifySort({
+            sort,
+            model
+        });
+    }
+
+    const body: esSearchBody = {
         query: {
             bool: {
                 must: query.must.length > 0 ? query.must : undefined,
@@ -310,18 +342,27 @@ export const createElasticsearchQueryBody = (params: CreateElasticsearchParams):
                 filter: query.filter.length > 0 ? query.filter : undefined
             }
         },
-        sort: createElasticsearchSortParams({
-            plugins,
-            sort,
-            modelFields,
-            parentPath,
-            model,
-            searchPlugins
-        }),
+        sort,
         size: limit + 1,
         // eslint-disable-next-line
         search_after: decodeCursor(after) as any,
         // eslint-disable-next-line
         track_total_hits: true
     };
+
+    const bodyPlugins = plugins
+        .byType<CmsEntryElasticsearchBodyModifierPlugin>(
+            CmsEntryElasticsearchBodyModifierPlugin.type
+        )
+        .filter(pl => {
+            return !pl.modelId || pl.modelId === model.modelId;
+        });
+    for (const pl of bodyPlugins) {
+        pl.modifyBody({
+            body,
+            model
+        });
+    }
+
+    return body;
 };
