@@ -105,7 +105,7 @@ module.exports = [
                     yargs.option("remoteRuntimeLogs", {
                         alias: "r",
                         describe: `Forward logs from deployed application code to your terminal`,
-                        type: "string"
+                        type: "boolean"
                     });
                     yargs.option("debug", {
                         default: false,
