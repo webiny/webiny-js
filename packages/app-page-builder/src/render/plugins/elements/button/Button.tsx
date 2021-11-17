@@ -14,9 +14,7 @@ const Button = ({ element }: { element: PbElement }) => {
     const { svg = null } = icon;
     const { position = "left" } = icon;
 
-    console.log("action: ", action.clickHandler);
-    console.log("plugin: ", plugins.byName(action.clickHandler));
-    const plugin = useMemo(() => plugins.byName(action.clickHandler), []);
+    const plugin = useMemo(() => plugins.byName(action.clickHandler), [action.clickHandler]);
 
     // Let's preserve backwards compatibility by extracting "link" properties from deprecated "link"
     // element object, if it exists otherwise, we'll use the newer "action" element object
@@ -29,6 +27,8 @@ const Button = ({ element }: { element: PbElement }) => {
         href = action?.href;
         newTab = action?.newTab;
     }
+
+    const clickHandler = plugin ? () => plugin.handler(action.parameters) : () => null;
 
     const classes = [
         "webiny-pb-base-page-element-style",
@@ -52,12 +52,7 @@ const Button = ({ element }: { element: PbElement }) => {
                 return (
                     <>
                         {action.actionType === "onClickHandler" ? (
-                            <div
-                                style={{ display: "flex", justifyContent }}
-                                onClick={
-                                    plugin ? () => plugin.handler(action.parameters) : () => null
-                                }
-                            >
+                            <div style={{ display: "flex", justifyContent }} onClick={clickHandler}>
                                 <div
                                     style={elementStyle}
                                     {...elementAttributes}

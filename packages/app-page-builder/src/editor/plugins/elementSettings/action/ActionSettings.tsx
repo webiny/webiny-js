@@ -125,16 +125,15 @@ const ActionSettingsComponent: React.FunctionComponent<
                                                         name: plugin.title
                                                     };
                                                 });
+                                                const valueForAutoComplete = selectOptions.find(
+                                                    option => option.id === value
+                                                );
                                                 return (
                                                     <AutoComplete
-                                                        value={selectOptions.find(
-                                                            option => option.id === value
-                                                        )}
+                                                        value={valueForAutoComplete}
                                                         placeholder="Select a handler"
                                                         options={selectOptions}
-                                                        onChange={option => {
-                                                            onChange(option);
-                                                        }}
+                                                        onChange={onChange}
                                                     />
                                                 );
                                             }}
