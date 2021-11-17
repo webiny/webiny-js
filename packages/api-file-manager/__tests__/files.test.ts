@@ -392,4 +392,80 @@ describe("Files CRUD test", () => {
             }
         });
     });
+
+    it("should find files by either name or tag name", async () => {
+        const [createResponse] = await createFiles({
+            data: [fileAData, fileBData, fileCData]
+        });
+        expect(createResponse).toEqual({
+            data: {
+                fileManager: {
+                    createFiles: {
+                        data: expect.any(Array),
+                        error: null
+                    }
+                }
+            }
+        });
+        await until(
+            () => listFiles().then(([data]) => data),
+            ({ data }) => {
+                return data.fileManager.listFiles.data.length === 3;
+            },
+            { name: "bulk list tags", tries: 10 }
+        );
+
+        const [searchNameResponse] = await listFiles({
+            search: "filenameC"
+        });
+
+        expect(searchNameResponse).toEqual({
+            data: {
+                fileManager: {
+                    listFiles: {
+                        data: [
+                            {
+                                ...fileCData,
+                                id: expect.any(String)
+                            }
+                        ],
+                        error: null,
+                        meta: {
+                            hasMoreItems: false,
+                            totalCount: 1,
+                            cursor: expect.any(String)
+                        }
+                    }
+                }
+            }
+        });
+        const [searchTagsResponse] = await listFiles({
+            search: "art"
+        });
+
+        expect(searchTagsResponse).toEqual({
+            data: {
+                fileManager: {
+                    listFiles: {
+                        data: [
+                            {
+                                ...fileCData,
+                                id: expect.any(String)
+                            },
+                            {
+                                ...fileBData,
+                                id: expect.any(String)
+                            }
+                        ],
+                        error: null,
+                        meta: {
+                            hasMoreItems: false,
+                            totalCount: 2,
+                            cursor: expect.any(String)
+                        }
+                    }
+                }
+            }
+        });
+    });
 });
