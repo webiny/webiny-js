@@ -7,7 +7,8 @@ import {
     FileManagerContext,
     FileManagerFilesStorageOperationsListParamsWhere,
     FileManagerFilesStorageOperationsTagsParamsWhere,
-    FilePermission
+    FilePermission,
+    FilesListOpts
 } from "~/types";
 import checkBasePermissions from "./utils/checkBasePermissions";
 import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
@@ -77,7 +78,13 @@ const filesContextCrudPlugin = new ContextPlugin<FileManagerContext>(async conte
         async getFile(id: string) {
             const permission = await checkBasePermissions(context, { rwd: "r" });
 
-            const file = await storageOperations.get(id);
+            const file = await storageOperations.get({
+                where: {
+                    id,
+                    tenant: context.tenancy.getCurrentTenant().id,
+                    locale: getLocaleCode(context)
+                }
+            });
 
             if (!file) {
                 throw new NotFoundError(`File with id "${id}" does not exists.`);
@@ -142,7 +149,13 @@ const filesContextCrudPlugin = new ContextPlugin<FileManagerContext>(async conte
         async updateFile(id, input) {
             const permission = await checkBasePermissions(context, { rwd: "w" });
 
-            const original = await storageOperations.get(id);
+            const original = await storageOperations.get({
+                where: {
+                    id,
+                    tenant: context.tenancy.getCurrentTenant().id,
+                    locale: getLocaleCode(context)
+                }
+            });
 
             if (!original) {
                 throw new NotFoundError(`File with id "${id}" does not exists.`);
@@ -191,7 +204,13 @@ const filesContextCrudPlugin = new ContextPlugin<FileManagerContext>(async conte
         async deleteFile(id) {
             const permission = await checkBasePermissions(context, { rwd: "d" });
 
-            const file = await storageOperations.get(id);
+            const file = await storageOperations.get({
+                where: {
+                    id,
+                    tenant: context.tenancy.getCurrentTenant().id,
+                    locale: getLocaleCode(context)
+                }
+            });
             if (!file) {
                 throw new NotFoundError(`File with id "${id}" does not exists.`);
             }
@@ -204,7 +223,9 @@ const filesContextCrudPlugin = new ContextPlugin<FileManagerContext>(async conte
                     plugins: filePlugins,
                     file
                 });
-                await storageOperations.delete(id);
+                await storageOperations.delete({
+                    file
+                });
                 await runLifecycleEvent("afterDelete", {
                     context,
                     plugins: filePlugins,
@@ -296,7 +317,7 @@ const filesContextCrudPlugin = new ContextPlugin<FileManagerContext>(async conte
                 );
             }
         },
-        async listFiles(params = {}) {
+        async listFiles(params: FilesListOpts = {}) {
             const permission = await checkBasePermissions(context, { rwd: "r" });
 
             const {
@@ -310,12 +331,11 @@ const filesContextCrudPlugin = new ContextPlugin<FileManagerContext>(async conte
                 sort: initialSort
             } = params;
 
-            const { i18nContent } = context;
-
             const where: FileManagerFilesStorageOperationsListParamsWhere = {
                 ...initialWhere,
                 private: false,
-                locale: i18nContent.locale.code
+                locale: context.i18nContent.getLocale().code,
+                tenant: context.tenancy.getCurrentTenant().id
             };
             /**
              * Always override the createdBy received from the user, if any.
@@ -335,8 +355,8 @@ const filesContextCrudPlugin = new ContextPlugin<FileManagerContext>(async conte
                 where.type_in = types;
             }
             /**
-             * TODO: determine the change of this part.
-             * Either assign search keyword to something meaningful or throw it out.
+             * We are assigning search to tag and name search.
+             * This should be treated as OR condition in the storage operations.
              */
             if (search && !where.search) {
                 where.search = search;
@@ -382,6 +402,7 @@ const filesContextCrudPlugin = new ContextPlugin<FileManagerContext>(async conte
             const { i18nContent } = context;
 
             const where: FileManagerFilesStorageOperationsTagsParamsWhere = {
+                tenant: context.tenancy.getCurrentTenant().id,
                 locale: i18nContent.locale.code
             };
 

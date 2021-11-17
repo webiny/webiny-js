@@ -1,12 +1,14 @@
 import { InstallationPlugin } from "@webiny/api-file-manager/plugins/definitions/InstallationPlugin";
-import configurations from "~/operations/configurations";
+import { configurations } from "~/operations/configurations";
 
 export class FileManagerInstallationPlugin extends InstallationPlugin {
     public name = "fm.system.ddb-es-installation";
 
     public async beforeInstall({ context }): Promise<void> {
-        const { elasticsearch } = context;
-        const esIndex = configurations.es(context);
+        const { elasticsearch, tenancy } = context;
+        const esIndex = configurations.es({
+            tenant: tenancy.getCurrentTenant().id
+        });
         const { body: exists } = await elasticsearch.indices.exists(esIndex);
         if (exists) {
             return;

@@ -10,6 +10,22 @@ const CUSTOM_HANDLERS = {
     // Skip "i18n" package.
     i18n: () => [],
 
+    // Split "api-file-manager" tests into batches of
+    "api-file-manager": () => {
+        return [
+            "packages/api-file-manager/* --keyword=fm:ddb --keyword=fm:base",
+            "packages/api-file-manager/* --keyword=fm:ddb-es --keyword=fm:base"
+        ];
+    },
+
+    // Split "api-form-builder" tests into batches of
+    "api-form-builder": () => {
+        return [
+            "packages/api-form-builder/* --keyword=fb:ddb --keyword=fb:base",
+            "packages/api-form-builder/* --keyword=fb:ddb-es --keyword=fb:base"
+        ];
+    },
+
     // Split "api-page-builder" tests into batches of
     "api-page-builder": () => {
         return [
