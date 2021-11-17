@@ -81,7 +81,7 @@ const createElasticsearchQuery = (
                 should: [
                     {
                         wildcard: {
-                            name: `*${search}*`
+                            name: `${search}`
                         }
                     },
                     {
