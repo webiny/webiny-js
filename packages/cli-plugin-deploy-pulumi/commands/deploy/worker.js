@@ -37,6 +37,6 @@ parentPort.on("message", async params => {
         process.exit(0);
     } catch (e) {
         console.log(e.stack);
-        console.error(e)
+        console.error(e);
     }
 });
