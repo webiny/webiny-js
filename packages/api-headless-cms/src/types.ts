@@ -1176,7 +1176,7 @@ export interface CmsModelManager {
     /**
      * Get an entry filtered by given params. Will always get one.
      */
-    get: (params?: CmsEntryGetParams) => Promise<CmsEntry>;
+    get: (id: string) => Promise<CmsEntry>;
     /**
      * Create a entry.
      */
@@ -1517,6 +1517,16 @@ export interface AfterEntryRevisionDeleteTopicParams {
     model: CmsModel;
 }
 
+export interface BeforeEntryGetTopicParams {
+    model: CmsModel;
+    where: CmsEntryListWhere;
+}
+
+export interface BeforeEntryListTopicParams {
+    where: CmsEntryListWhere;
+    model: CmsModel;
+}
+
 /**
  * Cms Entry CRUD methods in the context.
  *
@@ -1630,6 +1640,8 @@ export interface CmsEntryContext {
     onAfterEntryRequestChanges: Topic<AfterEntryRequestChangesTopicParams>;
     onBeforeEntryRequestReview: Topic<BeforeEntryRequestReviewTopicParams>;
     onAfterEntryRequestReview: Topic<AfterEntryRequestReviewTopicParams>;
+    onBeforeEntryGet: Topic<BeforeEntryGetTopicParams>;
+    onBeforeEntryList: Topic<BeforeEntryListTopicParams>;
 }
 
 /**

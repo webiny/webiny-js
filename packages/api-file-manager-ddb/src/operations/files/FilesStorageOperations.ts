@@ -2,7 +2,10 @@ import {
     File,
     FileManagerContext,
     FileManagerFilesStorageOperations,
+    FileManagerFilesStorageOperationsCreateBatchParams,
     FileManagerFilesStorageOperationsCreateParams,
+    FileManagerFilesStorageOperationsDeleteParams,
+    FileManagerFilesStorageOperationsGetParams,
     FileManagerFilesStorageOperationsListParams,
     FileManagerFilesStorageOperationsListParamsWhere,
     FileManagerFilesStorageOperationsListResponse,
@@ -14,15 +17,15 @@ import { Entity, Table } from "dynamodb-toolbox";
 import WebinyError from "@webiny/error";
 import defineTable from "~/definitions/table";
 import defineFilesEntity from "~/definitions/filesEntity";
-import lodashOmit from "lodash.omit";
-import lodashChunk from "lodash.chunk";
 import { queryOptions as DynamoDBToolboxQueryOptions } from "dynamodb-toolbox/dist/classes/Table";
 import { queryAll } from "@webiny/db-dynamodb/utils/query";
-import { FilterExpressions } from "dynamodb-toolbox/dist/lib/expressionBuilder";
 import { decodeCursor, encodeCursor } from "@webiny/db-dynamodb/utils/cursor";
 import { filterItems } from "@webiny/db-dynamodb/utils/filter";
 import { sortItems } from "@webiny/db-dynamodb/utils/sort";
 import { FileDynamoDbFieldPlugin } from "~/plugins/FileDynamoDbFieldPlugin";
+import { batchWriteAll } from "@webiny/db-dynamodb/utils/batchWrite";
+import { get as getEntityItem } from "@webiny/db-dynamodb/utils/get";
+import { cleanupItem } from "@webiny/db-dynamodb/utils/cleanup";
 
 interface FileItem extends File {
     PK: string;
@@ -38,62 +41,55 @@ interface QueryAllOptionsParams {
     where: FileManagerFilesStorageOperationsListParamsWhere;
 }
 
-/**
- * This is required due to sometimes file data sent is from the DynamoDB and we want to remove the unnecessary stuff.
- */
-const cleanStorageFile = (file: File & Record<string, any>): File => {
-    return lodashOmit(file, ["PK", "SK", "TYPE", "created", "modified", "entity"]);
-};
+interface CreatePartitionKeyParams {
+    locale: string;
+    tenant: string;
+}
+
+interface CreateSortKeyParams {
+    id: string;
+}
 
 export class FilesStorageOperations implements FileManagerFilesStorageOperations {
-    private readonly _context: any;
-    private readonly _table: Table;
-    private readonly _entity: Entity<any>;
+    private readonly _context: FileManagerContext;
+    private readonly table: Table;
+    private readonly entity: Entity<any>;
 
     private get context(): FileManagerContext {
         return this._context;
     }
 
-    private get partitionKey(): string {
-        const tenant = this.context.tenancy.getCurrentTenant();
-        const locale = this.context.i18nContent.getLocale();
-        if (!tenant) {
-            throw new WebinyError("Tenant missing.", "TENANT_NOT_FOUND");
-        }
-        if (!locale) {
-            throw new Error("Locale missing.");
-        }
-        return `T#${tenant.id}#L#${locale.code}#FM#F`;
-    }
-
     public constructor({ context }: ConstructorParams) {
         this._context = context;
-        this._table = defineTable({
+        this.table = defineTable({
             context
         });
 
-        this._entity = defineFilesEntity({
+        this.entity = defineFilesEntity({
             context,
-            table: this._table
+            table: this.table
         });
     }
 
-    public async get(id: string): Promise<File | null> {
+    public async get(params: FileManagerFilesStorageOperationsGetParams): Promise<File | null> {
+        const { where } = params;
+        const keys = {
+            PK: this.createPartitionKey(where),
+            SK: this.createSortKey(where)
+        };
         try {
-            const file = await this._entity.get({
-                PK: this.partitionKey,
-                SK: this.getSortKey(id)
+            const file = await getEntityItem<File>({
+                entity: this.entity,
+                keys
             });
-            if (!file || !file.Item) {
-                return null;
-            }
-            return cleanStorageFile(file.Item);
+            return cleanupItem<File>(this.entity, file);
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not fetch requested file.",
                 ex.code || "GET_FILE_ERROR",
                 {
-                    id
+                    error: ex,
+                    where
                 }
             );
         }
@@ -103,21 +99,22 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
         const { file } = params;
 
         const keys = {
-            PK: this.partitionKey,
-            SK: this.getSortKey(file.id)
+            PK: this.createPartitionKey(file),
+            SK: this.createSortKey(file)
         };
         const item: FileItem = {
+            ...file,
             ...keys,
-            TYPE: "fm.file",
-            ...file
+            TYPE: "fm.file"
         };
         try {
-            await this._entity.put(item);
+            await this.entity.put(item);
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not create a new file in the DynamoDB.",
                 ex.code || "CREATE_FILE_ERROR",
                 {
+                    error: ex,
                     item
                 }
             );
@@ -126,24 +123,26 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
         return file;
     }
 
-    public async update({ file }: FileManagerFilesStorageOperationsUpdateParams): Promise<File> {
+    public async update(params: FileManagerFilesStorageOperationsUpdateParams): Promise<File> {
+        const { file } = params;
         const keys = {
-            PK: this.partitionKey,
-            SK: this.getSortKey(file.id)
+            PK: this.createPartitionKey(file),
+            SK: this.createSortKey(file)
         };
 
         const item: FileItem = {
+            ...file,
             ...keys,
-            TYPE: "fm.file",
-            ...file
+            TYPE: "fm.file"
         };
         try {
-            await this._entity.put(item);
+            await this.entity.put(item);
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not update a file in the DynamoDB.",
                 ex.code || "UPDATE_FILE_ERROR",
                 {
+                    error: ex,
                     item
                 }
             );
@@ -151,56 +150,56 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
         return file;
     }
 
-    public async delete(id: string): Promise<void> {
+    public async delete(params: FileManagerFilesStorageOperationsDeleteParams): Promise<void> {
+        const { file } = params;
         const keys = {
-            PK: this.partitionKey,
-            SK: this.getSortKey(id)
+            PK: this.createPartitionKey(file),
+            SK: this.createSortKey(file)
         };
 
         try {
-            await this._entity.delete(keys);
+            await this.entity.delete(keys);
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not delete file from the DynamoDB.",
                 ex.code || "DELETE_FILE_ERROR",
                 {
-                    id,
+                    error: ex,
+                    file,
                     keys
                 }
             );
         }
     }
 
-    public async createBatch({ files }): Promise<File[]> {
-        const fileChunks = lodashChunk(files, 25);
+    public async createBatch(
+        params: FileManagerFilesStorageOperationsCreateBatchParams
+    ): Promise<File[]> {
+        const { files } = params;
 
-        for (const fileChunk of fileChunks) {
-            const batches = [];
-            for (const file of fileChunk) {
-                const keys = {
-                    PK: this.partitionKey,
-                    SK: this.getSortKey(file.id)
-                };
-                batches.push(
-                    this._entity.putBatch({
-                        ...keys,
-                        TYPE: "fm.file",
-                        ...file
-                    })
-                );
-            }
-            try {
-                await this._table.batchWrite(batches);
-            } catch (ex) {
-                throw new WebinyError(
-                    ex.message || "Could not batch insert a list of files.",
-                    ex.code || "BATCH_CREATE_FILES_ERROR",
-                    {
-                        files: fileChunk,
-                        items: batches
-                    }
-                );
-            }
+        const items = files.map(file => {
+            return this.entity.putBatch({
+                ...file,
+                PK: this.createPartitionKey(file),
+                SK: this.createSortKey(file),
+                TYPE: "fm.file"
+            });
+        });
+
+        try {
+            await batchWriteAll({
+                table: this.entity.table,
+                items
+            });
+        } catch (ex) {
+            throw new WebinyError(
+                ex.message || "Could not batch insert a list of files.",
+                ex.code || "BATCH_CREATE_FILES_ERROR",
+                {
+                    error: ex,
+                    files
+                }
+            );
         }
         return files;
     }
@@ -208,25 +207,26 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
     public async list(
         params: FileManagerFilesStorageOperationsListParams
     ): Promise<FileManagerFilesStorageOperationsListResponse> {
-        const { where, limit, after, sort } = params;
+        const { where: initialWhere, limit, after, sort } = params;
 
         const options = this.createQueryAllOptions({
-            where
+            where: initialWhere
         });
         const queryAllParams = {
-            entity: this._entity,
-            partitionKey: this.partitionKey,
+            entity: this.entity,
+            partitionKey: this.createPartitionKey(initialWhere),
             options
         };
-        let items: FileItem[] = [];
+        let items = [];
         try {
-            items = await queryAll(queryAllParams);
+            items = await queryAll<File>(queryAllParams);
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not query for the files.",
                 ex.code || "FILE_LIST_ERROR",
                 {
-                    where,
+                    error: ex,
+                    where: initialWhere,
                     limit,
                     after,
                     sort,
@@ -239,6 +239,21 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
                 }
             );
         }
+
+        const where: FileManagerFilesStorageOperationsListParamsWhere & {
+            contains?: { fields: string[]; value: string };
+        } = {
+            ...initialWhere
+        };
+        if (where.search) {
+            where.contains = {
+                fields: ["name", "tags"],
+                value: where.search
+            };
+        }
+        delete where["tenant"];
+        delete where["locale"];
+        delete where["search"];
 
         const fields = this.context.plugins.byType<FileDynamoDbFieldPlugin>(
             FileDynamoDbFieldPlugin.type
@@ -288,41 +303,23 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
     ): Promise<FileManagerFilesStorageOperationsTagsResponse> {
         const { where } = params;
 
-        const filters: FilterExpressions = [];
-        if (where.locale) {
-            filters.push({
-                attr: "locale",
-                eq: where.locale
-            });
-            delete where.locale;
-        }
-        if (where.tenant) {
-            filters.push({
-                attr: "tenant",
-                eq: where.tenant
-            });
-            delete where.tenant;
-        }
-
-        const options: DynamoDBToolboxQueryOptions = {
-            filters,
-            reverse: false
-        };
-
-        let items: FileItem[] = [];
-
         const queryAllParams = {
-            entity: this._entity,
-            partitionKey: this.partitionKey,
-            options
+            entity: this.entity,
+            partitionKey: this.createPartitionKey(where),
+            options: {
+                gte: " ",
+                reverse: false
+            }
         };
+        let results = [];
         try {
-            items = await queryAll(queryAllParams);
+            results = await queryAll<File>(queryAllParams);
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Error in the DynamoDB query.",
                 ex.code || "DYNAMODB_ERROR",
                 {
+                    error: ex,
                     query: queryAllParams
                 }
             );
@@ -330,7 +327,7 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
         /**
          * Aggregate all the tags from all the items in the database.
          */
-        const tagsObject = items.reduce((collection, item) => {
+        const tagsObject = results.reduce((collection, item) => {
             for (const tag of item.tags) {
                 if (!collection[tag]) {
                     collection[tag] = [];
@@ -353,18 +350,6 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
 
         return [tags, meta];
     }
-    /**
-     * Create the sort key for the file.
-     * Actually those are just some checks.
-     */
-    private getSortKey(id: string) {
-        if (!id || !id.match(/^([a-zA-Z0-9]+)$/)) {
-            throw new WebinyError("Could not determine the file sort key.", "FILE_SORT_KEY_ERROR", {
-                id
-            });
-        }
-        return id;
-    }
 
     private createQueryAllOptions({ where }: QueryAllOptionsParams): DynamoDBToolboxQueryOptions {
         const options: DynamoDBToolboxQueryOptions = {};
@@ -372,5 +357,16 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
             options.eq = where.id;
         }
         return options;
+    }
+
+    private createPartitionKey(params: CreatePartitionKeyParams): string {
+        const { tenant, locale } = params;
+        return `T#${tenant}#L#${locale}#FM#F`;
+    }
+
+    private createSortKey(params: CreateSortKeyParams) {
+        const { id } = params;
+
+        return id;
     }
 }

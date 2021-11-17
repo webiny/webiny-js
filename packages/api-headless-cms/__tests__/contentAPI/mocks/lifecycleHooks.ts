@@ -111,5 +111,11 @@ export const assignEntryEvents = () => {
         context.cms.onAfterEntryRequestChanges.subscribe(async () => {
             pubSubTracker.track("contentEntry:afterRequestChanges");
         });
+        context.cms.onBeforeEntryGet.subscribe(async () => {
+            pubSubTracker.track("contentEntry:beforeGet");
+        });
+        context.cms.onBeforeEntryList.subscribe(async () => {
+            pubSubTracker.track("contentEntry:beforeList");
+        });
     });
 };

@@ -534,4 +534,117 @@ describe("contentEntryHooks", () => {
         expect(pubSubTracker.isExecutedOnce("contentEntry:beforeRequestReview")).toEqual(true);
         expect(pubSubTracker.isExecutedOnce("contentEntry:afterRequestReview")).toEqual(true);
     });
+
+    test("should execute hooks on get and list", async () => {
+        const { createCategory, getCategory, listCategories, until } = useCategoryManageHandler({
+            ...manageOpts,
+            plugins: [assignEntryEvents()]
+        });
+
+        const [createResponse] = await createCategory({
+            data: {
+                title: "category",
+                slug: "category"
+            }
+        });
+
+        const category = createResponse.data.createCategory.data;
+        const { id } = category;
+
+        await until(
+            () => listCategories(),
+            ([response]) => {
+                return response.data.listCategories.data.length > 0;
+            },
+            {
+                name: "list categories after create"
+            }
+        );
+
+        pubSubTracker.reset();
+
+        const [getResponse] = await getCategory({
+            revision: id
+        });
+
+        expect(getResponse).toEqual({
+            data: {
+                getCategory: {
+                    data: category,
+                    error: null
+                }
+            }
+        });
+
+        expect(pubSubTracker.isExecutedOnce("contentEntry:beforeCreate")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:afterCreate")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:beforeCreateRevisionFrom")).toEqual(
+            false
+        );
+        expect(pubSubTracker.isExecutedOnce("contentEntry:afterCreateRevisionFrom")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:beforeUpdate")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:afterUpdate")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:beforeDeleteRevision")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:afterDeleteRevision")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:beforeDelete")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:afterDelete")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:beforePublish")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:afterPublish")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:beforeUnpublish")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:afterUnpublish")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:beforeRequestChanges")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:afterRequestChanges")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:beforeRequestReview")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:afterRequestReview")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:beforeGet")).toEqual(true);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:beforeList")).toEqual(false);
+
+        pubSubTracker.reset();
+        const [listResponse] = await listCategories({
+            where: {
+                id_in: [id]
+            }
+        });
+
+        expect(listResponse).toEqual({
+            data: {
+                listCategories: {
+                    data: [
+                        {
+                            ...category
+                        }
+                    ],
+                    meta: {
+                        hasMoreItems: false,
+                        totalCount: 1,
+                        cursor: null
+                    },
+                    error: null
+                }
+            }
+        });
+
+        expect(pubSubTracker.isExecutedOnce("contentEntry:beforeCreate")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:afterCreate")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:beforeCreateRevisionFrom")).toEqual(
+            false
+        );
+        expect(pubSubTracker.isExecutedOnce("contentEntry:afterCreateRevisionFrom")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:beforeUpdate")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:afterUpdate")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:beforeDeleteRevision")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:afterDeleteRevision")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:beforeDelete")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:afterDelete")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:beforePublish")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:afterPublish")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:beforeUnpublish")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:afterUnpublish")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:beforeRequestChanges")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:afterRequestChanges")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:beforeRequestReview")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:afterRequestReview")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:beforeGet")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentEntry:beforeList")).toEqual(true);
+    });
 });
