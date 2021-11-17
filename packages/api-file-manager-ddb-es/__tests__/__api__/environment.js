@@ -64,7 +64,7 @@ class FileManagerTestEnvironment extends NodeEnvironment {
                     })
                 });
                 return [
-                    //elasticsearchDataGzipCompression(),
+                    elasticsearchDataGzipCompression(),
                     ...pluginsValue,
                     ...dbPluginsValue,
                     elasticsearchClientContext

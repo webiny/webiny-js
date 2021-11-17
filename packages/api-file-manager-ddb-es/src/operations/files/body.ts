@@ -74,7 +74,8 @@ const createElasticsearchQuery = (
      * It produces something like "AND (name contains search value OR tags contains 'search words')"
      */
     if (where.search) {
-        const search = normalizeValue(where.search);
+        const search = normalizeValue(where.search).replace(/^\*/, "").replace(/\*$/, "");
+
         query.must.push({
             bool: {
                 should: [

@@ -2,7 +2,10 @@ import {
     File,
     FileManagerContext,
     FileManagerFilesStorageOperations,
+    FileManagerFilesStorageOperationsCreateBatchParams,
     FileManagerFilesStorageOperationsCreateParams,
+    FileManagerFilesStorageOperationsDeleteParams,
+    FileManagerFilesStorageOperationsGetParams,
     FileManagerFilesStorageOperationsListParams,
     FileManagerFilesStorageOperationsListResponse,
     FileManagerFilesStorageOperationsTagsParams,
@@ -17,14 +20,15 @@ import defineEsTable from "~/definitions/tableElasticsearch";
 import defineFilesEntity from "~/definitions/filesEntity";
 import defineFilesEsEntity from "~/definitions/filesElasticsearchEntity";
 import configurations from "~/operations/configurations";
-import lodashOmit from "lodash.omit";
-import lodashChunk from "lodash.chunk";
 import { decodeCursor, encodeCursor } from "@webiny/api-elasticsearch/cursors";
 import { createElasticsearchBody } from "~/operations/files/body";
 import { transformFromIndex, transformToIndex } from "~/operations/files/transformers";
 import { FileIndexTransformPlugin } from "~/plugins/FileIndexTransformPlugin";
 import { createLimit } from "@webiny/api-elasticsearch/limit";
 import { compress } from "@webiny/api-elasticsearch/compression";
+import { get as getEntityItem } from "@webiny/db-dynamodb/utils/get";
+import { cleanupItem } from "@webiny/db-dynamodb/utils/cleanup";
+import { batchWriteAll } from "@webiny/db-dynamodb/utils/batchWrite";
 
 interface FileItem extends File {
     PK: string;
@@ -43,21 +47,18 @@ interface ConstructorParams {
     context: FileManagerContext;
 }
 
-const SORT_KEY = "A";
-
-/**
- * This is required due to sometimes file data sent is from the DynamoDB and we want to remove the unnecessary stuff.
- */
-const cleanStorageFile = (file: File & Record<string, any>): File => {
-    return lodashOmit(file, ["PK", "SK", "TYPE", "created", "modified", "entity"]);
-};
+interface CreatePartitionKeyParams {
+    id: string;
+    locale: string;
+    tenant: string;
+}
 
 export class FilesStorageOperations implements FileManagerFilesStorageOperations {
     private readonly context: FileManagerContext;
-    private readonly _table: Table;
-    private readonly _esTable: Table;
-    private readonly _entity: Entity<any>;
-    private readonly _esEntity: Entity<any>;
+    private readonly table: Table;
+    private readonly esTable: Table;
+    private readonly entity: Entity<any>;
+    private readonly esEntity: Entity<any>;
     private _esIndex: string;
 
     private get esIndex(): string {
@@ -79,55 +80,46 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
         return ctx.elasticsearch as Client;
     }
 
-    private get partitionKeyPrefix(): string {
-        const tenant = this.context.tenancy.getCurrentTenant();
-        const locale = this.context.i18nContent.getLocale();
-        if (!tenant) {
-            throw new WebinyError("Tenant missing.", "TENANT_NOT_FOUND");
-        }
-        if (!locale) {
-            throw new Error("Locale missing.");
-        }
-        return `T#${tenant.id}#L#${locale.code}#FM`;
-    }
-
     public constructor({ context }: ConstructorParams) {
         this.context = context;
-        this._table = defineTable({
+        this.table = defineTable({
             context
         });
 
-        this._entity = defineFilesEntity({
+        this.entity = defineFilesEntity({
             context,
-            table: this._table
+            table: this.table
         });
 
-        this._esTable = defineEsTable({
+        this.esTable = defineEsTable({
             context
         });
 
-        this._esEntity = defineFilesEsEntity({
+        this.esEntity = defineFilesEsEntity({
             context,
-            table: this._esTable
+            table: this.esTable
         });
     }
 
-    public async get(id: string): Promise<File | null> {
+    public async get(params: FileManagerFilesStorageOperationsGetParams): Promise<File | null> {
+        const { where } = params;
+        const keys = {
+            PK: this.createPartitionKey(where),
+            SK: this.createSortKey()
+        };
+
         try {
-            const file = await this._entity.get({
-                PK: this.getPartitionKey(id),
-                SK: SORT_KEY
+            const file = await getEntityItem<File>({
+                entity: this.entity,
+                keys
             });
-            if (!file || !file.Item) {
-                return null;
-            }
-            return cleanStorageFile(file.Item);
+            return cleanupItem<File>(this.entity, file);
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not fetch requested file.",
                 ex.code || "GET_FILE_ERROR",
                 {
-                    id
+                    where
                 }
             );
         }
@@ -137,13 +129,13 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
         const { file } = params;
 
         const keys = {
-            PK: this.getPartitionKey(file.id),
-            SK: SORT_KEY
+            PK: this.createPartitionKey(file),
+            SK: this.createSortKey()
         };
         const item: FileItem = {
+            ...file,
             ...keys,
-            TYPE: "fm.file",
-            ...file
+            TYPE: "fm.file"
         };
         const esData = await transformToIndex({
             plugins: this.getFileIndexTransformPlugins(),
@@ -156,8 +148,8 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
             data: esCompressedData
         };
         try {
-            await this._entity.put(item);
-            await this._esEntity.put(esItem);
+            await this.entity.put(item);
+            await this.esEntity.put(esItem);
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not create a new file in the DynamoDB.",
@@ -172,16 +164,18 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
         return file;
     }
 
-    public async update({ file }: FileManagerFilesStorageOperationsUpdateParams): Promise<File> {
+    public async update(params: FileManagerFilesStorageOperationsUpdateParams): Promise<File> {
+        const { file } = params;
+
         const keys = {
-            PK: this.getPartitionKey(file.id),
-            SK: SORT_KEY
+            PK: this.createPartitionKey(file),
+            SK: this.createSortKey()
         };
 
         const item: FileItem = {
+            ...file,
             ...keys,
-            TYPE: "fm.file",
-            ...file
+            TYPE: "fm.file"
         };
         const esData = await transformToIndex({
             plugins: this.getFileIndexTransformPlugins(),
@@ -194,8 +188,8 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
             data: esCompressedData
         };
         try {
-            await this._entity.put(item);
-            await this._esEntity.put(esItem);
+            await this.entity.put(item);
+            await this.esEntity.put(esItem);
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not update a file in the DynamoDB.",
@@ -209,67 +203,93 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
         return file;
     }
 
-    public async delete(id: string): Promise<void> {
+    public async delete(params: FileManagerFilesStorageOperationsDeleteParams): Promise<void> {
+        const { file } = params;
         const keys = {
-            PK: this.getPartitionKey(id),
-            SK: SORT_KEY
+            PK: this.createPartitionKey(file),
+            SK: this.createSortKey()
         };
 
         try {
-            await this._table.batchWrite([
-                this._entity.deleteBatch(keys),
-                this._esEntity.deleteBatch(keys)
-            ]);
+            await this.entity.delete(keys);
+            await this.esEntity.delete(keys);
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not delete file from the DynamoDB.",
                 ex.code || "DELETE_FILE_ERROR",
                 {
-                    id
+                    error: ex,
+                    file
                 }
             );
         }
     }
 
-    public async createBatch({ files }): Promise<File[]> {
-        const fileChunks = lodashChunk(files, 12);
+    public async createBatch(
+        params: FileManagerFilesStorageOperationsCreateBatchParams
+    ): Promise<File[]> {
+        const { files } = params;
 
-        for (const fileChunk of fileChunks) {
-            const batches = [];
-            for (const file of fileChunk) {
-                const keys = {
-                    PK: this.getPartitionKey(file.id),
-                    SK: SORT_KEY
-                };
-                batches.push(
-                    this._entity.putBatch({
-                        ...keys,
-                        TYPE: "fm.file",
-                        ...file
-                    })
-                );
-                const esCompressedData = await compress(this.context.plugins, file);
-                batches.push(
-                    this._esEntity.putBatch({
-                        ...keys,
-                        index: this.esIndex,
-                        data: esCompressedData
-                    })
-                );
-            }
-            try {
-                await this._table.batchWrite(batches);
-            } catch (ex) {
-                throw new WebinyError(
-                    ex.message || "Could not batch insert a list of files.",
-                    ex.code || "BATCH_CREATE_FILES_ERROR",
-                    {
-                        files: fileChunk,
-                        items: batches
-                    }
-                );
-            }
+        const items = [];
+        const esItems = [];
+
+        for (const file of files) {
+            const keys = {
+                PK: this.createPartitionKey(file),
+                SK: this.createSortKey()
+            };
+
+            items.push(
+                this.entity.putBatch({
+                    ...file,
+                    ...keys,
+                    TYPE: "fm.file"
+                })
+            );
+
+            const esCompressedData = await compress(this.context.plugins, file);
+
+            esItems.push(
+                this.esEntity.putBatch({
+                    ...keys,
+                    index: this.esIndex,
+                    data: esCompressedData
+                })
+            );
         }
+
+        try {
+            await batchWriteAll({
+                table: this.entity.table,
+                items
+            });
+        } catch (ex) {
+            throw new WebinyError(
+                ex.message || "Could not batch insert a list of files.",
+                ex.code || "BATCH_CREATE_FILES_ERROR",
+                {
+                    error: ex,
+                    files
+                }
+            );
+        }
+
+        try {
+            await batchWriteAll({
+                table: this.esEntity.table,
+                items: esItems
+            });
+        } catch (ex) {
+            throw new WebinyError(
+                ex.message || "Could not batch insert a list of files into Elasticsearch table.",
+                ex.code || "BATCH_CREATE_FILES_ERROR",
+                {
+                    error: ex,
+                    files
+                }
+            );
+        }
+
         return files;
     }
 
@@ -398,11 +418,13 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
         return [tags, meta];
     }
 
-    /**
-     * Create the partition key for the file.
-     */
-    private getPartitionKey(id: string): string {
-        return `${this.partitionKeyPrefix}#F#${id}`;
+    private createPartitionKey(params: CreatePartitionKeyParams): string {
+        const { tenant, locale, id } = params;
+        return `T#${tenant}#L#${locale}#FM#F${id}`;
+    }
+
+    private createSortKey(): string {
+        return "A";
     }
 
     private getFileIndexTransformPlugins(): FileIndexTransformPlugin[] {

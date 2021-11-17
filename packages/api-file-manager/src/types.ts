@@ -240,6 +240,18 @@ export interface FileManagerSettingsStorageOperations {
  * @category FilesStorageOperations
  * @category FilesStorageOperationsParams
  */
+export interface FileManagerFilesStorageOperationsGetParams {
+    where: {
+        id: string;
+        tenant: string;
+        locale: string;
+    };
+}
+/**
+ * @category StorageOperations
+ * @category FilesStorageOperations
+ * @category FilesStorageOperationsParams
+ */
 export interface FileManagerFilesStorageOperationsCreateParams {
     file: File;
 }
@@ -250,6 +262,15 @@ export interface FileManagerFilesStorageOperationsCreateParams {
  */
 export interface FileManagerFilesStorageOperationsUpdateParams {
     original: File;
+    file: File;
+}
+
+/**
+ * @category StorageOperations
+ * @category FilesStorageOperations
+ * @category FilesStorageOperationsParams
+ */
+export interface FileManagerFilesStorageOperationsDeleteParams {
     file: File;
 }
 /**
@@ -273,16 +294,13 @@ export interface FileManagerFilesStorageOperationsListParamsWhere {
     tag?: string;
     tag_contains?: string;
     tag_in?: string[];
-    /**
-     * TODO: determine if to remove the search and use name or tag params.
-     */
-    search?: string;
     createdBy?: string;
-    locale?: string;
-    tenant?: string;
+    locale: string;
+    tenant: string;
     private?: boolean;
     type?: string;
     type_in?: string[];
+    search?: string;
 }
 /**
  * @category StorageOperations
@@ -318,7 +336,7 @@ export type FileManagerFilesStorageOperationsTagsResponse = [
 
 export interface FileManagerFilesStorageOperationsTagsParamsWhere extends FilesCrudListTagsWhere {
     locale: string;
-    tenant?: string;
+    tenant: string;
 }
 /**
  * @category StorageOperations
@@ -338,7 +356,7 @@ export interface FileManagerFilesStorageOperations {
     /**
      * Get a single file with given ID from the storage.
      */
-    get: (id: string) => Promise<File | null>;
+    get: (params: FileManagerFilesStorageOperationsGetParams) => Promise<File | null>;
     /**
      * Insert the file data into the database.
      */
@@ -350,7 +368,7 @@ export interface FileManagerFilesStorageOperations {
     /**
      * Delete the file from the database.
      */
-    delete: (id: string) => Promise<void>;
+    delete: (params: FileManagerFilesStorageOperationsDeleteParams) => Promise<void>;
     /**
      * Store multiple files at once to the database.
      */
