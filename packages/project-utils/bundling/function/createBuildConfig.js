@@ -63,7 +63,7 @@ module.exports = options => {
             ]
         },
         resolve: {
-            modules: [path.resolve("node_modules"), "node_modules"],
+            modules: [path.resolve(path.join(cwd, "node_modules")), "node_modules"],
             extensions: [".mjs", ".ts", ".tsx", ".js", ".jsx", ".json"]
         }
     };
