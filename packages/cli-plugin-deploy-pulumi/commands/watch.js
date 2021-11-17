@@ -109,7 +109,7 @@ module.exports = async (inputs, context) => {
     };
 
     // Forward logs from the cloud to here, using the "localtunnel" library.
-    if (inputs.logs) {
+    if (inputs.remoteRuntimeLogs) {
         try {
             const tunnel = await localtunnel({ port: 3010 });
 
@@ -144,11 +144,11 @@ module.exports = async (inputs, context) => {
 
             output.log({ type: "logs", message: "" });
 
-            if (inputs.logs !== "*") {
+            if (inputs.remoteRuntimeLogs !== "*") {
                 output.log({
                     type: "logs",
                     message: chalk.gray(
-                        `Only showing logs that match the following pattern: ${inputs.logs}`
+                        `Only showing logs that match the following pattern: ${inputs.remoteRuntimeLogs}`
                     )
                 });
             }
@@ -253,7 +253,7 @@ module.exports = async (inputs, context) => {
             });
 
             // If logs are enabled, inform user that we're updating the WEBINY_LOGS_FORWARD_URL env variable.
-            if (inputs.logs) {
+            if (inputs.remoteRuntimeLogs) {
                 setTimeout(() => {
                     output.log({
                         type: "deploy",
