@@ -74,7 +74,7 @@ const createElasticsearchQuery = (
      * It produces something like "AND (name contains search value OR tags contains 'search words')"
      */
     if (where.search) {
-        const search = normalizeValue(where.search).replace(/^\*/, "").replace(/\*$/, "");
+        const search = normalizeValue(where.search);
 
         query.must.push({
             bool: {
@@ -86,17 +86,21 @@ const createElasticsearchQuery = (
                     },
                     {
                         terms: {
-                            tags: search.toLowerCase().split(" ")
+                            tags: search
+                                .toLowerCase()
+                                .replace(/^\*/, "")
+                                .replace(/\*$/, "")
+                                .split(" ")
                         }
                     }
                 ]
             }
         });
-        /**
-         * Remove because this field actually does not exist and Elasticsearch would throw an error.
-         */
-        delete where.search;
     }
+    /**
+     * Remove because this field actually does not exist and Elasticsearch would throw an error.
+     */
+    delete where.search;
     /**
      * We apply other conditions as they are passed via the where value.
      */
