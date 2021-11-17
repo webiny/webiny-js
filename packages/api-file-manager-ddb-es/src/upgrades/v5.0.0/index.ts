@@ -1,6 +1,6 @@
 import { UpgradePlugin } from "@webiny/api-upgrade/types";
 import { paginateBatch } from "../utils";
-import configurations from "~/operations/configurations";
+import { configurations } from "~/operations/configurations";
 import { FileManagerContext } from "@webiny/api-file-manager/types";
 import { ElasticsearchContext } from "@webiny/api-elasticsearch/types";
 import { DbContext } from "@webiny/handler-db/types";
@@ -61,7 +61,8 @@ const plugin: UpgradePlugin<FileManagerContext & ElasticsearchContext & DbContex
                 .batch()
                 .create(
                     ...items.map(item => ({
-                        ...configurations.esDb,
+                        // @ts-ignore
+                        ...configurations.esDb(),
                         data: {
                             PK: `T#root#L#${item._source.locale}#FM#F#${item._source.id}`,
                             SK: "A",

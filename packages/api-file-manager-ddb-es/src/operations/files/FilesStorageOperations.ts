@@ -19,7 +19,7 @@ import defineTable from "~/definitions/table";
 import defineEsTable from "~/definitions/tableElasticsearch";
 import defineFilesEntity from "~/definitions/filesEntity";
 import defineFilesEsEntity from "~/definitions/filesElasticsearchEntity";
-import configurations from "~/operations/configurations";
+import { configurations } from "~/operations/configurations";
 import { decodeCursor, encodeCursor } from "@webiny/api-elasticsearch/cursors";
 import { createElasticsearchBody } from "~/operations/files/body";
 import { transformFromIndex, transformToIndex } from "~/operations/files/transformers";
@@ -63,7 +63,9 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
 
     private get esIndex(): string {
         if (!this._esIndex) {
-            const { index: esIndex } = configurations.es(this.context);
+            const { index: esIndex } = configurations.es({
+                tenant: this.context.tenancy.getCurrentTenant().id
+            });
             this._esIndex = esIndex;
         }
         return this._esIndex;
@@ -309,7 +311,9 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
         let response;
         try {
             response = await this.esClient.search({
-                ...configurations.es(this.context),
+                ...configurations.es({
+                    tenant: this.context.tenancy.getCurrentTenant().id
+                }),
                 body
             });
         } catch (ex) {
@@ -353,7 +357,9 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
     ): Promise<FileManagerFilesStorageOperationsTagsResponse> {
         const { where, limit: initialLimit } = params;
 
-        const esDefaults = configurations.es(this.context);
+        const esDefaults = configurations.es({
+            tenant: this.context.tenancy.getCurrentTenant().id
+        });
 
         const must: any[] = [];
         if (where.locale) {

@@ -27,7 +27,7 @@ const fileCData = {
 jest.setTimeout(100000);
 
 describe("Files CRUD test", () => {
-    const { createFile, updateFile, createFiles, getFile, listFiles, listTags, until } =
+    const { install, createFile, updateFile, createFiles, getFile, listFiles, listTags, until } =
         useGqlHandler();
 
     test("should create, read, update and delete files", async () => {
@@ -394,6 +394,23 @@ describe("Files CRUD test", () => {
     });
 
     it("should find files by either name or tag name", async () => {
+        /**
+         * Unfortunately due to DDB+ES storage ops we need to run the installation.
+         */
+        const [installResponse] = await install({
+            srcPrefix: "https://0c6fb883-webiny-latest-files.s3.amazonaws.com/"
+        });
+        expect(installResponse).toEqual({
+            data: {
+                fileManager: {
+                    install: {
+                        data: true,
+                        error: null
+                    }
+                }
+            }
+        });
+
         const [createResponse] = await createFiles({
             data: [fileAData, fileBData, fileCData]
         });
