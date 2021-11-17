@@ -467,5 +467,34 @@ describe("Files CRUD test", () => {
                 }
             }
         });
+
+        const [searchTags2Response] = await listFiles({
+            search: "webiny"
+        });
+
+        expect(searchTags2Response).toEqual({
+            data: {
+                fileManager: {
+                    listFiles: {
+                        data: [
+                            {
+                                ...fileCData,
+                                id: expect.any(String)
+                            },
+                            {
+                                ...fileAData,
+                                id: expect.any(String)
+                            }
+                        ],
+                        error: null,
+                        meta: {
+                            hasMoreItems: false,
+                            totalCount: 2,
+                            cursor: expect.any(String)
+                        }
+                    }
+                }
+            }
+        });
     });
 });

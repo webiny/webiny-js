@@ -324,6 +324,7 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
         }
         const plugins = this.getFileIndexTransformPlugins();
         const { hits, total } = response.body.hits;
+
         const files = await Promise.all<File>(
             hits.map(async item => {
                 return await transformFromIndex({
