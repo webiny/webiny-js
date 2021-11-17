@@ -24,7 +24,7 @@ module.exports = {
 
 const createScreen = args => {
     // If we only need a single pane, then we don't need to instantiate panes-layout with blessed at all.
-    const singlePane = !!args.build + !!args.deploy + !!args.logs === 1;
+    const singlePane = !!args.build + !!args.deploy + !!args.remoteRuntimeLogs === 1;
     if (singlePane) {
         const log = console.log;
         return {
@@ -59,7 +59,7 @@ const createScreen = args => {
         rows.total += HEIGHTS.deploy;
     }
 
-    if (args.logs) {
+    if (args.remoteRuntimeLogs) {
         rows.total += HEIGHTS.logs;
     }
 
@@ -84,7 +84,7 @@ const createScreen = args => {
         rows.current += HEIGHTS.deploy;
     }
 
-    if (args.logs) {
+    if (args.remoteRuntimeLogs) {
         output.logs.logs = output.grid.set(rows.current, 0, HEIGHTS.logs, 1, contrib.log, {
             label: "Logs",
             scrollOnInput: true,
