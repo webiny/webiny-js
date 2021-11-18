@@ -317,15 +317,15 @@ jobs:
 
       - name: Deploy API
         working-directory: xyz/test-project
-        run: yarn webiny deploy api --env dev
+        run: yarn webiny deploy api --env dev --debug
 
       - name: Deploy Admin Area
         working-directory: xyz/test-project
-        run: yarn webiny deploy apps/admin --env dev
+        run: yarn webiny deploy apps/admin --env dev --debug
 
       - name: Deploy Website
         working-directory: xyz/test-project
-        run: yarn webiny deploy apps/website --env dev
+        run: yarn webiny deploy apps/website --env dev --debug
 
       # Generates a new cypress.json config.
       - name: Create Cypress config
@@ -565,15 +565,15 @@ jobs:
 
       - name: Deploy API
         working-directory: xyz/test-project
-        run: yarn webiny deploy api --env dev
+        run: yarn webiny deploy api --env dev --debug
 
       - name: Deploy Admin Area
         working-directory: xyz/test-project
-        run: yarn webiny deploy apps/admin --env dev
+        run: yarn webiny deploy apps/admin --env dev --debug
 
       - name: Deploy Website
         working-directory: xyz/test-project
-        run: yarn webiny deploy apps/website --env dev
+        run: yarn webiny deploy apps/website --env dev --debug
 
       # Generates a new cypress.json config.
       - name: Create Cypress config

@@ -61,6 +61,7 @@ module.exports = async projectApplication => {
         login = `file://${stateFilesFolder}`;
     }
 
+    console.log('LOGO', login)
     await pulumi.run({
         command: ["login", login]
     });
