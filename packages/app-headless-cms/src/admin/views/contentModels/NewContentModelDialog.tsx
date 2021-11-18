@@ -68,17 +68,17 @@ const NewContentModelDialog: React.FC<NewContentModelDialogProps> = ({ open, onC
         return { value: item.id, label: item.name };
     });
 
-    const nameValidator = useCallback(name => {
-        name = name.trim();
-        if (!name.charAt(0).match(/[a-zA-Z]/)) {
+    const nameValidator = useCallback((name: string) => {
+        const target = (name || "").trim();
+        if (!target.charAt(0).match(/[a-zA-Z]/)) {
             throw new Error("Value is not valid - must not start with a number.");
         }
-        if (name.toLowerCase() === "id") {
+        if (target.toLowerCase() === "id") {
             throw new Error('Value is not valid - "id" is an auto-generated field.');
         }
         for (const ending of disallowedModelIdEndingList) {
             const re = new RegExp(`${ending}$`, "i");
-            const matched = name.match(re);
+            const matched = target.match(re);
             if (matched === null) {
                 continue;
             }
