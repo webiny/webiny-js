@@ -13,8 +13,8 @@ module.exports = async context => {
 
     const src = path.join(__dirname, "newCliPlugins", "admin", "cli");
     const dest = path.join(project.root, "apps", "admin", "cli");
+    context.info(`Inserting new CLI plugins into ${context.info.hl(dest)}.`);
     if (fs.existsSync(path.join(project.root, "apps", "admin"))) {
-        context.info(`Inserting new CLI plugins into ${context.info.hl(dest)}.`);
         await ncp(src, dest);
         context.success("CLI plugins successfully inserted.");
     } else {
@@ -30,8 +30,8 @@ module.exports = async context => {
 
     const src2 = path.join(__dirname, "newCliPlugins", "website", "cli");
     const dest2 = path.join(project.root, "apps", "website", "cli");
+    context.info(`Inserting new CLI plugins into ${context.info.hl(dest2)}.`);
     if (fs.existsSync(path.join(project.root, "apps", "website"))) {
-        context.info(`Inserting new CLI plugins into ${context.info.hl(dest2)}.`);
         await ncp(src2, dest2);
         context.success("CLI plugins successfully inserted.");
     } else {
@@ -68,7 +68,9 @@ import websitePlugins from "./apps/website/cli";`
             );
 
             fs.writeFileSync(projectTsPath, content);
-            context.success(`Root ${context.info.hl(`webiny.project.ts`)} manifest file successfully updated.`);
+            context.success(
+                `Root ${context.info.hl(`webiny.project.ts`)} manifest file successfully updated.`
+            );
         } else {
             context.warning(
                 `Skipping update root ${context.info.hl(
