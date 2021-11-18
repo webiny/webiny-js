@@ -44,6 +44,7 @@ module.exports = async projectApplication => {
         if (selfManagedBackend) {
             login = trimEnd(login, "/") + "/" + relativeProjectApplicationPath;
             login = login.replace(/\\/g, "/");
+            login = login + '/'
         }
     } else {
         // By default, we use local file system as backend. All files are stored in project root's
@@ -63,6 +64,7 @@ module.exports = async projectApplication => {
 
     console.log("LOGO", login);
     console.log("LOGO", login.toUpperCase());
+
     await pulumi.run({
         command: ["login", login]
     });
