@@ -69,7 +69,7 @@ import websitePlugins from "./apps/website/cli";`
 
             fs.writeFileSync(projectTsPath, content);
             context.success(
-                `Root ${context.info.hl(`webiny.project.ts`)} manifest file successfully updated.`
+                `Root ${context.success.hl(`webiny.project.ts`)} manifest file successfully updated.`
             );
         } else {
             context.warning(
