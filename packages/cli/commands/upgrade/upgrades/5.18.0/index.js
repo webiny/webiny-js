@@ -3,6 +3,8 @@ const glob = require("fast-glob");
 const { createMorphProject, yarnInstall, prettierFormat } = require("../utils");
 
 const apiHeadlessCms = require("./apiHeadlessCms");
+const webinyConfigJsUpdates = require("./webinyConfigJsUpdates");
+const newCliPlugins = require("./newCliPlugins");
 
 const targetVersion = "5.18.0";
 
@@ -44,25 +46,38 @@ module.exports = {
      * @returns {Promise<void>}
      */
     async upgrade(options, context) {
+        const start = new Date();
+
         const { info } = context;
 
         const files = await glob([
             // add files here
-            ...Object.values(apiHeadlessCms.files)
+            ...Object.values(apiHeadlessCms.files(context))
             //
         ]);
 
-        const project = createMorphProject(files);
-        /**
-         * Upgrade the API Headless CMS files.
-         */
-        info("Starting with API Headless CMS upgrade.");
-        apiHeadlessCms.upgradeGraphQL(project, context);
-        apiHeadlessCms.upgradeHeadlessCMS(project, context);
+        if (files.length > 0) {
+            const project = createMorphProject(files);
+            /**
+             * Upgrade the API Headless CMS files.
+             */
+            info("Starting with API Headless CMS upgrade.");
 
-        info("Writing changes...");
-        await project.save();
+            apiHeadlessCms.upgradeGraphQL(project, context);
+            apiHeadlessCms.upgradeHeadlessCMS(project, context);
 
+            info("Writing changes...");
+            await project.save();
+            console.log();
+        }
+
+        // Generates new webiny.config.ts files (with new build and watch commands).
+        await webinyConfigJsUpdates(context);
+
+        // Generates new Webiny CLI (post-deploy) plugins for both Admin Area and Website React applications.
+        await newCliPlugins(context);
+
+        // Format updated files.
         await prettierFormat(files, context);
 
         /**
@@ -71,5 +86,8 @@ module.exports = {
         await yarnInstall({
             context
         });
+
+        const duration = (new Date() - start) / 1000;
+        context.success(`Upgrade completed in ${context.success.hl(duration)}s.`);
     }
 };

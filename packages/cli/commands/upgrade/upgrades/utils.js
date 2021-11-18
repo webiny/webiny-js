@@ -134,7 +134,7 @@ const createMorphProject = files => {
 
 const prettierFormat = async (files, context) => {
     try {
-        context.info("Running prettier...");
+        context.info("Formatting updated code...");
         for (const file of files) {
             const filePath = path.join(process.cwd(), file);
             const options = await prettier.resolveConfig(filePath);
@@ -146,7 +146,8 @@ const prettierFormat = async (files, context) => {
             fs.writeFileSync(filePath, fileContentFormatted);
         }
 
-        context.info("Finished formatting files.");
+        context.success("Updated code formatted successfully.");
+        console.log()
     } catch (ex) {
         console.log(context.error.hl("Prettier failed."));
         context.error(ex.message);
@@ -160,11 +161,12 @@ const prettierFormat = async (files, context) => {
  * Run to install new packages in the project.
  */
 const yarnInstall = async ({ context }) => {
-    const { info, error } = context;
+    const { info, success, error } = context;
     try {
         info("Installing new packages...");
         await execa("yarn", { cwd: process.cwd() });
-        info("Finished installing new packages.");
+        success("Packages installed successfully.");
+        console.log()
     } catch (ex) {
         error("Installation of new packages failed.");
         console.log(error(ex.message));

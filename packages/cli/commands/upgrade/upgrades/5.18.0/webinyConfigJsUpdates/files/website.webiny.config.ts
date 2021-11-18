@@ -3,12 +3,8 @@ import { getStackOutput } from "@webiny/cli-plugin-deploy-pulumi/utils";
 import { createWatchApp, createBuildApp } from "@webiny/project-utils";
 
 const API_MAP = {
-    REACT_APP_USER_POOL_REGION: "${region}",
     REACT_APP_GRAPHQL_API_URL: "${apiUrl}/graphql",
-    REACT_APP_API_URL: "${apiUrl}",
-    REACT_APP_USER_POOL_ID: "${cognitoUserPoolId}",
-    REACT_APP_USER_POOL_WEB_CLIENT_ID: "${cognitoAppClientId}",
-    REACT_APP_USER_POOL_PASSWORD_POLICY: "${cognitoUserPoolPasswordPolicy}"
+    REACT_APP_API_URL: "${apiUrl}"
 };
 
 const NO_ENV_MESSAGE = `Please specify the environment via the "--env" argument, for example: "--env dev".`;

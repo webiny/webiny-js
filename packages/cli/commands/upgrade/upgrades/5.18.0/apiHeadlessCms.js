@@ -1,5 +1,7 @@
 // eslint-disable-next-line
 const tsMorph = require("ts-morph");
+const fs = require("fs");
+const path = require("path");
 
 const {
     insertImportToSourceFile,
@@ -14,9 +16,24 @@ const paths = {
     headlessCMS: "api/code/headlessCMS"
 };
 
-const files = {
-    graphQLIndex: `${paths.graphQL}/src/index.ts`,
-    headlessCMSIndex: `${paths.headlessCMS}/src/index.ts`
+const files = context => {
+    const files = {};
+
+    {
+        const checkPath = path.join(context.project.root, "api", "code", "graphql");
+        if (fs.existsSync(checkPath)) {
+            files.graphQLIndex = `${paths.graphQL}/src/index.ts`;
+        }
+    }
+
+    {
+        const checkPath = path.join(context.project.root, "api", "code", "headlessCMS");
+        if (fs.existsSync(checkPath)) {
+            files.headlessCMSIndex = `${paths.headlessCMS}/src/index.ts`;
+        }
+    }
+
+    return files;
 };
 
 /**
@@ -24,10 +41,15 @@ const files = {
  * @param context {CliContext}
  */
 const upgradeGraphQL = (project, context) => {
+    const checkPath = path.join(context.project.root, "api", "code", "graphql");
+    if (!fs.existsSync(checkPath)) {
+        return;
+    }
+
     const { info } = context;
     info(`Upgrading ${info.hl(paths.graphQL)}`);
 
-    const source = project.getSourceFile(files.graphQLIndex);
+    const source = project.getSourceFile(files(context).graphQLIndex);
 
     removeImportFromSourceFile(source, "@webiny/api-headless-cms/plugins");
     removeImportFromSourceFile(source, "@webiny/api-headless-cms-ddb-es");
@@ -87,10 +109,15 @@ const upgradeGraphQL = (project, context) => {
  * @param context {CliContext}
  */
 const upgradeHeadlessCMS = (project, context) => {
+    const checkPath = path.join(context.project.root, "api", "code", "headlessCMS");
+    if (!fs.existsSync(checkPath)) {
+        return;
+    }
+
     const { info } = context;
     info(`Upgrading ${info.hl(paths.headlessCMS)}`);
 
-    const source = project.getSourceFile(files.headlessCMSIndex);
+    const source = project.getSourceFile(files(context).headlessCMSIndex);
 
     removeImportFromSourceFile(source, "@webiny/api-headless-cms/content");
     removeImportFromSourceFile(source, "@webiny/api-headless-cms-ddb-es");
