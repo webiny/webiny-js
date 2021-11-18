@@ -1,6 +1,5 @@
 import { CmsGroup } from "~/types";
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
-import { pubSubTracker } from "./mocks/lifecycleHooks";
 
 describe("content model test", () => {
     const manageHandlerOpts = { path: "manage/en-US" };
@@ -19,27 +18,44 @@ describe("content model test", () => {
             }
         });
         contentModelGroup = createCMG.data.createContentModelGroup.data;
-        // we need to reset this since we are using a singleton
-        pubSubTracker.reset();
     });
 
     test("should not allow creation of a model with an existing modelId", async () => {
         const { createContentModelMutation } = useContentGqlHandler(manageHandlerOpts);
 
-        await createContentModelMutation({
+        const eventData = {
+            name: "Event",
+            modelId: "event",
+            group: contentModelGroup.id
+        };
+
+        const [eventResponse] = await createContentModelMutation({
+            data: eventData
+        });
+
+        expect(eventResponse).toMatchObject({
             data: {
-                name: "Event",
-                modelId: "event",
-                group: contentModelGroup.id
+                createContentModel: {
+                    data: {
+                        ...eventData,
+                        group: {
+                            id: contentModelGroup.id,
+                            name: contentModelGroup.name
+                        }
+                    },
+                    error: null
+                }
             }
         });
 
+        const eventsData = {
+            name: "Event",
+            modelId: "event",
+            group: contentModelGroup.id
+        };
+
         const [response] = await createContentModelMutation({
-            data: {
-                name: "Event",
-                modelId: "event",
-                group: contentModelGroup.id
-            }
+            data: eventsData
         });
 
         expect(response).toEqual({
@@ -47,8 +63,10 @@ describe("content model test", () => {
                 createContentModel: {
                     data: null,
                     error: {
-                        code: "",
-                        data: null,
+                        code: "MODEL_ID_EXISTS",
+                        data: {
+                            modelId: "event"
+                        },
                         message: 'Content model with modelId "event" already exists.'
                     }
                 }
@@ -59,20 +77,38 @@ describe("content model test", () => {
     test("should not allow creation of a model with an existing modelId (plural form of it)", async () => {
         const { createContentModelMutation } = useContentGqlHandler(manageHandlerOpts);
 
-        await createContentModelMutation({
+        const eventData = {
+            name: "Event",
+            modelId: "event",
+            group: contentModelGroup.id
+        };
+        const [eventResponse] = await createContentModelMutation({
+            data: eventData
+        });
+
+        expect(eventResponse).toMatchObject({
             data: {
-                name: "Event",
-                modelId: "event",
-                group: contentModelGroup.id
+                createContentModel: {
+                    data: {
+                        ...eventData,
+                        group: {
+                            id: contentModelGroup.id,
+                            name: contentModelGroup.name
+                        }
+                    },
+                    error: null
+                }
             }
         });
 
+        const eventsData = {
+            name: "Events",
+            modelId: "events",
+            group: contentModelGroup.id
+        };
+
         const [response] = await createContentModelMutation({
-            data: {
-                name: "Events",
-                modelId: "events",
-                group: contentModelGroup.id
-            }
+            data: eventsData
         });
 
         expect(response).toEqual({
@@ -80,8 +116,11 @@ describe("content model test", () => {
                 createContentModel: {
                     data: null,
                     error: {
-                        code: "",
-                        data: null,
+                        code: "MODEL_ID_SINGULAR_ERROR",
+                        data: {
+                            modelId: "events",
+                            singular: "event"
+                        },
                         message:
                             'Content model with modelId "events" does not exist, but a model with modelId "event" does.'
                     }
@@ -114,119 +153,14 @@ describe("content model test", () => {
                 createContentModel: {
                     data: null,
                     error: {
-                        code: "",
-                        data: null,
+                        code: "MODEL_ID_PLURAL_ERROR",
+                        data: {
+                            modelId: "event",
+                            plural: "events"
+                        },
                         message:
                             'Content model with modelId "event" does not exist, but a model with modelId "events" does.'
                     }
-                }
-            }
-        });
-    });
-
-    test("should not allow creation of a model with an existing modelId (auto-generated modelId)", async () => {
-        const { createContentModelMutation, listContentModelsQuery } =
-            useContentGqlHandler(manageHandlerOpts);
-
-        await createContentModelMutation({
-            data: {
-                name: "Event",
-                group: contentModelGroup.id
-            }
-        });
-
-        await createContentModelMutation({
-            data: {
-                name: "Event",
-                group: contentModelGroup.id
-            }
-        });
-
-        const [response] = await listContentModelsQuery();
-
-        expect(response).toMatchObject({
-            data: {
-                listContentModels: {
-                    data: [
-                        {
-                            modelId: "event"
-                        },
-                        {
-                            modelId: "event1"
-                        }
-                    ]
-                }
-            }
-        });
-    });
-
-    test("should not allow creation of a model with an existing modelId (auto-generated modelId, plural)", async () => {
-        const { createContentModelMutation, listContentModelsQuery } =
-            useContentGqlHandler(manageHandlerOpts);
-
-        await createContentModelMutation({
-            data: {
-                name: "Event",
-                group: contentModelGroup.id
-            }
-        });
-
-        await createContentModelMutation({
-            data: {
-                name: "Events",
-                group: contentModelGroup.id
-            }
-        });
-
-        const [response] = await listContentModelsQuery();
-
-        expect(response).toMatchObject({
-            data: {
-                listContentModels: {
-                    data: [
-                        {
-                            modelId: "event"
-                        },
-                        {
-                            modelId: "events1"
-                        }
-                    ]
-                }
-            }
-        });
-    });
-
-    test("should not allow creation of a model with an existing modelId (auto-generated modelId, singular)", async () => {
-        const { createContentModelMutation, listContentModelsQuery } =
-            useContentGqlHandler(manageHandlerOpts);
-
-        await createContentModelMutation({
-            data: {
-                name: "Events",
-                group: contentModelGroup.id
-            }
-        });
-
-        await createContentModelMutation({
-            data: {
-                name: "Event",
-                group: contentModelGroup.id
-            }
-        });
-
-        const [response] = await listContentModelsQuery();
-
-        expect(response).toMatchObject({
-            data: {
-                listContentModels: {
-                    data: [
-                        {
-                            modelId: "event1"
-                        },
-                        {
-                            modelId: "events"
-                        }
-                    ]
                 }
             }
         });

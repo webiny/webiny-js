@@ -24,7 +24,13 @@ const disallowedModelIdEndingList: string[] = ["Response", "List", "Meta", "Inpu
  */
 const checkModelIdUniqueness = (modelIdList: string[], modelId: string) => {
     if (modelIdList.includes(modelId) === true) {
-        throw new WebinyError(`Content model with modelId "${modelId}" already exists.`);
+        throw new WebinyError(
+            `Content model with modelId "${modelId}" already exists.`,
+            "MODEL_ID_EXISTS",
+            {
+                modelId
+            }
+        );
     }
     /**
      * Additionally, check if the plural form of the received modelId exists too. This prevents users
@@ -34,7 +40,12 @@ const checkModelIdUniqueness = (modelIdList: string[], modelId: string) => {
     const pluralizedModelIdCamelCase = pluralize(modelId);
     if (modelIdList.includes(pluralizedModelIdCamelCase) === true) {
         throw new WebinyError(
-            `Content model with modelId "${modelId}" does not exist, but a model with modelId "${pluralizedModelIdCamelCase}" does.`
+            `Content model with modelId "${modelId}" does not exist, but a model with modelId "${pluralizedModelIdCamelCase}" does.`,
+            "MODEL_ID_PLURAL_ERROR",
+            {
+                modelId,
+                plural: pluralizedModelIdCamelCase
+            }
         );
     }
 
@@ -44,7 +55,12 @@ const checkModelIdUniqueness = (modelIdList: string[], modelId: string) => {
     const singularizedModelIdCamelCase = pluralize.singular(modelId);
     if (modelIdList.includes(singularizedModelIdCamelCase) === true) {
         throw new WebinyError(
-            `Content model with modelId "${modelId}" does not exist, but a model with modelId "${singularizedModelIdCamelCase}" does.`
+            `Content model with modelId "${modelId}" does not exist, but a model with modelId "${singularizedModelIdCamelCase}" does.`,
+            "MODEL_ID_SINGULAR_ERROR",
+            {
+                modelId,
+                singular: singularizedModelIdCamelCase
+            }
         );
     }
 };
