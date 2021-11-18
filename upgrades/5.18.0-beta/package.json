@@ -1,3 +1,5 @@
 {
-  "name": "5.18.0-beta"
+  "name": "run-js-with-npx-from-gist",
+  "version": "1.0.0",
+  "bin": "./index.js"
 }

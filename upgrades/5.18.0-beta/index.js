@@ -1,5 +1,3 @@
-module.exports.beforeUpgrade = () => {}
-module.exports.afterUpgrade = () => {}
+#!/usr/bin/env node
 
-
-console.log('dsa')
+console.log("I was executed from a gist inside the terminal with npx!");
