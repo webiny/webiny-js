@@ -6081,9 +6081,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pulumi/aws@npm:^4.10.0":
-  version: 4.24.0
-  resolution: "@pulumi/aws@npm:4.24.0"
+"@pulumi/aws@npm:4.27.0":
+  version: 4.27.0
+  resolution: "@pulumi/aws@npm:4.27.0"
   dependencies:
     "@pulumi/pulumi": ^3.0.0
     aws-sdk: ^2.0.0
@@ -6091,11 +6091,11 @@ __metadata:
     mime: ^2.0.0
     read-package-tree: ^5.2.1
     resolve: ^1.7.1
-  checksum: 3a9e18a3bb6a5806aacc0a22920e879be08c1942c9e4b0a70a7aee63dd3dc7c52d1d996763c3e1657774f1a3d953cc1fca52e7734ba7a6ff469ae919d9b71026
+  checksum: f2a45d93445710fce9ca54c0110ab231da6f1795e8777d211848c0931b1bb2970dc2833df48ac61efeab2eef8de6be1da09df18212538a8c9f49121c1ced13b9
   languageName: node
   linkType: hard
 
-"@pulumi/pulumi@npm:^3.0.0, @pulumi/pulumi@npm:^3.6.0":
+"@pulumi/pulumi@npm:3.14.0, @pulumi/pulumi@npm:^3.0.0, @pulumi/pulumi@npm:^3.6.0":
   version: 3.14.0
   resolution: "@pulumi/pulumi@npm:3.14.0"
   dependencies:
@@ -11313,8 +11313,8 @@ __metadata:
   dependencies:
     "@babel/cli": ^7.5.5
     "@babel/core": ^7.5.5
-    "@pulumi/aws": ^4.10.0
-    "@pulumi/pulumi": ^3.6.0
+    "@pulumi/aws": 4.27.0
+    "@pulumi/pulumi": 3.14.0
     "@types/node": ^10.0.0
     "@webiny/cli": ^5.17.0
     "@webiny/project-utils": ^5.17.0
