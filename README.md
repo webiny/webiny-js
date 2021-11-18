@@ -414,9 +414,9 @@ Thanks goes to these wonderful people:
                     <br />
                 </td><td align="center">
                     <a href="https://github.com/econtentmaps">
-                        <img src="https://avatars.githubusercontent.com/u/61049336?v=4" width="100px;" alt="null"/>
+                        <img src="https://avatars.githubusercontent.com/u/61049336?v=4" width="100px;" alt="econtentmaps"/>
                         <br />
-                        <sub><b>null</b></sub>
+                        <sub><b>econtentmaps</b></sub>
                     </a>
                     <br />
                 </td></tr>
