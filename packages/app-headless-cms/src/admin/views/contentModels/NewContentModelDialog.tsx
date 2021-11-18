@@ -34,6 +34,12 @@ export type NewContentModelDialogProps = {
     onClose: UID.DialogOnClose;
 };
 
+/**
+ * This list is to disallow creating models that might interfere with GraphQL schema creation.
+ * Add more if required.
+ */
+const disallowedModelIdEndingList: string[] = ["Response", "List", "Meta", "Input", "Sorter"];
+
 const NewContentModelDialog: React.FC<NewContentModelDialogProps> = ({ open, onClose }) => {
     const [loading, setLoading] = React.useState(false);
     const { showSnackbar } = useSnackbar();
@@ -62,12 +68,21 @@ const NewContentModelDialog: React.FC<NewContentModelDialogProps> = ({ open, onC
         return { value: item.id, label: item.name };
     });
 
-    const nameValidator = useCallback(name => {
-        if (!name.charAt(0).match(/[a-zA-Z]/)) {
+    const nameValidator = useCallback((name: string) => {
+        const target = (name || "").trim();
+        if (!target.charAt(0).match(/[a-zA-Z]/)) {
             throw new Error("Value is not valid - must not start with a number.");
         }
-        if (name.trim().toLowerCase() === "id") {
+        if (target.toLowerCase() === "id") {
             throw new Error('Value is not valid - "id" is an auto-generated field.');
+        }
+        for (const ending of disallowedModelIdEndingList) {
+            const re = new RegExp(`${ending}$`, "i");
+            const matched = target.match(re);
+            if (matched === null) {
+                continue;
+            }
+            throw new Error(`Model name that ends with "${ending}" is not allowed.`);
         }
         return true;
     }, undefined);
