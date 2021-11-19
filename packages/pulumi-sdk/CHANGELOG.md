@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.17.4-beta.0](https://github.com/webiny/webiny-js/compare/v5.17.3...v5.17.4-beta.0) (2021-11-19)
+
+
+### Bug Fixes
+
+* do not use Pulumi CLI v3.18.0 ([fbb1825](https://github.com/webiny/webiny-js/commit/fbb182507089af8242c4e8f8f9bcb26613bbfd1b))
+
+
+
+
+
 ## [5.17.3](https://github.com/webiny/webiny-js/compare/v5.17.3-beta.0...v5.17.3) (2021-11-15)
 
 **Note:** Version bump only for package @webiny/pulumi-sdk
