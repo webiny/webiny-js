@@ -32,6 +32,7 @@ import securityPlugins from "./security";
 // Imports plugins created via scaffolding utilities.
 import scaffoldsPlugins from "./plugins/scaffolds";
 import { createElasticsearchClient } from "@webiny/api-elasticsearch/client";
+import advancedPublishingWorkflowPlugins from "./plugins/apw";
 
 const debug = process.env.DEBUG === "true";
 
@@ -93,7 +94,8 @@ export const handler = createHandler({
         }),
         createAdminHeadlessCmsGraphQL(),
         scaffoldsPlugins(),
-        elasticsearchDataGzipCompression()
+        elasticsearchDataGzipCompression(),
+        advancedPublishingWorkflowPlugins()
     ],
     http: { debug }
 });
