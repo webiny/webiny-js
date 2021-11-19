@@ -1,6 +1,10 @@
 const { red } = require("chalk");
 const execa = require("execa");
 
+// Change this for every new version. It needs to be set to the upcoming version.
+// TODO: improve this a bit, this is an easy thing to miss, buried in code like this.
+const UPGRADE_TARGET_VERSION = "5.18.0";
+
 module.exports = [
     {
         type: "cli-command",
@@ -15,6 +19,12 @@ module.exports = [
                         describe: "Do not perform CLI version and Git tree checks.",
                         type: "boolean",
                         default: false
+                    });
+                    yargs.option("use-version", {
+                        describe:
+                            "Use upgrade script for a specific version. Should only be used for development/testing purposes.",
+                        type: "string",
+                        default: UPGRADE_TARGET_VERSION
                     });
                 },
                 async argv => {
@@ -45,20 +55,25 @@ module.exports = [
                         }
                     }
 
-                    const { canUpgrade, upgrade } = require("./upgrades/upgrade");
-                    if (typeof canUpgrade === "function" && !argv.skipChecks) {
-                        try {
-                            const canPerformUpgrade = await canUpgrade(argv, context);
-                            if (canPerformUpgrade === false) {
-                                throw new Error();
-                            }
-                        } catch (ex) {
-                            const msg = ex.message || "unknown";
-                            throw new Error(`Upgrade failed. Reason: ${msg}`);
+                    const ctx = {
+                        project: {
+                            name: context.project.name,
+                            root: context.project.root
                         }
-                    }
+                    };
 
-                    await upgrade(argv, context);
+                    await execa(
+                        "npx",
+                        [
+                            "https://github.com/webiny/webiny-upgrades",
+                            argv.useVersion,
+                            "--context",
+                            `'${JSON.stringify(ctx)}'`
+                        ],
+                        {
+                            stdio: "inherit"
+                        }
+                    );
                 }
             );
         }
