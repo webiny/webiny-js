@@ -17,6 +17,11 @@ module.exports = [
                         type: "boolean",
                         default: false
                     });
+                    yargs.option("debug", {
+                        default: false,
+                        describe: `Turn on debug logs`,
+                        type: "boolean"
+                    });
                     yargs.option("use-version", {
                         describe:
                             "Use upgrade script for a specific version. Should only be used for development/testing purposes.",
@@ -59,18 +64,50 @@ module.exports = [
                         }
                     };
 
-                    await execa(
-                        "npx",
-                        [
-                            "https://github.com/webiny/webiny-upgrades",
-                            argv.useVersion || defaultUpgradeTargetVersion,
-                            "--context",
-                            `'${JSON.stringify(ctx)}'`
-                        ],
-                        {
-                            stdio: "inherit"
+                    const command = [
+                        "https://github.com/webiny/webiny-upgrades",
+                        argv.useVersion || defaultUpgradeTargetVersion,
+                        "--context",
+                        `'${JSON.stringify(ctx)}'`
+                    ];
+
+                    if (yargs.argv.debug) {
+                        context.debug("npx", ...command);
+                    }
+
+                    const npx = execa("npx", command, {
+                        env: {
+                            FORCE_COLOR: true
                         }
-                    );
+                    });
+
+                    npx.stdout.on("data", data => {
+                        const lines = data.toString().replace(/\n$/, "").split("\n");
+                        for (let i = 0; i < lines.length; i++) {
+                            const line = lines[i];
+                            try {
+                                const json = JSON.parse(line);
+                                if (json.type === "error") {
+                                    context.error(
+                                        "An error occurred while performing the upgrade."
+                                    );
+                                    console.log(json.message);
+                                    if (yargs.argv.debug) {
+                                        context.debug(json.data.stack);
+                                    }
+                                }
+                            } catch {
+                                // Not JSON, let's just print the line then.
+                                console.log(line);
+                            }
+                        }
+                    });
+
+                    npx.stderr.on("data", data => {
+                        console.log(data.toString());
+                    });
+
+                    await npx;
                 }
             );
         }
