@@ -1,5 +1,0 @@
-{
-  "name": "run-js-with-npx-from-gist",
-  "version": "1.0.0",
-  "bin": "./index.js"
-}
