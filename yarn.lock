@@ -6055,7 +6055,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pulumi/pulumi@npm:^3.0.0, @pulumi/pulumi@npm:^3.6.0":
+"@pulumi/pulumi@npm:< 3.18.0, @pulumi/pulumi@npm:^3.0.0":
   version: 3.17.1
   resolution: "@pulumi/pulumi@npm:3.17.1"
   dependencies:
@@ -10539,7 +10539,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/cli-plugin-deploy-pulumi@workspace:packages/cli-plugin-deploy-pulumi"
   dependencies:
-    "@pulumi/pulumi": ^3.6.0
+    "@pulumi/pulumi": < 3.18.0
     "@webiny/cli": ^5.17.3
     "@webiny/pulumi-sdk": ^5.17.3
     ansi-to-html: 0.6.15
@@ -11279,7 +11279,7 @@ __metadata:
     "@babel/cli": ^7.5.5
     "@babel/core": ^7.5.5
     "@pulumi/aws": ^4.10.0
-    "@pulumi/pulumi": ^3.6.0
+    "@pulumi/pulumi": < 3.18.0
     "@types/node": ^10.0.0
     "@webiny/cli": ^5.17.3
     "@webiny/project-utils": ^5.17.3
