@@ -1,8 +1,8 @@
-import { buildFunction, watchFunction } from "@webiny/project-utils";
+import { createBuildFunction, createWatchFunction } from "@webiny/project-utils";
 
 export default {
     commands: {
-        build: buildFunction,
-        watch: watchFunction
+        build: createBuildFunction({ cwd: __dirname }),
+        watch: createWatchFunction({ cwd: __dirname })
     }
 };

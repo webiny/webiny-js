@@ -1,16 +1,15 @@
 import { Table } from "dynamodb-toolbox";
-import configurations from "~/operations/configurations";
 import { FileManagerContext } from "@webiny/api-file-manager/types";
 import WebinyError from "@webiny/error";
 import { getDocumentClient } from "~/operations/utils";
 
 export default (params: { context: FileManagerContext }): Table => {
     const { context } = params;
-    const tableName = configurations.esDb().table;
+    const tableName = process.env.DB_TABLE_ELASTICSEARCH;
 
     if (!tableName) {
         throw new WebinyError(
-            `Missing Elasticsearch table in the configuration.`,
+            `Missing Elasticsearch table in the environment.`,
             "TABLE_NAME_ERROR"
         );
     }

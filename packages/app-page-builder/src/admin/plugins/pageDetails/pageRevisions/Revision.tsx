@@ -14,22 +14,22 @@ import { Icon } from "@webiny/ui/Icon";
 import { MenuItem, Menu, MenuDivider } from "@webiny/ui/Menu";
 import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
 import { Tooltip } from "@webiny/ui/Tooltip";
-import { ReactComponent as MoreVerticalIcon } from "../../../assets/more_vert.svg";
-import { ReactComponent as LockIcon } from "../../../assets/lock.svg";
-import { ReactComponent as BeenHereIcon } from "../../../assets/beenhere.svg";
-import { ReactComponent as GestureIcon } from "../../../assets/gesture.svg";
+import { ReactComponent as MoreVerticalIcon } from "~/admin/assets/more_vert.svg";
+import { ReactComponent as LockIcon } from "~/admin/assets/lock.svg";
+import { ReactComponent as BeenHereIcon } from "~/admin/assets/beenhere.svg";
+import { ReactComponent as GestureIcon } from "~/admin/assets/gesture.svg";
 import { useRevisionHandlers } from "./useRevisionHandlers";
-import { useConfigureWebsiteUrlDialog } from "../../../hooks/useConfigureWebsiteUrl";
-import { usePageBuilderSettings } from "../../../hooks/usePageBuilderSettings";
-import { useSiteStatus } from "../../../hooks/useSiteStatus";
-import { ReactComponent as AddIcon } from "../../../assets/add.svg";
-import { ReactComponent as EditIcon } from "../../../assets/edit.svg";
-import { ReactComponent as PublishIcon } from "../../../assets/round-publish-24px.svg";
-import { ReactComponent as UnpublishIcon } from "../../../assets/unpublish.svg";
-import { ReactComponent as DeleteIcon } from "../../../assets/delete.svg";
-import { ReactComponent as PreviewIcon } from "../../../assets/visibility.svg";
-import { PbPageData, PbPageRevision } from "../../../../types";
-import usePermission from "../../../../hooks/usePermission";
+import { useConfigureWebsiteUrlDialog } from "~/admin/hooks/useConfigureWebsiteUrl";
+import { usePageBuilderSettings } from "~/admin/hooks/usePageBuilderSettings";
+import { useSiteStatus } from "~/admin/hooks/useSiteStatus";
+import { ReactComponent as AddIcon } from "~/admin/assets/add.svg";
+import { ReactComponent as EditIcon } from "~/admin/assets/edit.svg";
+import { ReactComponent as PublishIcon } from "~/admin/assets/round-publish-24px.svg";
+import { ReactComponent as UnpublishIcon } from "~/admin/assets/unpublish.svg";
+import { ReactComponent as DeleteIcon } from "~/admin/assets/delete.svg";
+import { ReactComponent as PreviewIcon } from "~/admin/assets/visibility.svg";
+import { PbPageData, PbPageRevision } from "~/types";
+import usePermission from "~/hooks/usePermission";
 
 type RevisionProps = {
     revision: PbPageRevision;
@@ -166,14 +166,14 @@ const Revision = ({ revision, page }: RevisionProps) => {
                                 Preview
                             </MenuItem>
 
-                            {canDelete(page) && !revision.locked && (
+                            {canDelete(page) && (
                                 <Div>
                                     <MenuDivider />
                                     <MenuItem onClick={() => showConfirmation(deleteRevision)}>
                                         <ListItemGraphic>
                                             <Icon icon={<DeleteIcon />} />
                                         </ListItemGraphic>
-                                        Delete
+                                        Delete Revision
                                     </MenuItem>
                                 </Div>
                             )}

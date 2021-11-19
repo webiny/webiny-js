@@ -1,4 +1,4 @@
-import { CmsContentEntry, CmsContentModelGroup, CmsContentModel } from "~/types";
+import { CmsEntry, CmsGroup, CmsModel } from "~/types";
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
 import models from "./mocks/contentModels";
 import { useProductManageHandler } from "../utils/useProductManageHandler";
@@ -15,7 +15,7 @@ describe("multiple values in field", () => {
 
     // This function is not directly within `beforeEach` as we don't always setup the same content model.
     // We call this function manually at the beginning of each test, where needed.
-    const setupContentModelGroup = async (): Promise<CmsContentModelGroup> => {
+    const setupContentModelGroup = async (): Promise<CmsGroup> => {
         const [createCMG] = await createContentModelGroupMutation({
             data: {
                 name: "Group",
@@ -27,7 +27,7 @@ describe("multiple values in field", () => {
         return createCMG.data.createContentModelGroup.data;
     };
 
-    const setupCategoryModel = async (contentModelGroup: CmsContentModelGroup) => {
+    const setupCategoryModel = async (contentModelGroup: CmsGroup) => {
         const model = models.find(m => m.modelId === "category");
         // Create initial record
         const [create] = await createContentModelMutation({
@@ -184,7 +184,7 @@ describe("multiple values in field", () => {
                 slug: "vegetables"
             }
         });
-        const category = createCategoryResponse.data.createCategory.data as CmsContentEntry;
+        const category = createCategoryResponse.data.createCategory.data as CmsEntry;
 
         const productModel = models.find(m => m.modelId === "product");
         const [createResponse] = await createContentModelMutation({
@@ -195,7 +195,7 @@ describe("multiple values in field", () => {
             }
         });
 
-        const contentModel = createResponse.data.createContentModel.data as CmsContentModel;
+        const contentModel = createResponse.data.createContentModel.data as CmsModel;
 
         await updateContentModelMutation({
             modelId: contentModel.modelId,

@@ -23,7 +23,6 @@
     "@webiny/api-security": "^5.17.4",
     "@webiny/api-tenancy": "^5.17.4",
     "@webiny/api-upgrade": "^5.17.4",
-    "@webiny/cli-plugin-deploy-pulumi": "^5.17.4",
     "@webiny/error": "^5.17.4",
     "@webiny/handler": "^5.17.4",
     "@webiny/handler-args": "^5.17.4",

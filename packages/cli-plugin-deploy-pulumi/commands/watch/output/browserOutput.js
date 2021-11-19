@@ -27,7 +27,7 @@ module.exports = {
             server.wss = new WebSocket.Server({ server: server.httpServer });
 
             const port = args.port || 3011;
-            const logs = "logs" in args ? "true" : "false";
+            const logs = "remoteRuntimeLogs" in args ? "true" : "false";
             server.app.get("/", (req, res) => {
                 const html = fs
                     .readFileSync(path.join(__dirname, "./browser/panes.html"))

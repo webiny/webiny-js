@@ -13,15 +13,19 @@ import prerenderingServicePlugins from "@webiny/api-prerendering-service/client"
 import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import dynamoDbPlugins from "@webiny/db-dynamodb/plugins";
-import elasticSearch from "@webiny/api-elasticsearch";
+import elasticsearchClientContext from "@webiny/api-elasticsearch";
 import fileManagerPlugins from "@webiny/api-file-manager/plugins";
 import fileManagerDynamoDbElasticStorageOperation from "@webiny/api-file-manager-ddb-es";
 import logsPlugins from "@webiny/handler-logs";
 import fileManagerS3 from "@webiny/api-file-manager-s3";
 import { createFormBuilder } from "@webiny/api-form-builder";
 import { createFormBuilderStorageOperations } from "@webiny/api-form-builder-so-ddb-es";
-import headlessCmsPlugins from "@webiny/api-headless-cms/plugins";
-import headlessCmsDynamoDbElasticStorageOperation from "@webiny/api-headless-cms-ddb-es";
+import {
+    createAdminHeadlessCmsContext,
+    createAdminHeadlessCmsGraphQL
+} from "@webiny/api-headless-cms";
+import { createStorageOperations as createHeadlessCmsStorageOperations } from "@webiny/api-headless-cms-ddb-es";
+import headlessCmsModelFieldToGraphQLPlugins from "@webiny/api-headless-cms/content/plugins/graphqlFields";
 import elasticsearchDataGzipCompression from "@webiny/api-elasticsearch/plugins/GzipCompression";
 import securityPlugins from "./security";
 
@@ -45,7 +49,7 @@ export const handler = createHandler({
         dynamoDbPlugins(),
         logsPlugins(),
         graphqlPlugins({ debug }),
-        elasticSearch(elasticsearchClient),
+        elasticsearchClientContext(elasticsearchClient),
         dbPlugins({
             table: process.env.DB_TABLE,
             driver: new DynamoDbDriver({ documentClient })
@@ -79,8 +83,15 @@ export const handler = createHandler({
                 elasticsearch: elasticsearchClient
             })
         }),
-        headlessCmsPlugins(),
-        headlessCmsDynamoDbElasticStorageOperation(),
+        createAdminHeadlessCmsContext({
+            storageOperations: createHeadlessCmsStorageOperations({
+                documentClient,
+                elasticsearch: elasticsearchClient,
+                modelFieldToGraphQLPlugins: headlessCmsModelFieldToGraphQLPlugins(),
+                plugins: [elasticsearchDataGzipCompression()]
+            })
+        }),
+        createAdminHeadlessCmsGraphQL(),
         scaffoldsPlugins(),
         elasticsearchDataGzipCompression()
     ],

@@ -1,13 +1,15 @@
-import { CmsModelFieldToStoragePlugin } from "~/types";
+import { StorageTransformPlugin } from "./StorageTransformPlugin";
 
-export default (): CmsModelFieldToStoragePlugin => ({
-    type: "cms-model-field-to-storage",
-    name: "cms-model-field-to-storage-default",
+const plugin = new StorageTransformPlugin({
     fieldType: "*",
-    async fromStorage({ value }) {
+    fromStorage: async ({ value }) => {
         return value;
     },
-    async toStorage({ value }) {
+    toStorage: async ({ value }) => {
         return value;
     }
 });
+
+export default (): StorageTransformPlugin => {
+    return plugin;
+};

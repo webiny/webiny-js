@@ -1,13 +1,13 @@
-import { CmsContentModelGroup } from "../../src/types";
+import { CmsGroup } from "~/types";
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
-import { hooksTracker } from "./mocks/lifecycleHooks";
+import { pubSubTracker } from "./mocks/lifecycleHooks";
 
 describe("content model test reserved model ids", () => {
     const manageHandlerOpts = { path: "manage/en-US" };
 
     const { createContentModelGroupMutation } = useContentGqlHandler(manageHandlerOpts);
 
-    let contentModelGroup: CmsContentModelGroup;
+    let contentModelGroup: CmsGroup;
 
     beforeEach(async () => {
         const [createCMG] = await createContentModelGroupMutation({
@@ -20,7 +20,7 @@ describe("content model test reserved model ids", () => {
         });
         contentModelGroup = createCMG.data.createContentModelGroup.data;
         // we need to reset this since we are using a singleton
-        hooksTracker.reset();
+        pubSubTracker.reset();
     });
 
     test(`should not allow creation of a model the modelId set to blacklisted value`, async () => {

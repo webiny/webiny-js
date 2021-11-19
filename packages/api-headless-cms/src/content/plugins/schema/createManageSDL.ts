@@ -1,14 +1,14 @@
-import { CmsFieldTypePlugins, CmsContentModel } from "~/types";
-import { createManageTypeName, createTypeName } from "../utils/createTypeName";
-import { renderInputFields } from "../utils/renderInputFields";
-import { renderSortEnum } from "../utils/renderSortEnum";
-import { renderFields } from "../utils/renderFields";
-import { renderListFilterFields } from "../utils/renderListFilterFields";
-import { renderGetFilterFields } from "../utils/renderGetFilterFields";
-import { pluralizedTypeName } from "../utils/pluralizedTypeName";
+import { CmsFieldTypePlugins, CmsModel } from "~/types";
+import { createManageTypeName, createTypeName } from "~/content/plugins/utils/createTypeName";
+import { renderListFilterFields } from "~/content/plugins/utils/renderListFilterFields";
+import { renderSortEnum } from "~/content/plugins/utils/renderSortEnum";
+import { renderGetFilterFields } from "~/content/plugins/utils/renderGetFilterFields";
+import { renderInputFields } from "~/content/plugins/utils/renderInputFields";
+import { renderFields } from "~/content/plugins/utils/renderFields";
+import { pluralizedTypeName } from "~/content/plugins/utils/pluralizedTypeName";
 
 interface CreateManageSDL {
-    (params: { model: CmsContentModel; fieldTypePlugins: CmsFieldTypePlugins }): string;
+    (params: { model: CmsModel; fieldTypePlugins: CmsFieldTypePlugins }): string;
 }
 
 export const createManageSDL: CreateManageSDL = ({ model, fieldTypePlugins }): string => {

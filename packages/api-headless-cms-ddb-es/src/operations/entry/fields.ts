@@ -1,4 +1,4 @@
-import { CmsContentModel } from "@webiny/api-headless-cms/types";
+import { CmsModel } from "@webiny/api-headless-cms/types";
 import { CmsEntryElasticsearchFieldPlugin } from "~/plugins/CmsEntryElasticsearchFieldPlugin";
 
 const fieldsWithKeywords = ["text", "long-text", "rich-text", "id", "ref"];
@@ -40,7 +40,7 @@ const systemFields = {
 };
 
 export const createElasticsearchFields = (
-    model: CmsContentModel
+    model: CmsModel
 ): Record<string, CmsEntryElasticsearchFieldPlugin> => {
     return model.fields.reduce((fields, field) => {
         fields[field.fieldId] = new CmsEntryElasticsearchFieldPlugin({

@@ -1,5 +1,5 @@
-import { CmsContentEntry, CmsContext, CmsModelFieldToGraphQLPlugin } from "../../../types";
-import { createReadTypeName } from "../utils/createTypeName";
+import { CmsEntry, CmsContext, CmsModelFieldToGraphQLPlugin } from "~/types";
+import { createReadTypeName } from "~/content/plugins/utils/createTypeName";
 
 const createUnionTypeName = (model, field) => {
     return `${createReadTypeName(model.modelId)}${createReadTypeName(field.fieldId)}`;
@@ -14,7 +14,7 @@ const createListFilters = ({ field }) => {
     `;
 };
 
-const appendTypename = (entries: CmsContentEntry[], typename: string) => {
+const appendTypename = (entries: CmsEntry[], typename: string) => {
     return entries.map(item => {
         item["__typename"] = typename;
         return item;
@@ -44,7 +44,7 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
                 modelIdToTypeName.set(item.modelId, createReadTypeName(item.modelId));
             }
 
-            return async (parent, args, context: CmsContext) => {
+            return async (parent, _, context: CmsContext) => {
                 const { cms } = context;
 
                 // Get field value for this entry
@@ -68,13 +68,17 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
                     });
                     const getters = entriesByModel.map(async ({ modelId, entryId }) => {
                         // Get model manager, to get access to CRUD methods
-                        const model = await cms.getModel(modelId);
+                        const model = await cms.getModelManager(modelId);
 
-                        const entries: CmsContentEntry[] = cms.READ
-                            ? // `read` API works with `published` data
-                              await model.getPublishedByIds([entryId])
-                            : // `preview` and `manage` with `latest` data
-                              await model.getLatestByIds([entryId]);
+                        let entries: CmsEntry[];
+                        // `read` API works with `published` data
+                        if (cms.READ) {
+                            entries = await model.getPublishedByIds([entryId]);
+                        }
+                        // `preview` and `manage` with `latest` data
+                        else {
+                            entries = await model.getLatestByIds([entryId]);
+                        }
 
                         return appendTypename(entries, modelIdToTypeName.get(modelId));
                     });
@@ -85,13 +89,18 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
                 }
 
                 // Get model manager, to get access to CRUD methods
-                const model = await cms.getModel(value.modelId);
+                const model = await cms.getModelManager(value.modelId);
 
-                const revisions = cms.READ
-                    ? // `read` API works with `published` data
-                      await model.getPublishedByIds([value.entryId])
-                    : // `preview` API works with `latest` data
-                      await model.getLatestByIds([value.entryId]);
+                let revisions: CmsEntry[];
+                // `read` API works with `published` data
+                if (cms.READ) {
+                    revisions = await model.getPublishedByIds([value.entryId]);
+                }
+                // `preview` API works with `latest` data
+                else {
+                    revisions = await model.getLatestByIds([value.entryId]);
+                }
+
                 /**
                  * If there are no revisions we must return null.
                  */

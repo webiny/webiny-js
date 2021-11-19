@@ -1,19 +1,16 @@
 import pReduce from "p-reduce";
 import pMap from "p-map";
-import {
-    CmsContentModel,
-    CmsContentModelField,
-    CmsContext,
-    CmsModelFieldToStoragePlugin
-} from "~/types";
+import { CmsModel, CmsModelField } from "~/types";
+import { StorageTransformPlugin } from "./StorageTransformPlugin";
+import { PluginsContainer } from "@webiny/plugins";
 
 interface ProcessValue {
     (params: {
-        fields: CmsContentModelField[];
+        fields: CmsModelField[];
         sourceValue: Record<string, any>;
-        getStoragePlugin: (fieldType: string) => CmsModelFieldToStoragePlugin;
-        context: CmsContext;
-        model: CmsContentModel;
+        getStoragePlugin: (fieldType: string) => StorageTransformPlugin;
+        plugins: PluginsContainer;
+        model: CmsModel;
         operation: string;
     }): Promise<Record<string, any>>;
 }
@@ -22,7 +19,7 @@ const processValue: ProcessValue = async ({
     fields,
     sourceValue,
     getStoragePlugin,
-    context,
+    plugins,
     model,
     operation
 }) => {
@@ -31,7 +28,7 @@ const processValue: ProcessValue = async ({
         async (values, field) => {
             const plugin = getStoragePlugin(field.type);
             const value = await plugin[operation]({
-                context,
+                plugins,
                 model,
                 field,
                 value: sourceValue[field.fieldId],
@@ -43,16 +40,43 @@ const processValue: ProcessValue = async ({
     );
 };
 
-export default (): CmsModelFieldToStoragePlugin => ({
-    type: "cms-model-field-to-storage",
-    name: "cms-model-field-to-storage-object",
+const plugin = new StorageTransformPlugin({
     fieldType: "object",
-    async fromStorage({ field, value, getStoragePlugin, context, model }) {
+    toStorage: async ({ field, value, getStoragePlugin, model, plugins }) => {
         if (!value) {
             return null;
         }
 
-        const fields = field.settings.fields as CmsContentModelField[];
+        const fields = field.settings.fields as CmsModelField[];
+
+        if (field.multipleValues) {
+            return await pMap(value as Record<string, any>[], value =>
+                processValue({
+                    sourceValue: value,
+                    getStoragePlugin,
+                    model,
+                    plugins,
+                    operation: "toStorage",
+                    fields
+                })
+            );
+        }
+
+        return processValue({
+            sourceValue: value,
+            getStoragePlugin,
+            model,
+            plugins,
+            operation: "toStorage",
+            fields
+        });
+    },
+    fromStorage: async ({ field, value, getStoragePlugin, plugins, model }) => {
+        if (!value) {
+            return null;
+        }
+
+        const fields = field.settings.fields as CmsModelField[];
 
         if (field.multipleValues) {
             return pMap(value as Record<string, any>[], value =>
@@ -60,7 +84,7 @@ export default (): CmsModelFieldToStoragePlugin => ({
                     sourceValue: value,
                     getStoragePlugin,
                     model,
-                    context,
+                    plugins,
                     operation: "fromStorage",
                     fields
                 })
@@ -71,40 +95,13 @@ export default (): CmsModelFieldToStoragePlugin => ({
             sourceValue: value,
             getStoragePlugin,
             model,
-            context,
+            plugins,
             operation: "fromStorage",
-            fields
-        });
-    },
-    async toStorage({ field, value, getStoragePlugin, model, context }) {
-        if (!value) {
-            return null;
-        }
-
-        const fields = field.settings.fields as CmsContentModelField[];
-
-        if (field.multipleValues) {
-            const mValues = await pMap(value as Record<string, any>[], value =>
-                processValue({
-                    sourceValue: value,
-                    getStoragePlugin,
-                    model,
-                    context,
-                    operation: "toStorage",
-                    fields
-                })
-            );
-
-            return mValues;
-        }
-
-        return processValue({
-            sourceValue: value,
-            getStoragePlugin,
-            model,
-            context,
-            operation: "toStorage",
             fields
         });
     }
 });
+
+export default (): StorageTransformPlugin => {
+    return plugin;
+};

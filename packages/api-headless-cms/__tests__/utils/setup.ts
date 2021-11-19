@@ -1,7 +1,7 @@
-import { CmsContentModelGroup } from "~/types";
+import { CmsGroup } from "~/types";
 import models from "../contentAPI/mocks/contentModels";
 
-export const setupContentModelGroup = async (manager: any): Promise<CmsContentModelGroup> => {
+export const setupContentModelGroup = async (manager: any): Promise<CmsGroup> => {
     const [response] = await manager.createContentModelGroupMutation({
         data: {
             name: "Group",
@@ -19,11 +19,7 @@ export const setupContentModelGroup = async (manager: any): Promise<CmsContentMo
     return response.data.createContentModelGroup.data;
 };
 
-const setupContentModel = async (
-    manager: any,
-    contentModelGroup: CmsContentModelGroup,
-    name: string
-) => {
+const setupContentModel = async (manager: any, contentModelGroup: CmsGroup, name: string) => {
     const model = models.find(m => m.modelId === name);
     if (!model) {
         console.log(`[setupContentModel] There is no model "${name}" defined.`);
@@ -40,9 +36,9 @@ const setupContentModel = async (
     if (createResponse.errors) {
         console.error(`[setupContentModel] ${createResponse.errors[0].message}`);
         process.exit(1);
-    } else if (createResponse.data.createContentModel.data.error) {
+    } else if (createResponse.data.createContentModel.error) {
         console.error(
-            `[setupContentModel] ${createResponse.data.createContentModel.data.error.message}`
+            `[setupContentModel] ${createResponse.data.createContentModel.error.message}`
         );
         process.exit(1);
     }
@@ -57,9 +53,9 @@ const setupContentModel = async (
     if (updateResponse.errors) {
         console.error(`[setupContentModel] ${updateResponse.errors[0].message}`);
         process.exit(1);
-    } else if (updateResponse.data.updateContentModel.data.error) {
+    } else if (updateResponse.data.updateContentModel.error) {
         console.error(
-            `[setupContentModel] ${updateResponse.data.updateContentModel.data.error.message}`
+            `[setupContentModel] ${updateResponse.data.updateContentModel.error.message}`
         );
         process.exit(1);
     }
@@ -67,7 +63,7 @@ const setupContentModel = async (
 };
 export const setupContentModels = async (
     manager: any,
-    contentModelGroup: CmsContentModelGroup,
+    contentModelGroup: CmsGroup,
     modelsList: string[]
 ): Promise<Record<string, any>> => {
     const items = modelsList.reduce((acc, m) => {

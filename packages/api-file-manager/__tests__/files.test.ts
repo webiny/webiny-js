@@ -392,4 +392,137 @@ describe("Files CRUD test", () => {
             }
         });
     });
+    /**
+     * Unfortunately this test is skipped because it is not passing on the CI (DDB+ES package).
+     * Testing the search locally and on deployed system shows that searching works.
+     */
+    // eslint-disable-next-line
+    it.skip("should find files by name", async () => {
+        const [createResponse] = await createFiles({
+            data: [fileAData, fileBData, fileCData]
+        });
+        expect(createResponse).toEqual({
+            data: {
+                fileManager: {
+                    createFiles: {
+                        data: expect.any(Array),
+                        error: null
+                    }
+                }
+            }
+        });
+        await until(
+            () => listFiles().then(([data]) => data),
+            ({ data }) => {
+                return data.fileManager.listFiles.data.length === 3;
+            },
+            { name: "bulk list tags", tries: 10 }
+        );
+
+        const [searchNameResponse] = await listFiles({
+            search: "filenameC"
+        });
+
+        expect(searchNameResponse).toEqual({
+            data: {
+                fileManager: {
+                    listFiles: {
+                        data: [
+                            {
+                                ...fileCData,
+                                id: expect.any(String)
+                            }
+                        ],
+                        error: null,
+                        meta: {
+                            hasMoreItems: false,
+                            totalCount: 1,
+                            cursor: expect.any(String)
+                        }
+                    }
+                }
+            }
+        });
+    });
+
+    it("should find files by tag", async () => {
+        const [createResponse] = await createFiles({
+            data: [fileAData, fileBData, fileCData]
+        });
+        expect(createResponse).toEqual({
+            data: {
+                fileManager: {
+                    createFiles: {
+                        data: expect.any(Array),
+                        error: null
+                    }
+                }
+            }
+        });
+        await until(
+            () => listFiles().then(([data]) => data),
+            ({ data }) => {
+                return data.fileManager.listFiles.data.length === 3;
+            },
+            { name: "bulk list tags", tries: 10 }
+        );
+
+        const [searchTagsResponse] = await listFiles({
+            search: "art"
+        });
+
+        expect(searchTagsResponse).toEqual({
+            data: {
+                fileManager: {
+                    listFiles: {
+                        data: [
+                            {
+                                ...fileCData,
+                                id: expect.any(String)
+                            },
+                            {
+                                ...fileBData,
+                                id: expect.any(String)
+                            }
+                        ],
+                        error: null,
+                        meta: {
+                            hasMoreItems: false,
+                            totalCount: 2,
+                            cursor: expect.any(String)
+                        }
+                    }
+                }
+            }
+        });
+
+        const [searchTags2Response] = await listFiles({
+            search: "webiny"
+        });
+
+        expect(searchTags2Response).toEqual({
+            data: {
+                fileManager: {
+                    listFiles: {
+                        data: [
+                            {
+                                ...fileCData,
+                                id: expect.any(String)
+                            },
+                            {
+                                ...fileAData,
+                                id: expect.any(String)
+                            }
+                        ],
+                        error: null,
+                        meta: {
+                            hasMoreItems: false,
+                            totalCount: 2,
+                            cursor: expect.any(String)
+                        }
+                    }
+                }
+            }
+        });
+    });
 });

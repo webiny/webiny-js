@@ -1,5 +1,5 @@
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
-import { CmsContentModel, CmsContentModelGroup } from "~/types";
+import { CmsModel, CmsGroup } from "~/types";
 import models from "./mocks/contentModels";
 import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
 import { useArticleManageHandler } from "../utils/useArticleManageHandler";
@@ -23,7 +23,7 @@ describe("latest entries", function () {
             ...manageOpts
         });
 
-    const setupContentModelGroup = async (): Promise<CmsContentModelGroup> => {
+    const setupContentModelGroup = async (): Promise<CmsGroup> => {
         const [createCMG] = await createContentModelGroupMutation({
             data: {
                 name: "Group",
@@ -38,7 +38,7 @@ describe("latest entries", function () {
         return createCMG.data.createContentModelGroup.data;
     };
 
-    const setupContentModel = async (contentModelGroup: CmsContentModelGroup, name: string) => {
+    const setupContentModel = async (contentModelGroup: CmsGroup, name: string) => {
         const model = models.find(m => m.modelId === name);
         // Create initial record
         const [create] = await createContentModelMutation({
@@ -115,8 +115,8 @@ describe("latest entries", function () {
         return entry;
     };
 
-    let categoryModel: CmsContentModel;
-    let articleModel: CmsContentModel;
+    let categoryModel: CmsModel;
+    let articleModel: CmsModel;
 
     let fruitCategory;
     let vehicleCategory;

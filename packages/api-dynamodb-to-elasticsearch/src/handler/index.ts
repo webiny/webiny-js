@@ -34,6 +34,7 @@ const checkErrors = (result: any) => {
             }
             continue;
         }
+        console.log(item.error);
         throw new WebinyError(err, "DYNAMODB_TO_ELASTICSEARCH_ERROR", item);
     }
 };
@@ -65,7 +66,7 @@ export default (): HandlerPlugin<ElasticsearchContext> => ({
                 /**
                  * We must decompress the data that is going into the Elasticsearch.
                  */
-                data = await decompress(context, newImage.data);
+                data = await decompress(context.plugins, newImage.data);
                 /**
                  * No point in writing null or undefined data into the Elasticsearch.
                  * This might happen on some error while decompressing. We will log it.

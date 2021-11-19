@@ -11,7 +11,8 @@ export default () => {
                 label: "Source",
                 icon: <GithubIcon />,
                 path: "https://github.com/webiny/webiny-js",
-                rel: "noopener noreferrer"
+                rel: "noopener noreferrer",
+                target: "_blank"
             })
         );
     });

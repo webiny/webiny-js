@@ -14,7 +14,6 @@ export default {
                 const modules = await Promise.allSettled([
                     import("@webiny/cli-plugin-workspaces"),
                     import("@webiny/cli-plugin-deploy-pulumi"),
-                    import("@webiny/api-page-builder/cli"),
                     import("@webiny/cwp-template-aws/cli"),
                     import("@webiny/cli-plugin-scaffold"),
                     import("@webiny/cli-plugin-scaffold-full-stack-app"),
@@ -23,7 +22,9 @@ export default {
                     import("@webiny/cli-plugin-scaffold-admin-app-module"),
                     import("@webiny/cli-plugin-scaffold-react-app"),
                     import("@webiny/cli-plugin-scaffold-react-component"),
-                    import("@webiny/cli-plugin-scaffold-ci")
+                    import("@webiny/cli-plugin-scaffold-ci"),
+                    import("./apps/admin/cli"),
+                    import("./apps/website/cli")
                 ]);
 
                 return modules

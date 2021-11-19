@@ -3,7 +3,7 @@ import crypto from "crypto";
 import { withFields, string } from "@commodo/fields";
 import { object } from "commodo-fields-object";
 import { validation } from "@webiny/validation";
-import { NotAuthorizedError } from "@webiny/api-security";
+import { NotAuthorizedError } from "~/index";
 import { NotFoundError } from "@webiny/handler-graphql";
 import Error from "@webiny/error";
 import { ApiKey, ApiKeyInput, ApiKeyPermission, Security } from "~/types";

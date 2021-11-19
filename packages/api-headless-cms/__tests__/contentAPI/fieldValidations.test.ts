@@ -1,5 +1,5 @@
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
-import { CmsContentModelGroup } from "../../src/types";
+import { CmsGroup } from "~/types";
 import models from "./mocks/contentModels";
 import { useFruitManageHandler } from "../utils/useFruitManageHandler";
 
@@ -27,7 +27,7 @@ describe("fieldValidations", () => {
 
     // This function is not directly within `beforeEach` as we don't always setup the same content model.
     // We call this function manually at the beginning of each test, where needed.
-    const setupContentModelGroup = async (): Promise<CmsContentModelGroup> => {
+    const setupContentModelGroup = async (): Promise<CmsGroup> => {
         const [createCMG] = await createContentModelGroupMutation({
             data: {
                 name: "Group",
@@ -39,7 +39,7 @@ describe("fieldValidations", () => {
         return createCMG.data.createContentModelGroup.data;
     };
 
-    const setupContentModel = async (contentModelGroup: CmsContentModelGroup, name: string) => {
+    const setupContentModel = async (contentModelGroup: CmsGroup, name: string) => {
         const model = models.find(m => m.modelId === name);
         // Create initial record
         const [create] = await createContentModelMutation({
@@ -67,7 +67,7 @@ describe("fieldValidations", () => {
         });
         return update.data.updateContentModel.data;
     };
-    const setupContentModels = async (contentModelGroup: CmsContentModelGroup) => {
+    const setupContentModels = async (contentModelGroup: CmsGroup) => {
         const models = {
             fruit: null
         };
@@ -722,7 +722,8 @@ describe("fieldValidations", () => {
                         dateTime: defaultFruitData.dateTime,
                         dateTimeZ: defaultFruitData.dateTimeZ,
                         rating: null,
-                        isSomething: null
+                        isSomething: null,
+                        description: ""
                     },
                     error: null
                 }
@@ -772,7 +773,8 @@ describe("fieldValidations", () => {
                         dateTime: defaultFruitData.dateTime,
                         dateTimeZ: defaultFruitData.dateTimeZ,
                         rating: null,
-                        isSomething: null
+                        isSomething: null,
+                        description: ""
                     },
                     error: null
                 }

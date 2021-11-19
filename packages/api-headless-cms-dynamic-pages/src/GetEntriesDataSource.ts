@@ -8,7 +8,7 @@ interface Config {
 
 export class GetEntriesDataSource extends DataSource<Config, CmsContext> {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    async loadData(variables, config: Config, context: CmsContext) {
+    async loadData(_, __: Config, ___: CmsContext) {
         return [];
     }
 }

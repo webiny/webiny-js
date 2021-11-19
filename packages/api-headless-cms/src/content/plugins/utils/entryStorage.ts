@@ -1,39 +1,39 @@
 import Error from "@webiny/error";
-import {
-    CmsContentEntry,
-    CmsContentModel,
-    CmsContentModelField,
-    CmsContext,
-    CmsModelFieldToStoragePlugin
-} from "~/types";
+import { CmsEntry, CmsModel, CmsModelField, CmsContext } from "~/types";
+import { StorageTransformPlugin } from "~/content/plugins/storage/StorageTransformPlugin";
 
 interface GetStoragePluginFactory {
-    (context: CmsContext): (fieldType: string) => CmsModelFieldToStoragePlugin<any>;
+    (context: CmsContext): (fieldType: string) => StorageTransformPlugin<any>;
 }
 
 const getStoragePluginFactory: GetStoragePluginFactory = context => {
-    let defaultStoragePlugin: CmsModelFieldToStoragePlugin;
-    const storagePlugins = {};
+    let defaultStoragePlugin: StorageTransformPlugin;
 
-    context.plugins
-        .byType<CmsModelFieldToStoragePlugin>("cms-model-field-to-storage")
+    const plugins = context.plugins
+        .byType<StorageTransformPlugin>(StorageTransformPlugin.type)
         // we reverse plugins because we want to get latest added only
         .reverse()
-        .forEach(plugin => {
+        .reduce((collection, plugin) => {
             // check if it's a default plugin
             if (plugin.fieldType === "*" && !defaultStoragePlugin) {
                 defaultStoragePlugin = plugin;
-                return;
+                return collection;
             }
 
-            // either existing plugin added or plugin fieldType does not exist in current model
-            // this is to iterate a bit less later
-            if (!storagePlugins[plugin.fieldType]) {
-                storagePlugins[plugin.fieldType] = plugin;
+            /**
+             * either existing plugin added or plugin fieldType does not exist in current model
+             * this is to iterate a bit less later
+             */
+            if (!collection[plugin.fieldType]) {
+                collection[plugin.fieldType] = plugin;
             }
-        });
 
-    return fieldType => storagePlugins[fieldType] || defaultStoragePlugin;
+            return collection;
+        }, {});
+
+    return (fieldType: string) => {
+        return plugins[fieldType] || defaultStoragePlugin;
+    };
 };
 
 /**
@@ -41,10 +41,10 @@ const getStoragePluginFactory: GetStoragePluginFactory = context => {
  */
 const entryStorageTransform = async (
     context: CmsContext,
-    model: CmsContentModel,
+    model: CmsModel,
     operation: "toStorage" | "fromStorage",
-    entry: CmsContentEntry
-): Promise<CmsContentEntry> => {
+    entry: CmsEntry
+): Promise<CmsEntry> => {
     const getStoragePlugin = getStoragePluginFactory(context);
 
     const transformedValues: Record<string, any> = {};
@@ -58,7 +58,7 @@ const entryStorageTransform = async (
         }
 
         transformedValues[field.fieldId] = await plugin[operation]({
-            context,
+            plugins: context.plugins,
             model,
             field,
             value: entry.values[field.fieldId],
@@ -74,9 +74,9 @@ const entryStorageTransform = async (
  */
 export const entryToStorageTransform = async (
     context: CmsContext,
-    model: CmsContentModel,
-    entry: CmsContentEntry
-): Promise<CmsContentEntry> => {
+    model: CmsModel,
+    entry: CmsEntry
+): Promise<CmsEntry> => {
     return entryStorageTransform(context, model, "toStorage", entry);
 };
 
@@ -85,9 +85,9 @@ export const entryToStorageTransform = async (
  */
 export const entryFromStorageTransform = async (
     context: CmsContext,
-    model: CmsContentModel,
-    entry?: CmsContentEntry & Record<string, any>
-): Promise<CmsContentEntry> => {
+    model: CmsModel,
+    entry?: CmsEntry & Record<string, any>
+): Promise<CmsEntry> => {
     if (!entry) {
         return null;
     }
@@ -96,8 +96,8 @@ export const entryFromStorageTransform = async (
 
 interface EntryFieldFromStorageTransformParams {
     context: CmsContext;
-    model: CmsContentModel;
-    field: CmsContentModelField;
+    model: CmsModel;
+    field: CmsModelField;
     value: any;
 }
 /*
@@ -119,7 +119,7 @@ export const entryFieldFromStorageTransform = async (
     }
 
     return plugin.fromStorage({
-        context,
+        plugins: context.plugins,
         model,
         field,
         value,

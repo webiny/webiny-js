@@ -1,11 +1,7 @@
 import { ModelFieldFinder } from "./fieldFinder";
 import { cleanDatabaseRecord } from "./cleanDatabaseRecord";
-import { CmsContentIndexEntry } from "../../types";
-import {
-    CmsContentEntry,
-    CmsContentModel,
-    CmsContentModelField
-} from "@webiny/api-headless-cms/types";
+import { CmsIndexEntry } from "../../types";
+import { CmsEntry, CmsModel, CmsModelField } from "@webiny/api-headless-cms/types";
 
 const convertTimeToNumber = (time?: string): number | null => {
     if (!time) {
@@ -15,10 +11,7 @@ const convertTimeToNumber = (time?: string): number | null => {
     return hours * 60 * 60 + minutes * 60 + seconds;
 };
 
-const fixRawValues = (
-    target: CmsContentIndexEntry,
-    finder: ModelFieldFinder
-): CmsContentIndexEntry => {
+const fixRawValues = (target: CmsIndexEntry, finder: ModelFieldFinder): CmsIndexEntry => {
     const entry = {
         ...target
     };
@@ -54,7 +47,7 @@ const fixTime = (field, time: any): number | null => {
     }
 };
 
-const fixDateTime = (field: CmsContentModelField, dateTime: any): any => {
+const fixDateTime = (field: CmsModelField, dateTime: any): any => {
     switch (field.settings.type) {
         case "time":
             return fixTime(field, dateTime);
@@ -67,7 +60,7 @@ const fixDateTime = (field: CmsContentModelField, dateTime: any): any => {
     }
 };
 
-const fixNumber = (field: CmsContentModelField, value: any) => {
+const fixNumber = (_: CmsModelField, value: any) => {
     if (value === undefined || value === null) {
         return null;
     }
@@ -79,10 +72,7 @@ const fieldFixMethods = {
     number: fixNumber
 };
 
-const fixFieldValues = (
-    target: CmsContentIndexEntry,
-    finder: ModelFieldFinder
-): CmsContentIndexEntry => {
+const fixFieldValues = (target: CmsIndexEntry, finder: ModelFieldFinder): CmsIndexEntry => {
     const entry = {
         ...target
     };
@@ -106,9 +96,9 @@ const fixFieldValues = (
 };
 
 export const entryValueFixer = (
-    model: CmsContentModel,
+    _: CmsModel,
     finder: ModelFieldFinder,
-    target: CmsContentIndexEntry
-): CmsContentEntry => {
+    target: CmsIndexEntry
+): CmsEntry => {
     return cleanDatabaseRecord(fixFieldValues(fixRawValues(target, finder), finder));
 };

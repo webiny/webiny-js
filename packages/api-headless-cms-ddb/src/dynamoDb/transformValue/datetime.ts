@@ -9,7 +9,7 @@ const dateTimeTransformer = new DateTimeTransformPlugin({
     fields: ["*"]
 });
 
-export default (): CmsFieldFilterValueTransformPlugin<Date | string | number, number> => ({
+export default (): CmsFieldFilterValueTransformPlugin => ({
     type: "cms-field-filter-value-transform",
     name: "cms-field-value-filter-transform-datetime",
     fieldType: "datetime",

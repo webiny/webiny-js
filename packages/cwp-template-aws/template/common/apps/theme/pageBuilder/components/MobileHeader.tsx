@@ -1,11 +1,13 @@
 import React from "react";
 import HamburgerMenu from "react-hamburger-menu";
 import classNames from "classnames";
+import { useQuery } from "@apollo/react-hooks";
 import { Link } from "@webiny/react-router";
-import Menu from "./Menu";
+import Menu, { GET_PUBLIC_MENU, hasMenuItems } from "./Menu";
 import Navigation from "./Navigation";
 
 const MobileHeader = ({ menuName, logo, name, active, toggleMenu }) => {
+    const { data } = useQuery(GET_PUBLIC_MENU, { variables: { slug: menuName } });
     return (
         <div
             className="webiny-pb-section-header__wrapper hide-on-desktop-and-tablet"
@@ -29,19 +31,21 @@ const MobileHeader = ({ menuName, logo, name, active, toggleMenu }) => {
                     <a href="/">{name}</a>
                 </div>
             </nav>
-            <div onClick={toggleMenu} className="webiny-pb-section-header__mobile-icon">
-                <HamburgerMenu
-                    isOpen={active}
-                    menuClicked={toggleMenu}
-                    width={18}
-                    height={15}
-                    strokeWidth={1}
-                    rotate={0}
-                    color="black"
-                    borderRadius={0}
-                    animationDuration={0.5}
-                />
-            </div>
+            {hasMenuItems(data) && (
+                <div onClick={toggleMenu} className="webiny-pb-section-header__mobile-icon">
+                    <HamburgerMenu
+                        isOpen={active}
+                        menuClicked={toggleMenu}
+                        width={18}
+                        height={15}
+                        strokeWidth={1}
+                        rotate={0}
+                        color="black"
+                        borderRadius={0}
+                        animationDuration={0.5}
+                    />
+                </div>
+            )}
             <div
                 onClick={toggleMenu}
                 className={classNames("webiny-pb-section-header__mobile-overlay", {

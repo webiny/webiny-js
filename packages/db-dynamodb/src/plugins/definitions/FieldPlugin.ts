@@ -52,6 +52,10 @@ export abstract class FieldPlugin extends Plugin {
         return this.field;
     }
 
+    public getDynamoDbType(): string {
+        return this.dynamoDbType;
+    }
+
     public transformValue(value: any): any {
         if (this._transformValue) {
             return this.transformValue(value);

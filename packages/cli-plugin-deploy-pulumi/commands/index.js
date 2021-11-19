@@ -42,6 +42,11 @@ module.exports = [
                         describe: `Turn on debug logs`,
                         type: "boolean"
                     });
+                    yargs.option("logs", {
+                        default: undefined,
+                        describe: `Enable base compilation-related logs`,
+                        type: "boolean"
+                    });
                 },
                 async argv => {
                     await deploy(argv, context);
@@ -87,17 +92,21 @@ module.exports = [
                         type: "number",
                         default: 2
                     });
-                    yargs.option("logs", {
-                        describe: `Forward logs from deployed application code to your terminal.`,
-                        type: "string"
-                    });
-
                     yargs.option("output", {
-                        describe: `Specify the output destination to which all of the logs will be forwarded.`,
+                        describe: `Specify the output destination to which all of the logs will be forwarded`,
                         default: "terminal",
                         type: "string"
                     });
-
+                    yargs.option("logs", {
+                        default: undefined,
+                        describe: `Enable base compilation-related logs`,
+                        type: "boolean"
+                    });
+                    yargs.option("remoteRuntimeLogs", {
+                        alias: "r",
+                        describe: `Forward logs from deployed application code to your terminal`,
+                        type: "boolean"
+                    });
                     yargs.option("debug", {
                         default: false,
                         describe: `Turn on debug logs`,

@@ -16,12 +16,12 @@ const defaultOnSelectFile = file => {
 };
 
 export default class ImageTool {
-    private api: API;
-    private readOnly: boolean;
-    private config: any;
-    private tunes: Tunes;
-    private ui: Ui;
-    private _data: any;
+    private readonly api: API;
+    private readonly readOnly: boolean;
+    private readonly config: any;
+    private readonly tunes: Tunes;
+    private readonly ui: Ui;
+    private readonly _data: any;
 
     /**
      * Notify core that read-only mode is supported
@@ -212,5 +212,9 @@ export default class ImageTool {
                     console.error(err);
                 });
         }
+    }
+
+    public isReadOnly(): boolean {
+        return this.readOnly;
     }
 }

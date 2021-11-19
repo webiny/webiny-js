@@ -2,7 +2,7 @@ import { ToggleSaveRevisionStateActionArgsType } from "./types";
 import { EventActionCallable } from "../../../../types";
 
 export const toggleSaveRevisionStateAction: EventActionCallable<ToggleSaveRevisionStateActionArgsType> =
-    (state, meta, args) => {
+    (state, _, args) => {
         return {
             state: {
                 ui: {

@@ -1,5 +1,5 @@
 import { useContentGqlHandler } from "./useContentGqlHandler";
-import { GQLHandlerCallableArgs } from "./useGqlHandler";
+import { GQLHandlerCallableParams } from "./useGqlHandler";
 
 const reviewFields = `
     id
@@ -57,8 +57,10 @@ const listReviewsQuery = /* GraphQL */ `
     }
 `;
 
-export const useReviewReadHandler = (options: GQLHandlerCallableArgs) => {
-    const contentHandler = useContentGqlHandler(options);
+export const useReviewReadHandler = (
+    params: Omit<GQLHandlerCallableParams, "createHeadlessCmsApp">
+) => {
+    const contentHandler = useContentGqlHandler(params);
 
     return {
         ...contentHandler,

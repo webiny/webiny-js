@@ -11,7 +11,8 @@ export default () => {
                 label: "Slack",
                 icon: <SlackIcon />,
                 path: "https://www.webiny.com/slack/",
-                rel: "noopener noreferrer"
+                rel: "noopener noreferrer",
+                target: "_blank"
             })
         );
     });

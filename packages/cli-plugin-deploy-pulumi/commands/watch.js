@@ -1,18 +1,18 @@
 const os = require("os");
-const execa = require("execa");
 const chalk = require("chalk");
+const path = require("path");
 const localtunnel = require("localtunnel");
 const express = require("express");
 const bodyParser = require("body-parser");
 const { login, getPulumi, loadEnvVariables, getRandomColorForString } = require("../utils");
 const { getProjectApplication } = require("@webiny/cli/utils");
-const path = require("path");
 const get = require("lodash/get");
 const merge = require("lodash/merge");
 const browserOutput = require("./watch/output/browserOutput");
 const terminalOutput = require("./watch/output/terminalOutput");
 const minimatch = require("minimatch");
 const glob = require("fast-glob");
+const watchPackages = require("./watch/watchPackages");
 
 // Do not allow watching "prod" and "production" environments. On the Pulumi CLI side, the command
 // is still in preview mode, so it's definitely not wise to use it on production environments.
@@ -109,7 +109,7 @@ module.exports = async (inputs, context) => {
     };
 
     // Forward logs from the cloud to here, using the "localtunnel" library.
-    if (inputs.logs) {
+    if (inputs.remoteRuntimeLogs) {
         try {
             const tunnel = await localtunnel({ port: 3010 });
 
@@ -144,11 +144,11 @@ module.exports = async (inputs, context) => {
 
             output.log({ type: "logs", message: "" });
 
-            if (inputs.logs !== "*") {
+            if (inputs.remoteRuntimeLogs !== "*") {
                 output.log({
                     type: "logs",
                     message: chalk.gray(
-                        `Only showing logs that match the following pattern: ${inputs.logs}`
+                        `Only showing logs that match the following pattern: ${inputs.remoteRuntimeLogs}`
                     )
                 });
             }
@@ -253,7 +253,7 @@ module.exports = async (inputs, context) => {
             });
 
             // If logs are enabled, inform user that we're updating the WEBINY_LOGS_FORWARD_URL env variable.
-            if (inputs.logs) {
+            if (inputs.remoteRuntimeLogs) {
                 setTimeout(() => {
                     output.log({
                         type: "deploy",
@@ -271,76 +271,12 @@ module.exports = async (inputs, context) => {
         }
     }
 
-    // Add build logs.
     if (inputs.build) {
-        try {
-            output.log({
-                type: "build",
-                message: chalk.green("Watching packages...")
-            });
-
-            let packages = [];
-            if (inputs.package) {
-                packages = Array.isArray(inputs.package) ? inputs.package : [inputs.package];
-            } else {
-                packages = await execa("yarn", [
-                    "webiny",
-                    "workspaces",
-                    "tree",
-                    "--json",
-                    "--depth",
-                    inputs.depth,
-                    "--distinct",
-                    "--folder",
-                    inputs.folder
-                ]).then(({ stdout }) => JSON.parse(stdout));
-            }
-
-            const commandArgs = [
-                "webiny",
-                "workspaces",
-                "run",
-                "watch",
-                ...packages.reduce((current, item) => {
-                    current.push("--scope", item);
-                    return current;
-                }, [])
-            ];
-
-            if (inputs.env) {
-                commandArgs.push("--env", inputs.env);
-            }
-
-            const watchPackages = execa("yarn", commandArgs, { env: { FORCE_COLOR: true } });
-
-            watchPackages.stdout.on("data", data => {
-                output.log({
-                    type: "build",
-                    message: data.toString()
-                });
-            });
-
-            watchPackages.stderr.on("data", data => {
-                output.log({
-                    type: "build",
-                    message: data.toString()
-                });
-            });
-
-            context.onExit(() => {
-                return new Promise(resolve => {
-                    const kill = require("tree-kill");
-                    kill(watchPackages.pid, "SIGTERM", () => {
-                        resolve();
-                    });
-                });
-            });
-        } catch (e) {
-            output.log({
-                type: "build",
-                message: chalk.red(e.message)
-            });
-        }
+        await watchPackages({
+            inputs,
+            context,
+            output
+        });
     }
 };
 

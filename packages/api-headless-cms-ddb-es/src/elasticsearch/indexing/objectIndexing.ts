@@ -1,51 +1,54 @@
 import { CmsModelFieldToElasticsearchPlugin } from "~/types";
 import {
-    CmsContentModel,
-    CmsContentModelField,
-    CmsContext,
+    CmsModel,
+    CmsModelField,
     CmsModelFieldToGraphQLPlugin
 } from "@webiny/api-headless-cms/types";
+import { PluginsContainer } from "@webiny/plugins";
 
 interface ProcessToIndex {
     (params: {
-        fields: CmsContentModelField[];
+        fields: CmsModelField[];
         value: Record<string, any>;
+        rawValue: Record<string, any>;
         getFieldIndexPlugin: (fieldType: string) => CmsModelFieldToElasticsearchPlugin;
         getFieldTypePlugin: (fieldType: string) => CmsModelFieldToGraphQLPlugin;
-        context: CmsContext;
-        model: CmsContentModel;
+        plugins: PluginsContainer;
+        model: CmsModel;
     }): Record<"value" | "rawValue", Record<string, any>>;
 }
 
 interface ProcessFromIndex {
     (params: {
-        fields: CmsContentModelField[];
+        fields: CmsModelField[];
         value: Record<string, any>;
         rawValue: Record<string, any>;
         getFieldIndexPlugin: (fieldType: string) => CmsModelFieldToElasticsearchPlugin;
         getFieldTypePlugin: (fieldType: string) => CmsModelFieldToGraphQLPlugin;
-        context: CmsContext;
-        model: CmsContentModel;
+        plugins: PluginsContainer;
+        model: CmsModel;
     }): Record<string, any>;
 }
 
 const processToIndex: ProcessToIndex = ({
     fields,
     value: sourceValue,
+    rawValue: sourceRawValue,
     getFieldIndexPlugin,
     getFieldTypePlugin,
-    context,
+    plugins,
     model
 }) => {
     const reducer = (values, field) => {
         const plugin = getFieldIndexPlugin(field.type);
         const { value, rawValue } = plugin.toIndex({
-            context,
             model,
             field,
             value: sourceValue[field.fieldId],
+            rawValue: sourceRawValue[field.fieldId],
             getFieldIndexPlugin,
-            getFieldTypePlugin
+            getFieldTypePlugin,
+            plugins
         });
 
         if (value !== undefined) {
@@ -67,13 +70,13 @@ const processFromIndex: ProcessFromIndex = ({
     rawValue: sourceRawValue,
     getFieldIndexPlugin,
     getFieldTypePlugin,
-    context,
+    plugins,
     model
 }) => {
     const reducer = (values, field) => {
         const plugin = getFieldIndexPlugin(field.type);
         const value = plugin.fromIndex({
-            context,
+            plugins,
             model,
             field,
             value: sourceValue[field.fieldId],
@@ -96,61 +99,70 @@ export default (): CmsModelFieldToElasticsearchPlugin => ({
     type: "cms-model-field-to-elastic-search",
     name: "cms-model-field-to-elastic-search-object",
     fieldType: "object",
-    toIndex({ context, model, field, value, getFieldIndexPlugin, getFieldTypePlugin }) {
-        if (!value) {
+    toIndex({
+        plugins,
+        model,
+        field,
+        value: initialValue,
+        rawValue: initialRawValue,
+        getFieldIndexPlugin,
+        getFieldTypePlugin
+    }) {
+        if (!initialValue) {
             return { value: null };
         }
 
-        const fields = field.settings.fields as CmsContentModelField[];
+        const fields = field.settings.fields as CmsModelField[];
 
         /**
          * In "object" field, value is either an object or an array of objects.
          */
         if (field.multipleValues) {
-            const values = value.reduce(
-                (acc, item) => {
-                    const { value, rawValue } = processToIndex({
-                        value: item,
-                        getFieldIndexPlugin,
-                        getFieldTypePlugin,
-                        model,
-                        context,
-                        fields
-                    });
+            const result = {
+                value: [],
+                rawValue: []
+            };
+            for (const key in initialValue) {
+                const { value, rawValue } = processToIndex({
+                    value: initialValue[key],
+                    rawValue: initialRawValue[key],
+                    getFieldIndexPlugin,
+                    getFieldTypePlugin,
+                    model,
+                    plugins,
+                    fields
+                });
+                if (Object.keys(value).length > 0) {
+                    result.value.push(value);
+                }
 
-                    if (Object.keys(value).length > 0) {
-                        acc.value.push(value);
-                    }
-
-                    if (Object.keys(rawValue).length > 0) {
-                        acc.rawValue.push(rawValue);
-                    }
-                    return acc;
-                },
-                { value: [], rawValue: [] }
-            );
+                if (Object.keys(rawValue).length > 0) {
+                    result.rawValue.push(rawValue);
+                }
+            }
 
             return {
-                value: values.value.length > 0 ? values.value : undefined,
-                rawValue: values.rawValue.length > 0 ? values.rawValue : undefined
+                value: result.value.length > 0 ? result.value : undefined,
+                rawValue: result.rawValue.length > 0 ? result.rawValue : undefined
             };
         }
 
         return processToIndex({
-            value,
+            value: initialValue,
+            rawValue: initialRawValue,
             getFieldIndexPlugin,
             getFieldTypePlugin,
             model,
-            context,
+            plugins,
             fields
         });
     },
-    fromIndex({ field, value, rawValue, model, context, getFieldIndexPlugin, getFieldTypePlugin }) {
+    fromIndex({ field, value, rawValue, model, plugins, getFieldIndexPlugin, getFieldTypePlugin }) {
         if (!value) {
             return null;
         }
 
-        const fields = field.settings.fields as CmsContentModelField[];
+        const fields = field.settings.fields as CmsModelField[];
 
         /**
          * In "object" field, value is either an object or an array of objects.
@@ -170,7 +182,7 @@ export default (): CmsModelFieldToElasticsearchPlugin => ({
                     getFieldIndexPlugin,
                     getFieldTypePlugin,
                     model,
-                    context,
+                    plugins,
                     fields
                 })
             );
@@ -182,7 +194,7 @@ export default (): CmsModelFieldToElasticsearchPlugin => ({
             getFieldIndexPlugin,
             getFieldTypePlugin,
             model,
-            context,
+            plugins,
             fields
         });
     }

@@ -54,7 +54,7 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                 formBuilder: emptyResolver
             },
             FbQuery: {
-                version: async (root, args, context) => {
+                version: async (_, __, context) => {
                     const { i18nContent, tenancy, formBuilder } = context;
 
                     if (!tenancy.getCurrentTenant() || !i18nContent.getLocale()) {
@@ -73,7 +73,7 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                 }
             },
             FbMutation: {
-                install: async (root, args, context) => {
+                install: async (_, args, context) => {
                     try {
                         await context.formBuilder.installSystem({ domain: args.domain });
 
@@ -86,7 +86,7 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                         });
                     }
                 },
-                upgrade: async (root, args, context) => {
+                upgrade: async (_, args, context) => {
                     try {
                         await context.formBuilder.upgradeSystem(args.version as string);
 

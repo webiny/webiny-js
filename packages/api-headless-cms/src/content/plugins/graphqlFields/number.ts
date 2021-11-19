@@ -1,4 +1,4 @@
-import { CmsModelFieldToGraphQLPlugin } from "../../../types";
+import { CmsModelFieldToGraphQLPlugin } from "~/types";
 
 const createListFilters = ({ field }) => {
     return `

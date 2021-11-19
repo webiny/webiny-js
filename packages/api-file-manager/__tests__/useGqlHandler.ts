@@ -114,7 +114,7 @@ export default (params: UseGqlHandlerParams = {}) => {
         async isInstalled(variables) {
             return invoke({ body: { query: IS_INSTALLED, variables } });
         },
-        async install(variables) {
+        async install(variables = {}) {
             return invoke({ body: { query: INSTALL, variables } });
         },
         async getSettings(variables = {}) {

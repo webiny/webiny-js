@@ -35,6 +35,8 @@
     "@webiny/handler-graphql": "^5.17.4",
     "@webiny/handler-http": "^5.17.4",
     "@webiny/plugins": "^5.17.4",
+    "@webiny/pubsub": "^5.17.4",
+    "@webiny/utils": "^5.17.4",
     "@webiny/validation": "^5.17.4",
     "boolean": "^3.0.2",
     "commodo-fields-object": "^1.0.6",

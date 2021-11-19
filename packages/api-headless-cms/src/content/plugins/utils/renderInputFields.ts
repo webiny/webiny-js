@@ -1,15 +1,12 @@
 import {
     CmsFieldTypePlugins,
-    CmsContentModel,
+    CmsModel,
     CmsModelFieldDefinition,
     CmsModelFieldToGraphQLPlugin
 } from "~/types";
 
 interface RenderInputFields {
-    (params: {
-        model: CmsContentModel;
-        fieldTypePlugins: CmsFieldTypePlugins;
-    }): CmsModelFieldDefinition[];
+    (params: { model: CmsModel; fieldTypePlugins: CmsFieldTypePlugins }): CmsModelFieldDefinition[];
 }
 
 export const renderInputFields: RenderInputFields = ({ model, fieldTypePlugins }) => {

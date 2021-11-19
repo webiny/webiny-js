@@ -1,6 +1,6 @@
 import jsonpack from "jsonpack";
 import WebinyError from "@webiny/error";
-import { CmsModelFieldToStoragePlugin } from "@webiny/api-headless-cms/types";
+import { StorageTransformPlugin } from "@webiny/api-headless-cms/content/plugins/storage/StorageTransformPlugin";
 
 export type OriginalValue = Record<string, any> | any[];
 
@@ -15,6 +15,9 @@ export interface StorageValue {
  * NOTE 2021-07-28: it seems PR is not going to be merged so keep this.
  */
 const transformArray = (value: Record<string, any> | any[]) => {
+    if (!value) {
+        return value;
+    }
     let isArray = Array.isArray(value);
     const shouldBeArray = value instanceof Array === false && isArray;
     if (shouldBeArray) {
@@ -29,66 +32,66 @@ const transformArray = (value: Record<string, any> | any[]) => {
     return value;
 };
 
-export default (): CmsModelFieldToStoragePlugin<OriginalValue, StorageValue> => {
-    return {
-        type: "cms-model-field-to-storage",
-        name: "cms-model-field-to-storage-rich-text",
-        fieldType: "rich-text",
-        async fromStorage({ field, value: storageValue }) {
-            if (!storageValue) {
-                return storageValue;
-            } else if (typeof storageValue !== "object") {
-                throw new WebinyError(
-                    `Value received in "fromStorage" function is not an object in field "${field.fieldId}".`
-                );
-            }
-            /**
-             * This is to circumvent a bug introduced with 5.8.0 storage operations.
-             * Do not remove.
-             */
-            if (storageValue.hasOwnProperty("compression") === false) {
-                return storageValue;
-            }
-            const { compression, value } = storageValue;
-            if (!compression) {
-                throw new WebinyError(
-                    `Missing compression in "fromStorage" function in field "${
-                        field.fieldId
-                    }": ${JSON.stringify(storageValue)}.`,
-                    "MISSING_COMPRESSION",
-                    {
-                        value: storageValue
-                    }
-                );
-            }
-            if (compression !== "jsonpack") {
-                throw new WebinyError(
-                    `This plugin cannot transform something not packed with "jsonpack".`,
-                    "WRONG_COMPRESSION",
-                    {
-                        compression
-                    }
-                );
-            }
-            try {
-                return jsonpack.unpack(value);
-            } catch {
-                return null;
-            }
-        },
-        async toStorage({ value }) {
-            /**
-             * There is a possibility that we are trying to compress already compressed value.
-             * Introduced a bug with 5.8.0 storage operations, so just return the value to correct it.
-             */
-            if (value && value.hasOwnProperty("compression") === true) {
-                return value as any;
-            }
-            value = transformArray(value);
-            return {
-                compression: "jsonpack",
-                value: value ? jsonpack.pack(value) : value
-            };
+const plugin = new StorageTransformPlugin({
+    fieldType: "rich-text",
+    fromStorage: async ({ field, value: storageValue }) => {
+        if (!storageValue) {
+            return storageValue;
+        } else if (typeof storageValue !== "object") {
+            throw new WebinyError(
+                `RichText value received in "fromStorage" function is not an object in field "${field.fieldId}".`
+            );
         }
-    };
+        /**
+         * This is to circumvent a bug introduced with 5.8.0 storage operations.
+         * Do not remove.
+         */
+        if (storageValue.hasOwnProperty("compression") === false) {
+            return storageValue;
+        }
+        const { compression, value } = storageValue;
+        if (!compression) {
+            throw new WebinyError(
+                `Missing compression in "fromStorage" function in field "${
+                    field.fieldId
+                }": ${JSON.stringify(storageValue)}.`,
+                "MISSING_COMPRESSION",
+                {
+                    value: storageValue
+                }
+            );
+        }
+        if (compression !== "jsonpack") {
+            throw new WebinyError(
+                `This plugin cannot transform something not packed with "jsonpack".`,
+                "WRONG_COMPRESSION",
+                {
+                    compression
+                }
+            );
+        }
+        try {
+            return jsonpack.unpack(value);
+        } catch {
+            return null;
+        }
+    },
+    toStorage: async ({ value }) => {
+        /**
+         * There is a possibility that we are trying to compress already compressed value.
+         * Introduced a bug with 5.8.0 storage operations, so just return the value to correct it.
+         */
+        if (value && value.hasOwnProperty("compression") === true) {
+            return value as any;
+        }
+        value = transformArray(value);
+        return {
+            compression: "jsonpack",
+            value: value ? jsonpack.pack(value) : value
+        };
+    }
+});
+
+export default () => {
+    return plugin;
 };

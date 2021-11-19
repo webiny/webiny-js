@@ -1,8 +1,8 @@
 import timeLtePlugin from "../../src/content/plugins/validators/timeLte";
 import timeGtePlugin from "../../src/content/plugins/validators/timeGte";
-import { CmsContentModelFieldValidation } from "../../src/types";
+import { CmsModelFieldValidation } from "../../src/types";
 
-const createValidator = (args): CmsContentModelFieldValidation => {
+const createValidator = (args): CmsModelFieldValidation => {
     return {
         name: "test-validator",
         message: "test validation message",

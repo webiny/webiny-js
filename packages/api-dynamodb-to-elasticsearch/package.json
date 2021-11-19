@@ -15,7 +15,7 @@
     "@webiny/api-elasticsearch": "^5.17.4",
     "@webiny/error": "^5.17.4",
     "@webiny/handler": "^5.17.4",
-    "aws-sdk": "^2.539.0"
+    "aws-sdk": "^2.971.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",

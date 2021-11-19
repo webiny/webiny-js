@@ -1,18 +1,17 @@
 import { ElasticsearchQuerySearchValuePlugins } from "./searchPluginsList";
-import { CmsContentModelField, CmsContext } from "@webiny/api-headless-cms/types";
+import { CmsModelField } from "@webiny/api-headless-cms/types";
 
-interface Args {
+interface Params {
     plugins: ElasticsearchQuerySearchValuePlugins;
-    field: CmsContentModelField;
+    field: CmsModelField;
     value: any;
-    context: CmsContext;
 }
 
-export const transformValueForSearch = (args: Args) => {
-    const { field, plugins, value, context } = args;
+export const transformValueForSearch = (args: Params) => {
+    const { field, plugins, value } = args;
     const plugin = plugins[field.type];
     if (!plugin) {
         return value;
     }
-    return plugin.transform({ field, value, context });
+    return plugin.transform({ field, value });
 };

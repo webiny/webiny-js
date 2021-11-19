@@ -4,7 +4,7 @@ import { EventActionCallable } from "~/types";
 
 export const updatePageAction: EventActionCallable<UpdatePageRevisionActionArgsType> = (
     state,
-    meta,
+    _,
     args
 ) => {
     const actions = [

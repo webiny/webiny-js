@@ -1,5 +1,5 @@
 import { useContentGqlHandler } from "./useContentGqlHandler";
-import { GQLHandlerCallableArgs } from "./useGqlHandler";
+import { GQLHandlerCallableParams } from "./useGqlHandler";
 
 const authorFields = `
     id
@@ -141,8 +141,10 @@ const unpublishAuthorMutation = /* GraphQL */ `
     }
 `;
 
-export const useAuthorManageHandler = (options: GQLHandlerCallableArgs) => {
-    const contentHandler = useContentGqlHandler(options);
+export const useAuthorManageHandler = (
+    params: Omit<GQLHandlerCallableParams, "createHeadlessCmsApp">
+) => {
+    const contentHandler = useContentGqlHandler(params);
 
     return {
         ...contentHandler,

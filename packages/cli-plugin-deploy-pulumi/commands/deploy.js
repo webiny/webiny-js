@@ -1,8 +1,8 @@
 const path = require("path");
 const { green } = require("chalk");
-const execa = require("execa");
 const { loadEnvVariables, getPulumi, processHooks, login, notify } = require("../utils");
 const { getProjectApplication } = require("@webiny/cli/utils");
+const buildPackages = require("./deploy/buildPackages");
 
 module.exports = async (inputs, context) => {
     const { env, folder, build } = inputs;
@@ -26,7 +26,7 @@ module.exports = async (inputs, context) => {
 
     const start = new Date();
     const getDuration = () => {
-        return (new Date() - start) / 1000;
+        return (new Date() - start) / 1000 + "s";
     };
 
     // Get project application metadata. Will throw an error if invalid folder specified.
@@ -35,25 +35,12 @@ module.exports = async (inputs, context) => {
     await loadEnvVariables(inputs, context);
 
     if (build) {
-        await execa(
-            "yarn",
-            [
-                "webiny",
-                "workspaces",
-                "run",
-                "build",
-                "--folder",
-                projectApplication.root,
-                "--env",
-                inputs.env,
-                "--debug",
-                Boolean(inputs.debug)
-            ],
-            {
-                stdio: "inherit"
-            }
-        );
+        await buildPackages({ projectApplication, inputs, context });
+    } else {
+        context.info("Skipping building of packages.");
     }
+
+    console.log();
 
     await login(projectApplication);
 
@@ -87,8 +74,11 @@ module.exports = async (inputs, context) => {
         context.info(`Running "hook-before-deploy" hook...`);
         await processHooks("hook-before-deploy", hookDeployArgs);
 
+        context.success(`Hook "hook-before-deploy" completed.`);
+
         const continuing = inputs.preview ? `Previewing deployment...` : `Deploying...`;
-        context.success(`Hook "hook-before-deploy" completed. ${continuing}`);
+        console.log();
+        context.info(continuing);
     }
 
     console.log();

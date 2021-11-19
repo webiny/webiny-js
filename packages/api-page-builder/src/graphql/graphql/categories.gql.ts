@@ -62,7 +62,7 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                         return context.pageBuilder.categories.get(args.slug);
                     });
                 },
-                listCategories: async (_, args, context) => {
+                listCategories: async (_, __, context) => {
                     return resolve(() => context.pageBuilder.categories.list());
                 }
             },

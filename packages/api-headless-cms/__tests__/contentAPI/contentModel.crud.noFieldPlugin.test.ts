@@ -1,4 +1,4 @@
-import { CmsContentModelGroup, CmsModelFieldToGraphQLPlugin } from "../../src/types";
+import { CmsGroup, CmsModelFieldToGraphQLPlugin } from "~/types";
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
 
 const customFieldPlugin = (): CmsModelFieldToGraphQLPlugin => ({
@@ -31,7 +31,7 @@ describe("content model test no field plugin", () => {
 
     const { createContentModelGroupMutation } = useContentGqlHandler(manageHandlerOpts);
 
-    let contentModelGroup: CmsContentModelGroup;
+    let contentModelGroup: CmsGroup;
 
     beforeEach(async () => {
         const [createCMG] = await createContentModelGroupMutation({
@@ -124,7 +124,10 @@ describe("content model test no field plugin", () => {
 
     test("schema generation should not break if an old field type still exists", async () => {
         const customField = customFieldPlugin();
-        const manageModelAPI = useContentGqlHandler(manageHandlerOpts, [customField]);
+        const manageModelAPI = useContentGqlHandler({
+            ...manageHandlerOpts,
+            plugins: [customField]
+        });
         const manageAPI = useContentGqlHandler(manageHandlerOpts);
         const readAPI = useContentGqlHandler(readHandlerOpts);
         const previewAPI = useContentGqlHandler(manageHandlerOpts);

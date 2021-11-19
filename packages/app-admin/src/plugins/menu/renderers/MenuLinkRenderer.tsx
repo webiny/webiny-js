@@ -22,6 +22,8 @@ export class MenuLinkRenderer extends UIRenderer<NavigationMenuElement> {
                 to={element.config.path}
                 data-testid={element.config.testId}
                 onClick={onClick ? () => onClick(props) : null}
+                rel={element.config.rel}
+                target={element.config.target}
             >
                 <ListItem ripple={false}>
                     {element.config.icon ? (

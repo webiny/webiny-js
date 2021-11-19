@@ -1,13 +1,13 @@
 import WebinyError from "@webiny/error";
-import { CmsContext } from "@webiny/api-headless-cms/types";
 import { ElasticsearchQueryBuilderOperatorPlugin } from "@webiny/api-elasticsearch/plugins/definition/ElasticsearchQueryBuilderOperatorPlugin";
+import { PluginsContainer } from "@webiny/plugins";
 
 interface OperatorPlugins {
     [operator: string]: ElasticsearchQueryBuilderOperatorPlugin;
 }
 
-export const operatorPluginsList = (context: CmsContext): OperatorPlugins => {
-    return context.plugins
+export const operatorPluginsList = (plugins: PluginsContainer): OperatorPlugins => {
+    return plugins
         .byType<ElasticsearchQueryBuilderOperatorPlugin>(
             ElasticsearchQueryBuilderOperatorPlugin.type
         )

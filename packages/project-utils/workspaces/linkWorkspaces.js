@@ -5,7 +5,7 @@
  * - package root directory
  */
 const path = require("path");
-const get = require("lodash.get");
+const get = require("lodash/get");
 const fs = require("fs-extra");
 const rimraf = require("rimraf");
 

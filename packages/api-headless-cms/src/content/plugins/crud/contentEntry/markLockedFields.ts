@@ -1,20 +1,15 @@
-import {
-    CmsContentEntry,
-    CmsContentModel,
-    CmsContext,
-    CmsModelLockedFieldPlugin
-} from "../../../../types";
 import WebinyError from "@webiny/error";
-import { ContentModelPlugin } from "../../../plugins/ContentModelPlugin";
+import { CmsEntry, CmsModel, CmsContext, CmsModelLockedFieldPlugin } from "~/types";
+import { CmsModelPlugin } from "~/content/plugins/CmsModelPlugin";
 
 interface Args {
-    model: CmsContentModel;
-    entry: CmsContentEntry;
+    model: CmsModel;
+    entry: CmsEntry;
     context: CmsContext;
 }
 export const markLockedFields = async ({ model, context }: Args): Promise<void> => {
     // If the model is registered via a plugin, we don't need do process anything.
-    const plugins = context.plugins.byType<ContentModelPlugin>(ContentModelPlugin.type);
+    const plugins = context.plugins.byType<CmsModelPlugin>(CmsModelPlugin.type);
     if (plugins.find(plugin => plugin.contentModel.modelId === model.modelId)) {
         return;
     }
@@ -57,12 +52,17 @@ export const markLockedFields = async ({ model, context }: Args): Promise<void> 
         return;
     }
 
-    model.lockedFields = existingLockedFields.concat(lockedFields);
+    const newLockedFields = existingLockedFields.concat(lockedFields);
 
     try {
-        await context.cms.models.updateModel(model, {
-            lockedFields: model.lockedFields
+        await context.cms.updateModelDirect({
+            original: model,
+            model: {
+                ...model,
+                lockedFields: newLockedFields
+            }
         });
+        model.lockedFields = newLockedFields;
     } catch (ex) {
         throw new WebinyError(
             `Could not update model "${model.modelId}" with new locked fields.`,

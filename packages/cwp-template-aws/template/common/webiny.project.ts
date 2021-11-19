@@ -1,6 +1,5 @@
 import cliWorkspaces from "@webiny/cli-plugin-workspaces";
 import cliPulumiDeploy from "@webiny/cli-plugin-deploy-pulumi";
-import cliPageBuilder from "@webiny/api-page-builder/cli";
 import cliAwsTemplate from "@webiny/cwp-template-aws/cli";
 
 // Scaffolds.
@@ -13,6 +12,10 @@ import cliScaffoldReactApp from "@webiny/cli-plugin-scaffold-react-app";
 import cliScaffoldReactComponent from "@webiny/cli-plugin-scaffold-react-component";
 import cliScaffoldCiCd from "@webiny/cli-plugin-scaffold-ci";
 
+// Admin Area and Website CLI plugins.
+import adminPlugins from "./apps/admin/cli";
+import websitePlugins from "./apps/website/cli";
+
 export default {
     template: "[TEMPLATE_VERSION]",
     name: "[PROJECT_NAME]",
@@ -20,7 +23,6 @@ export default {
         plugins: [
             cliWorkspaces(),
             cliPulumiDeploy(),
-            cliPageBuilder(),
             cliAwsTemplate(),
 
             // Scaffolds.
@@ -31,7 +33,11 @@ export default {
             cliScaffoldAdminModule(),
             cliScaffoldReactApp(),
             cliScaffoldReactComponent(),
-            cliScaffoldCiCd()
+            cliScaffoldCiCd(),
+
+            // Admin Area and Website CLI plugins.
+            adminPlugins,
+            websitePlugins
         ]
     }
 };
