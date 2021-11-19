@@ -1,9 +1,8 @@
-import { buildFunction, watchFunction } from "@webiny/project-utils";
+const { createWatchPackage, createBuildPackage } = require("@webiny/project-utils");
 
-// Exports fundamental watch and build commands.
-export default {
+module.exports = {
     commands: {
-        watch: watchFunction,
-        build: buildFunction
+        watch: createWatchPackage({ cwd: __dirname }),
+        build: createBuildPackage({ cwd: __dirname })
     }
 };

@@ -171,7 +171,7 @@ const createLog = ({ multipleWatches, output, context }) => {
             prefix = chalk.hex(getRandomColorForString(packageName))(packageName) + ": ";
         }
 
-        let send;
+        let send = "";
         if (Array.isArray(message)) {
             message = message.filter(Boolean);
             if (message.length) {
