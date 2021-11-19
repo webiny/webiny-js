@@ -1,9 +1,6 @@
 const { red } = require("chalk");
 const execa = require("execa");
-
-// Change this for every new version. It needs to be set to the upcoming version.
-// TODO: improve this a bit, this is an easy thing to miss, buried in code like this.
-const UPGRADE_TARGET_VERSION = "5.18.0";
+const semver = require("semver");
 
 module.exports = [
     {
@@ -23,8 +20,7 @@ module.exports = [
                     yargs.option("use-version", {
                         describe:
                             "Use upgrade script for a specific version. Should only be used for development/testing purposes.",
-                        type: "string",
-                        default: UPGRADE_TARGET_VERSION
+                        type: "string"
                     });
                 },
                 async argv => {
@@ -55,6 +51,7 @@ module.exports = [
                         }
                     }
 
+                    const defaultUpgradeTargetVersion = semver.coerce(context.version).version;
                     const ctx = {
                         project: {
                             name: context.project.name,
@@ -66,7 +63,7 @@ module.exports = [
                         "npx",
                         [
                             "https://github.com/webiny/webiny-upgrades",
-                            argv.useVersion,
+                            argv.useVersion || defaultUpgradeTargetVersion,
                             "--context",
                             `'${JSON.stringify(ctx)}'`
                         ],
