@@ -31,7 +31,7 @@ class Delivery {
                 ]
             }
         });
-
+        
         new aws.iam.RolePolicyAttachment(`tenant-router-role-policy-attachment`, {
             role,
             policyArn: aws.iam.ManagedPolicies.AWSLambdaBasicExecutionRole
@@ -40,12 +40,12 @@ class Delivery {
         // Some resources _must_ be put in us-east-1, such as Lambda at Edge.
         const awsUsEast1 = new aws.Provider("us-east-1", { region: "us-east-1" });
 
-        const tenantRouter = new aws.lambda.Function(
-            "tenant-router",
+        const requestRouter = new aws.lambda.Function(
+            "tenant-request-router",
             {
                 publish: true,
                 runtime: "nodejs14.x",
-                handler: "index.handler",
+                handler: "index.request",
                 role: role.arn,
                 timeout: 5,
                 memorySize: 128,
@@ -55,7 +55,7 @@ class Delivery {
             },
             { provider: awsUsEast1 }
         );
-
+        
         this.cloudfront = new aws.cloudfront.Distribution("delivery", {
             enabled: true,
             waitForDeployment: true,
@@ -110,20 +110,17 @@ class Delivery {
                     {
                         eventType: "origin-request",
                         includeBody: false,
-                        lambdaArn: pulumi.interpolate`${tenantRouter.qualifiedArn}`
-                    },
-                    {
-                        eventType: "viewer-request",
-                        includeBody: false,
-                        lambdaArn: pulumi.interpolate`${tenantRouter.qualifiedArn}`
+                        lambdaArn: pulumi.interpolate`${requestRouter.qualifiedArn}`
                     }
                 ],
                 viewerProtocolPolicy: "redirect-to-https",
                 allowedMethods: ["GET", "HEAD", "OPTIONS"],
                 cachedMethods: ["GET", "HEAD", "OPTIONS"],
+                originRequestPolicyId: "",
                 forwardedValues: {
                     cookies: { forward: "none" },
-                    queryString: true
+                    queryString: true,
+                    headers: ["Host"]
                 },
                 // MinTTL <= DefaultTTL <= MaxTTL
                 minTtl: 0,
@@ -136,8 +133,10 @@ class Delivery {
                     restrictionType: "none"
                 }
             },
+            aliases: ["*.mt.webiny.com"],
             viewerCertificate: {
-                cloudfrontDefaultCertificate: true
+                acmCertificateArn: "arn:aws:acm:us-east-1:656932293860:certificate/5931d8b4-a39b-4a3a-a4e7-f5bbdd78d599",
+                sslSupportMethod: "sni-only"
             }
         });
     }

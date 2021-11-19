@@ -1,6 +1,7 @@
 import { plugins } from "@webiny/plugins";
 import { plugins as tenancyPlugins } from "@webiny/app-tenancy";
 import welcomeScreenPlugins from "@webiny/app-plugin-admin-welcome-screen";
+import tenantManager from "@webiny/app-tenant-manager/plugins";
 import routeNotFound from "./routeNotFound";
 import basePlugins from "./base";
 import apolloLinkPlugins from "./apolloLinks";
@@ -50,6 +51,10 @@ plugins.register([
      * Tenant installation.
      */
     tenancyPlugins(),
+    /**
+     * Tenant manager module
+     */
+    tenantManager(),
     /**
      * Security app and authentication plugins.
      */
