@@ -39,6 +39,7 @@ module.exports = options => {
         plugins: [
             new webpack.DefinePlugin({
                 "process.env.WEBINY_VERSION": JSON.stringify(process.env.WEBINY_VERSION || version),
+                "process.env.WEBINY_MULTI_TENANCY": JSON.stringify(process.env.WEBINY_MULTI_TENANCY || false),
                 ...definitions
             })
         ].filter(Boolean),
