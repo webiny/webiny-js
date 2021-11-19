@@ -3,6 +3,27 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.18.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.17.4...v5.18.0-beta.0) (2021-11-19)
+
+
+### Bug Fixes
+
+* add `appStorage` to stack output ([657b3a8](https://github.com/webiny/webiny-js/commit/657b3a80af4920b848a931d31b7f4a491d38f493))
+* correct `templateOptions` assignment ([33cbe95](https://github.com/webiny/webiny-js/commit/33cbe95bfaeabdbb56d688799ae0eb4e7dd75ee0))
+* correct `templateOptions` assignment and messaging ([8540a43](https://github.com/webiny/webiny-js/commit/8540a431e30ebed94c916d2a6f3b5debd6c33bbe))
+* create CLI plugins ([06782b1](https://github.com/webiny/webiny-js/commit/06782b15530f62a298b6cda3267e21fe3bcd96b2))
+* ignore TS error ([d70f7cd](https://github.com/webiny/webiny-js/commit/d70f7cd14b0b49f34823ed46afa09af83a121149))
+* remove file upload ([1874d73](https://github.com/webiny/webiny-js/commit/1874d73d751f8f4eb6a9326657d407be4cc1849c))
+* remove obsolete plugin ([779d323](https://github.com/webiny/webiny-js/commit/779d323a6b288f3fd0272347c74d5cfaf0c5653f))
+* update scripts ([3bafcf8](https://github.com/webiny/webiny-js/commit/3bafcf81e1fec0893d89472f56ed1a0691ddc6a0))
+* update webiny.config.ts files ([0a87fc2](https://github.com/webiny/webiny-js/commit/0a87fc2252492acfb7499f9a04c8935c5629dece))
+* upgrade commands ([dcefc22](https://github.com/webiny/webiny-js/commit/dcefc22804821ead5a80446e98a854ddcca66911))
+* use ddb as the default value ([0cdbc06](https://github.com/webiny/webiny-js/commit/0cdbc0604d6b2c50a52687f19d990976163c0ae4))
+
+
+
+
+
 ## [5.17.4](https://github.com/webiny/webiny-js/compare/v5.17.4-beta.1...v5.17.4) (2021-11-19)
 
 **Note:** Version bump only for package @webiny/cwp-template-aws

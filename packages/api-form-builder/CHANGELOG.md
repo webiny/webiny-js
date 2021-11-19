@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.18.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.17.4...v5.18.0-beta.0) (2021-11-19)
+
+
+### Bug Fixes
+
+* update build/watch commands ([ab0fd80](https://github.com/webiny/webiny-js/commit/ab0fd80192fa76db0848533df130849adac32607))
+
+
+### Features
+
+* tsconfig improvements ([#2018](https://github.com/webiny/webiny-js/issues/2018)) ([d4ce776](https://github.com/webiny/webiny-js/commit/d4ce7767a5981ba3473fcd923d3603102ce4be8d))
+
+
+
+
+
 ## [5.17.4](https://github.com/webiny/webiny-js/compare/v5.17.4-beta.1...v5.17.4) (2021-11-19)
 
 **Note:** Version bump only for package @webiny/api-form-builder

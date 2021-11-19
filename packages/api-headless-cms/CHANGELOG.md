@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.18.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.17.4...v5.18.0-beta.0) (2021-11-19)
+
+
+### Bug Fixes
+
+* **api-headless-cms:** model id checks ([#2033](https://github.com/webiny/webiny-js/issues/2033)) ([298dfcb](https://github.com/webiny/webiny-js/commit/298dfcbffb64ba5222a313250ca12f7f120b54a4))
+* add Cache-Control header for OPTIONS request ([4c1a103](https://github.com/webiny/webiny-js/commit/4c1a10337d1ee4cdcd0ce474006a039a9ba8f08c))
+* update build/watch commands ([ab0fd80](https://github.com/webiny/webiny-js/commit/ab0fd80192fa76db0848533df130849adac32607))
+* use `~` instead of package name in import statement ([c2600f3](https://github.com/webiny/webiny-js/commit/c2600f3941ed63c01705303f3bf3752ee1032079))
+
+
+### Features
+
+* **api-headless-cms:** add get and list before events ([#2031](https://github.com/webiny/webiny-js/issues/2031)) ([cff8ec0](https://github.com/webiny/webiny-js/commit/cff8ec0bd2b6965a209133e36d734d3d4bd0a9f9))
+* **api-headless-cms:** long text compression ([#2026](https://github.com/webiny/webiny-js/issues/2026)) ([4ff0fad](https://github.com/webiny/webiny-js/commit/4ff0fad3d44d95dddc54b86c278eea606010c5a2))
+* **api-headless-cms:** move all crud ops to root of context cms object ([#2019](https://github.com/webiny/webiny-js/issues/2019)) ([f306052](https://github.com/webiny/webiny-js/commit/f30605294f8be391b0388fbbb57090279ab5395d))
+* tsconfig improvements ([#2018](https://github.com/webiny/webiny-js/issues/2018)) ([d4ce776](https://github.com/webiny/webiny-js/commit/d4ce7767a5981ba3473fcd923d3603102ce4be8d))
+
+
+
+
+
 ## [5.17.4](https://github.com/webiny/webiny-js/compare/v5.17.4-beta.1...v5.17.4) (2021-11-19)
 
 **Note:** Version bump only for package @webiny/api-headless-cms
