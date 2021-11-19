@@ -202,7 +202,7 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
       PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
-      WEBINY_PULUMI_BACKEND: ${{ secrets.WEBINY_PULUMI_BACKEND }}${{ needs.e2e-wby-cms-ddb-init.outputs.ts }}_ddb
+      WEBINY_PULUMI_BACKEND: ${{ secrets.WEBINY_PULUMI_BACKEND }}${{ needs.e2e-wby-cms-ddb-init.outputs.ts }}_ddb/
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
     steps:
       - uses: actions/setup-node@v2
@@ -317,15 +317,15 @@ jobs:
 
       - name: Deploy API
         working-directory: xyz/test-project
-        run: yarn webiny deploy api --env dev
+        run: yarn webiny deploy api --env dev --debug
 
       - name: Deploy Admin Area
         working-directory: xyz/test-project
-        run: yarn webiny deploy apps/admin --env dev
+        run: yarn webiny deploy apps/admin --env dev --debug
 
       - name: Deploy Website
         working-directory: xyz/test-project
-        run: yarn webiny deploy apps/website --env dev
+        run: yarn webiny deploy apps/website --env dev --debug
 
       # Generates a new cypress.json config.
       - name: Create Cypress config
@@ -368,7 +368,7 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
       PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
-      WEBINY_PULUMI_BACKEND: ${{ secrets.WEBINY_PULUMI_BACKEND }}${{ needs.e2e-wby-cms-ddb-init.outputs.ts }}_ddb
+      WEBINY_PULUMI_BACKEND: ${{ secrets.WEBINY_PULUMI_BACKEND }}${{ needs.e2e-wby-cms-ddb-init.outputs.ts }}_ddb/
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
     steps:
       - uses: actions/checkout@v2
@@ -565,15 +565,15 @@ jobs:
 
       - name: Deploy API
         working-directory: xyz/test-project
-        run: yarn webiny deploy api --env dev
+        run: yarn webiny deploy api --env dev --debug
 
       - name: Deploy Admin Area
         working-directory: xyz/test-project
-        run: yarn webiny deploy apps/admin --env dev
+        run: yarn webiny deploy apps/admin --env dev --debug
 
       - name: Deploy Website
         working-directory: xyz/test-project
-        run: yarn webiny deploy apps/website --env dev
+        run: yarn webiny deploy apps/website --env dev --debug
 
       # Generates a new cypress.json config.
       - name: Create Cypress config
@@ -618,7 +618,7 @@ jobs:
       ELASTIC_SEARCH_INDEX_PREFIX: ${{ needs.e2e-wby-cms-ddb-es-init.outputs.ts }}_
       PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
       PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
-      WEBINY_PULUMI_BACKEND: ${{ secrets.WEBINY_PULUMI_BACKEND }}_${{ needs.e2e-wby-cms-ddb-es-init.outputs.ts }}
+      WEBINY_PULUMI_BACKEND: ${{ secrets.WEBINY_PULUMI_BACKEND }}${{ needs.e2e-wby-cms-ddb-es-init.outputs.ts }}_ddb-es
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
     steps:
       - uses: actions/checkout@v2
