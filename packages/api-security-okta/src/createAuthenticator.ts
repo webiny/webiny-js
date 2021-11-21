@@ -63,6 +63,10 @@ export const createAuthenticator = (config: AuthenticatorConfig) => {
         security.addAuthenticator(async idToken => {
             const token = await oktaAuthenticator(idToken);
 
+            if (!token) {
+                return;
+            }
+
             return config.getIdentity({ token });
         });
     });
