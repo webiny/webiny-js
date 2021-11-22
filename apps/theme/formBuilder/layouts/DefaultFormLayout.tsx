@@ -232,7 +232,7 @@ const DefaultFormLayout: FormLayoutComponent = ({
     /**
      * Renders the form submit button. We disable the button if the form is in the loading state.
      */
-    const renderSubmitButton = (submit, loading, tosAccepted, buttonLabel) => {
+    const renderSubmitButton = (submit, loading, _, buttonLabel) => {
         return (
             <div className="webiny-fb-form-submit-button">
                 <button
