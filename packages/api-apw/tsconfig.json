@@ -1,0 +1,50 @@
+{
+  "extends": "../../tsconfig.json",
+  "include": [
+    "src",
+    "__tests__/**/*.ts"
+  ],
+  "references": [
+    {
+      "path": "../api-headless-cms"
+    },
+    {
+      "path": "../handler"
+    },
+    {
+      "path": "../handler-graphql"
+    }
+  ],
+  "compilerOptions": {
+    "rootDirs": [
+      "./src",
+      "./__tests__"
+    ],
+    "outDir": "./dist",
+    "declarationDir": "./dist",
+    "paths": {
+      "~/*": [
+        "./src/*"
+      ],
+      "@webiny/api-headless-cms/*": [
+        "../api-headless-cms/src/*"
+      ],
+      "@webiny/api-headless-cms": [
+        "../api-headless-cms/src"
+      ],
+      "@webiny/handler/*": [
+        "../handler/src/*"
+      ],
+      "@webiny/handler": [
+        "../handler/src"
+      ],
+      "@webiny/handler-graphql/*": [
+        "../handler-graphql/src/*"
+      ],
+      "@webiny/handler-graphql": [
+        "../handler-graphql/src"
+      ]
+    },
+    "baseUrl": "."
+  }
+}

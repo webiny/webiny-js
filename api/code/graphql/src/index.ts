@@ -32,7 +32,7 @@ import securityPlugins from "./security";
 // Imports plugins created via scaffolding utilities.
 import scaffoldsPlugins from "./plugins/scaffolds";
 import { createElasticsearchClient } from "@webiny/api-elasticsearch/client";
-import advancedPublishingWorkflowPlugins from "./plugins/apw";
+import advancedPublishingWorkflowPlugins from "@webiny/api-apw";
 
 const debug = process.env.DEBUG === "true";
 
