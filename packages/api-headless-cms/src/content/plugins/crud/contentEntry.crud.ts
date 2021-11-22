@@ -45,6 +45,7 @@ import {
     entryFromStorageTransform,
     entryToStorageTransform
 } from "~/content/plugins/utils/entryStorage";
+import { assignAfterEntryDelete } from "~/content/plugins/crud/contentEntry/afterDelete";
 
 export const STATUS_DRAFT = "draft";
 export const STATUS_PUBLISHED = "published";
@@ -168,6 +169,10 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
     assignBeforeEntryUpdate({
         context,
         onBeforeUpdate
+    });
+    assignAfterEntryDelete({
+        context,
+        onAfterDelete
     });
 
     const checkEntryPermissions = (check: {

@@ -44,6 +44,7 @@ export const createContentCruds = (params: Params) => {
 
         context.cms = {
             ...context.cms,
+            storageOperations,
             ...createSystemCrud({
                 context,
                 getTenant,

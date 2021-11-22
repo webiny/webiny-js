@@ -15,7 +15,12 @@ import { FileManagerContext } from "@webiny/api-file-manager/types";
 import { UpgradePlugin } from "@webiny/api-upgrade/types";
 import { Topic } from "@webiny/pubsub/types";
 
-interface BaseCmsValuesObject {
+export interface HeadlessCms
+    extends CmsSettingsContext,
+        CmsSystemContext,
+        CmsGroupContext,
+        CmsModelContext,
+        CmsEntryContext {
     /**
      * API type
      */
@@ -40,9 +45,9 @@ interface BaseCmsValuesObject {
      * Means this request is a PREVIEW API
      */
     PREVIEW: boolean;
-}
-
-export interface HeadlessCms extends BaseCmsValuesObject, CmsCrudContextObject {
+    /**
+     * The storage operations loaded for current context.
+     */
     storageOperations: HeadlessCmsStorageOperations;
 }
 /**
@@ -1642,20 +1647,6 @@ export interface CmsEntryContext {
     onAfterEntryRequestReview: Topic<AfterEntryRequestReviewTopicParams>;
     onBeforeEntryGet: Topic<BeforeEntryGetTopicParams>;
     onBeforeEntryList: Topic<BeforeEntryListTopicParams>;
-}
-
-/**
- * A cms part of the context that has all the CRUD operations.
- *
- * @category Context
- */
-interface CmsCrudContextObject
-    extends CmsSettingsContext,
-        CmsSystemContext,
-        CmsGroupContext,
-        CmsModelContext,
-        CmsEntryContext {
-    storageOperations: HeadlessCmsStorageOperations;
 }
 
 /**
