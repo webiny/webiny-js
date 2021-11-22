@@ -60,7 +60,7 @@ module.exports = [
 
                     const command = [
                         "https://github.com/webiny/webiny-upgrades",
-                        argv.useVersion || defaultUpgradeTargetVersion,
+                        argv.useVersion || defaultUpgradeTargetVersion
                     ];
 
                     if (yargs.argv.debug) {
