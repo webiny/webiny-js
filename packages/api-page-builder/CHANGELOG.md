@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.18.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.18.0-beta.1...v5.18.0-beta.2) (2021-11-21)
+
+**Note:** Version bump only for package @webiny/api-page-builder
+
+
+
+
+
+# [5.18.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.18.0-beta.0...v5.18.0-beta.1) (2021-11-19)
+
+
+### Bug Fixes
+
+* create empty plugin (for existing 5.18.0 projects) ([e5f3c99](https://github.com/webiny/webiny-js/commit/e5f3c999b85c845b854e7ef10641734c1c999019))
+* create empty plugin (for existing 5.18.0 projects) ([b3c8120](https://github.com/webiny/webiny-js/commit/b3c8120566a760f7ebcb69564a5b5b92e562cbba))
+
+
+
+
+
 # [5.18.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.17.4...v5.18.0-beta.0) (2021-11-19)
 
 

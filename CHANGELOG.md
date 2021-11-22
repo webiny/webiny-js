@@ -3,6 +3,34 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.18.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.18.0-beta.1...v5.18.0-beta.2) (2021-11-21)
+
+
+### Bug Fixes
+
+* **authentication:** check if token was obtained before constructing identity ([af3233c](https://github.com/webiny/webiny-js/commit/af3233cd07f9d6e3e7f71de1c00c89f66863ccdd))
+
+
+
+
+
+# [5.18.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.18.0-beta.0...v5.18.0-beta.1) (2021-11-19)
+
+
+### Bug Fixes
+
+* create empty plugin (for existing 5.18.0 projects) ([e5f3c99](https://github.com/webiny/webiny-js/commit/e5f3c999b85c845b854e7ef10641734c1c999019))
+* create empty plugin (for existing 5.18.0 projects) ([b3c8120](https://github.com/webiny/webiny-js/commit/b3c8120566a760f7ebcb69564a5b5b92e562cbba))
+* handle non-string values ([1c8743e](https://github.com/webiny/webiny-js/commit/1c8743e44d0f56d6f7c2d3b62a29481d24911b18))
+* improve logging ([2dd751f](https://github.com/webiny/webiny-js/commit/2dd751fffb52a407cb5679bb7395e7601dea9463))
+* revert "stable" version ([d5619a2](https://github.com/webiny/webiny-js/commit/d5619a2ad7846c1715f7f328faabb004126bfb6c))
+* set PORT env variable ([4c497d7](https://github.com/webiny/webiny-js/commit/4c497d78317edaad798483d284354435502d54dd))
+* update scripts ([653d2ab](https://github.com/webiny/webiny-js/commit/653d2ab236d097326a15f45b6227a0a4c1f01f88))
+
+
+
+
+
 # [5.18.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.17.4...v5.18.0-beta.0) (2021-11-19)
 
 
