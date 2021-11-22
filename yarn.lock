@@ -8630,6 +8630,42 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@webiny/api-apw@^5.17.0, @webiny/api-apw@workspace:packages/api-apw":
+  version: 0.0.0-use.local
+  resolution: "@webiny/api-apw@workspace:packages/api-apw"
+  dependencies:
+    "@babel/cli": ^7.5.5
+    "@babel/core": ^7.5.5
+    "@babel/preset-env": ^7.5.5
+    "@babel/preset-flow": ^7.0.0
+    "@babel/runtime": ^7.5.5
+    "@webiny/api-headless-cms": ^5.17.0
+    "@webiny/api-i18n": ^5.17.0
+    "@webiny/api-i18n-content": ^5.17.0
+    "@webiny/api-i18n-ddb": ^5.17.0
+    "@webiny/api-security": ^5.17.0
+    "@webiny/api-security-so-ddb": ^5.17.0
+    "@webiny/api-tenancy": ^5.17.0
+    "@webiny/api-tenancy-so-ddb": ^5.17.0
+    "@webiny/cli": ^5.17.0
+    "@webiny/handler": ^5.17.0
+    "@webiny/handler-aws": ^5.17.0
+    "@webiny/handler-graphql": ^5.17.0
+    "@webiny/plugins": ^5.17.0
+    "@webiny/project-utils": ^5.17.0
+    apollo-graphql: ^0.4.1
+    get-yarn-workspaces: ^1.0.2
+    graphql: ^14.6.0
+    jest: ^26.6.3
+    mdbid: ^1.0.0
+    prettier: ^2.3.2
+    rimraf: ^3.0.2
+    sinon: ^9.0.2
+    ttypescript: ^1.5.12
+    typescript: ^4.1.3
+  languageName: unknown
+  linkType: soft
+
 "@webiny/api-authentication-cognito@workspace:packages/api-authentication-cognito":
   version: 0.0.0-use.local
   resolution: "@webiny/api-authentication-cognito@workspace:packages/api-authentication-cognito"
@@ -12341,6 +12377,7 @@ __metadata:
   dependencies:
     "@webiny/api-admin-users-cognito": ^5.17.0
     "@webiny/api-admin-users-cognito-so-ddb": ^5.17.0
+    "@webiny/api-apw": ^5.17.0
     "@webiny/api-elasticsearch": ^5.17.0
     "@webiny/api-file-manager": ^5.17.0
     "@webiny/api-file-manager-ddb-es": ^5.17.0
