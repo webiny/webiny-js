@@ -13,6 +13,27 @@
     },
     {
       "path": "../handler-graphql"
+    },
+    {
+      "path": "../api-security"
+    },
+    {
+      "path": "../api-i18n"
+    },
+    {
+      "path": "../api-i18n-content"
+    },
+    {
+      "path": "../api-i18n-ddb"
+    },
+    {
+      "path": "../api-tenancy"
+    },
+    {
+      "path": "../handler-aws"
+    },
+    {
+      "path": "../plugins"
     }
   ],
   "compilerOptions": {

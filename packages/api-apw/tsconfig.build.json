@@ -3,6 +3,19 @@
   "include": [
     "src"
   ],
+  "exclude": [
+    "node_modules",
+    "../handler",
+    "../handler/graphql",
+    "../api-headless-cms",
+    "../api-security",
+    "../api-i18n",
+    "../api-i18n-content",
+    "../api-i18n-ddb",
+    "../api-tenancy",
+    "../handler-aws",
+    "../plugins"
+  ],
   "references": [
     {
       "path": "../handler/tsconfig.build.json"
@@ -12,6 +25,27 @@
     },
     {
       "path": "../api-headless-cms/tsconfig.build.json"
+    },
+    {
+      "path": "../api-security/tsconfig.build.json"
+    },
+    {
+      "path": "../api-i18n/tsconfig.build.json"
+    },
+    {
+      "path": "../api-i18n-content/tsconfig.build.json"
+    },
+    {
+      "path": "../api-i18n-ddb/tsconfig.build.json"
+    },
+    {
+      "path": "../api-tenancy/tsconfig.build.json"
+    },
+    {
+      "path": "../handler-aws/tsconfig.build.json"
+    },
+    {
+      "path": "../plugins/tsconfig.build.json"
     }
   ],
   "compilerOptions": {
