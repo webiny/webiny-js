@@ -1,5 +1,5 @@
 import Error from "@webiny/error";
-import { CmsEntry, CmsGroup } from "~/types";
+import { CmsEntry, CmsGroup, CmsModel } from "~/types";
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
 import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
 import { useCategoryReadHandler } from "../utils/useCategoryReadHandler";
@@ -58,7 +58,7 @@ describe("MANAGE - Resolvers", () => {
 
     // This function is not directly within `beforeEach` as we don't always setup the same content model.
     // We call this function manually at the beginning of each test, where needed.
-    const setupContentModel = async (model = null) => {
+    const setupModel = async (model: CmsModel = null) => {
         if (!model) {
             model = models.find(m => m.modelId === "category");
         }
@@ -107,7 +107,7 @@ describe("MANAGE - Resolvers", () => {
     };
 
     const createCategories = async (): Promise<CreateCategoriesResult> => {
-        await setupContentModel();
+        await setupModel();
         // Use "manage" API to create and publish entries
         const { createCategory, listCategories } = useCategoryManageHandler(manageOpts);
 
@@ -139,7 +139,7 @@ describe("MANAGE - Resolvers", () => {
     };
 
     test(`get category`, async () => {
-        await setupContentModel();
+        await setupModel();
         const { createCategory, getCategory, listCategories } =
             useCategoryManageHandler(manageOpts);
 
@@ -186,7 +186,7 @@ describe("MANAGE - Resolvers", () => {
     });
 
     test(`error when getting category without specific groups and models permissions`, async () => {
-        await setupContentModel();
+        await setupModel();
         const { createCategory, listCategories } = useCategoryManageHandler(manageOpts);
 
         const [create] = await createCategory({ data: { title: "Hardware", slug: "hardware" } });
@@ -220,7 +220,7 @@ describe("MANAGE - Resolvers", () => {
     });
 
     test(`get category with specific groups and models permissions`, async () => {
-        await setupContentModel();
+        await setupModel();
         const { createCategory, listCategories } = useCategoryManageHandler(manageOpts);
 
         const [create] = await createCategory({ data: { title: "Hardware", slug: "hardware" } });
@@ -275,7 +275,7 @@ describe("MANAGE - Resolvers", () => {
     });
 
     test(`list categories (no parameters)`, async () => {
-        await setupContentModel();
+        await setupModel();
         // Use "manage" API to create and publish entries
         const { until, createCategory, publishCategory, listCategories } =
             useCategoryManageHandler(manageOpts);
@@ -347,7 +347,7 @@ describe("MANAGE - Resolvers", () => {
     });
 
     test("get entries by given ids", async () => {
-        await setupContentModel();
+        await setupModel();
         // Use "manage" API to create and publish entries
         const { createCategory, getCategoriesByIds } = useCategoryManageHandler(manageOpts);
 
@@ -394,7 +394,7 @@ describe("MANAGE - Resolvers", () => {
     });
 
     test(`should create category`, async () => {
-        await setupContentModel();
+        await setupModel();
         const { until, createCategory, listCategories } = useCategoryManageHandler(manageOpts);
         const [create1] = await createCategory({ data: { title: "Hardware", slug: "hardware" } });
 
@@ -436,7 +436,7 @@ describe("MANAGE - Resolvers", () => {
     });
 
     test(`should return validation error`, async () => {
-        await setupContentModel();
+        await setupModel();
         const { createCategory } = useCategoryManageHandler(manageOpts);
 
         const [response] = await createCategory({ data: { title: "Hardware" } });
@@ -462,7 +462,7 @@ describe("MANAGE - Resolvers", () => {
 
     test(`should create an entry (fields without validation)`, async () => {
         const model = modelsWithoutValidation.find(m => m.modelId === "category");
-        await setupContentModel(model);
+        await setupModel(model);
 
         const { until, createCategory, listCategories } = useCategoryManageHandler(manageOpts);
         const [result] = await createCategory({ data: { title: "Hardware", slug: "hardware" } });
@@ -505,7 +505,7 @@ describe("MANAGE - Resolvers", () => {
     });
 
     test(`create category revision`, async () => {
-        await setupContentModel();
+        await setupModel();
 
         const { until, createCategory, createCategoryFrom, listCategories } =
             useCategoryManageHandler(manageOpts);
@@ -592,7 +592,7 @@ describe("MANAGE - Resolvers", () => {
     });
 
     test(`update category`, async () => {
-        await setupContentModel();
+        await setupModel();
         const { until, createCategory, updateCategory, listCategories } =
             useCategoryManageHandler(manageOpts);
         const [create] = await createCategory({ data: { title: "Hardware", slug: "hardware" } });
@@ -655,7 +655,7 @@ describe("MANAGE - Resolvers", () => {
     });
 
     test(`delete category`, async () => {
-        await setupContentModel();
+        await setupModel();
         const {
             until,
             createCategory,
@@ -767,7 +767,7 @@ describe("MANAGE - Resolvers", () => {
     });
 
     test(`publish and unpublish a category`, async () => {
-        await setupContentModel();
+        await setupModel();
         const {
             until,
             createCategory,
@@ -1011,7 +1011,7 @@ describe("MANAGE - Resolvers", () => {
 
     test("should store and retrieve nested objects", async () => {
         const model = models.find(model => model.modelId === "product");
-        await setupContentModel(model);
+        await setupModel(model);
 
         const { vegetables } = await createCategories();
 
@@ -1101,6 +1101,117 @@ describe("MANAGE - Resolvers", () => {
                         }
                     }
                 ]
+            }
+        });
+    });
+
+    it("should have all entry revisions published", async () => {
+        const { getCategory, createCategory, publishCategory, createCategoryFrom, listCategories } =
+            useCategoryManageHandler(manageOpts);
+
+        // const { getCategory: getReadCategory } = useCategoryReadHandler(readOpts);
+
+        await setupModel();
+
+        const title = "Webiny Serverless Framework";
+        const slug = "webiny-serverless-framework";
+        const [createWebinyResponse] = await createCategory({
+            data: {
+                title,
+                slug
+            }
+        });
+
+        expect(createWebinyResponse).toMatchObject({
+            data: {
+                createCategory: {
+                    data: {
+                        id: expect.any(String),
+                        title,
+                        slug,
+                        meta: {
+                            status: "draft",
+                            version: 1
+                        }
+                    },
+                    error: null
+                }
+            }
+        });
+
+        const webiny = createWebinyResponse.data.createCategory.data;
+        await publishCategory({
+            revision: webiny.id
+        });
+        for (let i = 0; i < 5; i++) {
+            const [response] = await createCategoryFrom({
+                revision: webiny.id
+            });
+
+            await publishCategory({
+                revision: response.data.createCategoryFrom.data.id
+            });
+        }
+
+        await until(
+            () => listCategories().then(([data]) => data),
+            ({ data }) => {
+                if (data.listCategories.data.length !== 1) {
+                    return false;
+                }
+                const [last] = data.listCategories.data;
+                if (!last || last.meta.version !== 6) {
+                    return false;
+                }
+
+                return true;
+            },
+            { name: "list categories after creating revisions" }
+        );
+
+        const [listResponse] = await listCategories();
+
+        expect(listResponse).toMatchObject({
+            data: {
+                listCategories: {
+                    data: [
+                        {
+                            entryId: webiny.entryId,
+                            meta: {
+                                version: 6,
+                                status: "published"
+                            }
+                        }
+                    ],
+                    meta: {
+                        hasMoreItems: false,
+                        cursor: null,
+                        totalCount: 1
+                    },
+                    error: null
+                }
+            }
+        });
+
+        const id = `${webiny.entryId}#0006`;
+
+        const [getResponse] = await getCategory({
+            revision: id
+        });
+
+        expect(getResponse).toEqual({
+            data: {
+                getCategory: {
+                    data: {
+                        id,
+                        title,
+                        slug,
+                        entryId: webiny.entryId,
+                        createdOn: expect.stringMatching(/^20/),
+                        savedOn: expect.stringMatching(/^20/)
+                    },
+                    error: null
+                }
             }
         });
     });
