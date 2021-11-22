@@ -1139,18 +1139,22 @@ describe("MANAGE - Resolvers", () => {
             }
         });
 
-        const webiny = createWebinyResponse.data.createCategory.data;
-        await publishCategory({
-            revision: webiny.id
+        const [publishWebinyResponse] = await publishCategory({
+            revision: createWebinyResponse.data.createCategory.data.id
         });
+        const webiny = publishWebinyResponse.data.publishCategory.data;
+
+        const revisions = [webiny];
         for (let i = 0; i < 5; i++) {
             const [response] = await createCategoryFrom({
                 revision: webiny.id
             });
 
-            await publishCategory({
+            const [publishResponse] = await publishCategory({
                 revision: response.data.createCategoryFrom.data.id
             });
+
+            revisions.push(publishResponse.data.publishCategory.data);
         }
 
         await until(
@@ -1206,9 +1210,31 @@ describe("MANAGE - Resolvers", () => {
                         id,
                         title,
                         slug,
+                        createdBy: expect.any(Object),
                         entryId: webiny.entryId,
                         createdOn: expect.stringMatching(/^20/),
-                        savedOn: expect.stringMatching(/^20/)
+                        savedOn: expect.stringMatching(/^20/),
+                        meta: {
+                            locked: true,
+                            modelId: "category",
+                            publishedOn: expect.stringMatching(/^20/),
+                            revisions: revisions.reverse().map(revision => {
+                                return {
+                                    id: revision.id,
+                                    meta: {
+                                        status:
+                                            revision.meta.version === 6
+                                                ? "published"
+                                                : "unpublished"
+                                    },
+                                    title,
+                                    slug
+                                };
+                            }),
+                            status: "published",
+                            title,
+                            version: 6
+                        }
                     },
                     error: null
                 }
