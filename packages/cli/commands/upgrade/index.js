@@ -57,18 +57,10 @@ module.exports = [
                     }
 
                     const defaultUpgradeTargetVersion = semver.coerce(context.version).version;
-                    const ctx = {
-                        project: {
-                            name: context.project.name,
-                            root: context.project.root
-                        }
-                    };
 
                     const command = [
                         "https://github.com/webiny/webiny-upgrades",
                         argv.useVersion || defaultUpgradeTargetVersion,
-                        "--context",
-                        `'${JSON.stringify(ctx)}'`
                     ];
 
                     if (yargs.argv.debug) {
