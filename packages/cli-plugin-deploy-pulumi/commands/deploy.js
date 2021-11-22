@@ -37,7 +37,7 @@ module.exports = async (inputs, context) => {
     if (build) {
         await buildPackages({ projectApplication, inputs, context });
     } else {
-        context.success("Skipping building of packages.");
+        context.info("Skipping building of packages.");
     }
 
     console.log();
