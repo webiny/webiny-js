@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.18.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.18.0-beta.2...v5.18.0-beta.3) (2021-11-22)
+
+
+### Bug Fixes
+
+* remove context ([ec4566a](https://github.com/webiny/webiny-js/commit/ec4566af26fe67cc7cb26728e7f65e54e7f16968))
+* when `--json` flag is passed, do not output any info text ([7a14fe5](https://github.com/webiny/webiny-js/commit/7a14fe55b70ac432354553818a37762368631509))
+
+
+
+
+
 # [5.18.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.18.0-beta.1...v5.18.0-beta.2) (2021-11-21)
 
 
