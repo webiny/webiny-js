@@ -1,27 +1,27 @@
 {
-  "name": "api-page-builder-export-pages-process",
+  "name": "api-ddb-page-builder-export-pages-process",
   "version": "0.1.0",
   "scripts": {
     "build": "yarn webiny run build",
     "watch": "yarn webiny run watch"
   },
   "dependencies": {
-    "@webiny/api-i18n": "latest",
-    "@webiny/api-i18n-content": "latest",
-    "@webiny/api-i18n-ddb": "latest",
-    "@webiny/api-page-builder": "latest",
-    "@webiny/api-page-builder-import-export": "latest",
-    "@webiny/api-page-builder-import-export-so-ddb": "latest",
-    "@webiny/api-page-builder-so-ddb": "latest",
-    "@webiny/api-security": "latest",
-    "@webiny/api-security-so-ddb": "latest",
-    "@webiny/api-tenancy": "latest",
-    "@webiny/api-tenancy-so-ddb": "latest",
-    "@webiny/cli": "latest",
-    "@webiny/db-dynamodb": "latest",
-    "@webiny/handler-aws": "latest",
-    "@webiny/handler-db": "latest",
-    "@webiny/handler-logs": "latest",
-    "@webiny/project-utils": "latest"
+    "@webiny/api-i18n": "^5.17.0",
+    "@webiny/api-i18n-content": "^5.17.0",
+    "@webiny/api-i18n-ddb": "^5.17.0",
+    "@webiny/api-page-builder": "^5.17.0",
+    "@webiny/api-page-builder-import-export": "^5.17.0",
+    "@webiny/api-page-builder-import-export-so-ddb": "^5.17.0",
+    "@webiny/api-page-builder-so-ddb": "^5.17.0",
+    "@webiny/api-security": "^5.17.0",
+    "@webiny/api-security-so-ddb": "^5.17.0",
+    "@webiny/api-tenancy": "^5.17.0",
+    "@webiny/api-tenancy-so-ddb": "^5.17.0",
+    "@webiny/cli": "^5.17.0",
+    "@webiny/db-dynamodb": "^5.17.0",
+    "@webiny/handler-aws": "^5.17.0",
+    "@webiny/handler-db": "^5.17.0",
+    "@webiny/handler-logs": "^5.17.0",
+    "@webiny/project-utils": "^5.17.0"
   }
 }

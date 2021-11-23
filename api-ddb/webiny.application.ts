@@ -3,7 +3,7 @@
  * https://www.webiny.com/docs/key-topics/cloud-infrastructure/api/introduction
  */
 export default {
-    id: "api",
-    name: "API",
+    id: "api-ddb",
+    name: "API DDB",
     description: "Your GraphQL API and all of the backend services."
 };
