@@ -1,8 +1,8 @@
-const { createWatchPackage, createBuildPackage } = require("@webiny/project-utils");
+const { createWatchFunction, createBuildFunction } = require("@webiny/project-utils");
 
 module.exports = {
     commands: {
-        watch: createWatchPackage({ cwd: __dirname }),
-        build: createBuildPackage({ cwd: __dirname })
+        watch: createWatchFunction({ cwd: __dirname }),
+        build: createBuildFunction({ cwd: __dirname })
     }
 };
