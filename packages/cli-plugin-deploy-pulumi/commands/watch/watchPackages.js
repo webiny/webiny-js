@@ -17,7 +17,14 @@ const parseMessage = message => {
 };
 
 module.exports = async ({ inputs, output, context }) => {
-    const packages = await getPackages(inputs, context);
+    const packages = await getPackages({ inputs, output, context });
+    if (packages.length === 0) {
+        output.log({
+            type: "build",
+            message: `Could not watch any of the specified packages.`
+        });
+        return;
+    }
 
     if (inputs.debug) {
         context.debug("The following packages will be watched for changes:");
