@@ -156,6 +156,7 @@ export const useGqlHandler = (params: GQLHandlerCallableParams) => {
         sleep,
         handler,
         invoke,
+        storageOperations: ops.storageOperations,
         async introspect() {
             return invoke({ body: { query: introspectionQuery } });
         },

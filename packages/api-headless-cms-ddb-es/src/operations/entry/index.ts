@@ -696,39 +696,30 @@ export const createEntriesStorageOperations = (params: Params): CmsEntryStorageO
                 ids: [publishedStorageEntry.id]
             });
 
-            previouslyPublishedEntry.status = CONTENT_ENTRY_STATUS.UNPUBLISHED;
-
             items.push(
                 /**
                  * Update currently published entry (unpublish it)
                  */
                 entity.putBatch({
                     ...previouslyPublishedEntry,
+                    status: CONTENT_ENTRY_STATUS.UNPUBLISHED,
                     savedOn: entry.savedOn,
                     TYPE: createType(),
                     PK: createPartitionKey(publishedStorageEntry),
                     SK: createRevisionSortKey(publishedStorageEntry)
-                }),
-                /**
-                 * Update the helper item in DB with the new published entry ID
-                 */
-                entity.putBatch({
-                    ...storageEntry,
-                    TYPE: createType(),
-                    PK: createPartitionKey(storageEntry),
-                    SK: createPublishedSortKey()
-                })
-            );
-        } else {
-            items.push(
-                entity.putBatch({
-                    ...storageEntry,
-                    PK: createPartitionKey(storageEntry),
-                    SK: createPublishedSortKey(),
-                    TYPE: createPublishedType()
                 })
             );
         }
+        /**
+         * Update the helper item in DB with the new published entry
+         */
+        items.push(
+            entity.putBatch({
+                ...storageEntry,
+                ...publishedKeys,
+                TYPE: createPublishedType()
+            })
+        );
 
         /**
          * We need the latest entry to check if it neds to be updated as well in the Elasticsearch.
@@ -779,8 +770,7 @@ export const createEntriesStorageOperations = (params: Params): CmsEntryStorageO
 
         esItems.push(
             esEntity.putBatch({
-                PK: createPartitionKey(entry),
-                SK: createPublishedSortKey(),
+                ...publishedKeys,
                 index,
                 data: esLatestData
             })
@@ -1209,7 +1199,8 @@ export const createEntriesStorageOperations = (params: Params): CmsEntryStorageO
         model: CmsModel,
         params: CmsEntryStorageOperationsGetPreviousRevisionParams
     ) => {
-        const { tenant, locale, entryId, version } = params;
+        const { tenant, locale } = model;
+        const { entryId, version } = params;
         const queryParams: QueryOneParams = {
             entity,
             partitionKey: createPartitionKey({

@@ -22,6 +22,10 @@ const categoryFields = `
             id
             title
             slug
+            meta {
+                status
+                version
+            }
         }
     }
     # user defined fields

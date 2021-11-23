@@ -220,8 +220,6 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
         await utils.checkModelAccess(context, model);
 
         const entries = await storageOperations.entries.getByIds(model, {
-            tenant: getTenant().id,
-            locale: getLocale().code,
             ids
         });
 
@@ -278,8 +276,6 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
             await utils.checkModelAccess(context, model);
 
             const entries = await storageOperations.entries.getPublishedByIds(model, {
-                tenant: getTenant().id,
-                locale: getLocale().code,
                 ids
             });
 
@@ -293,8 +289,6 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
             await utils.checkModelAccess(context, model);
 
             const entries = await storageOperations.entries.getLatestByIds(model, {
-                tenant: getTenant().id,
-                locale: getLocale().code,
                 ids
             });
 
@@ -303,8 +297,6 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
 
         getEntryRevisions: async (model, entryId) => {
             return storageOperations.entries.getRevisions(model, {
-                tenant: getTenant().id,
-                locale: getLocale().code,
                 id: entryId
             });
         },
@@ -485,15 +477,11 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
             const [uniqueId] = sourceId.split("#");
 
             const originalStorageEntry = await storageOperations.entries.getRevisionById(model, {
-                tenant: getTenant().id,
-                locale: getLocale().code,
                 id: sourceId
             });
             const latestStorageEntry = await storageOperations.entries.getLatestRevisionByEntryId(
                 model,
                 {
-                    tenant: getTenant().id,
-                    locale: getLocale().code,
                     id: uniqueId
                 }
             );
@@ -602,8 +590,6 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
              * The entry we are going to update.
              */
             const originalStorageEntry = await storageOperations.entries.getRevisionById(model, {
-                tenant: getTenant().id,
-                locale: getLocale().code,
                 id
             });
 
@@ -693,23 +679,17 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
             const { id: entryId, version } = parseIdentifier(revisionId);
 
             const storageEntryToDelete = await storageOperations.entries.getRevisionById(model, {
-                tenant: getTenant().id,
-                locale: getLocale().code,
                 id: revisionId
             });
             const latestStorageEntry = await storageOperations.entries.getLatestRevisionByEntryId(
                 model,
                 {
-                    tenant: getTenant().id,
-                    locale: getLocale().code,
                     id: entryId
                 }
             );
             const previousStorageEntry = await storageOperations.entries.getPreviousRevision(
                 model,
                 {
-                    tenant: getTenant().id,
-                    locale: getLocale().code,
                     entryId,
                     version
                 }
@@ -785,8 +765,6 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
             await utils.checkModelAccess(context, model);
 
             const storageEntry = await storageOperations.entries.getLatestRevisionByEntryId(model, {
-                tenant: getTenant().id,
-                locale: getLocale().code,
                 id: entryId
             });
 
@@ -808,12 +786,7 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
             const permission = await checkEntryPermissions({ pw: "p" });
             await utils.checkModelAccess(context, model);
 
-            const tenant = getTenant().id;
-            const locale = getLocale().code;
-
             const originalStorageEntry = await storageOperations.entries.getRevisionById(model, {
-                tenant,
-                locale,
                 id
             });
 
@@ -880,8 +853,6 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
             const permission = await checkEntryPermissions({ pw: "c" });
 
             const originalStorageEntry = await storageOperations.entries.getRevisionById(model, {
-                tenant: getTenant().id,
-                locale: getLocale().code,
                 id
             });
 
@@ -957,15 +928,11 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
             const [entryId] = id.split("#");
 
             const originalStorageEntry = await storageOperations.entries.getRevisionById(model, {
-                tenant: getTenant().id,
-                locale: getLocale().code,
                 id
             });
             const latestEntryRevision = await storageOperations.entries.getLatestRevisionByEntryId(
                 model,
                 {
-                    tenant: getTenant().id,
-                    locale: getLocale().code,
                     id: entryId
                 }
             );
@@ -1042,8 +1009,6 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
 
             const originalStorageEntry =
                 await storageOperations.entries.getPublishedRevisionByEntryId(model, {
-                    tenant: getTenant().id,
-                    locale: getLocale().code,
                     id: entryId
                 });
 

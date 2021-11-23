@@ -2062,56 +2062,38 @@ export interface CmsEntryStorageOperationsRequestReviewParams<
 
 export interface CmsEntryStorageOperationsGetAllRevisionsParams {
     ids: readonly string[];
-    tenant: string;
-    locale: string;
 }
 
 export interface CmsEntryStorageOperationsGetByIdsParams {
     ids: readonly string[];
-    tenant: string;
-    locale: string;
 }
 
 export interface CmsEntryStorageOperationsGetLatestByIdsParams {
     ids: readonly string[];
-    tenant: string;
-    locale: string;
 }
 
 export interface CmsEntryStorageOperationsGetPublishedByIdsParams {
     ids: readonly string[];
-    tenant: string;
-    locale: string;
 }
 
 export interface CmsEntryStorageOperationsGetRevisionsParams {
     id: string;
-    tenant: string;
-    locale: string;
 }
 
 export interface CmsEntryStorageOperationsGetRevisionParams {
     id: string;
-    tenant: string;
-    locale: string;
 }
 
 export interface CmsEntryStorageOperationsGetPublishedRevisionParams {
     id: string;
-    tenant: string;
-    locale: string;
 }
 export interface CmsEntryStorageOperationsGetLatestRevisionParams {
     id: string;
-    tenant: string;
-    locale: string;
 }
 
 export interface CmsEntryStorageOperationsGetPreviousRevisionParams {
     entryId: string;
     version: number;
-    tenant: string;
-    locale: string;
 }
 
 export interface CmsEntryStorageOperationsListResponse<
