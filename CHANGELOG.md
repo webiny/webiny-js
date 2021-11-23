@@ -3,6 +3,32 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.18.0-beta.4](https://github.com/webiny/webiny-js/compare/v5.18.0-beta.3...v5.18.0-beta.4) (2021-11-23)
+
+
+### Bug Fixes
+
+* **api-cognito-authenticator:** make sure token is a string ([bfa4422](https://github.com/webiny/webiny-js/commit/bfa442206228295c82c41f7da4dd161cd5d1076a))
+* **api-security:** handle parallel calls to getPermissions ([170418d](https://github.com/webiny/webiny-js/commit/170418d2fb9bfe5b55f665f27967adb7d27ee7b7))
+* **api-security:** use storage operations in authn/authz plugins ([b123cf3](https://github.com/webiny/webiny-js/commit/b123cf3737acc883a7b2b2504878b8daa6742663))
+* **api-security-okta:** make sure token is a string ([dc96794](https://github.com/webiny/webiny-js/commit/dc96794525e4b7f2e02043886a47e04e7cdea6c2))
+* add TS ignore ([12129a5](https://github.com/webiny/webiny-js/commit/12129a5c83afa75823ab8213ec9d6cc92d5c6198))
+* change port to 3002 ([fcf755d](https://github.com/webiny/webiny-js/commit/fcf755d75b60b24a1ec694a5a6314f73137fc281))
+* exit if no packages detected ([f3bb8c7](https://github.com/webiny/webiny-js/commit/f3bb8c7d9b46ec9ebe7ecfe01d890e407ddcf91d))
+* improve error logging ([59b5023](https://github.com/webiny/webiny-js/commit/59b50236dd509d3497ef6a5ebac1839ca299f52c))
+* improve error logging ([eed9759](https://github.com/webiny/webiny-js/commit/eed9759ad9bb5ce2e70f08c7e686987f19ddc045))
+* remove extra "s" ([848b331](https://github.com/webiny/webiny-js/commit/848b331e9983c75c9292b5511ea86759fb4badff))
+* remove PORT env variable ([d08b03b](https://github.com/webiny/webiny-js/commit/d08b03b98c64fc78fdb9bcb3fd957b93f37b33f6))
+* remove unused variables ([558fbb8](https://github.com/webiny/webiny-js/commit/558fbb84eab404b3d1fb7759a45cc1c7189bbcec))
+* temporarily disable the new "Action" page element ([c20d44b](https://github.com/webiny/webiny-js/commit/c20d44bdcd4e3fa0819ab297afc736ec2a23b15e))
+* use correct functions ([b987fe4](https://github.com/webiny/webiny-js/commit/b987fe45b5d84e0ed487624d93c2f0eab4f0d729))
+* use output.log ([f4662a0](https://github.com/webiny/webiny-js/commit/f4662a02d0918a16970b673b3e661d3320182253))
+* **api-prerendering-service:** remove storageOperations from db record ([0b7d497](https://github.com/webiny/webiny-js/commit/0b7d4974b8e85bf6f0d4147d8f9a8286fc68568b))
+
+
+
+
+
 # [5.18.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.18.0-beta.2...v5.18.0-beta.3) (2021-11-22)
 
 

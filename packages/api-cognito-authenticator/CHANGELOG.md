@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.18.0-beta.4](https://github.com/webiny/webiny-js/compare/v5.18.0-beta.3...v5.18.0-beta.4) (2021-11-23)
+
+
+### Bug Fixes
+
+* **api-cognito-authenticator:** make sure token is a string ([bfa4422](https://github.com/webiny/webiny-js/commit/bfa442206228295c82c41f7da4dd161cd5d1076a))
+
+
+
+
+
 # [5.18.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.18.0-beta.2...v5.18.0-beta.3) (2021-11-22)
 
 **Note:** Version bump only for package @webiny/api-cognito-authenticator

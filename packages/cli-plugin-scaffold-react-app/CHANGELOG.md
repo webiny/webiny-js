@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.18.0-beta.4](https://github.com/webiny/webiny-js/compare/v5.18.0-beta.3...v5.18.0-beta.4) (2021-11-23)
+
+
+### Bug Fixes
+
+* change port to 3002 ([fcf755d](https://github.com/webiny/webiny-js/commit/fcf755d75b60b24a1ec694a5a6314f73137fc281))
+* remove PORT env variable ([d08b03b](https://github.com/webiny/webiny-js/commit/d08b03b98c64fc78fdb9bcb3fd957b93f37b33f6))
+
+
+
+
+
 # [5.18.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.18.0-beta.2...v5.18.0-beta.3) (2021-11-22)
 
 **Note:** Version bump only for package @webiny/cli-plugin-scaffold-react-app

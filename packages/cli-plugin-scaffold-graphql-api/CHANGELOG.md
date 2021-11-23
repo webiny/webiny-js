@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.18.0-beta.4](https://github.com/webiny/webiny-js/compare/v5.18.0-beta.3...v5.18.0-beta.4) (2021-11-23)
+
+
+### Bug Fixes
+
+* use correct functions ([b987fe4](https://github.com/webiny/webiny-js/commit/b987fe45b5d84e0ed487624d93c2f0eab4f0d729))
+
+
+
+
+
 # [5.18.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.18.0-beta.2...v5.18.0-beta.3) (2021-11-22)
 
 **Note:** Version bump only for package @webiny/cli-plugin-scaffold-graphql-api

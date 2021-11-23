@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.18.0-beta.4](https://github.com/webiny/webiny-js/compare/v5.18.0-beta.3...v5.18.0-beta.4) (2021-11-23)
+
+
+### Bug Fixes
+
+* remove extra "s" ([848b331](https://github.com/webiny/webiny-js/commit/848b331e9983c75c9292b5511ea86759fb4badff))
+
+
+
+
+
 # [5.18.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.18.0-beta.2...v5.18.0-beta.3) (2021-11-22)
 
 **Note:** Version bump only for package @webiny/app-security

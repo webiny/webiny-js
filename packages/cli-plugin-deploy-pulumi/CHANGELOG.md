@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.18.0-beta.4](https://github.com/webiny/webiny-js/compare/v5.18.0-beta.3...v5.18.0-beta.4) (2021-11-23)
+
+
+### Bug Fixes
+
+* exit if no packages detected ([f3bb8c7](https://github.com/webiny/webiny-js/commit/f3bb8c7d9b46ec9ebe7ecfe01d890e407ddcf91d))
+* improve error logging ([59b5023](https://github.com/webiny/webiny-js/commit/59b50236dd509d3497ef6a5ebac1839ca299f52c))
+* improve error logging ([eed9759](https://github.com/webiny/webiny-js/commit/eed9759ad9bb5ce2e70f08c7e686987f19ddc045))
+* use output.log ([f4662a0](https://github.com/webiny/webiny-js/commit/f4662a02d0918a16970b673b3e661d3320182253))
+
+
+
+
+
 # [5.18.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.18.0-beta.2...v5.18.0-beta.3) (2021-11-22)
 
 

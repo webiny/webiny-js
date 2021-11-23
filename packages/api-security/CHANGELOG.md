@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.18.0-beta.4](https://github.com/webiny/webiny-js/compare/v5.18.0-beta.3...v5.18.0-beta.4) (2021-11-23)
+
+
+### Bug Fixes
+
+* **api-security:** handle parallel calls to getPermissions ([170418d](https://github.com/webiny/webiny-js/commit/170418d2fb9bfe5b55f665f27967adb7d27ee7b7))
+* **api-security:** use storage operations in authn/authz plugins ([b123cf3](https://github.com/webiny/webiny-js/commit/b123cf3737acc883a7b2b2504878b8daa6742663))
+
+
+
+
+
 # [5.18.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.18.0-beta.2...v5.18.0-beta.3) (2021-11-22)
 
 **Note:** Version bump only for package @webiny/api-security
