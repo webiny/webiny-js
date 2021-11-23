@@ -18,11 +18,13 @@ export const GET_WORKFLOW_QUERY = /* GraphQL */ `
     }
 `;
 
-export const INSTALL_MUTATION = /* GraphQL */ `
-    mutation CmsInstall {
-        cms {
-            install {
-                data
+export const CREATE_WORKFLOW_MUTATION = /* GraphQL */ `
+    mutation CreateWorkflowMutation($data: ApwCreateWorkflowInput!) {
+        advancedPublishingWorkflow {
+            createWorkflow(data: $data) {
+                data {
+                    id
+                }
                 error ${ERROR_FIELDS}
             }
         }

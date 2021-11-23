@@ -41,7 +41,7 @@ const workflowSchema = new GraphQLSchemaPlugin<CmsContext>({
         type ApwWorkflowReviewer {
             id: ID
             displayName: String
-            avatar: File
+            #            avatar: File
         }
 
         type ApwWorkflowStep {
@@ -125,14 +125,14 @@ const workflowSchema = new GraphQLSchemaPlugin<CmsContext>({
 
         input ApwCreateWorkflowInput {
             title: String!
-            steps: ApwWorkflowStepInput!
+            steps: [ApwWorkflowStepInput]!
             scope: ApwWorkflowScopeInput!
             app: ApwWorkflowApplication!
         }
 
         input ApwUpdateWorkflowInput {
             title: String
-            steps: ApwWorkflowStepInput
+            steps: [ApwWorkflowStepInput]
             scope: ApwWorkflowScopeInput
         }
 
@@ -171,7 +171,6 @@ const workflowSchema = new GraphQLSchemaPlugin<CmsContext>({
         ApwQuery: {
             getWorkflow: async (_, args, context) => {
                 try {
-                    console.log(JSON.stringify({ args }, null, 2));
                     const model = await context.cms.getModel("apwWorkflow");
                     const entry = await context.cms.getEntry(model, {
                         where: {

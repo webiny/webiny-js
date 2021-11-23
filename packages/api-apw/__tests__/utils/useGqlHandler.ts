@@ -7,15 +7,20 @@ import { ApiKey, SecurityIdentity } from "@webiny/api-security/types";
 import apiKeyAuthentication from "@webiny/api-security/plugins/apiKeyAuthentication";
 import apiKeyAuthorization from "@webiny/api-security/plugins/apiKeyAuthorization";
 import { createPermissions, until, sleep, PermissionsArg } from "./helpers";
-import { GET_WORKFLOW_QUERY } from "./graphql/workflow";
+import { CREATE_WORKFLOW_MUTATION, GET_WORKFLOW_QUERY } from "./graphql/workflow";
 import { Plugin, PluginCollection } from "@webiny/plugins/types";
-
+import advancedPublishingWorkflowPlugins from "~/index";
 /**
  * Unfortunately at we need to import the api-i18n-ddb package manually
  */
 import i18nDynamoDbStorageOperations from "@webiny/api-i18n-ddb";
 import { createTenancyAndSecurity } from "./tenancySecurity";
 import { getStorageOperations } from "./storageOperations";
+import { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
+
+export interface CreateHeadlessCmsAppParams {
+    storageOperations: HeadlessCmsStorageOperations;
+}
 
 export interface GQLHandlerCallableParams {
     setupTenancyAndSecurityGraphQL?: boolean;
@@ -24,6 +29,7 @@ export interface GQLHandlerCallableParams {
     plugins?: Plugin | Plugin[] | Plugin[][] | PluginCollection;
     storageOperationPlugins?: Plugin | Plugin[] | Plugin[][] | PluginCollection;
     path: string;
+    createHeadlessCmsApp: (params: CreateHeadlessCmsAppParams) => any[];
 }
 
 export const useGqlHandler = (params: GQLHandlerCallableParams) => {
@@ -36,7 +42,18 @@ export const useGqlHandler = (params: GQLHandlerCallableParams) => {
         name: "Root",
         parent: null
     };
-    const { permissions, identity, plugins = [], path, setupTenancyAndSecurityGraphQL } = params;
+    const {
+        permissions,
+        identity,
+        plugins = [],
+        path,
+        setupTenancyAndSecurityGraphQL,
+        createHeadlessCmsApp
+    } = params;
+
+    const app = createHeadlessCmsApp({
+        storageOperations: ops.storageOperations
+    });
 
     const handler = createHandler({
         plugins: [
@@ -101,6 +118,8 @@ export const useGqlHandler = (params: GQLHandlerCallableParams) => {
             i18nDynamoDbStorageOperations(),
             i18nContentPlugins(),
             mockLocalesPlugins(),
+            ...app,
+            advancedPublishingWorkflowPlugins(),
             plugins
         ],
         http: { debug: true }
@@ -130,23 +149,10 @@ export const useGqlHandler = (params: GQLHandlerCallableParams) => {
         },
         // workflow
         async getWorkflowQuery(variables: Record<string, any>) {
-            return invoke({ body: GET_WORKFLOW_QUERY, variables });
+            return invoke({ body: { query: GET_WORKFLOW_QUERY, variables } });
+        },
+        async createWorkflowMutation(variables: Record<string, any>) {
+            return invoke({ body: { query: CREATE_WORKFLOW_MUTATION, variables } });
         }
-        // content model group
-        // async createContentModelGroupMutation(variables: Record<string, any>) {
-        //     return invoke({ body: { query: CREATE_CONTENT_MODEL_GROUP_MUTATION, variables } });
-        // },
-        // async getContentModelGroupQuery(variables: Record<string, any>) {
-        //     return invoke({ body: { query: GET_CONTENT_MODEL_GROUP_QUERY, variables } });
-        // },
-        // async updateContentModelGroupMutation(variables: Record<string, any>) {
-        //     return invoke({ body: { query: UPDATE_CONTENT_MODEL_GROUP_MUTATION, variables } });
-        // },
-        // async deleteContentModelGroupMutation(variables: Record<string, any>) {
-        //     return invoke({ body: { query: DELETE_CONTENT_MODEL_GROUP_MUTATION, variables } });
-        // },
-        // async listContentModelGroupsQuery() {
-        //     return invoke({ body: { query: LIST_CONTENT_MODEL_GROUP_QUERY } });
-        // },
     };
 };
