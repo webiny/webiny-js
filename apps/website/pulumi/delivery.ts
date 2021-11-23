@@ -31,7 +31,7 @@ class Delivery {
                 ]
             }
         });
-        
+
         new aws.iam.RolePolicyAttachment(`tenant-router-role-policy-attachment`, {
             role,
             policyArn: aws.iam.ManagedPolicies.AWSLambdaBasicExecutionRole
@@ -55,7 +55,7 @@ class Delivery {
             },
             { provider: awsUsEast1 }
         );
-        
+
         this.cloudfront = new aws.cloudfront.Distribution("delivery", {
             enabled: true,
             waitForDeployment: true,
@@ -133,9 +133,10 @@ class Delivery {
                     restrictionType: "none"
                 }
             },
-            aliases: ["*.mt.webiny.com"],
+            aliases: ["*.mt2.webiny.com"],
             viewerCertificate: {
-                acmCertificateArn: "arn:aws:acm:us-east-1:656932293860:certificate/5931d8b4-a39b-4a3a-a4e7-f5bbdd78d599",
+                acmCertificateArn:
+                    "arn:aws:acm:us-east-1:656932293860:certificate/eb47f296-39c3-44df-a04e-f25f4f339e17",
                 sslSupportMethod: "sni-only"
             }
         });
