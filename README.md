@@ -105,24 +105,60 @@ Webiny has many features, too many to list to make this readme digestable, so in
 
 - **Marketing landing pages and micro sites** - Using the [Page Builder](https://www.webiny.com/serverless-app/page-builder) marketing teams can quickly build new websites without any knowledge of HTML or CSS. 
 
-- **Multi-tenant SaaS applications** - Webiny has a powerful multi-tenancy layer with built-in data separation. All Webiny apps are multi-tenany by default, meaning with a single instance of Webiny you can run hundreds of projects and websites from a single code-base.
+- **Multi-tenant SaaS applications** - Webiny has a powerful multi-tenancy layer with built-in data separation. You can build your own SaaS applications on top and let Webiny handle the API, security and data storage for you.
 
 - **Full-stack serverless applications** - In addition to using Webiny to manage your content needs, you can expand the existing functionality by creating new full-stack serverless applications on top. Follow [this tutorial](https://www.webiny.com/docs/tutorials/create-custom-application/introduction) to build your own full-stack serverless Pinterest clone.
 
+- **Multi-website & multi-language portal** - All Webiny apps are multi-tenant by default, meaning with a single instance of Webiny you can run hundreds of projects and websites from a single code-base.
 
+- **Dynamic Page** <sup>(coming soon)</sup> - We're working on a seamless integration between the Headless CMS and the Page Builder, so you can build and publish dynamic pages without a single line of code, or build pipelines required. New content is live instantly and visible to the users.
+
+- **Multi-cloud support** <sup>(coming soon)</sup> - At the moment Webiny only supports AWS, but we have in plans to add support for other cloud vendors such as GCP and Azure. Because Webiny uses cloud-native services to run, and not containers, this task is not an easy one, but we have a plan. 
 
 <br /><br />
 
 ## ❓ FAQ
 
-Why serverless?
+**♦ Why serverless?**
 
-Why open-source?
+We believe serverless is the future of web development. It gives us much more bang for our buck!
 
-How is this enterprise?
+**♦ Why open-source?**
 
-How fast and scalable is Webiny?
+Open-source has 2 main aspects over SaaS: 
+1. It's customizable, unlike being locked in a SaaS solution.
+2. Your data is stored under your rules, in your data center, with your compliance standard inside your security parameter and delivered through your CDN.
 
+**♦ How is this enterprise?**
+1. Webiny is built to be integrated inside enterprise environments. Being open-source is one part of that solution, the other is that Webiny integrates with enterprise IdPs such as OKTA and Cognito.
+2. Webiny is architected to sustain heavy usage coming from large volumes of users. 
+3. Webiny is built on top of fault-tollerant serverless services.
+4. Webiny keeps the data encrypted both in transit and at rest.
+5. In the paid edition enterprises have access to our SLA-based support and consultancy services.
+
+**♦ How fast and scalable is Webiny?**
+
+How about a [load-test](https://www.webiny.com/docs/webiny-overview/performance-benchmark/introduction/) :)
+
+**♦ How much does it cost to run Webiny?**
+
+Webiny comes in 2 database options, DynamoDB + Elasticsearch and DynamoDB only. The latter option, when looking at all the infrastructure pieces Webiny uses to operate, the cost is fully determined by the consumption of the AWS services. In the DDB + ES option, there is a minumum ~$25/mo charge to AWS for the Elasticsearch cluster as it's not a consumption-based service.
+
+That being said, as part of our performance benchmark we also benchmarked the cost of the DDB + ES in case of the Headless CMS application for both [read](https://www.webiny.com/docs/webiny-overview/performance-benchmark/headless-cms-read-benchmark#cost-per-10k-requests) and [write](https://www.webiny.com/docs/webiny-overview/performance-benchmark/headless-cms-write-benchmark#cost-per-10k-requests) operations. That bechmark is a good starting point to determine your cost. 
+
+As a rule of thumb the DDB option, which is recommended for small and medium size projects, should be fairly cheaper when compared to a solution running on VMs or containers. 
+
+
+**♦ Why should my enterprise consider using Webiny?**
+
+Top 5 reasons to do so:
+1. **Self-hosted**: Webiny runs inside your own AWS cloud, you keep the control over your data and security perimeter.
+2. **Open-source**: Webiny is released under an MIT license, so you can customize every aspect of the system to fully match your needs.
+3. **Serverless**: Webiny runs on AWS services such as Lambda, S3 and DynamoDB, to offer a highly scalable and fault-tolerant infrastructure.
+4. **Cost-savings**: Cut your infrastructure and operations costs by 60% to 80% compared to solutions running on VMs.
+5. **Secure**: Follows security best-practices by encrypting data both in transit and rest across all services. Fully integrated with IdPs such as OKTA and Cognito. Code security is ensured by CodeQL and Dependabot scanning tools.
+
+<br /><br />
 
 <!-- CONTREEBUTORS:START - Do not remove or modify this section -->
 <!-- prettier-ignore-start -->
