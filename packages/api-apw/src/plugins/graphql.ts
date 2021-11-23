@@ -5,12 +5,6 @@ const emptyResolver = () => ({});
 
 const baseSchema = new GraphQLSchemaPlugin({
     typeDefs: /* GraphQL */ `
-        type ApwQuery {
-            advancedPublishingWorkflow: ApwQuery
-        }
-        type ApwMutation {
-            advancedPublishingWorkflow: ApwMutation
-        }
         extend type Query {
             advancedPublishingWorkflow: ApwQuery
         }

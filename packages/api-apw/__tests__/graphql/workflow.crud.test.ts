@@ -9,8 +9,8 @@ describe("Workflow crud test", () => {
         ...options
     });
     test("should able to get workflow by Id", async () => {
-        let [response] = await getWorkflowQuery({ id: "123" });
-        expect(response).toEqual({
+        const [getWorkflowResponse] = await getWorkflowQuery({ id: "123" });
+        expect(getWorkflowResponse).toEqual({
             data: {
                 advancedPublishingWorkflow: {
                     getWorkflow: {
@@ -25,7 +25,7 @@ describe("Workflow crud test", () => {
             }
         });
 
-        [response] = await createWorkflowMutation({
+        const [createWorkflowResponse] = await createWorkflowMutation({
             data: {
                 app: "PageBuilder",
                 title: "Main workflow",
@@ -41,7 +41,7 @@ describe("Workflow crud test", () => {
                 }
             }
         });
-        expect(response).toEqual({
+        expect(createWorkflowResponse).toEqual({
             data: {
                 advancedPublishingWorkflow: {
                     createWorkflow: {
