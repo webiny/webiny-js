@@ -107,7 +107,7 @@ module.exports = async ({ inputs, output, context }) => {
     await Promise.all(promises);
 };
 
-const getPackages = async inputs => {
+const getPackages = async ({ inputs, context, output }) => {
     let packagesList = [];
     if (inputs.package) {
         packagesList = Array.isArray(inputs.package) ? inputs.package : [inputs.package];
@@ -163,8 +163,25 @@ const getPackages = async inputs => {
                 if (pckg.config.commands && typeof pckg.config.commands.watch === "function") {
                     packages.push(pckg);
                 }
-            } catch {
-                // Do nothing.
+            } catch (e) {
+                output.log({
+                    type: "build",
+                    message: `An error occurred upon loading the ${context.warning.hl(
+                        configPath
+                    )} configuration file:`
+                });
+
+                output.log({
+                    type: "build",
+                    message: e.message
+                });
+
+                if (inputs.debug) {
+                    output.log({
+                        type: "build",
+                        message: e.stack
+                    });
+                }
             }
         }
 
