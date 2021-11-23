@@ -7,7 +7,13 @@ import { ApiKey, SecurityIdentity } from "@webiny/api-security/types";
 import apiKeyAuthentication from "@webiny/api-security/plugins/apiKeyAuthentication";
 import apiKeyAuthorization from "@webiny/api-security/plugins/apiKeyAuthorization";
 import { createPermissions, until, sleep, PermissionsArg } from "./helpers";
-import { CREATE_WORKFLOW_MUTATION, GET_WORKFLOW_QUERY } from "./graphql/workflow";
+import {
+    CREATE_WORKFLOW_MUTATION,
+    DELETE_WORKFLOW_MUTATION,
+    GET_WORKFLOW_QUERY,
+    LIST_WORKFLOWS_QUERY,
+    UPDATE_WORKFLOW_MUTATION
+} from "./graphql/workflow";
 import { Plugin, PluginCollection } from "@webiny/plugins/types";
 import { createApwContext, createApwGraphQL } from "~/index";
 /**
@@ -152,8 +158,17 @@ export const useGqlHandler = (params: GQLHandlerCallableParams) => {
         async getWorkflowQuery(variables: Record<string, any>) {
             return invoke({ body: { query: GET_WORKFLOW_QUERY, variables } });
         },
+        async listWorkflowsQuery(variables: Record<string, any>) {
+            return invoke({ body: { query: LIST_WORKFLOWS_QUERY, variables } });
+        },
         async createWorkflowMutation(variables: Record<string, any>) {
             return invoke({ body: { query: CREATE_WORKFLOW_MUTATION, variables } });
+        },
+        async updateWorkflowMutation(variables: Record<string, any>) {
+            return invoke({ body: { query: UPDATE_WORKFLOW_MUTATION, variables } });
+        },
+        async deleteWorkflowMutation(variables: Record<string, any>) {
+            return invoke({ body: { query: DELETE_WORKFLOW_MUTATION, variables } });
         }
     };
 };
