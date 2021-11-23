@@ -17,14 +17,24 @@ export default new GraphQLSchemaPlugin<Context>({
             id: ID!
         }
 
+        input TenantDomainInput {
+            fqdn: String!
+        }
+
+        input TenantSettingsInput {
+            domains: [TenantDomainInput!]!
+        }
+
         input CreateTenantInput {
             name: String!
             description: String!
+            settings: TenantSettingsInput!
         }
 
         input UpdateTenantInput {
             name: String!
             description: String!
+            settings: TenantSettingsInput!
         }
 
         extend type TenancyQuery {
@@ -69,7 +79,8 @@ export default new GraphQLSchemaPlugin<Context>({
                     id: mdbid(),
                     name: args.data.name,
                     description: args.data.description,
-                    parent: tenant.id
+                    parent: tenant.id,
+                    settings: args.data.settings
                 });
 
                 return new Response(newTenant);

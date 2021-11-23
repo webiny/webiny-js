@@ -16,6 +16,7 @@ import EmptyView from "@webiny/app-admin/components/EmptyView";
 import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
 import { useTenantForm } from "./hooks/useTenantForm";
 import { Input } from "@webiny/ui/Input";
+import { Domains } from "~/views/tenants/components/Domains";
 
 const t = i18n.ns("app-i18n/admin/locales/form");
 
@@ -60,6 +61,19 @@ const TenantForm = () => {
                             <Cell span={12}>
                                 <Bind name="description" validators={validation.create("required")}>
                                     <Input label={"Description"} rows={4} />
+                                </Bind>
+                            </Cell>
+                        </Grid>
+
+                        <Grid>
+                            <Cell span={12}>
+                                <Bind name={"settings.domains"} defaultValue={[]}>
+                                    <Domains
+                                        Bind={Bind}
+                                        title={"Custom Domains"}
+                                        inputLabel={"FQDN"}
+                                        addButtonLabel={"+ Add FQDN"}
+                                    />
                                 </Bind>
                             </Cell>
                         </Grid>

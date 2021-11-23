@@ -1,0 +1,109 @@
+import React, { Fragment, useMemo } from "react";
+import { DynamicFieldset } from "@webiny/ui/DynamicFieldset";
+import { Input } from "@webiny/ui/Input";
+import styled from "@emotion/styled";
+import { Typography } from "@webiny/ui/Typography";
+import { ButtonSecondary, ButtonDefault } from "@webiny/ui/Button";
+import { validation } from "@webiny/validation";
+import { BindComponent } from "@webiny/form/Bind";
+
+const Fieldset = styled("div")({
+    position: "relative",
+    width: "100%",
+    marginBottom: 15,
+    ".webiny-ui-button": {
+        position: "absolute",
+        display: "block",
+        right: 10,
+        top: 13
+    }
+});
+
+const Header = styled("div")({
+    display: "flex",
+    justifyContent: "space-between",
+    marginBottom: 15
+});
+
+interface Domain {
+    fqdn: string;
+}
+
+type DomainsProps = {
+    value?: Domain[];
+    onChange?: (value: any) => void;
+    title: string;
+    inputLabel: string;
+    addButtonLabel: string;
+    Bind: BindComponent;
+};
+
+const FQDN_REGEX = /(?=^.{4,253}$)(^((?!-)[a-zA-Z0-9-]{0,62}[a-zA-Z0-9]\.)+[a-zA-Z]{2,63}$)/;
+
+export const Domains = (props: DomainsProps) => {
+    const { onChange, value, Bind } = props;
+
+    const addDomain = () => {
+        const newValue = Array.isArray(value) ? [...value] : [];
+        newValue.push({ fqdn: "" });
+        onChange(newValue);
+    };
+
+    const fqdnValidator = useMemo(() => {
+        return [
+            validation.create("required"),
+            value => {
+                if (!FQDN_REGEX.test(value)) {
+                    throw new Error("Value must be a valid FQDN.");
+                }
+            }
+        ];
+    }, []);
+
+    return (
+        <DynamicFieldset value={value} onChange={onChange}>
+            {({ actions, header, row, empty }) => (
+                <>
+                    {row(({ index }) => (
+                        <Fieldset>
+                            <Bind validators={fqdnValidator} name={`settings.domains.${index}.fqdn`}>
+                                <Input
+                                    label={props.inputLabel}
+                                    description={
+                                        "Enter a fully qualified domain name to use for this tenant."
+                                    }
+                                />
+                            </Bind>
+                            <ButtonSecondary small onClick={actions.remove(index)}>
+                                Remove
+                            </ButtonSecondary>
+                        </Fieldset>
+                    ))}
+                    {empty(() => (
+                        <Fragment>
+                            <Header>
+                                <Typography use={"overline"}>{props.title}</Typography>
+                                <ButtonDefault onClick={addDomain}>
+                                    {props.addButtonLabel}
+                                </ButtonDefault>
+                            </Header>
+                            <Typography use={"body1"}>
+                                To make your tenants accessible via custom domains, you must define
+                                them here. Webiny will use these entries to route requests to the
+                                corresponding tenant&apos;s website.
+                            </Typography>
+                        </Fragment>
+                    ))}
+                    {header(() => (
+                        <Header>
+                            <Typography use={"overline"}>{props.title}</Typography>
+                            <ButtonDefault onClick={addDomain}>
+                                {props.addButtonLabel}
+                            </ButtonDefault>
+                        </Header>
+                    ))}
+                </>
+            )}
+        </DynamicFieldset>
+    );
+};

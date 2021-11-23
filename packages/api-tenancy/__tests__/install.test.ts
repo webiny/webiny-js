@@ -34,7 +34,12 @@ describe(`Test "Tenancy" install`, () => {
             id: "root",
             name: "Root",
             description: "The top-level Webiny tenant.",
-            webinyVersion: process.env.WEBINY_VERSION
+            webinyVersion: process.env.WEBINY_VERSION,
+            parent: null,
+            status: "active",
+            settings: {
+                domains: []
+            }
         });
 
         // There must be a version stored

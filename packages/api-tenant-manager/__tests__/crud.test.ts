@@ -8,12 +8,18 @@ describe(`Test "Tenant Manager"`, () => {
 
         const tenant1Data = {
             name: "Tenant #1",
-            description: "The first sub-tenant"
+            description: "The first sub-tenant",
+            settings: {
+                domains: [{ fqdn: "domain1.com" }]
+            }
         };
 
         const tenant2Data = {
             name: "Tenant #2",
-            description: "The second sub-tenant"
+            description: "The second sub-tenant",
+            settings: {
+                domains: [{ fqdn: "domain2.com" }]
+            }
         };
 
         // Create
@@ -23,7 +29,10 @@ describe(`Test "Tenant Manager"`, () => {
             id: expect.any(String),
             name: "Tenant #1",
             description: "The first sub-tenant",
-            parent: "root"
+            parent: "root",
+            settings: {
+                domains: [{ fqdn: "domain1.com" }]
+            }
         });
 
         // List
@@ -38,7 +47,10 @@ describe(`Test "Tenant Manager"`, () => {
             id: expect.any(String),
             name: "Tenant #2",
             description: "The second sub-tenant",
-            parent: "root"
+            parent: "root",
+            settings: {
+                domains: [{ fqdn: "domain2.com" }]
+            }
         });
 
         // List
@@ -49,7 +61,7 @@ describe(`Test "Tenant Manager"`, () => {
         // Update
         const [response3] = await handler.updateTenant({
             id: tenant1.id,
-            data: { name: "Updated #1", description: "Updated desc" }
+            data: { name: "Updated #1", description: "Updated desc", settings: tenant1.settings }
         });
 
         const tenant1a = response3.data.tenancy.updateTenant.data;
@@ -57,7 +69,8 @@ describe(`Test "Tenant Manager"`, () => {
             id: expect.any(String),
             name: "Updated #1",
             description: "Updated desc",
-            parent: "root"
+            parent: "root",
+            settings: tenant1.settings
         });
 
         // Delete

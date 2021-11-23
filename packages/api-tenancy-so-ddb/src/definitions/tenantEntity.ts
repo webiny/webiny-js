@@ -32,11 +32,19 @@ export const createTenantEntity = ({ entityName, table, attributes }: Params): E
             description: {
                 type: "string"
             },
+            status: {
+                type: "string",
+                default: "active"
+            },
             parent: {
                 type: "string"
             },
             webinyVersion: {
                 type: "string"
+            },
+            settings: {
+                type: "map",
+                default: {}
             },
             ...(attributes || {})
         }
