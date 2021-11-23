@@ -3,15 +3,36 @@ import { CmsGroup, CmsGroupPlugin } from "@webiny/api-headless-cms/content/plugi
 import { CmsContext } from "@webiny/api-headless-cms/types";
 import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
 
-const createContentModelPlugin = ({ group, locale }: { group: CmsGroup; locale: string }) =>
-    new CmsModelPlugin({
+interface Params {
+    group: CmsGroup;
+    /**
+     * Locale and tenant do not need to be defined.
+     * In that case model is not bound to any locale or tenant.
+     * You can bind it to locale, tenant, both or none.
+     */
+    locale?: string;
+    tenant?: string;
+}
+const createContentModelPlugin = (params: Params): CmsModelPlugin => {
+    const { group, locale, tenant } = params;
+
+    return new CmsModelPlugin({
         name: "APW - Workflow",
-        modelId: "apwWorkflow",
-        locale: locale,
+        /**
+         * Id of the model cannot be appWorkflow because it clashes with the GraphQL types for APW.
+         */
+        modelId: "apwWorkflowModelDefinition",
+        locale,
+        tenant,
         group: {
             id: group.id,
             name: group.name
         },
+        /**
+         * TODO @ashutosh
+         * IDs can be something readable and debuggable.
+         * You can use fieldId instead of random strings just to make it easier to debug (and you will need to debug eventually).
+         */
         layout: [["V6NTO38Zu"], ["qIuudSc8F"], ["KfnI2CteW"], ["KfnI2Ctec"]],
         titleFieldId: "title",
         description: null,
@@ -202,6 +223,7 @@ const createContentModelPlugin = ({ group, locale }: { group: CmsGroup; locale: 
             }
         ]
     });
+};
 
 const createApwModelGroup = () =>
     new ContextPlugin<CmsContext>(async context => {
@@ -211,7 +233,9 @@ const createApwModelGroup = () =>
          * We need to move these plugin in an installation plugin
          */
         const groupId = "contentModelGroup_apw";
-        // Create a CmsGroup.
+        /**
+         * Create a CmsGroup.
+         */
         context.plugins.register(
             new CmsGroupPlugin({
                 id: groupId,
@@ -221,8 +245,16 @@ const createApwModelGroup = () =>
             })
         );
         const group = await context.cms.getGroup(groupId);
-        // Create a CmsModel that represents "WorkFlow".
-        context.plugins.register(createContentModelPlugin({ group, locale: context.cms.locale }));
+        /**
+         * Create a CmsModel that represents "WorkFlow".
+         */
+        context.plugins.register(
+            createContentModelPlugin({
+                group,
+                tenant: context.tenancy.getCurrentTenant().id,
+                locale: context.i18nContent.getLocale().code
+            })
+        );
 
         context.security.enableAuthorization();
     });

@@ -9,7 +9,7 @@ import apiKeyAuthorization from "@webiny/api-security/plugins/apiKeyAuthorizatio
 import { createPermissions, until, sleep, PermissionsArg } from "./helpers";
 import { CREATE_WORKFLOW_MUTATION, GET_WORKFLOW_QUERY } from "./graphql/workflow";
 import { Plugin, PluginCollection } from "@webiny/plugins/types";
-import advancedPublishingWorkflowPlugins from "~/index";
+import { createApwContext, createApwGraphQL } from "~/index";
 /**
  * Unfortunately at we need to import the api-i18n-ddb package manually
  */
@@ -51,7 +51,7 @@ export const useGqlHandler = (params: GQLHandlerCallableParams) => {
         createHeadlessCmsApp
     } = params;
 
-    const app = createHeadlessCmsApp({
+    const headlessCmsApp = createHeadlessCmsApp({
         storageOperations: ops.storageOperations
     });
 
@@ -118,8 +118,9 @@ export const useGqlHandler = (params: GQLHandlerCallableParams) => {
             i18nDynamoDbStorageOperations(),
             i18nContentPlugins(),
             mockLocalesPlugins(),
-            ...app,
-            advancedPublishingWorkflowPlugins(),
+            ...headlessCmsApp,
+            createApwContext(),
+            createApwGraphQL(),
             plugins
         ],
         http: { debug: true }

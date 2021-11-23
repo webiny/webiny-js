@@ -145,7 +145,7 @@ const workflowSchema = new GraphQLSchemaPlugin<CmsContext>({
             query: String
         }
 
-        extend type ApwQuery {
+        type ApwQuery {
             getWorkflow(id: ID!): ApwWorkflowResponse
 
             listWorkflows(
@@ -157,7 +157,7 @@ const workflowSchema = new GraphQLSchemaPlugin<CmsContext>({
             ): ApwListWorkflowsResponse
         }
 
-        extend type ApwMutation {
+        type ApwMutation {
             createWorkflow(data: ApwCreateWorkflowInput!): ApwWorkflowResponse
 
             # Update workflow by given ID.
@@ -171,7 +171,7 @@ const workflowSchema = new GraphQLSchemaPlugin<CmsContext>({
         ApwQuery: {
             getWorkflow: async (_, args, context) => {
                 try {
-                    const model = await context.cms.getModel("apwWorkflow");
+                    const model = await context.cms.getModel("apwWorkflowModelDefinition");
                     const entry = await context.cms.getEntry(model, {
                         where: {
                             id: args.id
@@ -195,7 +195,7 @@ const workflowSchema = new GraphQLSchemaPlugin<CmsContext>({
         ApwMutation: {
             createWorkflow: async (_, args, context) => {
                 try {
-                    const model = await context.cms.getModel("apwWorkflow");
+                    const model = await context.cms.getModel("apwWorkflowModelDefinition");
 
                     const entry = await context.cms.createEntry(model, args);
 
