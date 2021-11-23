@@ -20,6 +20,7 @@ const plugin: CmsEditorFieldTypePlugin = {
     field: {
         type: "ref",
         validators: ["required"],
+        listValidators: ["minLength", "maxLength"],
         label: t`Reference`,
         description: t`Reference existing content entries. For example, a book can reference one or more authors.`,
         icon: <RefIcon />,
