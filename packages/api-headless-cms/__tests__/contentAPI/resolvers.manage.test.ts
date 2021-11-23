@@ -132,7 +132,9 @@ describe("MANAGE - Resolvers", () => {
         await until(
             () => listCategories().then(([data]) => data),
             ({ data }) => data.listCategories.data.length === Object.keys(values).length,
-            { name: "list all categories after creation in setupCategories" }
+            {
+                name: "list all categories after creation in setupCategories"
+            }
         );
 
         return categories;
@@ -150,7 +152,10 @@ describe("MANAGE - Resolvers", () => {
         // Need to wait until the new entry is propagated
         await until(
             () => listCategories().then(([data]) => data),
-            ({ data }) => data.listCategories.data[0].id === id
+            ({ data }) => data.listCategories.data[0].id === id,
+            {
+                name: "list categories after create"
+            }
         );
 
         const [response] = await getCategory({ revision: id });
@@ -177,6 +182,10 @@ describe("MANAGE - Resolvers", () => {
                 revisions: [
                     {
                         id: expect.any(String),
+                        meta: {
+                            status: "draft",
+                            version: 1
+                        },
                         title: "Hardware",
                         slug: "hardware"
                     }
@@ -196,7 +205,10 @@ describe("MANAGE - Resolvers", () => {
         // Need to wait until the new entry is propagated to Elastic Search index
         await until(
             () => listCategories().then(([data]) => data),
-            ({ data }) => data.listCategories.data[0].id === id
+            ({ data }) => data.listCategories.data[0].id === id,
+            {
+                name: "list categories after create"
+            }
         );
 
         const { getCategory } = useCategoryManageHandler({
@@ -230,7 +242,10 @@ describe("MANAGE - Resolvers", () => {
         // Need to wait until the new entry is propagated to Elastic Search index
         await until(
             () => listCategories().then(([data]) => data),
-            ({ data }) => data.listCategories.data[0].id === id
+            ({ data }) => data.listCategories.data[0].id === id,
+            {
+                name: "list categories after create"
+            }
         );
 
         const { getCategory } = useCategoryManageHandler({
@@ -265,6 +280,10 @@ describe("MANAGE - Resolvers", () => {
                 revisions: [
                     {
                         id: expect.any(String),
+                        meta: {
+                            status: "draft",
+                            version: 1
+                        },
                         title: "Hardware",
                         slug: "hardware"
                     }
@@ -297,7 +316,9 @@ describe("MANAGE - Resolvers", () => {
         await until(
             () => listCategories().then(([data]) => data),
             ({ data }) => data.listCategories.data[0].meta.status === "published",
-            { name: "wait for entry to be published" }
+            {
+                name: "wait for entry to be published"
+            }
         );
 
         const [response] = await listCategories();
@@ -326,7 +347,11 @@ describe("MANAGE - Resolvers", () => {
                                     {
                                         id: expect.any(String),
                                         slug: "slug-1",
-                                        title: "Title 1"
+                                        title: "Title 1",
+                                        meta: {
+                                            version: 1,
+                                            status: "published"
+                                        }
                                     }
                                 ],
                                 status: "published",
@@ -423,7 +448,11 @@ describe("MANAGE - Resolvers", () => {
                     {
                         id: expect.any(String),
                         title: "Hardware",
-                        slug: "hardware"
+                        slug: "hardware",
+                        meta: {
+                            version: 1,
+                            status: "draft"
+                        }
                     }
                 ]
             }
@@ -431,7 +460,10 @@ describe("MANAGE - Resolvers", () => {
 
         await until(
             () => listCategories().then(([data]) => data),
-            ({ data }) => data.listCategories.data[0].id === category1.id
+            ({ data }) => data.listCategories.data[0].id === category1.id,
+            {
+                name: "list categories after create"
+            }
         );
     });
 
@@ -492,7 +524,11 @@ describe("MANAGE - Resolvers", () => {
                     {
                         id: expect.any(String),
                         title: "Hardware",
-                        slug: "hardware"
+                        slug: "hardware",
+                        meta: {
+                            status: "draft",
+                            version: 1
+                        }
                     }
                 ]
             }
@@ -500,7 +536,10 @@ describe("MANAGE - Resolvers", () => {
 
         await until(
             () => listCategories().then(([data]) => data),
-            ({ data }) => data.listCategories.data[0].id === category.id
+            ({ data }) => data.listCategories.data[0].id === category.id,
+            {
+                name: "list categories after create"
+            }
         );
     });
 
@@ -516,7 +555,10 @@ describe("MANAGE - Resolvers", () => {
         // Wait until the new category is propagated to ES index (listCategories works with ES directly in MANAGE API)
         await until(
             () => listCategories().then(([data]) => data),
-            ({ data }) => data.listCategories.data[0].id === id
+            ({ data }) => data.listCategories.data[0].id === id,
+            {
+                name: "list categories after create"
+            }
         );
 
         const [revision] = await createCategoryFrom({ revision: id });
@@ -545,12 +587,20 @@ describe("MANAGE - Resolvers", () => {
                                 {
                                     id: expect.any(String),
                                     slug: "hardware",
-                                    title: "Hardware"
+                                    title: "Hardware",
+                                    meta: {
+                                        status: "draft",
+                                        version: 2
+                                    }
                                 },
                                 {
                                     id: expect.any(String),
                                     slug: "hardware",
-                                    title: "Hardware"
+                                    title: "Hardware",
+                                    meta: {
+                                        status: "draft",
+                                        version: 1
+                                    }
                                 }
                             ],
                             status: "draft",
@@ -573,7 +623,9 @@ describe("MANAGE - Resolvers", () => {
                 }
                 return entry.id === newEntry.id && entry.savedOn === newEntry.savedOn;
             },
-            { name: "list after create revision" }
+            {
+                name: "list after create revision"
+            }
         );
 
         expect(response).toEqual({
@@ -627,7 +679,11 @@ describe("MANAGE - Resolvers", () => {
                                 {
                                     id: expect.any(String),
                                     title: "New title",
-                                    slug: "hardware-store"
+                                    slug: "hardware-store",
+                                    meta: {
+                                        status: "draft",
+                                        version: 1
+                                    }
                                 }
                             ],
                             title: "New title",
@@ -650,7 +706,9 @@ describe("MANAGE - Resolvers", () => {
         await until(
             () => listCategories({}).then(([data]) => data),
             ({ data }) => data.listCategories.data[0].id === updatedCategory.id,
-            { name: "create category" }
+            {
+                name: "create category"
+            }
         );
     });
 
@@ -673,7 +731,9 @@ describe("MANAGE - Resolvers", () => {
         await until(
             () => listCategories().then(([data]) => data),
             ({ data }) => data.listCategories.data.length > 0,
-            { name: "create first revision" }
+            {
+                name: "create first revision"
+            }
         );
 
         // Create 2 more revisions
@@ -717,7 +777,9 @@ describe("MANAGE - Resolvers", () => {
         await until(
             () => listCategories().then(([data]) => data),
             ({ data }) => data.listCategories.data[0].id === id3,
-            { name: "after create 2 more revisions" }
+            {
+                name: "after create 2 more revisions"
+            }
         );
 
         // Delete latest revision
@@ -735,8 +797,12 @@ describe("MANAGE - Resolvers", () => {
         // Wait until the previous revision is indexed
         await until(
             () => listCategories().then(([data]) => data),
-            ({ data }) => data.listCategories.data[0].id === id2,
-            { name: "delete latest revision" }
+            ({ data }) => {
+                return data.listCategories.data[0].id === id2;
+            },
+            {
+                name: "after delete latest revision"
+            }
         );
 
         // Make sure revision #2 is now "latest"
@@ -786,7 +852,9 @@ describe("MANAGE - Resolvers", () => {
         await until(
             () => listLatestCategories().then(([data]) => data),
             ({ data }) => data.listCategories.data.length > 0,
-            { name: "create first revision" }
+            {
+                name: "create first revision"
+            }
         );
 
         // Create 2 more revisions
@@ -818,7 +886,9 @@ describe("MANAGE - Resolvers", () => {
         await until(
             () => listLatestCategories().then(([data]) => data),
             ({ data }) => data.listCategories.data[0].id === id3,
-            { name: "create 2 more revisions" }
+            {
+                name: "create 2 more revisions"
+            }
         );
 
         // Publish latest revision
@@ -837,7 +907,9 @@ describe("MANAGE - Resolvers", () => {
         await until(
             () => listPublishedCategories().then(([data]) => data),
             ({ data }) => data.listCategories.data[0].id === id3,
-            { name: "publish latest revision" }
+            {
+                name: "publish latest revision"
+            }
         );
 
         const [unpublish] = await unpublishCategory({ revision: id3 });
@@ -857,7 +929,9 @@ describe("MANAGE - Resolvers", () => {
         await until(
             () => listPublishedCategories().then(([data]) => data),
             ({ data }) => data.listCategories.data.length === 0,
-            { name: "unpublish revision" }
+            {
+                name: "unpublish revision"
+            }
         );
 
         // Publish the latest revision again
@@ -876,7 +950,9 @@ describe("MANAGE - Resolvers", () => {
         await until(
             () => listPublishedCategories().then(([data]) => data),
             ({ data }) => data.listCategories.data[0].id === id3,
-            { name: "publish latest revision again" }
+            {
+                name: "publish latest revision again"
+            }
         );
     });
 
@@ -1109,7 +1185,7 @@ describe("MANAGE - Resolvers", () => {
         const { getCategory, createCategory, publishCategory, createCategoryFrom, listCategories } =
             useCategoryManageHandler(manageOpts);
 
-        // const { getCategory: getReadCategory } = useCategoryReadHandler(readOpts);
+        const { getCategory: getReadCategory } = useCategoryReadHandler(readOpts);
 
         await setupModel();
 
@@ -1143,18 +1219,25 @@ describe("MANAGE - Resolvers", () => {
             revision: createWebinyResponse.data.createCategory.data.id
         });
         const webiny = publishWebinyResponse.data.publishCategory.data;
-
-        const revisions = [webiny];
+        /**
+         * Only publish categories with these versions.
+         * Rest should be draft.
+         * This is to test if unpublished updated works correctly.
+         */
+        const publishCategoriesList = [1, 3, 6];
         for (let i = 0; i < 5; i++) {
             const [response] = await createCategoryFrom({
                 revision: webiny.id
             });
 
-            const [publishResponse] = await publishCategory({
+            const createdCategory = response.data.createCategoryFrom.data;
+            if (publishCategoriesList.includes(createdCategory.meta.version) === false) {
+                continue;
+            }
+
+            await publishCategory({
                 revision: response.data.createCategoryFrom.data.id
             });
-
-            revisions.push(publishResponse.data.publishCategory.data);
         }
 
         await until(
@@ -1164,13 +1247,15 @@ describe("MANAGE - Resolvers", () => {
                     return false;
                 }
                 const [last] = data.listCategories.data;
-                if (!last || last.meta.version !== 6) {
+                if (!last || last.meta.version !== 6 || last.meta.status !== "published") {
                     return false;
                 }
 
                 return true;
             },
-            { name: "list categories after creating revisions" }
+            {
+                name: "list categories after creating revisions"
+            }
         );
 
         const [listResponse] = await listCategories();
@@ -1218,23 +1303,90 @@ describe("MANAGE - Resolvers", () => {
                             locked: true,
                             modelId: "category",
                             publishedOn: expect.stringMatching(/^20/),
-                            revisions: revisions.reverse().map(revision => {
-                                return {
-                                    id: revision.id,
+                            revisions: [
+                                {
+                                    id: `${webiny.entryId}#0006`,
                                     meta: {
-                                        status:
-                                            revision.meta.version === 6
-                                                ? "published"
-                                                : "unpublished"
+                                        status: "published",
+                                        version: 6
                                     },
                                     title,
                                     slug
-                                };
-                            }),
+                                },
+                                {
+                                    id: `${webiny.entryId}#0005`,
+                                    meta: {
+                                        status: "draft",
+                                        version: 5
+                                    },
+                                    title,
+                                    slug
+                                },
+                                {
+                                    id: `${webiny.entryId}#0004`,
+                                    meta: {
+                                        status: "draft",
+                                        version: 4
+                                    },
+                                    title,
+                                    slug
+                                },
+                                {
+                                    id: `${webiny.entryId}#0003`,
+                                    meta: {
+                                        status: "unpublished",
+                                        version: 3
+                                    },
+                                    title,
+                                    slug
+                                },
+                                {
+                                    id: `${webiny.entryId}#0002`,
+                                    meta: {
+                                        status: "draft",
+                                        version: 2
+                                    },
+                                    title,
+                                    slug
+                                },
+                                {
+                                    id: `${webiny.entryId}#0001`,
+                                    meta: {
+                                        status: "unpublished",
+                                        version: 1
+                                    },
+                                    title,
+                                    slug
+                                }
+                            ],
                             status: "published",
                             title,
                             version: 6
                         }
+                    },
+                    error: null
+                }
+            }
+        });
+        /**
+         * Should get the version 6 as the published version
+         */
+        const [getReadCategoryResponse] = await getReadCategory({
+            where: {
+                entryId: webiny.entryId
+            }
+        });
+
+        expect(getReadCategoryResponse).toEqual({
+            data: {
+                getCategory: {
+                    data: {
+                        id: `${webiny.entryId}#0006`,
+                        entryId: webiny.entryId,
+                        savedOn: expect.stringMatching(/^20/),
+                        createdOn: expect.stringMatching(/^20/),
+                        slug,
+                        title
                     },
                     error: null
                 }

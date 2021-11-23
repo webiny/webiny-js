@@ -302,12 +302,20 @@ describe("latest entries", function () {
                                 {
                                     id: `${updatedFruitCategory.id}`,
                                     title: updatedFruitCategory.title,
-                                    slug: updatedFruitCategory.slug
+                                    slug: updatedFruitCategory.slug,
+                                    meta: {
+                                        status: "published",
+                                        version: 2
+                                    }
                                 },
                                 {
                                     id: fruitCategory.id,
                                     title: fruitCategory.title,
-                                    slug: fruitCategory.slug
+                                    slug: fruitCategory.slug,
+                                    meta: {
+                                        status: "unpublished",
+                                        version: 1
+                                    }
                                 }
                             ]
                         },

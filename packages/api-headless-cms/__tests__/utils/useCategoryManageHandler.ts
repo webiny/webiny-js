@@ -24,6 +24,7 @@ const categoryFields = `
             slug
             meta {
                 status
+                version
             }
         }
     }

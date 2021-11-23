@@ -1209,7 +1209,8 @@ export const createEntriesStorageOperations = (params: Params): CmsEntryStorageO
         model: CmsModel,
         params: CmsEntryStorageOperationsGetPreviousRevisionParams
     ) => {
-        const { tenant, locale, entryId, version } = params;
+        const { tenant, locale } = model;
+        const { entryId, version } = params;
         const queryParams: QueryOneParams = {
             entity,
             partitionKey: createPartitionKey({

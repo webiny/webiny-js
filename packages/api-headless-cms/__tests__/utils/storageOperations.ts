@@ -1,9 +1,14 @@
 import { Plugin, PluginCollection } from "@webiny/plugins/types";
+import { HeadlessCmsStorageOperations } from "~/types";
 
 export interface Params {
     plugins?: Plugin | Plugin[] | Plugin[][] | PluginCollection;
 }
-export const getStorageOperations = (params: Params) => {
+export interface Response {
+    storageOperations: HeadlessCmsStorageOperations;
+    plugins: Plugin[] | Plugin[][] | PluginCollection;
+}
+export const getStorageOperations = (params: Params): Response => {
     // @ts-ignore
     if (typeof __getCreateStorageOperations !== "function") {
         throw new Error(`There is no global "__getCreateStorageOperations" function.`);
