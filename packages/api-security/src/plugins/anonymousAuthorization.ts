@@ -18,7 +18,9 @@ export default () => {
             // We assume that all other authorization plugins have already been executed.
             // If we've reached this far, it means that we have an anonymous user
             // and we need to load permissions from the "anonymous" group.
-            const group = await security.getGroup({ where: { slug: "anonymous" } });
+            const group = await security
+                .getStorageOperations()
+                .getGroup({ where: { tenant: tenant.id, slug: "anonymous" } });
 
             return group ? group.permissions || [] : [];
         });

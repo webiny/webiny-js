@@ -14,8 +14,49 @@ export interface GetTenant {
 export const createSecurity = async (config: SecurityConfig): Promise<Security> => {
     const authentication = createAuthentication();
     const authorizers: Authorizer[] = [];
-    let permissions: SecurityPermission[] = null;
     let performAuthorization = true;
+
+    let permissions;
+    let permissionsLoader;
+
+    const loadPermissions = (security: Security) => {
+        if (permissions) {
+            return permissions;
+        }
+
+        if (permissionsLoader) {
+            return permissionsLoader;
+        }
+
+        const shouldEnableAuthorization = performAuthorization;
+
+        permissionsLoader = new Promise(async resolve => {
+            // Authorizers often need to query business-related data, and since the identity is not yet
+            // authorized, these operations can easily trigger a NOT_AUTHORIZED error.
+            // To avoid this, we disable permission checks (assume `full-access` permissions) for
+            // the duration of the authorization process.
+            security.disableAuthorization();
+            for (const authorizer of authorizers) {
+                const result = await authorizer();
+                if (Array.isArray(result)) {
+                    permissions = result;
+                    return resolve(permissions);
+                }
+            }
+            // Set an empty array since no permissions were found.
+            permissions = [];
+            resolve(permissions);
+        }).then(permissions => {
+            // Re-enable authorization.
+            if (shouldEnableAuthorization) {
+                security.enableAuthorization();
+            }
+
+            return permissions;
+        });
+
+        return permissionsLoader;
+    };
 
     const security: Security = {
         ...authentication,
@@ -45,17 +86,20 @@ export const createSecurity = async (config: SecurityConfig): Promise<Security> 
         async getPermission<TPermission extends SecurityPermission = SecurityPermission>(
             permission: string
         ): Promise<TPermission | null> {
+            // We must resolve permissions first
+            const perms = await this.getPermissions();
+
             if (!performAuthorization) {
                 return { name: "*" } as TPermission;
             }
-            const perms = await this.getPermissions();
+
             const exactMatch = (perms || []).find(p => p.name === permission);
             if (exactMatch) {
                 return exactMatch as TPermission;
             }
 
             // Try matching using patterns
-            const matchedPermission = perms.find(p => minimatch(permission, p.name));
+            const matchedPermission = (perms || []).find(p => minimatch(permission, p.name));
             if (matchedPermission) {
                 return matchedPermission as TPermission;
             }
@@ -63,34 +107,8 @@ export const createSecurity = async (config: SecurityConfig): Promise<Security> 
             return null;
         },
 
-        async getPermissions(this: Security): Promise<SecurityPermission[]> {
-            if (Array.isArray(permissions)) {
-                return permissions;
-            }
-
-            // Authorizers often need to query business-related data, and since the identity is not yet
-            // authorized, these operations can easily trigger a NOT_AUTHORIZED error.
-            // To avoid this, we disable permission checks (assume `full-access` permissions) for
-            // the duration of the authorization process.
-
-            this.disableAuthorization();
-            for (const authorizer of authorizers) {
-                const result = await authorizer();
-                if (Array.isArray(result)) {
-                    // Re-enable permission checks.
-                    this.enableAuthorization();
-
-                    permissions = result;
-
-                    return result;
-                }
-            }
-
-            // Re-enable permission checks.
-            this.enableAuthorization();
-
-            // Set an empty array since no permissions were found.
-            return (permissions = []);
+        async getPermissions(): Promise<SecurityPermission[]> {
+            return await loadPermissions(this);
         },
 
         async hasFullAccess(): Promise<boolean> {

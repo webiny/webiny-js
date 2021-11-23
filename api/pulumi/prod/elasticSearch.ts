@@ -53,6 +53,7 @@ class ElasticSearch {
                                 AWS: currentCallerIdentity.accountId
                             },
                             Action: "es:*",
+                            // @ts-ignore
                             Resource: this.domain.arn.apply(v => `${v}/*`)
                         }
                     ]
