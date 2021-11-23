@@ -19,7 +19,7 @@ const plugin: CmsEditorFieldTypePlugin = {
     name: "cms-editor-field-type-ref",
     field: {
         type: "ref",
-        validators: [],
+        validators: ["required"],
         label: t`Reference`,
         description: t`Reference existing content entries. For example, a book can reference one or more authors.`,
         icon: <RefIcon />,
