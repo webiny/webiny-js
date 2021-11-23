@@ -99,10 +99,15 @@ Why are those modules paid? It's a way we support the development of the project
 
 Webiny has many features, too many to list to make this readme digestable, so instead of talking about features, here are the common use-cases you can satisfy using Webiny: 
 
-- **GraphQL API** - You can build a GraphQL API using the [Headless CMS](https://www.webiny.com/serverless-app/headless-cms) or [using the `webiny scaffold` command](https://www.webiny.com/docs/how-to-guides/scaffolding/graphql-api).
+- **Headless CMS** - Programatically integrate your apps with Webiny's GraphQL Headless CMS.
+
+- **GraphQL API** - You can build a GraphQL API using the [Headless CMS](https://www.webiny.com/serverless-app/headless-cms) but you can [also use the `webiny scaffold` command](https://www.webiny.com/docs/how-to-guides/scaffolding/graphql-api) to build new GraphQL resolvers where you can add your own custom business logic.
+
 - **Marketing landing pages and micro sites** - Using the [Page Builder](https://www.webiny.com/serverless-app/page-builder) marketing teams can quickly build new websites without any knowledge of HTML or CSS. 
+
 - **Multi-tenant SaaS applications** - Webiny has a powerful multi-tenancy layer with built-in data separation. All Webiny apps are multi-tenany by default, meaning with a single instance of Webiny you can run hundreds of projects and websites from a single code-base.
-- **Full-stack serverless applications** - 
+
+- **Full-stack serverless applications** - In addition to using Webiny to manage your content needs, you can expand the existing functionality by creating new full-stack serverless applications on top. Follow [this tutorial](https://www.webiny.com/docs/tutorials/create-custom-application/introduction) to build your own full-stack serverless Pinterest clone.
 
 
 
