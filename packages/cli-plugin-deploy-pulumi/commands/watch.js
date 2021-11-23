@@ -157,6 +157,13 @@ module.exports = async (inputs, context) => {
                 type: "logs",
                 message: chalk.red(e.message)
             });
+
+            if (inputs.debug) {
+                output.log({
+                    type: "logs",
+                    message: chalk.red(e.stack)
+                });
+            }
         }
     }
 
@@ -268,15 +275,36 @@ module.exports = async (inputs, context) => {
                 type: "deploy",
                 message: chalk.red(e.message)
             });
+
+            if (inputs.debug) {
+                output.log({
+                    type: "deploy",
+                    message: chalk.red(e.stack)
+                });
+            }
         }
     }
 
     if (inputs.build) {
-        await watchPackages({
-            inputs,
-            context,
-            output
-        });
+        try {
+            await watchPackages({
+                inputs,
+                context,
+                output
+            });
+        } catch (e) {
+            output.log({
+                type: "build",
+                message: chalk.red(e.message)
+            });
+
+            if (inputs.debug) {
+                output.log({
+                    type: "build",
+                    message: chalk.red(e.stack)
+                });
+            }
+        }
     }
 };
 
