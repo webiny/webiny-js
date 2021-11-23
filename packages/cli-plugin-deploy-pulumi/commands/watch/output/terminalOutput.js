@@ -10,6 +10,9 @@ module.exports = {
         output = createScreen(args);
     },
     log({ type, message }) {
+        if (typeof message !== "string") {
+            return;
+        }
         message
             .split("\n")
             .filter(Boolean)
