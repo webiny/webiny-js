@@ -1,7 +1,7 @@
 <p align="center">
   <img src="./static/webiny-logo.svg" width="250">
   <br><br>
-  <strong>The Easiest Way to Adopt Serverless</strong>
+  <strong>Enterprise Open-Source Serverless CMS</strong>
 </p>
 <p align="center">
   <a href="https://www.webiny.com">Official Website</a> |
@@ -22,9 +22,27 @@
 
 </p>
 
-## Getting started
+## Quick installation guide
 
-To get started with Webiny, simply [follow this link](https://www.webiny.com/docs/webiny/introduction/) 🚀
+1. Create a Webiny project:
+
+`npx create-webiny-project my-new-project`
+
+2. Deploy to your AWS cloud:
+
+`yarn webiny deploy`
+
+
+**Prerequisites**
+
+- Node.js ^12 || ^14
+- yarn ^1.22.0 || ^2
+- AWS account
+
+For the detailed install guide, please see 👉 https://www.webiny.com/docs/tutorials/install-webiny
+
+Need help, having trouble installing, find us on our community slack 👉 https://www.webiny.com/slack
+
 
 ## Webiny is the easiest way to adopt serverless!
 
