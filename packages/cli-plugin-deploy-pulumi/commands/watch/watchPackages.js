@@ -52,13 +52,14 @@ module.exports = async ({ inputs, output, context }) => {
         const current = packages[i];
         const config = current.config;
         if (typeof config.commands.watch !== "function") {
-            context.warning(
-                `Skipping watch of ${context.warning.hl(
+            output.log({
+                type: "build",
+                message: `Skipping watch of ${context.warning.hl(
                     current.name
                 )} package - ${context.warning.hl(
                     "watch"
                 )} command missing. Check package's ${context.warning.hl("webiny.config.ts")} file.`
-            );
+            });
             continue;
         }
 
