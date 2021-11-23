@@ -36,7 +36,7 @@ export const createAuthenticator = (config: AuthenticatorConfig) => {
     };
 
     const oktaAuthenticator = async idToken => {
-        if (isJwt(idToken)) {
+        if (typeof idToken === "string" && isJwt(idToken)) {
             try {
                 const jwks = await getJWKs();
                 const { header } = jwt.decode(idToken, { complete: true });
