@@ -1,6 +1,6 @@
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins";
 import { ErrorResponse, ListResponse, Response } from "@webiny/handler-graphql";
-import { CmsContext } from "@webiny/api-headless-cms/types";
+import { CmsContext, CmsEntryListParams } from "@webiny/api-headless-cms/types";
 
 const workflowSchema = new GraphQLSchemaPlugin<CmsContext>({
     typeDefs: /* GraphQL */ `
@@ -28,14 +28,22 @@ const workflowSchema = new GraphQLSchemaPlugin<CmsContext>({
             createdOn: DateTime
             createdBy: ApwCreatedBy
             # Workflow specific fields
+            app: ApwWorkflowApplication
             title: String
             steps: [ApwWorkflowStep]
             scope: ApwWorkflowScope
         }
 
+        type ApwMeta {
+            hasMoreItems: Boolean
+            totalCount: Int
+            cursor: String
+        }
+
         type ApwListWorkflowsResponse {
             data: [ApwWorkflowListItem]
             error: ApwError
+            meta: ApwMeta
         }
 
         type ApwWorkflowReviewer {
@@ -67,6 +75,7 @@ const workflowSchema = new GraphQLSchemaPlugin<CmsContext>({
             createdOn: DateTime
             createdBy: ApwCreatedBy
             # Workflow specific fields
+            app: ApwWorkflowApplication
             title: String
             steps: [ApwWorkflowStep]
             scope: ApwWorkflowScope
@@ -83,7 +92,7 @@ const workflowSchema = new GraphQLSchemaPlugin<CmsContext>({
         }
 
         enum ApwWorkflowApplication {
-            PageBuilder
+            pageBuilder
             cms
             formBuilder
         }
@@ -168,6 +177,35 @@ const workflowSchema = new GraphQLSchemaPlugin<CmsContext>({
         }
     `,
     resolvers: {
+        // TODO: Make it dynamic
+        ApwWorkflow: {
+            title: async workflow => {
+                return workflow.values.title;
+            },
+            app: async workflow => {
+                return workflow.values.app;
+            },
+            steps: async workflow => {
+                return workflow.values.steps;
+            },
+            scope: async workflow => {
+                return workflow.values.scope;
+            }
+        },
+        ApwWorkflowListItem: {
+            title: async workflow => {
+                return workflow.values.title;
+            },
+            app: async workflow => {
+                return workflow.values.app;
+            },
+            steps: async workflow => {
+                return workflow.values.steps;
+            },
+            scope: async workflow => {
+                return workflow.values.scope;
+            }
+        },
         ApwQuery: {
             getWorkflow: async (_, args, context) => {
                 try {
@@ -182,11 +220,11 @@ const workflowSchema = new GraphQLSchemaPlugin<CmsContext>({
                     return new ErrorResponse(e);
                 }
             },
-            listWorkflows: async (_, args) => {
+            listWorkflows: async (_, args: CmsEntryListParams, context) => {
                 try {
-                    console.log(JSON.stringify({ args }, null, 2));
-                    // const [data, meta] = await context.pageBuilder.pages.listPublished(args);
-                    return new ListResponse([], null);
+                    const model = await context.cms.getModel("apwWorkflowModelDefinition");
+                    const [entries, meta] = await context.cms.listEntries(model, args);
+                    return new ListResponse(entries, meta);
                 } catch (e) {
                     return new ErrorResponse(e);
                 }
@@ -196,28 +234,39 @@ const workflowSchema = new GraphQLSchemaPlugin<CmsContext>({
             createWorkflow: async (_, args, context) => {
                 try {
                     const model = await context.cms.getModel("apwWorkflowModelDefinition");
-
-                    const entry = await context.cms.createEntry(model, args);
-
+                    const entry = await context.cms.createEntry(model, args.data);
                     return new Response(entry);
                 } catch (e) {
                     return new ErrorResponse(e);
                 }
             },
-            updateWorkflow: async (_, args) => {
+            updateWorkflow: async (_, args, context) => {
                 try {
-                    console.log(JSON.stringify({ args }, null, 2));
-                    // const [data, meta] = await context.pageBuilder.pages.listPublished(args);
-                    return new Response(null);
+                    const model = await context.cms.getModel("apwWorkflowModelDefinition");
+                    /**
+                     * We're fetching the existing entry here because we're not accepting "app" field as input,
+                     * but, we still need to retain its value after the "update" operation.
+                     */
+                    const existingEntry = await context.cms.getEntry(model, {
+                        where: {
+                            id: args.id
+                        }
+                    });
+
+                    const entry = await context.cms.updateEntry(model, args.id, {
+                        ...args.data,
+                        app: existingEntry.values.app
+                    });
+                    return new Response(entry);
                 } catch (e) {
                     return new ErrorResponse(e);
                 }
             },
-            deleteWorkflow: async (_, args) => {
+            deleteWorkflow: async (_, args, context) => {
                 try {
-                    console.log(JSON.stringify({ args }, null, 2));
-                    // const [data, meta] = await context.pageBuilder.pages.listPublished(args);
-                    return new Response(null);
+                    const model = await context.cms.getModel("apwWorkflowModelDefinition");
+                    await context.cms.deleteEntry(model, args.id);
+                    return new Response(true);
                 } catch (e) {
                     return new ErrorResponse(e);
                 }

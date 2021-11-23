@@ -13,6 +13,7 @@ interface Params {
     locale?: string;
     tenant?: string;
 }
+
 const createContentModelPlugin = (params: Params): CmsModelPlugin => {
     const { group, locale, tenant } = params;
 
@@ -28,19 +29,14 @@ const createContentModelPlugin = (params: Params): CmsModelPlugin => {
             id: group.id,
             name: group.name
         },
-        /**
-         * TODO @ashutosh
-         * IDs can be something readable and debuggable.
-         * You can use fieldId instead of random strings just to make it easier to debug (and you will need to debug eventually).
-         */
-        layout: [["V6NTO38Zu"], ["qIuudSc8F"], ["KfnI2CteW"], ["KfnI2Ctec"]],
+        layout: [["workflow_title"], ["workflow_steps"], ["workflow_scope"], ["workflow_app"]],
         titleFieldId: "title",
         description: null,
         fields: [
             {
                 type: "text",
                 fieldId: "title",
-                id: "V6NTO38Zu",
+                id: "workflow_title",
                 settings: {},
                 label: "Title",
                 validation: [
@@ -58,7 +54,7 @@ const createContentModelPlugin = (params: Params): CmsModelPlugin => {
             {
                 type: "object",
                 fieldId: "steps",
-                id: "qIuudSc8F",
+                id: "workflow_steps",
                 settings: {
                     fields: [
                         {
@@ -84,7 +80,7 @@ const createContentModelPlugin = (params: Params): CmsModelPlugin => {
                                 ]
                             },
                             label: "Type",
-                            id: "S1dfh7k2F",
+                            id: "workflow_step_type",
                             type: "text",
                             validation: [
                                 {
@@ -101,7 +97,7 @@ const createContentModelPlugin = (params: Params): CmsModelPlugin => {
                             helpText: "What will be it called",
                             placeholderText: "Add text",
                             label: "Title",
-                            id: "nw_vWiXcb",
+                            id: "workflow_step_title",
                             type: "text",
                             validation: [
                                 {
@@ -134,13 +130,17 @@ const createContentModelPlugin = (params: Params): CmsModelPlugin => {
                             },
                             helpText: "Assign users whom approval is needed",
                             label: "Reviewers",
-                            id: "Vh5-lighE",
+                            id: "workflow_step_reviewers",
                             type: "ref",
                             validation: [],
                             fieldId: "reviewers"
                         }
                     ],
-                    layout: [["nw_vWiXcb"], ["S1dfh7k2F"], ["Vh5-lighE"]]
+                    layout: [
+                        ["workflow_step_type"],
+                        ["workflow_step_title"],
+                        ["workflow_step_reviewers"]
+                    ]
                 },
                 label: "Steps",
                 validation: [],
@@ -153,7 +153,7 @@ const createContentModelPlugin = (params: Params): CmsModelPlugin => {
             {
                 type: "object",
                 fieldId: "scope",
-                id: "KfnI2CteW",
+                id: "workflow_scope",
                 settings: {
                     fields: [
                         {
@@ -182,7 +182,7 @@ const createContentModelPlugin = (params: Params): CmsModelPlugin => {
                                 ]
                             },
                             label: "Type",
-                            id: "W3r2V5EAK",
+                            id: "workflow_scope_type",
                             type: "text",
                             validation: [
                                 {
@@ -193,7 +193,7 @@ const createContentModelPlugin = (params: Params): CmsModelPlugin => {
                             fieldId: "type"
                         }
                     ],
-                    layout: [["W3r2V5EAK"]]
+                    layout: [["workflow_scope_type"]]
                 },
                 label: "Scope",
                 validation: [],
@@ -204,7 +204,7 @@ const createContentModelPlugin = (params: Params): CmsModelPlugin => {
                 }
             },
             {
-                id: "KfnI2Ctec",
+                id: "workflow_app",
                 fieldId: "app",
                 settings: {},
                 type: "text",
@@ -218,7 +218,10 @@ const createContentModelPlugin = (params: Params): CmsModelPlugin => {
                 multipleValues: false,
                 predefinedValues: {
                     enabled: true,
-                    values: [{ label: "Page Builder", value: "pageBuilder" }]
+                    values: [
+                        { label: "Page Builder", value: "pageBuilder" },
+                        { label: "Headless CMS", value: "cms" }
+                    ]
                 }
             }
         ]
