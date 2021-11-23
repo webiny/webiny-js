@@ -1,6 +1,9 @@
 {
   "name": "@webiny/api-apw",
-  "version": "5.17.0",
+  "version": "5.18.0",
+  "keywords": [
+    "apw:base"
+  ],
   "main": "index.js",
   "repository": {
     "type": "git",

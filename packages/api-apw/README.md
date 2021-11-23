@@ -16,3 +16,18 @@ Or if you prefer yarn:
 ```
 yarn add @webiny/api-awp
 ```
+
+
+## Testing
+
+To run tests api-apw tests with targeted storage operations loaded use:
+
+#### DynamoDB
+```
+yarn test packages/api-apw --keyword=cms:ddb --keyword=apw:base
+```
+
+#### DynamoDB+Elasticsearch
+```
+yarn test packages/api-apw --keyword=cms:ddb-es --keyword=apw:base
+```
