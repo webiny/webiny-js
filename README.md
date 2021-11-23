@@ -4,8 +4,11 @@
   <strong>Enterprise Open-Source Serverless CMS</strong>
 </p>
 <p align="center">
-  <a href="https://www.webiny.com">Official Website</a> |
-  <a href="https://www.webiny.com/docs/webiny/introduction/">Docs</a>
+  <a href="https://www.webiny.com">Website</a> |
+  <a href="https://www.webiny.com/docs/webiny/introduction/">Documentation</a> |
+  <a href="https://www.webiny.com/slack">Community Slack</a> |
+  <a href="https://github.com/webiny/webiny-js/discussions">Forum</a> |
+  <a href="https://twitter.com/WebinyPlatform">Twitter</a> 
 </p>
 
 #
@@ -22,7 +25,25 @@
 
 </p>
 
-## Quick installation guide
+
+https://user-images.githubusercontent.com/3808420/143053809-45de6412-31fa-425a-886e-7ce12014603d.mp4
+
+
+Webiny Serverless CMS includes:
+
+1️⃣ **Page Builder** - Drag&drop page editor. Pages are prerendered automatically and cached on CloudFront for lightning fast delivery. 
+
+2️⃣ **Headless CMS** - Headless CMS with a GraphQL API. Build APIs and content models through a UI. Includes content revisions, localisation, and fine-grain permission control.
+
+3️⃣ **File Manager** - Upload files images. Search and organise your assets. Includes a built-in image editor for basic image manipulations.
+
+4️⃣ **Form Builder** - Build forms with a drag&drop editor. Insert forms through Page Builder into your pages. Has webhook support and ReCaptcha integration.
+
+
+All Webiny apps can be customised easily for fully fit an enterprise publishing workflow and integrate with leading identity provides for security.
+<br /><br />
+
+## 🏁 Quick installation guide
 
 1. Create a Webiny project:
 
@@ -42,42 +63,61 @@
 For the detailed install guide, please see 👉 https://www.webiny.com/docs/tutorials/install-webiny
 
 Need help, having trouble installing, find us on our community slack 👉 https://www.webiny.com/slack
+<br /><br />
+
+## 📕 Documentation
+
+For full documentation 👉 https://www.webiny.com/docs
+<br /><br />
+
+## 🤝 Community & Support
+
+Community Forum. Best for: help with building, discussion about database best practices 👉 https://www.webiny.com/slack
+
+GitHub Issues. Best for: bugs and errors you encounter using Webbiny 👉 https://github.com/webiny/webiny-js/issues
+<br /><br />
+
+## 💪 Contributing
+
+Webiny is all about the community. Whether it's fixing bugs, improving our documentation or simply spreading the word, please feel free to join in. Please see our [Contributing Guidelines](/docs/CONTRIBUTING.md) which explain project organization, setup, testing, and other steps.
+If you need any assistance in contribution, please reach out via our [community Slack](https://www.webiny.com/slack).
+<br /><br />
+
+## 📜 License
+
+This project is licensed under the terms of the [MIT license](/LICENSE) with the exception of the following modules which require a Webiny Enterprise license. 
+
+- Multi-tenancy module
+- OKTA integration
+
+Contact sales@webiny.com for more information.
+
+Why are those modules paid? It's a way we support the development of the project!
+<br /><br />
+
+## 👷‍♀️ When to use Webiny?
+
+Webiny has many features, too many to list to make this readme digestable, so instead of talking about features, here are the common use-cases you can satisfy using Webiny: 
+
+- **GraphQL API** - You can build a GraphQL API using the [Headless CMS](https://www.webiny.com/serverless-app/headless-cms) or [using the `webiny scaffold` command](https://www.webiny.com/docs/how-to-guides/scaffolding/graphql-api).
+- **Marketing landing pages and micro sites** - Using the [Page Builder](https://www.webiny.com/serverless-app/page-builder) marketing teams can quickly build new websites without any knowledge of HTML or CSS. 
+- **Multi-tenant SaaS applications** - Webiny has a powerful multi-tenancy layer with built-in data separation. All Webiny apps are multi-tenany by default, meaning with a single instance of Webiny you can run hundreds of projects and websites from a single code-base.
+- **Full-stack serverless applications** - 
 
 
-## Webiny is the easiest way to adopt serverless!
 
-Want to build an API? A React app? A full administration app for your product, website or mobile app? With Webiny you can do all that and then some! Your project will be bootstrapped and prepared for development of your next project in just a few moments. With the tools that come out of the box you'll be able to immediately deploy your project to the cloud (for now only AWS).
+<br /><br />
 
-Our plugin-based approach to the whole system will make it easy for you to override, upgrade and tweak the system to fit your needs.
+## ❓ FAQ
 
-### GraphQL API
+Why serverless?
 
-Our API layer works as a collection of plugins that process your GraphQL queries. Apps provided by Webiny are deployed as a monolith Lambda function. But that does not prevent you from deploying new Lambda functions with custom code. It's easy to extend our default setup and add handlers for REST API, or anything you might need.   
+Why open-source?
 
-### Frontend layer (SPA)
+How is this enterprise?
 
-Our frontend (SPA) layer is powered by React and Apollo Client. If you ever developed using those tools - you already know Webiny 🙂
-As our UI library we are using Material Components and [RMWC](https://jamesmfriedman.github.io/rmwc/) to get going with Material faster.
-You can see all the currently available components in our [storybook](https://storybook.webiny.com/).
+How fast and scalable is Webiny?
 
-We also provide a prerendering service out of the box. It takes care of generating static snapshots of your pages for maximum delivery speed. This service is also powered by Lambda!
-
-## Admin app
-
-We provide you with an administration app so you can kickstart your projects much faster and begin developing features for your clients right away. The entire admin app is based on plugins and you can customize everything.
-
-## Deployment to the Cloud
-
-We use [Pulumi IaaC](https://www.pulumi.com/) to reliably deploy infrastructure and your code to the cloud.
-You can also deploy Webiny using native CloudFormation if you will, AWS SAM, or any other tool. Guides on those particular tools will come at a later stage, but it IS possible.
-
-## Contributing
-
-Please see our [Contributing Guidelines](/docs/CONTRIBUTING.md) which explain repo organization, setup, testing, and other steps.
-
-## License
-
-This project is licensed under the terms of the [MIT license](/LICENSE).
 
 <!-- CONTREEBUTORS:START - Do not remove or modify this section -->
 <!-- prettier-ignore-start -->
