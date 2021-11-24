@@ -21,12 +21,10 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: PWD
-        run: pwd
-
       - name: Run AWS Nuke
         run: >
-          aws-nuke -c ./github/workflows/cleanup/aws-nuke.yml
+          aws-nuke
+          --config ./.github/workflows/cleanup/aws-nuke.yml
           --no-dry-run
           --force
           --force-sleep 3
