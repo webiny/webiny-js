@@ -23,4 +23,4 @@ jobs:
       options: --cpus 1
     steps:
       - name: Run AWS Nuke
-        run:  aws-nuke -c aws-nuke-config.yml --profile=webiny-ci --no-dry-run --force --force-sleep 3
+        run:  aws-nuke -c aws-nuke-config.yml --profile=webiny-ci --no-dry-run --force --force-sleep 3 --access-key-id --secret-access-key
