@@ -18,8 +18,11 @@ jobs:
     container:
       image: rebuy/aws-nuke
     steps:
+      - name: pwd
+        run: pwd
+
       - name: Download AWS Nuke Config
-        run: sudo curl https://raw.githubusercontent.com/webiny/webiny-js/next/.github/workflows/cleanup/aws-nuke.yml > aws-nuke.config.yml
+        run: curl https://raw.githubusercontent.com/webiny/webiny-js/next/.github/workflows/cleanup/aws-nuke.yml > ./aws-nuke.config.yml
 
       - name: Run AWS Nuke
         run: >
