@@ -21,7 +21,7 @@ for (let i = 0; i < paths.length; i++) {
     const { error } = require("dotenv").config({ path });
     if (boolean(yargs.argv.debug)) {
         if (error) {
-            log.info(`Could not load environment variables from ${log.info.hl(path)}.`);
+            log.debug(`No environment file found on ${log.debug.hl(path)}.`);
         } else {
             log.success(`Successfully loaded environment variables from ${log.success.hl(path)}.`);
         }

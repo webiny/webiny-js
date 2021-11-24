@@ -1,0 +1,29 @@
+# A config for the "aws-nuke" tool which destroys all cloud infrastructure
+# deployed into our "webiny-ci" AWS account. The config is used within
+# the `.github/workflows/cleanup.yml` workflow (triggered once a day).
+
+regions:
+  - eu-central-1
+  - global
+
+account-blocklist:
+  - "999999999999" # We don't have "production" accounts.
+
+accounts:
+  "726952677045":
+    filters:
+      S3Bucket:
+        - "s3://webiny-ci"
+
+resource-types:
+  # These resource types will be destroyed.
+  targets:
+    - S3Object
+    - S3Bucket
+    - CloudWatchLogsLogGroup
+    - LambdaFunction
+    - CloudFrontDistribution
+    - IAMPolicy
+    - IAMRole
+    - IAMRolePolicy
+    - IAMRolePolicyAttachment

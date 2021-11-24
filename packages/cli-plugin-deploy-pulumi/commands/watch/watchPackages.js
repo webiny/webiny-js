@@ -17,7 +17,14 @@ const parseMessage = message => {
 };
 
 module.exports = async ({ inputs, output, context }) => {
-    const packages = await getPackages(inputs, context);
+    const packages = await getPackages({ inputs, output, context });
+    if (packages.length === 0) {
+        output.log({
+            type: "build",
+            message: `Could not watch any of the specified packages.`
+        });
+        return;
+    }
 
     if (inputs.debug) {
         context.debug("The following packages will be watched for changes:");
@@ -45,13 +52,14 @@ module.exports = async ({ inputs, output, context }) => {
         const current = packages[i];
         const config = current.config;
         if (typeof config.commands.watch !== "function") {
-            context.warning(
-                `Skipping watch of ${context.warning.hl(
+            output.log({
+                type: "build",
+                message: `Skipping watch of ${context.warning.hl(
                     current.name
                 )} package - ${context.warning.hl(
                     "watch"
                 )} command missing. Check package's ${context.warning.hl("webiny.config.ts")} file.`
-            );
+            });
             continue;
         }
 
@@ -99,7 +107,7 @@ module.exports = async ({ inputs, output, context }) => {
     await Promise.all(promises);
 };
 
-const getPackages = async inputs => {
+const getPackages = async ({ inputs, context, output }) => {
     let packagesList = [];
     if (inputs.package) {
         packagesList = Array.isArray(inputs.package) ? inputs.package : [inputs.package];
@@ -155,8 +163,25 @@ const getPackages = async inputs => {
                 if (pckg.config.commands && typeof pckg.config.commands.watch === "function") {
                     packages.push(pckg);
                 }
-            } catch {
-                // Do nothing.
+            } catch (e) {
+                if (inputs.debug) {
+                    output.log({
+                        type: "build",
+                        message: `Warning: could not load ${context.warning.hl(
+                            configPath
+                        )} configuration file:`
+                    });
+
+                    output.log({
+                        type: "build",
+                        message: e.message
+                    });
+
+                    output.log({
+                        type: "build",
+                        message: e.stack
+                    });
+                }
             }
         }
 
@@ -171,7 +196,7 @@ const createLog = ({ multipleWatches, output, context }) => {
             prefix = chalk.hex(getRandomColorForString(packageName))(packageName) + ": ";
         }
 
-        let send;
+        let send = "";
         if (Array.isArray(message)) {
             message = message.filter(Boolean);
             if (message.length) {
