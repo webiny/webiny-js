@@ -24,6 +24,9 @@ jobs:
       - name: PWD
         run: pwd
 
+      - name: LS
+        run: ls -alh
+
       - name: Run AWS Nuke
         run: >
           aws-nuke -c aws-nuke-config.yml
