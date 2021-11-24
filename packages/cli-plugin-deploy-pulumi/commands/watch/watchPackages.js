@@ -164,19 +164,19 @@ const getPackages = async ({ inputs, context, output }) => {
                     packages.push(pckg);
                 }
             } catch (e) {
-                output.log({
-                    type: "build",
-                    message: `Warning: could not load the ${context.warning.hl(
-                        configPath
-                    )} configuration file:`
-                });
-
-                output.log({
-                    type: "build",
-                    message: e.message
-                });
-
                 if (inputs.debug) {
+                    output.log({
+                        type: "build",
+                        message: `Warning: could not load ${context.warning.hl(
+                            configPath
+                        )} configuration file:`
+                    });
+
+                    output.log({
+                        type: "build",
+                        message: e.message
+                    });
+
                     output.log({
                         type: "build",
                         message: e.stack
