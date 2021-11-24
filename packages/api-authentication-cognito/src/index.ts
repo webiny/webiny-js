@@ -20,6 +20,10 @@ export default (config: Config) => {
         authentication.addAuthenticator(async token => {
             const tokenObj = await cognitoAuthenticator(token);
 
+            if (!tokenObj) {
+                return;
+            }
+
             if (typeof config.getIdentity === "function") {
                 return config.getIdentity({ identityType: config.identityType, token: tokenObj });
             }

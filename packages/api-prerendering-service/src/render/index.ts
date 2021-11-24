@@ -30,8 +30,8 @@ export interface Params extends Configuration {
     storageOperations: PrerenderingServiceStorageOperations;
 }
 
-export default (configuration: Params): HandlerPlugin => {
-    const { storageOperations } = configuration;
+export default (params: Params): HandlerPlugin => {
+    const { storageOperations, ...configuration } = params;
 
     return {
         type: "handler",

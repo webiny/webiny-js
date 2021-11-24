@@ -15,7 +15,7 @@ describe("Content model locked fields", () => {
 
     // This function is not directly within `beforeEach` as we don't always setup the same content model.
     // We call this function manually at the beginning of each test, where needed.
-    const setupContentModelGroup = async (): Promise<CmsGroup> => {
+    const setupGroup = async (): Promise<CmsGroup> => {
         const [createCMG] = await createContentModelGroupMutation({
             data: {
                 name: "Group",
@@ -27,7 +27,7 @@ describe("Content model locked fields", () => {
         return createCMG.data.createContentModelGroup.data;
     };
 
-    const setupCategoryModel = async (contentModelGroup: CmsGroup) => {
+    const setupCategoryModel = async (contentModelGroup: CmsGroup): Promise<CmsModel> => {
         const model = models.find(m => m.modelId === "category");
         // Create initial record
         const [create] = await createContentModelMutation({
@@ -57,7 +57,7 @@ describe("Content model locked fields", () => {
         const { createCategory } = useCategoryManageHandler({
             ...manageOpts
         });
-        const contentModelGroup = await setupContentModelGroup();
+        const contentModelGroup = await setupGroup();
 
         const categoryContentModel = await setupCategoryModel(contentModelGroup);
 
@@ -136,5 +136,113 @@ describe("Content model locked fields", () => {
                 }
             });
         }
+    });
+
+    it("should allow deleting fields when no entries are present", async () => {
+        const { createCategory, deleteCategory, listCategories, until } = useCategoryManageHandler({
+            ...manageOpts
+        });
+
+        const group = await setupGroup();
+        const model = await setupCategoryModel(group);
+
+        const slugField = model.fields.find(field => field.fieldId === "slug");
+
+        const createPromises = [];
+        for (let i = 0; i < 1; i++) {
+            createPromises.push(
+                createCategory({
+                    data: {
+                        title: `Category #${i}`,
+                        slug: `category-${i}`
+                    }
+                })
+            );
+        }
+        const categories = await Promise.all(createPromises).then(responses => {
+            return responses.map(([response]) => {
+                return response.data.createCategory.data;
+            });
+        });
+
+        await until(
+            () => listCategories().then(([data]) => data),
+            ({ data }) => data.listCategories.data.length === categories.length,
+            {
+                name: "after create categories"
+            }
+        );
+
+        const fields = model.fields.filter(field => {
+            return field.fieldId !== slugField.fieldId;
+        });
+        const layout = model.layout.filter(layouts => {
+            return layouts.includes(slugField.id) === false;
+        });
+        const [updateModelFailResponse] = await updateContentModelMutation({
+            modelId: model.modelId,
+            data: {
+                fields,
+                layout
+            }
+        });
+
+        expect(updateModelFailResponse).toEqual({
+            data: {
+                updateContentModel: {
+                    data: null,
+                    error: {
+                        code: "ENTRY_FIELD_USED",
+                        data: null,
+                        message: `Cannot remove the field "slug" because it's already in use in created content.`
+                    }
+                }
+            }
+        });
+
+        const deletePromises = [];
+        for (const category of categories) {
+            deletePromises.push(
+                deleteCategory({
+                    revision: category.id
+                })
+            );
+        }
+        const deleteResults = await Promise.all(deletePromises).then(responses => {
+            return responses.map(([response]) => {
+                return response.data.deleteCategory.data;
+            });
+        });
+        expect(deleteResults).toEqual(categories.map(() => true));
+
+        await until(
+            () => listCategories().then(([data]) => data),
+            ({ data }) => data.listCategories.data.length === 0,
+            {
+                name: "after delete categories"
+            }
+        );
+
+        const [updateModelSuccessResponse] = await updateContentModelMutation({
+            modelId: model.modelId,
+            data: {
+                fields,
+                layout
+            }
+        });
+
+        expect(updateModelSuccessResponse).toEqual({
+            data: {
+                updateContentModel: {
+                    data: {
+                        ...model,
+                        fields,
+                        layout,
+                        savedOn: expect.stringMatching(/^20/)
+                    },
+                    error: null
+                }
+            }
+        });
     });
 });

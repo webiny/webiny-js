@@ -64,6 +64,7 @@ describe("Request review", () => {
             console.error(`[beforeEach] ${update.errors[0].message}`);
             process.exit(1);
         }
+        return update.data.updateContentModel.data;
     };
 
     test("request review, get and edit", async () => {
@@ -74,6 +75,7 @@ describe("Request review", () => {
             requestCategoryReview,
             updateCategory,
             listCategories
+            // storageOperations
         } = useCategoryManageHandler(manageOpts);
 
         const [createResponse] = await createCategory({
@@ -109,9 +111,31 @@ describe("Request review", () => {
             { name: "create category" }
         );
 
+        // const cmsModel: CmsModel = {
+        //     ...(model as any),
+        //     tenant: "root",
+        //     locale: "en-US"
+        // };
+
         const [requestReviewResponse] = await requestCategoryReview({
             revision: fruits.id
         });
+
+        // const getSoResult = await storageOperations.entries.get(cmsModel, {
+        //     where: {
+        //         id: fruits.id
+        //     }
+        // });
+        //
+        // expect()
+        //
+        // const soResult = await storageOperations.entries.getRevisions(cmsModel, {
+        //     id: fruits.id
+        // });
+        //
+        // const x = soResult;
+        // const y = getSoResult;
+        // console.log(x, y);
 
         expect(requestReviewResponse).toEqual({
             data: {
@@ -120,6 +144,15 @@ describe("Request review", () => {
                         ...fruits,
                         meta: {
                             ...fruits.meta,
+                            revisions: fruits.meta.revisions.map(revision => {
+                                return {
+                                    ...revision,
+                                    meta: {
+                                        ...revision.meta,
+                                        status: "reviewRequested"
+                                    }
+                                };
+                            }),
                             status: "reviewRequested"
                         }
                     },
@@ -151,6 +184,16 @@ describe("Request review", () => {
                         ...fruits,
                         meta: {
                             ...fruits.meta,
+                            revisions: fruits.meta.revisions.map(revision => {
+                                return {
+                                    ...revision,
+                                    meta: {
+                                        ...revision.meta,
+                                        status: "reviewRequested",
+                                        version: 1
+                                    }
+                                };
+                            }),
                             status: "reviewRequested"
                         }
                     },
@@ -179,7 +222,11 @@ describe("Request review", () => {
                             revisions: [
                                 {
                                     ...fruits.meta.revisions[0],
-                                    title: "Fruits updated"
+                                    title: "Fruits updated",
+                                    meta: {
+                                        status: "reviewRequested",
+                                        version: 1
+                                    }
                                 }
                             ],
                             title: "Fruits updated",

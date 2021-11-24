@@ -232,7 +232,7 @@ const DefaultFormLayout: FormLayoutComponent = ({
     /**
      * Renders the form submit button. We disable the button if the form is in the loading state.
      */
-    const renderSubmitButton = (submit, loading, _, buttonLabel) => {
+    const renderSubmitButton = (submit, loading, buttonLabel) => {
         return (
             <div className="webiny-fb-form-submit-button">
                 <button
@@ -253,7 +253,7 @@ const DefaultFormLayout: FormLayoutComponent = ({
         /* "onSubmit" callback gets triggered once all of the fields are valid. */
         /* We also pass the default values for all fields via the getDefaultValues callback. */
         <Form onSubmit={submitForm} data={getDefaultValues()}>
-            {({ submit, Bind, data }) => (
+            {({ submit, Bind }) => (
                 <div className={"webiny-fb-form"}>
                     {formSuccess ? (
                         renderSuccessMessage()
@@ -287,7 +287,6 @@ const DefaultFormLayout: FormLayoutComponent = ({
                             {renderSubmitButton(
                                 submit,
                                 loading,
-                                data.tosAccepted,
                                 formData.settings.submitButtonLabel
                             )}
                         </>

@@ -3,6 +3,150 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.18.0](https://github.com/webiny/webiny-js/compare/v5.18.0-beta.4...v5.18.0) (2021-11-24)
+
+
+### Bug Fixes
+
+* change warning message ([1bec838](https://github.com/webiny/webiny-js/commit/1bec8380111111310c2794baea8aed5c5d0781f4))
+* only show the warning message if the debug flag was passed ([191fd12](https://github.com/webiny/webiny-js/commit/191fd12476a2090cbd84b533cd96ca6e671e7333))
+
+
+
+
+
+# [5.18.0-beta.4](https://github.com/webiny/webiny-js/compare/v5.18.0-beta.3...v5.18.0-beta.4) (2021-11-23)
+
+
+### Bug Fixes
+
+* exit if no packages detected ([f3bb8c7](https://github.com/webiny/webiny-js/commit/f3bb8c7d9b46ec9ebe7ecfe01d890e407ddcf91d))
+* improve error logging ([59b5023](https://github.com/webiny/webiny-js/commit/59b50236dd509d3497ef6a5ebac1839ca299f52c))
+* improve error logging ([eed9759](https://github.com/webiny/webiny-js/commit/eed9759ad9bb5ce2e70f08c7e686987f19ddc045))
+* use output.log ([f4662a0](https://github.com/webiny/webiny-js/commit/f4662a02d0918a16970b673b3e661d3320182253))
+
+
+
+
+
+# [5.18.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.18.0-beta.2...v5.18.0-beta.3) (2021-11-22)
+
+
+### Bug Fixes
+
+* when `--json` flag is passed, do not output any info text ([7a14fe5](https://github.com/webiny/webiny-js/commit/7a14fe55b70ac432354553818a37762368631509))
+
+
+
+
+
+# [5.18.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.18.0-beta.1...v5.18.0-beta.2) (2021-11-21)
+
+**Note:** Version bump only for package @webiny/cli-plugin-deploy-pulumi
+
+
+
+
+
+# [5.18.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.18.0-beta.0...v5.18.0-beta.1) (2021-11-19)
+
+
+### Bug Fixes
+
+* handle non-string values ([1c8743e](https://github.com/webiny/webiny-js/commit/1c8743e44d0f56d6f7c2d3b62a29481d24911b18))
+
+
+
+
+
+# [5.18.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.17.4...v5.18.0-beta.0) (2021-11-19)
+
+
+### Bug Fixes
+
+* add a debug about the detected packages ([5e88dfa](https://github.com/webiny/webiny-js/commit/5e88dfafe01f8857c01a8f2e4a0c17bb2797e744))
+* change arg type ([0e8a897](https://github.com/webiny/webiny-js/commit/0e8a8970364252642e52ba7c27eabce8a0c04d09))
+* do not use Pulumi CLI v3.18.0 ([bfe72b1](https://github.com/webiny/webiny-js/commit/bfe72b1367c348708cf51b42f7d921ca8e2da887))
+* improve error logging ([4ba1f8d](https://github.com/webiny/webiny-js/commit/4ba1f8d22d200e7d0e1c07e74a6bfd701f2e1f3d))
+* move the `key` const up ([f92a8e9](https://github.com/webiny/webiny-js/commit/f92a8e99113bd5e1ad1b207fee6e714954f248e2))
+* override all console methods and handle errors ([0198f65](https://github.com/webiny/webiny-js/commit/0198f650530b547688a9b4a5e5045487842dc743))
+* remove redundant check ([d9478a6](https://github.com/webiny/webiny-js/commit/d9478a648a7cf78a508c2eec9d8a43deadcc16bf))
+* remove testing-related logs ([d302c55](https://github.com/webiny/webiny-js/commit/d302c5503f789e457e44c1173ca43c90a02d30ba))
+* remove trailing slash ([0fb678e](https://github.com/webiny/webiny-js/commit/0fb678ef02ddf62ef42b93312bc18f4a72567844))
+* skip upload of existing files ([3a3c012](https://github.com/webiny/webiny-js/commit/3a3c012c9d8a4aee3dd48b379f3490564427ea89))
+* skip watching of package that doesn't have the watch command defined ([4b51a40](https://github.com/webiny/webiny-js/commit/4b51a40f8920ff126531ca0412a2bd18c3898e7a))
+* undo console.log ([d73fbfd](https://github.com/webiny/webiny-js/commit/d73fbfd7c7cac03f373388a819dcb89a72bb0a9d))
+* use `info` instead of `success` ([d6a0532](https://github.com/webiny/webiny-js/commit/d6a05320eb3bc73251b97f2b6f4d2bd6497a1e2a))
+* use `remoteRuntimeLogs` instead of `logs` ([a10baf4](https://github.com/webiny/webiny-js/commit/a10baf4627413557005f54d613eb9408f2903738))
+* use `remoteRuntimeLogs` instead of `logs` ([0080fef](https://github.com/webiny/webiny-js/commit/0080fef86aaf7a8d03a51d8bb018cbb6bdba7ec1))
+* use worker threads to build packages in parallel ([bf104cd](https://github.com/webiny/webiny-js/commit/bf104cd5348a6e68bed5f622008641ccdd5e1bcd))
+
+
+
+
+
+## [5.17.4](https://github.com/webiny/webiny-js/compare/v5.17.4-beta.1...v5.17.4) (2021-11-19)
+
+**Note:** Version bump only for package @webiny/cli-plugin-deploy-pulumi
+
+
+
+
+
+## [5.17.4-beta.1](https://github.com/webiny/webiny-js/compare/v5.17.4-beta.0...v5.17.4-beta.1) (2021-11-19)
+
+**Note:** Version bump only for package @webiny/cli-plugin-deploy-pulumi
+
+
+
+
+
+## [5.17.4-beta.0](https://github.com/webiny/webiny-js/compare/v5.17.3...v5.17.4-beta.0) (2021-11-19)
+
+
+### Bug Fixes
+
+* do not use Pulumi CLI v3.18.0 ([fbb1825](https://github.com/webiny/webiny-js/commit/fbb182507089af8242c4e8f8f9bcb26613bbfd1b))
+
+
+
+
+
+## [5.17.3](https://github.com/webiny/webiny-js/compare/v5.17.3-beta.0...v5.17.3) (2021-11-15)
+
+**Note:** Version bump only for package @webiny/cli-plugin-deploy-pulumi
+
+
+
+
+
+## [5.17.3-beta.0](https://github.com/webiny/webiny-js/compare/v5.17.2...v5.17.3-beta.0) (2021-11-12)
+
+**Note:** Version bump only for package @webiny/cli-plugin-deploy-pulumi
+
+
+
+
+
+## [5.17.2](https://github.com/webiny/webiny-js/compare/v5.17.2-beta.0...v5.17.2) (2021-11-11)
+
+**Note:** Version bump only for package @webiny/cli-plugin-deploy-pulumi
+
+
+
+
+
+## [5.17.2-beta.0](https://github.com/webiny/webiny-js/compare/v5.17.1...v5.17.2-beta.0) (2021-11-11)
+
+
+### Bug Fixes
+
+* force same version on all packages ([9cbae8b](https://github.com/webiny/webiny-js/commit/9cbae8b050900546eb17932c23a609593211c1c8))
+
+
+
+
+
 # [5.17.0](https://github.com/webiny/webiny-js/compare/v5.17.0-beta.2...v5.17.0) (2021-11-08)
 
 **Note:** Version bump only for package @webiny/cli-plugin-deploy-pulumi

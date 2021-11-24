@@ -155,7 +155,11 @@ describe("MANAGE - resolvers - api key", () => {
                                 {
                                     id: expect.any(String),
                                     slug: "vegetables",
-                                    title: "Vegetables"
+                                    title: "Vegetables",
+                                    meta: {
+                                        status: "draft",
+                                        version: 1
+                                    }
                                 }
                             ],
                             status: "draft",
@@ -207,7 +211,11 @@ describe("MANAGE - resolvers - api key", () => {
                                 {
                                     id: category.id,
                                     slug: "vegetables",
-                                    title: "Vegetables"
+                                    title: "Vegetables",
+                                    meta: {
+                                        status: "draft",
+                                        version: 1
+                                    }
                                 }
                             ],
                             status: "draft",
@@ -254,7 +262,11 @@ describe("MANAGE - resolvers - api key", () => {
                                 {
                                     id: expect.any(String),
                                     slug: "green-vegetables",
-                                    title: "Green vegetables"
+                                    title: "Green vegetables",
+                                    meta: {
+                                        status: "draft",
+                                        version: 1
+                                    }
                                 }
                             ],
                             status: "draft",
@@ -300,7 +312,11 @@ describe("MANAGE - resolvers - api key", () => {
                                     {
                                         id: updatedCategory.id,
                                         slug: updatedCategory.slug,
-                                        title: updatedCategory.title
+                                        title: updatedCategory.title,
+                                        meta: {
+                                            status: "draft",
+                                            version: 1
+                                        }
                                     }
                                 ],
                                 status: "draft",

@@ -15,7 +15,12 @@ import { FileManagerContext } from "@webiny/api-file-manager/types";
 import { UpgradePlugin } from "@webiny/api-upgrade/types";
 import { Topic } from "@webiny/pubsub/types";
 
-interface BaseCmsValuesObject {
+export interface HeadlessCms
+    extends CmsSettingsContext,
+        CmsSystemContext,
+        CmsGroupContext,
+        CmsModelContext,
+        CmsEntryContext {
     /**
      * API type
      */
@@ -40,9 +45,9 @@ interface BaseCmsValuesObject {
      * Means this request is a PREVIEW API
      */
     PREVIEW: boolean;
-}
-
-export interface HeadlessCms extends BaseCmsValuesObject, CmsCrudContextObject {
+    /**
+     * The storage operations loaded for current context.
+     */
     storageOperations: HeadlessCmsStorageOperations;
 }
 /**
@@ -1645,20 +1650,6 @@ export interface CmsEntryContext {
 }
 
 /**
- * A cms part of the context that has all the CRUD operations.
- *
- * @category Context
- */
-interface CmsCrudContextObject
-    extends CmsSettingsContext,
-        CmsSystemContext,
-        CmsGroupContext,
-        CmsModelContext,
-        CmsEntryContext {
-    storageOperations: HeadlessCmsStorageOperations;
-}
-
-/**
  * Parameters for CmsEntryResolverFactory.
  *
  * @category GraphQL resolver
@@ -2071,56 +2062,38 @@ export interface CmsEntryStorageOperationsRequestReviewParams<
 
 export interface CmsEntryStorageOperationsGetAllRevisionsParams {
     ids: readonly string[];
-    tenant: string;
-    locale: string;
 }
 
 export interface CmsEntryStorageOperationsGetByIdsParams {
     ids: readonly string[];
-    tenant: string;
-    locale: string;
 }
 
 export interface CmsEntryStorageOperationsGetLatestByIdsParams {
     ids: readonly string[];
-    tenant: string;
-    locale: string;
 }
 
 export interface CmsEntryStorageOperationsGetPublishedByIdsParams {
     ids: readonly string[];
-    tenant: string;
-    locale: string;
 }
 
 export interface CmsEntryStorageOperationsGetRevisionsParams {
     id: string;
-    tenant: string;
-    locale: string;
 }
 
 export interface CmsEntryStorageOperationsGetRevisionParams {
     id: string;
-    tenant: string;
-    locale: string;
 }
 
 export interface CmsEntryStorageOperationsGetPublishedRevisionParams {
     id: string;
-    tenant: string;
-    locale: string;
 }
 export interface CmsEntryStorageOperationsGetLatestRevisionParams {
     id: string;
-    tenant: string;
-    locale: string;
 }
 
 export interface CmsEntryStorageOperationsGetPreviousRevisionParams {
     entryId: string;
     version: number;
-    tenant: string;
-    locale: string;
 }
 
 export interface CmsEntryStorageOperationsListResponse<

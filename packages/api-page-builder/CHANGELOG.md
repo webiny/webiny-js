@@ -3,6 +3,132 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.18.0](https://github.com/webiny/webiny-js/compare/v5.18.0-beta.4...v5.18.0) (2021-11-24)
+
+**Note:** Version bump only for package @webiny/api-page-builder
+
+
+
+
+
+# [5.18.0-beta.4](https://github.com/webiny/webiny-js/compare/v5.18.0-beta.3...v5.18.0-beta.4) (2021-11-23)
+
+**Note:** Version bump only for package @webiny/api-page-builder
+
+
+
+
+
+# [5.18.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.18.0-beta.2...v5.18.0-beta.3) (2021-11-22)
+
+**Note:** Version bump only for package @webiny/api-page-builder
+
+
+
+
+
+# [5.18.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.18.0-beta.1...v5.18.0-beta.2) (2021-11-21)
+
+**Note:** Version bump only for package @webiny/api-page-builder
+
+
+
+
+
+# [5.18.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.18.0-beta.0...v5.18.0-beta.1) (2021-11-19)
+
+
+### Bug Fixes
+
+* create empty plugin (for existing 5.18.0 projects) ([e5f3c99](https://github.com/webiny/webiny-js/commit/e5f3c999b85c845b854e7ef10641734c1c999019))
+* create empty plugin (for existing 5.18.0 projects) ([b3c8120](https://github.com/webiny/webiny-js/commit/b3c8120566a760f7ebcb69564a5b5b92e562cbba))
+
+
+
+
+
+# [5.18.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.17.4...v5.18.0-beta.0) (2021-11-19)
+
+
+### Bug Fixes
+
+* copy installation files ([c1e417c](https://github.com/webiny/webiny-js/commit/c1e417c41b2661ea045cf9ecf9be30e6c4c2dc67))
+* remove `ncp devDependency ([1cb54c0](https://github.com/webiny/webiny-js/commit/1cb54c06ff513a946d4e998f4c334d98870b0be3))
+* remove redundant file ([c16af9b](https://github.com/webiny/webiny-js/commit/c16af9be9310160dd2f9b2b07779751e9875acf3))
+* undo changes ([493d5d9](https://github.com/webiny/webiny-js/commit/493d5d9d36923288be299788956b80e3ae3cc668))
+* update build/watch commands ([ab0fd80](https://github.com/webiny/webiny-js/commit/ab0fd80192fa76db0848533df130849adac32607))
+* update dependencies ([c677f99](https://github.com/webiny/webiny-js/commit/c677f99a0df44286b31a4b4d4aea481fdcedb6b3))
+* update dependencies ([fc42644](https://github.com/webiny/webiny-js/commit/fc42644369cbfa71c2ea51f0a3e4c6bda4df8ba5))
+* update dependencies [no ci] ([95d3449](https://github.com/webiny/webiny-js/commit/95d34493e24d27074280eca3a313dbc9536c6c85))
+
+
+### Features
+
+* tsconfig improvements ([#2018](https://github.com/webiny/webiny-js/issues/2018)) ([d4ce776](https://github.com/webiny/webiny-js/commit/d4ce7767a5981ba3473fcd923d3603102ce4be8d))
+
+
+
+
+
+## [5.17.4](https://github.com/webiny/webiny-js/compare/v5.17.4-beta.1...v5.17.4) (2021-11-19)
+
+**Note:** Version bump only for package @webiny/api-page-builder
+
+
+
+
+
+## [5.17.4-beta.1](https://github.com/webiny/webiny-js/compare/v5.17.4-beta.0...v5.17.4-beta.1) (2021-11-19)
+
+**Note:** Version bump only for package @webiny/api-page-builder
+
+
+
+
+
+## [5.17.4-beta.0](https://github.com/webiny/webiny-js/compare/v5.17.3...v5.17.4-beta.0) (2021-11-19)
+
+**Note:** Version bump only for package @webiny/api-page-builder
+
+
+
+
+
+## [5.17.3](https://github.com/webiny/webiny-js/compare/v5.17.3-beta.0...v5.17.3) (2021-11-15)
+
+**Note:** Version bump only for package @webiny/api-page-builder
+
+
+
+
+
+## [5.17.3-beta.0](https://github.com/webiny/webiny-js/compare/v5.17.2...v5.17.3-beta.0) (2021-11-12)
+
+**Note:** Version bump only for package @webiny/api-page-builder
+
+
+
+
+
+## [5.17.2](https://github.com/webiny/webiny-js/compare/v5.17.2-beta.0...v5.17.2) (2021-11-11)
+
+**Note:** Version bump only for package @webiny/api-page-builder
+
+
+
+
+
+## [5.17.2-beta.0](https://github.com/webiny/webiny-js/compare/v5.17.1...v5.17.2-beta.0) (2021-11-11)
+
+
+### Bug Fixes
+
+* force same version on all packages ([9cbae8b](https://github.com/webiny/webiny-js/commit/9cbae8b050900546eb17932c23a609593211c1c8))
+
+
+
+
+
 # [5.17.0](https://github.com/webiny/webiny-js/compare/v5.17.0-beta.2...v5.17.0) (2021-11-08)
 
 **Note:** Version bump only for package @webiny/api-page-builder

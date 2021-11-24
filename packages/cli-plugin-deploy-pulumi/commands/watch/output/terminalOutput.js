@@ -13,6 +13,7 @@ module.exports = {
         if (typeof message !== "string") {
             return;
         }
+
         message
             .split("\n")
             .filter(Boolean)

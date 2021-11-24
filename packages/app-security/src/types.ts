@@ -17,7 +17,7 @@ export interface SecurityIdentity {
     id: string;
     type: string;
     displayName: string;
-    permissions: SecurityPermission[];
+    permissions?: SecurityPermission[];
     logout(): void;
     // For backwards compatibility, expose the `getPermission` method on the `identity` object.
     getPermission?<T extends SecurityPermission = SecurityPermission>(name: string): T;

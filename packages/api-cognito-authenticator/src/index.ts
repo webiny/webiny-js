@@ -38,7 +38,7 @@ export const createAuthenticator =
             return jwksCache.get(key);
         };
 
-        if (isJwt(idToken)) {
+        if (typeof idToken === "string" && isJwt(idToken)) {
             const jwks = await getJWKs();
             const { header } = jwt.decode(idToken, { complete: true });
             const jwk = jwks.find(key => key.kid === header.kid);
