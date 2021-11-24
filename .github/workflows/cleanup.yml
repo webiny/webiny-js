@@ -17,9 +17,12 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
     container:
       image: rebuy/aws-nuke
-      options: --user root
+      options: --user root -v ${{ github.workspace }}:/workspace
     steps:
       - uses: actions/checkout@v2
+
+      - name: PWD
+        run: pwd
 
       - name: Run AWS Nuke
         run: >
