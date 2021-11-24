@@ -17,10 +17,9 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
     container:
       image: rebuy/aws-nuke
-      options: --cpus 1
     steps:
       - name: Download AWS Nuke Config
-        run: curl https://raw.githubusercontent.com/webiny/webiny-js/next/.github/workflows/cleanup/aws-nuke.yml > aws-nuke.config.yml
+        run: sudo curl https://raw.githubusercontent.com/webiny/webiny-js/next/.github/workflows/cleanup/aws-nuke.yml > aws-nuke.config.yml
 
       - name: Run AWS Nuke
         run: >
