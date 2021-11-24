@@ -22,8 +22,35 @@ import checkboxesFieldRenderer from "@webiny/app-headless-cms/admin/plugins/fiel
 import refFieldRenderer from "@webiny/app-headless-cms/admin/plugins/fieldRenderers/ref";
 import objectFieldRenderer from "@webiny/app-headless-cms/admin/plugins/fieldRenderers/object";
 
-import { createValidators } from "@webiny/app-headless-cms/admin/plugins/validators";
-import { createFieldUiValidators } from "@webiny/app-headless-cms/admin/plugins/fieldValidators";
+import gteFieldValidator from "@webiny/app-headless-cms/admin/plugins/validators/gte";
+import inValidatorFieldValidator from "@webiny/app-headless-cms/admin/plugins/validators/in";
+import lteFieldValidator from "@webiny/app-headless-cms/admin/plugins/validators/lte";
+import requiredFieldValidator from "@webiny/app-headless-cms/admin/plugins/validators/required";
+import minLengthFieldValidator from "@webiny/app-headless-cms/admin/plugins/validators/minLength";
+import maxLengthFieldValidator from "@webiny/app-headless-cms/admin/plugins/validators/maxLength";
+import patternFieldValidator from "@webiny/app-headless-cms/admin/plugins/validators/pattern";
+import emailFieldValidator from "@webiny/app-headless-cms/admin/plugins/validators/patternPlugins/email";
+import urlFieldValidator from "@webiny/app-headless-cms/admin/plugins/validators/patternPlugins/url";
+import lowerCaseFieldValidator from "@webiny/app-headless-cms/admin/plugins/validators/patternPlugins/lowerCase";
+import upperCaseFieldValidator from "@webiny/app-headless-cms/admin/plugins/validators/patternPlugins/upperCase";
+import dateGteFieldValidator from "@webiny/app-headless-cms/admin/plugins/validators/dateGte";
+import dateLteFieldValidator from "@webiny/app-headless-cms/admin/plugins/validators/dateLte";
+import timeGteFieldValidator from "@webiny/app-headless-cms/admin/plugins/validators/timeGte";
+import timeLteFieldValidator from "@webiny/app-headless-cms/admin/plugins/validators/timeLte";
+
+import editorGteFieldValidator from "@webiny/app-headless-cms/admin/plugins/fieldValidators/gte";
+import editorDateGteFieldValidator from "@webiny/app-headless-cms/admin/plugins/fieldValidators/dateGte";
+import editorDateLteFieldValidator from "@webiny/app-headless-cms/admin/plugins/fieldValidators/dateLte";
+import editorInValidatorFieldValidator from "@webiny/app-headless-cms/admin/plugins/fieldValidators/in";
+import editorLteFieldValidator from "@webiny/app-headless-cms/admin/plugins/fieldValidators/lte";
+import editorRequiredFieldValidator from "@webiny/app-headless-cms/admin/plugins/fieldValidators/required";
+import editorMinLengthFieldValidator from "@webiny/app-headless-cms/admin/plugins/fieldValidators/minLength";
+import editorMaxLengthFieldValidator from "@webiny/app-headless-cms/admin/plugins/fieldValidators/maxLength";
+import editorPatternFieldValidator from "@webiny/app-headless-cms/admin/plugins/fieldValidators/pattern";
+import editorEmailFieldValidator from "@webiny/app-headless-cms/admin/plugins/fieldValidators/patternPlugins/email";
+import editorUrlFieldValidator from "@webiny/app-headless-cms/admin/plugins/fieldValidators/patternPlugins/url";
+import editorLowerCaseFieldValidator from "@webiny/app-headless-cms/admin/plugins/fieldValidators/patternPlugins/lowerCase";
+import editorUpperCaseFieldValidator from "@webiny/app-headless-cms/admin/plugins/fieldValidators/patternPlugins/upperCase";
 
 import welcomeScreenWidget from "@webiny/app-headless-cms/admin/plugins/welcomeScreenWidget";
 
@@ -51,13 +78,35 @@ export default [
     selectFieldRenderer,
     checkboxesFieldRenderer,
     refFieldRenderer,
-
+    gteFieldValidator,
+    inValidatorFieldValidator,
+    lteFieldValidator,
+    requiredFieldValidator,
+    minLengthFieldValidator,
+    maxLengthFieldValidator,
+    patternFieldValidator,
+    emailFieldValidator,
+    urlFieldValidator,
+    lowerCaseFieldValidator,
+    upperCaseFieldValidator,
+    dateGteFieldValidator(),
+    dateLteFieldValidator(),
+    timeGteFieldValidator(),
+    timeLteFieldValidator(),
+    editorGteFieldValidator,
+    editorDateGteFieldValidator(),
+    editorDateLteFieldValidator(),
+    editorInValidatorFieldValidator,
+    editorLteFieldValidator,
+    editorRequiredFieldValidator,
+    editorMinLengthFieldValidator,
+    editorMaxLengthFieldValidator,
+    editorPatternFieldValidator,
+    editorEmailFieldValidator,
+    editorUrlFieldValidator,
+    editorLowerCaseFieldValidator,
+    editorUpperCaseFieldValidator,
     welcomeScreenWidget,
     objectField,
-    objectFieldRenderer,
-    /**
-     * Field validators
-     */
-    createFieldUiValidators(),
-    createValidators()
+    objectFieldRenderer
 ];

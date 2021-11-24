@@ -80,7 +80,14 @@ class FileManagerPortal extends React.Component<FileManagerPortalProps> {
         };
 
         if (images) {
-            props.accept = ["image/jpg", "image/jpeg", "image/gif", "image/png", "image/svg+xml"];
+            props.accept = [
+                "image/jpg",
+                "image/jpeg",
+                "image/gif",
+                "image/png",
+                "image/webp",
+                "image/svg+xml"
+            ];
         }
 
         // Let's pass "permanent" / "persistent" / "temporary" flags as "mode" prop instead.

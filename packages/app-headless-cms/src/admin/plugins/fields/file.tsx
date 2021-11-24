@@ -2,6 +2,8 @@ import React from "react";
 import { ReactComponent as FileIcon } from "./icons/round_insert_drive_file-24px.svg";
 import { CmsEditorFieldTypePlugin } from "~/types";
 import { i18n } from "@webiny/app/i18n";
+import { Cell, Grid } from "@webiny/ui/Grid";
+import { Radio } from "@webiny/ui/Radio";
 
 const t = i18n.ns("app-headless-cms/admin/fields");
 
@@ -13,7 +15,7 @@ const plugin: CmsEditorFieldTypePlugin = {
         label: t`Files`,
         description: t`Images, videos and other files.`,
         icon: <FileIcon />,
-        validators: ["required", "fileType"],
+        validators: ["required"],
         listValidators: ["minLength", "maxLength"],
         allowMultipleValues: true,
         allowPredefinedValues: false,
@@ -26,6 +28,17 @@ const plugin: CmsEditorFieldTypePlugin = {
                     name: ""
                 }
             };
+        },
+        renderSettings: ({ form: { Bind } }) => {
+            return (
+                <Grid>
+                    <Cell span={12}>
+                        <Bind name={"settings.imagesOnly"}>
+                            <Radio label={t`Images only`} description={t`Show only images`} />
+                        </Bind>
+                    </Cell>
+                </Grid>
+            );
         }
     }
 };
