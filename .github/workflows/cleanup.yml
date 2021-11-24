@@ -12,6 +12,9 @@ on:
 jobs:
   aws-nuke:
     runs-on: ubuntu-latest
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
     container:
       image: rebuy/aws-nuke
 #      env:
@@ -23,4 +26,4 @@ jobs:
       options: --cpus 1
     steps:
       - name: Run AWS Nuke
-        run:  aws-nuke -c aws-nuke-config.yml --profile=webiny-ci --no-dry-run --force --force-sleep 3 --access-key-id --secret-access-key
+        run:  aws-nuke -c aws-nuke-config.yml --profile=webiny-ci --no-dry-run --force --force-sleep 3 --access-key-id ${{ env.AWS_ACCESS_KEY_ID }} --secret-access-key ${{ env.AWS_SECRET_ACCESS_KEY }}
