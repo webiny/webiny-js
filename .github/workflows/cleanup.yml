@@ -17,6 +17,7 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
     container:
       image: rebuy/aws-nuke
+      options: --user root
     steps:
       - uses: actions/checkout@v2
 
