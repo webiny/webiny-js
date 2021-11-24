@@ -1,0 +1,25 @@
+# Destroys any cloud infrastructure that was deployed for the purpose of E2E testing.
+name: Cloud infrastructure Cleanup
+
+#on:
+#  schedule:
+#    - cron: "0 2 * * *" # Every day at 2AM.
+
+on:
+  push:
+    branches: [next]
+
+jobs:
+  aws-nuke:
+    container:
+      image: rebuy/aws-nuke
+#      env:
+#        NODE_ENV: development
+#      ports:
+#        - 80
+#      volumes:
+#        - my_docker_volume:/volume_mount
+      options: --cpus 1
+    steps:
+      - name: Run AWS Nuke
+        run:  aws-nuke -c aws-nuke-config.yml --profile=webiny-ci --no-dry-run --force --force-sleep 3
