@@ -1,26 +1,55 @@
 import S3 from "aws-sdk/clients/s3";
 import { Page, File } from "@webiny/api-page-builder/types";
+import { FileManagerContext } from "@webiny/api-file-manager/types";
+import get from "lodash/get";
 import { s3Stream } from "./s3Stream";
 import Zipper from "./zipper";
 
 export const EXPORT_PAGES_FOLDER_KEY = "WEBINY_PB_EXPORT_PAGES";
 
+async function getFilteredFiles(files: ImageFile[]) {
+    const uniqueFileKeys = new Map<string, boolean>();
+    const promises = files.map(file => s3Stream.isFileAccessible(file.key));
+    const isFileAvailableResults = await Promise.all(promises);
+
+    const filesAvailableForDownload = [];
+    // Filter files
+    for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        // Check file accessibility
+        if (isFileAvailableResults[i] && !uniqueFileKeys.has(file.key)) {
+            filesAvailableForDownload.push(file);
+            uniqueFileKeys.set(file.key, true);
+        }
+    }
+    return filesAvailableForDownload;
+}
+
+export interface ExportedPageData {
+    page: Pick<Page, "content" | "title" | "version" | "status" | "settings" | "path">;
+    files: ImageFile[];
+}
+
 export async function exportPage(
     page: Page,
-    exportPagesDataKey: string
+    exportPagesDataKey: string,
+    fileManager: FileManagerContext["fileManager"]
 ): Promise<S3.ManagedUpload.SendData> {
     // Extract all files
     const files = extractFilesFromPageData(page.content);
     // Filter files
-    const filesAvailableForDownload = [];
-    const uniqueFileKeys = new Map<string, boolean>();
-    for (let i = 0; i < files.length; i++) {
-        const file = files[i];
-        // Check file accessibility
-        if ((await s3Stream.isFileAccessible(file.key)) && !uniqueFileKeys.has(file.key)) {
-            filesAvailableForDownload.push(file);
-            uniqueFileKeys.set(file.key, true);
-        }
+    const filesAvailableForDownload = await getFilteredFiles(files);
+    // Extract images from page settings
+    const pageSettingsImages = [
+        get(page, "settings.general.image"),
+        get(page, "settings.social.image")
+    ].filter(image => image && image.src);
+    const pageSettingsImagesData = [];
+    // Get file data for all images inside "page.settings"
+    for (let i = 0; i < pageSettingsImages.length; i++) {
+        const { id } = pageSettingsImages[i];
+        const file = await fileManager.files.getFile(id);
+        pageSettingsImagesData.push(file);
     }
 
     // Extract the page data in a json file and upload it to S3
@@ -28,16 +57,18 @@ export async function exportPage(
         page: {
             content: page.content,
             title: page.title,
+            path: page.path,
             version: page.version,
-            status: page.status
+            status: page.status,
+            settings: page.settings
         },
-        files: filesAvailableForDownload
+        files: [...filesAvailableForDownload, ...pageSettingsImagesData]
     };
     const pageDataBuffer = Buffer.from(JSON.stringify(pageData));
 
     const zipper = new Zipper({
         exportInfo: {
-            files: filesAvailableForDownload,
+            files: [...filesAvailableForDownload, ...pageSettingsImagesData],
             pageTitle: page.title,
             pageDataBuffer
         },

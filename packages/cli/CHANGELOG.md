@@ -3,6 +3,140 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.18.0](https://github.com/webiny/webiny-js/compare/v5.18.0-beta.4...v5.18.0) (2021-11-24)
+
+
+### Bug Fixes
+
+* adjust debug message [no ci] ([9c16da3](https://github.com/webiny/webiny-js/commit/9c16da3ba2ad1c7a61bfd02f44263790183b92e2))
+
+
+
+
+
+# [5.18.0-beta.4](https://github.com/webiny/webiny-js/compare/v5.18.0-beta.3...v5.18.0-beta.4) (2021-11-23)
+
+**Note:** Version bump only for package @webiny/cli
+
+
+
+
+
+# [5.18.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.18.0-beta.2...v5.18.0-beta.3) (2021-11-22)
+
+
+### Bug Fixes
+
+* remove context ([ec4566a](https://github.com/webiny/webiny-js/commit/ec4566af26fe67cc7cb26728e7f65e54e7f16968))
+
+
+
+
+
+# [5.18.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.18.0-beta.1...v5.18.0-beta.2) (2021-11-21)
+
+**Note:** Version bump only for package @webiny/cli
+
+
+
+
+
+# [5.18.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.18.0-beta.0...v5.18.0-beta.1) (2021-11-19)
+
+
+### Bug Fixes
+
+* improve logging ([2dd751f](https://github.com/webiny/webiny-js/commit/2dd751fffb52a407cb5679bb7395e7601dea9463))
+
+
+
+
+
+# [5.18.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.17.4...v5.18.0-beta.0) (2021-11-19)
+
+
+### Bug Fixes
+
+* adjust messaging ([3c867c6](https://github.com/webiny/webiny-js/commit/3c867c6b0ca59ad579f8a605afe5f94f8bccfef9))
+* adjust messaging ([ce0cfd6](https://github.com/webiny/webiny-js/commit/ce0cfd65552552370053855567782e2847b3f956))
+* determine target upgrade version using `package.json` / `semver` ([4a3e10f](https://github.com/webiny/webiny-js/commit/4a3e10fafbe63fe3a822083ecf52a95c714e9f61))
+* remove old upgrade scripts ([c34f40a](https://github.com/webiny/webiny-js/commit/c34f40ab76d4c7c85087553884b64813b0b9e4eb))
+* remove unneeded dependencies ([dabf981](https://github.com/webiny/webiny-js/commit/dabf98163bbc5c6cf4a382c3197cf64ea6337a25))
+* update dependencies ([d69c6be](https://github.com/webiny/webiny-js/commit/d69c6be8ac22ad732012b9f81a035e93d3df674d))
+* use "blueBright" for info ([e0b96fd](https://github.com/webiny/webiny-js/commit/e0b96fdb5939d6a0b9dac359a57e2ed3f4c42fd5))
+* use debug function instead of chalk ([dc94492](https://github.com/webiny/webiny-js/commit/dc94492056e1882b15800209d844fd5b5ab212b1))
+* use fast-glob lib ([eff106b](https://github.com/webiny/webiny-js/commit/eff106b3e6a3f2e806df86209596b2672f81949f))
+
+
+### Features
+
+* add "packages" getter ([77dc207](https://github.com/webiny/webiny-js/commit/77dc207b90dc9b85d3f516d18df9505f12ecf3d3))
+* add packageJson ([204135a](https://github.com/webiny/webiny-js/commit/204135aaa8021b8fc3e91dd73d2b8b338ea1f728))
+* run upgrade scripts from a remote code repository ([3c0cc49](https://github.com/webiny/webiny-js/commit/3c0cc490b155a1331c5132dbe0f0fca0af0a4e58))
+
+
+
+
+
+## [5.17.4](https://github.com/webiny/webiny-js/compare/v5.17.4-beta.1...v5.17.4) (2021-11-19)
+
+**Note:** Version bump only for package @webiny/cli
+
+
+
+
+
+## [5.17.4-beta.1](https://github.com/webiny/webiny-js/compare/v5.17.4-beta.0...v5.17.4-beta.1) (2021-11-19)
+
+**Note:** Version bump only for package @webiny/cli
+
+
+
+
+
+## [5.17.4-beta.0](https://github.com/webiny/webiny-js/compare/v5.17.3...v5.17.4-beta.0) (2021-11-19)
+
+**Note:** Version bump only for package @webiny/cli
+
+
+
+
+
+## [5.17.3](https://github.com/webiny/webiny-js/compare/v5.17.3-beta.0...v5.17.3) (2021-11-15)
+
+**Note:** Version bump only for package @webiny/cli
+
+
+
+
+
+## [5.17.3-beta.0](https://github.com/webiny/webiny-js/compare/v5.17.2...v5.17.3-beta.0) (2021-11-12)
+
+**Note:** Version bump only for package @webiny/cli
+
+
+
+
+
+## [5.17.2](https://github.com/webiny/webiny-js/compare/v5.17.2-beta.0...v5.17.2) (2021-11-11)
+
+**Note:** Version bump only for package @webiny/cli
+
+
+
+
+
+## [5.17.2-beta.0](https://github.com/webiny/webiny-js/compare/v5.17.1...v5.17.2-beta.0) (2021-11-11)
+
+
+### Bug Fixes
+
+* force same version on all packages ([9cbae8b](https://github.com/webiny/webiny-js/commit/9cbae8b050900546eb17932c23a609593211c1c8))
+
+
+
+
+
 # [5.17.0](https://github.com/webiny/webiny-js/compare/v5.17.0-beta.2...v5.17.0) (2021-11-08)
 
 **Note:** Version bump only for package @webiny/cli

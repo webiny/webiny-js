@@ -36,7 +36,7 @@ export const createAuthenticator = (config: AuthenticatorConfig) => {
     };
 
     const oktaAuthenticator = async idToken => {
-        if (isJwt(idToken)) {
+        if (typeof idToken === "string" && isJwt(idToken)) {
             try {
                 const jwks = await getJWKs();
                 const { header } = jwt.decode(idToken, { complete: true });
@@ -62,6 +62,10 @@ export const createAuthenticator = (config: AuthenticatorConfig) => {
     return new ContextPlugin<Context>(({ security }) => {
         security.addAuthenticator(async idToken => {
             const token = await oktaAuthenticator(idToken);
+
+            if (!token) {
+                return;
+            }
 
             return config.getIdentity({ token });
         });
