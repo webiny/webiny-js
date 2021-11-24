@@ -11,6 +11,7 @@ on:
 
 jobs:
   aws-nuke:
+    runs-on: ubuntu-latest
     container:
       image: rebuy/aws-nuke
 #      env:
