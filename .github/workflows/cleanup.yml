@@ -19,9 +19,8 @@ jobs:
       image: rebuy/aws-nuke
       options: --cpus 1
     steps:
+      - name: Run AWS Nuke Help
+        run: aws-nuke --help
+
       - name: Run AWS Nuke
-        run:  aws-nuke -c aws-nuke-config.yml \
-                --force \
-                --force-sleep 3 \
-                --access-key-id ${{ env.AWS_ACCESS_KEY_ID }} \
-                --secret-access-key ${{ env.AWS_SECRET_ACCESS_KEY }}
+        run:  aws-nuke -c aws-nuke-config.yml --no-dry-run --force --force-sleep 3 --access-key-id ${{ env.AWS_ACCESS_KEY_ID }} --secret-access-key ${{ env.AWS_SECRET_ACCESS_KEY }}
