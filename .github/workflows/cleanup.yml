@@ -21,7 +21,7 @@ jobs:
     steps:
       - name: Run AWS Nuke
         run:  aws-nuke -c aws-nuke-config.yml \
-                --no-dry-run \
+#                --no-dry-run \
                 --force \
                 --force-sleep 3 \
                 --access-key-id ${{ env.AWS_ACCESS_KEY_ID }} \
