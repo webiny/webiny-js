@@ -166,7 +166,7 @@ const getPackages = async ({ inputs, context, output }) => {
             } catch (e) {
                 output.log({
                     type: "build",
-                    message: `An error occurred upon loading the ${context.warning.hl(
+                    message: `Warning: could not load the ${context.warning.hl(
                         configPath
                     )} configuration file:`
                 });
