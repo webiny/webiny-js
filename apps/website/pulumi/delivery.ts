@@ -1,5 +1,6 @@
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
+import { WebsiteTenantRouter } from "./tenantRouter/WebsiteTenantRouter";
 
 class Delivery {
     bucket: aws.s3.Bucket;
@@ -14,47 +15,7 @@ class Delivery {
             }
         });
 
-        const role = new aws.iam.Role("tenant-router-role", {
-            assumeRolePolicy: {
-                Version: "2012-10-17",
-                Statement: [
-                    {
-                        Action: "sts:AssumeRole",
-                        Principal: aws.iam.Principals.LambdaPrincipal,
-                        Effect: "Allow"
-                    },
-                    {
-                        Action: "sts:AssumeRole",
-                        Principal: aws.iam.Principals.EdgeLambdaPrincipal,
-                        Effect: "Allow"
-                    }
-                ]
-            }
-        });
-
-        new aws.iam.RolePolicyAttachment(`tenant-router-role-policy-attachment`, {
-            role,
-            policyArn: aws.iam.ManagedPolicies.AWSLambdaBasicExecutionRole
-        });
-
-        // Some resources _must_ be put in us-east-1, such as Lambda at Edge.
-        const awsUsEast1 = new aws.Provider("us-east-1", { region: "us-east-1" });
-
-        const requestRouter = new aws.lambda.Function(
-            "tenant-request-router",
-            {
-                publish: true,
-                runtime: "nodejs14.x",
-                handler: "index.request",
-                role: role.arn,
-                timeout: 5,
-                memorySize: 128,
-                code: new pulumi.asset.AssetArchive({
-                    ".": new pulumi.asset.FileArchive("./tenantRouter")
-                })
-            },
-            { provider: awsUsEast1 }
-        );
+        const tenantRouter = new WebsiteTenantRouter("tenant-router", { apiFolder: "api-ddb" });
 
         this.cloudfront = new aws.cloudfront.Distribution("delivery", {
             enabled: true,
@@ -110,7 +71,7 @@ class Delivery {
                     {
                         eventType: "origin-request",
                         includeBody: false,
-                        lambdaArn: pulumi.interpolate`${requestRouter.qualifiedArn}`
+                        lambdaArn: pulumi.interpolate`${tenantRouter.originRequest.qualifiedArn}`
                     }
                 ],
                 viewerProtocolPolicy: "redirect-to-https",
