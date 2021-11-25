@@ -23,6 +23,7 @@ resource-types:
     - CloudWatchLogsLogGroup
     - LambdaFunction
     - CloudFrontDistribution
+    - CloudFrontDistributionDeployment
     - IAMPolicy
     - IAMRole
     - IAMRolePolicy

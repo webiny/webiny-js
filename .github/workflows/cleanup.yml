@@ -1,13 +1,9 @@
 # Destroys any cloud infrastructure that was deployed for the purpose of E2E testing.
 name: Cloud infrastructure Cleanup
 
-#on:
-#  schedule:
-#    - cron: "0 2 * * *" # Every day at 2AM.
-
 on:
-  push:
-    branches: [next]
+  schedule:
+    - cron: "0 2 * * *" # Every day at 2AM.
 
 jobs:
   aws-nuke:
@@ -17,16 +13,14 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
     container:
       image: rebuy/aws-nuke
+      options: --user root -v ${{ github.workspace }}:/workspace
     steps:
-      - name: pwd
-        run: pwd
-
-      - name: Download AWS Nuke Config
-        run: curl https://raw.githubusercontent.com/webiny/webiny-js/next/.github/workflows/cleanup/aws-nuke.yml > ./aws-nuke.config.yml
+      - uses: actions/checkout@v2
 
       - name: Run AWS Nuke
         run: >
-          aws-nuke -c aws-nuke-config.yml
+          aws-nuke
+          --config ./.github/workflows/cleanup/aws-nuke.yml
           --no-dry-run
           --force
           --force-sleep 3
