@@ -26,5 +26,12 @@
     "@webiny/handler-http": "^5.17.0",
     "@webiny/handler-logs": "^5.17.0",
     "@webiny/project-utils": "^5.17.0"
+  },
+  "adio": {
+    "ignore": {
+      "src": [
+        "@webiny/cli-plugin-deploy-pulumi"
+      ]
+    }
   }
 }

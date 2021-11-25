@@ -9,9 +9,7 @@
     "@webiny/api-prerendering-service": "^5.17.0",
     "@webiny/api-prerendering-service-so-ddb": "^5.17.0",
     "@webiny/cli": "^5.17.0",
-    "@webiny/db-dynamodb": "^5.17.0",
     "@webiny/handler-aws": "^5.17.0",
-    "@webiny/handler-db": "^5.17.0",
     "@webiny/project-utils": "^5.17.0"
   }
 }

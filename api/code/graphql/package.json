@@ -43,5 +43,12 @@
   },
   "devDependencies": {
     "@webiny/cli-plugin-deploy-pulumi": "^5.17.0"
+  },
+  "adio": {
+    "ignore": {
+      "src": [
+        "@webiny/api-tenant-manager"
+      ]
+    }
   }
 }
