@@ -66,7 +66,10 @@ export const Domains = (props: DomainsProps) => {
                 <>
                     {row(({ index }) => (
                         <Fieldset>
-                            <Bind validators={fqdnValidator} name={`settings.domains.${index}.fqdn`}>
+                            <Bind
+                                validators={fqdnValidator}
+                                name={`settings.domains.${index}.fqdn`}
+                            >
                                 <Input
                                     label={props.inputLabel}
                                     description={
@@ -88,9 +91,9 @@ export const Domains = (props: DomainsProps) => {
                                 </ButtonDefault>
                             </Header>
                             <Typography use={"body1"}>
-                                To make your tenants accessible via custom domains, you must define
-                                them here. Webiny will use these entries to route requests to the
-                                corresponding tenant&apos;s website.
+                                To make your tenant accessible via custom domains, you must define
+                                them here. Webiny will use these entries to route the incoming
+                                requests.
                             </Typography>
                         </Fragment>
                     ))}

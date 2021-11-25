@@ -5,7 +5,7 @@ import { useRouter } from "@webiny/react-router";
 import { useQuery, useMutation } from "@apollo/react-hooks";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { useConfirmationDialog } from "@webiny/app-admin/hooks/useConfirmationDialog";
-import { LIST_TENANTS, DELETE_TENANT } from "./graphql";
+import { LIST_TENANTS, DELETE_TENANT } from "~/graphql";
 import { useCurrentTenantId } from "./useCurrentTenantId";
 
 const t = i18n.ns("app-tenant-manager/tenants/data-list");
