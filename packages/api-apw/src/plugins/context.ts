@@ -239,25 +239,23 @@ const createApwModelGroup = () =>
         /**
          * Create a CmsGroup.
          */
-        context.plugins.register(
-            new CmsGroupPlugin({
-                id: groupId,
-                slug: "apw",
-                name: "APW",
-                description: "Group for Advanced Publishing Workflow"
-            })
-        );
-        const group = await context.cms.getGroup(groupId);
+        const cmsGroupPlugin = new CmsGroupPlugin({
+            id: groupId,
+            slug: "apw",
+            name: "APW",
+            description: "Group for Advanced Publishing Workflow"
+        });
+
         /**
          * Create a CmsModel that represents "WorkFlow".
          */
-        context.plugins.register(
-            createContentModelPlugin({
-                group,
-                tenant: context.tenancy.getCurrentTenant().id,
-                locale: context.i18nContent.getLocale().code
-            })
-        );
+        const cmsModelPlugin = createContentModelPlugin({
+            group: cmsGroupPlugin.contentModelGroup,
+            tenant: context.tenancy.getCurrentTenant().id,
+            locale: context.i18nContent.getLocale().code
+        });
+        // Register them so that they are accessible in cms context
+        context.plugins.register(cmsModelPlugin, cmsGroupPlugin);
 
         context.security.enableAuthorization();
     });
