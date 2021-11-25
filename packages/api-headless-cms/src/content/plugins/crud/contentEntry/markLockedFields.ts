@@ -2,13 +2,16 @@ import WebinyError from "@webiny/error";
 import { CmsEntry, CmsModel, CmsContext, CmsModelLockedFieldPlugin } from "~/types";
 import { CmsModelPlugin } from "~/content/plugins/CmsModelPlugin";
 
-interface Args {
+export interface MarkLockedFieldsParams {
     model: CmsModel;
     entry: CmsEntry;
     context: CmsContext;
 }
-export const markLockedFields = async ({ model, context }: Args): Promise<void> => {
-    // If the model is registered via a plugin, we don't need do process anything.
+export const markLockedFields = async (params: MarkLockedFieldsParams): Promise<void> => {
+    const { model, context } = params;
+    /**
+     * If the model is registered via a plugin, we don't need do process anything.
+     */
     const plugins = context.plugins.byType<CmsModelPlugin>(CmsModelPlugin.type);
     if (plugins.find(plugin => plugin.contentModel.modelId === model.modelId)) {
         return;
@@ -67,6 +70,38 @@ export const markLockedFields = async ({ model, context }: Args): Promise<void> 
         throw new WebinyError(
             `Could not update model "${model.modelId}" with new locked fields.`,
             "MODEL_LOCKED_FIELDS_UPDATE_FAILED",
+            ex
+        );
+    }
+};
+
+export interface MarkFieldsUnlockedParams {
+    context: CmsContext;
+    model: CmsModel;
+}
+export const markUnlockedFields = async (params: MarkFieldsUnlockedParams) => {
+    const { context, model } = params;
+    /**
+     * If the model is registered via a plugin, we don't need do process anything.
+     */
+    const plugins = context.plugins.byType<CmsModelPlugin>(CmsModelPlugin.type);
+    if (plugins.find(plugin => plugin.contentModel.modelId === model.modelId)) {
+        return;
+    }
+
+    try {
+        await context.cms.updateModelDirect({
+            original: model,
+            model: {
+                ...model,
+                lockedFields: []
+            }
+        });
+        model.lockedFields = [];
+    } catch (ex) {
+        throw new WebinyError(
+            `Could not update model "${model.modelId}" with unlocked fields.`,
+            "MODEL_UNLOCKED_FIELDS_UPDATE_FAILED",
             ex
         );
     }

@@ -29,7 +29,7 @@
     "invariant": "^2.2.4"
   },
   "scripts": {
-    "watch": "cross-env PORT=3001 yarn webiny run watch",
+    "watch": "yarn webiny run watch",
     "build": "yarn webiny run build"
   },
   "browserslist": {

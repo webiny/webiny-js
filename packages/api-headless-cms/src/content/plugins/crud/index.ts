@@ -6,9 +6,12 @@ import { createContentEntryCrud } from "~/content/plugins/crud/contentEntry.crud
 import { createSystemCrud } from "~/plugins/crud/system.crud";
 import { createSettingsCrud } from "~/plugins/crud/settings.crud";
 
+const debug = process.env.DEBUG === "true";
+
 export interface Params {
     storageOperations: HeadlessCmsStorageOperations;
 }
+
 export const createContentCruds = (params: Params) => {
     const { storageOperations } = params;
     return new ContextPlugin<CmsContext>(async context => {
@@ -17,9 +20,10 @@ export const createContentCruds = (params: Params) => {
          * It is to make sure that we load setup context before the CRUD init in our internal code.
          */
         if (!context.cms) {
-            console.log(
-                `Missing initial "cms" on the context. Make sure that you set it up before creating Content CRUDs.`
-            );
+            debug &&
+                console.log(
+                    `Missing initial "cms" on the context. Make sure that you set it up before creating Content CRUDs.`
+                );
             return;
         }
         const getLocale = () => {
@@ -40,6 +44,7 @@ export const createContentCruds = (params: Params) => {
 
         context.cms = {
             ...context.cms,
+            storageOperations,
             ...createSystemCrud({
                 context,
                 getTenant,

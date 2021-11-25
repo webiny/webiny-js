@@ -1,5 +1,6 @@
 const { red } = require("chalk");
 const execa = require("execa");
+const semver = require("semver");
 
 module.exports = [
     {
@@ -15,6 +16,16 @@ module.exports = [
                         describe: "Do not perform CLI version and Git tree checks.",
                         type: "boolean",
                         default: false
+                    });
+                    yargs.option("debug", {
+                        default: false,
+                        describe: `Turn on debug logs`,
+                        type: "boolean"
+                    });
+                    yargs.option("use-version", {
+                        describe:
+                            "Use upgrade script for a specific version. Should only be used for development/testing purposes.",
+                        type: "string"
                     });
                 },
                 async argv => {
@@ -45,20 +56,50 @@ module.exports = [
                         }
                     }
 
-                    const { canUpgrade, upgrade } = require("./upgrades/upgrade");
-                    if (typeof canUpgrade === "function" && !argv.skipChecks) {
-                        try {
-                            const canPerformUpgrade = await canUpgrade(argv, context);
-                            if (canPerformUpgrade === false) {
-                                throw new Error();
-                            }
-                        } catch (ex) {
-                            const msg = ex.message || "unknown";
-                            throw new Error(`Upgrade failed. Reason: ${msg}`);
-                        }
+                    const defaultUpgradeTargetVersion = semver.coerce(context.version).version;
+
+                    const command = [
+                        "https://github.com/webiny/webiny-upgrades",
+                        argv.useVersion || defaultUpgradeTargetVersion
+                    ];
+
+                    if (yargs.argv.debug) {
+                        context.debug("npx", ...command);
                     }
 
-                    await upgrade(argv, context);
+                    const npx = execa("npx", command, {
+                        env: {
+                            FORCE_COLOR: true
+                        }
+                    });
+
+                    npx.stdout.on("data", data => {
+                        const lines = data.toString().replace(/\n$/, "").split("\n");
+                        for (let i = 0; i < lines.length; i++) {
+                            const line = lines[i];
+                            try {
+                                const json = JSON.parse(line);
+                                if (json.type === "error") {
+                                    context.error(
+                                        "An error occurred while performing the upgrade."
+                                    );
+                                    console.log(json.message);
+                                    if (yargs.argv.debug) {
+                                        context.debug(json.data.stack);
+                                    }
+                                }
+                            } catch {
+                                // Not JSON, let's just print the line then.
+                                console.log(line);
+                            }
+                        }
+                    });
+
+                    npx.stderr.on("data", data => {
+                        console.log(data.toString());
+                    });
+
+                    await npx;
                 }
             );
         }

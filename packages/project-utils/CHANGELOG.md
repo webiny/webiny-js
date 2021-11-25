@@ -3,6 +3,159 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.18.1](https://github.com/webiny/webiny-js/compare/v5.18.1-beta.0...v5.18.1) (2021-11-25)
+
+**Note:** Version bump only for package @webiny/project-utils
+
+
+
+
+
+## [5.18.1-beta.0](https://github.com/webiny/webiny-js/compare/v5.18.0...v5.18.1-beta.0) (2021-11-25)
+
+**Note:** Version bump only for package @webiny/project-utils
+
+
+
+
+
+# [5.18.0](https://github.com/webiny/webiny-js/compare/v5.18.0-beta.4...v5.18.0) (2021-11-24)
+
+**Note:** Version bump only for package @webiny/project-utils
+
+
+
+
+
+# [5.18.0-beta.4](https://github.com/webiny/webiny-js/compare/v5.18.0-beta.3...v5.18.0-beta.4) (2021-11-23)
+
+**Note:** Version bump only for package @webiny/project-utils
+
+
+
+
+
+# [5.18.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.18.0-beta.2...v5.18.0-beta.3) (2021-11-22)
+
+**Note:** Version bump only for package @webiny/project-utils
+
+
+
+
+
+# [5.18.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.18.0-beta.1...v5.18.0-beta.2) (2021-11-21)
+
+**Note:** Version bump only for package @webiny/project-utils
+
+
+
+
+
+# [5.18.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.18.0-beta.0...v5.18.0-beta.1) (2021-11-19)
+
+**Note:** Version bump only for package @webiny/project-utils
+
+
+
+
+
+# [5.18.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.17.4...v5.18.0-beta.0) (2021-11-19)
+
+
+### Bug Fixes
+
+* add missing `WEBINY_MULTI_TENANCY` env variable ([355402b](https://github.com/webiny/webiny-js/commit/355402b7931fb084ad24df4925a4ac38594e7bd2))
+* add missing cwd [no ci] ([4cc4984](https://github.com/webiny/webiny-js/commit/4cc49844fd8fef1f43e44d6cba962e58635147f1))
+* change the order of execution ([80c6f8d](https://github.com/webiny/webiny-js/commit/80c6f8d4650d40d78ae47cbefbafdce9ee2b203d))
+* copy non-compiled files ([292fa78](https://github.com/webiny/webiny-js/commit/292fa782cee8f16e93ffef4f4ecfecb6b4022e09))
+* correct construction of dist file paths [no ci] ([f6e4310](https://github.com/webiny/webiny-js/commit/f6e43109ad0a3f1c04a8f54f52f95af1edff6f8f))
+* correct import statement [no ci] ([e83798c](https://github.com/webiny/webiny-js/commit/e83798cdc5cc3e1439571f1e3e75e175bebf613f))
+* correct path to `node_modules` (use `cwd`) ([f8621d3](https://github.com/webiny/webiny-js/commit/f8621d3e7e2bf273dd2d1c4b577b6da41df72e2a))
+* do not use execa to initiate watch ([16a653e](https://github.com/webiny/webiny-js/commit/16a653e6929cc4caff3696871fdf80eff491c6d5))
+* optimize build / watch scripts ([8777d00](https://github.com/webiny/webiny-js/commit/8777d00f45660df5ea190fbee0353a04bbfbd0d1))
+* pass CWD to `getCurrentDirectory` ([81be430](https://github.com/webiny/webiny-js/commit/81be4308d29b35de474b0200014613de13e67b05))
+* pass overrides via `overrides` property ([e8f4ba2](https://github.com/webiny/webiny-js/commit/e8f4ba2e82de46e9871c700e03840a66a15c32ca))
+* remove redundant if statement ([99f0f22](https://github.com/webiny/webiny-js/commit/99f0f22346e95b2c4813c159be678faecebc339d))
+* rename property ([40ebb36](https://github.com/webiny/webiny-js/commit/40ebb3613735bb7155ec03a28782cd0853cbdca4))
+* take js/jsx files into consideration too ([acbe793](https://github.com/webiny/webiny-js/commit/acbe7933abf18233dfcc9d3b236144cdf0f897ae))
+* update build/watch commands ([5ac1cf5](https://github.com/webiny/webiny-js/commit/5ac1cf5bc8bfec5258aedd4cf79e3947bd76f125))
+* update dependencies ([65045de](https://github.com/webiny/webiny-js/commit/65045dee10013c9da55d82ef12de4d08e285f045))
+* update dependencies ([3f04222](https://github.com/webiny/webiny-js/commit/3f0422274bdb3cb3d92be8f4603d808c1ea86570))
+* update import statement ([93085ba](https://github.com/webiny/webiny-js/commit/93085bad03bd09edc3af2f91163d90ec4a254b81))
+* update types ([e746875](https://github.com/webiny/webiny-js/commit/e746875fd22dc119ff9411460eedea1bb1e78f4b))
+* use new prepared options object instead of config ([442cff7](https://github.com/webiny/webiny-js/commit/442cff73aac2913792ba3d8837a90711e83abc00))
+* use TS/Babel programmatically ([e3e1b61](https://github.com/webiny/webiny-js/commit/e3e1b61ba1f832826313b3e0420c02dd26c94457))
+
+
+### Features
+
+* add "tsConfigOverrides" option ([372ddb3](https://github.com/webiny/webiny-js/commit/372ddb308dd33c5c63777efba0303e3432a7435e))
+* turn off logging by default ([7195ee0](https://github.com/webiny/webiny-js/commit/7195ee08719a5893ec4cc320e62d32678ef054f6))
+* turn on logging by default ([923c02b](https://github.com/webiny/webiny-js/commit/923c02bf2ad0d14dd1e0b7a80e815459453876d6))
+
+
+
+
+
+## [5.17.4](https://github.com/webiny/webiny-js/compare/v5.17.4-beta.1...v5.17.4) (2021-11-19)
+
+**Note:** Version bump only for package @webiny/project-utils
+
+
+
+
+
+## [5.17.4-beta.1](https://github.com/webiny/webiny-js/compare/v5.17.4-beta.0...v5.17.4-beta.1) (2021-11-19)
+
+**Note:** Version bump only for package @webiny/project-utils
+
+
+
+
+
+## [5.17.4-beta.0](https://github.com/webiny/webiny-js/compare/v5.17.3...v5.17.4-beta.0) (2021-11-19)
+
+**Note:** Version bump only for package @webiny/project-utils
+
+
+
+
+
+## [5.17.3](https://github.com/webiny/webiny-js/compare/v5.17.3-beta.0...v5.17.3) (2021-11-15)
+
+**Note:** Version bump only for package @webiny/project-utils
+
+
+
+
+
+## [5.17.3-beta.0](https://github.com/webiny/webiny-js/compare/v5.17.2...v5.17.3-beta.0) (2021-11-12)
+
+**Note:** Version bump only for package @webiny/project-utils
+
+
+
+
+
+## [5.17.2](https://github.com/webiny/webiny-js/compare/v5.17.2-beta.0...v5.17.2) (2021-11-11)
+
+**Note:** Version bump only for package @webiny/project-utils
+
+
+
+
+
+## [5.17.2-beta.0](https://github.com/webiny/webiny-js/compare/v5.17.1...v5.17.2-beta.0) (2021-11-11)
+
+
+### Bug Fixes
+
+* force same version on all packages ([9cbae8b](https://github.com/webiny/webiny-js/commit/9cbae8b050900546eb17932c23a609593211c1c8))
+
+
+
+
+
 # [5.17.0](https://github.com/webiny/webiny-js/compare/v5.17.0-beta.2...v5.17.0) (2021-11-08)
 
 **Note:** Version bump only for package @webiny/project-utils

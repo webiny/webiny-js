@@ -1,6 +1,6 @@
 import invariant from "invariant";
-import { createWatchApp, createBuildApp } from "@webiny/project-utils";
 import { getStackOutput } from "@webiny/cli-plugin-deploy-pulumi/utils";
+import { createWatchApp, createBuildApp } from "@webiny/project-utils";
 
 const API_MAP = {
     REACT_APP_USER_POOL_REGION: "${region}",
@@ -25,6 +25,9 @@ export default {
             invariant(output, NO_API_MESSAGE(options.env));
 
             Object.assign(process.env, output);
+
+            // Starts the local development server at port 3001.
+            Object.assign(process.env, { PORT: 3001 });
 
             const watch = createWatchApp({ cwd: __dirname });
             await watch(options);

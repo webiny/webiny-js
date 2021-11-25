@@ -16,6 +16,7 @@ import { deleteFile } from "@webiny/api-page-builder/graphql/crud/install/utils/
 import { PageImportExportTaskStatus } from "~/types";
 import { PbPageImportExportContext } from "~/graphql/types";
 import { s3Stream } from "~/exportPages/s3Stream";
+import { ExportedPageData } from "~/exportPages/utils";
 
 const streamPipeline = promisify(pipeline);
 
@@ -28,6 +29,41 @@ interface UpdateFilesInPageDataParams {
     data: Record<string, any>;
     fileIdToKeyMap: Map<string, string>;
     srcPrefix: string;
+}
+
+interface UpdateImageInPageSettingsParams {
+    fileIdToKeyMap: Map<string, string>;
+    srcPrefix: string;
+    settings: ExportedPageData["page"]["settings"];
+}
+
+function updateImageInPageSettings({
+    settings,
+    fileIdToKeyMap,
+    srcPrefix
+}: UpdateImageInPageSettingsParams): UpdateImageInPageSettingsParams["settings"] {
+    let newSettings = settings;
+
+    const srcPrefixWithoutTrailingSlash = srcPrefix.endsWith("/")
+        ? srcPrefix.slice(0, -1)
+        : srcPrefix;
+
+    if (dotProp.get(newSettings, "general.image.src")) {
+        newSettings = dotProp.set(
+            newSettings,
+            "general.image.src",
+            `${srcPrefixWithoutTrailingSlash}/${fileIdToKeyMap.get(settings.general.image.id)}`
+        );
+    }
+    if (dotProp.get(newSettings, "social.image.src")) {
+        newSettings = dotProp.set(
+            newSettings,
+            "social.image.src",
+            `${srcPrefixWithoutTrailingSlash}/${fileIdToKeyMap.get(settings.social.image.id)}`
+        );
+    }
+
+    return settings;
 }
 
 function updateFilesInPageData({ data, fileIdToKeyMap, srcPrefix }: UpdateFilesInPageDataParams) {
@@ -158,7 +194,7 @@ export async function importPage({
     pageKey,
     context,
     fileUploadsData
-}: ImportPageParams): Promise<Record<string, any>> {
+}: ImportPageParams): Promise<ExportedPageData["page"]> {
     const log = console.log;
 
     // Making Directory for page in which we're going to extract the page data file.
@@ -181,7 +217,7 @@ export async function importPage({
 
     // Load the page data file from disk.
     log(`Load file ${pageDataFileKey}`);
-    const { page, files } = await loadJson<Record<string, any>>(PAGE_DATA_FILE_PATH);
+    const { page, files } = await loadJson<ExportedPageData>(PAGE_DATA_FILE_PATH);
 
     // Only update page data if there are files.
     if (Array.isArray(files) && files.length) {
@@ -194,6 +230,12 @@ export async function importPage({
 
         const { srcPrefix } = await context.fileManager.settings.getSettings();
         updateFilesInPageData({ data: page.content, fileIdToKeyMap, srcPrefix });
+
+        page.settings = updateImageInPageSettings({
+            settings: page.settings,
+            fileIdToKeyMap,
+            srcPrefix
+        });
     }
 
     log("Removing Directory for page...");

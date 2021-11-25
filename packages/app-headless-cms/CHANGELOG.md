@@ -3,6 +3,147 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.18.1](https://github.com/webiny/webiny-js/compare/v5.18.1-beta.0...v5.18.1) (2021-11-25)
+
+**Note:** Version bump only for package @webiny/app-headless-cms
+
+
+
+
+
+## [5.18.1-beta.0](https://github.com/webiny/webiny-js/compare/v5.18.0...v5.18.1-beta.0) (2021-11-25)
+
+**Note:** Version bump only for package @webiny/app-headless-cms
+
+
+
+
+
+# [5.18.0](https://github.com/webiny/webiny-js/compare/v5.18.0-beta.4...v5.18.0) (2021-11-24)
+
+**Note:** Version bump only for package @webiny/app-headless-cms
+
+
+
+
+
+# [5.18.0-beta.4](https://github.com/webiny/webiny-js/compare/v5.18.0-beta.3...v5.18.0-beta.4) (2021-11-23)
+
+**Note:** Version bump only for package @webiny/app-headless-cms
+
+
+
+
+
+# [5.18.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.18.0-beta.2...v5.18.0-beta.3) (2021-11-22)
+
+**Note:** Version bump only for package @webiny/app-headless-cms
+
+
+
+
+
+# [5.18.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.18.0-beta.1...v5.18.0-beta.2) (2021-11-21)
+
+**Note:** Version bump only for package @webiny/app-headless-cms
+
+
+
+
+
+# [5.18.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.18.0-beta.0...v5.18.0-beta.1) (2021-11-19)
+
+**Note:** Version bump only for package @webiny/app-headless-cms
+
+
+
+
+
+# [5.18.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.17.4...v5.18.0-beta.0) (2021-11-19)
+
+
+### Bug Fixes
+
+* **api-headless-cms:** model id checks ([#2033](https://github.com/webiny/webiny-js/issues/2033)) ([298dfcb](https://github.com/webiny/webiny-js/commit/298dfcbffb64ba5222a313250ca12f7f120b54a4))
+* **app-headless-cms:** add missing TS types ([98e0e5b](https://github.com/webiny/webiny-js/commit/98e0e5bf5546cfaa14514c53b8c7d9fa2ca8a55a))
+* update build/watch commands ([ab0fd80](https://github.com/webiny/webiny-js/commit/ab0fd80192fa76db0848533df130849adac32607))
+
+
+### Features
+
+* tsconfig improvements ([#2018](https://github.com/webiny/webiny-js/issues/2018)) ([d4ce776](https://github.com/webiny/webiny-js/commit/d4ce7767a5981ba3473fcd923d3603102ce4be8d))
+
+
+
+
+
+## [5.17.4](https://github.com/webiny/webiny-js/compare/v5.17.4-beta.1...v5.17.4) (2021-11-19)
+
+**Note:** Version bump only for package @webiny/app-headless-cms
+
+
+
+
+
+## [5.17.4-beta.1](https://github.com/webiny/webiny-js/compare/v5.17.4-beta.0...v5.17.4-beta.1) (2021-11-19)
+
+**Note:** Version bump only for package @webiny/app-headless-cms
+
+
+
+
+
+## [5.17.4-beta.0](https://github.com/webiny/webiny-js/compare/v5.17.3...v5.17.4-beta.0) (2021-11-19)
+
+**Note:** Version bump only for package @webiny/app-headless-cms
+
+
+
+
+
+## [5.17.3](https://github.com/webiny/webiny-js/compare/v5.17.3-beta.0...v5.17.3) (2021-11-15)
+
+**Note:** Version bump only for package @webiny/app-headless-cms
+
+
+
+
+
+## [5.17.3-beta.0](https://github.com/webiny/webiny-js/compare/v5.17.2...v5.17.3-beta.0) (2021-11-12)
+
+**Note:** Version bump only for package @webiny/app-headless-cms
+
+
+
+
+
+## [5.17.2](https://github.com/webiny/webiny-js/compare/v5.17.2-beta.0...v5.17.2) (2021-11-11)
+
+**Note:** Version bump only for package @webiny/app-headless-cms
+
+
+
+
+
+## [5.17.2-beta.0](https://github.com/webiny/webiny-js/compare/v5.17.1...v5.17.2-beta.0) (2021-11-11)
+
+**Note:** Version bump only for package @webiny/app-headless-cms
+
+
+
+
+
+## [5.17.1](https://github.com/webiny/webiny-js/compare/v5.17.0...v5.17.1) (2021-11-11)
+
+
+### Bug Fixes
+
+* **app-headless-cms:** add missing TS types ([f5b0ef2](https://github.com/webiny/webiny-js/commit/f5b0ef2573c387cc5f31001ed458e1e152fcf663))
+
+
+
+
+
 # [5.17.0](https://github.com/webiny/webiny-js/compare/v5.17.0-beta.2...v5.17.0) (2021-11-08)
 
 **Note:** Version bump only for package @webiny/app-headless-cms

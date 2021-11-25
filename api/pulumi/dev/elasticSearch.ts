@@ -48,6 +48,11 @@ class ElasticSearch {
                                 AWS: currentCallerIdentity.accountId
                             },
                             Action: "es:*",
+                            /**
+                             * Error that started with new pulumi version.
+                             * TODO: remove ts-ignore when its fixed
+                             */
+                            // @ts-ignore
                             Resource: this.domain.arn.apply(v => `${v}/*`)
                         }
                         /**

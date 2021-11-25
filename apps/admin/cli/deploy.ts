@@ -51,7 +51,7 @@ export default {
             }
         });
 
-        const duration = (new Date().getTime() - start) / 1000 + "s";
+        const duration = (new Date().getTime() - start) / 1000;
 
         context.success(
             `React application successfully uploaded in ${context.success.hl(duration)}s.`

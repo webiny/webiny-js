@@ -1,0 +1,28 @@
+# Destroys any cloud infrastructure that was deployed for the purpose of E2E testing.
+name: Cloud infrastructure Cleanup
+
+on:
+  schedule:
+    - cron: "0 2 * * *" # Every day at 2AM.
+
+jobs:
+  aws-nuke:
+    runs-on: ubuntu-latest
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    container:
+      image: rebuy/aws-nuke
+      options: --user root -v ${{ github.workspace }}:/workspace
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Run AWS Nuke
+        run: >
+          aws-nuke
+          --config ./.github/workflows/cleanup/aws-nuke.yml
+          --no-dry-run
+          --force
+          --force-sleep 3
+          --access-key-id ${{ env.AWS_ACCESS_KEY_ID }}
+          --secret-access-key ${{ env.AWS_SECRET_ACCESS_KEY }}
