@@ -15551,7 +15551,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"codex-tooltip@npm:^1.0.2":
+"codex-tooltip@npm:1.0.2":
   version: 1.0.2
   resolution: "codex-tooltip@npm:1.0.2"
   checksum: 8627bd1a4912406aebbd0ab2fb6725238eb0c8ce957786c1cf6dfdea8003a80519197a0235922e1afea08c55b75ea0036dffd1b6445a77049238bda0d52fe00f
