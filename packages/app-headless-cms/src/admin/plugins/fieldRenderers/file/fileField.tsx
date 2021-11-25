@@ -29,14 +29,16 @@ const plugin: CmsEditorFieldRendererPlugin = {
                         <Bind>
                             {bind => {
                                 const { value, onChange } = bind;
+
                                 return (
                                     <FileManager multiple={false} images={imagesOnly}>
                                         {({ showFileManager }) => {
                                             const selectFile = () => {
                                                 showFileManager(newFile => {
-                                                    if (newFile !== null) {
-                                                        onChange(newFile.src);
+                                                    if (newFile === null) {
+                                                        return;
                                                     }
+                                                    onChange(newFile.src);
                                                 });
                                             };
                                             return (

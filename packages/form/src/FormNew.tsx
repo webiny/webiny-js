@@ -95,7 +95,18 @@ export const Form = React.forwardRef((props: FormProps, ref) => {
             ): Promise<any> => {
                 return new Promise(resolve => {
                     afterChange.current[name] = true;
-                    setState(state => set(`data.${name}`, value, state));
+                    setState(state => {
+                        const next = set(
+                            `validation.${name}`,
+                            {
+                                isValid: undefined,
+                                message: undefined,
+                                results: false
+                            },
+                            state
+                        );
+                        return set(`data.${name}`, value, next);
+                    });
                     if (typeof inlineCallback === "function") {
                         inlineCallback(value);
                     }
