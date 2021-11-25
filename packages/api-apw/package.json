@@ -28,7 +28,8 @@
     "@webiny/handler": "^5.17.0",
     "@webiny/handler-aws": "^5.17.0",
     "@webiny/handler-graphql": "^5.17.0",
-    "@webiny/plugins": "^5.17.0"
+    "@webiny/plugins": "^5.17.0",
+    "@webiny/api-page-builder": "^5.18.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",
