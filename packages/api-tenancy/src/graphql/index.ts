@@ -13,7 +13,7 @@ export default new GraphQLSchemaPlugin<TenancyContext>({
             parent: ID
             settings: TenantSettings!
         }
-        
+
         type TenantDomain {
             fqdn: String!
         }
