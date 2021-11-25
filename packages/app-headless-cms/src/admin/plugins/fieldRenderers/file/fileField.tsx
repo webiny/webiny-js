@@ -21,33 +21,38 @@ const plugin: CmsEditorFieldRendererPlugin = {
         render({ field, getBind, Label }) {
             const Bind = getBind();
 
+            const imagesOnly = field.settings && field.settings.imagesOnly;
             return (
                 <Grid>
                     <Cell span={12}>
                         <Label>{field.label}</Label>
                         <Bind>
-                            {({ value, onChange }) => (
-                                <FileManager multiple={false}>
-                                    {({ showFileManager }) => {
-                                        const selectFile = () => {
-                                            showFileManager(newFile => {
-                                                if (newFile !== null) {
-                                                    onChange(newFile.src);
-                                                }
-                                            });
-                                        };
-
-                                        return (
-                                            <File
-                                                url={value}
-                                                onRemove={() => onChange(null)}
-                                                showFileManager={selectFile}
-                                                placeholder={t`Select a file"`}
-                                            />
-                                        );
-                                    }}
-                                </FileManager>
-                            )}
+                            {bind => {
+                                const { value, onChange } = bind;
+                                return (
+                                    <FileManager multiple={false} images={imagesOnly}>
+                                        {({ showFileManager }) => {
+                                            const selectFile = () => {
+                                                showFileManager(newFile => {
+                                                    if (newFile !== null) {
+                                                        onChange(newFile.src);
+                                                    }
+                                                });
+                                            };
+                                            return (
+                                                <File
+                                                    {...bind}
+                                                    url={value}
+                                                    onRemove={() => onChange(null)}
+                                                    showFileManager={selectFile}
+                                                    placeholder={field.placeholderText}
+                                                    description={field.helpText}
+                                                />
+                                            );
+                                        }}
+                                    </FileManager>
+                                );
+                            }}
                         </Bind>
                         {field.helpText && (
                             <FormElementMessage>{field.helpText}</FormElementMessage>

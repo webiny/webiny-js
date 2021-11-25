@@ -83,9 +83,11 @@ class FileManagerPortal extends React.Component<FileManagerPortalProps> {
             props.accept = [
                 "image/jpg",
                 "image/jpeg",
+                "image/tiff",
                 "image/gif",
                 "image/png",
                 "image/webp",
+                "image/bmp",
                 "image/svg+xml"
             ];
         }

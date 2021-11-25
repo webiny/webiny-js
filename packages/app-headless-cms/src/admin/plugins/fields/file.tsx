@@ -34,7 +34,10 @@ const plugin: CmsEditorFieldTypePlugin = {
                 <Grid>
                     <Cell span={12}>
                         <Bind name={"settings.imagesOnly"}>
-                            <Radio label={t`Images only`} description={t`Show only images`} />
+                            <Radio
+                                label={t`Images only`}
+                                description={t`Allow only images to be selected`}
+                            />
                         </Bind>
                     </Cell>
                 </Grid>
