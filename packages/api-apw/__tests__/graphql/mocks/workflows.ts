@@ -30,5 +30,20 @@ export default () => ({
         scope: {
             type: "default"
         }
-    }
+    },
+    createWorkflow: params => ({
+        app: "pageBuilder",
+        title: "Main workflow",
+        steps: [
+            {
+                title: "Legal Review",
+                type: "mandatory_blocking",
+                reviewers: [{ id: "123" }]
+            }
+        ],
+        scope: {
+            type: "default"
+        },
+        ...params
+    })
 });

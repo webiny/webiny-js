@@ -144,4 +144,56 @@ describe("Workflow crud test", () => {
             }
         });
     });
+
+    it("should list workflows", async () => {
+        const workflows = [];
+        // Create five workflows
+        for (let i = 0; i < 5; i++) {
+            const [createWorkflowResponse] = await createWorkflowMutation({
+                data: MOCKS.createWorkflow({ app: i % 2 === 0 ? "pageBuilder" : "cms" })
+            });
+
+            workflows.push(
+                createWorkflowResponse.data.advancedPublishingWorkflow.createWorkflow.data
+            );
+        }
+
+        // Should have five workflows
+        const [listWorkflowsResponse] = await listWorkflowsQuery({});
+        expect(listWorkflowsResponse).toEqual({
+            data: {
+                advancedPublishingWorkflow: {
+                    listWorkflows: {
+                        data: [...workflows.reverse()],
+                        meta: {
+                            hasMoreItems: false,
+                            cursor: null,
+                            totalCount: 5
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+
+        // Should only return workflows for "pageBuilder" app
+        const [listPBWorkflowsResponse] = await listWorkflowsQuery({
+            where: { app: "pageBuilder" }
+        });
+        expect(listPBWorkflowsResponse).toEqual({
+            data: {
+                advancedPublishingWorkflow: {
+                    listWorkflows: {
+                        data: [workflows[0], workflows[2], workflows[4]],
+                        meta: {
+                            hasMoreItems: false,
+                            cursor: null,
+                            totalCount: 3
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+    });
 });
