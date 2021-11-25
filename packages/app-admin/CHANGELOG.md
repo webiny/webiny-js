@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.18.1-beta.0](https://github.com/webiny/webiny-js/compare/v5.18.0...v5.18.1-beta.0) (2021-11-25)
+
+**Note:** Version bump only for package @webiny/app-admin
+
+
+
+
+
 # [5.18.0](https://github.com/webiny/webiny-js/compare/v5.18.0-beta.4...v5.18.0) (2021-11-24)
 
 **Note:** Version bump only for package @webiny/app-admin
