@@ -2,6 +2,7 @@ import { CmsModelPlugin } from "@webiny/api-headless-cms/content/plugins/CmsMode
 import { CmsGroup, CmsGroupPlugin } from "@webiny/api-headless-cms/content/plugins/CmsGroupPlugin";
 import { CmsContext } from "@webiny/api-headless-cms/types";
 import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
+import { PageDynamoDbAttributePlugin } from "~/plugins/definitions/PageDynamoDbAttributePlugin";
 
 interface Params {
     group: CmsGroup;
@@ -259,5 +260,17 @@ const createApwModelGroup = () =>
 
         context.security.enableAuthorization();
     });
+/**
+ * This is DynamoDB only entity attribute.
+ * TODO: Think on how to implement this generally, agnostic to the storage operation types.
+ */
+const createWorkflowFieldPlugin = () => {
+    return new PageDynamoDbAttributePlugin({
+        attribute: "workflow",
+        params: {
+            type: "string"
+        }
+    });
+};
 
-export default () => [createApwModelGroup()];
+export default () => [createWorkflowFieldPlugin(), createApwModelGroup()];
