@@ -6,11 +6,11 @@
     "watch": "yarn webiny run watch"
   },
   "dependencies": {
-    "@webiny/api-dynamodb-to-elasticsearch": "^5.18.0",
-    "@webiny/api-elasticsearch": "^5.18.0",
-    "@webiny/cli": "^5.18.0",
-    "@webiny/handler-aws": "^5.18.0",
-    "@webiny/handler-logs": "^5.18.0",
-    "@webiny/project-utils": "^5.18.0"
+    "@webiny/api-dynamodb-to-elasticsearch": "^5.18.1",
+    "@webiny/api-elasticsearch": "^5.18.1",
+    "@webiny/cli": "^5.18.1",
+    "@webiny/handler-aws": "^5.18.1",
+    "@webiny/handler-logs": "^5.18.1",
+    "@webiny/project-utils": "^5.18.1"
   }
 }
