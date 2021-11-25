@@ -32,7 +32,6 @@
     "access": "public",
     "directory": "."
   },
-  "scripts": {},
   "adio": {
     "ignoreDirs": [
       "/create/template/",
