@@ -1,8 +1,6 @@
 {
   "extends": "../../tsconfig.build.json",
-  "include": [
-    "src"
-  ],
+  "include": ["src"],
   "exclude": [
     "node_modules",
     "../handler",
@@ -13,6 +11,9 @@
     "../api-i18n-content",
     "../api-i18n-ddb",
     "../api-tenancy",
+    "../api-security-so-ddb",
+    "../api-tenancy-so-ddb",
+    "../db-dynamodb",
     "../handler-aws",
     "../plugins",
     "../api-page-builder"
@@ -43,13 +44,19 @@
       "path": "../api-tenancy/tsconfig.build.json"
     },
     {
+      "path": "../api-tenancy-so-ddb/tsconfig.build.json"
+    },
+    {
+      "path": "../api-security-so-ddb/tsconfig.build.json"
+    },
+    {
       "path": "../handler-aws/tsconfig.build.json"
     },
     {
       "path": "../plugins/tsconfig.build.json"
     },
     {
-      "path": "../api-page-builder/tsconfig.build.json"
+      "path": "../db-dynamodb/tsconfig.build.json"
     }
   ],
   "compilerOptions": {
@@ -57,9 +64,7 @@
     "outDir": "./dist",
     "declarationDir": "./dist",
     "paths": {
-      "~/*": [
-        "./src/*"
-      ]
+      "~/*": ["./src/*"]
     },
     "baseUrl": "."
   }

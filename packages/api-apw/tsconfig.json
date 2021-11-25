@@ -1,9 +1,6 @@
 {
   "extends": "../../tsconfig.json",
-  "include": [
-    "src",
-    "__tests__/**/*.ts"
-  ],
+  "include": ["src", "__tests__/**/*.ts"],
   "references": [
     {
       "path": "../api-headless-cms"
@@ -30,44 +27,39 @@
       "path": "../api-tenancy"
     },
     {
+      "path": "../api-tenancy-so-ddb"
+    },
+    {
+      "path": "../api-security-so-ddb"
+    },
+    {
       "path": "../handler-aws"
     },
     {
       "path": "../plugins"
     },
     {
-      "path": "../api-page-builder"
+      "path": "../db-dynamodb"
     }
   ],
   "compilerOptions": {
-    "rootDirs": [
-      "./src",
-      "./__tests__"
-    ],
+    "rootDirs": ["./src", "./__tests__"],
     "outDir": "./dist",
     "declarationDir": "./dist",
     "paths": {
-      "~/*": [
-        "./src/*"
-      ],
-      "@webiny/api-headless-cms/*": [
-        "../api-headless-cms/src/*"
-      ],
-      "@webiny/api-headless-cms": [
-        "../api-headless-cms/src"
-      ],
-      "@webiny/handler/*": [
-        "../handler/src/*"
-      ],
-      "@webiny/handler": [
-        "../handler/src"
-      ],
-      "@webiny/handler-graphql/*": [
-        "../handler-graphql/src/*"
-      ],
-      "@webiny/handler-graphql": [
-        "../handler-graphql/src"
-      ]
+      "~/*": ["./src/*"],
+      "@webiny/api-headless-cms/*": ["../api-headless-cms/src/*"],
+      "@webiny/api-headless-cms": ["../api-headless-cms/src"],
+      "@webiny/handler/*": ["../handler/src/*"],
+      "@webiny/handler": ["../handler/src"],
+      "@webiny/api-tenancy-so-ddb/*": ["../api-tenancy-so-ddb/src/*"],
+      "@webiny/api-tenancy-so-ddb": ["../api-tenancy-so-ddb/src"],
+      "@webiny/api-security-so-ddb/*": ["../api-security-so-ddb/src/*"],
+      "@webiny/api-security-so-ddb": ["../api-security-so-ddb/src"],
+      "@webiny/db-dynamodb/*": ["../db-dynamodb/src/*"],
+      "@webiny/db-dynamodb": ["../db-dynamodb/src"],
+      "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
+      "@webiny/handler-graphql": ["../handler-graphql/src"]
     },
     "baseUrl": "."
   }
