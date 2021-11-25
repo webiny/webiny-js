@@ -19,7 +19,7 @@ import FileDetails from "./FileDetails";
 import LeftSidebar from "./LeftSidebar";
 import BottomInfoBar from "./BottomInfoBar";
 import { OverlayLayout } from "../OverlayLayout";
-import { useSnackbar } from "../../hooks/useSnackbar";
+import { useSnackbar } from "~/hooks/useSnackbar";
 import { Scrollbar } from "@webiny/ui/Scrollbar";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { i18n } from "@webiny/app/i18n";
