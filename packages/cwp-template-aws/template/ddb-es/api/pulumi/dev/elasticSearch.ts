@@ -61,8 +61,7 @@ class ElasticSearch {
                                     AWS: currentCallerIdentity.accountId
                                 },
                                 Action: "es:*",
-                                // @ts-ignore
-                                Resource: this.domain.arn.apply(v => `${v}/*`)
+                                Resource: pulumi.interpolate`${this.domain.arn}/*`
                             }
                             /**
                              * Uncomment the following `Allow` policy to allow access from specific IP address.
@@ -77,7 +76,7 @@ class ElasticSearch {
                             //     Effect: "Allow",
                             //     Principal: "*",
                             //     Action: "es:*",
-                            //     Resource: this.domain.arn.apply(v => `${v}/*`),
+                            //     Resource: pulumi.interpolate`${this.domain.arn}/*`,
                             //     Condition: {
                             //         IpAddress: {
                             //             "aws:SourceIp": "213.149.51.28/32"

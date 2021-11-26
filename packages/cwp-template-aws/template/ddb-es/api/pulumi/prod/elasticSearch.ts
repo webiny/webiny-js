@@ -64,7 +64,7 @@ class ElasticSearch {
                                     AWS: currentCallerIdentity.accountId
                                 },
                                 Action: "es:*",
-                                Resource: this.domain.arn.apply(v => `${v}/*`)
+                                Resource: pulumi.interpolate`${this.domain.arn}/*`
                             }
                         ]
                     })
