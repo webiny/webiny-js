@@ -17,7 +17,7 @@ jobs:
       jest-packages: ${{ steps.list-jest-packages.outputs.jest-packages }}
       day: ${{ steps.get-day.outputs.day }}
       ts: ${{ steps.get-timestamp.outputs.ts }}
-      experimental-version: ${{ steps.get-timestamp.outputs.experimental-version }}
+      experimental-version: ${{ steps.get-experimental-version.outputs.experimental-version }}
     steps:
       - uses: actions/setup-node@v2
         with:
