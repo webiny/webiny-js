@@ -3,7 +3,7 @@ interface CreateWorkflowParams {
     app?: "pageBuilder" | "cms";
     scope?: {
         type: string;
-        options?: Record<string, any>;
+        data?: Record<string, any>;
     };
 }
 

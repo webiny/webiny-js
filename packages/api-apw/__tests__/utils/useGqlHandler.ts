@@ -26,7 +26,7 @@ import { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
 import pageBuilderPlugins from "@webiny/api-page-builder/graphql";
 import pageBuilderDynamoDbPlugins from "@webiny/api-page-builder-so-ddb";
 import { CREATE_CATEGORY } from "./graphql/categories";
-import { CREATE_PAGE } from "./graphql/pages";
+import { CREATE_PAGE, GET_PAGE } from "./graphql/pages";
 
 export interface CreateHeadlessCmsAppParams {
     storageOperations: HeadlessCmsStorageOperations;
@@ -188,6 +188,9 @@ export const useGqlHandler = (params: GQLHandlerCallableParams) => {
         // Pages.
         async createPage(variables) {
             return invoke({ body: { query: CREATE_PAGE, variables } });
+        },
+        async getPageQuery(variables) {
+            return invoke({ body: { query: GET_PAGE, variables } });
         }
     };
 };

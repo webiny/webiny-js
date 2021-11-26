@@ -8,10 +8,16 @@ describe("Workflow crud test", () => {
         path: "manage/en-US"
     };
 
-    const { createWorkflowMutation, listWorkflowsQuery, createCategory, createPage, until } =
-        useContentGqlHandler({
-            ...options
-        });
+    const {
+        createWorkflowMutation,
+        listWorkflowsQuery,
+        createCategory,
+        createPage,
+        getPageQuery,
+        until
+    } = useContentGqlHandler({
+        ...options
+    });
 
     const setupCategory = async () => {
         const [createCategoryResponse] = await createCategory({
@@ -149,5 +155,76 @@ describe("Workflow crud test", () => {
         );
 
         expect(createPageResponse.data.pageBuilder.createPage.data.workflow).toEqual(null);
+    });
+
+    test("Page should have the workflow assigned even when the workflow is created after page", async () => {
+        const category = await setupCategory();
+
+        /**
+         * Create a page even before a workflow is created.
+         */
+        const [createPageResponse] = await createPage({ category: category.slug });
+        const page = createPageResponse.data.pageBuilder.createPage.data;
+        expect(page.category.slug).toEqual(category.slug);
+        expect(page.workflow).toEqual(null);
+
+        /*
+         Create a workflow.
+        */
+        const [createWorkflowResponse] = await createWorkflowMutation({
+            data: MOCKS.createWorkflow({
+                title: `Main review workflow`,
+                app: "pageBuilder",
+                scope: {
+                    type: "specific",
+                    data: {
+                        values: [page.pid]
+                    }
+                }
+            })
+        });
+
+        const workflow = createWorkflowResponse.data.advancedPublishingWorkflow.createWorkflow.data;
+
+        await until(
+            () => listWorkflowsQuery({}).then(([data]) => data),
+            listWorkflowsResponse =>
+                listWorkflowsResponse.data.advancedPublishingWorkflow.listWorkflows.data.length ===
+                1
+        );
+        /**
+         * Now page should have this workflow assigned to it.
+         */
+        const [getPageResponse] = await getPageQuery({ id: page.id });
+        expect(getPageResponse.data.pageBuilder.getPage.data.workflow).toBe(workflow.id);
+
+        /**
+         * Let's try creating one more workflow with same scope.
+         */
+        /*
+         Create a workflow.
+        */
+        const [createAnotherWorkflowResponse] = await createWorkflowMutation({
+            data: MOCKS.createWorkflow({
+                title: `Main review workflow - 2`,
+                app: "pageBuilder",
+                scope: {
+                    type: "specific",
+                    data: {
+                        values: [page.pid, page.pid + "999999"]
+                    }
+                }
+            })
+        });
+        const anotherWorkflowWithSameScope =
+            createAnotherWorkflowResponse.data.advancedPublishingWorkflow.createWorkflow.data;
+
+        /**
+         * Now page should have new newly created workflow assigned to it.
+         */
+        const [getPageResponseAgain] = await getPageQuery({ id: page.id });
+        expect(getPageResponseAgain.data.pageBuilder.getPage.data.workflow).toBe(
+            anotherWorkflowWithSameScope.id
+        );
     });
 });
