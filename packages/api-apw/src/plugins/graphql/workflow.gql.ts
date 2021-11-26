@@ -60,7 +60,7 @@ const workflowSchema = new GraphQLSchemaPlugin<CmsContext>({
 
         type ApwWorkflowScope {
             type: String
-            options: JSON
+            data: JSON
         }
 
         type ApwWorkflow {
@@ -128,8 +128,7 @@ const workflowSchema = new GraphQLSchemaPlugin<CmsContext>({
 
         input ApwWorkflowScopeInput {
             type: String
-            options: JSON
-            # More fields will come later on.
+            data: JSON
         }
 
         input ApwCreateWorkflowInput {

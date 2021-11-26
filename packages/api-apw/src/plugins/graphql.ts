@@ -1,5 +1,6 @@
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins";
-import workflow from "./graphql/workflow";
+import workflowSchema from "./graphql/workflow.gql";
+import contentReviewSchema from "./graphql/contentReview.gql";
 
 const emptyResolver = () => ({});
 
@@ -22,4 +23,4 @@ const baseSchema = new GraphQLSchemaPlugin({
     }
 });
 
-export default () => [baseSchema, workflow];
+export default () => [baseSchema, workflowSchema, contentReviewSchema];
