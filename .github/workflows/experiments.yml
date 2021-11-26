@@ -39,7 +39,12 @@ jobs:
 
       - name: Experimental Version
         id: get-experimental-version
-        run: echo "::set-output name=experimental-version::$(node --eval '"${{ github.event.head_commit.message }}".match(/release=/) && console.log("${{ github.event.head_commit.message }}".match(/release=(.*)?]/)[1])')"
+        run: echo "::set-output name=experimental-version::$(node --eval '"${{ github.event.head_commit.message }}".match(/release=/) && console.log("0.0.0-" + "${{ github.event.head_commit.message }}".match(/release=(.*)?]/)[1])')"
+
+      - name: Experimental Version
+        if: ${{ steps.get-experimental-version.outputs.experimental-version }}
+        id: get-experimental-version
+        run: echo "The experimental ${{ steps.get-experimental-version.outputs.experimental-version }} version of Webiny will be released."
 
   build:
     name: Build
@@ -171,7 +176,7 @@ jobs:
 
   npm-release-experimental:
     needs: [init, code-analysis, jest-tests, code-analysis-typescript]
-    name: Release 0.0.0-${{ needs.init.outputs.experimental-version }}
+    name: Release ${{ needs.init.outputs.experimental-version }}
     runs-on: ubuntu-latest
     if: needs.init.outputs.experimental-version
     env:
@@ -213,7 +218,7 @@ jobs:
         run: git config --global user.name "webiny-bot"
 
       - name: Create a release (not pushing)
-        run: yarn lerna:version:experimental 0.0.0-${{ needs.init.outputs.experimental-version }}
+        run: yarn lerna:version:experimental ${{ needs.init.outputs.experimental-version }}
 
 #      - name: Release packages to NPM
 #        run: yarn lerna:publish:experimental
