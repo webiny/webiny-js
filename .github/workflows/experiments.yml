@@ -37,11 +37,11 @@ jobs:
         id: list-jest-packages
         run: echo "::set-output name=jest-packages::$(node scripts/listPackagesWithTests.js)"
 
-      - name: Experimental Version
+      - name: Experimental version
         id: get-experimental-version
         run: echo "::set-output name=experimental-version::$(node --eval '"${{ github.event.head_commit.message }}".match(/release=/) && console.log("0.0.0-" + "${{ github.event.head_commit.message }}".match(/release=(.*)?]/)[1])')"
 
-      - name: Experimental Version
+      - name: Experimental version release
         if: ${{ steps.get-experimental-version.outputs.experimental-version }}
         id: is-experimental-version
         run: echo "The experimental ${{ steps.get-experimental-version.outputs.experimental-version }} version of Webiny will be released."
