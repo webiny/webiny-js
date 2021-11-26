@@ -177,7 +177,6 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: 12
-
         - name: Release Version
           run: node --eval '"${{ github.event.head_commit.message }}".match(/release=/) && console.log("${{ github.event.head_commit.message }}".match(/release=(.*)?]/))'
 
