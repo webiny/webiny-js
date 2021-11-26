@@ -1,6 +1,8 @@
 {
   "extends": "../../tsconfig.build.json",
-  "include": ["src"],
+  "include": [
+    "src"
+  ],
   "exclude": [
     "node_modules",
     "../handler",
@@ -16,7 +18,8 @@
     "../db-dynamodb",
     "../handler-aws",
     "../plugins",
-    "../api-page-builder"
+    "../api-page-builder",
+    "../api-page-builder-so-ddb"
   ],
   "references": [
     {
@@ -57,6 +60,12 @@
     },
     {
       "path": "../db-dynamodb/tsconfig.build.json"
+    },
+    {
+      "path": "../api-page-builder-so-ddb/tsconfig.build.json"
+    },
+    {
+      "path": "../api-page-builder/tsconfig.build.json"
     }
   ],
   "compilerOptions": {
@@ -64,7 +73,9 @@
     "outDir": "./dist",
     "declarationDir": "./dist",
     "paths": {
-      "~/*": ["./src/*"]
+      "~/*": [
+        "./src/*"
+      ]
     },
     "baseUrl": "."
   }
