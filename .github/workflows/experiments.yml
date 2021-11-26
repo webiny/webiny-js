@@ -36,6 +36,10 @@ jobs:
         id: list-jest-packages
         run: echo "::set-output name=jest-packages::$(node scripts/listPackagesWithTests.js)"
 
+      - name: Experimental Version
+        id: experimental-version
+        run: echo "::set-output name=experimental-version::$(node --eval '"${{ github.event.head_commit.message }}".match(/release=/) && console.log("${{ github.event.head_commit.message }}".match(/release=(.*)?]/)[1])')"
+
   build:
     name: Build
     needs: init
@@ -168,7 +172,7 @@ jobs:
     needs: init
     name: NPM release ("experimental" tag)
     runs-on: ubuntu-latest
-    if: "contains(github.event.head_commit.message, 'release=')"
+    if: needs.init.outputs.experimental-version
     env:
       GH_TOKEN: ${{ secrets.GH_TOKEN }}
       NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
@@ -178,12 +182,8 @@ jobs:
         with:
           node-version: 12
 
-      - name: Experimental Version
-        id: experimental-version
-        run: node --eval '"${{ github.event.head_commit.message }}".match(/release=/) && console.log("${{ github.event.head_commit.message }}".match(/release=(.*)?]/)[1])'
-
       - name: Output Test
-        run: echo ${{steps.experimental-version}}
+        run: echo ${{needs.init.outputs.experimental-version}}
 
 #      - uses: actions/checkout@v2
 #        with:
