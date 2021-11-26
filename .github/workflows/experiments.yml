@@ -43,7 +43,7 @@ jobs:
 
       - name: Experimental Version
         if: ${{ steps.get-experimental-version.outputs.experimental-version }}
-        id: get-experimental-version
+        id: is-experimental-version
         run: echo "The experimental ${{ steps.get-experimental-version.outputs.experimental-version }} version of Webiny will be released."
 
   build:
