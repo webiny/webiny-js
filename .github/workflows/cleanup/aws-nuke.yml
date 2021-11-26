@@ -28,3 +28,4 @@ resource-types:
     - IAMRole
     - IAMRolePolicy
     - IAMRolePolicyAttachment
+    - DynamoDBTable
