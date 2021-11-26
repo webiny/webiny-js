@@ -8,9 +8,9 @@ export interface UpdateInput {
     [key: string]: any;
 }
 
-export interface CreateParams {
+export interface CreateParams<TPage> {
     context: PbContext;
-    page: Page;
+    page: TPage;
 }
 
 export interface BeforeUpdateParams<TPage> {
@@ -53,8 +53,8 @@ export interface NotFoundParams {
 }
 
 interface Config<TPage extends Page = Page> {
-    beforeCreate?: CallbackFunction<CreateParams>;
-    afterCreate?: CallbackFunction<CreateParams>;
+    beforeCreate?: CallbackFunction<CreateParams<TPage>>;
+    afterCreate?: CallbackFunction<CreateParams<TPage>>;
     beforeUpdate?: CallbackFunction<BeforeUpdateParams<TPage>>;
     afterUpdate?: CallbackFunction<AfterUpdateParams<TPage>>;
     beforeDelete?: CallbackFunction<DeleteParams<TPage>>;
@@ -75,11 +75,11 @@ export class PagePlugin<TPage extends Page = Page> extends Plugin {
         this._config = config || {};
     }
 
-    beforeCreate(params: CreateParams): void | Promise<void> {
+    beforeCreate(params: CreateParams<TPage>): void | Promise<void> {
         return this._execute("beforeCreate", params);
     }
 
-    afterCreate(params: CreateParams): void | Promise<void> {
+    afterCreate(params: CreateParams<TPage>): void | Promise<void> {
         return this._execute("afterCreate", params);
     }
 
