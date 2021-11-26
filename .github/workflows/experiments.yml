@@ -219,5 +219,5 @@ jobs:
       - name: Create a release (not pushing)
         run: yarn lerna:version:experimental ${{ needs.init.outputs.experimental-version }}
 
-#      - name: Release packages to NPM
-#        run: yarn lerna:publish:experimental
+      - name: Release packages to NPM
+        run: yarn lerna:publish:experimental
