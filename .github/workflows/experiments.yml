@@ -178,8 +178,12 @@ jobs:
         with:
           node-version: 12
 
-      - name: Release Version
+      - name: Experimental Version
+        id: experimental-version
         run: node --eval '"${{ github.event.head_commit.message }}".match(/release=/) && console.log("${{ github.event.head_commit.message }}".match(/release=(.*)?]/))'
+
+      - name: Output Test
+        run: echo ${{steps.experimental-version}}
 
 #      - uses: actions/checkout@v2
 #        with:
