@@ -10,6 +10,7 @@ const getDataFields = (fields = "") => `{
     title
     scope {
         type
+        data
     }
     steps {
         title

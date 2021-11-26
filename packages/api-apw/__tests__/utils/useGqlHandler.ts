@@ -15,7 +15,7 @@ import {
     UPDATE_WORKFLOW_MUTATION
 } from "./graphql/workflow";
 import { Plugin, PluginCollection } from "@webiny/plugins/types";
-import { createApwContext, createApwGraphQL } from "~/index";
+import { createApwContext, createApwGraphQL, createApwHooks } from "~/index";
 /**
  * Unfortunately at we need to import the api-i18n-ddb package manually
  */
@@ -23,6 +23,10 @@ import i18nDynamoDbStorageOperations from "@webiny/api-i18n-ddb";
 import { createTenancyAndSecurity } from "./tenancySecurity";
 import { getStorageOperations } from "./storageOperations";
 import { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
+import pageBuilderPlugins from "@webiny/api-page-builder/graphql";
+import pageBuilderDynamoDbPlugins from "@webiny/api-page-builder-so-ddb";
+import { CREATE_CATEGORY } from "./graphql/categories";
+import { CREATE_PAGE } from "./graphql/pages";
 
 export interface CreateHeadlessCmsAppParams {
     storageOperations: HeadlessCmsStorageOperations;
@@ -37,6 +41,10 @@ export interface GQLHandlerCallableParams {
     path: string;
     createHeadlessCmsApp: (params: CreateHeadlessCmsAppParams) => any[];
 }
+
+// const elasticsearchClient = createElasticsearchClient({
+//     endpoint: `https://${process.env.ELASTIC_SEARCH_ENDPOINT}`
+// });
 
 export const useGqlHandler = (params: GQLHandlerCallableParams) => {
     const ops = getStorageOperations({
@@ -66,7 +74,7 @@ export const useGqlHandler = (params: GQLHandlerCallableParams) => {
             ...ops.plugins,
             ...createTenancyAndSecurity({
                 setupGraphQL: setupTenancyAndSecurityGraphQL,
-                permissions: createPermissions(permissions),
+                permissions: [...createPermissions(permissions), { name: "pb.*" }],
                 identity
             }),
             {
@@ -124,9 +132,12 @@ export const useGqlHandler = (params: GQLHandlerCallableParams) => {
             i18nDynamoDbStorageOperations(),
             i18nContentPlugins(),
             mockLocalesPlugins(),
+            pageBuilderPlugins(),
+            pageBuilderDynamoDbPlugins(),
             ...headlessCmsApp,
             createApwContext(),
             createApwGraphQL(),
+            createApwHooks(),
             plugins
         ],
         http: { debug: true }
@@ -169,6 +180,14 @@ export const useGqlHandler = (params: GQLHandlerCallableParams) => {
         },
         async deleteWorkflowMutation(variables: Record<string, any>) {
             return invoke({ body: { query: DELETE_WORKFLOW_MUTATION, variables } });
+        },
+        // Categories.
+        async createCategory(variables) {
+            return invoke({ body: { query: CREATE_CATEGORY, variables } });
+        },
+        // Pages.
+        async createPage(variables) {
+            return invoke({ body: { query: CREATE_PAGE, variables } });
         }
     };
 };

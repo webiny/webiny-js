@@ -1,3 +1,12 @@
+interface CreateWorkflowParams {
+    title?: string;
+    app?: "pageBuilder" | "cms";
+    scope?: {
+        type: string;
+        options?: Record<string, any>;
+    };
+}
+
 export default () => ({
     workflow1: {
         app: "pageBuilder",
@@ -10,7 +19,8 @@ export default () => ({
             }
         ],
         scope: {
-            type: "default"
+            type: "default",
+            data: null
         }
     },
     updatedWorkflow1: {
@@ -28,10 +38,11 @@ export default () => ({
             }
         ],
         scope: {
-            type: "default"
+            type: "default",
+            data: null
         }
     },
-    createWorkflow: params => ({
+    createWorkflow: (params: CreateWorkflowParams) => ({
         app: "pageBuilder",
         title: "Main workflow",
         steps: [
@@ -45,5 +56,51 @@ export default () => ({
             type: "default"
         },
         ...params
-    })
+    }),
+    scopes: [
+        {
+            type: "default"
+        },
+        {
+            type: "default"
+        },
+        {
+            type: "pb_category"
+        },
+        {
+            type: "cms_model"
+        },
+        {
+            type: "specific"
+        }
+    ],
+    getPageBuilderScope: (pageId: string, pageCategory?: string) => [
+        {
+            type: "pb_category",
+            data: {
+                values: ["dynamic", pageCategory]
+            }
+        },
+        {
+            type: "default"
+        },
+        {
+            type: "specific",
+            data: {
+                values: ["page#1", "page#2", "page#3", pageId]
+            }
+        },
+        {
+            type: "pb_category",
+            data: {
+                values: ["random", pageCategory]
+            }
+        },
+        {
+            type: "specific",
+            data: {
+                values: ["page#1", "page#2", "page#3", pageId]
+            }
+        }
+    ]
 });
