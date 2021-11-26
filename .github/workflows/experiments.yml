@@ -181,7 +181,6 @@ jobs:
         - name: Release Version
           run: node --eval '"${{ github.event.head_commit.message }}".match(/release=/) && console.log("${{ github.event.head_commit.message }}".match(/release=(.*)?]/))'
 
-
 #      - uses: actions/checkout@v2
 #        with:
 #          fetch-depth: 0
