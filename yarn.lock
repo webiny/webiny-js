@@ -8643,11 +8643,14 @@ __metadata:
     "@webiny/api-i18n": ^5.17.0
     "@webiny/api-i18n-content": ^5.17.0
     "@webiny/api-i18n-ddb": ^5.17.0
+    "@webiny/api-page-builder": ^5.18.0
+    "@webiny/api-page-builder-so-ddb": ^5.18.0
     "@webiny/api-security": ^5.17.0
     "@webiny/api-security-so-ddb": ^5.17.0
     "@webiny/api-tenancy": ^5.17.0
     "@webiny/api-tenancy-so-ddb": ^5.17.0
     "@webiny/cli": ^5.17.0
+    "@webiny/db-dynamodb": ^5.17.0
     "@webiny/handler": ^5.17.0
     "@webiny/handler-aws": ^5.17.0
     "@webiny/handler-graphql": ^5.17.0
@@ -8657,6 +8660,7 @@ __metadata:
     get-yarn-workspaces: ^1.0.2
     graphql: ^14.6.0
     jest: ^26.6.3
+    lodash: ^4.5.0
     mdbid: ^1.0.0
     prettier: ^2.3.2
     rimraf: ^3.0.2
@@ -9383,7 +9387,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-page-builder-so-ddb@workspace:packages/api-page-builder-so-ddb":
+"@webiny/api-page-builder-so-ddb@^5.18.0, @webiny/api-page-builder-so-ddb@workspace:packages/api-page-builder-so-ddb":
   version: 0.0.0-use.local
   resolution: "@webiny/api-page-builder-so-ddb@workspace:packages/api-page-builder-so-ddb"
   dependencies:
@@ -10932,7 +10936,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/db-dynamodb@^5.18.0, @webiny/db-dynamodb@workspace:packages/db-dynamodb":
+"@webiny/db-dynamodb@^5.17.0, @webiny/db-dynamodb@^5.18.0, @webiny/db-dynamodb@workspace:packages/db-dynamodb":
   version: 0.0.0-use.local
   resolution: "@webiny/db-dynamodb@workspace:packages/db-dynamodb"
   dependencies:
