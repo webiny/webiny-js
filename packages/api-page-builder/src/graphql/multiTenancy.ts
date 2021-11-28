@@ -11,9 +11,18 @@ function updateStorageFolder(item: PsRenderArgs, tenant: Tenant) {
         return;
     }
 
-    item.configuration.storage.folder = `${tenant.id}/${item.path}`;
+    const existingFolder = item.configuration.storage.folder;
+
+    const parts = [tenant.id, existingFolder || item.path].map(p =>
+        p.replace(/^\/+/g, "").replace(/\/$/g, "")
+    );
+
+    item.configuration.storage.folder = parts.join("/");
 }
 
+/**
+ * This plugin ensures that Prerendering Service stores files in a dedicated folder for each tenant.
+ */
 export default () => {
     return new ContextPlugin<Context>(context => {
         if (!context.tenancy.isMultiTenant()) {
