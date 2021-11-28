@@ -18,23 +18,21 @@ exports.handler = async event => {
     // Find tenant by domain
     const params = {
         TableName: DB_TABLE_NAME,
-        IndexName: "GSI1",
-        KeyConditionExpression: "GSI1_PK = :GSI1_PK AND GSI1_SK = :GSI1_SK",
-        ExpressionAttributeValues: { ":GSI1_PK": `DOMAIN#${requestedDomain}`, ":GSI1_SK": "A" },
-        Limit: 1
+        Key: {
+            PK: `DOMAIN#${requestedDomain}`,
+            SK: "A"
+        }
     };
 
-    const { Items, Count } = await documentClient.query(params).promise();
+    const { Item } = await documentClient.get(params).promise();
 
-    if (Count === 1) {
-        const { tenant } = Items[0];
+    if (Item) {
         const from = request.uri;
-        request.uri = `/${tenant}${from}`;
+        request.uri = `/${Item.tenant}${from}`;
         console.log(`Rewriting request from "${from}" to "${request.uri}"`);
     } else {
         console.log(`Failed to find a tenant for domain "${requestedDomain}"`);
     }
-
     // Restore the Host header
     request.headers.host[0].value = originDomain;
 

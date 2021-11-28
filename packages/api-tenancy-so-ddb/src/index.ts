@@ -64,10 +64,10 @@ export const createStorageOperations: CreateTenancyStorageOperations = params =>
 
                 // Add a new domain.
                 return {
-                    PK: `T#${tenant.id}`,
-                    SK: `DOMAIN#${fqdn}`,
-                    GSI1_PK: `DOMAIN#${fqdn}`,
-                    GSI1_SK: `A`,
+                    PK: `DOMAIN#${fqdn}`,
+                    SK: `A`,
+                    GSI1_PK: `DOMAINS`,
+                    GSI1_SK: `T#${tenant.id}#${fqdn}`,
                     tenant: tenant.id,
                     fqdn,
                     webinyVersion: tenant.webinyVersion
@@ -193,12 +193,12 @@ export const createStorageOperations: CreateTenancyStorageOperations = params =>
 
             const items: any[] = [entities.tenants.putBatch({ ...keys, ...data })];
 
-            // Create a separate record for each domain
             const existingDomains = await queryAll<TenantDomain>({
                 entity: entities.domains,
-                partitionKey: tenantPK,
+                partitionKey: "DOMAINS",
                 options: {
-                    beginsWith: "DOMAIN#"
+                    index: "GSI1",
+                    beginsWith: `T#${data.id}`
                 }
             });
 
@@ -209,8 +209,8 @@ export const createStorageOperations: CreateTenancyStorageOperations = params =>
             for (const { fqdn } of existingDomains) {
                 if (!data.settings.domains.find(d => d.fqdn === fqdn)) {
                     deleteDomains.push({
-                        PK: tenantPK,
-                        SK: `DOMAIN#${fqdn}`
+                        PK: `DOMAIN#${fqdn}`,
+                        SK: `A`
                     });
                 }
             }
