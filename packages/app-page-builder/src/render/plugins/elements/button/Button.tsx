@@ -20,7 +20,8 @@ const Button = ({ element }: { element: PbElement }) => {
     // element object, if it exists otherwise, we'll use the newer "action" element object
     let href: string, newTab: boolean;
 
-    if (link && !action) {
+    // If `link.href` is truthy, assume we're using link, not action.
+    if (link && link.href) {
         href = link?.href;
         newTab = link?.newTab;
     } else {
