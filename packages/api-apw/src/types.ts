@@ -10,3 +10,9 @@ export enum WorkflowScopeTypes {
     CMS_MODEL = "cms_model",
     SPECIFIC = "specific"
 }
+
+export enum ContentReviewStepStatus {
+    DONE = "done",
+    ACTIVE = "active",
+    INACTIVE = "inactive"
+}
