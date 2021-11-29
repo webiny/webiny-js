@@ -1,6 +1,6 @@
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
-import { WebsiteTenantRouter } from "./tenantRouter/WebsiteTenantRouter";
+import { WebsiteTenantRouter } from "@webiny/pulumi-aws";
 
 class Delivery {
     bucket: aws.s3.Bucket;
@@ -15,7 +15,9 @@ class Delivery {
             }
         });
 
-        const tenantRouter = new WebsiteTenantRouter("tenant-router", { apiFolder: "api-ddb" });
+        const tenantRouter = new WebsiteTenantRouter("website-tenant-router", {
+            apiFolder: "api-ddb"
+        });
 
         this.cloudfront = new aws.cloudfront.Distribution("delivery", {
             enabled: true,

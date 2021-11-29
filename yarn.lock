@@ -11331,6 +11331,17 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@webiny/pulumi-aws@workspace:packages/pulumi-aws":
+  version: 0.0.0-use.local
+  resolution: "@webiny/pulumi-aws@workspace:packages/pulumi-aws"
+  dependencies:
+    "@pulumi/aws": ^4.10.0
+    "@pulumi/pulumi": < 3.18.0
+    "@types/node": ^10.0.0
+    "@webiny/cli-plugin-deploy-pulumi": ^5.18.1
+  languageName: unknown
+  linkType: soft
+
 "@webiny/pulumi-sdk@^5.18.1, @webiny/pulumi-sdk@workspace:packages/pulumi-sdk":
   version: 0.0.0-use.local
   resolution: "@webiny/pulumi-sdk@workspace:packages/pulumi-sdk"
