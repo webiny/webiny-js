@@ -27,6 +27,13 @@ import pageBuilderPlugins from "@webiny/api-page-builder/graphql";
 import pageBuilderDynamoDbPlugins from "@webiny/api-page-builder-so-ddb";
 import { CREATE_CATEGORY } from "./graphql/categories";
 import { CREATE_PAGE, GET_PAGE } from "./graphql/pages";
+import {
+    CREATE_CONTENT_REVIEW_MUTATION,
+    DELETE_CONTENT_REVIEW_MUTATION,
+    GET_CONTENT_REVIEW_QUERY,
+    LIST_CONTENT_REVIEWS_QUERY,
+    UPDATE_CONTENT_REVIEW_MUTATION
+} from "./graphql/contentReview";
 
 export interface CreateHeadlessCmsAppParams {
     storageOperations: HeadlessCmsStorageOperations;
@@ -165,7 +172,7 @@ export const useGqlHandler = (params: GQLHandlerCallableParams) => {
         async introspect() {
             return invoke({ body: { query: introspectionQuery } });
         },
-        // workflow
+        // Workflow
         async getWorkflowQuery(variables: Record<string, any>) {
             return invoke({ body: { query: GET_WORKFLOW_QUERY, variables } });
         },
@@ -181,16 +188,32 @@ export const useGqlHandler = (params: GQLHandlerCallableParams) => {
         async deleteWorkflowMutation(variables: Record<string, any>) {
             return invoke({ body: { query: DELETE_WORKFLOW_MUTATION, variables } });
         },
-        // Categories.
+        // Categories
         async createCategory(variables) {
             return invoke({ body: { query: CREATE_CATEGORY, variables } });
         },
-        // Pages.
+        // Pages
         async createPage(variables) {
             return invoke({ body: { query: CREATE_PAGE, variables } });
         },
         async getPageQuery(variables) {
             return invoke({ body: { query: GET_PAGE, variables } });
+        },
+        // Content Review
+        async getContentReviewQuery(variables: Record<string, any>) {
+            return invoke({ body: { query: GET_CONTENT_REVIEW_QUERY, variables } });
+        },
+        async listContentReviewsQuery(variables: Record<string, any>) {
+            return invoke({ body: { query: LIST_CONTENT_REVIEWS_QUERY, variables } });
+        },
+        async createContentReviewMutation(variables: Record<string, any>) {
+            return invoke({ body: { query: CREATE_CONTENT_REVIEW_MUTATION, variables } });
+        },
+        async updateContentReviewMutation(variables: Record<string, any>) {
+            return invoke({ body: { query: UPDATE_CONTENT_REVIEW_MUTATION, variables } });
+        },
+        async deleteContentReviewMutation(variables: Record<string, any>) {
+            return invoke({ body: { query: DELETE_CONTENT_REVIEW_MUTATION, variables } });
         }
     };
 };
