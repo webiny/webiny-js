@@ -5,6 +5,7 @@ import { getStackOutput } from "@webiny/cli-plugin-deploy-pulumi/utils";
 
 interface Config {
     apiFolder?: string;
+    apiEnv?: string;
 }
 
 interface Params {
@@ -32,32 +33,33 @@ export class WebsiteTenantRouter extends pulumi.ComponentResource {
 
         const { region, dynamoDbTable } = getStackOutput({
             folder: config.apiFolder || "api",
-            env: String(process.env.WEBINY_ENV)
+            env: config.apiEnv || String(process.env.WEBINY_ENV)
         });
 
-        const callerIdentity = pulumi.output(aws.getCallerIdentity({}));
-
-        const tenantRouterPolicy = new aws.iam.Policy(`${name}-policy`, {
-            name: `${name}-policy`,
-            policy: {
-                Version: "2012-10-17",
-                Statement: [
-                    {
-                        Sid: "PermissionForDynamodb",
-                        Effect: "Allow",
-                        Action: ["dynamodb:GetItem"],
-                        Resource: [
-                            pulumi.interpolate`arn:aws:dynamodb:${region}:${callerIdentity.accountId}:table/${dynamoDbTable}`,
-                            pulumi.interpolate`arn:aws:dynamodb:${region}:${callerIdentity.accountId}:table/${dynamoDbTable}/*`
-                        ]
-                    }
-                ]
+        const inlinePolicies = Promise.all([aws.getCallerIdentity({})]).then(([callerIdentity]) => [
+            {
+                name: "dynamodb-policy",
+                policy: JSON.stringify({
+                    Version: "2012-10-17",
+                    Statement: [
+                        {
+                            Sid: "PermissionForDynamodb",
+                            Effect: "Allow",
+                            Action: ["dynamodb:GetItem"],
+                            Resource: [
+                                `arn:aws:dynamodb:${region}:${callerIdentity.accountId}:table/${dynamoDbTable}`,
+                                `arn:aws:dynamodb:${region}:${callerIdentity.accountId}:table/${dynamoDbTable}/*`
+                            ]
+                        }
+                    ]
+                })
             }
-        });
+        ]);
 
         const role = new aws.iam.Role(
             `${name}-role`,
             {
+                inlinePolicies,
                 managedPolicyArns: [aws.iam.ManagedPolicies.AWSLambdaBasicExecutionRole],
                 assumeRolePolicy: {
                     Version: "2012-10-17",
@@ -77,11 +79,6 @@ export class WebsiteTenantRouter extends pulumi.ComponentResource {
             },
             { parent: this }
         );
-
-        new aws.iam.RolePolicyAttachment(`${name}-dynamodb`, {
-            role,
-            policyArn: tenantRouterPolicy.arn
-        });
 
         // Some resources _must_ be put in us-east-1, such as Lambda at Edge.
         const awsUsEast1 = new aws.Provider("us-east-1", { region: "us-east-1" });
