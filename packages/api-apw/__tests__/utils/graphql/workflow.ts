@@ -6,6 +6,13 @@ const ERROR_FIELDS = `{
 
 const getDataFields = (fields = "") => `{
     id
+    createdOn
+    savedOn
+    createdBy {
+        id
+        displayName
+        type
+    }
     app
     title
     scope {
