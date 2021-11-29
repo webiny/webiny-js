@@ -1,0 +1,10 @@
+{
+  "extends": "../../tsconfig.json",
+  "include": ["index.ts", "components/**/*.ts"],
+  "references": [],
+  "compilerOptions": {
+    "rootDirs": ["."],
+    "paths": { "~/*": ["./*"] },
+    "baseUrl": "."
+  }
+}

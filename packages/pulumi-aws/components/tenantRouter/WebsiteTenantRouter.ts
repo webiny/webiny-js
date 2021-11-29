@@ -38,7 +38,7 @@ export class WebsiteTenantRouter extends pulumi.ComponentResource {
         const callerIdentity = pulumi.output(aws.getCallerIdentity({}));
 
         const tenantRouterPolicy = new aws.iam.Policy(`${name}-policy`, {
-            name: "tenant-router-policy",
+            name: `${name}-policy`,
             policy: {
                 Version: "2012-10-17",
                 Statement: [
@@ -87,7 +87,7 @@ export class WebsiteTenantRouter extends pulumi.ComponentResource {
         const awsUsEast1 = new aws.Provider("us-east-1", { region: "us-east-1" });
 
         this.originRequest = new aws.lambda.Function(
-            "tenant-request-router",
+            `${name}-origin-request`,
             {
                 publish: true,
                 runtime: "nodejs14.x",
