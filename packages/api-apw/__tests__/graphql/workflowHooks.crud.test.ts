@@ -3,7 +3,7 @@ import getMocks from "./mocks/workflows";
 
 const MOCKS = getMocks();
 
-describe("Workflow crud test", () => {
+describe("Workflow assignment to a PB Page test", () => {
     const options = {
         path: "manage/en-US"
     };

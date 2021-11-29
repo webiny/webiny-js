@@ -83,6 +83,23 @@ export const workflowModelDefinition = {
                         fieldId: "title"
                     },
                     {
+                        renderer: {
+                            name: "text-input"
+                        },
+                        helpText: "What will be it called",
+                        placeholderText: "Add text",
+                        label: "Slug",
+                        id: "workflow_step_slug",
+                        type: "text",
+                        validation: [
+                            {
+                                name: "required",
+                                message: "Value is required."
+                            }
+                        ],
+                        fieldId: "slug"
+                    },
+                    {
                         multipleValues: true,
                         settings: {
                             models: [
@@ -114,6 +131,7 @@ export const workflowModelDefinition = {
                 layout: [
                     ["workflow_step_type"],
                     ["workflow_step_title"],
+                    ["workflow_step_slug"],
                     ["workflow_step_reviewers"]
                 ]
             },

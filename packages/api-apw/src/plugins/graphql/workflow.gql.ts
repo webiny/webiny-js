@@ -54,6 +54,7 @@ const workflowSchema = new GraphQLSchemaPlugin<CmsContext>({
 
         type ApwWorkflowStep {
             title: String
+            slug: String
             type: ApwWorkflowStepTypes
             reviewers: [ApwWorkflowReviewer]
         }
@@ -122,6 +123,7 @@ const workflowSchema = new GraphQLSchemaPlugin<CmsContext>({
 
         input ApwWorkflowStepInput {
             title: String
+            slug: String
             type: ApwWorkflowStepTypes
             reviewers: [ApwWorkflowReviewerInput]
         }

@@ -14,6 +14,7 @@ export default () => ({
         steps: [
             {
                 title: "Legal Review",
+                slug: "legal-review",
                 type: "mandatory_blocking",
                 reviewers: [{ id: "123" }]
             }
@@ -28,11 +29,13 @@ export default () => ({
         steps: [
             {
                 title: "Legal Review",
+                slug: "legal-review",
                 type: "mandatory_blocking",
                 reviewers: [{ id: "123" }]
             },
             {
                 title: "Design Review",
+                slug: "design-review",
                 type: "mandatory_blocking",
                 reviewers: [{ id: "123456" }]
             }
@@ -48,6 +51,7 @@ export default () => ({
         steps: [
             {
                 title: "Legal Review",
+                slug: "legal-review",
                 type: "mandatory_blocking",
                 reviewers: [{ id: "123" }]
             }
@@ -102,5 +106,29 @@ export default () => ({
                 values: ["page#1", "page#2", "page#3", pageId]
             }
         }
-    ]
+    ],
+    mainWorkflow: {
+        app: "pageBuilder",
+        title: "Main review workflow",
+        steps: [
+            {
+                title: "Legal Review",
+                slug: "legal-review",
+                type: "mandatory_blocking",
+                reviewers: [{ id: "123" }]
+            },
+            {
+                title: "Design Review",
+                slug: "design-review",
+                type: "mandatory_blocking",
+                reviewers: [{ id: "123" }]
+            }
+        ],
+        scope: {
+            type: "pb_category",
+            data: {
+                values: ["static"]
+            }
+        }
+    }
 });
