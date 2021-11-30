@@ -1,4 +1,4 @@
-import datetimeTransform from "../../../../src/dynamoDb/transformValue/datetime";
+import datetimeTransform from "~/dynamoDb/transformValue/datetime";
 import { CmsModelField } from "@webiny/api-headless-cms/types";
 
 const createField = (fieldType: string): CmsModelField => {
