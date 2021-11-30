@@ -26,10 +26,12 @@ const createFilteringTypeDef = () => {
     `;
 };
 
-const appendTypename = (entries: CmsEntry[], typename: string) => {
+const appendTypename = (entries: CmsEntry[], typename: string): CmsEntry[] => {
     return entries.map(item => {
-        item["__typename"] = typename;
-        return item;
+        return {
+            ...item,
+            __typename: typename
+        };
     });
 };
 
@@ -189,14 +191,14 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
         },
         createTypeField({ field }) {
             if (field.multipleValues) {
-                return `${field.fieldId}: [RefField]`;
+                return `${field.fieldId}: [RefField!]`;
             }
 
             return `${field.fieldId}: RefField`;
         },
         createInputField({ field }) {
             if (field.multipleValues) {
-                return field.fieldId + ": [RefFieldInput]";
+                return field.fieldId + ": [RefFieldInput!]!";
             }
 
             return field.fieldId + ": RefFieldInput";
