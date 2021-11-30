@@ -1,13 +1,23 @@
-import { ElasticsearchQueryBuilderValueSearchPlugin } from "~/types";
+import {
+    CmsEntryElasticsearchQueryBuilderValueSearchPlugin,
+    CreatePathCallable,
+    TransformCallable
+} from "~/plugins/CmsEntryElasticsearchQueryBuilderValueSearchPlugin";
 
-export default (): ElasticsearchQueryBuilderValueSearchPlugin => ({
-    type: "cms-elastic-search-query-builder-value-search",
-    name: "cms-elastic-search-query-builder-value-search-ref-field",
-    fieldType: "ref",
-    transform: ({ value }) => {
-        return value;
-    },
-    createPath: ({ field }) => {
-        return `values.${field.fieldId}.entryId`;
-    }
-});
+const createPath: CreatePathCallable<string> = params => {
+    const value = `${params.value || ""}`;
+    const target = value && value.includes("#") ? "id" : "entryId";
+    return `${params.field.fieldId}.${target}`;
+};
+
+const transform: TransformCallable<string> = params => {
+    return params.value;
+};
+
+export const createRefSearchPlugin = (): CmsEntryElasticsearchQueryBuilderValueSearchPlugin => {
+    return new CmsEntryElasticsearchQueryBuilderValueSearchPlugin({
+        fieldType: "ref",
+        path: createPath,
+        transform
+    });
+};

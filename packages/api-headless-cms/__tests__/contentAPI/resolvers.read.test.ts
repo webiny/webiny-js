@@ -178,7 +178,9 @@ describe("READ - Resolvers", () => {
                         id: categoryId
                     }
                 }).then(([data]) => data),
-            ({ data }) => !!data.getCategory.data.id,
+            ({ data }) => {
+                return !!data.getCategory.data.id;
+            },
             {
                 name: "getCategory"
             }

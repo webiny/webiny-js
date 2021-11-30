@@ -17,37 +17,6 @@ import { Entity, Table } from "dynamodb-toolbox";
 import { PluginsContainer } from "@webiny/plugins";
 
 /**
- * Arguments for ElasticsearchQueryBuilderValueSearchPlugin.
- *
- * @see ElasticsearchQueryBuilderValueSearchPlugin.transform
- */
-interface ElasticsearchQueryBuilderValueSearchPluginArgs {
-    field: CmsModelField;
-    value: any;
-}
-
-/**
- * A plugin definition for transforming the search value for Elasticsearch.
- *
- * @category Plugin
- * @category Elasticsearch
- */
-export interface ElasticsearchQueryBuilderValueSearchPlugin extends Plugin {
-    /**
-     * A plugin type.
-     */
-    type: "cms-elastic-search-query-builder-value-search";
-    /**
-     * A field type for plugin to target.
-     */
-    fieldType: string;
-    /**
-     * Transform value that is going to be searched for in the Elasticsearch.
-     */
-    transform: (args: ElasticsearchQueryBuilderValueSearchPluginArgs) => any;
-}
-
-/**
  * A definition of the entry that is being prepared for the Elasticsearch.
  *
  * @category Elasticsearch

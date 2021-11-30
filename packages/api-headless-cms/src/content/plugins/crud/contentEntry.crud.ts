@@ -34,8 +34,6 @@ import {
 import * as utils from "~/utils";
 import { validateModelEntryData } from "./contentEntry/entryDataValidation";
 import WebinyError from "@webiny/error";
-import { I18NLocale } from "@webiny/api-i18n/types";
-import { Tenant } from "@webiny/api-tenancy/types";
 import { SecurityIdentity } from "@webiny/api-security/types";
 import { createTopic } from "@webiny/pubsub";
 import { assignBeforeEntryCreate } from "./contentEntry/beforeCreate";
@@ -131,13 +129,11 @@ const increaseEntryIdVersion = (id: string): EntryIdResult => {
 export interface Params {
     storageOperations: HeadlessCmsStorageOperations;
     context: CmsContext;
-    getTenant: () => Tenant;
-    getLocale: () => I18NLocale;
     getIdentity: () => SecurityIdentity;
 }
 
 export const createContentEntryCrud = (params: Params): CmsEntryContext => {
-    const { storageOperations, context, getTenant, getLocale, getIdentity } = params;
+    const { storageOperations, context, getIdentity } = params;
 
     const onBeforeCreate = createTopic<BeforeEntryCreateTopicParams>();
     const onAfterCreate = createTopic<AfterEntryCreateTopicParams>();
@@ -333,8 +329,8 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
             const ownedBy = permission.own ? getIdentity().id : where.ownedBy;
             const listWhere: CmsEntryListWhere = {
                 ...where,
-                tenant: where.tenant || getTenant().id,
-                locale: where.locale || getLocale().code
+                tenant: model.tenant,
+                locale: model.locale
             };
             if (ownedBy !== undefined) {
                 listWhere.ownedBy = ownedBy;

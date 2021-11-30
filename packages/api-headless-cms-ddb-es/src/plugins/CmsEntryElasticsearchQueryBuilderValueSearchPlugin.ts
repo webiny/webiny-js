@@ -1,0 +1,54 @@
+import { Plugin } from "@webiny/plugins/Plugin";
+import { CmsModelField } from "@webiny/api-headless-cms/types";
+
+export interface CreatePathCallableParams<T = any> {
+    field: CmsModelField;
+    value: T;
+}
+
+export interface CreatePathCallable<T = any> {
+    (params: CreatePathCallableParams<T>): string;
+}
+
+export interface TransformCallableParams<T = any> {
+    field: CmsModelField;
+    value: T;
+}
+export interface TransformCallable<T = any> {
+    (params: TransformCallableParams<T>): string;
+}
+
+export interface Params {
+    fieldType: string;
+    path?: string | CreatePathCallable;
+    transform: TransformCallable;
+}
+export class CmsEntryElasticsearchQueryBuilderValueSearchPlugin extends Plugin {
+    public static readonly type: string = "cms-elastic-search-query-builder-value-search";
+
+    private readonly config: Params;
+
+    public get fieldType(): string {
+        return this.config.fieldType;
+    }
+
+    public constructor(params: Params) {
+        super();
+
+        this.config = params;
+        this.name = `${(this.constructor as any).type}-${this.config.fieldType}`;
+    }
+
+    public transform(params: TransformCallableParams): any {
+        return this.config.transform(params);
+    }
+
+    public createPath(params: CreatePathCallableParams): string {
+        if (typeof this.config.path === "function") {
+            return this.config.path(params);
+        } else if (typeof this.config.path === "string") {
+            return this.config.path;
+        }
+        return null;
+    }
+}

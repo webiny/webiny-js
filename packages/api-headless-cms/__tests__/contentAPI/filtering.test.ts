@@ -689,7 +689,9 @@ describe("filtering", () => {
         const teslaProduct = publishTeslaResponse.data.publishProduct.data;
         const daciaProduct = publishDaciaResponse.data.publishProduct.data;
 
-        // If this `until` resolves successfully, we know entry is accessible via the "read" API
+        /**
+         * If this `until` resolves successfully, we know entry is accessible via the "read" API
+         */
         await until(
             () => productReader.listProducts({}).then(([data]) => data),
             ({ data }) => {
