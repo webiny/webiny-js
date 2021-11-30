@@ -214,7 +214,7 @@ describe("Content Review crud test", () => {
                                     media: {
                                         src: "my-bucket/file1"
                                     },
-                                    body: expect.any(Object),
+                                    body: richTextMock,
                                     resolved: null,
                                     comments: null
                                 }
@@ -254,7 +254,7 @@ describe("Content Review crud test", () => {
                                         media: {
                                             src: "my-bucket/file1"
                                         },
-                                        body: expect.any(Object),
+                                        body: richTextMock,
                                         resolved: null,
                                         comments: null
                                     }
@@ -369,14 +369,14 @@ describe("Content Review crud test", () => {
                             changeRequested: [
                                 {
                                     title: "Please change the main heading",
-                                    body: expect.any(Object),
+                                    body: richTextMock,
                                     media: {
                                         src: "my-bucket/file1"
                                     },
                                     resolved: null,
                                     comments: [
                                         {
-                                            body: expect.any(Object),
+                                            body: richTextMock,
                                             author: "author#1"
                                         }
                                     ]

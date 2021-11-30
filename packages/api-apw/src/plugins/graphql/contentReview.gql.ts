@@ -1,8 +1,8 @@
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins";
-import { ErrorResponse, Response, ListResponse } from "@webiny/handler-graphql";
-import { CmsContext } from "@webiny/api-headless-cms/types";
-import { CmsEntryListParams } from "@webiny/api-headless-cms/types";
+import { ErrorResponse, ListResponse, Response } from "@webiny/handler-graphql";
+import { CmsContext, CmsEntryListParams } from "@webiny/api-headless-cms/types";
 import { ContentReviewStepStatus } from "~/types";
+import { entryFieldFromStorageTransform } from "@webiny/api-headless-cms/content/plugins/utils/entryStorage";
 
 const contentReviewSchema = new GraphQLSchemaPlugin<CmsContext>({
     typeDefs: /* GraphQL */ `
@@ -167,6 +167,43 @@ const contentReviewSchema = new GraphQLSchemaPlugin<CmsContext>({
     `,
     resolvers: {
         // TODO: Make it dynamic
+        ApwContentReviewChangeRequested: {
+            body: async (parent, _, context, info) => {
+                const fieldName = info.fieldName;
+                const model = await context.cms.getModel("apwContentReviewModelDefinition");
+
+                const field = model.fields
+                    .find(field => field.fieldId === "changeRequested")
+                    .settings.fields.find(field => field.fieldId === fieldName);
+
+                // Get transformed value (eg. data decompression)
+                return await entryFieldFromStorageTransform({
+                    context,
+                    model,
+                    field,
+                    value: parent[fieldName]
+                });
+            }
+        },
+        ApwContentReviewComment: {
+            body: async (parent, _, context, info) => {
+                const fieldName = info.fieldName;
+                const model = await context.cms.getModel("apwContentReviewModelDefinition");
+
+                const field = model.fields
+                    .find(field => field.fieldId === "changeRequested")
+                    .settings.fields.find(field => field.fieldId === "comments")
+                    .settings.fields.find(field => field.fieldId === fieldName);
+
+                // Get transformed value (eg. data decompression)
+                return await entryFieldFromStorageTransform({
+                    context,
+                    model,
+                    field,
+                    value: parent[fieldName]
+                });
+            }
+        },
         ApwContentReview: {
             steps: async workflow => {
                 return workflow.values.steps;
