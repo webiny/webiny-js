@@ -37,9 +37,8 @@ const appendTypename = (entries: CmsEntry[], typename: string): CmsEntry[] => {
 
 const modelIdToTypeName = new Map();
 
-interface EntryByModel {
-    entryId: string;
-    modelId: string;
+interface EntriesByModel {
+    [key: string]: string[];
 }
 
 const plugin: CmsModelFieldToGraphQLPlugin = {
@@ -78,25 +77,31 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
                         return [];
                     }
 
-                    const entriesByModel: EntryByModel[] = value.map((ref, index) => {
-                        return {
-                            entryId: ref.entryId,
-                            modelId: ref.modelId,
-                            index
-                        };
-                    });
-                    const getters = entriesByModel.map(async ({ modelId, entryId }) => {
+                    const entriesByModel: EntriesByModel = value.reduce((collection, ref) => {
+                        if (!collection[ref.modelId]) {
+                            collection[ref.modelId] = [];
+                        } else if (collection[ref.modelId].includes(ref.entryId) === true) {
+                            return collection;
+                        }
+
+                        collection[ref.modelId].push(ref.entryId);
+
+                        return collection;
+                    }, {});
+
+                    const getters = Object.keys(entriesByModel).map(async modelId => {
+                        const idList = entriesByModel[modelId];
                         // Get model manager, to get access to CRUD methods
                         const model = await cms.getModelManager(modelId);
 
                         let entries: CmsEntry[];
                         // `read` API works with `published` data
                         if (cms.READ) {
-                            entries = await model.getPublishedByIds([entryId]);
+                            entries = await model.getPublishedByIds(idList);
                         }
                         // `preview` and `manage` with `latest` data
                         else {
-                            entries = await model.getLatestByIds([entryId]);
+                            entries = await model.getLatestByIds(idList);
                         }
 
                         return appendTypename(entries, modelIdToTypeName.get(modelId));

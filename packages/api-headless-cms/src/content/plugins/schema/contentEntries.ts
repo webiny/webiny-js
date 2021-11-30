@@ -143,25 +143,14 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
                         {} as EntriesByModel
                     );
 
-                    const getters: Promise<CmsEntry[]>[] = [];
-
-                    for (const modelId in entriesByModel) {
-                        if (entriesByModel.hasOwnProperty(modelId) === false) {
-                            continue;
+                    const getters: Promise<CmsEntry[]>[] = Object.keys(entriesByModel).map(
+                        async modelId => {
+                            return context.cms.getEntriesByIds(
+                                modelsMap[modelId],
+                                entriesByModel[modelId]
+                            );
                         }
-                        const references = entriesByModel[modelId];
-                        if (Array.isArray(references) === false || references.length === 0) {
-                            continue;
-                        }
-                        const model = modelsMap[modelId];
-                        if (!model) {
-                            continue;
-                        }
-
-                        const p = context.cms.getEntriesByIds(model, references);
-
-                        getters.push(p);
-                    }
+                    );
 
                     if (getters.length === 0) {
                         return new Response([]);
