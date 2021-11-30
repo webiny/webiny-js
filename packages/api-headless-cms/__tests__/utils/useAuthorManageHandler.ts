@@ -3,6 +3,7 @@ import { GQLHandlerCallableParams } from "./useGqlHandler";
 
 const authorFields = `
     id
+    entryId
     createdOn
     createdBy {
         id

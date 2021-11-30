@@ -77,8 +77,7 @@ export const createManageResolvers: CreateManageResolvers = ({
                 return entry.status;
             },
             async revisions(entry, _, context: CmsContext) {
-                const entryId = entry.id.split("#")[0];
-                const revisions = await context.cms.getEntryRevisions(model, entryId);
+                const revisions = await context.cms.getEntryRevisions(model, entry.entryId);
                 return revisions.sort((a, b) => b.version - a.version);
             }
         }

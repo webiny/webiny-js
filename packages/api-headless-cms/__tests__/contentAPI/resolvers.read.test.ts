@@ -178,7 +178,9 @@ describe("READ - Resolvers", () => {
                         id: categoryId
                     }
                 }).then(([data]) => data),
-            ({ data }) => !!data.getCategory.data.id,
+            ({ data }) => {
+                return !!data.getCategory.data.id;
+            },
             {
                 name: "getCategory"
             }
@@ -946,7 +948,10 @@ describe("READ - Resolvers", () => {
                     },
                     sort: ["createdOn_ASC"]
                 }).then(([data]) => data),
-            ({ data }) => data.listCategories.data.length === 1
+            ({ data }) => data.listCategories.data.length === 1,
+            {
+                name: "after create categories"
+            }
         );
 
         expect(result).toEqual({
@@ -1127,7 +1132,7 @@ describe("READ - Resolvers", () => {
                 image: "potato.jpg",
                 category: {
                     modelId: "category",
-                    entryId: vegetables.id
+                    id: vegetables.id
                 }
             }
         });
@@ -1143,7 +1148,7 @@ describe("READ - Resolvers", () => {
                 image: "orange.jpg",
                 category: {
                     modelId: "category",
-                    entryId: vegetables.id
+                    id: vegetables.id
                 }
             }
         });
@@ -1158,7 +1163,7 @@ describe("READ - Resolvers", () => {
                 image: "korn.jpg",
                 category: {
                     modelId: "category",
-                    entryId: vegetables.id
+                    id: vegetables.id
                 }
             }
         });
@@ -1216,7 +1221,7 @@ describe("READ - Resolvers", () => {
                 image: "potato.jpg",
                 category: {
                     modelId: "category",
-                    entryId: vegetables.id
+                    id: vegetables.id
                 }
             }
         });
@@ -1231,7 +1236,7 @@ describe("READ - Resolvers", () => {
                 image: "orange.jpg",
                 category: {
                     modelId: "category",
-                    entryId: vegetables.id
+                    id: vegetables.id
                 }
             }
         });
@@ -1246,7 +1251,7 @@ describe("READ - Resolvers", () => {
                 image: "korn.jpg",
                 category: {
                     modelId: "category",
-                    entryId: vegetables.id
+                    id: vegetables.id
                 }
             }
         });
@@ -1321,7 +1326,7 @@ describe("READ - Resolvers", () => {
                 image: "potato.jpg",
                 category: {
                     modelId: "category",
-                    entryId: vegetables.id
+                    id: vegetables.id
                 }
             }
         });
@@ -1336,7 +1341,7 @@ describe("READ - Resolvers", () => {
                 image: "orange.jpg",
                 category: {
                     modelId: "category",
-                    entryId: vegetables.id
+                    id: vegetables.id
                 }
             }
         });
@@ -1351,7 +1356,7 @@ describe("READ - Resolvers", () => {
                 image: "korn.jpg",
                 category: {
                     modelId: "category",
-                    entryId: vegetables.id
+                    id: vegetables.id
                 }
             }
         });
@@ -1421,7 +1426,7 @@ describe("READ - Resolvers", () => {
 
         const categoryValue = {
             modelId: "category",
-            entryId: vegetables.id
+            id: vegetables.id
         };
 
         const [potatoResponse] = await createProduct({

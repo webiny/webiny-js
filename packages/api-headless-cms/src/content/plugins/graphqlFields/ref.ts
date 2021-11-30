@@ -7,21 +7,39 @@ const createUnionTypeName = (model, field) => {
 
 const createListFilters = ({ field }) => {
     return `
-        ${field.fieldId}: String
-        ${field.fieldId}_in: [String!]
-        ${field.fieldId}_not: String
-        ${field.fieldId}_not_in: [String!]
+        ${field.fieldId}: RefFieldWhereInput
     `;
 };
 
-const appendTypename = (entries: CmsEntry[], typename: string) => {
+const createFilteringTypeDef = () => {
+    return `
+        input RefFieldWhereInput {
+            id: String
+            id_not: String
+            id_in: [String!]
+            id_not_in: [String]
+            entryId: String
+            entryId_not: String
+            entryId_in: [String!]
+            entryId_not_in: [String!]
+        }
+    `;
+};
+
+const appendTypename = (entries: CmsEntry[], typename: string): CmsEntry[] => {
     return entries.map(item => {
-        item["__typename"] = typename;
-        return item;
+        return {
+            ...item,
+            __typename: typename
+        };
     });
 };
 
 const modelIdToTypeName = new Map();
+
+interface EntriesByModel {
+    [key: string]: string[];
+}
 
 const plugin: CmsModelFieldToGraphQLPlugin = {
     name: "cms-model-field-to-graphql-ref",
@@ -59,25 +77,31 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
                         return [];
                     }
 
-                    const entriesByModel = value.map((ref, index) => {
-                        return {
-                            entryId: ref.entryId,
-                            modelId: ref.modelId,
-                            index
-                        };
-                    });
-                    const getters = entriesByModel.map(async ({ modelId, entryId }) => {
+                    const entriesByModel: EntriesByModel = value.reduce((collection, ref) => {
+                        if (!collection[ref.modelId]) {
+                            collection[ref.modelId] = [];
+                        } else if (collection[ref.modelId].includes(ref.entryId) === true) {
+                            return collection;
+                        }
+
+                        collection[ref.modelId].push(ref.entryId);
+
+                        return collection;
+                    }, {});
+
+                    const getters = Object.keys(entriesByModel).map(async modelId => {
+                        const idList = entriesByModel[modelId];
                         // Get model manager, to get access to CRUD methods
                         const model = await cms.getModelManager(modelId);
 
                         let entries: CmsEntry[];
                         // `read` API works with `published` data
                         if (cms.READ) {
-                            entries = await model.getPublishedByIds([entryId]);
+                            entries = await model.getPublishedByIds(idList);
                         }
                         // `preview` and `manage` with `latest` data
                         else {
-                            entries = await model.getLatestByIds([entryId]);
+                            entries = await model.getLatestByIds(idList);
                         }
 
                         return appendTypename(entries, modelIdToTypeName.get(modelId));
@@ -124,20 +148,23 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
                         })
                     );
             }
+            const unionFieldsTypeDef = unionFields
+                .map(
+                    ({ field, typeName }) =>
+                        `union ${typeName} = ${field.settings.models
+                            .map(({ modelId }) => createReadTypeName(modelId))
+                            .join(" | ")}`
+                )
+                .join("\n");
 
-            if (!unionFields.length) {
-                return null;
-            }
+            const filteringTypeDef = `
+                ${createFilteringTypeDef()}
+                
+                ${unionFieldsTypeDef}
+            `;
 
             return {
-                typeDefs: unionFields
-                    .map(
-                        ({ field, typeName }) =>
-                            `union ${typeName} = ${field.settings.models
-                                .map(({ modelId }) => createReadTypeName(modelId))
-                                .join(" | ")}`
-                    )
-                    .join("\n"),
+                typeDefs: filteringTypeDef,
                 resolvers: {}
             };
         },
@@ -145,31 +172,37 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
     },
     manage: {
         createSchema() {
+            /**
+             * entryId in RefFieldInput is deprecated but cannot mark it as GraphQL does not allow marking input fields as deprecated
+             */
             return {
                 typeDefs: `
                     type RefField {
                         modelId: String!
                         entryId: ID!
+                        id: ID!
                     }
                     
                     input RefFieldInput {
                         modelId: String!
-                        entryId: ID!
+                        id: ID!
                     }
+                    
+                    ${createFilteringTypeDef()}
                 `,
                 resolvers: {}
             };
         },
         createTypeField({ field }) {
             if (field.multipleValues) {
-                return `${field.fieldId}: [RefField]`;
+                return `${field.fieldId}: [RefField!]`;
             }
 
             return `${field.fieldId}: RefField`;
         },
         createInputField({ field }) {
             if (field.multipleValues) {
-                return field.fieldId + ": [RefFieldInput]";
+                return field.fieldId + ": [RefFieldInput!]!";
             }
 
             return field.fieldId + ": RefFieldInput";

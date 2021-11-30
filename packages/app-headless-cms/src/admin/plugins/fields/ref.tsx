@@ -103,7 +103,7 @@ const plugin: CmsEditorFieldTypePlugin = {
             queryField: /* GraphQL */ `
                 {
                     modelId
-                    entryId
+                    id
                 }
             `
         }
