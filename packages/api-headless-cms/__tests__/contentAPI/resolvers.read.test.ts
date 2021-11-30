@@ -946,7 +946,10 @@ describe("READ - Resolvers", () => {
                     },
                     sort: ["createdOn_ASC"]
                 }).then(([data]) => data),
-            ({ data }) => data.listCategories.data.length === 1
+            ({ data }) => data.listCategories.data.length === 1,
+            {
+                name: "after create categories"
+            }
         );
 
         expect(result).toEqual({

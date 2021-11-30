@@ -1095,9 +1095,6 @@ describe("MANAGE - Resolvers", () => {
             ...manageOpts
         });
 
-        // const [introspection] = await introspect();
-        // console.log(printSchema(buildClientSchema(introspection.data)));
-
         const [potatoResponse] = await createProduct({
             data: {
                 title: "Potato",
@@ -1139,44 +1136,53 @@ describe("MANAGE - Resolvers", () => {
             }
         });
 
-        const potato = potatoResponse.data.createProduct.data;
-
-        expect(potato).toMatchObject({
-            id: potato.id,
-            title: "Potato",
-            price: 99.9,
-            availableOn: "2020-12-25",
-            color: "white",
-            availableSizes: ["s", "m"],
-            category: {
-                modelId: "category",
-                entryId: vegetables.id
-            },
-            variant: {
-                name: "Variant 1",
-                price: 100,
-                category: {
-                    modelId: "category",
-                    entryId: vegetables.id
-                },
-                options: [
-                    {
-                        name: "Option 1",
-                        price: 10,
+        expect(potatoResponse).toMatchObject({
+            data: {
+                createProduct: {
+                    data: {
+                        id: expect.any(String),
+                        title: "Potato",
+                        price: 99.9,
+                        availableOn: "2020-12-25",
+                        color: "white",
+                        availableSizes: ["s", "m"],
                         category: {
                             modelId: "category",
-                            entryId: vegetables.id
+                            id: vegetables.id,
+                            entryId: vegetables.entryId
+                        },
+                        variant: {
+                            name: "Variant 1",
+                            price: 100,
+                            category: {
+                                modelId: "category",
+                                id: vegetables.id,
+                                entryId: vegetables.entryId
+                            },
+                            options: [
+                                {
+                                    name: "Option 1",
+                                    price: 10,
+                                    category: {
+                                        modelId: "category",
+                                        id: vegetables.id,
+                                        entryId: vegetables.entryId
+                                    }
+                                },
+                                {
+                                    name: "Option 2",
+                                    price: 20,
+                                    category: {
+                                        modelId: "category",
+                                        id: vegetables.id,
+                                        entryId: vegetables.entryId
+                                    }
+                                }
+                            ]
                         }
                     },
-                    {
-                        name: "Option 2",
-                        price: 20,
-                        category: {
-                            modelId: "category",
-                            entryId: vegetables.id
-                        }
-                    }
-                ]
+                    error: null
+                }
             }
         });
     });

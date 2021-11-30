@@ -705,7 +705,9 @@ describe("filtering", () => {
          */
         const [equalManagerResponse] = await productManager.listProducts({
             where: {
-                category: fruitCategoryId
+                category: {
+                    id: fruitCategoryId
+                }
             },
             sort: ["title_ASC"]
         });
@@ -728,7 +730,9 @@ describe("filtering", () => {
          */
         const [notEqualManagerResponse] = await productManager.listProducts({
             where: {
-                category_not: fruitCategoryId
+                category: {
+                    id_not: fruitCategoryId
+                }
             },
             sort: ["title_ASC"]
         });
@@ -751,7 +755,9 @@ describe("filtering", () => {
          */
         const [inManagerResponse] = await productManager.listProducts({
             where: {
-                category_in: [carManufacturerCategoryId]
+                category: {
+                    id_in: [carManufacturerCategoryId]
+                }
             },
             sort: ["title_ASC"]
         });
@@ -774,7 +780,9 @@ describe("filtering", () => {
          */
         const [notInManagerResponse] = await productManager.listProducts({
             where: {
-                category_not_in: [carManufacturerCategoryId]
+                category: {
+                    id_not_in: [carManufacturerCategoryId]
+                }
             },
             sort: ["title_ASC"]
         });
@@ -797,7 +805,9 @@ describe("filtering", () => {
          */
         const [inMultipleManagerResponse] = await productManager.listProducts({
             where: {
-                category_in: [fruitCategoryId, carManufacturerCategoryId]
+                category: {
+                    id_in: [fruitCategoryId, carManufacturerCategoryId]
+                }
             },
             sort: ["title_ASC"]
         });
@@ -820,7 +830,9 @@ describe("filtering", () => {
          */
         const [notInMultipleManagerResponse] = await productManager.listProducts({
             where: {
-                category_not_in: [fruitCategoryId, carManufacturerCategoryId]
+                category: {
+                    id_not_in: [fruitCategoryId, carManufacturerCategoryId]
+                }
             },
             sort: ["title_ASC"]
         });
@@ -868,7 +880,9 @@ describe("filtering", () => {
          */
         const [equalReaderResponse] = await productReader.listProducts({
             where: {
-                category: carManufacturerCategoryId
+                category: {
+                    id: carManufacturerCategoryId
+                }
             },
             sort: ["title_ASC"]
         });
@@ -891,7 +905,9 @@ describe("filtering", () => {
          */
         const [notEqualReaderResponse] = await productReader.listProducts({
             where: {
-                category_not: carManufacturerCategoryId
+                category: {
+                    id_not: carManufacturerCategoryId
+                }
             },
             sort: ["title_ASC"]
         });
@@ -914,7 +930,9 @@ describe("filtering", () => {
          */
         const [inReaderResponse] = await productReader.listProducts({
             where: {
-                category_in: [fruitCategoryId]
+                category: {
+                    id_in: [fruitCategoryId]
+                }
             },
             sort: ["title_ASC"]
         });
@@ -937,7 +955,9 @@ describe("filtering", () => {
          */
         const [notInReaderResponse] = await productReader.listProducts({
             where: {
-                category_not_in: [fruitCategoryId]
+                category: {
+                    id_not_in: [fruitCategoryId]
+                }
             },
             sort: ["title_ASC"]
         });
@@ -960,7 +980,9 @@ describe("filtering", () => {
          */
         const [inMultipleReaderResponse] = await productReader.listProducts({
             where: {
-                category_in: [fruitCategoryId, carManufacturerCategoryId]
+                category: {
+                    id_in: [fruitCategoryId, carManufacturerCategoryId]
+                }
             },
             sort: ["title_ASC"]
         });
@@ -983,7 +1005,9 @@ describe("filtering", () => {
          */
         const [notInMultipleReaderResponse] = await productReader.listProducts({
             where: {
-                category_not_in: [fruitCategoryId, carManufacturerCategoryId]
+                category: {
+                    id_not_in: [fruitCategoryId, carManufacturerCategoryId]
+                }
             },
             sort: ["title_ASC"]
         });

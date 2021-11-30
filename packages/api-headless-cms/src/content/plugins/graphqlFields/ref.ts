@@ -7,10 +7,22 @@ const createUnionTypeName = (model, field) => {
 
 const createListFilters = ({ field }) => {
     return `
-        ${field.fieldId}: String
-        ${field.fieldId}_in: [String!]
-        ${field.fieldId}_not: String
-        ${field.fieldId}_not_in: [String!]
+        ${field.fieldId}: RefFieldWhereInput
+    `;
+};
+
+const createFilteringTypeDef = () => {
+    return `
+        input RefFieldWhereInput {
+            id: String
+            id_not: String
+            id_in: [String!]
+            id_not_in: [String]
+            entryId: String
+            entryId_not: String
+            entryId_in: [String!]
+            entryId_not_in: [String!]
+        }
     `;
 };
 
@@ -22,6 +34,11 @@ const appendTypename = (entries: CmsEntry[], typename: string) => {
 };
 
 const modelIdToTypeName = new Map();
+
+interface EntryByModel {
+    entryId: string;
+    modelId: string;
+}
 
 const plugin: CmsModelFieldToGraphQLPlugin = {
     name: "cms-model-field-to-graphql-ref",
@@ -59,7 +76,7 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
                         return [];
                     }
 
-                    const entriesByModel = value.map((ref, index) => {
+                    const entriesByModel: EntryByModel[] = value.map((ref, index) => {
                         return {
                             entryId: ref.entryId,
                             modelId: ref.modelId,
@@ -124,20 +141,23 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
                         })
                     );
             }
+            const unionFieldsTypeDef = unionFields
+                .map(
+                    ({ field, typeName }) =>
+                        `union ${typeName} = ${field.settings.models
+                            .map(({ modelId }) => createReadTypeName(modelId))
+                            .join(" | ")}`
+                )
+                .join("\n");
 
-            if (!unionFields.length) {
-                return null;
-            }
+            const filteringTypeDef = `
+                ${createFilteringTypeDef()}
+                
+                ${unionFieldsTypeDef}
+            `;
 
             return {
-                typeDefs: unionFields
-                    .map(
-                        ({ field, typeName }) =>
-                            `union ${typeName} = ${field.settings.models
-                                .map(({ modelId }) => createReadTypeName(modelId))
-                                .join(" | ")}`
-                    )
-                    .join("\n"),
+                typeDefs: filteringTypeDef,
                 resolvers: {}
             };
         },
@@ -145,17 +165,24 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
     },
     manage: {
         createSchema() {
+            /**
+             * entryId in RefFieldInput is deprecated but cannot mark it as GraphQL does not allow marking input fields as deprecated
+             */
             return {
                 typeDefs: `
                     type RefField {
                         modelId: String!
                         entryId: ID!
+                        id: ID!
                     }
                     
                     input RefFieldInput {
                         modelId: String!
+                        id: ID
                         entryId: ID!
                     }
+                    
+                    ${createFilteringTypeDef()}
                 `,
                 resolvers: {}
             };

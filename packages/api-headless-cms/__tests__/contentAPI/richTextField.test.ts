@@ -146,6 +146,7 @@ describe("richTextField", () => {
                 createProduct: {
                     data: {
                         id: expect.any(String),
+                        entryId: expect.any(String),
                         createdOn: expect.stringMatching(/^20/),
                         createdBy: {
                             id: "12345678",
@@ -160,7 +161,8 @@ describe("richTextField", () => {
                         availableSizes: ["s", "m"],
                         category: {
                             modelId: "category",
-                            entryId: category.id
+                            id: category.id,
+                            entryId: category.entryId
                         },
                         richText: richTextMock,
                         inStock: null,
@@ -215,6 +217,7 @@ describe("richTextField", () => {
                 getProduct: {
                     data: {
                         id: expect.any(String),
+                        entryId: expect.any(String),
                         createdOn: expect.stringMatching(/^20/),
                         savedOn: expect.stringMatching(/^20/),
                         title: "Potato",
@@ -268,6 +271,7 @@ describe("richTextField", () => {
 
         const expectedCreatedProduct = {
             id: expect.any(String),
+            entryId: expect.any(String),
             createdOn: expect.stringMatching(/^20/),
             createdBy: {
                 id: "12345678",
@@ -282,7 +286,8 @@ describe("richTextField", () => {
             availableSizes: ["s", "m"],
             category: {
                 modelId: "category",
-                entryId: category.id
+                id: category.id,
+                entryId: category.entryId
             },
             richText: null,
             inStock: null,

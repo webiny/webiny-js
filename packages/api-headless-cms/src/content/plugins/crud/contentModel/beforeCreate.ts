@@ -16,7 +16,14 @@ const disallowedModelIdList: string[] = [
  * This list is to disallow creating models that might interfere with GraphQL schema creation.
  * Add more if required.
  */
-const disallowedModelIdEndingList: string[] = ["Response", "List", "Meta", "Input", "Sorter"];
+const disallowedModelIdEndingList: string[] = [
+    "Response",
+    "List",
+    "Meta",
+    "Input",
+    "Sorter",
+    "RefType"
+];
 
 /**
  * Checks for the uniqueness of provided modelId, against the provided list of models.

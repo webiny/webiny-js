@@ -46,6 +46,7 @@ import {
     entryToStorageTransform
 } from "~/content/plugins/utils/entryStorage";
 import { assignAfterEntryDelete } from "~/content/plugins/crud/contentEntry/afterDelete";
+import { referenceFieldsValidation } from "./contentEntry/referenceFieldsValidation";
 
 export const STATUS_DRAFT = "draft";
 export const STATUS_PUBLISHED = "published";
@@ -107,7 +108,8 @@ const createEntryId = (version: number): EntryIdResult => {
 };
 
 const increaseEntryIdVersion = (id: string): EntryIdResult => {
-    if (id.includes("#") === false) {
+    const { id: entryId, version } = parseIdentifier(id);
+    if (!version) {
         throw new WebinyError(
             "Cannot increase version on the ID without the version part.",
             "WRONG_ID",
@@ -116,14 +118,12 @@ const increaseEntryIdVersion = (id: string): EntryIdResult => {
             }
         );
     }
-    const [entryId, version] = id.split("#");
-    const ver = parseInt(version) + 1;
     return {
         entryId,
-        version: ver,
+        version: version + 1,
         id: createIdentifier({
             id: entryId,
-            version: ver
+            version: version + 1
         })
     };
 };
@@ -394,9 +394,15 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
             /**
              * Make sure we only work with fields that are defined in the model.
              */
-            const input = cleanInputData(model, inputData);
+            const initialInput = cleanInputData(model, inputData);
 
-            await validateModelEntryData(context, model, input);
+            await validateModelEntryData(context, model, initialInput);
+
+            const input = await referenceFieldsValidation({
+                context,
+                model,
+                input: initialInput
+            });
 
             const identity = context.security.getIdentity();
             const locale = context.cms.getLocale();
@@ -474,7 +480,7 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
             /**
              * Entries are identified by a common parent ID + Revision number.
              */
-            const [uniqueId] = sourceId.split("#");
+            const { id: uniqueId } = parseIdentifier(sourceId);
 
             const originalStorageEntry = await storageOperations.entries.getRevisionById(model, {
                 id: sourceId
@@ -501,12 +507,18 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
                 originalStorageEntry
             );
 
-            const values = {
+            const initialValues = {
                 ...originalEntry.values,
                 ...input
             };
 
-            await validateModelEntryData(context, model, values);
+            await validateModelEntryData(context, model, initialValues);
+
+            const values = await referenceFieldsValidation({
+                context,
+                model,
+                input: initialValues
+            });
 
             utils.checkOwnership(context, permission, originalEntry);
 
@@ -612,22 +624,30 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
 
             utils.checkOwnership(context, permission, originalEntry);
 
+            const initialValues = {
+                /**
+                 * Existing values from the database, transformed back to original, of course.
+                 */
+                ...originalEntry.values,
+                /**
+                 * Add new values.
+                 */
+                ...input
+            };
+
+            const values = await referenceFieldsValidation({
+                context,
+                model,
+                input: initialValues
+            });
+
             /**
              * We always send the full entry to the hooks and storage operations update.
              */
             const entry: CmsEntry = {
                 ...originalEntry,
                 savedOn: new Date().toISOString(),
-                values: {
-                    /**
-                     * Existing values from the database, transformed back to original, of course.
-                     */
-                    ...originalEntry.values,
-                    /**
-                     * Add new values.
-                     */
-                    ...input
-                }
+                values
             };
 
             let storageEntry: CmsStorageEntry = undefined;
@@ -925,7 +945,7 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
         },
         requestEntryReview: async (model, id) => {
             const permission = await checkEntryPermissions({ pw: "r" });
-            const [entryId] = id.split("#");
+            const { id: entryId } = parseIdentifier(id);
 
             const originalStorageEntry = await storageOperations.entries.getRevisionById(model, {
                 id
@@ -1005,7 +1025,7 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
         unpublishEntry: async (model, id) => {
             const permission = await checkEntryPermissions({ pw: "u" });
 
-            const [entryId] = id.split("#");
+            const { id: entryId } = parseIdentifier(id);
 
             const originalStorageEntry =
                 await storageOperations.entries.getPublishedRevisionByEntryId(model, {

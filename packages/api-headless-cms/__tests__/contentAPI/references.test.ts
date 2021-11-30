@@ -292,7 +292,8 @@ describe("entry references", () => {
                          */
                         categories: [
                             {
-                                entryId: techCategory.id,
+                                id: techCategory.id,
+                                entryId: techCategory.entryId,
                                 modelId: techCategory.meta.modelId
                             }
                         ]
@@ -632,7 +633,7 @@ describe("entry references", () => {
         });
 
         // eslint-disable-next-line
-        const foodArticle = await createArticleItem({
+        await createArticleItem({
             manager: articleManager,
             data: {
                 title: "Food article",
@@ -701,6 +702,52 @@ describe("entry references", () => {
         });
 
         expect(listArticlesEntryIdInResponse).toEqual({
+            data: {
+                listArticles: {
+                    data: [techArticle, techArticle2, techArticle3],
+                    meta: {
+                        hasMoreItems: false,
+                        totalCount: 3,
+                        cursor: null
+                    },
+                    error: null
+                }
+            }
+        });
+
+        const [listArticlesIdResponse] = await articleReader.listArticles({
+            where: {
+                category: {
+                    id: techCategory.id
+                }
+            },
+            sort: ["createdBy_ASC"]
+        });
+
+        expect(listArticlesIdResponse).toEqual({
+            data: {
+                listArticles: {
+                    data: [techArticle, techArticle2, techArticle3],
+                    meta: {
+                        hasMoreItems: false,
+                        totalCount: 3,
+                        cursor: null
+                    },
+                    error: null
+                }
+            }
+        });
+
+        const [listArticlesIdInResponse] = await articleReader.listArticles({
+            where: {
+                category: {
+                    id_in: [techCategory.id]
+                }
+            },
+            sort: ["createdBy_ASC"]
+        });
+
+        expect(listArticlesIdInResponse).toEqual({
             data: {
                 listArticles: {
                     data: [techArticle, techArticle2, techArticle3],
