@@ -13,6 +13,7 @@
     { "path": "../plugins" },
     { "path": "../react-router" },
     { "path": "../ui" },
+    { "path": "../utils" },
     { "path": "../validation" }
   ],
   "compilerOptions": {
