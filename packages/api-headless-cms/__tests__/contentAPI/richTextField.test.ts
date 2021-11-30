@@ -135,7 +135,7 @@ describe("richTextField", () => {
                 image: "file.jpg",
                 category: {
                     modelId: "category",
-                    entryId: category.id
+                    id: category.id
                 },
                 richText: richTextMock
             }
@@ -259,7 +259,7 @@ describe("richTextField", () => {
             image: "file.jpg",
             category: {
                 modelId: "category",
-                entryId: category.id
+                id: category.id
             }
         };
         /**

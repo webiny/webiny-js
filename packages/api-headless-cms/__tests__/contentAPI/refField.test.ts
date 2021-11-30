@@ -100,7 +100,7 @@ describe("refField", () => {
                 image: "file.jpg",
                 category: {
                     modelId: "category",
-                    entryId: category.id
+                    id: category.id
                 }
             }
         });
@@ -151,11 +151,11 @@ describe("refField", () => {
             data: {
                 product: {
                     modelId: "product",
-                    entryId: product.id
+                    id: product.id
                 },
                 author: {
                     modelId: "author",
-                    entryId: author.id
+                    id: author.id
                 },
                 text: `review text`,
                 rating: 5

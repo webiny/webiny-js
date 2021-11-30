@@ -221,7 +221,7 @@ describe("multiple values in field", () => {
                 image: "file.jpg",
                 category: {
                     modelId: categoryContentModel.modelId,
-                    entryId: category.id
+                    id: category.id
                 },
                 richText: [
                     {

@@ -44,7 +44,7 @@ import {
     entryToStorageTransform
 } from "~/content/plugins/utils/entryStorage";
 import { assignAfterEntryDelete } from "~/content/plugins/crud/contentEntry/afterDelete";
-import { referenceFieldsValidation } from "./contentEntry/referenceFieldsValidation";
+import { referenceFieldsMapping } from "./contentEntry/referenceFieldsMapping";
 
 export const STATUS_DRAFT = "draft";
 export const STATUS_PUBLISHED = "published";
@@ -394,7 +394,7 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
 
             await validateModelEntryData(context, model, initialInput);
 
-            const input = await referenceFieldsValidation({
+            const input = await referenceFieldsMapping({
                 context,
                 model,
                 input: initialInput
@@ -510,7 +510,7 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
 
             await validateModelEntryData(context, model, initialValues);
 
-            const values = await referenceFieldsValidation({
+            const values = await referenceFieldsMapping({
                 context,
                 model,
                 input: initialValues
@@ -631,7 +631,7 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
                 ...input
             };
 
-            const values = await referenceFieldsValidation({
+            const values = await referenceFieldsMapping({
                 context,
                 model,
                 input: initialValues

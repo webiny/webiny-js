@@ -585,7 +585,7 @@ describe("filtering", () => {
                 image: "banana.jpg",
                 category: {
                     modelId: categoryModel.modelId,
-                    entryId: fruitCategoryId
+                    id: fruitCategoryId
                 }
             }
         });
@@ -607,7 +607,7 @@ describe("filtering", () => {
                 image: "plum.jpg",
                 category: {
                     modelId: categoryModel.modelId,
-                    entryId: fruitCategoryId
+                    id: fruitCategoryId
                 }
             }
         });
@@ -633,7 +633,7 @@ describe("filtering", () => {
                 image: "tesla.jpg",
                 category: {
                     modelId: categoryModel.modelId,
-                    entryId: carManufacturerCategoryId
+                    id: carManufacturerCategoryId
                 }
             }
         });
@@ -655,7 +655,7 @@ describe("filtering", () => {
                 image: "dacia.jpg",
                 category: {
                     modelId: categoryModel.modelId,
-                    entryId: carManufacturerCategoryId
+                    id: carManufacturerCategoryId
                 }
             }
         });

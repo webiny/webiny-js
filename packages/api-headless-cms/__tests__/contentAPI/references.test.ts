@@ -147,12 +147,12 @@ describe("entry references", () => {
                 title: "Tech article",
                 body: null,
                 category: {
-                    entryId: techCategory.id,
+                    id: techCategory.id,
                     modelId: "category"
                 },
                 categories: [
                     {
-                        entryId: techCategory.id,
+                        id: techCategory.id,
                         modelId: "category"
                     }
                 ]
@@ -176,12 +176,12 @@ describe("entry references", () => {
                 title: "Tech article 2",
                 body: null,
                 category: {
-                    entryId: techCategory2.id,
+                    id: techCategory2.id,
                     modelId: "category"
                 },
                 categories: [
                     {
-                        entryId: techCategory2.id,
+                        id: techCategory2.id,
                         modelId: "category"
                     }
                 ]
@@ -206,12 +206,12 @@ describe("entry references", () => {
                 title: "Tech article 3",
                 body: null,
                 category: {
-                    entryId: techCategory3.id,
+                    id: techCategory3.id,
                     modelId: "category"
                 },
                 categories: [
                     {
-                        entryId: techCategory3.id,
+                        id: techCategory3.id,
                         modelId: "category"
                     }
                 ]
@@ -330,12 +330,12 @@ describe("entry references", () => {
                 title: "Tech article",
                 body: null,
                 category: {
-                    entryId: techCategory.id,
+                    id: techCategory.id,
                     modelId: "category"
                 },
                 categories: [
                     {
-                        entryId: techCategory.id,
+                        id: techCategory.id,
                         modelId: "category"
                     }
                 ]

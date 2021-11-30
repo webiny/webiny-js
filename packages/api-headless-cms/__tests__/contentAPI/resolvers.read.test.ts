@@ -1132,7 +1132,7 @@ describe("READ - Resolvers", () => {
                 image: "potato.jpg",
                 category: {
                     modelId: "category",
-                    entryId: vegetables.id
+                    id: vegetables.id
                 }
             }
         });
@@ -1148,7 +1148,7 @@ describe("READ - Resolvers", () => {
                 image: "orange.jpg",
                 category: {
                     modelId: "category",
-                    entryId: vegetables.id
+                    id: vegetables.id
                 }
             }
         });
@@ -1163,7 +1163,7 @@ describe("READ - Resolvers", () => {
                 image: "korn.jpg",
                 category: {
                     modelId: "category",
-                    entryId: vegetables.id
+                    id: vegetables.id
                 }
             }
         });
@@ -1221,7 +1221,7 @@ describe("READ - Resolvers", () => {
                 image: "potato.jpg",
                 category: {
                     modelId: "category",
-                    entryId: vegetables.id
+                    id: vegetables.id
                 }
             }
         });
@@ -1236,7 +1236,7 @@ describe("READ - Resolvers", () => {
                 image: "orange.jpg",
                 category: {
                     modelId: "category",
-                    entryId: vegetables.id
+                    id: vegetables.id
                 }
             }
         });
@@ -1251,7 +1251,7 @@ describe("READ - Resolvers", () => {
                 image: "korn.jpg",
                 category: {
                     modelId: "category",
-                    entryId: vegetables.id
+                    id: vegetables.id
                 }
             }
         });
@@ -1326,7 +1326,7 @@ describe("READ - Resolvers", () => {
                 image: "potato.jpg",
                 category: {
                     modelId: "category",
-                    entryId: vegetables.id
+                    id: vegetables.id
                 }
             }
         });
@@ -1341,7 +1341,7 @@ describe("READ - Resolvers", () => {
                 image: "orange.jpg",
                 category: {
                     modelId: "category",
-                    entryId: vegetables.id
+                    id: vegetables.id
                 }
             }
         });
@@ -1356,7 +1356,7 @@ describe("READ - Resolvers", () => {
                 image: "korn.jpg",
                 category: {
                     modelId: "category",
-                    entryId: vegetables.id
+                    id: vegetables.id
                 }
             }
         });
@@ -1426,7 +1426,7 @@ describe("READ - Resolvers", () => {
 
         const categoryValue = {
             modelId: "category",
-            entryId: vegetables.id
+            id: vegetables.id
         };
 
         const [potatoResponse] = await createProduct({

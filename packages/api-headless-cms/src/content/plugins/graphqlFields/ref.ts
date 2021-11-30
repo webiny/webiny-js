@@ -180,8 +180,7 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
                     
                     input RefFieldInput {
                         modelId: String!
-                        id: ID
-                        entryId: ID!
+                        id: ID!
                     }
                     
                     ${createFilteringTypeDef()}

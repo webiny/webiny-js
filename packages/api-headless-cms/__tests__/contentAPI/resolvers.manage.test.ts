@@ -1105,14 +1105,14 @@ describe("MANAGE - Resolvers", () => {
                 availableSizes: ["s", "m"],
                 category: {
                     modelId: "category",
-                    entryId: vegetables.id
+                    id: vegetables.id
                 },
                 variant: {
                     name: "Variant 1",
                     price: 100,
                     category: {
                         modelId: "category",
-                        entryId: vegetables.id
+                        id: vegetables.id
                     },
                     options: [
                         {
@@ -1120,7 +1120,7 @@ describe("MANAGE - Resolvers", () => {
                             price: 10,
                             category: {
                                 modelId: "category",
-                                entryId: vegetables.id
+                                id: vegetables.id
                             }
                         },
                         {
@@ -1128,7 +1128,7 @@ describe("MANAGE - Resolvers", () => {
                             price: 20,
                             category: {
                                 modelId: "category",
-                                entryId: vegetables.id
+                                id: vegetables.id
                             }
                         }
                     ]

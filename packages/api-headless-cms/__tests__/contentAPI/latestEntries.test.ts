@@ -168,7 +168,12 @@ describe("latest entries", function () {
             data: {
                 title,
                 body,
-                categories
+                categories: categories.map(category => {
+                    return {
+                        id: category.id,
+                        modelId: category.modelId
+                    };
+                })
             }
         });
         /**

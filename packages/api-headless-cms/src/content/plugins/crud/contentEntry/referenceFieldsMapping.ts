@@ -159,18 +159,13 @@ const getReferencesByModel = (params: GetReferencesByModelParams) => {
         if (!value) {
             continue;
         }
-        const { modelId, id: baseId, entryId } = value;
-        const id = baseId || entryId;
+        const { modelId, id } = value;
         if (!id) {
-            throw new WebinyError(
-                "Missing id and entryId on the reference field.",
-                "MALFORMED_REF_FIELD",
-                {
-                    value,
-                    modelId,
-                    path
-                }
-            );
+            throw new WebinyError("Missing id on the reference field.", "MALFORMED_REF_FIELD", {
+                value,
+                modelId,
+                path
+            });
         } else if (!modelId) {
             throw new WebinyError("Missing model on the reference field.", "MALFORMED_REF_FIELD", {
                 value,
@@ -201,7 +196,7 @@ const getReferencesByModel = (params: GetReferencesByModelParams) => {
     return references;
 };
 
-export const referenceFieldsValidation = async (params: Params): Promise<Record<string, any>> => {
+export const referenceFieldsMapping = async (params: Params): Promise<Record<string, any>> => {
     const { context, model, input } = params;
 
     let output: Record<string, any> = {
@@ -303,9 +298,8 @@ export const referenceFieldsValidation = async (params: Params): Promise<Record<
             continue;
         }
 
-        const { id: baseId, entryId } = referenceValues[path];
+        const { id } = referenceValues[path];
 
-        const id = baseId || entryId;
         const entry = records[id];
         if (!entry) {
             throw new WebinyError(`Missing record with id "${id}".`, "RECORDS_ERROR", {
