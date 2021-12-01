@@ -1,3 +1,32 @@
 {
-  "extends": "../../../../tsconfig"
+  "extends": "../../tsconfig.json",
+  "include": ["src"],
+  "references": [
+    { "path": "../../../../packages/api-prerendering-service" },
+    { "path": "../../../../packages/api-prerendering-service-aws" },
+    { "path": "../../../../packages/api-prerendering-service-so-ddb" },
+    { "path": "../../../../packages/handler-aws" }
+  ],
+  "compilerOptions": {
+    "paths": {
+      "~/*": ["./src/*"],
+      "@webiny/api-prerendering-service/*": ["../../../../packages/api-prerendering-service/src/*"],
+      "@webiny/api-prerendering-service": ["../../../../packages/api-prerendering-service/src"],
+      "@webiny/api-prerendering-service-aws/*": [
+        "../../../../packages/api-prerendering-service-aws/src/*"
+      ],
+      "@webiny/api-prerendering-service-aws": [
+        "../../../../packages/api-prerendering-service-aws/src"
+      ],
+      "@webiny/api-prerendering-service-so-ddb/*": [
+        "../../../../packages/api-prerendering-service-so-ddb/src/*"
+      ],
+      "@webiny/api-prerendering-service-so-ddb": [
+        "../../../../packages/api-prerendering-service-so-ddb/src"
+      ],
+      "@webiny/handler-aws/*": ["../../../../packages/handler-aws/src/*"],
+      "@webiny/handler-aws": ["../../../../packages/handler-aws/src"]
+    },
+    "baseUrl": "."
+  }
 }
