@@ -1,5 +1,12 @@
 import { CmsEntry, CmsContext, CmsModelFieldToGraphQLPlugin } from "~/types";
 import { createReadTypeName } from "~/content/plugins/utils/createTypeName";
+import { parseIdentifier } from "@webiny/utils";
+
+interface RefFieldValue {
+    id?: string;
+    entryId: string;
+    modelId: string;
+}
 
 const createUnionTypeName = (model, field) => {
     return `${createReadTypeName(model.modelId)}${createReadTypeName(field.fieldId)}`;
@@ -190,7 +197,17 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
                     
                     ${createFilteringTypeDef()}
                 `,
-                resolvers: {}
+                resolvers: {
+                    RefField: {
+                        entryId: (parent: RefFieldValue) => {
+                            const { id } = parseIdentifier(parent.entryId || parent.id);
+                            return id;
+                        },
+                        id: (parent: RefFieldValue) => {
+                            return parent.id || parent.entryId;
+                        }
+                    }
+                }
             };
         },
         createTypeField({ field }) {
