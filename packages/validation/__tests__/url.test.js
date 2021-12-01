@@ -82,4 +82,13 @@ describe("url test", () => {
             ValidationError
         );
     });
+
+    it("should pass - Google Maps embed URL (with exclamation mark)", async () => {
+        await expect(
+            validation.validate(
+                "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2482.6342726998337!2d-0.13235738423882193!3d51.51992537963726!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x48761b2de379bf0f%3A0x94d194cc3e61963a!2s3%20Gower%20St%2C%20London%20WC1E%206HA%2C%20Vereinigtes%20K%C3%B6nigreich!5e0!3m2!1sde!2sde!4v1638353426946!5m2!1sde!2sde",
+                "url"
+            )
+        ).resolves.toBe(true);
+    });
 });
