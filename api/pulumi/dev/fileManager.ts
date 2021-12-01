@@ -15,7 +15,6 @@ class FileManager {
         transform: aws.lambda.Function;
         download: aws.lambda.Function;
     };
-
     constructor() {
         this.bucket = new aws.s3.Bucket("fm-bucket", {
             acl: "private",
@@ -29,6 +28,7 @@ class FileManager {
                 }
             ]
         });
+
         const roleName = "fm-lambda-role";
         this.role = new aws.iam.Role(roleName, {
             assumeRolePolicy: {

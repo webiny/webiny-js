@@ -17,20 +17,24 @@ class FileManager {
         download: aws.lambda.Function;
     };
 
-    constructor() {
-        this.bucket = new aws.s3.Bucket("fm-bucket", {
-            acl: "private",
-
-            forceDestroy: true,
-            corsRules: [
-                {
-                    allowedHeaders: ["*"],
-                    allowedMethods: ["POST", "GET"],
-                    allowedOrigins: ["*"],
-                    maxAgeSeconds: 3000
-                }
-            ]
-        });
+    constructor({ protectedEnvironment }: { protectedEnvironment: boolean }) {
+        this.bucket = new aws.s3.Bucket(
+            "fm-bucket",
+            {
+                acl: "private",
+                // We definitely don't want to force-destroy if "protectedEnvironment" flag is true.
+                forceDestroy: !protectedEnvironment,
+                corsRules: [
+                    {
+                        allowedHeaders: ["*"],
+                        allowedMethods: ["POST", "GET"],
+                        allowedOrigins: ["*"],
+                        maxAgeSeconds: 3000
+                    }
+                ]
+            },
+            { protect: protectedEnvironment }
+        );
 
         const roleName = "fm-lambda-role";
 

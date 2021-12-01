@@ -8,7 +8,6 @@ import { getLayerArn } from "@webiny/aws-layers";
 interface PreRenderingServiceParams {
     env: Record<string, any>;
     primaryDynamodbTable: aws.dynamodb.Table;
-    elasticsearchDynamodbTable: aws.dynamodb.Table;
     bucket: aws.s3.Bucket;
 }
 
@@ -23,12 +22,7 @@ class PageBuilder {
         };
     };
 
-    constructor({
-        env,
-        primaryDynamodbTable,
-        elasticsearchDynamodbTable,
-        bucket
-    }: PreRenderingServiceParams) {
+    constructor({ env, primaryDynamodbTable, bucket }: PreRenderingServiceParams) {
         const roleName = "pre-rendering-service-lambda-role";
         this.role = new aws.iam.Role(roleName, {
             assumeRolePolicy: {
@@ -45,11 +39,7 @@ class PageBuilder {
             }
         });
 
-        const policy = policies.getPreRenderingServiceLambdaPolicy(
-            primaryDynamodbTable,
-            elasticsearchDynamodbTable,
-            bucket
-        );
+        const policy = policies.getPreRenderingServiceLambdaPolicy(primaryDynamodbTable, bucket);
 
         new aws.iam.RolePolicyAttachment(`${roleName}-PreRenderingServiceLambdaPolicy`, {
             role: this.role,
@@ -143,7 +133,7 @@ class PageBuilder {
 
         const eventRule = new aws.cloudwatch.EventRule("ps-process-queue-event-rule", {
             description: `Triggers "ps-process-queue" Lambda function that will process all queued prerendering jobs.`,
-            scheduleExpression: "rate(5 minutes)",
+            scheduleExpression: "rate(1 minute)",
             isEnabled: true
         });
 

@@ -4,18 +4,14 @@ import i18nPlugins from "@webiny/api-i18n/graphql";
 import i18nDynamoDbStorageOperations from "@webiny/api-i18n-ddb";
 import i18nContentPlugins from "@webiny/api-i18n-content/plugins";
 import pageBuilderPlugins from "@webiny/api-page-builder/graphql";
-import pageBuilderDynamoDbElasticsearchPlugins from "@webiny/api-page-builder-so-ddb-es";
+import pageBuilderDynamoDbPlugins from "@webiny/api-page-builder-so-ddb";
 import pageBuilderImportExportPlugins from "@webiny/api-page-builder-import-export/graphql";
 import { createStorageOperations as createPageBuilderStorageOperations } from "@webiny/api-page-builder-import-export-so-ddb";
 import exportPagesProcessPlugins from "@webiny/api-page-builder-import-export/exportPages/process";
 import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import dynamoDbPlugins from "@webiny/db-dynamodb/plugins";
-import elasticSearch from "@webiny/api-elasticsearch";
-import fileManagerPlugins from "@webiny/api-file-manager/plugins";
-import fileManagerDynamoDbElasticStorageOperation from "@webiny/api-file-manager-ddb-es";
 import logsPlugins from "@webiny/handler-logs";
-import fileManagerS3 from "@webiny/api-file-manager-s3";
 import securityPlugins from "./security";
 
 const documentClient = new DocumentClient({
@@ -29,23 +25,16 @@ export const handler = createHandler({
     plugins: [
         dynamoDbPlugins(),
         logsPlugins(),
-        elasticSearch({ endpoint: `https://${process.env.ELASTIC_SEARCH_ENDPOINT}` }),
         dbPlugins({
             table: process.env.DB_TABLE,
-            driver: new DynamoDbDriver({
-                documentClient
-            })
+            driver: new DynamoDbDriver({ documentClient })
         }),
         securityPlugins({ documentClient }),
         i18nPlugins(),
         i18nDynamoDbStorageOperations(),
         i18nContentPlugins(),
-        fileManagerPlugins(),
-        fileManagerDynamoDbElasticStorageOperation(),
-        // Add File storage S3 plugin for API file manager.
-        fileManagerS3(),
         pageBuilderPlugins(),
-        pageBuilderDynamoDbElasticsearchPlugins(),
+        pageBuilderDynamoDbPlugins(),
         pageBuilderImportExportPlugins({
             storageOperations: createPageBuilderStorageOperations({ documentClient })
         }),

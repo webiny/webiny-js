@@ -3,7 +3,7 @@
 Webiny ships with two sets of infrastructure configuration out of the box.
 There are `dev` and `prod` configurations.
 
-## Configurations overview
+## Configuration overview
 
 `dev` is a configuration you would typically use in your development. It configures a non-VPC set of resources. It's less secure, but a lot cheaper to run.
 
