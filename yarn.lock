@@ -8574,7 +8574,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@webiny/api-admin-users-cognito-so-ddb@^5.18.1, @webiny/api-admin-users-cognito-so-ddb@workspace:packages/api-admin-users-cognito-so-ddb":
+"@webiny/api-admin-users-cognito-so-ddb@^5.17.0, @webiny/api-admin-users-cognito-so-ddb@workspace:packages/api-admin-users-cognito-so-ddb":
   version: 0.0.0-use.local
   resolution: "@webiny/api-admin-users-cognito-so-ddb@workspace:packages/api-admin-users-cognito-so-ddb"
   dependencies:
@@ -8595,7 +8595,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-admin-users-cognito@^5.18.1, @webiny/api-admin-users-cognito@workspace:packages/api-admin-users-cognito":
+"@webiny/api-admin-users-cognito@^5.17.0, @webiny/api-admin-users-cognito@^5.18.1, @webiny/api-admin-users-cognito@workspace:packages/api-admin-users-cognito":
   version: 0.0.0-use.local
   resolution: "@webiny/api-admin-users-cognito@workspace:packages/api-admin-users-cognito"
   dependencies:
@@ -8794,7 +8794,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-file-manager-ddb@^5.18.1, @webiny/api-file-manager-ddb@workspace:packages/api-file-manager-ddb":
+"@webiny/api-file-manager-ddb@^5.17.0, @webiny/api-file-manager-ddb@^5.18.1, @webiny/api-file-manager-ddb@workspace:packages/api-file-manager-ddb":
   version: 0.0.0-use.local
   resolution: "@webiny/api-file-manager-ddb@workspace:packages/api-file-manager-ddb"
   dependencies:
@@ -8821,7 +8821,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-file-manager-s3@^5.18.1, @webiny/api-file-manager-s3@workspace:packages/api-file-manager-s3":
+"@webiny/api-file-manager-s3@^5.17.0, @webiny/api-file-manager-s3@workspace:packages/api-file-manager-s3":
   version: 0.0.0-use.local
   resolution: "@webiny/api-file-manager-s3@workspace:packages/api-file-manager-s3"
   dependencies:
@@ -8841,7 +8841,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-file-manager@^5.18.1, @webiny/api-file-manager@workspace:packages/api-file-manager":
+"@webiny/api-file-manager@^5.17.0, @webiny/api-file-manager@^5.18.1, @webiny/api-file-manager@workspace:packages/api-file-manager":
   version: 0.0.0-use.local
   resolution: "@webiny/api-file-manager@workspace:packages/api-file-manager"
   dependencies:
@@ -8879,7 +8879,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-form-builder-so-ddb-es@^5.18.1, @webiny/api-form-builder-so-ddb-es@workspace:packages/api-form-builder-so-ddb-es":
+"@webiny/api-form-builder-so-ddb-es@workspace:packages/api-form-builder-so-ddb-es":
   version: 0.0.0-use.local
   resolution: "@webiny/api-form-builder-so-ddb-es@workspace:packages/api-form-builder-so-ddb-es"
   dependencies:
@@ -8917,7 +8917,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-form-builder-so-ddb@workspace:packages/api-form-builder-so-ddb":
+"@webiny/api-form-builder-so-ddb@^5.17.0, @webiny/api-form-builder-so-ddb@workspace:packages/api-form-builder-so-ddb":
   version: 0.0.0-use.local
   resolution: "@webiny/api-form-builder-so-ddb@workspace:packages/api-form-builder-so-ddb"
   dependencies:
@@ -8945,7 +8945,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-form-builder@^5.18.1, @webiny/api-form-builder@workspace:packages/api-form-builder":
+"@webiny/api-form-builder@^5.17.0, @webiny/api-form-builder@^5.18.1, @webiny/api-form-builder@workspace:packages/api-form-builder":
   version: 0.0.0-use.local
   resolution: "@webiny/api-form-builder@workspace:packages/api-form-builder"
   dependencies:
@@ -8994,7 +8994,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-headless-cms-ddb-es@^5.18.1, @webiny/api-headless-cms-ddb-es@workspace:packages/api-headless-cms-ddb-es":
+"@webiny/api-headless-cms-ddb-es@workspace:packages/api-headless-cms-ddb-es":
   version: 0.0.0-use.local
   resolution: "@webiny/api-headless-cms-ddb-es@workspace:packages/api-headless-cms-ddb-es"
   dependencies:
@@ -9037,7 +9037,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-headless-cms-ddb@workspace:packages/api-headless-cms-ddb":
+"@webiny/api-headless-cms-ddb@^5.17.0, @webiny/api-headless-cms-ddb@workspace:packages/api-headless-cms-ddb":
   version: 0.0.0-use.local
   resolution: "@webiny/api-headless-cms-ddb@workspace:packages/api-headless-cms-ddb"
   dependencies:
@@ -9091,7 +9091,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-headless-cms@^5.18.1, @webiny/api-headless-cms@workspace:packages/api-headless-cms":
+"@webiny/api-headless-cms@^5.17.0, @webiny/api-headless-cms@^5.18.1, @webiny/api-headless-cms@workspace:packages/api-headless-cms":
   version: 0.0.0-use.local
   resolution: "@webiny/api-headless-cms@workspace:packages/api-headless-cms"
   dependencies:
@@ -9146,7 +9146,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-i18n-content@^5.18.1, @webiny/api-i18n-content@workspace:packages/api-i18n-content":
+"@webiny/api-i18n-content@^5.17.0, @webiny/api-i18n-content@^5.18.1, @webiny/api-i18n-content@workspace:packages/api-i18n-content":
   version: 0.0.0-use.local
   resolution: "@webiny/api-i18n-content@workspace:packages/api-i18n-content"
   dependencies:
@@ -9165,7 +9165,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-i18n-ddb@^5.18.1, @webiny/api-i18n-ddb@workspace:packages/api-i18n-ddb":
+"@webiny/api-i18n-ddb@^5.17.0, @webiny/api-i18n-ddb@^5.18.1, @webiny/api-i18n-ddb@workspace:packages/api-i18n-ddb":
   version: 0.0.0-use.local
   resolution: "@webiny/api-i18n-ddb@workspace:packages/api-i18n-ddb"
   dependencies:
@@ -9197,7 +9197,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-i18n@^5.18.1, @webiny/api-i18n@workspace:packages/api-i18n":
+"@webiny/api-i18n@^5.17.0, @webiny/api-i18n@^5.18.1, @webiny/api-i18n@workspace:packages/api-i18n":
   version: 0.0.0-use.local
   resolution: "@webiny/api-i18n@workspace:packages/api-i18n"
   dependencies:
@@ -9228,7 +9228,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-page-builder-import-export-so-ddb@^5.18.1, @webiny/api-page-builder-import-export-so-ddb@workspace:packages/api-page-builder-import-export-so-ddb":
+"@webiny/api-page-builder-import-export-so-ddb@^5.17.0, @webiny/api-page-builder-import-export-so-ddb@workspace:packages/api-page-builder-import-export-so-ddb":
   version: 0.0.0-use.local
   resolution: "@webiny/api-page-builder-import-export-so-ddb@workspace:packages/api-page-builder-import-export-so-ddb"
   dependencies:
@@ -9257,7 +9257,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-page-builder-import-export@^5.18.1, @webiny/api-page-builder-import-export@workspace:packages/api-page-builder-import-export":
+"@webiny/api-page-builder-import-export@^5.17.0, @webiny/api-page-builder-import-export@^5.18.1, @webiny/api-page-builder-import-export@workspace:packages/api-page-builder-import-export":
   version: 0.0.0-use.local
   resolution: "@webiny/api-page-builder-import-export@workspace:packages/api-page-builder-import-export"
   dependencies:
@@ -9348,7 +9348,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-page-builder-so-ddb@workspace:packages/api-page-builder-so-ddb":
+"@webiny/api-page-builder-so-ddb@^5.17.0, @webiny/api-page-builder-so-ddb@workspace:packages/api-page-builder-so-ddb":
   version: 0.0.0-use.local
   resolution: "@webiny/api-page-builder-so-ddb@workspace:packages/api-page-builder-so-ddb"
   dependencies:
@@ -9380,7 +9380,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-page-builder@^5.18.1, @webiny/api-page-builder@workspace:packages/api-page-builder":
+"@webiny/api-page-builder@^5.17.0, @webiny/api-page-builder@^5.18.1, @webiny/api-page-builder@workspace:packages/api-page-builder":
   version: 0.0.0-use.local
   resolution: "@webiny/api-page-builder@workspace:packages/api-page-builder"
   dependencies:
@@ -9434,7 +9434,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-prerendering-service-aws@^5.18.1, @webiny/api-prerendering-service-aws@workspace:packages/api-prerendering-service-aws":
+"@webiny/api-prerendering-service-aws@^5.17.0, @webiny/api-prerendering-service-aws@workspace:packages/api-prerendering-service-aws":
   version: 0.0.0-use.local
   resolution: "@webiny/api-prerendering-service-aws@workspace:packages/api-prerendering-service-aws"
   dependencies:
@@ -9455,7 +9455,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-prerendering-service-so-ddb@^5.18.1, @webiny/api-prerendering-service-so-ddb@workspace:packages/api-prerendering-service-so-ddb":
+"@webiny/api-prerendering-service-so-ddb@^5.17.0, @webiny/api-prerendering-service-so-ddb@workspace:packages/api-prerendering-service-so-ddb":
   version: 0.0.0-use.local
   resolution: "@webiny/api-prerendering-service-so-ddb@workspace:packages/api-prerendering-service-so-ddb"
   dependencies:
@@ -9482,7 +9482,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-prerendering-service@^5.18.1, @webiny/api-prerendering-service@workspace:packages/api-prerendering-service":
+"@webiny/api-prerendering-service@^5.17.0, @webiny/api-prerendering-service@^5.18.1, @webiny/api-prerendering-service@workspace:packages/api-prerendering-service":
   version: 0.0.0-use.local
   resolution: "@webiny/api-prerendering-service@workspace:packages/api-prerendering-service"
   dependencies:
@@ -9517,7 +9517,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-security-cognito@^5.18.1, @webiny/api-security-cognito@workspace:packages/api-security-cognito":
+"@webiny/api-security-cognito@^5.17.0, @webiny/api-security-cognito@workspace:packages/api-security-cognito":
   version: 0.0.0-use.local
   resolution: "@webiny/api-security-cognito@workspace:packages/api-security-cognito"
   dependencies:
@@ -9555,7 +9555,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-security-so-ddb@^5.17.0-beta.1, @webiny/api-security-so-ddb@^5.18.1, @webiny/api-security-so-ddb@workspace:packages/api-security-so-ddb":
+"@webiny/api-security-so-ddb@^5.17.0, @webiny/api-security-so-ddb@^5.17.0-beta.1, @webiny/api-security-so-ddb@^5.18.1, @webiny/api-security-so-ddb@workspace:packages/api-security-so-ddb":
   version: 0.0.0-use.local
   resolution: "@webiny/api-security-so-ddb@workspace:packages/api-security-so-ddb"
   dependencies:
@@ -9576,7 +9576,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-security@^5.18.1, @webiny/api-security@workspace:packages/api-security":
+"@webiny/api-security@^5.17.0, @webiny/api-security@^5.18.1, @webiny/api-security@workspace:packages/api-security":
   version: 0.0.0-use.local
   resolution: "@webiny/api-security@workspace:packages/api-security"
   dependencies:
@@ -9609,7 +9609,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-tenancy-so-ddb@^5.17.0-beta.1, @webiny/api-tenancy-so-ddb@^5.18.1, @webiny/api-tenancy-so-ddb@workspace:packages/api-tenancy-so-ddb":
+"@webiny/api-tenancy-so-ddb@^5.17.0, @webiny/api-tenancy-so-ddb@^5.17.0-beta.1, @webiny/api-tenancy-so-ddb@^5.18.1, @webiny/api-tenancy-so-ddb@workspace:packages/api-tenancy-so-ddb":
   version: 0.0.0-use.local
   resolution: "@webiny/api-tenancy-so-ddb@workspace:packages/api-tenancy-so-ddb"
   dependencies:
@@ -9630,7 +9630,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-tenancy@^5.18.1, @webiny/api-tenancy@workspace:packages/api-tenancy":
+"@webiny/api-tenancy@^5.17.0, @webiny/api-tenancy@^5.18.1, @webiny/api-tenancy@workspace:packages/api-tenancy":
   version: 0.0.0-use.local
   resolution: "@webiny/api-tenancy@workspace:packages/api-tenancy"
   dependencies:
@@ -10834,7 +10834,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/cli@^5.18.1, @webiny/cli@workspace:packages/cli":
+"@webiny/cli@^5.17.0, @webiny/cli@^5.18.1, @webiny/cli@workspace:packages/cli":
   version: 0.0.0-use.local
   resolution: "@webiny/cli@workspace:packages/cli"
   dependencies:
@@ -10898,7 +10898,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/db-dynamodb@^5.18.1, @webiny/db-dynamodb@workspace:packages/db-dynamodb":
+"@webiny/db-dynamodb@^5.17.0, @webiny/db-dynamodb@^5.18.1, @webiny/db-dynamodb@workspace:packages/db-dynamodb":
   version: 0.0.0-use.local
   resolution: "@webiny/db-dynamodb@workspace:packages/db-dynamodb"
   dependencies:
@@ -10983,7 +10983,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/handler-args@^5.18.1, @webiny/handler-args@workspace:packages/handler-args":
+"@webiny/handler-args@^5.17.0, @webiny/handler-args@^5.18.1, @webiny/handler-args@workspace:packages/handler-args":
   version: 0.0.0-use.local
   resolution: "@webiny/handler-args@workspace:packages/handler-args"
   dependencies:
@@ -10999,7 +10999,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/handler-aws@^5.17.0-beta.1, @webiny/handler-aws@^5.18.1, @webiny/handler-aws@workspace:packages/handler-aws":
+"@webiny/handler-aws@^5.17.0, @webiny/handler-aws@^5.17.0-beta.1, @webiny/handler-aws@^5.18.1, @webiny/handler-aws@workspace:packages/handler-aws":
   version: 0.0.0-use.local
   resolution: "@webiny/handler-aws@workspace:packages/handler-aws"
   dependencies:
@@ -11022,7 +11022,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/handler-client@^5.18.1, @webiny/handler-client@workspace:packages/handler-client":
+"@webiny/handler-client@^5.17.0, @webiny/handler-client@^5.18.1, @webiny/handler-client@workspace:packages/handler-client":
   version: 0.0.0-use.local
   resolution: "@webiny/handler-client@workspace:packages/handler-client"
   dependencies:
@@ -11044,7 +11044,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/handler-db@^5.18.1, @webiny/handler-db@workspace:packages/handler-db":
+"@webiny/handler-db@^5.17.0, @webiny/handler-db@^5.18.1, @webiny/handler-db@workspace:packages/handler-db":
   version: 0.0.0-use.local
   resolution: "@webiny/handler-db@workspace:packages/handler-db"
   dependencies:
@@ -11061,7 +11061,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/handler-graphql@^5.18.1, @webiny/handler-graphql@workspace:packages/handler-graphql":
+"@webiny/handler-graphql@^5.17.0, @webiny/handler-graphql@^5.18.1, @webiny/handler-graphql@workspace:packages/handler-graphql":
   version: 0.0.0-use.local
   resolution: "@webiny/handler-graphql@workspace:packages/handler-graphql"
   dependencies:
@@ -11088,7 +11088,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/handler-http@^5.17.0-beta.1, @webiny/handler-http@^5.18.1, @webiny/handler-http@workspace:packages/handler-http":
+"@webiny/handler-http@^5.17.0, @webiny/handler-http@^5.17.0-beta.1, @webiny/handler-http@^5.18.1, @webiny/handler-http@workspace:packages/handler-http":
   version: 0.0.0-use.local
   resolution: "@webiny/handler-http@workspace:packages/handler-http"
   dependencies:
@@ -11105,7 +11105,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/handler-logs@^5.18.1, @webiny/handler-logs@workspace:packages/handler-logs":
+"@webiny/handler-logs@^5.17.0, @webiny/handler-logs@workspace:packages/handler-logs":
   version: 0.0.0-use.local
   resolution: "@webiny/handler-logs@workspace:packages/handler-logs"
   dependencies:
@@ -11122,7 +11122,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/handler@^5.18.1, @webiny/handler@workspace:packages/handler":
+"@webiny/handler@^5.17.0, @webiny/handler@^5.18.1, @webiny/handler@workspace:packages/handler":
   version: 0.0.0-use.local
   resolution: "@webiny/handler@workspace:packages/handler"
   dependencies:
@@ -11201,7 +11201,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/project-utils@^5.18.1, @webiny/project-utils@workspace:packages/project-utils":
+"@webiny/project-utils@^5.17.0, @webiny/project-utils@^5.18.1, @webiny/project-utils@^5.3.0, @webiny/project-utils@workspace:packages/project-utils":
   version: 0.0.0-use.local
   resolution: "@webiny/project-utils@workspace:packages/project-utils"
   dependencies:
@@ -12288,28 +12288,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"api-dynamo-to-elastic@workspace:api/code/dynamoToElastic":
-  version: 0.0.0-use.local
-  resolution: "api-dynamo-to-elastic@workspace:api/code/dynamoToElastic"
-  dependencies:
-    "@webiny/api-dynamodb-to-elasticsearch": ^5.18.1
-    "@webiny/api-elasticsearch": ^5.18.1
-    "@webiny/cli": ^5.18.1
-    "@webiny/handler-aws": ^5.18.1
-    "@webiny/handler-logs": ^5.18.1
-    "@webiny/project-utils": ^5.18.1
-  languageName: unknown
-  linkType: soft
-
 "api-file-manager-download@workspace:api/code/fileManager/download":
   version: 0.0.0-use.local
   resolution: "api-file-manager-download@workspace:api/code/fileManager/download"
   dependencies:
-    "@webiny/api-file-manager": ^5.18.1
-    "@webiny/cli": ^5.18.1
-    "@webiny/handler-aws": ^5.18.1
-    "@webiny/handler-logs": ^5.18.1
-    "@webiny/project-utils": ^5.18.1
+    "@webiny/api-file-manager": ^5.17.0
+    "@webiny/cli": ^5.17.0
+    "@webiny/handler-aws": ^5.17.0
+    "@webiny/project-utils": ^5.17.0
   languageName: unknown
   linkType: soft
 
@@ -12317,11 +12303,10 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "api-file-manager-manage@workspace:api/code/fileManager/manage"
   dependencies:
-    "@webiny/api-file-manager": ^5.18.1
-    "@webiny/cli": ^5.18.1
-    "@webiny/handler-aws": ^5.18.1
-    "@webiny/handler-logs": ^5.18.1
-    "@webiny/project-utils": ^5.18.1
+    "@webiny/api-file-manager": ^5.17.0
+    "@webiny/cli": ^5.17.0
+    "@webiny/handler-aws": ^5.17.0
+    "@webiny/project-utils": ^5.17.0
   languageName: unknown
   linkType: soft
 
@@ -12329,11 +12314,10 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "api-file-manager-transform@workspace:api/code/fileManager/transform"
   dependencies:
-    "@webiny/api-file-manager": ^5.18.1
-    "@webiny/cli": ^5.18.1
-    "@webiny/handler-aws": ^5.18.1
-    "@webiny/handler-logs": ^5.18.1
-    "@webiny/project-utils": ^5.18.1
+    "@webiny/api-file-manager": ^5.17.0
+    "@webiny/cli": ^5.17.0
+    "@webiny/handler-aws": ^5.17.0
+    "@webiny/project-utils": ^5.3.0
   languageName: unknown
   linkType: soft
 
@@ -12341,41 +12325,39 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "api-graphql@workspace:api/code/graphql"
   dependencies:
-    "@webiny/api-admin-users-cognito": ^5.18.1
-    "@webiny/api-admin-users-cognito-so-ddb": ^5.18.1
-    "@webiny/api-elasticsearch": ^5.18.1
-    "@webiny/api-file-manager": ^5.18.1
-    "@webiny/api-file-manager-ddb-es": ^5.18.1
-    "@webiny/api-file-manager-s3": ^5.18.1
-    "@webiny/api-form-builder": ^5.18.1
-    "@webiny/api-form-builder-so-ddb-es": ^5.18.1
-    "@webiny/api-headless-cms": ^5.18.1
-    "@webiny/api-headless-cms-ddb-es": ^5.18.1
-    "@webiny/api-i18n": ^5.18.1
-    "@webiny/api-i18n-content": ^5.18.1
-    "@webiny/api-i18n-ddb": ^5.18.1
-    "@webiny/api-page-builder": ^5.18.1
-    "@webiny/api-page-builder-import-export": ^5.18.1
-    "@webiny/api-page-builder-import-export-so-ddb": ^5.18.1
-    "@webiny/api-page-builder-so-ddb-es": ^5.18.1
-    "@webiny/api-prerendering-service": ^5.18.1
-    "@webiny/api-security": ^5.18.1
-    "@webiny/api-security-cognito": ^5.18.1
-    "@webiny/api-security-so-ddb": ^5.18.1
-    "@webiny/api-tenancy": ^5.18.1
-    "@webiny/api-tenancy-so-ddb": ^5.18.1
-    "@webiny/cli": ^5.18.1
-    "@webiny/cli-plugin-deploy-pulumi": ^5.18.1
-    "@webiny/db-dynamodb": ^5.18.1
-    "@webiny/handler": ^5.18.1
-    "@webiny/handler-args": ^5.18.1
-    "@webiny/handler-aws": ^5.18.1
-    "@webiny/handler-client": ^5.18.1
-    "@webiny/handler-db": ^5.18.1
-    "@webiny/handler-graphql": ^5.18.1
-    "@webiny/handler-http": ^5.18.1
-    "@webiny/handler-logs": ^5.18.1
-    "@webiny/project-utils": ^5.18.1
+    "@webiny/api-admin-users-cognito": ^5.17.0
+    "@webiny/api-admin-users-cognito-so-ddb": ^5.17.0
+    "@webiny/api-file-manager": ^5.17.0
+    "@webiny/api-file-manager-ddb": ^5.17.0
+    "@webiny/api-file-manager-s3": ^5.17.0
+    "@webiny/api-form-builder": ^5.17.0
+    "@webiny/api-form-builder-so-ddb": ^5.17.0
+    "@webiny/api-headless-cms": ^5.17.0
+    "@webiny/api-headless-cms-ddb": ^5.17.0
+    "@webiny/api-i18n": ^5.17.0
+    "@webiny/api-i18n-content": ^5.17.0
+    "@webiny/api-i18n-ddb": ^5.17.0
+    "@webiny/api-page-builder": ^5.17.0
+    "@webiny/api-page-builder-import-export": ^5.17.0
+    "@webiny/api-page-builder-import-export-so-ddb": ^5.17.0
+    "@webiny/api-page-builder-so-ddb": ^5.17.0
+    "@webiny/api-prerendering-service": ^5.17.0
+    "@webiny/api-security": ^5.17.0
+    "@webiny/api-security-cognito": ^5.17.0
+    "@webiny/api-security-so-ddb": ^5.17.0
+    "@webiny/api-tenancy": ^5.17.0
+    "@webiny/api-tenancy-so-ddb": ^5.17.0
+    "@webiny/cli": ^5.17.0
+    "@webiny/db-dynamodb": ^5.17.0
+    "@webiny/handler": ^5.17.0
+    "@webiny/handler-args": ^5.17.0
+    "@webiny/handler-aws": ^5.17.0
+    "@webiny/handler-client": ^5.17.0
+    "@webiny/handler-db": ^5.17.0
+    "@webiny/handler-graphql": ^5.17.0
+    "@webiny/handler-http": ^5.17.0
+    "@webiny/handler-logs": ^5.17.0
+    "@webiny/project-utils": ^5.17.0
   languageName: unknown
   linkType: soft
 
@@ -12383,28 +12365,26 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "api-headless-cms@workspace:api/code/headlessCMS"
   dependencies:
-    "@webiny/api-elasticsearch": ^5.18.1
-    "@webiny/api-headless-cms": ^5.18.1
-    "@webiny/api-headless-cms-ddb-es": ^5.18.1
-    "@webiny/api-i18n": ^5.18.1
-    "@webiny/api-i18n-content": ^5.18.1
-    "@webiny/api-i18n-ddb": ^5.18.1
-    "@webiny/api-security": ^5.18.1
-    "@webiny/api-security-cognito": ^5.18.1
-    "@webiny/api-security-so-ddb": ^5.18.1
-    "@webiny/api-tenancy": ^5.18.1
-    "@webiny/api-tenancy-so-ddb": ^5.18.1
-    "@webiny/cli": ^5.18.1
-    "@webiny/cli-plugin-deploy-pulumi": ^5.18.1
-    "@webiny/db-dynamodb": ^5.18.1
-    "@webiny/handler": ^5.18.1
-    "@webiny/handler-args": ^5.18.1
-    "@webiny/handler-aws": ^5.18.1
-    "@webiny/handler-client": ^5.18.1
-    "@webiny/handler-db": ^5.18.1
-    "@webiny/handler-http": ^5.18.1
-    "@webiny/handler-logs": ^5.18.1
-    "@webiny/project-utils": ^5.18.1
+    "@webiny/api-headless-cms": ^5.17.0
+    "@webiny/api-headless-cms-ddb": ^5.17.0
+    "@webiny/api-i18n": ^5.17.0
+    "@webiny/api-i18n-content": ^5.17.0
+    "@webiny/api-i18n-ddb": ^5.17.0
+    "@webiny/api-security": ^5.17.0
+    "@webiny/api-security-cognito": ^5.17.0
+    "@webiny/api-security-so-ddb": ^5.17.0
+    "@webiny/api-tenancy": ^5.17.0
+    "@webiny/api-tenancy-so-ddb": ^5.17.0
+    "@webiny/cli": ^5.17.0
+    "@webiny/db-dynamodb": ^5.17.0
+    "@webiny/handler": ^5.17.0
+    "@webiny/handler-args": ^5.17.0
+    "@webiny/handler-aws": ^5.17.0
+    "@webiny/handler-client": ^5.17.0
+    "@webiny/handler-db": ^5.17.0
+    "@webiny/handler-http": ^5.17.0
+    "@webiny/handler-logs": ^5.17.0
+    "@webiny/project-utils": ^5.17.0
   languageName: unknown
   linkType: soft
 
@@ -12412,24 +12392,23 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "api-page-builder-export-pages-combine@workspace:api/code/pageBuilder/exportPages/combine"
   dependencies:
-    "@webiny/api-elasticsearch": ^5.18.1
-    "@webiny/api-i18n": ^5.18.1
-    "@webiny/api-i18n-content": ^5.18.1
-    "@webiny/api-i18n-ddb": ^5.18.1
-    "@webiny/api-page-builder": ^5.18.1
-    "@webiny/api-page-builder-import-export": ^5.18.1
-    "@webiny/api-page-builder-import-export-so-ddb": ^5.18.1
-    "@webiny/api-page-builder-so-ddb-es": ^5.18.1
-    "@webiny/api-security": ^5.18.1
-    "@webiny/api-security-so-ddb": ^5.18.1
-    "@webiny/api-tenancy": ^5.18.1
-    "@webiny/api-tenancy-so-ddb": ^5.18.1
-    "@webiny/cli": ^5.18.1
-    "@webiny/db-dynamodb": ^5.18.1
-    "@webiny/handler-aws": ^5.18.1
-    "@webiny/handler-db": ^5.18.1
-    "@webiny/handler-logs": ^5.18.1
-    "@webiny/project-utils": ^5.18.1
+    "@webiny/api-i18n": ^5.17.0
+    "@webiny/api-i18n-content": ^5.17.0
+    "@webiny/api-i18n-ddb": ^5.17.0
+    "@webiny/api-page-builder": ^5.17.0
+    "@webiny/api-page-builder-import-export": ^5.17.0
+    "@webiny/api-page-builder-import-export-so-ddb": ^5.17.0
+    "@webiny/api-page-builder-so-ddb": ^5.17.0
+    "@webiny/api-security": ^5.17.0
+    "@webiny/api-security-so-ddb": ^5.17.0
+    "@webiny/api-tenancy": ^5.17.0
+    "@webiny/api-tenancy-so-ddb": ^5.17.0
+    "@webiny/cli": ^5.17.0
+    "@webiny/db-dynamodb": ^5.17.0
+    "@webiny/handler-aws": ^5.17.0
+    "@webiny/handler-db": ^5.17.0
+    "@webiny/handler-logs": ^5.17.0
+    "@webiny/project-utils": ^5.17.0
   languageName: unknown
   linkType: soft
 
@@ -12437,41 +12416,23 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "api-page-builder-export-pages-process@workspace:api/code/pageBuilder/exportPages/process"
   dependencies:
-    "@webiny/api-elasticsearch": ^5.18.1
-    "@webiny/api-file-manager": ^5.18.1
-    "@webiny/api-file-manager-ddb-es": ^5.18.1
-    "@webiny/api-file-manager-s3": ^5.18.1
-    "@webiny/api-i18n": ^5.18.1
-    "@webiny/api-i18n-content": ^5.18.1
-    "@webiny/api-i18n-ddb": ^5.18.1
-    "@webiny/api-page-builder": ^5.18.1
-    "@webiny/api-page-builder-import-export": ^5.18.1
-    "@webiny/api-page-builder-import-export-so-ddb": ^5.18.1
-    "@webiny/api-page-builder-so-ddb-es": ^5.18.1
-    "@webiny/api-security": ^5.18.1
-    "@webiny/api-security-so-ddb": ^5.18.1
-    "@webiny/api-tenancy": ^5.18.1
-    "@webiny/api-tenancy-so-ddb": ^5.18.1
-    "@webiny/cli": ^5.18.1
-    "@webiny/db-dynamodb": ^5.18.1
-    "@webiny/handler-aws": ^5.18.1
-    "@webiny/handler-db": ^5.18.1
-    "@webiny/handler-logs": ^5.18.1
-    "@webiny/project-utils": ^5.18.1
-  languageName: unknown
-  linkType: soft
-
-"api-page-builder-flush@workspace:api/code/prerenderingService/flush":
-  version: 0.0.0-use.local
-  resolution: "api-page-builder-flush@workspace:api/code/prerenderingService/flush"
-  dependencies:
-    "@webiny/api-prerendering-service": ^5.18.1
-    "@webiny/api-prerendering-service-aws": ^5.18.1
-    "@webiny/api-prerendering-service-so-ddb": ^5.18.1
-    "@webiny/cli": ^5.18.1
-    "@webiny/handler-aws": ^5.18.1
-    "@webiny/handler-logs": ^5.18.1
-    "@webiny/project-utils": ^5.18.1
+    "@webiny/api-i18n": ^5.17.0
+    "@webiny/api-i18n-content": ^5.17.0
+    "@webiny/api-i18n-ddb": ^5.17.0
+    "@webiny/api-page-builder": ^5.17.0
+    "@webiny/api-page-builder-import-export": ^5.17.0
+    "@webiny/api-page-builder-import-export-so-ddb": ^5.17.0
+    "@webiny/api-page-builder-so-ddb": ^5.17.0
+    "@webiny/api-security": ^5.17.0
+    "@webiny/api-security-so-ddb": ^5.17.0
+    "@webiny/api-tenancy": ^5.17.0
+    "@webiny/api-tenancy-so-ddb": ^5.17.0
+    "@webiny/cli": ^5.17.0
+    "@webiny/db-dynamodb": ^5.17.0
+    "@webiny/handler-aws": ^5.17.0
+    "@webiny/handler-db": ^5.17.0
+    "@webiny/handler-logs": ^5.17.0
+    "@webiny/project-utils": ^5.17.0
   languageName: unknown
   linkType: soft
 
@@ -12479,24 +12440,23 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "api-page-builder-import-pages-create@workspace:api/code/pageBuilder/importPages/create"
   dependencies:
-    "@webiny/api-elasticsearch": ^5.18.1
-    "@webiny/api-i18n": ^5.18.1
-    "@webiny/api-i18n-content": ^5.18.1
-    "@webiny/api-i18n-ddb": ^5.18.1
-    "@webiny/api-page-builder": ^5.18.1
-    "@webiny/api-page-builder-import-export": ^5.18.1
-    "@webiny/api-page-builder-import-export-so-ddb": ^5.18.1
-    "@webiny/api-page-builder-so-ddb-es": ^5.18.1
-    "@webiny/api-security": ^5.18.1
-    "@webiny/api-security-so-ddb": ^5.18.1
-    "@webiny/api-tenancy": ^5.18.1
-    "@webiny/api-tenancy-so-ddb": ^5.18.1
-    "@webiny/cli": ^5.18.1
-    "@webiny/db-dynamodb": ^5.18.1
-    "@webiny/handler-aws": ^5.18.1
-    "@webiny/handler-db": ^5.18.1
-    "@webiny/handler-logs": ^5.18.1
-    "@webiny/project-utils": ^5.18.1
+    "@webiny/api-i18n": ^5.17.0
+    "@webiny/api-i18n-content": ^5.17.0
+    "@webiny/api-i18n-ddb": ^5.17.0
+    "@webiny/api-page-builder": ^5.17.0
+    "@webiny/api-page-builder-import-export": ^5.17.0
+    "@webiny/api-page-builder-import-export-so-ddb": ^5.17.0
+    "@webiny/api-page-builder-so-ddb": ^5.17.0
+    "@webiny/api-security": ^5.17.0
+    "@webiny/api-security-so-ddb": ^5.17.0
+    "@webiny/api-tenancy": ^5.17.0
+    "@webiny/api-tenancy-so-ddb": ^5.17.0
+    "@webiny/cli": ^5.17.0
+    "@webiny/db-dynamodb": ^5.17.0
+    "@webiny/handler-aws": ^5.17.0
+    "@webiny/handler-db": ^5.17.0
+    "@webiny/handler-logs": ^5.17.0
+    "@webiny/project-utils": ^5.17.0
   languageName: unknown
   linkType: soft
 
@@ -12504,41 +12464,26 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "api-page-builder-import-pages-process@workspace:api/code/pageBuilder/importPages/process"
   dependencies:
-    "@webiny/api-elasticsearch": ^5.18.1
-    "@webiny/api-file-manager": ^5.18.1
-    "@webiny/api-file-manager-ddb-es": ^5.18.1
-    "@webiny/api-file-manager-s3": ^5.18.1
-    "@webiny/api-i18n": ^5.18.1
-    "@webiny/api-i18n-content": ^5.18.1
-    "@webiny/api-i18n-ddb": ^5.18.1
-    "@webiny/api-page-builder": ^5.18.1
-    "@webiny/api-page-builder-import-export": ^5.18.1
-    "@webiny/api-page-builder-import-export-so-ddb": ^5.18.1
-    "@webiny/api-page-builder-so-ddb-es": ^5.18.1
-    "@webiny/api-security": ^5.18.1
-    "@webiny/api-security-so-ddb": ^5.18.1
-    "@webiny/api-tenancy": ^5.18.1
-    "@webiny/api-tenancy-so-ddb": ^5.18.1
-    "@webiny/cli": ^5.18.1
-    "@webiny/db-dynamodb": ^5.18.1
-    "@webiny/handler-aws": ^5.18.1
-    "@webiny/handler-db": ^5.18.1
-    "@webiny/handler-logs": ^5.18.1
-    "@webiny/project-utils": ^5.18.1
-  languageName: unknown
-  linkType: soft
-
-"api-page-builder-render@workspace:api/code/prerenderingService/render":
-  version: 0.0.0-use.local
-  resolution: "api-page-builder-render@workspace:api/code/prerenderingService/render"
-  dependencies:
-    "@webiny/api-prerendering-service": ^5.18.1
-    "@webiny/api-prerendering-service-aws": ^5.18.1
-    "@webiny/api-prerendering-service-so-ddb": ^5.18.1
-    "@webiny/cli": ^5.18.1
-    "@webiny/handler-aws": ^5.18.1
-    "@webiny/handler-logs": ^5.18.1
-    "@webiny/project-utils": ^5.18.1
+    "@webiny/api-file-manager": ^5.17.0
+    "@webiny/api-file-manager-ddb": ^5.17.0
+    "@webiny/api-file-manager-s3": ^5.17.0
+    "@webiny/api-i18n": ^5.17.0
+    "@webiny/api-i18n-content": ^5.17.0
+    "@webiny/api-i18n-ddb": ^5.17.0
+    "@webiny/api-page-builder": ^5.17.0
+    "@webiny/api-page-builder-import-export": ^5.17.0
+    "@webiny/api-page-builder-import-export-so-ddb": ^5.17.0
+    "@webiny/api-page-builder-so-ddb": ^5.17.0
+    "@webiny/api-security": ^5.17.0
+    "@webiny/api-security-so-ddb": ^5.17.0
+    "@webiny/api-tenancy": ^5.17.0
+    "@webiny/api-tenancy-so-ddb": ^5.17.0
+    "@webiny/cli": ^5.17.0
+    "@webiny/db-dynamodb": ^5.17.0
+    "@webiny/handler-aws": ^5.17.0
+    "@webiny/handler-db": ^5.17.0
+    "@webiny/handler-logs": ^5.17.0
+    "@webiny/project-utils": ^5.17.0
   languageName: unknown
   linkType: soft
 
@@ -12546,14 +12491,26 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "api-page-builder-update-settings@workspace:api/code/pageBuilder/updateSettings"
   dependencies:
-    "@webiny/api-page-builder": ^5.18.1
-    "@webiny/api-page-builder-so-ddb-es": ^5.18.1
-    "@webiny/cli": ^5.18.1
-    "@webiny/db-dynamodb": ^5.18.1
-    "@webiny/handler-aws": ^5.18.1
-    "@webiny/handler-db": ^5.18.1
-    "@webiny/handler-logs": ^5.18.1
-    "@webiny/project-utils": ^5.18.1
+    "@webiny/api-page-builder": ^5.17.0
+    "@webiny/api-page-builder-so-ddb": ^5.17.0
+    "@webiny/cli": ^5.17.0
+    "@webiny/db-dynamodb": ^5.17.0
+    "@webiny/handler-aws": ^5.17.0
+    "@webiny/handler-db": ^5.17.0
+    "@webiny/project-utils": ^5.17.0
+  languageName: unknown
+  linkType: soft
+
+"api-prerendering-service-flush@workspace:api/code/prerenderingService/flush":
+  version: 0.0.0-use.local
+  resolution: "api-prerendering-service-flush@workspace:api/code/prerenderingService/flush"
+  dependencies:
+    "@webiny/api-prerendering-service": ^5.17.0
+    "@webiny/api-prerendering-service-aws": ^5.17.0
+    "@webiny/api-prerendering-service-so-ddb": ^5.17.0
+    "@webiny/cli": ^5.17.0
+    "@webiny/handler-aws": ^5.17.0
+    "@webiny/project-utils": ^5.17.0
   languageName: unknown
   linkType: soft
 
@@ -12561,12 +12518,11 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "api-prerendering-service-queue-add@workspace:api/code/prerenderingService/queue/add"
   dependencies:
-    "@webiny/api-prerendering-service": ^5.18.1
-    "@webiny/api-prerendering-service-so-ddb": ^5.18.1
-    "@webiny/cli": ^5.18.1
-    "@webiny/handler-aws": ^5.18.1
-    "@webiny/handler-logs": ^5.18.1
-    "@webiny/project-utils": ^5.18.1
+    "@webiny/api-prerendering-service": ^5.17.0
+    "@webiny/api-prerendering-service-so-ddb": ^5.17.0
+    "@webiny/cli": ^5.17.0
+    "@webiny/handler-aws": ^5.17.0
+    "@webiny/project-utils": ^5.17.0
   languageName: unknown
   linkType: soft
 
@@ -12574,12 +12530,24 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "api-prerendering-service-queue-process@workspace:api/code/prerenderingService/queue/process"
   dependencies:
-    "@webiny/api-prerendering-service": ^5.18.1
-    "@webiny/api-prerendering-service-so-ddb": ^5.18.1
-    "@webiny/cli": ^5.18.1
-    "@webiny/handler-aws": ^5.18.1
-    "@webiny/handler-logs": ^5.18.1
-    "@webiny/project-utils": ^5.18.1
+    "@webiny/api-prerendering-service": ^5.17.0
+    "@webiny/api-prerendering-service-so-ddb": ^5.17.0
+    "@webiny/cli": ^5.17.0
+    "@webiny/handler-aws": ^5.17.0
+    "@webiny/project-utils": ^5.17.0
+  languageName: unknown
+  linkType: soft
+
+"api-prerendering-service-render@workspace:api/code/prerenderingService/render":
+  version: 0.0.0-use.local
+  resolution: "api-prerendering-service-render@workspace:api/code/prerenderingService/render"
+  dependencies:
+    "@webiny/api-prerendering-service": ^5.17.0
+    "@webiny/api-prerendering-service-aws": ^5.17.0
+    "@webiny/api-prerendering-service-so-ddb": ^5.17.0
+    "@webiny/cli": ^5.17.0
+    "@webiny/handler-aws": ^5.17.0
+    "@webiny/project-utils": ^5.17.0
   languageName: unknown
   linkType: soft
 

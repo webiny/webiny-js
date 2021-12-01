@@ -5,12 +5,5 @@
 export default {
     id: "api",
     name: "API",
-    description: "Your GraphQL API and all of the backend services.",
-    cli: {
-        // Default args for the "yarn webiny watch ..." command.
-        watch: {
-            // Watch five levels of dependencies, starting from this project application.
-            depth: 5
-        }
-    }
+    description: "Your GraphQL API and all of the backend services."
 };

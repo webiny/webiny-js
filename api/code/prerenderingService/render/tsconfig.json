@@ -1,20 +1,3 @@
 {
-  "extends": "../../../../tsconfig",
-  "references": [
-    {
-      "path": "../../../../packages/api-prerendering-service"
-    },
-    {
-      "path": "../../../../packages/api-prerendering-service-aws"
-    },
-    {
-      "path": "../../../../packages/api-prerendering-service-so-ddb"
-    },
-    {
-      "path": "../../../../packages/handler-aws"
-    },
-    {
-      "path": "../../../../packages/handler-logs"
-    }
-  ]
+  "extends": "../../../../tsconfig"
 }

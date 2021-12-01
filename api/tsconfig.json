@@ -12,5 +12,5 @@
     "noImplicitReturns": true,
     "forceConsistentCasingInFileNames": true
   },
-  "include": ["./pulumi/**/*.ts"]
+  "files": ["pulumi/index.ts"]
 }
