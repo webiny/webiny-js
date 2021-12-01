@@ -34,6 +34,8 @@ import {
     LIST_CONTENT_REVIEWS_QUERY,
     UPDATE_CONTENT_REVIEW_MUTATION
 } from "./graphql/contentReview";
+import { LOGIN } from "./graphql/login";
+import { GET_REVIEWER_QUERY, LIST_REVIEWERS_QUERY } from "./graphql/reviewer";
 
 export interface CreateHeadlessCmsAppParams {
     storageOperations: HeadlessCmsStorageOperations;
@@ -48,10 +50,6 @@ export interface GQLHandlerCallableParams {
     path: string;
     createHeadlessCmsApp: (params: CreateHeadlessCmsAppParams) => any[];
 }
-
-// const elasticsearchClient = createElasticsearchClient({
-//     endpoint: `https://${process.env.ELASTIC_SEARCH_ENDPOINT}`
-// });
 
 export const useGqlHandler = (params: GQLHandlerCallableParams) => {
     const ops = getStorageOperations({
@@ -164,11 +162,28 @@ export const useGqlHandler = (params: GQLHandlerCallableParams) => {
         return [JSON.parse(response.body), response];
     };
 
+    const securityIdentity = {
+        async login() {
+            return invoke({ body: { query: LOGIN } });
+        }
+    };
+
+    const reviewer = {
+        async getReviewerQuery(variables: Record<string, any>) {
+            return invoke({ body: { query: GET_REVIEWER_QUERY, variables } });
+        },
+        async listReviewersQuery(variables: Record<string, any>) {
+            return invoke({ body: { query: LIST_REVIEWERS_QUERY, variables } });
+        }
+    };
+
     return {
         until,
         sleep,
         handler,
         invoke,
+        securityIdentity,
+        reviewer,
         async introspect() {
             return invoke({ body: { query: introspectionQuery } });
         },

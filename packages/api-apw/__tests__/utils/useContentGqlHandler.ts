@@ -9,7 +9,7 @@ export const useContentGqlHandler = (
 ) => {
     return useGqlHandler({
         ...params,
-        setupTenancyAndSecurityGraphQL: false,
+        setupTenancyAndSecurityGraphQL: true,
         plugins: (params.plugins || []).concat([createContentHeadlessCmsGraphQL()]),
         createHeadlessCmsApp: createContentHeadlessCmsContext
     });
