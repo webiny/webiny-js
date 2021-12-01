@@ -80,13 +80,13 @@ export const useInstaller = ({ isInstalled }) => {
                     installed: false
                 });
             } else {
-                const wbyVersion = appConfig.getKey("WEBINY_VERSION", process.env.REACT_APP_WEBINY_VERSION)
+                const wbyVersion = appConfig.getKey(
+                    "WEBINY_VERSION",
+                    process.env.REACT_APP_WEBINY_VERSION
+                );
 
                 const upgrades = (installer.plugin.upgrades || []).filter(({ version }) => {
-                    return (
-                        lte(version, wbyVersion) &&
-                        gt(version, installer.installed)
-                    );
+                    return lte(version, wbyVersion) && gt(version, installer.installed);
                 });
 
                 if (upgrades.length > 1) {

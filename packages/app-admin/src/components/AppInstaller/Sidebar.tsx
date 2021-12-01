@@ -120,7 +120,7 @@ const Sidebar = ({ allInstallers, installer, showLogin }) => {
     const upgrades = allInstallers.filter(installer => installer.type === "upgrade");
     const installations = allInstallers.filter(installer => installer.type === "install");
 
-    const wbyVersion = appConfig.getKey("WEBINY_VERSION", process.env.REACT_APP_WEBINY_VERSION)
+    const wbyVersion = appConfig.getKey("WEBINY_VERSION", process.env.REACT_APP_WEBINY_VERSION);
 
     return (
         <SidebarWrapper>
@@ -131,8 +131,7 @@ const Sidebar = ({ allInstallers, installer, showLogin }) => {
                 <Installations
                     title={
                         <span>
-                            The following apps will be upgraded to{" "}
-                            <strong>{wbyVersion}</strong>:
+                            The following apps will be upgraded to <strong>{wbyVersion}</strong>:
                         </span>
                     }
                     allInstallers={upgrades}

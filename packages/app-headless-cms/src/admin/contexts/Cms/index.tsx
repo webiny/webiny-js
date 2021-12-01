@@ -20,7 +20,7 @@ type CmsProviderProps = {
 };
 
 export function CmsProvider(props: CmsProviderProps) {
-    const apiUrl = appConfig.getKey('API_URL', process.env.REACT_APP_API_URL);
+    const apiUrl = appConfig.getKey("API_URL", process.env.REACT_APP_API_URL);
     const { getCurrentLocale } = useI18N();
 
     const currentLocale = getCurrentLocale("content");

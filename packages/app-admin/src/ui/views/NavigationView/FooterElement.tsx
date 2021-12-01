@@ -23,7 +23,7 @@ export class FooterElement extends UIElement<FooterElementConfig> {
             new PlaceholderElement("navigation.footer.placeholder")
         );
 
-        const wbyVersion = appConfig.getKey("WEBINY_VERSION", process.env.REACT_APP_WEBINY_VERSION)
+        const wbyVersion = appConfig.getKey("WEBINY_VERSION", process.env.REACT_APP_WEBINY_VERSION);
 
         new GenericElement("webiny.version", () => {
             return (

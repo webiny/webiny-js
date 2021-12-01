@@ -1,4 +1,4 @@
-export type Config = Record<string, any>
+export type Config = Record<string, any>;
 
 interface AppConfig {
     set(config: Config): void;
