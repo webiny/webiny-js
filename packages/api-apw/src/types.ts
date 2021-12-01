@@ -31,6 +31,7 @@ export enum ApwWorkflowApplications {
 }
 
 export type ApwWorkflow = CmsEntry;
+export type ApwReviewer = CmsEntry;
 
 interface ApwWorkflowScope {
     type: WorkflowScopeTypes;
@@ -43,11 +44,6 @@ export enum ApwWorkflowStepTypes {
     BLOCKING = "blocking",
     NON_BLOCKING = "non_blocking",
     OPTIONAL = "optional"
-}
-
-interface ApwReviewer {
-    id: string;
-    displayName: string;
 }
 
 interface ApwWorkflowSteps {
@@ -75,6 +71,15 @@ export interface ListWorkflowsParams extends CmsEntryListParams {
     };
 }
 
+interface CreateReviewerParams {
+    identityId: string;
+    displayName: string;
+}
+
+interface UpdateReviewerParams {
+    displayName: string;
+}
+
 interface AdvancedPublishingWorkflow {
     getWorkflowModel(): Promise<CmsModel>;
 
@@ -87,6 +92,15 @@ interface AdvancedPublishingWorkflow {
     updateWorkflow(id: string, data: UpdateWorkflowParams): Promise<ApwWorkflow>;
 
     deleteWorkflow(id: string): Promise<Boolean>;
+
+    reviewer: {
+        getModel(): Promise<CmsModel>;
+        get(id: string): Promise<ApwReviewer>;
+        list(params: CmsEntryListParams): Promise<[ApwReviewer[], CmsEntryMeta]>;
+        create(data: CreateReviewerParams): Promise<ApwReviewer>;
+        update(id: string, data: UpdateReviewerParams): Promise<ApwReviewer>;
+        delete(id: string): Promise<Boolean>;
+    };
 }
 
 export interface ApwContext extends Context, CmsContext {
