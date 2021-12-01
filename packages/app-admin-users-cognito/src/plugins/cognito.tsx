@@ -11,9 +11,16 @@ import { createPasswordValidator, PasswordPolicy } from "~/createPasswordValidat
 import { config as appConfig } from "@webiny/app/config";
 
 export default (): PluginCollection => {
+    let envPasswordValidatorPolicy;
+    try {
+        envPasswordValidatorPolicy = JSON.parse(process.env.REACT_APP_USER_POOL_PASSWORD_POLICY);
+    } catch {
+        // Do nothing.
+    }
+
     const passwordValidatorPolicy = appConfig.getKey<PasswordPolicy>(
         "USER_POOL_PASSWORD_POLICY",
-        JSON.parse(process.env.REACT_APP_USER_POOL_PASSWORD_POLICY)
+        envPasswordValidatorPolicy
     );
 
     const passwordValidator = createPasswordValidator(passwordValidatorPolicy);
