@@ -36,6 +36,13 @@ import {
 } from "./graphql/contentReview";
 import { LOGIN } from "./graphql/login";
 import { GET_REVIEWER_QUERY, LIST_REVIEWERS_QUERY } from "./graphql/reviewer";
+import {
+    CREATE_COMMENT_MUTATION,
+    DELETE_COMMENT_MUTATION,
+    GET_COMMENT_QUERY,
+    LIST_COMMENTS_QUERY,
+    UPDATE_COMMENT_MUTATION
+} from "./graphql/comment";
 
 export interface CreateHeadlessCmsAppParams {
     storageOperations: HeadlessCmsStorageOperations;
@@ -202,6 +209,22 @@ export const useGqlHandler = (params: GQLHandlerCallableParams) => {
         },
         async deleteWorkflowMutation(variables: Record<string, any>) {
             return invoke({ body: { query: DELETE_WORKFLOW_MUTATION, variables } });
+        },
+        // Comment
+        async getCommentQuery(variables: Record<string, any>) {
+            return invoke({ body: { query: GET_COMMENT_QUERY, variables } });
+        },
+        async listCommentsQuery(variables: Record<string, any>) {
+            return invoke({ body: { query: LIST_COMMENTS_QUERY, variables } });
+        },
+        async createCommentMutation(variables: Record<string, any>) {
+            return invoke({ body: { query: CREATE_COMMENT_MUTATION, variables } });
+        },
+        async updateCommentMutation(variables: Record<string, any>) {
+            return invoke({ body: { query: UPDATE_COMMENT_MUTATION, variables } });
+        },
+        async deleteCommentMutation(variables: Record<string, any>) {
+            return invoke({ body: { query: DELETE_COMMENT_MUTATION, variables } });
         },
         // Categories
         async createCategory(variables) {
