@@ -5,6 +5,7 @@ import { GenericElement } from "~/ui/elements/GenericElement";
 import { PlaceholderElement } from "~/ui/elements/PlaceholderElement";
 import { NavigationMenuElement } from "~/ui/elements/NavigationMenuElement";
 import { MenuFooter, subFooter } from "./Styled";
+import { config as appConfig } from "@webiny/app/config";
 
 interface FooterElementConfig extends UIElementConfig {
     closeMenu: () => void;
@@ -22,10 +23,12 @@ export class FooterElement extends UIElement<FooterElementConfig> {
             new PlaceholderElement("navigation.footer.placeholder")
         );
 
+        const wbyVersion = appConfig.getKey("WEBINY_VERSION", process.env.REACT_APP_WEBINY_VERSION)
+
         new GenericElement("webiny.version", () => {
             return (
                 <ListItem ripple={false} className={subFooter}>
-                    Webiny v{process.env.REACT_APP_WEBINY_VERSION}
+                    Webiny v{wbyVersion}
                 </ListItem>
             );
         }).moveAfter(this._footerPlaceholder);
