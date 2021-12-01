@@ -2,6 +2,7 @@ import React from "react";
 import ApolloClient from "apollo-client";
 import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
 import { CircularProgress } from "@webiny/ui/Progress";
+import { config as appConfig } from "@webiny/app/config";
 
 export interface CmsContextValue {
     getApolloClient(locale: string): ApolloClient<any>;
@@ -19,6 +20,7 @@ type CmsProviderProps = {
 };
 
 export function CmsProvider(props: CmsProviderProps) {
+    const apiUrl = appConfig.getKey('API_URL', process.env.REACT_APP_API_URL);
     const { getCurrentLocale } = useI18N();
 
     const currentLocale = getCurrentLocale("content");
@@ -31,7 +33,7 @@ export function CmsProvider(props: CmsProviderProps) {
 
     if (currentLocale && !apolloClientsCache[currentLocale]) {
         apolloClientsCache[currentLocale] = props.createApolloClient({
-            uri: `${process.env.REACT_APP_API_URL}/cms/manage/${currentLocale}`
+            uri: `${apiUrl}/cms/manage/${currentLocale}`
         });
     }
 
@@ -39,7 +41,7 @@ export function CmsProvider(props: CmsProviderProps) {
         getApolloClient(locale: string) {
             if (!apolloClientsCache[locale]) {
                 apolloClientsCache[locale] = props.createApolloClient({
-                    uri: `${process.env.REACT_APP_API_URL}/cms/manage/${locale}`
+                    uri: `${apiUrl}/cms/manage/${locale}`
                 });
             }
             return apolloClientsCache[locale];

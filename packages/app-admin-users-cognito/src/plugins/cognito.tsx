@@ -8,11 +8,15 @@ import { UIViewPlugin } from "@webiny/app-admin/ui/UIView";
 import { UsersFormView } from "~/ui/views/Users/UsersFormView";
 import { PasswordElement } from "@webiny/app-admin/ui/elements/form/PasswordElement";
 import { createPasswordValidator, PasswordPolicy } from "~/createPasswordValidator";
+import { config as appConfig } from "@webiny/app/config";
 
 export default (): PluginCollection => {
-    const passwordValidator = createPasswordValidator(
-        JSON.parse(process.env.REACT_APP_USER_POOL_PASSWORD_POLICY) as PasswordPolicy
+    const passwordValidatorPolicy = appConfig.getKey<PasswordPolicy>(
+        "USER_POOL_PASSWORD_POLICY",
+        JSON.parse(process.env.REACT_APP_USER_POOL_PASSWORD_POLICY)
     );
+
+    const passwordValidator = createPasswordValidator(passwordValidatorPolicy);
     return [
         // Add password input to admin user installation
         new ViewPlugin({

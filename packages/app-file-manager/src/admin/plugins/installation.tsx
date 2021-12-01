@@ -7,6 +7,7 @@ import { Alert } from "@webiny/ui/Alert";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { SimpleForm, SimpleFormContent } from "@webiny/app-admin/components/SimpleForm";
 import styled from "@emotion/styled";
+import { config as appConfig } from "@webiny/app/config";
 
 const SimpleFormPlaceholder = styled.div({
     minHeight: 300,
@@ -41,11 +42,13 @@ const FMInstaller = ({ onInstalled }) => {
     const client = useApolloClient();
     const [error, setError] = useState(null);
 
+    const apiUrl = appConfig.getKey("API_URL", process.env.REACT_APP_API_URL);
+
     useEffect(() => {
         client
             .mutate({
                 mutation: INSTALL,
-                variables: { srcPrefix: process.env.REACT_APP_API_URL + "/files" }
+                variables: { srcPrefix: apiUrl + "/files" }
             })
             .then(({ data }) => {
                 const { error } = data.fileManager.install;
