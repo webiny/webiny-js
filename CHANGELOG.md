@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.18.3-beta.0](https://github.com/webiny/webiny-js/compare/v5.18.2...v5.18.3-beta.0) (2021-12-01)
+
+
+### Bug Fixes
+
+* add `--debug` flag ([61f31f9](https://github.com/webiny/webiny-js/commit/61f31f9bab4b16fca98a78ee03232e5f21c534a5))
+* add app config ([ee45c58](https://github.com/webiny/webiny-js/commit/ee45c584071642d8eb66ad82e19bf0992a451cbb))
+* ensure `JSON.parse` doesn't throw an error ([a660438](https://github.com/webiny/webiny-js/commit/a660438a905582504b5b2aab3e0e36e29c597bac))
+* read app config before env vars ([9ed1e3d](https://github.com/webiny/webiny-js/commit/9ed1e3df070c2b62e20b9f4fca564f09440afbbb))
+* read app config before env vars ([147923f](https://github.com/webiny/webiny-js/commit/147923f5aebb901556afe334e5c346f17a239ed0))
+* remove unused const ([8b9b038](https://github.com/webiny/webiny-js/commit/8b9b0380a74496bd8f0251be4e90f5d517e1798f))
+
+
+
+
+
 ## [5.18.2](https://github.com/webiny/webiny-js/compare/v5.18.2-beta.0...v5.18.2) (2021-11-29)
 
 **Note:** Version bump only for package webiny-js

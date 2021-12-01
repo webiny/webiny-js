@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.18.3-beta.0](https://github.com/webiny/webiny-js/compare/v5.18.2...v5.18.3-beta.0) (2021-12-01)
+
+
+### Bug Fixes
+
+* read app config before env vars ([9ed1e3d](https://github.com/webiny/webiny-js/commit/9ed1e3df070c2b62e20b9f4fca564f09440afbbb))
+
+
+
+
+
 ## [5.18.2](https://github.com/webiny/webiny-js/compare/v5.18.2-beta.0...v5.18.2) (2021-11-29)
 
 **Note:** Version bump only for package @webiny/app-headless-cms
