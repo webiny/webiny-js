@@ -1,4 +1,4 @@
-const { green, red } = require("chalk");
+const { red } = require("chalk");
 const { login, getPulumi, loadEnvVariables } = require("../utils");
 const { getProjectApplication } = require("@webiny/cli/utils");
 const path = require("path");
