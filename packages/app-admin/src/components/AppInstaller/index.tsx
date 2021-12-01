@@ -17,18 +17,20 @@ import {
     installerSplitView,
     SuccessDialog
 } from "./styled";
+import { config as appConfig } from "@webiny/app/config";
 
 export const AppInstaller = ({ Authentication, children }) => {
     const tenantId = localStorage.get("webiny_tenant") || "root";
 
     const lsKey = `webiny_installation_${tenantId}`;
+    const wbyVersion = appConfig.getKey("WEBINY_VERSION", process.env.REACT_APP_WEBINY_VERSION);
 
     const markInstallerAsCompleted = () => {
-        localStorage.set(lsKey, process.env.REACT_APP_WEBINY_VERSION);
+        localStorage.set(lsKey, wbyVersion);
     };
 
     const isInstallerCompleted = () => {
-        return localStorage.get(lsKey) === process.env.REACT_APP_WEBINY_VERSION;
+        return localStorage.get(lsKey) === wbyVersion;
     };
 
     const [finished, setFinished] = useState(false);

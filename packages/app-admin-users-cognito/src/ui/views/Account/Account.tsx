@@ -12,6 +12,7 @@ import { Cell, Grid } from "@webiny/ui/Grid";
 import { validation } from "@webiny/validation";
 import AvatarImage from "../../components/AvatarImage";
 import { GET_CURRENT_USER, UPDATE_CURRENT_USER } from "./graphql";
+import { config as appConfig } from "@webiny/app/config";
 
 import {
     SimpleForm,
@@ -65,7 +66,10 @@ const UserAccountForm = () => {
 
     const user = currentUser.loading ? {} : currentUser.data.adminUsers.user.data;
 
-    const emailIsDisabled = process.env.REACT_APP_ADMIN_USER_CAN_CHANGE_EMAIL === "false";
+    const emailIsDisabled = appConfig.getKey(
+        "ADMIN_USER_CAN_CHANGE_EMAIL",
+        process.env.REACT_APP_ADMIN_USER_CAN_CHANGE_EMAIL === "false"
+    );
 
     return (
         <Grid>

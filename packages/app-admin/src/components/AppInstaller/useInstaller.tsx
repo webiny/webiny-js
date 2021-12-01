@@ -5,6 +5,7 @@ import { useApolloClient } from "@apollo/react-hooks";
 import { plugins } from "@webiny/plugins";
 import { AdminInstallationPlugin } from "~/types";
 import { CircularProgress } from "@webiny/ui/Progress";
+import { config as appConfig } from "@webiny/app/config";
 
 const Loader = ({ children, ...props }) => (
     <Suspense fallback={<CircularProgress label={"Loading..."} />}>
@@ -79,11 +80,13 @@ export const useInstaller = ({ isInstalled }) => {
                     installed: false
                 });
             } else {
+                const wbyVersion = appConfig.getKey(
+                    "WEBINY_VERSION",
+                    process.env.REACT_APP_WEBINY_VERSION
+                );
+
                 const upgrades = (installer.plugin.upgrades || []).filter(({ version }) => {
-                    return (
-                        lte(version, process.env.REACT_APP_WEBINY_VERSION) &&
-                        gt(version, installer.installed)
-                    );
+                    return lte(version, wbyVersion) && gt(version, installer.installed);
                 });
 
                 if (upgrades.length > 1) {

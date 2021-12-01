@@ -9,6 +9,7 @@ import { useSecurity } from "@webiny/app-security";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { playgroundDialog, PlaygroundContainer } from "./Playground.styles";
 import { settings } from "./settings";
+import { config as appConfig } from "@webiny/app/config";
 
 const withHeaders = (link, headers) => {
     return ApolloLink.from([
@@ -53,7 +54,8 @@ const Playground = ({ createApolloClient }) => {
 
     const createApolloLink = useCallback(({ endpoint, headers }) => {
         // If the request endpoint is not know to us, return the first available
-        if (!endpoint.includes(process.env.REACT_APP_API_URL)) {
+        const apiUrl = appConfig.getKey("API_URL", process.env.REACT_APP_API_URL);
+        if (!endpoint.includes(apiUrl)) {
             return { link: withHeaders(Object.values(links.current)[0], headers) };
         }
 
