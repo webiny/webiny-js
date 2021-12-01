@@ -13,13 +13,11 @@ export const createReviewerFromIdentity = () =>
                 limit: 1
             });
 
-            if (reviewer) {
-                return;
+            if (!reviewer) {
+                await context.advancedPublishingWorkflow.reviewer.create({
+                    identityId: identity.id,
+                    displayName: identity.displayName
+                });
             }
-
-            await context.advancedPublishingWorkflow.reviewer.create({
-                identityId: identity.id,
-                displayName: identity.displayName
-            });
         });
     });
