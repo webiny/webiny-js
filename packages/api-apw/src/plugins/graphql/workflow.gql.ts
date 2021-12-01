@@ -1,8 +1,9 @@
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins";
-import { ErrorResponse, ListResponse, Response } from "@webiny/handler-graphql";
-import { CmsContext, CmsEntryListParams } from "@webiny/api-headless-cms/types";
+import { ErrorResponse, ListResponse } from "@webiny/handler-graphql";
+import { ApwContext, ListWorkflowsParams } from "~/types";
+import resolve from "~/utils/resolve";
 
-const workflowSchema = new GraphQLSchemaPlugin<CmsContext>({
+const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
     typeDefs: /* GraphQL */ `
         type ApwCreatedBy {
             id: ID
@@ -209,22 +210,13 @@ const workflowSchema = new GraphQLSchemaPlugin<CmsContext>({
         },
         ApwQuery: {
             getWorkflow: async (_, args, context) => {
-                try {
-                    const model = await context.cms.getModel("apwWorkflowModelDefinition");
-                    const entry = await context.cms.getEntry(model, {
-                        where: {
-                            id: args.id
-                        }
-                    });
-                    return new Response(entry);
-                } catch (e) {
-                    return new ErrorResponse(e);
-                }
+                return resolve(() => context.advancedPublishingWorkflow.getWorkflow(args.id));
             },
-            listWorkflows: async (_, args: CmsEntryListParams, context) => {
+            listWorkflows: async (_, args: ListWorkflowsParams, context) => {
                 try {
-                    const model = await context.cms.getModel("apwWorkflowModelDefinition");
-                    const [entries, meta] = await context.cms.listEntries(model, args);
+                    const [entries, meta] = await context.advancedPublishingWorkflow.listWorkflows(
+                        args
+                    );
                     return new ListResponse(entries, meta);
                 } catch (e) {
                     return new ErrorResponse(e);
@@ -233,44 +225,15 @@ const workflowSchema = new GraphQLSchemaPlugin<CmsContext>({
         },
         ApwMutation: {
             createWorkflow: async (_, args, context) => {
-                try {
-                    const model = await context.cms.getModel("apwWorkflowModelDefinition");
-                    const entry = await context.cms.createEntry(model, args.data);
-                    return new Response(entry);
-                } catch (e) {
-                    return new ErrorResponse(e);
-                }
+                return resolve(() => context.advancedPublishingWorkflow.createWorkflow(args.data));
             },
             updateWorkflow: async (_, args, context) => {
-                try {
-                    const model = await context.cms.getModel("apwWorkflowModelDefinition");
-                    /**
-                     * We're fetching the existing entry here because we're not accepting "app" field as input,
-                     * but, we still need to retain its value after the "update" operation.
-                     */
-                    const existingEntry = await context.cms.getEntry(model, {
-                        where: {
-                            id: args.id
-                        }
-                    });
-
-                    const entry = await context.cms.updateEntry(model, args.id, {
-                        ...args.data,
-                        app: existingEntry.values.app
-                    });
-                    return new Response(entry);
-                } catch (e) {
-                    return new ErrorResponse(e);
-                }
+                return resolve(() =>
+                    context.advancedPublishingWorkflow.updateWorkflow(args.id, args.data)
+                );
             },
             deleteWorkflow: async (_, args, context) => {
-                try {
-                    const model = await context.cms.getModel("apwWorkflowModelDefinition");
-                    await context.cms.deleteEntry(model, args.id);
-                    return new Response(true);
-                } catch (e) {
-                    return new ErrorResponse(e);
-                }
+                return resolve(() => context.advancedPublishingWorkflow.deleteWorkflow(args.id));
             }
         }
     }
