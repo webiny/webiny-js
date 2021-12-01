@@ -7,6 +7,21 @@ const emptyResolver = () => ({});
 
 const baseSchema = new GraphQLSchemaPlugin({
     typeDefs: /* GraphQL */ `
+        type ApwMeta {
+            hasMoreItems: Boolean
+            totalCount: Int
+            cursor: String
+        }
+        type ApwCreatedBy {
+            id: ID
+            displayName: String
+            type: String
+        }
+        type ApwError {
+            code: String
+            message: String
+            data: JSON
+        }
         extend type Query {
             advancedPublishingWorkflow: ApwQuery
         }

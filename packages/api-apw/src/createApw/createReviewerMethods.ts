@@ -1,7 +1,7 @@
-import { ApwContext } from "~/types";
+import { ApwContext, ApwReviewerCrud } from "~/types";
 import { CmsModel } from "@webiny/api-headless-cms/types";
 
-export function createReviewerMethods(context: ApwContext) {
+export function createReviewerMethods(context: ApwContext): ApwReviewerCrud {
     return {
         async getModel(): Promise<CmsModel> {
             return await context.cms.getModel("apwReviewerModelDefinition");

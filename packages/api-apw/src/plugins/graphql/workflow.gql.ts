@@ -2,21 +2,12 @@ import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins";
 import { ErrorResponse, ListResponse } from "@webiny/handler-graphql";
 import { ApwContext, ListWorkflowsParams } from "~/types";
 import resolve from "~/utils/resolve";
+import { generateFieldResolvers } from "~/utils/fieldResolver";
+
+const fieldIds = ["app", "title", "steps", "scope"];
 
 const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
     typeDefs: /* GraphQL */ `
-        type ApwCreatedBy {
-            id: ID
-            displayName: String
-            type: String
-        }
-
-        type ApwError {
-            code: String
-            message: String
-            data: JSON
-        }
-
         type ApwWorkflowListItem {
             # System generated fields
             id: ID
@@ -33,12 +24,6 @@ const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
             title: String
             steps: [ApwWorkflowStep]
             scope: ApwWorkflowScope
-        }
-
-        type ApwMeta {
-            hasMoreItems: Boolean
-            totalCount: Int
-            cursor: String
         }
 
         type ApwListWorkflowsResponse {
@@ -179,42 +164,19 @@ const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
         }
     `,
     resolvers: {
-        // TODO: Make it dynamic
         ApwWorkflow: {
-            title: async workflow => {
-                return workflow.values.title;
-            },
-            app: async workflow => {
-                return workflow.values.app;
-            },
-            steps: async workflow => {
-                return workflow.values.steps;
-            },
-            scope: async workflow => {
-                return workflow.values.scope;
-            }
+            ...generateFieldResolvers(fieldIds)
         },
         ApwWorkflowListItem: {
-            title: async workflow => {
-                return workflow.values.title;
-            },
-            app: async workflow => {
-                return workflow.values.app;
-            },
-            steps: async workflow => {
-                return workflow.values.steps;
-            },
-            scope: async workflow => {
-                return workflow.values.scope;
-            }
+            ...generateFieldResolvers(fieldIds)
         },
         ApwQuery: {
             getWorkflow: async (_, args, context) => {
-                return resolve(() => context.advancedPublishingWorkflow.getWorkflow(args.id));
+                return resolve(() => context.advancedPublishingWorkflow.workflow.get(args.id));
             },
             listWorkflows: async (_, args: ListWorkflowsParams, context) => {
                 try {
-                    const [entries, meta] = await context.advancedPublishingWorkflow.listWorkflows(
+                    const [entries, meta] = await context.advancedPublishingWorkflow.workflow.list(
                         args
                     );
                     return new ListResponse(entries, meta);
@@ -225,15 +187,15 @@ const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
         },
         ApwMutation: {
             createWorkflow: async (_, args, context) => {
-                return resolve(() => context.advancedPublishingWorkflow.createWorkflow(args.data));
+                return resolve(() => context.advancedPublishingWorkflow.workflow.create(args.data));
             },
             updateWorkflow: async (_, args, context) => {
                 return resolve(() =>
-                    context.advancedPublishingWorkflow.updateWorkflow(args.id, args.data)
+                    context.advancedPublishingWorkflow.workflow.update(args.id, args.data)
                 );
             },
             deleteWorkflow: async (_, args, context) => {
-                return resolve(() => context.advancedPublishingWorkflow.deleteWorkflow(args.id));
+                return resolve(() => context.advancedPublishingWorkflow.workflow.delete(args.id));
             }
         }
     }

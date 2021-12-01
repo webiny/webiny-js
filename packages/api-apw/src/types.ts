@@ -80,27 +80,37 @@ interface UpdateReviewerParams {
     displayName: string;
 }
 
+interface BaseApwCrud {
+    getModel(): Promise<CmsModel>;
+}
+
+export interface ApwWorkflowCrud extends BaseApwCrud {
+    get(id: string): Promise<ApwWorkflow>;
+
+    list(params: ListWorkflowsParams): Promise<[ApwWorkflow[], CmsEntryMeta]>;
+
+    create(data: CreateWorkflowParams): Promise<ApwWorkflow>;
+
+    update(id: string, data: UpdateWorkflowParams): Promise<ApwWorkflow>;
+
+    delete(id: string): Promise<Boolean>;
+}
+
+export interface ApwReviewerCrud extends BaseApwCrud {
+    get(id: string): Promise<ApwReviewer>;
+
+    list(params: CmsEntryListParams): Promise<[ApwReviewer[], CmsEntryMeta]>;
+
+    create(data: CreateReviewerParams): Promise<ApwReviewer>;
+
+    update(id: string, data: UpdateReviewerParams): Promise<ApwReviewer>;
+
+    delete(id: string): Promise<Boolean>;
+}
+
 interface AdvancedPublishingWorkflow {
-    getWorkflowModel(): Promise<CmsModel>;
-
-    getWorkflow(id: string): Promise<ApwWorkflow>;
-
-    listWorkflows(params: ListWorkflowsParams): Promise<[ApwWorkflow[], CmsEntryMeta]>;
-
-    createWorkflow(data: CreateWorkflowParams): Promise<ApwWorkflow>;
-
-    updateWorkflow(id: string, data: UpdateWorkflowParams): Promise<ApwWorkflow>;
-
-    deleteWorkflow(id: string): Promise<Boolean>;
-
-    reviewer: {
-        getModel(): Promise<CmsModel>;
-        get(id: string): Promise<ApwReviewer>;
-        list(params: CmsEntryListParams): Promise<[ApwReviewer[], CmsEntryMeta]>;
-        create(data: CreateReviewerParams): Promise<ApwReviewer>;
-        update(id: string, data: UpdateReviewerParams): Promise<ApwReviewer>;
-        delete(id: string): Promise<Boolean>;
-    };
+    workflow: ApwWorkflowCrud;
+    reviewer: ApwReviewerCrud;
 }
 
 export interface ApwContext extends Context, CmsContext {

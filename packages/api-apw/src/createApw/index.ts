@@ -6,7 +6,7 @@ import { createReviewerMethods } from "./createReviewerMethods";
 export const createAdvancedPublishingWorkflow = () =>
     new ContextPlugin<ApwContext>(async context => {
         context.advancedPublishingWorkflow = {
-            ...createWorkflowMethods(context),
+            workflow: createWorkflowMethods(context),
             reviewer: createReviewerMethods(context)
         };
     });
