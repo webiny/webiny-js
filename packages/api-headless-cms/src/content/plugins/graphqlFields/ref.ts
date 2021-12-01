@@ -199,12 +199,25 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
                 `,
                 resolvers: {
                     RefField: {
-                        entryId: (parent: RefFieldValue) => {
-                            const { id } = parseIdentifier(parent.entryId || parent.id);
+                        entryId: (parent: RefFieldValue | RefFieldValue[]) => {
+                            if (Array.isArray(parent) === true) {
+                                return (parent as RefFieldValue[]).map(value => {
+                                    const { id } = parseIdentifier(value.entryId || value.id);
+                                    return id;
+                                });
+                            }
+                            const value = parent as RefFieldValue;
+                            const { id } = parseIdentifier(value.entryId || value.id);
                             return id;
                         },
-                        id: (parent: RefFieldValue) => {
-                            return parent.id || parent.entryId;
+                        id: (parent: RefFieldValue | RefFieldValue[]) => {
+                            if (Array.isArray(parent) === true) {
+                                return (parent as RefFieldValue[]).map(
+                                    value => value.id || value.entryId
+                                );
+                            }
+                            const value = parent as RefFieldValue;
+                            return value.id || value.entryId;
                         }
                     }
                 }
