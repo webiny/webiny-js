@@ -5,6 +5,7 @@ import { workflowModelDefinition } from "./workflow.model";
 import { contentReviewModelDefinition } from "./contentReview.model";
 import { reviewerModelDefinition } from "./reviewer.model";
 import contentModelPluginFactory from "./contentModelPluginFactory";
+import { commentModelDefinition } from "~/plugins/models/comment.model";
 
 export const createApwModels = () =>
     new ContextPlugin<ApwContext>(async context => {
@@ -37,7 +38,8 @@ export const createApwModels = () =>
         const modelDefinitions = [
             workflowModelDefinition,
             contentReviewModelDefinition,
-            reviewerModelDefinition
+            reviewerModelDefinition,
+            commentModelDefinition()
         ];
 
         const cmsModelPlugins = [];
