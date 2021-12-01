@@ -5,9 +5,7 @@ const path = require("path");
 
 module.exports = async (inputs, context) => {
     const [, ...command] = inputs._;
-    const { env, folder } = inputs;
-
-    const jsonOutput = !!command.find(item => item === "--json");
+    const { env, folder, debug } = inputs;
 
     await loadEnvVariables(inputs, context);
 
@@ -25,7 +23,11 @@ module.exports = async (inputs, context) => {
     });
 
     if (env) {
-        !jsonOutput && context.info(`Environment provided - selecting ${green(env)} Pulumi stack.`);
+        debug &&
+            context.debug(
+                `Environment provided - selecting ${context.debug.hl(env)} Pulumi stack.`
+            );
+
         let stackExists = true;
         try {
             const PULUMI_SECRETS_PROVIDER = process.env.PULUMI_SECRETS_PROVIDER;
@@ -53,8 +55,15 @@ module.exports = async (inputs, context) => {
         }
     }
 
-    !jsonOutput && context.info(`Running the following command in ${green(folder)} folder:`);
-    !jsonOutput && context.info(`${green("pulumi " + command.join(" "))}`);
+    if (debug) {
+        const pulumiCommand = `${context.debug.hl("pulumi " + command.join(" "))}`;
+        debug &&
+            context.debug(
+                `Running the following command in ${context.debug.hl(
+                    folder
+                )} folder: ${pulumiCommand}`
+            );
+    }
 
     return pulumi.run({
         command,
