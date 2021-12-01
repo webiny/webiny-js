@@ -1,4 +1,5 @@
 import { CmsModelField } from "@webiny/api-headless-cms/types";
+import camelCase from "lodash/camelCase";
 
 export interface CreateModelFieldParams extends Omit<CmsModelField, "id" | "fieldId"> {
     parent: string;
@@ -6,10 +7,10 @@ export interface CreateModelFieldParams extends Omit<CmsModelField, "id" | "fiel
 
 export const createModelField = (params: CreateModelFieldParams): CmsModelField => {
     const { label, type, parent } = params;
-    const fieldId = label.toLowerCase();
+    const fieldId = camelCase(label);
 
     return {
-        id: `${parent}_${fieldId}`,
+        id: `${camelCase(parent)}_${fieldId}`,
         fieldId,
         label,
         type,
