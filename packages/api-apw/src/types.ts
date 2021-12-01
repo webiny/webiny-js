@@ -4,9 +4,17 @@ import {
     CmsEntry,
     CmsEntryListParams,
     CmsEntryMeta,
-    CmsModel
+    CmsModel,
+    CmsModelField
 } from "@webiny/api-headless-cms/types";
 import { Context } from "@webiny/handler/types";
+
+export interface FieldResolversParams {
+    fieldId: string;
+    getModel: (context: ApwContext) => Promise<CmsModel>;
+    getField: (model: CmsModel, fieldId: string) => CmsModelField;
+    isRoot: Boolean;
+}
 
 export interface PageWithWorkflow extends Page {
     workflow?: Record<string, any>;
@@ -32,6 +40,7 @@ export enum ApwWorkflowApplications {
 
 export type ApwWorkflow = CmsEntry;
 export type ApwReviewer = CmsEntry;
+export type ApwComment = CmsEntry;
 
 interface ApwWorkflowScope {
     type: WorkflowScopeTypes;
@@ -80,37 +89,45 @@ interface UpdateReviewerParams {
     displayName: string;
 }
 
-interface BaseApwCrud {
+interface CreateApwCommentParams {
+    body: Record<string, any>;
+}
+
+interface UpdateApwCommentParams {
+    body: Record<string, any>;
+}
+
+interface BaseApwCrud<TEntry, TCreateEntryParams, TUpdateEntryParams> {
     getModel(): Promise<CmsModel>;
+
+    get(id: string): Promise<TEntry>;
+
+    create(data: TCreateEntryParams): Promise<TEntry>;
+
+    update(id: string, data: TUpdateEntryParams): Promise<TEntry>;
+
+    delete(id: string): Promise<Boolean>;
 }
 
-export interface ApwWorkflowCrud extends BaseApwCrud {
-    get(id: string): Promise<ApwWorkflow>;
-
+export interface ApwWorkflowCrud
+    extends BaseApwCrud<ApwWorkflow, CreateWorkflowParams, UpdateWorkflowParams> {
     list(params: ListWorkflowsParams): Promise<[ApwWorkflow[], CmsEntryMeta]>;
-
-    create(data: CreateWorkflowParams): Promise<ApwWorkflow>;
-
-    update(id: string, data: UpdateWorkflowParams): Promise<ApwWorkflow>;
-
-    delete(id: string): Promise<Boolean>;
 }
 
-export interface ApwReviewerCrud extends BaseApwCrud {
-    get(id: string): Promise<ApwReviewer>;
-
+export interface ApwReviewerCrud
+    extends BaseApwCrud<ApwReviewer, CreateReviewerParams, UpdateReviewerParams> {
     list(params: CmsEntryListParams): Promise<[ApwReviewer[], CmsEntryMeta]>;
+}
 
-    create(data: CreateReviewerParams): Promise<ApwReviewer>;
-
-    update(id: string, data: UpdateReviewerParams): Promise<ApwReviewer>;
-
-    delete(id: string): Promise<Boolean>;
+export interface ApwCommentCrud
+    extends BaseApwCrud<ApwComment, CreateApwCommentParams, UpdateApwCommentParams> {
+    list(params: CmsEntryListParams): Promise<[ApwComment[], CmsEntryMeta]>;
 }
 
 interface AdvancedPublishingWorkflow {
     workflow: ApwWorkflowCrud;
     reviewer: ApwReviewerCrud;
+    comment: ApwCommentCrud;
 }
 
 export interface ApwContext extends Context, CmsContext {
