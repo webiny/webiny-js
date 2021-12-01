@@ -3,6 +3,7 @@ import workflowSchema from "./graphql/workflow.gql";
 import contentReviewSchema from "./graphql/contentReview.gql";
 import reviewerSchema from "./graphql/reviewer.gql";
 import commentSchema from "./graphql/comment.gql";
+import changeRequestedSchema from "./graphql/changeRequested.gql";
 
 const emptyResolver = () => ({});
 
@@ -45,5 +46,6 @@ export default () => [
     workflowSchema,
     contentReviewSchema,
     reviewerSchema,
-    commentSchema
+    commentSchema,
+    changeRequestedSchema
 ];

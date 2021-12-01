@@ -41,6 +41,7 @@ export enum ApwWorkflowApplications {
 export type ApwWorkflow = CmsEntry;
 export type ApwReviewer = CmsEntry;
 export type ApwComment = CmsEntry;
+export type ApwChangeRequested = CmsEntry;
 
 interface ApwWorkflowScope {
     type: WorkflowScopeTypes;
@@ -97,6 +98,20 @@ interface UpdateApwCommentParams {
     body: Record<string, any>;
 }
 
+interface CreateApwChangeRequestedParams {
+    title: string;
+    body: JSON;
+    resolved: boolean;
+    media: JSON;
+}
+
+interface UpdateApwChangeRequestedParams {
+    title: string;
+    body: JSON;
+    resolved: boolean;
+    media: JSON;
+}
+
 interface BaseApwCrud<TEntry, TCreateEntryParams, TUpdateEntryParams> {
     getModel(): Promise<CmsModel>;
 
@@ -124,10 +139,20 @@ export interface ApwCommentCrud
     list(params: CmsEntryListParams): Promise<[ApwComment[], CmsEntryMeta]>;
 }
 
+export interface ApwChangeRequestedCrud
+    extends BaseApwCrud<
+        ApwChangeRequested,
+        CreateApwChangeRequestedParams,
+        UpdateApwChangeRequestedParams
+    > {
+    list(params: CmsEntryListParams): Promise<[ApwChangeRequested[], CmsEntryMeta]>;
+}
+
 interface AdvancedPublishingWorkflow {
     workflow: ApwWorkflowCrud;
     reviewer: ApwReviewerCrud;
     comment: ApwCommentCrud;
+    changeRequested: ApwChangeRequestedCrud;
 }
 
 export interface ApwContext extends Context, CmsContext {
