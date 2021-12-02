@@ -7,10 +7,24 @@ const commentBody = () =>
         parent: "comment"
     });
 
-export const commentModelDefinition = () => ({
+const changeRequestRef = modelId =>
+    createModelField({
+        label: "Change Request",
+        type: "ref",
+        parent: "comment",
+        settings: {
+            models: [
+                {
+                    modelId
+                }
+            ]
+        }
+    });
+
+export const createCommentModelDefinition = ({ modelId }) => ({
     name: "APW - Comment",
     modelId: "apwContentReviewCommentModelDefinition",
     titleFieldId: "displayName",
     layout: [["comment_body"], ["comment_displayName"]],
-    fields: [commentBody()]
+    fields: [commentBody(), changeRequestRef(modelId)]
 });

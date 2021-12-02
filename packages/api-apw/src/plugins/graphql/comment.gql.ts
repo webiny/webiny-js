@@ -5,13 +5,14 @@ import resolve from "~/utils/resolve";
 import { generateFieldResolvers } from "~/utils/fieldResolver";
 import { CmsEntryListParams } from "@webiny/api-headless-cms/types";
 
-const fieldIds: FieldResolversParams[] = [
+const fieldIds: Array<FieldResolversParams | string> = [
     {
         fieldId: "body",
         getModel: context => context.advancedPublishingWorkflow.comment.getModel(),
         getField: (model, fieldId) => model.fields.find(field => field.fieldId === fieldId),
         isRoot: true
-    }
+    },
+    "changeRequest"
 ];
 
 const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
@@ -29,6 +30,7 @@ const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
             createdBy: ApwCreatedBy
             # Comment specific fields
             body: JSON
+            changeRequest: ID
         }
 
         type ApwListCommentsResponse {
@@ -50,6 +52,7 @@ const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
             createdBy: ApwCreatedBy
             # Comment specific fields
             body: JSON
+            changeRequest: ID
         }
 
         type ApwCommentResponse {
@@ -77,6 +80,7 @@ const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
 
         input ApwCreateCommentInput {
             body: JSON
+            changeRequest: ID
         }
 
         input ApwUpdateCommentInput {
@@ -85,6 +89,7 @@ const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
 
         input ApwListCommentsWhereInput {
             id: ID
+            changeRequest: ID
         }
 
         input ApwListCommentsSearchInput {

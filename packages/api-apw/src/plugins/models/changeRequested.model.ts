@@ -28,7 +28,7 @@ const mediaField = () =>
         parent: "changeRequested"
     });
 
-export const changeRequestedModelDefinition = () => ({
+export const createChangeRequestedModelDefinition = () => ({
     name: "APW - Comment",
     modelId: "apwChangeRequestedModelDefinition",
     titleFieldId: "displayName",
