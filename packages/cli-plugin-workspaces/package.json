@@ -24,7 +24,6 @@
     "access": "public",
     "directory": "."
   },
-  "scripts": {},
   "adio": {
     "ignoreDirs": [
       "/node_modules/",

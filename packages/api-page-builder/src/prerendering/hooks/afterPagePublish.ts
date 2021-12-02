@@ -7,19 +7,25 @@ export default () => [
     new PagePlugin({
         // After a page was published, we need to render the page.
         async afterPublish({ context, page, publishedPage }) {
-            const promises = [];
-            promises.push(
-                context.pageBuilder.pages.prerendering.render({
-                    context,
-                    paths: [{ path: page.path }]
-                })
-            );
-
+            // First, let's load settings.
             const settings = await context.pageBuilder.settings.getCurrent();
+            const notFoundPageId = lodashGet(settings, "pages.notFound");
 
-            const homePage = lodashGet(settings, "pages.home");
+            const promises = [];
+
+            // Render regular page (not-found page has special treatment; see further below)
+            if (page.pid !== notFoundPageId) {
+                promises.push(
+                    context.pageBuilder.pages.prerendering.render({
+                        context,
+                        paths: [{ path: page.path }]
+                    })
+                );
+            }
+
+            const homePageId = lodashGet(settings, "pages.home");
             // If we just published a page that is set as current homepage, let's rerender the "/" path as well.
-            if (homePage === page.pid) {
+            if (homePageId === page.pid) {
                 promises.push(
                     context.pageBuilder.pages.prerendering.render({
                         context,
@@ -28,10 +34,10 @@ export default () => [
                 );
             }
 
-            const notFoundPage = lodashGet(settings, "pages.notFound");
             // Finally, if we just published a page that is set as current not-found page, let's do
-            // another rerender and save that into the NOT_FOUND_FOLDER.
-            if (notFoundPage === page.pid) {
+            // two versions of it: one goes in the system-level `_NOT_FOUND_PAGE_` folder, and another
+            // one goes in the folder defined bu the page slug.
+            if (notFoundPageId === page.pid) {
                 promises.push(
                     context.pageBuilder.pages.prerendering.render({
                         context,
@@ -43,6 +49,14 @@ export default () => [
                                         notFoundPage: true
                                     },
                                     storage: { folder: NOT_FOUND_FOLDER }
+                                }
+                            },
+                            {
+                                path: page.path,
+                                configuration: {
+                                    meta: {
+                                        notFoundPage: true
+                                    }
                                 }
                             }
                         ]

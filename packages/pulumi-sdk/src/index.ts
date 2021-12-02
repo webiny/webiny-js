@@ -101,11 +101,11 @@ export class Pulumi {
             }
         };
 
-        return execa(
-            this.pulumiBinaryPath,
-            [...args.command, ...finalArgs, FLAG_NON_INTERACTIVE],
-            execaArgs
-        );
+        // We want to keep the "interactive" output format of the Pulumi command when `--preview` flag is passed in.
+        const flags =
+            args.command && args.command.includes("preview") ? [] : [FLAG_NON_INTERACTIVE];
+
+        return execa(this.pulumiBinaryPath, [...args.command, ...finalArgs, ...flags], execaArgs);
     }
 
     async install(rawArgs?: InstallArgs): Promise<boolean> {

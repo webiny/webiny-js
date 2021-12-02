@@ -25,17 +25,31 @@ describe(`Test "Tenancy" tenants`, () => {
             id: "2",
             name: "Tenant #2",
             description: "The second sub-tenant",
-            parent: "root"
+            parent: "root",
+            status: "pending",
+            settings: {
+                domains: [{ fqdn: "domain.com" }]
+            }
         };
 
         await tenancy.createTenant(tenant1Data);
         const tenants = await tenancy.listTenants({ parent: "root" });
         expect(tenants.length).toBe(1);
-        expect(tenants[0]).toEqual({ ...tenant1Data, webinyVersion: process.env.WEBINY_VERSION });
+        expect(tenants[0]).toEqual({
+            ...tenant1Data,
+            webinyVersion: process.env.WEBINY_VERSION,
+            status: "active",
+            settings: { domains: [] }
+        });
 
         await tenancy.createTenant(tenant2Data);
         const tenant2 = await tenancy.getTenantById("2");
-        expect(tenant2).toEqual({ ...tenant2Data, webinyVersion: process.env.WEBINY_VERSION });
+        expect(tenant2).toEqual({
+            ...tenant2Data,
+            webinyVersion: process.env.WEBINY_VERSION,
+            status: "pending",
+            settings: { domains: [{ fqdn: "domain.com" }] }
+        });
 
         await tenancy.updateTenant("2", { name: "Tenant #2.1", description: "Subtenant" });
         await expect(tenancy.getTenantById("2")).resolves.toEqual({

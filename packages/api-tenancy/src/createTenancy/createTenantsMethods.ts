@@ -66,9 +66,15 @@ export function createTenantsMethods(storageOperations: TenancyStorageOperations
             this: Tenancy,
             data: CreateTenantInput
         ) {
-            const tenant = {
+            const tenant: Tenant = {
                 ...data,
                 id: data.id ?? mdbid(),
+                status: data.status || "active",
+                settings: {
+                    ...(data.settings || {}),
+                    domains: (data.settings && data.settings.domains) || []
+                },
+                parent: data.parent || null,
                 webinyVersion: process.env.WEBINY_VERSION
             };
 

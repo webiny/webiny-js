@@ -95,21 +95,15 @@ The setup of our Github repo is identical to the one created by `create-webiny-p
 
 6. Begin working on the `admin` app:
    ```
-   cd apps/admin/code
-   yarn start --env=dev
+   yarn webiny watch apps/admin --env=dev
    ```
    
 7. Begin working on the `website` app (OPTIONAL):
    ```
-   cd apps/website/code
-   yarn start --env=dev
+   yarn webiny watch apps/website --env=dev
    ```
-
-8. Run `watch` on packages you are working on so that your changes are automatically built into the corresponding `dist` folder. React app build will automatically rebuild and hot-reload changes that happen in the `dist` folder of all related packages.
-
-The easiest way to run a watch is by running `yarn webiny ws run watch --scope=your-scope`. You can use glob patterns in the `--scope` parameter. For example, `yarn webiny ws run watch --scope=@webiny/app*` will run `watch` on all packages that start
-
-Another way is to use `--folder` parameter, which will run the `watch` command on all workspaces found within the given folder: `yarn webiny ws run watch --folder=./packages`. Keep in mind that `packages` folder contains over 60 packages so you don't want to watch all of them, all the time.
+   
+Learn more about the `watch` command here: https://www.webiny.com/docs/how-to-guides/use-watch-command
 
 ## Tests
 

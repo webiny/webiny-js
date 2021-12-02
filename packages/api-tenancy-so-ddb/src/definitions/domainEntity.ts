@@ -6,7 +6,7 @@ interface Params {
     table: Table;
     attributes?: Attributes;
 }
-export const createTenantEntity = ({ entityName, table, attributes }: Params): Entity<any> => {
+export const createDomainEntity = ({ entityName, table, attributes }: Params): Entity<any> => {
     return new Entity({
         table,
         name: entityName,
@@ -23,28 +23,14 @@ export const createTenantEntity = ({ entityName, table, attributes }: Params): E
             GSI1_SK: {
                 type: "string"
             },
-            id: {
+            tenant: {
                 type: "string"
             },
-            name: {
-                type: "string"
-            },
-            description: {
-                type: "string"
-            },
-            status: {
-                type: "string",
-                default: "active"
-            },
-            parent: {
+            fqdn: {
                 type: "string"
             },
             webinyVersion: {
                 type: "string"
-            },
-            settings: {
-                type: "map",
-                default: {}
             },
             ...(attributes || {})
         }

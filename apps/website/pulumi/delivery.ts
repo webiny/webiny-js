@@ -66,6 +66,7 @@ class Delivery {
                 viewerProtocolPolicy: "redirect-to-https",
                 allowedMethods: ["GET", "HEAD", "OPTIONS"],
                 cachedMethods: ["GET", "HEAD", "OPTIONS"],
+                originRequestPolicyId: "",
                 forwardedValues: {
                     cookies: { forward: "none" },
                     queryString: true
