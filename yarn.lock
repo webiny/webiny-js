@@ -12466,7 +12466,7 @@ __metadata:
     "@webiny/api-page-builder": ^5.18.3
     "@webiny/api-page-builder-import-export": ^5.18.3
     "@webiny/api-page-builder-import-export-so-ddb": ^5.18.3
-    "@webiny/api-page-builder-so-ddb-es": ^5.18.3
+    "@webiny/api-page-builder-so-ddb": ^5.18.3
     "@webiny/api-security": ^5.18.3
     "@webiny/api-security-so-ddb": ^5.18.3
     "@webiny/api-tenancy": ^5.18.3
