@@ -523,6 +523,8 @@ describe("entry references", () => {
     });
 
     it("should list articles filtered by reference", async () => {
+        expect.assertions(8);
+
         const group = await setupContentModelGroup(mainManager);
         await setupContentModels(mainManager, group, ["category", "article"]);
 
@@ -828,6 +830,108 @@ describe("entry references", () => {
                     meta: {
                         hasMoreItems: false,
                         totalCount: 1,
+                        cursor: null
+                    },
+                    error: null
+                }
+            }
+        });
+        /**
+         * Filtering on multipleValues field
+         */
+
+        const [listArticlesFoodMultipleEntryIdResponse] = await articleReader.listArticles({
+            where: {
+                categories: {
+                    entryId: foodCategory.entryId
+                }
+            },
+            sort: ["createdOn_ASC"]
+        });
+
+        expect(listArticlesFoodMultipleEntryIdResponse).toEqual({
+            data: {
+                listArticles: {
+                    data: [
+                        {
+                            ...foodArticle,
+                            category: {
+                                id: foodCategory.id,
+                                title: foodCategory.title
+                            },
+                            categories: [
+                                {
+                                    id: foodCategory.id,
+                                    title: foodCategory.title
+                                }
+                            ],
+                            meta: undefined
+                        }
+                    ],
+                    meta: {
+                        hasMoreItems: false,
+                        totalCount: 1,
+                        cursor: null
+                    },
+                    error: null
+                }
+            }
+        });
+
+        const [listArticlesFoodMultipleIdResponse] = await articleReader.listArticles({
+            where: {
+                categories: {
+                    id: foodCategory.id
+                }
+            },
+            sort: ["createdOn_ASC"]
+        });
+
+        expect(listArticlesFoodMultipleIdResponse).toEqual({
+            data: {
+                listArticles: {
+                    data: [
+                        {
+                            ...foodArticle,
+                            category: {
+                                id: foodCategory.id,
+                                title: foodCategory.title
+                            },
+                            categories: [
+                                {
+                                    id: foodCategory.id,
+                                    title: foodCategory.title
+                                }
+                            ],
+                            meta: undefined
+                        }
+                    ],
+                    meta: {
+                        hasMoreItems: false,
+                        totalCount: 1,
+                        cursor: null
+                    },
+                    error: null
+                }
+            }
+        });
+
+        const [listArticlesMultipleEntryIdInResponse] = await articleReader.listArticles({
+            where: {
+                categories: {
+                    entryId_in: [techCategory.entryId]
+                }
+            },
+            sort: ["createdOn_ASC"]
+        });
+
+        expect(listArticlesMultipleEntryIdInResponse).toEqual({
+            data: {
+                listArticles: {
+                    data: expectedTechArticles,
+                    meta: {
+                        hasMoreItems: false,
+                        totalCount: 3,
                         cursor: null
                     },
                     error: null
