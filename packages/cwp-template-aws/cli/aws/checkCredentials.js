@@ -23,8 +23,6 @@ module.exports = {
             process.exit(1);
         }
 
-        const { profile } = config.credentials;
-
         if (!config.region) {
             console.log();
             context.error("You must define an AWS Region to deploy to!");
@@ -41,6 +39,11 @@ module.exports = {
         // We assign the region to the appropriate ENV variable for easier access in the stack definition files.
         process.env.AWS_REGION = config.region;
 
-        context.info(`Using profile ${green(profile)} in ${green(config.region)} region.`);
+        const { profile } = config.credentials;
+        if (profile) {
+            context.info(`Using profile ${green(profile)} in ${green(config.region)} region.`);
+        } else {
+            context.info(`Using ${green(config.region)} region.`);
+        }
     }
 };
