@@ -8,19 +8,26 @@ import {
     CmsModelField
 } from "@webiny/api-headless-cms/types";
 import { Plugin } from "@webiny/plugins/types";
-import { CmsFieldFilterPathPlugin, CmsFieldFilterValueTransformPlugin } from "~/types";
+import { CmsFieldFilterValueTransformPlugin } from "~/types";
 import { systemFields } from "./systemFields";
 import { ValueFilterPlugin } from "@webiny/db-dynamodb/plugins/definitions/ValueFilterPlugin";
 import { PluginsContainer } from "@webiny/plugins";
+import {
+    CmsEntryFieldFilterPathPlugin,
+    Params as CmsEntryFieldFilterPathPluginParams,
+    CreatePathCallable as CmsEntryFieldFieldCreatePathCallable
+} from "~/plugins/CmsEntryFieldFilterPathPlugin";
 
 interface ModelField {
     def: CmsModelField;
     valueTransformer: (value: any) => any;
-    valuePath: string;
+    createPath: CmsEntryFieldFieldCreatePathCallable;
     isSystemField?: boolean;
 }
 
 type ModelFieldRecords = Record<string, ModelField>;
+
+type MappedPlugins<T extends Plugin> = Record<string, T>;
 
 interface CreateFiltersParams {
     plugins: PluginsContainer;
@@ -76,6 +83,64 @@ const transformValue = (value: any, transform: (value: any) => any): any => {
     return transform(value);
 };
 
+interface GetFilterPluginParams {
+    plugins: MappedPlugins<ValueFilterPlugin>;
+    operation: string;
+}
+const getFilterPlugin = (params: GetFilterPluginParams) => {
+    const { plugins, operation } = params;
+    const plugin = plugins[operation];
+    if (plugin) {
+        return plugin;
+    }
+    throw new WebinyError(
+        `There is no filter plugin for operation "${operation}".`,
+        "FILTER_PLUGIN_ERROR",
+        {
+            operation
+        }
+    );
+};
+
+interface CreateValuePathParams {
+    field: CmsModelField;
+    plugins: MappedPlugins<CmsEntryFieldFilterPathPlugin>;
+    index?: number;
+}
+const createValuePath = (params: CreateValuePathParams): string => {
+    const { field, plugins, index } = params;
+    const { fieldId } = field;
+    const valuePathPlugin = plugins[field.type];
+    const basePath = systemFields[fieldId] ? "" : `${VALUES_ATTRIBUTE}.`;
+    if (!valuePathPlugin || valuePathPlugin.canUse(field) === false) {
+        return `${basePath}${field.fieldId}`;
+    }
+    const path = valuePathPlugin.createPath({
+        field,
+        index
+    });
+    return `${basePath}${path}`;
+};
+
+interface ObjectFilteringParams {
+    key: string;
+    field: CmsModelField;
+    value: any;
+}
+const isObjectFiltering = (params: ObjectFilteringParams): boolean => {
+    const { value } = params;
+    if (!value) {
+        return false;
+    } else if (Array.isArray(value) === true) {
+        return false;
+    } else if (value instanceof Date || !!value.toISOString) {
+        return false;
+    } else if (typeof value !== "object") {
+        return false;
+    }
+    return true;
+};
+
 const createFilters = (params: CreateFiltersParams): ItemFilter[] => {
     const { where, plugins, fields } = params;
     const filterPlugins = getMappedPlugins<ValueFilterPlugin>({
@@ -88,12 +153,18 @@ const createFilters = (params: CreateFiltersParams): ItemFilter[] => {
         type: "cms-field-filter-value-transform",
         property: "fieldType"
     });
-    const valuePathPlugins = getMappedPlugins<CmsFieldFilterPathPlugin>({
+    const valuePathPlugins = getMappedPlugins<CmsEntryFieldFilterPathPlugin>({
         plugins,
-        type: "cms-field-filter-path",
+        type: CmsEntryFieldFilterPathPlugin.type,
         property: "fieldType"
     });
-    return Object.keys(where).map(key => {
+
+    const filters: ItemFilter[] = [];
+
+    for (const key in where) {
+        if (where.hasOwnProperty(key) === false) {
+            continue;
+        }
         const { fieldId, operation, negate } = extractWhereParams(key);
 
         const field: ModelField = fields[fieldId];
@@ -109,35 +180,6 @@ const createFilters = (params: CreateFiltersParams): ItemFilter[] => {
 
         const transformValuePlugin: CmsFieldFilterValueTransformPlugin =
             transformValuePlugins[field.def.type];
-        const valuePathPlugin = valuePathPlugins[field.def.type];
-        let targetValuePath: string;
-        /**
-         * add the base path if field is not a system field
-         * pathPlugin should not know about that
-         */
-        const basePath = systemFields[fieldId] ? "" : `${VALUES_ATTRIBUTE}.`;
-        if (valuePathPlugin) {
-            targetValuePath = valuePathPlugin.createPath({
-                field: field.def
-            });
-        } else if (systemFields[fieldId]) {
-            targetValuePath = fieldId;
-        } else {
-            targetValuePath = field.def.fieldId;
-        }
-
-        const valuePath = `${basePath}${targetValuePath}`;
-
-        const filterPlugin = filterPlugins[operation];
-        if (!filterPlugin) {
-            throw new WebinyError(
-                `There is no filter plugin for operation "${operation}".`,
-                "FILTER_PLUGIN_ERROR",
-                {
-                    operation
-                }
-            );
-        }
 
         const transformValueCallable = (value: any) => {
             if (!transformValuePlugin) {
@@ -149,19 +191,72 @@ const createFilters = (params: CreateFiltersParams): ItemFilter[] => {
             });
         };
 
-        return {
+        const objectFilteringParams = {
+            key,
+            value: where[key],
+            field: field.def
+        };
+        if (isObjectFiltering(objectFilteringParams)) {
+            const propertyFilters = Object.keys(where[key]);
+            if (propertyFilters.length === 0) {
+                continue;
+            }
+            for (const propertyFilter of propertyFilters) {
+                const {
+                    fieldId: propertyId,
+                    operation: propertyOperation,
+                    negate: propertyNegate
+                } = extractWhereParams(propertyFilter);
+
+                const filterPlugin = getFilterPlugin({
+                    plugins: filterPlugins,
+                    operation: propertyOperation
+                });
+
+                const basePath = createValuePath({
+                    field: field.def,
+                    plugins: valuePathPlugins
+                });
+
+                filters.push({
+                    fieldId,
+                    path: `${basePath}.${propertyId}`,
+                    filterPlugin,
+                    negate: propertyNegate,
+                    compareValue: transformValue(
+                        where[key][propertyFilter],
+                        transformValueCallable
+                    ),
+                    transformValue: transformValueCallable
+                });
+            }
+
+            continue;
+        }
+
+        const filterPlugin = getFilterPlugin({
+            plugins: filterPlugins,
+            operation
+        });
+
+        filters.push({
             fieldId,
-            path: valuePath,
+            path: createValuePath({
+                field: field.def,
+                plugins: valuePathPlugins
+            }),
             filterPlugin,
             negate,
             compareValue: transformValue(where[key], transformValueCallable),
             transformValue: transformValueCallable
-        };
-    });
+        });
+    }
+
+    return filters;
 };
 
 export const filterItems = async (params: FilterItemsParams): Promise<CmsEntry[]> => {
-    const { items, where, plugins, fields, fromStorage } = params;
+    const { items: records, where, plugins, fields, fromStorage } = params;
 
     const filters = createFilters({
         plugins,
@@ -170,22 +265,22 @@ export const filterItems = async (params: FilterItemsParams): Promise<CmsEntry[]
     });
     const results: CmsEntry[] = [];
 
-    for (const key in items) {
-        if (items.hasOwnProperty(key) === false) {
+    for (const key in records) {
+        if (records.hasOwnProperty(key) === false) {
             continue;
         }
-        const item = items[key];
+        const record = records[key];
 
         let passed = true;
         for (const filter of filters) {
-            const rawValue = dotProp.get(item, filter.path);
+            const rawValue = dotProp.get(record, filter.path);
 
             const plainValue = await fromStorage(fields[filter.fieldId].def, rawValue);
             /**
              * If raw value is not same as the value after the storage transform, set the value to the items being filtered.
              */
             if (plainValue !== rawValue) {
-                items[key] = dotProp.set(item, filter.path, plainValue);
+                records[key] = dotProp.set(record, filter.path, plainValue);
             }
 
             const value = transformValue(plainValue, filter.transformValue);
@@ -201,28 +296,9 @@ export const filterItems = async (params: FilterItemsParams): Promise<CmsEntry[]
         if (!passed) {
             continue;
         }
-        results.push(item);
+        results.push(record);
     }
     return results;
-
-    // return items.filter(item => {
-    //     for (const filter of filters) {
-    //         const plainValue = await fromStorage(
-    //             fields[filter.fieldId].def,
-    //             dotProp.get(item, filter.path)
-    //         );
-    //
-    //         const value = transformValue(plainValue, filter.transformValue);
-    //         const matched = filter.filterPlugin.matches({
-    //             value,
-    //             compareValue: filter.compareValue
-    //         });
-    //         if ((filter.negate ? !matched : matched) === false) {
-    //             return false;
-    //         }
-    //     }
-    //     return true;
-    // });
 };
 
 const extractSort = (
@@ -253,7 +329,9 @@ const extractSort = (
             }
         );
     }
-    const valuePath = modelField.valuePath;
+    const valuePath = modelField.createPath({
+        field: modelField.def
+    });
     return {
         fieldId,
         valuePath,
@@ -320,7 +398,7 @@ const getMappedPlugins = <T extends Plugin>(params: {
     plugins: PluginsContainer;
     type: string;
     property: string;
-}): Record<string, T> => {
+}): MappedPlugins<T> => {
     const { plugins: pluginsContainer, type, property } = params;
     const plugins = pluginsContainer.byType<T>(type);
     if (plugins.length === 0) {
@@ -357,19 +435,22 @@ export const buildModelFields = ({
         type: "cms-field-filter-value-transform",
         property: "fieldType"
     });
-    const valuePathPlugins = getMappedPlugins<CmsFieldFilterPathPlugin>({
+    const valuePathPlugins = getMappedPlugins<CmsEntryFieldFilterPathPlugin>({
         plugins,
-        type: "cms-field-filter-path",
+        type: CmsEntryFieldFilterPathPlugin.type,
         property: "fieldType"
     });
     const fields: ModelFieldRecords = Object.values(systemFields).reduce((collection, field) => {
         const transformValuePlugin = transformValuePlugins[field.type];
         const valuePathPlugin = valuePathPlugins[field.type];
-        let valuePath: string;
+
+        let createPath: CmsEntryFieldFilterPathPluginParams["path"] = params => {
+            return params.field.fieldId;
+        };
         if (valuePathPlugin) {
-            valuePath = valuePathPlugin.createPath({
-                field
-            });
+            createPath = params => {
+                return valuePathPlugin.createPath(params);
+            };
         }
         collection[field.fieldId] = {
             def: field,
@@ -379,7 +460,7 @@ export const buildModelFields = ({
                 }
                 return transformValuePlugin.transform({ field, value });
             },
-            valuePath: valuePath || field.fieldId,
+            createPath,
             isSystemField: true
         };
 
@@ -389,13 +470,16 @@ export const buildModelFields = ({
     return model.fields.reduce((collection, field) => {
         const transformValuePlugin = transformValuePlugins[field.type];
         const valuePathPlugin = valuePathPlugins[field.type];
-        let valuePath: string;
+
+        let createPath: CmsEntryFieldFilterPathPluginParams["path"] = params => {
+            return `${VALUES_ATTRIBUTE}.${params.field.fieldId}`;
+        };
         if (valuePathPlugin) {
-            valuePath = valuePathPlugin.createPath({
-                field
-            });
+            createPath = params => {
+                return valuePathPlugin.createPath(params);
+            };
         }
-        const targetValuePath = `${VALUES_ATTRIBUTE}.${valuePath || field.fieldId}`;
+
         collection[field.fieldId] = {
             def: field,
             valueTransformer: (value: any) => {
@@ -404,7 +488,7 @@ export const buildModelFields = ({
                 }
                 return transformValuePlugin.transform({ field, value });
             },
-            valuePath: targetValuePath || field.fieldId
+            createPath
         };
 
         return collection;

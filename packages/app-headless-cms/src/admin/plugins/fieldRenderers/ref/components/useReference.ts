@@ -148,7 +148,7 @@ export const useReference: UseReferenceHook = ({ bind, field }) => {
         client
             .query({
                 query: GQL.GET_CONTENT_ENTRY,
-                variables: { entry: { modelId: value.modelId, entryId: value.entryId } }
+                variables: { entry: { modelId: value.modelId, id: value.id } }
             })
             .then(res => {
                 setLoading(false);
@@ -177,7 +177,7 @@ export const useReference: UseReferenceHook = ({ bind, field }) => {
             setValueEntry(() => {
                 return entry;
             });
-            return bind.onChange({ modelId: entry.modelId, entryId: entry.id });
+            return bind.onChange({ modelId: entry.modelId, id: entry.id });
         }
 
         setValueEntry(() => null);

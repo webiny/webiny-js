@@ -1,6 +1,7 @@
 import defaultFieldIndexPlugin from "~/elasticsearch/indexing/defaultFieldIndexing";
 import cmsFieldTypePlugins from "@webiny/api-headless-cms/content/plugins/graphqlFields";
 import { CmsEntry } from "@webiny/api-headless-cms/types";
+import { PluginsContainer } from "@webiny/plugins/PluginsContainer";
 
 const mockRichTextValue = [
     {
@@ -10,8 +11,6 @@ const mockRichTextValue = [
 ];
 
 const mockTextValue = "some short searchable text";
-
-const mockContext: any = {};
 
 const mockModel: any = {
     fields: [
@@ -71,10 +70,11 @@ describe("defaultFieldIndexPlugin", () => {
         const result = mockModel.fields.reduce(
             (entry, field) => {
                 const { value, rawValue } = plugin.toIndex({
+                    rawValue: mockInputEntry.values[field.fieldId],
                     value: mockInputEntry.values[field.fieldId],
+                    plugins: new PluginsContainer(),
                     getFieldIndexPlugin,
                     getFieldTypePlugin,
-                    context: mockContext,
                     model: mockModel,
                     field
                 });
@@ -103,7 +103,7 @@ describe("defaultFieldIndexPlugin", () => {
                 rawValue: mockIndexedEntry.rawValues[field.fieldId],
                 getFieldIndexPlugin,
                 getFieldTypePlugin,
-                context: mockContext,
+                plugins: new PluginsContainer(),
                 model: mockModel,
                 field
             });

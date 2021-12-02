@@ -1,14 +1,20 @@
-import { ElasticsearchQueryBuilderValueSearchPlugin } from "~/types";
+import {
+    CmsEntryElasticsearchQueryBuilderValueSearchPlugin,
+    TransformCallable
+} from "~/plugins/CmsEntryElasticsearchQueryBuilderValueSearchPlugin";
 
-export default (): ElasticsearchQueryBuilderValueSearchPlugin => ({
-    type: "cms-elastic-search-query-builder-value-search",
-    name: "elastic-search-query-builder-value-search-time",
-    fieldType: "datetime",
-    transform: ({ field, value }) => {
-        if (field.settings.type !== "time") {
-            return value;
-        }
-        const [hours, minutes, seconds = 0] = value.split(":").map(Number);
-        return hours * 60 * 60 + minutes * 60 + seconds;
+const transform: TransformCallable = params => {
+    const { field, value } = params;
+    if (!value || field.settings.type !== "time") {
+        return value;
     }
-});
+    const [hours, minutes, seconds = 0] = value.split(":").map(Number);
+    return hours * 60 * 60 + minutes * 60 + seconds;
+};
+
+export const createTimeSearchPlugin = (): CmsEntryElasticsearchQueryBuilderValueSearchPlugin => {
+    return new CmsEntryElasticsearchQueryBuilderValueSearchPlugin({
+        fieldType: "datetime",
+        transform
+    });
+};

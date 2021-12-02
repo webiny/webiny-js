@@ -3,14 +3,40 @@ import { Image } from "@webiny/app/components";
 import * as Ui from "@webiny/ui/ImageUpload";
 import { createRenderImagePreview, imageExtensions } from "./utils";
 import fileIcon from "../../fields/icons/round_insert_drive_file-24px.svg";
+import { FormElementMessage } from "@webiny/ui/FormElementMessage";
 
 const imagePreviewProps = {
     transform: { width: 300 },
     style: { width: "100%", height: 232, objectFit: "cover" }
 };
 
-function File(props) {
-    const { url, onRemove, placeholder, styles, showFileManager } = props;
+const defaultStyles = {
+    width: "100%",
+    height: "auto"
+};
+
+const defaultValidation = {
+    isValid: null,
+    message: null
+};
+
+export interface Props {
+    url: string;
+    onRemove: Function;
+    placeholder: string;
+    styles?: Record<string, any>;
+    showFileManager?: Function;
+    validation?: {
+        isValid?: boolean;
+        message?: string;
+    };
+    description?: string;
+}
+const File: React.FunctionComponent<Props> = props => {
+    const { url, onRemove, placeholder, showFileManager, description } = props;
+
+    const styles = props.styles || defaultStyles;
+    const validation = props.validation || defaultValidation;
 
     const isImage = useCallback(url => {
         return imageExtensions.some(extension => url.includes(extension));
@@ -36,21 +62,26 @@ function File(props) {
     };
 
     return (
-        <Ui.Image
-            renderImagePreview={renderImagePreview(url)}
-            style={styles}
-            value={url ? { src: getImageSrc(url) } : null}
-            uploadImage={showFileManager}
-            removeImage={onRemove}
-            placeholder={placeholder}
-            containerStyle={{ height: "auto" }}
-        />
+        <>
+            <Ui.Image
+                renderImagePreview={renderImagePreview(url)}
+                style={styles}
+                value={url ? { src: getImageSrc(url) } : null}
+                uploadImage={showFileManager}
+                removeImage={onRemove}
+                placeholder={placeholder}
+                containerStyle={{ height: "auto" }}
+            />
+            {validation.isValid === false && (
+                <FormElementMessage error>
+                    {validation.message || "Invalid value."}
+                </FormElementMessage>
+            )}
+            {validation.isValid !== false && description && (
+                <FormElementMessage>{description}</FormElementMessage>
+            )}
+        </>
     );
-}
-
-File.defaultProps = {
-    validation: { isValid: null },
-    styles: { width: "100%", height: "auto" }
 };
 
 export default File;

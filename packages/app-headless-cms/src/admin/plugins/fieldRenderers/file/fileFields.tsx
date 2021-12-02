@@ -7,7 +7,6 @@ import { imageWrapperStyles } from "./utils";
 import { FileManager } from "@webiny/app-admin/components";
 import styled from "@emotion/styled";
 import File from "./File";
-import { FormElementMessage } from "@webiny/ui/FormElementMessage";
 
 const t = i18n.ns("app-headless-cms/admin/fields/file");
 
@@ -25,68 +24,67 @@ const FileUploadWrapper = styled("div")({
 function FieldRenderer({ getBind, Label, field }) {
     const Bind = getBind();
 
+    const imagesOnly = field.settings && field.settings.imagesOnly;
+
     return (
         <Bind>
-            {({ value, onChange, validation }) => (
-                <FileUploadWrapper className={imageWrapperStyles}>
-                    <FileManager multiple={true}>
-                        {({ showFileManager }) => {
-                            const selectFiles = (index = -1) => {
-                                showFileManager(files => {
-                                    if (!files) {
-                                        return;
-                                    }
+            {bind => {
+                const { value, onChange } = bind;
+                return (
+                    <FileUploadWrapper className={imageWrapperStyles}>
+                        <FileManager multiple={true} images={imagesOnly}>
+                            {({ showFileManager }) => {
+                                const selectFiles = (index = -1) => {
+                                    showFileManager(files => {
+                                        if (!files) {
+                                            return;
+                                        }
 
-                                    const urls = files.map(f => f.src);
-                                    if (index === -1) {
-                                        onChange([...(value || []), ...urls]);
-                                    } else {
-                                        onChange([
-                                            ...value.slice(0, index),
-                                            ...urls,
-                                            ...value.slice(index + 1)
-                                        ]);
-                                    }
-                                });
-                            };
-                            return (
-                                <GridInner>
-                                    <Cell span={12}>
-                                        <Label>{field.label}</Label>
-                                    </Cell>
+                                        const urls = files.map(f => f.src);
+                                        if (index === -1) {
+                                            onChange([...(value || []), ...urls]);
+                                        } else {
+                                            onChange([
+                                                ...value.slice(0, index),
+                                                ...urls,
+                                                ...value.slice(index + 1)
+                                            ]);
+                                        }
+                                    });
+                                };
+                                return (
+                                    <GridInner>
+                                        <Cell span={12}>
+                                            <Label>{field.label}</Label>
+                                        </Cell>
 
-                                    {value.map((url, index) => (
-                                        <Cell span={3} key={url}>
+                                        {value.map((url, index) => (
+                                            <Cell span={3} key={url}>
+                                                <File
+                                                    url={url}
+                                                    showFileManager={() => selectFiles(index)}
+                                                    onRemove={() =>
+                                                        onChange(dotProp.delete(value, index))
+                                                    }
+                                                    placeholder={t`Select a file"`}
+                                                />
+                                            </Cell>
+                                        ))}
+
+                                        <Cell span={3}>
                                             <File
-                                                url={url}
-                                                showFileManager={() => selectFiles(index)}
-                                                onRemove={() =>
-                                                    onChange(dotProp.delete(value, index))
-                                                }
+                                                {...bind}
+                                                showFileManager={() => selectFiles()}
                                                 placeholder={t`Select a file"`}
                                             />
                                         </Cell>
-                                    ))}
-
-                                    <Cell span={3}>
-                                        <File
-                                            showFileManager={() => selectFiles()}
-                                            placeholder={t`Select a file"`}
-                                        />
-                                    </Cell>
-                                    {validation.isValid === false && (
-                                        <Cell span={12}>
-                                            <FormElementMessage error>
-                                                {validation.message}
-                                            </FormElementMessage>
-                                        </Cell>
-                                    )}
-                                </GridInner>
-                            );
-                        }}
-                    </FileManager>
-                </FileUploadWrapper>
-            )}
+                                    </GridInner>
+                                );
+                            }}
+                        </FileManager>
+                    </FileUploadWrapper>
+                );
+            }}
         </Bind>
     );
 }

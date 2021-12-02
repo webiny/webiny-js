@@ -1,8 +1,18 @@
 {
-  "extends": "../../../../tsconfig",
+  "extends": "../../tsconfig.json",
+  "include": ["src"],
   "references": [
     { "path": "../../../../packages/api-file-manager" },
-    { "path": "../../../../packages/handler-aws" },
-    { "path": "../../../../packages/handler-logs" }
-  ]
+    { "path": "../../../../packages/handler-aws" }
+  ],
+  "compilerOptions": {
+    "paths": {
+      "~/*": ["./src/*"],
+      "@webiny/api-file-manager/*": ["../../../../packages/api-file-manager/src/*"],
+      "@webiny/api-file-manager": ["../../../../packages/api-file-manager/src"],
+      "@webiny/handler-aws/*": ["../../../../packages/handler-aws/src/*"],
+      "@webiny/handler-aws": ["../../../../packages/handler-aws/src"]
+    },
+    "baseUrl": "."
+  }
 }

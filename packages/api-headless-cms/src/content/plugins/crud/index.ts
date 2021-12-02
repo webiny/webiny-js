@@ -73,8 +73,6 @@ export const createContentCruds = (params: Params) => {
             }),
             ...createContentEntryCrud({
                 context,
-                getLocale,
-                getTenant,
                 getIdentity,
                 storageOperations
             })

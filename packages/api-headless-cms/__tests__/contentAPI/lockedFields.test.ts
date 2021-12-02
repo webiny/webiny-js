@@ -103,7 +103,7 @@ describe("Content model locked fields", () => {
                 image: "file.jpg",
                 category: {
                     modelId: categoryContentModel.modelId,
-                    entryId: category.id
+                    id: category.id
                 }
             }
         });

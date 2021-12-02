@@ -1,5 +1,8 @@
-import timeSearch from "./timeSearch";
-import refSearch from "./refSearch";
-import { ElasticsearchQueryBuilderValueSearchPlugin } from "~/types";
+import { createTimeSearchPlugin } from "./timeSearch";
+import { createRefSearchPlugin } from "./refSearch";
+import { CmsEntryElasticsearchQueryBuilderValueSearchPlugin } from "~/plugins/CmsEntryElasticsearchQueryBuilderValueSearchPlugin";
 
-export default (): ElasticsearchQueryBuilderValueSearchPlugin[] => [timeSearch(), refSearch()];
+export default (): CmsEntryElasticsearchQueryBuilderValueSearchPlugin[] => [
+    createTimeSearchPlugin(),
+    createRefSearchPlugin()
+];

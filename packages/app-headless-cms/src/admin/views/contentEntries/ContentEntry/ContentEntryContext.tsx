@@ -17,6 +17,7 @@ import { ContentEntriesContext } from "~/admin/views/contentEntries/ContentEntri
 import { useContentEntries } from "~/admin/views/contentEntries/hooks/useContentEntries";
 import { CmsContentEntryRevision, CmsEditorContentEntry } from "~/types";
 import { Tabs } from "@webiny/ui/Tabs";
+import { parseIdentifier } from "@webiny/utils";
 
 export interface ContentEntryContext extends ContentEntriesContext {
     createEntry: () => void;
@@ -48,7 +49,11 @@ export const Provider = ({ children }) => {
     const query = new URLSearchParams(location.search);
     const contentId = query.get("id");
     const revisionId = contentId ? decodeURIComponent(contentId) : null;
-    const entryId = revisionId ? revisionId.split("#")[0] : null;
+    let entryId = null;
+    if (revisionId) {
+        const result = parseIdentifier(revisionId);
+        entryId = result ? result.id : null;
+    }
 
     const { READ_CONTENT } = useMemo(() => {
         return {

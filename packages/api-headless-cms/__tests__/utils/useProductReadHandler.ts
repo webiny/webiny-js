@@ -3,6 +3,7 @@ import { GQLHandlerCallableParams } from "./useGqlHandler";
 
 const productFields = `
     id
+    entryId
     createdOn
     savedOn
     # user defined fields

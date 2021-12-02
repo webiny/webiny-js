@@ -1,14 +1,14 @@
 import WebinyError from "@webiny/error";
-import { operatorPluginsList } from "./operatorPluginsList";
+import { OperatorPlugins, operatorPluginsList } from "./operatorPluginsList";
 import { transformValueForSearch } from "./transformValueForSearch";
 import { searchPluginsList } from "./searchPluginsList";
 import {
     CmsEntryListParams,
     CmsEntryListSort,
     CmsEntryListWhere,
-    CmsModel
+    CmsModel,
+    CmsModelField
 } from "@webiny/api-headless-cms/types";
-import { ElasticsearchQueryBuilderValueSearchPlugin } from "~/types";
 import {
     SearchBody as esSearchBody,
     Sort as esSort,
@@ -24,6 +24,10 @@ import { createLatestType, createPublishedType } from "~/operations/entry";
 import { CmsEntryElasticsearchQueryModifierPlugin } from "~/plugins/CmsEntryElasticsearchQueryModifierPlugin";
 import { CmsEntryElasticsearchSortModifierPlugin } from "~/plugins/CmsEntryElasticsearchSortModifierPlugin";
 import { CmsEntryElasticsearchBodyModifierPlugin } from "~/plugins/CmsEntryElasticsearchBodyModifierPlugin";
+import {
+    CmsEntryElasticsearchQueryBuilderValueSearchPlugin,
+    CreatePathCallableParams
+} from "~/plugins/CmsEntryElasticsearchQueryBuilderValueSearchPlugin";
 
 interface CreateElasticsearchParams {
     plugins: PluginsContainer;
@@ -38,7 +42,7 @@ interface CreateElasticsearchSortParams {
     modelFields: ModelFields;
     parentPath?: string;
     model: CmsModel;
-    searchPlugins: Record<string, ElasticsearchQueryBuilderValueSearchPlugin>;
+    searchPlugins: Record<string, CmsEntryElasticsearchQueryBuilderValueSearchPlugin>;
 }
 
 interface CreateElasticsearchQueryArgs {
@@ -47,7 +51,7 @@ interface CreateElasticsearchQueryArgs {
     where: CmsEntryListWhere;
     modelFields: ModelFields;
     parentPath?: string;
-    searchPlugins: Record<string, ElasticsearchQueryBuilderValueSearchPlugin>;
+    searchPlugins: Record<string, CmsEntryElasticsearchQueryBuilderValueSearchPlugin>;
 }
 
 const specialFields = ["published", "latest", "locale", "tenant"];
@@ -73,7 +77,7 @@ const createElasticsearchSortParams = (args: CreateElasticsearchSortParams): esS
             field: modelField.field.fieldId,
             path: createFieldPath({
                 parentPath,
-                modelField: modelField,
+                modelField,
                 searchPlugin
             })
         });
@@ -157,7 +161,7 @@ const createInitialQueryValue = (
 
 interface CreateFieldPathParams {
     modelField: ModelField;
-    searchPlugin?: ElasticsearchQueryBuilderValueSearchPlugin;
+    searchPlugin?: CmsEntryElasticsearchQueryBuilderValueSearchPlugin;
     parentPath?: string;
 }
 const createFieldPath = ({
@@ -168,7 +172,8 @@ const createFieldPath = ({
     let path;
     if (searchPlugin && typeof searchPlugin.createPath === "function") {
         path = searchPlugin.createPath({
-            field: modelField.field
+            field: modelField.field,
+            value: null
         });
     } else if (typeof modelField.path === "function") {
         path = modelField.path(modelField.field.fieldId);
@@ -202,6 +207,132 @@ const hasKeyword = (modelField: ModelField): boolean => {
      * All other fields have keyword added.
      */
     return true;
+};
+
+interface IsRefFieldFilteringParams {
+    key: string;
+    value: any;
+    field: CmsModelField;
+}
+
+/**
+ * A list of typeof strings that are 100% not ref field filtering.
+ * We also need to check for array and date.
+ */
+const nonRefFieldTypes: string[] = [
+    "string",
+    "number",
+    "undefined",
+    "symbol",
+    "bigint",
+    "function",
+    "boolean"
+];
+const isRefFieldFiltering = (params: IsRefFieldFilteringParams): boolean => {
+    const { key, value, field } = params;
+    const typeOf = typeof value;
+    if (
+        !value ||
+        nonRefFieldTypes.includes(typeOf) ||
+        Array.isArray(value) ||
+        value instanceof Date ||
+        !!value.toISOString
+    ) {
+        return false;
+    } else if (typeOf === "object" && field.type === "ref") {
+        return true;
+    }
+    throw new WebinyError(
+        "Could not determine if the search value is ref field search.",
+        "REF_FIELD_SEARCH_ERROR",
+        {
+            value,
+            field,
+            key
+        }
+    );
+};
+
+interface FieldPathFactoryParams extends Omit<CreatePathCallableParams, "field"> {
+    plugin?: CmsEntryElasticsearchQueryBuilderValueSearchPlugin;
+    modelField: ModelField;
+    parentPath?: string;
+    keyword?: boolean;
+}
+const fieldPathFactory = (params: FieldPathFactoryParams): string => {
+    const { plugin, modelField, value, parentPath, keyword } = params;
+
+    const field = modelField.field;
+
+    let fieldPath: string;
+    if (plugin) {
+        fieldPath = plugin.createPath({ field, value });
+    }
+    if (!fieldPath) {
+        fieldPath = field.fieldId;
+        if (modelField.path) {
+            fieldPath =
+                typeof modelField.path === "function" ? modelField.path(value) : modelField.path;
+        }
+    }
+
+    const keywordValue = keyword ? ".keyword" : "";
+    if (!parentPath) {
+        return `${fieldPath}${keywordValue}`;
+    }
+    return `${parentPath}.${fieldPath}${keywordValue}`;
+};
+
+interface ApplyFilteringParams {
+    query: ElasticsearchBoolQueryConfig;
+    modelField: ModelField;
+    operator: string;
+    value: any;
+    operatorPlugins: OperatorPlugins;
+    searchPlugins: Record<string, CmsEntryElasticsearchQueryBuilderValueSearchPlugin>;
+    parentPath: string;
+}
+const applyFiltering = (params: ApplyFilteringParams) => {
+    const {
+        query,
+        modelField,
+        operator,
+        value: initialValue,
+        operatorPlugins,
+        searchPlugins,
+        parentPath
+    } = params;
+    const plugin = operatorPlugins[operator];
+    if (!plugin) {
+        throw new WebinyError("Operator plugin missing.", "PLUGIN_MISSING", {
+            operator
+        });
+    }
+    const fieldSearchPlugin = searchPlugins[modelField.type];
+    const value = transformValueForSearch({
+        plugins: searchPlugins,
+        field: modelField.field,
+        value: initialValue
+    });
+
+    const keyword = hasKeyword(modelField);
+    plugin.apply(query, {
+        basePath: fieldPathFactory({
+            plugin: fieldSearchPlugin,
+            modelField,
+            parentPath: modelField.isSystemField ? null : parentPath,
+            value
+        }),
+        path: fieldPathFactory({
+            plugin: fieldSearchPlugin,
+            modelField,
+            value,
+            parentPath: modelField.isSystemField ? null : parentPath,
+            keyword
+        }),
+        value,
+        keyword
+    });
 };
 /*
  * Iterate through where keys and apply plugins where necessary
@@ -253,30 +384,36 @@ const execElasticsearchBuildQueryPlugins = (
         if (!isSearchable) {
             throw new WebinyError(`Field "${field}" is not searchable.`);
         }
-        const plugin = operatorPlugins[operator];
-        if (!plugin) {
-            throw new WebinyError("Operator plugin missing.", "PLUGIN_MISSING", {
-                operator
-            });
+        /**
+         * There is a possibility that value is an object.
+         * In that case, check if field is ref field and continue a bit differently.
+         */
+        if (isRefFieldFiltering({ key, value: where[key], field: cmsField })) {
+            /**
+             * We we need to go through each key in where[key] to determine the filters.
+             */
+            for (const whereKey in where[key]) {
+                const { operator } = parseWhereKey(whereKey);
+                applyFiltering({
+                    query,
+                    modelField,
+                    operator,
+                    value: where[key][whereKey],
+                    searchPlugins,
+                    operatorPlugins,
+                    parentPath
+                });
+            }
+            continue;
         }
-        const fieldSearchPlugin = searchPlugins[modelField.type];
-        const value = transformValueForSearch({
-            plugins: searchPlugins,
-            field: cmsField,
-            value: where[key]
-        });
-
-        const fieldPath = createFieldPath({
-            searchPlugin: fieldSearchPlugin,
+        applyFiltering({
+            query,
             modelField,
-            parentPath: parentPath
-        });
-        const keyword = hasKeyword(modelField);
-        plugin.apply(query, {
-            basePath: fieldPath,
-            path: keyword ? `${fieldPath}.keyword` : fieldPath,
-            value,
-            keyword
+            operator,
+            value: where[key],
+            searchPlugins,
+            operatorPlugins,
+            parentPath
         });
     }
 

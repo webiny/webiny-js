@@ -1,4 +1,4 @@
-import richTextStoragePlugin from "../../../../src/dynamoDb/storage/richText";
+import richTextStoragePlugin from "~/dynamoDb/storage/richText";
 
 const defaultArgs = {
     field: {

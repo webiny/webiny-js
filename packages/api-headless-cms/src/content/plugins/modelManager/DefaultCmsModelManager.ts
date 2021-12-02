@@ -1,4 +1,5 @@
 import { CmsModelManager, CmsModel, CmsContext } from "~/types";
+import { parseIdentifier } from "@webiny/utils";
 
 export class DefaultCmsModelManager implements CmsModelManager {
     private readonly _context: CmsContext;
@@ -14,7 +15,8 @@ export class DefaultCmsModelManager implements CmsModelManager {
     }
 
     public async delete(id: string) {
-        if (id.includes("#")) {
+        const { version } = parseIdentifier(id);
+        if (version) {
             return this._context.cms.deleteEntryRevision(this._model, id);
         }
 

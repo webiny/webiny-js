@@ -16,7 +16,7 @@ if (TEST_TYPE !== "unit") {
     log.info(`${log.info.hl("api/code/graphql")}: Assigning environment variables...`);
     const stackOutput = getStackOutput({ folder: "api", env: DEPLOY_ENVIRONMENT });
 
-    if (stackOutput && Object.keys(stackOutput).length > 0) {
+    if (stackOutput) {
         // Assign received values as environment variables.
         Object.assign(process.env, {
             // We assign `region`, `dynamoDbTable`, and `apiUrl` as AWS_REGION, DB_TABLE, and API_URL
@@ -24,7 +24,6 @@ if (TEST_TYPE !== "unit") {
             // `api/pulumi/dev/index.ts` file and assign them here.
             AWS_REGION: stackOutput.region,
             DB_TABLE: stackOutput.dynamoDbTable,
-            DB_TABLE_ELASTICSEARCH: stackOutput.dynamoDbElasticsearchTable,
             API_URL: stackOutput.apiUrl,
 
             // Can be of use while writing tests, for example to distinguish test data from non-test data.

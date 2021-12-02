@@ -34,10 +34,12 @@ const fields = `
     categories {
         modelId
         entryId
+        id
     }
     category {
         modelId
         entryId
+        id
     }
 `;
 

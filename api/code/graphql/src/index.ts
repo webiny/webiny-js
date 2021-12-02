@@ -5,36 +5,31 @@ import i18nPlugins from "@webiny/api-i18n/graphql";
 import i18nDynamoDbStorageOperations from "@webiny/api-i18n-ddb";
 import i18nContentPlugins from "@webiny/api-i18n-content/plugins";
 import pageBuilderPlugins from "@webiny/api-page-builder/graphql";
-import pageBuilderDynamoDbElasticsearchPlugins from "@webiny/api-page-builder-so-ddb-es";
+import pageBuilderDynamoDbPlugins from "@webiny/api-page-builder-so-ddb";
 import pageBuilderPrerenderingPlugins from "@webiny/api-page-builder/prerendering";
 import pageBuilderImportExportPlugins from "@webiny/api-page-builder-import-export/graphql";
-import { createStorageOperations as createPageImportExportStorageOperations } from "@webiny/api-page-builder-import-export-so-ddb";
+import { createStorageOperations as createPageBuilderImportExportStorageOperations } from "@webiny/api-page-builder-import-export-so-ddb";
 import prerenderingServicePlugins from "@webiny/api-prerendering-service/client";
 import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import dynamoDbPlugins from "@webiny/db-dynamodb/plugins";
-import elasticSearch from "@webiny/api-elasticsearch";
 import fileManagerPlugins from "@webiny/api-file-manager/plugins";
-import fileManagerDynamoDbElasticStorageOperation from "@webiny/api-file-manager-ddb-es";
+import fileManagerDynamoDbStorageOperation from "@webiny/api-file-manager-ddb";
 import logsPlugins from "@webiny/handler-logs";
 import fileManagerS3 from "@webiny/api-file-manager-s3";
 import { createFormBuilder } from "@webiny/api-form-builder";
-import { createFormBuilderStorageOperations } from "@webiny/api-form-builder-so-ddb-es";
+import { createFormBuilderStorageOperations } from "@webiny/api-form-builder-so-ddb";
 import {
-    createAdminHeadlessCmsContext,
-    createAdminHeadlessCmsGraphQL
+    createAdminHeadlessCmsGraphQL,
+    createAdminHeadlessCmsContext
 } from "@webiny/api-headless-cms";
-import { createStorageOperations as createHeadlessCmsStorageOperations } from "@webiny/api-headless-cms-ddb-es";
+import { createStorageOperations as createHeadlessCmsStorageOperations } from "@webiny/api-headless-cms-ddb";
 import headlessCmsModelFieldToGraphQLPlugins from "@webiny/api-headless-cms/content/plugins/graphqlFields";
-import elasticsearchDataGzipCompression from "@webiny/api-elasticsearch/plugins/GzipCompression";
+import tenantManager from "@webiny/api-tenant-manager";
 import securityPlugins from "./security";
 
 // Imports plugins created via scaffolding utilities.
 import scaffoldsPlugins from "./plugins/scaffolds";
-import { createElasticsearchClient } from "@webiny/api-elasticsearch/client";
-
-import { createApwGraphQL, createApwContext } from "@webiny/api-apw";
-import apwHook from "@webiny/api-apw/plugins/hooks";
 
 const debug = process.env.DEBUG === "true";
 
@@ -43,16 +38,11 @@ const documentClient = new DocumentClient({
     region: process.env.AWS_REGION
 });
 
-const elasticsearchClient = createElasticsearchClient({
-    endpoint: `https://${process.env.ELASTIC_SEARCH_ENDPOINT}`
-});
-
 export const handler = createHandler({
     plugins: [
         dynamoDbPlugins(),
         logsPlugins(),
         graphqlPlugins({ debug }),
-        elasticSearch(elasticsearchClient),
         dbPlugins({
             table: process.env.DB_TABLE,
             driver: new DynamoDbDriver({ documentClient })
@@ -62,7 +52,7 @@ export const handler = createHandler({
         i18nDynamoDbStorageOperations(),
         i18nContentPlugins(),
         fileManagerPlugins(),
-        fileManagerDynamoDbElasticStorageOperation(),
+        fileManagerDynamoDbStorageOperation(),
         fileManagerS3(),
         prerenderingServicePlugins({
             handlers: {
@@ -74,32 +64,26 @@ export const handler = createHandler({
                 }
             }
         }),
+        tenantManager(),
         pageBuilderPlugins(),
-        pageBuilderDynamoDbElasticsearchPlugins(),
+        pageBuilderDynamoDbPlugins(),
         pageBuilderPrerenderingPlugins(),
         pageBuilderImportExportPlugins({
-            storageOperations: createPageImportExportStorageOperations({ documentClient })
+            storageOperations: createPageBuilderImportExportStorageOperations({ documentClient })
         }),
         createFormBuilder({
             storageOperations: createFormBuilderStorageOperations({
-                documentClient,
-                elasticsearch: elasticsearchClient
-            })
-        }),
-        createAdminHeadlessCmsContext({
-            storageOperations: createHeadlessCmsStorageOperations({
-                documentClient,
-                elasticsearch: elasticsearchClient,
-                modelFieldToGraphQLPlugins: headlessCmsModelFieldToGraphQLPlugins(),
-                plugins: [elasticsearchDataGzipCompression()]
+                documentClient
             })
         }),
         createAdminHeadlessCmsGraphQL(),
-        scaffoldsPlugins(),
-        elasticsearchDataGzipCompression(),
-        createApwContext(),
-        createApwGraphQL(),
-        apwHook()
+        createAdminHeadlessCmsContext({
+            storageOperations: createHeadlessCmsStorageOperations({
+                documentClient,
+                modelFieldToGraphQLPlugins: headlessCmsModelFieldToGraphQLPlugins()
+            })
+        }),
+        scaffoldsPlugins()
     ],
     http: { debug }
 });

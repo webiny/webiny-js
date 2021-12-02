@@ -35,37 +35,6 @@ export interface CmsFieldFilterValueTransformPlugin extends Plugin {
     transform: (params: CmsFieldFilterValueTransformParams) => any;
 }
 
-interface CmsFieldFilterPathParams {
-    /**
-     * A field for which we are creating the value path.
-     */
-    field: CmsModelField;
-    /**
-     * If value is an array we will need index position.
-     * It is up to the developer to add.
-     */
-    index?: number | string;
-}
-export interface CmsFieldFilterPathPlugin extends Plugin {
-    /**
-     * A plugin type.
-     */
-    type: "cms-field-filter-path";
-    /**
-     * A field type this plugin is for.
-     */
-    fieldType: string;
-    /**
-     * A field id this plugin is for.
-     * It is meant for targeting only specific fields in a certain type.
-     */
-    fieldId?: string[];
-    /**
-     * Get a path for given field.
-     */
-    createPath: (params: CmsFieldFilterPathParams) => string;
-}
-
 export type AttributeDefinition = DynamoDBTypes | EntityAttributeConfig | EntityCompositeAttributes;
 
 export type Attributes = Record<string, AttributeDefinition>;

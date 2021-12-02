@@ -32,7 +32,9 @@ export default {
                         // Use only "fulfilled" imports.
                         if (m.status === "fulfilled") {
                             try {
-                                return m.value.default();
+                                return typeof m.value.default === "function"
+                                    ? m.value.default()
+                                    : m.value.default;
                             } catch {
                                 // This one is most likely not built yet.
                                 return null;

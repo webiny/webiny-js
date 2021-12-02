@@ -100,7 +100,7 @@ describe("refField", () => {
                 image: "file.jpg",
                 category: {
                     modelId: "category",
-                    entryId: category.id
+                    id: category.id
                 }
             }
         });
@@ -151,11 +151,11 @@ describe("refField", () => {
             data: {
                 product: {
                     modelId: "product",
-                    entryId: product.id
+                    id: product.id
                 },
                 author: {
                     modelId: "author",
-                    entryId: author.id
+                    id: author.id
                 },
                 text: `review text`,
                 rating: 5
@@ -180,6 +180,7 @@ describe("refField", () => {
                 getReview: {
                     data: {
                         id: review.id,
+                        entryId: review.entryId,
                         createdOn: review.createdOn,
                         createdBy: {
                             id: "12345678",
@@ -204,12 +205,14 @@ describe("refField", () => {
                             version: 1
                         },
                         product: {
-                            entryId: product.id,
+                            id: product.id,
+                            entryId: product.entryId,
                             modelId: "product"
                         },
                         author: {
                             modelId: "author",
-                            entryId: author.id
+                            entryId: author.entryId,
+                            id: author.id
                         }
                     },
                     error: null
@@ -231,8 +234,11 @@ describe("refField", () => {
                 listReviews: {
                     data: [
                         {
+                            id: review.id,
+                            entryId: review.entryId,
                             author: {
-                                entryId: author.id,
+                                id: author.id,
+                                entryId: author.entryId,
                                 modelId: "author"
                             },
                             createdOn: review.createdOn,
@@ -241,7 +247,6 @@ describe("refField", () => {
                                 displayName: "John Doe",
                                 type: "admin"
                             },
-                            id: review.id,
                             meta: {
                                 locked: true,
                                 modelId: "review",
@@ -257,7 +262,8 @@ describe("refField", () => {
                                 version: 1
                             },
                             product: {
-                                entryId: product.id,
+                                id: product.id,
+                                entryId: product.entryId,
                                 modelId: "product"
                             },
                             rating: 5,

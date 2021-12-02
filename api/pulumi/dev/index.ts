@@ -4,7 +4,6 @@ import Graphql from "./graphql";
 import HeadlessCMS from "./headlessCMS";
 import ApiGateway from "./apiGateway";
 import Cloudfront from "./cloudfront";
-import ElasticSearch from "./elasticSearch";
 import FileManager from "./fileManager";
 import PageBuilder from "./pageBuilder";
 import PrerenderingService from "./prerenderingService";
@@ -18,19 +17,16 @@ const DEBUG = String(process.env.DEBUG);
 const WEBINY_LOGS_FORWARD_URL = String(process.env.WEBINY_LOGS_FORWARD_URL);
 
 export default () => {
-    const cognito = new Cognito();
     const dynamoDb = new DynamoDB();
-    const elasticSearch = new ElasticSearch();
+    const cognito = new Cognito();
     const fileManager = new FileManager();
 
     const prerenderingService = new PrerenderingService({
         env: {
             DB_TABLE: dynamoDb.table.name,
-            DB_TABLE_ELASTICSEARCH: elasticSearch.table.name,
             DEBUG
         },
         primaryDynamodbTable: dynamoDb.table,
-        elasticsearchDynamodbTable: elasticSearch.table,
         bucket: fileManager.bucket
     });
 
@@ -39,15 +35,12 @@ export default () => {
             COGNITO_REGION: String(process.env.AWS_REGION),
             COGNITO_USER_POOL_ID: cognito.userPool.id,
             DB_TABLE: dynamoDb.table.name,
-            DB_TABLE_ELASTICSEARCH: elasticSearch.table.name,
-            ELASTIC_SEARCH_ENDPOINT: elasticSearch.domain.endpoint,
+
             S3_BUCKET: fileManager.bucket.id,
             DEBUG,
             WEBINY_LOGS_FORWARD_URL
         },
         primaryDynamodbTable: dynamoDb.table,
-        elasticsearchDynamodbTable: elasticSearch.table,
-        elasticsearchDomain: elasticSearch.domain,
         bucket: fileManager.bucket,
         cognitoUserPool: cognito.userPool
     });
@@ -56,11 +49,8 @@ export default () => {
         env: {
             COGNITO_REGION: String(process.env.AWS_REGION),
             COGNITO_USER_POOL_ID: cognito.userPool.id,
-            OKTA_ISSUER: process.env.OKTA_ISSUER,
-            OKTA_CLIENT_ID: process.env.OKTA_CLIENT_ID,
             DB_TABLE: dynamoDb.table.name,
-            DB_TABLE_ELASTICSEARCH: elasticSearch.table.name,
-            ELASTIC_SEARCH_ENDPOINT: elasticSearch.domain.endpoint,
+
             PRERENDERING_RENDER_HANDLER: prerenderingService.functions.render.arn,
             PRERENDERING_FLUSH_HANDLER: prerenderingService.functions.flush.arn,
             PRERENDERING_QUEUE_ADD_HANDLER: prerenderingService.functions.queue.add.arn,
@@ -72,8 +62,6 @@ export default () => {
             WEBINY_LOGS_FORWARD_URL
         },
         primaryDynamodbTable: dynamoDb.table,
-        elasticsearchDynamodbTable: elasticSearch.table,
-        elasticsearchDomain: elasticSearch.domain,
         bucket: fileManager.bucket,
         cognitoUserPool: cognito.userPool
     });
@@ -82,18 +70,12 @@ export default () => {
         env: {
             COGNITO_REGION: String(process.env.AWS_REGION),
             COGNITO_USER_POOL_ID: cognito.userPool.id,
-            OKTA_ISSUER: process.env.OKTA_ISSUER,
-            OKTA_CLIENT_ID: process.env.OKTA_CLIENT_ID,
             DB_TABLE: dynamoDb.table.name,
-            DB_TABLE_ELASTICSEARCH: elasticSearch.table.name,
-            ELASTIC_SEARCH_ENDPOINT: elasticSearch.domain.endpoint,
             S3_BUCKET: fileManager.bucket.id,
             DEBUG,
             WEBINY_LOGS_FORWARD_URL
         },
-        primaryDynamodbTable: dynamoDb.table,
-        elasticsearchDynamodbTable: elasticSearch.table,
-        elasticsearchDomain: elasticSearch.domain
+        primaryDynamodbTable: dynamoDb.table
     });
 
     const apiGateway = new ApiGateway({
@@ -137,13 +119,11 @@ export default () => {
         region: process.env.AWS_REGION,
         apiUrl: cloudfront.cloudfront.domainName.apply(value => `https://${value}`),
         cognitoUserPoolId: cognito.userPool.id,
-        cognitoUserPoolName: cognito.userPool.name,
         cognitoAppClientId: cognito.userPoolClient.id,
         cognitoUserPoolPasswordPolicy: cognito.userPool.passwordPolicy,
         updatePbSettingsFunction: pageBuilder.functions.updateSettings.arn,
         psQueueAdd: prerenderingService.functions.queue.add.arn,
         psQueueProcess: prerenderingService.functions.queue.process.arn,
-        dynamoDbTable: dynamoDb.table.name,
-        dynamoDbElasticsearchTable: elasticSearch.table.name
+        dynamoDbTable: dynamoDb.table.name
     };
 };

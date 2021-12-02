@@ -2,7 +2,6 @@ import { HandlerContext } from "@webiny/handler/types";
 import { HttpContext } from "@webiny/handler-http/types";
 import { ArgsContext } from "@webiny/handler-args/types";
 import { ClientContext } from "@webiny/handler-client/types";
-import { ElasticsearchContext } from "@webiny/api-elasticsearch/types";
 import { TenancyContext } from "@webiny/api-tenancy/types";
 import { SecurityContext } from "@webiny/api-security/types";
 import { I18NContext } from "@webiny/api-i18n/types";
@@ -23,7 +22,6 @@ export interface Context
         HttpContext,
         ArgsContext,
         ClientContext,
-        ElasticsearchContext,
         TenancyContext,
         SecurityContext,
         I18NContext,

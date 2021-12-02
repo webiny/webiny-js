@@ -324,6 +324,7 @@ export interface CmsEditorFieldValidatorPlugin extends Plugin {
         label: string;
         description: string;
         defaultMessage: string;
+        defaultSettings?: Record<string, any>;
         renderSettings?: (props: {
             field: CmsEditorField;
             Bind: BindComponent;
@@ -370,7 +371,7 @@ export interface CmsModelFieldValidatorPlugin extends Plugin {
     type: "cms-model-field-validator";
     validator: {
         name: string;
-        validate: (value: any, validator: CmsFieldValidator) => Promise<any>;
+        validate: (value: any, validator: CmsFieldValidator | any) => Promise<any>;
     };
 }
 

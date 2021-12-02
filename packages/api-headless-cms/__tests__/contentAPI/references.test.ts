@@ -147,12 +147,12 @@ describe("entry references", () => {
                 title: "Tech article",
                 body: null,
                 category: {
-                    entryId: techCategory.id,
+                    id: techCategory.id,
                     modelId: "category"
                 },
                 categories: [
                     {
-                        entryId: techCategory.id,
+                        id: techCategory.id,
                         modelId: "category"
                     }
                 ]
@@ -171,17 +171,16 @@ describe("entry references", () => {
 
         const techArticle2 = await createArticleItem({
             manager: articleManager,
-            // from: techArticle,
             data: {
                 title: "Tech article 2",
                 body: null,
                 category: {
-                    entryId: techCategory2.id,
+                    id: techCategory2.id,
                     modelId: "category"
                 },
                 categories: [
                     {
-                        entryId: techCategory2.id,
+                        id: techCategory2.id,
                         modelId: "category"
                     }
                 ]
@@ -201,17 +200,16 @@ describe("entry references", () => {
 
         const techArticle3 = await createArticleItem({
             manager: articleManager,
-            // from: techArticle2,
             data: {
                 title: "Tech article 3",
                 body: null,
                 category: {
-                    entryId: techCategory3.id,
+                    id: techCategory3.id,
                     modelId: "category"
                 },
                 categories: [
                     {
-                        entryId: techCategory3.id,
+                        id: techCategory3.id,
                         modelId: "category"
                     }
                 ]
@@ -292,7 +290,8 @@ describe("entry references", () => {
                          */
                         categories: [
                             {
-                                entryId: techCategory.id,
+                                id: techCategory.id,
+                                entryId: techCategory.entryId,
                                 modelId: techCategory.meta.modelId
                             }
                         ]
@@ -329,12 +328,12 @@ describe("entry references", () => {
                 title: "Tech article",
                 body: null,
                 category: {
-                    entryId: techCategory.id,
+                    id: techCategory.id,
                     modelId: "category"
                 },
                 categories: [
                     {
-                        entryId: techCategory.id,
+                        id: techCategory.id,
                         modelId: "category"
                     }
                 ]
@@ -523,11 +522,7 @@ describe("entry references", () => {
         });
     });
 
-    /**
-     * TODO implement filtering by reference field to make this work
-     */
-    // eslint-disable-next-line
-    it.skip("should list articles filtered by reference", async () => {
+    it("should list articles filtered by reference", async () => {
         const group = await setupContentModelGroup(mainManager);
         await setupContentModels(mainManager, group, ["category", "article"]);
 
@@ -550,12 +545,12 @@ describe("entry references", () => {
                 title: "Tech article",
                 body: null,
                 category: {
-                    entryId: techCategory.id,
+                    id: techCategory.id,
                     modelId: "category"
                 },
                 categories: [
                     {
-                        entryId: techCategory.id,
+                        id: techCategory.id,
                         modelId: "category"
                     }
                 ]
@@ -574,17 +569,16 @@ describe("entry references", () => {
 
         const techArticle2 = await createArticleItem({
             manager: articleManager,
-            // from: techArticle,
             data: {
                 title: "Tech article 2",
                 body: null,
                 category: {
-                    entryId: techCategory2.id,
+                    id: techCategory2.id,
                     modelId: "category"
                 },
                 categories: [
                     {
-                        entryId: techCategory2.id,
+                        id: techCategory2.id,
                         modelId: "category"
                     }
                 ]
@@ -604,17 +598,16 @@ describe("entry references", () => {
 
         const techArticle3 = await createArticleItem({
             manager: articleManager,
-            // from: techArticle2,
             data: {
                 title: "Tech article 3",
                 body: null,
                 category: {
-                    entryId: techCategory3.id,
+                    id: techCategory3.id,
                     modelId: "category"
                 },
                 categories: [
                     {
-                        entryId: techCategory3.id,
+                        id: techCategory3.id,
                         modelId: "category"
                     }
                 ]
@@ -631,19 +624,18 @@ describe("entry references", () => {
             publish: true
         });
 
-        // eslint-disable-next-line
         const foodArticle = await createArticleItem({
             manager: articleManager,
             data: {
                 title: "Food article",
                 body: null,
                 category: {
-                    entryId: foodCategory.id,
+                    id: foodCategory.id,
                     modelId: "category"
                 },
                 categories: [
                     {
-                        entryId: foodCategory.id,
+                        id: foodCategory.id,
                         modelId: "category"
                     }
                 ]
@@ -674,13 +666,58 @@ describe("entry references", () => {
                     entryId: techCategory.entryId
                 }
             },
-            sort: ["createdBy_ASC"]
+            sort: ["createdOn_ASC"]
         });
+
+        const expectedTechArticles = [
+            {
+                ...techArticle,
+                category: {
+                    id: techCategory3.id,
+                    title: techCategory3.title
+                },
+                categories: [
+                    {
+                        id: techCategory3.id,
+                        title: techCategory3.title
+                    }
+                ],
+                meta: undefined
+            },
+            {
+                ...techArticle2,
+                category: {
+                    id: techCategory3.id,
+                    title: techCategory3.title
+                },
+                categories: [
+                    {
+                        id: techCategory3.id,
+                        title: techCategory3.title
+                    }
+                ],
+                meta: undefined
+            },
+            {
+                ...techArticle3,
+                category: {
+                    id: techCategory3.id,
+                    title: techCategory3.title
+                },
+                categories: [
+                    {
+                        id: techCategory3.id,
+                        title: techCategory3.title
+                    }
+                ],
+                meta: undefined
+            }
+        ];
 
         expect(listArticlesEntryIdResponse).toEqual({
             data: {
                 listArticles: {
-                    data: [techArticle, techArticle2, techArticle3],
+                    data: expectedTechArticles,
                     meta: {
                         hasMoreItems: false,
                         totalCount: 3,
@@ -697,16 +734,100 @@ describe("entry references", () => {
                     entryId_in: [techCategory.entryId]
                 }
             },
-            sort: ["createdBy_ASC"]
+            sort: ["createdOn_ASC"]
         });
 
         expect(listArticlesEntryIdInResponse).toEqual({
             data: {
                 listArticles: {
-                    data: [techArticle, techArticle2, techArticle3],
+                    data: expectedTechArticles,
                     meta: {
                         hasMoreItems: false,
                         totalCount: 3,
+                        cursor: null
+                    },
+                    error: null
+                }
+            }
+        });
+
+        const [listArticlesIdResponse] = await articleReader.listArticles({
+            where: {
+                category: {
+                    id: techCategory.id
+                }
+            },
+            sort: ["createdOn_ASC"]
+        });
+
+        expect(listArticlesIdResponse).toEqual({
+            data: {
+                listArticles: {
+                    data: [expectedTechArticles[0]],
+                    meta: {
+                        hasMoreItems: false,
+                        totalCount: 1,
+                        cursor: null
+                    },
+                    error: null
+                }
+            }
+        });
+
+        const [listArticlesIdInResponse] = await articleReader.listArticles({
+            where: {
+                category: {
+                    id_in: [techCategory.id]
+                }
+            },
+            sort: ["createdOn_ASC"]
+        });
+
+        expect(listArticlesIdInResponse).toEqual({
+            data: {
+                listArticles: {
+                    data: [expectedTechArticles[0]],
+                    meta: {
+                        hasMoreItems: false,
+                        totalCount: 1,
+                        cursor: null
+                    },
+                    error: null
+                }
+            }
+        });
+
+        const [listArticlesFoodResponse] = await articleReader.listArticles({
+            where: {
+                category: {
+                    entryId: foodCategory.entryId
+                }
+            },
+            sort: ["createdOn_ASC"]
+        });
+
+        expect(listArticlesFoodResponse).toEqual({
+            data: {
+                listArticles: {
+                    data: [
+                        {
+                            ...foodArticle,
+                            category: {
+                                id: foodCategory.id,
+                                title: foodCategory.title
+                            },
+                            categories: [
+                                {
+                                    id: foodCategory.id,
+                                    title: foodCategory.title
+                                }
+                            ],
+                            meta: undefined
+                        }
+                    ],
+                    meta: {
+                        hasMoreItems: false,
+                        totalCount: 1,
                         cursor: null
                     },
                     error: null

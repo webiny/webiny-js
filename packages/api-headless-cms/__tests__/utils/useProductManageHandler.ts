@@ -3,6 +3,7 @@ import { GQLHandlerCallableParams } from "./useGqlHandler";
 
 const productFields = `
     id
+    entryId
     createdOn
     createdBy {
         id
@@ -27,6 +28,7 @@ const productFields = `
     category {
         modelId
         entryId
+        id
     }
     price
     inStock
@@ -41,6 +43,7 @@ const productFields = `
         category {
             modelId
             entryId
+            id
         }
         options {
             name
@@ -48,6 +51,7 @@ const productFields = `
             category {
                 modelId
                 entryId
+                id
             }
         }
     }

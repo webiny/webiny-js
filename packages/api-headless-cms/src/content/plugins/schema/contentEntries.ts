@@ -1,8 +1,12 @@
 import { Response } from "@webiny/handler-graphql";
-import { CmsEntry, CmsContext } from "~/types";
+import { CmsEntry, CmsContext, CmsModel } from "~/types";
 import { NotAuthorizedResponse } from "@webiny/api-security";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSchemaPlugin";
 import { getEntryTitle } from "~/content/plugins/utils/getEntryTitle";
+
+interface EntriesByModel {
+    [key: string]: string[];
+}
 
 const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
     if (!context.cms.MANAGE) {
@@ -35,7 +39,7 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
 
             input CmsModelEntryInput {
                 modelId: ID!
-                entryId: ID!
+                id: ID!
             }
 
             extend type Query {
@@ -95,7 +99,7 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
                     );
                 },
                 async getContentEntry(_, args, context) {
-                    const { modelId, entryId } = args.entry;
+                    const { modelId, id } = args.entry;
                     const models = await context.cms.listModels();
                     const model = models.find(m => m.modelId === modelId);
 
@@ -103,7 +107,7 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
                         return new NotAuthorizedResponse({ data: { modelId } });
                     }
 
-                    const [entry] = await context.cms.getEntriesByIds(model, [entryId]);
+                    const [entry] = await context.cms.getEntriesByIds(model, [id]);
 
                     return new Response({
                         id: entry.id,
@@ -117,33 +121,62 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
                 },
                 async getContentEntries(_, args, context) {
                     const models = await context.cms.listModels();
-                    const entriesByModel = args.entries.map((ref, index) => {
-                        return {
-                            entryId: ref.entryId,
-                            modelId: ref.modelId,
-                            index
-                        };
-                    });
 
-                    const getters = entriesByModel.map(async ({ modelId, entryId }) => {
-                        // Get model manager, to get access to CRUD methods
-                        const model = models.find(m => m.modelId === modelId);
-                        const entries = await context.cms.getEntriesByIds(model, [entryId]);
-                        return entries.map(entry => ({
-                            id: entry.id,
-                            model: {
-                                modelId: model.modelId,
-                                name: model.name
-                            },
-                            status: entry.status,
-                            title: getEntryTitle(model, entry)
-                        }));
-                    });
-                    return new Response(
-                        await Promise.all(getters).then((results: any[]) => {
-                            return results.reduce((result, item) => result.concat(item), []);
-                        })
+                    const modelsMap: Record<string, CmsModel> = models.reduce(
+                        (collection, model) => {
+                            collection[model.modelId] = model;
+                            return collection;
+                        },
+                        {}
                     );
+
+                    const entriesByModel: EntriesByModel = args.entries.reduce(
+                        (collection, ref) => {
+                            if (!collection[ref.modelId]) {
+                                collection[ref.modelId] = [];
+                            } else if (collection[ref.modelId].includes(ref.id) === true) {
+                                return collection;
+                            }
+                            collection[ref.modelId].push(ref.id);
+                            return collection;
+                        },
+                        {} as EntriesByModel
+                    );
+
+                    const getters: Promise<CmsEntry[]>[] = Object.keys(entriesByModel).map(
+                        async modelId => {
+                            return context.cms.getEntriesByIds(
+                                modelsMap[modelId],
+                                entriesByModel[modelId]
+                            );
+                        }
+                    );
+
+                    if (getters.length === 0) {
+                        return new Response([]);
+                    }
+
+                    const results = await Promise.all(getters);
+
+                    const entries = results.reduce((collection, items) => {
+                        return collection.concat(
+                            items.map(item => {
+                                const model = modelsMap[item.modelId];
+
+                                return {
+                                    id: item.id,
+                                    model: {
+                                        modelId: model.modelId,
+                                        name: model.name
+                                    },
+                                    status: item.status,
+                                    title: getEntryTitle(model, item)
+                                };
+                            })
+                        );
+                    }, [] as any[]);
+
+                    return new Response(entries);
                 }
             }
         }

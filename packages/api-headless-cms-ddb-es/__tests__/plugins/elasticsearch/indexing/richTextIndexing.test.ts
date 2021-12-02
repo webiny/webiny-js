@@ -1,5 +1,6 @@
 import richTextIndexingPlugin from "~/elasticsearch/indexing/richTextIndexing";
 import { CmsModelField } from "@webiny/api-headless-cms/types";
+import { PluginsContainer } from "@webiny/plugins";
 
 const mockValue = [
     {
@@ -7,7 +8,6 @@ const mockValue = [
         content: "some long text"
     }
 ];
-const mockContext: any = {};
 const mockModel: any = {};
 
 const mockField: CmsModelField = {
@@ -29,13 +29,11 @@ const mockField: CmsModelField = {
     helpText: "text"
 };
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const getFieldTypePlugin = (fieldType: string) => {
+const getFieldTypePlugin = () => {
     return null;
 };
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const getFieldIndexPlugin = (fieldType: string) => {
+const getFieldIndexPlugin = () => {
     return null;
 };
 
@@ -45,9 +43,10 @@ describe("richTextIndexing", () => {
 
         const result = plugin.toIndex({
             value: mockValue,
+            rawValue: mockValue,
             field: mockField,
             model: mockModel,
-            context: mockContext,
+            plugins: new PluginsContainer(),
             getFieldTypePlugin,
             getFieldIndexPlugin
         });
@@ -65,7 +64,7 @@ describe("richTextIndexing", () => {
             rawValue: mockValue,
             field: mockField,
             model: mockModel,
-            context: mockContext,
+            plugins: new PluginsContainer(),
             getFieldTypePlugin,
             getFieldIndexPlugin
         });
