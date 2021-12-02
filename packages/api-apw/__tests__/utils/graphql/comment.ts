@@ -14,6 +14,7 @@ const getDataFields = (fields = "") => `{
         type
     }
     body
+    changeRequest
     ${fields}
 }`;
 
