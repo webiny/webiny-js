@@ -148,15 +148,18 @@ describe("latest entries", function () {
         const title = "Test article";
         const categories = [
             {
-                entryId: fruitCategory.id,
+                id: fruitCategory.id,
+                entryId: fruitCategory.entryId,
                 modelId: categoryModel.modelId
             },
             {
-                entryId: vehicleCategory.id,
+                id: vehicleCategory.id,
+                entryId: vehicleCategory.entryId,
                 modelId: categoryModel.modelId
             },
             {
-                entryId: animalCategory.id,
+                id: animalCategory.id,
+                entryId: animalCategory.entryId,
                 modelId: categoryModel.modelId
             }
         ];
@@ -165,7 +168,12 @@ describe("latest entries", function () {
             data: {
                 title,
                 body,
-                categories
+                categories: categories.map(category => {
+                    return {
+                        id: category.id,
+                        modelId: category.modelId
+                    };
+                })
             }
         });
         /**

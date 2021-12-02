@@ -4,7 +4,6 @@ import Graphql from "./graphql";
 import HeadlessCMS from "./headlessCMS";
 import ApiGateway from "./apiGateway";
 import Cloudfront from "./cloudfront";
-import ElasticSearch from "./elasticSearch";
 import FileManager from "./fileManager";
 import PageBuilder from "./pageBuilder";
 import PrerenderingService from "./prerenderingService";
@@ -17,20 +16,23 @@ const DEBUG = String(process.env.DEBUG);
 // https://www.webiny.com/docs/how-to-guides/use-watch-command#enabling-logs-forwarding
 const WEBINY_LOGS_FORWARD_URL = String(process.env.WEBINY_LOGS_FORWARD_URL);
 
+// We protect mission critical cloud infrastructure resource against accidental deletion. We do this
+// only for the "prod" environment, but, if needed, feel free to additional environments.
+// https://www.pulumi.com/docs/intro/concepts/resources/#protect
+const protectedEnvironment = process.env.WEBINY_ENV === "prod";
+
 export default () => {
-    const dynamoDb = new DynamoDB();
-    const cognito = new Cognito();
-    const elasticSearch = new ElasticSearch();
-    const fileManager = new FileManager();
+    const dynamoDb = new DynamoDB({ protectedEnvironment });
+    const cognito = new Cognito({ protectedEnvironment });
+
+    const fileManager = new FileManager({ protectedEnvironment });
 
     const prerenderingService = new PrerenderingService({
         env: {
             DB_TABLE: dynamoDb.table.name,
-            DB_TABLE_ELASTICSEARCH: elasticSearch.table.name,
             DEBUG
         },
         primaryDynamodbTable: dynamoDb.table,
-        elasticsearchDynamodbTable: elasticSearch.table,
         bucket: fileManager.bucket
     });
 
@@ -39,16 +41,13 @@ export default () => {
             COGNITO_REGION: String(process.env.AWS_REGION),
             COGNITO_USER_POOL_ID: cognito.userPool.id,
             DB_TABLE: dynamoDb.table.name,
-            DB_TABLE_ELASTICSEARCH: elasticSearch.table.name,
-            ELASTIC_SEARCH_ENDPOINT: elasticSearch.domain.endpoint,
+
             S3_BUCKET: fileManager.bucket.id,
             DEBUG,
             WEBINY_LOGS_FORWARD_URL
         },
         bucket: fileManager.bucket,
         primaryDynamodbTable: dynamoDb.table,
-        elasticsearchDynamodbTable: elasticSearch.table,
-        elasticsearchDomain: elasticSearch.domain,
         cognitoUserPool: cognito.userPool
     });
 
@@ -57,8 +56,7 @@ export default () => {
             COGNITO_REGION: String(process.env.AWS_REGION),
             COGNITO_USER_POOL_ID: cognito.userPool.id,
             DB_TABLE: dynamoDb.table.name,
-            DB_TABLE_ELASTICSEARCH: elasticSearch.table.name,
-            ELASTIC_SEARCH_ENDPOINT: elasticSearch.domain.endpoint,
+
             PRERENDERING_RENDER_HANDLER: prerenderingService.functions.render.arn,
             PRERENDERING_FLUSH_HANDLER: prerenderingService.functions.flush.arn,
             PRERENDERING_QUEUE_ADD_HANDLER: prerenderingService.functions.queue.add.arn,
@@ -70,8 +68,6 @@ export default () => {
             WEBINY_LOGS_FORWARD_URL
         },
         primaryDynamodbTable: dynamoDb.table,
-        elasticsearchDynamodbTable: elasticSearch.table,
-        elasticsearchDomain: elasticSearch.domain,
         bucket: fileManager.bucket,
         cognitoUserPool: cognito.userPool
     });
@@ -81,15 +77,11 @@ export default () => {
             COGNITO_REGION: String(process.env.AWS_REGION),
             COGNITO_USER_POOL_ID: cognito.userPool.id,
             DB_TABLE: dynamoDb.table.name,
-            DB_TABLE_ELASTICSEARCH: elasticSearch.table.name,
-            ELASTIC_SEARCH_ENDPOINT: elasticSearch.domain.endpoint,
             S3_BUCKET: fileManager.bucket.id,
             DEBUG,
             WEBINY_LOGS_FORWARD_URL
         },
-        primaryDynamodbTable: dynamoDb.table,
-        elasticsearchDynamodbTable: elasticSearch.table,
-        elasticsearchDomain: elasticSearch.domain
+        primaryDynamodbTable: dynamoDb.table
     });
 
     const apiGateway = new ApiGateway({
@@ -138,7 +130,6 @@ export default () => {
         updatePbSettingsFunction: pageBuilder.functions.updateSettings.arn,
         psQueueAdd: prerenderingService.functions.queue.add.arn,
         psQueueProcess: prerenderingService.functions.queue.process.arn,
-        dynamoDbTable: dynamoDb.table.name,
-        dynamoDbElasticsearchTable: elasticSearch.table.name
+        dynamoDbTable: dynamoDb.table.name
     };
 };

@@ -1,8 +1,8 @@
-import plainObjectPath from "../../../../src/dynamoDb/path/plainObject";
+import { createPlainObjectPathPlugin } from "~/dynamoDb/path/plainObject";
 
 describe("dynamodb path plain object", () => {
     it("should get the plain object path", () => {
-        const plugin = plainObjectPath();
+        const plugin = createPlainObjectPathPlugin();
 
         const result = plugin.createPath({
             field: {
@@ -17,7 +17,7 @@ describe("dynamodb path plain object", () => {
     });
 
     it("should throw an error when no path in the settings", () => {
-        const plugin = plainObjectPath();
+        const plugin = createPlainObjectPathPlugin();
 
         expect(() => {
             plugin.createPath({

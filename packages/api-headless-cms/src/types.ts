@@ -184,11 +184,11 @@ export interface CmsModelDateTimeField extends CmsModelField {
  * @category ModelField
  * @category FieldValidation
  */
-export interface CmsModelFieldValidatorValidateParams {
+export interface CmsModelFieldValidatorValidateParams<T = any> {
     /**
      * A value to be validated.
      */
-    value: any;
+    value: T;
     /**
      * Options from the CmsModelField validations.
      *
@@ -1305,6 +1305,16 @@ type CmsEntryStatus =
     | "changesRequested"
     | "draft";
 
+export interface CmsEntryListWhereRef {
+    id?: string;
+    id_in?: string[];
+    id_not?: string;
+    id_not_in?: string[];
+    entryId?: string;
+    entryId_not?: string;
+    entryId_in?: string[];
+    entryId_not_in?: string[];
+}
 /**
  * Entry listing where params.
  *
@@ -1367,7 +1377,10 @@ export interface CmsEntryListWhere {
      * @internal
      */
     latest?: boolean;
-    [key: string]: any;
+    /**
+     * Can be reference field or, actually, anything else.
+     */
+    [key: string]: any | CmsEntryListWhereRef;
 }
 
 /**

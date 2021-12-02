@@ -10,15 +10,30 @@ export interface ParseIdentifierResult {
     version: number | null;
 }
 
-export const parseIdentifier = (value: string): ParseIdentifierResult => {
-    const [id, version] = value.split("#");
+export const parseIdentifier = (value?: string): ParseIdentifierResult => {
+    if (!value) {
+        throw new WebinyError("Missing value to be parsed for the identifier.", "MALFORMED_VALUE");
+    }
+    const [id, initialVersion] = value.split("#");
     if (!id) {
         throw new WebinyError("Missing ID in given value.", "MALFORMED_VALUE", {
             value
         });
     }
+    const version = initialVersion ? Number(initialVersion) : null;
+    if (version !== null && version <= 0) {
+        throw new WebinyError(
+            "Version parsed from ID is less or equal to zero.",
+            "MALFORMED_VALUE",
+            {
+                id,
+                version,
+                value
+            }
+        );
+    }
     return {
         id,
-        version: version ? Number(version) : null
+        version
     };
 };

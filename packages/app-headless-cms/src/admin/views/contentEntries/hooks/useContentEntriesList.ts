@@ -22,7 +22,7 @@ export function useContentEntriesList() {
 
     // Get entry ID and search query (if any)
     const query = new URLSearchParams(location.search);
-    const entryId = query.get("id");
+    const id = query.get("id");
     const searchQuery = query.get("search");
     const updateSearch = useCallback(
         debounce(({ filter, query }) => {
@@ -113,7 +113,7 @@ export function useContentEntriesList() {
         listQueryVariables,
         setListQueryVariables,
         sorters,
-        entryId,
+        id,
         loading,
         data: filterByStatus(get(data, "content.data", []), listQueryVariables.status),
         loadMore,

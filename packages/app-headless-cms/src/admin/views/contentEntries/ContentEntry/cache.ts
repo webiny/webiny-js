@@ -2,6 +2,7 @@ import dotProp from "dot-prop-immutable";
 import orderBy from "lodash/orderBy";
 import { CmsEditorContentEntry } from "~/types";
 import * as GQL from "~/admin/graphql/contentEntries";
+import { parseIdentifier } from "@webiny/utils";
 
 /*
  * We need to preserve the order of entries with new entry addition
@@ -62,7 +63,7 @@ export const removeEntryFromListCache = (model, cache, revision, variables) => {
     if (!content || !content.data) {
         return;
     }
-    const entryId = revision.id.split("#")[0];
+    const { id: entryId } = parseIdentifier(revision.id);
     const index = content.data.findIndex(item => item.id.startsWith(entryId));
     if (index === -1) {
         return;

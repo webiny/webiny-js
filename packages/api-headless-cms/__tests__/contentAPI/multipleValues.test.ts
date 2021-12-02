@@ -221,7 +221,7 @@ describe("multiple values in field", () => {
                 image: "file.jpg",
                 category: {
                     modelId: categoryContentModel.modelId,
-                    entryId: category.id
+                    id: category.id
                 },
                 richText: [
                     {
@@ -237,6 +237,7 @@ describe("multiple values in field", () => {
                 createProduct: {
                     data: {
                         id: expect.any(String),
+                        entryId: expect.any(String),
                         createdOn: expect.stringMatching(/^20/),
                         createdBy: {
                             id: "12345678",
@@ -246,7 +247,8 @@ describe("multiple values in field", () => {
                         savedOn: expect.stringMatching(/^20/),
                         category: {
                             modelId: categoryContentModel.modelId,
-                            entryId: category.id
+                            id: category.id,
+                            entryId: category.entryId
                         },
                         title: "Potato",
                         color: "white",

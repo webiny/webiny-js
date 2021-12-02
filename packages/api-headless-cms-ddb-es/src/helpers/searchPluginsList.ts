@@ -1,16 +1,16 @@
 import WebinyError from "@webiny/error";
-import { ElasticsearchQueryBuilderValueSearchPlugin } from "~/types";
 import { PluginsContainer } from "@webiny/plugins";
+import { CmsEntryElasticsearchQueryBuilderValueSearchPlugin } from "~/plugins/CmsEntryElasticsearchQueryBuilderValueSearchPlugin";
 
 export interface ElasticsearchQuerySearchValuePlugins {
-    [fieldType: string]: ElasticsearchQueryBuilderValueSearchPlugin;
+    [fieldType: string]: CmsEntryElasticsearchQueryBuilderValueSearchPlugin;
 }
 
 export const searchPluginsList = (
     plugins: PluginsContainer
 ): ElasticsearchQuerySearchValuePlugins => {
     return plugins
-        .byType<ElasticsearchQueryBuilderValueSearchPlugin>(
+        .byType<CmsEntryElasticsearchQueryBuilderValueSearchPlugin>(
             "cms-elastic-search-query-builder-value-search"
         )
         .reduce((plugins, plugin) => {

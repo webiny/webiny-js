@@ -1,34 +1,27 @@
 {
-  "extends": "../../../../tsconfig",
+  "extends": "../../tsconfig.json",
+  "include": ["src"],
   "references": [
     { "path": "../../../../packages/api-page-builder" },
-    { "path": "../../../../packages/api-page-builder-so-ddb-es" },
-    { "path": "../../../../packages/api-i18n" },
+    { "path": "../../../../packages/api-page-builder-so-ddb" },
+    { "path": "../../../../packages/db-dynamodb" },
     { "path": "../../../../packages/handler-aws" },
-    { "path": "../../../../packages/handler-logs" },
-    { "path": "../../../../packages/handler-db" },
-    { "path": "../../../../packages/db-dynamodb" }
+    { "path": "../../../../packages/handler-db" }
   ],
   "compilerOptions": {
     "paths": {
       "~/*": ["./src/*"],
-      "@webiny/handler-aws/*": ["../../../packages/handler-aws/src/*"],
-      "@webiny/handler-aws": ["../../../packages/handler-aws/src"],
-      "@webiny/api-page-builder/*": ["../../../packages/api-page-builder/src/*"],
-      "@webiny/api-page-builder": ["../../../packages/api-page-builder/src"],
-      "@webiny/api-page-builder-so-ddb-es/*": [
-        "../../../packages/api-page-builder-so-ddb-es/src/*"
-      ],
-      "@webiny/api-page-builder-so-ddb-es": ["../../../packages/api-page-builder-so-ddb-es/src"],
-
-      "@webiny/api-i18n/*": ["../../../packages/api-i18n/src/*"],
-      "@webiny/api-i18n": ["../../../packages/api-i18n/src"],
-      "@webiny/handler-logs/*": ["../../../packages/handler-logs/src/*"],
-      "@webiny/handler-logs": ["../../../packages/handler-logs/src"],
-      "@webiny/handler-db/*": ["../../../packages/handler-db/src/*"],
-      "@webiny/handler-db": ["../../../packages/handler-db/src"],
-      "@webiny/db-dynamodb/*": ["../../../packages/db-dynamodb/src/*"],
-      "@webiny/db-dynamodb": ["../../../packages/db-dynamodb/src"]
-    }
+      "@webiny/api-page-builder/*": ["../../../../packages/api-page-builder/src/*"],
+      "@webiny/api-page-builder": ["../../../../packages/api-page-builder/src"],
+      "@webiny/api-page-builder-so-ddb/*": ["../../../../packages/api-page-builder-so-ddb/src/*"],
+      "@webiny/api-page-builder-so-ddb": ["../../../../packages/api-page-builder-so-ddb/src"],
+      "@webiny/db-dynamodb/*": ["../../../../packages/db-dynamodb/src/*"],
+      "@webiny/db-dynamodb": ["../../../../packages/db-dynamodb/src"],
+      "@webiny/handler-aws/*": ["../../../../packages/handler-aws/src/*"],
+      "@webiny/handler-aws": ["../../../../packages/handler-aws/src"],
+      "@webiny/handler-db/*": ["../../../../packages/handler-db/src/*"],
+      "@webiny/handler-db": ["../../../../packages/handler-db/src"]
+    },
+    "baseUrl": "."
   }
 }

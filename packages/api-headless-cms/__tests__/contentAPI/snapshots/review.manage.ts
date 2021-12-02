@@ -82,10 +82,7 @@ export default /* GraphQL */ `
         text_contains: String
         text_not_contains: String
         
-        product: String
-        product_in: [String!]
-        product_not: String
-        product_not_in: [String!]
+        product: RefFieldWhereInput
 
         rating: Number
         rating_not: Number
@@ -96,10 +93,7 @@ export default /* GraphQL */ `
         rating_gt: Number
         rating_gte: Number
         
-        author: String
-        author_in: [String!]
-        author_not: String
-        author_not_in: [String!]
+        author: RefFieldWhereInput
     }
 
     type ReviewResponse {
