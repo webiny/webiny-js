@@ -45,7 +45,7 @@ module.exports = {
         if (profile) {
             context.info(`Using profile ${green(profile)} in ${green(region)} region.`);
         } else {
-            context.info(`Using access key id ${green(accessKeyId)} in ${green(region)} region.`);
+            context.info(`Using access key ID ${green(accessKeyId)} in ${green(region)} region.`);
         }
     }
 };
