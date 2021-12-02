@@ -33,6 +33,8 @@ import emailFieldValidator from "@webiny/app-headless-cms/admin/plugins/validato
 import urlFieldValidator from "@webiny/app-headless-cms/admin/plugins/validators/patternPlugins/url";
 import lowerCaseFieldValidator from "@webiny/app-headless-cms/admin/plugins/validators/patternPlugins/lowerCase";
 import upperCaseFieldValidator from "@webiny/app-headless-cms/admin/plugins/validators/patternPlugins/upperCase";
+import lowerCaseSpaceFieldValidator from "@webiny/app-headless-cms/admin/plugins/validators/patternPlugins/lowerCaseSpace";
+import upperCaseSpaceFieldValidator from "@webiny/app-headless-cms/admin/plugins/validators/patternPlugins/upperCaseSpace";
 import dateGteFieldValidator from "@webiny/app-headless-cms/admin/plugins/validators/dateGte";
 import dateLteFieldValidator from "@webiny/app-headless-cms/admin/plugins/validators/dateLte";
 import timeGteFieldValidator from "@webiny/app-headless-cms/admin/plugins/validators/timeGte";
@@ -51,6 +53,8 @@ import editorEmailFieldValidator from "@webiny/app-headless-cms/admin/plugins/fi
 import editorUrlFieldValidator from "@webiny/app-headless-cms/admin/plugins/fieldValidators/patternPlugins/url";
 import editorLowerCaseFieldValidator from "@webiny/app-headless-cms/admin/plugins/fieldValidators/patternPlugins/lowerCase";
 import editorUpperCaseFieldValidator from "@webiny/app-headless-cms/admin/plugins/fieldValidators/patternPlugins/upperCase";
+import editorLowerCaseSpaceFieldValidator from "@webiny/app-headless-cms/admin/plugins/fieldValidators/patternPlugins/lowerCaseSpace";
+import editorUpperCaseSpaceFieldValidator from "@webiny/app-headless-cms/admin/plugins/fieldValidators/patternPlugins/upperCaseSpace";
 
 import welcomeScreenWidget from "@webiny/app-headless-cms/admin/plugins/welcomeScreenWidget";
 
@@ -89,6 +93,8 @@ export default [
     urlFieldValidator,
     lowerCaseFieldValidator,
     upperCaseFieldValidator,
+    lowerCaseSpaceFieldValidator,
+    upperCaseSpaceFieldValidator,
     dateGteFieldValidator(),
     dateLteFieldValidator(),
     timeGteFieldValidator(),
@@ -106,6 +112,8 @@ export default [
     editorUrlFieldValidator,
     editorLowerCaseFieldValidator,
     editorUpperCaseFieldValidator,
+    editorLowerCaseSpaceFieldValidator,
+    editorUpperCaseSpaceFieldValidator,
     welcomeScreenWidget,
     objectField,
     objectFieldRenderer
