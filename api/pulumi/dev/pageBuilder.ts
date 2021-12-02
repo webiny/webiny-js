@@ -1,7 +1,7 @@
 import * as path from "path";
 import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
-import policies, { EsDomain } from "./policies";
+import policies from "./policies";
 
 //@ts-ignore
 import { createInstallationZip } from "@webiny/api-page-builder/installation";
@@ -9,9 +9,7 @@ import { createInstallationZip } from "@webiny/api-page-builder/installation";
 interface PageBuilderParams {
     env: Record<string, any>;
     primaryDynamodbTable: aws.dynamodb.Table;
-    elasticsearchDynamodbTable: aws.dynamodb.Table;
     bucket: aws.s3.Bucket;
-    elasticsearchDomain: EsDomain;
     cognitoUserPool: aws.cognito.UserPool;
 }
 
@@ -31,35 +29,24 @@ class PageBuilder {
         };
     };
 
-    constructor({
-        env,
-        bucket,
-        primaryDynamodbTable,
-        elasticsearchDomain,
-        elasticsearchDynamodbTable,
-        cognitoUserPool
-    }: PageBuilderParams) {
+    constructor({ env, bucket, primaryDynamodbTable, cognitoUserPool }: PageBuilderParams) {
         const pbInstallationZipPath = path.join(path.resolve(), ".tmp", "pbInstallation.zip");
 
         createInstallationZip(pbInstallationZipPath);
-        try {
-            new aws.s3.BucketObject(
-                "./pbInstallation.zip",
-                {
-                    key: "pbInstallation.zip",
-                    acl: "public-read",
-                    bucket: bucket,
-                    contentType: "application/octet-stream",
-                    source: new pulumi.asset.FileAsset(pbInstallationZipPath)
-                },
-                {
-                    parent: bucket
-                }
-            );
-        } catch (e) {
-            console.log("Error-------");
-            console.log(e);
-        }
+
+        new aws.s3.BucketObject(
+            "./pbInstallation.zip",
+            {
+                key: "pbInstallation.zip",
+                acl: "public-read",
+                bucket: bucket,
+                contentType: "application/octet-stream",
+                source: new pulumi.asset.FileAsset(pbInstallationZipPath)
+            },
+            {
+                parent: bucket
+            }
+        );
 
         this.role = new aws.iam.Role("pb-update-settings-lambda-role", {
             assumeRolePolicy: {
@@ -190,8 +177,6 @@ class PageBuilder {
 
         const importPageLambdaPolicy = policies.getImportPagesLambdaPolicy({
             primaryDynamodbTable,
-            elasticsearchDomain,
-            elasticsearchDynamodbTable,
             cognitoUserPool,
             bucket
         });

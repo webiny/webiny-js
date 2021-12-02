@@ -1,4 +1,4 @@
-import dateStoragePlugin from "../../../../src/dynamoDb/storage/date";
+import dateStoragePlugin from "~/dynamoDb/storage/date";
 
 const createDefaultArgs = ({ fieldId = "fieldId", type }) => {
     return {

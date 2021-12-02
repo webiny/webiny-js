@@ -49,7 +49,7 @@ const listItemMinHeight = css({
 const ContentEntriesList = () => {
     const {
         contentModel,
-        entryId,
+        id,
         loading,
         canCreate,
         onCreate,
@@ -169,7 +169,7 @@ const ContentEntriesList = () => {
                             <UIList.ListItem
                                 key={item.id}
                                 className={listItemMinHeight}
-                                selected={item.id === entryId}
+                                selected={item.id === id}
                             >
                                 <UIList.ListItemText onClick={editEntry(item)}>
                                     {item.meta.title || "Untitled"}

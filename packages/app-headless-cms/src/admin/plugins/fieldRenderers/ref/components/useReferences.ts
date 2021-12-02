@@ -100,7 +100,7 @@ export const useReferences = ({ bind, field }) => {
         setValueEntries(values);
 
         // Update parent form
-        bind.onChange(values.map(item => ({ modelId: item.modelId, entryId: item.id })));
+        bind.onChange(values.map(item => ({ modelId: item.modelId, id: item.id })));
     }, []);
 
     // Format options for the Autocomplete component.

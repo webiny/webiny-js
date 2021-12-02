@@ -2,7 +2,7 @@ import WebinyError from "@webiny/error";
 import { ElasticsearchQueryBuilderOperatorPlugin } from "@webiny/api-elasticsearch/plugins/definition/ElasticsearchQueryBuilderOperatorPlugin";
 import { PluginsContainer } from "@webiny/plugins";
 
-interface OperatorPlugins {
+export interface OperatorPlugins {
     [operator: string]: ElasticsearchQueryBuilderOperatorPlugin;
 }
 

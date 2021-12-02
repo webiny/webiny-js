@@ -1,8 +1,6 @@
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 
-export type EsDomain = aws.elasticsearch.Domain | pulumi.Output<aws.elasticsearch.GetDomainResult>;
-
 class Policies {
     private readonly awsRegion: string;
     private readonly callerIdentityOutput: pulumi.Output<aws.GetCallerIdentityResult>;
@@ -11,31 +9,6 @@ class Policies {
         const current = aws.getCallerIdentity({});
         this.callerIdentityOutput = pulumi.output(current);
         this.awsRegion = aws.config.requireRegion();
-    }
-
-    getDynamoDbToElasticLambdaPolicy(domain: EsDomain): aws.iam.Policy {
-        return new aws.iam.Policy("DynamoDbToElasticLambdaPolicy-updated", {
-            description: "This policy enables access to ES and Dynamodb streams",
-            policy: {
-                Version: "2012-10-17",
-                Statement: [
-                    {
-                        Sid: "PermissionForES",
-                        Effect: "Allow",
-                        Action: [
-                            "es:ESHttpDelete",
-                            "es:ESHttpPatch",
-                            "es:ESHttpPost",
-                            "es:ESHttpPut"
-                        ],
-                        Resource: [
-                            pulumi.interpolate`${domain.arn}`,
-                            pulumi.interpolate`${domain.arn}/*`
-                        ]
-                    }
-                ]
-            }
-        });
     }
 
     getFileManagerLambdaPolicy(bucket: aws.s3.Bucket): aws.iam.Policy {
@@ -63,7 +36,6 @@ class Policies {
 
     getPreRenderingServiceLambdaPolicy(
         primaryDynamodbTable: aws.dynamodb.Table,
-        elasticsearchDynamodbTable: aws.dynamodb.Table,
         bucket: aws.s3.Bucket
     ): aws.iam.Policy {
         return new aws.iam.Policy("PreRenderingServicePolicy", {
@@ -86,9 +58,7 @@ class Policies {
                         ],
                         Resource: [
                             pulumi.interpolate`${primaryDynamodbTable.arn}`,
-                            pulumi.interpolate`${primaryDynamodbTable.arn}/*`,
-                            pulumi.interpolate`${elasticsearchDynamodbTable.arn}`,
-                            pulumi.interpolate`${elasticsearchDynamodbTable.arn}/*`
+                            pulumi.interpolate`${primaryDynamodbTable.arn}/*`
                         ]
                     },
                     {
@@ -122,34 +92,6 @@ class Policies {
                         Effect: "Allow",
                         Action: "cloudfront:CreateInvalidation",
                         Resource: pulumi.interpolate`arn:aws:cloudfront::${this.callerIdentityOutput.accountId}:distribution/*`
-                    }
-                ]
-            }
-        });
-    }
-
-    getPbUpdateSettingsLambdaPolicy(primaryDynamodbTable: aws.dynamodb.Table): aws.iam.Policy {
-        return new aws.iam.Policy("PbUpdateSettingsLambdaPolicy", {
-            description: "This policy enables access to Dynamodb",
-            policy: {
-                Version: "2012-10-17",
-                Statement: [
-                    {
-                        Sid: "AllowDynamoDBAccess",
-                        Effect: "Allow",
-                        Action: [
-                            "dynamodb:BatchGetItem",
-                            "dynamodb:BatchWriteItem",
-                            "dynamodb:PutItem",
-                            "dynamodb:DeleteItem",
-                            "dynamodb:GetItem",
-                            "dynamodb:Query",
-                            "dynamodb:UpdateItem"
-                        ],
-                        Resource: [
-                            pulumi.interpolate`${primaryDynamodbTable.arn}`,
-                            pulumi.interpolate`${primaryDynamodbTable.arn}/*`
-                        ]
                     }
                 ]
             }
@@ -212,19 +154,15 @@ class Policies {
 
     getImportPagesLambdaPolicy({
         primaryDynamodbTable,
-        elasticsearchDynamodbTable,
         bucket,
-        elasticsearchDomain,
         cognitoUserPool
     }: {
         primaryDynamodbTable: aws.dynamodb.Table;
-        elasticsearchDynamodbTable: aws.dynamodb.Table;
         bucket: aws.s3.Bucket;
-        elasticsearchDomain: EsDomain;
         cognitoUserPool: aws.cognito.UserPool;
     }): aws.iam.Policy {
         return new aws.iam.Policy("ImportPageLambdaPolicy", {
-            description: "This policy enables access to ES, Dynamodb, S3, Lambda and Cognito IDP",
+            description: "This policy enables access Dynamodb, S3, Lambda and Cognito IDP",
             policy: {
                 Version: "2012-10-17",
                 Statement: [
@@ -242,9 +180,7 @@ class Policies {
                         ],
                         Resource: [
                             pulumi.interpolate`${primaryDynamodbTable.arn}`,
-                            pulumi.interpolate`${primaryDynamodbTable.arn}/*`,
-                            pulumi.interpolate`${elasticsearchDynamodbTable.arn}`,
-                            pulumi.interpolate`${elasticsearchDynamodbTable.arn}/*`
+                            pulumi.interpolate`${primaryDynamodbTable.arn}/*`
                         ]
                     },
                     {
@@ -275,14 +211,33 @@ class Policies {
                         Effect: "Allow",
                         Action: "cognito-idp:*",
                         Resource: pulumi.interpolate`${cognitoUserPool.arn}`
-                    },
+                    }
+                ]
+            }
+        });
+    }
+
+    getPbUpdateSettingsLambdaPolicy(primaryDynamodbTable: aws.dynamodb.Table): aws.iam.Policy {
+        return new aws.iam.Policy("PbUpdateSettingsLambdaPolicy", {
+            description: "This policy enables access to Dynamodb",
+            policy: {
+                Version: "2012-10-17",
+                Statement: [
                     {
-                        Sid: "PermissionForES",
+                        Sid: "AllowDynamoDBAccess",
                         Effect: "Allow",
-                        Action: "es:*",
+                        Action: [
+                            "dynamodb:BatchGetItem",
+                            "dynamodb:BatchWriteItem",
+                            "dynamodb:PutItem",
+                            "dynamodb:DeleteItem",
+                            "dynamodb:GetItem",
+                            "dynamodb:Query",
+                            "dynamodb:UpdateItem"
+                        ],
                         Resource: [
-                            pulumi.interpolate`${elasticsearchDomain.arn}`,
-                            pulumi.interpolate`${elasticsearchDomain.arn}/*`
+                            pulumi.interpolate`${primaryDynamodbTable.arn}`,
+                            pulumi.interpolate`${primaryDynamodbTable.arn}/*`
                         ]
                     }
                 ]
@@ -292,19 +247,15 @@ class Policies {
 
     getApiGraphqlLambdaPolicy({
         primaryDynamodbTable,
-        elasticsearchDynamodbTable,
         bucket,
-        elasticsearchDomain,
         cognitoUserPool
     }: {
         primaryDynamodbTable: aws.dynamodb.Table;
-        elasticsearchDynamodbTable: aws.dynamodb.Table;
         bucket: aws.s3.Bucket;
-        elasticsearchDomain: EsDomain;
         cognitoUserPool: aws.cognito.UserPool;
     }): aws.iam.Policy {
         return new aws.iam.Policy("ApiGraphqlLambdaPolicy", {
-            description: "This policy enables access to ES, Dynamodb, S3, Lambda and Cognito IDP",
+            description: "This policy enables access to Dynamodb, S3, Lambda and Cognito IDP",
             policy: {
                 Version: "2012-10-17",
                 Statement: [
@@ -365,9 +316,7 @@ class Policies {
                         ],
                         Resource: [
                             pulumi.interpolate`${primaryDynamodbTable.arn}`,
-                            pulumi.interpolate`${primaryDynamodbTable.arn}/*`,
-                            pulumi.interpolate`${elasticsearchDynamodbTable.arn}`,
-                            pulumi.interpolate`${elasticsearchDynamodbTable.arn}/*`
+                            pulumi.interpolate`${primaryDynamodbTable.arn}/*`
                         ]
                     },
                     {
@@ -393,15 +342,6 @@ class Policies {
                         Effect: "Allow",
                         Action: "cognito-idp:*",
                         Resource: pulumi.interpolate`${cognitoUserPool.arn}`
-                    },
-                    {
-                        Sid: "PermissionForES",
-                        Effect: "Allow",
-                        Action: "es:*",
-                        Resource: [
-                            pulumi.interpolate`${elasticsearchDomain.arn}`,
-                            pulumi.interpolate`${elasticsearchDomain.arn}/*`
-                        ]
                     }
                 ]
             }
@@ -409,16 +349,12 @@ class Policies {
     }
 
     getHeadlessCmsLambdaPolicy({
-        primaryDynamodbTable,
-        elasticsearchDynamodbTable,
-        elasticsearchDomain
+        primaryDynamodbTable
     }: {
         primaryDynamodbTable: aws.dynamodb.Table;
-        elasticsearchDynamodbTable: aws.dynamodb.Table;
-        elasticsearchDomain: EsDomain;
     }): aws.iam.Policy {
         return new aws.iam.Policy("HeadlessCmsLambdaPolicy", {
-            description: "This policy enables access to ES and Dynamodb streams",
+            description: "This policy enables access to Dynamodb streams",
             policy: {
                 Version: "2012-10-17",
                 Statement: [
@@ -479,18 +415,7 @@ class Policies {
                         ],
                         Resource: [
                             pulumi.interpolate`${primaryDynamodbTable.arn}`,
-                            pulumi.interpolate`${primaryDynamodbTable.arn}/*`,
-                            pulumi.interpolate`${elasticsearchDynamodbTable.arn}`,
-                            pulumi.interpolate`${elasticsearchDynamodbTable.arn}/*`
-                        ]
-                    },
-                    {
-                        Sid: "PermissionForES",
-                        Effect: "Allow",
-                        Action: "es:*",
-                        Resource: [
-                            pulumi.interpolate`${elasticsearchDomain.arn}`,
-                            pulumi.interpolate`${elasticsearchDomain.arn}/*`
+                            pulumi.interpolate`${primaryDynamodbTable.arn}/*`
                         ]
                     }
                 ]

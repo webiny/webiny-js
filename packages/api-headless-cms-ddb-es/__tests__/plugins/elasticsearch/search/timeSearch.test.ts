@@ -1,4 +1,4 @@
-import timeSearch from "../../../../src/elasticsearch/search/timeSearch";
+import { createTimeSearchPlugin } from "~/elasticsearch/search/timeSearch";
 
 const timeField = {
     settings: {
@@ -13,8 +13,7 @@ const notTimeField = {
 };
 
 describe("timeSearch", () => {
-    const plugin = timeSearch();
-    const context: any = {};
+    const plugin = createTimeSearchPlugin();
 
     const correctValues = [
         ["01:02:03", 3723],
@@ -25,7 +24,6 @@ describe("timeSearch", () => {
         "should transform value correctly",
         (value: string, expected: number) => {
             const result = plugin.transform({
-                context,
                 field: timeField as any,
                 value
             });
@@ -36,7 +34,6 @@ describe("timeSearch", () => {
 
     it("should return passed value as it is not time field", () => {
         const result = plugin.transform({
-            context,
             field: notTimeField as any,
             value: "someValue"
         });

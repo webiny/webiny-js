@@ -25,7 +25,7 @@ class Cognito {
             userPoolAddOns: {
                 advancedSecurityMode: "OFF" /* required */
             },
-            aliasAttributes: ["preferred_username"],
+            usernameAttributes: ["email"],
             verificationMessageTemplate: {
                 defaultEmailOption: "CONFIRM_WITH_CODE"
             },

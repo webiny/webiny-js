@@ -9,6 +9,7 @@ import {
     CmsContext,
     CmsSystem,
     CmsSystemContext,
+    HeadlessCms,
     HeadlessCmsStorageOperations
 } from "~/types";
 import { Tenant } from "@webiny/api-tenancy/types";
@@ -142,7 +143,7 @@ export const createSystemCrud = (params: Params): CmsSystemContext => {
                 system
             });
         },
-        async upgradeSystem(version) {
+        async upgradeSystem(this: HeadlessCms, version) {
             const identity = getIdentity();
             if (!identity) {
                 throw new NotAuthorizedError();
@@ -152,9 +153,10 @@ export const createSystemCrud = (params: Params): CmsSystemContext => {
                 .byType<UpgradePlugin>("api-upgrade")
                 .filter(pl => pl.app === "headless-cms");
 
+            const installedAppVersion = await this.getSystemVersion();
             const plugin = getApplicablePlugin({
                 deployedVersion: context.WEBINY_VERSION,
-                installedAppVersion: await this.getVersion(),
+                installedAppVersion,
                 upgradePlugins,
                 upgradeToVersion: version
             });

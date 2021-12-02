@@ -31,6 +31,7 @@ import i18nDynamoDbStorageOperations from "@webiny/api-i18n-ddb";
 import { createTenancyAndSecurity } from "./tenancySecurity";
 import { getStorageOperations } from "./storageOperations";
 import { HeadlessCmsStorageOperations } from "~/types";
+import { GET_CONTENT_ENTRIES_QUERY, GET_CONTENT_ENTRY_QUERY } from "./graphql/contentEntry";
 
 export interface CreateHeadlessCmsAppParams {
     storageOperations: HeadlessCmsStorageOperations;
@@ -198,6 +199,12 @@ export const useGqlHandler = (params: GQLHandlerCallableParams) => {
         },
         async deleteContentModelMutation(variables: Record<string, any>) {
             return invoke({ body: { query: DELETE_CONTENT_MODEL_MUTATION, variables } });
+        },
+        async getContentEntry(variables: Record<string, any>) {
+            return invoke({ body: { query: GET_CONTENT_ENTRY_QUERY, variables } });
+        },
+        async getContentEntries(variables: Record<string, any>) {
+            return invoke({ body: { query: GET_CONTENT_ENTRIES_QUERY, variables } });
         }
     };
 };

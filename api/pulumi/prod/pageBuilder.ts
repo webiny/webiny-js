@@ -2,7 +2,7 @@ import * as path from "path";
 import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
 import vpc from "./vpc";
-import policies, { EsDomain } from "./policies";
+import policies from "./policies";
 
 //@ts-ignore
 import { createInstallationZip } from "@webiny/api-page-builder/installation";
@@ -11,8 +11,6 @@ interface PageBuilderParams {
     env: Record<string, any>;
     bucket: aws.s3.Bucket;
     primaryDynamodbTable: aws.dynamodb.Table;
-    elasticsearchDynamodbTable: aws.dynamodb.Table;
-    elasticsearchDomain: EsDomain;
     cognitoUserPool: aws.cognito.UserPool;
 }
 
@@ -32,14 +30,7 @@ class PageBuilder {
         };
     };
 
-    constructor({
-        env,
-        bucket,
-        primaryDynamodbTable,
-        elasticsearchDynamodbTable,
-        elasticsearchDomain,
-        cognitoUserPool
-    }: PageBuilderParams) {
+    constructor({ env, bucket, primaryDynamodbTable, cognitoUserPool }: PageBuilderParams) {
         const pbInstallationZipPath = path.join(path.resolve(), ".tmp", "pbInstallation.zip");
 
         // Will create "pbInstallation.zip" and save it in the `pbInstallationZipPath` path.
@@ -195,8 +186,6 @@ class PageBuilder {
 
         const importPageLambdaPolicy = policies.getImportPagesLambdaPolicy({
             primaryDynamodbTable,
-            elasticsearchDomain,
-            elasticsearchDynamodbTable,
             cognitoUserPool,
             bucket
         });

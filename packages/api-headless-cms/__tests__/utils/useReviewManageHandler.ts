@@ -3,6 +3,7 @@ import { GQLHandlerCallableParams } from "./useGqlHandler";
 
 const reviewFields = `
     id
+    entryId
     createdOn
     createdBy {
         id
@@ -27,10 +28,12 @@ const reviewFields = `
     product {
         modelId
         entryId
+        id
     }
     author {
         modelId
         entryId
+        id
     }
     rating
 `;
