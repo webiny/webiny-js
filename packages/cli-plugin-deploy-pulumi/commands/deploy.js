@@ -34,8 +34,22 @@ module.exports = async (inputs, context) => {
 
     await loadEnvVariables(inputs, context);
 
+    const hookArgs = { context, env, inputs, projectApplication };
+
     if (build) {
+        await runHook({
+            hook: "hook-before-build",
+            args: hookArgs,
+            context
+        });
+
         await buildPackages({ projectApplication, inputs, context });
+
+        await runHook({
+            hook: "hook-after-build",
+            args: hookArgs,
+            context
+        });
     } else {
         context.info("Skipping building of packages.");
     }
@@ -66,21 +80,16 @@ module.exports = async (inputs, context) => {
         }
     });
 
-    const hookDeployArgs = { context, env, inputs, projectApplication };
+    await runHook({
+        hook: "hook-before-deploy",
+        skip: inputs.preview,
+        args: hookArgs,
+        context
+    });
 
-    if (inputs.preview) {
-        context.info(`Skipped "hook-before-deploy" hook.`);
-    } else {
-        context.info(`Running "hook-before-deploy" hook...`);
-        await processHooks("hook-before-deploy", hookDeployArgs);
-
-        context.success(`Hook "hook-before-deploy" completed.`);
-
-        const continuing = inputs.preview ? `Previewing deployment...` : `Deploying...`;
-        console.log();
-        context.info(continuing);
-    }
-
+    console.log();
+    const continuing = inputs.preview ? `Previewing deployment...` : `Deploying...`;
+    context.info(continuing);
     console.log();
 
     if (inputs.preview) {
@@ -130,13 +139,23 @@ module.exports = async (inputs, context) => {
     }
 
     console.log();
-    if (inputs.preview) {
-        context.info(`Skipped "hook-after-deploy" hook.`);
-    } else {
-        context.info(`Running "hook-after-deploy" hook...`);
-        await processHooks("hook-after-deploy", hookDeployArgs);
-        context.success(`Hook "hook-after-deploy" completed.`);
-    }
+
+    await runHook({
+        hook: "hook-after-deploy",
+        skip: inputs.preview,
+        args: hookArgs,
+        context
+    });
 
     notify({ message: `"${folder}" stack deployed in ${duration}s.` });
 };
+
+async function runHook({ hook, skip, args, context }) {
+    if (skip) {
+        context.info(`Skipped "${hook}" hook.`);
+    } else {
+        context.info(`Running "${hook}" hook...`);
+        await processHooks(hook, args);
+        context.success(`Hook "${hook}" completed.`);
+    }
+}
