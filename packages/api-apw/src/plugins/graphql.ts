@@ -9,6 +9,28 @@ const emptyResolver = () => ({});
 
 const baseSchema = new GraphQLSchemaPlugin({
     typeDefs: /* GraphQL */ `
+        input ApwRefFieldInput {
+            id: ID
+            modelId: String
+        }
+
+        input ApwRefFieldWhereInput {
+            id: String
+            id_not: String
+            id_in: [String!]
+            id_not_in: [String]
+            entryId: String
+            entryId_not: String
+            entryId_in: [String!]
+            entryId_not_in: [String!]
+        }
+
+        type ApwRefField {
+            modelId: String!
+            entryId: ID!
+            id: ID!
+        }
+
         type ApwMeta {
             hasMoreItems: Boolean
             totalCount: Int

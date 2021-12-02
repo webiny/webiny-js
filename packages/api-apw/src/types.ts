@@ -92,6 +92,9 @@ interface UpdateReviewerParams {
 
 interface CreateApwCommentParams {
     body: Record<string, any>;
+    changeRequest: {
+        id: string;
+    };
 }
 
 interface UpdateApwCommentParams {

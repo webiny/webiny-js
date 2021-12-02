@@ -1,9 +1,9 @@
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins";
 import { ErrorResponse, ListResponse } from "@webiny/handler-graphql";
+import { CmsEntryListParams } from "@webiny/api-headless-cms/types";
 import { ApwContext, FieldResolversParams } from "~/types";
 import resolve from "~/utils/resolve";
 import { generateFieldResolvers } from "~/utils/fieldResolver";
-import { CmsEntryListParams } from "@webiny/api-headless-cms/types";
 
 const fieldIds: Array<FieldResolversParams | string> = [
     {
@@ -30,7 +30,7 @@ const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
             createdBy: ApwCreatedBy
             # Comment specific fields
             body: JSON
-            changeRequest: ID
+            changeRequest: ApwRefField
         }
 
         type ApwListCommentsResponse {
@@ -52,7 +52,7 @@ const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
             createdBy: ApwCreatedBy
             # Comment specific fields
             body: JSON
-            changeRequest: ID
+            changeRequest: ApwRefField
         }
 
         type ApwCommentResponse {
@@ -80,7 +80,7 @@ const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
 
         input ApwCreateCommentInput {
             body: JSON
-            changeRequest: ID
+            changeRequest: ApwRefFieldInput
         }
 
         input ApwUpdateCommentInput {
@@ -89,11 +89,39 @@ const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
 
         input ApwListCommentsWhereInput {
             id: ID
-            changeRequest: ID
+            id_not: ID
+            id_in: [ID!]
+            id_not_in: [ID!]
+            entryId: String
+            entryId_not: String
+            entryId_in: [String!]
+            entryId_not_in: [String!]
+            createdOn: DateTime
+            createdOn_gt: DateTime
+            createdOn_gte: DateTime
+            createdOn_lt: DateTime
+            createdOn_lte: DateTime
+            createdOn_between: [DateTime!]
+            createdOn_not_between: [DateTime!]
+            savedOn: DateTime
+            savedOn_gt: DateTime
+            savedOn_gte: DateTime
+            savedOn_lt: DateTime
+            savedOn_lte: DateTime
+            savedOn_between: [DateTime!]
+            savedOn_not_between: [DateTime!]
+            createdBy: String
+            createdBy_not: String
+            createdBy_in: [String!]
+            createdBy_not_in: [String!]
+            ownedBy: String
+            ownedBy_not: String
+            ownedBy_in: [String!]
+            ownedBy_not_in: [String!]
+            changeRequest: ApwRefFieldWhereInput
         }
 
         input ApwListCommentsSearchInput {
-            # By specifying "query", the search will be performed against workflow' "title" field.
             query: String
         }
 
@@ -112,10 +140,8 @@ const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
         extend type ApwMutation {
             createComment(data: ApwCreateCommentInput!): ApwCommentResponse
 
-            # Update workflow by given ID.
             updateComment(id: ID!, data: ApwUpdateCommentInput!): ApwCommentResponse
 
-            # Delete workflow
             deleteComment(id: ID!): ApwDeleteCommentResponse
         }
     `,
