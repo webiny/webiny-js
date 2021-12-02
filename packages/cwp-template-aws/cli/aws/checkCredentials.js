@@ -39,11 +39,13 @@ module.exports = {
         // We assign the region to the appropriate ENV variable for easier access in the stack definition files.
         process.env.AWS_REGION = config.region;
 
-        const { profile } = config.credentials;
+        const { region } = config;
+        const { profile, accessKeyId } = config.credentials;
+
         if (profile) {
-            context.info(`Using profile ${green(profile)} in ${green(config.region)} region.`);
+            context.info(`Using profile ${green(profile)} in ${green(region)} region.`);
         } else {
-            context.info(`Using ${green(config.region)} region.`);
+            context.info(`Using access key id ${green(accessKeyId)} in ${green(region)} region.`);
         }
     }
 };
