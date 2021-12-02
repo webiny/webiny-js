@@ -27,7 +27,6 @@ import {
 import { createStorageOperations as createHeadlessCmsStorageOperations } from "@webiny/api-headless-cms-ddb-es";
 import headlessCmsModelFieldToGraphQLPlugins from "@webiny/api-headless-cms/content/plugins/graphqlFields";
 import elasticsearchDataGzipCompression from "@webiny/api-elasticsearch/plugins/GzipCompression";
-import tenantManager from "@webiny/api-tenant-manager";
 import securityPlugins from "./security";
 
 // Imports plugins created via scaffolding utilities.
@@ -56,7 +55,6 @@ export const handler = createHandler({
             driver: new DynamoDbDriver({ documentClient })
         }),
         securityPlugins({ documentClient }),
-        tenantManager(),
         i18nPlugins(),
         i18nDynamoDbStorageOperations(),
         i18nContentPlugins(),
@@ -65,11 +63,11 @@ export const handler = createHandler({
         fileManagerS3(),
         prerenderingServicePlugins({
             handlers: {
-                render: process.env.PRERENDERING_RENDER_HANDLER,
-                flush: process.env.PRERENDERING_FLUSH_HANDLER,
+                render: process.env.PRERENDERING_RENDER_HANDLER as string,
+                flush: process.env.PRERENDERING_FLUSH_HANDLER as string,
                 queue: {
-                    add: process.env.PRERENDERING_QUEUE_ADD_HANDLER,
-                    process: process.env.PRERENDERING_QUEUE_PROCESS_HANDLER
+                    add: process.env.PRERENDERING_QUEUE_ADD_HANDLER as string,
+                    process: process.env.PRERENDERING_QUEUE_PROCESS_HANDLER as string
                 }
             }
         }),

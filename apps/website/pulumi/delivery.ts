@@ -1,6 +1,4 @@
 import * as aws from "@pulumi/aws";
-import * as pulumi from "@pulumi/pulumi";
-import { WebsiteTenantRouter } from "@webiny/pulumi-aws";
 
 class Delivery {
     bucket: aws.s3.Bucket;
@@ -13,10 +11,6 @@ class Delivery {
                 indexDocument: "index.html",
                 errorDocument: "_NOT_FOUND_PAGE_/index.html"
             }
-        });
-
-        const tenantRouter = new WebsiteTenantRouter("website-tenant-router", {
-            apiFolder: "api-ddb"
         });
 
         this.cloudfront = new aws.cloudfront.Distribution("delivery", {
@@ -69,21 +63,13 @@ class Delivery {
             defaultCacheBehavior: {
                 compress: true,
                 targetOriginId: this.bucket.arn,
-                lambdaFunctionAssociations: [
-                    {
-                        eventType: "origin-request",
-                        includeBody: false,
-                        lambdaArn: pulumi.interpolate`${tenantRouter.originRequest.qualifiedArn}`
-                    }
-                ],
                 viewerProtocolPolicy: "redirect-to-https",
                 allowedMethods: ["GET", "HEAD", "OPTIONS"],
                 cachedMethods: ["GET", "HEAD", "OPTIONS"],
                 originRequestPolicyId: "",
                 forwardedValues: {
                     cookies: { forward: "none" },
-                    queryString: true,
-                    headers: ["Host"]
+                    queryString: true
                 },
                 // MinTTL <= DefaultTTL <= MaxTTL
                 minTtl: 0,
@@ -96,11 +82,8 @@ class Delivery {
                     restrictionType: "none"
                 }
             },
-            aliases: ["*.mt2.webiny.com"],
             viewerCertificate: {
-                acmCertificateArn:
-                    "arn:aws:acm:us-east-1:656932293860:certificate/eb47f296-39c3-44df-a04e-f25f4f339e17",
-                sslSupportMethod: "sni-only"
+                cloudfrontDefaultCertificate: true
             }
         });
     }
