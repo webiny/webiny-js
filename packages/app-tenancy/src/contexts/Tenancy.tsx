@@ -3,6 +3,7 @@ import { default as localStorage } from "store";
 import { plugins } from "@webiny/plugins";
 import { TenantHeaderLinkPlugin } from "@webiny/app/plugins/TenantHeaderLinkPlugin";
 export const TenancyContext = React.createContext(null);
+import { config as appConfig } from "@webiny/app/config";
 
 export interface Tenant {
     id: string;
@@ -59,7 +60,10 @@ export const TenancyProvider = props => {
         () => ({
             tenant: currentTenant,
             setTenant: changeTenant,
-            isMultiTenant: process.env.REACT_APP_WEBINY_MULTI_TENANCY === "true"
+            isMultiTenant: appConfig.getKey(
+                "WEBINY_MULTI_TENANCY",
+                process.env.REACT_APP_WEBINY_MULTI_TENANCY === "true"
+            )
         }),
         [currentTenant]
     );

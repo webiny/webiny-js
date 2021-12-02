@@ -3,6 +3,41 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.18.3](https://github.com/webiny/webiny-js/compare/v5.18.3-beta.0...v5.18.3) (2021-12-02)
+
+**Note:** Version bump only for package @webiny/app-page-builder
+
+
+
+
+
+## [5.18.3-beta.0](https://github.com/webiny/webiny-js/compare/v5.18.2...v5.18.3-beta.0) (2021-12-01)
+
+**Note:** Version bump only for package @webiny/app-page-builder
+
+
+
+
+
+## [5.18.2](https://github.com/webiny/webiny-js/compare/v5.18.2-beta.0...v5.18.2) (2021-11-29)
+
+**Note:** Version bump only for package @webiny/app-page-builder
+
+
+
+
+
+## [5.18.2-beta.0](https://github.com/webiny/webiny-js/compare/v5.18.1...v5.18.2-beta.0) (2021-11-29)
+
+
+### Bug Fixes
+
+* use link settings if href is specified ([#2062](https://github.com/webiny/webiny-js/issues/2062)) ([9a91ba8](https://github.com/webiny/webiny-js/commit/9a91ba8e825cc0c5700d865eede9b07a7b4eb3df))
+
+
+
+
+
 ## [5.18.1](https://github.com/webiny/webiny-js/compare/v5.18.1-beta.0...v5.18.1) (2021-11-25)
 
 **Note:** Version bump only for package @webiny/app-page-builder

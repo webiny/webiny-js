@@ -12,6 +12,7 @@ import placeholder from "!!raw-loader!./placeholder.graphql";
 import { NavigationMenuElement } from "@webiny/app-admin/ui/elements/NavigationMenuElement";
 import { UIViewPlugin } from "@webiny/app-admin/ui/UIView";
 import { NavigationView } from "@webiny/app-admin/ui/views/NavigationView";
+import { config as appConfig } from "@webiny/app/config";
 
 type GraphQLPlaygroundOptions = {
     createApolloClient(params: { uri: string }): ApolloClient<any>;
@@ -52,9 +53,10 @@ export default (options: GraphQLPlaygroundOptions) => [
     {
         type: "graphql-playground-tab",
         tab() {
+            const apiUrl = appConfig.getKey("API_URL", process.env.REACT_APP_API_URL);
             return {
                 name: "Main API",
-                endpoint: process.env.REACT_APP_API_URL + "/graphql",
+                endpoint: apiUrl + "/graphql",
                 headers: {},
                 query: placeholder
             };
