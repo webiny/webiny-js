@@ -1,10 +1,10 @@
 import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
 import { CmsGroupPlugin } from "@webiny/api-headless-cms/content/plugins/CmsGroupPlugin";
 import { ApwContext } from "~/types";
-import { workflowModelDefinition } from "./workflow.model";
-import { contentReviewModelDefinition } from "./contentReview.model";
-import { reviewerModelDefinition } from "./reviewer.model";
 import contentModelPluginFactory from "./contentModelPluginFactory";
+import { createWorkflowModelDefinition } from "./workflow.model";
+import { contentReviewModelDefinition } from "./contentReview.model";
+import { createReviewerModelDefinition } from "./reviewer.model";
 import { createCommentModelDefinition } from "./comment.model";
 import { createChangeRequestedModelDefinition } from "./changeRequested.model";
 
@@ -37,12 +37,20 @@ export const createApwModels = () =>
          * Create  CmsModel plugins.
          */
         const changeRequestedModelDefinition = createChangeRequestedModelDefinition();
+        const reviewerModelDefinition = createReviewerModelDefinition();
+        const workflowModelDefinition = createWorkflowModelDefinition({
+            reviewerModelId: reviewerModelDefinition.modelId
+        });
+        const commentModelDefinition = createCommentModelDefinition({
+            modelId: changeRequestedModelDefinition.modelId
+        });
+
         const modelDefinitions = [
             workflowModelDefinition,
             contentReviewModelDefinition,
             reviewerModelDefinition,
             changeRequestedModelDefinition,
-            createCommentModelDefinition({ modelId: changeRequestedModelDefinition.modelId })
+            commentModelDefinition
         ];
 
         const cmsModelPlugins = [];

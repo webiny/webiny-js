@@ -24,15 +24,11 @@ export function createWorkflowMethods(context: ApwContext): ApwWorkflowCrud {
         },
         async update(id, data) {
             const model = await this.getModel();
-            /**
-             * We're fetching the existing entry here because we're not accepting "app" field as input,
-             * but, we still need to retain its value after the "update" operation.
-             */
             const existingEntry = await this.get(id);
 
             return await context.cms.updateEntry(model, id, {
-                ...data,
-                app: existingEntry.values.app
+                ...existingEntry.values,
+                ...data
             });
         },
         async delete(id: string) {

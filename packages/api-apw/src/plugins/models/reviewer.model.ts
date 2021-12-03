@@ -15,10 +15,10 @@ const displayNameField = () =>
         validation: [{ message: "Value is required.", name: "required" }]
     });
 
-export const reviewerModelDefinition = {
+export const createReviewerModelDefinition = () => ({
     name: "APW - Reviewer",
     modelId: "apwReviewerModelDefinition",
     titleFieldId: "displayName",
     layout: [["reviewer_id"], ["reviewer_displayName"]],
     fields: [idField(), displayNameField()]
-};
+});

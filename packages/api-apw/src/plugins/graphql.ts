@@ -10,7 +10,7 @@ const emptyResolver = () => ({});
 const baseSchema = new GraphQLSchemaPlugin({
     typeDefs: /* GraphQL */ `
         input ApwRefFieldInput {
-            id: ID
+            id: ID!
             modelId: String
         }
 

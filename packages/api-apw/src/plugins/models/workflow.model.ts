@@ -1,4 +1,4 @@
-export const workflowModelDefinition = {
+export const createWorkflowModelDefinition = ({ reviewerModelId }) => ({
     name: "APW - Workflow",
     /**
      * Id of the model cannot be appWorkflow because it clashes with the GraphQL types for APW.
@@ -104,7 +104,7 @@ export const workflowModelDefinition = {
                         settings: {
                             models: [
                                 {
-                                    modelId: "reviewer"
+                                    modelId: reviewerModelId
                                 }
                             ]
                         },
@@ -251,4 +251,4 @@ export const workflowModelDefinition = {
             }
         }
     ]
-};
+});
