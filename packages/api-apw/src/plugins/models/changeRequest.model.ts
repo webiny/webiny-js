@@ -4,34 +4,34 @@ const bodyField = () =>
     createModelField({
         label: "Body",
         type: "rich-text",
-        parent: "changeRequested"
+        parent: "changeRequest"
     });
 
 const titleField = () =>
     createModelField({
         label: "Title",
         type: "text",
-        parent: "changeRequested"
+        parent: "changeRequest"
     });
 
 const resolvedField = () =>
     createModelField({
         label: "Resolved",
         type: "boolean",
-        parent: "changeRequested"
+        parent: "changeRequest"
     });
 
 const mediaField = () =>
     createModelField({
         label: "Media",
         type: "file",
-        parent: "changeRequested"
+        parent: "changeRequest"
     });
 
-export const createChangeRequestedModelDefinition = () => ({
-    name: "APW - Comment",
-    modelId: "apwChangeRequestedModelDefinition",
-    titleFieldId: "displayName",
-    layout: [["changeRequested_body"], ["changeRequested_title"]],
+export const createChangeRequestModelDefinition = () => ({
+    name: "APW - Change Request",
+    modelId: "apwChangeRequestModelDefinition",
+    titleFieldId: "changeRequest_title",
+    layout: [["changeRequest_body"], ["changeRequest_title"]],
     fields: [bodyField(), titleField(), resolvedField(), mediaField()]
 });

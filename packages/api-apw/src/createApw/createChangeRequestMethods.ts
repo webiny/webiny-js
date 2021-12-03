@@ -1,9 +1,9 @@
-import { ApwContext, ApwChangeRequestedCrud } from "~/types";
+import { ApwContext, ApwChangeRequestCrud } from "~/types";
 
-export function createChangeRequestedMethods(context: ApwContext): ApwChangeRequestedCrud {
+export function createChangeRequestMethods(context: ApwContext): ApwChangeRequestCrud {
     return {
         async getModel() {
-            return await context.cms.getModel("apwChangeRequestedModelDefinition");
+            return await context.cms.getModel("apwChangeRequestModelDefinition");
         },
         async get(id) {
             const model = await this.getModel();

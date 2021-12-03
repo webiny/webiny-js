@@ -8,7 +8,7 @@ import { CmsEntryListParams } from "@webiny/api-headless-cms/types";
 const fieldIds: Array<FieldResolversParams | string> = [
     {
         fieldId: "body",
-        getModel: context => context.advancedPublishingWorkflow.changeRequested.getModel(),
+        getModel: context => context.advancedPublishingWorkflow.changeRequest.getModel(),
         getField: (model, fieldId) => model.fields.find(field => field.fieldId === fieldId),
         isRoot: true
     },
@@ -19,7 +19,7 @@ const fieldIds: Array<FieldResolversParams | string> = [
 
 const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
     typeDefs: /* GraphQL */ `
-        type ApwChangeRequestedListItem {
+        type ApwChangeRequestListItem {
             # System generated fields
             id: ID
             pid: ID
@@ -30,20 +30,20 @@ const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
             createdFrom: ID
             createdOn: DateTime
             createdBy: ApwCreatedBy
-            # ChangeRequested specific fields
+            # ChangeRequest specific fields
             title: String
             body: JSON
             resolved: Boolean
             media: JSON
         }
 
-        type ApwListChangesRequestedResponse {
-            data: [ApwChangeRequestedListItem]
+        type ApwListChangeRequestsResponse {
+            data: [ApwChangeRequestListItem]
             error: ApwError
             meta: ApwMeta
         }
 
-        type ApwChangeRequested {
+        type ApwChangeRequest {
             # System generated fields
             id: ID
             pid: ID
@@ -54,24 +54,24 @@ const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
             createdFrom: ID
             createdOn: DateTime
             createdBy: ApwCreatedBy
-            # ChangeRequested specific fields
+            # ChangeRequest specific fields
             title: String
             body: JSON
             resolved: Boolean
             media: JSON
         }
 
-        type ApwChangeRequestedResponse {
-            data: ApwChangeRequested
+        type ApwChangeRequestResponse {
+            data: ApwChangeRequest
             error: ApwError
         }
 
-        type ApwDeleteChangeRequestedResponse {
+        type ApwDeleteChangeRequestResponse {
             data: Boolean
             error: ApwError
         }
 
-        enum ApwListChangeRequestedSort {
+        enum ApwListChangeRequestSort {
             id_ASC
             id_DESC
             savedOn_ASC
@@ -84,71 +84,66 @@ const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
             title_DESC
         }
 
-        input ApwCreateChangeRequestedInput {
+        input ApwCreateChangeRequestInput {
             title: String!
             body: JSON!
             resolved: Boolean
             media: JSON
         }
 
-        input ApwUpdateChangeRequestedInput {
+        input ApwUpdateChangeRequestInput {
             title: String
             body: JSON
             resolved: Boolean
             media: JSON
         }
 
-        input ApwListChangeRequestedWhereInput {
+        input ApwListChangeRequestWhereInput {
             id: ID
         }
 
-        input ApwListChangeRequestedSearchInput {
-            # By specifying "query", the search will be performed against workflow' "title" field.
+        input ApwListChangeRequestSearchInput {
             query: String
         }
 
         extend type ApwQuery {
-            getChangeRequested(id: ID!): ApwChangeRequestedResponse
+            getChangeRequest(id: ID!): ApwChangeRequestResponse
 
-            listChangesRequested(
-                where: ApwListChangeRequestedWhereInput
+            listChangeRequests(
+                where: ApwListChangeRequestWhereInput
                 limit: Int
                 after: String
-                sort: [ApwListChangeRequestedSort!]
-                search: ApwListChangeRequestedSearchInput
-            ): ApwListChangesRequestedResponse
+                sort: [ApwListChangeRequestSort!]
+                search: ApwListChangeRequestSearchInput
+            ): ApwListChangeRequestsResponse
         }
 
         extend type ApwMutation {
-            createChangeRequested(data: ApwCreateChangeRequestedInput!): ApwChangeRequestedResponse
+            createChangeRequest(data: ApwCreateChangeRequestInput!): ApwChangeRequestResponse
 
-            # Update workflow by given ID.
-            updateChangeRequested(
+            updateChangeRequest(
                 id: ID!
-                data: ApwUpdateChangeRequestedInput!
-            ): ApwChangeRequestedResponse
+                data: ApwUpdateChangeRequestInput!
+            ): ApwChangeRequestResponse
 
-            # Delete workflow
-            deleteChangeRequested(id: ID!): ApwDeleteChangeRequestedResponse
+            deleteChangeRequest(id: ID!): ApwDeleteChangeRequestResponse
         }
     `,
     resolvers: {
-        ApwChangeRequested: {
+        ApwChangeRequest: {
             ...generateFieldResolvers(fieldIds)
         },
-        ApwChangeRequestedListItem: {
+        ApwChangeRequestListItem: {
             ...generateFieldResolvers(fieldIds)
         },
         ApwQuery: {
-            getChangeRequested: async (_, args, context) => {
-                return resolve(() =>
-                    context.advancedPublishingWorkflow.changeRequested.get(args.id)
-                );
+            getChangeRequest: async (_, args, context) => {
+                return resolve(() => context.advancedPublishingWorkflow.changeRequest.get(args.id));
             },
-            listChangesRequested: async (_, args: CmsEntryListParams, context) => {
+            listChangeRequests: async (_, args: CmsEntryListParams, context) => {
                 try {
                     const [entries, meta] =
-                        await context.advancedPublishingWorkflow.changeRequested.list(args);
+                        await context.advancedPublishingWorkflow.changeRequest.list(args);
                     return new ListResponse(entries, meta);
                 } catch (e) {
                     return new ErrorResponse(e);
@@ -156,19 +151,19 @@ const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
             }
         },
         ApwMutation: {
-            createChangeRequested: async (_, args, context) => {
+            createChangeRequest: async (_, args, context) => {
                 return resolve(() =>
-                    context.advancedPublishingWorkflow.changeRequested.create(args.data)
+                    context.advancedPublishingWorkflow.changeRequest.create(args.data)
                 );
             },
-            updateChangeRequested: async (_, args, context) => {
+            updateChangeRequest: async (_, args, context) => {
                 return resolve(() =>
-                    context.advancedPublishingWorkflow.changeRequested.update(args.id, args.data)
+                    context.advancedPublishingWorkflow.changeRequest.update(args.id, args.data)
                 );
             },
-            deleteChangeRequested: async (_, args, context) => {
+            deleteChangeRequest: async (_, args, context) => {
                 return resolve(() =>
-                    context.advancedPublishingWorkflow.changeRequested.delete(args.id)
+                    context.advancedPublishingWorkflow.changeRequest.delete(args.id)
                 );
             }
         }

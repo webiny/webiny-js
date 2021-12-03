@@ -3,7 +3,7 @@ import { ApwContext } from "~/types";
 import { createWorkflowMethods } from "./createWorkflowMethods";
 import { createReviewerMethods } from "./createReviewerMethods";
 import { createCommentMethods } from "./createCommentMethods";
-import { createChangeRequestedMethods } from "./createChangeRequestedMethods";
+import { createChangeRequestMethods } from "./createChangeRequestMethods";
 
 export const createAdvancedPublishingWorkflow = () =>
     new ContextPlugin<ApwContext>(async context => {
@@ -11,6 +11,6 @@ export const createAdvancedPublishingWorkflow = () =>
             workflow: createWorkflowMethods(context),
             reviewer: createReviewerMethods(context),
             comment: createCommentMethods(context),
-            changeRequested: createChangeRequestedMethods(context)
+            changeRequest: createChangeRequestMethods(context)
         };
     });

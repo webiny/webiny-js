@@ -142,7 +142,7 @@ export interface ApwCommentCrud
     list(params: CmsEntryListParams): Promise<[ApwComment[], CmsEntryMeta]>;
 }
 
-export interface ApwChangeRequestedCrud
+export interface ApwChangeRequestCrud
     extends BaseApwCrud<
         ApwChangeRequested,
         CreateApwChangeRequestedParams,
@@ -155,7 +155,7 @@ interface AdvancedPublishingWorkflow {
     workflow: ApwWorkflowCrud;
     reviewer: ApwReviewerCrud;
     comment: ApwCommentCrud;
-    changeRequested: ApwChangeRequestedCrud;
+    changeRequest: ApwChangeRequestCrud;
 }
 
 export interface ApwContext extends Context, CmsContext {

@@ -5,7 +5,7 @@ const deleteCommentsAfterChangeRequest = () =>
     new ContextPlugin<ApwContext>(async context => {
         context.cms.onAfterEntryDelete.subscribe(async ({ model, entry }) => {
             const changeRequestedModel =
-                await context.advancedPublishingWorkflow.changeRequested.getModel();
+                await context.advancedPublishingWorkflow.changeRequest.getModel();
             /**
              * If deleted entry is of "changeRequested" model, also delete all associated comments.
              */

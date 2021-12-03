@@ -6,7 +6,7 @@ import { createWorkflowModelDefinition } from "./workflow.model";
 import { contentReviewModelDefinition } from "./contentReview.model";
 import { createReviewerModelDefinition } from "./reviewer.model";
 import { createCommentModelDefinition } from "./comment.model";
-import { createChangeRequestedModelDefinition } from "./changeRequested.model";
+import { createChangeRequestModelDefinition } from "./changeRequest.model";
 
 export const createApwModels = () =>
     new ContextPlugin<ApwContext>(async context => {
@@ -36,20 +36,20 @@ export const createApwModels = () =>
         /**
          * Create  CmsModel plugins.
          */
-        const changeRequestedModelDefinition = createChangeRequestedModelDefinition();
+        const changeRequestModelDefinition = createChangeRequestModelDefinition();
         const reviewerModelDefinition = createReviewerModelDefinition();
         const workflowModelDefinition = createWorkflowModelDefinition({
             reviewerModelId: reviewerModelDefinition.modelId
         });
         const commentModelDefinition = createCommentModelDefinition({
-            modelId: changeRequestedModelDefinition.modelId
+            modelId: changeRequestModelDefinition.modelId
         });
 
         const modelDefinitions = [
             workflowModelDefinition,
             contentReviewModelDefinition,
             reviewerModelDefinition,
-            changeRequestedModelDefinition,
+            changeRequestModelDefinition,
             commentModelDefinition
         ];
 
