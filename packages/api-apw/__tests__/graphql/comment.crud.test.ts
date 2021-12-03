@@ -1,4 +1,5 @@
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
+import { mocks as changeRequestMock } from "./mocks/changeRequest";
 
 const richTextMock = [
     {
@@ -60,11 +61,25 @@ describe("Comment crud test", () => {
         listCommentsQuery,
         createCommentMutation,
         updateCommentMutation,
-        deleteCommentMutation
+        deleteCommentMutation,
+        createChangeRequestedMutation
     } = useContentGqlHandler({
         ...options
     });
+
+    const setupChangeRequest = async () => {
+        /*
+         * Create a new entry.
+         */
+        const [createChangeRequestedResponse] = await createChangeRequestedMutation({
+            data: changeRequestMock.changeRequestA
+        });
+        return createChangeRequestedResponse.data.advancedPublishingWorkflow.createChangeRequested
+            .data;
+    };
+
     test("should able to create, update, get, list and delete a comment", async () => {
+        const changeRequest = await setupChangeRequest();
         /*
          * Should return error in case of no entry found.
          */
@@ -88,7 +103,10 @@ describe("Comment crud test", () => {
          */
         const [createCommentResponse] = await createCommentMutation({
             data: {
-                body: richTextMock
+                body: richTextMock,
+                changeRequest: {
+                    id: changeRequest.id
+                }
             }
         });
         const { id } = createCommentResponse.data.advancedPublishingWorkflow.createComment.data;
@@ -106,7 +124,12 @@ describe("Comment crud test", () => {
                                 displayName: "John Doe",
                                 type: "admin"
                             },
-                            body: richTextMock
+                            body: richTextMock,
+                            changeRequest: {
+                                id: changeRequest.id,
+                                entryId: expect.any(String),
+                                modelId: expect.any(String)
+                            }
                         },
                         error: null
                     }
@@ -130,7 +153,12 @@ describe("Comment crud test", () => {
                                 displayName: "John Doe",
                                 type: "admin"
                             },
-                            body: richTextMock
+                            body: richTextMock,
+                            changeRequest: {
+                                id: changeRequest.id,
+                                entryId: expect.any(String),
+                                modelId: expect.any(String)
+                            }
                         },
                         error: null
                     }
@@ -160,7 +188,12 @@ describe("Comment crud test", () => {
                                 displayName: "John Doe",
                                 type: "admin"
                             },
-                            body: updatedRichText
+                            body: updatedRichText,
+                            changeRequest: {
+                                id: changeRequest.id,
+                                entryId: expect.any(String),
+                                modelId: expect.any(String)
+                            }
                         },
                         error: null
                     }
@@ -186,7 +219,12 @@ describe("Comment crud test", () => {
                                     displayName: "John Doe",
                                     type: "admin"
                                 },
-                                body: updatedRichText
+                                body: updatedRichText,
+                                changeRequest: {
+                                    id: changeRequest.id,
+                                    entryId: expect.any(String),
+                                    modelId: expect.any(String)
+                                }
                             }
                         ],
                         error: null,
