@@ -191,12 +191,16 @@ module.exports = async (inputs, context) => {
 
             // Log used values if debugging has been enabled.
             if (inputs.debug) {
+                const message = pathArg
+                    ? [
+                          "The following files and folders are being watched:",
+                          ...pathArg.map(p => "\n‣ " + p)
+                      ].join("\n")
+                    : `Watching ${projectApplication.root}.`;
+
                 output.log({
                     type: "deploy",
-                    message: [
-                        "The following files and folders are being watched:",
-                        ...pathArg.map(p => "‣ " + p)
-                    ].join("\n")
+                    message
                 });
             }
 
