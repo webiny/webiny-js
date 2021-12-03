@@ -44,12 +44,12 @@ import {
     UPDATE_COMMENT_MUTATION
 } from "./graphql/comment";
 import {
-    CREATE_CHANGE_REQUESTED_MUTATION,
-    DELETE_CHANGE_REQUESTED_MUTATION,
-    GET_CHANGE_REQUESTED_QUERY,
+    CREATE_CHANGE_REQUEST_MUTATION,
+    DELETE_CHANGE_REQUEST_MUTATION,
+    GET_CHANGE_REQUEST_QUERY,
     LIST_CHANGES_REQUESTED_QUERY,
-    UPDATE_CHANGE_REQUESTED_MUTATION
-} from "./graphql/changeRequested";
+    UPDATE_CHANGE_REQUEST_MUTATION
+} from "./graphql/changeRequest";
 
 export interface CreateHeadlessCmsAppParams {
     storageOperations: HeadlessCmsStorageOperations;
@@ -234,20 +234,20 @@ export const useGqlHandler = (params: GQLHandlerCallableParams) => {
             return invoke({ body: { query: DELETE_COMMENT_MUTATION, variables } });
         },
         // Change Requested
-        async getChangeRequestedQuery(variables: Record<string, any>) {
-            return invoke({ body: { query: GET_CHANGE_REQUESTED_QUERY, variables } });
+        async getChangeRequestQuery(variables: Record<string, any>) {
+            return invoke({ body: { query: GET_CHANGE_REQUEST_QUERY, variables } });
         },
-        async listChangesRequestedQuery(variables: Record<string, any>) {
+        async listChangeRequestsQuery(variables: Record<string, any>) {
             return invoke({ body: { query: LIST_CHANGES_REQUESTED_QUERY, variables } });
         },
-        async createChangeRequestedMutation(variables: Record<string, any>) {
-            return invoke({ body: { query: CREATE_CHANGE_REQUESTED_MUTATION, variables } });
+        async createChangeRequestMutation(variables: Record<string, any>) {
+            return invoke({ body: { query: CREATE_CHANGE_REQUEST_MUTATION, variables } });
         },
-        async updateChangeRequestedMutation(variables: Record<string, any>) {
-            return invoke({ body: { query: UPDATE_CHANGE_REQUESTED_MUTATION, variables } });
+        async updateChangeRequestMutation(variables: Record<string, any>) {
+            return invoke({ body: { query: UPDATE_CHANGE_REQUEST_MUTATION, variables } });
         },
-        async deleteChangeRequestedMutation(variables: Record<string, any>) {
-            return invoke({ body: { query: DELETE_CHANGE_REQUESTED_MUTATION, variables } });
+        async deleteChangeRequestMutation(variables: Record<string, any>) {
+            return invoke({ body: { query: DELETE_CHANGE_REQUEST_MUTATION, variables } });
         },
         // Categories
         async createCategory(variables) {

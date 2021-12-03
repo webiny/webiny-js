@@ -20,10 +20,10 @@ const getDataFields = (fields = "") => `{
     ${fields}
 }`;
 
-export const GET_CHANGE_REQUESTED_QUERY = /* GraphQL */ `
-    query GetChangeRequested($id: ID!) {
+export const GET_CHANGE_REQUEST_QUERY = /* GraphQL */ `
+    query GetChangeRequest($id: ID!) {
         advancedPublishingWorkflow {
-            getChangeRequested(id: $id) {
+            getChangeRequest(id: $id) {
                 data ${getDataFields()}
                 error ${ERROR_FIELDS}
             }
@@ -32,15 +32,15 @@ export const GET_CHANGE_REQUESTED_QUERY = /* GraphQL */ `
 `;
 
 export const LIST_CHANGES_REQUESTED_QUERY = /* GraphQL */ `
-    query ListChangeRequesteds(
-        $where: ApwListChangeRequestedWhereInput,
+    query ListChangeRequests(
+        $where: ApwListChangeRequestWhereInput,
         $limit: Int,
         $after: String,
-        $sort: [ApwListChangeRequestedSort!],
-        $search: ApwListChangeRequestedSearchInput
+        $sort: [ApwListChangeRequestSort!],
+        $search: ApwListChangeRequestSearchInput
     ) {
         advancedPublishingWorkflow {
-            listChangesRequested(
+            listChangeRequests(
                 where: $where,
                 limit: $limit,
                 after: $after,
@@ -59,10 +59,10 @@ export const LIST_CHANGES_REQUESTED_QUERY = /* GraphQL */ `
     }
 `;
 
-export const CREATE_CHANGE_REQUESTED_MUTATION = /* GraphQL */ `
-    mutation CreateChangeRequestedMutation($data: ApwCreateChangeRequestedInput!) {
+export const CREATE_CHANGE_REQUEST_MUTATION = /* GraphQL */ `
+    mutation CreateChangeRequestMutation($data: ApwCreateChangeRequestInput!) {
         advancedPublishingWorkflow {
-            createChangeRequested(data: $data) {
+            createChangeRequest(data: $data) {
                 data ${getDataFields()}
                 error ${ERROR_FIELDS}
             }
@@ -70,10 +70,10 @@ export const CREATE_CHANGE_REQUESTED_MUTATION = /* GraphQL */ `
     }
 `;
 
-export const UPDATE_CHANGE_REQUESTED_MUTATION = /* GraphQL */ `
-    mutation UpdateChangeRequestedMutation($id: ID!, $data: ApwUpdateChangeRequestedInput!) {
+export const UPDATE_CHANGE_REQUEST_MUTATION = /* GraphQL */ `
+    mutation UpdateChangeRequestMutation($id: ID!, $data: ApwUpdateChangeRequestInput!) {
         advancedPublishingWorkflow {
-            updateChangeRequested(id: $id, data: $data) {
+            updateChangeRequest(id: $id, data: $data) {
                 data ${getDataFields()}
                 error ${ERROR_FIELDS}
             }
@@ -81,10 +81,10 @@ export const UPDATE_CHANGE_REQUESTED_MUTATION = /* GraphQL */ `
     }
 `;
 
-export const DELETE_CHANGE_REQUESTED_MUTATION = /* GraphQL */ `
-    mutation DeleteChangeRequestedMutation($id: ID!) {
+export const DELETE_CHANGE_REQUEST_MUTATION = /* GraphQL */ `
+    mutation DeleteChangeRequestMutation($id: ID!) {
         advancedPublishingWorkflow {
-            deleteChangeRequested(id: $id) {
+            deleteChangeRequest(id: $id) {
                 data
                 error ${ERROR_FIELDS}
             }

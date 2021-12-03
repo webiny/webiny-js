@@ -58,17 +58,17 @@ const changeRequested = {
     }
 };
 
-describe("ChangeRequested crud test", () => {
+describe("ChangeRequest crud test", () => {
     const options = {
         path: "manage/en-US"
     };
 
     const {
-        getChangeRequestedQuery,
-        listChangesRequestedQuery,
-        createChangeRequestedMutation,
-        updateChangeRequestedMutation,
-        deleteChangeRequestedMutation
+        getChangeRequestQuery,
+        listChangeRequestsQuery,
+        createChangeRequestMutation,
+        updateChangeRequestMutation,
+        deleteChangeRequestMutation
     } = useContentGqlHandler({
         ...options
     });
@@ -76,11 +76,11 @@ describe("ChangeRequested crud test", () => {
         /*
          * Should return error in case of no entry found.
          */
-        const [getChangeRequestedResponse] = await getChangeRequestedQuery({ id: "123" });
-        expect(getChangeRequestedResponse).toEqual({
+        const [getChangeRequestResponse] = await getChangeRequestQuery({ id: "123" });
+        expect(getChangeRequestResponse).toEqual({
             data: {
                 advancedPublishingWorkflow: {
-                    getChangeRequested: {
+                    getChangeRequest: {
                         data: null,
                         error: {
                             code: "NOT_FOUND",
@@ -94,17 +94,16 @@ describe("ChangeRequested crud test", () => {
         /*
          * Create a new entry.
          */
-        const [createChangeRequestedResponse] = await createChangeRequestedMutation({
+        const [createChangeRequestResponse] = await createChangeRequestMutation({
             data: changeRequested
         });
         const { id } =
-            createChangeRequestedResponse.data.advancedPublishingWorkflow.createChangeRequested
-                .data;
+            createChangeRequestResponse.data.advancedPublishingWorkflow.createChangeRequest.data;
 
-        expect(createChangeRequestedResponse).toEqual({
+        expect(createChangeRequestResponse).toEqual({
             data: {
                 advancedPublishingWorkflow: {
-                    createChangeRequested: {
+                    createChangeRequest: {
                         data: {
                             id: expect.any(String),
                             createdOn: expect.stringMatching(/^20/),
@@ -125,11 +124,11 @@ describe("ChangeRequested crud test", () => {
         /**
          *  Now that we have a entry, we should be able to get it.
          */
-        const [getChangeRequestedByIdResponse] = await getChangeRequestedQuery({ id: id });
-        expect(getChangeRequestedByIdResponse).toEqual({
+        const [getChangeRequestByIdResponse] = await getChangeRequestQuery({ id: id });
+        expect(getChangeRequestByIdResponse).toEqual({
             data: {
                 advancedPublishingWorkflow: {
-                    getChangeRequested: {
+                    getChangeRequest: {
                         data: {
                             id: expect.any(String),
                             createdOn: expect.stringMatching(/^20/),
@@ -151,17 +150,17 @@ describe("ChangeRequested crud test", () => {
         /**
          * Let's update the entry.
          */
-        const [updateChangeRequestedResponse] = await updateChangeRequestedMutation({
+        const [updateChangeRequestResponse] = await updateChangeRequestMutation({
             id,
             data: {
                 body: updatedRichText,
                 resolved: true
             }
         });
-        expect(updateChangeRequestedResponse).toEqual({
+        expect(updateChangeRequestResponse).toEqual({
             data: {
                 advancedPublishingWorkflow: {
-                    updateChangeRequested: {
+                    updateChangeRequest: {
                         data: {
                             id: expect.any(String),
                             createdOn: expect.stringMatching(/^20/),
@@ -184,11 +183,11 @@ describe("ChangeRequested crud test", () => {
         /**
          * Let's list all entries should return only one.
          */
-        const [listChangesRequestedResponse] = await listChangesRequestedQuery({ where: {} });
-        expect(listChangesRequestedResponse).toEqual({
+        const [listChangeRequestsResponse] = await listChangeRequestsQuery({ where: {} });
+        expect(listChangeRequestsResponse).toEqual({
             data: {
                 advancedPublishingWorkflow: {
-                    listChangesRequested: {
+                    listChangeRequests: {
                         data: [
                             {
                                 id: expect.any(String),
@@ -218,11 +217,11 @@ describe("ChangeRequested crud test", () => {
         /**
          *  Delete the only entry we have.
          */
-        const [deleteChangeRequestedResponse] = await deleteChangeRequestedMutation({ id });
-        expect(deleteChangeRequestedResponse).toEqual({
+        const [deleteChangeRequestResponse] = await deleteChangeRequestMutation({ id });
+        expect(deleteChangeRequestResponse).toEqual({
             data: {
                 advancedPublishingWorkflow: {
-                    deleteChangeRequested: {
+                    deleteChangeRequest: {
                         data: true,
                         error: null
                     }
@@ -233,11 +232,11 @@ describe("ChangeRequested crud test", () => {
         /**
          * Now that we've deleted the only entry we had, we should get empty list as response.
          */
-        const [listChangesRequestedAgainResponse] = await listChangesRequestedQuery({ where: {} });
-        expect(listChangesRequestedAgainResponse).toEqual({
+        const [listChangeRequestsAgainResponse] = await listChangeRequestsQuery({ where: {} });
+        expect(listChangeRequestsAgainResponse).toEqual({
             data: {
                 advancedPublishingWorkflow: {
-                    listChangesRequested: {
+                    listChangeRequests: {
                         data: [],
                         error: null,
                         meta: {

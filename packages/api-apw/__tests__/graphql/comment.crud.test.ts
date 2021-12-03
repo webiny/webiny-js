@@ -62,7 +62,7 @@ describe("Comment crud test", () => {
         createCommentMutation,
         updateCommentMutation,
         deleteCommentMutation,
-        createChangeRequestedMutation
+        createChangeRequestMutation
     } = useContentGqlHandler({
         ...options
     });
@@ -71,11 +71,10 @@ describe("Comment crud test", () => {
         /*
          * Create a new entry.
          */
-        const [createChangeRequestedResponse] = await createChangeRequestedMutation({
+        const [createChangeRequestResponse] = await createChangeRequestMutation({
             data: changeRequestMock.changeRequestA
         });
-        return createChangeRequestedResponse.data.advancedPublishingWorkflow.createChangeRequested
-            .data;
+        return createChangeRequestResponse.data.advancedPublishingWorkflow.createChangeRequest.data;
     };
 
     test("should able to create, update, get, list and delete a comment", async () => {

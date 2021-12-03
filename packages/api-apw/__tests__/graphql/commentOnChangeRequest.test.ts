@@ -38,10 +38,10 @@ describe("Comment on a change request test", () => {
     };
 
     const {
-        createChangeRequestedMutation,
+        createChangeRequestMutation,
         createCommentMutation,
         listCommentsQuery,
-        deleteChangeRequestedMutation
+        deleteChangeRequestMutation
     } = useContentGqlHandler({
         ...options
     });
@@ -49,12 +49,11 @@ describe("Comment on a change request test", () => {
         /*
          * Create a new change request entry.
          */
-        const [createChangeRequestedResponse] = await createChangeRequestedMutation({
+        const [createChangeRequestResponse] = await createChangeRequestMutation({
             data: CHANGE_REQUESTED_MOCK
         });
         const changeRequested =
-            createChangeRequestedResponse.data.advancedPublishingWorkflow.createChangeRequested
-                .data;
+            createChangeRequestResponse.data.advancedPublishingWorkflow.createChangeRequest.data;
 
         /**
          * Add a comment to this change request.
@@ -218,12 +217,11 @@ describe("Comment on a change request test", () => {
          */
         const changesRequested = [];
         for (let i = 0; i < 2; i++) {
-            const [createChangeRequestedResponse] = await createChangeRequestedMutation({
+            const [createChangeRequestResponse] = await createChangeRequestMutation({
                 data: CHANGE_REQUESTED_MOCK
             });
             changesRequested.push(
-                createChangeRequestedResponse.data.advancedPublishingWorkflow.createChangeRequested
-                    .data
+                createChangeRequestResponse.data.advancedPublishingWorkflow.createChangeRequest.data
             );
         }
 
@@ -334,13 +332,13 @@ describe("Comment on a change request test", () => {
         /**
          * Let's delete the first change request.
          */
-        const [deleteChangeRequested] = await deleteChangeRequestedMutation({
+        const [deleteChangeRequest] = await deleteChangeRequestMutation({
             id: changesRequested[0].id
         });
-        expect(deleteChangeRequested).toEqual({
+        expect(deleteChangeRequest).toEqual({
             data: {
                 advancedPublishingWorkflow: {
-                    deleteChangeRequested: {
+                    deleteChangeRequest: {
                         data: true,
                         error: null
                     }
