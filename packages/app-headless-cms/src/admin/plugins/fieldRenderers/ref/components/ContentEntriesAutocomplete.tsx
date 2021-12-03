@@ -5,10 +5,12 @@ import { i18n } from "@webiny/app/i18n";
 import { Link } from "@webiny/react-router";
 import { useReference } from "./useReference";
 import { renderItem } from "./renderItem";
+import { createEntryUrl } from "./createEntryUrl";
 
 const t = i18n.ns("app-headless-cms/admin/fields/ref");
 
-const label = t`Selected content entry is not published. Make sure to {publishItLink} before publishing the main content entry.`;
+const unpublishedLabel = t`Selected content entry is not published. Make sure to {publishItLink} before publishing the main content entry.`;
+const publishedLabel = t`Selected content entry is published. You can view it {here}.`;
 
 function ContentEntriesAutocomplete({ bind, field }) {
     const { options, setSearch, value, loading, onChange } = useReference({
@@ -16,10 +18,15 @@ function ContentEntriesAutocomplete({ bind, field }) {
         field
     });
 
-    let unpublishedEntryInfo = null;
+    let entryInfo: string = null;
     if (value && !value.published) {
-        const link = `/cms/content-entries/${value.modelId}?id=${encodeURIComponent(value.id)}`;
-        unpublishedEntryInfo = label({ publishItLink: <Link to={link}>{t`publish it`}</Link> });
+        const link = createEntryUrl(value);
+        entryInfo = unpublishedLabel({ publishItLink: <Link to={link}>{t`publish it`}</Link> });
+    } else if (value) {
+        const link = createEntryUrl(value);
+        entryInfo = publishedLabel({
+            here: <Link to={link}>{t`here`}</Link>
+        });
     }
 
     return (
@@ -34,7 +41,7 @@ function ContentEntriesAutocomplete({ bind, field }) {
             description={
                 <>
                     {field.helpText}
-                    {unpublishedEntryInfo}
+                    {entryInfo}
                 </>
             }
             onInput={debounce(search => setSearch(search), 250)}
