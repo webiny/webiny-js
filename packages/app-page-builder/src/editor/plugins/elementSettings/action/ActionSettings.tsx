@@ -5,6 +5,7 @@ import { merge } from "dot-prop-immutable";
 import { Switch } from "@webiny/ui/Switch";
 import { Form } from "@webiny/form";
 import { AutoComplete } from "@webiny/ui/AutoComplete";
+import { Typography } from "@webiny/ui/Typography";
 import { validation } from "@webiny/validation";
 import { withActiveElement } from "../../../components";
 import { DelayedOnChange } from "../../../components/DelayedOnChange";
@@ -176,7 +177,9 @@ const ActionSettingsComponent: React.FunctionComponent<
                                                                 }
                                                             )
                                                         ) : (
-                                                            <p>None Required</p>
+                                                            <Typography use="caption">
+                                                                None Required
+                                                            </Typography>
                                                         )}
                                                     </>
                                                 );

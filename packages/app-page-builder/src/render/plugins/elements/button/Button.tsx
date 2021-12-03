@@ -21,7 +21,7 @@ const Button = ({ element }: { element: PbElement }) => {
     let href: string, newTab: boolean;
 
     // If `link.href` is truthy, assume we're using link, not action.
-    if (link && link.href) {
+    if (link?.href && !action?.href) {
         href = link?.href;
         newTab = link?.newTab;
     } else {
