@@ -1,7 +1,5 @@
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
-import getMocks from "./mocks/workflows";
-
-const MOCKS = getMocks();
+import mocks from "./mocks/workflows";
 
 describe("Workflow assignment to a PB Page test", () => {
     const options = {
@@ -14,7 +12,9 @@ describe("Workflow assignment to a PB Page test", () => {
         createCategory,
         createPage,
         getPageQuery,
-        until
+        until,
+        reviewer: reviewerGQL,
+        securityIdentity
     } = useContentGqlHandler({
         ...options
     });
@@ -31,7 +31,19 @@ describe("Workflow assignment to a PB Page test", () => {
         return createCategoryResponse.data.pageBuilder.createCategory.data;
     };
 
+    const login = async () => {
+        await securityIdentity.login();
+    };
+
+    const setupReviewer = async () => {
+        await login();
+        const [listReviewersResponse] = await reviewerGQL.listReviewersQuery({});
+        const [reviewer] = listReviewersResponse.data.advancedPublishingWorkflow.listReviewers.data;
+        return reviewer;
+    };
+
     test("Page should have a workflow assigned right after create", async () => {
+        const reviewer = await setupReviewer();
         const category = await setupCategory();
         const workflows = [];
         /*
@@ -39,11 +51,14 @@ describe("Workflow assignment to a PB Page test", () => {
         */
         for (let i = 0; i < 5; i++) {
             const [createWorkflowResponse] = await createWorkflowMutation({
-                data: MOCKS.createWorkflow({
-                    title: `Main review workflow - ${i + 1}`,
-                    app: i % 2 === 0 ? "pageBuilder" : "cms",
-                    scope: MOCKS.scopes[i]
-                })
+                data: mocks.createWorkflow(
+                    {
+                        title: `Main review workflow - ${i + 1}`,
+                        app: i % 2 === 0 ? "pageBuilder" : "cms",
+                        scope: mocks.scopes[i]
+                    },
+                    [reviewer]
+                )
             });
             const workflow =
                 createWorkflowResponse.data.advancedPublishingWorkflow.createWorkflow.data;
@@ -71,19 +86,23 @@ describe("Workflow assignment to a PB Page test", () => {
     });
 
     test("Page should have the latest created workflow assigned in case of multiple matching workflows", async () => {
+        const reviewer = await setupReviewer();
         const category = await setupCategory();
         const workflows = [];
-        const workflowScopes = MOCKS.getPageBuilderScope("", "static");
+        const workflowScopes = mocks.getPageBuilderScope("", "static");
         /*
          Create 5 workflow entries
         */
         for (let i = 0; i < 5; i++) {
             const [createWorkflowResponse] = await createWorkflowMutation({
-                data: MOCKS.createWorkflow({
-                    title: `Main review workflow - ${i + 1}`,
-                    app: "pageBuilder",
-                    scope: workflowScopes[i]
-                })
+                data: mocks.createWorkflow(
+                    {
+                        title: `Main review workflow - ${i + 1}`,
+                        app: "pageBuilder",
+                        scope: workflowScopes[i]
+                    },
+                    [reviewer]
+                )
             });
 
             const workflow =
@@ -112,12 +131,13 @@ describe("Workflow assignment to a PB Page test", () => {
     });
 
     test("Page should not have a workflow assigned in case of no workflow exist", async () => {
+        const reviewer = await setupReviewer();
         const category = await setupCategory();
 
         // Create a workflow entry
         const [createWorkflowResponse] = await createWorkflowMutation({
             data: {
-                ...MOCKS.workflow1,
+                ...mocks.createWorkflow({}, [reviewer]),
                 app: "cms"
             }
         });
@@ -158,6 +178,7 @@ describe("Workflow assignment to a PB Page test", () => {
     });
 
     test("Page should have the workflow assigned even when the workflow is created after page", async () => {
+        const reviewer = await setupReviewer();
         const category = await setupCategory();
 
         /**
@@ -172,16 +193,19 @@ describe("Workflow assignment to a PB Page test", () => {
          Create a workflow.
         */
         const [createWorkflowResponse] = await createWorkflowMutation({
-            data: MOCKS.createWorkflow({
-                title: `Main review workflow`,
-                app: "pageBuilder",
-                scope: {
-                    type: "specific",
-                    data: {
-                        values: [page.pid]
+            data: mocks.createWorkflow(
+                {
+                    title: `Main review workflow`,
+                    app: "pageBuilder",
+                    scope: {
+                        type: "specific",
+                        data: {
+                            values: [page.pid]
+                        }
                     }
-                }
-            })
+                },
+                [reviewer]
+            )
         });
 
         const workflow = createWorkflowResponse.data.advancedPublishingWorkflow.createWorkflow.data;
@@ -205,16 +229,19 @@ describe("Workflow assignment to a PB Page test", () => {
          Create a workflow.
         */
         const [createAnotherWorkflowResponse] = await createWorkflowMutation({
-            data: MOCKS.createWorkflow({
-                title: `Main review workflow - 2`,
-                app: "pageBuilder",
-                scope: {
-                    type: "specific",
-                    data: {
-                        values: [page.pid, page.pid + "999999"]
+            data: mocks.createWorkflow(
+                {
+                    title: `Main review workflow - 2`,
+                    app: "pageBuilder",
+                    scope: {
+                        type: "specific",
+                        data: {
+                            values: [page.pid, page.pid + "999999"]
+                        }
                     }
-                }
-            })
+                },
+                [reviewer]
+            )
         });
         const anotherWorkflowWithSameScope =
             createAnotherWorkflowResponse.data.advancedPublishingWorkflow.createWorkflow.data;

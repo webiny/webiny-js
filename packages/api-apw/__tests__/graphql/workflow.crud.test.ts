@@ -1,7 +1,5 @@
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
-import getMocks from "./mocks/workflows";
-
-const MOCKS = getMocks();
+import mocks from "./mocks/workflows";
 
 describe("Workflow crud test", () => {
     const options = {
@@ -13,11 +11,26 @@ describe("Workflow crud test", () => {
         listWorkflowsQuery,
         createWorkflowMutation,
         updateWorkflowMutation,
-        deleteWorkflowMutation
+        deleteWorkflowMutation,
+        securityIdentity,
+        reviewer: reviewerGQL
     } = useContentGqlHandler({
         ...options
     });
+
+    const login = async () => {
+        await securityIdentity.login();
+    };
+
+    const setupReviewer = async () => {
+        await login();
+        const [listReviewersResponse] = await reviewerGQL.listReviewersQuery({});
+        const [reviewer] = listReviewersResponse.data.advancedPublishingWorkflow.listReviewers.data;
+        return reviewer;
+    };
+
     test("should able to create, update, get, list and delete a workflow", async () => {
+        const reviewer = await setupReviewer();
         /*
          * Should return error in case of no entry found.
          */
@@ -39,10 +52,12 @@ describe("Workflow crud test", () => {
         /*
          * Create a new workflow entry.
          */
+        const workflowData = mocks.createWorkflow({}, [reviewer]);
         const [createWorkflowResponse] = await createWorkflowMutation({
-            data: MOCKS.workflow1
+            data: workflowData
         });
-        const { id } = createWorkflowResponse.data.advancedPublishingWorkflow.createWorkflow.data;
+
+        const workflow = createWorkflowResponse.data.advancedPublishingWorkflow.createWorkflow.data;
 
         expect(createWorkflowResponse).toEqual({
             data: {
@@ -57,7 +72,7 @@ describe("Workflow crud test", () => {
                                 displayName: "John Doe",
                                 type: "admin"
                             },
-                            ...MOCKS.workflow1
+                            ...workflowData
                         },
                         error: null
                     }
@@ -67,7 +82,7 @@ describe("Workflow crud test", () => {
         /**
          *  Now that we have a workflow entry, we should be able to get it.
          */
-        const [getWorkflowByIdResponse] = await getWorkflowQuery({ id: id });
+        const [getWorkflowByIdResponse] = await getWorkflowQuery({ id: workflow.id });
         expect(getWorkflowByIdResponse).toEqual({
             data: {
                 advancedPublishingWorkflow: {
@@ -81,26 +96,39 @@ describe("Workflow crud test", () => {
                                 displayName: "John Doe",
                                 type: "admin"
                             },
-                            ...MOCKS.workflow1
+                            ...workflow
                         },
                         error: null
                     }
                 }
             }
         });
-
         /**
          * Let's update the entry.
          */
+        const designReviewStep = {
+            title: "Design review",
+            slug: "design-review",
+            type: "mandatory_blocking",
+            reviewers: [
+                {
+                    id: reviewer.id,
+                    modelId: "apwReviewerModelDefinition"
+                }
+            ]
+        };
         const [updateWorkflowResponse] = await updateWorkflowMutation({
-            id,
-            data: MOCKS.updatedWorkflow1
+            id: workflow.id,
+            data: {
+                steps: [...workflow.steps, designReviewStep]
+            }
         });
         expect(updateWorkflowResponse).toEqual({
             data: {
                 advancedPublishingWorkflow: {
                     updateWorkflow: {
                         data: {
+                            ...workflow,
                             id: expect.any(String),
                             createdOn: expect.stringMatching(/^20/),
                             savedOn: expect.stringMatching(/^20/),
@@ -109,8 +137,7 @@ describe("Workflow crud test", () => {
                                 displayName: "John Doe",
                                 type: "admin"
                             },
-                            ...MOCKS.workflow1,
-                            ...MOCKS.updatedWorkflow1
+                            steps: [...workflow.steps, designReviewStep]
                         },
                         error: null
                     }
@@ -136,8 +163,10 @@ describe("Workflow crud test", () => {
                                     displayName: "John Doe",
                                     type: "admin"
                                 },
-                                ...MOCKS.workflow1,
-                                ...MOCKS.updatedWorkflow1
+                                app: workflow.app,
+                                title: workflow.title,
+                                steps: [...workflow.steps, designReviewStep],
+                                scope: workflow.scope
                             }
                         ],
                         error: null,
@@ -154,7 +183,7 @@ describe("Workflow crud test", () => {
         /**
          *  Delete the only workflow entry we have.
          */
-        const [deleteWorkflowResponse] = await deleteWorkflowMutation({ id });
+        const [deleteWorkflowResponse] = await deleteWorkflowMutation({ id: workflow.id });
         expect(deleteWorkflowResponse).toEqual({
             data: {
                 advancedPublishingWorkflow: {
@@ -187,14 +216,16 @@ describe("Workflow crud test", () => {
         });
     });
 
-    it("should be able to list workflows", async () => {
+    test("should be able to list workflows", async () => {
+        await login();
+        const reviewer = await setupReviewer();
         const workflows = [];
         /*
          * Create five workflows.
          */
         for (let i = 0; i < 5; i++) {
             const [createWorkflowResponse] = await createWorkflowMutation({
-                data: MOCKS.createWorkflow({ app: i % 2 === 0 ? "pageBuilder" : "cms" })
+                data: mocks.createWorkflow({ app: i % 2 === 0 ? "pageBuilder" : "cms" }, [reviewer])
             });
 
             workflows.push(

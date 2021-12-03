@@ -7,8 +7,9 @@ interface CreateWorkflowParams {
     };
 }
 
-export default () => ({
-    workflow1: {
+export default {
+    reviewerModelId: "apwReviewerModelDefinition",
+    createWorkflow: (params: CreateWorkflowParams, reviewers) => ({
         app: "pageBuilder",
         title: "Main workflow",
         steps: [
@@ -16,48 +17,15 @@ export default () => ({
                 title: "Legal Review",
                 slug: "legal-review",
                 type: "mandatory_blocking",
-                reviewers: [{ id: "123" }]
+                reviewers: reviewers.map(reviewer => ({
+                    modelId: "apwReviewerModelDefinition",
+                    id: reviewer.id
+                }))
             }
         ],
         scope: {
             type: "default",
             data: null
-        }
-    },
-    updatedWorkflow1: {
-        title: "Main workflow - edited",
-        steps: [
-            {
-                title: "Legal Review",
-                slug: "legal-review",
-                type: "mandatory_blocking",
-                reviewers: [{ id: "123" }]
-            },
-            {
-                title: "Design Review",
-                slug: "design-review",
-                type: "mandatory_blocking",
-                reviewers: [{ id: "123456" }]
-            }
-        ],
-        scope: {
-            type: "default",
-            data: null
-        }
-    },
-    createWorkflow: (params: CreateWorkflowParams) => ({
-        app: "pageBuilder",
-        title: "Main workflow",
-        steps: [
-            {
-                title: "Legal Review",
-                slug: "legal-review",
-                type: "mandatory_blocking",
-                reviewers: [{ id: "123" }]
-            }
-        ],
-        scope: {
-            type: "default"
         },
         ...params
     }),
@@ -115,13 +83,13 @@ export default () => ({
                 title: "Legal Review",
                 slug: "legal-review",
                 type: "mandatory_blocking",
-                reviewers: [{ id: "123" }]
+                reviewers: [{ id: "123", modelId: "apwReviewerModelDefinition" }]
             },
             {
                 title: "Design Review",
                 slug: "design-review",
                 type: "mandatory_blocking",
-                reviewers: [{ id: "123" }]
+                reviewers: [{ id: "123", modelId: "apwReviewerModelDefinition" }]
             }
         ],
         scope: {
@@ -131,4 +99,4 @@ export default () => ({
             }
         }
     }
-});
+};

@@ -25,6 +25,7 @@ const getDataFields = (fields = "") => `{
         type
         reviewers {
             id
+            modelId
         }
     }
     ${fields}
