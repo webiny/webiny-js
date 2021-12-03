@@ -1,4 +1,4 @@
-import jwt from "jsonwebtoken";
+import jwt, { JsonWebTokenError } from "jsonwebtoken";
 import jwkToPem from "jwk-to-pem";
 import fetch from "node-fetch";
 import util from "util";
@@ -15,7 +15,7 @@ export interface Config {
 const jwksCache = new Map<string, Record<string, any>[]>();
 
 export interface Authenticator {
-    (token: string): Record<string, any>;
+    (token: string): Record<string, any> | undefined;
 }
 
 export const createAuthenticator =
@@ -39,22 +39,37 @@ export const createAuthenticator =
         };
 
         if (typeof idToken === "string" && isJwt(idToken)) {
-            const jwks = await getJWKs();
-            const { header } = jwt.decode(idToken, { complete: true });
-            const jwk = jwks.find(key => key.kid === header.kid);
+            try {
+                const jwks = await getJWKs();
+                const decodedToken = jwt.decode(idToken, { complete: true });
+                // JWT can return null
+                if (!decodedToken) {
+                    return;
+                }
 
-            if (!jwk) {
-                return;
+                const header = decodedToken.header;
+                const jwk = jwks.find(key => key.kid === header.kid);
+
+                if (!jwk) {
+                    return;
+                }
+
+                const token = await verify(idToken, jwkToPem(jwk));
+                if (token.token_use !== "id") {
+                    const error = new Error("idToken is invalid!");
+                    throw Object.assign(error, {
+                        code: "SECURITY_COGNITO_INVALID_TOKEN"
+                    });
+                }
+
+                return token;
+            } catch (e) {
+                if (e instanceof JsonWebTokenError) {
+                    // handle JWT parsing errors and fallback to unauthenticated user
+                    return;
+                }
+
+                throw e;
             }
-
-            const token = await verify(idToken, jwkToPem(jwk));
-            if (token.token_use !== "id") {
-                const error = new Error("idToken is invalid!");
-                throw Object.assign(error, {
-                    code: "SECURITY_COGNITO_INVALID_TOKEN"
-                });
-            }
-
-            return token;
         }
     };
