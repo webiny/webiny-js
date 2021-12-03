@@ -29,3 +29,4 @@ resource-types:
     - IAMRolePolicy
     - IAMRolePolicyAttachment
     - DynamoDBTable
+    - CloudWatchEventsRule
