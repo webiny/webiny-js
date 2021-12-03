@@ -6,6 +6,7 @@ export default /* GraphQL */ `
         name: String
         price: Number
         category: Category
+        categories: [Category]
     }
 
     type Product_Variant {
