@@ -16,6 +16,7 @@ import { GroupAutocompleteElement } from "~/ui/elements/GroupAutocompleteElement
 import { UseUserForm, useUserForm } from "~/ui/views/Users/hooks/useUserForm";
 import { FormView } from "@webiny/app-admin/ui/views/FormView";
 import { FormElementRenderProps } from "@webiny/app-admin/ui/elements/form/FormElement";
+import { config as appConfig } from "@webiny/app/config";
 
 const FormWrapper = styled("div")({
     margin: "0 100px"
@@ -139,7 +140,10 @@ export class UsersFormView extends UIView {
                         return false;
                     }
 
-                    return process.env.REACT_APP_ADMIN_USER_CAN_CHANGE_EMAIL === "false";
+                    return appConfig.getKey(
+                        "ADMIN_USER_CAN_CHANGE_EMAIL",
+                        process.env.REACT_APP_ADMIN_USER_CAN_CHANGE_EMAIL === "false"
+                    );
                 }
             })
         );

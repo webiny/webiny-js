@@ -192,6 +192,11 @@ module.exports = [
                         describe: `Environment`,
                         type: "string"
                     });
+                    yargs.option("debug", {
+                        default: false,
+                        describe: `Turn on debug logs`,
+                        type: "boolean"
+                    });
                 },
                 async argv => {
                     await require("./pulumiRun")(argv, context);

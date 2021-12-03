@@ -5,6 +5,7 @@ import classSet from "classnames";
 
 import webinyLogo from "../../assets/images/webiny-orange-logo.svg";
 import signInDivider from "./assets/sign-in-divider.svg";
+import { config as appConfig } from "@webiny/app/config";
 
 const SidebarWrapper = styled("div")({});
 
@@ -119,6 +120,8 @@ const Sidebar = ({ allInstallers, installer, showLogin }) => {
     const upgrades = allInstallers.filter(installer => installer.type === "upgrade");
     const installations = allInstallers.filter(installer => installer.type === "install");
 
+    const wbyVersion = appConfig.getKey("WEBINY_VERSION", process.env.REACT_APP_WEBINY_VERSION);
+
     return (
         <SidebarWrapper>
             <Logo>
@@ -128,8 +131,7 @@ const Sidebar = ({ allInstallers, installer, showLogin }) => {
                 <Installations
                     title={
                         <span>
-                            The following apps will be upgraded to{" "}
-                            <strong>{process.env.REACT_APP_WEBINY_VERSION}</strong>:
+                            The following apps will be upgraded to <strong>{wbyVersion}</strong>:
                         </span>
                     }
                     allInstallers={upgrades}
