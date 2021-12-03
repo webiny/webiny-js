@@ -218,9 +218,11 @@ const createFilters = (params: CreateFiltersParams): ItemFilter[] => {
                     plugins: valuePathPlugins
                 });
 
+                const multiValuesPath = field.def.multipleValues ? "%s." : "";
+
                 filters.push({
                     fieldId,
-                    path: `${basePath}.${propertyId}`,
+                    path: `${basePath}.${multiValuesPath}${propertyId}`,
                     filterPlugin,
                     negate: propertyNegate,
                     compareValue: transformValue(
@@ -254,6 +256,43 @@ const createFilters = (params: CreateFiltersParams): ItemFilter[] => {
 
     return filters;
 };
+/**
+ * In case filter field is not multiple values one, return exact path.
+ * If is multiple values field, use path without the last part
+ */
+const getFilterValuePath = (filter: ItemFilter): string => {
+    if (filter.path.includes(".%s.") === false) {
+        return filter.path;
+    }
+    const paths = filter.path.split(".%s.");
+    return paths.shift();
+};
+
+const getFilterValuePropertyPath = (filter: ItemFilter): string => {
+    if (filter.path.includes(".%s.") === false) {
+        return null;
+    }
+    const paths = filter.path.split(".%s.");
+    return paths.pop();
+};
+
+interface ExecFilterParams {
+    value: any;
+    filter: ItemFilter;
+}
+const execFilter = (params: ExecFilterParams) => {
+    const { value: plainValue, filter } = params;
+
+    const value = transformValue(plainValue, filter.transformValue);
+    const matched = filter.filterPlugin.matches({
+        value,
+        compareValue: filter.compareValue
+    });
+    if (filter.negate) {
+        return matched === false;
+    }
+    return matched;
+};
 
 export const filterItems = async (params: FilterItemsParams): Promise<CmsEntry[]> => {
     const { items: records, where, plugins, fields, fromStorage } = params;
@@ -263,42 +302,83 @@ export const filterItems = async (params: FilterItemsParams): Promise<CmsEntry[]
         where,
         fields
     });
-    const results: CmsEntry[] = [];
 
-    for (const key in records) {
-        if (records.hasOwnProperty(key) === false) {
-            continue;
-        }
-        const record = records[key];
-
-        let passed = true;
+    const promises: Promise<CmsEntry>[] = records.map(async record => {
+        /**
+         * We need to go through all the filters and apply them to the given record.
+         */
         for (const filter of filters) {
-            const rawValue = dotProp.get(record, filter.path);
+            /**
+             * In case is multiple values field, last part is removed from path.
+             * -> values.categories.id -> values.categories
+             */
+            const valuePath = getFilterValuePath(filter);
+
+            const rawValue = dotProp.get(record, valuePath);
+            if (valuePath !== filter.path) {
+                /**
+                 * Calculated is different than original because we need to search in the array of objects.
+                 */
+                const propertyPath = getFilterValuePropertyPath(filter);
+                if (!propertyPath) {
+                    console.log(`Cannot determine the property path of "${filter.path}".`);
+                    continue;
+                }
+
+                const plainValue = await fromStorage(fields[filter.fieldId].def, rawValue);
+                /**
+                 * We cannot go through the value because it is not array. Log the error and continue.
+                 */
+                if (Array.isArray(plainValue) === false) {
+                    console.log(
+                        `Cannot go through the value on ${valuePath} because it is not an array, and we expect it to be.`
+                    );
+                    continue;
+                }
+                record = dotProp.set(record, valuePath, plainValue);
+
+                const values = plainValue.map(value => {
+                    return value[propertyPath];
+                });
+
+                const result = execFilter({
+                    value: values,
+                    filter
+                });
+
+                if (!result) {
+                    return null;
+                }
+                continue;
+            }
 
             const plainValue = await fromStorage(fields[filter.fieldId].def, rawValue);
             /**
              * If raw value is not same as the value after the storage transform, set the value to the items being filtered.
              */
             if (plainValue !== rawValue) {
-                records[key] = dotProp.set(record, filter.path, plainValue);
+                record = dotProp.set(record, filter.path, plainValue);
             }
 
-            const value = transformValue(plainValue, filter.transformValue);
-            const matched = filter.filterPlugin.matches({
-                value,
-                compareValue: filter.compareValue
+            const result = execFilter({
+                value: plainValue,
+                filter
             });
-            if ((filter.negate ? !matched : matched) === false) {
-                passed = false;
-                break;
+            if (result === false) {
+                return null;
             }
         }
-        if (!passed) {
-            continue;
-        }
-        results.push(record);
-    }
-    return results;
+
+        return record;
+    });
+    /**
+     * We run filtering as promises so it is a bit faster than in for ... of loop.
+     */
+    const results: CmsEntry[] = await Promise.all(promises);
+    /**
+     * And filter out the null values which are returned when filter is not satisfied.
+     */
+    return results.filter(Boolean);
 };
 
 const extractSort = (
