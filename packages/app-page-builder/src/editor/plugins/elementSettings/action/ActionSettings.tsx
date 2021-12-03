@@ -3,6 +3,7 @@ import { Radio, RadioGroup } from "@webiny/ui/Radio";
 import { css } from "emotion";
 import { merge } from "dot-prop-immutable";
 import { Switch } from "@webiny/ui/Switch";
+import { Typography } from "@webiny/ui/Typography";
 import { Form } from "@webiny/form";
 import { AutoComplete } from "@webiny/ui/AutoComplete";
 import { validation } from "@webiny/validation";
@@ -176,7 +177,9 @@ const ActionSettingsComponent: React.FunctionComponent<
                                                                 }
                                                             )
                                                         ) : (
-                                                            <p>None Required</p>
+                                                            <Typography use="caption">
+                                                            None Required
+                                                        </Typography>
                                                         )}
                                                     </>
                                                 );

@@ -12,6 +12,7 @@ import height from "./height";
 import align from "./align";
 import save from "./save";
 import link from "./link";
+import action from "./action";
 import grid from "./grid";
 
 export default [
@@ -29,5 +30,6 @@ export default [
     height,
     save,
     link,
+    action,
     grid
 ];
