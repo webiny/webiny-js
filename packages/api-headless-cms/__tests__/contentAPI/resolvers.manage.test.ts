@@ -1121,7 +1121,13 @@ describe("MANAGE - Resolvers", () => {
                             category: {
                                 modelId: "category",
                                 id: vegetables.id
-                            }
+                            },
+                            categories: [
+                                {
+                                    modelId: "category",
+                                    id: vegetables.id
+                                }
+                            ]
                         },
                         {
                             name: "Option 2",
@@ -1129,7 +1135,13 @@ describe("MANAGE - Resolvers", () => {
                             category: {
                                 modelId: "category",
                                 id: vegetables.id
-                            }
+                            },
+                            categories: [
+                                {
+                                    modelId: "category",
+                                    id: vegetables.id
+                                }
+                            ]
                         }
                     ]
                 }

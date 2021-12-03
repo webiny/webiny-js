@@ -1,199 +1,111 @@
 import { CmsContext, CmsEntry, CmsModel, CmsModelField } from "~/types";
 import WebinyError from "@webiny/error";
-import { parseIdentifier } from "@webiny/utils";
 import dotProp from "dot-prop";
 
 interface ReferenceObject {
     id: string;
     modelId: string;
 }
+
 interface Params {
     context: CmsContext;
     model: CmsModel;
     input: Record<string, ReferenceObject | ReferenceObject[]>;
 }
 
-/**
- * We need to filter the ref fields.
- * Because we have nested fields option, we must go through the object field as well.
- */
-const filterApplicableFields = (
-    fields: CmsModelField[],
-    parentPath: string = null
-): Record<string, CmsModelField> => {
-    let referenceFields = {};
-    for (const field of fields) {
-        const isRef = field.type === "ref";
-        const isObj = field.type === "object";
-        if (!isRef && !isObj) {
-            continue;
-        }
-        /**
-         *
-         */
-        const path = parentPath ? `${parentPath}.${field.fieldId}` : field.fieldId;
-        if (isRef === true) {
-            referenceFields[path] = field;
-            continue;
-        }
-        /**
-         *
-         */
-        if (!field.settings || Array.isArray(field.settings.fields) === false) {
-            continue;
-        }
-
-        referenceFields = {
-            ...referenceFields,
-            ...filterApplicableFields(field.settings.fields, path)
-        };
-    }
-    return referenceFields;
-};
-
-interface CreateReferenceFieldPathsParams {
+interface BuildReferenceFieldPaths {
     fields: CmsModelField[];
-    parent?: CmsModelFieldWithParent;
+    parentPaths: string[];
     input: Record<string, any>;
 }
 
-interface CmsModelFieldWithParent extends CmsModelField {
-    parent?: CmsModelFieldWithParent;
-    path: string;
-    value: any;
-}
+const buildReferenceFieldPaths = (params: BuildReferenceFieldPaths): string[] => {
+    const { fields, parentPaths: initialParentPaths, input } = params;
 
-const createReferenceFieldPaths = (params: CreateReferenceFieldPathsParams) => {
-    const { input, fields, parent } = params;
+    const parentPaths = [].concat(initialParentPaths);
 
-    let result: Record<string, CmsModelFieldWithParent> = {};
+    const isMultipleValues = Array.isArray(input);
 
-    for (const field of fields) {
-        const isRef = field.type === "ref";
-        const isObj = field.type === "object";
-        if (!isRef && !isObj) {
-            continue;
-        }
-        const path = `${parent ? `${parent.path}.${parent.multipleValues ? "%s." : ""}` : ""}${
-            field.fieldId
-        }`;
-        if (isObj === true) {
-            if (!field.settings || Array.isArray(field.settings.fields) === false) {
-                continue;
-            }
-            const objectResults = createReferenceFieldPaths({
-                fields: field.settings.fields,
-                input,
-                parent: {
-                    ...field,
-                    parent,
-                    path,
-                    value: dotProp.get(input, path, field.multipleValues ? [] : null)
+    return fields
+        .filter(field => ["object", "ref"].includes(field.type))
+        .reduce((collection, field) => {
+            /**
+             * First we check the ref field
+             */
+            if (field.type === "ref") {
+                const parentPathsValue = parentPaths.length > 0 ? `${parentPaths.join(".")}.` : "";
+                if (field.multipleValues) {
+                    const inputValue = dotProp.get(input, `${field.fieldId}`, []);
+                    if (Array.isArray(inputValue) === false) {
+                        return collection;
+                    }
+                    for (const key in inputValue) {
+                        const path = `${parentPathsValue}${field.fieldId}.${key}`;
+                        collection.push(path);
+                    }
+                    return collection;
                 }
-            });
-            result = {
-                ...result,
-                ...objectResults
-            };
-            continue;
-        }
 
-        result[path] = {
-            ...field,
-            parent,
-            path,
-            value: dotProp.get(input, path, null)
-        };
-    }
+                if (isMultipleValues) {
+                    for (const key in input) {
+                        const path = `${parentPathsValue}${key}.${field.fieldId}`;
+                        collection.push(path);
+                    }
+                    return collection;
+                }
 
-    return result;
-};
+                collection.push(`${parentPathsValue}${field.fieldId}`);
 
-interface GetReferenceValuesParams {
-    paths: Record<string, any>;
-    input: Record<string, any>;
-}
-const getReferenceValues = (params: GetReferenceValuesParams) => {
-    const { paths, input } = params;
-    return Object.keys(paths).reduce((collection, path) => {
-        const field = paths[path];
-
-        if (field.parent && field.parent.multipleValues) {
-            const values = dotProp.get(input, field.parent.path, []);
-            if (Array.isArray(values) === false || values.length === 0) {
                 return collection;
             }
-            for (const key in values) {
-                collection[`${field.parent.path}.${key}.${field.fieldId}`] = dotProp.get(
-                    input,
-                    `${field.parent.path}.${key}.${field.fieldId}`
-                );
-            }
-            return collection;
-        }
-        const value = dotProp.get(input, field.path);
-        if (Array.isArray(value)) {
-            for (const i in value) {
-                collection[`${path}.${i}`] = value[i];
-            }
-            return collection;
-        }
-
-        collection[path] = value;
-
-        return collection;
-    }, {});
-};
-
-interface GetReferencesByModelParams {
-    values: Record<string, any>;
-}
-const getReferencesByModel = (params: GetReferencesByModelParams) => {
-    const { values } = params;
-    const references: Record<string, string[]> = {};
-    for (const path in values) {
-        if (values.hasOwnProperty(path) === false) {
-            continue;
-        }
-        const value = values[path];
-        if (!value) {
-            continue;
-        }
-        const { modelId, id } = value;
-        if (!id) {
-            throw new WebinyError("Missing id on the reference field.", "MALFORMED_REF_FIELD", {
-                value,
-                modelId,
-                path
-            });
-        } else if (!modelId) {
-            throw new WebinyError("Missing model on the reference field.", "MALFORMED_REF_FIELD", {
-                value,
-                modelId,
-                path
-            });
-        }
-        const { version } = parseIdentifier(id);
-        if (!version) {
-            throw new WebinyError(
-                "Missing ID with a version attached on the reference field.",
-                "MALFORMED_REF_FIELD",
-                {
-                    value,
-                    path,
-                    modelId
+            /**
+             * Then we move onto the object field
+             */
+            const parentPathsValue = parentPaths.length > 0 ? `${parentPaths.join(".")}.` : "";
+            /**
+             * This is if received input is array. We need to map key with fieldId at this point.
+             */
+            if (isMultipleValues) {
+                for (const key in input) {
+                    const path = `${parentPathsValue}${key}.${field.fieldId}`;
+                    collection.push(path);
                 }
-            );
-        }
-        if (!references[modelId]) {
-            references[modelId] = [];
-        }
-        if (references[modelId].includes(id)) {
-            continue;
-        }
-        references[modelId].push(id);
-    }
-    return references;
+                return collection;
+            }
+
+            const objFieldPath = `${field.fieldId}`;
+            const objFieldInputValue = dotProp.get(input, objFieldPath, []);
+
+            /**
+             * If field is multiple values one, we need to go through the input and use the existing keys.
+             */
+            if (field.multipleValues) {
+                if (Array.isArray(objFieldInputValue) === false) {
+                    return collection;
+                }
+                for (const key in objFieldInputValue) {
+                    const result = buildReferenceFieldPaths({
+                        fields: field.settings.fields,
+                        input: objFieldInputValue[key],
+                        parentPaths: parentPaths.concat([field.fieldId, key])
+                    });
+                    collection.push(...result);
+                }
+
+                return collection;
+            }
+
+            /**
+             * Single value reference field.
+             */
+            const results = buildReferenceFieldPaths({
+                fields: field.settings.fields as CmsModelField[],
+                input: objFieldInputValue,
+                parentPaths: parentPaths.concat([field.fieldId])
+            });
+
+            return collection.concat(results);
+        }, []);
 };
 
 export const referenceFieldsMapping = async (params: Params): Promise<Record<string, any>> => {
@@ -203,42 +115,44 @@ export const referenceFieldsMapping = async (params: Params): Promise<Record<str
         ...input
     };
 
-    const referenceFields = filterApplicableFields(model.fields);
-
-    const referencePaths = createReferenceFieldPaths({
+    const referenceFieldPaths = buildReferenceFieldPaths({
         fields: model.fields,
-        input
+        input,
+        parentPaths: []
     });
-
-    /**
-     * No point in going further if there are no ref fields.
-     */
-    if (Object.keys(referenceFields).length === 0) {
+    if (referenceFieldPaths.length === 0) {
         return output;
     }
 
-    const referenceValues = getReferenceValues({
-        paths: referencePaths,
-        input
-    });
-    /**
-     * We need to find all the models and IDs that are referenced.
-     * This will produce a list of entries that need to be verified, grouped by a model.
-     */
-    const references = getReferencesByModel({
-        values: referenceValues
-    });
+    const referencesByModel: Record<string, string[]> = {};
+    const pathsByReferenceId: Record<string, string[]> = {};
+
+    for (const path of referenceFieldPaths) {
+        const ref = dotProp.get(output, path) as ReferenceObject | any;
+        if (!ref || !ref.id || !ref.modelId) {
+            continue;
+        }
+        if (!referencesByModel[ref.modelId]) {
+            referencesByModel[ref.modelId] = [];
+        }
+        referencesByModel[ref.modelId].push(ref.id);
+        if (!pathsByReferenceId[ref.id]) {
+            pathsByReferenceId[ref.id] = [];
+        }
+        pathsByReferenceId[ref.id].push(path);
+    }
+
     /**
      * Again, no point in going further.
      */
-    if (Object.keys(references).length === 0) {
+    if (Object.keys(referencesByModel).length === 0) {
         return output;
     }
     /**
      * Load all models and use only those that are used in reference.
      */
     const models = (await context.cms.listModels()).filter(model => {
-        const entries = references[model.modelId];
+        const entries = referencesByModel[model.modelId];
         if (Array.isArray(entries) === false || entries.length === 0) {
             return false;
         }
@@ -255,7 +169,7 @@ export const referenceFieldsMapping = async (params: Params): Promise<Record<str
      * Load all the entries by their ID
      */
     const promises = models.map(model => {
-        return context.cms.getEntriesByIds(model, references[model.modelId]);
+        return context.cms.getEntriesByIds(model, referencesByModel[model.modelId]);
     });
 
     const results = await Promise.all(promises);
@@ -269,49 +183,43 @@ export const referenceFieldsMapping = async (params: Params): Promise<Record<str
     /**
      * Verify that all referenced entries actually exist.
      */
-    for (const m in references) {
-        const entries = references[m];
+    for (const modelId in referencesByModel) {
+        const entries = referencesByModel[modelId];
         for (const entry of entries) {
             if (records[entry]) {
                 continue;
             }
             throw new WebinyError(
-                `Missing referenced entry with id "${entry}" in model "${m}".`,
+                `Missing referenced entry with id "${entry}" in model "${modelId}".`,
                 "ENTRY_NOT_FOUND",
                 {
                     entry,
-                    model: m
+                    model: modelId
                 }
             );
         }
     }
 
     /**
-     * In the end, assign the entryId, id and model values to the input.
+     * In the end, assign the entryId, id and model values to the output.
      */
-    for (const path in referenceValues) {
-        if (referenceValues.hasOwnProperty(path) === false) {
-            continue;
-        }
-        const value = referenceValues[path];
-        if (!value) {
-            continue;
-        }
-
-        const { id } = referenceValues[path];
-
+    for (const id in pathsByReferenceId) {
         const entry = records[id];
+        const paths = pathsByReferenceId[id];
         if (!entry) {
-            throw new WebinyError(`Missing record with id "${id}".`, "RECORDS_ERROR", {
-                id
+            throw new WebinyError("Missing entry in records.", "ENTRY_ERROR", {
+                id,
+                paths
             });
         }
-
-        output = dotProp.set(output, path, {
-            id: entry.id,
-            entryId: entry.entryId,
-            modelId: entry.modelId
-        });
+        for (const path of paths) {
+            output = dotProp.set(output, path, {
+                id: entry.id,
+                entryId: entry.entryId,
+                modelId: entry.modelId
+            });
+        }
     }
+
     return output;
 };
