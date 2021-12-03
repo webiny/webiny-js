@@ -87,6 +87,9 @@ export class Pulumi {
         set(args.execa, "env.PULUMI_SKIP_UPDATE_CHECK", "true");
         set(args.execa, "env.PULUMI_HOME", this.pulumiFolder);
 
+        // Use ";" when on Windows. For Mac and Linux, use ":".
+        const PATH_SEPARATOR = os.platform() === "win32" ? ";" : ":";
+
         const execaArgs = {
             ...args.execa,
             env: {
@@ -97,7 +100,7 @@ export class Pulumi {
                  * we need to specify the exact location of our Pulumi binaries, using the PATH environment variable, so it can correctly resolve
                  * plugins necessary for custom resources and dynamic providers to work.
                  */
-                PATH: `${process.env.PATH};${this.pulumiFolder}`
+                PATH: process.env.PATH + PATH_SEPARATOR + this.pulumiFolder
             }
         };
 
