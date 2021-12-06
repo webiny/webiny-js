@@ -17,7 +17,7 @@ const getAllEntryRevisions = (params: LoaderParams) => {
     const { entity, model } = params;
     const { tenant, locale } = model;
     return new DataLoader<string, CmsEntry[]>(async ids => {
-        const results: CmsEntry[][] = [];
+        const results: Record<string, CmsEntry[]> = {};
         for (const id of ids) {
             const queryAllParams: QueryAllParams = {
                 entity,
@@ -31,11 +31,12 @@ const getAllEntryRevisions = (params: LoaderParams) => {
                 }
             };
             const items = await queryAll<CmsEntry>(queryAllParams);
-            const entries = cleanupItems(entity, items);
-            results.push(entries);
+            results[id] = cleanupItems(entity, items);
         }
 
-        return results;
+        return ids.map(id => {
+            return results[id] || [];
+        });
     });
 };
 
