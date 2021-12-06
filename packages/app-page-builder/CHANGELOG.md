@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.19.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.19.0-beta.0...v5.19.0-beta.1) (2021-12-06)
+
+
+### Bug Fixes
+
+* apply final polishes to the button's action setting ([9217c57](https://github.com/webiny/webiny-js/commit/9217c57703423a667f01ae39d50c533d8bde2515))
+* use `body2` instead of `caption` ([fbfef6f](https://github.com/webiny/webiny-js/commit/fbfef6f9b7717eb2564c3062da81ee9a6095dde7))
+
+
+
+
+
 # [5.19.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.18.3...v5.19.0-beta.0) (2021-12-06)
 
 
