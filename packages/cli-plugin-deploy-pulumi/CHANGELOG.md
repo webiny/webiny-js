@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.19.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.18.3...v5.19.0-beta.0) (2021-12-06)
+
+
+### Bug Fixes
+
+* **cli-plugin-deploy-pulumi:** watch with --debug throws on windows ([6d5a625](https://github.com/webiny/webiny-js/commit/6d5a625c4136c1adb8151d63312beef97ef84703))
+* add `uploadFolderToS3` utility function types ([f01245f](https://github.com/webiny/webiny-js/commit/f01245f9937cbd938e5e5ed29c3f9cf1dc2340e3))
+* **@webiny/cli-plugin-deploy-pulumi:** add acl parameter to uploadFolderToS3 ([c20ec87](https://github.com/webiny/webiny-js/commit/c20ec8778e2477da183f4ed8c9a2153138a28403))
+
+
+### Features
+
+* add `deploy` flag ([cf5b323](https://github.com/webiny/webiny-js/commit/cf5b3239fbf85b868f1dcc6a68a3f318545cfc5b))
+* add multi-tenancy website routing ([#2077](https://github.com/webiny/webiny-js/issues/2077)) ([fc2f0da](https://github.com/webiny/webiny-js/commit/fc2f0dafbb036bf26f1c24cce46edbcfcf38cca7))
+
+
+
+
+
 ## [5.18.3](https://github.com/webiny/webiny-js/compare/v5.18.3-beta.0...v5.18.3) (2021-12-02)
 
 **Note:** Version bump only for package @webiny/cli-plugin-deploy-pulumi

@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.19.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.18.3...v5.19.0-beta.0) (2021-12-06)
+
+
+### Bug Fixes
+
+* **app-headless-cms:** date time with timezone validation ([#2081](https://github.com/webiny/webiny-js/issues/2081)) ([3ec3e1e](https://github.com/webiny/webiny-js/commit/3ec3e1ec4d8ce6dfe3510ecaa3f9322ff9c93c28))
+
+
+### Features
+
+* **api-headless-cms:** filter by reference entryId or id ([#2068](https://github.com/webiny/webiny-js/issues/2068)) ([16a1c97](https://github.com/webiny/webiny-js/commit/16a1c9761bf142b3bc81127656438f27f1ffc4d6))
+* **app-headless-cms:** add url to reference entries ([#2082](https://github.com/webiny/webiny-js/issues/2082)) ([b5132ae](https://github.com/webiny/webiny-js/commit/b5132aede10f1fef0cdc5801355fae34509f0681))
+* **app-headless-cms:** ref field validators ([#2046](https://github.com/webiny/webiny-js/issues/2046)) ([056c79f](https://github.com/webiny/webiny-js/commit/056c79fecf6b2816bc631516f33ae818e91f3f56))
+* **app-headless-cms:** uppercase and lowercase with space ([#2080](https://github.com/webiny/webiny-js/issues/2080)) ([e7f9ba6](https://github.com/webiny/webiny-js/commit/e7f9ba61fa2a0224e40f3455b24c5283b20e192a))
+
+
+
+
+
 ## [5.18.3](https://github.com/webiny/webiny-js/compare/v5.18.3-beta.0...v5.18.3) (2021-12-02)
 
 **Note:** Version bump only for package @webiny/app-headless-cms

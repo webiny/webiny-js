@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.19.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.18.3...v5.19.0-beta.0) (2021-12-06)
+
+
+### Features
+
+* **app-headless-cms:** ref field validators ([#2046](https://github.com/webiny/webiny-js/issues/2046)) ([056c79f](https://github.com/webiny/webiny-js/commit/056c79fecf6b2816bc631516f33ae818e91f3f56))
+
+
+
+
+
 ## [5.18.3](https://github.com/webiny/webiny-js/compare/v5.18.3-beta.0...v5.18.3) (2021-12-02)
 
 **Note:** Version bump only for package @webiny/form

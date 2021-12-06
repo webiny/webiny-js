@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.19.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.18.3...v5.19.0-beta.0) (2021-12-06)
+
+
+### Bug Fixes
+
+* **@webiny/validation:** add exclamation mark to url validation regexp ([#2069](https://github.com/webiny/webiny-js/issues/2069)) ([f7dc3e8](https://github.com/webiny/webiny-js/commit/f7dc3e811dab12fb92f240c38f53270862ea14f0))
+
+
+
+
+
 ## [5.18.3](https://github.com/webiny/webiny-js/compare/v5.18.3-beta.0...v5.18.3) (2021-12-02)
 
 **Note:** Version bump only for package @webiny/validation

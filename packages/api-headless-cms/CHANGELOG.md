@@ -3,6 +3,29 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.19.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.18.3...v5.19.0-beta.0) (2021-12-06)
+
+
+### Bug Fixes
+
+* **api-headless-cms:** data loader fetch records ([#2095](https://github.com/webiny/webiny-js/issues/2095)) ([34de235](https://github.com/webiny/webiny-js/commit/34de2359c8256a3feb31710aaf09c1224a4cf262))
+* **api-headless-cms:** multiple values in ref field when searching ([#2090](https://github.com/webiny/webiny-js/issues/2090)) ([b3999e3](https://github.com/webiny/webiny-js/commit/b3999e3fb80733b2f20e84d2732ad003c1400f4b))
+* **api-headless-cms:** publish flow ([#2044](https://github.com/webiny/webiny-js/issues/2044)) ([b53b481](https://github.com/webiny/webiny-js/commit/b53b481ab42c9d39502644a0ff10144357889d1a))
+* **api-headless-cms:** references validation ([#2093](https://github.com/webiny/webiny-js/issues/2093)) ([5409bfd](https://github.com/webiny/webiny-js/commit/5409bfd3da74e7e05c7e99fe7aed7665d6ce1e30))
+* **api-headless-cms:** system version check ([#2070](https://github.com/webiny/webiny-js/issues/2070)) ([7695eee](https://github.com/webiny/webiny-js/commit/7695eeeb0717c78b79dae11d42136897cefd901f))
+
+
+### Features
+
+* **api-headless-cms:** filter by reference entryId or id ([#2068](https://github.com/webiny/webiny-js/issues/2068)) ([16a1c97](https://github.com/webiny/webiny-js/commit/16a1c9761bf142b3bc81127656438f27f1ffc4d6))
+* **api-headless-cms:** load model and entry crud in admin ([#2037](https://github.com/webiny/webiny-js/issues/2037)) ([424cbb7](https://github.com/webiny/webiny-js/commit/424cbb73cd0e826e8c85b1df4593e9164e5ebd42))
+* **api-headless-cms:** ref field resolvers ([#2072](https://github.com/webiny/webiny-js/issues/2072)) ([d00d87d](https://github.com/webiny/webiny-js/commit/d00d87dfd49cb31b20edee744a2920b69a8b3031))
+* **app-headless-cms:** uppercase and lowercase with space ([#2080](https://github.com/webiny/webiny-js/issues/2080)) ([e7f9ba6](https://github.com/webiny/webiny-js/commit/e7f9ba61fa2a0224e40f3455b24c5283b20e192a))
+
+
+
+
+
 ## [5.18.3](https://github.com/webiny/webiny-js/compare/v5.18.3-beta.0...v5.18.3) (2021-12-02)
 
 **Note:** Version bump only for package @webiny/api-headless-cms
