@@ -37,6 +37,10 @@ export function createFieldResolversFactory({ endpointType, models, model, field
                 ? createResolver({ graphQLType, models, model, field, createFieldResolvers })
                 : null;
 
+            /**
+             * When fieldResolver is false it will completely skip adding fieldId into the resolvers.
+             * This is to fix the breaking of GraphQL schema.
+             */
             if (fieldResolver === false) {
                 continue;
             } else if (typeof fieldResolver === "function") {
