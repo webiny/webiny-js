@@ -1,4 +1,5 @@
 import { Plugin } from "./types";
+import { PluginConstructor, Plugin as PluginClass } from "./Plugin";
 import uniqid from "uniqid";
 
 const isOptionsObject = item => item && !Array.isArray(item) && !item.type && !item.name;
@@ -46,26 +47,38 @@ export class PluginsContainer {
         return this.plugins[name] as T;
     }
 
-    public byType<T extends Plugin>(type: T["type"]): T[] {
+    public byType<TPlugin extends PluginClass>(plugin: PluginConstructor<TPlugin>): TPlugin[];
+    public byType<T extends Plugin>(plugin: T["type"]): T[];
+    public byType(plugin: PluginConstructor<PluginClass> | string): Plugin[] {
+        const type = this.getPluginType(plugin);
+
         if (this._byTypeCache[type]) {
-            return Array.from(this._byTypeCache[type]) as T[];
+            return Array.from(this._byTypeCache[type]) as Plugin[];
         }
-        const plugins = this.findByType<T>(type);
+        const plugins = this.findByType(type);
         this._byTypeCache[type] = plugins;
         return Array.from(plugins);
     }
 
-    public atLeastOneByType<T extends Plugin>(type: T["type"]): T[] {
-        const list = this.byType<T>(type);
+    public atLeastOneByType<TPlugin extends PluginClass>(
+        plugin: PluginConstructor<TPlugin>
+    ): TPlugin[];
+    public atLeastOneByType<T extends Plugin>(plugin: T["type"]): T[];
+    public atLeastOneByType(plugin: PluginConstructor<PluginClass> | string): Plugin[] {
+        const list = this.byType(plugin as any);
         if (list.length === 0) {
+            const type = this.getPluginType(plugin);
             throw new Error(`There are no plugins by type "${type}".`);
         }
         return list;
     }
 
-    public oneByType<T extends Plugin>(type: T["type"]): T {
-        const list = this.atLeastOneByType<T>(type);
+    public oneByType<TPlugin extends PluginClass>(plugin: PluginConstructor<TPlugin>): TPlugin;
+    public oneByType<T extends Plugin>(plugin: T["type"]): T;
+    public oneByType(plugin: PluginConstructor<PluginClass> | string): Plugin {
+        const list = this.atLeastOneByType(plugin as any);
         if (list.length > 1) {
+            const type = this.getPluginType(plugin);
             throw new Error(
                 `There is a requirement for plugin of type "${type}" to be only one registered.`
             );
@@ -88,6 +101,10 @@ export class PluginsContainer {
         // reset the cache when removing a plugin
         this._byTypeCache = {};
         delete this.plugins[name];
+    }
+
+    private getPluginType(plugin: PluginConstructor<PluginClass> | string) {
+        return typeof plugin === "string" ? plugin : plugin.type;
     }
 
     private findByType<T extends Plugin>(type: T["type"]): T[] {
