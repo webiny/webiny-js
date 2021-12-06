@@ -37,9 +37,11 @@ export function createFieldResolversFactory({ endpointType, models, model, field
                 ? createResolver({ graphQLType, models, model, field, createFieldResolvers })
                 : null;
 
-            if (typeof fieldResolver === "function") {
+            if (fieldResolver === false) {
+                continue;
+            } else if (typeof fieldResolver === "function") {
                 resolver = fieldResolver;
-            } else if (fieldResolver !== null) {
+            } else if (fieldResolver) {
                 resolver = fieldResolver.resolver;
                 Object.assign(typeResolvers, fieldResolver.typeResolvers);
             }

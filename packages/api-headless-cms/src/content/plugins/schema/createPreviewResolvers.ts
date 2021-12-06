@@ -29,15 +29,17 @@ export const createPreviewResolvers: CreateReadResolvers = ({
         fieldTypePlugins
     });
 
+    const fieldResolvers = createFieldResolvers({
+        graphQLType: rTypeName,
+        fields: model.fields,
+        isRoot: true
+    });
+
     return {
         Query: {
             [`get${typeName}`]: resolveGet({ model }),
             [`list${pluralizedTypeName(typeName)}`]: resolveList({ model })
         },
-        ...createFieldResolvers({
-            graphQLType: rTypeName,
-            fields: model.fields,
-            isRoot: true
-        })
+        ...fieldResolvers
     };
 };
