@@ -40,5 +40,10 @@ export const systemFields: Record<string, CmsModelField> = {
         settings: {
             path: "ownedBy.id"
         }
+    }),
+    version: createSystemField({
+        id: "version",
+        type: "number",
+        fieldId: "version"
     })
 };

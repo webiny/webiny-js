@@ -16,7 +16,7 @@ import { batchReadAll } from "@webiny/db-dynamodb/utils/batchRead";
 const getAllEntryRevisions = (params: LoaderParams) => {
     const { entity, model } = params;
     const { tenant, locale } = model;
-    return new DataLoader<string, CmsEntry[]>(async ids => {
+    return new DataLoader<string, CmsEntry[]>(async (ids: readonly string[]) => {
         const results: Record<string, CmsEntry[]> = {};
         for (const id of ids) {
             const queryAllParams: QueryAllParams = {
@@ -88,7 +88,7 @@ const getPublishedRevisionByEntryId = (params: LoaderParams) => {
 
     const publishedKey = createPublishedSortKey();
 
-    return new DataLoader<string, CmsEntry[]>(async ids => {
+    return new DataLoader<string, CmsEntry[]>(async (ids: readonly string[]) => {
         const queries = ids.reduce((collection, id) => {
             const partitionKey = createPartitionKey({
                 tenant,
@@ -126,7 +126,7 @@ const getLatestRevisionByEntryId = (params: LoaderParams) => {
 
     const latestKey = createLatestSortKey();
 
-    return new DataLoader<string, CmsEntry[]>(async ids => {
+    return new DataLoader<string, CmsEntry[]>(async (ids: readonly string[]) => {
         const queries = ids.reduce((collection, id) => {
             const partitionKey = createPartitionKey({
                 tenant,

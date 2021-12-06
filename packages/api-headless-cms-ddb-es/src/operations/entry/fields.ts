@@ -36,6 +36,14 @@ const systemFields = {
         keyword: false,
         sortable: false,
         unmappedType: "date"
+    }),
+    version: new CmsEntryElasticsearchFieldPlugin({
+        field: "version",
+        path: "version",
+        sortable: true,
+        searchable: true,
+        keyword: false,
+        unmappedType: "number"
     })
 };
 

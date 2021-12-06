@@ -21,6 +21,10 @@ export const elasticsearchFields = [
         field: "createdBy",
         path: "createdBy.id"
     }),
+    new CmsEntryElasticsearchFieldPlugin({
+        field: "version",
+        path: "version"
+    }),
     /**
      * Always add the ALL fields plugin because of the keyword/path build.
      */
