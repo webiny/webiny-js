@@ -5,7 +5,6 @@ import { merge } from "dot-prop-immutable";
 import { Switch } from "@webiny/ui/Switch";
 import { Typography } from "@webiny/ui/Typography";
 import { Form } from "@webiny/form";
-import { AutoComplete } from "@webiny/ui/AutoComplete";
 import { validation } from "@webiny/validation";
 import { withActiveElement } from "../../../components";
 import { DelayedOnChange } from "../../../components/DelayedOnChange";
@@ -22,6 +21,7 @@ import { plugins } from "@webiny/plugins";
 import Accordion from "../components/Accordion";
 import Wrapper from "../components/Wrapper";
 import InputField from "../components/InputField";
+import SelectField from "../components/SelectField";
 
 const classes = {
     gridClass: css({
@@ -32,6 +32,9 @@ const classes = {
     }),
     gridCellClass: css({
         justifySelf: "end"
+    }),
+    bottomMargin: css({
+        marginBottom: 8
     })
 };
 
@@ -55,7 +58,7 @@ const ActionSettingsComponent: React.FunctionComponent<
         newTab = element.data?.action?.newTab;
     }
 
-    const { clickHandler, actionType, parameters } = element.data?.action || {};
+    const { clickHandler, actionType, variables } = element.data?.action || {};
 
     const updateElement = (element: PbEditorElement) => {
         handler.trigger(
@@ -79,11 +82,14 @@ const ActionSettingsComponent: React.FunctionComponent<
             ),
         []
     );
+    const selectedHandler = useMemo(() => {
+        return clickHandlers.find(handler => clickHandler === handler.name);
+    }, [clickHandler]);
 
     return (
         <Accordion title={"Action"} defaultValue={defaultAccordionValue}>
             <Form
-                data={{ href, newTab, clickHandler, actionType, parameters }}
+                data={{ href, newTab, clickHandler, actionType, variables }}
                 onChange={updateSettings}
             >
                 {({ Bind }) => {
@@ -114,76 +120,62 @@ const ActionSettingsComponent: React.FunctionComponent<
                             </Wrapper>
                             {actionType === "onClickHandler" ? (
                                 <>
+                                    <Bind name={"clickHandler"}>
+                                        {({ value, onChange }) => (
+                                            <Wrapper
+                                                label={"Handler"}
+                                                containerClassName={classes.gridClass}
+                                            >
+                                                <SelectField value={value} onChange={onChange}>
+                                                    {clickHandlers.map(item => (
+                                                        <option key={item.name} value={item.name}>
+                                                            {item.title}
+                                                        </option>
+                                                    ))}
+                                                </SelectField>
+                                            </Wrapper>
+                                        )}
+                                    </Bind>
+
                                     <Wrapper
-                                        label={"Click Handler"}
+                                        label={"Variables"}
                                         containerClassName={classes.gridClass}
                                     >
-                                        <Bind name={"clickHandler"}>
-                                            {({ value, onChange }) => {
-                                                const selectOptions = clickHandlers.map(plugin => {
-                                                    return {
-                                                        id: plugin.name,
-                                                        name: plugin.title
-                                                    };
-                                                });
-                                                const valueForAutoComplete = selectOptions.find(
-                                                    option => option.id === value
-                                                );
-                                                return (
-                                                    <AutoComplete
-                                                        value={valueForAutoComplete}
-                                                        placeholder="Select a handler"
-                                                        options={selectOptions}
-                                                        onChange={onChange}
-                                                    />
-                                                );
-                                            }}
-                                        </Bind>
-                                    </Wrapper>
-                                    <Wrapper
-                                        label={"Parameters"}
-                                        containerClassName={classes.gridClass}
-                                    >
-                                        <Bind name="parameters" defaultValue={[]}>
-                                            {({ value, onChange }) => {
-                                                const selectedHandler = clickHandlers.find(
-                                                    handler => clickHandler === handler.name
-                                                );
-                                                return (
-                                                    <>
-                                                        {selectedHandler?.parameters ? (
-                                                            selectedHandler.parameters.map(
-                                                                (parameter, index) => {
-                                                                    return (
-                                                                        <InputField
-                                                                            key={index}
-                                                                            description={
-                                                                                parameter.label
-                                                                            }
-                                                                            value={value[index]}
-                                                                            placeholder={
-                                                                                parameter.label
-                                                                            }
-                                                                            onChange={val => {
-                                                                                const tempArray = [
-                                                                                    ...value
-                                                                                ];
-                                                                                tempArray[index] =
-                                                                                    val;
-                                                                                onChange(tempArray);
-                                                                            }}
-                                                                        />
-                                                                    );
-                                                                }
-                                                            )
-                                                        ) : (
+                                        <Bind name="variables" defaultValue={{}}>
+                                            <DelayedOnChange>
+                                                {({ value, onChange }) => {
+                                                    if (!selectedHandler?.variables) {
+                                                        return (
                                                             <Typography use="body2">
                                                                 None required.
                                                             </Typography>
-                                                        )}
-                                                    </>
-                                                );
-                                            }}
+                                                        );
+                                                    }
+
+                                                    return (
+                                                        <>
+                                                            {selectedHandler.variables.map(
+                                                                (variable, index) => (
+                                                                    <InputField
+                                                                        key={index}
+                                                                        value={value[variable.name]}
+                                                                        placeholder={variable.label}
+                                                                        className={
+                                                                            classes.bottomMargin
+                                                                        }
+                                                                        onChange={val =>
+                                                                            onChange({
+                                                                                ...value,
+                                                                                [variable.name]: val
+                                                                            })
+                                                                        }
+                                                                    />
+                                                                )
+                                                            )}
+                                                        </>
+                                                    );
+                                                }}
+                                            </DelayedOnChange>
                                         </Bind>
                                     </Wrapper>
                                 </>

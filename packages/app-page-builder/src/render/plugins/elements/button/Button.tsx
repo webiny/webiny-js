@@ -29,7 +29,10 @@ const Button = ({ element }: { element: PbElement }) => {
         newTab = action?.newTab;
     }
 
-    const clickHandler = plugin ? () => plugin.handler(action.parameters) : () => null;
+    console.log(action);
+    const clickHandler = plugin
+        ? () => plugin.handler({ variables: action.variables })
+        : () => null;
 
     const classes = [
         "webiny-pb-base-page-element-style",
