@@ -178,8 +178,8 @@ const ActionSettingsComponent: React.FunctionComponent<
                                                             )
                                                         ) : (
                                                             <Typography use="caption">
-                                                            None Required
-                                                        </Typography>
+                                                                None Required
+                                                            </Typography>
                                                         )}
                                                     </>
                                                 );
