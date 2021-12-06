@@ -32,6 +32,11 @@ module.exports = [
                         describe: `Build packages before deploying`,
                         type: "boolean"
                     });
+                    yargs.option("deploy", {
+                        default: true,
+                        describe: `Deploy project application after the application code has been built`,
+                        type: "boolean"
+                    });
                     yargs.option("preview", {
                         default: false,
                         describe: `Preview the deploy instead of actually performing it`,
