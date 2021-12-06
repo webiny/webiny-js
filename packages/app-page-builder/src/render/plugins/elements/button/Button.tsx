@@ -29,7 +29,6 @@ const Button = ({ element }: { element: PbElement }) => {
         newTab = action?.newTab;
     }
 
-    console.log(action);
     const clickHandler = plugin
         ? () => plugin.handler({ variables: action.variables })
         : () => null;
