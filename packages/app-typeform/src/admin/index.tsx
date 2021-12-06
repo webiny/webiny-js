@@ -29,9 +29,8 @@ const PreviewBox = styled("div")({
 
 export default () => [
     render(),
-    {
+    new PbEditorPageElementPlugin({
         name: "pb-page-element-typeform",
-        type: "pb-editor-page-element",
         elementType: "typeform",
         toolbar: {
             title: "Typeform",
@@ -69,7 +68,7 @@ export default () => [
                 }
             };
         }
-    } as PbEditorPageElementPlugin,
+    }),
     {
         name: "pb-editor-page-element-advanced-settings-typeform",
         type: "pb-editor-page-element-advanced-settings",

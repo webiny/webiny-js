@@ -104,7 +104,7 @@ const HorizontalAlignFlexSettings: React.FunctionComponent<PbEditorPageElementSe
         };
 
         const plugin = plugins
-            .byType<PbEditorPageElementPlugin>("pb-editor-page-element")
+            .byType(PbEditorPageElementPlugin)
             .find(pl => pl.elementType === element.type);
 
         if (!plugin) {

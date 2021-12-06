@@ -3,9 +3,8 @@ import { ReactComponent as LinkIcon } from "./round-folder-24px.svg";
 import FolderForm from "./FolderForm";
 import { PbMenuItemPlugin } from "../../../../types";
 
-const plugin: PbMenuItemPlugin = {
+export default new PbMenuItemPlugin({
     name: "pb-menu-item-folder",
-    type: "pb-menu-item",
     menuItem: {
         type: "folder",
         title: "Folder",
@@ -15,6 +14,4 @@ const plugin: PbMenuItemPlugin = {
             return <FolderForm {...props} />;
         }
     }
-};
-
-export default plugin;
+});

@@ -17,7 +17,7 @@ import {
 import { AfterDropElementActionEvent } from "../../../recoil/actions/afterDropElement";
 import { createInitialPerDeviceSettingValue } from "../../elementSettings/elementSettingsUtils";
 
-export default (args: PbEditorElementPluginArgs = {}): PbEditorPageElementPlugin => {
+export default (args: PbEditorElementPluginArgs = {}) => {
     const elementSettings = [
         "pb-editor-page-element-style-settings-background",
         "pb-editor-page-element-style-settings-animation",
@@ -35,9 +35,8 @@ export default (args: PbEditorElementPluginArgs = {}): PbEditorPageElementPlugin
 
     const elementType = kebabCase(args.elementType || "block");
 
-    return {
+    return new PbEditorPageElementPlugin({
         name: `pb-editor-page-element-${elementType}`,
-        type: "pb-editor-page-element",
         elementType: elementType,
         settings:
             typeof args.settings === "function" ? args.settings(elementSettings) : elementSettings,
@@ -126,5 +125,5 @@ export default (args: PbEditorElementPluginArgs = {}): PbEditorPageElementPlugin
             );
             return result;
         }
-    };
+    });
 };

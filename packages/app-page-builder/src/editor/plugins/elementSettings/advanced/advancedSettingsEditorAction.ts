@@ -9,7 +9,7 @@ export const advancedSettingsEditorAction: CreateElementEventActionCallable = (
 ) => {
     // Check the source of the element (could be `saved` element which behaves differently from other elements)
     const sourcePlugin = plugins
-        .byType<PbEditorPageElementPlugin>("pb-editor-page-element")
+        .byType(PbEditorPageElementPlugin)
         .find(pl => pl.elementType === source.type);
     if (!sourcePlugin) {
         return {};
@@ -18,7 +18,7 @@ export const advancedSettingsEditorAction: CreateElementEventActionCallable = (
     if (!sourceOnCreate || sourceOnCreate !== "skip") {
         // If source element does not define a specific `onCreate` behavior - continue with the actual element plugin
         const plugin = plugins
-            .byType<PbEditorPageElementPlugin>("pb-editor-page-element")
+            .byType(PbEditorPageElementPlugin)
             .find(pl => pl.elementType === element.type);
         if (!plugin) {
             return {};

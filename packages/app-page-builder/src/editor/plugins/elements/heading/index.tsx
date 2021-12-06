@@ -5,7 +5,7 @@ import { createInitialPerDeviceSettingValue } from "../../elementSettings/elemen
 import { createInitialTextValue } from "../utils/textUtils";
 import Heading from "./Heading";
 
-export default (args: PbEditorTextElementPluginsArgs = {}): PbEditorPageElementPlugin => {
+export default (args: PbEditorTextElementPluginsArgs = {}) => {
     const defaultText = "Heading";
 
     const defaultSettings = [
@@ -32,9 +32,8 @@ export default (args: PbEditorTextElementPluginsArgs = {}): PbEditorPageElementP
 
     const elementType = kebabCase(args.elementType || "heading");
 
-    return {
+    return new PbEditorPageElementPlugin({
         name: `pb-editor-page-element-${elementType}`,
-        type: "pb-editor-page-element",
         elementType: elementType,
         toolbar: typeof args.toolbar === "function" ? args.toolbar(defaultToolbar) : defaultToolbar,
         settings:
@@ -82,5 +81,5 @@ export default (args: PbEditorTextElementPluginsArgs = {}): PbEditorPageElementP
         render(props) {
             return <Heading {...props} mediumEditorOptions={args.mediumEditorOptions} />;
         }
-    };
+    });
 };

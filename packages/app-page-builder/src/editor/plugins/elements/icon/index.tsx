@@ -53,9 +53,8 @@ export default (args: PbEditorElementPluginArgs = {}) => {
     ];
 
     return [
-        {
+        new PbEditorPageElementPlugin({
             name: `pb-editor-page-element-${elementType}`,
-            type: "pb-editor-page-element",
             elementType: elementType,
             toolbar:
                 typeof args.toolbar === "function" ? args.toolbar(defaultToolbar) : defaultToolbar,
@@ -93,7 +92,7 @@ export default (args: PbEditorElementPluginArgs = {}) => {
             render(props) {
                 return <Icon {...props} />;
             }
-        } as PbEditorPageElementPlugin,
+        }),
         {
             name: "pb-editor-page-element-style-settings-icon",
             type: "pb-editor-page-element-style-settings",

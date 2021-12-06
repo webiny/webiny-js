@@ -68,7 +68,7 @@ const useElementStyleSettings = () => {
     });
 
     const plugin = plugins
-        .byType<PbEditorPageElementPlugin>("pb-editor-page-element")
+        .byType(PbEditorPageElementPlugin)
         .find(pl => pl.elementType === elementType);
 
     return getElementActions(plugin);

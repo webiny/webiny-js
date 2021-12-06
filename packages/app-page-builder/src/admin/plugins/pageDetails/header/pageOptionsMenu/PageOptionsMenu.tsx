@@ -147,13 +147,9 @@ const PageOptionsMenu = props => {
                 </MenuItem>
             </SecureView>
 
-            {plugins
-                .byType<PbPageDetailsHeaderRightOptionsMenuItemPlugin>(
-                    "pb-page-details-header-right-options-menu-item"
-                )
-                .map(plugin => (
-                    <React.Fragment key={plugin.name}>{plugin.render(props)}</React.Fragment>
-                ))}
+            {plugins.byType(PbPageDetailsHeaderRightOptionsMenuItemPlugin).map(plugin => (
+                <React.Fragment key={plugin.name}>{plugin.render(props)}</React.Fragment>
+            ))}
         </Menu>
     );
 };

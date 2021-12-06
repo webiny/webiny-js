@@ -52,7 +52,7 @@ const AdvancedSettings: React.FunctionComponent<AdvancedSettingsPropsType> = ({ 
         <Form key={element && element.id} data={data} onSubmit={onSubmit}>
             {({ submit, Bind, data, form }) => (
                 <>
-                    {renderPlugins<PbEditorPageElementAdvancedSettingsPlugin>(
+                    {renderPlugins(
                         "pb-editor-page-element-advanced-settings",
                         { Bind, data, form, submit },
                         {

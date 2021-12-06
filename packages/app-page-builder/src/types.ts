@@ -8,6 +8,7 @@ import { BindComponent } from "@webiny/form/Bind";
 import { IconPrefix, IconName } from "@fortawesome/fontawesome-svg-core";
 import { Form, FormSetValue } from "@webiny/form/Form";
 import { CoreOptions } from "medium-editor";
+import { definePlugin, PluginInstance } from "@webiny/plugins";
 
 export enum PageImportExportTaskStatus {
     PENDING = "pending",
@@ -282,26 +283,30 @@ export type PbAddonRenderPlugin = Plugin & {
 export type PbDocumentElementPlugin = Plugin & {
     elementType: "document";
     create(options?: any): PbElement;
-    render(props): ReactElement;
 };
 
-export type PbPageDetailsRevisionContentPlugin = Plugin & {
-    type: "pb-page-details-revision-content";
+export interface PbPageDetailsPluginConfig {
     render(params: { page: Record<string, any>; getPageQuery: any }): ReactElement;
-};
+}
 
-export type PbPageDetailsHeaderRightOptionsMenuItemPlugin = Plugin & {
-    type: "pb-page-details-header-right-options-menu-item";
-    render(props: any): ReactElement;
-};
+export const PbPageDetailsPlugin = definePlugin<PbPageDetailsPluginConfig>({
+    type: "pb-page-details"
+});
 
-export type PbPageDetailsRevisionContentPreviewPlugin = Plugin & {
-    type: "pb-page-details-revision-content-preview";
-    render(params: { page: Record<string, any>; getPageQuery: any }): ReactElement;
-};
+export const PbPageDetailsRevisionContentPlugin = definePlugin<PbPageDetailsPluginConfig>({
+    type: "pb-page-details-revision-content"
+});
 
-export type PbMenuItemPlugin = Plugin & {
-    type: "pb-menu-item";
+export const PbPageDetailsHeaderRightOptionsMenuItemPlugin =
+    definePlugin<PbPageDetailsPluginConfig>({
+        type: "pb-page-details-header-right-options-menu-item"
+    });
+
+export const PbPageDetailsRevisionContentPreviewPlugin = definePlugin<PbPageDetailsPluginConfig>({
+    type: "pb-page-details-revision-content-preview"
+});
+
+export interface PbMenuItemPluginConfig {
     menuItem: {
         /* Item type (this will be stored to DB when menu is saved) */
         type: string;
@@ -318,10 +323,13 @@ export type PbMenuItemPlugin = Plugin & {
             onCancel: Function;
         }) => ReactElement;
     };
-};
+}
 
-export type PbEditorPageElementGroupPlugin = Plugin & {
-    type: "pb-editor-page-element-group";
+export const PbMenuItemPlugin = definePlugin<PbMenuItemPluginConfig>({
+    type: "pb-menu-item"
+});
+
+export interface PbEditorPageElementGroupPluginConfig {
     group: {
         // Title rendered in the toolbar.
         title: string;
@@ -330,12 +338,15 @@ export type PbEditorPageElementGroupPlugin = Plugin & {
         // Empty element group view rendered in the toolbar.
         emptyView?: ReactElement;
     };
-};
+}
+
+export const PbEditorPageElementGroupPlugin = definePlugin<PbEditorPageElementGroupPluginConfig>({
+    type: "pb-editor-page-element-group"
+});
 
 export type PbEditorPageElementTitle = (params: { refresh: () => void }) => ReactNode;
 
-export type PbEditorPageElementPlugin = Plugin & {
-    type: "pb-editor-page-element";
+export interface PbEditorPageElementPluginConfig {
     elementType: string;
     toolbar?: {
         // Element title in the toolbar.
@@ -343,7 +354,7 @@ export type PbEditorPageElementPlugin = Plugin & {
         // Element group this element belongs to.
         group?: string;
         // A function to render an element preview in the toolbar.
-        preview?: ({ theme: PbTheme }) => ReactNode;
+        preview?(params?: { theme?: PbTheme }): ReactNode;
     };
     // Help link
     help?: string;
@@ -357,7 +368,11 @@ export type PbEditorPageElementPlugin = Plugin & {
         parent?: PbEditorElement
     ) => Omit<PbEditorElement, "id">;
     // A function to render an element in the editor.
-    render: (params: { theme?: PbTheme; element: PbEditorElement; isActive: boolean }) => ReactNode;
+    render?: (params: {
+        theme?: PbTheme;
+        element: PbEditorElement;
+        isActive: boolean;
+    }) => ReactNode;
     // A function to check if an element can be deleted.
     canDelete?: (params: { element: PbEditorElement }) => boolean;
     // Executed when another element is dropped on the drop zones of current element.
@@ -382,15 +397,17 @@ export type PbEditorPageElementPlugin = Plugin & {
         width: number;
         height: number;
     }) => ReactElement;
-};
+}
+
+export const PbEditorPageElementPlugin = definePlugin<PbEditorPageElementPluginConfig>({
+    type: "pb-editor-page-element"
+});
+
+export type PbEditorPageElementPlugin = PluginInstance<typeof PbEditorPageElementPlugin>;
 
 export type PbEditorPageElementActionPlugin = Plugin & {
     type: "pb-editor-page-element-action";
     render: (params: { element: PbEditorElement; plugin: PbEditorPageElementPlugin }) => ReactNode;
-};
-
-export type PbPageDetailsPlugin = Plugin & {
-    render: (params: { page: Record<string, any>; [key: string]: any }) => ReactNode;
 };
 
 export type PbEditorPageSettingsPlugin = Plugin & {

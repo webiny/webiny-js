@@ -5,7 +5,7 @@ import { DisplayMode, PbEditorPageElementPlugin, PbEditorTextElementPluginsArgs 
 import { createInitialTextValue } from "../utils/textUtils";
 import { createInitialPerDeviceSettingValue } from "../../elementSettings/elementSettingsUtils";
 
-export default (args: PbEditorTextElementPluginsArgs = {}): PbEditorPageElementPlugin => {
+export default (args: PbEditorTextElementPluginsArgs = {}) => {
     const defaultText = "Block Quote";
     const elementType = kebabCase(args.elementType || "quote");
     const defaultToolbar = {
@@ -32,9 +32,8 @@ export default (args: PbEditorTextElementPluginsArgs = {}): PbEditorPageElementP
         "pb-editor-page-element-settings-delete"
     ];
 
-    return {
+    return new PbEditorPageElementPlugin({
         name: `pb-editor-page-element-${elementType}`,
-        type: "pb-editor-page-element",
         elementType: elementType,
         toolbar: typeof args.toolbar === "function" ? args.toolbar(defaultToolbar) : defaultToolbar,
         settings:
@@ -77,5 +76,5 @@ export default (args: PbEditorTextElementPluginsArgs = {}): PbEditorPageElementP
         render({ element }) {
             return <Quote elementId={element.id} mediumEditorOptions={args.mediumEditorOptions} />;
         }
-    };
+    });
 };

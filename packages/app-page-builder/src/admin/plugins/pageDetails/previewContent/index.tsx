@@ -20,9 +20,8 @@ const RenderBlock = styled("div")({
 });
 
 const plugins = [
-    {
+    new PbPageDetailsRevisionContentPlugin({
         name: "pb-page-details-revision-content-preview",
-        type: "pb-page-details-revision-content",
         render(props) {
             const { getPageQuery } = props;
 
@@ -39,14 +38,13 @@ const plugins = [
                 </Tab>
             );
         }
-    } as PbPageDetailsRevisionContentPlugin,
-    {
+    }),
+    new PbPageDetailsRevisionContentPreviewPlugin({
         name: "pb-page-details-revision-preview",
-        type: "pb-page-details-revision-content-preview",
         render(props) {
             return <PagePreview {...props} />;
         }
-    } as PbPageDetailsRevisionContentPreviewPlugin
+    })
 ];
 
 export default plugins;

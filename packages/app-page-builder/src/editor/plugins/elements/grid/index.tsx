@@ -36,7 +36,7 @@ const createDefaultCells = (cellsType: string) => {
     });
 };
 
-export default (args: PbEditorElementPluginArgs = {}): PbEditorPageElementPlugin => {
+export default (args: PbEditorElementPluginArgs = {}) => {
     const defaultSettings = [
         "pb-editor-page-element-style-settings-grid",
         "pb-editor-page-element-style-settings-background",
@@ -67,8 +67,7 @@ export default (args: PbEditorElementPluginArgs = {}): PbEditorPageElementPlugin
         }
     };
 
-    return {
-        type: "pb-editor-page-element",
+    return new PbEditorPageElementPlugin({
         name: `pb-editor-page-element-${elementType}`,
         elementType: elementType,
         toolbar: typeof args.toolbar === "function" ? args.toolbar(defaultToolbar) : defaultToolbar,
@@ -130,5 +129,5 @@ export default (args: PbEditorElementPluginArgs = {}): PbEditorPageElementPlugin
         render({ element }) {
             return <GridContainer element={element} />;
         }
-    };
+    });
 };

@@ -45,9 +45,7 @@ interface CreateElement {
 }
 
 export const createElement: CreateElement = (type, options = {}, parent) => {
-    const plugin = plugins
-        .byType<PbEditorPageElementPlugin>("pb-editor-page-element")
-        .find(pl => pl.elementType === type);
+    const plugin = plugins.byType(PbEditorPageElementPlugin).find(pl => pl.elementType === type);
 
     invariant(plugin, `Missing element plugin for type "${type}"!`);
 

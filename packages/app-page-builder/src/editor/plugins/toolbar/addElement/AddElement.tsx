@@ -66,12 +66,12 @@ const AddElement: React.FunctionComponent = () => {
         handler.trigger(new DropElementActionEvent(args));
     }, []);
     const getGroups = useCallback(() => {
-        return plugins.byType<PbEditorPageElementGroupPlugin>("pb-editor-page-element-group");
+        return plugins.byType(PbEditorPageElementGroupPlugin);
     }, []);
 
     const getGroupElements = useCallback(group => {
         return plugins
-            .byType<PbEditorPageElementPlugin>("pb-editor-page-element")
+            .byType(PbEditorPageElementPlugin)
             .filter(el => el.toolbar && el.toolbar.group === group);
     }, []);
 

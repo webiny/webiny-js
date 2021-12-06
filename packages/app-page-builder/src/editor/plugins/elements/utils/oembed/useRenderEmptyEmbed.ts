@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import { plugins } from "@webiny/plugins";
-import { PbEditorElement } from "../../../../../types";
+import { PbEditorElement, PbEditorPageElementPlugin } from "../../../../../types";
 
 export default (element: PbEditorElement) => {
     return useCallback(() => {
@@ -9,7 +9,7 @@ export default (element: PbEditorElement) => {
         }
 
         const [pageElementPlugin] = plugins
-            .byType("pb-editor-page-element")
+            .byType(PbEditorPageElementPlugin)
             .filter(pl => pl.elementType === element.type);
         return pageElementPlugin.toolbar.preview();
     }, [element]);

@@ -41,9 +41,8 @@ export default (args: PbEditorElementPluginArgs = {}) => {
     const defaultSettings = ["pb-editor-page-element-settings-delete"];
 
     return [
-        {
+        new PbEditorPageElementPlugin({
             name: `pb-editor-page-element-${elementType}`,
-            type: "pb-editor-page-element",
             elementType: elementType,
             toolbar:
                 typeof args.toolbar === "function" ? args.toolbar(defaultToolbar) : defaultToolbar,
@@ -77,7 +76,7 @@ export default (args: PbEditorElementPluginArgs = {}) => {
             render({ element }) {
                 return <ImagesList data={element.data} />;
             }
-        } as PbEditorPageElementPlugin,
+        }),
         {
             name: "pb-editor-page-element-advanced-settings-images-list-filter",
             type: "pb-editor-page-element-advanced-settings",

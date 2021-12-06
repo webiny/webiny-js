@@ -4,9 +4,8 @@ import { PbEditorPageElementGroupPlugin } from "../../../../types";
 import EmptyElementGroupView from "../../../components/EmptyElementGroupView";
 import { ReactComponent as ContentIcon } from "../../../assets/icons/insights.svg";
 
-export default {
+export default new PbEditorPageElementGroupPlugin({
     name: "pb-editor-element-group-saved",
-    type: "pb-editor-page-element-group",
     group: {
         title: "Saved",
         icon: <SavedIcon />,
@@ -19,4 +18,4 @@ export default {
             />
         )
     }
-} as PbEditorPageElementGroupPlugin;
+});

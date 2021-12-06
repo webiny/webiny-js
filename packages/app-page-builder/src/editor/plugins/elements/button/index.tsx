@@ -42,9 +42,8 @@ const buttonElementPluginsFactory = (args: PbEditorElementPluginArgs = {}) => {
     const elementType = kebabCase(args.elementType || "button");
 
     return [
-        {
+        new PbEditorPageElementPlugin({
             name: `pb-editor-page-element-${elementType}`,
-            type: "pb-editor-page-element",
             elementType: elementType,
             toolbar:
                 typeof args.toolbar === "function" ? args.toolbar(defaultToolbar) : defaultToolbar,
@@ -78,7 +77,7 @@ const buttonElementPluginsFactory = (args: PbEditorElementPluginArgs = {}) => {
             render({ element }) {
                 return <Button element={element} />;
             }
-        } as PbEditorPageElementPlugin,
+        }),
         {
             name: "pb-editor-page-element-style-settings-button",
             type: "pb-editor-page-element-style-settings",

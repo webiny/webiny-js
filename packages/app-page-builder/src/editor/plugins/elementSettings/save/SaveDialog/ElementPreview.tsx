@@ -6,7 +6,7 @@ import { PbEditorPageElementPlugin } from "../../../../../types";
 
 const replaceContent = (element: any, doc: Document): Document => {
     const pl = plugins
-        .byType<PbEditorPageElementPlugin>("pb-editor-page-element")
+        .byType(PbEditorPageElementPlugin)
         .find(pl => pl.elementType === element.type);
 
     if (!pl) {

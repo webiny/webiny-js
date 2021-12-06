@@ -32,8 +32,7 @@ const cellPlugin = (args: PbEditorElementPluginArgs = {}): PbEditorPageElementPl
 
     const elementType = kebabCase(args.elementType || "cell");
 
-    return {
-        type: "pb-editor-page-element",
+    return new PbEditorPageElementPlugin({
         name: `pb-editor-page-element-${elementType}`,
         elementType,
         settings:
@@ -110,7 +109,7 @@ const cellPlugin = (args: PbEditorElementPluginArgs = {}): PbEditorPageElementPl
         render(props) {
             return <CellContainer {...props} elementId={props.element.id} />;
         }
-    };
+    });
 };
 // this is required because when saving cell element it cannot be without grid element
 const saveActionPlugin = {

@@ -20,9 +20,8 @@ const PreviewBox = styled("div")({
 
 export default () => [
     formElement,
-    {
+    new PbEditorPageElementPlugin({
         name: "pb-page-element-form",
-        type: "pb-editor-page-element",
         elementType: "form",
         toolbar: {
             title: "Form",
@@ -52,7 +51,7 @@ export default () => [
                 settings: {}
             };
         }
-    } as PbEditorPageElementPlugin,
+    }),
     {
         name: "pb-element-advanced-settings-form",
         type: "pb-editor-page-element-advanced-settings",

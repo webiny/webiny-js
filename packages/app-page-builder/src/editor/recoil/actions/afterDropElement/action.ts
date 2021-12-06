@@ -2,13 +2,13 @@ import { plugins } from "@webiny/plugins";
 import { EventActionCallable, PbEditorPageElementPlugin } from "../../../../types";
 import { AfterDropElementActionArgsType } from "./types";
 
-const elementPluginType = "pb-editor-page-element";
-
-const getElementTypePlugin = (type: string): PbEditorPageElementPlugin => {
-    const pluginsByType = plugins.byType<PbEditorPageElementPlugin>(elementPluginType);
+const getElementTypePlugin = (type: string) => {
+    const pluginsByType = plugins.byType(PbEditorPageElementPlugin);
     const plugin = pluginsByType.find(pl => pl.elementType === type);
     if (!plugin) {
-        throw new Error(`There is no plugin in "${elementPluginType}" for element type ${type}`);
+        throw new Error(
+            `There is no plugin in "${PbEditorPageElementPlugin.type}" for element type ${type}`
+        );
     }
     return plugin;
 };

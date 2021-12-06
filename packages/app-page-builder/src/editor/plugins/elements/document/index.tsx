@@ -2,10 +2,9 @@ import React from "react";
 import Document from "./Document";
 import { PbEditorPageElementPlugin, PbEditorElement } from "../../../../types";
 
-export default (): PbEditorPageElementPlugin => {
-    return {
+export default () => {
+    return new PbEditorPageElementPlugin({
         name: "pb-editor-page-element-document",
-        type: "pb-editor-page-element",
         elementType: "document",
         create(options = {}) {
             return {
@@ -18,5 +17,5 @@ export default (): PbEditorPageElementPlugin => {
             // TODO figure out if we can change this on the plugin type level
             return <Document element={element as unknown as PbEditorElement} />;
         }
-    };
+    });
 };

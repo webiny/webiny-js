@@ -9,13 +9,13 @@ import {
 import { plugins } from "@webiny/plugins";
 import { DropElementActionArgsType } from "./types";
 
-const elementPluginType = "pb-editor-page-element";
-
 const getElementTypePlugin = (type: string): PbEditorPageElementPlugin => {
-    const pluginsByType = plugins.byType<PbEditorPageElementPlugin>(elementPluginType);
+    const pluginsByType = plugins.byType(PbEditorPageElementPlugin);
     const plugin = pluginsByType.find(pl => pl.elementType === type);
     if (!plugin) {
-        throw new Error(`There is no plugin in "${elementPluginType}" for element type ${type}`);
+        throw new Error(
+            `There is no plugin in "${PbEditorPageElementPlugin.type}" for element type ${type}`
+        );
     }
     return plugin;
 };

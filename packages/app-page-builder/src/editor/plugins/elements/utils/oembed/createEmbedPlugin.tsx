@@ -36,12 +36,11 @@ type EmbedPluginConfig = {
     }) => React.ReactElement;
 };
 
-export const createEmbedPlugin = (config: EmbedPluginConfig): PbEditorPageElementPlugin => {
+export const createEmbedPlugin = (config: EmbedPluginConfig) => {
     const defaultSettings = ["pb-editor-page-element-settings-delete"];
 
-    return {
+    return new PbEditorPageElementPlugin({
         name: "pb-editor-page-element-" + config.type,
-        type: "pb-editor-page-element",
         elementType: config.type,
         toolbar: config.toolbar,
         settings:
@@ -80,7 +79,7 @@ export const createEmbedPlugin = (config: EmbedPluginConfig): PbEditorPageElemen
         },
         onCreate: config.onCreate || "open-settings",
         renderElementPreview: config.renderElementPreview
-    };
+    });
 };
 
 type EmbedPluginSidebarConfig = {

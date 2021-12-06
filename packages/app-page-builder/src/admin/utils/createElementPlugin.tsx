@@ -5,7 +5,7 @@ import { PbEditorElement, PbEditorPageElementPlugin } from "../../types";
 import Title from "./components/Title";
 
 export default (el: PbEditorElement) => {
-    const elementPlugins = plugins.byType<PbEditorPageElementPlugin>("pb-editor-page-element");
+    const elementPlugins = plugins.byType(PbEditorPageElementPlugin);
     const rootPlugin = elementPlugins.find(pl => pl.elementType === el.content.type);
 
     if (!rootPlugin) {
@@ -14,31 +14,32 @@ export default (el: PbEditorElement) => {
 
     const name = "saved-element-" + el.id;
 
-    plugins.register({
-        name,
-        title: el.name,
-        type: "pb-editor-page-element",
-        elementType: name,
-        target: rootPlugin.target,
-        toolbar: {
-            title({ refresh }) {
-                return <Title plugin={name} title={el.name} id={el.id} refresh={refresh} />;
+    plugins.register(
+        new PbEditorPageElementPlugin({
+            name,
+            // title: el.name,
+            elementType: name,
+            target: rootPlugin.target,
+            toolbar: {
+                title({ refresh }) {
+                    return <Title plugin={name} title={el.name} id={el.id} refresh={refresh} />;
+                },
+                group: "pb-editor-element-group-saved",
+                preview() {
+                    return (
+                        <img
+                            src={el.preview.src}
+                            alt={el.name}
+                            style={{ width: 227, height: "auto", backgroundColor: "#fff" }}
+                        />
+                    );
+                }
             },
-            group: "pb-editor-element-group-saved",
-            preview() {
-                return (
-                    <img
-                        src={el.preview.src}
-                        alt={el.name}
-                        style={{ width: 227, height: "auto", backgroundColor: "#fff" }}
-                    />
-                );
+            onCreate: "skip",
+            settings: rootPlugin ? rootPlugin.settings : [],
+            create() {
+                return cloneDeep(el.content);
             }
-        },
-        onCreate: "skip",
-        settings: rootPlugin ? rootPlugin.settings : [],
-        create() {
-            return cloneDeep(el.content);
-        }
-    });
+        })
+    );
 };

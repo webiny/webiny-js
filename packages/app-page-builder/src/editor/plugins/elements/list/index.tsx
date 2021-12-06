@@ -5,7 +5,7 @@ import List, { className } from "./List";
 import { createInitialTextValue } from "../utils/textUtils";
 import { createInitialPerDeviceSettingValue } from "../../elementSettings/elementSettingsUtils";
 
-export default (args: PbEditorTextElementPluginsArgs = {}): PbEditorPageElementPlugin => {
+export default (args: PbEditorTextElementPluginsArgs = {}) => {
     const elementType = kebabCase(args.elementType || "list");
 
     const defaultToolbar = {
@@ -35,9 +35,8 @@ export default (args: PbEditorTextElementPluginsArgs = {}): PbEditorPageElementP
         "pb-editor-page-element-settings-delete"
     ];
 
-    return {
+    return new PbEditorPageElementPlugin({
         name: `pb-editor-page-element-${elementType}`,
-        type: "pb-editor-page-element",
         elementType: elementType,
         toolbar: typeof args.toolbar === "function" ? args.toolbar(defaultToolbar) : defaultToolbar,
         settings:
@@ -86,5 +85,5 @@ export default (args: PbEditorTextElementPluginsArgs = {}): PbEditorPageElementP
         render({ element }) {
             return <List elementId={element.id} mediumEditorOptions={args.mediumEditorOptions} />;
         }
-    };
+    });
 };

@@ -30,7 +30,7 @@ export const imageCreatedEditorAction: CreateElementEventActionCallable = (
 
     // Check the source of the element (could be `saved` element which behaves differently from other elements)
     const imagePlugin = plugins
-        .byType<PbEditorPageElementPlugin>("pb-editor-page-element")
+        .byType(PbEditorPageElementPlugin)
         .find(pl => pl.elementType === source.type);
 
     if (!imagePlugin) {
