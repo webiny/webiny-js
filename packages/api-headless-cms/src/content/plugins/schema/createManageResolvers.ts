@@ -40,6 +40,19 @@ export const createManageResolvers: CreateManageResolvers = ({
         fieldTypePlugins
     });
 
+    const fieldResolvers = createFieldResolvers({
+        graphQLType: mTypeName,
+        fields: model.fields,
+        isRoot: true,
+        // These are extra fields we want to apply to field resolvers of "gqlType"
+        extraResolvers: {
+            ...commonFieldResolvers(),
+            meta(entry) {
+                return entry;
+            }
+        }
+    });
+
     return {
         Query: {
             [`get${typeName}`]: resolveGet({ model }),
@@ -57,18 +70,7 @@ export const createManageResolvers: CreateManageResolvers = ({
             [`request${typeName}Review`]: resolveRequestReview({ model }),
             [`request${typeName}Changes`]: resolveRequestChanges({ model })
         },
-        ...createFieldResolvers({
-            graphQLType: mTypeName,
-            fields: model.fields,
-            isRoot: true,
-            // These are extra fields we want to apply to field resolvers of "gqlType"
-            extraResolvers: {
-                ...commonFieldResolvers(),
-                meta(entry) {
-                    return entry;
-                }
-            }
-        }),
+        ...fieldResolvers,
         [`${mTypeName}Meta`]: {
             title(entry) {
                 return getEntryTitle(model, entry);
