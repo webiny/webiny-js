@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.19.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.19.0-beta.1...v5.19.0-beta.2) (2021-12-06)
+
+
+### Bug Fixes
+
+* add missing plugin ([022aae4](https://github.com/webiny/webiny-js/commit/022aae4e3a08a8eff32b5e00c7fea6e6e65fe3f2))
+* remove console.log ([eeda02f](https://github.com/webiny/webiny-js/commit/eeda02f48802fad1ec3c10c687e7c558a4fd5126))
+* remove test plugins ([79fd5df](https://github.com/webiny/webiny-js/commit/79fd5dfa65159a83a7810e4b03b071fb0056d6b9))
+
+
+
+
+
 # [5.19.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.19.0-beta.0...v5.19.0-beta.1) (2021-12-06)
 
 
