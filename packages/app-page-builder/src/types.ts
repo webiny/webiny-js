@@ -251,14 +251,19 @@ export type PbRenderElementAttributesPlugin = Plugin & {
     }) => { [key: string]: string };
 };
 
-type ActionParameter = { label: string; defaultValue: any };
+export type PbButtonElementClickHandlerVariable = {
+    name: string;
+    label: string;
+    defaultValue: any;
+};
 
-export type PbButtonElementClickHandlerPlugin = Plugin & {
+export interface PbButtonElementClickHandlerPlugin<TVariables = Record<string, any>>
+    extends Plugin {
     type: "pb-page-element-button-click-handler";
     title: string;
-    parameters: ActionParameter[];
-    handler: (params: any[]) => void | Promise<void>;
-};
+    variables?: PbButtonElementClickHandlerVariable[];
+    handler: (params: { variables: TVariables }) => void | Promise<void>;
+}
 
 export type PbPageElementImagesListComponentPlugin = Plugin & {
     type: "pb-page-element-images-list-component";

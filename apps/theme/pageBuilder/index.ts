@@ -1,8 +1,32 @@
 import StaticLayout from "./layouts/Static";
 
-import { PbPageLayoutPlugin, PbThemePlugin } from "@webiny/app-page-builder/types";
+import {
+    PbButtonElementClickHandlerPlugin,
+    PbPageLayoutPlugin,
+    PbThemePlugin
+} from "@webiny/app-page-builder/types";
 
 export default [
+    {
+        type: "pb-page-element-button-click-handler",
+        name: "simple",
+        title: "A Simple Handler",
+        handler: params => {
+            console.log(params);
+        }
+    },
+    {
+        type: "pb-page-element-button-click-handler",
+        name: "test-2",
+        title: "Handler With Variables",
+        variables: [
+            { name: "color", label: "My Color", defaultValue: "red" },
+            { name: "size", label: "My Size", defaultValue: "XXL" }
+        ],
+        handler: function ({ variables }) {
+            console.log(variables);
+        }
+    } as PbButtonElementClickHandlerPlugin<{ color: string; type: string }>,
     {
         type: "pb-theme",
         theme: {
