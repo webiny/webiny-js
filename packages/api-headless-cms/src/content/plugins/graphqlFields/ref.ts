@@ -219,7 +219,7 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
         },
         createInputField({ field }) {
             if (field.multipleValues) {
-                return field.fieldId + ": [RefFieldInput!]!";
+                return field.fieldId + ": [RefFieldInput!]";
             }
 
             return field.fieldId + ": RefFieldInput";

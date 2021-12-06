@@ -15,6 +15,8 @@ import ForgotPassword from "~/views/ForgotPassword";
 import SetNewPassword from "~/views/SetNewPassword";
 import SignedIn from "~/views/SignedIn";
 import { useSecurity } from "@webiny/app-security";
+import { config as appConfig } from "@webiny/app/config";
+
 const createApolloLinkPlugin = () => {
     return new ApolloLinkPlugin(() => {
         return setContext(async (_, { headers }) => {
@@ -41,9 +43,12 @@ const createApolloLinkPlugin = () => {
 };
 
 const defaultOptions = {
-    region: process.env.REACT_APP_USER_POOL_REGION,
-    userPoolId: process.env.REACT_APP_USER_POOL_ID,
-    userPoolWebClientId: process.env.REACT_APP_USER_POOL_WEB_CLIENT_ID
+    region: appConfig.getKey("USER_POOL_REGION", process.env.REACT_APP_USER_POOL_REGION),
+    userPoolId: appConfig.getKey("USER_POOL_ID", process.env.REACT_APP_USER_POOL_ID),
+    userPoolWebClientId: appConfig.getKey(
+        "USER_POOL_WEB_CLIENT_ID",
+        process.env.REACT_APP_USER_POOL_WEB_CLIENT_ID
+    )
 };
 
 export interface Props {

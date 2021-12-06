@@ -44,6 +44,7 @@ const ids = {
     field216: shortId.generate(),
     field217: shortId.generate(),
     field218: shortId.generate(),
+    field219: shortId.generate(),
     // product review
     field31: shortId.generate(),
     field32: shortId.generate(),
@@ -588,6 +589,27 @@ const models: CmsModel[] = [
                                                 message: "Please select a category"
                                             }
                                         ],
+                                        listValidation: [],
+                                        settings: {
+                                            models: [{ modelId: "category" }]
+                                        },
+                                        placeholderText: "placeholder text",
+                                        predefinedValues: {
+                                            enabled: false,
+                                            values: []
+                                        },
+                                        renderer: {
+                                            name: "renderer"
+                                        }
+                                    },
+                                    {
+                                        id: ids.field219,
+                                        multipleValues: true,
+                                        helpText: "",
+                                        label: "Categories",
+                                        fieldId: "categories",
+                                        type: "ref",
+                                        validation: [],
                                         listValidation: [],
                                         settings: {
                                             models: [{ modelId: "category" }]

@@ -16,7 +16,8 @@ export type Attributes = Record<string, AttributeDefinition>;
 
 export enum ENTITIES {
     SYSTEM = "TenancySystem",
-    TENANT = "TenancyTenant"
+    TENANT = "TenancyTenant",
+    DOMAIN = "TenancyDomain"
 }
 
 export interface TableModifier {
@@ -38,5 +39,5 @@ export interface TenancySystem {
 
 export interface TenantsStorageOperations extends BaseTenantsStorageOperations {
     getTable(): Table;
-    getEntities(): Record<"tenants" | "system", Entity<any>>;
+    getEntities(): Record<"tenants" | "system" | "domain", Entity<any>>;
 }

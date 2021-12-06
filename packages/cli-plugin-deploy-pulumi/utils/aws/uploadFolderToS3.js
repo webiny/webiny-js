@@ -26,7 +26,9 @@ module.exports = async ({
     bucket,
     onFileUploadSuccess,
     onFileUploadError,
-    onFileUploadSkip
+    onFileUploadSkip,
+    acl = "public-read",
+    cacheControl = "max-age=31536000"
 }) => {
     const s3 = new S3Client({ region: process.env.AWS_REGION });
 
@@ -83,8 +85,8 @@ module.exports = async ({
                                 .putObject({
                                     Bucket: bucket,
                                     Key: key,
-                                    ACL: "public-read",
-                                    CacheControl: "max-age=31536000",
+                                    ACL: acl,
+                                    CacheControl: cacheControl,
                                     ContentType: mime.getType(path) || undefined,
                                     Body: fs.readFileSync(path),
                                     Metadata: {

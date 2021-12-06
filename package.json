@@ -14,7 +14,16 @@
       "api/code/pageBuilder/exportPages/*",
       "api/code/prerenderingService/render",
       "api/code/prerenderingService/flush",
-      "api/code/prerenderingService/queue/*"
+      "api/code/prerenderingService/queue/*",
+      "api-ddb/code/fileManager/*",
+      "api-ddb/code/graphql",
+      "api-ddb/code/headlessCMS",
+      "api-ddb/code/pageBuilder/updateSettings",
+      "api-ddb/code/pageBuilder/importPages/*",
+      "api-ddb/code/pageBuilder/exportPages/*",
+      "api-ddb/code/prerenderingService/render",
+      "api-ddb/code/prerenderingService/flush",
+      "api-ddb/code/prerenderingService/queue/*"
     ]
   },
   "author": "Webiny Ltd.",
@@ -215,7 +224,9 @@
     "react-dom": "16.14.0",
     "pretty-format": "25.5.0",
     "typescript": "4.1.3",
-    "codex-tooltip": "1.0.2"
+    "codex-tooltip": "1.0.2",
+    "@pulumi/pulumi": "3.19.0",
+    "@pulumi/aws": "4.28.0"
   },
-  "packageManager": "yarn@2.4.3"
+  "packageManager": "yarn@3.1.0"
 }

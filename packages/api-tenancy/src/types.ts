@@ -3,11 +3,19 @@ import { DbContext } from "@webiny/handler-db/types";
 import { HttpContext } from "@webiny/handler-http/types";
 import { Topic } from "@webiny/pubsub/types";
 
+export interface TenantDomain {
+    fqdn: string;
+}
+
 export interface Tenant {
     id: string;
     name: string;
-    description?: string;
-    parent?: string | null;
+    description: string;
+    status: string;
+    settings: {
+        domains: TenantDomain[];
+    };
+    parent: string | null;
     webinyVersion?: string;
 }
 
@@ -43,7 +51,11 @@ export interface TenancyContext extends Context, HttpContext, DbContext {
 export interface CreateTenantInput {
     id?: string;
     name: string;
-    description?: string;
+    description: string;
+    status?: string;
+    settings?: {
+        domains: TenantDomain[];
+    };
     parent?: string | null;
 }
 

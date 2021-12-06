@@ -114,6 +114,11 @@ module.exports = async options => {
 
             console.log(chalk.cyan("Starting the development server...\n"));
             if (options.openBrowser) {
+                // Powershell sets `SystemRoot`, but the `open` library is looking for `SYSTEMROOT`
+                // so we need to make it happy by setting the right ENV variable.
+                if (process.platform === "win32" && typeof process.env.SystemRoot !== "undefined") {
+                    process.env.SYSTEMROOT = process.env.SystemRoot;
+                }
                 openBrowserTab(urls.localUrlForBrowser);
             }
         });

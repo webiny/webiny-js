@@ -87,6 +87,9 @@ export class Pulumi {
         set(args.execa, "env.PULUMI_SKIP_UPDATE_CHECK", "true");
         set(args.execa, "env.PULUMI_HOME", this.pulumiFolder);
 
+        // Use ";" when on Windows. For Mac and Linux, use ":".
+        const PATH_SEPARATOR = os.platform() === "win32" ? ";" : ":";
+
         const execaArgs = {
             ...args.execa,
             env: {
@@ -97,15 +100,15 @@ export class Pulumi {
                  * we need to specify the exact location of our Pulumi binaries, using the PATH environment variable, so it can correctly resolve
                  * plugins necessary for custom resources and dynamic providers to work.
                  */
-                PATH: `${process.env.PATH};${this.pulumiFolder}`
+                PATH: process.env.PATH + PATH_SEPARATOR + this.pulumiFolder
             }
         };
 
-        return execa(
-            this.pulumiBinaryPath,
-            [...args.command, ...finalArgs, FLAG_NON_INTERACTIVE],
-            execaArgs
-        );
+        // We want to keep the "interactive" output format of the Pulumi command when `--preview` flag is passed in.
+        const flags =
+            args.command && args.command.includes("preview") ? [] : [FLAG_NON_INTERACTIVE];
+
+        return execa(this.pulumiBinaryPath, [...args.command, ...finalArgs, ...flags], execaArgs);
     }
 
     async install(rawArgs?: InstallArgs): Promise<boolean> {

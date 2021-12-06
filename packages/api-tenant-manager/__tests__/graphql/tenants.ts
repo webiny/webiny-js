@@ -3,6 +3,11 @@ const fields = /* GraphQL */ `
     name
     description
     parent
+    settings {
+        domains {
+            fqdn
+        }
+    }
 `;
 
 const ERROR_FIELD = /* GraphQL */ `

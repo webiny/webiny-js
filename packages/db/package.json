@@ -1,6 +1,6 @@
 {
   "name": "@webiny/db",
-  "version": "5.18.1",
+  "version": "5.18.3",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -15,8 +15,8 @@
   "devDependencies": {
     "@babel/cli": "^7.5.5",
     "@babel/core": "^7.5.5",
-    "@webiny/cli": "^5.18.1",
-    "@webiny/project-utils": "^5.18.1",
+    "@webiny/cli": "^5.18.3",
+    "@webiny/project-utils": "^5.18.3",
     "rimraf": "^3.0.2",
     "typescript": "^4.1.3"
   },

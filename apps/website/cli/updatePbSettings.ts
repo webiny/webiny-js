@@ -17,7 +17,7 @@ export default {
         const websiteOutput = getStackOutput({ folder: "apps/website", env: args.env });
 
         // 2. Get exports from `api` stack, again, for `args.env` environment.
-        const apiOutput = getStackOutput({ folder: "api", env: args.env });
+        const apiOutput = getStackOutput({ folder: "api-ddb", env: args.env });
 
         // 3. Let's update relevant Page Builder app's URLs, by invoking the `updateSettings` function,
         // which has been exported from the `api` stack for this exact purpose.

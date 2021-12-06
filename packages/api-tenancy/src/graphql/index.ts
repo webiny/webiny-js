@@ -11,6 +11,15 @@ export default new GraphQLSchemaPlugin<TenancyContext>({
             name: String!
             description: String!
             parent: ID
+            settings: TenantSettings!
+        }
+
+        type TenantDomain {
+            fqdn: String!
+        }
+
+        type TenantSettings {
+            domains: [TenantDomain!]!
         }
 
         type TenancyQuery {
