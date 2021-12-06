@@ -7,7 +7,6 @@ import {
     CmsEntryStorageOperationsCreateRevisionFromParams,
     CmsEntryStorageOperationsDeleteParams,
     CmsEntryStorageOperationsDeleteRevisionParams,
-    CmsEntryStorageOperationsGetAllRevisionsParams,
     CmsEntryStorageOperationsGetByIdsParams,
     CmsEntryStorageOperationsGetLatestByIdsParams,
     CmsEntryStorageOperationsGetLatestRevisionParams,
@@ -370,15 +369,6 @@ export const createEntriesStorageOperations = (params: Params): CmsEntryStorageO
             });
         }
     };
-    const getAllRevisionsByIds = async (
-        model: CmsModel,
-        params: CmsEntryStorageOperationsGetAllRevisionsParams
-    ) => {
-        return await dataLoaders.getAllEntryRevisions({
-            model,
-            ids: params.ids
-        });
-    };
 
     const getLatestRevisionByEntryId = async (
         model: CmsModel,
@@ -511,7 +501,7 @@ export const createEntriesStorageOperations = (params: Params): CmsEntryStorageO
 
     const list = async (model: CmsModel, params: CmsEntryStorageOperationsListParams) => {
         const { limit: initialLimit = 10, where: originalWhere, after, sort } = params;
-        const limit = initialLimit <= 0 || initialLimit >= 100 ? 100 : initialLimit;
+        const limit = initialLimit <= 0 || initialLimit >= 10000 ? 10000 : initialLimit;
 
         const type = originalWhere.published ? "P" : "L";
 
@@ -892,7 +882,6 @@ export const createEntriesStorageOperations = (params: Params): CmsEntryStorageO
         getByIds,
         getRevisionById,
         getPublishedRevisionByEntryId,
-        getAllRevisionsByIds,
         getLatestRevisionByEntryId,
         get,
         getRevisions,
