@@ -61,7 +61,7 @@ const personModelFields: Record<string, CmsModelField> = {
         fieldId: "biography",
         label: "Biography",
         multipleValues: false,
-        type: "richText"
+        type: "text"
     }
 };
 
