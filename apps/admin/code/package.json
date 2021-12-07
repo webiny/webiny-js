@@ -33,7 +33,7 @@
     "@webiny/telemetry": "^5.18.3",
     "@webiny/ui": "^5.18.3",
     "apollo-cache": "^1.3.5",
-    "apollo-client": "^2.2.8",
+    "apollo-client": "^2.6.10",
     "apollo-link": "^1.2.14",
     "apollo-link-batch-http": "^1.2.14",
     "apollo-utilities": "^1.3.4",
