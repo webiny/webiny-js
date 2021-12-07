@@ -19,7 +19,7 @@
     "@types/react-router-dom": "^5.1.5",
     "@webiny/plugins": "^5.18.3",
     "apollo-client": "^2.6.8",
-    "graphql": "^14.7.0",
+    "graphql": "^16.0.1",
     "react": "^16.14.0",
     "react-dom": "^16.14.0",
     "react-router": "^5.1.2",

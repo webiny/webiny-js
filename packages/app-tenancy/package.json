@@ -21,7 +21,7 @@
     "@webiny/app-admin": "^5.18.3",
     "@webiny/plugins": "^5.18.3",
     "@webiny/ui": "^5.18.3",
-    "graphql-tag": "^2.12.5",
+    "graphql-tag": "^2.12.6",
     "react": "^16.14.0",
     "react-dom": "^16.14.0",
     "store": "^2.0.12"

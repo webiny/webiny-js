@@ -24,7 +24,7 @@
     "@webiny/ui": "^5.18.3",
     "@webiny/validation": "^5.18.3",
     "emotion": "^10.0.17",
-    "graphql-tag": "^2.12.5",
+    "graphql-tag": "^2.12.6",
     "lodash": "^4.17.21",
     "react": "^16.14.0",
     "react-dom": "^16.14.0",

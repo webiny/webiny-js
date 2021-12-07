@@ -12,7 +12,7 @@ const TerserPlugin = require("terser-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
 const safePostCssParser = require("postcss-safe-parser");
-const ManifestPlugin = require("webpack-manifest-plugin");
+const { WebpackManifestPlugin } = require("webpack-manifest-plugin");
 const InterpolateHtmlPlugin = require("react-dev-utils/InterpolateHtmlPlugin");
 const WatchMissingNodeModulesPlugin = require("react-dev-utils/WatchMissingNodeModulesPlugin");
 const getCSSModuleLocalIdent = require("react-dev-utils/getCSSModuleLocalIdent");
@@ -193,8 +193,7 @@ module.exports = function (webpackEnv, { paths, options }) {
             filename: isEnvProduction
                 ? `${STATIC_FOLDER}/js/[name].[contenthash:8].js`
                 : isEnvDevelopment && `${STATIC_FOLDER}/js/bundle.js`,
-            // TODO: remove this when upgrading to webpack 5
-            futureEmitAssets: true,
+
             // There are also additional JS chunk files if you use code splitting.
             chunkFilename: isEnvProduction
                 ? `${STATIC_FOLDER}/js/[name].[contenthash:8].chunk.js`
@@ -207,9 +206,6 @@ module.exports = function (webpackEnv, { paths, options }) {
                 ? info => path.relative(paths.appSrc, info.absoluteResourcePath).replace(/\\/g, "/")
                 : isEnvDevelopment &&
                   (info => path.resolve(info.absoluteResourcePath).replace(/\\/g, "/")),
-            // Prevents conflicts when multiple Webpack runtimes (from different apps)
-            // are used on the same page.
-            jsonpFunction: `webpackJsonp${appPackageJson.name}`,
             // this defaults to 'window', but by setting it to 'this' then
             // module chunks which are built will work in web workers as well.
             globalObject: "this"
@@ -254,9 +250,9 @@ module.exports = function (webpackEnv, { paths, options }) {
                             // Turned on because emoji and regex is not minified properly using default
                             // https://github.com/facebook/create-react-app/issues/2488
                             ascii_only: true
-                        }
-                    },
-                    sourceMap: shouldUseSourceMap
+                        },
+                        sourceMap: shouldUseSourceMap
+                    }
                 }),
                 // This is only used in production mode
                 new OptimizeCSSAssetsPlugin({
@@ -332,7 +328,10 @@ module.exports = function (webpackEnv, { paths, options }) {
                 // please link the files into your node_modules/ and let module-resolution kick in.
                 // Make sure your source files are compiled, as they will not be processed in any way.
                 // new ModuleScopePlugin(paths.appSrc, [paths.appPackageJson]),
-            ]
+            ],
+            fallback: {
+                path: require.resolve("path-browserify")
+            }
         },
         resolveLoader: {
             plugins: [
@@ -618,7 +617,7 @@ module.exports = function (webpackEnv, { paths, options }) {
             //   `index.html`
             // - "entrypoints" key: Array of files which are included in `index.html`,
             //   can be used to reconstruct the HTML if necessary
-            new ManifestPlugin({
+            new WebpackManifestPlugin({
                 fileName: "asset-manifest.json",
                 publicPath: publicPath,
                 generate: (seed, files, entrypoints) => {
@@ -641,7 +640,11 @@ module.exports = function (webpackEnv, { paths, options }) {
             // solution that requires the user to opt into importing specific locales.
             // https://github.com/jmblog/how-to-optimize-momentjs-with-webpack
             // You can remove this if you don't use Moment.js:
-            new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
+            new webpack.IgnorePlugin({
+                resourceRegExp: /^\.\/locale$/,
+                contextRegExp: /moment$/
+            }),
+
             // TypeScript type checking
             useTypeScript &&
                 new ForkTsCheckerWebpackPlugin({
@@ -671,18 +674,7 @@ module.exports = function (webpackEnv, { paths, options }) {
                 }),
             logs && new WebpackBar({ name: path.basename(paths.appPath) })
         ].filter(Boolean),
-        // Some libraries import Node modules but don't use them in the browser.
-        // Tell Webpack to provide empty mocks for them so importing them works.
-        node: {
-            module: "empty",
-            dgram: "empty",
-            dns: "mock",
-            fs: "empty",
-            http2: "empty",
-            net: "empty",
-            tls: "empty",
-            child_process: "empty"
-        },
+
         // Turn off performance processing because we utilize
         // our own hints via the FileSizeReporter
         performance: false

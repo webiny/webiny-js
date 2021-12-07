@@ -19,7 +19,7 @@
     "apollo-link-batch-http": "^1.2.14",
     "core-js": "^3.0.1",
     "cross-fetch": "^3.0.4",
-    "graphql": "^14.7.0",
+    "graphql": "^16.0.1",
     "graphql-tag": "^2.11.0",
     "invariant": "^2.2.4",
     "lodash.trim": "^4.4.2",

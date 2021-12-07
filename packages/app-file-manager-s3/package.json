@@ -12,8 +12,8 @@
   "dependencies": {
     "@webiny/plugins": "^5.18.3",
     "apollo-client": "^2.6.10",
-    "graphql": "^14.7.0",
-    "graphql-tag": "^2.11.0"
+    "graphql": "^16.0.1",
+    "graphql-tag": "^2.12.6"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",

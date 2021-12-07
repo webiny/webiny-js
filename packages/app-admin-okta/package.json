@@ -24,8 +24,8 @@
     "apollo-client": "^2.6.10",
     "apollo-link-context": "^1.0.20",
     "emotion": "^10.0.27",
-    "graphql": "^14.7.0",
-    "graphql-tag": "^2.12.5",
+    "graphql": "^16.0.1",
+    "graphql-tag": "^2.12.6",
     "react": "^16.14.0",
     "react-dom": "^16.14.0"
   },

@@ -60,7 +60,7 @@
     "@webiny/project-utils": "^5.18.3",
     "apollo-graphql": "^0.4.1",
     "get-yarn-workspaces": "^1.0.2",
-    "graphql": "^14.6.0",
+    "graphql": "^16.0.1",
     "jest": "^26.6.3",
     "mdbid": "^1.0.0",
     "prettier": "^2.3.2",

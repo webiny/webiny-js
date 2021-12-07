@@ -43,6 +43,7 @@
     "html-webpack-plugin": "5.5.0",
     "lodash": "^4.6.2",
     "mini-css-extract-plugin": "2.4.5",
+    "node-libs-browser": "^2.2.1",
     "optimize-css-assets-webpack-plugin": "6.0.1",
     "pnp-webpack-plugin": "1.7.0",
     "postcss-flexbugs-fixes": "4.1.0",
