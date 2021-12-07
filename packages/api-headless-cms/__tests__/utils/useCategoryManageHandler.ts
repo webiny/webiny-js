@@ -137,6 +137,17 @@ const publishCategoryMutation = /* GraphQL */ `
     }
 `;
 
+const republishCategoryMutation = /* GraphQL */ `
+    mutation RepublishCategory($revision: ID!) {
+        republishCategory(revision: $revision) {
+            data {
+                ${categoryFields}
+            }
+            ${errorFields}
+        }
+    }
+`;
+
 const unpublishCategoryMutation = /* GraphQL */ `
     mutation UnpublishCategory($revision: ID!) {
         unpublishCategory(revision: $revision) {
@@ -229,6 +240,15 @@ export const useCategoryManageHandler = (
             return await contentHandler.invoke({
                 body: {
                     query: publishCategoryMutation,
+                    variables
+                },
+                headers
+            });
+        },
+        async republishCategory(variables, headers: Record<string, any> = {}) {
+            return await contentHandler.invoke({
+                body: {
+                    query: republishCategoryMutation,
                     variables
                 },
                 headers
