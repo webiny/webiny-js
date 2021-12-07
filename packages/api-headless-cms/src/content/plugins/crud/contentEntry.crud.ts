@@ -688,6 +688,90 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
                 );
             }
         },
+        republishEntry: async (model, id) => {
+            await checkEntryPermissions({ rwd: "w" });
+            await utils.checkModelAccess(context, model);
+            /**
+             * Fetch the entry from the storage.
+             */
+            const originalStorageEntry = await storageOperations.entries.getRevisionById(model, {
+                id
+            });
+            if (!originalStorageEntry) {
+                throw new NotFoundError(`Entry "${id}" was not found!`);
+            }
+
+            const originalEntry = await entryFromStorageTransform(
+                context,
+                model,
+                originalStorageEntry
+            );
+            /**
+             * We can only process published entries.
+             */
+            if (originalEntry.status !== "published") {
+                throw new WebinyError(
+                    "Entry with given ID is not published!",
+                    "NOT_PUBLISHED_ERROR",
+                    {
+                        id,
+                        original: originalEntry
+                    }
+                );
+            }
+
+            const values = await referenceFieldsMapping({
+                context,
+                model,
+                input: originalEntry.values
+            });
+
+            const entry: CmsEntry = {
+                ...originalEntry,
+                values
+            };
+
+            const storageEntry = await entryToStorageTransform(context, model, entry);
+            /**
+             * First we need to update existing entry.
+             */
+            try {
+                await storageOperations.entries.update(model, {
+                    originalEntry,
+                    originalStorageEntry,
+                    entry,
+                    storageEntry,
+                    input: {}
+                });
+            } catch (ex) {
+                throw new WebinyError(
+                    "Could not update existing entry with new data while re-publishing.",
+                    "REPUBLISH_UPDATE_ERROR",
+                    {
+                        entry
+                    }
+                );
+            }
+            /**
+             * Then we move onto publishing it again.
+             */
+            try {
+                return await storageOperations.entries.publish(model, {
+                    originalEntry,
+                    originalStorageEntry,
+                    entry,
+                    storageEntry
+                });
+            } catch (ex) {
+                throw new WebinyError(
+                    "Could not publish existing entry while re-publishing.",
+                    "REPUBLISH_PUBLISH_ERROR",
+                    {
+                        entry
+                    }
+                );
+            }
+        },
         deleteEntryRevision: async (model, revisionId) => {
             const permission = await checkEntryPermissions({ rwd: "d" });
             await utils.checkModelAccess(context, model);
