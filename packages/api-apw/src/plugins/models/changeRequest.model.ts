@@ -28,10 +28,23 @@ const mediaField = () =>
         parent: "changeRequest"
     });
 
+const stepField = () =>
+    createModelField({
+        label: "Step",
+        type: "text",
+        parent: "changeRequest",
+        validation: [
+            {
+                name: "required",
+                message: "Value is required"
+            }
+        ]
+    });
+
 export const createChangeRequestModelDefinition = () => ({
     name: "APW - Change Request",
     modelId: "apwChangeRequestModelDefinition",
     titleFieldId: "changeRequest_title",
     layout: [["changeRequest_body"], ["changeRequest_title"]],
-    fields: [bodyField(), titleField(), resolvedField(), mediaField()]
+    fields: [bodyField(), titleField(), resolvedField(), mediaField(), stepField()]
 });

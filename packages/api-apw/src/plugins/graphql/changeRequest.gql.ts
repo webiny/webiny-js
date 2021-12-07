@@ -14,7 +14,8 @@ const fieldIds: Array<FieldResolversParams | string> = [
     },
     "title",
     "resolved",
-    "media"
+    "media",
+    "step"
 ];
 
 const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
@@ -31,6 +32,7 @@ const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
             createdOn: DateTime
             createdBy: ApwCreatedBy
             # ChangeRequest specific fields
+            step: String!
             title: String
             body: JSON
             resolved: Boolean
@@ -55,6 +57,7 @@ const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
             createdOn: DateTime
             createdBy: ApwCreatedBy
             # ChangeRequest specific fields
+            step: String!
             title: String
             body: JSON
             resolved: Boolean
@@ -85,6 +88,7 @@ const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
         }
 
         input ApwCreateChangeRequestInput {
+            step: String!
             title: String!
             body: JSON!
             resolved: Boolean

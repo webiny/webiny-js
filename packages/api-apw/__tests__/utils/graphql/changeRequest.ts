@@ -13,6 +13,7 @@ const getDataFields = (fields = "") => `{
         displayName
         type
     }
+    step
     body
     title
     media
