@@ -14,13 +14,13 @@
     "Adrian Smijulj <adrian@webiny.com>"
   ],
   "dependencies": {
-    "@babel/runtime": "^7.5.5",
+    "@babel/runtime": "^7.16.3",
     "@webiny/plugins": "^5.18.3"
   },
   "devDependencies": {
-    "@babel/cli": "^7.5.5",
-    "@babel/core": "^7.5.5",
-    "@babel/preset-env": "^7.5.5",
+    "@babel/cli": "^7.16.0",
+    "@babel/core": "^7.16.0",
+    "@babel/preset-env": "^7.16.4",
     "@webiny/cli": "^5.18.3",
     "@webiny/project-utils": "^5.18.3",
     "rimraf": "^3.0.2",

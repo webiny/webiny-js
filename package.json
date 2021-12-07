@@ -33,8 +33,8 @@
   },
   "devDependencies": {
     "@4tw/cypress-drag-drop": "^1.4.0",
-    "@babel/cli": "^7.0.0",
-    "@babel/core": "^7.0.0",
+    "@babel/cli": "^7.16.0",
+    "@babel/core": "^7.16.0",
     "@commitlint/cli": "^11.0.0",
     "@commitlint/config-conventional": "^11.0.0",
     "@testing-library/cypress": "^7.0.2",
@@ -219,8 +219,8 @@
   "resolutions": {
     "@rmwc/textfield": "link:./packages/ui/rmwc/textfield",
     "@types/react": "16.14.2",
-    "react": "16.14.0",
-    "react-dom": "16.14.0",
+    "react": "17.0.2",
+    "react-dom": "17.0.2",
     "pretty-format": "25.5.0",
     "typescript": "4.1.3",
     "codex-tooltip": "1.0.2",

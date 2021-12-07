@@ -14,8 +14,8 @@
     "directory": "dist"
   },
   "devDependencies": {
-    "@babel/cli": "^7.12.10",
-    "@babel/core": "^7.5.5",
+    "@babel/cli": "^7.16.0",
+    "@babel/core": "^7.16.0",
     "@webiny/cli": "^5.18.3",
     "@webiny/project-utils": "^5.18.3",
     "rimraf": "^3.0.2",

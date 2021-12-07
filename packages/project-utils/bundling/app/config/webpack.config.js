@@ -21,7 +21,6 @@ const ModuleNotFoundPlugin = require("react-dev-utils/ModuleNotFoundPlugin");
 const ForkTsCheckerWebpackPlugin = require("react-dev-utils/ForkTsCheckerWebpackPlugin");
 const typescriptFormatter = require("react-dev-utils/typescriptFormatter");
 const WebpackBar = require("webpackbar");
-const postcssNormalize = require("postcss-normalize");
 
 const materialNodeModules = require.resolve("@material/base/package.json").split("@material")[0];
 const sassIncludePaths = [
@@ -77,7 +76,6 @@ module.exports = function (webpackEnv, { paths, options }) {
 
     // Check if TypeScript is setup
     const useTypeScript = fs.existsSync(paths.appTsConfig);
-    const appPackageJson = require(paths.appPackageJson);
 
     // Variable used for enabling profiling in Production
     // passed into alias object. Uses a flag if passed into the build command
@@ -116,27 +114,29 @@ module.exports = function (webpackEnv, { paths, options }) {
                 // package.json
                 loader: require.resolve("postcss-loader"),
                 options: {
-                    // Necessary for external CSS imports to work
-                    // https://github.com/facebook/create-react-app/issues/2677
-                    ident: "postcss",
-                    plugins: () => [
-                        require("postcss-flexbugs-fixes"),
-                        require("postcss-preset-env")({
-                            autoprefixer: {
-                                flexbox: "no-2009"
-                            },
-                            stage: 3,
-                            // Necessary for "@material" to work with dart implementation of sass
-                            features: {
-                                "custom-properties": false
-                            }
-                        }),
-                        // Adds PostCSS Normalize as the reset css with default options,
-                        // so that it honors browserslist config in package.json
-                        // which in turn let's users customize the target behavior as per their needs.
-                        postcssNormalize()
-                    ],
-                    sourceMap: isEnvProduction && shouldUseSourceMap
+                    postcssOptions: {
+                        // Necessary for external CSS imports to work
+                        // https://github.com/facebook/create-react-app/issues/2677
+                        ident: "postcss",
+                        plugins: () => [
+                            require("postcss-flexbugs-fixes"),
+                            require("postcss-preset-env")({
+                                autoprefixer: {
+                                    flexbox: "no-2009"
+                                },
+                                stage: 3,
+                                // Necessary for "@material" to work with dart implementation of sass
+                                features: {
+                                    "custom-properties": false
+                                }
+                            }),
+                            // Adds PostCSS Normalize as the reset css with default options,
+                            // so that it honors browserslist config in package.json
+                            // which in turn let's users customize the target behavior as per their needs.
+                            require("postcss-normalize")()
+                        ],
+                        sourceMap: isEnvProduction && shouldUseSourceMap
+                    }
                 }
             }
         ].filter(Boolean);
@@ -310,6 +310,7 @@ module.exports = function (webpackEnv, { paths, options }) {
                 // https://www.smashingmagazine.com/2016/08/a-glimpse-into-the-future-with-react-native-for-web/
                 "react-native": require.resolve("react-native-web"),
                 "react-dom$": require.resolve("@hot-loader/react-dom"),
+                "react/jsx-runtime": require.resolve("react/jsx-runtime.js"),
                 react: require.resolve("react"),
                 // Allows for better profiling with ReactDevTools
                 ...(isEnvProductionProfile && {
@@ -343,9 +344,6 @@ module.exports = function (webpackEnv, { paths, options }) {
         module: {
             strictExportPresence: true,
             rules: [
-                // Disable require.ensure as it's not a standard language feature.
-                { parser: { requireEnsure: false } },
-
                 // First, run the linter.
                 // It's important to do this before Babel processes the JS.
                 // TODO: replace with eslint-webpack-plugin
@@ -396,7 +394,11 @@ module.exports = function (webpackEnv, { paths, options }) {
                             loader: require.resolve("babel-loader"),
                             options: babelCustomizer({
                                 sourceType: "unambiguous",
-                                presets: [require.resolve("babel-preset-react-app")],
+                                presets: [
+                                    require.resolve("@babel/preset-env"),
+                                    require.resolve("@babel/preset-react"),
+                                    require.resolve("@babel/preset-typescript")
+                                ],
                                 plugins: [
                                     [
                                         require.resolve("babel-plugin-named-asset-import"),
@@ -428,34 +430,7 @@ module.exports = function (webpackEnv, { paths, options }) {
                                 compact: isEnvProduction
                             })
                         },
-                        // Process any JS outside of the app with Babel.
-                        // Unlike the application JS, we only compile the standard ES features.
-                        {
-                            test: /\.(js|mjs)$/,
-                            exclude: /@babel(?:\/|\\{1,2})runtime/,
-                            loader: require.resolve("babel-loader"),
-                            options: {
-                                babelrc: false,
-                                configFile: false,
-                                compact: false,
-                                sourceType: "unambiguous",
-                                presets: [
-                                    [
-                                        require.resolve("babel-preset-react-app/dependencies"),
-                                        { helpers: true }
-                                    ]
-                                ],
-                                cacheDirectory: true,
-                                // See #6846 for context on why cacheCompression is disabled
-                                cacheCompression: false,
 
-                                // Babel sourcemaps are needed for debugging into node_modules
-                                // code.  Without the options below, debuggers like VSCode
-                                // show incorrect code and set breakpoints on the wrong lines.
-                                sourceMaps: shouldUseSourceMap,
-                                inputSourceMap: shouldUseSourceMap
-                            }
-                        },
                         // "postcss" loader applies autoprefixer to our CSS.
                         // "css" loader resolves paths in CSS and adds assets as dependencies.
                         // "style" loader turns CSS into JS modules that inject <style> tags.
@@ -634,15 +609,6 @@ module.exports = function (webpackEnv, { paths, options }) {
                         entrypoints: entrypointFiles
                     };
                 }
-            }),
-            // Moment.js is an extremely popular library that bundles large locale files
-            // by default due to how Webpack interprets its code. This is a practical
-            // solution that requires the user to opt into importing specific locales.
-            // https://github.com/jmblog/how-to-optimize-momentjs-with-webpack
-            // You can remove this if you don't use Moment.js:
-            new webpack.IgnorePlugin({
-                resourceRegExp: /^\.\/locale$/,
-                contextRegExp: /moment$/
             }),
 
             // TypeScript type checking

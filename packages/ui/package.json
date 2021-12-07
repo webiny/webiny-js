@@ -14,7 +14,7 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@babel/runtime": "^7.5.5",
+    "@babel/runtime": "^7.16.3",
     "@editorjs/editorjs": "^2.19.3",
     "@emotion/core": "^10.0.17",
     "@emotion/styled": "^10.0.17",
@@ -47,7 +47,7 @@
     "@rmwc/top-app-bar": "^5.6.0",
     "@rmwc/types": "^5.6.0",
     "@rmwc/typography": "^5.6.0",
-    "@svgr/webpack": "^4.3.2",
+    "@svgr/webpack": "^6.1.1",
     "brace": "^0.11.1",
     "classnames": "^2.2.6",
     "cropperjs": "^1.4.3",
@@ -72,11 +72,11 @@
     "shortid": "^2.2.16"
   },
   "devDependencies": {
-    "@babel/cli": "^7.5.5",
-    "@babel/core": "^7.5.5",
-    "@babel/plugin-proposal-class-properties": "^7.5.5",
-    "@babel/preset-env": "^7.5.5",
-    "@babel/preset-typescript": "^7.8.3",
+    "@babel/cli": "^7.16.0",
+    "@babel/core": "^7.16.0",
+    "@babel/plugin-proposal-class-properties": "^7.16.0",
+    "@babel/preset-env": "^7.16.4",
+    "@babel/preset-typescript": "^7.16.0",
     "@storybook/addon-info": "^5.2.8",
     "@storybook/addon-knobs": "^5.0.5",
     "@storybook/addon-links": "^5.0.5",
@@ -104,8 +104,8 @@
     "webpack": "^4.46.0"
   },
   "peerDependencies": {
-    "react": "16.14.0",
-    "react-dom": "16.14.0"
+    "react": "17.0.2",
+    "react-dom": "17.0.2"
   },
   "publishConfig": {
     "access": "public",
@@ -122,11 +122,6 @@
       "^.+\\.js$": "babel-jest"
     },
     "setupTestFrameworkScriptFile": "jest-extended"
-  },
-  "svgo": {
-    "plugins": {
-      "removeViewBox": false
-    }
   },
   "adio": {
     "ignore": {

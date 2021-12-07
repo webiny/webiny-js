@@ -41,8 +41,8 @@
     "cross-fetch": "^3.0.4",
     "invariant": "^2.2.4",
     "prop-types": "^15.7.2",
-    "react": "^16.14.0",
-    "react-dom": "^16.14.0",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
     "regenerator-runtime": "^0.13.5",
     "theme": "^0.1.0"
   },
@@ -52,7 +52,8 @@
   "scripts": {
     "analyze": "source-map-explorer build/static/js/main.*",
     "watch": "cross-env PORT=3001 yarn webiny run watch",
-    "build": "yarn webiny run build"
+    "build": "yarn webiny run build",
+    "build:dev": "yarn webiny run build --env dev"
   },
   "browserslist": {
     "development": [
@@ -65,11 +66,6 @@
       "not op_mini all",
       "ie 11"
     ]
-  },
-  "svgo": {
-    "plugins": {
-      "removeViewBox": false
-    }
   },
   "adio": {
     "ignore": {

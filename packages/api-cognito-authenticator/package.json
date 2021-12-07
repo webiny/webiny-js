@@ -17,8 +17,8 @@
     "node-fetch": "^2.6.1"
   },
   "devDependencies": {
-    "@babel/cli": "^7.5.5",
-    "@babel/core": "^7.5.5",
+    "@babel/cli": "^7.16.0",
+    "@babel/core": "^7.16.0",
     "@types/jsonwebtoken": "^8.5.1",
     "@webiny/cli": "^5.18.3",
     "@webiny/project-utils": "^5.18.3",
