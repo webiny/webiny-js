@@ -349,29 +349,30 @@ module.exports = function (webpackEnv, { paths, options }) {
 
                 // First, run the linter.
                 // It's important to do this before Babel processes the JS.
-                {
-                    test: /\.(js|mjs|jsx|ts|tsx)$/,
-                    enforce: "pre",
-                    use: [
-                        {
-                            options: {
-                                cache: true,
-                                formatter: require.resolve("react-dev-utils/eslintFormatter"),
-                                eslintPath: require.resolve("eslint")
-                            },
-                            loader: require.resolve("eslint-loader")
-                        }
-                    ],
-                    //include: paths.appSrc
-                    include: file => {
-                        if (file.includes("dist")) {
-                            return false;
-                        }
+                // TODO: replace with eslint-webpack-plugin
+                // {
+                //     test: /\.(js|mjs|jsx|ts|tsx)$/,
+                //     enforce: "pre",
+                //     use: [
+                //         {
+                //             options: {
+                //                 cache: true,
+                //                 formatter: require.resolve("react-dev-utils/eslintFormatter"),
+                //                 eslintPath: require.resolve("eslint")
+                //             },
+                //             loader: require.resolve("eslint-loader")
+                //         }
+                //     ],
+                //     //include: paths.appSrc
+                //     include: file => {
+                //         if (file.includes("dist")) {
+                //             return false;
+                //         }
 
-                        return paths.allWorkspaces.some(p => file.includes(p));
-                    },
-                    exclude: /node_modules/
-                },
+                //         return paths.allWorkspaces.some(p => file.includes(p));
+                //     },
+                //     exclude: /node_modules/
+                // },
                 {
                     // "oneOf" will traverse all following loaders until one will
                     // match the requirements. When no loader matches it will fall
