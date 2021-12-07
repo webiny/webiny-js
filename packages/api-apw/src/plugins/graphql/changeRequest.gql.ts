@@ -104,6 +104,7 @@ const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
 
         input ApwListChangeRequestWhereInput {
             id: ID
+            step: String
         }
 
         input ApwListChangeRequestSearchInput {
