@@ -4,6 +4,7 @@ import { createWorkflowMethods } from "./createWorkflowMethods";
 import { createReviewerMethods } from "./createReviewerMethods";
 import { createCommentMethods } from "./createCommentMethods";
 import { createChangeRequestMethods } from "./createChangeRequestMethods";
+import { createContentReviewMethods } from "./createContentReviewMethods";
 
 export const createAdvancedPublishingWorkflow = () =>
     new ContextPlugin<ApwContext>(async context => {
@@ -11,6 +12,7 @@ export const createAdvancedPublishingWorkflow = () =>
             workflow: createWorkflowMethods(context),
             reviewer: createReviewerMethods(context),
             comment: createCommentMethods(context),
-            changeRequest: createChangeRequestMethods(context)
+            changeRequest: createChangeRequestMethods(context),
+            contentReview: createContentReviewMethods(context)
         };
     });

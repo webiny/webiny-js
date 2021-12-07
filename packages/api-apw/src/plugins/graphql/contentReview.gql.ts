@@ -1,10 +1,13 @@
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins";
-import { ErrorResponse, ListResponse, Response } from "@webiny/handler-graphql";
-import { CmsContext, CmsEntryListParams } from "@webiny/api-headless-cms/types";
-import { ContentReviewStepStatus } from "~/types";
-import { entryFieldFromStorageTransform } from "@webiny/api-headless-cms/content/plugins/utils/entryStorage";
+import { ErrorResponse, ListResponse } from "@webiny/handler-graphql";
+import { CmsEntryListParams } from "@webiny/api-headless-cms/types";
+import { ApwContext } from "~/types";
+import { generateFieldResolvers } from "~/utils/fieldResolver";
+import resolve from "~/utils/resolve";
 
-const contentReviewSchema = new GraphQLSchemaPlugin<CmsContext>({
+const fields = ["steps", "content"];
+
+const contentReviewSchema = new GraphQLSchemaPlugin<ApwContext>({
     typeDefs: /* GraphQL */ `
         type ApwContentReviewListItem {
             # System generated fields
@@ -18,8 +21,9 @@ const contentReviewSchema = new GraphQLSchemaPlugin<CmsContext>({
             createdOn: DateTime
             createdBy: ApwCreatedBy
             # ContentReview specific fields
-            changeRequested: [ApwContentReviewChangeRequested]
+            #            changeRequested: [ApwContentReviewChangeRequested]
             steps: [ApwContentReviewStep]
+            content: ApwContentReviewContent
         }
 
         type ApwListContentReviewsResponse {
@@ -70,8 +74,10 @@ const contentReviewSchema = new GraphQLSchemaPlugin<CmsContext>({
             createdOn: DateTime
             createdBy: ApwCreatedBy
             # ContentReview specific fields
-            changeRequested: [ApwContentReviewChangeRequested]
+            # changeRequested: [ApwContentReviewChangeRequested]
             steps: [ApwContentReviewStep]
+            content: ApwContentReviewContent
+            workflow: ID
         }
 
         type ApwContentReviewResponse {
@@ -121,10 +127,26 @@ const contentReviewSchema = new GraphQLSchemaPlugin<CmsContext>({
             comments: [ApwContentReviewCommentInput]
         }
 
+        enum ApwContentReviewContentTypes {
+            page
+            cms_entry
+        }
+
+        type ApwContentReviewContent {
+            id: ID
+            type: ApwContentReviewContentTypes
+            settings: String
+        }
+
+        input ApwContentReviewContentInput {
+            id: ID!
+            type: ApwContentReviewContentTypes!
+            settings: String
+        }
+
         input ApwCreateContentReviewInput {
-            changeRequested: [ApwContentReviewChangeRequestedInput]
-            workflow: ID!
-            content: ID!
+            #            workflow: ID!
+            content: ApwContentReviewContentInput!
         }
 
         input ApwUpdateContentReviewInput {
@@ -155,89 +177,29 @@ const contentReviewSchema = new GraphQLSchemaPlugin<CmsContext>({
         extend type ApwMutation {
             createContentReview(data: ApwCreateContentReviewInput!): ApwContentReviewResponse
 
-            # Update workflow by given ID.
             updateContentReview(
                 id: ID!
                 data: ApwUpdateContentReviewInput!
             ): ApwContentReviewResponse
 
-            # Delete workflow
             deleteContentReview(id: ID!): ApwDeleteContentReviewResponse
         }
     `,
     resolvers: {
-        // TODO: Make it dynamic
-        ApwContentReviewChangeRequested: {
-            body: async (parent, _, context, info) => {
-                const fieldName = info.fieldName;
-                const model = await context.cms.getModel("apwContentReviewModelDefinition");
-
-                const field = model.fields
-                    .find(field => field.fieldId === "changeRequested")
-                    .settings.fields.find(field => field.fieldId === fieldName);
-
-                // Get transformed value (eg. data decompression)
-                return await entryFieldFromStorageTransform({
-                    context,
-                    model,
-                    field,
-                    value: parent[fieldName]
-                });
-            }
-        },
-        ApwContentReviewComment: {
-            body: async (parent, _, context, info) => {
-                const fieldName = info.fieldName;
-                const model = await context.cms.getModel("apwContentReviewModelDefinition");
-
-                const field = model.fields
-                    .find(field => field.fieldId === "changeRequested")
-                    .settings.fields.find(field => field.fieldId === "comments")
-                    .settings.fields.find(field => field.fieldId === fieldName);
-
-                // Get transformed value (eg. data decompression)
-                return await entryFieldFromStorageTransform({
-                    context,
-                    model,
-                    field,
-                    value: parent[fieldName]
-                });
-            }
-        },
         ApwContentReview: {
-            steps: async workflow => {
-                return workflow.values.steps;
-            },
-            changeRequested: async workflow => {
-                return workflow.values.changeRequested;
-            }
+            ...generateFieldResolvers(fields)
         },
         ApwContentReviewListItem: {
-            steps: async workflow => {
-                return workflow.values.steps;
-            },
-            changeRequested: async workflow => {
-                return workflow.values.changeRequested;
-            }
+            ...generateFieldResolvers(fields)
         },
         ApwQuery: {
             getContentReview: async (_, args, context) => {
-                try {
-                    const model = await context.cms.getModel("apwContentReviewModelDefinition");
-                    const entry = await context.cms.getEntry(model, {
-                        where: {
-                            id: args.id
-                        }
-                    });
-                    return new Response(entry);
-                } catch (e) {
-                    return new ErrorResponse(e);
-                }
+                return resolve(() => context.advancedPublishingWorkflow.contentReview.get(args.id));
             },
             listContentReviews: async (_, args: CmsEntryListParams, context) => {
                 try {
-                    const model = await context.cms.getModel("apwContentReviewModelDefinition");
-                    const [entries, meta] = await context.cms.listEntries(model, args);
+                    const [entries, meta] =
+                        await context.advancedPublishingWorkflow.contentReview.list(args);
                     return new ListResponse(entries, meta);
                 } catch (e) {
                     return new ErrorResponse(e);
@@ -246,60 +208,19 @@ const contentReviewSchema = new GraphQLSchemaPlugin<CmsContext>({
         },
         ApwMutation: {
             createContentReview: async (_, args, context) => {
-                try {
-                    /**
-                     * Load the workflow by id and use its steps.
-                     */
-                    const workflowModel = await context.cms.getModel("apwWorkflowModelDefinition");
-                    const workflow = await context.cms.getEntry(workflowModel, {
-                        where: { id: args.data.workflow }
-                    });
-
-                    const model = await context.cms.getModel("apwContentReviewModelDefinition");
-                    const entry = await context.cms.createEntry(model, {
-                        ...args.data,
-                        // TODO: Move this logic to a function
-                        steps: workflow.values.steps.map(step => ({
-                            status: ContentReviewStepStatus.INACTIVE,
-                            slug: step.slug
-                        }))
-                    });
-                    return new Response(entry);
-                } catch (e) {
-                    return new ErrorResponse(e);
-                }
+                return resolve(() =>
+                    context.advancedPublishingWorkflow.contentReview.create(args.data)
+                );
             },
             updateContentReview: async (_, args, context) => {
-                try {
-                    const model = await context.cms.getModel("apwContentReviewModelDefinition");
-                    /**
-                     * We're fetching the existing entry here because we're not accepting "app" field as input,
-                     * but, we still need to retain its value after the "update" operation.
-                     */
-                    const existingEntry = await context.cms.getEntry(model, {
-                        where: {
-                            id: args.id
-                        }
-                    });
-
-                    const entry = await context.cms.updateEntry(model, args.id, {
-                        ...args.data,
-                        // TODO: We need to merge the input with existing data
-                        steps: existingEntry.values.steps
-                    });
-                    return new Response(entry);
-                } catch (e) {
-                    return new ErrorResponse(e);
-                }
+                return resolve(() =>
+                    context.advancedPublishingWorkflow.contentReview.update(args.id, args.data)
+                );
             },
             deleteContentReview: async (_, args, context) => {
-                try {
-                    const model = await context.cms.getModel("apwContentReviewModelDefinition");
-                    await context.cms.deleteEntry(model, args.id);
-                    return new Response(true);
-                } catch (e) {
-                    return new ErrorResponse(e);
-                }
+                return resolve(() =>
+                    context.advancedPublishingWorkflow.contentReview.delete(args.id)
+                );
             }
         }
     }

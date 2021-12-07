@@ -3,7 +3,7 @@ import { CmsGroupPlugin } from "@webiny/api-headless-cms/content/plugins/CmsGrou
 import { ApwContext } from "~/types";
 import contentModelPluginFactory from "./contentModelPluginFactory";
 import { createWorkflowModelDefinition } from "./workflow.model";
-import { contentReviewModelDefinition } from "./contentReview.model";
+import { createContentReviewModelDefinition } from "./contentReview.model";
 import { createReviewerModelDefinition } from "./reviewer.model";
 import { createCommentModelDefinition } from "./comment.model";
 import { createChangeRequestModelDefinition } from "./changeRequest.model";
@@ -44,6 +44,7 @@ export const createApwModels = () =>
         const commentModelDefinition = createCommentModelDefinition({
             modelId: changeRequestModelDefinition.modelId
         });
+        const contentReviewModelDefinition = createContentReviewModelDefinition();
 
         const modelDefinitions = [
             workflowModelDefinition,

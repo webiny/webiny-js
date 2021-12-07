@@ -8,6 +8,7 @@ import {
     CmsModelField
 } from "@webiny/api-headless-cms/types";
 import { Context } from "@webiny/handler/types";
+import { PbContext } from "@webiny/api-page-builder/graphql/types";
 
 export interface FieldResolversParams {
     fieldId: string;
@@ -17,7 +18,7 @@ export interface FieldResolversParams {
 }
 
 export interface PageWithWorkflow extends Page {
-    workflow?: Record<string, any>;
+    workflow?: string;
 }
 
 export enum WorkflowScopeTypes {
@@ -27,7 +28,7 @@ export enum WorkflowScopeTypes {
     SPECIFIC = "specific"
 }
 
-export enum ContentReviewStepStatus {
+export enum ApwContentReviewStepStatus {
     DONE = "done",
     ACTIVE = "active",
     INACTIVE = "inactive"
@@ -41,7 +42,8 @@ export enum ApwWorkflowApplications {
 export type ApwWorkflow = CmsEntry;
 export type ApwReviewer = CmsEntry;
 export type ApwComment = CmsEntry;
-export type ApwChangeRequested = CmsEntry;
+export type ApwChangeRequest = CmsEntry;
+export type ApwContentReview = CmsEntry;
 
 interface ApwWorkflowScope {
     type: WorkflowScopeTypes;
@@ -101,18 +103,27 @@ interface UpdateApwCommentParams {
     body: Record<string, any>;
 }
 
-interface CreateApwChangeRequestedParams {
+interface CreateApwChangeRequestParams {
     title: string;
     body: JSON;
     resolved: boolean;
     media: JSON;
 }
 
-interface UpdateApwChangeRequestedParams {
+interface UpdateApwChangeRequestParams {
     title: string;
     body: JSON;
     resolved: boolean;
     media: JSON;
+}
+
+interface CreateApwContentReviewParams {
+    content: string;
+    workflow: string;
+}
+
+interface UpdateApwContentReviewParams {
+    steps: JSON;
 }
 
 interface BaseApwCrud<TEntry, TCreateEntryParams, TUpdateEntryParams> {
@@ -144,11 +155,20 @@ export interface ApwCommentCrud
 
 export interface ApwChangeRequestCrud
     extends BaseApwCrud<
-        ApwChangeRequested,
-        CreateApwChangeRequestedParams,
-        UpdateApwChangeRequestedParams
+        ApwChangeRequest,
+        CreateApwChangeRequestParams,
+        UpdateApwChangeRequestParams
     > {
-    list(params: CmsEntryListParams): Promise<[ApwChangeRequested[], CmsEntryMeta]>;
+    list(params: CmsEntryListParams): Promise<[ApwChangeRequest[], CmsEntryMeta]>;
+}
+
+export interface ApwContentReviewCrud
+    extends BaseApwCrud<
+        ApwContentReview,
+        CreateApwContentReviewParams,
+        UpdateApwContentReviewParams
+    > {
+    list(params: CmsEntryListParams): Promise<[ApwContentReview[], CmsEntryMeta]>;
 }
 
 interface AdvancedPublishingWorkflow {
@@ -156,8 +176,9 @@ interface AdvancedPublishingWorkflow {
     reviewer: ApwReviewerCrud;
     comment: ApwCommentCrud;
     changeRequest: ApwChangeRequestCrud;
+    contentReview: ApwContentReviewCrud;
 }
 
-export interface ApwContext extends Context, CmsContext {
+export interface ApwContext extends Context, CmsContext, PbContext {
     advancedPublishingWorkflow: AdvancedPublishingWorkflow;
 }
