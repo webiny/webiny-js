@@ -1,4 +1,5 @@
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
+import { mocks as changeRequestMock } from "./mocks/changeRequest";
 
 const richTextMock = [
     {
@@ -24,13 +25,6 @@ const richTextMock = [
         ]
     }
 ];
-const CHANGE_REQUESTED_MOCK = {
-    title: "Please replace this heading",
-    body: richTextMock,
-    media: {
-        src: "cloudfront.net/my-file"
-    }
-};
 
 describe("Comment on a change request test", () => {
     const options = {
@@ -50,7 +44,7 @@ describe("Comment on a change request test", () => {
          * Create a new change request entry.
          */
         const [createChangeRequestResponse] = await createChangeRequestMutation({
-            data: CHANGE_REQUESTED_MOCK
+            data: changeRequestMock.changeRequestA
         });
         const changeRequested =
             createChangeRequestResponse.data.advancedPublishingWorkflow.createChangeRequest.data;
@@ -218,7 +212,7 @@ describe("Comment on a change request test", () => {
         const changesRequested = [];
         for (let i = 0; i < 2; i++) {
             const [createChangeRequestResponse] = await createChangeRequestMutation({
-                data: CHANGE_REQUESTED_MOCK
+                data: changeRequestMock.changeRequestA
             });
             changesRequested.push(
                 createChangeRequestResponse.data.advancedPublishingWorkflow.createChangeRequest.data

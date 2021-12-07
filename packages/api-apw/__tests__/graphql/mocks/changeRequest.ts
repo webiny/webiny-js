@@ -25,6 +25,7 @@ const richTextMock = [
 
 export const mocks = {
     changeRequestA: {
+        step: "61af1a60f04e49226e6cc17e#design_review",
         title: "Please replace this heading",
         body: richTextMock,
         media: {
