@@ -1,4 +1,6 @@
 import { SecurityIdentity } from "@webiny/api-security/types";
+import workflowMocks from "../graphql/mocks/workflows";
+
 export { until } from "@webiny/project-utils/testing/helpers/until";
 export { sleep } from "@webiny/project-utils/testing/helpers/sleep";
 
@@ -62,4 +64,52 @@ export const createIdentity = (identity?: SecurityIdentity) => {
         return getSecurityIdentity();
     }
     return identity;
+};
+
+export const createSetupForContentReview = async gqlHandler => {
+    const setupReviewer = async () => {
+        await gqlHandler.securityIdentity.login();
+        const [listReviewersResponse] = await gqlHandler.reviewer.listReviewersQuery({});
+        const [reviewer] = listReviewersResponse.data.advancedPublishingWorkflow.listReviewers.data;
+        return reviewer;
+    };
+
+    const setupCategory = async () => {
+        const [createCategoryResponse] = await gqlHandler.createCategory({
+            data: {
+                name: "Static",
+                url: "/static/",
+                slug: "static",
+                layout: "static"
+            }
+        });
+        return createCategoryResponse.data.pageBuilder.createCategory.data;
+    };
+
+    const setupPage = async () => {
+        const category = await setupCategory();
+
+        const [createPageResponse] = await gqlHandler.createPage({ category: category.slug });
+        return createPageResponse.data.pageBuilder.createPage.data;
+    };
+
+    const setupWorkflow = async () => {
+        const reviewer = await setupReviewer();
+        const [createWorkflowResponse] = await gqlHandler.createWorkflowMutation({
+            data: workflowMocks.createWorkflowWithThreeSteps({}, [reviewer])
+        });
+        return createWorkflowResponse.data.advancedPublishingWorkflow.createWorkflow.data;
+    };
+
+    const setup = async () => {
+        const workflow = await setupWorkflow();
+        const page = await setupPage();
+
+        return {
+            page,
+            workflow
+        };
+    };
+
+    return setup();
 };

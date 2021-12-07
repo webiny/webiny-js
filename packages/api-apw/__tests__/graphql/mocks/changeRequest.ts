@@ -31,5 +31,13 @@ export const mocks = {
         media: {
             src: "cloudfront.net/my-file"
         }
-    }
+    },
+    createChangeRequestInput: ({ step, title }: { step: string; title?: string }) => ({
+        step: step,
+        title: title || "Please replace this heading",
+        body: richTextMock,
+        media: {
+            src: "cloudfront.net/my-file"
+        }
+    })
 };

@@ -29,6 +29,44 @@ export default {
         },
         ...params
     }),
+    createWorkflowWithThreeSteps: (params: CreateWorkflowParams, reviewers) => ({
+        app: "pageBuilder",
+        title: "Main workflow",
+        steps: [
+            {
+                title: "Legal Review",
+                slug: "legal-review",
+                type: "mandatory_blocking",
+                reviewers: reviewers.map(reviewer => ({
+                    modelId: "apwReviewerModelDefinition",
+                    id: reviewer.id
+                }))
+            },
+            {
+                title: "Design Review",
+                slug: "design-review",
+                type: "mandatory_blocking",
+                reviewers: reviewers.map(reviewer => ({
+                    modelId: "apwReviewerModelDefinition",
+                    id: reviewer.id
+                }))
+            },
+            {
+                title: "Copy Review",
+                slug: "copy-review",
+                type: "mandatory_blocking",
+                reviewers: reviewers.map(reviewer => ({
+                    modelId: "apwReviewerModelDefinition",
+                    id: reviewer.id
+                }))
+            }
+        ],
+        scope: {
+            type: "default",
+            data: null
+        },
+        ...params
+    }),
     scopes: [
         {
             type: "default"
@@ -83,13 +121,13 @@ export default {
                 title: "Legal Review",
                 slug: "legal-review",
                 type: "mandatory_blocking",
-                reviewers: [{ id: "123", modelId: "apwReviewerModelDefinition" }]
+                reviewers: [{ id: "12345678#0001", modelId: "apwReviewerModelDefinition" }]
             },
             {
                 title: "Design Review",
                 slug: "design-review",
                 type: "mandatory_blocking",
-                reviewers: [{ id: "123", modelId: "apwReviewerModelDefinition" }]
+                reviewers: [{ id: "12345678#0001", modelId: "apwReviewerModelDefinition" }]
             }
         ],
         scope: {

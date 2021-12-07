@@ -17,15 +17,10 @@ const getDataFields = (fields = "") => `{
         status
         slug
     }
-    changeRequested {
-        title
-        body
-        resolved
-        media
-        comments {
-            body
-            author
-        }
+    content {
+        type
+        id
+        settings
     }
     ${fields}
 }`;
