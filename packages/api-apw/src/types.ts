@@ -169,6 +169,8 @@ export interface ApwContentReviewCrud
         UpdateApwContentReviewParams
     > {
     list(params: CmsEntryListParams): Promise<[ApwContentReview[], CmsEntryMeta]>;
+    provideSignOff(id: string, step: string): Promise<Boolean>;
+    retractSignOff(id: string, step: string): Promise<Boolean>;
 }
 
 interface AdvancedPublishingWorkflow {

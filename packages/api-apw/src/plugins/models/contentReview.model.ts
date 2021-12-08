@@ -40,7 +40,7 @@ const contentTypeField = () =>
         },
         validation: [{ name: "required", message: "Value is required." }]
     });
-
+// TODO: Find a way to store JSON value without "object" field.
 const contentSettingsField = () =>
     createModelField({
         label: "Settings",
@@ -103,6 +103,42 @@ const stepPendingChangeRequests = () =>
     createModelField({
         label: "Pending change requests",
         type: "number",
+        parent: "contentReview Step",
+        validation: [
+            {
+                name: "required",
+                message: "Value is required."
+            }
+        ]
+    });
+
+const stepSignOffProvidedOn = () =>
+    createModelField({
+        label: "Sign off provided on",
+        type: "datetime",
+        parent: "contentReview Step"
+    });
+
+const stepSignOffProvidedBy = fields =>
+    createModelField({
+        label: "Sign off provided By",
+        type: "object",
+        parent: "contentReview Step",
+        multipleValues: false,
+        settings: { fields }
+    });
+
+const stepSignOffProvidedById = () =>
+    createModelField({
+        label: "Id",
+        type: "text",
+        parent: "contentReview Step"
+    });
+
+const stepSignOffProvidedByDisplayName = () =>
+    createModelField({
+        label: "DisplayName",
+        type: "text",
         parent: "contentReview Step"
     });
 
@@ -136,6 +172,12 @@ export const createContentReviewModelDefinition = () => ({
     ],
     fields: [
         contentField([contentIdField(), contentTypeField(), contentSettingsField()]),
-        stepsField([stepStatusField(), stepSlugField(), stepPendingChangeRequests()])
+        stepsField([
+            stepStatusField(),
+            stepSlugField(),
+            stepPendingChangeRequests(),
+            stepSignOffProvidedOn(),
+            stepSignOffProvidedBy([stepSignOffProvidedById(), stepSignOffProvidedByDisplayName()])
+        ])
     ]
 });

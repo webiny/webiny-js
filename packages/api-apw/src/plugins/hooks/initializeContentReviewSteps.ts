@@ -37,7 +37,7 @@ const initializeContentReviewSteps = () =>
                 entry = lodashSet(
                     entry,
                     "values.steps",
-                    workflow.values.steps.map(step => ({
+                    workflow.values.steps.map((step, index) => ({
                         /**
                          * We're using the "slug" field from workflow step (which is non-unique string)
                          * to setup a link between "Change request" and "Content review".
@@ -45,7 +45,13 @@ const initializeContentReviewSteps = () =>
                          * we're normalizing them to be unique here.
                          */
                         slug: `${entry.entryId}#${step.slug}`,
-                        status: ApwContentReviewStepStatus.INACTIVE,
+                        /**
+                         * Always set first step 'active' by default.
+                         */
+                        status:
+                            index === 0
+                                ? ApwContentReviewStepStatus.ACTIVE
+                                : ApwContentReviewStepStatus.INACTIVE,
                         pendingChangeRequests: 0
                     }))
                 );

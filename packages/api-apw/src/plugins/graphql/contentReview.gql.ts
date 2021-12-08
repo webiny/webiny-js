@@ -61,6 +61,8 @@ const contentReviewSchema = new GraphQLSchemaPlugin<ApwContext>({
             status: ApwContentReviewStepStatus
             slug: String
             pendingChangeRequests: Int
+            signOffProvidedOn: DateTime
+            signOffProvidedBy: ApwCreatedBy
         }
 
         type ApwContentReview {
@@ -163,6 +165,11 @@ const contentReviewSchema = new GraphQLSchemaPlugin<ApwContext>({
             query: String
         }
 
+        type ApwProvideSignOffResponse {
+            data: Boolean
+            error: ApwError
+        }
+
         extend type ApwQuery {
             getContentReview(id: ID!): ApwContentReviewResponse
 
@@ -184,6 +191,10 @@ const contentReviewSchema = new GraphQLSchemaPlugin<ApwContext>({
             ): ApwContentReviewResponse
 
             deleteContentReview(id: ID!): ApwDeleteContentReviewResponse
+
+            provideSignOff(id: ID!, step: String!): ApwProvideSignOffResponse
+
+            retractSignOff(id: ID!, step: String!): ApwProvideSignOffResponse
         }
     `,
     resolvers: {
@@ -221,6 +232,22 @@ const contentReviewSchema = new GraphQLSchemaPlugin<ApwContext>({
             deleteContentReview: async (_, args, context) => {
                 return resolve(() =>
                     context.advancedPublishingWorkflow.contentReview.delete(args.id)
+                );
+            },
+            provideSignOff: async (_, args, context) => {
+                return resolve(() =>
+                    context.advancedPublishingWorkflow.contentReview.provideSignOff(
+                        args.id,
+                        args.step
+                    )
+                );
+            },
+            retractSignOff: async (_, args, context) => {
+                return resolve(() =>
+                    context.advancedPublishingWorkflow.contentReview.retractSignOff(
+                        args.id,
+                        args.step
+                    )
                 );
             }
         }
