@@ -99,6 +99,13 @@ const stepSlugField = () => ({
     fieldId: "slug"
 });
 
+const stepPendingChangeRequests = () =>
+    createModelField({
+        label: "Pending change requests",
+        type: "number",
+        parent: "contentReview Step"
+    });
+
 const stepsField = fields => ({
     id: "contentReview_steps",
     label: "Steps",
@@ -129,6 +136,6 @@ export const createContentReviewModelDefinition = () => ({
     ],
     fields: [
         contentField([contentIdField(), contentTypeField(), contentSettingsField()]),
-        stepsField([stepStatusField(), stepSlugField()])
+        stepsField([stepStatusField(), stepSlugField(), stepPendingChangeRequests()])
     ]
 });

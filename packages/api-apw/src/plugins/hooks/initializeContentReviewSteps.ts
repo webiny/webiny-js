@@ -45,7 +45,8 @@ const initializeContentReviewSteps = () =>
                          * we're normalizing them to be unique here.
                          */
                         slug: `${entry.entryId}#${step.slug}`,
-                        status: ApwContentReviewStepStatus.INACTIVE
+                        status: ApwContentReviewStepStatus.INACTIVE,
+                        pendingChangeRequests: 0
                     }))
                 );
             }
