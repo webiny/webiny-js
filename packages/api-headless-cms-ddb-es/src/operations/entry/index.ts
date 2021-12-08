@@ -682,7 +682,7 @@ export const createEntriesStorageOperations = (params: Params): CmsEntryStorageO
             model
         });
 
-        if (publishedStorageEntry) {
+        if (publishedStorageEntry && publishedStorageEntry.id !== entry.id) {
             /**
              * If there is a `published` entry already, we need to set it to `unpublished`. We need to
              * execute two updates: update the previously published entry's status and the published entry record.

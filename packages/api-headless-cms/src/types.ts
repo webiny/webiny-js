@@ -1610,6 +1610,11 @@ export interface CmsEntryContext {
      */
     updateEntry: (model: CmsModel, id: string, data?: Record<string, any>) => Promise<CmsEntry>;
     /**
+     * Method that republishes entry with given identifier.
+     * @internal
+     */
+    republishEntry: (model: CmsModel, id: string) => Promise<CmsEntry>;
+    /**
      * Delete only a certain revision of the entry.
      */
     deleteEntryRevision: (model: CmsModel, id: string) => Promise<void>;
