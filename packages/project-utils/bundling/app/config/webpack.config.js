@@ -388,6 +388,30 @@ module.exports = function (webpackEnv, { paths, options }) {
                     // match the requirements. When no loader matches it will fall
                     // back to the "file" loader at the end of the loader list.
                     oneOf: [
+                        {
+                            test: /\.svg$/i,
+                            issuer: /\.[jt]sx?$/,
+                            use: [
+                                {
+                                    loader: require.resolve("@svgr/webpack"),
+                                    options: {
+                                        svgoConfig: {
+                                            plugins: [
+                                                {
+                                                    name: "preset-default",
+                                                    params: {
+                                                        overrides: {
+                                                            removeViewBox: false
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                },
+                                require.resolve("file-loader")
+                            ]
+                        },
                         // "url" loader works like "file" loader except that it embeds assets
                         // smaller than specified limit in bytes as data URLs to avoid requests.
                         // A missing `test` is equivalent to a match.
@@ -413,17 +437,6 @@ module.exports = function (webpackEnv, { paths, options }) {
                                     require.resolve("@babel/preset-typescript")
                                 ],
                                 plugins: [
-                                    [
-                                        require.resolve("babel-plugin-named-asset-import"),
-                                        {
-                                            loaderMap: {
-                                                svg: {
-                                                    ReactComponent:
-                                                        "@svgr/webpack?-svgo,+titleProp,+ref![path]"
-                                                }
-                                            }
-                                        }
-                                    ],
                                     [
                                         "babel-plugin-module-resolver",
                                         {
