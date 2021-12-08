@@ -107,13 +107,6 @@ const Upgrade = ({ onInstalled }) => {
 
     const [status, setStatus] = useState<JobStatus>("pending");
 
-    // const [modelsLoading, setModelsLoading] = useState(null);
-
-    // const [models, setModels] = useState({});
-    // const [clients, setClients] = useState<Clients>({});
-
-    // const [currentlyUpgrading, setCurrentlyUpgrading] = useState<CurrentlyUpgrading>(null);
-
     const [upgradeItems, setUpgradeItems] = useState<UpgradeItems>(null);
 
     useEffect(() => {
