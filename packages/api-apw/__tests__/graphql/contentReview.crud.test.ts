@@ -73,7 +73,8 @@ describe("Content Review crud test", () => {
                             },
                             steps: workflow.steps.map(() => ({
                                 status: ApwContentReviewStepStatus.INACTIVE,
-                                slug: expect.any(String)
+                                slug: expect.any(String),
+                                pendingChangeRequests: 0
                             })),
                             content: {
                                 id: expect.any(String),
@@ -107,7 +108,8 @@ describe("Content Review crud test", () => {
                             },
                             steps: workflow.steps.map(() => ({
                                 status: ApwContentReviewStepStatus.INACTIVE,
-                                slug: expect.any(String)
+                                slug: expect.any(String),
+                                pendingChangeRequests: 0
                             })),
                             content: {
                                 id: expect.any(String),
@@ -144,7 +146,8 @@ describe("Content Review crud test", () => {
                             },
                             steps: workflow.steps.map(() => ({
                                 status: ApwContentReviewStepStatus.INACTIVE,
-                                slug: expect.any(String)
+                                slug: expect.any(String),
+                                pendingChangeRequests: 0
                             })),
                             content: {
                                 id: expect.any(String),
@@ -178,7 +181,8 @@ describe("Content Review crud test", () => {
                                 },
                                 steps: workflow.steps.map(() => ({
                                     status: ApwContentReviewStepStatus.INACTIVE,
-                                    slug: expect.any(String)
+                                    slug: expect.any(String),
+                                    pendingChangeRequests: 0
                                 })),
                                 content: {
                                     id: expect.any(String),

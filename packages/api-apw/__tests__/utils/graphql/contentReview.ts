@@ -16,6 +16,7 @@ const getDataFields = (fields = "") => `{
     steps {
         status
         slug
+        pendingChangeRequests
     }
     content {
         type

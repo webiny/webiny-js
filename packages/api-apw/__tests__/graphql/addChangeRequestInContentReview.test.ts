@@ -39,7 +39,8 @@ describe(`Add change requests on a step in a "Content Review"`, () => {
         createChangeRequestMutation,
         listChangeRequestsQuery,
         deleteContentReviewMutation,
-        createContentReviewMutation
+        createContentReviewMutation,
+        getContentReviewQuery
     } = gqlHandler;
 
     const createContentReview = async page => {
@@ -220,6 +221,52 @@ describe(`Add change requests on a step in a "Content Review"`, () => {
                 }
             }
         });
+
+        /**
+         * Should have 1 pending change requests for step 1 and 2 pending change requests for step 2.
+         */
+        const [getContentReviewResponse] = await getContentReviewQuery({ id: contentReview.id });
+        expect(getContentReviewResponse).toEqual({
+            data: {
+                advancedPublishingWorkflow: {
+                    getContentReview: {
+                        data: {
+                            id: expect.any(String),
+                            createdOn: expect.stringMatching(/^20/),
+                            savedOn: expect.stringMatching(/^20/),
+                            createdBy: {
+                                id: expect.any(String),
+                                displayName: expect.any(String),
+                                type: "admin"
+                            },
+                            content: {
+                                id: expect.any(String),
+                                type: "page",
+                                settings: null
+                            },
+                            steps: [
+                                {
+                                    slug: expect.any(String),
+                                    status: expect.any(String),
+                                    pendingChangeRequests: 1
+                                },
+                                {
+                                    slug: expect.any(String),
+                                    status: expect.any(String),
+                                    pendingChangeRequests: 2
+                                },
+                                {
+                                    slug: expect.any(String),
+                                    status: expect.any(String),
+                                    pendingChangeRequests: 0
+                                }
+                            ]
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
     });
 
     test(`should delete all "change requests" when a "content review" gets deleted`, async () => {
@@ -319,10 +366,10 @@ describe(`Add change requests on a step in a "Content Review"`, () => {
         /**
          * Let's delete the first content review entry.
          */
-        const [deleteChangeRequest] = await deleteContentReviewMutation({
+        const [deleteContentReviewResponse] = await deleteContentReviewMutation({
             id: contentReviews[0].id
         });
-        expect(deleteChangeRequest).toEqual({
+        expect(deleteContentReviewResponse).toEqual({
             data: {
                 advancedPublishingWorkflow: {
                     deleteContentReview: {
