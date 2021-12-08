@@ -373,8 +373,10 @@ const Upgrade = ({ onInstalled }) => {
         <Alert title={t`Something went wrong`} type={"danger"}>
             {error.message}
         </Alert>
-    ) : (
+    ) : upgrade ? (
         t`Upgrading Headless CMS...`
+    ) : (
+        "Loading Headless CMS information"
     );
 
     return (
