@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.19.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.19.0-beta.2...v5.19.0-beta.3) (2021-12-08)
+
+
+### Bug Fixes
+
+* add placeholder [no ci] ([3c878fc](https://github.com/webiny/webiny-js/commit/3c878fc835ba788e708a1372d033707a58680abb))
+
+
+### Features
+
+* **api-headless-cms:** republish existing entries ([#2100](https://github.com/webiny/webiny-js/issues/2100)) ([47aecba](https://github.com/webiny/webiny-js/commit/47aecbaf46afdfbb3f61a52bff1d808c0035cef8))
+* introduce `placeholder` prop ([06e7ad7](https://github.com/webiny/webiny-js/commit/06e7ad7adf246e631c79c48a7a377d1c8ead95ec))
+
+
+
+
+
 # [5.19.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.19.0-beta.1...v5.19.0-beta.2) (2021-12-06)
 
 
