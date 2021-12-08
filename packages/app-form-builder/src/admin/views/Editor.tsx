@@ -1,5 +1,5 @@
 import React from "react";
-import HTML5Backend from "react-dnd-html5-backend";
+import { HTML5Backend } from "react-dnd-html5-backend";
 import { DndProvider } from "react-dnd";
 import Snackbar from "@webiny/app-admin/ui/views/AdminView/components/Snackbar";
 import { FormEditorApp } from "../components/FormEditor";

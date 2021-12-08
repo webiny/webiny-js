@@ -1,5 +1,5 @@
 import React from "react";
-import HTML5Backend from "react-dnd-html5-backend";
+import { HTML5Backend } from "react-dnd-html5-backend";
 import { DndProvider } from "react-dnd";
 import { Editor } from "~/admin/components/ContentModelEditor/Editor";
 import { useRouter } from "@webiny/react-router";
