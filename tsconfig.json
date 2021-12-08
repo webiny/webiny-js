@@ -1,5 +1,6 @@
 {
   "extends": "./tsconfig.build.json",
+  "include": [],
   "references": [
     {
       "path": "./packages/api-cognito-authenticator"

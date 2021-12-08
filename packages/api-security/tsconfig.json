@@ -1,6 +1,6 @@
 {
   "extends": "../../tsconfig.build.json",
-  "include": ["src", "__tests__/**/*.ts"],
+  "include": ["src"],
   "references": [
     {
       "path": "../api-authentication"
@@ -40,7 +40,7 @@
     }
   ],
   "compilerOptions": {
-    "rootDirs": ["./src", "./__tests__"],
+    "rootDir": "./src",
     "outDir": "./dist",
     "declarationDir": "./dist",
     "paths": {

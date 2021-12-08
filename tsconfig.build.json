@@ -11,8 +11,6 @@
     "declaration": true,
     "composite": true,
     "noEmit": false,
-    "jsx": "preserve",
-    "emitDeclarationOnly": true,
     "baseUrl": ".",
     "paths": {},
     "typeRoots": ["./typings", "./node_modules/@types", "@types/testing-library__cypress"],
@@ -20,9 +18,12 @@
     "noUnusedParameters": true,
     "noUnusedLocals": true,
 
+    "jsx": "react",
+    "sourceMap": true,
     "skipLibCheck": true,
     "incremental": true,
-    "preserveWatchOutput": false
+    "preserveWatchOutput": false,
+    "emitDeclarationOnly": false
   },
   "exclude": [
     "node_modules",
