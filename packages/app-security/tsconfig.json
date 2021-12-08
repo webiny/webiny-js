@@ -1,7 +1,14 @@
 {
-  "extends": "../../tsconfig.json",
+  "extends": "../../tsconfig.build.json",
   "include": ["src", "__tests__/**/*.ts"],
-  "references": [{ "path": "../app" }, { "path": "../plugins" }],
+  "references": [
+    {
+      "path": "../app"
+    },
+    {
+      "path": "../plugins"
+    }
+  ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
     "outDir": "./dist",

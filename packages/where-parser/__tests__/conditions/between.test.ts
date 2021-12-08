@@ -32,7 +32,7 @@ describe("condition - between", () => {
 
     test.each(unsupportedValues)(
         "between should throw an error on validation when value is not supported - %s",
-        (name: string, value: any) => {
+        (_name: string, value: any) => {
             const betweenCondition = availableConditions.get("between");
 
             expect(() => {
@@ -60,7 +60,7 @@ describe("condition - between", () => {
 
     test.each(unsupportedValues)(
         "not_between should throw an error on validation when value is not supported - %s",
-        (name: string, value: any) => {
+        (_name: string, value: any) => {
             const notBetweenCondition = availableConditions.get("not_between");
 
             expect(() => {

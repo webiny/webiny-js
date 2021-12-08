@@ -1,12 +1,22 @@
 {
-  "extends": "../../tsconfig.json",
+  "extends": "../../tsconfig.build.json",
   "include": ["src", "__tests__/**/*.ts"],
   "references": [
-    { "path": "../db" },
-    { "path": "../error" },
-    { "path": "../handler" },
-    { "path": "../handler-db" },
-    { "path": "../plugins" }
+    {
+      "path": "../db"
+    },
+    {
+      "path": "../error"
+    },
+    {
+      "path": "../handler"
+    },
+    {
+      "path": "../handler-db"
+    },
+    {
+      "path": "../plugins"
+    }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],

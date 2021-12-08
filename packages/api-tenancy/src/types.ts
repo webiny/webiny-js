@@ -10,12 +10,12 @@ export interface TenantDomain {
 export interface Tenant {
     id: string;
     name: string;
-    description: string;
-    status: string;
-    settings: {
+    description?: string;
+    status?: string;
+    settings?: {
         domains: TenantDomain[];
     };
-    parent: string | null;
+    parent?: string | null;
     webinyVersion?: string;
 }
 

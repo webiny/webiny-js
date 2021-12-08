@@ -1,10 +1,16 @@
 {
-  "extends": "../../tsconfig.json",
+  "extends": "../../tsconfig.build.json",
   "include": ["src", "__tests__/**/*.ts"],
   "references": [
-    { "path": "../api-cognito-authenticator" },
-    { "path": "../api-security" },
-    { "path": "../handler" }
+    {
+      "path": "../api-cognito-authenticator"
+    },
+    {
+      "path": "../api-security"
+    },
+    {
+      "path": "../handler"
+    }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],

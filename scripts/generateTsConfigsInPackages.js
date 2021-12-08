@@ -75,7 +75,7 @@ async function output(target, content) {
 
         // Generate `tsconfig.build.json`
         const tsconfigBuildJson = {
-            extends: "../../tsconfig.build.json",
+            extends: "../tsconfig.build.json",
             include: ["src"],
             references: dependencies.map(dep => ({
                 path: `${getRelativePath(

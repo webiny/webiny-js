@@ -1,23 +1,55 @@
 {
-  "extends": "../../tsconfig.json",
+  "extends": "../../tsconfig.build.json",
   "include": ["src", "__tests__/**/*.ts"],
   "references": [
-    { "path": "../api-file-manager" },
-    { "path": "../api-page-builder" },
-    { "path": "../api-security" },
-    { "path": "../error" },
-    { "path": "../handler" },
-    { "path": "../handler-args" },
-    { "path": "../handler-aws" },
-    { "path": "../handler-graphql" },
-    { "path": "../validation" },
-    { "path": "../api-dynamodb-to-elasticsearch" },
-    { "path": "../api-file-manager-ddb-es" },
-    { "path": "../api-i18n-ddb" },
-    { "path": "../api-security-so-ddb" },
-    { "path": "../api-tenancy" },
-    { "path": "../api-tenancy-so-ddb" },
-    { "path": "../db" }
+    {
+      "path": "../api-file-manager"
+    },
+    {
+      "path": "../api-page-builder"
+    },
+    {
+      "path": "../api-security"
+    },
+    {
+      "path": "../error"
+    },
+    {
+      "path": "../handler"
+    },
+    {
+      "path": "../handler-args"
+    },
+    {
+      "path": "../handler-aws"
+    },
+    {
+      "path": "../handler-graphql"
+    },
+    {
+      "path": "../validation"
+    },
+    {
+      "path": "../api-dynamodb-to-elasticsearch"
+    },
+    {
+      "path": "../api-file-manager-ddb-es"
+    },
+    {
+      "path": "../api-i18n-ddb"
+    },
+    {
+      "path": "../api-security-so-ddb"
+    },
+    {
+      "path": "../api-tenancy"
+    },
+    {
+      "path": "../api-tenancy-so-ddb"
+    },
+    {
+      "path": "../db"
+    }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],

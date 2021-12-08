@@ -1,10 +1,16 @@
 {
-  "extends": "../../tsconfig.json",
+  "extends": "../../tsconfig.build.json",
   "include": ["src", "__tests__/**/*.ts"],
   "references": [
-    { "path": "../api-admin-users-cognito" },
-    { "path": "../db-dynamodb" },
-    { "path": "../error" }
+    {
+      "path": "../api-admin-users-cognito"
+    },
+    {
+      "path": "../db-dynamodb"
+    },
+    {
+      "path": "../error"
+    }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],

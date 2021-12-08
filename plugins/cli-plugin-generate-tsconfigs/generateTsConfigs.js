@@ -52,7 +52,7 @@ module.exports = async ({ folder, context }) => {
     };
 
     const tsBuildConfig = {
-        extends: "../../tsconfig.build.json",
+        extends: "../tsconfig.build.json",
         include: ["src"],
         exclude: ["node_modules", "**/__tests__/**", "./dist"],
         references: [],

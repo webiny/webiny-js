@@ -1,10 +1,16 @@
 {
-  "extends": "../../tsconfig.json",
+  "extends": "../../tsconfig.build.json",
   "include": ["src", "__tests__/**/*.ts"],
   "references": [
-    { "path": "../api-file-manager" },
-    { "path": "../handler-graphql" },
-    { "path": "../validation" }
+    {
+      "path": "../api-file-manager"
+    },
+    {
+      "path": "../handler-graphql"
+    },
+    {
+      "path": "../validation"
+    }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],

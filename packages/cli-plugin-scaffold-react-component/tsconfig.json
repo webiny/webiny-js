@@ -1,7 +1,14 @@
 {
-  "extends": "../../tsconfig.json",
+  "extends": "../../tsconfig.build.json",
   "include": ["src", "__tests__/**/*.ts"],
-  "references": [{ "path": "../cli-plugin-scaffold" }, { "path": "../error" }],
+  "references": [
+    {
+      "path": "../cli-plugin-scaffold"
+    },
+    {
+      "path": "../error"
+    }
+  ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
     "outDir": "./dist",

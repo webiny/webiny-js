@@ -4,7 +4,6 @@ import { ElasticsearchQueryBuilderOperatorGreaterThanOrEqualToPlugin } from "~/p
 
 describe("ElasticsearchQueryBuilderOperatorGreaterThanOrEqualToPlugin", () => {
     const plugin = new ElasticsearchQueryBuilderOperatorGreaterThanOrEqualToPlugin();
-    const context: any = {};
 
     it("should apply gte correctly", () => {
         const query = createBlankQuery();
@@ -12,7 +11,6 @@ describe("ElasticsearchQueryBuilderOperatorGreaterThanOrEqualToPlugin", () => {
             value: 100,
             path: "id",
             basePath: "id",
-            context,
             keyword: false
         });
 
@@ -40,7 +38,6 @@ describe("ElasticsearchQueryBuilderOperatorGreaterThanOrEqualToPlugin", () => {
             value: 100,
             path: "id",
             basePath: "id",
-            context,
             keyword: false
         });
 
@@ -49,7 +46,6 @@ describe("ElasticsearchQueryBuilderOperatorGreaterThanOrEqualToPlugin", () => {
             value: from,
             path: "date",
             basePath: "date",
-            context,
             keyword: false
         });
 

@@ -1,5 +1,5 @@
 {
-  "extends": "../../tsconfig.json",
+  "extends": "../../tsconfig.build.json",
   "include": ["src"],
   "references": [
     { "path": "../../../../../packages/api-i18n" },

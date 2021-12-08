@@ -37,6 +37,9 @@
     "@babel/core": "^7.16.0",
     "@commitlint/cli": "^11.0.0",
     "@commitlint/config-conventional": "^11.0.0",
+    "@lerna/batch-packages": "^3.16.0",
+    "@lerna/filter-packages": "^4.0.0",
+    "@lerna/project": "^4.0.0",
     "@testing-library/cypress": "^7.0.2",
     "@types/fs-extra": "^8.0.1",
     "@types/jest": "^24.0.24",
@@ -109,7 +112,7 @@
     "semver": "^6.3.0",
     "source-map-support": "^0.5.0",
     "ts-jest": "^26.4.4",
-    "typescript": "4.1.3",
+    "typescript": "4.5.2",
     "typescript-transform-paths": "^2.2.3",
     "utf-8-validate": "^5.0.2",
     "verdaccio": "^4.10.0",
@@ -166,7 +169,8 @@
     "verdaccio:start": "yarn verdaccio -c ./.verdaccio.yaml",
     "verdaccio:start:detached": "yarn pm2 start \"yarn verdaccio:start\"",
     "webiny": "./node_modules/.bin/webiny",
-    "webiny-ui-build-storybook": "cd packages/ui && cross-env OUT=../../netlify-static yarn build-storybook"
+    "webiny-ui-build-storybook": "cd packages/ui && cross-env OUT=../../netlify-static yarn build-storybook",
+    "watch": "yarn run tsc --build --watch"
   },
   "husky": {
     "hooks": {
@@ -222,7 +226,7 @@
     "react": "17.0.2",
     "react-dom": "17.0.2",
     "pretty-format": "25.5.0",
-    "typescript": "4.1.3",
+    "typescript": "4.5.2",
     "codex-tooltip": "1.0.2",
     "@pulumi/pulumi": "3.19.0",
     "@pulumi/aws": "4.28.0",

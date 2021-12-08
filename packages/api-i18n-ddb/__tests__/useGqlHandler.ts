@@ -3,7 +3,7 @@ import graphqlHandler from "@webiny/handler-graphql";
 import i18nPlugins from "@webiny/api-i18n/graphql";
 import i18nDynamoDbStorageOperations from "~/index";
 import dynamoDbPlugins from "@webiny/db-dynamodb/plugins";
-import { SecurityIdentity } from "@webiny/api-security";
+import { SecurityIdentity } from "@webiny/api-security/types";
 import { apiCallsFactory } from "../../api-i18n/__tests__/helpers";
 import { SecurityPermission } from "@webiny/api-security/types";
 import dbPlugins from "@webiny/handler-db";

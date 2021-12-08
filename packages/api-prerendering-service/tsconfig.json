@@ -1,16 +1,25 @@
 {
-  "extends": "../../tsconfig.json",
+  "extends": "../../tsconfig.build.json",
   "include": ["src", "__tests__/**/*.ts"],
   "references": [
-    { "path": "../error" },
-    { "path": "../handler" },
-    { "path": "../handler-args" },
-    { "path": "../handler-client" },
-    { "path": "../handler-db" },
-    { "path": "../plugins" },
-    { "path": "../db" },
-    { "path": "../db-dynamodb" },
-    { "path": "../handler-aws" }
+    {
+      "path": "../error"
+    },
+    {
+      "path": "../handler"
+    },
+    {
+      "path": "../handler-args"
+    },
+    {
+      "path": "../handler-client"
+    },
+    {
+      "path": "../plugins"
+    },
+    {
+      "path": "../handler-aws"
+    }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],

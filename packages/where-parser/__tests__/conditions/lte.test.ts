@@ -17,7 +17,7 @@ const unsupportedValues = [
 describe("condition - lte", () => {
     test.each(supportedValues)(
         "lte should not throw an error on validation when value is supported - %s",
-        (name: string, value: any) => {
+        (_name: string, value: any) => {
             const lteCondition = availableConditions.get("lte");
 
             expect(() => {
@@ -31,7 +31,7 @@ describe("condition - lte", () => {
 
     test.each(unsupportedValues)(
         "lte should throw an error on validation when value is not supported - %s",
-        (name: string, value: any) => {
+        (_name: string, value: any) => {
             const lteCondition = availableConditions.get("lte");
 
             expect(() => {
@@ -45,7 +45,7 @@ describe("condition - lte", () => {
 
     test.each(supportedValues)(
         "not_lte should not throw an error on validation when value is supported - %s",
-        (name: string, value: any) => {
+        (_name: string, value: any) => {
             const notLteCondition = availableConditions.get("not_lte");
 
             expect(() => {
@@ -59,7 +59,7 @@ describe("condition - lte", () => {
 
     test.each(unsupportedValues)(
         "not_lte should throw an error on validation when value is not supported - %s",
-        (name: string, value: any) => {
+        (_name: string, value: any) => {
             const notLteCondition = availableConditions.get("not_lte");
 
             expect(() => {

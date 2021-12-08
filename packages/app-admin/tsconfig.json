@@ -1,15 +1,31 @@
 {
-  "extends": "../../tsconfig.json",
+  "extends": "../../tsconfig.build.json",
   "include": ["src", "__tests__/**/*.ts"],
   "references": [
-    { "path": "../app" },
-    { "path": "../app-security" },
-    { "path": "../form" },
-    { "path": "../plugins" },
-    { "path": "../react-router" },
-    { "path": "../ui" },
-    { "path": "../ui-composer" },
-    { "path": "../validation" }
+    {
+      "path": "../app"
+    },
+    {
+      "path": "../app-security"
+    },
+    {
+      "path": "../form"
+    },
+    {
+      "path": "../plugins"
+    },
+    {
+      "path": "../react-router"
+    },
+    {
+      "path": "../ui"
+    },
+    {
+      "path": "../ui-composer"
+    },
+    {
+      "path": "../validation"
+    }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],

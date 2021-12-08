@@ -18,7 +18,11 @@
     "typeRoots": ["./typings", "./node_modules/@types", "@types/testing-library__cypress"],
     "plugins": [{ "transform": "typescript-transform-paths", "afterDeclarations": true }],
     "noUnusedParameters": true,
-    "noUnusedLocals": true
+    "noUnusedLocals": true,
+
+    "skipLibCheck": true,
+    "incremental": true,
+    "preserveWatchOutput": false
   },
   "exclude": [
     "node_modules",

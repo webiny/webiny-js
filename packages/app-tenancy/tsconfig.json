@@ -1,11 +1,19 @@
 {
-  "extends": "../../tsconfig.json",
+  "extends": "../../tsconfig.build.json",
   "include": ["src", "__tests__/**/*.ts"],
   "references": [
-    { "path": "../app" },
-    { "path": "../app-admin" },
-    { "path": "../plugins" },
-    { "path": "../ui" }
+    {
+      "path": "../app"
+    },
+    {
+      "path": "../app-admin"
+    },
+    {
+      "path": "../plugins"
+    },
+    {
+      "path": "../ui"
+    }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],

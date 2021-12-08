@@ -1,10 +1,16 @@
 {
-  "extends": "../../tsconfig.json",
+  "extends": "../../tsconfig.build.json",
   "include": ["src", "__tests__/**/*.ts"],
   "references": [
-    { "path": "../api-elasticsearch" },
-    { "path": "../error" },
-    { "path": "../handler" }
+    {
+      "path": "../api-elasticsearch"
+    },
+    {
+      "path": "../error"
+    },
+    {
+      "path": "../handler"
+    }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],

@@ -1,10 +1,16 @@
 {
-  "extends": "../../tsconfig.json",
+  "extends": "../../tsconfig.build.json",
   "include": ["src", "__tests__/**/*.ts"],
   "references": [
-    { "path": "../app" },
-    { "path": "../app-page-builder" },
-    { "path": "../validation" }
+    {
+      "path": "../app"
+    },
+    {
+      "path": "../app-page-builder"
+    },
+    {
+      "path": "../validation"
+    }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],

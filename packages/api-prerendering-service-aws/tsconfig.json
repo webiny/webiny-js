@@ -1,11 +1,19 @@
 {
-  "extends": "../../tsconfig.json",
+  "extends": "../../tsconfig.build.json",
   "include": ["src", "__tests__/**/*.ts"],
   "references": [
-    { "path": "../api-prerendering-service" },
-    { "path": "../handler" },
-    { "path": "../handler-args" },
-    { "path": "../plugins" }
+    {
+      "path": "../api-prerendering-service"
+    },
+    {
+      "path": "../handler"
+    },
+    {
+      "path": "../handler-args"
+    },
+    {
+      "path": "../plugins"
+    }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],

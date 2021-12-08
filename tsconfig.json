@@ -1,7 +1,287 @@
 {
   "extends": "./tsconfig.build.json",
-  "compilerOptions": {
-    "noEmit": true,
-    "emitDeclarationOnly": false
-  }
+  "references": [
+    {
+      "path": "./packages/api-cognito-authenticator"
+    },
+    {
+      "path": "./packages/app-cognito-authenticator"
+    },
+    {
+      "path": "./packages/app-page-builder-elements"
+    },
+    {
+      "path": "./packages/commodo"
+    },
+    {
+      "path": "./packages/db"
+    },
+    {
+      "path": "./packages/error"
+    },
+    {
+      "path": "./packages/form"
+    },
+    {
+      "path": "./packages/handler-args"
+    },
+    {
+      "path": "./packages/handler-logs"
+    },
+    {
+      "path": "./packages/i18n"
+    },
+    {
+      "path": "./packages/plugins"
+    },
+    {
+      "path": "./packages/pubsub"
+    },
+    {
+      "path": "./packages/pulumi-sdk"
+    },
+    {
+      "path": "./packages/react-rich-text-renderer"
+    },
+    {
+      "path": "./packages/storybook-utils"
+    },
+    {
+      "path": "./packages/validation"
+    },
+    {
+      "path": "./packages/app-file-manager-s3"
+    },
+    {
+      "path": "./packages/handler"
+    },
+    {
+      "path": "./packages/i18n-react"
+    },
+    {
+      "path": "./packages/react-router"
+    },
+    {
+      "path": "./packages/ui-composer"
+    },
+    {
+      "path": "./packages/ui"
+    },
+    {
+      "path": "./packages/utils"
+    },
+    {
+      "path": "./packages/where-parser"
+    },
+    {
+      "path": "./packages/api-elasticsearch"
+    },
+    {
+      "path": "./packages/api-upgrade"
+    },
+    {
+      "path": "./packages/app"
+    },
+    {
+      "path": "./packages/cli-plugin-scaffold"
+    },
+    {
+      "path": "./packages/handler-client"
+    },
+    {
+      "path": "./packages/handler-db"
+    },
+    {
+      "path": "./packages/handler-http"
+    },
+    {
+      "path": "./packages/pulumi-aws"
+    },
+    {
+      "path": "./packages/api-authentication"
+    },
+    {
+      "path": "./packages/api-dynamodb-to-elasticsearch"
+    },
+    {
+      "path": "./packages/app-security"
+    },
+    {
+      "path": "./packages/cli-plugin-scaffold-admin-app-module"
+    },
+    {
+      "path": "./packages/cli-plugin-scaffold-ci"
+    },
+    {
+      "path": "./packages/cli-plugin-scaffold-graphql-api"
+    },
+    {
+      "path": "./packages/cli-plugin-scaffold-graphql-service"
+    },
+    {
+      "path": "./packages/cli-plugin-scaffold-react-app"
+    },
+    {
+      "path": "./packages/cli-plugin-scaffold-react-component"
+    },
+    {
+      "path": "./packages/db-dynamodb"
+    },
+    {
+      "path": "./packages/handler-aws"
+    },
+    {
+      "path": "./packages/handler-graphql"
+    },
+    {
+      "path": "./packages/api-authentication-cognito"
+    },
+    {
+      "path": "./packages/api-prerendering-service"
+    },
+    {
+      "path": "./packages/api-tenancy"
+    },
+    {
+      "path": "./packages/app-admin-cognito"
+    },
+    {
+      "path": "./packages/app-admin"
+    },
+    {
+      "path": "./packages/cli-plugin-scaffold-full-stack-app"
+    },
+    {
+      "path": "./packages/api-prerendering-service-aws"
+    },
+    {
+      "path": "./packages/api-prerendering-service-so-ddb"
+    },
+    {
+      "path": "./packages/api-tenancy-so-ddb"
+    },
+    {
+      "path": "./packages/app-file-manager"
+    },
+    {
+      "path": "./packages/app-i18n"
+    },
+    {
+      "path": "./packages/app-plugin-admin-welcome-screen"
+    },
+    {
+      "path": "./packages/app-security-access-management"
+    },
+    {
+      "path": "./packages/app-tenancy"
+    },
+    {
+      "path": "./packages/api-security"
+    },
+    {
+      "path": "./packages/app-admin-okta"
+    },
+    {
+      "path": "./packages/app-admin-users-cognito"
+    },
+    {
+      "path": "./packages/app-graphql-playground"
+    },
+    {
+      "path": "./packages/app-i18n-content"
+    },
+    {
+      "path": "./packages/app-page-builder"
+    },
+    {
+      "path": "./packages/app-tenant-manager"
+    },
+    {
+      "path": "./packages/api-security-cognito"
+    },
+    {
+      "path": "./packages/api-security-okta"
+    },
+    {
+      "path": "./packages/api-security-so-ddb"
+    },
+    {
+      "path": "./packages/app-form-builder"
+    },
+    {
+      "path": "./packages/app-headless-cms"
+    },
+    {
+      "path": "./packages/app-typeform"
+    },
+    {
+      "path": "./packages/api-admin-users-cognito"
+    },
+    {
+      "path": "./packages/api-i18n"
+    },
+    {
+      "path": "./packages/api-tenant-manager"
+    },
+    {
+      "path": "./packages/api-admin-users-cognito-so-ddb"
+    },
+    {
+      "path": "./packages/api-i18n-content"
+    },
+    {
+      "path": "./packages/api-i18n-ddb"
+    },
+    {
+      "path": "./packages/api-file-manager"
+    },
+    {
+      "path": "./packages/api-file-manager-ddb-es"
+    },
+    {
+      "path": "./packages/api-file-manager-ddb"
+    },
+    {
+      "path": "./packages/api-file-manager-s3"
+    },
+    {
+      "path": "./packages/api-headless-cms"
+    },
+    {
+      "path": "./packages/api-form-builder"
+    },
+    {
+      "path": "./packages/api-headless-cms-ddb-es"
+    },
+    {
+      "path": "./packages/api-headless-cms-ddb"
+    },
+    {
+      "path": "./packages/api-page-builder"
+    },
+    {
+      "path": "./packages/api-form-builder-so-ddb-es"
+    },
+    {
+      "path": "./packages/api-form-builder-so-ddb"
+    },
+    {
+      "path": "./packages/api-page-builder-import-export"
+    },
+    {
+      "path": "./packages/api-page-builder-so-ddb-es"
+    },
+    {
+      "path": "./packages/api-page-builder-so-ddb"
+    },
+    {
+      "path": "./packages/api-dynamic-pages"
+    },
+    {
+      "path": "./packages/api-page-builder-import-export-so-ddb"
+    },
+    {
+      "path": "./packages/api-headless-cms-dynamic-pages"
+    }
+  ]
 }

@@ -1,23 +1,27 @@
 {
-  "extends": "../../tsconfig",
+  "extends": "../../tsconfig.build.json",
+  "include": ["src", "__tests__/**/*.ts"],
   "references": [
     {
-      "path": "../error"
+      "path": "../api-prerendering-service"
     },
     {
-      "path": "../handler-aws"
+      "path": "../error"
     },
     {
       "path": "../db"
     },
     {
-      "path": "../api-prerendering-service"
+      "path": "../db-dynamodb"
     },
     {
-      "path": "../db-dynamodb"
+      "path": "../handler-aws"
     }
   ],
   "compilerOptions": {
+    "rootDirs": ["./src", "./__tests__"],
+    "outDir": "./dist",
+    "declarationDir": "./dist",
     "paths": {
       "~/*": ["./src/*"],
       "@webiny/error/*": ["../error/src/*"],

@@ -1,18 +1,43 @@
 {
-  "extends": "../../tsconfig.json",
+  "extends": "../../tsconfig.build.json",
   "include": ["src", "__tests__/**/*.ts"],
   "references": [
-    { "path": "../api-authentication" },
-    { "path": "../api-tenancy" },
-    { "path": "../error" },
-    { "path": "../handler" },
-    { "path": "../handler-aws" },
-    { "path": "../handler-graphql" },
-    { "path": "../handler-http" },
-    { "path": "../plugins" },
-    { "path": "../pubsub" },
-    { "path": "../validation" },
-    { "path": "../api-tenancy-so-ddb" }
+    {
+      "path": "../api-authentication"
+    },
+    {
+      "path": "../api-tenancy"
+    },
+    {
+      "path": "../error"
+    },
+    {
+      "path": "../handler"
+    },
+    {
+      "path": "../handler-aws"
+    },
+    {
+      "path": "../handler-graphql"
+    },
+    {
+      "path": "../handler-http"
+    },
+    {
+      "path": "../plugins"
+    },
+    {
+      "path": "../pubsub"
+    },
+    {
+      "path": "../validation"
+    },
+    {
+      "path": "../api-tenancy-so-ddb"
+    },
+    {
+      "path": "../handler-aws"
+    }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],

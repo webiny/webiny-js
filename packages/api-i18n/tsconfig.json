@@ -1,18 +1,46 @@
 {
-  "extends": "../../tsconfig.json",
+  "extends": "../../tsconfig.build.json",
   "include": ["src", "__tests__/**/*.ts"],
   "references": [
-    { "path": "../api-security" },
-    { "path": "../api-security-so-ddb" },
-    { "path": "../api-tenancy" },
-    { "path": "../api-tenancy-so-ddb" },
-    { "path": "../error" },
-    { "path": "../handler" },
-    { "path": "../handler-aws" },
-    { "path": "../handler-client" },
-    { "path": "../handler-graphql" },
-    { "path": "../plugins" },
-    { "path": "../handler-http" }
+    {
+      "path": "../api-security"
+    },
+    {
+      "path": "../api-security-so-ddb"
+    },
+    {
+      "path": "../api-tenancy"
+    },
+    {
+      "path": "../api-tenancy-so-ddb"
+    },
+    {
+      "path": "../error"
+    },
+    {
+      "path": "../handler"
+    },
+    {
+      "path": "../handler-aws"
+    },
+    {
+      "path": "../handler-client"
+    },
+    {
+      "path": "../handler-graphql"
+    },
+    {
+      "path": "../plugins"
+    },
+    {
+      "path": "../api-security-so-ddb"
+    },
+    {
+      "path": "../api-tenancy-so-ddb"
+    },
+    {
+      "path": "../handler-http"
+    }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],

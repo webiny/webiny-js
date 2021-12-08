@@ -1,13 +1,25 @@
 {
-  "extends": "../../tsconfig.json",
+  "extends": "../../tsconfig.build.json",
   "include": ["src", "__tests__/**/*.ts"],
   "references": [
-    { "path": "../api-headless-cms" },
-    { "path": "../db-dynamodb" },
-    { "path": "../error" },
-    { "path": "../handler-db" },
-    { "path": "../plugins" },
-    { "path": "../utils" }
+    {
+      "path": "../api-headless-cms"
+    },
+    {
+      "path": "../db-dynamodb"
+    },
+    {
+      "path": "../error"
+    },
+    {
+      "path": "../handler-db"
+    },
+    {
+      "path": "../utils"
+    },
+    {
+      "path": "../plugins"
+    }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
