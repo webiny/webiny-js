@@ -5,7 +5,7 @@
     "forceConsistentCasingInFileNames": true,
     "allowSyntheticDefaultImports": true,
     "moduleResolution": "node",
-    "module": "esnext",
+    "module": "CommonJS",
     "lib": ["dom", "dom.iterable"],
     "esModuleInterop": true,
     "declaration": true,
