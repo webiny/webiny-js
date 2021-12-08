@@ -728,6 +728,8 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
 
             const entry: CmsEntry = {
                 ...originalEntry,
+                savedOn: new Date().toISOString(),
+                webinyVersion: context.WEBINY_VERSION,
                 values
             };
 

@@ -2,14 +2,17 @@ import { useContentGqlHandler } from "../utils/useContentGqlHandler";
 import { CmsGroup, CmsModel } from "~/types";
 import models from "./mocks/contentModels";
 import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
+import { useCategoryReadHandler } from "../utils/useCategoryReadHandler";
 
 describe("Republish entries", () => {
+    const readOpts = { path: "read/en-US" };
     const manageOpts = { path: "manage/en-US" };
 
     const {
         createContentModelMutation,
         updateContentModelMutation,
-        createContentModelGroupMutation
+        createContentModelGroupMutation,
+        until
     } = useContentGqlHandler(manageOpts);
 
     // This function is not directly within `beforeEach` as we don't always setup the same content model.
@@ -56,6 +59,7 @@ describe("Republish entries", () => {
         const group = await setupGroup();
         await setupCategoryModel(group);
 
+        const { listCategories } = useCategoryReadHandler(readOpts);
         const { createCategory, publishCategory, republishCategory } =
             useCategoryManageHandler(manageOpts);
 
@@ -100,6 +104,19 @@ describe("Republish entries", () => {
             revision: orangeOriginal.id
         });
         const orange = orangePublishResponse.data.publishCategory.data;
+
+        /**
+         * Wait for the categories to be published
+         */
+        await until(
+            () => listCategories(),
+            ([response]) => {
+                return response.data.listCategories.data.length === 3;
+            },
+            {
+                name: "after publishing categories"
+            }
+        );
         /**
          * Now we republish all categories and expect they did not change.
          */
@@ -109,29 +126,102 @@ describe("Republish entries", () => {
         expect(appleRepublishResponse).toEqual({
             data: {
                 republishCategory: {
-                    data: apple,
+                    data: {
+                        ...apple,
+                        savedOn: expect.stringMatching(/^20/)
+                    },
                     error: null
                 }
             }
         });
+        apple.savedOn = appleRepublishResponse.data.republishCategory.data.savedOn;
+
         const [bananaRepublishResponse] = await republishCategory({
             revision: bananaOriginal.id
         });
         expect(bananaRepublishResponse).toEqual({
             data: {
                 republishCategory: {
-                    data: banana,
+                    data: {
+                        ...banana,
+                        savedOn: expect.stringMatching(/^20/)
+                    },
                     error: null
                 }
             }
         });
+        banana.savedOn = bananaRepublishResponse.data.republishCategory.data.savedOn;
+
         const [orangeRepublishResponse] = await republishCategory({
             revision: orangeOriginal.id
         });
         expect(orangeRepublishResponse).toEqual({
             data: {
                 republishCategory: {
-                    data: orange,
+                    data: {
+                        ...orange,
+                        savedOn: expect.stringMatching(/^20/)
+                    },
+                    error: null
+                }
+            }
+        });
+        orange.savedOn = orangeRepublishResponse.data.republishCategory.data.savedOn;
+
+        const times = [apple.savedOn, banana.savedOn, orange.savedOn];
+        /**
+         * Wait for the categories to be published
+         */
+        await until(
+            () =>
+                listCategories({
+                    sort: ["createdOn_ASC"]
+                }),
+            ([response]) => {
+                const items = response.data.listCategories.data;
+                if (items.length !== 3) {
+                    return false;
+                }
+                for (const key in times) {
+                    if (items[key].savedOn !== times[key]) {
+                        return false;
+                    }
+                }
+                return true;
+            },
+            {
+                name: "after republishing categories"
+            }
+        );
+        const [response] = await listCategories({
+            sort: ["createdOn_ASC"]
+        });
+
+        expect(response).toMatchObject({
+            data: {
+                listCategories: {
+                    data: [
+                        {
+                            id: apple.id,
+                            title: apple.title,
+                            savedOn: apple.savedOn
+                        },
+                        {
+                            id: banana.id,
+                            title: banana.title,
+                            savedOn: banana.savedOn
+                        },
+                        {
+                            id: orange.id,
+                            title: orange.title,
+                            savedOn: orange.savedOn
+                        }
+                    ],
+                    meta: {
+                        totalCount: 3,
+                        hasMoreItems: false,
+                        cursor: null
+                    },
                     error: null
                 }
             }
