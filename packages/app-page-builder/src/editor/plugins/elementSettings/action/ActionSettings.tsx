@@ -126,7 +126,7 @@ const ActionSettingsComponent: React.FunctionComponent<
                                                 label={"Handler"}
                                                 containerClassName={classes.gridClass}
                                             >
-                                                <SelectField value={value} onChange={onChange}>
+                                                <SelectField value={value} onChange={onChange} placeholder={"No handlers found."}>
                                                     {clickHandlers.map(item => (
                                                         <option key={item.name} value={item.name}>
                                                             {item.title}
