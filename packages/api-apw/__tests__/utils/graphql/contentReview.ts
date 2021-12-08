@@ -17,6 +17,11 @@ const getDataFields = (fields = "") => `{
         status
         slug
         pendingChangeRequests
+        signOffProvidedOn
+        signOffProvidedBy {
+            id
+            displayName
+        }
     }
     content {
         type
@@ -91,6 +96,28 @@ export const DELETE_CONTENT_REVIEW_MUTATION = /* GraphQL */ `
     mutation DeleteContentReviewMutation($id: ID!) {
         advancedPublishingWorkflow {
             deleteContentReview(id: $id) {
+                data
+                error ${ERROR_FIELDS}
+            }
+        }
+    }
+`;
+
+export const PROVIDE_SIGN_OFF_MUTATION = /* GraphQL */ `
+    mutation ProvideSignOffMutation($id: ID!, $step: String!) {
+        advancedPublishingWorkflow {
+            provideSignOff(id: $id, step: $step) {
+                data
+                error ${ERROR_FIELDS}
+            }
+        }
+    }
+`;
+
+export const RETRACT_SIGN_OFF_MUTATION = /* GraphQL */ `
+    mutation RetractSignOffMutation($id: ID!, $step: String!) {
+        advancedPublishingWorkflow {
+            retractSignOff(id: $id, step: $step) {
                 data
                 error ${ERROR_FIELDS}
             }
