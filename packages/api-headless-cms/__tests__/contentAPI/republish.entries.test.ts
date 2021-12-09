@@ -1,8 +1,18 @@
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
-import { CmsGroup, CmsModel } from "~/types";
+import { CmsEntry, CmsGroup, CmsModel } from "~/types";
 import models from "./mocks/contentModels";
 import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
 import { useCategoryReadHandler } from "../utils/useCategoryReadHandler";
+import mdbid from "mdbid";
+import { useProductReadHandler } from "../utils/useProductReadHandler";
+import { useProductManageHandler } from "../utils/useProductManageHandler";
+const cliPackageJson = require("@webiny/cli/package.json");
+const webinyVersion = cliPackageJson.version;
+
+interface CreateEntryResult {
+    entry: CmsEntry;
+    input: Record<string, any>;
+}
 
 describe("Republish entries", () => {
     const readOpts = { path: "read/en-US" };
@@ -14,6 +24,9 @@ describe("Republish entries", () => {
         createContentModelGroupMutation,
         until
     } = useContentGqlHandler(manageOpts);
+
+    const { createCategory, publishCategory, republishCategory } =
+        useCategoryManageHandler(manageOpts);
 
     // This function is not directly within `beforeEach` as we don't always setup the same content model.
     // We call this function manually at the beginning of each test, where needed.
@@ -29,8 +42,8 @@ describe("Republish entries", () => {
         return createCMG.data.createContentModelGroup.data;
     };
 
-    const setupCategoryModel = async (contentModelGroup: CmsGroup): Promise<CmsModel> => {
-        const model = models.find(m => m.modelId === "category");
+    const setupModel = async (contentModelGroup: CmsGroup, modelId: string): Promise<CmsModel> => {
+        const model = models.find(m => m.modelId === modelId);
         // Create initial record
         const [create] = await createContentModelMutation({
             data: {
@@ -52,17 +65,14 @@ describe("Republish entries", () => {
                 layout: model.layout
             }
         });
-        return update.data.updateContentModel.data;
+        return {
+            ...update.data.updateContentModel.data,
+            tenant: "root",
+            locale: "en-US"
+        };
     };
 
-    test("should republish entries without changing them", async () => {
-        const group = await setupGroup();
-        await setupCategoryModel(group);
-
-        const { listCategories } = useCategoryReadHandler(readOpts);
-        const { createCategory, publishCategory, republishCategory } =
-            useCategoryManageHandler(manageOpts);
-
+    const createPublishedCategories = async () => {
         /**
          * Create test categories.
          */
@@ -105,6 +115,64 @@ describe("Republish entries", () => {
         });
         const orange = orangePublishResponse.data.publishCategory.data;
 
+        return {
+            appleOriginal: appleOriginal,
+            applePublished: apple,
+            bananaOriginal: bananaOriginal,
+            bananaPublished: banana,
+            orangeOriginal: orangeOriginal,
+            orangePublished: orange
+        };
+    };
+
+    const createEntry = (model: CmsModel, input: Record<string, any>): CreateEntryResult => {
+        const id = mdbid();
+        return {
+            entry: {
+                id: `${id}#0001`,
+                entryId: id,
+                locale: model.locale,
+                tenant: model.tenant,
+                webinyVersion,
+                locked: false,
+                values: input,
+                createdOn: new Date().toISOString(),
+                savedOn: new Date().toISOString(),
+                modelId: model.modelId,
+                status: "draft",
+                version: 1,
+                createdBy: {
+                    id: "admin",
+                    type: "admin",
+                    displayName: "Admin"
+                },
+                ownedBy: {
+                    id: "admin",
+                    type: "admin",
+                    displayName: "Admin"
+                }
+            },
+            input
+        };
+    };
+
+    test("should republish entries without changing them", async () => {
+        const group = await setupGroup();
+        await setupModel(group, "category");
+
+        const { listCategories } = useCategoryReadHandler(readOpts);
+
+        const categories = await createPublishedCategories();
+
+        const {
+            appleOriginal,
+            applePublished,
+            orangeOriginal,
+            orangePublished,
+            bananaPublished,
+            bananaOriginal
+        } = categories;
+
         /**
          * Wait for the categories to be published
          */
@@ -127,14 +195,14 @@ describe("Republish entries", () => {
             data: {
                 republishCategory: {
                     data: {
-                        ...apple,
+                        ...applePublished,
                         savedOn: expect.stringMatching(/^20/)
                     },
                     error: null
                 }
             }
         });
-        apple.savedOn = appleRepublishResponse.data.republishCategory.data.savedOn;
+        applePublished.savedOn = appleRepublishResponse.data.republishCategory.data.savedOn;
 
         const [bananaRepublishResponse] = await republishCategory({
             revision: bananaOriginal.id
@@ -143,14 +211,14 @@ describe("Republish entries", () => {
             data: {
                 republishCategory: {
                     data: {
-                        ...banana,
+                        ...bananaPublished,
                         savedOn: expect.stringMatching(/^20/)
                     },
                     error: null
                 }
             }
         });
-        banana.savedOn = bananaRepublishResponse.data.republishCategory.data.savedOn;
+        bananaPublished.savedOn = bananaRepublishResponse.data.republishCategory.data.savedOn;
 
         const [orangeRepublishResponse] = await republishCategory({
             revision: orangeOriginal.id
@@ -159,16 +227,16 @@ describe("Republish entries", () => {
             data: {
                 republishCategory: {
                     data: {
-                        ...orange,
+                        ...orangePublished,
                         savedOn: expect.stringMatching(/^20/)
                     },
                     error: null
                 }
             }
         });
-        orange.savedOn = orangeRepublishResponse.data.republishCategory.data.savedOn;
+        orangePublished.savedOn = orangeRepublishResponse.data.republishCategory.data.savedOn;
 
-        const times = [apple.savedOn, banana.savedOn, orange.savedOn];
+        const times = [applePublished.savedOn, bananaPublished.savedOn, orangePublished.savedOn];
         /**
          * Wait for the categories to be published
          */
@@ -202,19 +270,19 @@ describe("Republish entries", () => {
                 listCategories: {
                     data: [
                         {
-                            id: apple.id,
-                            title: apple.title,
-                            savedOn: apple.savedOn
+                            id: applePublished.id,
+                            title: applePublished.title,
+                            savedOn: applePublished.savedOn
                         },
                         {
-                            id: banana.id,
-                            title: banana.title,
-                            savedOn: banana.savedOn
+                            id: bananaPublished.id,
+                            title: bananaPublished.title,
+                            savedOn: bananaPublished.savedOn
                         },
                         {
-                            id: orange.id,
-                            title: orange.title,
-                            savedOn: orange.savedOn
+                            id: orangePublished.id,
+                            title: orangePublished.title,
+                            savedOn: orangePublished.savedOn
                         }
                     ],
                     meta: {
@@ -230,7 +298,7 @@ describe("Republish entries", () => {
 
     test("should not allow republishing of unpublished entries", async () => {
         const group = await setupGroup();
-        await setupCategoryModel(group);
+        await setupModel(group, "category");
 
         const { createCategory, republishCategory } = useCategoryManageHandler(manageOpts);
 
@@ -257,6 +325,295 @@ describe("Republish entries", () => {
                         code: "NOT_PUBLISHED_ERROR",
                         data: expect.any(Object)
                     }
+                }
+            }
+        });
+    });
+
+    /**
+     * This test checks values directly in the storage operations so we make sure there are required values in ref objects.
+     * We check in both latest and published records because in different storages that can be two different records.
+     */
+    test("storage operations - should republish entries without changing them", async () => {
+        const group = await setupGroup();
+        const categoryModel = await setupModel(group, "category");
+        const productModel = await setupModel(group, "product");
+
+        const { applePublished, bananaPublished } = await createPublishedCategories();
+
+        const { listProducts: listReadProducts } = useProductReadHandler(readOpts);
+        const { publishProduct, republishProduct } = useProductManageHandler(manageOpts);
+
+        const { storageOperations } = useCategoryManageHandler(manageOpts);
+
+        const { entry: galaEntry, input: galaInput } = createEntry(productModel, {
+            title: "Gala",
+            category: {
+                entryId: applePublished.id,
+                modelId: categoryModel.modelId
+            }
+        });
+        const { entry: goldenEntry, input: goldenInput } = createEntry(productModel, {
+            title: "Golden",
+            category: {
+                entryId: bananaPublished.id,
+                modelId: categoryModel.modelId
+            }
+        });
+
+        const galaRecord = await storageOperations.entries.create(productModel, {
+            entry: galaEntry,
+            input: galaInput,
+            storageEntry: galaEntry
+        });
+
+        const goldenRecord = await storageOperations.entries.create(productModel, {
+            entry: goldenEntry,
+            input: goldenInput,
+            storageEntry: goldenEntry
+        });
+
+        expect(galaRecord).toEqual({
+            ...galaEntry
+        });
+
+        const [publishGalaResponse] = await publishProduct({
+            revision: galaRecord.id
+        });
+
+        expect(publishGalaResponse).toMatchObject({
+            data: {
+                publishProduct: {
+                    data: {
+                        id: galaRecord.id
+                    },
+                    error: null
+                }
+            }
+        });
+
+        const [publishGoldenResponse] = await publishProduct({
+            revision: goldenRecord.id
+        });
+
+        expect(publishGoldenResponse).toMatchObject({
+            data: {
+                publishProduct: {
+                    data: {
+                        id: goldenRecord.id
+                    },
+                    error: null
+                }
+            }
+        });
+
+        /**
+         * Wait for the products to be published
+         */
+        await until(
+            () =>
+                listReadProducts({
+                    sort: ["createdOn_ASC"]
+                }),
+            ([response]) => {
+                const items = response.data.listProducts.data;
+                if (items.length !== 2) {
+                    return false;
+                }
+                const [gala, golden] = items;
+                return gala.id === galaRecord.id && golden.id === goldenRecord.id;
+            },
+            {
+                name: "after publishing product"
+            }
+        );
+
+        const [republishGalaResponse] = await republishProduct({
+            revision: galaRecord.id
+        });
+        expect(republishGalaResponse).toMatchObject({
+            data: {
+                republishProduct: {
+                    data: {
+                        id: galaRecord.id
+                    },
+                    error: null
+                }
+            }
+        });
+        const [republishGoldenResponse] = await republishProduct({
+            revision: goldenRecord.id
+        });
+        expect(republishGoldenResponse).toMatchObject({
+            data: {
+                republishProduct: {
+                    data: {
+                        id: goldenRecord.id
+                    },
+                    error: null
+                }
+            }
+        });
+        const galaSavedOn = republishGalaResponse.data.republishProduct.data.savedOn;
+        const goldenSavedOn = republishGoldenResponse.data.republishProduct.data.savedOn;
+        /**
+         * Wait for the products to be published
+         */
+        await until(
+            () =>
+                listReadProducts({
+                    sort: ["createdOn_ASC"]
+                }),
+            ([response]) => {
+                const items = response.data.listProducts.data;
+                if (items.length !== 2) {
+                    return false;
+                }
+                const [gala, golden] = items;
+                const ids = gala.id === galaRecord.id && golden.id === goldenRecord.id;
+                const times = gala.savedOn === galaSavedOn && golden.savedOn === goldenSavedOn;
+                return ids && times;
+            },
+            {
+                name: "after publishing product"
+            }
+        );
+        /**
+         * And now we need to go directly into storage and check that values on the product records are ok.
+         * We must call both latest and published.
+         */
+        const latestProducts = await storageOperations.entries.list(productModel, {
+            where: {
+                latest: true
+            },
+            sort: ["createdOn_ASC"]
+        });
+
+        expect(latestProducts).toMatchObject({
+            items: [
+                {
+                    values: {
+                        category: {
+                            id: applePublished.id,
+                            entryId: applePublished.entryId,
+                            modelId: categoryModel.modelId
+                        }
+                    }
+                },
+                {
+                    values: {
+                        category: {
+                            id: bananaPublished.id,
+                            entryId: bananaPublished.entryId,
+                            modelId: categoryModel.modelId
+                        }
+                    }
+                }
+            ],
+            hasMoreItems: false,
+            totalCount: 2
+        });
+
+        const latestGalaRecord = await storageOperations.entries.get(productModel, {
+            where: {
+                id: galaRecord.id,
+                latest: true
+            }
+        });
+
+        expect(latestGalaRecord).toMatchObject({
+            id: galaRecord.id,
+            values: {
+                category: {
+                    id: applePublished.id,
+                    entryId: applePublished.entryId,
+                    modelId: categoryModel.modelId
+                }
+            }
+        });
+
+        const latestGoldenRecord = await storageOperations.entries.get(productModel, {
+            where: {
+                id: goldenRecord.id,
+                latest: true
+            }
+        });
+
+        expect(latestGoldenRecord).toMatchObject({
+            id: goldenRecord.id,
+            values: {
+                category: {
+                    id: bananaPublished.id,
+                    entryId: bananaPublished.entryId,
+                    modelId: categoryModel.modelId
+                }
+            }
+        });
+
+        const publishedProducts = await storageOperations.entries.list(productModel, {
+            where: {
+                published: true
+            },
+            sort: ["createdOn_ASC"]
+        });
+
+        expect(publishedProducts).toMatchObject({
+            items: [
+                {
+                    values: {
+                        category: {
+                            id: applePublished.id,
+                            entryId: applePublished.entryId,
+                            modelId: categoryModel.modelId
+                        }
+                    }
+                },
+                {
+                    values: {
+                        category: {
+                            id: bananaPublished.id,
+                            entryId: bananaPublished.entryId,
+                            modelId: categoryModel.modelId
+                        }
+                    }
+                }
+            ],
+            hasMoreItems: false,
+            totalCount: 2
+        });
+
+        const publishedGalaRecord = await storageOperations.entries.get(productModel, {
+            where: {
+                id: galaRecord.id,
+                published: true
+            }
+        });
+
+        expect(publishedGalaRecord).toMatchObject({
+            id: galaRecord.id,
+            values: {
+                category: {
+                    id: applePublished.id,
+                    entryId: applePublished.entryId,
+                    modelId: categoryModel.modelId
+                }
+            }
+        });
+
+        const publishedGoldenRecord = await storageOperations.entries.get(productModel, {
+            where: {
+                id: goldenRecord.id,
+                published: true
+            }
+        });
+
+        expect(publishedGoldenRecord).toMatchObject({
+            id: goldenRecord.id,
+            values: {
+                category: {
+                    id: bananaPublished.id,
+                    entryId: bananaPublished.entryId,
+                    modelId: categoryModel.modelId
                 }
             }
         });
