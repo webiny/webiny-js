@@ -10796,6 +10796,28 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@webiny/cli-plugin-seed@workspace:packages/cli-plugin-seed":
+  version: 0.0.0-use.local
+  resolution: "@webiny/cli-plugin-seed@workspace:packages/cli-plugin-seed"
+  dependencies:
+    "@babel/cli": ^7.5.5
+    "@babel/core": ^7.5.5
+    "@babel/preset-env": ^7.5.5
+    "@babel/preset-flow": ^7.0.0
+    "@babel/runtime": ^7.5.5
+    "@types/inquirer": ^7.3.1
+    "@webiny/cli": ^5.18.3
+    "@webiny/plugins": ^5.18.3
+    "@webiny/project-utils": ^5.18.3
+    chalk: ^4.1.0
+    inquirer: ^7.3.3
+    ora: 4.1.1
+    prettier: ^2.3.2
+    rimraf: ^3.0.2
+    typescript: ^4.1.3
+  languageName: unknown
+  linkType: soft
+
 "@webiny/cli-plugin-workspaces@workspace:packages/cli-plugin-workspaces":
   version: 0.0.0-use.local
   resolution: "@webiny/cli-plugin-workspaces@workspace:packages/cli-plugin-workspaces"

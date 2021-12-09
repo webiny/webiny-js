@@ -1,0 +1,16 @@
+{
+  "extends": "../../tsconfig.json",
+  "include": ["src", "__tests__/**/*.ts"],
+  "references": [{ "path": "../plugins" }],
+  "compilerOptions": {
+    "rootDirs": ["./src", "./__tests__"],
+    "outDir": "./dist",
+    "declarationDir": "./dist",
+    "paths": {
+      "~/*": ["./src/*"],
+      "@webiny/plugins/*": ["../plugins/src/*"],
+      "@webiny/plugins": ["../plugins/src"]
+    },
+    "baseUrl": "."
+  }
+}
