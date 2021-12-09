@@ -108,6 +108,19 @@ const buildReferenceFieldPaths = (params: BuildReferenceFieldPaths): string[] =>
         }, []);
 };
 
+const getReferenceFieldValue = (ref: any): { id: string | null; modelId: string | null } => {
+    if (!ref) {
+        return {
+            id: null,
+            modelId: null
+        };
+    }
+    return {
+        id: (ref.id || ref.entryId || "").trim() || null,
+        modelId: (ref.modelId || "").trim() || null
+    };
+};
+
 export const referenceFieldsMapping = async (params: Params): Promise<Record<string, any>> => {
     const { context, model, input } = params;
 
@@ -129,17 +142,20 @@ export const referenceFieldsMapping = async (params: Params): Promise<Record<str
 
     for (const path of referenceFieldPaths) {
         const ref = dotProp.get(output, path) as ReferenceObject | any;
-        if (!ref || !ref.id || !ref.modelId) {
+
+        const { id, modelId } = getReferenceFieldValue(ref);
+
+        if (!id || !modelId) {
             continue;
         }
-        if (!referencesByModel[ref.modelId]) {
-            referencesByModel[ref.modelId] = [];
+        if (!referencesByModel[modelId]) {
+            referencesByModel[modelId] = [];
         }
-        referencesByModel[ref.modelId].push(ref.id);
-        if (!pathsByReferenceId[ref.id]) {
-            pathsByReferenceId[ref.id] = [];
+        referencesByModel[modelId].push(id);
+        if (!pathsByReferenceId[id]) {
+            pathsByReferenceId[id] = [];
         }
-        pathsByReferenceId[ref.id].push(path);
+        pathsByReferenceId[id].push(path);
     }
 
     /**
