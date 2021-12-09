@@ -1,11 +1,17 @@
-import { ListResponse, Response, ErrorResponse } from "@webiny/handler-graphql/responses";
+import {
+    ListResponse,
+    Response,
+    ErrorResponse,
+    NotFoundResponse
+} from "@webiny/handler-graphql/responses";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
-import { Page, PbContext } from "~/types";
+import { Page, PbContext, PageSecurityPermission } from "~/types";
 import Error from "@webiny/error";
 import resolve from "./utils/resolve";
 import pageSettings from "./pages/pageSettings";
 import { fetchEmbed, findProvider } from "./pages/oEmbed";
 import lodashGet from "lodash/get";
+import checkBasePermissions from "~/graphql/crud/utils/checkBasePermissions";
 
 const plugin: GraphQLSchemaPlugin<PbContext> = {
     type: "graphql-schema",
@@ -272,6 +278,9 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                 deleteRevision(id: ID!): PbDeleteResponse
 
                 updateImageSize: PbDeleteResponse
+
+                # Re-renders given page.
+                rerenderPage(id: ID!): PbPageResponse
             }
         `,
         resolvers: {
@@ -448,6 +457,32 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
 
                 requestChanges: async (_, args: { id: string }, context) => {
                     return resolve(() => context.pageBuilder.pages.requestChanges(args.id));
+                },
+
+                rerenderPage: async (_, args: { id: string }, context) => {
+                    try {
+                        await checkBasePermissions<PageSecurityPermission>(context, "pb.page", {
+                            pw: "p"
+                        });
+
+                        // If permissions-checks were successful, let's continue with the rest.
+                        // Retrieve the original page. If it doesn't exist, immediately exit.
+                        const page = await context.pageBuilder.pages.get(args.id);
+                        if (!page) {
+                            console.warn(`no page with id ${args.id}`);
+                            return new NotFoundResponse("Page not found.");
+                        }
+
+                        // We only need the `id` of the newly created page.
+                        await context.pageBuilder.pages.prerendering.render({
+                            context,
+                            paths: [{ path: page.path }]
+                        });
+
+                        return new Response(page);
+                    } catch (e) {
+                        return new ErrorResponse(e);
+                    }
                 }
             },
             PbPageSettings: {
