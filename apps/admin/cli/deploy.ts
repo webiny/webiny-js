@@ -39,6 +39,7 @@ export default {
         await uploadFolderToS3({
             path: buildFolderPath,
             bucket: adminOutput.appStorage,
+            acl: "private",
             onFileUploadSuccess: ({ paths }) => {
                 context.success(paths.relative);
             },

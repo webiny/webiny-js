@@ -1,37 +1,20 @@
 import * as aws from "@pulumi/aws";
+import { CloudFrontBucket } from "@webiny/pulumi-aws";
 
 class App {
     cloudfront: aws.cloudfront.Distribution;
-    bucket: aws.s3.Bucket;
+    bucket: CloudFrontBucket;
     constructor() {
-        this.bucket = new aws.s3.Bucket("app", {
-            acl: "public-read",
-            forceDestroy: true,
-            website: {
-                indexDocument: "index.html",
-                errorDocument: "index.html"
-            }
-        });
+        this.bucket = new CloudFrontBucket("app");
 
         this.cloudfront = new aws.cloudfront.Distribution("app", {
             enabled: true,
             waitForDeployment: true,
-            origins: [
-                {
-                    originId: this.bucket.arn,
-                    domainName: this.bucket.websiteEndpoint,
-                    customOriginConfig: {
-                        originProtocolPolicy: "http-only",
-                        httpPort: 80,
-                        httpsPort: 443,
-                        originSslProtocols: ["TLSv1.2"]
-                    }
-                }
-            ],
+            origins: [this.bucket.origin],
             defaultRootObject: "index.html",
             defaultCacheBehavior: {
                 compress: true,
-                targetOriginId: this.bucket.arn,
+                targetOriginId: this.bucket.origin.originId,
                 viewerProtocolPolicy: "redirect-to-https",
                 allowedMethods: ["GET", "HEAD", "OPTIONS"],
                 cachedMethods: ["GET", "HEAD", "OPTIONS"],

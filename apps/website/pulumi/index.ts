@@ -17,7 +17,7 @@ export = async () => {
         // utilized by the Page Builder app's prerendering engine. Using this URL, it accesses the SPA and creates HTML snapshots.
         // The files that are generated in that process are stored in the `deliveryStorage` S3 bucket further below.
         appId: app.cloudfront.id,
-        appStorage: app.bucket.id,
+        appStorage: app.bucket.s3Bucket.id,
         appUrl: app.cloudfront.domainName.apply(value => `https://${value}`),
         // These are the Cloudfront and S3 bucket that will deliver static pages to the actual website visitors.
         // The static HTML snapshots delivered from them still rely on the app's S3 bucket
