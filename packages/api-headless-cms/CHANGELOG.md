@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.19.0-beta.4](https://github.com/webiny/webiny-js/compare/v5.19.0-beta.3...v5.19.0-beta.4) (2021-12-09)
+
+
+### Bug Fixes
+
+* **api-headless-cms:** republishing entries ([#2104](https://github.com/webiny/webiny-js/issues/2104)) ([3225aab](https://github.com/webiny/webiny-js/commit/3225aab0ec5eb4da841eafaa661e16065a2604ac))
+
+
+
+
+
 # [5.19.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.19.0-beta.2...v5.19.0-beta.3) (2021-12-08)
 
 

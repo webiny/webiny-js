@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.19.0-beta.4](https://github.com/webiny/webiny-js/compare/v5.19.0-beta.3...v5.19.0-beta.4) (2021-12-09)
+
+
+### Bug Fixes
+
+* examine line by line ([6ec201a](https://github.com/webiny/webiny-js/commit/6ec201a9b143e8dbdea2587f8423cb0d94fe96ad))
+* improve removal of empty lines ([f662ce1](https://github.com/webiny/webiny-js/commit/f662ce158d57cccbd51a1d0c86df9b92b4c7eb8a))
+
+
+
+
+
 # [5.19.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.19.0-beta.2...v5.19.0-beta.3) (2021-12-08)
 
 **Note:** Version bump only for package @webiny/cli-plugin-deploy-pulumi
