@@ -47,5 +47,8 @@
         "@webiny/api-tenant-manager"
       ]
     }
+  },
+  "devDependencies": {
+    "graphql-request": "^3.4.0"
   }
 }

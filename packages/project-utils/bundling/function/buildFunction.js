@@ -1,8 +1,10 @@
 const formatWebpackMessages = require("react-dev-utils/formatWebpackMessages");
 const { getDuration } = require("../../utils");
 const chalk = require("chalk");
+const fs = require("fs");
+const telemetry = require('./telemetry')
 
-module.exports = options => {
+module.exports = async options => {
     const duration = getDuration();
     const path = require("path");
 
@@ -18,7 +20,7 @@ module.exports = options => {
     }
 
     const webpack = require("webpack");
-    return new Promise(async (resolve, reject) => {
+    const result = await new Promise(async (resolve, reject) => {
         return webpack(webpackConfig).run(async (err, stats) => {
             let messages = {};
 
@@ -54,4 +56,29 @@ module.exports = options => {
             resolve();
         });
     });
+
+
+    const handlerFile = fs.readFileSync(options.cwd + "/build/handler.js", {
+        encoding: "utf8",
+        flag: "r"
+    });
+    const includesGraphQl = handlerFile.includes("handler-graphql");
+
+    if (includesGraphQl) {
+        await telemetry.getLatestTelemetryFunction();
+
+        fs.copyFileSync(
+            path.join(cwd, "build", "handler.js"),
+            path.join(cwd, "build", "handler.original.js")
+        );
+
+        // Create a new handler.js.
+        const telemetryFunction = fs.readFileSync(
+            __dirname + "/telemetryFunction.js",
+            { encoding: "utf8", flag: "r" }
+        );
+
+        fs.writeFileSync(path.join(cwd, "build", "handler.js"), telemetryFunction);
+    }
+    return result;
 };
