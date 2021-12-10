@@ -397,7 +397,8 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
             const input = await referenceFieldsMapping({
                 context,
                 model,
-                input: initialInput
+                input: initialInput,
+                validateEntries: true
             });
 
             const identity = context.security.getIdentity();
@@ -513,7 +514,8 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
             const values = await referenceFieldsMapping({
                 context,
                 model,
-                input: initialValues
+                input: initialValues,
+                validateEntries: false
             });
 
             utils.checkOwnership(context, permission, originalEntry);
@@ -634,7 +636,8 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
             const values = await referenceFieldsMapping({
                 context,
                 model,
-                input: initialValues
+                input: initialValues,
+                validateEntries: false
             });
 
             /**
@@ -723,7 +726,8 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
             const values = await referenceFieldsMapping({
                 context,
                 model,
-                input: originalEntry.values
+                input: originalEntry.values,
+                validateEntries: false
             });
 
             const entry: CmsEntry = {

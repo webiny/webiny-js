@@ -86,6 +86,7 @@ export const useInstaller = ({ isInstalled }) => {
                 );
 
                 const upgrades = (installer.plugin.upgrades || []).filter(({ version }) => {
+                    // TODO use coerce
                     return lte(version, wbyVersion) && gt(version, installer.installed);
                 });
 

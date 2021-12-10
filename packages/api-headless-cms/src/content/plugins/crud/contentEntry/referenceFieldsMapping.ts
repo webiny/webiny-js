@@ -1,6 +1,13 @@
-import { CmsContext, CmsEntry, CmsModel, CmsModelField } from "~/types";
+import { CmsContext, CmsModel, CmsModelField } from "~/types";
 import WebinyError from "@webiny/error";
 import dotProp from "dot-prop";
+import { parseIdentifier } from "@webiny/utils";
+
+interface CmsRefEntry {
+    id: string;
+    entryId: string;
+    modelId: string;
+}
 
 interface ReferenceObject {
     id: string;
@@ -11,6 +18,7 @@ interface Params {
     context: CmsContext;
     model: CmsModel;
     input: Record<string, ReferenceObject | ReferenceObject[]>;
+    validateEntries?: boolean;
 }
 
 interface BuildReferenceFieldPaths {
@@ -122,7 +130,7 @@ const getReferenceFieldValue = (ref: any): { id: string | null; modelId: string 
 };
 
 export const referenceFieldsMapping = async (params: Params): Promise<Record<string, any>> => {
-    const { context, model, input } = params;
+    const { context, model, input, validateEntries = false } = params;
 
     let output: Record<string, any> = {
         ...input
@@ -190,9 +198,13 @@ export const referenceFieldsMapping = async (params: Params): Promise<Record<str
 
     const results = await Promise.all(promises);
 
-    const records: Record<string, CmsEntry> = results.reduce((collection, entries) => {
+    const records: Record<string, CmsRefEntry> = results.reduce((collection, entries) => {
         for (const entry of entries) {
-            collection[entry.id] = entry;
+            collection[entry.id] = {
+                id: entry.id,
+                entryId: entry.entryId,
+                modelId: entry.modelId
+            };
         }
         return collection;
     }, {});
@@ -201,18 +213,25 @@ export const referenceFieldsMapping = async (params: Params): Promise<Record<str
      */
     for (const modelId in referencesByModel) {
         const entries = referencesByModel[modelId];
-        for (const entry of entries) {
-            if (records[entry]) {
+        for (const id of entries) {
+            if (records[id]) {
                 continue;
+            } else if (validateEntries === true) {
+                throw new WebinyError(
+                    `Missing referenced entry with id "${id}" in model "${modelId}".`,
+                    "ENTRY_NOT_FOUND",
+                    {
+                        id,
+                        model: modelId
+                    }
+                );
             }
-            throw new WebinyError(
-                `Missing referenced entry with id "${entry}" in model "${modelId}".`,
-                "ENTRY_NOT_FOUND",
-                {
-                    entry,
-                    model: modelId
-                }
-            );
+            const { id: entryId } = parseIdentifier(id);
+            records[id] = {
+                id,
+                entryId,
+                modelId
+            };
         }
     }
 
@@ -223,10 +242,13 @@ export const referenceFieldsMapping = async (params: Params): Promise<Record<str
         const entry = records[id];
         const paths = pathsByReferenceId[id];
         if (!entry) {
-            throw new WebinyError("Missing entry in records.", "ENTRY_ERROR", {
-                id,
-                paths
-            });
+            if (validateEntries === true) {
+                throw new WebinyError("Missing entry in records.", "ENTRY_ERROR", {
+                    id,
+                    paths
+                });
+            }
+            continue;
         }
         for (const path of paths) {
             output = dotProp.set(output, path, {
