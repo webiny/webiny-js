@@ -44,9 +44,6 @@ module.exports = function ({ host, port, https, allowedHost, proxy, paths }) {
             // as we specified in the config. In development, we always serve from /.
             publicPath: "/"
         },
-        // WebpackDevServer is noisy by default so we emit custom message instead
-        // by listening to the compiler events with `compiler.hooks[...].tap` calls above.
-        // quiet: true,
         // Enable HTTPS if the HTTPS environment variable is set to 'true'
         https,
         host,

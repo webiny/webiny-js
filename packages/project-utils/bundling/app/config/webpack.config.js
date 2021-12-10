@@ -602,7 +602,13 @@ module.exports = function (webpackEnv, { paths, options }) {
 
         // Turn off performance processing because we utilize
         // our own hints via the FileSizeReporter
-        performance: false
+        performance: false,
+
+        // WebpackDevServer is noisy by default so we emit custom message instead
+        // by listening to the compiler events with `compiler.hooks[...].tap` calls above.
+        infrastructureLogging: {
+            level: "none"
+        }
     };
 
     // common function to get style loaders
