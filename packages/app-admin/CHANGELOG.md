@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.19.0-beta.5](https://github.com/webiny/webiny-js/compare/v5.19.0-beta.4...v5.19.0-beta.5) (2021-12-10)
+
+
+### Bug Fixes
+
+* **api-headless-cms:** add entry validation option, defaults to false ([87ae167](https://github.com/webiny/webiny-js/commit/87ae167419752662771fe1e6913d87f1c459ed2f))
+
+
+
+
+
 # [5.19.0-beta.4](https://github.com/webiny/webiny-js/compare/v5.19.0-beta.3...v5.19.0-beta.4) (2021-12-09)
 
 **Note:** Version bump only for package @webiny/app-admin
