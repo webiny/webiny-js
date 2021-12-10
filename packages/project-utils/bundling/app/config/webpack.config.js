@@ -22,6 +22,7 @@ const ModuleNotFoundPlugin = require("react-dev-utils/ModuleNotFoundPlugin");
 const ForkTsCheckerWebpackPlugin = require("react-dev-utils/ForkTsCheckerWebpackPlugin");
 const typescriptFormatter = require("react-dev-utils/typescriptFormatter");
 const WebpackBar = require("webpackbar");
+const ReactRefreshWebpackPlugin = require("@pmmmwh/react-refresh-webpack-plugin");
 
 const materialNodeModules = require.resolve("@material/base/package.json").split("@material")[0];
 const sassIncludePaths = [
@@ -96,77 +97,6 @@ module.exports = function (webpackEnv, { paths, options }) {
     const publicUrl = isEnvProduction ? publicPath.slice(0, -1) : isEnvDevelopment && "";
     // Get environment variables to inject into our app.
     const env = getClientEnvironment(publicUrl);
-
-    // common function to get style loaders
-    const getStyleLoaders = (cssOptions, preProcessor) => {
-        const loaders = [
-            isEnvDevelopment && require.resolve("style-loader"),
-            isEnvProduction && {
-                loader: MiniCssExtractPlugin.loader,
-                options: shouldUseRelativeAssetPaths ? { publicPath: "../../" } : {}
-            },
-            {
-                loader: require.resolve("css-loader"),
-                options: {
-                    ...cssOptions,
-                    // for some wacky reason css-loader tries to resolve inline images
-                    // like url("data:image/svg+xml;base64,PHN2ZyB4d3dy53My5...")
-                    url: {
-                        filter(url) {
-                            if (url.startsWith("data:")) {
-                                return false;
-                            }
-
-                            return true;
-                        }
-                    }
-                }
-            },
-            {
-                // Options for PostCSS as we reference these options twice
-                // Adds vendor prefixing based on your specified browser support in
-                // package.json
-                loader: require.resolve("postcss-loader"),
-                options: {
-                    postcssOptions: {
-                        // Necessary for external CSS imports to work
-                        // https://github.com/facebook/create-react-app/issues/2677
-                        ident: "postcss",
-                        plugins: () => [
-                            require("postcss-flexbugs-fixes"),
-                            require("postcss-preset-env")({
-                                autoprefixer: {
-                                    flexbox: "no-2009"
-                                },
-                                stage: 3,
-                                // Necessary for "@material" to work with dart implementation of sass
-                                features: {
-                                    "custom-properties": false
-                                }
-                            }),
-                            // Adds PostCSS Normalize as the reset css with default options,
-                            // so that it honors browserslist config in package.json
-                            // which in turn let's users customize the target behavior as per their needs.
-                            require("postcss-normalize")()
-                        ],
-                        sourceMap: isEnvProduction && shouldUseSourceMap
-                    }
-                }
-            }
-        ].filter(Boolean);
-        if (preProcessor) {
-            loaders.push(
-                {
-                    loader: require.resolve("resolve-url-loader"),
-                    options: {
-                        sourceMap: isEnvProduction && shouldUseSourceMap
-                    }
-                },
-                preProcessor
-            );
-        }
-        return loaders;
-    };
 
     return {
         mode: isEnvProduction ? "production" : isEnvDevelopment && "development",
@@ -410,7 +340,9 @@ module.exports = function (webpackEnv, { paths, options }) {
                                         }
                                     }
                                 },
-                                require.resolve("file-loader")
+                                {
+                                    ...getUrlLoader()
+                                }
                             ]
                         },
                         // "url" loader works like "file" loader except that it embeds assets
@@ -418,11 +350,7 @@ module.exports = function (webpackEnv, { paths, options }) {
                         // A missing `test` is equivalent to a match.
                         {
                             test: [/\.bmp$/, /\.gif$/, /\.jpe?g$/, /\.png$/],
-                            loader: require.resolve("url-loader"),
-                            options: {
-                                limit: imageInlineSizeLimit,
-                                name: `${STATIC_FOLDER}/media/[name].[hash:8].[ext]`
-                            }
+                            ...getUrlLoader()
                         },
                         // Process application JS with Babel.
                         // The preset includes JSX, Flow, TypeScript, and some ESnext features.
@@ -446,8 +374,9 @@ module.exports = function (webpackEnv, { paths, options }) {
                                                 "~": "./src"
                                             }
                                         }
-                                    ]
-                                ],
+                                    ],
+                                    isEnvDevelopment && require.resolve("react-refresh/babel")
+                                ].filter(Boolean),
                                 // This is a feature of `babel-loader` for webpack (not Babel itself).
                                 // It enables caching results in ./node_modules/.cache/babel-loader/
                                 // directory for faster rebuilds.
@@ -595,8 +524,9 @@ module.exports = function (webpackEnv, { paths, options }) {
             // during a production build.
             // Otherwise React will be compiled in the very slow development mode.
             new webpack.DefinePlugin(env.stringified),
-            // This is necessary to emit hot updates (currently CSS only):
-            isEnvDevelopment && new webpack.HotModuleReplacementPlugin(),
+            // This is necessary to emit hot updates
+            isEnvDevelopment && new ReactRefreshWebpackPlugin(),
+            // isEnvDevelopment && new webpack.HotModuleReplacementPlugin(),
             // Watcher doesn't work well if you mistype casing in a path so we use
             // a plugin that prints an error when you attempt to do this.
             // See https://github.com/facebook/create-react-app/issues/240
@@ -674,4 +604,86 @@ module.exports = function (webpackEnv, { paths, options }) {
         // our own hints via the FileSizeReporter
         performance: false
     };
+
+    // common function to get style loaders
+    function getStyleLoaders(cssOptions, preProcessor) {
+        const loaders = [
+            isEnvDevelopment && require.resolve("style-loader"),
+            isEnvProduction && {
+                loader: MiniCssExtractPlugin.loader,
+                options: shouldUseRelativeAssetPaths ? { publicPath: "../../" } : {}
+            },
+            {
+                loader: require.resolve("css-loader"),
+                options: {
+                    ...cssOptions,
+                    // for some wacky reason css-loader tries to resolve inline images
+                    // like url("data:image/svg+xml;base64,PHN2ZyB4d3dy53My5...")
+                    url: {
+                        filter(url) {
+                            if (url.startsWith("data:")) {
+                                return false;
+                            }
+
+                            return true;
+                        }
+                    }
+                }
+            },
+            {
+                // Options for PostCSS as we reference these options twice
+                // Adds vendor prefixing based on your specified browser support in
+                // package.json
+                loader: require.resolve("postcss-loader"),
+                options: {
+                    postcssOptions: {
+                        // Necessary for external CSS imports to work
+                        // https://github.com/facebook/create-react-app/issues/2677
+                        ident: "postcss",
+                        plugins: () => [
+                            require("postcss-flexbugs-fixes"),
+                            require("postcss-preset-env")({
+                                autoprefixer: {
+                                    flexbox: "no-2009"
+                                },
+                                stage: 3,
+                                // Necessary for "@material" to work with dart implementation of sass
+                                features: {
+                                    "custom-properties": false
+                                }
+                            }),
+                            // Adds PostCSS Normalize as the reset css with default options,
+                            // so that it honors browserslist config in package.json
+                            // which in turn let's users customize the target behavior as per their needs.
+                            require("postcss-normalize")()
+                        ],
+                        sourceMap: isEnvProduction && shouldUseSourceMap
+                    }
+                }
+            }
+        ];
+
+        if (preProcessor) {
+            loaders.push(
+                {
+                    loader: require.resolve("resolve-url-loader"),
+                    options: {
+                        sourceMap: isEnvProduction && shouldUseSourceMap
+                    }
+                },
+                preProcessor
+            );
+        }
+        return loaders.filter(Boolean);
+    }
+
+    function getUrlLoader() {
+        return {
+            loader: require.resolve("url-loader"),
+            options: {
+                limit: imageInlineSizeLimit,
+                name: `${STATIC_FOLDER}/media/[name].[hash:8].[ext]`
+            }
+        };
+    }
 };

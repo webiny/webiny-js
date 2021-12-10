@@ -1,15 +1,13 @@
 "use strict";
 
+const fs = require("fs");
 const errorOverlayMiddleware = require("react-dev-utils/errorOverlayMiddleware");
 const evalSourceMapMiddleware = require("react-dev-utils/evalSourceMapMiddleware");
-const ignoredFiles = require("react-dev-utils/ignoredFiles");
-const fs = require("fs");
 
-const protocol = process.env.HTTPS === "true" ? "https" : "http";
-const host = process.env.HOST || "0.0.0.0";
-
-module.exports = function (proxy, allowedHost, paths) {
+module.exports = function ({ host, port, https, allowedHost, proxy, paths }) {
     return {
+        host,
+        port,
         // Enable gzip compression of generated files.
         compress: true,
         static: {
@@ -50,7 +48,7 @@ module.exports = function (proxy, allowedHost, paths) {
         // by listening to the compiler events with `compiler.hooks[...].tap` calls above.
         // quiet: true,
         // Enable HTTPS if the HTTPS environment variable is set to 'true'
-        https: protocol === "https",
+        https,
         host,
         client: {
             overlay: false,
@@ -63,7 +61,7 @@ module.exports = function (proxy, allowedHost, paths) {
             // See https://github.com/facebook/create-react-app/issues/387.
             disableDotRule: true
         },
-        allowedHosts: [allowedHost],
+        allowedHosts: allowedHost ? [allowedHost] : undefined,
         proxy,
         onBeforeSetupMiddleware(devServer) {
             const { app, server } = devServer;
