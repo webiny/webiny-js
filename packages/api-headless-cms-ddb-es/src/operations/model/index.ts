@@ -145,7 +145,6 @@ export const createModelsStorageOperations = (params: Params): CmsModelStorageOp
 
         try {
             await entity.delete(keys);
-            return model;
         } catch (ex) {
             throw new WebinyError(
                 ex.messatge || "Could not delete model.",
@@ -157,6 +156,26 @@ export const createModelsStorageOperations = (params: Params): CmsModelStorageOp
                 }
             );
         }
+        const { index } = configurations.es({
+            model
+        });
+        /**
+         * In case of DynamoDB error we need to remove the index we created.
+         */
+        try {
+            await elasticsearch.indices.delete({
+                index
+            });
+        } catch (ex) {
+            throw new WebinyError(
+                `Could not delete elasticsearch index "${index}" after model record was deleted.`,
+                "DELETE_MODEL_INDICE_ERROR",
+                {
+                    error: ex
+                }
+            );
+        }
+        return model;
     };
 
     const get = async (params: CmsModelStorageOperationsGetParams) => {
