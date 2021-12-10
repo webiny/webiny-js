@@ -90,6 +90,9 @@ describe("MANAGE - Resolvers", () => {
         if (create.errors) {
             console.error(`[beforeEach] ${create.errors[0].message}`);
             process.exit(1);
+        } else if (create.data.createContentModel.error) {
+            console.error(`[beforeEach] ${create.data.createContentModel.error.message}`);
+            process.exit(1);
         }
 
         const [update] = await updateContentModelMutation({
@@ -103,7 +106,11 @@ describe("MANAGE - Resolvers", () => {
         if (update.errors) {
             console.error(`[beforeEach] ${update.errors[0].message}`);
             process.exit(1);
+        } else if (update.data.updateContentModel.error) {
+            console.error(`[beforeEach] ${update.data.updateContentModel.error.message}`);
+            process.exit(1);
         }
+        return update.data.updateContentModel.data;
     };
 
     const createCategories = async (): Promise<CreateCategoriesResult> => {
