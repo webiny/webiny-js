@@ -604,6 +604,9 @@ module.exports = function (webpackEnv, { paths, options }) {
         // our own hints via the FileSizeReporter
         performance: false,
 
+        // make the output less verbose
+        stats: "errors-warnings",
+
         // WebpackDevServer is noisy by default so we emit custom message instead
         // by listening to the compiler events with `compiler.hooks[...].tap` calls above.
         infrastructureLogging: {

@@ -51,7 +51,8 @@ module.exports = function ({ host, port, https, allowedHost, proxy, paths }) {
             overlay: false,
             // Silence WebpackDevServer's own logs since they're generally not useful.
             // It will still show compile warnings and errors with this setting.
-            logging: "none"
+            logging: "warn",
+            progress: true
         },
         historyApiFallback: {
             // Paths with dots should still use the history fallback.
