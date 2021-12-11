@@ -22,7 +22,7 @@ const createPartitionKey = (params: PartitionKeysParams): string => {
     if (!tenant) {
         throw new WebinyError(`Missing tenant variable when creating model partitionKey`);
     } else if (!locale) {
-        throw new WebinyError(`Missing tenant variable when creating model partitionKey`);
+        throw new WebinyError(`Missing locale variable when creating model partitionKey`);
     }
     return `T#${tenant}#L#${locale}#CMS#CM`;
 };
