@@ -208,7 +208,7 @@ export const createLocalesCrud = (params: Params): LocalesCRUD => {
                         locale
                     });
                 }
-                await onBeforeUpdate.publish({
+                await onAfterUpdate.publish({
                     context,
                     locale: result,
                     original
