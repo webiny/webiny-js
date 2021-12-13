@@ -73,7 +73,7 @@ describe("ChangeRequest crud test", () => {
     } = useContentGqlHandler({
         ...options
     });
-    test("should able to create, update, get, list and delete a comment", async () => {
+    test(`should able to create, update, get, list and delete a "change request"`, async () => {
         /*
          * Should return error in case of no entry found.
          */
