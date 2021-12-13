@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.19.0-beta.6](https://github.com/webiny/webiny-js/compare/v5.19.0-beta.5...v5.19.0-beta.6) (2021-12-13)
+
+
+### Features
+
+* **api-headless-cms:** take locale from cms context ([#2109](https://github.com/webiny/webiny-js/issues/2109)) ([5130234](https://github.com/webiny/webiny-js/commit/51302341619200aab5add9b9d4b9d39a85937e58))
+
+
+
+
+
 # [5.19.0-beta.5](https://github.com/webiny/webiny-js/compare/v5.19.0-beta.4...v5.19.0-beta.5) (2021-12-10)
 
 **Note:** Version bump only for package @webiny/api-headless-cms-ddb-es
