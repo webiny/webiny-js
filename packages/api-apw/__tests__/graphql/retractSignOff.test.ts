@@ -208,4 +208,61 @@ describe("Retract sign off for a step in content review process", function () {
             }
         });
     });
+
+    test(`should throw error when trying to retract sign off by a non-reviewer`, async () => {
+        const gqlHandlerForIdentityA = useContentGqlHandler({
+            ...options,
+            identity: {
+                id: "123456789",
+                type: "admin",
+                displayName: "Ryan"
+            }
+        });
+
+        const { page } = await setup();
+        await gqlHandlerForIdentityA.securityIdentity.login();
+
+        /*
+         Create a content review entry.
+        */
+        const [createContentReviewResponse] = await createContentReviewMutation({
+            data: {
+                content: {
+                    id: page.id,
+                    type: "page"
+                }
+            }
+        });
+        const createdContentReview =
+            createContentReviewResponse.data.advancedPublishingWorkflow.createContentReview.data;
+
+        const [step1] = createdContentReview.steps;
+
+        await provideSignOffMutation({
+            id: createdContentReview.id,
+            step: step1.slug
+        });
+
+        /**
+         * Should return error while retracting sign-off for a step by a non-reviewer.
+         */
+        const [retractSignOffResponse] = await gqlHandlerForIdentityA.retractSignOffMutation({
+            id: createdContentReview.id,
+            step: step1.slug
+        });
+        expect(retractSignOffResponse).toEqual({
+            data: {
+                advancedPublishingWorkflow: {
+                    retractSignOff: {
+                        data: null,
+                        error: {
+                            code: "NOT_AUTHORISED",
+                            message: expect.any(String),
+                            data: expect.any(Object)
+                        }
+                    }
+                }
+            }
+        });
+    });
 });
