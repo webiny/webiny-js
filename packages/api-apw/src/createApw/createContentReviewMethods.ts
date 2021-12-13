@@ -1,4 +1,6 @@
 import { ApwContext, ApwContentReviewCrud, ApwContentReviewStepStatus } from "~/types";
+import { getWorkflowIdFromContent } from "~/plugins/hooks/initializeContentReviewSteps";
+import { hasReviewer } from "~/plugins/utils";
 
 export function createContentReviewMethods(context: ApwContext): ApwContentReviewCrud {
     return {
@@ -44,7 +46,28 @@ export function createContentReviewMethods(context: ApwContext): ApwContentRevie
             const step = entry.values.steps[stepIndex];
 
             const identity = context.security.getIdentity();
+            /**
+             * TODO: @ashutosh
+             * Maybe we should copy the entire step data from "Workflow" while creating a "Content Review".
+             */
+            const workflowId = await getWorkflowIdFromContent(context, entry.values.content);
+
+            const hasReviewerForStep = await hasReviewer({
+                context,
+                stepIndex,
+                identity,
+                workflowId
+            });
+
             // Check if the pre-conditions for "sign-off" are meet.
+            if (!hasReviewerForStep) {
+                throw {
+                    code: "NOT_AUTHORISED",
+                    message: `Not a reviewer, couldn't provide sign-off.`,
+                    data: { entry, input: { id, step: stepSlug } }
+                };
+            }
+
             if (step.pendingChangeRequests > 0) {
                 throw {
                     code: "PENDING_CHANGE_REQUESTS",
@@ -94,8 +117,28 @@ export function createContentReviewMethods(context: ApwContext): ApwContentRevie
             const entry = await this.get(id);
             const stepIndex = entry.values.steps.findIndex(step => step.slug === stepSlug);
             const step = entry.values.steps[stepIndex];
+            const identity = context.security.getIdentity();
+            /**
+             * TODO: @ashutosh
+             * Maybe we should copy the entire step data from "Workflow" while creating a "Content Review".
+             */
+            const workflowId = await getWorkflowIdFromContent(context, entry.values.content);
+
+            const hasReviewerForStep = await hasReviewer({
+                context,
+                stepIndex,
+                identity,
+                workflowId
+            });
 
             // Check if the pre-conditions for retracting "sign-off" are meet.
+            if (!hasReviewerForStep) {
+                throw {
+                    code: "NOT_AUTHORISED",
+                    message: `Not a reviewer, couldn't retract sign-off.`,
+                    data: { entry, input: { id, step: stepSlug } }
+                };
+            }
 
             if (step.status !== ApwContentReviewStepStatus.DONE) {
                 throw {

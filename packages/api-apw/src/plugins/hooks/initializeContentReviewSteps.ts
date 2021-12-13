@@ -5,7 +5,7 @@ import lodashSet from "lodash/set";
 /**
  * TODO: @ashutosh Convert it to use plugins.
  */
-const getWorkflowIdFromContent = async (
+export const getWorkflowIdFromContent = async (
     context: ApwContext,
     params: { type: string; id: string; settings: Record<string, any> }
 ): Promise<string> => {

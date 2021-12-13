@@ -58,7 +58,7 @@ export enum ApwWorkflowStepTypes {
     OPTIONAL = "optional"
 }
 
-interface ApwWorkflowSteps {
+export interface ApwWorkflowSteps {
     title: string;
     type: ApwWorkflowStepTypes;
     reviewers: ApwReviewer[];
