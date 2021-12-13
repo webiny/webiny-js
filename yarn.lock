@@ -7194,6 +7194,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/cssnano@npm:^4.0.1":
+  version: 4.0.1
+  resolution: "@types/cssnano@npm:4.0.1"
+  dependencies:
+    postcss: 5 - 7
+  checksum: 183fa4c41d82c32ef4ddd7ead1eabfa911d0c4ecdcbe78d0289167bf83b129fee0c7160c7247f07163579a4b584b92eda664bbf021b14836370e00c0e437ae19
+  languageName: node
+  linkType: hard
+
 "@types/eslint-scope@npm:^3.7.0":
   version: 3.7.1
   resolution: "@types/eslint-scope@npm:3.7.1"
@@ -9555,7 +9564,6 @@ __metadata:
     apollo-utilities: ^1.3.4
     babel-plugin-emotion: ^9.2.8
     babel-plugin-lodash: ^3.3.4
-    babel-plugin-named-asset-import: ^1.0.0-next.3e165448
     bytes: ^3.1.0
     classnames: ^2.2.6
     dataurl-to-blob: ^0.0.1
@@ -9656,7 +9664,6 @@ __metadata:
     apollo-client: ^2.6.10
     apollo-link: ^1.2.14
     apollo-utilities: ^1.3.4
-    babel-plugin-named-asset-import: ^1.0.0-next.3e165448
     graphql: ^15.7.2
     graphql-tag: ^2.12.6
     lodash.get: ^4.4.2
@@ -9703,7 +9710,6 @@ __metadata:
     apollo-utilities: ^1.3.4
     babel-plugin-emotion: ^9.2.8
     babel-plugin-lodash: ^3.3.4
-    babel-plugin-named-asset-import: ^1.0.0-next.3e165448
     dot-prop-immutable: ^2.1.0
     emotion: ^10.0.17
     graphql: ^15.7.2
@@ -9808,7 +9814,6 @@ __metadata:
     babel-plugin-emotion: ^9.2.8
     babel-plugin-lodash: ^3.3.4
     babel-plugin-module-resolver: ^4.1.0
-    babel-plugin-named-asset-import: ^1.0.0-next.3e165448
     classnames: ^2.2.6
     dot-prop-immutable: ^2.1.0
     emotion: ^10.0.17
@@ -9855,7 +9860,6 @@ __metadata:
     "@webiny/ui": ^5.18.3
     babel-plugin-emotion: ^9.2.8
     babel-plugin-lodash: ^3.3.4
-    babel-plugin-named-asset-import: ^1.0.0-next.3e165448
     emotion: ^10.0.17
     react: ^17.0.2
     react-dom: ^17.0.2
@@ -9893,7 +9897,6 @@ __metadata:
     apollo-link-context: ^1.0.20
     apollo-utilities: ^1.3.4
     babel-plugin-emotion: ^9.2.8
-    babel-plugin-named-asset-import: ^1.0.0-next.3e165448
     graphql: ^15.7.2
     graphql-tag: ^2.12.6
     lodash: ^4.17.11
@@ -9925,7 +9928,6 @@ __metadata:
     "@webiny/project-utils": ^5.18.3
     babel-plugin-emotion: ^9.2.8
     babel-plugin-lodash: ^3.3.4
-    babel-plugin-named-asset-import: ^1.0.0-next.3e165448
     execa: ^5.0.0
     rimraf: ^3.0.2
     ttypescript: ^1.5.12
@@ -9982,7 +9984,6 @@ __metadata:
     apollo-utilities: ^1.3.4
     babel-plugin-emotion: ^9.2.8
     babel-plugin-lodash: ^3.3.4
-    babel-plugin-named-asset-import: ^1.0.0-next.3e165448
     classnames: ^2.2.6
     dataurl-to-blob: ^0.0.1
     dot-prop-immutable: ^2.1.0
@@ -10073,7 +10074,6 @@ __metadata:
     "@webiny/validation": ^5.18.3
     babel-plugin-emotion: ^9.2.8
     babel-plugin-lodash: ^3.3.4
-    babel-plugin-named-asset-import: ^1.0.0-next.3e165448
     emotion: ^10.0.17
     graphql-tag: ^2.12.6
     lodash: ^4.17.21
@@ -10102,7 +10102,6 @@ __metadata:
     "@webiny/project-utils": ^5.18.3
     babel-plugin-emotion: ^9.2.8
     babel-plugin-lodash: ^3.3.4
-    babel-plugin-named-asset-import: ^1.0.0-next.3e165448
     minimatch: ^3.0.4
     react: ^17.0.2
     react-dom: ^17.0.2
@@ -10134,7 +10133,6 @@ __metadata:
     "@webiny/ui": ^5.18.3
     babel-plugin-emotion: ^9.2.8
     babel-plugin-lodash: ^3.3.4
-    babel-plugin-named-asset-import: ^1.0.0-next.3e165448
     graphql-tag: ^2.12.6
     react: ^17.0.2
     react-dom: ^17.0.2
@@ -10174,7 +10172,6 @@ __metadata:
     apollo-link: ^1.2.14
     apollo-utilities: ^1.3.4
     babel-plugin-emotion: ^9.2.8
-    babel-plugin-named-asset-import: ^1.0.0-next.3e165448
     emotion: ^10.0.27
     graphql: ^15.7.2
     graphql-tag: ^2.12.6
@@ -10208,7 +10205,6 @@ __metadata:
     "@webiny/project-utils": ^5.18.3
     "@webiny/validation": ^5.18.3
     babel-plugin-emotion: ^9.2.8
-    babel-plugin-named-asset-import: ^1.0.0-next.3e165448
     lodash: ^4.17.4
     react: ^17.0.2
     react-dom: ^17.0.2
@@ -10929,12 +10925,13 @@ __metadata:
     "@webiny/telemetry": ^5.18.3
     babel-loader: 8.2.3
     babel-plugin-lodash: 3.3.4
-    babel-plugin-named-asset-import: 0.3.7
     camelcase: 5.3.1
     case-sensitive-paths-webpack-plugin: 2.4.0
     chalk: 4.1.0
     css-loader: 6.5.1
+    css-minimizer-webpack-plugin: ^3.2.0
     eslint: 8.4.1
+    eslint-config-react-app: ^6.0.0
     eslint-webpack-plugin: ^3.1.1
     file-loader: 6.2.0
     fs-extra: 8.1.0
@@ -10944,13 +10941,11 @@ __metadata:
     lodash: ^4.6.2
     mini-css-extract-plugin: 2.4.5
     node-libs-browser: ^2.2.1
-    optimize-css-assets-webpack-plugin: 6.0.1
-    pnp-webpack-plugin: 1.7.0
+    path-browserify: ^1.0.1
     postcss-flexbugs-fixes: 5.0.2
     postcss-loader: 6.2.1
     postcss-normalize: 10.0.1
     postcss-preset-env: 7.0.1
-    postcss-safe-parser: 6.0.0
     raw-loader: 4.0.2
     react: 17.0.2
     react-dev-utils: 11.0.4
@@ -10966,7 +10961,6 @@ __metadata:
     scheduler: 0.19.1
     style-loader: 3.3.1
     terser-webpack-plugin: 5.2.5
-    ts-pnp: 1.1.5
     ttypescript: ^1.5.12
     url: 0.11.0
     url-loader: 4.1.1
@@ -11050,7 +11044,6 @@ __metadata:
     "@types/react": ^16.9.56
     "@webiny/cli": ^5.18.3
     "@webiny/project-utils": ^5.18.3
-    babel-plugin-named-asset-import: ^1.0.0-next.3e165448
     classnames: ^2.3.1
     react: ^17.0.2
     rimraf: ^3.0.2
@@ -11197,7 +11190,6 @@ __metadata:
     "@webiny/validation": ^5.18.3
     babel-loader: ^8.0.0-beta.6
     babel-plugin-emotion: ^9.2.8
-    babel-plugin-named-asset-import: ^1.0.0-next.3e165448
     brace: ^0.11.1
     classnames: ^2.2.6
     cropperjs: ^1.4.3
@@ -13364,21 +13356,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"babel-plugin-named-asset-import@npm:0.3.7, babel-plugin-named-asset-import@npm:^0.3.1":
+"babel-plugin-named-asset-import@npm:^0.3.1":
   version: 0.3.7
   resolution: "babel-plugin-named-asset-import@npm:0.3.7"
   peerDependencies:
     "@babel/core": ^7.1.0
   checksum: 4c9a42a2762f3d596a09105d05991525a0553d095030459d0f71449b023801ccc43e90fa20b618c52283dc61ca528a4a59df244e5b1dd583867786088eb473b7
-  languageName: node
-  linkType: hard
-
-"babel-plugin-named-asset-import@npm:^1.0.0-next.3e165448":
-  version: 1.0.0-next.fb6e6f70
-  resolution: "babel-plugin-named-asset-import@npm:1.0.0-next.fb6e6f70"
-  peerDependencies:
-    "@babel/core": ^7.1.0
-  checksum: feb4bc5618aea27b14ce2820aef91e2ea7752cd7d64072878f74f71152a427e50edff949202acdb91f372f31a96ab063161e5585725f5a3d42568ea490798a62
   languageName: node
   linkType: hard
 
@@ -15627,6 +15610,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"confusing-browser-globals@npm:^1.0.10":
+  version: 1.0.10
+  resolution: "confusing-browser-globals@npm:1.0.10"
+  checksum: 7ccdc44c2ca419cf6576c3e4336106e18d1c5337f547e461342f51aec4a10f96fdfe45414b522be3c7d24ea0b62bf4372cd37768022e4d6161707ffb2c0987e6
+  languageName: node
+  linkType: hard
+
 "connect-history-api-fallback@npm:^1.6.0":
   version: 1.6.0
   resolution: "connect-history-api-fallback@npm:1.6.0"
@@ -16343,6 +16333,30 @@ __metadata:
   languageName: node
   linkType: hard
 
+"css-minimizer-webpack-plugin@npm:^3.2.0":
+  version: 3.2.0
+  resolution: "css-minimizer-webpack-plugin@npm:3.2.0"
+  dependencies:
+    "@types/cssnano": ^4.0.1
+    cssnano: ^5.0.6
+    jest-worker: ^27.0.2
+    postcss: ^8.3.5
+    schema-utils: ^4.0.0
+    serialize-javascript: ^6.0.0
+    source-map: ^0.6.1
+  peerDependencies:
+    webpack: ^5.0.0
+  peerDependenciesMeta:
+    clean-css:
+      optional: true
+    csso:
+      optional: true
+    esbuild:
+      optional: true
+  checksum: 97f783d8adc82f0e95a53dd324af9b4d19ca8b50a07358990bd86a41d305717d86e36bacdec931b01276471f9a26aa0f998c9646d9bc091d56a7b0d01c750a07
+  languageName: node
+  linkType: hard
+
 "css-prefers-color-scheme@npm:^5.0.0":
   version: 5.0.0
   resolution: "css-prefers-color-scheme@npm:5.0.0"
@@ -16503,7 +16517,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cssnano@npm:^5.0.2":
+"cssnano@npm:^5.0.6":
   version: 5.0.12
   resolution: "cssnano@npm:5.0.12"
   dependencies:
@@ -18534,6 +18548,32 @@ __metadata:
     escodegen: bin/escodegen.js
     esgenerate: bin/esgenerate.js
   checksum: 5aa6b2966fafe0545e4e77936300cc94ad57cfe4dc4ebff9950492eaba83eef634503f12d7e3cbd644ecc1bab388ad0e92b06fd32222c9281a75d1cf02ec6cef
+  languageName: node
+  linkType: hard
+
+"eslint-config-react-app@npm:^6.0.0":
+  version: 6.0.0
+  resolution: "eslint-config-react-app@npm:6.0.0"
+  dependencies:
+    confusing-browser-globals: ^1.0.10
+  peerDependencies:
+    "@typescript-eslint/eslint-plugin": ^4.0.0
+    "@typescript-eslint/parser": ^4.0.0
+    babel-eslint: ^10.0.0
+    eslint: ^7.5.0
+    eslint-plugin-flowtype: ^5.2.0
+    eslint-plugin-import: ^2.22.0
+    eslint-plugin-jest: ^24.0.0
+    eslint-plugin-jsx-a11y: ^6.3.1
+    eslint-plugin-react: ^7.20.3
+    eslint-plugin-react-hooks: ^4.0.8
+    eslint-plugin-testing-library: ^3.9.0
+  peerDependenciesMeta:
+    eslint-plugin-jest:
+      optional: true
+    eslint-plugin-testing-library:
+      optional: true
+  checksum: b265852455b1c10e9c5f0cebe199306fffc7f8e1b6548fcb0bccdc4415c288dfee8ab10717122a32275b91130dfb482dcbbc87d2fb79d8728d4c2bfa889f0915
   languageName: node
   linkType: hard
 
@@ -24168,6 +24208,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"jest-worker@npm:^27.0.2":
+  version: 27.4.4
+  resolution: "jest-worker@npm:27.4.4"
+  dependencies:
+    "@types/node": "*"
+    merge-stream: ^2.0.0
+    supports-color: ^8.0.0
+  checksum: e4a383d587f9e0fbe247a6c2e3a0dbe7b5cc0f9fe8583d6ffdc9257591563e62ecd6ef4c987dc44ca43a97d430395e36221427325bc839312a7ea62a4b1baedd
+  languageName: node
+  linkType: hard
+
 "jest-worker@npm:^27.0.6, jest-worker@npm:^27.3.1":
   version: 27.4.2
   resolution: "jest-worker@npm:27.4.2"
@@ -24805,16 +24856,6 @@ __metadata:
   bin:
     lambdafs: bin/brotli.js
   checksum: d42ae7e3f20a0fc1bb70e77a32ce08f35067eb608698f6d0facfc7e0e3353b84c6a3063ee593875e98445a29d18089d755dc5db3721a31589d575cd35f7eff93
-  languageName: node
-  linkType: hard
-
-"last-call-webpack-plugin@npm:^3.0.0":
-  version: 3.0.0
-  resolution: "last-call-webpack-plugin@npm:3.0.0"
-  dependencies:
-    lodash: ^4.17.5
-    webpack-sources: ^1.1.0
-  checksum: 23c25a2397c9f75b769b5238ab798873e857baf2363d471d186c9f05212457943f0de16181f33aeecbfd42116b72a0f343fe8910d5d8010f24956d95d536c743
   languageName: node
   linkType: hard
 
@@ -28013,19 +28054,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"optimize-css-assets-webpack-plugin@npm:6.0.1":
-  version: 6.0.1
-  resolution: "optimize-css-assets-webpack-plugin@npm:6.0.1"
-  dependencies:
-    cssnano: ^5.0.2
-    last-call-webpack-plugin: ^3.0.0
-    postcss: ^8.2.1
-  peerDependencies:
-    webpack: ^4.0.0
-  checksum: 84975f52890e98d4610e58b6bd972837c7d11c157d2b31d63f02069b58da42445445225495043c7e2e16a0f90f8dfd12221f20cc7a7917d198e68ce903a5b2a0
-  languageName: node
-  linkType: hard
-
 "optionator@npm:^0.8.1":
   version: 0.8.3
   resolution: "optionator@npm:0.8.3"
@@ -29128,15 +29156,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pnp-webpack-plugin@npm:1.7.0":
-  version: 1.7.0
-  resolution: "pnp-webpack-plugin@npm:1.7.0"
-  dependencies:
-    ts-pnp: ^1.1.6
-  checksum: a41716d13607be5a3e06ba58b17e9e619cf07da3a0a7b10bd41cd89362873041054fd2b7966ad30a1b26b826cfb8fecc0469a95902d5b1b8ba8f591e2fe6b96d
-  languageName: node
-  linkType: hard
-
 "polished@npm:^3.3.1":
   version: 3.7.2
   resolution: "polished@npm:3.7.2"
@@ -29920,15 +29939,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"postcss-safe-parser@npm:6.0.0":
-  version: 6.0.0
-  resolution: "postcss-safe-parser@npm:6.0.0"
-  peerDependencies:
-    postcss: ^8.3.3
-  checksum: 06c733eaad83a3954367e7ee02ddfe3796e7a44d4299ccf9239f40964a4daac153c7d77613f32964b5a86c0c6c2f6167738f31d578b73b17cb69d0c4446f0ebe
-  languageName: node
-  linkType: hard
-
 "postcss-selector-not@npm:^5.0.0":
   version: 5.0.0
   resolution: "postcss-selector-not@npm:5.0.0"
@@ -29994,7 +30004,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"postcss@npm:^7.0.0, postcss@npm:^7.0.14, postcss@npm:^7.0.26, postcss@npm:^7.0.32, postcss@npm:^7.0.35, postcss@npm:^7.0.5, postcss@npm:^7.0.6":
+"postcss@npm:5 - 7, postcss@npm:^7.0.0, postcss@npm:^7.0.14, postcss@npm:^7.0.26, postcss@npm:^7.0.32, postcss@npm:^7.0.35, postcss@npm:^7.0.5, postcss@npm:^7.0.6":
   version: 7.0.39
   resolution: "postcss@npm:7.0.39"
   dependencies:
@@ -30004,7 +30014,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"postcss@npm:^8.2.1, postcss@npm:^8.2.15, postcss@npm:^8.3":
+"postcss@npm:^8.2.15, postcss@npm:^8.3, postcss@npm:^8.3.5":
   version: 8.4.4
   resolution: "postcss@npm:8.4.4"
   dependencies:
@@ -35579,17 +35589,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ts-pnp@npm:1.1.5":
-  version: 1.1.5
-  resolution: "ts-pnp@npm:1.1.5"
-  peerDependenciesMeta:
-    typescript:
-      optional: true
-  checksum: 05a313149475b4171f19daa04258d1c463e0b03b38c2b7041e674baeea14bf3ce166e7709eff77fae9859f45730552619cee4cd26999fa619c66e1c9f86ab754
-  languageName: node
-  linkType: hard
-
-"ts-pnp@npm:^1.1.2, ts-pnp@npm:^1.1.6":
+"ts-pnp@npm:^1.1.2":
   version: 1.2.0
   resolution: "ts-pnp@npm:1.2.0"
   peerDependenciesMeta:

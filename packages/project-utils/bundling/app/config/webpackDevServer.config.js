@@ -1,8 +1,6 @@
 "use strict";
 
 const fs = require("fs");
-const errorOverlayMiddleware = require("react-dev-utils/errorOverlayMiddleware");
-const evalSourceMapMiddleware = require("react-dev-utils/evalSourceMapMiddleware");
 
 module.exports = function ({ host, port, https, allowedHost, proxy, paths }) {
     return {
@@ -48,7 +46,7 @@ module.exports = function ({ host, port, https, allowedHost, proxy, paths }) {
         https,
         host,
         client: {
-            overlay: false,
+            overlay: true,
             // Silence WebpackDevServer's own logs since they're generally not useful.
             // It will still show compile warnings and errors with this setting.
             logging: "warn",
@@ -62,16 +60,11 @@ module.exports = function ({ host, port, https, allowedHost, proxy, paths }) {
         allowedHosts: allowedHost ? [allowedHost] : undefined,
         proxy,
         onBeforeSetupMiddleware(devServer) {
-            const { app, server } = devServer;
+            const { app } = devServer;
             if (fs.existsSync(paths.proxySetup)) {
                 // This registers user provided middleware for proxy reasons
                 require(paths.proxySetup)(app);
             }
-
-            // This lets us fetch source contents from webpack for the error overlay
-            app.use(evalSourceMapMiddleware(server));
-            // This lets us open files from the runtime error overlay.
-            app.use(errorOverlayMiddleware());
         }
     };
 };

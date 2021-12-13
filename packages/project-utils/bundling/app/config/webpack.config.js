@@ -4,14 +4,12 @@ const fs = require("fs");
 const path = require("path");
 const webpack = require("webpack");
 const resolve = require("resolve");
-const PnpWebpackPlugin = require("pnp-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const CaseSensitivePathsPlugin = require("case-sensitive-paths-webpack-plugin");
 const InlineChunkHtmlPlugin = require("react-dev-utils/InlineChunkHtmlPlugin");
 const TerserPlugin = require("terser-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
-const safePostCssParser = require("postcss-safe-parser");
+const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 const { WebpackManifestPlugin } = require("webpack-manifest-plugin");
 const InterpolateHtmlPlugin = require("react-dev-utils/InterpolateHtmlPlugin");
 const WatchMissingNodeModulesPlugin = require("react-dev-utils/WatchMissingNodeModulesPlugin");
@@ -110,17 +108,6 @@ module.exports = function (webpackEnv, { paths, options }) {
         // These are the "entry points" to our application.
         // This means they will be the "root" imports that are included in JS bundle.
         entry: [
-            // Include an alternative client for WebpackDevServer. A client's job is to
-            // connect to WebpackDevServer by a socket and get notified about changes.
-            // When you save a file, the client will either apply hot updates (in case
-            // of CSS changes), or refresh the page (in case of JS changes). When you
-            // make a syntax error, this client will display a syntax error overlay.
-            // Note: instead of the default WebpackDevServer client, we use a custom one
-            // to bring better experience for Create React App users. You can replace
-            // the line below with these two lines if you prefer the stock client:
-            // require.resolve('webpack-dev-server/client') + '?/',
-            // require.resolve('webpack/hot/dev-server'),
-            isEnvDevelopment && require.resolve("react-dev-utils/webpackHotDevClient"),
             // Finally, this is your app's code:
             paths.appIndexJs
             // We include the app code last so that if there is a runtime error during
@@ -136,7 +123,7 @@ module.exports = function (webpackEnv, { paths, options }) {
             // In development, it does not produce real files.
             filename: isEnvProduction
                 ? `${STATIC_FOLDER}/js/[name].[contenthash:8].js`
-                : isEnvDevelopment && `${STATIC_FOLDER}/js/bundle.js`,
+                : isEnvDevelopment && `${STATIC_FOLDER}/js/[name].js`,
 
             // There are also additional JS chunk files if you use code splitting.
             chunkFilename: isEnvProduction
@@ -155,82 +142,69 @@ module.exports = function (webpackEnv, { paths, options }) {
             globalObject: "this"
         },
         optimization: {
-            minimize: isEnvProduction
-            // minimizer: [
-            //     // This is only used in production mode
-            //     new TerserPlugin({
-            //         terserOptions: {
-            //             parse: {
-            //                 // We want terser to parse ecma 8 code. However, we don't want it
-            //                 // to apply any minification steps that turns valid ecma 5 code
-            //                 // into invalid ecma 5 code. This is why the 'compress' and 'output'
-            //                 // sections only apply transformations that are ecma 5 safe
-            //                 // https://github.com/facebook/create-react-app/pull/4234
-            //                 ecma: 8
-            //             },
-            //             compress: {
-            //                 ecma: 5,
-            //                 warnings: false,
-            //                 // Disabled because of an issue with Uglify breaking seemingly valid code:
-            //                 // https://github.com/facebook/create-react-app/issues/2376
-            //                 // Pending further investigation:
-            //                 // https://github.com/mishoo/UglifyJS2/issues/2011
-            //                 comparisons: false,
-            //                 // Disabled because of an issue with Terser breaking valid code:
-            //                 // https://github.com/facebook/create-react-app/issues/5250
-            //                 // Pending further investigation:
-            //                 // https://github.com/terser-js/terser/issues/120
-            //                 inline: 2
-            //             },
-            //             mangle: {
-            //                 safari10: true
-            //             },
-            //             // Added for profiling in devtools
-            //             keep_classnames: isEnvProductionProfile,
-            //             keep_fnames: isEnvProductionProfile,
-            //             output: {
-            //                 ecma: 5,
-            //                 comments: false,
-            //                 // Turned on because emoji and regex is not minified properly using default
-            //                 // https://github.com/facebook/create-react-app/issues/2488
-            //                 ascii_only: true
-            //             },
-            //             sourceMap: shouldUseSourceMap
-            //         }
-            //     }),
-            //     // This is only used in production mode
-            //     new OptimizeCSSAssetsPlugin({
-            //         cssProcessorOptions: {
-            //             parser: safePostCssParser,
-            //             map: shouldUseSourceMap
-            //                 ? {
-            //                       // `inline: false` forces the sourcemap to be output into a
-            //                       // separate file
-            //                       inline: false,
-            //                       // `annotation: true` appends the sourceMappingURL to the end of
-            //                       // the css file, helping the browser find the sourcemap
-            //                       annotation: true
-            //                   }
-            //                 : false
-            //         },
-            //         cssProcessorPluginOptions: {
-            //             preset: ["default", { minifyFontValues: { removeQuotes: false } }]
-            //         }
-            //     })
-            // ],
-            // // Automatically split vendor and commons
-            // // https://twitter.com/wSokra/status/969633336732905474
-            // // https://medium.com/webpack/webpack-4-code-splitting-chunk-graph-and-the-splitchunks-optimization-be739a861366
-            // splitChunks: {
-            //     chunks: "all",
-            //     name: false
-            // },
-            // // Keep the runtime chunk separated to enable long term caching
-            // // https://twitter.com/wSokra/status/969679223278505985
-            // // https://github.com/facebook/create-react-app/issues/5358
-            // runtimeChunk: {
-            //     name: entrypoint => `runtime-${entrypoint.name}`
-            // }
+            minimize: isEnvProduction,
+            minimizer: [
+                // This is only used in production mode
+                new TerserPlugin({
+                    terserOptions: {
+                        parse: {
+                            // We want terser to parse ecma 8 code. However, we don't want it
+                            // to apply any minification steps that turns valid ecma 5 code
+                            // into invalid ecma 5 code. This is why the 'compress' and 'output'
+                            // sections only apply transformations that are ecma 5 safe
+                            // https://github.com/facebook/create-react-app/pull/4234
+                            ecma: 8
+                        },
+                        compress: {
+                            ecma: 5,
+                            warnings: false,
+                            // Disabled because of an issue with Uglify breaking seemingly valid code:
+                            // https://github.com/facebook/create-react-app/issues/2376
+                            // Pending further investigation:
+                            // https://github.com/mishoo/UglifyJS2/issues/2011
+                            comparisons: false,
+                            // Disabled because of an issue with Terser breaking valid code:
+                            // https://github.com/facebook/create-react-app/issues/5250
+                            // Pending further investigation:
+                            // https://github.com/terser-js/terser/issues/120
+                            inline: 2
+                        },
+                        mangle: {
+                            safari10: true
+                        },
+                        // Added for profiling in devtools
+                        keep_classnames: isEnvProductionProfile,
+                        keep_fnames: isEnvProductionProfile,
+                        output: {
+                            ecma: 5,
+                            comments: false,
+                            // Turned on because emoji and regex is not minified properly using default
+                            // https://github.com/facebook/create-react-app/issues/2488
+                            ascii_only: true
+                        },
+                        sourceMap: shouldUseSourceMap
+                    }
+                }),
+                // This is only used in production mode
+                new CssMinimizerPlugin({
+                    minimizerOptions: {
+                        preset: ["default", { minifyFontValues: { removeQuotes: false } }]
+                    }
+                })
+            ],
+            // Automatically split vendor and commons
+            // https://twitter.com/wSokra/status/969633336732905474
+            // https://medium.com/webpack/webpack-4-code-splitting-chunk-graph-and-the-splitchunks-optimization-be739a861366
+            splitChunks: {
+                chunks: "all",
+                name: false
+            },
+            // Keep the runtime chunk separated to enable long term caching
+            // https://twitter.com/wSokra/status/969679223278505985
+            // https://github.com/facebook/create-react-app/issues/5358
+            runtimeChunk: {
+                name: entrypoint => `runtime-${entrypoint.name}`
+            }
         },
         resolve: {
             // This allows you to set a fallback for where Webpack should look for modules.
@@ -263,57 +237,14 @@ module.exports = function (webpackEnv, { paths, options }) {
                 }),
                 ...(modules.webpackAliases || {})
             },
-            plugins: [
-                // Adds support for installing with Plug'n'Play, leading to faster installs and adding
-                // guards against forgotten dependencies and such.
-                PnpWebpackPlugin
-                // Prevents users from importing files from outside of src/ (or node_modules/).
-                // This often causes confusion because we only process files within src/ with babel.
-                // To fix this, we prevent you from importing files out of src/ -- if you'd like to,
-                // please link the files into your node_modules/ and let module-resolution kick in.
-                // Make sure your source files are compiled, as they will not be processed in any way.
-                // new ModuleScopePlugin(paths.appSrc, [paths.appPackageJson]),
-            ],
             fallback: {
                 path: require.resolve("path-browserify")
             }
         },
-        resolveLoader: {
-            plugins: [
-                // Also related to Plug'n'Play, but this time it tells Webpack to load its loaders
-                // from the current package.
-                PnpWebpackPlugin.moduleLoader(module)
-            ]
-        },
+
         module: {
             strictExportPresence: true,
             rules: [
-                // First, run the linter.
-                // It's important to do this before Babel processes the JS.
-                // TODO: replace with eslint-webpack-plugin
-                // {
-                //     test: /\.(js|mjs|jsx|ts|tsx)$/,
-                //     enforce: "pre",
-                //     use: [
-                //         {
-                //             options: {
-                //                 cache: true,
-                //                 formatter: require.resolve("react-dev-utils/eslintFormatter"),
-                //                 eslintPath: require.resolve("eslint")
-                //             },
-                //             loader: require.resolve("eslint-loader")
-                //         }
-                //     ],
-                //     //include: paths.appSrc
-                //     include: file => {
-                //         if (file.includes("dist")) {
-                //             return false;
-                //         }
-
-                //         return paths.allWorkspaces.some(p => file.includes(p));
-                //     },
-                //     exclude: /node_modules/
-                // },
                 {
                     // "oneOf" will traverse all following loaders until one will
                     // match the requirements. When no loader matches it will fall
@@ -398,8 +329,7 @@ module.exports = function (webpackEnv, { paths, options }) {
                             test: cssRegex,
                             exclude: cssModuleRegex,
                             use: getStyleLoaders({
-                                importLoaders: 1,
-                                sourceMap: isEnvProduction && shouldUseSourceMap
+                                importLoaders: 1
                             }),
                             // Don't consider CSS imports dead code even if the
                             // containing package claims to have no side effects.
@@ -413,7 +343,6 @@ module.exports = function (webpackEnv, { paths, options }) {
                             test: cssModuleRegex,
                             use: getStyleLoaders({
                                 importLoaders: 1,
-                                sourceMap: isEnvProduction && shouldUseSourceMap,
                                 modules: {
                                     getLocalIdent: getCSSModuleLocalIdent
                                 }
@@ -427,8 +356,7 @@ module.exports = function (webpackEnv, { paths, options }) {
                             exclude: sassModuleRegex,
                             use: getStyleLoaders(
                                 {
-                                    importLoaders: 3,
-                                    sourceMap: isEnvProduction && shouldUseSourceMap
+                                    importLoaders: 3
                                 },
                                 sassLoader
                             ),
@@ -445,7 +373,6 @@ module.exports = function (webpackEnv, { paths, options }) {
                             use: getStyleLoaders(
                                 {
                                     importLoaders: 3,
-                                    sourceMap: isEnvProduction && shouldUseSourceMap,
                                     modules: {
                                         getLocalIdent: getCSSModuleLocalIdent
                                     }
@@ -526,7 +453,6 @@ module.exports = function (webpackEnv, { paths, options }) {
             new webpack.DefinePlugin(env.stringified),
             // This is necessary to emit hot updates
             isEnvDevelopment && new ReactRefreshWebpackPlugin(),
-            // isEnvDevelopment && new webpack.HotModuleReplacementPlugin(),
             // Watcher doesn't work well if you mistype casing in a path so we use
             // a plugin that prints an error when you attempt to do this.
             // See https://github.com/facebook/create-react-app/issues/240
@@ -568,7 +494,18 @@ module.exports = function (webpackEnv, { paths, options }) {
                 }
             }),
 
-            new ESLintPlugin({}),
+            new ESLintPlugin({
+                extensions: ["js", "mjs", "jsx", "ts", "tsx"],
+                formatter: require.resolve("react-dev-utils/eslintFormatter"),
+                eslintPath: require.resolve("eslint"),
+                context: paths.appSrc,
+                // ESLint class options
+                cwd: paths.appPath,
+                resolvePluginsRelativeTo: __dirname,
+                baseConfig: {
+                    extends: [require.resolve("eslint-config-react-app/base")]
+                }
+            }),
 
             // TypeScript type checking
             useTypeScript &&
@@ -579,12 +516,6 @@ module.exports = function (webpackEnv, { paths, options }) {
                     async: isEnvDevelopment,
                     useTypescriptIncrementalApi: true,
                     checkSyntacticErrors: true,
-                    resolveModuleNameModule: process.versions.pnp
-                        ? `${__dirname}/pnpTs.js`
-                        : undefined,
-                    resolveTypeReferenceDirectiveModule: process.versions.pnp
-                        ? `${__dirname}/pnpTs.js`
-                        : undefined,
                     tsconfig: paths.appTsConfig,
                     reportFiles: [
                         "**",
@@ -610,7 +541,8 @@ module.exports = function (webpackEnv, { paths, options }) {
         // WebpackDevServer is noisy by default so we emit custom message instead
         // by listening to the compiler events with `compiler.hooks[...].tap` calls above.
         infrastructureLogging: {
-            level: "none"
+            colors: true,
+            level: "error"
         }
     };
 
@@ -625,7 +557,7 @@ module.exports = function (webpackEnv, { paths, options }) {
             {
                 loader: require.resolve("css-loader"),
                 options: {
-                    ...cssOptions,
+                    sourceMap: isEnvProduction && shouldUseSourceMap,
                     // for some wacky reason css-loader tries to resolve inline images
                     // like url("data:image/svg+xml;base64,PHN2ZyB4d3dy53My5...")
                     url: {
@@ -636,7 +568,9 @@ module.exports = function (webpackEnv, { paths, options }) {
 
                             return true;
                         }
-                    }
+                    },
+
+                    ...cssOptions
                 }
             },
             {
