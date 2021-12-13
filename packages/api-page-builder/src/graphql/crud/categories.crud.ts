@@ -54,7 +54,7 @@ export default new ContextPlugin<PbContext>(async context => {
             const { auth } = options;
 
             const tenant = context.tenancy.getCurrentTenant();
-            const locale = context.i18nContent.getLocale();
+            const locale = context.i18nContent.getCurrentLocale();
             const params: CategoryStorageOperationsGetParams = {
                 where: {
                     slug,
@@ -129,7 +129,7 @@ export default new ContextPlugin<PbContext>(async context => {
             }
 
             const tenant = context.tenancy.getCurrentTenant();
-            const locale = context.i18nContent.getLocale();
+            const locale = context.i18nContent.getCurrentLocale();
 
             const params: CategoryStorageOperationsListParams = {
                 where: {
@@ -177,7 +177,7 @@ export default new ContextPlugin<PbContext>(async context => {
             const data: Category = await createDataModel.toJSON();
 
             const tenant = context.tenancy.getCurrentTenant();
-            const locale = context.i18nContent.getLocale();
+            const locale = context.i18nContent.getCurrentLocale();
 
             const category: Category = {
                 ...data,

@@ -3,7 +3,6 @@ import { createLocalesGraphQL } from "./graphql/locales";
 import { createInstallationGraphQL } from "./graphql/installation";
 import { createI18NBaseContext } from "./context";
 import localeContexts from "./localeContexts";
-import { createCrudContext } from "~/graphql/crud";
 import { ContextI18NGetLocales, I18NContext } from "~/types";
 
 /**
@@ -12,7 +11,6 @@ import { ContextI18NGetLocales, I18NContext } from "~/types";
 export const createI18NContext = () => {
     return [
         localeContexts,
-        createCrudContext(),
         createI18NBaseContext(),
         {
             name: "context-i18n-get-locales",

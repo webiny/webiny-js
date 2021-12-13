@@ -2,6 +2,7 @@ import acceptLanguageParser from "accept-language-parser";
 import { ContextI18NGetLocales, I18NContext } from "~/types";
 import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
 import { I18NLocaleContextPlugin } from "~/plugins/I18NLocaleContextPlugin";
+import { createCrudContext } from "~/graphql/crud";
 /**
  * Parses "x-i18n-locale" header value (e.g. "default:en-US;content:hr-HR;").
  */
@@ -55,7 +56,7 @@ const getLocaleFromHeaders = (http, localeContext = "default") => {
     return { acceptLanguageHeader, contextLocaleHeader };
 };
 
-export const createI18NBaseContext = () => {
+const createBaseContextPlugin = () => {
     return new ContextPlugin<I18NContext>(async context => {
         let locales = [];
         if (context.tenancy.getCurrentTenant()) {
@@ -147,3 +148,11 @@ export const createI18NBaseContext = () => {
         };
     });
 };
+
+const plugins = [createCrudContext(), createBaseContextPlugin()];
+
+export const createI18NBaseContext = () => {
+    return plugins;
+};
+
+export default () => createI18NBaseContext();

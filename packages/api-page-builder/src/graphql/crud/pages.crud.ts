@@ -251,7 +251,7 @@ export default new ContextPlugin<PbContext>(async context => {
             const page: Page = {
                 id,
                 pid: pageId,
-                locale: context.i18nContent.getLocale().code,
+                locale: context.i18nContent.getCurrentLocale().code,
                 tenant: context.tenancy.getCurrentTenant().id,
                 editor: DEFAULT_EDITOR,
                 category: category.slug,
@@ -1062,7 +1062,7 @@ export default new ContextPlugin<PbContext>(async context => {
                     ...initialWhere,
                     latest: true,
                     search: search ? search.query : undefined,
-                    locale: context.i18nContent.getLocale().code,
+                    locale: context.i18nContent.getCurrentLocale().code,
                     createdBy,
                     path_not_in: pathNotIn,
                     pid_not_in: pidNotIn,
@@ -1109,7 +1109,7 @@ export default new ContextPlugin<PbContext>(async context => {
                     ...initialWhere,
                     published: true,
                     search: search && search.query ? search.query : undefined,
-                    locale: context.i18nContent.getLocale().code,
+                    locale: context.i18nContent.getCurrentLocale().code,
                     path_not_in: pathNotIn,
                     pid_not_in: pidNotIn,
                     tags_in: tags && tags.query ? tags.query : undefined,
@@ -1177,7 +1177,7 @@ export default new ContextPlugin<PbContext>(async context => {
             const listTagsParams: PageStorageOperationsListTagsParams = {
                 where: {
                     tenant: context.tenancy.getCurrentTenant().id,
-                    locale: context.i18nContent.getLocale().code,
+                    locale: context.i18nContent.getCurrentLocale().code,
                     search
                 }
             };
