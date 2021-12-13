@@ -5,7 +5,8 @@ import { SecurityContext } from "@webiny/api-security/types";
 export interface BaseI18NContentContext {
     i18nContent: {
         locale: I18NLocale;
-        getLocale: () => I18NLocale;
+        // getLocale: () => I18NLocale;
+        getCurrentLocale: () => I18NLocale;
         hasI18NContentPermission: () => Promise<boolean>;
         checkI18NContentPermission: () => void;
     };
