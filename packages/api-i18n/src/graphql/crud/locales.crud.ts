@@ -1,62 +1,63 @@
-import { I18NContext, I18NContextObject, I18NLocale } from "~/types";
-import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
+import {
+    I18NContext,
+    I18NLocale,
+    I18NLocalesStorageOperations,
+    LocalesCRUD,
+    OnAfterCreateLocaleTopicParams,
+    OnAfterDeleteLocaleTopicParams,
+    OnAfterUpdateLocaleTopicParams,
+    OnBeforeCreateLocaleTopicParams,
+    OnBeforeDeleteLocaleTopicParams,
+    OnBeforeUpdateLocaleTopicParams
+} from "~/types";
 import WebinyError from "@webiny/error";
 import { NotFoundError } from "@webiny/handler-graphql";
 import { NotAuthorizedError } from "@webiny/api-security";
-import { LocalesStorageOperationsProviderPlugin } from "~/plugins/LocalesStorageOperationsProviderPlugin";
-import { LocalePlugin } from "~/plugins/LocalePlugin";
-import { runLifecycleEvent } from "./locales/lifecycleEvent";
+import { createTopic } from "@webiny/pubsub";
 
-export default new ContextPlugin<I18NContext>(async context => {
-    if (!context.i18n) {
-        context.i18n = {} as I18NContextObject;
-    }
-    const pluginType = LocalesStorageOperationsProviderPlugin.type;
+export interface Params {
+    context: I18NContext;
+    storageOperations: I18NLocalesStorageOperations;
+}
+export const createLocalesCrud = (params: Params): LocalesCRUD => {
+    const { storageOperations, context } = params;
 
-    const providerPlugin = context.plugins
-        .byType<LocalesStorageOperationsProviderPlugin>(pluginType)
-        .find(() => true);
+    const onBeforeCreate = createTopic<OnBeforeCreateLocaleTopicParams>();
+    const onAfterCreate = createTopic<OnAfterCreateLocaleTopicParams>();
+    const onBeforeUpdate = createTopic<OnBeforeUpdateLocaleTopicParams>();
+    const onAfterUpdate = createTopic<OnAfterUpdateLocaleTopicParams>();
+    const onBeforeDelete = createTopic<OnBeforeDeleteLocaleTopicParams>();
+    const onAfterDelete = createTopic<OnAfterDeleteLocaleTopicParams>();
 
-    if (!providerPlugin) {
-        throw new WebinyError(`Missing "${pluginType}" plugin.`, "PLUGIN_NOT_FOUND", {
-            type: pluginType
-        });
-    }
-
-    const storageOperations = await providerPlugin.provide({
-        context
-    });
-
-    const localePlugins = context.plugins.byType<LocalePlugin>(LocalePlugin.type);
-
-    context.i18n.locales = {
-        getDefault: async () => {
+    return {
+        onBeforeCreate,
+        onAfterCreate,
+        onBeforeUpdate,
+        onAfterUpdate,
+        onBeforeDelete,
+        onAfterDelete,
+        async getDefaultLocale() {
+            let locale: I18NLocale = null;
             try {
-                const locale = await storageOperations.getDefault();
-                if (!locale) {
-                    throw new NotFoundError(`Default locale  not found.`);
-                }
-                return {
-                    ...locale,
-                    createdOn: locale.createdOn ? locale.createdOn : new Date().toISOString()
-                };
+                locale = await storageOperations.getDefault();
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not load the default locale.",
                     ex.code || "LOCALE_DEFAULT_ERROR"
                 );
             }
+            if (!locale) {
+                throw new NotFoundError(`Default locale  not found.`);
+            }
+            return {
+                ...locale,
+                createdOn: locale.createdOn ? locale.createdOn : new Date().toISOString()
+            };
         },
-        get: async code => {
+        async getLocale(code) {
+            let locale: I18NLocale = null;
             try {
-                const locale = await storageOperations.get(code);
-                if (!locale) {
-                    throw new NotFoundError(`Locale "${code}" not found.`);
-                }
-                return {
-                    ...locale,
-                    createdOn: locale.createdOn ? locale.createdOn : new Date().toISOString()
-                };
+                locale = await storageOperations.get(code);
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not load the requested locale.",
@@ -66,9 +67,18 @@ export default new ContextPlugin<I18NContext>(async context => {
                     }
                 );
             }
+
+            if (!locale) {
+                throw new NotFoundError(`Locale "${code}" not found.`);
+            }
+
+            return {
+                ...locale,
+                createdOn: locale.createdOn ? locale.createdOn : new Date().toISOString()
+            };
         },
 
-        list: async params => {
+        async listLocales(params) {
             const { where, sort, after, limit = 1000 } = params || {};
             try {
                 return await storageOperations.list({
@@ -84,10 +94,8 @@ export default new ContextPlugin<I18NContext>(async context => {
                 );
             }
         },
-
-        create: async input => {
+        async createLocale(input) {
             const { security, tenancy } = context;
-
             const permission = await security.getPermission("i18n.locale");
 
             if (!permission) {
@@ -118,10 +126,9 @@ export default new ContextPlugin<I18NContext>(async context => {
             };
 
             try {
-                await runLifecycleEvent("beforeCreate", {
+                await onBeforeCreate.publish({
                     context,
-                    plugins: localePlugins,
-                    data: locale
+                    locale
                 });
                 const result = await storageOperations.create({
                     locale
@@ -132,10 +139,8 @@ export default new ContextPlugin<I18NContext>(async context => {
                         locale: result
                     });
                 }
-                await runLifecycleEvent("afterCreate", {
+                await onAfterCreate.publish({
                     context,
-                    plugins: localePlugins,
-                    data: locale,
                     locale: result
                 });
                 return locale;
@@ -151,16 +156,15 @@ export default new ContextPlugin<I18NContext>(async context => {
                 );
             }
         },
-
-        update: async (code, input) => {
-            const { i18n, security } = context;
+        async updateLocale(this: LocalesCRUD, code, input) {
+            const { security } = context;
 
             const permission = await security.getPermission("i18n.locale");
 
             if (!permission) {
                 throw new NotAuthorizedError();
             }
-            const original = await i18n.locales.get(code);
+            const original = await this.getLocale(code);
             if (!original) {
                 throw new NotFoundError(`Locale "${code}" not found.`);
             }
@@ -189,11 +193,10 @@ export default new ContextPlugin<I18NContext>(async context => {
             };
 
             try {
-                await runLifecycleEvent("beforeUpdate", {
+                await onBeforeUpdate.publish({
                     context,
-                    plugins: localePlugins,
-                    original,
-                    data: locale
+                    locale,
+                    original
                 });
                 const result = await storageOperations.update({
                     original,
@@ -205,12 +208,10 @@ export default new ContextPlugin<I18NContext>(async context => {
                         locale
                     });
                 }
-                await runLifecycleEvent("afterUpdate", {
+                await onBeforeUpdate.publish({
                     context,
-                    plugins: localePlugins,
-                    data: locale,
-                    original,
-                    locale: result
+                    locale: result,
+                    original
                 });
                 return locale;
             } catch (ex) {
@@ -224,15 +225,15 @@ export default new ContextPlugin<I18NContext>(async context => {
                 );
             }
         },
-        delete: async code => {
-            const { i18n, security } = context;
+        async deleteLocale(this: LocalesCRUD, code) {
+            const { security } = context;
 
             const permission = await security.getPermission("i18n.locale");
 
             if (!permission) {
                 throw new NotAuthorizedError();
             }
-            const locale = await i18n.locales.get(code);
+            const locale = await this.getLocale(code);
             if (!locale) {
                 throw new NotFoundError(`Locale "${code}" not found.`);
             }
@@ -242,22 +243,20 @@ export default new ContextPlugin<I18NContext>(async context => {
                     "Cannot delete default locale, please set another locale as default first."
                 );
             }
-            const [allLocales] = await i18n.locales.list();
+            const [allLocales] = await this.listLocales();
             if (allLocales.length === 1) {
                 throw new WebinyError("Cannot delete the last locale.");
             }
             try {
-                await runLifecycleEvent("beforeDelete", {
+                await onBeforeDelete.publish({
                     context,
-                    plugins: localePlugins,
                     locale
                 });
                 await storageOperations.delete({
                     locale
                 });
-                await runLifecycleEvent("afterDelete", {
+                await onAfterDelete.publish({
                     context,
-                    plugins: localePlugins,
                     locale
                 });
                 return locale;
@@ -272,4 +271,4 @@ export default new ContextPlugin<I18NContext>(async context => {
             }
         }
     };
-});
+};
