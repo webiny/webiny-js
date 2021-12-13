@@ -525,4 +525,44 @@ describe("Files CRUD test", () => {
             }
         });
     });
+
+    it("should have no tags if files uploaded have no tags", async () => {
+        const [createResponse] = await createFiles({
+            data: [fileAData, fileBData, fileCData].map(file => {
+                return {
+                    ...file,
+                    tags: undefined
+                };
+            })
+        });
+        expect(createResponse).toEqual({
+            data: {
+                fileManager: {
+                    createFiles: {
+                        data: expect.any(Array),
+                        error: null
+                    }
+                }
+            }
+        });
+        await until(
+            () => listFiles().then(([data]) => data),
+            ({ data }) => {
+                return data.fileManager.listFiles.data.length === 3;
+            },
+            {
+                name: "list files after create"
+            }
+        );
+
+        const [tagsResponse] = await listTags({});
+
+        expect(tagsResponse).toEqual({
+            data: {
+                fileManager: {
+                    listTags: []
+                }
+            }
+        });
+    });
 });
