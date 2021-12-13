@@ -1,15 +1,16 @@
 const path = require("path");
+const webpack = require("webpack");
+const WebpackBar = require("webpackbar");
 const { version } = require("@webiny/project-utils/package.json");
 
 module.exports = options => {
-    const webpack = require("webpack");
-    let babelOptions = require("./babelrc");
     const { getOutput, getEntry } = require("./utils");
     const output = getOutput(options);
     const entry = getEntry(options);
 
-    const { overrides, debug, cwd } = options;
+    const { cwd, debug, overrides } = options;
 
+    let babelOptions = require("./babelrc");
     // Customize Babel options.
     if (typeof overrides.babel === "function") {
         babelOptions = overrides.babel(babelOptions);
@@ -43,7 +44,8 @@ module.exports = options => {
                     process.env.WEBINY_MULTI_TENANCY || false
                 ),
                 ...definitions
-            })
+            }),
+            options.logs && new WebpackBar({ name: path.basename(cwd) })
         ].filter(Boolean),
         // Run babel on all .js files and skip those in node_modules
         module: {

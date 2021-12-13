@@ -10,7 +10,10 @@ module.exports = options => {
 
     logs && console.log(`Compiling ${chalk.green(path.basename(cwd))}...`);
 
-    let webpackConfig = require("./createBuildConfig")(options);
+    let webpackConfig = require("./webpack.config")({
+        production: true,
+        ...options
+    });
 
     // Customize Webpack config.
     if (typeof overrides.webpack === "function") {
