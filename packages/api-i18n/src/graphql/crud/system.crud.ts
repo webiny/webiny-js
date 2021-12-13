@@ -1,35 +1,20 @@
-import { I18NContext, I18NContextObject, I18NSystem } from "~/types";
-import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
+import { I18NContext, I18NSystem, I18NSystemStorageOperations, SystemCRUD } from "~/types";
 import WebinyError from "@webiny/error";
-import { SystemStorageOperationsProviderPlugin } from "~/plugins/SystemStorageOperationsProviderPlugin";
 
-export default new ContextPlugin<I18NContext>(async context => {
-    if (!context.i18n) {
-        context.i18n = {} as I18NContextObject;
-    }
-    const pluginType = SystemStorageOperationsProviderPlugin.type;
+export interface Params {
+    context: I18NContext;
+    storageOperations: I18NSystemStorageOperations;
+}
+export const createSystemCrud = (params: Params): SystemCRUD => {
+    const { context, storageOperations } = params;
 
-    const providerPlugin = context.plugins
-        .byType<SystemStorageOperationsProviderPlugin>(pluginType)
-        .find(() => true);
-
-    if (!providerPlugin) {
-        throw new WebinyError(`Missing "${pluginType}" plugin.`, "PLUGIN_NOT_FOUND", {
-            type: pluginType
-        });
-    }
-
-    const storageOperations = await providerPlugin.provide({
-        context
-    });
-
-    context.i18n.system = {
-        getVersion: async () => {
+    return {
+        async getSystemVersion() {
             const system = await storageOperations.get();
 
             return system ? system.version : null;
         },
-        setVersion: async version => {
+        async setSystemVersion(version) {
             const original = await storageOperations.get();
 
             const system: I18NSystem = {
@@ -68,19 +53,19 @@ export default new ContextPlugin<I18NContext>(async context => {
                 );
             }
         },
-        install: async ({ code }) => {
+        async installSystem(this: SystemCRUD, { code }) {
             const { i18n } = context;
-            const version = await i18n.system.getVersion();
+            const version = await this.getSystemVersion();
             if (version) {
                 throw new WebinyError("I18N is already installed.", "INSTALL_ERROR", {
                     version
                 });
             }
-            await i18n.locales.create({
+            await i18n.locales.createLocale({
                 code,
                 default: true
             });
-            await i18n.system.setVersion(context.WEBINY_VERSION);
+            await this.setSystemVersion(context.WEBINY_VERSION);
         }
     };
-});
+};

@@ -334,7 +334,7 @@ const filesContextCrudPlugin = new ContextPlugin<FileManagerContext>(async conte
             const where: FileManagerFilesStorageOperationsListParamsWhere = {
                 ...initialWhere,
                 private: false,
-                locale: context.i18nContent.getLocale().code,
+                locale: context.i18nContent.getCurrentLocale().code,
                 tenant: context.tenancy.getCurrentTenant().id
             };
             /**
