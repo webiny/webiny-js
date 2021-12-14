@@ -1,7 +1,11 @@
 {
   "name": "@webiny/cwp-template-aws",
   "version": "5.18.3",
-  "main": "index.js",
+  "main": "./dist/index.js",
+  "exports": {
+    ".": "./dist/index.js",
+    "./": "./dist/"
+  },
   "repository": {
     "type": "git",
     "directory": "packages/cwp-template-aws"

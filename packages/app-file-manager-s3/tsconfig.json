@@ -11,9 +11,7 @@
     "outDir": "./dist",
     "declarationDir": "./dist",
     "paths": {
-      "~/*": ["./src/*"],
-      "@webiny/plugins/*": ["../plugins/src/*"],
-      "@webiny/plugins": ["../plugins/src"]
+      "~/*": ["./src/*"]
     },
     "baseUrl": "."
   }

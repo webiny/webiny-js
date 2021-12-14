@@ -1,7 +1,11 @@
 {
   "name": "@webiny/cli-plugin-deploy-pulumi",
   "version": "5.18.3",
-  "main": "index.js",
+  "main": "./dist/index.js",
+  "exports": {
+    ".": "./dist/index.js",
+    "./": "./dist/"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git",

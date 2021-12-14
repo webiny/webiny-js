@@ -1,7 +1,11 @@
 {
   "name": "@webiny/api-file-manager-ddb-es",
   "version": "5.18.3",
-  "main": "index.js",
+  "main": "./dist/index.js",
+  "exports": {
+    ".": "./dist/index.js",
+    "./": "./dist/"
+  },
   "keywords": [
     "@webiny/api-file-manager",
     "storage-operations",
@@ -51,6 +55,7 @@
     "jest-dynalite": "^3.2.0",
     "jsonpack": "^1.1.5",
     "rimraf": "^3.0.2",
+    "tslib": "^2.3.1",
     "ttypescript": "^1.5.12",
     "typescript": "^4.5.2"
   },

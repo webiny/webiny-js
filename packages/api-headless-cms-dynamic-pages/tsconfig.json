@@ -14,11 +14,7 @@
     "outDir": "./dist",
     "declarationDir": "./dist",
     "paths": {
-      "~/*": ["./src/*"],
-      "@webiny/api-dynamic-pages/*": ["../api-dynamic-pages/src/*"],
-      "@webiny/api-dynamic-pages": ["../api-dynamic-pages/src"],
-      "@webiny/api-headless-cms/*": ["../api-headless-cms/src/*"],
-      "@webiny/api-headless-cms": ["../api-headless-cms/src"]
+      "~/*": ["./src/*"]
     },
     "baseUrl": "."
   }

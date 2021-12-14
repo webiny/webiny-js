@@ -17,13 +17,7 @@
     "outDir": "./dist",
     "declarationDir": "./dist",
     "paths": {
-      "~/*": ["./src/*"],
-      "@webiny/api-file-manager/*": ["../api-file-manager/src/*"],
-      "@webiny/api-file-manager": ["../api-file-manager/src"],
-      "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
-      "@webiny/handler-graphql": ["../handler-graphql/src"],
-      "@webiny/validation/*": ["../validation/src/*"],
-      "@webiny/validation": ["../validation/src"]
+      "~/*": ["./src/*"]
     },
     "baseUrl": "."
   }

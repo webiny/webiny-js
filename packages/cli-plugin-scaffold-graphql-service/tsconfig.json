@@ -17,13 +17,7 @@
     "outDir": "./dist",
     "declarationDir": "./dist",
     "paths": {
-      "~/*": ["./src/*"],
-      "@webiny/cli-plugin-scaffold/*": ["../cli-plugin-scaffold/src/*"],
-      "@webiny/cli-plugin-scaffold": ["../cli-plugin-scaffold/src"],
-      "@webiny/handler/*": ["../handler/src/*"],
-      "@webiny/handler": ["../handler/src"],
-      "@webiny/plugins/*": ["../plugins/src/*"],
-      "@webiny/plugins": ["../plugins/src"]
+      "~/*": ["./src/*"]
     },
     "baseUrl": "."
   }

@@ -17,13 +17,7 @@
     "outDir": "./dist",
     "declarationDir": "./dist",
     "paths": {
-      "~/*": ["./src/*"],
-      "@webiny/api-elasticsearch/*": ["../api-elasticsearch/src/*"],
-      "@webiny/api-elasticsearch": ["../api-elasticsearch/src"],
-      "@webiny/error/*": ["../error/src/*"],
-      "@webiny/error": ["../error/src"],
-      "@webiny/handler/*": ["../handler/src/*"],
-      "@webiny/handler": ["../handler/src"]
+      "~/*": ["./src/*"]
     },
     "baseUrl": "."
   }

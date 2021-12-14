@@ -20,15 +20,7 @@
     "outDir": "./dist",
     "declarationDir": "./dist",
     "paths": {
-      "~/*": ["./src/*"],
-      "@webiny/api-prerendering-service/*": ["../api-prerendering-service/src/*"],
-      "@webiny/api-prerendering-service": ["../api-prerendering-service/src"],
-      "@webiny/handler/*": ["../handler/src/*"],
-      "@webiny/handler": ["../handler/src"],
-      "@webiny/handler-args/*": ["../handler-args/src/*"],
-      "@webiny/handler-args": ["../handler-args/src"],
-      "@webiny/plugins/*": ["../plugins/src/*"],
-      "@webiny/plugins": ["../plugins/src"]
+      "~/*": ["./src/*"]
     },
     "baseUrl": "."
   }

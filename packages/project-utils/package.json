@@ -1,7 +1,11 @@
 {
   "name": "@webiny/project-utils",
   "version": "5.18.3",
-  "main": "index.js",
+  "main": "./dist/index.js",
+  "exports": {
+    ".": "./dist/index.js",
+    "./": "./dist/"
+  },
   "description": "A collection of utilities for Webiny project.",
   "repository": {
     "type": "git",

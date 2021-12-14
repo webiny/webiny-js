@@ -49,6 +49,7 @@
     "@types/react-dom": "^17.0.0",
     "@typescript-eslint/eslint-plugin": "^5.5.0",
     "@typescript-eslint/parser": "^5.5.0",
+    "@zerollup/ts-transform-paths": "^1.7.18",
     "adio": "^1.0.1",
     "amazon-cognito-identity-js": "^4.5.3",
     "babel-core": "^7.0.0-bridge.0",
@@ -112,8 +113,12 @@
     "semver": "^6.3.0",
     "source-map-support": "^0.5.0",
     "ts-jest": "^26.4.4",
+    "ts-patch": "^2.0.1",
+    "ts-transform-asset": "^3.1.0",
+    "tslib": "^2.3.1",
+    "ttypescript": "^1.5.13",
     "typescript": "4.5.2",
-    "typescript-transform-paths": "^2.2.3",
+    "typescript-transform-paths": "^3.3.1",
     "utf-8-validate": "^5.0.2",
     "verdaccio": "^4.10.0",
     "write-json-file": "^4.2.0",
@@ -170,7 +175,7 @@
     "verdaccio:start:detached": "yarn pm2 start \"yarn verdaccio:start\"",
     "webiny": "./node_modules/.bin/webiny",
     "webiny-ui-build-storybook": "cd packages/ui && cross-env OUT=../../netlify-static yarn build-storybook",
-    "watch": "yarn run tsc --build --watch"
+    "watch": "yarn run ttsc --build --watch"
   },
   "husky": {
     "hooks": {

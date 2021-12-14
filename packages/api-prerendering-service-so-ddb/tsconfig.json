@@ -23,17 +23,7 @@
     "outDir": "./dist",
     "declarationDir": "./dist",
     "paths": {
-      "~/*": ["./src/*"],
-      "@webiny/error/*": ["../error/src/*"],
-      "@webiny/error": ["../error/src"],
-      "@webiny/handler-aws/*": ["../handler-aws/src/*"],
-      "@webiny/handler-aws": ["../handler-aws/src"],
-      "@webiny/db/*": ["../db/src/*"],
-      "@webiny/db": ["../db/src"],
-      "@webiny/db-dynamodb/*": ["../db-dynamodb/src/*"],
-      "@webiny/db-dynamodb": ["../db-dynamodb/src"],
-      "@webiny/api-prerendering-service/*": ["../api-prerendering-service/src/*"],
-      "@webiny/api-prerendering-service": ["../api-prerendering-service/src"]
+      "~/*": ["./src/*"]
     },
     "baseUrl": "."
   }

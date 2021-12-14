@@ -44,31 +44,7 @@
     "outDir": "./dist",
     "declarationDir": "./dist",
     "paths": {
-      "~/*": ["./src/*"],
-      "@webiny/app/*": ["../app/src/*"],
-      "@webiny/app": ["../app/src"],
-      "@webiny/app-admin/*": ["../app-admin/src/*"],
-      "@webiny/app-admin": ["../app-admin/src"],
-      "@webiny/app-i18n/*": ["../app-i18n/src/*"],
-      "@webiny/app-i18n": ["../app-i18n/src"],
-      "@webiny/app-page-builder-elements/*": ["../app-page-builder-elements/src/*"],
-      "@webiny/app-page-builder-elements": ["../app-page-builder-elements/src"],
-      "@webiny/app-plugin-admin-welcome-screen/*": ["../app-plugin-admin-welcome-screen/src/*"],
-      "@webiny/app-plugin-admin-welcome-screen": ["../app-plugin-admin-welcome-screen/src"],
-      "@webiny/app-security/*": ["../app-security/src/*"],
-      "@webiny/app-security": ["../app-security/src"],
-      "@webiny/app-tenancy/*": ["../app-tenancy/src/*"],
-      "@webiny/app-tenancy": ["../app-tenancy/src"],
-      "@webiny/form/*": ["../form/src/*"],
-      "@webiny/form": ["../form/src"],
-      "@webiny/plugins/*": ["../plugins/src/*"],
-      "@webiny/plugins": ["../plugins/src"],
-      "@webiny/react-router/*": ["../react-router/src/*"],
-      "@webiny/react-router": ["../react-router/src"],
-      "@webiny/ui/*": ["../ui/src/*"],
-      "@webiny/ui": ["../ui/src"],
-      "@webiny/validation/*": ["../validation/src/*"],
-      "@webiny/validation": ["../validation/src"]
+      "~/*": ["./src/*"]
     },
     "baseUrl": "."
   }

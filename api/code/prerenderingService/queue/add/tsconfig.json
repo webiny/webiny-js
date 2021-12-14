@@ -8,19 +8,7 @@
   ],
   "compilerOptions": {
     "paths": {
-      "~/*": ["./src/*"],
-      "@webiny/api-prerendering-service/*": [
-        "../../../../../packages/api-prerendering-service/src/*"
-      ],
-      "@webiny/api-prerendering-service": ["../../../../../packages/api-prerendering-service/src"],
-      "@webiny/api-prerendering-service-so-ddb/*": [
-        "../../../../../packages/api-prerendering-service-so-ddb/src/*"
-      ],
-      "@webiny/api-prerendering-service-so-ddb": [
-        "../../../../../packages/api-prerendering-service-so-ddb/src"
-      ],
-      "@webiny/handler-aws/*": ["../../../../../packages/handler-aws/src/*"],
-      "@webiny/handler-aws": ["../../../../../packages/handler-aws/src"]
+      "~/*": ["./src/*"]
     },
     "baseUrl": "."
   }

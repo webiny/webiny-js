@@ -11,9 +11,7 @@
     "outDir": "./dist",
     "declarationDir": "./dist",
     "paths": {
-      "~/*": ["./src/*"],
-      "@webiny/handler/*": ["../handler/src/*"],
-      "@webiny/handler": ["../handler/src"]
+      "~/*": ["./src/*"]
     },
     "baseUrl": "."
   }

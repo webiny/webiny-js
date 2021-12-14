@@ -17,13 +17,7 @@
     "outDir": "./dist",
     "declarationDir": "./dist",
     "paths": {
-      "~/*": ["./src/*"],
-      "@webiny/api-authentication/*": ["../api-authentication/src/*"],
-      "@webiny/api-authentication": ["../api-authentication/src"],
-      "@webiny/api-cognito-authenticator/*": ["../api-cognito-authenticator/src/*"],
-      "@webiny/api-cognito-authenticator": ["../api-cognito-authenticator/src"],
-      "@webiny/handler/*": ["../handler/src/*"],
-      "@webiny/handler": ["../handler/src"]
+      "~/*": ["./src/*"]
     },
     "baseUrl": "."
   }

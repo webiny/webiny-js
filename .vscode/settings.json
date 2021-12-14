@@ -10,7 +10,6 @@
     ".webiny": true
   },
   "search.exclude": {
-    "**/dist": true,
     "**/node_modules": true,
     "yarn.lock": true,
     ".pulumi": true

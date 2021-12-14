@@ -23,17 +23,7 @@
     "outDir": "./dist",
     "declarationDir": "./dist",
     "paths": {
-      "~/*": ["./src/*"],
-      "@webiny/error/*": ["../error/src/*"],
-      "@webiny/error": ["../error/src"],
-      "@webiny/handler/*": ["../handler/src/*"],
-      "@webiny/handler": ["../handler/src"],
-      "@webiny/handler-http/*": ["../handler-http/src/*"],
-      "@webiny/handler-http": ["../handler-http/src"],
-      "@webiny/plugins/*": ["../plugins/src/*"],
-      "@webiny/plugins": ["../plugins/src"],
-      "@webiny/handler-args/*": ["../handler-args/src/*"],
-      "@webiny/handler-args": ["../handler-args/src"]
+      "~/*": ["./src/*"]
     },
     "baseUrl": "."
   }

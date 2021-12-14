@@ -29,21 +29,7 @@
     "outDir": "./dist",
     "declarationDir": "./dist",
     "paths": {
-      "~/*": ["./src/*"],
-      "@webiny/app/*": ["../app/src/*"],
-      "@webiny/app": ["../app/src"],
-      "@webiny/app-admin/*": ["../app-admin/src/*"],
-      "@webiny/app-admin": ["../app-admin/src"],
-      "@webiny/app-security/*": ["../app-security/src/*"],
-      "@webiny/app-security": ["../app-security/src"],
-      "@webiny/form/*": ["../form/src/*"],
-      "@webiny/form": ["../form/src"],
-      "@webiny/react-router/*": ["../react-router/src/*"],
-      "@webiny/react-router": ["../react-router/src"],
-      "@webiny/ui/*": ["../ui/src/*"],
-      "@webiny/ui": ["../ui/src"],
-      "@webiny/validation/*": ["../validation/src/*"],
-      "@webiny/validation": ["../validation/src"]
+      "~/*": ["./src/*"]
     },
     "baseUrl": "."
   }

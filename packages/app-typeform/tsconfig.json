@@ -17,13 +17,7 @@
     "outDir": "./dist",
     "declarationDir": "./dist",
     "paths": {
-      "~/*": ["./src/*"],
-      "@webiny/app/*": ["../app/src/*"],
-      "@webiny/app": ["../app/src"],
-      "@webiny/app-page-builder/*": ["../app-page-builder/src/*"],
-      "@webiny/app-page-builder": ["../app-page-builder/src"],
-      "@webiny/validation/*": ["../validation/src/*"],
-      "@webiny/validation": ["../validation/src"]
+      "~/*": ["./src/*"]
     },
     "baseUrl": "."
   }

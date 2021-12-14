@@ -1,0 +1,20 @@
+{
+  "name": "@webiny/typescript-utils",
+  "version": "5.18.3",
+  "main": "index.ts",
+  "description": "A collection of utilities for Webiny project.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git"
+  },
+  "author": "Michał Kędrzyński <michal@webiny.com>",
+  "dependencies": {
+    "typescript": "^4.5.2"
+  },
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public",
+    "directory": "."
+  },
+  "gitHead": "b8aec8a1be3f25c3b428b357fe1e352c7cbff9ae"
+}

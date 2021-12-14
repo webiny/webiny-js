@@ -1,7 +1,11 @@
 {
   "name": "@webiny/handler-aws",
   "version": "5.18.3",
-  "main": "index.js",
+  "main": "./dist/index.js",
+  "exports": {
+    ".": "./dist/index.js",
+    "./": "./dist/"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git"
@@ -31,6 +35,7 @@
     "babel-plugin-lodash": "^3.3.4",
     "merge": "^1.2.1",
     "rimraf": "^3.0.2",
+    "tslib": "^2.3.1",
     "typescript": "^4.5.2"
   },
   "publishConfig": {
