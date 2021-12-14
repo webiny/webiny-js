@@ -4,7 +4,7 @@ import get from "lodash/get";
 import {
     ApwContentReviewStepStatus,
     ApwContext,
-    ApwWorkflowSteps,
+    ApwWorkflowStep,
     ApwWorkflowStepTypes
 } from "~/types";
 import { SecurityIdentity } from "@webiny/api-security/types";
@@ -36,7 +36,7 @@ export const createModelField = (params: CreateModelFieldParams): CmsModelField 
 export interface HasReviewersParams {
     identity: SecurityIdentity;
     context: ApwContext;
-    workflowStep: ApwWorkflowSteps;
+    workflowStep: ApwWorkflowStep;
 }
 
 export const hasReviewer = async ({
@@ -60,7 +60,7 @@ export const getValue = (object: Record<string, any>, key: string) => {
 };
 
 export const getContentReviewStepInitialStatus = (
-    workflowSteps: ApwWorkflowSteps[],
+    workflowSteps: ApwWorkflowStep[],
     index: number,
     previousStepStatus: ApwContentReviewStepStatus
 ): ApwContentReviewStepStatus => {

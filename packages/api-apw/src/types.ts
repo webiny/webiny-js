@@ -58,7 +58,7 @@ export enum ApwWorkflowStepTypes {
     NON_MANDATORY = "not_mandatory"
 }
 
-export interface ApwWorkflowSteps {
+export interface ApwWorkflowStep {
     title: string;
     type: ApwWorkflowStepTypes;
     reviewers: ApwReviewer[];
@@ -68,13 +68,13 @@ interface CreateWorkflowParams {
     app: ApwWorkflowApplications;
     title: string;
     scope: ApwWorkflowScope;
-    steps: ApwWorkflowSteps;
+    steps: ApwWorkflowStep[];
 }
 
 interface UpdateWorkflowParams {
     title?: string;
     scope?: ApwWorkflowScope;
-    steps?: ApwWorkflowSteps;
+    steps?: ApwWorkflowStep[];
 }
 
 export interface ListWorkflowsParams extends CmsEntryListParams {

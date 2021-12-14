@@ -2,14 +2,11 @@ import {
     ApwContext,
     ApwContentReviewCrud,
     ApwContentReviewStepStatus,
-    ApwWorkflowSteps,
+    ApwWorkflowStep,
     ApwWorkflowStepTypes
 } from "~/types";
-import {
-    getNextStepStatus,
-    getWorkflowIdFromContent
-} from "~/plugins/hooks/initializeContentReviewSteps";
-import { getValue, hasReviewer } from "~/plugins/utils";
+import { getWorkflowIdFromContent } from "~/plugins/hooks/initializeContentReviewSteps";
+import { getValue, hasReviewer, getNextStepStatus } from "~/plugins/utils";
 
 export function createContentReviewMethods(context: ApwContext): ApwContentReviewCrud {
     return {
@@ -63,7 +60,7 @@ export function createContentReviewMethods(context: ApwContext): ApwContentRevie
              */
             const workflowId = await getWorkflowIdFromContent(context, entry.values.content);
             const workflow = await context.advancedPublishingWorkflow.workflow.get(workflowId);
-            const workflowSteps: ApwWorkflowSteps[] = getValue(workflow, "steps");
+            const workflowSteps: ApwWorkflowStep[] = getValue(workflow, "steps");
             const previousStepFromWorkflow = workflowSteps[stepIndex - 1];
 
             const hasPermission = await hasReviewer({
@@ -165,7 +162,7 @@ export function createContentReviewMethods(context: ApwContext): ApwContentRevie
              */
             const workflowId = await getWorkflowIdFromContent(context, entry.values.content);
             const workflow = await context.advancedPublishingWorkflow.workflow.get(workflowId);
-            const workflowSteps: ApwWorkflowSteps[] = getValue(workflow, "steps");
+            const workflowSteps: ApwWorkflowStep[] = getValue(workflow, "steps");
 
             const hasPermission = await hasReviewer({
                 context,
