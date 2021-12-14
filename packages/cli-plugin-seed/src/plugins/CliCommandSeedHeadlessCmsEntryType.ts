@@ -1,31 +1,54 @@
 import { Plugin } from "@webiny/plugins/Plugin";
+import { ModelBuilder } from "~/applications/headlessCms/builders/ModelBuilder";
+import { CmsGroup } from "~/applications/headlessCms/graphql/types";
 
 export interface Params {
-    id: string;
-    name: string;
+    /**
+     * Builder for model create and update input
+     */
+    modelBuilder: ModelBuilder;
+    /**
+     * Does this entry type have any other entry type dependencies?
+     */
     dependencies?: string[];
 }
+
+export interface GetModelBuilderParams {
+    group: CmsGroup;
+}
+
 export class CliCommandSeedHeadlessCmsEntryType extends Plugin {
     public static readonly type: string = "cli-plugin-seed-application-headless-cms-entry-type";
-
     private readonly params: Params;
 
     public constructor(params: Params) {
         super();
-        if (params.id.match(/^([a-zA-Z]+)$/) === null) {
-            throw new Error(
-                `Plugin ID must be comprised of only [a-z] and [A-Z]. Input: "${params.id}"`
-            );
+        const id = params.modelBuilder.modelId;
+        if (id.match(/^([a-zA-Z]+)$/) === null) {
+            throw new Error(`Plugin ID must be comprised of only [a-z] and [A-Z]. Input: "${id}"`);
         }
         this.params = params;
     }
 
     public getId(): string {
-        return this.params.id;
+        return this.params.modelBuilder.modelId;
     }
 
     public getName(): string {
-        return this.params.name;
+        return this.params.modelBuilder.name;
+    }
+
+    public getModelBuilder(params: GetModelBuilderParams): ModelBuilder {
+        this.params.modelBuilder.setGroup(params.group);
+        return this.params.modelBuilder;
+    }
+
+    public getModelId(): string {
+        return this.params.modelBuilder.modelId;
+    }
+
+    public getDependencies(): string[] {
+        return this.params.dependencies || [];
     }
 
     public validate(input: string[]): string | boolean {
@@ -37,12 +60,13 @@ export class CliCommandSeedHeadlessCmsEntryType extends Plugin {
     }
 
     private validateDependencies(input: string[]): string | boolean {
-        if (!this.params.dependencies || this.params.dependencies.length === 0) {
+        const dependencies = this.getDependencies();
+        if (dependencies.length === 0) {
             return true;
         }
-        for (const dep of this.params.dependencies) {
+        for (const dep of dependencies) {
             if (input.includes(dep) === false) {
-                return `Entry type plugin "${this.params.name}" is missing a dependency with ID "${dep}".`;
+                return `Entry type plugin "${this.getName()}" is missing a dependency with ID "${dep}".`;
             }
         }
         return true;

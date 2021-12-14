@@ -1,12 +1,16 @@
 import { Plugin } from "@webiny/plugins/Plugin";
-import { Question } from "inquirer";
-import { CliContext } from "@webiny/cli/types";
-import { Inquirer } from "inquirer";
+import { Question as BaseQuestion } from "inquirer";
+import { PromptModule } from "inquirer";
+import Choice from "inquirer/lib/objects/choice";
 import { Ora } from "ora";
-import { Logger } from "~/types";
+import { CliSeedContext, Logger } from "~/types";
 
-interface QuestionsParams {
-    context: CliContext;
+export interface QuestionsParams {
+    context: CliSeedContext;
+}
+
+export interface Question extends BaseQuestion {
+    choices?: Choice[];
 }
 
 export type Questions = ((params: QuestionsParams) => Question[]) | Question[];
@@ -14,26 +18,26 @@ export type Questions = ((params: QuestionsParams) => Question[]) | Question[];
 export type Answers = Record<string, any>;
 
 export interface ProcessParams {
-    context: CliContext;
+    context: CliSeedContext;
     answers: Answers;
-    inquirer: Inquirer;
+    inquirer: PromptModule;
     ora: Ora;
     log: Logger;
 }
 
 export interface OnSuccessParams {
-    context: CliContext;
+    context: CliSeedContext;
     answers: Answers;
-    inquirer: Inquirer;
+    inquirer: PromptModule;
     ora: Ora;
     log: Logger;
 }
 
 export interface OnErrorParams {
-    context: CliContext;
+    context: CliSeedContext;
     answers: Answers;
     error: Error;
-    inquirer: Inquirer;
+    inquirer: PromptModule;
     ora: Ora;
     log: Logger;
 }
