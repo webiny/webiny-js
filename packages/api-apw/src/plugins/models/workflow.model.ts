@@ -45,11 +45,11 @@ export const createWorkflowModelDefinition = ({ reviewerModelId }) => ({
                                     label: "Mandatory, blocking  - An approval from a reviewer is required before being able to move to the next step and publish the content. "
                                 },
                                 {
-                                    value: "mandatory_non-blocking",
+                                    value: "mandatory_non_blocking",
                                     label: "Mandatory, non-blocking - An approval from a reviewer is to publish the content, but the next step in the review workflow is not blocked. "
                                 },
                                 {
-                                    value: "optional",
+                                    value: "not_mandatory",
                                     label: "Not mandatory - This is an optional review step. The content can be published regardless if an approval is provided or not."
                                 }
                             ]

@@ -53,9 +53,9 @@ interface ApwWorkflowScope {
 }
 
 export enum ApwWorkflowStepTypes {
-    BLOCKING = "blocking",
-    NON_BLOCKING = "non_blocking",
-    OPTIONAL = "optional"
+    MANDATORY_BLOCKING = "mandatory_blocking",
+    MANDATORY_NON_BLOCKING = "mandatory_non_blocking",
+    NON_MANDATORY = "not_mandatory"
 }
 
 export interface ApwWorkflowSteps {
@@ -169,7 +169,9 @@ export interface ApwContentReviewCrud
         UpdateApwContentReviewParams
     > {
     list(params: CmsEntryListParams): Promise<[ApwContentReview[], CmsEntryMeta]>;
+
     provideSignOff(id: string, step: string): Promise<Boolean>;
+
     retractSignOff(id: string, step: string): Promise<Boolean>;
 }
 

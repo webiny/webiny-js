@@ -45,7 +45,7 @@ export default {
             {
                 title: "Design Review",
                 slug: "design-review",
-                type: "mandatory_blocking",
+                type: "mandatory_non_blocking",
                 reviewers: reviewers.map(reviewer => ({
                     modelId: "apwReviewerModelDefinition",
                     id: reviewer.id
@@ -54,7 +54,7 @@ export default {
             {
                 title: "Copy Review",
                 slug: "copy-review",
-                type: "mandatory_blocking",
+                type: "not_mandatory",
                 reviewers: reviewers.map(reviewer => ({
                     modelId: "apwReviewerModelDefinition",
                     id: reviewer.id
