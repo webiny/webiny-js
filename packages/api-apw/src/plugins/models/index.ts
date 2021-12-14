@@ -59,7 +59,7 @@ export const createApwModels = () =>
             const cmsModelPlugin = contentModelPluginFactory({
                 group: cmsGroupPlugin.contentModelGroup,
                 tenant: context.tenancy.getCurrentTenant().id,
-                locale: context.i18nContent.getLocale().code,
+                locale: context.i18nContent.locale.code,
                 modelDefinition
             });
             cmsModelPlugins.push(cmsModelPlugin);
