@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.19.1-beta.0](https://github.com/webiny/webiny-js/compare/v5.19.0...v5.19.1-beta.0) (2021-12-14)
+
+
+### Bug Fixes
+
+* **api-file-manager:** tags listing when file with no tags ([#2114](https://github.com/webiny/webiny-js/issues/2114)) ([d9c638b](https://github.com/webiny/webiny-js/commit/d9c638b7fe0637703dae68115ce48f84896e3592))
+
+
+
+
+
 # [5.19.0](https://github.com/webiny/webiny-js/compare/v5.19.0-beta.6...v5.19.0) (2021-12-13)
 
 **Note:** Version bump only for package webiny-js
