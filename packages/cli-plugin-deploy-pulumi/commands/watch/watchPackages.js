@@ -96,7 +96,7 @@ module.exports = async ({ inputs, output, context }) => {
 
                 worker.postMessage(
                     JSON.stringify({
-                        options: { env, debug, logs },
+                        options: { env, debug, logs: !multipleWatches },
                         package: current
                     })
                 );

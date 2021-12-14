@@ -390,7 +390,8 @@ export interface CmsModelFieldToGraphQLCreateResolver {
         createFieldResolvers: any;
     }):
         | GraphQLFieldResolver
-        | { resolver: GraphQLFieldResolver; typeResolvers: Resolvers<CmsContext> };
+        | { resolver: GraphQLFieldResolver; typeResolvers: Resolvers<CmsContext> }
+        | false;
 }
 
 /**
