@@ -1,5 +1,6 @@
 const blessed = require("blessed");
 const contrib = require("blessed-contrib");
+const stripAnsi = require("strip-ansi");
 
 let output;
 
@@ -16,7 +17,13 @@ module.exports = {
 
         message
             .split("\n")
-            .filter(Boolean)
+            .filter(line => {
+                // There are lines that only contain ANSI color / style codes and nothing else.
+                // Naturally, we don't need these to be displayed in user's terminal. That's why,
+                // before doing the string trim, we're also stripping any potential ANSI codes.
+                const lineWithoutAnsi = stripAnsi(line);
+                return lineWithoutAnsi.trim().length > 0;
+            })
             .forEach(item => {
                 output.logs[type].log(item);
             });

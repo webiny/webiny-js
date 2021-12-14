@@ -241,6 +241,8 @@ export default /* GraphQL */ `
         deleteProduct(revision: ID!): CmsDeleteResponse
 
         publishProduct(revision: ID!): ProductResponse
+    
+        republishProduct(revision: ID!): ProductResponse
 
         unpublishProduct(revision: ID!): ProductResponse
         

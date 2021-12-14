@@ -397,7 +397,8 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
             const input = await referenceFieldsMapping({
                 context,
                 model,
-                input: initialInput
+                input: initialInput,
+                validateEntries: true
             });
 
             const identity = context.security.getIdentity();
@@ -513,7 +514,8 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
             const values = await referenceFieldsMapping({
                 context,
                 model,
-                input: initialValues
+                input: initialValues,
+                validateEntries: false
             });
 
             utils.checkOwnership(context, permission, originalEntry);
@@ -634,7 +636,8 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
             const values = await referenceFieldsMapping({
                 context,
                 model,
-                input: initialValues
+                input: initialValues,
+                validateEntries: false
             });
 
             /**
@@ -684,6 +687,93 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
                         storageEntry,
                         originalEntry,
                         input
+                    }
+                );
+            }
+        },
+        republishEntry: async (model, id) => {
+            await checkEntryPermissions({ rwd: "w" });
+            await utils.checkModelAccess(context, model);
+            /**
+             * Fetch the entry from the storage.
+             */
+            const originalStorageEntry = await storageOperations.entries.getRevisionById(model, {
+                id
+            });
+            if (!originalStorageEntry) {
+                throw new NotFoundError(`Entry "${id}" was not found!`);
+            }
+
+            const originalEntry = await entryFromStorageTransform(
+                context,
+                model,
+                originalStorageEntry
+            );
+            /**
+             * We can only process published entries.
+             */
+            if (originalEntry.status !== "published") {
+                throw new WebinyError(
+                    "Entry with given ID is not published!",
+                    "NOT_PUBLISHED_ERROR",
+                    {
+                        id,
+                        original: originalEntry
+                    }
+                );
+            }
+
+            const values = await referenceFieldsMapping({
+                context,
+                model,
+                input: originalEntry.values,
+                validateEntries: false
+            });
+
+            const entry: CmsEntry = {
+                ...originalEntry,
+                savedOn: new Date().toISOString(),
+                webinyVersion: context.WEBINY_VERSION,
+                values
+            };
+
+            const storageEntry = await entryToStorageTransform(context, model, entry);
+            /**
+             * First we need to update existing entry.
+             */
+            try {
+                await storageOperations.entries.update(model, {
+                    originalEntry,
+                    originalStorageEntry,
+                    entry,
+                    storageEntry,
+                    input: {}
+                });
+            } catch (ex) {
+                throw new WebinyError(
+                    "Could not update existing entry with new data while re-publishing.",
+                    "REPUBLISH_UPDATE_ERROR",
+                    {
+                        entry
+                    }
+                );
+            }
+            /**
+             * Then we move onto publishing it again.
+             */
+            try {
+                return await storageOperations.entries.publish(model, {
+                    originalEntry,
+                    originalStorageEntry,
+                    entry,
+                    storageEntry
+                });
+            } catch (ex) {
+                throw new WebinyError(
+                    "Could not publish existing entry while re-publishing.",
+                    "REPUBLISH_PUBLISH_ERROR",
+                    {
+                        entry
                     }
                 );
             }

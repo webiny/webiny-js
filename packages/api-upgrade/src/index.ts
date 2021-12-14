@@ -2,6 +2,13 @@ import { UpgradePlugin } from "~/types";
 import Error from "@webiny/error";
 import { gt, lt, coerce } from "semver";
 
+export enum ErrorCode {
+    UPGRADE_VERSION_MISMATCH = "UPGRADE_VERSION_MISMATCH",
+    VERSION_ALREADY_INSTALLED = "VERSION_ALREADY_INSTALLED",
+    SKIPPING_UPGRADES_NOT_ALLOWED = "SKIPPING_UPGRADES_NOT_ALLOWED",
+    UPGRADE_NOT_AVAILABLE = "UPGRADE_NOT_AVAILABLE"
+}
+
 interface RunUpgradeArgs {
     /**
      * Version of Webiny that is currently deployed (context.WEBINY_VERSION).
@@ -31,7 +38,7 @@ export function getApplicablePlugin(args: RunUpgradeArgs): UpgradePlugin {
     if (upgradeToVersion !== deployedVersion) {
         throw new Error(
             `The requested upgrade version does not match the deployed version.`,
-            "UPGRADE_VERSION_MISMATCH",
+            ErrorCode.UPGRADE_VERSION_MISMATCH,
             {
                 deployedVersion: deployedVersion,
                 requestedUpgradeTo: upgradeToVersion
@@ -42,7 +49,7 @@ export function getApplicablePlugin(args: RunUpgradeArgs): UpgradePlugin {
     if (installedAppVersion === upgradeToVersion) {
         throw new Error(
             `Version ${upgradeToVersion} is already installed!`,
-            "VERSION_ALREADY_INSTALLED"
+            ErrorCode.VERSION_ALREADY_INSTALLED
         );
     }
 
@@ -53,7 +60,7 @@ export function getApplicablePlugin(args: RunUpgradeArgs): UpgradePlugin {
     if (upgrades.length > 0) {
         throw new Error(
             `Skipping of upgrades is not allowed: https://docs.webiny.com/docs/how-to-guides/upgrade-webiny`,
-            "SKIPPING_UPGRADES_NOT_ALLOWED",
+            ErrorCode.SKIPPING_UPGRADES_NOT_ALLOWED,
             {
                 deployedVersion: deployedVersion,
                 skippedVersions: upgrades.map(pl => pl.version),
@@ -67,7 +74,7 @@ export function getApplicablePlugin(args: RunUpgradeArgs): UpgradePlugin {
     if (!upgrade) {
         throw new Error(
             `Upgrade to version ${upgradeToVersion} is not available.`,
-            "UPGRADE_NOT_AVAILABLE"
+            ErrorCode.UPGRADE_NOT_AVAILABLE
         );
     }
 

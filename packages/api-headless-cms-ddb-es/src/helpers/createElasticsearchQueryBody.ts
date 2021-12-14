@@ -138,17 +138,9 @@ const createInitialQueryValue = (
         });
     }
     // we do not allow not published and not latest
-    else if (where.published === false) {
+    else {
         throw new WebinyError(
-            `Cannot call Elasticsearch query with "published" set at false.`,
-            "ELASTICSEARCH_UNSUPPORTED_QUERY",
-            {
-                where
-            }
-        );
-    } else if (where.latest === false) {
-        throw new WebinyError(
-            `Cannot call Elasticsearch query with "latest" set at false.`,
+            `Cannot call Elasticsearch query when not setting "published" or "latest".`,
             "ELASTICSEARCH_UNSUPPORTED_QUERY",
             {
                 where
