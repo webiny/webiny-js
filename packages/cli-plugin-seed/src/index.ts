@@ -1,4 +1,4 @@
-import { CliCommandPlugin, CliCommandSeedRunArgs } from "~/types";
+import { CliCommandPlugin, CliCommandSeedRunArgs, CliSeedContext } from "~/types";
 import { seed } from "./seed";
 
 export default (): CliCommandPlugin => ({
@@ -15,9 +15,17 @@ export default (): CliCommandPlugin => ({
                     type: "string",
                     demandOption: true
                 });
+                y.option("skip-warning", {
+                    describe: "Skip additional charges warning.",
+                    default: false,
+                    type: "boolean"
+                });
             },
             async (args: CliCommandSeedRunArgs) => {
-                return seed({ context, args });
+                return seed({
+                    context: context as CliSeedContext,
+                    args
+                });
             }
         );
     }

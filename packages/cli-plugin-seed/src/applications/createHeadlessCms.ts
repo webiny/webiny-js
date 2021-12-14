@@ -1,132 +1,95 @@
 import { CliCommandSeedApplication, Questions } from "~/plugins/CliCommandSeedApplication";
-import { processHeadlessCms } from "./headlessCms/processHeadlessCms";
-import { getEntryTypeContextPlugins } from "~/applications/headlessCms/entryTypes/getEntryTypeContextPlugins";
-import { CliCommandSeedHeadlessCmsEntryType } from "~/plugins/CliCommandSeedHeadlessCmsEntryType";
+import Choice from "inquirer/lib/objects/choice";
+import { CliSeedContext } from "~/types";
+import { getRecordTypeContextPlugins } from "~/applications/headlessCms/recordTypes/recordTypeContextPlugins";
+import { createArticleEntryType } from "~/applications/headlessCms/entryTypes/article";
+import { createAuthorEntryType } from "~/applications/headlessCms/entryTypes/author";
+import { createCategoryEntryType } from "~/applications/headlessCms/entryTypes/category";
+import { createEntriesRecordType } from "~/applications/headlessCms/recordTypes/entries";
+import { createGroupsRecordType } from "~/applications/headlessCms/recordTypes/groups";
+import { createModelsRecordType } from "~/applications/headlessCms/recordTypes/models";
+import { createHeadlessCmsManageClient } from "~/applications/graphQLClient";
 
 const questions: Questions = params => {
     const { context } = params;
 
-    const entryTypePlugins = getEntryTypeContextPlugins(context);
+    context.plugins.register([
+        createCategoryEntryType(context),
+        createAuthorEntryType(context),
+        createArticleEntryType(context)
+    ]);
+    context.plugins.register([
+        createEntriesRecordType(context),
+        createGroupsRecordType(context),
+        createModelsRecordType(context)
+    ]);
 
-    const getEntryTypePlugin = (id: string): CliCommandSeedHeadlessCmsEntryType | null => {
-        return entryTypePlugins.find(plugin => plugin.getId() === id);
-    };
+    const recordTypePlugins = getRecordTypeContextPlugins(context);
+
+    const typesOfRecordsChoices: Choice[] = recordTypePlugins.map(recordType => {
+        return {
+            name: recordType.getName(),
+            value: recordType.getRecordType(),
+            short: recordType.getName(),
+            disabled: false
+        };
+    });
+    if (typesOfRecordsChoices.length === 0) {
+        throw new Error("Missing record type choices in Headless CMS.");
+    }
+
+    const recordTypeQuestions = recordTypePlugins.reduce((questions, recordType) => {
+        return questions.concat(recordType.getQuestions({ context }));
+    }, []);
+
     return [
         {
-            message: "Which kind of entries do you want generated?",
-            name: "entryTypes",
-            type: "checkbox",
-            choices: entryTypePlugins.map(entryType => {
-                return {
-                    name: entryType.getName(),
-                    value: entryType.getId()
-                };
-            }),
-            validate: (input: string[]) => {
-                if (!input || input.length === 0) {
-                    return "You must choose at least one type of entry to be generated.";
-                }
-                for (const id of input) {
-                    const plugin = getEntryTypePlugin(id);
-                    if (!plugin) {
-                        return `There is no entry type plugin with ID "${id}".`;
-                    }
-                    const validation = plugin.validate(input);
-                    if (validation !== true) {
-                        return validation;
-                    }
-                }
-                return true;
-            }
-        },
-        {
-            message: "How many groups?",
-            name: "groups",
-            type: "number",
-            default: 1,
-            validate: (input: number) => {
-                if (!input || isNaN(input) || input < 1) {
-                    return "You must generate at least 1 group.";
-                }
-                return true;
-            }
-        },
-        {
-            message: "How many models?",
-            name: "models",
-            type: "number",
-            default: 1,
-            validate: (input: number) => {
-                if (!input || isNaN(input) || input < 1) {
-                    return "You must generate at least 1 model.";
-                }
-                return true;
-            }
-        },
-        {
-            message: "How many entries per model?",
-            name: "entries",
-            type: "number",
-            default: 5,
-            validate: (input: number) => {
-                if (!input || isNaN(input) || input < 1) {
-                    return "You must generate at least 1 entry.";
-                }
-                return true;
-            }
-        },
-        {
-            message: "How many revisions per entry?",
-            name: "revisions",
-            type: "number",
-            default: 1,
-            validate: (input: number) => {
-                if (!input || isNaN(input) || input < 1) {
-                    return "You must generate at least 1 entry version.";
-                }
-                return true;
-            }
-        },
-        {
-            message: "Publish generated entries?",
-            name: "publish",
-            type: "confirm",
-            default: true
-        },
-        {
-            message: "When publishing, which entry version should be published?",
-            name: "publishRevision",
+            message: "Which kind of records do you want generated?",
+            name: "recordType",
             type: "list",
-            choices: [
-                {
-                    name: "First",
-                    value: "first"
-                },
-                {
-                    name: "Last",
-                    value: "last"
-                },
-                {
-                    name: "Random",
-                    value: "random"
+            default: "group",
+            choices: typesOfRecordsChoices,
+            validate: (input: string) => {
+                if (!input) {
+                    return "You must choose which type of record do you want generated.";
                 }
-            ],
-            when: (answers: Record<string, any>) => {
-                const { publish, revisions } = answers;
-                if (revisions <= 1) {
-                    return false;
-                }
-                return !!publish;
+                return true;
             }
         }
-    ];
+    ].concat(recordTypeQuestions);
 };
 
-export const createHeadlessCms = () => {
+export const createHeadlessCms = (_: CliSeedContext) => {
     return new CliCommandSeedApplication({
         id: "headless-cms",
         name: "Headless CMS",
         questions,
-        process: processHeadlessCms
+        process: async (app, params) => {
+            const { context, answers, log } = params;
+
+            const { recordType } = answers;
+            if (!recordType) {
+                log.red(`[DEBUG] There is no recordType in answers.`);
+                return;
+            }
+
+            const recordTypesPlugins = getRecordTypeContextPlugins(context);
+            const recordTypePlugin = recordTypesPlugins.find(
+                plugin => plugin.getRecordType() === recordType
+            );
+            if (!recordTypePlugin) {
+                log.red(`[DEBUG] There is no record type plugin "${recordType}".`);
+                return;
+            }
+            log.green(`[DEBUG] Processing Headless CMS plugin for "${recordType}".`);
+
+            return recordTypePlugin.process({
+                ...params,
+                application: app,
+                client: createHeadlessCmsManageClient({
+                    url: "manageUrl"
+                })
+            });
+        }
     });
 };

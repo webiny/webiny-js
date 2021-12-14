@@ -1,11 +1,9 @@
 import inquirer from "inquirer";
 import ora from "ora";
-import { CliContext } from "@webiny/cli/types";
 import { CliCommandSeedApplication } from "~/plugins/CliCommandSeedApplication";
 import { getDefaultPlugins } from "~/applications";
-import { PluginsContainer } from "@webiny/plugins/PluginsContainer";
 import { createLogger } from "~/utils/logger";
-import { CliCommandSeedRunArgs } from "~/types";
+import { CliCommandSeedRunArgs, CliSeedContext } from "~/types";
 import { validateArguments } from "~/utils/validations";
 
 export interface Applications {
@@ -13,7 +11,7 @@ export interface Applications {
 }
 
 export interface Params {
-    context: CliContext;
+    context: CliSeedContext;
     args: CliCommandSeedRunArgs;
 }
 export const seed = async (params: Params) => {
@@ -26,17 +24,23 @@ export const seed = async (params: Params) => {
         return;
     }
 
-    const { expenses } = await inquirer.prompt({
-        type: "confirm",
-        name: "expenses",
-        message:
-            "Do you understand that running this tool will add additional usage cost into your account?"
-    });
-    if (!expenses) {
-        return;
+    const prompt = inquirer.createPromptModule();
+    /**
+     * Users can skip warning if they chose to.
+     */
+    if (args.skipWarning !== true) {
+        const { expenses } = await prompt({
+            type: "confirm",
+            name: "expenses",
+            message:
+                "Do you understand that running this tool will add additional usage cost into your account?"
+        });
+        if (!expenses) {
+            return;
+        }
     }
 
-    (context.plugins as PluginsContainer).register(getDefaultPlugins());
+    context.plugins.register(getDefaultPlugins(context));
 
     const applications: Applications = context.plugins
         /**
@@ -68,7 +72,7 @@ export const seed = async (params: Params) => {
             }
         ]);
 
-    const { app } = await inquirer.prompt({
+    const { app } = await prompt({
         type: "list",
         name: "app",
         message: "Choose an app to seed:",
@@ -95,7 +99,7 @@ export const seed = async (params: Params) => {
     /**
      * Go through the list of questions required by the selected application.
      */
-    const answers = await inquirer.prompt(questions);
+    const answers = await prompt(questions);
     /**
      * If any of the answers is null, we stop the seed.
      */
@@ -106,26 +110,29 @@ export const seed = async (params: Params) => {
     }
     const oraInstance = ora();
 
+    log.yellow(`Processing ${application.getName()}...`);
     try {
         await application.process({
             context,
             ora: oraInstance,
-            inquirer,
+            inquirer: prompt,
             answers,
             log
         });
         await application.onSuccess({
             context,
             ora: oraInstance,
-            inquirer,
+            inquirer: prompt,
             answers,
             log
         });
+        log.yellow("...done");
     } catch (ex) {
+        log.red(`Error during processing...`);
         await application.onError({
             context,
             ora: oraInstance,
-            inquirer,
+            inquirer: prompt,
             answers,
             error: ex,
             log

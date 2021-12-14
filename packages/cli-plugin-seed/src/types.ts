@@ -1,6 +1,9 @@
 import { CliContext } from "@webiny/cli/types";
-import { Plugin } from "@webiny/plugins/types";
+import { Plugin, PluginsContainer } from "@webiny/plugins/types";
 
+export interface CliSeedContext extends CliContext {
+    plugins: PluginsContainer;
+}
 /**
  * Arguments for CliPlugin.create
  *
@@ -8,11 +11,12 @@ import { Plugin } from "@webiny/plugins/types";
  */
 export interface CliCommandPluginArgs {
     yargs: any;
-    context: CliContext;
+    context: CliSeedContext;
 }
 
 export interface CliCommandSeedRunArgs {
     env: string;
+    skipWarning: boolean;
 }
 
 /**
