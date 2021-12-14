@@ -1,6 +1,6 @@
 import { ModelFieldBuilder, Params as BaseParams } from "./ModelFieldBuilder";
 
-export interface Params extends Omit<BaseParams, "type" | "label"> {}
+export type Params = Omit<BaseParams, "type" | "label">;
 export interface RefParams extends Params {
     settings: {
         models: { modelId: string }[];

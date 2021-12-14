@@ -56,6 +56,7 @@ const processModels = async (params: ProcessParams) => {
     }
 };
 
+// eslint-disable-next-line
 export const createModelsRecordType = (_: CliSeedContext) => {
     return new CliCommandSeedHeadlessCmsRecordType({
         name: "Models",

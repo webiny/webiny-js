@@ -16,6 +16,7 @@ const modelBuilder = modelBuilderFactory({
     .addField(titleField)
     .setTitleFieldId(titleField);
 
+// eslint-disable-next-line
 export const createArticleEntryType = (_: CliSeedContext) => {
     return new CliCommandSeedHeadlessCmsEntryType({
         modelBuilder,

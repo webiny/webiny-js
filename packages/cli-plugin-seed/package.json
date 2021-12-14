@@ -14,10 +14,15 @@
   "description": "A tool to seed a Webiny project with random data.",
   "dependencies": {
     "@babel/runtime": "^7.5.5",
+    "@webiny/error": "^5.19.1",
     "chalk": "^4.1.0",
     "chance": "^1.1.8",
+    "graphql-request": "^3.7.0",
+    "graphql-tag": "^2.12.6",
     "inquirer": "^7.3.3",
-    "ora": "4.1.1"
+    "lodash": "^4.17.21",
+    "ora": "4.1.1",
+    "shortid": "^2.2.16"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",

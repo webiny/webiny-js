@@ -32,6 +32,7 @@ const modelBuilder = modelBuilderFactory({
     .addField(ageField)
     .setTitleFieldId(nameField);
 
+// eslint-disable-next-line
 export const createAuthorEntryType = (_: CliSeedContext) => {
     return new CliCommandSeedHeadlessCmsEntryType({
         modelBuilder

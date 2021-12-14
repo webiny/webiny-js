@@ -2,7 +2,7 @@ import { CmsModelField } from "~/applications/headlessCms/graphql/types";
 import lodashCamelCase from "lodash/camelCase";
 import shortid from "shortid";
 
-export interface Params extends Partial<CmsModelField> {}
+export type Params = Partial<CmsModelField>;
 
 export interface BuildParams extends Omit<Params, "type"> {
     label: string;

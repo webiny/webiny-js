@@ -36,6 +36,7 @@ const processGroups = async (params: ProcessParams) => {
     }
 };
 
+// eslint-disable-next-line
 export const createGroupsRecordType = (_: CliSeedContext) => {
     return new CliCommandSeedHeadlessCmsRecordType({
         name: "Groups",

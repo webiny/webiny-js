@@ -10818,14 +10818,19 @@ __metadata:
     "@types/chance": ^1.1.3
     "@types/inquirer": ^7.3.1
     "@webiny/cli": ^5.18.3
+    "@webiny/error": ^5.19.1
     "@webiny/plugins": ^5.18.3
     "@webiny/project-utils": ^5.18.3
     chalk: ^4.1.0
     chance: ^1.1.8
+    graphql-request: ^3.7.0
+    graphql-tag: ^2.12.6
     inquirer: ^7.3.3
+    lodash: ^4.17.21
     ora: 4.1.1
     prettier: ^2.3.2
     rimraf: ^3.0.2
+    shortid: ^2.2.16
     typescript: ^4.1.3
   languageName: unknown
   linkType: soft
@@ -10961,6 +10966,13 @@ __metadata:
     typescript: ^4.1.3
   languageName: unknown
   linkType: soft
+
+"@webiny/error@npm:^5.19.1":
+  version: 5.19.1
+  resolution: "@webiny/error@npm:5.19.1"
+  checksum: 832f34fb959195577dd4576f1e0ffe9dd773a5cd0c515ac926040a3078e1b971bab46673f210c029ad15ba7b0c47cd763552362c619c11362fd7012b8c091592
+  languageName: node
+  linkType: hard
 
 "@webiny/form@^5.18.3, @webiny/form@workspace:packages/form":
   version: 0.0.0-use.local
@@ -21632,6 +21644,19 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
+"graphql-request@npm:^3.7.0":
+  version: 3.7.0
+  resolution: "graphql-request@npm:3.7.0"
+  dependencies:
+    cross-fetch: ^3.0.6
+    extract-files: ^9.0.0
+    form-data: ^3.0.0
+  peerDependencies:
+    graphql: 14 - 16
+  checksum: db3800cc4ee884cd1514d7d5eafafb9ed27694278fdddd7402345754a7d25e7d713246c72aa510b439b6df2633b74f2cf74fb36864a22a857d5fb2de1cf0b4d8
+  languageName: node
+  linkType: hard
+
 "graphql-scalars@npm:1.12.0":
   version: 1.12.0
   resolution: "graphql-scalars@npm:1.12.0"
@@ -21652,7 +21677,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"graphql-tag@npm:^2.10.1, graphql-tag@npm:^2.10.3, graphql-tag@npm:^2.11.0, graphql-tag@npm:^2.12.5":
+"graphql-tag@npm:^2.10.1, graphql-tag@npm:^2.10.3, graphql-tag@npm:^2.11.0, graphql-tag@npm:^2.12.5, graphql-tag@npm:^2.12.6":
   version: 2.12.6
   resolution: "graphql-tag@npm:2.12.6"
   dependencies:

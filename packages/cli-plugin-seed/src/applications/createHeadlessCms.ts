@@ -58,7 +58,7 @@ const questions: Questions = params => {
         }
     ].concat(recordTypeQuestions);
 };
-
+// eslint-disable-next-line
 export const createHeadlessCms = (_: CliSeedContext) => {
     return new CliCommandSeedApplication({
         id: "headless-cms",
