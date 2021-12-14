@@ -33,13 +33,13 @@ describe("Provide sign off for a step in content review process", function () {
         const createdContentReview =
             createContentReviewResponse.data.advancedPublishingWorkflow.createContentReview.data;
 
-        const [step1, step2] = createdContentReview.steps;
+        const [step1, , step3] = createdContentReview.steps;
         /**
          * Should return error while providing sign-off for "inactive" step.
          */
         let [provideSignOffResponse] = await provideSignOffMutation({
             id: createdContentReview.id,
-            step: step2.slug
+            step: step3.slug
         });
         expect(provideSignOffResponse).toEqual({
             data: {
@@ -75,7 +75,8 @@ describe("Provide sign off for a step in content review process", function () {
         });
 
         /**
-         * Now that we've provided sign-off for step1, step2 should have status "active".
+         * Now that we've provided sign-off for step1, step2 should have status "active" because step1 is done
+         * and step3 should also have status "active" because step2 is not of type "mandatory_blocking".
          */
         const [getContentReviewResponse] = await getContentReviewQuery({
             id: createdContentReview.id
@@ -117,7 +118,7 @@ describe("Provide sign off for a step in content review process", function () {
                                     signOffProvidedBy: null
                                 },
                                 {
-                                    status: ApwContentReviewStepStatus.INACTIVE,
+                                    status: ApwContentReviewStepStatus.ACTIVE,
                                     slug: expect.any(String),
                                     pendingChangeRequests: 0,
                                     signOffProvidedOn: null,
@@ -177,6 +178,92 @@ describe("Provide sign off for a step in content review process", function () {
                             message: expect.any(String),
                             data: expect.any(Object)
                         }
+                    }
+                }
+            }
+        });
+    });
+
+    test(`should throw error when trying to provide sign off without completing previous steps`, async () => {
+        const { page } = await setup();
+
+        /*
+         Create a content review entry.
+        */
+        const [createContentReviewResponse] = await createContentReviewMutation({
+            data: {
+                content: {
+                    id: page.id,
+                    type: "page"
+                }
+            }
+        });
+        const createdContentReview =
+            createContentReviewResponse.data.advancedPublishingWorkflow.createContentReview.data;
+
+        const [step1, step2, step3] = createdContentReview.steps;
+        /**
+         * Should return error while providing sign off without completing "mandatory_blocking" step.
+         */
+        let [provideSignOffResponse] = await provideSignOffMutation({
+            id: createdContentReview.id,
+            step: step2.slug
+        });
+        expect(provideSignOffResponse).toEqual({
+            data: {
+                advancedPublishingWorkflow: {
+                    provideSignOff: {
+                        data: null,
+                        error: {
+                            code: "MISSING_STEP",
+                            message: expect.any(String),
+                            data: expect.any(Object)
+                        }
+                    }
+                }
+            }
+        });
+        /**
+         * Let's providing sign off for "mandatory_blocking" step.
+         */
+        [provideSignOffResponse] = await provideSignOffMutation({
+            id: createdContentReview.id,
+            step: step1.slug
+        });
+
+        /**
+         * Should able to providing sign off even if previous step is not done;
+         * given it is of "mandatory_non_blocking" type.
+         */
+
+        [provideSignOffResponse] = await provideSignOffMutation({
+            id: createdContentReview.id,
+            step: step3.slug
+        });
+        expect(provideSignOffResponse).toEqual({
+            data: {
+                advancedPublishingWorkflow: {
+                    provideSignOff: {
+                        data: true,
+                        error: null
+                    }
+                }
+            }
+        });
+
+        /**
+         * Should able to providing sign off after completing "mandatory_blocking" step.
+         */
+        [provideSignOffResponse] = await provideSignOffMutation({
+            id: createdContentReview.id,
+            step: step2.slug
+        });
+        expect(provideSignOffResponse).toEqual({
+            data: {
+                advancedPublishingWorkflow: {
+                    provideSignOff: {
+                        data: true,
+                        error: null
                     }
                 }
             }

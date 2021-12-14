@@ -80,7 +80,8 @@ describe("Retract sign off for a step in content review process", function () {
         });
 
         /**
-         * Now that we've provided sign-off for step1, step2 should have status "active".
+         * Now that we've provided sign-off for step1, step2 should have status "active" because step1 is done
+         * and step3 should also have status "active" because step2 is not of type "mandatory_blocking".
          */
         const [getContentReviewResponse] = await getContentReviewQuery({
             id: createdContentReview.id
@@ -122,7 +123,7 @@ describe("Retract sign off for a step in content review process", function () {
                                     signOffProvidedBy: null
                                 },
                                 {
-                                    status: ApwContentReviewStepStatus.INACTIVE,
+                                    status: ApwContentReviewStepStatus.ACTIVE,
                                     slug: expect.any(String),
                                     pendingChangeRequests: 0,
                                     signOffProvidedOn: null,
