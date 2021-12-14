@@ -1,6 +1,6 @@
 import crypto from "crypto";
 import { NotAuthorizedError } from "@webiny/api-security";
-import { getApplicablePlugin } from "@webiny/api-upgrade";
+import { ErrorCode, getApplicablePlugin } from "@webiny/api-upgrade";
 import { UpgradePlugin } from "@webiny/api-upgrade/types";
 import WebinyError from "@webiny/error";
 import {
@@ -154,14 +154,29 @@ export const createSystemCrud = (params: Params): CmsSystemContext => {
                 .filter(pl => pl.app === "headless-cms");
 
             const installedAppVersion = await this.getSystemVersion();
-            const plugin = getApplicablePlugin({
-                deployedVersion: context.WEBINY_VERSION,
-                installedAppVersion,
-                upgradePlugins,
-                upgradeToVersion: version
-            });
 
-            await plugin.apply(context);
+            let plugin: UpgradePlugin;
+            try {
+                plugin = getApplicablePlugin({
+                    deployedVersion: context.WEBINY_VERSION,
+                    installedAppVersion,
+                    upgradePlugins,
+                    upgradeToVersion: version
+                });
+            } catch (ex) {
+                /**
+                 * We just let the error disappear if is UPGRADE_NOT_AVAILABLE code
+                 * and rethrow if is not.
+                 * This is because we want upgrade to pass if there is no plugin available.
+                 */
+                if (ex.code !== ErrorCode.UPGRADE_NOT_AVAILABLE) {
+                    throw ex;
+                }
+            }
+
+            if (plugin) {
+                await plugin.apply(context);
+            }
 
             /**
              * Store new app version.

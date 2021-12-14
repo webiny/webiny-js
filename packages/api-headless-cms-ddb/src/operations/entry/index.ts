@@ -770,7 +770,7 @@ export const createEntriesStorageOperations = (params: Params): CmsEntryStorageO
                 })
             );
         }
-        if (publishedStorageEntry) {
+        if (publishedStorageEntry && publishedStorageEntry.id !== entry.id) {
             items.push(
                 entity.putBatch({
                     ...publishedStorageEntry,
