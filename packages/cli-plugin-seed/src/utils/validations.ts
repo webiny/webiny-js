@@ -1,8 +1,7 @@
-import { CliCommandSeedRunArgs, Logger } from "~/types";
-import { CliContext } from "@webiny/cli/types";
+import { CliCommandSeedRunArgs, CliSeedContext, Logger } from "~/types";
 
 export interface Params {
-    context: CliContext;
+    context: CliSeedContext;
     args: CliCommandSeedRunArgs;
     log: Logger;
 }

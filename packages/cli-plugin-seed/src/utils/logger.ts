@@ -1,7 +1,8 @@
 import chalk from "chalk";
 import { Logger } from "~/types";
 
-const output = (color: string, text: string): void => {
+type Colors = "red" | "yellow" | "green" | "blue" | "white" | "cyan" | "magenta" | "black";
+const output = (color: Colors, text: string): void => {
     if (typeof chalk[color] !== "function") {
         throw new Error(`Color "${color}" does not exist in chalk library.`);
     }
