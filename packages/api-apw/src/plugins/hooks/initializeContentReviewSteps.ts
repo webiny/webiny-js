@@ -1,6 +1,7 @@
-import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
-import { ApwContentReviewStepStatus, ApwContext, PageWithWorkflow } from "~/types";
 import lodashSet from "lodash/set";
+import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
+import { ApwContext, PageWithWorkflow } from "~/types";
+import { getContentReviewStepInitialStatus, getValue } from "~/plugins/utils";
 
 /**
  * TODO: @ashutosh Convert it to use plugins.
@@ -33,11 +34,17 @@ const initializeContentReviewSteps = () =>
                 // @ts-ignore
                 const workflowId = await getWorkflowIdFromContent(context, input.content);
                 const workflow = await context.advancedPublishingWorkflow.workflow.get(workflowId);
+                const workflowSteps = getValue(workflow, "steps");
 
-                entry = lodashSet(
-                    entry,
-                    "values.steps",
-                    workflow.values.steps.map((step, index) => ({
+                let previousStepStatus;
+                const updatedSteps = workflow.values.steps.map((step, index) => {
+                    const status = getContentReviewStepInitialStatus(
+                        workflowSteps,
+                        index,
+                        previousStepStatus
+                    );
+                    previousStepStatus = status;
+                    return {
                         /**
                          * We're using the "slug" field from workflow step (which is non-unique string)
                          * to setup a link between "Change request" and "Content review".
@@ -48,13 +55,12 @@ const initializeContentReviewSteps = () =>
                         /**
                          * Always set first step 'active' by default.
                          */
-                        status:
-                            index === 0
-                                ? ApwContentReviewStepStatus.ACTIVE
-                                : ApwContentReviewStepStatus.INACTIVE,
+                        status,
                         pendingChangeRequests: 0
-                    }))
-                );
+                    };
+                });
+
+                entry = lodashSet(entry, "values.steps", updatedSteps);
             }
         });
     });

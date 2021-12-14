@@ -1,6 +1,15 @@
-import { ApwContext, ApwContentReviewCrud, ApwContentReviewStepStatus } from "~/types";
-import { getWorkflowIdFromContent } from "~/plugins/hooks/initializeContentReviewSteps";
-import { hasReviewer } from "~/plugins/utils";
+import {
+    ApwContext,
+    ApwContentReviewCrud,
+    ApwContentReviewStepStatus,
+    ApwWorkflowSteps,
+    ApwWorkflowStepTypes
+} from "~/types";
+import {
+    getNextStepStatus,
+    getWorkflowIdFromContent
+} from "~/plugins/hooks/initializeContentReviewSteps";
+import { getValue, hasReviewer } from "~/plugins/utils";
 
 export function createContentReviewMethods(context: ApwContext): ApwContentReviewCrud {
     return {
@@ -42,8 +51,10 @@ export function createContentReviewMethods(context: ApwContext): ApwContentRevie
         },
         async provideSignOff(id, stepSlug) {
             const entry = await this.get(id);
-            const stepIndex = entry.values.steps.findIndex(step => step.slug === stepSlug);
-            const step = entry.values.steps[stepIndex];
+            const steps = getValue(entry, "steps");
+            const stepIndex = steps.findIndex(step => step.slug === stepSlug);
+            const currentStep = steps[stepIndex];
+            const previousStep = steps[stepIndex - 1];
 
             const identity = context.security.getIdentity();
             /**
@@ -51,129 +62,171 @@ export function createContentReviewMethods(context: ApwContext): ApwContentRevie
              * Maybe we should copy the entire step data from "Workflow" while creating a "Content Review".
              */
             const workflowId = await getWorkflowIdFromContent(context, entry.values.content);
+            const workflow = await context.advancedPublishingWorkflow.workflow.get(workflowId);
+            const workflowSteps: ApwWorkflowSteps[] = getValue(workflow, "steps");
+            const previousStepFromWorkflow = workflowSteps[stepIndex - 1];
 
-            const hasReviewerForStep = await hasReviewer({
+            const hasPermission = await hasReviewer({
                 context,
-                stepIndex,
                 identity,
-                workflowId
+                workflowStep: workflowSteps[stepIndex]
             });
 
-            // Check if the pre-conditions for "sign-off" are meet.
-            if (!hasReviewerForStep) {
+            /**
+             *  Check whether the sign-off is requested by a reviewer.
+             */
+            if (!hasPermission) {
                 throw {
                     code: "NOT_AUTHORISED",
                     message: `Not a reviewer, couldn't provide sign-off.`,
                     data: { entry, input: { id, step: stepSlug } }
                 };
             }
-
-            if (step.pendingChangeRequests > 0) {
+            /**
+             *  Don't allow sign off, if previous step is of "mandatory_blocking" type and undone.
+             */
+            if (
+                previousStep &&
+                previousStep.status !== ApwContentReviewStepStatus.DONE &&
+                previousStepFromWorkflow.type === ApwWorkflowStepTypes.MANDATORY_BLOCKING
+            ) {
+                throw {
+                    code: "MISSING_STEP",
+                    message: `Please complete previous steps first.`,
+                    data: { entry, input: { id, step: stepSlug } }
+                };
+            }
+            /**
+             *  Don't allow sign off, if there are pending change requests.
+             */
+            if (currentStep.pendingChangeRequests > 0) {
                 throw {
                     code: "PENDING_CHANGE_REQUESTS",
                     message: `Change requests are pending couldn't provide sign-off.`,
                     data: { entry, input: { id, step: stepSlug } }
                 };
             }
-
-            if (step.status !== ApwContentReviewStepStatus.ACTIVE) {
+            /**
+             *  Don't allow sign off, if current step is not in "active" state.
+             */
+            if (currentStep.status !== ApwContentReviewStepStatus.ACTIVE) {
                 throw {
                     code: "STEP_NOT_ACTIVE",
                     message: `Step needs to be in active state before providing sign-off.`,
                     data: { entry, input: { id, step: stepSlug } }
                 };
             }
-
+            let previousStepStatus;
             /*
              * Provide sign-off for give step.
              */
-            await context.advancedPublishingWorkflow.contentReview.update(id, {
-                steps: entry.values.steps.map((step, index) => {
-                    if (step.slug === stepSlug) {
-                        return {
-                            ...step,
-                            status: ApwContentReviewStepStatus.DONE,
-                            signOffProvidedOn: new Date().toISOString(),
-                            signOffProvidedBy: identity
-                        };
-                    }
-                    /**
-                     * Set next step status as "active".
-                     */
-                    if (index === stepIndex + 1) {
-                        return {
-                            ...step,
-                            // TODO: @ashutosh assign status based on workflow step type.
-                            status: ApwContentReviewStepStatus.ACTIVE
-                        };
-                    }
+            const updatedSteps = steps.map((step, index) => {
+                if (index === stepIndex) {
+                    previousStepStatus = ApwContentReviewStepStatus.DONE;
+                    return {
+                        ...step,
+                        status: ApwContentReviewStepStatus.DONE,
+                        signOffProvidedOn: new Date().toISOString(),
+                        signOffProvidedBy: identity
+                    };
+                }
+                /**
+                 * Update next steps status based on type.
+                 */
+                if (index > stepIndex) {
+                    const previousStep = workflowSteps[index - 1];
 
-                    return step;
-                })
+                    previousStepStatus = getNextStepStatus(previousStep.type, previousStepStatus);
+                    return {
+                        ...step,
+                        status: previousStepStatus
+                    };
+                }
+
+                return step;
+            });
+            /**
+             * Save updated steps.
+             */
+            await context.advancedPublishingWorkflow.contentReview.update(id, {
+                steps: updatedSteps
             });
             return true;
         },
         async retractSignOff(id, stepSlug) {
             const entry = await this.get(id);
-            const stepIndex = entry.values.steps.findIndex(step => step.slug === stepSlug);
-            const step = entry.values.steps[stepIndex];
+            const steps = getValue(entry, "steps");
+            const stepIndex = steps.findIndex(step => step.slug === stepSlug);
+            const currentStep = steps[stepIndex];
             const identity = context.security.getIdentity();
             /**
              * TODO: @ashutosh
              * Maybe we should copy the entire step data from "Workflow" while creating a "Content Review".
              */
             const workflowId = await getWorkflowIdFromContent(context, entry.values.content);
+            const workflow = await context.advancedPublishingWorkflow.workflow.get(workflowId);
+            const workflowSteps: ApwWorkflowSteps[] = getValue(workflow, "steps");
 
-            const hasReviewerForStep = await hasReviewer({
+            const hasPermission = await hasReviewer({
                 context,
-                stepIndex,
                 identity,
-                workflowId
+                workflowStep: workflowSteps[stepIndex]
             });
 
-            // Check if the pre-conditions for retracting "sign-off" are meet.
-            if (!hasReviewerForStep) {
+            /**
+             *  Check whether the retract sign-off is requested by a reviewer.
+             */
+            if (!hasPermission) {
                 throw {
                     code: "NOT_AUTHORISED",
                     message: `Not a reviewer, couldn't retract sign-off.`,
                     data: { entry, input: { id, step: stepSlug } }
                 };
             }
-
-            if (step.status !== ApwContentReviewStepStatus.DONE) {
+            /**
+             *  Don't allow, if step in not "done" i.e. no sign-off was provided for it.
+             */
+            if (currentStep.status !== ApwContentReviewStepStatus.DONE) {
                 throw {
                     code: "NO_SIGN_OFF_PROVIDED",
                     message: `Sign-off must be provided in order for it to be retracted.`,
                     data: { entry, input: { id, step: stepSlug } }
                 };
             }
+            let previousStepStatus;
 
             /*
              * Retract sign-off for give step.
              */
-            await context.advancedPublishingWorkflow.contentReview.update(id, {
-                steps: entry.values.steps.map((step, index) => {
-                    if (step.slug === stepSlug) {
-                        return {
-                            ...step,
-                            status: ApwContentReviewStepStatus.ACTIVE,
-                            signOffProvidedOn: null,
-                            signOffProvidedBy: null
-                        };
-                    }
-                    /**
-                     * Set next step status as "inactive".
-                     */
-                    if (index === stepIndex + 1) {
-                        return {
-                            ...step,
-                            // TODO: @ashutosh assign status based on workflow step type.
-                            status: ApwContentReviewStepStatus.INACTIVE
-                        };
-                    }
+            const updatedSteps = steps.map((step, index) => {
+                if (index === stepIndex) {
+                    previousStepStatus = ApwContentReviewStepStatus.ACTIVE;
+                    return {
+                        ...step,
+                        status: previousStepStatus,
+                        signOffProvidedOn: null,
+                        signOffProvidedBy: null
+                    };
+                }
+                /**
+                 * Set next step status as "inactive".
+                 */
+                if (index > stepIndex) {
+                    const previousStep = workflowSteps[index - 1];
 
-                    return step;
-                })
+                    previousStepStatus = getNextStepStatus(previousStep.type, previousStepStatus);
+
+                    return {
+                        ...step,
+                        status: previousStepStatus
+                    };
+                }
+
+                return step;
+            });
+
+            await context.advancedPublishingWorkflow.contentReview.update(id, {
+                steps: updatedSteps
             });
             return true;
         }

@@ -1,6 +1,12 @@
 import { CmsModelField } from "@webiny/api-headless-cms/types";
 import camelCase from "lodash/camelCase";
-import { ApwContext, ApwWorkflowSteps } from "~/types";
+import get from "lodash/get";
+import {
+    ApwContentReviewStepStatus,
+    ApwContext,
+    ApwWorkflowSteps,
+    ApwWorkflowStepTypes
+} from "~/types";
 import { SecurityIdentity } from "@webiny/api-security/types";
 
 export interface CreateModelFieldParams extends Omit<CmsModelField, "id" | "fieldId"> {
@@ -30,31 +36,63 @@ export const createModelField = (params: CreateModelFieldParams): CmsModelField 
 export interface HasReviewersParams {
     identity: SecurityIdentity;
     context: ApwContext;
-    workflowId: string;
-    stepIndex: number;
+    workflowStep: ApwWorkflowSteps;
 }
 
 export const hasReviewer = async ({
     context,
-    workflowId,
-    stepIndex,
-    identity
+    identity,
+    workflowStep
 }: HasReviewersParams): Promise<Boolean> => {
-    /**
-     * TODO: @ashutosh
-     * Maybe we should copy the entire step data from "Workflow" while creating a "Content Review".
-     */
-    const workflow = await context.advancedPublishingWorkflow.workflow.get(workflowId);
-    const stepFromWorkflow: ApwWorkflowSteps = workflow.values.steps[stepIndex];
+    for (const stepReviewer of workflowStep.reviewers) {
+        const entry = await context.advancedPublishingWorkflow.reviewer.get(stepReviewer.id);
 
-    for (const stepReviewer of stepFromWorkflow.reviewers) {
-        const reviewerEntry = await context.advancedPublishingWorkflow.reviewer.get(
-            stepReviewer.id
-        );
-        if (reviewerEntry.values.identityId === identity.id) {
+        if (getValue(entry, "identityId") === identity.id) {
             return true;
         }
     }
 
     return false;
+};
+
+export const getValue = (object: Record<string, any>, key: string) => {
+    return get(object, `values.${key}`);
+};
+
+export const getContentReviewStepInitialStatus = (
+    workflowSteps: ApwWorkflowSteps[],
+    index: number,
+    previousStepStatus: ApwContentReviewStepStatus
+): ApwContentReviewStepStatus => {
+    if (index === 0) {
+        return ApwContentReviewStepStatus.ACTIVE;
+    }
+
+    const previousStep = workflowSteps[index - 1];
+    if (
+        previousStepStatus === ApwContentReviewStepStatus.ACTIVE &&
+        previousStep.type !== ApwWorkflowStepTypes.MANDATORY_BLOCKING
+    ) {
+        return ApwContentReviewStepStatus.ACTIVE;
+    }
+
+    return ApwContentReviewStepStatus.INACTIVE;
+};
+
+export const getNextStepStatus = (
+    previousStepType: ApwWorkflowStepTypes,
+    previousStepStatus: ApwContentReviewStepStatus
+): ApwContentReviewStepStatus => {
+    if (previousStepStatus === ApwContentReviewStepStatus.DONE) {
+        return ApwContentReviewStepStatus.ACTIVE;
+    }
+
+    if (
+        previousStepStatus === ApwContentReviewStepStatus.ACTIVE &&
+        previousStepType !== ApwWorkflowStepTypes.MANDATORY_BLOCKING
+    ) {
+        return ApwContentReviewStepStatus.ACTIVE;
+    }
+
+    return ApwContentReviewStepStatus.INACTIVE;
 };
