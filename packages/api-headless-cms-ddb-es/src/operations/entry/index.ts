@@ -5,7 +5,6 @@ import {
     CmsEntryStorageOperationsCreateRevisionFromParams,
     CmsEntryStorageOperationsDeleteParams,
     CmsEntryStorageOperationsDeleteRevisionParams,
-    CmsEntryStorageOperationsGetAllRevisionsParams,
     CmsEntryStorageOperationsGetByIdsParams,
     CmsEntryStorageOperationsGetLatestByIdsParams,
     CmsEntryStorageOperationsGetLatestRevisionParams,
@@ -1107,16 +1106,6 @@ export const createEntriesStorageOperations = (params: Params): CmsEntryStorageO
         return storageEntry;
     };
 
-    const getAllRevisionsByIds = async (
-        model: CmsModel,
-        params: CmsEntryStorageOperationsGetAllRevisionsParams
-    ) => {
-        return await dataLoaders.getAllEntryRevisions({
-            model,
-            ids: params.ids
-        });
-    };
-
     const getLatestRevisionByEntryId = async (
         model: CmsModel,
         params: CmsEntryStorageOperationsGetLatestRevisionParams
@@ -1258,7 +1247,6 @@ export const createEntriesStorageOperations = (params: Params): CmsEntryStorageO
         requestReview,
         requestChanges,
         list,
-        getAllRevisionsByIds,
         getLatestRevisionByEntryId,
         getPublishedRevisionByEntryId,
         getRevisionById,

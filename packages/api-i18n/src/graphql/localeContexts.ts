@@ -1,16 +1,14 @@
-import { I18NLocaleContextPlugin } from "~/types";
+import { I18NLocaleContextPlugin } from "~/plugins/I18NLocaleContextPlugin";
 
 export default [
-    {
-        type: "i18n-locale-context",
+    new I18NLocaleContextPlugin({
         context: {
             name: "default"
         }
-    },
-    {
-        type: "i18n-locale-context",
+    }),
+    new I18NLocaleContextPlugin({
         context: {
             name: "content"
         }
-    }
-] as I18NLocaleContextPlugin[];
+    })
+];

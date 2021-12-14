@@ -56,6 +56,7 @@ import height from "@webiny/app-page-builder/editor/plugins/elementSettings/heig
 import align from "@webiny/app-page-builder/editor/plugins/elementSettings/align";
 import save from "@webiny/app-page-builder/editor/plugins/elementSettings/save";
 import link from "@webiny/app-page-builder/editor/plugins/elementSettings/link";
+import action from "@webiny/app-page-builder/editor/plugins/elementSettings/action";
 import gridSettings from "@webiny/app-page-builder/editor/plugins/elementSettings/grid";
 import textSettings from "@webiny/app-page-builder/editor/plugins/elementSettings/text";
 import visibility from "@webiny/app-page-builder/editor/plugins/elementSettings/visibility";
@@ -133,6 +134,7 @@ export default [
     height,
     save,
     link,
+    action,
     gridSettings,
     textSettings,
     visibility,

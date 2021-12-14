@@ -390,7 +390,8 @@ export interface CmsModelFieldToGraphQLCreateResolver {
         createFieldResolvers: any;
     }):
         | GraphQLFieldResolver
-        | { resolver: GraphQLFieldResolver; typeResolvers: Resolvers<CmsContext> };
+        | { resolver: GraphQLFieldResolver; typeResolvers: Resolvers<CmsContext> }
+        | false;
 }
 
 /**
@@ -2073,10 +2074,6 @@ export interface CmsEntryStorageOperationsRequestReviewParams<
     originalStorageEntry: T;
 }
 
-export interface CmsEntryStorageOperationsGetAllRevisionsParams {
-    ids: readonly string[];
-}
-
 export interface CmsEntryStorageOperationsGetByIdsParams {
     ids: readonly string[];
 }
@@ -2168,10 +2165,10 @@ export interface CmsEntryStorageOperations<T extends CmsStorageEntry = CmsStorag
     /**
      * Get all revisions of all of the given IDs.
      */
-    getAllRevisionsByIds: (
-        model: CmsModel,
-        params: CmsEntryStorageOperationsGetAllRevisionsParams
-    ) => Promise<T[]>;
+    // getAllRevisionsByIds: (
+    //     model: CmsModel,
+    //     params: CmsEntryStorageOperationsGetAllRevisionsParams
+    // ) => Promise<T[]>;
     /**
      * Get the entry by the given revision id.
      */

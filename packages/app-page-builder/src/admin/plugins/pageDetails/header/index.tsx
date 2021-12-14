@@ -1,4 +1,5 @@
 import * as React from "react";
+
 import { PbPageDetailsPlugin } from "~/types";
 import Header from "./Header";
 import RevisionSelector from "./revisionSelector/RevisionSelector";

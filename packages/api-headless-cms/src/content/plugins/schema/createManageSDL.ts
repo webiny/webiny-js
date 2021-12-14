@@ -27,7 +27,7 @@ export const createManageSDL: CreateManageSDL = ({ model, fieldTypePlugins }): s
     const fields = renderFields({ model, type: "manage", fieldTypePlugins });
 
     return /* GraphQL */ `
-        """${model.description}"""
+        """${model.description || model.modelId}"""
         ${fields
             .map(f => f.typeDefs)
             .filter(Boolean)

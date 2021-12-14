@@ -5,7 +5,7 @@ const { getProjectApplication } = require("@webiny/cli/utils");
 const buildPackages = require("./deploy/buildPackages");
 
 module.exports = async (inputs, context) => {
-    const { env, folder, build } = inputs;
+    const { env, folder, build, deploy } = inputs;
 
     // If folder not specified, that means we want to deploy the whole project (all project applications).
     // For that, we look if there are registered plugins that perform that.
@@ -41,6 +41,11 @@ module.exports = async (inputs, context) => {
     }
 
     console.log();
+
+    if (!deploy) {
+        context.info("Skipping project application deployment.");
+        return;
+    }
 
     await login(projectApplication);
 
