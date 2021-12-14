@@ -9196,6 +9196,7 @@ __metadata:
     "@webiny/handler-http": ^5.19.0
     "@webiny/plugins": ^5.19.0
     "@webiny/project-utils": ^5.19.0
+    "@webiny/pubsub": ^5.18.3
     accept-language-parser: ^1.5.0
     i18n-locales: ^0.0.2
     jest: ^26.6.3
@@ -11246,7 +11247,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/pubsub@^5.19.0, @webiny/pubsub@workspace:packages/pubsub":
+"@webiny/pubsub@^5.18.3, @webiny/pubsub@^5.19.0, @webiny/pubsub@workspace:packages/pubsub":
   version: 0.0.0-use.local
   resolution: "@webiny/pubsub@workspace:packages/pubsub"
   dependencies:
