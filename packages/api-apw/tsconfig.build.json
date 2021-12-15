@@ -1,8 +1,6 @@
 {
   "extends": "../../tsconfig.build.json",
-  "include": [
-    "src"
-  ],
+  "include": ["src"],
   "exclude": [
     "node_modules",
     "../handler",
@@ -73,9 +71,7 @@
     "outDir": "./dist",
     "declarationDir": "./dist",
     "paths": {
-      "~/*": [
-        "./src/*"
-      ]
+      "~/*": ["./src/*"]
     },
     "baseUrl": "."
   }
