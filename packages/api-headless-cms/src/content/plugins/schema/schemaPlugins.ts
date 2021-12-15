@@ -76,5 +76,5 @@ export const generateSchemaPlugins = async (
             }
         });
 
-    return newPlugins;
+    return newPlugins.filter(pl => !!pl.schema.typeDefs);
 };
