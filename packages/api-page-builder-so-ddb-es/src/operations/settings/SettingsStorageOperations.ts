@@ -153,7 +153,7 @@ export class SettingsStorageOperationsDdbEs implements SettingsStorageOperations
         }
         if (locale !== false) {
             if (!locale) {
-                locale = this.context.i18nContent.getLocale().code;
+                locale = this.context.i18nContent.getCurrentLocale().code;
             }
             parts.push(`L#${locale}`);
         }

@@ -150,6 +150,8 @@ export default /* GraphQL */ `
         deleteReview(revision: ID!): CmsDeleteResponse
 
         publishReview(revision: ID!): ReviewResponse
+    
+        republishReview(revision: ID!): ReviewResponse
 
         unpublishReview(revision: ID!): ReviewResponse
         

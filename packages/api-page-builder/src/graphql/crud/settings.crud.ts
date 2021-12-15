@@ -51,7 +51,9 @@ const createSettingsParams = (params: SettingsParamsInput): SettingsParams => {
     const tenant =
         initialTenant === false ? false : initialTenant || context.tenancy.getCurrentTenant().id;
     const locale =
-        initialLocale === false ? false : initialLocale || context.i18nContent.getLocale().code;
+        initialLocale === false
+            ? false
+            : initialLocale || context.i18nContent.getCurrentLocale().code;
     return {
         type,
         tenant,

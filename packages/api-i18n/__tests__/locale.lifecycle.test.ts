@@ -1,5 +1,5 @@
 import useGqlHandler from "./useGqlHandler";
-import { localeLifecyclePlugin, lifecycleTracker } from "./mocks/localePlugin";
+import { assignLifecycleEvents, lifecycleTracker } from "./mocks/lifecycleEvents";
 
 const WEBINY_VERSION = process.env.WEBINY_VERSION;
 
@@ -29,7 +29,7 @@ const expectedLocaleData = {
 
 describe("Locale lifecycle events", () => {
     const { createI18NLocale, updateI18NLocale, deleteI18NLocale } = useGqlHandler({
-        plugins: [localeLifecyclePlugin]
+        plugins: [assignLifecycleEvents()]
     });
     const hookParamsExpected = {
         createdOn: expect.stringMatching(/^20/),
@@ -73,7 +73,7 @@ describe("Locale lifecycle events", () => {
         const beforeCreate = lifecycleTracker.getLast(LocaleLifecycle.BEFORE_CREATE);
         expect(beforeCreate.params[0]).toEqual({
             context: expect.any(Object),
-            data: {
+            locale: {
                 ...localeData,
                 ...hookParamsExpected
             }
@@ -81,10 +81,6 @@ describe("Locale lifecycle events", () => {
         const afterCreate = lifecycleTracker.getLast(LocaleLifecycle.AFTER_CREATE);
         expect(afterCreate.params[0]).toEqual({
             context: expect.any(Object),
-            data: {
-                ...localeData,
-                ...hookParamsExpected
-            },
             locale: {
                 ...localeData,
                 ...hookParamsExpected
@@ -93,12 +89,36 @@ describe("Locale lifecycle events", () => {
     });
 
     test(`it should call "beforeUpdate" and "afterUpdate" methods`, async () => {
-        await createI18NLocale({ data: localeData });
-        await createI18NLocale({
+        const [hrHrResponse] = await createI18NLocale({ data: localeData });
+        expect(hrHrResponse).toMatchObject({
             data: {
-                ...localeData,
+                i18n: {
+                    createI18NLocale: {
+                        data: {
+                            ...localeData
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+        const [enUsResponse] = await createI18NLocale({
+            data: {
                 code: "en-US",
                 default: false
+            }
+        });
+        expect(enUsResponse).toMatchObject({
+            data: {
+                i18n: {
+                    createI18NLocale: {
+                        data: {
+                            code: "en-US",
+                            default: false
+                        },
+                        error: null
+                    }
+                }
             }
         });
 
@@ -153,7 +173,7 @@ describe("Locale lifecycle events", () => {
                 default: false,
                 code: "en-US"
             },
-            data: {
+            locale: {
                 ...localeData,
                 ...hookParamsExpected,
                 code: "en-US"
@@ -166,11 +186,6 @@ describe("Locale lifecycle events", () => {
                 ...localeData,
                 ...hookParamsExpected,
                 default: false,
-                code: "en-US"
-            },
-            data: {
-                ...localeData,
-                ...hookParamsExpected,
                 code: "en-US"
             },
             locale: {

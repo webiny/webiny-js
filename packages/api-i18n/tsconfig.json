@@ -12,6 +12,7 @@
     { "path": "../handler-client" },
     { "path": "../handler-graphql" },
     { "path": "../plugins" },
+    { "path": "../pubsub" },
     { "path": "../handler-http" }
   ],
   "compilerOptions": {
@@ -30,6 +31,8 @@
       "@webiny/api-tenancy-so-ddb": ["../api-tenancy-so-ddb/src"],
       "@webiny/error/*": ["../error/src/*"],
       "@webiny/error": ["../error/src"],
+      "@webiny/pubsub/*": ["../pubsub/src/*"],
+      "@webiny/pubsub": ["../pubsub/src"],
       "@webiny/handler/*": ["../handler/src/*"],
       "@webiny/handler": ["../handler/src"],
       "@webiny/handler-aws/*": ["../handler-aws/src/*"],

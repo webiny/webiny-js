@@ -26,7 +26,7 @@ export const prerenderingHandlers = new ContextPlugin<PbContext>(context => {
 
             const meta = merge(currentPrerenderingMeta || {}, {
                 tenant: context.tenancy.getCurrentTenant().id,
-                locale: context.i18nContent.getLocale().code
+                locale: context.i18nContent.getCurrentLocale().code
             });
 
             const dbNamespace = "T#" + context.tenancy.getCurrentTenant().id;

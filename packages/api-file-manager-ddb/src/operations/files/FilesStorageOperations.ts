@@ -328,7 +328,8 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
          * Aggregate all the tags from all the items in the database.
          */
         const tagsObject = results.reduce((collection, item) => {
-            for (const tag of item.tags) {
+            const tags = Array.isArray(item.tags) ? item.tags : [];
+            for (const tag of tags) {
                 if (!collection[tag]) {
                     collection[tag] = [];
                 }

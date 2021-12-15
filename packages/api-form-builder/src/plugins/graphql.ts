@@ -57,7 +57,7 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                 version: async (_, __, context) => {
                     const { i18nContent, tenancy, formBuilder } = context;
 
-                    if (!tenancy.getCurrentTenant() || !i18nContent.getLocale()) {
+                    if (!tenancy.getCurrentTenant() || !i18nContent.getCurrentLocale()) {
                         return null;
                     }
 

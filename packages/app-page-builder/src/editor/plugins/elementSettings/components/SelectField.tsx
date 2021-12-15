@@ -55,11 +55,13 @@ const SelectField = ({
     className,
     validation = { isValid: true },
     description,
+    placeholder = "",
     ...props
 }: SelectProps) => {
     return (
         <React.Fragment>
             <select
+                placeholder={placeholder}
                 className={classNames(selectStyle, className)}
                 value={value}
                 onChange={({ target: { value } }) => {
@@ -67,6 +69,11 @@ const SelectField = ({
                 }}
                 {...omit(props, "validate")}
             >
+                {placeholder ? (
+                    <option value="" disabled selected hidden>
+                        {placeholder}
+                    </option>
+                ) : null}
                 {children}
             </select>
             {validation.isValid === false && (

@@ -161,6 +161,17 @@ const publishProductMutation = /* GraphQL */ `
     }
 `;
 
+const republishProductMutation = /* GraphQL */ `
+    mutation RepublishProduct($revision: ID!) {
+        republishProduct(revision: $revision) {
+            data {
+                ${productFields}
+            }
+            ${errorFields}
+        }
+    }
+`;
+
 const unpublishProductMutation = /* GraphQL */ `
     mutation UnpublishProduct($revision: ID!) {
         unpublishProduct(revision: $revision) {
@@ -236,6 +247,16 @@ export const useProductManageHandler = (
                 headers
             });
         },
+        async republishProduct(variables, headers: Record<string, any> = {}) {
+            return await contentHandler.invoke({
+                body: {
+                    query: republishProductMutation,
+                    variables
+                },
+                headers
+            });
+        },
+
         async unpublishProduct(variables, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
                 body: {
