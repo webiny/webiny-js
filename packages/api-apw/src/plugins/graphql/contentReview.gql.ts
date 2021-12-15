@@ -5,7 +5,7 @@ import { ApwContext } from "~/types";
 import { generateFieldResolvers } from "~/utils/fieldResolver";
 import resolve from "~/utils/resolve";
 
-const fields = ["steps", "content"];
+const fields = ["steps", "content", "status"];
 
 const contentReviewSchema = new GraphQLSchemaPlugin<ApwContext>({
     typeDefs: /* GraphQL */ `
@@ -24,6 +24,7 @@ const contentReviewSchema = new GraphQLSchemaPlugin<ApwContext>({
             #            changeRequested: [ApwContentReviewChangeRequested]
             steps: [ApwContentReviewStep]
             content: ApwContentReviewContent
+            status: ApwContentReviewStatus
         }
 
         type ApwListContentReviewsResponse {
@@ -57,6 +58,12 @@ const contentReviewSchema = new GraphQLSchemaPlugin<ApwContext>({
             inactive
         }
 
+        enum ApwContentReviewStatus {
+            underReview
+            readyToBePublished
+            published
+        }
+
         type ApwContentReviewStep {
             status: ApwContentReviewStepStatus
             slug: String
@@ -81,6 +88,7 @@ const contentReviewSchema = new GraphQLSchemaPlugin<ApwContext>({
             steps: [ApwContentReviewStep]
             content: ApwContentReviewContent
             workflow: ID
+            status: ApwContentReviewStatus
         }
 
         type ApwContentReviewResponse {

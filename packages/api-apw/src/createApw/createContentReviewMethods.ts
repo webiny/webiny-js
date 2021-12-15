@@ -3,7 +3,8 @@ import {
     ApwContentReviewCrud,
     ApwContentReviewStepStatus,
     ApwWorkflowStep,
-    ApwWorkflowStepTypes
+    ApwWorkflowStepTypes,
+    ApwContentReviewStatus
 } from "~/types";
 import { getWorkflowIdFromContent } from "~/plugins/hooks/initializeContentReviewSteps";
 import { getValue, hasReviewer, getNextStepStatus } from "~/plugins/utils";
@@ -29,7 +30,8 @@ export function createContentReviewMethods(context: ApwContext): ApwContentRevie
             const model = await this.getModel();
             return await context.cms.createEntry(model, {
                 ...data,
-                steps: []
+                steps: [],
+                status: ApwContentReviewStatus.UNDER_REVIEW
             });
         },
         async update(id, data) {

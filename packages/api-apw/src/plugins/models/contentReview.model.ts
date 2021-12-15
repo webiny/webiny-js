@@ -15,6 +15,36 @@ const contentField = fields =>
         ]
     });
 
+const contentStatus = () =>
+    createModelField({
+        label: "Status",
+        parent: "contentReview",
+        type: "text",
+        predefinedValues: {
+            enabled: true,
+            values: [
+                {
+                    label: "Under review",
+                    value: "underReview"
+                },
+                {
+                    label: "Ready to be published",
+                    value: "readyToBePublished"
+                },
+                {
+                    label: "Published",
+                    value: "published"
+                }
+            ]
+        },
+        validation: [
+            {
+                name: "required",
+                message: "Value is required."
+            }
+        ]
+    });
+
 const contentIdField = () =>
     createModelField({
         label: "Id",
@@ -172,6 +202,7 @@ export const createContentReviewModelDefinition = () => ({
     ],
     fields: [
         contentField([contentIdField(), contentTypeField(), contentSettingsField()]),
+        contentStatus(),
         stepsField([
             stepStatusField(),
             stepSlugField(),

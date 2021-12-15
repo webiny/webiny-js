@@ -60,6 +60,12 @@ export enum ApwWorkflowStepTypes {
     NON_MANDATORY = "not_mandatory"
 }
 
+export enum ApwContentReviewStatus {
+    UNDER_REVIEW = "underReview",
+    READY_TO_BE_PUBLISHED = "readyToBePublished",
+    PUBLISHED = "published"
+}
+
 export interface ApwWorkflowStep {
     title: string;
     type: ApwWorkflowStepTypes;
