@@ -65,4 +65,64 @@ describe("Locales crud", () => {
             }
         });
     });
+
+    test("it should fail origin field validation", async () => {
+        const [createFailedResponse] = await createI18NLocale(
+            {
+                data: {
+                    ...localeData,
+                    origin: "unknown"
+                }
+            },
+            ["origin"]
+        );
+
+        expect(createFailedResponse).toEqual({
+            data: {
+                i18n: {
+                    createI18NLocale: {
+                        data: null,
+                        error: {
+                            message: "Origin must be set to one of: webiny, web.",
+                            code: "LOCALE_CREATE_ERROR",
+                            data: expect.any(Object)
+                        }
+                    }
+                }
+            }
+        });
+
+        await createI18NLocale(
+            {
+                data: localeData
+            },
+            ["origin"]
+        );
+
+        const [updateResponse] = await updateI18NLocale(
+            {
+                code: localeData.code,
+                data: {
+                    default: true,
+                    origin: "unknown"
+                }
+            },
+            ["origin"]
+        );
+
+        expect(updateResponse).toEqual({
+            data: {
+                i18n: {
+                    updateI18NLocale: {
+                        data: null,
+                        error: {
+                            message: "Origin must be set to one of: webiny, web.",
+                            code: "LOCALE_UPDATE_ERROR",
+                            data: expect.any(Object)
+                        }
+                    }
+                }
+            }
+        });
+    });
 });
