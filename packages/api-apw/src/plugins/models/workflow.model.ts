@@ -1,3 +1,208 @@
+import { createModelField } from "../utils";
+
+const titleField = () =>
+    createModelField({
+        label: "Title",
+        type: "text",
+        parent: "workflow",
+        validation: [
+            {
+                message: "Value is required.",
+                name: "required"
+            }
+        ]
+    });
+
+const stepsField = fields =>
+    createModelField({
+        label: "Steps",
+        type: "object",
+        parent: "workflow",
+        settings: {
+            fields
+        },
+        multipleValues: true
+    });
+
+const stepTitleField = () =>
+    createModelField({
+        label: "Title",
+        type: "text",
+        parent: "workflow steps",
+        validation: [
+            {
+                name: "required",
+                message: "Value is required."
+            }
+        ]
+    });
+
+const stepTypeField = () =>
+    createModelField({
+        label: "Type",
+        type: "text",
+        parent: "workflow steps",
+        predefinedValues: {
+            enabled: true,
+            values: [
+                {
+                    value: "mandatory_blocking",
+                    label: "Mandatory, blocking  - An approval from a reviewer is required before being able to move to the next step and publish the content. "
+                },
+                {
+                    value: "mandatory_non_blocking",
+                    label: "Mandatory, non-blocking - An approval from a reviewer is to publish the content, but the next step in the review workflow is not blocked. "
+                },
+                {
+                    value: "not_mandatory",
+                    label: "Not mandatory - This is an optional review step. The content can be published regardless if an approval is provided or not."
+                }
+            ]
+        },
+        validation: [
+            {
+                name: "required",
+                message: "Value is required."
+            }
+        ]
+    });
+
+const stepSlugField = () =>
+    createModelField({
+        label: "Slug",
+        type: "text",
+        parent: "workflow steps",
+        validation: [
+            {
+                name: "required",
+                message: "Value is required."
+            }
+        ]
+    });
+
+const stepReviewersField = reviewerModelId =>
+    createModelField({
+        label: "Reviewers",
+        type: "ref",
+        parent: "workflow steps",
+        multipleValues: true,
+        settings: {
+            models: [
+                {
+                    modelId: reviewerModelId
+                }
+            ]
+        },
+        listValidation: [
+            {
+                name: "minLength",
+                message: "Value is too short.",
+                settings: {
+                    value: "1"
+                }
+            }
+        ]
+    });
+
+const scopeField = fields =>
+    createModelField({
+        type: "object",
+        label: "Scope",
+        parent: "workflow",
+        settings: {
+            fields
+        }
+    });
+
+const scopeTypeField = () =>
+    createModelField({
+        label: "Type",
+        parent: "workflow scope",
+        type: "text",
+        validation: [
+            {
+                name: "required",
+                message: "Value is required."
+            }
+        ],
+        predefinedValues: {
+            enabled: true,
+            values: [
+                {
+                    value: "default",
+                    label: "Default  - Catch all scope that applies to all content that's being published."
+                },
+                {
+                    value: "pb",
+                    label: "Page category (Page Builder only) - The workflow will apply to all pages inside specific categories."
+                },
+                {
+                    value: "cms",
+                    label: "Content model (Headless CMS only) - The workflow will apply to all the content inside the specific content models. "
+                }
+            ]
+        }
+    });
+
+const scopeDataField = fields =>
+    createModelField({
+        label: "Data",
+        parent: "workflow scope",
+        type: "object",
+        settings: {
+            fields
+        }
+    });
+
+const scopeDataPbCategories = () =>
+    createModelField({
+        label: "Categories",
+        parent: "workflow scope data",
+        type: "text",
+        multipleValues: true
+    });
+const scopeDataPbPages = () =>
+    createModelField({
+        label: "Pages",
+        parent: "workflow scope data",
+        type: "text",
+        multipleValues: true
+    });
+const scopeDataCmsModels = () =>
+    createModelField({
+        label: "Models",
+        parent: "workflow scope data",
+        type: "text",
+        multipleValues: true
+    });
+const scopeDataCmsEntries = () =>
+    createModelField({
+        label: "Category",
+        parent: "workflow scope data",
+        type: "text",
+        multipleValues: true
+    });
+
+const applicationField = () =>
+    createModelField({
+        parent: "workflow",
+        type: "text",
+        label: "App",
+        validation: [
+            {
+                name: "required",
+                message: "Value is required."
+            }
+        ],
+        predefinedValues: {
+            enabled: true,
+            values: [
+                { label: "Page Builder", value: "pageBuilder" },
+                { label: "Headless CMS", value: "cms" }
+            ]
+        }
+    });
+
 export const createWorkflowModelDefinition = ({ reviewerModelId }) => ({
     name: "APW - Workflow",
     /**
@@ -8,247 +213,22 @@ export const createWorkflowModelDefinition = ({ reviewerModelId }) => ({
     titleFieldId: "title",
     description: null,
     fields: [
-        {
-            type: "text",
-            fieldId: "title",
-            id: "workflow_title",
-            settings: {},
-            label: "Title",
-            validation: [
-                {
-                    message: "Value is required.",
-                    name: "required"
-                }
-            ],
-            multipleValues: false,
-            predefinedValues: {
-                enabled: false,
-                values: []
-            }
-        },
-        {
-            type: "object",
-            fieldId: "steps",
-            id: "workflow_steps",
-            settings: {
-                fields: [
-                    {
-                        renderer: {
-                            name: "radio-buttons"
-                        },
-                        helpText: null,
-                        predefinedValues: {
-                            enabled: true,
-                            values: [
-                                {
-                                    value: "mandatory_blocking",
-                                    label: "Mandatory, blocking  - An approval from a reviewer is required before being able to move to the next step and publish the content. "
-                                },
-                                {
-                                    value: "mandatory_non_blocking",
-                                    label: "Mandatory, non-blocking - An approval from a reviewer is to publish the content, but the next step in the review workflow is not blocked. "
-                                },
-                                {
-                                    value: "not_mandatory",
-                                    label: "Not mandatory - This is an optional review step. The content can be published regardless if an approval is provided or not."
-                                }
-                            ]
-                        },
-                        label: "Type",
-                        id: "workflow_step_type",
-                        type: "text",
-                        validation: [
-                            {
-                                name: "required",
-                                message: "Value is required."
-                            }
-                        ],
-                        fieldId: "type"
-                    },
-                    {
-                        renderer: {
-                            name: "text-input"
-                        },
-                        helpText: "What will be it called",
-                        placeholderText: "Add text",
-                        label: "Title",
-                        id: "workflow_step_title",
-                        type: "text",
-                        validation: [
-                            {
-                                name: "required",
-                                message: "Value is required."
-                            }
-                        ],
-                        fieldId: "title"
-                    },
-                    {
-                        renderer: {
-                            name: "text-input"
-                        },
-                        helpText: "What will be it called",
-                        placeholderText: "Add text",
-                        label: "Slug",
-                        id: "workflow_step_slug",
-                        type: "text",
-                        validation: [
-                            {
-                                name: "required",
-                                message: "Value is required."
-                            }
-                        ],
-                        fieldId: "slug"
-                    },
-                    {
-                        multipleValues: true,
-                        settings: {
-                            models: [
-                                {
-                                    modelId: reviewerModelId
-                                }
-                            ]
-                        },
-                        listValidation: [
-                            {
-                                name: "minLength",
-                                message: "Value is too short.",
-                                settings: {
-                                    value: "1"
-                                }
-                            }
-                        ],
-                        renderer: {
-                            name: "ref-inputs"
-                        },
-                        helpText: "Assign users whom approval is needed",
-                        label: "Reviewers",
-                        id: "workflow_step_reviewers",
-                        type: "ref",
-                        validation: [],
-                        fieldId: "reviewers"
-                    }
-                ],
-                layout: [
-                    ["workflow_step_type"],
-                    ["workflow_step_title"],
-                    ["workflow_step_slug"],
-                    ["workflow_step_reviewers"]
-                ]
-            },
-            label: "Steps",
-            validation: [],
-            multipleValues: true,
-            predefinedValues: {
-                enabled: false,
-                values: []
-            }
-        },
-        {
-            type: "object",
-            fieldId: "scope",
-            id: "workflow_scope",
-            settings: {
-                fields: [
-                    {
-                        renderer: {
-                            name: "radio-buttons"
-                        },
-                        predefinedValues: {
-                            enabled: true,
-                            values: [
-                                {
-                                    value: "default",
-                                    label: "Default  - Catch all scope that applies to all content that's being published."
-                                },
-                                {
-                                    value: "pb_category",
-                                    label: "Page category (Page Builder only) - The workflow will apply to all pages inside specific categories."
-                                },
-                                {
-                                    value: "cms_model",
-                                    label: "Content model (Headless CMS only) - The workflow will apply to all the content inside the specific content models. "
-                                },
-                                {
-                                    value: "specific",
-                                    label: "Specific content - The workflow will apply to specific pages, or content model entries."
-                                }
-                            ]
-                        },
-                        label: "Type",
-                        id: "workflow_scope_type",
-                        type: "text",
-                        validation: [
-                            {
-                                name: "required",
-                                message: "Value is required."
-                            }
-                        ],
-                        fieldId: "type"
-                    },
-                    {
-                        renderer: {
-                            name: "radio-buttons"
-                        },
-                        predefinedValues: {
-                            enabled: false,
-                            values: []
-                        },
-                        label: "Data",
-                        id: "workflow_scope_data",
-                        type: "object",
-                        validation: [],
-                        fieldId: "data",
-                        settings: {
-                            fields: [
-                                {
-                                    renderer: {
-                                        name: "text-input"
-                                    },
-                                    predefinedValues: {
-                                        enabled: false,
-                                        values: []
-                                    },
-                                    label: "Values",
-                                    id: "workflow_scope_data_value",
-                                    type: "text",
-                                    validation: [],
-                                    fieldId: "values",
-                                    multipleValues: true
-                                }
-                            ]
-                        }
-                    }
-                ],
-                layout: [["workflow_scope_type"]]
-            },
-            label: "Scope",
-            validation: [],
-            multipleValues: false,
-            predefinedValues: {
-                enabled: false,
-                values: []
-            }
-        },
-        {
-            id: "workflow_app",
-            fieldId: "app",
-            settings: {},
-            type: "text",
-            label: "Application",
-            validation: [
-                {
-                    name: "required",
-                    message: "Value is required."
-                }
-            ],
-            multipleValues: false,
-            predefinedValues: {
-                enabled: true,
-                values: [
-                    { label: "Page Builder", value: "pageBuilder" },
-                    { label: "Headless CMS", value: "cms" }
-                ]
-            }
-        }
+        titleField(),
+        stepsField([
+            stepTitleField(),
+            stepTypeField(),
+            stepSlugField(),
+            stepReviewersField(reviewerModelId)
+        ]),
+        scopeField([
+            scopeTypeField(),
+            scopeDataField([
+                scopeDataPbCategories(),
+                scopeDataPbPages(),
+                scopeDataCmsModels(),
+                scopeDataCmsEntries()
+            ])
+        ]),
+        applicationField()
     ]
 });
