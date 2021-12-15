@@ -10,7 +10,7 @@ import parentTenantGroupAuthorization from "@webiny/api-security/plugins/parentT
 import cognitoAuthentication from "@webiny/api-security-cognito";
 import anonymousAuthorization from "@webiny/api-security/plugins/anonymousAuthorization";
 
-export default ({ documentClient }) => [
+export default ({ documentClient }: { documentClient: any }) => [
     /**
      * Create Tenancy app in the `context`.
      */

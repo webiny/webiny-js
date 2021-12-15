@@ -20,8 +20,6 @@ module.exports = options => {
 
     const definitions = overrides.define ? JSON.parse(overrides.define) : {};
 
-    console.warn(require.resolve("typescript"));
-
     return {
         entry: path.resolve(entry),
         target: "node",
@@ -55,7 +53,6 @@ module.exports = options => {
                     typescriptPath: require.resolve("typescript")
                 },
                 async: !production
-                //silent: true
             }),
             options.logs && new WebpackBar({ name: path.basename(cwd) })
         ].filter(Boolean),

@@ -13,7 +13,7 @@ import createAdminUsersApp from "@webiny/api-admin-users-cognito";
 import { syncWithCognito } from "@webiny/api-admin-users-cognito/syncWithCognito";
 import { createStorageOperations as createAdminUsersStorageOperations } from "@webiny/api-admin-users-cognito-so-ddb";
 
-export default ({ documentClient }) => [
+export default ({ documentClient }: { documentClient: any }) => [
     /**
      * Create Tenancy app in the `context`.
      */
@@ -49,8 +49,8 @@ export default ({ documentClient }) => [
      * Sync Admin Users with Cognito User Pool.
      */
     syncWithCognito({
-        region: process.env.COGNITO_REGION,
-        userPoolId: process.env.COGNITO_USER_POOL_ID
+        region: process.env.COGNITO_REGION as string,
+        userPoolId: process.env.COGNITO_USER_POOL_ID as string
     }),
 
     /**
@@ -72,8 +72,8 @@ export default ({ documentClient }) => [
      * This plugin will verify the JWT token against the provided User Pool.
      */
     cognitoAuthentication({
-        region: process.env.COGNITO_REGION,
-        userPoolId: process.env.COGNITO_USER_POOL_ID,
+        region: process.env.COGNITO_REGION as string,
+        userPoolId: process.env.COGNITO_USER_POOL_ID as string,
         identityType: "admin"
     }),
 

@@ -9,7 +9,7 @@
     { "path": "../ui" }
   ],
   "compilerOptions": {
-    "rootDirs": ["./src", "./__tests__"],
+    "rootDir": "./src",
     "outDir": "./dist",
     "declarationDir": "./dist",
     "paths": {

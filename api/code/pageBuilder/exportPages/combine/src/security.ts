@@ -3,7 +3,7 @@ import { createStorageOperations as tenancyStorageOperations } from "@webiny/api
 import { createSecurityContext } from "@webiny/api-security";
 import { createStorageOperations as securityStorageOperations } from "@webiny/api-security-so-ddb";
 
-export default ({ documentClient }) => [
+export default ({ documentClient }: { documentClient: any }) => [
     /**
      * Create Tenancy app in the `context`.
      */

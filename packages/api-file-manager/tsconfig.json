@@ -16,7 +16,7 @@
     { "path": "../api-i18n-ddb" }
   ],
   "compilerOptions": {
-    "rootDirs": ["./src", "./__tests__"],
+    "rootDir": "./src",
     "outDir": "./dist",
     "declarationDir": "./dist",
     "paths": {

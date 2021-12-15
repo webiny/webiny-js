@@ -10,7 +10,7 @@
     { "path": "../utils" }
   ],
   "compilerOptions": {
-    "rootDirs": ["./src", "./__tests__"],
+    "rootDir": "./src",
     "outDir": "./dist",
     "declarationDir": "./dist",
     "paths": {

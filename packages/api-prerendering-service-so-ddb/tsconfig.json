@@ -18,6 +18,9 @@
     }
   ],
   "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "declarationDir": "./dist",
     "paths": {
       "~/*": ["./src/*"],
       "@webiny/error/*": ["../error/src/*"],

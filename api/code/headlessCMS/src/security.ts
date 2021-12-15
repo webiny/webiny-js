@@ -10,7 +10,7 @@ import parentTenantGroupAuthorization from "@webiny/api-security/plugins/parentT
 import cognitoAuthentication from "@webiny/api-security-cognito";
 import anonymousAuthorization from "@webiny/api-security/plugins/anonymousAuthorization";
 
-export default ({ documentClient }) => [
+export default ({ documentClient }: { documentClient: any }) => [
     /**
      * Create Tenancy app in the `context`.
      */
@@ -44,8 +44,8 @@ export default ({ documentClient }) => [
      * This plugin will verify the JWT token against the provided User Pool.
      */
     cognitoAuthentication({
-        region: process.env.COGNITO_REGION,
-        userPoolId: process.env.COGNITO_USER_POOL_ID,
+        region: process.env.COGNITO_REGION as string,
+        userPoolId: process.env.COGNITO_USER_POOL_ID as string,
         identityType: "admin"
     }),
 

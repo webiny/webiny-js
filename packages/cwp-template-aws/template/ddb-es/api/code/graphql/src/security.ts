@@ -13,7 +13,7 @@ import createAdminUsersApp from "@webiny/api-admin-users-cognito";
 import { syncWithCognito } from "@webiny/api-admin-users-cognito/syncWithCognito";
 import { createStorageOperations as createAdminUsersStorageOperations } from "@webiny/api-admin-users-cognito-so-ddb";
 
-export default ({ documentClient }) => [
+export default ({ documentClient }: { documentClient: any }) => [
     /**
      * Create Tenancy app in the `context`.
      */

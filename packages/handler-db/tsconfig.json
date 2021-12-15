@@ -3,7 +3,7 @@
   "include": ["src", "__tests__/**/*.ts"],
   "references": [{ "path": "../db" }, { "path": "../handler" }],
   "compilerOptions": {
-    "rootDirs": ["./src", "./__tests__"],
+    "rootDir": "./src",
     "outDir": "./dist",
     "declarationDir": "./dist",
     "paths": {

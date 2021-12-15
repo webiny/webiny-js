@@ -3,7 +3,7 @@
   "include": ["src", "__tests__/**/*.ts"],
   "references": [{ "path": "../cli-plugin-scaffold" }, { "path": "../error" }],
   "compilerOptions": {
-    "rootDirs": ["./src", "./__tests__"],
+    "rootDir": "./src",
     "outDir": "./dist",
     "declarationDir": "./dist",
     "paths": {
