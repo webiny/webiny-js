@@ -4,13 +4,12 @@ import get from "lodash/get";
 import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
 import { CmsContext } from "@webiny/api-headless-cms/types";
 import { PbContext } from "@webiny/api-page-builder/graphql/types";
-import { PageWithWorkflow, WorkflowScopeTypes } from "~/types";
+import { ApwWorkflowApplications, PageWithWorkflow, WorkflowScopeTypes } from "~/types";
 
 const WORKFLOW_PRECEDENCE = {
     [WorkflowScopeTypes.DEFAULT]: 0,
-    [WorkflowScopeTypes.PB_CATEGORY]: 1,
-    [WorkflowScopeTypes.CMS_MODEL]: 1,
-    [WorkflowScopeTypes.SPECIFIC]: 2
+    [WorkflowScopeTypes.PB]: 1,
+    [WorkflowScopeTypes.CMS]: 1
 };
 
 const getValue = (object: Record<string, any>, key: string) => {
@@ -36,18 +35,31 @@ const workflowByCreatedOnDesc = (a, b) => {
 };
 
 const isWorkflowApplicable = (page, workflow) => {
+    const application = getValue(workflow, "app");
+    if (application !== ApwWorkflowApplications.PB) {
+        return false;
+    }
+
     const scopeType = getValue(workflow, "scope.type");
-    if (scopeType === WorkflowScopeTypes.SPECIFIC) {
-        const values = getValue(workflow, "scope.data.values");
-        return values && values.includes(page.pid);
+
+    if (scopeType === WorkflowScopeTypes.DEFAULT) {
+        return true;
     }
 
-    if (scopeType === WorkflowScopeTypes.PB_CATEGORY) {
-        const values = getValue(workflow, "scope.data.values");
-        return values && values.includes(page.category);
+    if (scopeType === WorkflowScopeTypes.PB) {
+        const categories = getValue(workflow, "scope.data.categories");
+
+        if (Array.isArray(categories) && categories.includes(page.category)) {
+            return true;
+        }
+
+        const pages = getValue(workflow, "scope.data.pages");
+        if (Array.isArray(pages) && pages.includes(page.pid)) {
+            return true;
+        }
     }
 
-    return getValue(workflow, "app") === "pageBuilder";
+    return false;
 };
 
 export default () => [
@@ -125,19 +137,19 @@ export default () => [
             const app = getValue(entry, "app");
 
             if (
-                app === "pageBuilder" &&
-                scope.type === WorkflowScopeTypes.SPECIFIC &&
+                app === ApwWorkflowApplications.PB &&
+                scope.type === WorkflowScopeTypes.PB &&
                 scope.data &&
-                Array.isArray(scope.data.values)
+                Array.isArray(scope.data.pages)
             ) {
-                for (const pid of scope.data.values) {
+                for (const pid of scope.data.pages) {
                     try {
                         /**
                          * Currently, we only assign "workflow" to latest page.
                          */
                         const page = await context.pageBuilder.pages.get<PageWithWorkflow>(pid);
                         /**
-                         * TODO: @ashutosh What will happen if more than one workflow with same `scope` is created?
+                         * There can be more than one workflow with same `scope` for same `app`. That is why;
                          * We'll update the workflow reference even though it already had one assign.
                          */
                         if (page.workflow) {

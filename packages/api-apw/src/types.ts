@@ -23,9 +23,8 @@ export interface PageWithWorkflow extends Page {
 
 export enum WorkflowScopeTypes {
     DEFAULT = "default",
-    PB_CATEGORY = "pb_category",
-    CMS_MODEL = "cms_model",
-    SPECIFIC = "specific"
+    PB = "pb",
+    CMS = "cms"
 }
 
 export enum ApwContentReviewStepStatus {
@@ -48,7 +47,10 @@ export type ApwContentReview = CmsEntry;
 interface ApwWorkflowScope {
     type: WorkflowScopeTypes;
     data: {
-        values?: string[];
+        categories?: string[];
+        pages?: string[];
+        models?: string[];
+        entries?: string[];
     };
 }
 
