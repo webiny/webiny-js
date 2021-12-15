@@ -1,44 +1,58 @@
 import * as ts from "typescript";
 import path from "path";
 
-const fileRegex = /^\.\.?\/.*\.(jpg|png|svg|md|css)$/i;
+const pathsRegex = /^~\//i;
+const fileRegex = /^\.\.?\/.*\.\w*$/i;
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const transformerProgram = (program: ts.Program) => {
     const transformerFactory: ts.TransformerFactory<ts.SourceFile> = context => {
-        return sourceFile => {
-            const visitor = (node: ts.Node): ts.Node => {
-                if (ts.isImportDeclaration(node) && ts.isStringLiteral(node.moduleSpecifier)) {
-                    const importPath = node.moduleSpecifier.text;
-                    if (!fileRegex.test(importPath)) {
-                        return node;
-                    }
+        const visitor = (node: ts.Node): ts.Node => {
+            if (ts.isImportDeclaration(node) && ts.isStringLiteral(node.moduleSpecifier)) {
+                let importPath = node.moduleSpecifier.text;
 
-                    const { outDir, rootDir } = context.getCompilerOptions();
-                    const sourceFile = ts.getSourceFileOfNode(node);
-                    if (!sourceFile) {
-                        return node;
-                    }
+                const { outDir, rootDir } = context.getCompilerOptions();
 
-                    const { fileName } = sourceFile;
+                const sourceFile = ts.getSourceFileOfNode(node);
+                if (!sourceFile) {
+                    return node;
+                }
 
+                const { fileName } = sourceFile;
+
+                if (pathsRegex.test(importPath)) {
+                    // console.log("beforePath: " + importPath);
+                    const fullImportPath = importPath.replace("~", rootDir);
+                    importPath = ts.getRelativePathFromFile(fileName, fullImportPath);
+                    // console.log("afterPath: " + importPath);
+                }
+
+                if (fileRegex.test(importPath)) {
                     const relativeToRoot = ts.getRelativePathFromDirectory(rootDir, fileName);
                     const outputFile = ts.resolvePath(outDir, relativeToRoot);
                     const importPathFull = ts.resolvePath(path.posix.dirname(fileName), importPath);
-                    const relativeToAsset = ts.getRelativePathFromFile(outputFile, importPathFull);
+                    importPath = ts.getRelativePathFromFile(outputFile, importPathFull);
+                }
 
+                if (importPath !== node.moduleSpecifier.text) {
+                    // console.log("source: " + fileName);
+                    // console.log(`import: ${node.moduleSpecifier.text} => ${importPath}`);
                     return ts.updateImportDeclaration(
                         node,
                         node.decorators,
                         node.modifiers,
                         node.importClause,
-                        ts.createLiteral(relativeToAsset)
+                        ts.createLiteral(importPath)
                     );
                 }
 
-                return ts.visitEachChild(node, visitor, context);
-            };
+                return node;
+            }
 
+            return ts.visitEachChild(node, visitor, context);
+        };
+
+        return sourceFile => {
             return ts.visitNode(sourceFile, visitor);
         };
     };

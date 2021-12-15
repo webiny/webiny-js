@@ -149,7 +149,7 @@
     "release-latest": "node ./scripts/releaseLatest.js",
     "dispatch-github-event": "node ./scripts/dispatchGitHubEvent.js",
     "lint-staged": "lint-staged",
-    "postinstall": "yarn node ./scripts/linkWorkspaces.js",
+    "postinstall": "ts-patch install && yarn node ./scripts/linkWorkspaces.js",
     "prepublishOnly": "yarn node scripts/prepublishOnly.js",
     "prettier": "prettier \"**/**/*.{js,jsx,ts,tsx,json}\" --config .prettierrc.js",
     "prettier:check": "yarn prettier --check",

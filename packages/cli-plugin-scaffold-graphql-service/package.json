@@ -3,9 +3,21 @@
   "version": "5.18.3",
   "description": "Generate Webiny GraphQL service",
   "main": "./dist/index.js",
+  "typings": "./index.d.ts",
+  "typesVersions": {
+    ">=3.1": {
+      "*": [
+        "dist/*",
+        "dist/*/index.d.ts"
+      ]
+    }
+  },
   "exports": {
     ".": "./dist/index.js",
-    "./": "./dist/"
+    "./": [
+      "./dist/",
+      "./src/"
+    ]
   },
   "types": "index.d.ts",
   "repository": {
@@ -55,7 +67,7 @@
   },
   "publishConfig": {
     "access": "public",
-    "directory": "dist"
+    "directory": "."
   },
   "adio": {
     "ignoreDirs": [

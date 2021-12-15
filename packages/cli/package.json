@@ -1,11 +1,6 @@
 {
   "name": "@webiny/cli",
   "version": "5.18.3",
-  "main": "./dist/index.js",
-  "exports": {
-    ".": "./dist/index.js",
-    "./": "./dist/"
-  },
   "bin": {
     "webiny": "./bin.js"
   },

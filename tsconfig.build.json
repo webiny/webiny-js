@@ -15,9 +15,18 @@
     "paths": {},
     "typeRoots": ["./typings", "./node_modules/@types", "@types/testing-library__cypress"],
     "plugins": [
-      { "transform": "typescript-transform-paths", "useRootDirs": true },
-      { "transform": "typescript-transform-paths", "useRootDirs": true, "afterDeclarations": true },
-      { "transform": "@webiny/typescript-utils/transformer.ts" }
+      {
+        "transform": "typescript-transform-paths",
+        "useRootDirs": true
+      },
+      {
+        "transform": "typescript-transform-paths",
+        "useRootDirs": true,
+        "afterDeclarations": true
+      },
+      {
+        "transform": "@webiny/typescript-utils/transformer.ts"
+      }
     ],
     "noUnusedParameters": true,
     "noUnusedLocals": true,

@@ -1,6 +1,16 @@
 {
   "name": "@webiny/api-security",
   "version": "5.18.3",
+  "main": "./dist/index.js",
+  "typings": "./index.d.ts",
+  "typesVersions": {
+    ">=3.1": {
+      "*": [
+        "dist/*",
+        "dist/*/index.d.ts"
+      ]
+    }
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git"
@@ -42,7 +52,7 @@
   },
   "publishConfig": {
     "access": "public",
-    "directory": "dist"
+    "directory": "."
   },
   "scripts": {
     "build": "yarn webiny run build",

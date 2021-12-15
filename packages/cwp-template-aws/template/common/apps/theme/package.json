@@ -2,9 +2,21 @@
   "name": "theme",
   "version": "0.1.0",
   "main": "./dist/index.js",
+  "typings": "./index.d.ts",
+  "typesVersions": {
+    ">=3.1": {
+      "*": [
+        "dist/*",
+        "dist/*/index.d.ts"
+      ]
+    }
+  },
   "exports": {
     ".": "./dist/index.js",
-    "./": "./dist/"
+    "./": [
+      "./dist/",
+      "./src/"
+    ]
   },
   "license": "MIT",
   "dependencies": {

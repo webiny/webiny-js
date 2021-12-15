@@ -9,7 +9,7 @@ import Snackbar from "@webiny/app-admin/ui/views/AdminView/components/Snackbar";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { DialogContainer } from "@webiny/app-admin/ui/views/AdminView/components/Dialog";
 import { Typography } from "@webiny/ui/Typography";
-import { LoadingEditor, LoadingTitle } from "./EditorStyled.js";
+import { LoadingEditor, LoadingTitle } from "./EditorStyled";
 import { GET_PAGE, CREATE_PAGE_FROM } from "./graphql";
 
 const extractPageGetPage = (data: any): any => {

@@ -1,15 +1,6 @@
 {
   "extends": "./tsconfig.build.json",
   "include": [],
-  "compilerOptions": {
-    "plugins": [
-      {
-        "transform": "typescript-transform-paths",
-        "afterDeclarations": true,
-        "useRootDirs": true
-      }
-    ]
-  },
   "references": [
     {
       "path": "./packages/api-cognito-authenticator"
@@ -293,5 +284,11 @@
     {
       "path": "./packages/api-headless-cms-dynamic-pages"
     }
-  ]
+  ],
+  "compilerOptions": {
+    "paths": {
+      "~/*": ["./src/*"]
+    },
+    "baseUrl": "."
+  }
 }

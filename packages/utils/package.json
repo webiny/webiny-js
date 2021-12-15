@@ -2,9 +2,21 @@
   "name": "@webiny/utils",
   "version": "5.18.3",
   "main": "./dist/index.js",
+  "typings": "./index.d.ts",
+  "typesVersions": {
+    ">=3.1": {
+      "*": [
+        "dist/*",
+        "dist/*/index.d.ts"
+      ]
+    }
+  },
   "exports": {
     ".": "./dist/index.js",
-    "./": "./dist/"
+    "./": [
+      "./dist/",
+      "./src/"
+    ]
   },
   "types": "index.d.ts",
   "repository": {
@@ -16,7 +28,7 @@
   "license": "MIT",
   "publishConfig": {
     "access": "public",
-    "directory": "dist"
+    "directory": "."
   },
   "dependencies": {
     "@webiny/error": "^5.18.3"

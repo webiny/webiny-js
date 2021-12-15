@@ -1,11 +1,6 @@
 {
   "name": "theme",
   "version": "0.1.0",
-  "main": "./dist/index.js",
-  "exports": {
-    ".": "./dist/index.js",
-    "./": "./dist/"
-  },
   "license": "MIT",
   "dependencies": {
     "@apollo/react-components": "^3.1.5",

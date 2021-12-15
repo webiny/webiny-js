@@ -2,10 +2,13 @@
   "name": "@webiny/cli-plugin-scaffold-react-component",
   "version": "5.18.3",
   "description": "Generate a simple React component package.",
-  "main": "./dist/index.js",
+  "main": "./index.js",
   "exports": {
     ".": "./dist/index.js",
-    "./": "./dist/"
+    "./": [
+      "./dist/",
+      "./src/"
+    ]
   },
   "types": "index.d.ts",
   "repository": {
@@ -55,7 +58,7 @@
   },
   "publishConfig": {
     "access": "public",
-    "directory": "dist"
+    "directory": "."
   },
   "adio": {
     "ignoreDirs": [

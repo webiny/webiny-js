@@ -2,6 +2,10 @@
   "extends": "../../../tsconfig",
   "include": ["src"],
   "compilerOptions": {
-    "composite": false
+    "composite": false,
+    "paths": {
+      "theme": ["../../theme"],
+      "theme/*": ["../../theme/*"]
+    }
   }
 }

@@ -1,11 +1,7 @@
 {
   "name": "@webiny/global-config",
   "version": "5.18.3",
-  "main": "./dist/index.js",
-  "exports": {
-    ".": "./dist/index.js",
-    "./": "./dist/"
-  },
+  "main": "./index.js",
   "license": "MIT",
   "dependencies": {
     "load-json-file": "6.2.0",

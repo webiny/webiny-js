@@ -2,9 +2,21 @@
   "name": "@webiny/api-page-builder-import-export",
   "version": "5.18.3",
   "main": "./dist/index.js",
+  "typings": "./index.d.ts",
+  "typesVersions": {
+    ">=3.1": {
+      "*": [
+        "dist/*",
+        "dist/*/index.d.ts"
+      ]
+    }
+  },
   "exports": {
     ".": "./dist/index.js",
-    "./": "./dist/"
+    "./": [
+      "./dist/",
+      "./src/"
+    ]
   },
   "keywords": [
     "pbie:base"
@@ -68,7 +80,7 @@
   },
   "publishConfig": {
     "access": "public",
-    "directory": "dist"
+    "directory": "."
   },
   "scripts": {
     "build": "yarn webiny run build",

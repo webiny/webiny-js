@@ -11,7 +11,7 @@
   "license": "MIT",
   "publishConfig": {
     "access": "public",
-    "directory": "dist"
+    "directory": "."
   },
   "dependencies": {
     "@pulumi/aws": "^4.10.0",

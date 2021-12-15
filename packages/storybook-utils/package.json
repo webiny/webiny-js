@@ -2,6 +2,15 @@
   "private": true,
   "name": "@webiny/storybook-utils",
   "version": "5.18.3",
+  "typings": "./index.d.ts",
+  "typesVersions": {
+    ">=3.1": {
+      "*": [
+        "dist/*",
+        "dist/*/index.d.ts"
+      ]
+    }
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git"
@@ -45,6 +54,6 @@
     "build": "yarn webiny run build"
   },
   "publishConfig": {
-    "directory": "dist"
+    "directory": "."
   }
 }

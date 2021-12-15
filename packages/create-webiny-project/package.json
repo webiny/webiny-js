@@ -2,11 +2,7 @@
   "name": "create-webiny-project",
   "version": "5.18.3",
   "description": "Webiny project bootstrap tool.",
-  "main": "./dist/index.js",
-  "exports": {
-    ".": "./dist/index.js",
-    "./": "./dist/"
-  },
+  "main": "./index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
