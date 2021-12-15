@@ -59,6 +59,7 @@ describe(`Pending change requests count test`, () => {
                                 displayName: expect.any(String),
                                 type: "admin"
                             },
+                            status: "underReview",
                             content: {
                                 id: expect.any(String),
                                 type: "page",
@@ -128,6 +129,7 @@ describe(`Pending change requests count test`, () => {
                                 displayName: expect.any(String),
                                 type: "admin"
                             },
+                            status: "underReview",
                             content: {
                                 id: expect.any(String),
                                 type: "page",
@@ -190,6 +192,7 @@ describe(`Pending change requests count test`, () => {
                                 displayName: expect.any(String),
                                 type: "admin"
                             },
+                            status: "underReview",
                             content: {
                                 id: expect.any(String),
                                 type: "page",
@@ -252,6 +255,7 @@ describe(`Pending change requests count test`, () => {
                                 displayName: expect.any(String),
                                 type: "admin"
                             },
+                            status: "underReview",
                             content: {
                                 id: expect.any(String),
                                 type: "page",
@@ -314,6 +318,7 @@ describe(`Pending change requests count test`, () => {
                                 displayName: expect.any(String),
                                 type: "admin"
                             },
+                            status: "underReview",
                             content: {
                                 id: expect.any(String),
                                 type: "page",

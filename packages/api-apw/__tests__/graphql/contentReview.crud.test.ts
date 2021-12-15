@@ -71,6 +71,7 @@ describe("Content Review crud test", () => {
                                 displayName: "John Doe",
                                 type: "admin"
                             },
+                            status: "underReview",
                             steps: workflow.steps.map((_, index) => ({
                                 status:
                                     index === 0
@@ -111,6 +112,7 @@ describe("Content Review crud test", () => {
                                 displayName: "John Doe",
                                 type: "admin"
                             },
+                            status: "underReview",
                             steps: workflow.steps.map((_, index) => ({
                                 status:
                                     index === 0
@@ -154,6 +156,7 @@ describe("Content Review crud test", () => {
                                 displayName: "John Doe",
                                 type: "admin"
                             },
+                            status: "underReview",
                             steps: workflow.steps.map((_, index) => ({
                                 status:
                                     index === 0
@@ -194,6 +197,7 @@ describe("Content Review crud test", () => {
                                     displayName: "John Doe",
                                     type: "admin"
                                 },
+                                status: "underReview",
                                 steps: workflow.steps.map((_, index) => ({
                                     status:
                                         index === 0

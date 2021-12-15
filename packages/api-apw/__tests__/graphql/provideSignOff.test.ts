@@ -94,6 +94,7 @@ describe("Provide sign off for a step in content review process", function () {
                                 displayName: "John Doe",
                                 type: "admin"
                             },
+                            status: "underReview",
                             content: {
                                 id: expect.any(String),
                                 type: expect.any(String),

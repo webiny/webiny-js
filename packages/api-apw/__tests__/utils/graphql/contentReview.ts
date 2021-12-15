@@ -13,6 +13,7 @@ const getDataFields = (fields = "") => `{
         displayName
         type
     }
+    status
     steps {
         status
         slug

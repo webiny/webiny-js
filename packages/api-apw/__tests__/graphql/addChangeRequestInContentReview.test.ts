@@ -239,6 +239,7 @@ describe(`Add change requests on a step in a "Content Review"`, () => {
                                 displayName: expect.any(String),
                                 type: "admin"
                             },
+                            status: "underReview",
                             content: {
                                 id: expect.any(String),
                                 type: "page",
