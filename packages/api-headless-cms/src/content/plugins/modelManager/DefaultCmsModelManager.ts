@@ -1,4 +1,4 @@
-import { CmsModelManager, CmsModel, CmsContext } from "~/types";
+import { CmsModelManager, CmsModel, CmsContext, CmsEntryListParams } from "~/types";
 import { parseIdentifier } from "@webiny/utils";
 
 export class DefaultCmsModelManager implements CmsModelManager {
@@ -27,16 +27,12 @@ export class DefaultCmsModelManager implements CmsModelManager {
         return this._context.cms.getEntryById(this._model, id);
     }
 
-    public async list(args) {
-        return this._context.cms.listEntries(this._model, args);
+    public async listPublished(params: CmsEntryListParams) {
+        return this._context.cms.listPublishedEntries(this._model, params);
     }
 
-    public async listPublished(args) {
-        return this._context.cms.listPublishedEntries(this._model, args);
-    }
-
-    public async listLatest(args) {
-        return this._context.cms.listLatestEntries(this._model, args);
+    public async listLatest(params: CmsEntryListParams) {
+        return this._context.cms.listLatestEntries(this._model, params);
     }
 
     public async getPublishedByIds(ids: string[]) {
