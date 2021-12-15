@@ -19,6 +19,9 @@ export const defineSystemEntity = (params: { context: PbContext; table: Table })
             version: {
                 type: "string"
             },
+            tenant: {
+                type: "string"
+            },
             ...attributes
         }
     });
