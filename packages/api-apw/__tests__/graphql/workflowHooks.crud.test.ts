@@ -1,7 +1,7 @@
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
 import mocks from "./mocks/workflows";
 
-describe("Workflow assignment to a PB Page test", () => {
+describe("Workflow assignment to a PB Page", () => {
     const options = {
         path: "manage/en-US"
     };
@@ -50,15 +50,17 @@ describe("Workflow assignment to a PB Page test", () => {
          Create 5 workflow entries
         */
         for (let i = 0; i < 5; i++) {
+            const createWorkflowInput = mocks.createWorkflow(
+                {
+                    title: `Main review workflow - ${i + 1}`,
+                    app: i % 2 === 0 ? "pageBuilder" : "cms",
+                    scope: mocks.scopes[i]
+                },
+                [reviewer]
+            );
+
             const [createWorkflowResponse] = await createWorkflowMutation({
-                data: mocks.createWorkflow(
-                    {
-                        title: `Main review workflow - ${i + 1}`,
-                        app: i % 2 === 0 ? "pageBuilder" : "cms",
-                        scope: mocks.scopes[i]
-                    },
-                    [reviewer]
-                )
+                data: createWorkflowInput
             });
             const workflow =
                 createWorkflowResponse.data.advancedPublishingWorkflow.createWorkflow.data;
@@ -198,9 +200,9 @@ describe("Workflow assignment to a PB Page test", () => {
                     title: `Main review workflow`,
                     app: "pageBuilder",
                     scope: {
-                        type: "specific",
+                        type: "pb",
                         data: {
-                            values: [page.pid]
+                            pages: [page.pid]
                         }
                     }
                 },
@@ -234,9 +236,9 @@ describe("Workflow assignment to a PB Page test", () => {
                     title: `Main review workflow - 2`,
                     app: "pageBuilder",
                     scope: {
-                        type: "specific",
+                        type: "pb",
                         data: {
-                            values: [page.pid, page.pid + "999999"]
+                            pages: [page.pid, page.pid + "999999"]
                         }
                     }
                 },

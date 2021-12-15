@@ -75,41 +75,41 @@ export default {
             type: "default"
         },
         {
-            type: "pb_category"
+            type: "pb"
         },
         {
-            type: "cms_model"
+            type: "cm"
         },
         {
-            type: "specific"
+            type: "pb"
         }
     ],
     getPageBuilderScope: (pageId: string, pageCategory?: string) => [
         {
-            type: "pb_category",
+            type: "pb",
             data: {
-                values: ["dynamic", pageCategory]
+                categories: ["dynamic", pageCategory]
             }
         },
         {
             type: "default"
         },
         {
-            type: "specific",
+            type: "pb",
             data: {
-                values: ["page#1", "page#2", "page#3", pageId]
+                pages: ["page#1", "page#2", "page#3", pageId]
             }
         },
         {
-            type: "pb_category",
+            type: "pb",
             data: {
-                values: ["random", pageCategory]
+                categories: ["random", pageCategory]
             }
         },
         {
-            type: "specific",
+            type: "pb",
             data: {
-                values: ["page#1", "page#2", "page#3", pageId]
+                pages: ["page#1", "page#2", "page#3", pageId]
             }
         }
     ],
@@ -131,9 +131,9 @@ export default {
             }
         ],
         scope: {
-            type: "pb_category",
+            type: "pb",
             data: {
-                values: ["static"]
+                categories: ["static"]
             }
         }
     }
