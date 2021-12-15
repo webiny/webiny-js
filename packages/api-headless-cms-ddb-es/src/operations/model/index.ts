@@ -127,7 +127,7 @@ export const createModelsStorageOperations = (params: Params): CmsModelStorageOp
             return model;
         } catch (ex) {
             throw new WebinyError(
-                ex.messatge || "Could not update model.",
+                ex.message || "Could not update model.",
                 ex.code || "MODEL_UPDATE_ERROR",
                 {
                     error: ex,
@@ -145,10 +145,9 @@ export const createModelsStorageOperations = (params: Params): CmsModelStorageOp
 
         try {
             await entity.delete(keys);
-            return model;
         } catch (ex) {
             throw new WebinyError(
-                ex.messatge || "Could not delete model.",
+                ex.message || "Could not delete model.",
                 ex.code || "MODEL_DELETE_ERROR",
                 {
                     error: ex,
@@ -157,6 +156,26 @@ export const createModelsStorageOperations = (params: Params): CmsModelStorageOp
                 }
             );
         }
+        const { index } = configurations.es({
+            model
+        });
+        /**
+         * In case of DynamoDB error we need to remove the index we created.
+         */
+        try {
+            await elasticsearch.indices.delete({
+                index
+            });
+        } catch (ex) {
+            throw new WebinyError(
+                `Could not delete elasticsearch index "${index}" after model record was deleted.`,
+                "DELETE_MODEL_INDICE_ERROR",
+                {
+                    error: ex
+                }
+            );
+        }
+        return model;
     };
 
     const get = async (params: CmsModelStorageOperationsGetParams) => {
@@ -170,7 +189,7 @@ export const createModelsStorageOperations = (params: Params): CmsModelStorageOp
             return cleanupItem(entity, item);
         } catch (ex) {
             throw new WebinyError(
-                ex.messatge || "Could not get model.",
+                ex.message || "Could not get model.",
                 ex.code || "MODEL_GET_ERROR",
                 {
                     error: ex,
@@ -195,7 +214,7 @@ export const createModelsStorageOperations = (params: Params): CmsModelStorageOp
             return cleanupItems(entity, items);
         } catch (ex) {
             throw new WebinyError(
-                ex.messatge || "Could not list models.",
+                ex.message || "Could not list models.",
                 ex.code || "MODEL_LIST_ERROR",
                 {
                     error: ex,

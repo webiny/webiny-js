@@ -34,7 +34,8 @@ export const assignBeforeModelDelete = (params: Params) => {
             const result = await storageOperations.entries.list(model, {
                 where: {
                     tenant: model.tenant,
-                    locale: model.locale
+                    locale: model.locale,
+                    latest: true
                 },
                 limit: 1
             });

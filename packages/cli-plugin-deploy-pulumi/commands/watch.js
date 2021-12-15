@@ -229,30 +229,32 @@ module.exports = async (inputs, context) => {
             });
 
             watchCloudInfrastructure.stdout.on("data", data => {
-                const line = data.toString();
+                const lines = data.toString().split("\n");
+                for (let i = 0; i < lines.length; i++) {
+                    const line = lines[i];
+                    try {
+                        const [, , name, message] = line
+                            .match(/(.*)\[(.*)\] (.*)/)
+                            .map(item => item.trim());
 
-                try {
-                    const [, , name, message] = line
-                        .match(/(.*)\[(.*)\] (.*)/)
-                        .map(item => item.trim());
-
-                    if (name) {
-                        const coloredName = chalk.hex(getRandomColorForString(name)).bold(name);
+                        if (name) {
+                            const coloredName = chalk.hex(getRandomColorForString(name)).bold(name);
+                            output.log({
+                                type: "deploy",
+                                message: `${coloredName}: ${message}`
+                            });
+                        } else {
+                            output.log({
+                                type: "deploy",
+                                message
+                            });
+                        }
+                    } catch (e) {
                         output.log({
                             type: "deploy",
-                            message: `${coloredName}: ${message}`
-                        });
-                    } else {
-                        output.log({
-                            type: "deploy",
-                            message
+                            message: line
                         });
                     }
-                } catch (e) {
-                    output.log({
-                        type: "deploy",
-                        message: line
-                    });
                 }
             });
 

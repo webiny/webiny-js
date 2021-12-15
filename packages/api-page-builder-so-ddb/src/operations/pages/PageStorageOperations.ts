@@ -838,7 +838,7 @@ export class PageStorageOperationsDdb implements PageStorageOperations {
      */
     private createBasePartitionKey(): string {
         const tenant = this.context.tenancy.getCurrentTenant().id;
-        const locale = this.context.i18nContent.getLocale().code;
+        const locale = this.context.i18nContent.getCurrentLocale().code;
         return `T#${tenant}#L#${locale}#PB`;
     }
 

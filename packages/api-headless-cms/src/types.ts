@@ -1160,17 +1160,13 @@ export interface CmsStorageEntry extends CmsEntry {
  */
 export interface CmsModelManager {
     /**
-     * List entries in this content model.
-     */
-    list: (params?: CmsEntryListParams) => Promise<[CmsEntry[], CmsEntryMeta]>;
-    /**
      * List only published entries in the content model.
      */
-    listPublished: (params?: CmsEntryListParams) => Promise<[CmsEntry[], CmsEntryMeta]>;
+    listPublished: (params: CmsEntryListParams) => Promise<[CmsEntry[], CmsEntryMeta]>;
     /**
      * List latest entries in the content model. Used for administration.
      */
-    listLatest: (params?: CmsEntryListParams) => Promise<[CmsEntry[], CmsEntryMeta]>;
+    listLatest: (params: CmsEntryListParams) => Promise<[CmsEntry[], CmsEntryMeta]>;
     /**
      * Get a list of published entries by the ID list.
      */
@@ -1570,7 +1566,7 @@ export interface CmsEntryContext {
      */
     listEntries: (
         model: CmsModel,
-        params?: CmsEntryListParams
+        params: CmsEntryListParams
     ) => Promise<[CmsEntry[], CmsEntryMeta]>;
     /**
      * Lists latest entries. Used for manage API.
@@ -1610,6 +1606,11 @@ export interface CmsEntryContext {
      * Update existing entry.
      */
     updateEntry: (model: CmsModel, id: string, data?: Record<string, any>) => Promise<CmsEntry>;
+    /**
+     * Method that republishes entry with given identifier.
+     * @internal
+     */
+    republishEntry: (model: CmsModel, id: string) => Promise<CmsEntry>;
     /**
      * Delete only a certain revision of the entry.
      */
