@@ -1201,6 +1201,16 @@ export interface AfterModelCreateTopicParams {
     input: Partial<CmsModel>;
     model: CmsModel;
 }
+export interface BeforeModelCreateFromTopicParams {
+    input: Partial<CmsModel>;
+    original: CmsModel;
+    model: CmsModel;
+}
+export interface AfterModelCreateFromTopicParams {
+    input: Partial<CmsModel>;
+    original: CmsModel;
+    model: CmsModel;
+}
 export interface BeforeModelUpdateTopicParams {
     input: Partial<CmsModel>;
     original: CmsModel;
@@ -1252,11 +1262,14 @@ export interface CmsModelContext {
      */
     createModel: (data: CmsModelCreateInput) => Promise<CmsModel>;
     /**
+     * Create a content model from the given model - clone.
+     */
+    createModelFrom: (
+        modelId: string,
+        data: Omit<CmsModelCreateInput, "group">
+    ) => Promise<CmsModel>;
+    /**
      * Update content model without data validation. Used internally.
-     *
-     * @param model - existing content model
-     * @param data - data to be updated
-     *
      * @hidden
      */
     updateModelDirect: (params: CmsModelUpdateDirectParams) => Promise<CmsModel>;
@@ -1284,6 +1297,8 @@ export interface CmsModelContext {
      */
     onBeforeModelCreate: Topic<BeforeModelCreateTopicParams>;
     onAfterModelCreate: Topic<AfterModelCreateTopicParams>;
+    onBeforeModelCreateFrom: Topic<BeforeModelCreateFromTopicParams>;
+    onAfterModelCreateFrom: Topic<AfterModelCreateFromTopicParams>;
     onBeforeModelUpdate: Topic<BeforeModelUpdateTopicParams>;
     onAfterModelUpdate: Topic<AfterModelUpdateTopicParams>;
     onBeforeModelDelete: Topic<BeforeModelDeleteTopicParams>;
