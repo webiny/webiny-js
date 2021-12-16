@@ -2,11 +2,11 @@
   "extends": "../../../tsconfig.json",
   "include": ["src"],
   "references": [
-    { "path": "../../../../packages/api-page-builder" },
-    { "path": "../../../../packages/api-page-builder-so-ddb" },
-    { "path": "../../../../packages/db-dynamodb" },
-    { "path": "../../../../packages/handler-aws" },
-    { "path": "../../../../packages/handler-db" }
+    { "path": "../../../../packages/api-page-builder/tsconfig.build.json" },
+    { "path": "../../../../packages/api-page-builder-so-ddb/tsconfig.build.json" },
+    { "path": "../../../../packages/db-dynamodb/tsconfig.build.json" },
+    { "path": "../../../../packages/handler-aws/tsconfig.build.json" },
+    { "path": "../../../../packages/handler-db/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "paths": {

@@ -2,8 +2,8 @@
   "extends": "../../../tsconfig.json",
   "include": ["src"],
   "references": [
-    { "path": "../../../../packages/api-file-manager" },
-    { "path": "../../../../packages/handler-aws" }
+    { "path": "../../../../packages/api-file-manager/tsconfig.build.json" },
+    { "path": "../../../../packages/handler-aws/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "paths": {
