@@ -4,10 +4,11 @@ import {
     TransformCallable
 } from "~/plugins/CmsEntryElasticsearchQueryBuilderValueSearchPlugin";
 
-const createPath: CreatePathCallable<string> = params => {
-    const value = `${params.value || ""}`;
-    const target = value && value.includes("#") ? "id" : "entryId";
-    return `${params.field.fieldId}.${target}`;
+const createPath: CreatePathCallable<string> = ({ field, key }) => {
+    if (key && key.match("entryId") === null) {
+        return `${field.fieldId}.id`;
+    }
+    return `${field.fieldId}.entryId`;
 };
 
 const transform: TransformCallable<string> = params => {
