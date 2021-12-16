@@ -56,7 +56,7 @@ const menuStyles = css({
 
 const allowedTitleFieldTypes = ["text", "number"];
 
-const isFieldAllowedToBeTitle = (field: CmsEditorField, parent: any) => {
+const isFieldAllowedToBeTitle = (field: CmsEditorField, parent?: CmsEditorField) => {
     if (field.multipleValues || parent) {
         return false;
     } else if (allowedTitleFieldTypes.includes(field.type) === false) {
@@ -65,7 +65,13 @@ const isFieldAllowedToBeTitle = (field: CmsEditorField, parent: any) => {
     return true;
 };
 
-const Field = props => {
+export interface Props {
+    field: CmsEditorField;
+    onDelete: Function;
+    onEdit: Function;
+    parent?: CmsEditorField;
+}
+const Field: React.FC<Props> = props => {
     const { field, onEdit, parent } = props;
     const { showSnackbar } = useSnackbar();
     const { setData, data } = useContentModelEditor();
@@ -95,6 +101,9 @@ const Field = props => {
         return null;
     }
 
+    const isTitleField = field.fieldId === data.titleFieldId && !parent;
+    console.log(field.fieldId, isTitleField, parent);
+
     const lockedFields = data.lockedFields || [];
     return (
         <Fragment>
@@ -104,7 +113,7 @@ const Field = props => {
                     <Typography use={"caption"}>
                         {fieldPlugin.field.label}{" "}
                         {field.multipleValues && <>({t`multiple values`})</>}
-                        {field.fieldId === data.titleFieldId && <>({t`entry title`})</>}
+                        {isTitleField && <>({t`entry title`})</>}
                     </Typography>
                 </Info>
                 <Actions>
