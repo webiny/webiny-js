@@ -1,4 +1,4 @@
-const formatWebpackMessages = require("react-dev-utils/formatWebpackMessages");
+const formatWebpackMessages = require("../utils/formatWebpackMessages");
 const { getDuration } = require("../../utils");
 const chalk = require("chalk");
 
@@ -31,7 +31,7 @@ module.exports = options => {
                     warnings: []
                 });
 
-                return reject(new Error(messages.errors.join("\n\n")));
+                return reject(messages.errors.join("\n\n"));
             }
 
             if (stats.hasErrors()) {
@@ -50,7 +50,7 @@ module.exports = options => {
                 if (messages.errors.length > 1) {
                     messages.errors.length = 1;
                 }
-                return reject(new Error(messages.errors.join("\n\n")));
+                return reject(messages.errors.join("\n\n"));
             }
 
             logs && console.log(`Compiled successfully in ${chalk.green(duration()) + "s"}.`);

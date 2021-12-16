@@ -71,7 +71,15 @@ module.exports = async ({ projectApplication, inputs, context }) => {
                     if (type === "error") {
                         stats.error++;
                         context.error(current.name);
-                        console.log(message);
+
+                        if (Array.isArray(message)) {
+                            for (const msg of message) {
+                                console.log(msg);
+                            }
+                        } else {
+                            console.log(message);
+                        }
+
                         console.log();
                         return resolve({
                             package: current,
