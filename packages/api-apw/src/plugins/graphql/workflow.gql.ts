@@ -85,9 +85,9 @@ const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
         }
 
         enum ApwWorkflowStepTypes {
-            mandatory_blocking
-            mandatory_non_blocking
-            not_mandatory
+            mandatoryBlocking
+            mandatoryNonBlocking
+            notMandatory
         }
 
         enum ApwListWorkflowsSort {

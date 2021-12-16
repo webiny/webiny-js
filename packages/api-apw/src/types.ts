@@ -55,9 +55,9 @@ interface ApwWorkflowScope {
 }
 
 export enum ApwWorkflowStepTypes {
-    MANDATORY_BLOCKING = "mandatory_blocking",
-    MANDATORY_NON_BLOCKING = "mandatory_non_blocking",
-    NON_MANDATORY = "not_mandatory"
+    MANDATORY_BLOCKING = "mandatoryBlocking",
+    MANDATORY_NON_BLOCKING = "mandatoryNonBlocking",
+    NON_MANDATORY = "notMandatory"
 }
 
 export enum ApwContentReviewStatus {
