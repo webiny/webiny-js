@@ -8,10 +8,19 @@ export const createReviewerFromIdentity = () =>
          * A way to replicate our identity in CMS at some point.
          */
         context.security.onLogin.subscribe(async ({ identity }) => {
-            const [[reviewer]] = await context.advancedPublishingWorkflow.reviewer.list({
-                where: { identityId: identity.id },
-                limit: 1
-            });
+            let reviewer;
+            try {
+                [[reviewer]] = await context.advancedPublishingWorkflow.reviewer.list({
+                    where: { identityId: identity.id },
+                    limit: 1
+                });
+            } catch (e) {
+                if (e.message === "index_not_found_exception") {
+                    // Do nothing
+                } else {
+                    throw e;
+                }
+            }
 
             if (!reviewer) {
                 await context.advancedPublishingWorkflow.reviewer.create({

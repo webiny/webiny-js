@@ -33,6 +33,10 @@ const initializeContentReviewSteps = () =>
             if (model.modelId === contentReviewModel.modelId) {
                 // @ts-ignore
                 const workflowId = await getWorkflowIdFromContent(context, input.content);
+                if (!workflowId) {
+                    console.info(`Unable to find linked workflow.`);
+                    return;
+                }
                 const workflow = await context.advancedPublishingWorkflow.workflow.get(workflowId);
                 const workflowSteps = getValue(workflow, "steps");
 

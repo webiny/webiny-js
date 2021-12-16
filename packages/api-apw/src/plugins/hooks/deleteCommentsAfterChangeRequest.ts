@@ -22,14 +22,21 @@ const deleteCommentsAfterChangeRequest = () =>
                     /**
                      * Get all comments.
                      */
-                    [comments, meta] = await context.advancedPublishingWorkflow.comment.list({
-                        where: {
-                            changeRequest: {
-                                id: entry.id
-                            }
-                        },
-                        after: meta.cursor
-                    });
+                    try {
+                        [comments, meta] = await context.advancedPublishingWorkflow.comment.list({
+                            where: {
+                                changeRequest: {
+                                    id: entry.id
+                                }
+                            },
+                            after: meta.cursor
+                        });
+                    } catch (e) {
+                        meta.hasMoreItems = false;
+                        if (e.message !== "index_not_found_exception") {
+                            throw e;
+                        }
+                    }
 
                     /**
                      * Delete comments one by one.

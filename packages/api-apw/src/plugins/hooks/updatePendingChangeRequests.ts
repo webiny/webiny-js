@@ -35,26 +35,41 @@ const updatePendingChangeRequests = async ({
      */
     const entryId = stepSlug.split("#")[0];
 
-    const [[contentReviewEntry]] = await context.advancedPublishingWorkflow.contentReview.list({
-        where: {
-            entryId
+    let contentReviewEntry;
+    try {
+        [[contentReviewEntry]] = await context.advancedPublishingWorkflow.contentReview.list({
+            where: {
+                entryId
+            }
+        });
+    } catch (e) {
+        if (e.message !== "index_not_found_exception") {
+            throw e;
         }
-    });
+    }
     if (contentReviewEntry) {
         /**
          * Update "pendingChangeRequests" count of corresponding step in content review entry.
          */
-        await context.advancedPublishingWorkflow.contentReview.update(contentReviewEntry.id, {
-            steps: contentReviewEntry.values.steps.map(step => {
-                if (step.slug === stepSlug) {
-                    return {
-                        ...step,
-                        pendingChangeRequests: step.pendingChangeRequests + delta
-                    };
-                }
-                return step;
-            })
-        });
+        try {
+            await context.advancedPublishingWorkflow.contentReview.update(contentReviewEntry.id, {
+                steps: contentReviewEntry.values.steps.map(step => {
+                    if (step.slug === stepSlug) {
+                        return {
+                            ...step,
+                            pendingChangeRequests: step.pendingChangeRequests + delta
+                        };
+                    }
+                    return step;
+                })
+            });
+        } catch (e) {
+            if (e.code === "NOT_FOUND") {
+                console.info(`Trying to update a non-existing entry!`);
+            } else {
+                throw e;
+            }
+        }
     }
 };
 

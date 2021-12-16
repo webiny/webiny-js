@@ -81,9 +81,10 @@ export default () => [
                 return;
             }
             try {
-                // 2. List all workflows for app pageBuilder
-                const model = await context.cms.getModel("apwWorkflowModelDefinition");
-                const [entries] = await context.cms.listEntries(model, {
+                /*
+                 2. List all workflows for app pageBuilder
+                */
+                const [entries] = await context.advancedPublishingWorkflow.workflow.list({
                     where: { app: "pageBuilder" }
                 });
 
@@ -108,9 +109,7 @@ export default () => [
                     }
                 }
             } catch (e) {
-                console.log("Failed to assign workflow to page: ", page.id);
-                console.log(e.message);
-                console.log(e);
+                console.info(`Failed to assign workflow to page "${page.pid}".`, e.message, e.code);
             }
         }
     }),

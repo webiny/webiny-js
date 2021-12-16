@@ -29,13 +29,20 @@ const deleteChangeRequestsWithContentReview = () =>
                         /**
                          * Get all change requests.
                          */
-                        [changeRequests, meta] =
-                            await context.advancedPublishingWorkflow.changeRequest.list({
-                                where: {
-                                    step: slug
-                                },
-                                after: meta.cursor
-                            });
+                        try {
+                            [changeRequests, meta] =
+                                await context.advancedPublishingWorkflow.changeRequest.list({
+                                    where: {
+                                        step: slug
+                                    },
+                                    after: meta.cursor
+                                });
+                        } catch (e) {
+                            meta.hasMoreItems = false;
+                            if (e.message !== "index_not_found_exception") {
+                                throw e;
+                            }
+                        }
 
                         /**
                          * Delete change requests one by one.
