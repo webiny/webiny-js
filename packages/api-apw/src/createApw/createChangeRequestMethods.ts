@@ -7,15 +7,11 @@ export function createChangeRequestMethods(context: ApwContext): ApwChangeReques
         },
         async get(id) {
             const model = await this.getModel();
-            return await context.cms.getEntry(model, {
-                where: {
-                    id
-                }
-            });
+            return await context.cms.getEntryById(model, id);
         },
         async list(params) {
             const model = await this.getModel();
-            return await context.cms.listEntries(model, params);
+            return await context.cms.listLatestEntries(model, params);
         },
         async create(data) {
             const model = await this.getModel();
