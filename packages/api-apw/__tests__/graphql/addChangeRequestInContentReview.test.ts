@@ -40,7 +40,9 @@ describe(`Add change requests on a step in a "Content Review"`, () => {
         listChangeRequestsQuery,
         deleteContentReviewMutation,
         createContentReviewMutation,
-        getContentReviewQuery
+        getContentReviewQuery,
+        listContentReviewsQuery,
+        until
     } = gqlHandler;
 
     const createContentReview = async page => {
@@ -67,6 +69,30 @@ describe(`Add change requests on a step in a "Content Review"`, () => {
         });
         const changeRequested =
             createChangeRequestResponse.data.advancedPublishingWorkflow.createChangeRequest.data;
+
+        await until(
+            () => listContentReviewsQuery({}).then(([data]) => data),
+            response => {
+                const [entry] = response.data.advancedPublishingWorkflow.listContentReviews.data;
+                return (
+                    entry.steps.find(step => step.slug === step1.slug).pendingChangeRequests === 1
+                );
+            },
+            {
+                name: "Wait for updated entry to be available in list query"
+            }
+        );
+
+        await until(
+            () => listChangeRequestsQuery({}).then(([data]) => data),
+            response => {
+                const list = response.data.advancedPublishingWorkflow.listChangeRequests.data;
+                return list.length === 1;
+            },
+            {
+                name: "Wait for entry to be available in list query"
+            }
+        );
 
         /**
          * List all change requests for a given step in content review.
@@ -119,7 +145,38 @@ describe(`Add change requests on a step in a "Content Review"`, () => {
             changeRequests.push(
                 createChangeRequestResponse.data.advancedPublishingWorkflow.createChangeRequest.data
             );
+
+            await until(
+                () => listContentReviewsQuery({}).then(([data]) => data),
+                response => {
+                    const [entry] =
+                        response.data.advancedPublishingWorkflow.listContentReviews.data;
+                    return (
+                        entry.steps.find(step => step.slug === step2.slug).pendingChangeRequests ===
+                        i + 1
+                    );
+                },
+                {
+                    name: "Wait for updated entry to be available in list query"
+                }
+            );
         }
+
+        await until(
+            () =>
+                listChangeRequestsQuery({
+                    where: {
+                        step: step2.slug
+                    }
+                }).then(([data]) => data),
+            response => {
+                const list = response.data.advancedPublishingWorkflow.listChangeRequests.data;
+                return list.length === 2;
+            },
+            {
+                name: "Wait for updated entry to be available in list query"
+            }
+        );
 
         /**
          * List all changeRequests for a step2 in the content review.
@@ -305,6 +362,17 @@ describe(`Add change requests on a step in a "Content Review"`, () => {
             }
         }
 
+        await until(
+            () => listChangeRequestsQuery({}).then(([data]) => data),
+            response => {
+                const list = response.data.advancedPublishingWorkflow.listChangeRequests.data;
+                return list.length === 4;
+            },
+            {
+                name: "Wait for entry to be available in list query"
+            }
+        );
+
         /**
          * List all changeRequests.
          */
@@ -386,6 +454,18 @@ describe(`Add change requests on a step in a "Content Review"`, () => {
                 }
             }
         });
+
+        await until(
+            () => listChangeRequestsQuery({}).then(([data]) => data),
+            response => {
+                const list = response.data.advancedPublishingWorkflow.listChangeRequests.data;
+                return list.length === 2;
+            },
+            {
+                name: "Wait for entry to be available in list query"
+            }
+        );
+
         /**
          * List all the changeRequests associated with the deleted change request.
          */

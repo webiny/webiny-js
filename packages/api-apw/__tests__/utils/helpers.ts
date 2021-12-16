@@ -69,6 +69,15 @@ export const createIdentity = (identity?: SecurityIdentity) => {
 export const createSetupForContentReview = async gqlHandler => {
     const setupReviewer = async () => {
         await gqlHandler.securityIdentity.login();
+
+        await gqlHandler.until(
+            () => gqlHandler.reviewer.listReviewersQuery({}).then(([data]) => data),
+            response => response.data.advancedPublishingWorkflow.listReviewers.data.length === 1,
+            {
+                name: "Wait for listReviewer query"
+            }
+        );
+
         const [listReviewersResponse] = await gqlHandler.reviewer.listReviewersQuery({});
         const [reviewer] = listReviewersResponse.data.advancedPublishingWorkflow.listReviewers.data;
         return reviewer;
@@ -103,6 +112,18 @@ export const createSetupForContentReview = async gqlHandler => {
 
     const setup = async () => {
         const workflow = await setupWorkflow();
+
+        await gqlHandler.until(
+            () => gqlHandler.listWorkflowsQuery({}).then(([data]) => data),
+            response => {
+                const list = response.data.advancedPublishingWorkflow.listWorkflows.data;
+                return list.length === 1;
+            },
+            {
+                name: "Wait for workflow entry to be available in list query before creating page."
+            }
+        );
+
         const page = await setupPage();
 
         return {

@@ -8,7 +8,7 @@ describe("Reviewer crud test", () => {
         path: "manage/en-US"
     };
 
-    const { securityIdentity, reviewer } = useContentGqlHandler({
+    const { securityIdentity, reviewer, until } = useContentGqlHandler({
         ...options,
         plugins: [defaultIdentity()]
     });
@@ -33,7 +33,21 @@ describe("Reviewer crud test", () => {
                 }
             }
         });
-        // Logged in user should be created in the system as reviewer.
+
+        await until(
+            () => reviewer.listReviewersQuery({}).then(([data]) => data),
+            response => {
+                const list = response.data.advancedPublishingWorkflow.listReviewers.data;
+                return list.length === 1;
+            },
+            {
+                name: "Wait for listReviewers query"
+            }
+        );
+
+        /**
+         * Should created a reviewer entry after login.
+         */
         const [listReviewersResponse] = await reviewer.listReviewersQuery({});
         expect(listReviewersResponse).toEqual({
             data: {
@@ -63,9 +77,25 @@ describe("Reviewer crud test", () => {
                 }
             }
         });
-        // Login in with another identity.
+        /*
+         * Login with another identity.
+         */
         await securityIdentityRoot.login();
-        // System should now have 2 reviewers
+
+        await until(
+            () => reviewer.listReviewersQuery({}).then(([data]) => data),
+            response => {
+                const list = response.data.advancedPublishingWorkflow.listReviewers.data;
+                return list.length === 2;
+            },
+            {
+                name: "Wait for listReviewers query"
+            }
+        );
+
+        /**
+         * Should now have 2 reviewers.
+         */
         const [listReviewersAgainResponse] = await reviewer.listReviewersQuery({});
         expect(listReviewersAgainResponse).toEqual({
             data: {
@@ -123,7 +153,21 @@ describe("Reviewer crud test", () => {
                 }
             }
         });
-        // Logged in user should be created in the system as reviewer.
+
+        await until(
+            () => reviewer.listReviewersQuery({}).then(([data]) => data),
+            response => {
+                const list = response.data.advancedPublishingWorkflow.listReviewers.data;
+                return list.length === 1;
+            },
+            {
+                name: "Wait for listReviewers query"
+            }
+        );
+
+        /**
+         * Should created a reviewer entry after login.
+         */
         const [listReviewersResponse] = await reviewer.listReviewersQuery({});
         expect(listReviewersResponse).toEqual({
             data: {
@@ -153,9 +197,25 @@ describe("Reviewer crud test", () => {
                 }
             }
         });
-        // Login in with another identity.
+        /*
+         * Login again with same identity.
+         */
         await securityIdentity.login();
-        // System should now have 2 reviewers
+
+        await until(
+            () => reviewer.listReviewersQuery({}).then(([data]) => data),
+            response => {
+                const list = response.data.advancedPublishingWorkflow.listReviewers.data;
+                return list.length === 1;
+            },
+            {
+                name: "Wait for listReviewers query"
+            }
+        );
+
+        /*
+         * Should not have 2 reviewers.
+         */
         const [listReviewersAgainResponse] = await reviewer.listReviewersQuery({});
         expect(listReviewersAgainResponse).toEqual({
             data: {

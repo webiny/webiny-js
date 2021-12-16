@@ -15,7 +15,8 @@ describe("Content Review crud test", () => {
         createContentReviewMutation,
         deleteContentReviewMutation,
         listContentReviewsQuery,
-        updateContentReviewMutation
+        updateContentReviewMutation,
+        until
     } = gqlHandler;
 
     const setup = async () => {
@@ -24,25 +25,6 @@ describe("Content Review crud test", () => {
 
     test(`should able to create, update, get, list and delete "Content Review"`, async () => {
         const { page, workflow } = await setup();
-
-        /*
-         Should return error in case of no entry found.
-        */
-        const [getContentReviewResponse] = await getContentReviewQuery({ id: "123" });
-        expect(getContentReviewResponse).toEqual({
-            data: {
-                advancedPublishingWorkflow: {
-                    getContentReview: {
-                        data: null,
-                        error: {
-                            code: "NOT_FOUND",
-                            data: null,
-                            message: "Entry not found!"
-                        }
-                    }
-                }
-            }
-        });
         /*
          Create a content review entry.
         */
@@ -93,6 +75,15 @@ describe("Content Review crud test", () => {
                 }
             }
         });
+
+        await until(
+            () => getContentReviewQuery({ id: createdContentReview.id }).then(([data]) => data),
+            response => response.data.advancedPublishingWorkflow.getContentReview.data !== null,
+            {
+                name: "Wait for getContentReview query"
+            }
+        );
+
         /*
          Now that we have a content review entry, we should be able to get it
         */
@@ -179,10 +170,22 @@ describe("Content Review crud test", () => {
             }
         });
 
+        await until(
+            () => listContentReviewsQuery({}).then(([data]) => data),
+            response => {
+                const [updatedEntry] =
+                    response.data.advancedPublishingWorkflow.listContentReviews.data;
+                return updatedEntry && updatedEntry.savedOn !== createdContentReview.savedOn;
+            },
+            {
+                name: "Wait for updated entry to be available in list query"
+            }
+        );
+
         /*
          Let's list all workflow entries there should be only one
         */
-        const [listContentReviewsResponse] = await listContentReviewsQuery({ where: {} });
+        const [listContentReviewsResponse] = await listContentReviewsQuery({});
         expect(listContentReviewsResponse).toEqual({
             data: {
                 advancedPublishingWorkflow: {
@@ -242,6 +245,17 @@ describe("Content Review crud test", () => {
                 }
             }
         });
+
+        await until(
+            () => listContentReviewsQuery({}).then(([data]) => data),
+            response => {
+                const list = response.data.advancedPublishingWorkflow.listContentReviews.data;
+                return list.length === 0;
+            },
+            {
+                name: "Wait for entry to be removed from list query"
+            }
+        );
 
         /*
          Now that we've deleted the only entry we had, we should get empty list as response from "listWorkflows"

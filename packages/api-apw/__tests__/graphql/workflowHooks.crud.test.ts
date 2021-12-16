@@ -37,6 +37,15 @@ describe("Workflow assignment to a PB Page", () => {
 
     const setupReviewer = async () => {
         await login();
+
+        await until(
+            () => reviewerGQL.listReviewersQuery({}).then(([data]) => data),
+            response => response.data.advancedPublishingWorkflow.listReviewers.data.length === 1,
+            {
+                name: "Wait for listReviewers"
+            }
+        );
+
         const [listReviewersResponse] = await reviewerGQL.listReviewersQuery({});
         const [reviewer] = listReviewersResponse.data.advancedPublishingWorkflow.listReviewers.data;
         return reviewer;
@@ -69,9 +78,7 @@ describe("Workflow assignment to a PB Page", () => {
 
         await until(
             () => listWorkflowsQuery({}).then(([data]) => data),
-            listWorkflowsResponse =>
-                listWorkflowsResponse.data.advancedPublishingWorkflow.listWorkflows.data.length ===
-                5
+            response => response.data.advancedPublishingWorkflow.listWorkflows.data.length === 5
         );
         /**
          * Create a page and see what workflow has been assigned to it
@@ -114,9 +121,7 @@ describe("Workflow assignment to a PB Page", () => {
 
         await until(
             () => listWorkflowsQuery({}).then(([data]) => data),
-            listWorkflowsResponse =>
-                listWorkflowsResponse.data.advancedPublishingWorkflow.listWorkflows.data.length ===
-                5
+            response => response.data.advancedPublishingWorkflow.listWorkflows.data.length === 5
         );
         /**
          * Create a page and see what workflow has been assigned to it
@@ -147,9 +152,7 @@ describe("Workflow assignment to a PB Page", () => {
 
         await until(
             () => listWorkflowsQuery({}).then(([data]) => data),
-            listWorkflowsResponse =>
-                listWorkflowsResponse.data.advancedPublishingWorkflow.listWorkflows.data.length ===
-                1
+            response => response.data.advancedPublishingWorkflow.listWorkflows.data.length === 1
         );
 
         // List workflows
@@ -214,9 +217,7 @@ describe("Workflow assignment to a PB Page", () => {
 
         await until(
             () => listWorkflowsQuery({}).then(([data]) => data),
-            listWorkflowsResponse =>
-                listWorkflowsResponse.data.advancedPublishingWorkflow.listWorkflows.data.length ===
-                1
+            response => response.data.advancedPublishingWorkflow.listWorkflows.data.length === 1
         );
         /**
          * Now page should have this workflow assigned to it.
@@ -227,6 +228,7 @@ describe("Workflow assignment to a PB Page", () => {
         /**
          * Let's try creating one more workflow with same scope.
          */
+
         /*
          Create a workflow.
         */

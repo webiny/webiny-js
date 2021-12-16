@@ -35,7 +35,8 @@ describe("Comment on a change request test", () => {
         createChangeRequestMutation,
         createCommentMutation,
         listCommentsQuery,
-        deleteChangeRequestMutation
+        deleteChangeRequestMutation,
+        until
     } = useContentGqlHandler({
         ...options
     });
@@ -87,6 +88,14 @@ describe("Comment on a change request test", () => {
                 }
             }
         });
+
+        await until(
+            () => listCommentsQuery({}).then(([data]) => data),
+            response => response.data.advancedPublishingWorkflow.listComments.data.length === 1,
+            {
+                name: "Wait for entry to be available via list query"
+            }
+        );
 
         /**
          * List all comments for a given change request.
@@ -145,6 +154,14 @@ describe("Comment on a change request test", () => {
         const secondComment =
             anotherCreateCommentResponse.data.advancedPublishingWorkflow.createComment.data;
 
+        await until(
+            () => listCommentsQuery({}).then(([data]) => data),
+            response => response.data.advancedPublishingWorkflow.listComments.data.length === 2,
+            {
+                name: "Wait for entry to be available via list query"
+            }
+        );
+
         /**
          * Again, list all comments for a given change request.
          */
@@ -153,7 +170,8 @@ describe("Comment on a change request test", () => {
                 changeRequest: {
                     id: changeRequested.id
                 }
-            }
+            },
+            sort: ["createdOn_DESC"]
         });
         expect(listCommentsResponse2).toEqual({
             data: {
@@ -239,10 +257,18 @@ describe("Comment on a change request test", () => {
             }
         }
 
+        await until(
+            () => listCommentsQuery({}).then(([data]) => data),
+            response => response.data.advancedPublishingWorkflow.listComments.data.length === 4,
+            {
+                name: "Wait for entry to be available via list query"
+            }
+        );
+
         /**
          * List all comments.
          */
-        let [listCommentsResponse] = await listCommentsQuery({});
+        let [listCommentsResponse] = await listCommentsQuery({ sort: ["createdOn_DESC"] });
         expect(listCommentsResponse).toEqual({
             data: {
                 advancedPublishingWorkflow: {
@@ -339,6 +365,22 @@ describe("Comment on a change request test", () => {
                 }
             }
         });
+
+        await until(
+            () =>
+                listCommentsQuery({
+                    where: {
+                        changeRequest: {
+                            id: changesRequested[0].id
+                        }
+                    }
+                }).then(([data]) => data),
+            response => response.data.advancedPublishingWorkflow.listComments.data.length === 0,
+            {
+                name: "Wait for entry to be removed from list query"
+            }
+        );
+
         /**
          * List all the comments associated with the deleted change request.
          */
@@ -368,7 +410,9 @@ describe("Comment on a change request test", () => {
         /**
          * List all the comments without any filters.
          */
-        [listCommentsResponse] = await listCommentsQuery({});
+        [listCommentsResponse] = await listCommentsQuery({
+            sort: ["createdOn_DESC"]
+        });
         expect(listCommentsResponse).toEqual({
             data: {
                 advancedPublishingWorkflow: {

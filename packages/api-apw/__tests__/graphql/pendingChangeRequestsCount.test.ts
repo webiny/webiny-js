@@ -14,7 +14,9 @@ describe(`Pending change requests count test`, () => {
         createChangeRequestMutation,
         createContentReviewMutation,
         getContentReviewQuery,
-        updateChangeRequestMutation
+        listContentReviewsQuery,
+        updateChangeRequestMutation,
+        until
     } = gqlHandler;
 
     const createContentReview = async page => {
@@ -41,6 +43,19 @@ describe(`Pending change requests count test`, () => {
         });
         const changeRequested =
             createChangeRequestResponse.data.advancedPublishingWorkflow.createChangeRequest.data;
+
+        await until(
+            () => listContentReviewsQuery({}).then(([data]) => data),
+            response => {
+                const [entry] = response.data.advancedPublishingWorkflow.listContentReviews.data;
+                return (
+                    entry.steps.find(step => step.slug === step1.slug).pendingChangeRequests === 1
+                );
+            },
+            {
+                name: "Wait for updated entry to be available in list query"
+            }
+        );
 
         /**
          * Should have 1 pending change requests for step 1 and 0 pending change requests for step 2.
@@ -109,6 +124,23 @@ describe(`Pending change requests count test`, () => {
 
             changeRequests.push(
                 createChangeRequestResponse.data.advancedPublishingWorkflow.createChangeRequest.data
+            );
+
+            await until(
+                () => listContentReviewsQuery({}).then(([data]) => data),
+                response => {
+                    const [entry] =
+                        response.data.advancedPublishingWorkflow.listContentReviews.data;
+                    return (
+                        entry.steps.find(step => step.slug === step1.slug).pendingChangeRequests ===
+                            1 &&
+                        entry.steps.find(step => step.slug === step2.slug).pendingChangeRequests ===
+                            i + 1
+                    );
+                },
+                {
+                    name: "Wait for updated entry to be available in list query"
+                }
             );
         }
 

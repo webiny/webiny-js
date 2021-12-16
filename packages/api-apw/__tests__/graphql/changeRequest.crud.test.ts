@@ -69,36 +69,19 @@ describe("ChangeRequest crud test", () => {
         listChangeRequestsQuery,
         createChangeRequestMutation,
         updateChangeRequestMutation,
-        deleteChangeRequestMutation
+        deleteChangeRequestMutation,
+        until
     } = useContentGqlHandler({
         ...options
     });
     test(`should able to create, update, get, list and delete a "change request"`, async () => {
-        /*
-         * Should return error in case of no entry found.
-         */
-        const [getChangeRequestResponse] = await getChangeRequestQuery({ id: "123" });
-        expect(getChangeRequestResponse).toEqual({
-            data: {
-                advancedPublishingWorkflow: {
-                    getChangeRequest: {
-                        data: null,
-                        error: {
-                            code: "NOT_FOUND",
-                            data: null,
-                            message: "Entry not found!"
-                        }
-                    }
-                }
-            }
-        });
         /*
          * Create a new entry.
          */
         const [createChangeRequestResponse] = await createChangeRequestMutation({
             data: changeRequested
         });
-        const { id } =
+        const createdChangeRequest =
             createChangeRequestResponse.data.advancedPublishingWorkflow.createChangeRequest.data;
 
         expect(createChangeRequestResponse).toEqual({
@@ -122,10 +105,21 @@ describe("ChangeRequest crud test", () => {
                 }
             }
         });
+
+        await until(
+            () => getChangeRequestQuery({ id: createdChangeRequest.id }).then(([data]) => data),
+            response => response.data.advancedPublishingWorkflow.getChangeRequest.data !== null,
+            {
+                name: "Wait for getChangeRequest query"
+            }
+        );
+
         /**
          *  Now that we have a entry, we should be able to get it.
          */
-        const [getChangeRequestByIdResponse] = await getChangeRequestQuery({ id: id });
+        const [getChangeRequestByIdResponse] = await getChangeRequestQuery({
+            id: createdChangeRequest.id
+        });
         expect(getChangeRequestByIdResponse).toEqual({
             data: {
                 advancedPublishingWorkflow: {
@@ -152,7 +146,7 @@ describe("ChangeRequest crud test", () => {
          * Let's update the entry.
          */
         const [updateChangeRequestResponse] = await updateChangeRequestMutation({
-            id,
+            id: createdChangeRequest.id,
             data: {
                 body: updatedRichText,
                 resolved: true
@@ -181,10 +175,22 @@ describe("ChangeRequest crud test", () => {
             }
         });
 
+        await until(
+            () => listChangeRequestsQuery({}).then(([data]) => data),
+            response => {
+                const [updatedItem] =
+                    response.data.advancedPublishingWorkflow.listChangeRequests.data;
+                return updatedItem && createdChangeRequest.savedOn !== updatedItem.savedOn;
+            },
+            {
+                name: "Wait for updated entry to be available via listChangeRequests query"
+            }
+        );
+
         /**
          * Let's list all entries should return only one.
          */
-        const [listChangeRequestsResponse] = await listChangeRequestsQuery({ where: {} });
+        const [listChangeRequestsResponse] = await listChangeRequestsQuery({});
         expect(listChangeRequestsResponse).toEqual({
             data: {
                 advancedPublishingWorkflow: {
@@ -218,7 +224,9 @@ describe("ChangeRequest crud test", () => {
         /**
          *  Delete the only entry we have.
          */
-        const [deleteChangeRequestResponse] = await deleteChangeRequestMutation({ id });
+        const [deleteChangeRequestResponse] = await deleteChangeRequestMutation({
+            id: createdChangeRequest.id
+        });
         expect(deleteChangeRequestResponse).toEqual({
             data: {
                 advancedPublishingWorkflow: {
@@ -230,10 +238,21 @@ describe("ChangeRequest crud test", () => {
             }
         });
 
+        await until(
+            () => listChangeRequestsQuery({}).then(([data]) => data),
+            response => {
+                const list = response.data.advancedPublishingWorkflow.listChangeRequests.data;
+                return list.length === 0;
+            },
+            {
+                name: "Wait for empty list after deleting entry"
+            }
+        );
+
         /**
          * Now that we've deleted the only entry we had, we should get empty list as response.
          */
-        const [listChangeRequestsAgainResponse] = await listChangeRequestsQuery({ where: {} });
+        const [listChangeRequestsAgainResponse] = await listChangeRequestsQuery({});
         expect(listChangeRequestsAgainResponse).toEqual({
             data: {
                 advancedPublishingWorkflow: {

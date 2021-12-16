@@ -13,7 +13,8 @@ describe("Workflow crud test", () => {
         updateWorkflowMutation,
         deleteWorkflowMutation,
         securityIdentity,
-        reviewer: reviewerGQL
+        reviewer: reviewerGQL,
+        until
     } = useContentGqlHandler({
         ...options
     });
@@ -24,6 +25,18 @@ describe("Workflow crud test", () => {
 
     const setupReviewer = async () => {
         await login();
+
+        await until(
+            () => reviewerGQL.listReviewersQuery({}).then(([data]) => data),
+            response => {
+                const list = response.data.advancedPublishingWorkflow.listReviewers.data;
+                return list.length >= 1;
+            },
+            {
+                name: "Wait for listReviewers"
+            }
+        );
+
         const [listReviewersResponse] = await reviewerGQL.listReviewersQuery({});
         const [reviewer] = listReviewersResponse.data.advancedPublishingWorkflow.listReviewers.data;
         return reviewer;
@@ -31,24 +44,6 @@ describe("Workflow crud test", () => {
 
     test("should able to create, update, get, list and delete a workflow", async () => {
         const reviewer = await setupReviewer();
-        /*
-         * Should return error in case of no entry found.
-         */
-        const [getWorkflowResponse] = await getWorkflowQuery({ id: "123" });
-        expect(getWorkflowResponse).toEqual({
-            data: {
-                advancedPublishingWorkflow: {
-                    getWorkflow: {
-                        data: null,
-                        error: {
-                            code: "NOT_FOUND",
-                            data: null,
-                            message: "Entry not found!"
-                        }
-                    }
-                }
-            }
-        });
         /*
          * Create a new workflow entry.
          */
@@ -79,6 +74,15 @@ describe("Workflow crud test", () => {
                 }
             }
         });
+
+        await until(
+            () => getWorkflowQuery({ id: workflow.id }).then(([data]) => data),
+            response => response.data.advancedPublishingWorkflow.getWorkflow.data !== null,
+            {
+                name: "Wait for getWorkflow query"
+            }
+        );
+
         /**
          *  Now that we have a workflow entry, we should be able to get it.
          */
@@ -103,6 +107,25 @@ describe("Workflow crud test", () => {
                 }
             }
         });
+        /*
+         * Should return error in case of no entry found.
+         */
+        const [getWorkflowResponse] = await getWorkflowQuery({ id: "123" });
+        expect(getWorkflowResponse).toEqual({
+            data: {
+                advancedPublishingWorkflow: {
+                    getWorkflow: {
+                        data: null,
+                        error: {
+                            code: "NOT_FOUND",
+                            data: null,
+                            message: expect.any(String)
+                        }
+                    }
+                }
+            }
+        });
+
         /**
          * Let's update the entry.
          */
@@ -145,10 +168,21 @@ describe("Workflow crud test", () => {
             }
         });
 
+        await until(
+            () => listWorkflowsQuery({}).then(([data]) => data),
+            response => {
+                const [updatedEntry] = response.data.advancedPublishingWorkflow.listWorkflows.data;
+                return updatedEntry && workflow.savedOn !== updatedEntry.savedOn;
+            },
+            {
+                name: "Wait for listWorkflows query after update"
+            }
+        );
+
         /**
          * Let's list all workflow entries should return only one.
          */
-        const [listWorkflowsResponse] = await listWorkflowsQuery({ where: {} });
+        const [listWorkflowsResponse] = await listWorkflowsQuery({});
         expect(listWorkflowsResponse).toEqual({
             data: {
                 advancedPublishingWorkflow: {
@@ -195,10 +229,21 @@ describe("Workflow crud test", () => {
             }
         });
 
+        await until(
+            () => listWorkflowsQuery({}).then(([data]) => data),
+            response => {
+                const list = response.data.advancedPublishingWorkflow.listWorkflows.data;
+                return list.length === 0;
+            },
+            {
+                name: "Wait for listWorkflows query after delete"
+            }
+        );
+
         /**
          * Now that we've deleted the only entry we had, we should get empty list as response from "listWorkflows".
          */
-        const [listWorkflowsAgainResponse] = await listWorkflowsQuery({ where: {} });
+        const [listWorkflowsAgainResponse] = await listWorkflowsQuery({});
         expect(listWorkflowsAgainResponse).toEqual({
             data: {
                 advancedPublishingWorkflow: {
@@ -232,6 +277,17 @@ describe("Workflow crud test", () => {
                 createWorkflowResponse.data.advancedPublishingWorkflow.createWorkflow.data
             );
         }
+
+        await until(
+            () => listWorkflowsQuery({}).then(([data]) => data),
+            response => {
+                const list = response.data.advancedPublishingWorkflow.listWorkflows.data;
+                return list.length === 5;
+            },
+            {
+                name: "Wait for listWorkflows query"
+            }
+        );
 
         /*
          * Should list all five workflows.

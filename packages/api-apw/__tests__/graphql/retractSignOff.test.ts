@@ -14,7 +14,8 @@ describe("Retract sign off for a step in content review process", function () {
         getContentReviewQuery,
         createContentReviewMutation,
         provideSignOffMutation,
-        retractSignOffMutation
+        retractSignOffMutation,
+        until
     } = gqlHandler;
 
     const setup = async () => {
@@ -38,6 +39,16 @@ describe("Retract sign off for a step in content review process", function () {
             createContentReviewResponse.data.advancedPublishingWorkflow.createContentReview.data;
 
         const [step1] = createdContentReview.steps;
+
+        let previousSavedOn = createdContentReview.savedOn;
+
+        await until(
+            () => getContentReviewQuery({ id: createdContentReview.id }).then(([data]) => data),
+            response => response.data.advancedPublishingWorkflow.getContentReview.data !== null,
+            {
+                name: "Wait for entry to be available in get query"
+            }
+        );
 
         /**
          * Should return error when retracting sign-off of a step for which sign-off wasn't provided.
@@ -78,6 +89,23 @@ describe("Retract sign off for a step in content review process", function () {
                 }
             }
         });
+
+        await until(
+            () => getContentReviewQuery({ id: createdContentReview.id }).then(([data]) => data),
+            response => {
+                const entry = response.data.advancedPublishingWorkflow.getContentReview.data;
+
+                const hasChanged = entry && entry.savedOn !== previousSavedOn;
+                if (hasChanged) {
+                    previousSavedOn = entry.savedOn;
+                    return true;
+                }
+                return false;
+            },
+            {
+                name: "Wait for updated entry to be available in get query"
+            }
+        );
 
         /**
          * Now that we've provided sign-off for step1, step2 should have status "active" because step1 is done
@@ -155,6 +183,23 @@ describe("Retract sign off for a step in content review process", function () {
                 }
             }
         });
+
+        await until(
+            () => getContentReviewQuery({ id: createdContentReview.id }).then(([data]) => data),
+            response => {
+                const entry = response.data.advancedPublishingWorkflow.getContentReview.data;
+
+                const hasChanged = entry && entry.savedOn !== previousSavedOn;
+                if (hasChanged) {
+                    previousSavedOn = entry.savedOn;
+                    return true;
+                }
+                return false;
+            },
+            {
+                name: "Wait for updated entry to be available in get query"
+            }
+        );
 
         /**
          * Now that we've retracted sign-off for step1, step2 should have status "inactive".
@@ -240,6 +285,14 @@ describe("Retract sign off for a step in content review process", function () {
             createContentReviewResponse.data.advancedPublishingWorkflow.createContentReview.data;
 
         const [step1] = createdContentReview.steps;
+
+        await until(
+            () => getContentReviewQuery({ id: createdContentReview.id }).then(([data]) => data),
+            response => response.data.advancedPublishingWorkflow.getContentReview.data !== null,
+            {
+                name: "Wait for entry to be available in get query"
+            }
+        );
 
         await provideSignOffMutation({
             id: createdContentReview.id,

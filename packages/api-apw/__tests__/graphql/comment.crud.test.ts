@@ -62,7 +62,8 @@ describe("Comment crud test", () => {
         createCommentMutation,
         updateCommentMutation,
         deleteCommentMutation,
-        createChangeRequestMutation
+        createChangeRequestMutation,
+        until
     } = useContentGqlHandler({
         ...options
     });
@@ -80,25 +81,7 @@ describe("Comment crud test", () => {
     test("should able to create, update, get, list and delete a comment", async () => {
         const changeRequest = await setupChangeRequest();
         /*
-         * Should return error in case of no entry found.
-         */
-        const [getCommentResponse] = await getCommentQuery({ id: "123" });
-        expect(getCommentResponse).toEqual({
-            data: {
-                advancedPublishingWorkflow: {
-                    getComment: {
-                        data: null,
-                        error: {
-                            code: "NOT_FOUND",
-                            data: null,
-                            message: "Entry not found!"
-                        }
-                    }
-                }
-            }
-        });
-        /*
-         * Create a new workflow entry.
+         * Create a new entry.
          */
         const [createCommentResponse] = await createCommentMutation({
             data: {
@@ -108,7 +91,7 @@ describe("Comment crud test", () => {
                 }
             }
         });
-        const { id } = createCommentResponse.data.advancedPublishingWorkflow.createComment.data;
+        const comment = createCommentResponse.data.advancedPublishingWorkflow.createComment.data;
 
         expect(createCommentResponse).toEqual({
             data: {
@@ -135,10 +118,19 @@ describe("Comment crud test", () => {
                 }
             }
         });
+
+        await until(
+            () => getCommentQuery({ id: comment.id }).then(([data]) => data),
+            response => response.data.advancedPublishingWorkflow.getComment.data !== null,
+            {
+                name: "Wait for getComment query"
+            }
+        );
+
         /**
-         *  Now that we have a workflow entry, we should be able to get it.
+         *  Now that we have an entry, we should be able to get it.
          */
-        const [getCommentByIdResponse] = await getCommentQuery({ id: id });
+        const [getCommentByIdResponse] = await getCommentQuery({ id: comment.id });
         expect(getCommentByIdResponse).toEqual({
             data: {
                 advancedPublishingWorkflow: {
@@ -165,11 +157,30 @@ describe("Comment crud test", () => {
             }
         });
 
+        /*
+         * Should return error in case of no entry found.
+         */
+        const [getCommentResponse] = await getCommentQuery({ id: "123" });
+        expect(getCommentResponse).toEqual({
+            data: {
+                advancedPublishingWorkflow: {
+                    getComment: {
+                        data: null,
+                        error: {
+                            code: "NOT_FOUND",
+                            data: null,
+                            message: `Entry by ID "123" not found.`
+                        }
+                    }
+                }
+            }
+        });
+
         /**
          * Let's update the entry.
          */
         const [updateCommentResponse] = await updateCommentMutation({
-            id,
+            id: comment.id,
             data: {
                 body: updatedRichText
             }
@@ -199,6 +210,17 @@ describe("Comment crud test", () => {
                 }
             }
         });
+
+        await until(
+            () => listCommentsQuery({}).then(([data]) => data),
+            response => {
+                const [updatedItem] = response.data.advancedPublishingWorkflow.listComments.data;
+                return updatedItem && comment.savedOn !== updatedItem.savedOn;
+            },
+            {
+                name: "Wait for updated entry to be available via listReviewers query"
+            }
+        );
 
         /**
          * Let's list all workflow entries should return only one.
@@ -238,9 +260,9 @@ describe("Comment crud test", () => {
         });
 
         /**
-         *  Delete the only workflow entry we have.
+         *  Delete the only entry we have.
          */
-        const [deleteCommentResponse] = await deleteCommentMutation({ id });
+        const [deleteCommentResponse] = await deleteCommentMutation({ id: comment.id });
         expect(deleteCommentResponse).toEqual({
             data: {
                 advancedPublishingWorkflow: {
@@ -252,10 +274,21 @@ describe("Comment crud test", () => {
             }
         });
 
+        await until(
+            () => listCommentsQuery({}).then(([data]) => data),
+            response => {
+                const list = response.data.advancedPublishingWorkflow.listComments.data;
+                return list.length === 0;
+            },
+            {
+                name: "Wait for empty list via listReviewers query after deleting entry"
+            }
+        );
+
         /**
          * Now that we've deleted the only entry we had, we should get empty list as response from "listComments".
          */
-        const [listCommentsAgainResponse] = await listCommentsQuery({ where: {} });
+        const [listCommentsAgainResponse] = await listCommentsQuery({});
         expect(listCommentsAgainResponse).toEqual({
             data: {
                 advancedPublishingWorkflow: {

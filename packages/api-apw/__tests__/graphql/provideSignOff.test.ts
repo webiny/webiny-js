@@ -10,7 +10,7 @@ describe("Provide sign off for a step in content review process", function () {
     const gqlHandler = useContentGqlHandler({
         ...options
     });
-    const { getContentReviewQuery, createContentReviewMutation, provideSignOffMutation } =
+    const { getContentReviewQuery, createContentReviewMutation, provideSignOffMutation, until } =
         gqlHandler;
 
     const setup = async () => {
@@ -34,6 +34,16 @@ describe("Provide sign off for a step in content review process", function () {
             createContentReviewResponse.data.advancedPublishingWorkflow.createContentReview.data;
 
         const [step1, , step3] = createdContentReview.steps;
+        let previousSavedOn = createdContentReview.savedOn;
+
+        await until(
+            () => getContentReviewQuery({ id: createdContentReview.id }).then(([data]) => data),
+            response => response.data.advancedPublishingWorkflow.getContentReview.data !== null,
+            {
+                name: "Wait for entry to be available in get query"
+            }
+        );
+
         /**
          * Should return error while providing sign-off for "inactive" step.
          */
@@ -73,6 +83,23 @@ describe("Provide sign off for a step in content review process", function () {
                 }
             }
         });
+
+        await until(
+            () => getContentReviewQuery({ id: createdContentReview.id }).then(([data]) => data),
+            response => {
+                const entry = response.data.advancedPublishingWorkflow.getContentReview.data;
+
+                const hasChanged = entry && entry.savedOn !== previousSavedOn;
+                if (hasChanged) {
+                    previousSavedOn = entry.savedOn;
+                    return true;
+                }
+                return false;
+            },
+            {
+                name: "Wait for updated entry to be available in get query"
+            }
+        );
 
         /**
          * Now that we've provided sign-off for step1, step2 should have status "active" because step1 is done
@@ -162,6 +189,18 @@ describe("Provide sign off for a step in content review process", function () {
             createContentReviewResponse.data.advancedPublishingWorkflow.createContentReview.data;
 
         const [step1] = createdContentReview.steps;
+
+        await until(
+            () =>
+                gqlHandlerForIdentityA
+                    .getContentReviewQuery({ id: createdContentReview.id })
+                    .then(([data]) => data),
+            response => response.data.advancedPublishingWorkflow.getContentReview.data !== null,
+            {
+                name: "Wait for entry to be available in get query"
+            }
+        );
+
         /**
          * Should return error while providing sign-off for a step by a non-reviewer.
          */
@@ -203,6 +242,16 @@ describe("Provide sign off for a step in content review process", function () {
             createContentReviewResponse.data.advancedPublishingWorkflow.createContentReview.data;
 
         const [step1, step2, step3] = createdContentReview.steps;
+
+        await until(
+            () => getContentReviewQuery({ id: createdContentReview.id }).then(([data]) => data),
+            response => response.data.advancedPublishingWorkflow.getContentReview.data !== null,
+            {
+                name: "Wait for entry to be available in get query"
+            }
+        );
+        let previousSavedOn = createdContentReview.savedOn;
+
         /**
          * Should return error while providing sign off without completing "mandatory_blocking" step.
          */
@@ -231,6 +280,22 @@ describe("Provide sign off for a step in content review process", function () {
             id: createdContentReview.id,
             step: step1.slug
         });
+
+        await until(
+            () => getContentReviewQuery({ id: createdContentReview.id }).then(([data]) => data),
+            response => {
+                const entry = response.data.advancedPublishingWorkflow.getContentReview.data;
+                const hasChanged = entry && entry.savedOn !== previousSavedOn;
+                if (hasChanged) {
+                    previousSavedOn = entry.savedOn;
+                    return true;
+                }
+                return false;
+            },
+            {
+                name: "Wait for updated entry to be available in get query"
+            }
+        );
 
         /**
          * Should able to providing sign off even if previous step is not done;
