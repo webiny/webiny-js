@@ -1,5 +1,6 @@
 const { handler } = require("./handler.original.js");
 const https = require("https");
+const packageData = require("../../package.json");
 const AWS = require("aws-sdk");
 AWS.config.update({ region: "us-east-1" });
 
@@ -7,7 +8,7 @@ const TELEMETRY_ENDPOINT = "dprxy5obcl14c.cloudfront.net";
 
 const localData = {
     apiKey: process.env.WCP_API_KEY,
-    version: process.env.WCP_TELEMETRY_VERSION,
+    version: packageData.telemetryVersion,
     logs: []
 };
 

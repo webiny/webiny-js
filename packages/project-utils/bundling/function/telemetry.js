@@ -12,11 +12,7 @@ const params = {
 async function getLatestTelemetryFunction() {
     const { Contents } = await s3.listObjects(params).promise();
 
-    const telemetryVersions = Contents
-      .map(content =>
-        content.Key.split("/").pop()
-      )
-      .sort();
+    const telemetryVersions = Contents.map(content => content.Key.split("/").pop()).sort();
 
     const latestTelemetryVersion = telemetryVersions.pop();
 

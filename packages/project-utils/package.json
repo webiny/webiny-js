@@ -1,7 +1,7 @@
 {
   "name": "@webiny/project-utils",
   "version": "5.18.3",
-  "telemetryVersion": "2.0.1",
+  "telemetryVersion": "1.0.1",
   "main": "index.js",
   "description": "A collection of utilities for Webiny project.",
   "repository": {
