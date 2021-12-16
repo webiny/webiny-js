@@ -1,3 +1,5 @@
+import { ApwWorkflowStepTypes } from "~/types";
+
 interface CreateWorkflowParams {
     title?: string;
     app?: "pageBuilder" | "cms";
@@ -7,8 +9,22 @@ interface CreateWorkflowParams {
     };
 }
 
+interface CreateWorkflowStepParams {
+    title: string;
+    slug: string;
+    type: ApwWorkflowStepTypes;
+    reviewers: Array<{ id: string }>;
+}
+
 export default {
     reviewerModelId: "apwReviewerModelDefinition",
+    createWorkflowStep: (params: CreateWorkflowStepParams) => ({
+        ...params,
+        reviewers: params.reviewers.map(reviewer => ({
+            modelId: "apwReviewerModelDefinition",
+            id: reviewer.id
+        }))
+    }),
     createWorkflow: (params: CreateWorkflowParams, reviewers) => ({
         app: "pageBuilder",
         title: "Main workflow",
@@ -16,7 +32,7 @@ export default {
             {
                 title: "Legal Review",
                 slug: "legal-review",
-                type: "mandatory_blocking",
+                type: "mandatoryBlocking",
                 reviewers: reviewers.map(reviewer => ({
                     modelId: "apwReviewerModelDefinition",
                     id: reviewer.id
@@ -36,7 +52,7 @@ export default {
             {
                 title: "Legal Review",
                 slug: "legal-review",
-                type: "mandatory_blocking",
+                type: "mandatoryBlocking",
                 reviewers: reviewers.map(reviewer => ({
                     modelId: "apwReviewerModelDefinition",
                     id: reviewer.id
@@ -45,7 +61,7 @@ export default {
             {
                 title: "Design Review",
                 slug: "design-review",
-                type: "mandatory_non_blocking",
+                type: "mandatoryNonBlocking",
                 reviewers: reviewers.map(reviewer => ({
                     modelId: "apwReviewerModelDefinition",
                     id: reviewer.id
@@ -54,7 +70,7 @@ export default {
             {
                 title: "Copy Review",
                 slug: "copy-review",
-                type: "not_mandatory",
+                type: "notMandatory",
                 reviewers: reviewers.map(reviewer => ({
                     modelId: "apwReviewerModelDefinition",
                     id: reviewer.id
@@ -120,13 +136,13 @@ export default {
             {
                 title: "Legal Review",
                 slug: "legal-review",
-                type: "mandatory_blocking",
+                type: "mandatoryBlocking",
                 reviewers: [{ id: "12345678#0001", modelId: "apwReviewerModelDefinition" }]
             },
             {
                 title: "Design Review",
                 slug: "design-review",
-                type: "mandatory_blocking",
+                type: "mandatoryBlocking",
                 reviewers: [{ id: "12345678#0001", modelId: "apwReviewerModelDefinition" }]
             }
         ],

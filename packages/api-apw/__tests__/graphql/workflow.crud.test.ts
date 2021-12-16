@@ -1,5 +1,6 @@
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
 import mocks from "./mocks/workflows";
+import { ApwWorkflowStepTypes } from "~/types";
 
 describe("Workflow crud test", () => {
     const options = {
@@ -129,17 +130,16 @@ describe("Workflow crud test", () => {
         /**
          * Let's update the entry.
          */
-        const designReviewStep = {
+        const designReviewStep = mocks.createWorkflowStep({
             title: "Design review",
             slug: "design-review",
-            type: "mandatory_blocking",
+            type: ApwWorkflowStepTypes.MANDATORY_BLOCKING,
             reviewers: [
                 {
-                    id: reviewer.id,
-                    modelId: "apwReviewerModelDefinition"
+                    id: reviewer.id
                 }
             ]
-        };
+        });
         const [updateWorkflowResponse] = await updateWorkflowMutation({
             id: workflow.id,
             data: {
