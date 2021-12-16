@@ -32,6 +32,12 @@ export const createManageResolvers: CreateManageResolvers = ({
     model,
     fieldTypePlugins
 }) => {
+    if (model.fields.length === 0) {
+        return {
+            Query: {},
+            Mutation: {}
+        };
+    }
     const typeName = createTypeName(model.modelId);
     const mTypeName = createManageTypeName(typeName);
     const createFieldResolvers = createFieldResolversFactory({

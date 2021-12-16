@@ -26,6 +26,10 @@ export const createManageSDL: CreateManageSDL = ({ model, fieldTypePlugins }): s
     const inputFields = renderInputFields({ model, fieldTypePlugins });
     const fields = renderFields({ model, type: "manage", fieldTypePlugins });
 
+    if (inputFields.length === 0) {
+        return "";
+    }
+
     return /* GraphQL */ `
         """${model.description || model.modelId}"""
         ${fields
