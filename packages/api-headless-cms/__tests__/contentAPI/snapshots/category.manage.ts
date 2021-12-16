@@ -140,6 +140,8 @@ export default /* GraphQL */ `
         deleteCategory(revision: ID!): CmsDeleteResponse
 
         publishCategory(revision: ID!): CategoryResponse
+    
+        republishCategory(revision: ID!): CategoryResponse
 
         unpublishCategory(revision: ID!): CategoryResponse
         

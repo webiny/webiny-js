@@ -76,6 +76,7 @@ const createElasticsearchSortParams = (args: CreateElasticsearchSortParams): esS
             searchable: modelField.isSearchable,
             field: modelField.field.fieldId,
             path: createFieldPath({
+                key: modelField.field.fieldId,
                 parentPath,
                 modelField,
                 searchPlugin
@@ -138,17 +139,9 @@ const createInitialQueryValue = (
         });
     }
     // we do not allow not published and not latest
-    else if (where.published === false) {
+    else {
         throw new WebinyError(
-            `Cannot call Elasticsearch query with "published" set at false.`,
-            "ELASTICSEARCH_UNSUPPORTED_QUERY",
-            {
-                where
-            }
-        );
-    } else if (where.latest === false) {
-        throw new WebinyError(
-            `Cannot call Elasticsearch query with "latest" set at false.`,
+            `Cannot call Elasticsearch query when not setting "published" or "latest".`,
             "ELASTICSEARCH_UNSUPPORTED_QUERY",
             {
                 where
@@ -161,19 +154,22 @@ const createInitialQueryValue = (
 
 interface CreateFieldPathParams {
     modelField: ModelField;
+    key: string;
     searchPlugin?: CmsEntryElasticsearchQueryBuilderValueSearchPlugin;
     parentPath?: string;
 }
 const createFieldPath = ({
     modelField,
     searchPlugin,
-    parentPath
+    parentPath,
+    key
 }: CreateFieldPathParams): string => {
     let path;
     if (searchPlugin && typeof searchPlugin.createPath === "function") {
         path = searchPlugin.createPath({
             field: modelField.field,
-            value: null
+            value: null,
+            key
         });
     } else if (typeof modelField.path === "function") {
         path = modelField.path(modelField.field.fieldId);
@@ -256,17 +252,18 @@ const isRefFieldFiltering = (params: IsRefFieldFilteringParams): boolean => {
 interface FieldPathFactoryParams extends Omit<CreatePathCallableParams, "field"> {
     plugin?: CmsEntryElasticsearchQueryBuilderValueSearchPlugin;
     modelField: ModelField;
+    key: string;
     parentPath?: string;
     keyword?: boolean;
 }
 const fieldPathFactory = (params: FieldPathFactoryParams): string => {
-    const { plugin, modelField, value, parentPath, keyword } = params;
+    const { plugin, modelField, value, parentPath, keyword, key } = params;
 
     const field = modelField.field;
 
     let fieldPath: string;
     if (plugin) {
-        fieldPath = plugin.createPath({ field, value });
+        fieldPath = plugin.createPath({ field, value, key });
     }
     if (!fieldPath) {
         fieldPath = field.fieldId;
@@ -287,6 +284,7 @@ interface ApplyFilteringParams {
     query: ElasticsearchBoolQueryConfig;
     modelField: ModelField;
     operator: string;
+    key: string;
     value: any;
     operatorPlugins: OperatorPlugins;
     searchPlugins: Record<string, CmsEntryElasticsearchQueryBuilderValueSearchPlugin>;
@@ -297,6 +295,7 @@ const applyFiltering = (params: ApplyFilteringParams) => {
         query,
         modelField,
         operator,
+        key,
         value: initialValue,
         operatorPlugins,
         searchPlugins,
@@ -321,14 +320,16 @@ const applyFiltering = (params: ApplyFilteringParams) => {
             plugin: fieldSearchPlugin,
             modelField,
             parentPath: modelField.isSystemField ? null : parentPath,
-            value
+            value,
+            key
         }),
         path: fieldPathFactory({
             plugin: fieldSearchPlugin,
             modelField,
             value,
             parentPath: modelField.isSystemField ? null : parentPath,
-            keyword
+            keyword,
+            key
         }),
         value,
         keyword
@@ -398,6 +399,7 @@ const execElasticsearchBuildQueryPlugins = (
                     query,
                     modelField,
                     operator,
+                    key: whereKey,
                     value: where[key][whereKey],
                     searchPlugins,
                     operatorPlugins,
@@ -410,6 +412,7 @@ const execElasticsearchBuildQueryPlugins = (
             query,
             modelField,
             operator,
+            key,
             value: where[key],
             searchPlugins,
             operatorPlugins,

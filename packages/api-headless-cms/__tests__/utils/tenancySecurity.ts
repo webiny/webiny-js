@@ -48,7 +48,7 @@ export const createTenancyAndSecurity = ({ setupGraphQL, permissions, identity }
                 id: "root",
                 name: "Root",
                 webinyVersion: context.WEBINY_VERSION
-            });
+            } as any);
 
             context.security.addAuthenticator(async () => {
                 return (

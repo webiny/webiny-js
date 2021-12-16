@@ -523,7 +523,7 @@ describe("entry references", () => {
     });
 
     it("should list articles filtered by reference", async () => {
-        expect.assertions(8);
+        expect.assertions(12);
 
         const group = await setupContentModelGroup(mainManager);
         await setupContentModels(mainManager, group, ["category", "article"]);
@@ -723,6 +723,50 @@ describe("entry references", () => {
                     meta: {
                         hasMoreItems: false,
                         totalCount: 3,
+                        cursor: null
+                    },
+                    error: null
+                }
+            }
+        });
+
+        const [listArticlesEntryIdWrongResponse] = await articleReader.listArticles({
+            where: {
+                category: {
+                    entryId: techCategory.id
+                }
+            },
+            sort: ["createdOn_ASC"]
+        });
+        expect(listArticlesEntryIdWrongResponse).toEqual({
+            data: {
+                listArticles: {
+                    data: [],
+                    meta: {
+                        hasMoreItems: false,
+                        totalCount: 0,
+                        cursor: null
+                    },
+                    error: null
+                }
+            }
+        });
+
+        const [listArticlesIdWrongResponse] = await articleReader.listArticles({
+            where: {
+                category: {
+                    id: techCategory.entryId
+                }
+            },
+            sort: ["createdOn_ASC"]
+        });
+        expect(listArticlesIdWrongResponse).toEqual({
+            data: {
+                listArticles: {
+                    data: [],
+                    meta: {
+                        hasMoreItems: false,
+                        totalCount: 0,
                         cursor: null
                     },
                     error: null
@@ -932,6 +976,52 @@ describe("entry references", () => {
                     meta: {
                         hasMoreItems: false,
                         totalCount: 3,
+                        cursor: null
+                    },
+                    error: null
+                }
+            }
+        });
+
+        const [listArticlesMultipleEntryIdWrongResponse] = await articleReader.listArticles({
+            where: {
+                categories: {
+                    entryId_in: [techCategory.id]
+                }
+            },
+            sort: ["createdOn_ASC"]
+        });
+
+        expect(listArticlesMultipleEntryIdWrongResponse).toEqual({
+            data: {
+                listArticles: {
+                    data: [],
+                    meta: {
+                        hasMoreItems: false,
+                        totalCount: 0,
+                        cursor: null
+                    },
+                    error: null
+                }
+            }
+        });
+
+        const [listArticlesMultipleIdWrongResponse] = await articleReader.listArticles({
+            where: {
+                categories: {
+                    id_in: [techCategory.entryId]
+                }
+            },
+            sort: ["createdOn_ASC"]
+        });
+
+        expect(listArticlesMultipleIdWrongResponse).toEqual({
+            data: {
+                listArticles: {
+                    data: [],
+                    meta: {
+                        hasMoreItems: false,
+                        totalCount: 0,
                         cursor: null
                     },
                     error: null

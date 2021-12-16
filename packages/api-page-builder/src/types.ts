@@ -384,6 +384,7 @@ export interface PageElementStorageOperations {
  */
 export interface System {
     version: string;
+    tenant: string;
 }
 /**
  * @category StorageOperations

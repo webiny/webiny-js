@@ -15,7 +15,10 @@ const throwTransformError = (params: ThrowTransformErrorParams): void => {
     });
 };
 
-const dateOnly = (value: string): string => {
+const dateOnly = (value?: string): string => {
+    if (!value) {
+        return new Date().toISOString().substr(0, 10);
+    }
     try {
         const date = new Date(value).toISOString();
         return date.substr(0, 10);
@@ -28,9 +31,11 @@ const dateOnly = (value: string): string => {
     }
 };
 
-const extractTimeZone = (value: string): [string, string] => {
+const extractTimeZone = (value?: string): [string, string] => {
     let result: string[];
-    if (value.includes("+")) {
+    if (!value) {
+        return [new Date().toISOString(), "00:00"];
+    } else if (value.includes("+")) {
         result = value.split("+");
     } else {
         result = value.split("-");
@@ -47,8 +52,10 @@ const extractTimeZone = (value: string): [string, string] => {
     return result as [string, string];
 };
 
-const extractTime = (value: string): string => {
-    if (value.includes(":") === false) {
+const extractTime = (value?: string): string => {
+    if (!value) {
+        return "00:00:00";
+    } else if (value.includes(":") === false) {
         throw new WebinyError("Time value is missing : separators.", "TIME_ERROR", {
             value
         });
@@ -61,8 +68,11 @@ const extractTime = (value: string): string => {
     }
 };
 
-const dateTimeWithTimezone = (value: string): string => {
-    if (value.includes("T") === false) {
+const dateTimeWithTimezone = (value?: string): string => {
+    if (!value) {
+        const date = new Date().toISOString();
+        return date.replace(/\.([0-9]+)Z/, "+00:00");
+    } else if (value.includes("T") === false) {
         return value;
     }
 
@@ -91,8 +101,10 @@ const dateTimeWithTimezone = (value: string): string => {
     return value.replace(initialDate, date).replace(initialTime, time);
 };
 
-const dateTimeWithoutTimezone = (value: string): string => {
-    if (value.includes(" ") === false) {
+const dateTimeWithoutTimezone = (value?: string): string => {
+    if (!value) {
+        return new Date().toISOString();
+    } else if (value.includes(" ") === false) {
         return value;
     }
     try {
@@ -106,8 +118,15 @@ const dateTimeWithoutTimezone = (value: string): string => {
     }
 };
 
+const time = (value?: string) => {
+    if (!value) {
+        return "00:00:00";
+    }
+    return extractTime(value);
+};
+
 const transformers = {
-    time: null,
+    time,
     date: dateOnly,
     dateTimeWithoutTimezone,
     dateTimeWithTimezone
@@ -120,10 +139,6 @@ export default (): CmsFieldValueTransformer => ({
     transform: (value, field) => {
         // check types in packages/app-headless-cms/src/admin/plugins/fieldRenderers/dateTime/dateTimeField.tsx
         const type = field.settings.type;
-        if (!value) {
-            console.log(`Field "${field.fieldId}" has no value.`);
-            return null;
-        }
         const transform = transformers[type];
 
         if (!transform) {

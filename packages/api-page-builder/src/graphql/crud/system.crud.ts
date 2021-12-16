@@ -26,6 +26,10 @@ export default new ContextPlugin<PbContext>(async context => {
         SystemStorageOperationsProviderPlugin.type
     );
 
+    const getTenantId = (): string => {
+        return context.tenancy.getCurrentTenant().id;
+    };
+
     context.pageBuilder.system = {
         async get() {
             try {
@@ -48,6 +52,7 @@ export default new ContextPlugin<PbContext>(async context => {
             if (original) {
                 const system = {
                     ...original,
+                    tenant: original.tenant || getTenantId(),
                     version
                 };
                 try {
@@ -68,7 +73,8 @@ export default new ContextPlugin<PbContext>(async context => {
             }
 
             const system: System = {
-                version
+                version,
+                tenant: getTenantId()
             };
             try {
                 await storageOperations.create({

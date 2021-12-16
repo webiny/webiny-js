@@ -1,7 +1,7 @@
 import { NotAuthorizedError } from "@webiny/api-security";
 import { getApplicablePlugin } from "@webiny/api-upgrade";
 import Error from "@webiny/error";
-import { FileManagerContext, FileManagerSettings } from "~/types";
+import { FileManagerContext, FileManagerSettings, FileManagerSystem } from "~/types";
 import { UpgradePlugin } from "@webiny/api-upgrade/types";
 import WebinyError from "@webiny/error";
 import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
@@ -29,6 +29,10 @@ const systemCrudContextPlugin = new ContextPlugin<FileManagerContext>(async cont
         context.fileManager = {} as any;
     }
 
+    const getTenantId = (): string => {
+        return context.tenancy.getCurrentTenant().id;
+    };
+
     context.fileManager.system = {
         async getVersion() {
             const system = await storageOperations.get();
@@ -39,8 +43,9 @@ const systemCrudContextPlugin = new ContextPlugin<FileManagerContext>(async cont
             const system = await storageOperations.get();
 
             if (system) {
-                const data = {
+                const data: FileManagerSystem = {
                     ...system,
+                    tenant: system.tenant || getTenantId(),
                     version
                 };
                 try {
@@ -60,8 +65,9 @@ const systemCrudContextPlugin = new ContextPlugin<FileManagerContext>(async cont
                 }
             }
 
-            const data = {
-                version
+            const data: FileManagerSystem = {
+                version,
+                tenant: getTenantId()
             };
             try {
                 await storageOperations.create({

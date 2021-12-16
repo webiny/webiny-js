@@ -31,7 +31,9 @@ export const renderField = ({ model, type, field, fieldTypePlugins }) => {
         fieldTypePlugins
     });
 
-    if (typeof defs === "string") {
+    if (!defs) {
+        return null;
+    } else if (typeof defs === "string") {
         return { fields: defs };
     }
 

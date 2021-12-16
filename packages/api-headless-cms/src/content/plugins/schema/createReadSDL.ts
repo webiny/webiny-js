@@ -24,6 +24,10 @@ export const createReadSDL: CreateManageSDL = ({ model, fieldTypePlugins }): str
     const getFilterFieldsRender = renderGetFilterFields({ model, fieldTypePlugins });
     const fieldsRender = renderFields({ model, type: "read", fieldTypePlugins });
 
+    if (fieldsRender.length === 0) {
+        return "";
+    }
+
     return `
         """${model.description || ""}"""
         ${fieldsRender

@@ -19,6 +19,9 @@ export default (params: { context: FileManagerContext; table: Table }): Entity<a
             version: {
                 type: "string"
             },
+            tenant: {
+                type: "string"
+            },
             ...attributes
         }
     });

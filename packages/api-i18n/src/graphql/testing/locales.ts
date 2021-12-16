@@ -1,3 +1,5 @@
+import { ContextI18NGetLocales } from "~/types";
+
 export const locales = {
     en: {
         code: "en-US",
@@ -13,7 +15,7 @@ export const locales = {
     }
 };
 
-export const mockLocalesPlugins = () => ({
+export const mockLocalesPlugins = (): ContextI18NGetLocales => ({
     name: "context-i18n-get-locales",
     type: "context-i18n-get-locales",
     async resolve() {
