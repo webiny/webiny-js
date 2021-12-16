@@ -3,11 +3,19 @@ const https = require("https");
 const AWS = require("aws-sdk");
 AWS.config.update({ region: "us-east-1" });
 
+const TELEMETRY_ENDPOINT = "dprxy5obcl14c.cloudfront.net";
+
+const localData = {
+    apiKey: process.env.WCP_API_KEY,
+    version: process.env.WCP_TELEMETRY_VERSION,
+    logs: []
+};
+
 async function postTelemetryData(telemetryData) {
     return new Promise((resolve, reject) => {
         const options = {
             method: "POST",
-            hostname: "dprxy5obcl14c.cloudfront.net",
+            hostname: TELEMETRY_ENDPOINT,
             path: "/telemetry",
             headers: { "Content-Type": "application/json" },
             maxRedirects: 20
@@ -37,13 +45,6 @@ async function postTelemetryData(telemetryData) {
         req.end();
     });
 }
-
-
-const localData = {
-    apiKey: process.env.WCP_API_KEY,
-    version: process.env.WCP_TELEMETRY_VERSION,
-    logs: []
-};
 
 let timerRunning = false;
 
@@ -75,7 +76,7 @@ async function addToTelemetryPackage(data) {
     }
 }
 
-module.exports.handler = async (args) => {
+module.exports.handler = async args => {
     await initTelemetry();
     const start = Date.now();
 

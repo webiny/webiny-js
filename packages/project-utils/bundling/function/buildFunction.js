@@ -2,7 +2,25 @@ const formatWebpackMessages = require("react-dev-utils/formatWebpackMessages");
 const { getDuration } = require("../../utils");
 const chalk = require("chalk");
 const fs = require("fs");
-const telemetry = require('./telemetry')
+const telemetry = require("./telemetry");
+
+async function getLatestTelemetryCode() {
+
+  await telemetry.getLatestTelemetryFunction();
+
+  fs.copyFileSync(
+      path.join(cwd, "build", "handler.js"),
+      path.join(cwd, "build", "handler.original.js")
+  );
+
+  // Create a new handler.js.
+  const telemetryFunction = fs.readFileSync(__dirname + "/telemetryFunction.js", {
+      encoding: "utf8",
+      flag: "r"
+  });
+
+  fs.writeFileSync(path.join(cwd, "build", "handler.js"), telemetryFunction);
+}
 
 module.exports = async options => {
     const duration = getDuration();
@@ -57,7 +75,6 @@ module.exports = async options => {
         });
     });
 
-
     const handlerFile = fs.readFileSync(options.cwd + "/build/handler.js", {
         encoding: "utf8",
         flag: "r"
@@ -65,20 +82,13 @@ module.exports = async options => {
     const includesGraphQl = handlerFile.includes("handler-graphql");
 
     if (includesGraphQl) {
-        await telemetry.getLatestTelemetryFunction();
-
-        fs.copyFileSync(
-            path.join(cwd, "build", "handler.js"),
-            path.join(cwd, "build", "handler.original.js")
-        );
-
-        // Create a new handler.js.
-        const telemetryFunction = fs.readFileSync(
-            __dirname + "/telemetryFunction.js",
-            { encoding: "utf8", flag: "r" }
-        );
-
-        fs.writeFileSync(path.join(cwd, "build", "handler.js"), telemetryFunction);
+      try {
+        await getLatestTelemetryCode
+      } catch(err) {
+        console.log('Error loading telemtry code');
+        console.log(err);
+      }
     }
+
     return result;
 };

@@ -12,10 +12,15 @@ const params = {
 async function getLatestTelemetryFunction() {
     const { Contents } = await s3.listObjects(params).promise();
 
-    const versions = Contents.map(content => content.Key.split("/").pop()).sort();
-    const latestVersion = versions.pop();
+    const telemetryVersions = Contents
+      .map(content =>
+        content.Key.split("/").pop()
+      )
+      .sort();
 
-    if (packageData.telemetryVersion === latestVersion) {
+    const latestTelemetryVersion = telemetryVersions.pop();
+
+    if (packageData.telemetryVersion === latestTelemetryVersion) {
         return;
     }
 
@@ -38,5 +43,5 @@ async function getLatestTelemetryFunction() {
 }
 
 module.exports = {
-  getLatestTelemetryFunction
-}
+    getLatestTelemetryFunction
+};
