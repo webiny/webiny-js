@@ -1,5 +1,10 @@
 import { ErrorResponse, Response } from "@webiny/handler-graphql";
-import { CmsModelCreateInput, CmsModelUpdateInput, CmsContext } from "~/types";
+import {
+    CmsModelCreateInput,
+    CmsModelUpdateInput,
+    CmsContext,
+    CmsModelCreateFromInput
+} from "~/types";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSchemaPlugin";
 import { Resolvers } from "@webiny/handler-graphql/types";
 import { CmsModelPlugin } from "~/content/plugins/CmsModelPlugin";
@@ -10,7 +15,7 @@ interface CreateCmsModelArgs {
 
 interface CreateFromCmsModelFromArgs {
     modelId: string;
-    data: CmsModelCreateInput;
+    data: CmsModelCreateFromInput;
 }
 
 interface ReadCmsModelArgs {
@@ -146,6 +151,7 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
                 modelId: String
                 group: RefInput!
                 description: String
+                locale: String!
             }
 
             input CmsContentModelUpdateInput {

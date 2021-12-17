@@ -947,6 +947,19 @@ export interface CmsModelCreateInput {
 }
 
 /**
+ * A GraphQL params.data parameter received when creating content model from existing model.
+ *
+ * @category GraphQL params
+ * @category CmsModel
+ */
+export interface CmsModelCreateFromInput extends CmsModelCreateInput {
+    /**
+     * Locale into which we want to clone the model into.
+     */
+    locale: string;
+}
+
+/**
  * A definition for content model field received from the user.
  *
  * Input type for `CmsModelField`.
@@ -1018,6 +1031,10 @@ export interface CmsModelUpdateInput {
      * A new content model name.
      */
     name?: string;
+    /**
+     * A group we want to move the model to.
+     */
+    group?: string;
     /**
      * A new description of the content model.
      */
@@ -1198,30 +1215,30 @@ export interface CmsModelManager {
 }
 
 export interface BeforeModelCreateTopicParams {
-    input: Partial<CmsModel>;
+    input: CmsModelCreateInput;
     model: CmsModel;
 }
 export interface AfterModelCreateTopicParams {
-    input: Partial<CmsModel>;
+    input: CmsModelCreateInput;
     model: CmsModel;
 }
 export interface BeforeModelCreateFromTopicParams {
-    input: Partial<CmsModel>;
+    input: CmsModelCreateFromInput;
     original: CmsModel;
     model: CmsModel;
 }
 export interface AfterModelCreateFromTopicParams {
-    input: Partial<CmsModel>;
+    input: CmsModelCreateFromInput;
     original: CmsModel;
     model: CmsModel;
 }
 export interface BeforeModelUpdateTopicParams {
-    input: Partial<CmsModel>;
+    input: CmsModelUpdateInput;
     original: CmsModel;
     model: CmsModel;
 }
 export interface AfterModelUpdateTopicParams {
-    input: Partial<CmsModel>;
+    input: CmsModelUpdateInput;
     original: CmsModel;
     model: CmsModel;
 }
@@ -1268,7 +1285,7 @@ export interface CmsModelContext {
     /**
      * Create a content model from the given model - clone.
      */
-    createModelFrom: (modelId: string, data: CmsModelCreateInput) => Promise<CmsModel>;
+    createModelFrom: (modelId: string, data: CmsModelCreateFromInput) => Promise<CmsModel>;
     /**
      * Update content model without data validation. Used internally.
      * @hidden
