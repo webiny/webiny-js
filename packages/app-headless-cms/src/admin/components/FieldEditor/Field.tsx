@@ -102,7 +102,6 @@ const Field: React.FC<Props> = props => {
     }
 
     const isTitleField = field.fieldId === data.titleFieldId && !parent;
-    console.log(field.fieldId, isTitleField, parent);
 
     const lockedFields = data.lockedFields || [];
     return (
