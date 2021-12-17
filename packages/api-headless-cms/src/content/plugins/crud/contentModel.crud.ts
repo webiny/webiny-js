@@ -339,24 +339,37 @@ export const createModelsCrud = (params: Params): CmsModelContext => {
         },
         async createModelFrom(modelId, data) {
             await checkModelPermissions("w");
-            // Get a model record; this will also perform ownership validation.
+            /**
+             * Get a model record; this will also perform ownership validation.
+             */
             const original = await get(modelId);
 
             const createdData = new CreateContentModelModel().populate({
                 name: data.name,
                 modelId: data.modelId,
                 description: data.description || original.description,
-                group: original.group.id
+                group: data.group
             });
 
             await createdData.validate();
             const input = await createdData.toJSON();
 
+            context.security.disableAuthorization();
+            const group = await context.cms.getGroup(input.group);
+            context.security.enableAuthorization();
+            if (!group) {
+                throw new NotFoundError(`There is no group "${input.group}".`);
+            }
+
             const identity = getIdentity();
             const model: CmsModel = {
                 ...original,
+                group: {
+                    id: group.id,
+                    name: group.name
+                },
                 name: input.name,
-                modelId: input.modelId || undefined,
+                modelId: input.modelId,
                 description: input.description,
                 createdBy: {
                     id: identity.id,

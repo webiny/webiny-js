@@ -74,6 +74,20 @@ export const CREATE_CONTENT_MODEL = gql`
     }
 `;
 
+export const CREATE_CONTENT_MODEL_FROM = gql`
+    mutation CmsCreateContentModelFrom($modelId: ID!, $data: CmsContentModelCreateFromInput!) {
+        createContentModelFrom(modelId: $modelId, data: $data) {
+            data {
+                ${BASE_CONTENT_MODEL_FIELDS}
+            }
+            error {
+                message
+                data
+            }
+        }
+    }
+`;
+
 export const DELETE_CONTENT_MODEL = gql`
     mutation CmsDeleteContentModel($modelId: ID!) {
         deleteContentModel(modelId: $modelId) {
