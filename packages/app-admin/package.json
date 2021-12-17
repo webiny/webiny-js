@@ -10,6 +10,7 @@
   "author": "Pavel Denisjuk",
   "license": "MIT",
   "dependencies": {
+    "@apollo/react-components": "^3.1.5",
     "@apollo/react-hooks": "^3.1.5",
     "@babel/runtime": "^7.5.5",
     "@editorjs/editorjs": "^2.19.0",

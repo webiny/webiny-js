@@ -2,6 +2,7 @@ import React from "react";
 import { isEqual } from "lodash";
 import { ReactComponent as WebinyLogo } from "../../assets/images/webiny-logo.svg";
 import { Link } from "@webiny/react-router";
+import { makeComposable } from "~/admin";
 
 class Logo extends React.Component<any> {
     static defaultProps = {
@@ -65,4 +66,4 @@ class Logo extends React.Component<any> {
     }
 }
 
-export default Logo;
+export default makeComposable("Logo", Logo);
