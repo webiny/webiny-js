@@ -78,10 +78,7 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
             });
 
             if (!result) {
-                return {
-                    fields: "",
-                    typeDefs: ""
-                };
+                return null;
             }
             const { fieldType, typeDefs } = result;
 
@@ -118,10 +115,7 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
             });
 
             if (!result) {
-                return {
-                    fields: "",
-                    typeDefs: ""
-                };
+                return null;
             }
             const { fieldType, typeDefs } = result;
 
@@ -139,10 +133,7 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
                 fieldTypePlugins
             });
             if (!result) {
-                return {
-                    fields: "",
-                    typeDefs: ""
-                };
+                return null;
             }
             const { fieldType, typeDefs } = result;
 

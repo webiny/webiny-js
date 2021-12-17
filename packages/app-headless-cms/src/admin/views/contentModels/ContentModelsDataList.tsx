@@ -5,6 +5,7 @@ import get from "lodash/get";
 import { useRouter } from "@webiny/react-router";
 import { DeleteIcon, EditIcon } from "@webiny/ui/List/DataList/icons";
 import { ReactComponent as ViewListIcon } from "../../icons/view_list.svg";
+import { ReactComponent as CloneIcon } from "../../icons/clone.svg";
 import { useApolloClient, useQuery } from "../../hooks";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import * as UIL from "@webiny/ui/List";
@@ -22,6 +23,7 @@ import { Cell, Grid } from "@webiny/ui/Grid";
 import { Select } from "@webiny/ui/Select";
 import { ReactComponent as FilterIcon } from "@webiny/app-admin/assets/icons/filter-24px.svg";
 import usePermission from "../../hooks/usePermission";
+import { CmsEditorContentModel } from "~/types";
 
 const t = i18n.namespace("FormsApp.ContentModelsDataList");
 
@@ -56,8 +58,9 @@ const listItemMinHeight = css({
 type ContentModelsDataListProps = {
     canCreate: boolean;
     onCreate: () => void;
+    onClone: (contentModel: CmsEditorContentModel) => void;
 };
-const ContentModelsDataList = ({ canCreate, onCreate }: ContentModelsDataListProps) => {
+const ContentModelsDataList = ({ canCreate, onCreate, onClone }: ContentModelsDataListProps) => {
     const [filter, setFilter] = useState("");
     const [sort, setSort] = useState(serializeSorters(SORTERS[0].sorters));
     const { history } = useRouter();
@@ -240,6 +243,15 @@ const ContentModelsDataList = ({ canCreate, onCreate }: ContentModelsDataListPro
                                                 )}
                                             </>
                                         )}
+
+                                        <Tooltip content={"Clone content model"} placement={"top"}>
+                                            <IconButton
+                                                data-testid={"cms-clone-content-model-button"}
+                                                icon={<CloneIcon />}
+                                                label={t`View entries`}
+                                                onClick={() => onClone(contentModel)}
+                                            />
+                                        </Tooltip>
 
                                         {canDelete(contentModel, "cms.contentModel") &&
                                         contentModel.plugin ? (

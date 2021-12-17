@@ -8,6 +8,10 @@ export interface Params {
 export const createSystemCrud = (params: Params): SystemCRUD => {
     const { context, storageOperations } = params;
 
+    const getTenantId = (): string => {
+        return context.tenancy.getCurrentTenant().id;
+    };
+
     return {
         async getSystemVersion() {
             const system = await storageOperations.get();
@@ -19,6 +23,7 @@ export const createSystemCrud = (params: Params): SystemCRUD => {
 
             const system: I18NSystem = {
                 ...(original || ({} as any)),
+                tenant: original && original.tenant ? original.tenant : getTenantId,
                 version
             };
             if (original) {
