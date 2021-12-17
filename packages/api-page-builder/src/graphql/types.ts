@@ -17,6 +17,7 @@ import {
     Page,
     PageElement,
     PageElementStorageOperations,
+    PageSpecialType,
     PageStorageOperations,
     Settings,
     System
@@ -64,13 +65,127 @@ export interface GetPagesOptions {
     decompress?: boolean;
 }
 
+/**
+ * @category Lifecycle events
+ */
+export interface OnBeforePageCreateTopicParams {
+    page: Page;
+}
+/**
+ * @category Lifecycle events
+ */
+export interface OnAfterPageCreateTopicParams {
+    page: Page;
+}
+/**
+ * @category Lifecycle events
+ */
+export interface OnBeforePageUpdateTopicParams {
+    original: Page;
+    page: Page;
+    input: Record<string, any>;
+}
+/**
+ * @category Lifecycle events
+ */
+export interface OnAfterPageUpdateTopicParams {
+    original: Page;
+    page: Page;
+    input: Record<string, any>;
+}
+/**
+ * @category Lifecycle events
+ */
+export interface OnBeforePageCreateFromTopicParams {
+    original: Page;
+    page: Page;
+}
+/**
+ * @category Lifecycle events
+ */
+export interface OnAfterPageCreateFromTopicParams {
+    original: Page;
+    page: Page;
+}
+/**
+ * @category Lifecycle events
+ */
+export interface OnBeforePageDeleteTopicParams {
+    page: Page;
+    latestPage: Page;
+    publishedPage: Page;
+}
+/**
+ * @category Lifecycle events
+ */
+export interface OnAfterPageDeleteTopicParams {
+    page: Page;
+    latestPage: Page;
+    publishedPage: Page;
+}
+/**
+ * @category Lifecycle events
+ */
+export interface OnBeforePagePublishTopicParams {
+    page: Page;
+    latestPage: Page;
+    publishedPage?: Page;
+}
+/**
+ * @category Lifecycle events
+ */
+export interface OnAfterPagePublishTopicParams {
+    page: Page;
+    latestPage: Page;
+    publishedPage?: Page;
+}
+/**
+ * @category Lifecycle events
+ */
+export interface OnBeforePageUnpublishTopicParams {
+    page: Page;
+}
+/**
+ * @category Lifecycle events
+ */
+export interface OnAfterPageUnpublishTopicParams {
+    page: Page;
+}
+/**
+ * @category Lifecycle events
+ */
+export interface OnBeforePageRequestReviewTopicParams {
+    page: Page;
+}
+/**
+ * @category Lifecycle events
+ */
+export interface OnAfterPageRequestReviewTopicParams {
+    page: Page;
+}
+/**
+ * @category Lifecycle events
+ */
+export interface OnBeforePageRequestChangesTopicParams {
+    page: Page;
+}
+/**
+ * @category Lifecycle events
+ */
+export interface OnAfterPageRequestChangesTopicParams {
+    page: Page;
+}
+
+/**
+ * @category Pages
+ */
 export interface PagesCrud {
     /**
      * To be used internally in our code.
      * @internal
      */
     storageOperations: PageStorageOperations;
-    get<TPage extends Page = Page>(id: string, options?: GetPagesOptions): Promise<TPage>;
+    getPage<TPage extends Page = Page>(id: string, options?: GetPagesOptions): Promise<TPage>;
     listLatest<TPage extends Page = Page>(
         args: ListPagesParams,
         options?: ListLatestPagesOptions
@@ -95,11 +210,73 @@ export interface PagesCrud {
         render(args: RenderParams): Promise<void>;
         flush(args: FlushParams): Promise<void>;
     };
+    /**
+     * Lifecycle events
+     */
+    onBeforePageCreate: Topic<OnBeforePageCreateTopicParams>;
+    onAfterPageCreate: Topic<OnAfterPageCreateTopicParams>;
+    onBeforePageCreateFrom: Topic<OnBeforePageCreateFromTopicParams>;
+    onAfterPageCreateFrom: Topic<OnAfterPageCreateFromTopicParams>;
+    onBeforePageUpdate: Topic<OnBeforePageUpdateTopicParams>;
+    onAfterPageUpdate: Topic<OnAfterPageUpdateTopicParams>;
+    onBeforePageDelete: Topic<OnBeforePageDeleteTopicParams>;
+    onAfterPageDelete: Topic<OnAfterPageDeleteTopicParams>;
+    onBeforePagePublish: Topic<OnBeforePagePublishTopicParams>;
+    onAfterPagePublish: Topic<OnAfterPagePublishTopicParams>;
+    onBeforePageUnpublish: Topic<OnBeforePageUnpublishTopicParams>;
+    onAfterPageUnpublish: Topic<OnAfterPageUnpublishTopicParams>;
+    onBeforePageRequestReview: Topic<OnBeforePageRequestReviewTopicParams>;
+    onAfterPageRequestReview: Topic<OnAfterPageRequestReviewTopicParams>;
+    onBeforePageRequestChanges: Topic<OnBeforePageRequestChangesTopicParams>;
+    onAfterPageRequestChanges: Topic<OnAfterPageRequestChangesTopicParams>;
 }
 
 export interface ListPageElementsParams {
     sort?: string[];
 }
+
+/**
+ * @category Lifecycle events
+ */
+export interface OnBeforePageElementCreateTopicParams {
+    pageElement: PageElement;
+}
+/**
+ * @category Lifecycle events
+ */
+export interface OnAfterPageElementCreateTopicParams {
+    pageElement: PageElement;
+}
+/**
+ * @category Lifecycle events
+ */
+export interface OnBeforePageElementUpdateTopicParams {
+    original: PageElement;
+    pageElement: PageElement;
+}
+/**
+ * @category Lifecycle events
+ */
+export interface OnAfterPageElementUpdateTopicParams {
+    original: PageElement;
+    pageElement: PageElement;
+}
+/**
+ * @category Lifecycle events
+ */
+export interface OnBeforePageElementDeleteTopicParams {
+    pageElement: PageElement;
+}
+/**
+ * @category Lifecycle events
+ */
+export interface OnAfterPageElementDeleteTopicParams {
+    pageElement: PageElement;
+}
+
+/**
+ * @category PageElements
+ */
 export interface PageElementsCrud {
     /**
      * To be used internally in our code.
@@ -111,8 +288,59 @@ export interface PageElementsCrud {
     create(data: Record<string, any>): Promise<PageElement>;
     update(id: string, data: Record<string, any>): Promise<PageElement>;
     delete(id: string): Promise<PageElement>;
+    /**
+     * Lifecycle events
+     */
+    onBeforePageElementCreate: Topic<OnBeforePageElementCreateTopicParams>;
+    onAfterPageElementCreate: Topic<OnAfterPageElementCreateTopicParams>;
+    onBeforePageElementUpdate: Topic<OnBeforePageElementUpdateTopicParams>;
+    onAfterPageElementUpdate: Topic<OnAfterPageElementUpdateTopicParams>;
+    onBeforePageElementDelete: Topic<OnBeforePageElementDeleteTopicParams>;
+    onAfterPageElementDelete: Topic<OnAfterPageElementDeleteTopicParams>;
 }
 
+/**
+ * @category Lifecycle events
+ */
+export interface OnBeforeCategoryCreateTopicParams {
+    category: Category;
+}
+/**
+ * @category Lifecycle events
+ */
+export interface OnAfterCategoryCreateTopicParams {
+    category: Category;
+}
+/**
+ * @category Lifecycle events
+ */
+export interface OnBeforeCategoryUpdateTopicParams {
+    original: Category;
+    category: Category;
+}
+/**
+ * @category Lifecycle events
+ */
+export interface OnAfterCategoryUpdateTopicParams {
+    original: Category;
+    category: Category;
+}
+/**
+ * @category Lifecycle events
+ */
+export interface OnBeforeCategoryDeleteTopicParams {
+    category: Category;
+}
+/**
+ * @category Lifecycle events
+ */
+export interface OnAfterCategoryDeleteTopicParams {
+    category: Category;
+}
+
+/**
+ * @category Categories
+ */
 export interface CategoriesCrud {
     /**
      * To be used internally in our code.
@@ -124,6 +352,15 @@ export interface CategoriesCrud {
     create(data: Record<string, any>): Promise<Category>;
     update(slug: string, data: Record<string, any>): Promise<Category>;
     delete(slug: string): Promise<Category>;
+    /**
+     * Lifecycle events
+     */
+    onBeforeCategoryCreate: Topic<OnBeforeCategoryCreateTopicParams>;
+    onAfterCategoryCreate: Topic<OnAfterCategoryCreateTopicParams>;
+    onBeforeCategoryUpdate: Topic<OnBeforeCategoryUpdateTopicParams>;
+    onAfterCategoryUpdate: Topic<OnAfterCategoryUpdateTopicParams>;
+    onBeforeCategoryDelete: Topic<OnBeforeCategoryDeleteTopicParams>;
+    onAfterCategoryDelete: Topic<OnAfterCategoryDeleteTopicParams>;
 }
 
 export interface MenuGetOptions {
@@ -134,6 +371,50 @@ export interface ListMenuParams {
     sort?: string[];
 }
 
+/**
+ * @category Lifecycle events
+ */
+export interface OnBeforeMenuCreateTopicParams {
+    menu: Menu;
+    input: Record<string, any>;
+}
+/**
+ * @category Lifecycle events
+ */
+export interface OnAfterMenuCreateTopicParams {
+    menu: Menu;
+    input: Record<string, any>;
+}
+/**
+ * @category Lifecycle events
+ */
+export interface OnBeforeMenuUpdateTopicParams {
+    original: Menu;
+    menu: Menu;
+}
+/**
+ * @category Lifecycle events
+ */
+export interface OnAfterMenuUpdateTopicParams {
+    original: Menu;
+    menu: Menu;
+}
+/**
+ * @category Lifecycle events
+ */
+export interface OnBeforeMenuDeleteTopicParams {
+    menu: Menu;
+}
+/**
+ * @category Lifecycle events
+ */
+export interface OnAfterMenuDeleteTopicParams {
+    menu: Menu;
+}
+
+/**
+ * @category Menu
+ */
 export interface MenusCrud {
     /**
      * To be used internally in our code.
@@ -146,6 +427,15 @@ export interface MenusCrud {
     create(data: Record<string, any>): Promise<Menu>;
     update(slug: string, data: Record<string, any>): Promise<Menu>;
     delete(slug: string): Promise<Menu>;
+    /**
+     * Lifecycle events
+     */
+    onBeforeMenuCreate: Topic<OnBeforeMenuCreateTopicParams>;
+    onAfterMenuCreate: Topic<OnAfterMenuCreateTopicParams>;
+    onBeforeMenuUpdate: Topic<OnBeforeMenuUpdateTopicParams>;
+    onAfterMenuUpdate: Topic<OnAfterMenuUpdateTopicParams>;
+    onBeforeMenuDelete: Topic<OnBeforeMenuDeleteTopicParams>;
+    onAfterMenuDelete: Topic<OnAfterMenuDeleteTopicParams>;
 }
 
 /**
@@ -156,6 +446,31 @@ export interface DefaultSettingsCrudOptions {
     locale?: string | false;
 }
 
+export interface SettingsUpdateTopicMetaParams {
+    diff: {
+        pages: Array<[PageSpecialType, string, string, Page]>;
+    };
+}
+/**
+ * @category Lifecycle events
+ */
+export interface OnBeforeSettingsUpdateTopicParams {
+    original: Settings;
+    settings: Settings;
+    meta: SettingsUpdateTopicMetaParams;
+}
+/**
+ * @category Lifecycle events
+ */
+export interface OnAfterSettingsUpdateTopicParams {
+    original: Settings;
+    settings: Settings;
+    meta: SettingsUpdateTopicMetaParams;
+}
+
+/**
+ * @category Settings
+ */
 export interface SettingsCrud {
     getCurrent: () => Promise<Settings>;
     get: (options?: DefaultSettingsCrudOptions) => Promise<Settings>;
@@ -165,14 +480,39 @@ export interface SettingsCrud {
         options?: { auth?: boolean } & DefaultSettingsCrudOptions
     ) => Promise<Settings>;
     getSettingsCacheKey: (options?: DefaultSettingsCrudOptions) => string;
+    /**
+     * Lifecycle events
+     */
+    onBeforeSettingsUpdate: Topic<OnBeforeSettingsUpdateTopicParams>;
+    onAfterSettingsUpdate: Topic<OnAfterSettingsUpdateTopicParams>;
 }
 
+/**
+ * @category Lifecycle events
+ */
+export interface OnBeforeInstallTopicParams {
+    context: PbContext;
+}
+/**
+ * @category Lifecycle events
+ */
+export interface OnAfterInstallTopicParams {
+    context: PbContext;
+}
+/**
+ * @category System
+ */
 export interface SystemCrud {
     get: () => Promise<System>;
     getVersion(): Promise<string>;
     setVersion(version: string): Promise<void>;
     install(args: { name: string; insertDemoData: boolean }): Promise<void>;
     upgrade(version: string, data?: Record<string, any>): Promise<boolean>;
+    /**
+     * Lifecycle events
+     */
+    onBeforeInstall: Topic<OnBeforeInstallTopicParams>;
+    onAfterInstall: Topic<OnBeforeInstallTopicParams>;
 }
 
 export interface PbContext
@@ -193,6 +533,9 @@ export interface PbContext
         system: SystemCrud;
         setPrerenderingHandlers: (configuration: PrerenderingHandlers) => void;
         getPrerenderingHandlers: () => PrerenderingHandlers;
+        /**
+         * Lifecycle events
+         */
         onPageBeforeRender: Topic<PageBeforeRenderEvent>;
         onPageAfterRender: Topic<PageAfterRenderEvent>;
         onPageBeforeFlush: Topic<PageBeforeFlushEvent>;

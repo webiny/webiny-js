@@ -4,7 +4,13 @@ import {
     Menu,
     PbContext,
     MenuStorageOperationsListParams,
-    MenuStorageOperations
+    MenuStorageOperations,
+    OnBeforeMenuCreateTopicParams,
+    OnAfterMenuCreateTopicParams,
+    OnBeforeMenuUpdateTopicParams,
+    OnAfterMenuUpdateTopicParams,
+    OnBeforeMenuDeleteTopicParams,
+    OnAfterMenuDeleteTopicParams
 } from "~/types";
 import { NotFoundError } from "@webiny/handler-graphql";
 import checkBasePermissions from "./utils/checkBasePermissions";
@@ -13,12 +19,11 @@ import Error from "@webiny/error";
 import { validation } from "@webiny/validation";
 import { withFields, string } from "@commodo/fields";
 import { object } from "commodo-fields-object";
-import executeCallbacks from "./utils/executeCallbacks";
 import prepareMenuItems from "./menus/prepareMenuItems";
-import { MenuPlugin } from "~/plugins/MenuPlugin";
 import WebinyError from "@webiny/error";
 import { MenuStorageOperationsProviderPlugin } from "~/plugins/MenuStorageOperationsProviderPlugin";
 import { createStorageOperations } from "./storageOperations";
+import { createTopic } from "@webiny/pubsub";
 
 const CreateDataModel = withFields({
     title: string({ validation: validation.create("required,minLength:1,maxLength:100") }),
@@ -49,9 +54,20 @@ export default new ContextPlugin<PbContext>(async context => {
         MenuStorageOperationsProviderPlugin.type
     );
 
-    const hookPlugins = context.plugins.byType<MenuPlugin>(MenuPlugin.type);
+    const onBeforeMenuCreate = createTopic<OnBeforeMenuCreateTopicParams>();
+    const onAfterMenuCreate = createTopic<OnAfterMenuCreateTopicParams>();
+    const onBeforeMenuUpdate = createTopic<OnBeforeMenuUpdateTopicParams>();
+    const onAfterMenuUpdate = createTopic<OnAfterMenuUpdateTopicParams>();
+    const onBeforeMenuDelete = createTopic<OnBeforeMenuDeleteTopicParams>();
+    const onAfterMenuDelete = createTopic<OnAfterMenuDeleteTopicParams>();
 
     context.pageBuilder.menus = {
+        onBeforeMenuCreate,
+        onAfterMenuCreate,
+        onBeforeMenuUpdate,
+        onAfterMenuUpdate,
+        onBeforeMenuDelete,
+        onAfterMenuDelete,
         storageOperations,
         async get(slug, options) {
             let permission = undefined;
@@ -190,16 +206,17 @@ export default new ContextPlugin<PbContext>(async context => {
             };
 
             try {
-                await executeCallbacks<MenuPlugin["beforeCreate"]>(hookPlugins, "beforeCreate", {
-                    context,
+                await onBeforeMenuCreate.publish({
+                    input: data,
                     menu
                 });
+
                 const result = await storageOperations.create({
                     input: data,
                     menu
                 });
-                await executeCallbacks<MenuPlugin["afterCreate"]>(hookPlugins, "afterCreate", {
-                    context,
+                await onAfterMenuCreate.publish({
+                    input: data,
                     menu: result
                 });
                 return result;
@@ -239,8 +256,8 @@ export default new ContextPlugin<PbContext>(async context => {
             };
 
             try {
-                await executeCallbacks<MenuPlugin["beforeUpdate"]>(hookPlugins, "beforeUpdate", {
-                    context,
+                await onAfterMenuUpdate.publish({
+                    original,
                     menu
                 });
 
@@ -250,10 +267,11 @@ export default new ContextPlugin<PbContext>(async context => {
                     menu
                 });
 
-                await executeCallbacks<MenuPlugin["afterUpdate"]>(hookPlugins, "afterUpdate", {
-                    context,
+                await onAfterMenuUpdate.publish({
+                    original,
                     menu: result
                 });
+
                 return result;
             } catch (ex) {
                 throw new WebinyError(
@@ -281,8 +299,7 @@ export default new ContextPlugin<PbContext>(async context => {
             checkOwnPermissions(identity, permission, menu);
 
             try {
-                await executeCallbacks<MenuPlugin["beforeDelete"]>(hookPlugins, "beforeDelete", {
-                    context,
+                await onBeforeMenuDelete.publish({
                     menu
                 });
 
@@ -290,10 +307,10 @@ export default new ContextPlugin<PbContext>(async context => {
                     menu
                 });
 
-                await executeCallbacks<MenuPlugin["afterDelete"]>(hookPlugins, "afterDelete", {
-                    context,
+                await onAfterMenuDelete.publish({
                     menu: result
                 });
+
                 return result;
             } catch (ex) {
                 throw new WebinyError(

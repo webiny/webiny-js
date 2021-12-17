@@ -5,15 +5,22 @@ import { DynamicPage } from "~/types";
 import { interpolateValue } from "~/interpolateValue";
 import { IndexPageDataPlugin } from "@webiny/api-page-builder-so-ddb-es/plugins/definitions/IndexPageDataPlugin";
 import { SearchPublishedPagesPlugin } from "@webiny/api-page-builder-so-ddb-es/plugins/definitions/SearchPublishedPagesPlugin";
+import { ContextPlugin } from "../../handler/src/plugins/ContextPlugin";
+import { PbContext } from "@webiny/api-page-builder/types";
 
 export default () => [
-    new PagePlugin<DynamicPage>({
-        // - Store "dynamic" flag into DB if page URL is a pattern
-        beforeUpdate({ updateData }) {
-            if (updateData.path && updateData.path.includes("{")) {
-                updateData.dynamic = true;
+    new ContextPlugin<PbContext>(async context => {
+        /**
+         * Store "dynamic" flag into DB if page URL is a pattern
+         */
+        context.pageBuilder.pages.onBeforePageUpdate.subscribe(async params => {
+            const { page } = params;
+            if (page.path && page.path.includes("{")) {
+                (page as any).dynamic = true;
             }
-        },
+        });
+    }),
+    new PagePlugin<DynamicPage>({
         // - Attempt to load dynamic page using patterns
         async notFound({ args, context }) {
             return await loadDynamicPage(args, context);

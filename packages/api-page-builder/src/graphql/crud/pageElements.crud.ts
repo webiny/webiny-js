@@ -4,6 +4,12 @@ import { withFields, string } from "@commodo/fields";
 import { object } from "commodo-fields-object";
 import { validation } from "@webiny/validation";
 import {
+    OnAfterPageElementCreateTopicParams,
+    OnAfterPageElementDeleteTopicParams,
+    OnAfterPageElementUpdateTopicParams,
+    OnBeforePageElementCreateTopicParams,
+    OnBeforePageElementDeleteTopicParams,
+    OnBeforePageElementUpdateTopicParams,
     PageElement,
     PageElementStorageOperations,
     PageElementStorageOperationsListParams,
@@ -15,6 +21,7 @@ import { NotFoundError } from "@webiny/handler-graphql";
 import WebinyError from "@webiny/error";
 import { PageElementStorageOperationsProviderPlugin } from "~/plugins/PageElementStorageOperationsProviderPlugin";
 import { createStorageOperations } from "~/graphql/crud/storageOperations";
+import { createTopic } from "@webiny/pubsub";
 
 const CreateDataModel = withFields({
     name: string({ validation: validation.create("required,maxLength:100") }),
@@ -48,7 +55,26 @@ export default new ContextPlugin<PbContext>(async context => {
         PageElementStorageOperationsProviderPlugin.type
     );
 
+    const onBeforePageElementCreate = createTopic<OnBeforePageElementCreateTopicParams>();
+    const onAfterPageElementCreate = createTopic<OnAfterPageElementCreateTopicParams>();
+    const onBeforePageElementUpdate = createTopic<OnBeforePageElementUpdateTopicParams>();
+    const onAfterPageElementUpdate = createTopic<OnAfterPageElementUpdateTopicParams>();
+    const onBeforePageElementDelete = createTopic<OnBeforePageElementDeleteTopicParams>();
+    const onAfterPageElementDelete = createTopic<OnAfterPageElementDeleteTopicParams>();
+
     context.pageBuilder.pageElements = {
+        /**
+         * Lifecycle events
+         */
+        onBeforePageElementCreate,
+        onAfterPageElementCreate,
+        onBeforePageElementUpdate,
+        onAfterPageElementUpdate,
+        onBeforePageElementDelete,
+        onAfterPageElementDelete,
+        /**
+         * Storage operations
+         */
         storageOperations,
         async get(id) {
             const permission = await checkBasePermissions(context, PERMISSION_NAME, {

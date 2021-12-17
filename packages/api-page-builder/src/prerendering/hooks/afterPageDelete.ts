@@ -1,10 +1,13 @@
-import { PagePlugin } from "~/plugins/PagePlugin";
+import { PbContext } from "~/graphql/types";
+import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
 
-export default () => [
-    new PagePlugin({
-        // After we deleted a page, we need to clear prerender files / cache as well, if the page was published.
-        async afterDelete({ context, page, publishedPage }) {
-            // Published pages have this record.
+export default () => {
+    return new ContextPlugin<PbContext>(async context => {
+        context.pageBuilder.pages.onAfterPageDelete.subscribe(async params => {
+            const { page, publishedPage } = params;
+            /**
+             * Published pages have this record.
+             */
             if (!publishedPage) {
                 return;
             }
@@ -16,7 +19,9 @@ export default () => [
                 });
             }
 
-            // If the published version was deleted.
+            /**
+             * If the published version was deleted.
+             */
             const isPublished = publishedPage.id === page.id;
             if (isPublished) {
                 return context.pageBuilder.pages.prerendering.flush({
@@ -24,9 +29,10 @@ export default () => [
                     paths: [{ path: publishedPage.path }]
                 });
             }
-
-            // Note: special pages (404 / home) cannot be deleted, that's why
-            // there is no special handling in regards to that here.
-        }
-    })
-];
+            /**
+             * Note: special pages (404 / home) cannot be deleted, that's why
+             * there is no special handling in regards to that here.
+             */
+        });
+    });
+};

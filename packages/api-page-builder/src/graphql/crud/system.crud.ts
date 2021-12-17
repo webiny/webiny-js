@@ -2,15 +2,20 @@ import WebinyError from "@webiny/error";
 import { NotAuthorizedError } from "@webiny/api-security";
 import { UpgradePlugin } from "@webiny/api-upgrade/types";
 import { getApplicablePlugin } from "@webiny/api-upgrade";
-import executeCallbacks from "./utils/executeCallbacks";
 import { preparePageData } from "./install/welcome-to-webiny-page-data";
 import { notFoundPageData } from "./install/notFoundPageData";
 import savePageAssets from "./install/utils/savePageAssets";
-import { PbContext, System, SystemStorageOperations } from "~/types";
-import { InstallationPlugin } from "~/plugins/InstallationPlugin";
+import {
+    OnAfterInstallTopicParams,
+    OnBeforeInstallTopicParams,
+    PbContext,
+    System,
+    SystemStorageOperations
+} from "~/types";
 import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
 import { SystemStorageOperationsProviderPlugin } from "~/plugins/SystemStorageOperationsProviderPlugin";
 import { createStorageOperations } from "./storageOperations";
+import { createTopic } from "@webiny/pubsub";
 
 export default new ContextPlugin<PbContext>(async context => {
     /**
@@ -30,7 +35,12 @@ export default new ContextPlugin<PbContext>(async context => {
         return context.tenancy.getCurrentTenant().id;
     };
 
+    const onBeforeInstall = createTopic<OnBeforeInstallTopicParams>();
+    const onAfterInstall = createTopic<OnAfterInstallTopicParams>();
+
     context.pageBuilder.system = {
+        onBeforeInstall,
+        onAfterInstall,
         async get() {
             try {
                 return await storageOperations.get();
@@ -99,19 +109,12 @@ export default new ContextPlugin<PbContext>(async context => {
                 throw new WebinyError("Page builder is already installed.", "PB_INSTALL_ABORTED");
             }
 
-            const hookPlugins = context.plugins.byType<InstallationPlugin>(InstallationPlugin.type);
             /**
              * 1. Execute all beforeInstall installation hooks.
-             * In old code there was Elasticsearch index creation here and it was moved to the plugin because
-             * different storage operations need different things done.
              */
-            await executeCallbacks<InstallationPlugin["beforeInstall"]>(
-                hookPlugins,
-                "beforeInstall",
-                {
-                    context
-                }
-            );
+            await onBeforeInstall.publish({
+                context
+            });
 
             if (insertDemoData) {
                 // 2. Create initial page category.
@@ -194,13 +197,9 @@ export default new ContextPlugin<PbContext>(async context => {
             // 6. Mark the Page Builder app as installed.
             await context.pageBuilder.system.setVersion(context.WEBINY_VERSION);
 
-            await executeCallbacks<InstallationPlugin["afterInstall"]>(
-                hookPlugins,
-                "afterInstall",
-                {
-                    context
-                }
-            );
+            await onAfterInstall.publish({
+                context
+            });
         },
         async upgrade(version) {
             const identity = context.security.getIdentity();

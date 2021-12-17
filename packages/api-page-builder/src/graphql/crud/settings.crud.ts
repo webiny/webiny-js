@@ -1,22 +1,25 @@
 import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
 import {
+    OnAfterSettingsUpdateTopicParams,
+    OnBeforeSettingsUpdateTopicParams,
+    PageSpecialType,
     PbContext,
     Settings,
     SettingsStorageOperations,
     SettingsStorageOperationsCreateParams,
-    SettingsStorageOperationsGetParams
+    SettingsStorageOperationsGetParams,
+    SettingsUpdateTopicMetaParams
 } from "~/types";
 import { NotAuthorizedError } from "@webiny/api-security";
-import executeCallbacks from "./utils/executeCallbacks";
 import { DefaultSettingsModel } from "~/utils/models";
 import mergeWith from "lodash/mergeWith";
 import Error from "@webiny/error";
-import { SettingsPlugin } from "~/plugins/SettingsPlugin";
 import WebinyError from "@webiny/error";
 import { createStorageOperations } from "./storageOperations";
 import { SettingsStorageOperationsProviderPlugin } from "~/plugins/SettingsStorageOperationsProviderPlugin";
 import lodashGet from "lodash/get";
 import DataLoader from "dataloader";
+import { createTopic } from "@webiny/pubsub";
 
 interface SettingsParams {
     tenant: false | string | undefined;
@@ -75,7 +78,7 @@ export default new ContextPlugin<PbContext>(async context => {
         SettingsStorageOperationsProviderPlugin.type
     );
 
-    const settingsPlugins = context.plugins.byType<SettingsPlugin>(SettingsPlugin.type);
+    // const settingsPlugins = context.plugins.byType<SettingsPlugin>(SettingsPlugin.type);
 
     const settingsDataLoader = new DataLoader<SettingsParams, Settings, string>(
         async keys => {
@@ -97,7 +100,12 @@ export default new ContextPlugin<PbContext>(async context => {
         }
     );
 
+    const onBeforeSettingsUpdate = createTopic<OnBeforeSettingsUpdateTopicParams>();
+    const onAfterSettingsUpdate = createTopic<OnAfterSettingsUpdateTopicParams>();
+
     context.pageBuilder.settings = {
+        onBeforeSettingsUpdate,
+        onAfterSettingsUpdate,
         /**
          * For the cache key we use the identifier created by the storage operations.
          * Initial, in the DynamoDB, it was PK + SK. It can be what ever
@@ -229,9 +237,9 @@ export default new ContextPlugin<PbContext>(async context => {
             // after save, make sure to trigger events, on which other plugins can do their tasks.
             const specialTypes = ["home", "notFound"];
 
-            const changedPages = [];
+            const changedPages: SettingsUpdateTopicMetaParams["diff"]["pages"] = [];
             for (let i = 0; i < specialTypes.length; i++) {
-                const specialType = specialTypes[i];
+                const specialType = specialTypes[i] as PageSpecialType;
                 const p = lodashGet(original, `pages.${specialType}`);
                 const n = lodashGet(settings, `pages.${specialType}`);
 
@@ -257,32 +265,29 @@ export default new ContextPlugin<PbContext>(async context => {
                 }
             }
 
-            const callbackParams = {
-                context,
-                previousSettings: original,
-                nextSettings: settings,
-                meta: {
-                    diff: {
-                        pages: changedPages
-                    }
+            const meta: SettingsUpdateTopicMetaParams = {
+                diff: {
+                    pages: changedPages
                 }
             };
             try {
-                await executeCallbacks<SettingsPlugin["beforeUpdate"]>(
-                    settingsPlugins,
-                    "beforeUpdate",
-                    callbackParams
-                );
+                await onBeforeSettingsUpdate.publish({
+                    original,
+                    settings,
+                    meta
+                });
+
                 const result = await storageOperations.update({
                     input: rawData,
                     original,
                     settings
                 });
-                await executeCallbacks<SettingsPlugin["afterUpdate"]>(
-                    settingsPlugins,
-                    "afterUpdate",
-                    callbackParams
-                );
+
+                await onAfterSettingsUpdate.publish({
+                    original,
+                    settings,
+                    meta
+                });
                 /**
                  * Clear the cache of the data loader.
                  */

@@ -5,6 +5,12 @@ import {
     CategoryStorageOperations,
     CategoryStorageOperationsGetParams,
     CategoryStorageOperationsListParams,
+    OnAfterCategoryCreateTopicParams,
+    OnAfterCategoryDeleteTopicParams,
+    OnAfterCategoryUpdateTopicParams,
+    OnBeforeCategoryCreateTopicParams,
+    OnBeforeCategoryDeleteTopicParams,
+    OnBeforeCategoryUpdateTopicParams,
     PbContext
 } from "~/types";
 import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
@@ -16,6 +22,7 @@ import checkOwnPermissions from "./utils/checkOwnPermissions";
 import WebinyError from "@webiny/error";
 import { CategoryStorageOperationsProviderPlugin } from "~/plugins/CategoryStorageOperationsProviderPlugin";
 import { createStorageOperations } from "./storageOperations";
+import { createTopic } from "@webiny/pubsub";
 
 const CreateDataModel = withFields({
     slug: string({ validation: validation.create("required,minLength:1,maxLength:100") }),
@@ -48,7 +55,26 @@ export default new ContextPlugin<PbContext>(async context => {
 
     const getPermission = name => context.security.getPermission(name);
 
+    const onBeforeCategoryCreate = createTopic<OnBeforeCategoryCreateTopicParams>();
+    const onAfterCategoryCreate = createTopic<OnAfterCategoryCreateTopicParams>();
+    const onBeforeCategoryUpdate = createTopic<OnBeforeCategoryUpdateTopicParams>();
+    const onAfterCategoryUpdate = createTopic<OnAfterCategoryUpdateTopicParams>();
+    const onBeforeCategoryDelete = createTopic<OnBeforeCategoryDeleteTopicParams>();
+    const onAfterCategoryDelete = createTopic<OnAfterCategoryDeleteTopicParams>();
+
     context.pageBuilder.categories = {
+        /**
+         * Lifecycle events
+         */
+        onBeforeCategoryCreate,
+        onAfterCategoryCreate,
+        onBeforeCategoryUpdate,
+        onAfterCategoryUpdate,
+        onBeforeCategoryDelete,
+        onAfterCategoryDelete,
+        /**
+         * Storage operations
+         */
         storageOperations,
         async get(slug, options = { auth: true }) {
             const { auth } = options;
