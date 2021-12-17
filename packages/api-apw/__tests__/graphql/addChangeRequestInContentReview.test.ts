@@ -73,6 +73,7 @@ describe(`Add change requests on a step in a "Content Review"`, () => {
         await until(
             () => listContentReviewsQuery({}).then(([data]) => data),
             response => {
+                console.log(JSON.stringify({ response }, null, 2));
                 const [entry] = response.data.advancedPublishingWorkflow.listContentReviews.data;
                 return (
                     entry &&
