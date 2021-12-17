@@ -59,8 +59,8 @@ module.exports = async (inputs, context) => {
     }
 
     if (inputs.deploy) {
-        if (typeof inputs.logs === "string" && inputs.logs === "") {
-            inputs.logs = "*";
+        if (typeof inputs.remoteRuntimeLogs === "string" && inputs.remoteRuntimeLogs === "") {
+            inputs.remoteRuntimeLogs = "*";
         }
     }
 
