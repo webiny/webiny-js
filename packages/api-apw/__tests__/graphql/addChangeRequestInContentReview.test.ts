@@ -61,6 +61,17 @@ describe(`Add change requests on a step in a "Content Review"`, () => {
         const { page } = await createSetupForContentReview(gqlHandler);
         const contentReview = await createContentReview(page);
         const [step1, step2] = contentReview.steps;
+
+        await until(
+            () => listContentReviewsQuery({}).then(([data]) => data),
+            response => {
+                const list = response.data.advancedPublishingWorkflow.listContentReviews.data;
+                return list.length === 1;
+            },
+            {
+                name: `Wait for "ContentReview" entry to be available in list query`
+            }
+        );
         /*
          * Create a new change request entry for step 1.
          */
@@ -69,6 +80,17 @@ describe(`Add change requests on a step in a "Content Review"`, () => {
         });
         const changeRequested =
             createChangeRequestResponse.data.advancedPublishingWorkflow.createChangeRequest.data;
+
+        await until(
+            () => listChangeRequestsQuery({}).then(([data]) => data),
+            response => {
+                const list = response.data.advancedPublishingWorkflow.listChangeRequests.data;
+                return list.length === 1;
+            },
+            {
+                name: `Wait for "ChangeRequest" entry to be available in list query`
+            }
+        );
 
         await until(
             () => listContentReviewsQuery({}).then(([data]) => data),
@@ -80,19 +102,7 @@ describe(`Add change requests on a step in a "Content Review"`, () => {
                 );
             },
             {
-                name: `Wait for "ContentReview" entry to be available in list query`,
-                tries: 20
-            }
-        );
-
-        await until(
-            () => listChangeRequestsQuery({}).then(([data]) => data),
-            response => {
-                const list = response.data.advancedPublishingWorkflow.listChangeRequests.data;
-                return list.length === 1;
-            },
-            {
-                name: `Wait for "ChangeRequest" entry to be available in list query`
+                name: `Wait for "ContentReview" entry to be available in list query`
             }
         );
 
