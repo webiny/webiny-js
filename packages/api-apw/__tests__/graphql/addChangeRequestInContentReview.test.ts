@@ -75,11 +75,12 @@ describe(`Add change requests on a step in a "Content Review"`, () => {
             response => {
                 const [entry] = response.data.advancedPublishingWorkflow.listContentReviews.data;
                 return (
+                    entry &&
                     entry.steps.find(step => step.slug === step1.slug).pendingChangeRequests === 1
                 );
             },
             {
-                name: "Wait for updated entry to be available in list query"
+                name: `Wait for "ContentReview" entry to be available in list query`
             }
         );
 
@@ -90,7 +91,7 @@ describe(`Add change requests on a step in a "Content Review"`, () => {
                 return list.length === 1;
             },
             {
-                name: "Wait for entry to be available in list query"
+                name: `Wait for "ChangeRequest" entry to be available in list query`
             }
         );
 
@@ -152,12 +153,15 @@ describe(`Add change requests on a step in a "Content Review"`, () => {
                     const [entry] =
                         response.data.advancedPublishingWorkflow.listContentReviews.data;
                     return (
+                        entry &&
                         entry.steps.find(step => step.slug === step2.slug).pendingChangeRequests ===
-                        i + 1
+                            i + 1
                     );
                 },
                 {
-                    name: "Wait for updated entry to be available in list query"
+                    name: `Wait for updated "ContentReview" entry to be available in list query iteration: ${
+                        i + 1
+                    }`
                 }
             );
         }
@@ -174,7 +178,7 @@ describe(`Add change requests on a step in a "Content Review"`, () => {
                 return list.length === 2;
             },
             {
-                name: "Wait for updated entry to be available in list query"
+                name: `Wait for "ChangeRequest" entry to be available in list query for step2`
             }
         );
 
