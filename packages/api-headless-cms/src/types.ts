@@ -940,6 +940,10 @@ export interface CmsModelCreateInput {
      * Description of the content model.
      */
     description?: string;
+    /**
+     * Group where to put the content model in.
+     */
+    group: string;
 }
 
 /**
@@ -1264,10 +1268,7 @@ export interface CmsModelContext {
     /**
      * Create a content model from the given model - clone.
      */
-    createModelFrom: (
-        modelId: string,
-        data: Omit<CmsModelCreateInput, "group">
-    ) => Promise<CmsModel>;
+    createModelFrom: (modelId: string, data: CmsModelCreateInput) => Promise<CmsModel>;
     /**
      * Update content model without data validation. Used internally.
      * @hidden
