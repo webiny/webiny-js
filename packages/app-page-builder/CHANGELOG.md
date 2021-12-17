@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.20.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.19.1...v5.20.0-beta.0) (2021-12-17)
+
+
+### Features
+
+* removing the rerender button, only gql left ([e7c6e16](https://github.com/webiny/webiny-js/commit/e7c6e16158d80c78af472cdac620fd9b8a2dcc37))
+* **app-page-builder:** rerender page functionality ([45bfb1b](https://github.com/webiny/webiny-js/commit/45bfb1bac0c1303f039f082dc54b113786c6e270))
+
+
+
+
+
 ## [5.19.1](https://github.com/webiny/webiny-js/compare/v5.19.1-beta.0...v5.19.1) (2021-12-14)
 
 **Note:** Version bump only for package @webiny/app-page-builder
