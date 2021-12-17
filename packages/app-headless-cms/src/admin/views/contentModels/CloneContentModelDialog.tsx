@@ -15,8 +15,9 @@ import * as UID from "@webiny/ui/Dialog";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { addModelToGroupCache, addModelToListCache } from "./cache";
 import * as GQL from "../../viewsGraphql";
+import { CmsEditorContentModel } from "~/types";
 
-const t = i18n.ns("app-headless-cms/admin/views/content-models/new-content-model-dialog");
+const t = i18n.ns("app-headless-cms/admin/views/content-models/clone-content-model-dialog");
 
 const narrowDialog = css({
     ".mdc-dialog__surface": {
@@ -29,10 +30,12 @@ const noPadding = css({
     padding: "5px !important"
 });
 
-export type NewContentModelDialogProps = {
+export interface Props {
     open: boolean;
     onClose: UID.DialogOnClose;
-};
+    contentModel: CmsEditorContentModel;
+    closeModal: () => void;
+}
 
 /**
  * This list is to disallow creating models that might interfere with GraphQL schema creation.
@@ -40,14 +43,14 @@ export type NewContentModelDialogProps = {
  */
 const disallowedModelIdEndingList: string[] = ["Response", "List", "Meta", "Input", "Sorter"];
 
-const NewContentModelDialog: React.FC<NewContentModelDialogProps> = ({ open, onClose }) => {
+const CloneContentModelDialog: React.FC<Props> = ({ open, onClose, contentModel, closeModal }) => {
     const [loading, setLoading] = React.useState(false);
     const { showSnackbar } = useSnackbar();
     const { history } = useRouter();
 
-    const [createContentModel] = useMutation(GQL.CREATE_CONTENT_MODEL, {
+    const [createContentModelFrom] = useMutation(GQL.CREATE_CONTENT_MODEL_FROM, {
         update(cache, { data }) {
-            const { data: model, error } = data.createContentModel;
+            const { data: model, error } = data.createContentModelFrom;
 
             if (error) {
                 setLoading(false);
@@ -57,7 +60,8 @@ const NewContentModelDialog: React.FC<NewContentModelDialogProps> = ({ open, onC
             addModelToListCache(cache, model);
             addModelToGroupCache(cache, model);
 
-            history.push("/cms/content-models/" + model.modelId);
+            history.push("/cms/content-models/");
+            closeModal();
         }
     });
 
@@ -93,24 +97,27 @@ const NewContentModelDialog: React.FC<NewContentModelDialogProps> = ({ open, onC
             open={open}
             onClose={onClose}
             className={narrowDialog}
-            data-testid="cms-new-content-model-modal"
+            data-testid="cms-clone-content-model-modal"
         >
             {open && (
                 <Form
                     data={{
-                        group: get(contentModelGroups, "0.value")
+                        group: contentModel.group.id
                     }}
                     onSubmit={async data => {
                         setLoading(true);
-                        await createContentModel({
-                            variables: { data }
+                        await createContentModelFrom({
+                            variables: {
+                                modelId: contentModel.modelId,
+                                data
+                            }
                         });
                     }}
                 >
                     {({ Bind, submit }) => (
                         <>
                             {loading && <CircularProgress />}
-                            <UID.DialogTitle>{t`New Content Model`}</UID.DialogTitle>
+                            <UID.DialogTitle>{t`New Content Model From Existing`}</UID.DialogTitle>
                             <UID.DialogContent>
                                 <Grid className={noPadding}>
                                     <Cell span={12}>
@@ -124,6 +131,7 @@ const NewContentModelDialog: React.FC<NewContentModelDialogProps> = ({ open, onC
                                             <Input
                                                 label={t`Name`}
                                                 description={t`The name of the content model`}
+                                                placeholder={contentModel.name}
                                             />
                                         </Bind>
                                     </Cell>
@@ -136,6 +144,7 @@ const NewContentModelDialog: React.FC<NewContentModelDialogProps> = ({ open, onC
                                                 description={t`Choose a content model group`}
                                                 label={t`Content model group`}
                                                 options={contentModelGroups}
+                                                value={contentModel.group.id}
                                             />
                                         </Bind>
                                     </Cell>
@@ -148,6 +157,7 @@ const NewContentModelDialog: React.FC<NewContentModelDialogProps> = ({ open, onC
                                                     maxLength={200}
                                                     characterCount
                                                     label={t`Description`}
+                                                    value={contentModel.description}
                                                 />
                                             )}
                                         </Bind>
@@ -165,4 +175,4 @@ const NewContentModelDialog: React.FC<NewContentModelDialogProps> = ({ open, onC
     );
 };
 
-export default NewContentModelDialog;
+export default CloneContentModelDialog;

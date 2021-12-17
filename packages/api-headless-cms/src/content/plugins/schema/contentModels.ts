@@ -8,6 +8,11 @@ interface CreateCmsModelArgs {
     data: CmsModelCreateInput;
 }
 
+interface CreateFromCmsModelFromArgs {
+    modelId: string;
+    data: CmsModelCreateInput;
+}
+
 interface ReadCmsModelArgs {
     modelId: string;
 }
@@ -57,6 +62,18 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
             createContentModel: async (_: unknown, args: CreateCmsModelArgs, context) => {
                 try {
                     const model = await context.cms.createModel(args.data);
+                    return new Response(model);
+                } catch (e) {
+                    return new ErrorResponse(e);
+                }
+            },
+            createContentModelFrom: async (
+                _: unknown,
+                args: CreateFromCmsModelFromArgs,
+                context
+            ) => {
+                try {
+                    const model = await context.cms.createModelFrom(args.modelId, args.data);
                     return new Response(model);
                 } catch (e) {
                     return new ErrorResponse(e);
@@ -124,6 +141,13 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
                 description: String
             }
 
+            input CmsContentModelCreateFromInput {
+                name: String!
+                modelId: String
+                group: RefInput!
+                description: String
+            }
+
             input CmsContentModelUpdateInput {
                 name: String
                 group: RefInput
@@ -135,6 +159,11 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
 
             extend type Mutation {
                 createContentModel(data: CmsContentModelCreateInput!): CmsContentModelResponse
+
+                createContentModelFrom(
+                    modelId: ID!
+                    data: CmsContentModelCreateFromInput!
+                ): CmsContentModelResponse
 
                 updateContentModel(
                     modelId: ID!

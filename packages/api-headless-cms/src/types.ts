@@ -477,7 +477,7 @@ export interface CmsModelFieldToGraphQLPlugin extends Plugin {
             model: CmsModel;
             field: CmsModelField;
             fieldTypePlugins: CmsFieldTypePlugins;
-        }): CmsModelFieldDefinition | string;
+        }): CmsModelFieldDefinition | string | null;
         /**
          * Definition for field resolver.
          * By default it is simple return of the `instance.values[fieldId]` but if required, users can define their own.
@@ -575,7 +575,7 @@ export interface CmsModelFieldToGraphQLPlugin extends Plugin {
             model: CmsModel;
             field: CmsModelField;
             fieldTypePlugins: CmsFieldTypePlugins;
-        }) => CmsModelFieldDefinition | string;
+        }) => CmsModelFieldDefinition | string | null;
         /**
          * Definition for input GraphQL field type.
          *
@@ -940,6 +940,10 @@ export interface CmsModelCreateInput {
      * Description of the content model.
      */
     description?: string;
+    /**
+     * Group where to put the content model in.
+     */
+    group: string;
 }
 
 /**
@@ -1160,17 +1164,13 @@ export interface CmsStorageEntry extends CmsEntry {
  */
 export interface CmsModelManager {
     /**
-     * List entries in this content model.
-     */
-    list: (params?: CmsEntryListParams) => Promise<[CmsEntry[], CmsEntryMeta]>;
-    /**
      * List only published entries in the content model.
      */
-    listPublished: (params?: CmsEntryListParams) => Promise<[CmsEntry[], CmsEntryMeta]>;
+    listPublished: (params: CmsEntryListParams) => Promise<[CmsEntry[], CmsEntryMeta]>;
     /**
      * List latest entries in the content model. Used for administration.
      */
-    listLatest: (params?: CmsEntryListParams) => Promise<[CmsEntry[], CmsEntryMeta]>;
+    listLatest: (params: CmsEntryListParams) => Promise<[CmsEntry[], CmsEntryMeta]>;
     /**
      * Get a list of published entries by the ID list.
      */
@@ -1203,6 +1203,16 @@ export interface BeforeModelCreateTopicParams {
 }
 export interface AfterModelCreateTopicParams {
     input: Partial<CmsModel>;
+    model: CmsModel;
+}
+export interface BeforeModelCreateFromTopicParams {
+    input: Partial<CmsModel>;
+    original: CmsModel;
+    model: CmsModel;
+}
+export interface AfterModelCreateFromTopicParams {
+    input: Partial<CmsModel>;
+    original: CmsModel;
     model: CmsModel;
 }
 export interface BeforeModelUpdateTopicParams {
@@ -1256,11 +1266,11 @@ export interface CmsModelContext {
      */
     createModel: (data: CmsModelCreateInput) => Promise<CmsModel>;
     /**
+     * Create a content model from the given model - clone.
+     */
+    createModelFrom: (modelId: string, data: CmsModelCreateInput) => Promise<CmsModel>;
+    /**
      * Update content model without data validation. Used internally.
-     *
-     * @param model - existing content model
-     * @param data - data to be updated
-     *
      * @hidden
      */
     updateModelDirect: (params: CmsModelUpdateDirectParams) => Promise<CmsModel>;
@@ -1288,6 +1298,8 @@ export interface CmsModelContext {
      */
     onBeforeModelCreate: Topic<BeforeModelCreateTopicParams>;
     onAfterModelCreate: Topic<AfterModelCreateTopicParams>;
+    onBeforeModelCreateFrom: Topic<BeforeModelCreateFromTopicParams>;
+    onAfterModelCreateFrom: Topic<AfterModelCreateFromTopicParams>;
     onBeforeModelUpdate: Topic<BeforeModelUpdateTopicParams>;
     onAfterModelUpdate: Topic<AfterModelUpdateTopicParams>;
     onBeforeModelDelete: Topic<BeforeModelDeleteTopicParams>;
@@ -1570,7 +1582,7 @@ export interface CmsEntryContext {
      */
     listEntries: (
         model: CmsModel,
-        params?: CmsEntryListParams
+        params: CmsEntryListParams
     ) => Promise<[CmsEntry[], CmsEntryMeta]>;
     /**
      * Lists latest entries. Used for manage API.

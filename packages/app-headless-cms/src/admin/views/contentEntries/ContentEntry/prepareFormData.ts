@@ -42,18 +42,21 @@ const createTransformers = (fields: CmsEditorField[]): FieldTransformers => {
 };
 
 export const prepareFormData = (
-    data: Record<string, any>,
+    input: Record<string, any>,
     model: CmsEditorContentModel
 ): Record<string, any> => {
     const transformers = createTransformers(model.fields);
 
-    return Object.keys(data).reduce((acc, key) => {
-        const value = data[key];
-        if (!transformers[key]) {
-            acc[key] = value;
-            return acc;
+    return Object.keys(transformers).reduce((output, key) => {
+        const value = input[key];
+        const transform = transformers[key];
+
+        const transformedValue = transform(value);
+        if (transformedValue === undefined) {
+            return output;
         }
-        acc[key] = transformers[key](value);
-        return acc;
-    }, {});
+        output[key] = transformedValue;
+
+        return output;
+    }, input);
 };

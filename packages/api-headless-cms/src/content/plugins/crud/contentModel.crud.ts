@@ -10,7 +10,9 @@ import {
     BeforeModelUpdateTopicParams,
     AfterModelUpdateTopicParams,
     BeforeModelDeleteTopicParams,
-    AfterModelDeleteTopicParams
+    AfterModelDeleteTopicParams,
+    BeforeModelCreateFromTopicParams,
+    AfterModelCreateFromTopicParams
 } from "~/types";
 import * as utils from "~/utils";
 import DataLoader from "dataloader";
@@ -151,7 +153,7 @@ export const createModelsCrud = (params: Params): CmsModelContext => {
         });
     };
 
-    const get = async (modelId: string) => {
+    const get = async (modelId: string): Promise<CmsModel> => {
         const permission = await checkModelPermissions("r");
 
         const model = await modelsGet(modelId);
@@ -176,6 +178,8 @@ export const createModelsCrud = (params: Params): CmsModelContext => {
 
     const onBeforeCreate = createTopic<BeforeModelCreateTopicParams>();
     const onAfterCreate = createTopic<AfterModelCreateTopicParams>();
+    const onBeforeCreateFrom = createTopic<BeforeModelCreateFromTopicParams>();
+    const onAfterCreateFrom = createTopic<AfterModelCreateFromTopicParams>();
     const onBeforeUpdate = createTopic<BeforeModelUpdateTopicParams>();
     const onAfterUpdate = createTopic<AfterModelUpdateTopicParams>();
     const onBeforeDelete = createTopic<BeforeModelDeleteTopicParams>();
@@ -185,6 +189,7 @@ export const createModelsCrud = (params: Params): CmsModelContext => {
      */
     assignBeforeModelCreate({
         onBeforeCreate,
+        onBeforeCreateFrom,
         plugins: context.plugins,
         storageOperations
     });
@@ -214,6 +219,8 @@ export const createModelsCrud = (params: Params): CmsModelContext => {
     return {
         onBeforeModelCreate: onBeforeCreate,
         onAfterModelCreate: onAfterCreate,
+        onBeforeModelCreateFrom: onBeforeCreateFrom,
+        onAfterModelCreateFrom: onAfterCreateFrom,
         onBeforeModelUpdate: onBeforeUpdate,
         onAfterModelUpdate: onAfterUpdate,
         onBeforeModelDelete: onBeforeDelete,
@@ -329,6 +336,74 @@ export const createModelsCrud = (params: Params): CmsModelContext => {
             });
 
             return resultModel;
+        },
+        async createModelFrom(modelId, data) {
+            await checkModelPermissions("w");
+            /**
+             * Get a model record; this will also perform ownership validation.
+             */
+            const original = await get(modelId);
+
+            const createdData = new CreateContentModelModel().populate({
+                name: data.name,
+                modelId: data.modelId,
+                description: data.description || original.description,
+                group: data.group
+            });
+
+            await createdData.validate();
+            const input = await createdData.toJSON();
+
+            context.security.disableAuthorization();
+            const group = await context.cms.getGroup(input.group);
+            context.security.enableAuthorization();
+            if (!group) {
+                throw new NotFoundError(`There is no group "${input.group}".`);
+            }
+
+            const identity = getIdentity();
+            const model: CmsModel = {
+                ...original,
+                group: {
+                    id: group.id,
+                    name: group.name
+                },
+                name: input.name,
+                modelId: input.modelId,
+                description: input.description,
+                createdBy: {
+                    id: identity.id,
+                    displayName: identity.displayName,
+                    type: identity.type
+                },
+                createdOn: new Date().toISOString() as any,
+                savedOn: new Date().toISOString() as any,
+                lockedFields: [],
+                webinyVersion: context.WEBINY_VERSION
+            };
+
+            await onBeforeCreateFrom.publish({
+                model,
+                original,
+                input
+            });
+
+            const createdModel = await storageOperations.models.create({
+                input,
+                model
+            });
+
+            loaders.listModels.clearAll();
+
+            await updateManager(context, model);
+
+            await onAfterCreateFrom.publish({
+                input,
+                original,
+                model: createdModel
+            });
+
+            return createdModel;
         },
         async updateModel(modelId, inputData) {
             await checkModelPermissions("w");
