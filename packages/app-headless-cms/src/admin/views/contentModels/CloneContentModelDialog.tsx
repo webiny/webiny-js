@@ -8,7 +8,7 @@ import { Select } from "@webiny/ui/Select";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { validation } from "@webiny/validation";
-import { useQuery, useMutation } from "../../hooks";
+import { useMutation, useQueryLocale } from "../../hooks";
 import { i18n } from "@webiny/app/i18n";
 import { ButtonDefault } from "@webiny/ui/Button";
 import * as UID from "@webiny/ui/Dialog";
@@ -16,6 +16,7 @@ import { Grid, Cell } from "@webiny/ui/Grid";
 import { addModelToGroupCache, addModelToListCache } from "./cache";
 import * as GQL from "../../viewsGraphql";
 import { CmsEditorContentModel } from "~/types";
+import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
 
 const t = i18n.ns("app-headless-cms/admin/views/content-models/clone-content-model-dialog");
 
@@ -43,18 +44,45 @@ export interface Props {
  */
 const disallowedModelIdEndingList: string[] = ["Response", "List", "Meta", "Input", "Sorter"];
 
+const getSelectedGroup = (groups: any[], model: CmsEditorContentModel): string | null => {
+    if (groups.length === 0 || !model) {
+        return "";
+    }
+    const current = model.group.id;
+    const group = groups.find(g => g.value === current);
+    if (group) {
+        return group.value;
+    }
+    const defaultSelected = groups.find(() => true);
+    return defaultSelected ? defaultSelected.value : group.id;
+};
+
 const CloneContentModelDialog: React.FC<Props> = ({ open, onClose, contentModel, closeModal }) => {
     const [loading, setLoading] = React.useState(false);
     const { showSnackbar } = useSnackbar();
     const { history } = useRouter();
+    const { getLocales, getCurrentLocale, setCurrentLocale } = useI18N();
+
+    const currentLocale = getCurrentLocale();
+    const [locale, setLocale] = React.useState(currentLocale);
 
     const [createContentModelFrom] = useMutation(GQL.CREATE_CONTENT_MODEL_FROM, {
-        update(cache, { data }) {
-            const { data: model, error } = data.createContentModelFrom;
+        onError(error) {
+            setLoading(false);
+            showSnackbar(error.message);
+        },
+        update(cache, response) {
+            const { data: model, error } = response.data.createContentModelFrom;
 
             if (error) {
                 setLoading(false);
                 return showSnackbar(error.message);
+            }
+
+            if (currentLocale !== locale) {
+                setCurrentLocale(locale, "content");
+                window.location.reload();
+                return;
             }
 
             addModelToListCache(cache, model);
@@ -65,13 +93,19 @@ const CloneContentModelDialog: React.FC<Props> = ({ open, onClose, contentModel,
         }
     });
 
-    const { data } = useQuery(GQL.LIST_MENU_CONTENT_GROUPS_MODELS, {
-        skip: !open
-    });
+    const { data, loading: loadingGroups } = useQueryLocale(
+        GQL.LIST_MENU_CONTENT_GROUPS_MODELS,
+        locale,
+        {
+            skip: !open
+        }
+    );
 
     const contentModelGroups = get(data, "listContentModelGroups.data", []).map(item => {
         return { value: item.id, label: item.name };
     });
+
+    const selectedGroup = getSelectedGroup(contentModelGroups, contentModel);
 
     const nameValidator = useCallback((name: string) => {
         const target = (name || "").trim();
@@ -92,6 +126,13 @@ const CloneContentModelDialog: React.FC<Props> = ({ open, onClose, contentModel,
         return true;
     }, undefined);
 
+    const locales = getLocales().map(locale => {
+        return {
+            value: locale.code,
+            label: locale.code === currentLocale ? "Current locale" : locale.code
+        };
+    });
+
     return (
         <UID.Dialog
             open={open}
@@ -99,10 +140,15 @@ const CloneContentModelDialog: React.FC<Props> = ({ open, onClose, contentModel,
             className={narrowDialog}
             data-testid="cms-clone-content-model-modal"
         >
+            {loadingGroups && (
+                <CircularProgress label={"Please wait while we load required information."} />
+            )}
             {open && (
                 <Form
                     data={{
-                        group: contentModel.group.id
+                        group: selectedGroup,
+                        locale,
+                        name: contentModel.name
                     }}
                     onSubmit={async data => {
                         setLoading(true);
@@ -117,7 +163,7 @@ const CloneContentModelDialog: React.FC<Props> = ({ open, onClose, contentModel,
                     {({ Bind, submit }) => (
                         <>
                             {loading && <CircularProgress />}
-                            <UID.DialogTitle>{t`New Content Model From Existing`}</UID.DialogTitle>
+                            <UID.DialogTitle>{t`Clone Content Model`}</UID.DialogTitle>
                             <UID.DialogContent>
                                 <Grid className={noPadding}>
                                     <Cell span={12}>
@@ -131,7 +177,6 @@ const CloneContentModelDialog: React.FC<Props> = ({ open, onClose, contentModel,
                                             <Input
                                                 label={t`Name`}
                                                 description={t`The name of the content model`}
-                                                placeholder={contentModel.name}
                                             />
                                         </Bind>
                                     </Cell>
@@ -144,7 +189,24 @@ const CloneContentModelDialog: React.FC<Props> = ({ open, onClose, contentModel,
                                                 description={t`Choose a content model group`}
                                                 label={t`Content model group`}
                                                 options={contentModelGroups}
-                                                value={contentModel.group.id}
+                                            />
+                                        </Bind>
+                                    </Cell>
+                                    <Cell span={12}>
+                                        <Bind
+                                            name={"locale"}
+                                            validators={validation.create("required")}
+                                            afterChange={value => {
+                                                if (!value) {
+                                                    return;
+                                                }
+                                                setLocale(value);
+                                            }}
+                                        >
+                                            <Select
+                                                description={t`Choose a locale into which you wish to clone the model`}
+                                                label={t`Content model locale`}
+                                                options={locales}
                                             />
                                         </Bind>
                                     </Cell>
@@ -165,7 +227,7 @@ const CloneContentModelDialog: React.FC<Props> = ({ open, onClose, contentModel,
                                 </Grid>
                             </UID.DialogContent>
                             <UID.DialogActions>
-                                <ButtonDefault onClick={submit}>+ {t`Create`}</ButtonDefault>
+                                <ButtonDefault onClick={submit}>+ {t`Clone`}</ButtonDefault>
                             </UID.DialogActions>
                         </>
                     )}
