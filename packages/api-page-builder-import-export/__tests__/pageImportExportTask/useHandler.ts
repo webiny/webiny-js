@@ -25,7 +25,7 @@ export default (params: Params = {}) => {
                     return;
                 }
                 context.i18nContent = {
-                    getLocale: () => {
+                    getCurrentLocale: () => {
                         return {
                             code: "en-US"
                         };

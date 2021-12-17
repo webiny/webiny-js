@@ -63,7 +63,7 @@ export default new ContextPlugin<PbContext>(async context => {
             }
 
             const tenant = context.tenancy.getCurrentTenant();
-            const locale = context.i18nContent.getLocale();
+            const locale = context.i18nContent.getCurrentLocale();
             const params: MenuStorageOperationsGetParams = {
                 where: {
                     slug,
@@ -122,7 +122,7 @@ export default new ContextPlugin<PbContext>(async context => {
             });
 
             const tenant = context.tenancy.getCurrentTenant();
-            const locale = context.i18nContent.getLocale();
+            const locale = context.i18nContent.getCurrentLocale();
             const { sort } = params || {};
 
             const listParams: MenuStorageOperationsListParams = {
@@ -162,7 +162,7 @@ export default new ContextPlugin<PbContext>(async context => {
             const data: Menu = await createDataModel.toJSON();
 
             const tenant = context.tenancy.getCurrentTenant();
-            const locale = context.i18nContent.getLocale();
+            const locale = context.i18nContent.getCurrentLocale();
 
             const existing = await storageOperations.get({
                 where: {

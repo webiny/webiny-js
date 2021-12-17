@@ -4,13 +4,27 @@ import { renderField } from "~/content/plugins/utils/renderFields";
 import { renderInputField } from "~/content/plugins/utils/renderInputFields";
 import { createManageTypeName, createTypeName } from "~/content/plugins/utils/createTypeName";
 
-const typeFromField = ({ typeOfType, model, type, field, fieldTypePlugins }) => {
+interface TypeFromFieldResponse {
+    fieldType: string;
+    typeDefs: string;
+}
+const typeFromField = ({
+    typeOfType,
+    model,
+    type,
+    field,
+    fieldTypePlugins
+}): TypeFromFieldResponse | null => {
     const typeSuffix = typeOfType === "input" ? "Input" : "";
     const typeName = createTypeName(model.modelId);
     const mTypeName = createManageTypeName(typeName);
 
     // `field` is an "object" field
     const fields = field.settings.fields as CmsModelField[];
+
+    if (!fields || fields.length === 0) {
+        return null;
+    }
     const fieldTypeName = `${mTypeName}_${upperFirst(field.fieldId)}`;
 
     const typeFields = [];
@@ -55,7 +69,7 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
     isSearchable: false,
     read: {
         createTypeField({ field, model, fieldTypePlugins }) {
-            const { fieldType, typeDefs } = typeFromField({
+            const result = typeFromField({
                 typeOfType: "type",
                 model,
                 type: "read",
@@ -63,25 +77,36 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
                 fieldTypePlugins
             });
 
+            if (!result) {
+                return null;
+            }
+            const { fieldType, typeDefs } = result;
+
             return {
                 fields: `${field.fieldId}: ${field.multipleValues ? `[${fieldType}!]` : fieldType}`,
                 typeDefs
             };
         },
         createResolver({ field, createFieldResolvers, graphQLType }) {
+            if (!field.settings.fields || field.settings.fields.length === 0) {
+                return false;
+            }
+
             const fieldType = `${graphQLType}_${upperFirst(field.fieldId)}`;
+
+            const typeResolvers = createFieldResolvers({
+                graphQLType: fieldType,
+                fields: field.settings.fields
+            });
             return {
                 resolver: null,
-                typeResolvers: createFieldResolvers({
-                    graphQLType: fieldType,
-                    fields: field.settings.fields
-                })
+                typeResolvers: typeResolvers || {}
             };
         }
     },
     manage: {
         createTypeField({ model, field, fieldTypePlugins }) {
-            const { fieldType, typeDefs } = typeFromField({
+            const result = typeFromField({
                 typeOfType: "type",
                 model,
                 type: "manage",
@@ -89,19 +114,28 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
                 fieldTypePlugins
             });
 
+            if (!result) {
+                return null;
+            }
+            const { fieldType, typeDefs } = result;
+
             return {
                 fields: `${field.fieldId}: ${field.multipleValues ? `[${fieldType}!]` : fieldType}`,
                 typeDefs
             };
         },
         createInputField({ model, field, fieldTypePlugins }) {
-            const { fieldType, typeDefs } = typeFromField({
+            const result = typeFromField({
                 typeOfType: "input",
                 model,
                 type: "manage",
                 field,
                 fieldTypePlugins
             });
+            if (!result) {
+                return null;
+            }
+            const { fieldType, typeDefs } = result;
 
             return {
                 fields: `${field.fieldId}: ${field.multipleValues ? `[${fieldType}!]` : fieldType}`,
@@ -109,13 +143,17 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
             };
         },
         createResolver({ graphQLType, field, createFieldResolvers }) {
+            if (!field.settings.fields || field.settings.fields.length === 0) {
+                return false;
+            }
             const fieldType = `${graphQLType}_${upperFirst(field.fieldId)}`;
+            const typeResolvers = createFieldResolvers({
+                graphQLType: fieldType,
+                fields: field.settings.fields
+            });
             return {
                 resolver: null,
-                typeResolvers: createFieldResolvers({
-                    graphQLType: fieldType,
-                    fields: field.settings.fields
-                })
+                typeResolvers: typeResolvers || {}
             };
         }
     }

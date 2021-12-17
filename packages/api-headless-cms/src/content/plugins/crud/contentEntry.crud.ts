@@ -14,7 +14,6 @@ import {
     AfterEntryUpdateTopicParams,
     AfterEntryDeleteTopicParams,
     BeforeEntryDeleteTopicParams,
-    CmsEntryListParams,
     BeforeEntryRevisionCreateTopicParams,
     AfterEntryRevisionCreateTopicParams,
     BeforeEntryPublishTopicParams,
@@ -296,6 +295,11 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
                 id: entryId
             });
         },
+        /**
+         * TODO determine if this method is required at all.
+         *
+         * @internal
+         */
         getEntry: async (model, params) => {
             await checkEntryPermissions({ rwd: "r" });
 
@@ -317,11 +321,37 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
             }
             return items[0];
         },
+        /**
+         * @description Should not be used directly. Internal use only!
+         *
+         * @internal
+         */
         listEntries: async (model: CmsModel, params) => {
             const permission = await checkEntryPermissions({ rwd: "r" });
             await utils.checkModelAccess(context, model);
 
-            const where: CmsEntryListParams["where"] = params.where || {};
+            const { where } = params;
+            /**
+             * Where must contain either latest or published keys.
+             * We cannot list entries without one of those
+             */
+            if (where.latest && where.published) {
+                throw new WebinyError(
+                    "Cannot list entries that are both published and latest.",
+                    "LIST_ENTRIES_ERROR",
+                    {
+                        where
+                    }
+                );
+            } else if (!where.latest && !where.published) {
+                throw new WebinyError(
+                    "Cannot list entries if we do not have latest or published defined.",
+                    "LIST_ENTRIES_ERROR",
+                    {
+                        where
+                    }
+                );
+            }
             /**
              * Possibly only get records which are owned by current user.
              * Or if searching for the owner set that value - in the case that user can see other entries than their own.

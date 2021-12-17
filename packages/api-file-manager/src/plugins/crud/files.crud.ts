@@ -341,7 +341,7 @@ const filesContextCrudPlugin = new ContextPlugin<FileManagerContext>(async conte
             const where: FileManagerFilesStorageOperationsListParamsWhere = {
                 ...initialWhere,
                 private: false,
-                locale: context.i18nContent.getLocale().code,
+                locale: context.i18nContent.getCurrentLocale().code,
                 tenant: context.tenancy.getCurrentTenant().id
             };
             /**
@@ -420,10 +420,6 @@ const filesContextCrudPlugin = new ContextPlugin<FileManagerContext>(async conte
             };
 
             try {
-                /**
-                 * There is a meta object on the second key.
-                 * TODO: use when changing GraphQL output of the tags.
-                 */
                 const [tags] = await storageOperations.tags(params);
                 if (Array.isArray(tags) === false) {
                     return [];

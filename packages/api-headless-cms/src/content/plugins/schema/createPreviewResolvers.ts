@@ -19,6 +19,11 @@ export const createPreviewResolvers: CreateReadResolvers = ({
     model,
     fieldTypePlugins
 }) => {
+    if (model.fields.length === 0) {
+        return {
+            Query: {}
+        };
+    }
     const typeName = createTypeName(model.modelId);
     const rTypeName = createReadTypeName(typeName);
 
@@ -29,15 +34,17 @@ export const createPreviewResolvers: CreateReadResolvers = ({
         fieldTypePlugins
     });
 
+    const fieldResolvers = createFieldResolvers({
+        graphQLType: rTypeName,
+        fields: model.fields,
+        isRoot: true
+    });
+
     return {
         Query: {
             [`get${typeName}`]: resolveGet({ model }),
             [`list${pluralizedTypeName(typeName)}`]: resolveList({ model })
         },
-        ...createFieldResolvers({
-            graphQLType: rTypeName,
-            fields: model.fields,
-            isRoot: true
-        })
+        ...fieldResolvers
     };
 };

@@ -45,6 +45,7 @@ const ids = {
     field217: shortId.generate(),
     field218: shortId.generate(),
     field219: shortId.generate(),
+    field220: shortId.generate(),
     // product review
     field31: shortId.generate(),
     field32: shortId.generate(),
@@ -177,7 +178,8 @@ const models: CmsModel[] = [
             [ids.field208],
             [ids.field209],
             [ids.field210],
-            [ids.field211]
+            [ids.field211],
+            [ids.field220]
         ],
         fields: [
             {
@@ -637,6 +639,27 @@ const models: CmsModel[] = [
                             }
                         }
                     ]
+                },
+                validation: [],
+                listValidation: [],
+                placeholderText: "",
+                predefinedValues: {
+                    enabled: false,
+                    values: []
+                },
+                renderer: {
+                    name: "renderer"
+                }
+            },
+            {
+                id: ids.field220,
+                multipleValues: false,
+                helpText: "",
+                label: "No fields object",
+                fieldId: "noFieldsObject",
+                type: "object",
+                settings: {
+                    fields: []
                 },
                 validation: [],
                 listValidation: [],

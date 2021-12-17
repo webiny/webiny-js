@@ -56,7 +56,7 @@ export default new ContextPlugin<PbContext>(async context => {
             });
 
             const tenant = context.tenancy.getCurrentTenant();
-            const locale = context.i18nContent.getLocale();
+            const locale = context.i18nContent.getCurrentLocale();
 
             const params = {
                 where: {
@@ -95,7 +95,7 @@ export default new ContextPlugin<PbContext>(async context => {
             });
 
             const tenant = context.tenancy.getCurrentTenant();
-            const locale = context.i18nContent.getLocale();
+            const locale = context.i18nContent.getCurrentLocale();
 
             const { sort } = params || {};
 
@@ -141,7 +141,7 @@ export default new ContextPlugin<PbContext>(async context => {
             const pageElement: PageElement = {
                 ...data,
                 tenant: context.tenancy.getCurrentTenant().id,
-                locale: context.i18nContent.getLocale().code,
+                locale: context.i18nContent.getCurrentLocale().code,
                 id,
                 createdOn: new Date().toISOString(),
                 createdBy: {
