@@ -151,7 +151,7 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
                 modelId: String
                 group: RefInput!
                 description: String
-                locale: String!
+                locale: String
             }
 
             input CmsContentModelUpdateInput {

@@ -52,7 +52,7 @@ export const createPermissions = (permissions: PermissionsArg[]): PermissionsArg
         },
         {
             name: "content.i18n",
-            locales: ["en-US"]
+            locales: ["en-US", "de-DE"]
         }
     ];
 };

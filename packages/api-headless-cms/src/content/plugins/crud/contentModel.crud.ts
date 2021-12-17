@@ -364,9 +364,7 @@ export const createModelsCrud = (params: Params): CmsModelContext => {
             await createdData.validate();
             const input: CmsModelCreateFromInput = await createdData.toJSON();
 
-            context.security.disableAuthorization();
-            const locale = await context.i18n.getLocale(input.locale);
-            context.security.enableAuthorization();
+            const locale = await context.i18n.getLocale(input.locale || original.locale);
             if (!locale) {
                 throw new NotFoundError(`There is no locale "${input.locale}".`);
             }

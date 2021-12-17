@@ -956,7 +956,7 @@ export interface CmsModelCreateFromInput extends CmsModelCreateInput {
     /**
      * Locale into which we want to clone the model into.
      */
-    locale: string;
+    locale?: string;
 }
 
 /**

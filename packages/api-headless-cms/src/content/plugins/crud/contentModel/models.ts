@@ -19,7 +19,7 @@ export const CreateContentModelModelFrom = withFields({
     modelId: string({ validation: shortString }),
     description: string({ validation: shortString }),
     group: string({ validation: requiredShortString }),
-    locale: string({ validation: requiredShortString })
+    locale: string({ validation: shortString })
 })();
 
 const RendererModel = withFields({
