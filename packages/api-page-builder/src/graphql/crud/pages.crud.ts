@@ -264,10 +264,10 @@ export default new ContextPlugin<PbContext>(async context => {
          * Storage operations
          */
         storageOperations,
-        async create(slug) {
+        async createPage(slug) {
             await checkBasePermissions(context, PERMISSION_NAME, { rwd: "w" });
 
-            const category = await context.pageBuilder.categories.get(slug);
+            const category = await context.pageBuilder.categories.getCategory(slug);
             if (!category) {
                 throw new NotFoundError(`Category with slug "${slug}" not found.`);
             }
@@ -363,12 +363,12 @@ export default new ContextPlugin<PbContext>(async context => {
             }
         },
 
-        async createFrom(id) {
+        async createPageFrom(id) {
             const permission = await checkBasePermissions(context, PERMISSION_NAME, {
                 rwd: "w"
             });
 
-            const original = await context.pageBuilder.pages.get(id, {
+            const original = await context.pageBuilder.pages.getPage(id, {
                 decompress: false
             });
 
@@ -449,7 +449,7 @@ export default new ContextPlugin<PbContext>(async context => {
             }
         },
 
-        async update(id, input) {
+        async updatePage(id, input) {
             const permission = await checkBasePermissions(context, PERMISSION_NAME, {
                 rwd: "w"
             });
@@ -525,7 +525,7 @@ export default new ContextPlugin<PbContext>(async context => {
             }
         },
 
-        async delete(id) {
+        async deletePage(id) {
             const permission = await checkBasePermissions(context, PERMISSION_NAME, {
                 rwd: "d"
             });
@@ -575,7 +575,7 @@ export default new ContextPlugin<PbContext>(async context => {
             const identity = context.security.getIdentity();
             checkOwnPermissions(identity, permission, page, "ownedBy");
 
-            const settings = await context.pageBuilder.settings.getCurrent();
+            const settings = await context.pageBuilder.settings.getCurrentSettings();
             const pages = settings && settings.pages ? settings.pages : {};
             for (const key in pages) {
                 // We don't allow delete operation for "published" version of special pages.
@@ -656,12 +656,12 @@ export default new ContextPlugin<PbContext>(async context => {
             }
         },
 
-        async publish(id: string) {
+        async publishPage(id: string) {
             await checkBasePermissions<PageSecurityPermission>(context, PERMISSION_NAME, {
                 pw: "p"
             });
 
-            const original = await context.pageBuilder.pages.get(id, {
+            const original = await context.pageBuilder.pages.getPage(id, {
                 decompress: false
             });
 
@@ -709,7 +709,7 @@ export default new ContextPlugin<PbContext>(async context => {
                  * now, it works like this. If there was only more ⏱.
                  * 2) If a user doesn't have the unpublish permission, again, the whole action will fail.
                  */
-                await context.pageBuilder.pages.unpublish(publishedPathPage.id);
+                await context.pageBuilder.pages.unpublishPage(publishedPathPage.id);
             }
 
             const page: Page = {
@@ -769,12 +769,12 @@ export default new ContextPlugin<PbContext>(async context => {
             }
         },
 
-        async unpublish(id: string) {
+        async unpublishPage(id: string) {
             await checkBasePermissions<PageSecurityPermission>(context, PERMISSION_NAME, {
                 pw: "u"
             });
 
-            const original = await context.pageBuilder.pages.get(id, {
+            const original = await context.pageBuilder.pages.getPage(id, {
                 decompress: false
             });
             /**
@@ -791,7 +791,7 @@ export default new ContextPlugin<PbContext>(async context => {
                 throw new WebinyError(`Page is not published.`);
             }
 
-            const settings = await context.pageBuilder.settings.getCurrent();
+            const settings = await context.pageBuilder.settings.getCurrentSettings();
             const pages = settings && settings.pages ? settings.pages : {};
             for (const key in pages) {
                 if (pages[key] === original.pid) {
@@ -839,12 +839,12 @@ export default new ContextPlugin<PbContext>(async context => {
             }
         },
 
-        async requestReview(id: string) {
+        async requestPageReview(id: string) {
             await checkBasePermissions(context, PERMISSION_NAME, {
                 pw: "r"
             });
 
-            const original = await context.pageBuilder.pages.get(id, {
+            const original = await context.pageBuilder.pages.getPage(id, {
                 decompress: false
             });
 
@@ -894,12 +894,12 @@ export default new ContextPlugin<PbContext>(async context => {
             }
         },
 
-        async requestChanges(id: string) {
+        async requestPageChanges(id: string) {
             await checkBasePermissions(context, PERMISSION_NAME, {
                 pw: "c"
             });
 
-            const original = await context.pageBuilder.pages.get(id, {
+            const original = await context.pageBuilder.pages.getPage(id, {
                 decompress: false
             });
             if (original.status !== STATUS_REVIEW_REQUESTED) {
@@ -952,7 +952,7 @@ export default new ContextPlugin<PbContext>(async context => {
             }
         },
 
-        async get(id, options) {
+        async getPage(id, options) {
             const permission = await checkBasePermissions(context, PERMISSION_NAME, {
                 rwd: "r"
             });
@@ -986,7 +986,7 @@ export default new ContextPlugin<PbContext>(async context => {
             return (await extractPageContent(contentCompressionPlugins, page)) as any;
         },
 
-        async getPublishedById(params) {
+        async getPublishedPageById(params) {
             const { id, preview } = params;
 
             let page: Page = null;
@@ -1016,7 +1016,7 @@ export default new ContextPlugin<PbContext>(async context => {
             return (await extractPageContent(contentCompressionPlugins, page)) as any;
         },
 
-        async getPublishedByPath(params) {
+        async getPublishedPageByPath(params) {
             if (!params.path) {
                 throw new WebinyError(
                     'Cannot get published page - "path" not provided.',
@@ -1026,13 +1026,13 @@ export default new ContextPlugin<PbContext>(async context => {
 
             const normalizedPath = normalizePath(params.path);
             if (normalizedPath === "/") {
-                const settings = await context.pageBuilder.settings.getCurrent();
+                const settings = await context.pageBuilder.settings.getCurrentSettings();
                 const homePage = lodashGet(settings, "pages.home");
                 if (!homePage) {
                     throw new NotFoundError("Page not found.");
                 }
 
-                return await context.pageBuilder.pages.getPublishedById({
+                return await context.pageBuilder.pages.getPublishedPageById({
                     id: homePage
                 });
             }
@@ -1084,7 +1084,7 @@ export default new ContextPlugin<PbContext>(async context => {
             throw new NotFoundError("Page not found.");
         },
 
-        async listLatest(params, options = {}) {
+        async listLatestPages(params, options = {}) {
             const { auth } = options;
             let permission: { own?: boolean } = null;
             if (auth !== false) {
@@ -1147,7 +1147,7 @@ export default new ContextPlugin<PbContext>(async context => {
             }
         },
 
-        async listPublished(params) {
+        async listPublishedPages(params) {
             const { after, limit, sort, search, exclude, where: initialWhere = {} } = params;
 
             const { paths: pathNotIn, ids: pidNotIn } = createNotIn(exclude);
@@ -1221,7 +1221,7 @@ export default new ContextPlugin<PbContext>(async context => {
             }
         },
 
-        async listTags(params) {
+        async listPagesTags(params) {
             const search = params && params.search ? params.search.query : "";
             if (search.length < 2) {
                 throw new WebinyError("Please provide at least two characters.", "LIST_TAGS_ERROR");

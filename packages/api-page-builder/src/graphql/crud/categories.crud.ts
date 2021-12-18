@@ -76,7 +76,7 @@ export default new ContextPlugin<PbContext>(async context => {
          * Storage operations
          */
         storageOperations,
-        async get(slug, options = { auth: true }) {
+        async getCategory(slug, options = { auth: true }) {
             const { auth } = options;
 
             const tenant = context.tenancy.getCurrentTenant();
@@ -133,7 +133,7 @@ export default new ContextPlugin<PbContext>(async context => {
             return category;
         },
 
-        async list() {
+        async listCategories() {
             await context.i18nContent.checkI18NContentPermission();
 
             let permission;
@@ -185,10 +185,10 @@ export default new ContextPlugin<PbContext>(async context => {
                 );
             }
         },
-        async create(input) {
+        async createCategory(input) {
             await checkBasePermissions(context, PERMISSION_NAME, { rwd: "w" });
 
-            const existingCategory = await context.pageBuilder.categories.get(input.slug, {
+            const existingCategory = await context.pageBuilder.categories.getCategory(input.slug, {
                 auth: false
             });
             if (existingCategory) {
@@ -233,12 +233,12 @@ export default new ContextPlugin<PbContext>(async context => {
                 );
             }
         },
-        async update(slug, input) {
+        async updateCategory(slug, input) {
             const permission = await checkBasePermissions(context, PERMISSION_NAME, {
                 rwd: "w"
             });
 
-            const original = await context.pageBuilder.categories.get(slug);
+            const original = await context.pageBuilder.categories.getCategory(slug);
             if (!original) {
                 throw new NotFoundError(`Category "${slug}" not found.`);
             }
@@ -273,12 +273,12 @@ export default new ContextPlugin<PbContext>(async context => {
                 );
             }
         },
-        async delete(slug) {
+        async deleteCategory(slug) {
             const permission = await checkBasePermissions(context, PERMISSION_NAME, {
                 rwd: "d"
             });
 
-            const category = await context.pageBuilder.categories.get(slug);
+            const category = await context.pageBuilder.categories.getCategory(slug);
             if (!category) {
                 throw new NotFoundError(`Category "${slug}" not found.`);
             }
@@ -288,7 +288,7 @@ export default new ContextPlugin<PbContext>(async context => {
 
             // Before deleting, let's check if there is a page that's in this category.
             // If so, let's prevent this.
-            const [pages] = await context.pageBuilder.pages.listLatest(
+            const [pages] = await context.pageBuilder.pages.listLatestPages(
                 {
                     where: {
                         category: category.slug

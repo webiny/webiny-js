@@ -69,10 +69,10 @@ export default new ContextPlugin<PbContext>(async context => {
         onBeforeMenuDelete,
         onAfterMenuDelete,
         storageOperations,
-        async get(slug, options) {
+        async getMenu(slug, options) {
             let permission = undefined;
-            const auth = options && options.auth === false ? false : true;
-            if (auth) {
+            const { auth = true } = options || {};
+            if (auth !== false) {
                 permission = await checkBasePermissions(context, PERMISSION_NAME, {
                     rwd: "r"
                 });
@@ -119,8 +119,8 @@ export default new ContextPlugin<PbContext>(async context => {
          * Used to fetch menu data from a public website. Items are prepared for consumption too.
          * @param slug
          */
-        async getPublic(slug) {
-            const menu = await context.pageBuilder.menus.get(slug, {
+        async getPublicMenu(slug) {
+            const menu = await context.pageBuilder.menus.getMenu(slug, {
                 auth: false
             });
 
@@ -132,7 +132,7 @@ export default new ContextPlugin<PbContext>(async context => {
             return menu;
         },
 
-        async list(params) {
+        async listMenus(params) {
             const permission = await checkBasePermissions(context, PERMISSION_NAME, {
                 rwd: "r"
             });
@@ -169,7 +169,7 @@ export default new ContextPlugin<PbContext>(async context => {
             }
         },
 
-        async create(input) {
+        async createMenu(input) {
             await checkBasePermissions(context, PERMISSION_NAME, { rwd: "w" });
 
             const createDataModel = new CreateDataModel().populate(input);
@@ -232,12 +232,12 @@ export default new ContextPlugin<PbContext>(async context => {
             }
         },
 
-        async update(slug, input) {
+        async updateMenu(slug, input) {
             const permission = await checkBasePermissions(context, PERMISSION_NAME, {
                 rwd: "w"
             });
 
-            const original = await context.pageBuilder.menus.get(slug);
+            const original = await context.pageBuilder.menus.getMenu(slug);
             if (!original) {
                 throw new NotFoundError(`Menu "${slug}" not found.`);
             }
@@ -285,12 +285,12 @@ export default new ContextPlugin<PbContext>(async context => {
                 );
             }
         },
-        async delete(slug) {
+        async deleteMenu(slug) {
             const permission = await checkBasePermissions(context, PERMISSION_NAME, {
                 rwd: "d"
             });
 
-            const menu = await context.pageBuilder.menus.get(slug);
+            const menu = await context.pageBuilder.menus.getMenu(slug);
             if (!menu) {
                 throw new NotFoundError(`Menu "${slug}" not found.`);
             }

@@ -113,14 +113,14 @@ export default new ContextPlugin<PbContext>(async context => {
         getSettingsCacheKey(options) {
             return storageOperations.createCacheKey(options || {});
         },
-        async getCurrent() {
+        async getCurrentSettings() {
             // With this line commented, we made this endpoint public.
             // We did this because of the public website pages which need to access the settings.
             // It's possible we'll create another GraphQL field, made for this exact purpose.
             // auth !== false && (await checkBasePermissions(context));
 
-            const current = await context.pageBuilder.settings.get({});
-            const defaults = await context.pageBuilder.settings.getDefault();
+            const current = await context.pageBuilder.settings.getSettings({});
+            const defaults = await context.pageBuilder.settings.getDefaultSettings();
 
             return mergeWith({}, defaults, current, (prev, next) => {
                 // No need to use falsy value if we have it set in the default settings.
@@ -129,7 +129,7 @@ export default new ContextPlugin<PbContext>(async context => {
                 }
             });
         },
-        async get(options) {
+        async getSettings(options) {
             // With this line commented, we made this endpoint public.
             // We did this because of the public website pages which need to access the settings.
             // It's possible we'll create another GraphQL field, made for this exact purpose.
@@ -158,12 +158,12 @@ export default new ContextPlugin<PbContext>(async context => {
                 );
             }
         },
-        async getDefault(options) {
-            const allTenants = await context.pageBuilder.settings.get({
+        async getDefaultSettings(options) {
+            const allTenants = await context.pageBuilder.settings.getSettings({
                 tenant: false,
                 locale: false
             });
-            const tenantAllLocales = await context.pageBuilder.settings.get({
+            const tenantAllLocales = await context.pageBuilder.settings.getSettings({
                 tenant: options ? options.tenant : undefined,
                 locale: false
             });
@@ -178,7 +178,7 @@ export default new ContextPlugin<PbContext>(async context => {
                 }
             });
         },
-        async update(rawData, options) {
+        async updateSettings(rawData, options) {
             if (!options) {
                 options = {};
             }
@@ -194,7 +194,7 @@ export default new ContextPlugin<PbContext>(async context => {
                 context
             });
 
-            let original = (await context.pageBuilder.settings.get(options)) as Settings;
+            let original = (await context.pageBuilder.settings.getSettings(options)) as Settings;
             if (!original) {
                 original = await new DefaultSettingsModel().populate({}).toJSON();
 
@@ -256,7 +256,7 @@ export default new ContextPlugin<PbContext>(async context => {
                     // Only load if the next page (n) has been sent, which is always a
                     // must if previously a page was defined (p).
                     if (n) {
-                        const page = await context.pageBuilder.pages.getPublishedById({
+                        const page = await context.pageBuilder.pages.getPublishedPageById({
                             id: n
                         });
 

@@ -143,21 +143,25 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
             PbQuery: {
                 getCurrentSettings: async (_, __, context) => {
                     try {
-                        return new Response(await context.pageBuilder.settings.getCurrent());
+                        return new Response(
+                            await context.pageBuilder.settings.getCurrentSettings()
+                        );
                     } catch (err) {
                         return new ErrorResponse(err);
                     }
                 },
                 getSettings: async (_, __, context) => {
                     try {
-                        return new Response(await context.pageBuilder.settings.get());
+                        return new Response(await context.pageBuilder.settings.getSettings());
                     } catch (err) {
                         return new ErrorResponse(err);
                     }
                 },
                 getDefaultSettings: async (_, __, context) => {
                     try {
-                        return new Response(await context.pageBuilder.settings.getDefault());
+                        return new Response(
+                            await context.pageBuilder.settings.getDefaultSettings()
+                        );
                     } catch (err) {
                         return new ErrorResponse(err);
                     }
@@ -166,7 +170,9 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
             PbMutation: {
                 updateSettings: async (_, args, context) => {
                     try {
-                        return new Response(await context.pageBuilder.settings.update(args.data));
+                        return new Response(
+                            await context.pageBuilder.settings.updateSettings(args.data)
+                        );
                     } catch (err) {
                         return new ErrorResponse(err);
                     }

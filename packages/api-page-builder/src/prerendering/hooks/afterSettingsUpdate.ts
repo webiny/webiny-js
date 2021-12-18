@@ -5,7 +5,7 @@ const NOT_FOUND_FOLDER = "_NOT_FOUND_PAGE_";
 
 export default () => {
     return new ContextPlugin<PbContext>(async context => {
-        context.pageBuilder.settings.onAfterUpdate.subscribe(async params => {
+        context.pageBuilder.settings.onAfterSettingsUpdate.subscribe(async params => {
             const { settings, meta } = params;
             if (!settings) {
                 return;

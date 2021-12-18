@@ -14,7 +14,7 @@ export default () => {
             /**
              * First, let's load settings.
              */
-            const settings = await context.pageBuilder.settings.getCurrent();
+            const settings = await context.pageBuilder.settings.getCurrentSettings();
             const notFoundPageId = lodashGet(settings, "pages.notFound");
 
             const promises = [];

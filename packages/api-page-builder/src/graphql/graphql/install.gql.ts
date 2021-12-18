@@ -43,13 +43,13 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                         return null;
                     }
 
-                    return pageBuilder.system.getVersion();
+                    return pageBuilder.system.getSystemVersion();
                 }
             },
             PbMutation: {
                 install: async (_, args, context) => {
                     try {
-                        await context.pageBuilder.system.install({
+                        await context.pageBuilder.system.installSystem({
                             name: args.data.name,
                             insertDemoData: "insertDemoData" in args ? args.insertDemoData : true
                         });
@@ -60,7 +60,7 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                 },
                 upgrade: async (_, args, context) => {
                     try {
-                        await context.pageBuilder.system.upgrade(args.version);
+                        await context.pageBuilder.system.upgradeSystem(args.version);
                         return new Response(true);
                     } catch (e) {
                         return new ErrorResponse(e);

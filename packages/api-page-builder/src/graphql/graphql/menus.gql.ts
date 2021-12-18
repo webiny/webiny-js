@@ -54,24 +54,24 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
             PbQuery: {
                 getMenu: async (_, args: { slug: string }, context) => {
                     return resolve(() => {
-                        return context.pageBuilder.menus.get(args.slug);
+                        return context.pageBuilder.menus.getMenu(args.slug);
                     });
                 },
                 getPublicMenu: async (_, args: { slug: string }, context) => {
                     return resolve(() => {
-                        return context.pageBuilder.menus.getPublic(args.slug);
+                        return context.pageBuilder.menus.getPublicMenu(args.slug);
                     });
                 },
                 listMenus: async (_, __, context) => {
                     return resolve(() => {
-                        return context.pageBuilder.menus.list();
+                        return context.pageBuilder.menus.listMenus();
                     });
                 }
             },
             PbMutation: {
                 createMenu: async (_, args: { data: Record<string, any> }, context) => {
                     return resolve(() => {
-                        return context.pageBuilder.menus.create(args.data);
+                        return context.pageBuilder.menus.createMenu(args.data);
                     });
                 },
                 updateMenu: async (
@@ -80,12 +80,12 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                     context
                 ) => {
                     return resolve(() => {
-                        return context.pageBuilder.menus.update(args.slug, args.data);
+                        return context.pageBuilder.menus.updateMenu(args.slug, args.data);
                     });
                 },
                 deleteMenu: async (_, args: { slug: string }, context) => {
                     return resolve(() => {
-                        return context.pageBuilder.menus.delete(args.slug);
+                        return context.pageBuilder.menus.deleteMenu(args.slug);
                     });
                 }
             }

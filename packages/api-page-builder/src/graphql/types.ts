@@ -186,26 +186,28 @@ export interface PagesCrud {
      */
     storageOperations: PageStorageOperations;
     getPage<TPage extends Page = Page>(id: string, options?: GetPagesOptions): Promise<TPage>;
-    listLatest<TPage extends Page = Page>(
+    listLatestPages<TPage extends Page = Page>(
         args: ListPagesParams,
         options?: ListLatestPagesOptions
     ): Promise<[TPage[], ListMeta]>;
-    listPublished<TPage extends Page = Page>(args: ListPagesParams): Promise<[TPage[], ListMeta]>;
-    listTags(args: { search: { query: string } }): Promise<string[]>;
-    getPublishedById<TPage extends Page = Page>(args: {
+    listPublishedPages<TPage extends Page = Page>(
+        args: ListPagesParams
+    ): Promise<[TPage[], ListMeta]>;
+    listPagesTags(args: { search: { query: string } }): Promise<string[]>;
+    getPublishedPageById<TPage extends Page = Page>(args: {
         id: string;
         preview?: boolean;
     }): Promise<TPage>;
-    getPublishedByPath<TPage extends Page = Page>(args: { path: string }): Promise<TPage>;
+    getPublishedPageByPath<TPage extends Page = Page>(args: { path: string }): Promise<TPage>;
     listPageRevisions<TPage extends Page = Page>(id: string): Promise<TPage[]>;
-    create<TPage extends Page = Page>(category: string): Promise<TPage>;
-    createFrom<TPage extends Page = Page>(page: string): Promise<TPage>;
-    update<TPage extends Page = Page>(id: string, data: Record<string, any>): Promise<TPage>;
-    delete<TPage extends Page = Page>(id: string): Promise<[TPage, TPage]>;
-    publish<TPage extends Page = Page>(id: string): Promise<TPage>;
-    unpublish<TPage extends Page = Page>(id: string): Promise<TPage>;
-    requestReview<TPage extends Page = Page>(id: string): Promise<TPage>;
-    requestChanges<TPage extends Page = Page>(id: string): Promise<TPage>;
+    createPage<TPage extends Page = Page>(category: string): Promise<TPage>;
+    createPageFrom<TPage extends Page = Page>(page: string): Promise<TPage>;
+    updatePage<TPage extends Page = Page>(id: string, data: Record<string, any>): Promise<TPage>;
+    deletePage<TPage extends Page = Page>(id: string): Promise<[TPage, TPage]>;
+    publishPage<TPage extends Page = Page>(id: string): Promise<TPage>;
+    unpublishPage<TPage extends Page = Page>(id: string): Promise<TPage>;
+    requestPageReview<TPage extends Page = Page>(id: string): Promise<TPage>;
+    requestPageChanges<TPage extends Page = Page>(id: string): Promise<TPage>;
     prerendering: {
         render(args: RenderParams): Promise<void>;
         flush(args: FlushParams): Promise<void>;
@@ -283,11 +285,11 @@ export interface PageElementsCrud {
      * @internal
      */
     storageOperations: PageElementStorageOperations;
-    get(id: string): Promise<PageElement>;
-    list(params?: ListPageElementsParams): Promise<PageElement[]>;
-    create(data: Record<string, any>): Promise<PageElement>;
-    update(id: string, data: Record<string, any>): Promise<PageElement>;
-    delete(id: string): Promise<PageElement>;
+    getPageElement(id: string): Promise<PageElement>;
+    listPageElements(params?: ListPageElementsParams): Promise<PageElement[]>;
+    createPageElement(data: Record<string, any>): Promise<PageElement>;
+    updatePageElement(id: string, data: Record<string, any>): Promise<PageElement>;
+    deletePageElement(id: string): Promise<PageElement>;
     /**
      * Lifecycle events
      */
@@ -347,11 +349,11 @@ export interface CategoriesCrud {
      * @internal
      */
     storageOperations: CategoryStorageOperations;
-    get(slug: string, options?: { auth: boolean }): Promise<Category>;
-    list(): Promise<Category[]>;
-    create(data: Record<string, any>): Promise<Category>;
-    update(slug: string, data: Record<string, any>): Promise<Category>;
-    delete(slug: string): Promise<Category>;
+    getCategory(slug: string, options?: { auth: boolean }): Promise<Category>;
+    listCategories(): Promise<Category[]>;
+    createCategory(data: Record<string, any>): Promise<Category>;
+    updateCategory(slug: string, data: Record<string, any>): Promise<Category>;
+    deleteCategory(slug: string): Promise<Category>;
     /**
      * Lifecycle events
      */
@@ -421,12 +423,12 @@ export interface MenusCrud {
      * @internal
      */
     storageOperations: MenuStorageOperations;
-    get(slug: string, options?: MenuGetOptions): Promise<Menu>;
-    getPublic(slug: string): Promise<Menu>;
-    list(params?: ListMenuParams): Promise<Menu[]>;
-    create(data: Record<string, any>): Promise<Menu>;
-    update(slug: string, data: Record<string, any>): Promise<Menu>;
-    delete(slug: string): Promise<Menu>;
+    getMenu(slug: string, options?: MenuGetOptions): Promise<Menu>;
+    getPublicMenu(slug: string): Promise<Menu>;
+    listMenus(params?: ListMenuParams): Promise<Menu[]>;
+    createMenu(data: Record<string, any>): Promise<Menu>;
+    updateMenu(slug: string, data: Record<string, any>): Promise<Menu>;
+    deleteMenu(slug: string): Promise<Menu>;
     /**
      * Lifecycle events
      */
@@ -472,10 +474,10 @@ export interface OnAfterSettingsUpdateTopicParams {
  * @category Settings
  */
 export interface SettingsCrud {
-    getCurrent: () => Promise<Settings>;
-    get: (options?: DefaultSettingsCrudOptions) => Promise<Settings>;
-    getDefault: (options?: Pick<DefaultSettingsCrudOptions, "tenant">) => Promise<Settings>;
-    update: (
+    getCurrentSettings: () => Promise<Settings>;
+    getSettings: (options?: DefaultSettingsCrudOptions) => Promise<Settings>;
+    getDefaultSettings: (options?: Pick<DefaultSettingsCrudOptions, "tenant">) => Promise<Settings>;
+    updateSettings: (
         data: Record<string, any>,
         options?: { auth?: boolean } & DefaultSettingsCrudOptions
     ) => Promise<Settings>;
@@ -503,11 +505,11 @@ export interface OnAfterInstallTopicParams {
  * @category System
  */
 export interface SystemCrud {
-    get: () => Promise<System>;
-    getVersion(): Promise<string>;
-    setVersion(version: string): Promise<void>;
-    install(args: { name: string; insertDemoData: boolean }): Promise<void>;
-    upgrade(version: string, data?: Record<string, any>): Promise<boolean>;
+    getSystem: () => Promise<System>;
+    getSystemVersion(): Promise<string>;
+    setSystemVersion(version: string): Promise<void>;
+    installSystem(args: { name: string; insertDemoData: boolean }): Promise<void>;
+    upgradeSystem(version: string, data?: Record<string, any>): Promise<boolean>;
     /**
      * Lifecycle events
      */

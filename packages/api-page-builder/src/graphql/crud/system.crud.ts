@@ -41,7 +41,7 @@ export default new ContextPlugin<PbContext>(async context => {
     context.pageBuilder.system = {
         onBeforeInstall,
         onAfterInstall,
-        async get() {
+        async getSystem() {
             try {
                 return await storageOperations.get();
             } catch (ex) {
@@ -51,13 +51,13 @@ export default new ContextPlugin<PbContext>(async context => {
                 );
             }
         },
-        async getVersion() {
-            const system = await context.pageBuilder.system.get();
+        async getSystemVersion() {
+            const system = await context.pageBuilder.system.getSystem();
 
             return system ? system.version : null;
         },
-        async setVersion(version: string) {
-            const original = await context.pageBuilder.system.get();
+        async setSystemVersion(version: string) {
+            const original = await context.pageBuilder.system.getSystem();
 
             if (original) {
                 const system = {
@@ -100,11 +100,11 @@ export default new ContextPlugin<PbContext>(async context => {
                 );
             }
         },
-        async install({ name, insertDemoData }) {
+        async installSystem({ name, insertDemoData }) {
             const { pageBuilder, fileManager } = context;
 
             // Check whether the PB app is already installed
-            const version = await pageBuilder.system.getVersion();
+            const version = await pageBuilder.system.getSystemVersion();
             if (version) {
                 throw new WebinyError("Page builder is already installed.", "PB_INSTALL_ABORTED");
             }
@@ -118,9 +118,9 @@ export default new ContextPlugin<PbContext>(async context => {
 
             if (insertDemoData) {
                 // 2. Create initial page category.
-                let staticCategory = await pageBuilder.categories.get("static");
+                let staticCategory = await pageBuilder.categories.getCategory("static");
                 if (!staticCategory) {
-                    staticCategory = await pageBuilder.categories.create({
+                    staticCategory = await pageBuilder.categories.createCategory({
                         name: "Static",
                         slug: "static",
                         url: "/static/",
@@ -134,9 +134,9 @@ export default new ContextPlugin<PbContext>(async context => {
                 const fileIdToFileMap = await savePageAssets({ context });
 
                 // 4. Create initial menu.
-                const mainMenu = await pageBuilder.menus.get("main-menu");
+                const mainMenu = await pageBuilder.menus.getMenu("main-menu");
                 if (!mainMenu) {
-                    await pageBuilder.menus.create({
+                    await pageBuilder.menus.createMenu({
                         title: "Main Menu",
                         slug: "main-menu",
                         description:
@@ -174,18 +174,18 @@ export default new ContextPlugin<PbContext>(async context => {
                 ];
 
                 const initialPages = await Promise.all(
-                    initialPagesData.map(() => pages.create(staticCategory.slug))
+                    initialPagesData.map(() => pages.createPage(staticCategory.slug))
                 );
                 const updatedPages = await Promise.all(
                     initialPagesData.map((data, index) => {
-                        return pages.update(initialPages[index].id, data);
+                        return pages.updatePage(initialPages[index].id, data);
                     })
                 );
                 const [homePage, notFoundPage] = await Promise.all(
-                    updatedPages.map(page => pages.publish(page.id))
+                    updatedPages.map(page => pages.publishPage(page.id))
                 );
 
-                await pageBuilder.settings.update({
+                await pageBuilder.settings.updateSettings({
                     name: name,
                     pages: {
                         home: homePage.pid,
@@ -195,13 +195,13 @@ export default new ContextPlugin<PbContext>(async context => {
             }
 
             // 6. Mark the Page Builder app as installed.
-            await context.pageBuilder.system.setVersion(context.WEBINY_VERSION);
+            await context.pageBuilder.system.setSystemVersion(context.WEBINY_VERSION);
 
             await onAfterInstall.publish({
                 context
             });
         },
-        async upgrade(version) {
+        async upgradeSystem(version) {
             const identity = context.security.getIdentity();
             if (!identity) {
                 throw new NotAuthorizedError();
@@ -213,7 +213,7 @@ export default new ContextPlugin<PbContext>(async context => {
 
             const plugin = getApplicablePlugin({
                 deployedVersion: context.WEBINY_VERSION,
-                installedAppVersion: await context.pageBuilder.system.getVersion(),
+                installedAppVersion: await context.pageBuilder.system.getSystemVersion(),
                 upgradePlugins,
                 upgradeToVersion: version
             });
@@ -221,7 +221,7 @@ export default new ContextPlugin<PbContext>(async context => {
             await plugin.apply(context);
 
             // Store new app version
-            await context.pageBuilder.system.setVersion(version);
+            await context.pageBuilder.system.setSystemVersion(version);
 
             return true;
         }

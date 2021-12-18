@@ -76,7 +76,7 @@ export default new ContextPlugin<PbContext>(async context => {
          * Storage operations
          */
         storageOperations,
-        async get(id) {
+        async getPageElement(id) {
             const permission = await checkBasePermissions(context, PERMISSION_NAME, {
                 rwd: "r"
             });
@@ -115,7 +115,7 @@ export default new ContextPlugin<PbContext>(async context => {
             return pageElement;
         },
 
-        async list(params) {
+        async listPageElements(params) {
             const permission = await checkBasePermissions(context, PERMISSION_NAME, {
                 rwd: "r"
             });
@@ -153,7 +153,7 @@ export default new ContextPlugin<PbContext>(async context => {
             }
         },
 
-        async create(input) {
+        async createPageElement(input) {
             await checkBasePermissions(context, PERMISSION_NAME, { rwd: "w" });
 
             const createDataModel = new CreateDataModel().populate(input);
@@ -194,11 +194,11 @@ export default new ContextPlugin<PbContext>(async context => {
             }
         },
 
-        async update(id, input) {
+        async updatePageElement(id, input) {
             const permission = await checkBasePermissions(context, PERMISSION_NAME, {
                 rwd: "w"
             });
-            const original = await context.pageBuilder.pageElements.get(id);
+            const original = await context.pageBuilder.pageElements.getPageElement(id);
             if (!original) {
                 throw new NotFoundError(`Page element "${id}" not found.`);
             }
@@ -235,12 +235,12 @@ export default new ContextPlugin<PbContext>(async context => {
             }
         },
 
-        async delete(slug) {
+        async deletePageElement(slug) {
             const permission = await checkBasePermissions(context, PERMISSION_NAME, {
                 rwd: "d"
             });
 
-            const pageElement = await context.pageBuilder.pageElements.get(slug);
+            const pageElement = await context.pageBuilder.pageElements.getPageElement(slug);
             if (!pageElement) {
                 throw new NotFoundError(`PageElement "${slug}" not found.`);
             }
