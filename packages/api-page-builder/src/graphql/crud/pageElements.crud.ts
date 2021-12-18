@@ -178,10 +178,17 @@ export default new ContextPlugin<PbContext>(async context => {
             };
 
             try {
-                return await storageOperations.create({
+                await onBeforePageElementCreate.publish({
+                    pageElement
+                });
+                const result = await storageOperations.create({
                     input: data,
                     pageElement
                 });
+                await onAfterPageElementCreate.publish({
+                    pageElement
+                });
+                return result;
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not create page element.",
@@ -217,11 +224,20 @@ export default new ContextPlugin<PbContext>(async context => {
             };
 
             try {
-                return await storageOperations.update({
+                await onBeforePageElementUpdate.publish({
+                    original,
+                    pageElement
+                });
+                const result = await storageOperations.update({
                     input: data,
                     original,
                     pageElement
                 });
+                await onAfterPageElementUpdate.publish({
+                    original,
+                    pageElement: result
+                });
+                return result;
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not update page element.",
@@ -249,9 +265,16 @@ export default new ContextPlugin<PbContext>(async context => {
             checkOwnPermissions(identity, permission, pageElement);
 
             try {
-                return await storageOperations.delete({
+                await onBeforePageElementDelete.publish({
                     pageElement
                 });
+                const result = await storageOperations.delete({
+                    pageElement
+                });
+                await onAfterPageElementDelete.publish({
+                    pageElement: result
+                });
+                return result;
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not delete page element.",

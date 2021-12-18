@@ -218,10 +218,17 @@ export default new ContextPlugin<PbContext>(async context => {
             };
 
             try {
-                return await storageOperations.create({
+                await onBeforeCategoryCreate.publish({
+                    category
+                });
+                const result = await storageOperations.create({
                     input: data,
                     category
                 });
+                await onBeforeCategoryCreate.publish({
+                    category: result
+                });
+                return result;
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not create category.",
@@ -256,11 +263,20 @@ export default new ContextPlugin<PbContext>(async context => {
                 ...data
             };
             try {
-                return await storageOperations.update({
+                await onBeforeCategoryUpdate.publish({
+                    original,
+                    category
+                });
+                const result = await storageOperations.update({
                     input: data,
                     original,
                     category
                 });
+                await onAfterCategoryUpdate.publish({
+                    original,
+                    category
+                });
+                return result;
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not update category.",
@@ -307,9 +323,16 @@ export default new ContextPlugin<PbContext>(async context => {
             }
 
             try {
-                return await storageOperations.delete({
+                await onBeforeCategoryDelete.publish({
                     category
                 });
+                const result = await storageOperations.delete({
+                    category
+                });
+                await onAfterCategoryDelete.publish({
+                    category: result
+                });
+                return result;
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not delete category.",

@@ -256,7 +256,7 @@ export default new ContextPlugin<PbContext>(async context => {
             };
 
             try {
-                await onAfterMenuUpdate.publish({
+                await onBeforeMenuUpdate.publish({
                     original,
                     menu
                 });
