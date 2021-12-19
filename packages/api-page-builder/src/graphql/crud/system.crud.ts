@@ -10,26 +10,17 @@ import {
     OnBeforeInstallTopicParams,
     PbContext,
     System,
+    SystemCrud,
     SystemStorageOperations
 } from "~/types";
-import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
-import { SystemStorageOperationsProviderPlugin } from "~/plugins/SystemStorageOperationsProviderPlugin";
-import { createStorageOperations } from "./storageOperations";
 import { createTopic } from "@webiny/pubsub";
 
-export default new ContextPlugin<PbContext>(async context => {
-    /**
-     * If pageBuilder is not defined on the context, do not continue, but log it.
-     */
-    if (!context.pageBuilder) {
-        console.log("Missing pageBuilder on context. Skipping System crud.");
-        return;
-    }
-
-    const storageOperations = await createStorageOperations<SystemStorageOperations>(
-        context,
-        SystemStorageOperationsProviderPlugin.type
-    );
+export interface Params {
+    context: PbContext;
+    storageOperations: SystemStorageOperations;
+}
+export const createSystemCrud = (params: Params): SystemCrud => {
+    const { context, storageOperations } = params;
 
     const getTenantId = (): string => {
         return context.tenancy.getCurrentTenant().id;
@@ -38,7 +29,7 @@ export default new ContextPlugin<PbContext>(async context => {
     const onBeforeInstall = createTopic<OnBeforeInstallTopicParams>();
     const onAfterInstall = createTopic<OnAfterInstallTopicParams>();
 
-    context.pageBuilder.system = {
+    return {
         onBeforeInstall,
         onAfterInstall,
         async getSystem() {
@@ -226,4 +217,4 @@ export default new ContextPlugin<PbContext>(async context => {
             return true;
         }
     };
-});
+};

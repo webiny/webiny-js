@@ -1,6 +1,7 @@
 import { withFields, string } from "@commodo/fields";
 import { validation } from "@webiny/validation";
 import {
+    CategoriesCrud,
     Category,
     CategoryStorageOperations,
     CategoryStorageOperationsGetParams,
@@ -13,15 +14,12 @@ import {
     OnBeforeCategoryUpdateTopicParams,
     PbContext
 } from "~/types";
-import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
 import { NotAuthorizedError } from "@webiny/api-security";
 import hasRwd from "./utils/hasRwd";
 import { NotFoundError } from "@webiny/handler-graphql";
 import checkBasePermissions from "./utils/checkBasePermissions";
 import checkOwnPermissions from "./utils/checkOwnPermissions";
 import WebinyError from "@webiny/error";
-import { CategoryStorageOperationsProviderPlugin } from "~/plugins/CategoryStorageOperationsProviderPlugin";
-import { createStorageOperations } from "./storageOperations";
 import { createTopic } from "@webiny/pubsub";
 
 const CreateDataModel = withFields({
@@ -39,19 +37,12 @@ const UpdateDataModel = withFields({
 
 const PERMISSION_NAME = "pb.category";
 
-export default new ContextPlugin<PbContext>(async context => {
-    /**
-     * If pageBuilder is not defined on the context, do not continue, but log it.
-     */
-    if (!context.pageBuilder) {
-        console.log("Missing pageBuilder on context. Skipping Categories crud.");
-        return;
-    }
-
-    const storageOperations = await createStorageOperations<CategoryStorageOperations>(
-        context,
-        CategoryStorageOperationsProviderPlugin.type
-    );
+export interface Params {
+    context: PbContext;
+    storageOperations: CategoryStorageOperations;
+}
+export const createCategoriesCrud = (params: Params): CategoriesCrud => {
+    const { context, storageOperations } = params;
 
     const getPermission = name => context.security.getPermission(name);
 
@@ -62,7 +53,7 @@ export default new ContextPlugin<PbContext>(async context => {
     const onBeforeCategoryDelete = createTopic<OnBeforeCategoryDeleteTopicParams>();
     const onAfterCategoryDelete = createTopic<OnAfterCategoryDeleteTopicParams>();
 
-    context.pageBuilder.categories = {
+    return {
         /**
          * Lifecycle events
          */
@@ -345,4 +336,4 @@ export default new ContextPlugin<PbContext>(async context => {
             }
         }
     };
-});
+};

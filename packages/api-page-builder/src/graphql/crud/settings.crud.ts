@@ -1,10 +1,10 @@
-import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
 import {
     OnAfterSettingsUpdateTopicParams,
     OnBeforeSettingsUpdateTopicParams,
     PageSpecialType,
     PbContext,
     Settings,
+    SettingsCrud,
     SettingsStorageOperations,
     SettingsStorageOperationsCreateParams,
     SettingsStorageOperationsGetParams,
@@ -15,8 +15,6 @@ import { DefaultSettingsModel } from "~/utils/models";
 import mergeWith from "lodash/mergeWith";
 import Error from "@webiny/error";
 import WebinyError from "@webiny/error";
-import { createStorageOperations } from "./storageOperations";
-import { SettingsStorageOperationsProviderPlugin } from "~/plugins/SettingsStorageOperationsProviderPlugin";
 import lodashGet from "lodash/get";
 import DataLoader from "dataloader";
 import { createTopic } from "@webiny/pubsub";
@@ -64,21 +62,12 @@ const createSettingsParams = (params: SettingsParamsInput): SettingsParams => {
     };
 };
 
-export default new ContextPlugin<PbContext>(async context => {
-    /**
-     * If pageBuilder is not defined on the context, do not continue, but log it.
-     */
-    if (!context.pageBuilder) {
-        console.log("Missing pageBuilder on context. Skipping Settings crud.");
-        return;
-    }
-
-    const storageOperations = await createStorageOperations<SettingsStorageOperations>(
-        context,
-        SettingsStorageOperationsProviderPlugin.type
-    );
-
-    // const settingsPlugins = context.plugins.byType<SettingsPlugin>(SettingsPlugin.type);
+export interface Params {
+    context: PbContext;
+    storageOperations: SettingsStorageOperations;
+}
+export const createSettingsCrud = (params: Params): SettingsCrud => {
+    const { context, storageOperations } = params;
 
     const settingsDataLoader = new DataLoader<SettingsParams, Settings, string>(
         async keys => {
@@ -103,7 +92,7 @@ export default new ContextPlugin<PbContext>(async context => {
     const onBeforeSettingsUpdate = createTopic<OnBeforeSettingsUpdateTopicParams>();
     const onAfterSettingsUpdate = createTopic<OnAfterSettingsUpdateTopicParams>();
 
-    context.pageBuilder.settings = {
+    return {
         onBeforeSettingsUpdate,
         onAfterSettingsUpdate,
         /**
@@ -183,9 +172,6 @@ export default new ContextPlugin<PbContext>(async context => {
                 options = {};
             }
             options.auth !== false && (await checkBasePermissions(context));
-
-            // const targetTenant = options.tenant === false ? false : options.tenant;
-            // const targetLocale = options.locale === false ? false : options.locale;
 
             const params = createSettingsParams({
                 tenant: options.tenant,
@@ -306,4 +292,4 @@ export default new ContextPlugin<PbContext>(async context => {
             }
         }
     };
-});
+};

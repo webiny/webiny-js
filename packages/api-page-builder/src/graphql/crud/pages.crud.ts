@@ -3,10 +3,10 @@ import uniqid from "uniqid";
 import lodashGet from "lodash/get";
 import DataLoader from "dataloader";
 import { NotFoundError } from "@webiny/handler-graphql";
-import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
 import {
     OnBeforePageCreateTopicParams,
     Page,
+    PagesCrud,
     PageSecurityPermission,
     PageStorageOperations,
     PageStorageOperationsListParams,
@@ -20,9 +20,7 @@ import { compressContent, extractContent } from "./pages/contentCompression";
 import { CreateDataModel, UpdateSettingsModel } from "./pages/models";
 import { PagePlugin } from "~/plugins/PagePlugin";
 import WebinyError from "@webiny/error";
-import { PageStorageOperationsProviderPlugin } from "~/plugins/PageStorageOperationsProviderPlugin";
 import lodashTrimEnd from "lodash/trimEnd";
-import { createStorageOperations } from "./storageOperations";
 import { getZeroPaddedVersionNumber } from "~/utils/zeroPaddedVersionNumber";
 import {
     FlushParams,
@@ -134,19 +132,12 @@ const createDataLoaderKeys = (id: string): DataLoaderGetByIdKey[] => {
     ];
 };
 
-export default new ContextPlugin<PbContext>(async context => {
-    /**
-     * If pageBuilder is not defined on the context, do not continue, but log it.
-     */
-    if (!context.pageBuilder) {
-        console.log("Missing pageBuilder on context. Skipping Pages crud.");
-        return;
-    }
-
-    const storageOperations = await createStorageOperations<PageStorageOperations>(
-        context,
-        PageStorageOperationsProviderPlugin.type
-    );
+export interface Params {
+    context: PbContext;
+    storageOperations: PageStorageOperations;
+}
+export const createPageCrud = (params: Params): PagesCrud => {
+    const { context, storageOperations } = params;
 
     /**
      * Used in a couple of key events - (un)publishing and pages deletion.
@@ -240,7 +231,7 @@ export default new ContextPlugin<PbContext>(async context => {
     const onBeforePageRequestChanges = createTopic<OnBeforePageRequestChangesTopicParams>();
     const onAfterPageRequestChanges = createTopic<OnAfterPageRequestChangesTopicParams>();
 
-    context.pageBuilder.pages = {
+    return {
         /**
          * Lifecycle events
          */
@@ -1257,4 +1248,4 @@ export default new ContextPlugin<PbContext>(async context => {
             }
         }
     };
-});
+};

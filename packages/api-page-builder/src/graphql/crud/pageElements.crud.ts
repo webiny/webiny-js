@@ -1,4 +1,3 @@
-import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
 import mdbid from "mdbid";
 import { withFields, string } from "@commodo/fields";
 import { object } from "commodo-fields-object";
@@ -11,6 +10,7 @@ import {
     OnBeforePageElementDeleteTopicParams,
     OnBeforePageElementUpdateTopicParams,
     PageElement,
+    PageElementsCrud,
     PageElementStorageOperations,
     PageElementStorageOperationsListParams,
     PbContext
@@ -19,8 +19,6 @@ import checkBasePermissions from "./utils/checkBasePermissions";
 import checkOwnPermissions from "./utils/checkOwnPermissions";
 import { NotFoundError } from "@webiny/handler-graphql";
 import WebinyError from "@webiny/error";
-import { PageElementStorageOperationsProviderPlugin } from "~/plugins/PageElementStorageOperationsProviderPlugin";
-import { createStorageOperations } from "~/graphql/crud/storageOperations";
 import { createTopic } from "@webiny/pubsub";
 
 const CreateDataModel = withFields({
@@ -41,19 +39,12 @@ const UpdateDataModel = withFields({
 
 const PERMISSION_NAME = "pb.page";
 
-export default new ContextPlugin<PbContext>(async context => {
-    /**
-     * If pageBuilder is not defined on the context, do not continue, but log it.
-     */
-    if (!context.pageBuilder) {
-        console.log("Missing pageBuilder on context. Skipping Page Elements crud.");
-        return;
-    }
-
-    const storageOperations = await createStorageOperations<PageElementStorageOperations>(
-        context,
-        PageElementStorageOperationsProviderPlugin.type
-    );
+export interface Params {
+    context: PbContext;
+    storageOperations: PageElementStorageOperations;
+}
+export const createPageElementsCrud = (params: Params): PageElementsCrud => {
+    const { context, storageOperations } = params;
 
     const onBeforePageElementCreate = createTopic<OnBeforePageElementCreateTopicParams>();
     const onAfterPageElementCreate = createTopic<OnAfterPageElementCreateTopicParams>();
@@ -62,7 +53,7 @@ export default new ContextPlugin<PbContext>(async context => {
     const onBeforePageElementDelete = createTopic<OnBeforePageElementDeleteTopicParams>();
     const onAfterPageElementDelete = createTopic<OnAfterPageElementDeleteTopicParams>();
 
-    context.pageBuilder.pageElements = {
+    return {
         /**
          * Lifecycle events
          */
@@ -287,4 +278,4 @@ export default new ContextPlugin<PbContext>(async context => {
             }
         }
     };
-});
+};

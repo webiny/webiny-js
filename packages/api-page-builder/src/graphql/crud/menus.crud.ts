@@ -1,4 +1,3 @@
-import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
 import {
     MenuStorageOperationsGetParams,
     Menu,
@@ -10,7 +9,8 @@ import {
     OnBeforeMenuUpdateTopicParams,
     OnAfterMenuUpdateTopicParams,
     OnBeforeMenuDeleteTopicParams,
-    OnAfterMenuDeleteTopicParams
+    OnAfterMenuDeleteTopicParams,
+    MenusCrud
 } from "~/types";
 import { NotFoundError } from "@webiny/handler-graphql";
 import checkBasePermissions from "./utils/checkBasePermissions";
@@ -21,8 +21,6 @@ import { withFields, string } from "@commodo/fields";
 import { object } from "commodo-fields-object";
 import prepareMenuItems from "./menus/prepareMenuItems";
 import WebinyError from "@webiny/error";
-import { MenuStorageOperationsProviderPlugin } from "~/plugins/MenuStorageOperationsProviderPlugin";
-import { createStorageOperations } from "./storageOperations";
 import { createTopic } from "@webiny/pubsub";
 
 const CreateDataModel = withFields({
@@ -40,19 +38,12 @@ const UpdateDataModel = withFields({
 
 const PERMISSION_NAME = "pb.menu";
 
-export default new ContextPlugin<PbContext>(async context => {
-    /**
-     * If pageBuilder is not defined on the context, do not continue, but log it.
-     */
-    if (!context.pageBuilder) {
-        console.log("Missing pageBuilder on context. Skipping Menus crud.");
-        return;
-    }
-
-    const storageOperations = await createStorageOperations<MenuStorageOperations>(
-        context,
-        MenuStorageOperationsProviderPlugin.type
-    );
+export interface Params {
+    context: PbContext;
+    storageOperations: MenuStorageOperations;
+}
+export const createMenuCrud = (params: Params): MenusCrud => {
+    const { context, storageOperations } = params;
 
     const onBeforeMenuCreate = createTopic<OnBeforeMenuCreateTopicParams>();
     const onAfterMenuCreate = createTopic<OnAfterMenuCreateTopicParams>();
@@ -61,7 +52,7 @@ export default new ContextPlugin<PbContext>(async context => {
     const onBeforeMenuDelete = createTopic<OnBeforeMenuDeleteTopicParams>();
     const onAfterMenuDelete = createTopic<OnAfterMenuDeleteTopicParams>();
 
-    context.pageBuilder.menus = {
+    return {
         onBeforeMenuCreate,
         onAfterMenuCreate,
         onBeforeMenuUpdate,
@@ -324,4 +315,4 @@ export default new ContextPlugin<PbContext>(async context => {
             }
         }
     };
-});
+};
