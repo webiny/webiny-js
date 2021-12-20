@@ -1,22 +1,21 @@
-import { ApwContext, ApwReviewerCrud } from "~/types";
-import { CmsModel } from "@webiny/api-headless-cms/types";
+import { ApwReviewerCrud, CreateApwParams } from "~/types";
 
-export function createReviewerMethods(context: ApwContext): ApwReviewerCrud {
+export function createReviewerMethods({ storageOperations }: CreateApwParams): ApwReviewerCrud {
     return {
-        async getModel(): Promise<CmsModel> {
-            return await context.cms.getModel("apwReviewerModelDefinition");
+        async getModel() {
+            return await storageOperations.getModel("apwReviewerModelDefinition");
         },
         async get(id) {
             const model = await this.getModel();
-            return await context.cms.getEntryById(model, id);
+            return await storageOperations.getEntryById(model, id);
         },
         async list(params) {
             const model = await this.getModel();
-            return await context.cms.listLatestEntries(model, params);
+            return await storageOperations.listLatestEntries(model, params);
         },
         async create(data) {
             const model = await this.getModel();
-            return await context.cms.createEntry(model, data);
+            return await storageOperations.createEntry(model, data);
         },
         async update(id, data) {
             const model = await this.getModel();
@@ -26,14 +25,14 @@ export function createReviewerMethods(context: ApwContext): ApwReviewerCrud {
              */
             const existingEntry = await this.get(id);
 
-            return await context.cms.updateEntry(model, id, {
+            return await storageOperations.updateEntry(model, id, {
                 ...data,
                 app: existingEntry.values.app
             });
         },
         async delete(id: string) {
             const model = await this.getModel();
-            await context.cms.deleteEntry(model, id);
+            await storageOperations.deleteEntry(model, id);
             return true;
         }
     };

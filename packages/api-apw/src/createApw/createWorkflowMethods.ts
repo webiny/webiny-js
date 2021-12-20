@@ -1,35 +1,34 @@
-import { ApwContext, ApwWorkflowCrud } from "~/types";
-import { CmsModel } from "@webiny/api-headless-cms/types";
+import { ApwWorkflowCrud, CreateApwParams } from "~/types";
 
-export function createWorkflowMethods(context: ApwContext): ApwWorkflowCrud {
+export function createWorkflowMethods({ storageOperations }: CreateApwParams): ApwWorkflowCrud {
     return {
-        async getModel(): Promise<CmsModel> {
-            return await context.cms.getModel("apwWorkflowModelDefinition");
+        async getModel() {
+            return await storageOperations.getModel("apwWorkflowModelDefinition");
         },
         async get(id) {
             const model = await this.getModel();
-            return await context.cms.getEntryById(model, id);
+            return await storageOperations.getEntryById(model, id);
         },
         async list(params) {
             const model = await this.getModel();
-            return await context.cms.listLatestEntries(model, params);
+            return await storageOperations.listLatestEntries(model, params);
         },
         async create(data) {
             const model = await this.getModel();
-            return await context.cms.createEntry(model, data);
+            return await storageOperations.createEntry(model, data);
         },
         async update(id, data) {
             const model = await this.getModel();
             const existingEntry = await this.get(id);
 
-            return await context.cms.updateEntry(model, id, {
+            return await storageOperations.updateEntry(model, id, {
                 ...existingEntry.values,
                 ...data
             });
         },
         async delete(id: string) {
             const model = await this.getModel();
-            await context.cms.deleteEntry(model, id);
+            await storageOperations.deleteEntry(model, id);
             return true;
         }
     };

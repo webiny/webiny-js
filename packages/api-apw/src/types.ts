@@ -2,13 +2,18 @@ import { Page } from "@webiny/api-page-builder/types";
 import {
     CmsContext,
     CmsEntry,
+    CmsEntryContext,
     CmsEntryListParams,
     CmsEntryMeta,
     CmsModel,
+    CmsModelContext,
     CmsModelField
 } from "@webiny/api-headless-cms/types";
 import { Context } from "@webiny/handler/types";
 import { PbContext } from "@webiny/api-page-builder/graphql/types";
+import { SecurityIdentity } from "@webiny/api-security/types";
+import { I18NLocale } from "@webiny/api-i18n/types";
+import { Tenant } from "@webiny/api-tenancy/types";
 
 export interface FieldResolversParams {
     fieldId: string;
@@ -188,7 +193,7 @@ export interface ApwContentReviewCrud
     retractSignOff(id: string, step: string): Promise<Boolean>;
 }
 
-interface AdvancedPublishingWorkflow {
+export interface AdvancedPublishingWorkflow {
     workflow: ApwWorkflowCrud;
     reviewer: ApwReviewerCrud;
     comment: ApwCommentCrud;
@@ -198,4 +203,18 @@ interface AdvancedPublishingWorkflow {
 
 export interface ApwContext extends Context, CmsContext, PbContext {
     apw: AdvancedPublishingWorkflow;
+}
+
+export interface CreateApwParams {
+    getLocale: () => I18NLocale;
+    getIdentity: () => SecurityIdentity;
+    getTenant: () => Tenant;
+    storageOperations: {
+        getModel: CmsModelContext["getModel"];
+        getEntryById: CmsEntryContext["getEntryById"];
+        listLatestEntries: CmsEntryContext["listLatestEntries"];
+        createEntry: CmsEntryContext["createEntry"];
+        updateEntry: CmsEntryContext["updateEntry"];
+        deleteEntry: CmsEntryContext["deleteEntry"];
+    };
 }

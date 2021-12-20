@@ -1,9 +1,10 @@
 import {
-    ApwContext,
     ApwContentReviewCrud,
     ApwContentReviewStepStatus,
     ApwWorkflowStepTypes,
-    ApwContentReviewStatus
+    ApwContentReviewStatus,
+    CreateApwParams,
+    ApwReviewerCrud
 } from "~/types";
 import { getValue, hasReviewer, getNextStepStatus } from "~/plugins/utils";
 import {
@@ -14,22 +15,30 @@ import {
     StepMissingError
 } from "~/utils/errors";
 
-export function createContentReviewMethods(context: ApwContext): ApwContentReviewCrud {
+interface CreateContentReviewMethodsParams extends CreateApwParams {
+    getReviewer: ApwReviewerCrud["get"];
+}
+
+export function createContentReviewMethods({
+    getIdentity,
+    storageOperations,
+    getReviewer
+}: CreateContentReviewMethodsParams): ApwContentReviewCrud {
     return {
         async getModel() {
-            return await context.cms.getModel("apwContentReviewModelDefinition");
+            return await storageOperations.getModel("apwContentReviewModelDefinition");
         },
         async get(id) {
             const model = await this.getModel();
-            return await context.cms.getEntryById(model, id);
+            return await storageOperations.getEntryById(model, id);
         },
         async list(params) {
             const model = await this.getModel();
-            return await context.cms.listLatestEntries(model, params);
+            return await storageOperations.listLatestEntries(model, params);
         },
         async create(data) {
             const model = await this.getModel();
-            return await context.cms.createEntry(model, {
+            return await storageOperations.createEntry(model, {
                 ...data,
                 steps: [],
                 status: ApwContentReviewStatus.UNDER_REVIEW
@@ -39,14 +48,14 @@ export function createContentReviewMethods(context: ApwContext): ApwContentRevie
             const model = await this.getModel();
             const existingEntry = await this.get(id);
 
-            return await context.cms.updateEntry(model, id, {
+            return await storageOperations.updateEntry(model, id, {
                 ...existingEntry.values,
                 ...data
             });
         },
         async delete(id) {
             const model = await this.getModel();
-            await context.cms.deleteEntry(model, id);
+            await storageOperations.deleteEntry(model, id);
             return true;
         },
         async provideSignOff(id, stepSlug) {
@@ -56,9 +65,9 @@ export function createContentReviewMethods(context: ApwContext): ApwContentRevie
             const currentStep = steps[stepIndex];
             const previousStep = steps[stepIndex - 1];
 
-            const identity = context.security.getIdentity();
+            const identity = getIdentity();
             const hasPermission = await hasReviewer({
-                getReviewer: context.apw.reviewer.get.bind(context.apw.reviewer),
+                getReviewer,
                 identity,
                 step: currentStep
             });
@@ -123,7 +132,7 @@ export function createContentReviewMethods(context: ApwContext): ApwContentRevie
             /**
              * Save updated steps.
              */
-            await context.apw.contentReview.update(id, {
+            await this.update(id, {
                 steps: updatedSteps
             });
             return true;
@@ -134,10 +143,10 @@ export function createContentReviewMethods(context: ApwContext): ApwContentRevie
             const stepIndex = steps.findIndex(step => step.slug === stepSlug);
             const currentStep = steps[stepIndex];
 
-            const identity = context.security.getIdentity();
+            const identity = getIdentity();
 
             const hasPermission = await hasReviewer({
-                getReviewer: context.apw.reviewer.get.bind(context.apw.reviewer),
+                getReviewer,
                 identity,
                 step: currentStep
             });
@@ -186,7 +195,7 @@ export function createContentReviewMethods(context: ApwContext): ApwContentRevie
                 return step;
             });
 
-            await context.apw.contentReview.update(id, {
+            await this.update(id, {
                 steps: updatedSteps
             });
             return true;

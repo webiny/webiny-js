@@ -1,23 +1,30 @@
-import { ApwContext, ApwCommentCrud } from "~/types";
+import { ApwChangeRequestCrud, ApwCommentCrud, CreateApwParams } from "~/types";
 
-export function createCommentMethods(context: ApwContext): ApwCommentCrud {
+interface CreateCommentMethodsParams extends CreateApwParams {
+    getChangeRequestModel: ApwChangeRequestCrud["getModel"];
+}
+
+export function createCommentMethods({
+    storageOperations,
+    getChangeRequestModel
+}: CreateCommentMethodsParams): ApwCommentCrud {
     return {
         async getModel() {
-            return await context.cms.getModel("apwContentReviewCommentModelDefinition");
+            return await storageOperations.getModel("apwContentReviewCommentModelDefinition");
         },
         async get(id) {
             const model = await this.getModel();
-            return await context.cms.getEntryById(model, id);
+            return await storageOperations.getEntryById(model, id);
         },
         async list(params) {
             const model = await this.getModel();
-            return await context.cms.listLatestEntries(model, params);
+            return await storageOperations.listLatestEntries(model, params);
         },
         async create(data) {
             const model = await this.getModel();
-            const refModel = await context.apw.changeRequest.getModel();
+            const refModel = await getChangeRequestModel();
 
-            return await context.cms.createEntry(model, {
+            return await storageOperations.createEntry(model, {
                 ...data,
                 changeRequest: {
                     ...data.changeRequest,
@@ -33,14 +40,14 @@ export function createCommentMethods(context: ApwContext): ApwCommentCrud {
              */
             const existingEntry = await this.get(id);
 
-            return await context.cms.updateEntry(model, id, {
+            return await storageOperations.updateEntry(model, id, {
                 ...existingEntry.values,
                 ...data
             });
         },
         async delete(id: string) {
             const model = await this.getModel();
-            await context.cms.deleteEntry(model, id);
+            await storageOperations.deleteEntry(model, id);
             return true;
         }
     };

@@ -1,21 +1,23 @@
-import { ApwContext, ApwChangeRequestCrud } from "~/types";
+import { ApwChangeRequestCrud, CreateApwParams } from "~/types";
 
-export function createChangeRequestMethods(context: ApwContext): ApwChangeRequestCrud {
+export function createChangeRequestMethods({
+    storageOperations
+}: CreateApwParams): ApwChangeRequestCrud {
     return {
         async getModel() {
-            return await context.cms.getModel("apwChangeRequestModelDefinition");
+            return await storageOperations.getModel("apwChangeRequestModelDefinition");
         },
         async get(id) {
             const model = await this.getModel();
-            return await context.cms.getEntryById(model, id);
+            return await storageOperations.getEntryById(model, id);
         },
         async list(params) {
             const model = await this.getModel();
-            return await context.cms.listLatestEntries(model, params);
+            return await storageOperations.listLatestEntries(model, params);
         },
         async create(data) {
             const model = await this.getModel();
-            return await context.cms.createEntry(model, data);
+            return await storageOperations.createEntry(model, data);
         },
         async update(id, data) {
             const model = await this.getModel();
@@ -25,14 +27,14 @@ export function createChangeRequestMethods(context: ApwContext): ApwChangeReques
              */
             const existingEntry = await this.get(id);
 
-            return await context.cms.updateEntry(model, id, {
+            return await storageOperations.updateEntry(model, id, {
                 ...existingEntry.values,
                 ...data
             });
         },
         async delete(id: string) {
             const model = await this.getModel();
-            await context.cms.deleteEntry(model, id);
+            await storageOperations.deleteEntry(model, id);
             return true;
         }
     };
