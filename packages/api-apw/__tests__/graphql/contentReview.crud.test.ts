@@ -15,7 +15,6 @@ describe("Content Review crud test", () => {
         createContentReviewMutation,
         deleteContentReviewMutation,
         listContentReviewsQuery,
-        updateContentReviewMutation,
         until
     } = gqlHandler;
 
@@ -125,55 +124,11 @@ describe("Content Review crud test", () => {
             }
         });
 
-        /*
-         Let's update the entry with some change requested
-        */
-        const [updateContentReviewResponse] = await updateContentReviewMutation({
-            id: createdContentReview.id,
-            data: {}
-        });
-
-        expect(updateContentReviewResponse).toEqual({
-            data: {
-                apw: {
-                    updateContentReview: {
-                        data: {
-                            id: expect.any(String),
-                            createdOn: expect.stringMatching(/^20/),
-                            savedOn: expect.stringMatching(/^20/),
-                            createdBy: {
-                                id: "12345678",
-                                displayName: "John Doe",
-                                type: "admin"
-                            },
-                            status: "underReview",
-                            steps: workflow.steps.map((_, index) => ({
-                                status:
-                                    index === 0
-                                        ? ApwContentReviewStepStatus.ACTIVE
-                                        : ApwContentReviewStepStatus.INACTIVE,
-                                slug: expect.any(String),
-                                pendingChangeRequests: 0,
-                                signOffProvidedOn: null,
-                                signOffProvidedBy: null
-                            })),
-                            content: {
-                                id: expect.any(String),
-                                type: expect.any(String),
-                                settings: null
-                            }
-                        },
-                        error: null
-                    }
-                }
-            }
-        });
-
         await until(
             () => listContentReviewsQuery({}).then(([data]) => data),
             response => {
-                const [updatedEntry] = response.data.apw.listContentReviews.data;
-                return updatedEntry && updatedEntry.savedOn !== createdContentReview.savedOn;
+                const list = response.data.apw.listContentReviews.data;
+                return list.length === 1;
             },
             {
                 name: "Wait for updated entry to be available in list query"

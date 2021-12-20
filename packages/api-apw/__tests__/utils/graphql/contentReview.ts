@@ -82,17 +82,6 @@ export const CREATE_CONTENT_REVIEW_MUTATION = /* GraphQL */ `
     }
 `;
 
-export const UPDATE_CONTENT_REVIEW_MUTATION = /* GraphQL */ `
-    mutation UpdateContentReviewMutation($id: ID!, $data: ApwUpdateContentReviewInput!) {
-        apw {
-            updateContentReview(id: $id, data: $data) {
-                data ${getDataFields()}
-                error ${ERROR_FIELDS}
-            }
-        }
-    }
-`;
-
 export const DELETE_CONTENT_REVIEW_MUTATION = /* GraphQL */ `
     mutation DeleteContentReviewMutation($id: ID!) {
         apw {

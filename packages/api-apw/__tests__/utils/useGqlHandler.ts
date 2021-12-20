@@ -33,8 +33,7 @@ import {
     GET_CONTENT_REVIEW_QUERY,
     LIST_CONTENT_REVIEWS_QUERY,
     PROVIDE_SIGN_OFF_MUTATION,
-    RETRACT_SIGN_OFF_MUTATION,
-    UPDATE_CONTENT_REVIEW_MUTATION
+    RETRACT_SIGN_OFF_MUTATION
 } from "./graphql/contentReview";
 import { LOGIN } from "./graphql/login";
 import { GET_REVIEWER_QUERY, LIST_REVIEWERS_QUERY } from "./graphql/reviewer";
@@ -270,9 +269,6 @@ export const useGqlHandler = (params: GQLHandlerCallableParams) => {
         },
         async createContentReviewMutation(variables: Record<string, any>) {
             return invoke({ body: { query: CREATE_CONTENT_REVIEW_MUTATION, variables } });
-        },
-        async updateContentReviewMutation(variables: Record<string, any>) {
-            return invoke({ body: { query: UPDATE_CONTENT_REVIEW_MUTATION, variables } });
         },
         async deleteContentReviewMutation(variables: Record<string, any>) {
             return invoke({ body: { query: DELETE_CONTENT_REVIEW_MUTATION, variables } });
