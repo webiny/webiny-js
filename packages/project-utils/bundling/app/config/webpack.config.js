@@ -3,7 +3,6 @@
 const fs = require("fs");
 const path = require("path");
 const webpack = require("webpack");
-const resolve = require("resolve");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const CaseSensitivePathsPlugin = require("case-sensitive-paths-webpack-plugin");
 const InlineChunkHtmlPlugin = require("react-dev-utils/InlineChunkHtmlPlugin");
@@ -12,13 +11,11 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 const { WebpackManifestPlugin } = require("webpack-manifest-plugin");
 const InterpolateHtmlPlugin = require("react-dev-utils/InterpolateHtmlPlugin");
-const WatchMissingNodeModulesPlugin = require("react-dev-utils/WatchMissingNodeModulesPlugin");
 const getCSSModuleLocalIdent = require("react-dev-utils/getCSSModuleLocalIdent");
 const getClientEnvironment = require("./env");
 const ESLintPlugin = require("eslint-webpack-plugin");
 const ModuleNotFoundPlugin = require("react-dev-utils/ModuleNotFoundPlugin");
-const ForkTsCheckerWebpackPlugin = require("react-dev-utils/ForkTsCheckerWebpackPlugin");
-const typescriptFormatter = require("react-dev-utils/typescriptFormatter");
+const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
 const WebpackBar = require("webpackbar");
 const ReactRefreshWebpackPlugin = require("@pmmmwh/react-refresh-webpack-plugin");
 
@@ -457,11 +454,6 @@ module.exports = function (webpackEnv, { paths, options }) {
             // a plugin that prints an error when you attempt to do this.
             // See https://github.com/facebook/create-react-app/issues/240
             isEnvDevelopment && new CaseSensitivePathsPlugin(),
-            // If you require a missing module and then `npm install` it, you still have
-            // to restart the development server for Webpack to discover it. This plugin
-            // makes the discovery automatic so you don't have to restart.
-            // See https://github.com/facebook/create-react-app/issues/186
-            isEnvDevelopment && new WatchMissingNodeModulesPlugin(paths.appNodeModules),
             isEnvProduction &&
                 new MiniCssExtractPlugin({
                     // Options similar to the same options in webpackOptions.output
@@ -510,24 +502,13 @@ module.exports = function (webpackEnv, { paths, options }) {
             // TypeScript type checking
             useTypeScript &&
                 new ForkTsCheckerWebpackPlugin({
-                    typescript: resolve.sync("typescript", {
-                        basedir: paths.appNodeModules
-                    }),
-                    async: isEnvDevelopment,
-                    useTypescriptIncrementalApi: true,
-                    checkSyntacticErrors: true,
-                    tsconfig: paths.appTsConfig,
-                    reportFiles: [
-                        "**",
-                        "!**/__tests__/**",
-                        "!**/?(*.)(spec|test).*",
-                        "!**/src/setupProxy.*",
-                        "!**/src/setupTests.*"
-                    ],
-                    silent: true,
-                    // The formatter is invoked directly in WebpackDevServerUtils during development
-                    formatter: isEnvProduction ? typescriptFormatter : undefined
+                    typescript: {
+                        configFile: paths.appTsConfig,
+                        typescriptPath: require.resolve("typescript")
+                    },
+                    async: isEnvDevelopment
                 }),
+
             logs && new WebpackBar({ name: path.basename(paths.appPath) })
         ].filter(Boolean),
 

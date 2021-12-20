@@ -1,4 +1,4 @@
-const formatWebpackMessages = require("../utils/formatWebpackMessages");
+const formatWebpackMessages = require("react-dev-utils/formatWebpackMessages");
 const { getDuration } = require("../../utils");
 const chalk = require("chalk");
 

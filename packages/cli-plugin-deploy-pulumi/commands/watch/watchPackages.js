@@ -31,7 +31,7 @@ module.exports = async ({ inputs, output, context }) => {
         packages.forEach(item => console.log("‣ " + item.name));
     }
 
-    const { env, debug, logs } = inputs;
+    const { env, debug } = inputs;
     const multipleWatches = packages.length > 1;
     if (multipleWatches) {
         output.log({
@@ -78,13 +78,15 @@ module.exports = async ({ inputs, output, context }) => {
                     }
                 });
 
-                worker.on("error", () => {
+                worker.on("error", e => {
                     log(
                         current.name,
                         `An unknown error occurred while watching ${context.error.hl(
                             current.name
                         )}:`
                     );
+
+                    log(e);
 
                     resolve({
                         package: current,

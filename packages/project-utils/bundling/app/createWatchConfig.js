@@ -61,15 +61,11 @@ module.exports = async options => {
         const useTypeScript = fs.existsSync(paths.appTsConfig);
         const tscCompileOnError = process.env.TSC_COMPILE_ON_ERROR === "true";
         const urls = prepareUrls(protocol, host, port);
-        const devSocket = {
-            warnings: warnings => devServer.sockWrite(devServer.sockets, "warnings", warnings),
-            errors: errors => devServer.sockWrite(devServer.sockets, "errors", errors)
-        };
+
         // Create a webpack compiler that is configured with custom messages.
         const compiler = createCompiler({
             appName,
             config: buildConfig,
-            devSocket,
             urls,
             useYarn,
             useTypeScript,
