@@ -15,7 +15,7 @@ import {
     UPDATE_WORKFLOW_MUTATION
 } from "./graphql/workflow";
 import { Plugin, PluginCollection } from "@webiny/plugins/types";
-import { createApwContext, createApwGraphQL, createApwHooks } from "~/index";
+import { createApwContext, createApwGraphQL } from "~/index";
 /**
  * Unfortunately at we need to import the api-i18n-ddb package manually
  */
@@ -158,7 +158,6 @@ export const useGqlHandler = (params: GQLHandlerCallableParams) => {
             ...headlessCmsApp,
             createApwContext(),
             createApwGraphQL(),
-            createApwHooks(),
             plugins
         ],
         http: { debug: true }

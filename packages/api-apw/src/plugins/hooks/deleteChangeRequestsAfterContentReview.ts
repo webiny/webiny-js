@@ -1,57 +1,55 @@
-import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
 import { ApwContext } from "~/types";
 
-const deleteChangeRequestsWithContentReview = () =>
-    new ContextPlugin<ApwContext>(async context => {
-        context.cms.onAfterEntryDelete.subscribe(async ({ model, entry }) => {
-            const contentReviewModel = await context.apw.contentReview.getModel();
+export const deleteChangeRequestsWithContentReview = (context: ApwContext) => {
+    const { cms, apw } = context;
+
+    cms.onAfterEntryDelete.subscribe(async ({ model, entry }) => {
+        const contentReviewModel = await apw.contentReview.getModel();
+        /**
+         * If deleted entry is of "contentReview" model, also delete all associated changeRequests.
+         */
+        if (model.modelId === contentReviewModel.modelId) {
+            const steps = entry.values.steps;
             /**
-             * If deleted entry is of "contentReview" model, also delete all associated changeRequests.
+             * For each step get associated change requests and delete them.
              */
-            if (model.modelId === contentReviewModel.modelId) {
-                const steps = entry.values.steps;
+            for (let i = 0; i < steps.length; i++) {
+                const { slug } = steps[i];
+
+                let meta = {
+                    hasMoreItems: true,
+                    cursor: null
+                };
+                let changeRequests = [];
                 /**
-                 * For each step get associated change requests and delete them.
+                 * Paginate through change requests.
                  */
-                for (let i = 0; i < steps.length; i++) {
-                    const { slug } = steps[i];
-
-                    let meta = {
-                        hasMoreItems: true,
-                        cursor: null
-                    };
-                    let changeRequests = [];
+                while (meta.hasMoreItems) {
                     /**
-                     * Paginate through change requests.
+                     * Get all change requests.
                      */
-                    while (meta.hasMoreItems) {
-                        /**
-                         * Get all change requests.
-                         */
-                        try {
-                            [changeRequests, meta] = await context.apw.changeRequest.list({
-                                where: {
-                                    step: slug
-                                },
-                                after: meta.cursor
-                            });
-                        } catch (e) {
-                            meta.hasMoreItems = false;
-                            if (e.message !== "index_not_found_exception") {
-                                throw e;
-                            }
+                    try {
+                        [changeRequests, meta] = await apw.changeRequest.list({
+                            where: {
+                                step: slug
+                            },
+                            after: meta.cursor
+                        });
+                    } catch (e) {
+                        meta.hasMoreItems = false;
+                        if (e.message !== "index_not_found_exception") {
+                            throw e;
                         }
+                    }
 
-                        /**
-                         * Delete change requests one by one.
-                         */
-                        for (const changeRequest of changeRequests) {
-                            await context.apw.changeRequest.delete(changeRequest.id);
-                        }
+                    /**
+                     * Delete change requests one by one.
+                     */
+                    for (const changeRequest of changeRequests) {
+                        await apw.changeRequest.delete(changeRequest.id);
                     }
                 }
             }
-        });
+        }
     });
-
-export default () => deleteChangeRequestsWithContentReview();
+};

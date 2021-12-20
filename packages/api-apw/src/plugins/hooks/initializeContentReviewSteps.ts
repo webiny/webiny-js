@@ -1,5 +1,4 @@
 import lodashSet from "lodash/set";
-import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
 import { ApwContext, PageWithWorkflow } from "~/types";
 import { getContentReviewStepInitialStatus, getValue } from "~/plugins/utils";
 
@@ -22,51 +21,49 @@ export const getWorkflowIdFromContent = async (
     return null;
 };
 
-const initializeContentReviewSteps = () =>
-    new ContextPlugin<ApwContext>(async context => {
-        context.cms.onBeforeEntryCreate.subscribe(async ({ model, entry, input }) => {
-            const contentReviewModel = await context.apw.contentReview.getModel();
-            /**
-             * If created entry is of "contentReview" model, let's initialize the steps.
-             */
-            if (model.modelId === contentReviewModel.modelId) {
-                // @ts-ignore
-                const workflowId = await getWorkflowIdFromContent(context, input.content);
-                if (!workflowId) {
-                    console.info(`Unable to find linked workflow.`);
-                    return;
-                }
-                const workflow = await context.apw.workflow.get(workflowId);
-                const workflowSteps = getValue(workflow, "steps");
-
-                let previousStepStatus;
-                const updatedSteps = workflow.values.steps.map((step, index) => {
-                    const status = getContentReviewStepInitialStatus(
-                        workflowSteps,
-                        index,
-                        previousStepStatus
-                    );
-                    previousStepStatus = status;
-                    return {
-                        ...step,
-                        /**
-                         * We're using the "slug" field from workflow step (which is non-unique string)
-                         * to setup a link between "Change request" and "Content review".
-                         * And because there can be multiple "content reviews" for same workflow,
-                         * we're normalizing them to be unique here.
-                         */
-                        slug: `${entry.entryId}#${step.slug}`,
-                        /**
-                         * Always set first step 'active' by default.
-                         */
-                        status,
-                        pendingChangeRequests: 0
-                    };
-                });
-
-                entry = lodashSet(entry, "values.steps", updatedSteps);
+export const initializeContentReviewSteps = (context: ApwContext) => {
+    const { cms, apw } = context;
+    cms.onBeforeEntryCreate.subscribe(async ({ model, entry, input }) => {
+        const contentReviewModel = await apw.contentReview.getModel();
+        /**
+         * If created entry is of "contentReview" model, let's initialize the steps.
+         */
+        if (model.modelId === contentReviewModel.modelId) {
+            // @ts-ignore
+            const workflowId = await getWorkflowIdFromContent(context, input.content);
+            if (!workflowId) {
+                console.info(`Unable to find linked workflow.`);
+                return;
             }
-        });
-    });
+            const workflow = await apw.workflow.get(workflowId);
+            const workflowSteps = getValue(workflow, "steps");
 
-export default () => initializeContentReviewSteps();
+            let previousStepStatus;
+            const updatedSteps = workflow.values.steps.map((step, index) => {
+                const status = getContentReviewStepInitialStatus(
+                    workflowSteps,
+                    index,
+                    previousStepStatus
+                );
+                previousStepStatus = status;
+                return {
+                    ...step,
+                    /**
+                     * We're using the "slug" field from workflow step (which is non-unique string)
+                     * to setup a link between "Change request" and "Content review".
+                     * And because there can be multiple "content reviews" for same workflow,
+                     * we're normalizing them to be unique here.
+                     */
+                    slug: `${entry.entryId}#${step.slug}`,
+                    /**
+                     * Always set first step 'active' by default.
+                     */
+                    status,
+                    pendingChangeRequests: 0
+                };
+            });
+
+            entry = lodashSet(entry, "values.steps", updatedSteps);
+        }
+    });
+};

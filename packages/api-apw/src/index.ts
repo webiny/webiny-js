@@ -4,7 +4,6 @@
  */
 import graphql from "~/plugins/graphql";
 import context from "./plugins/context";
-import hooks from "./plugins/hooks";
 
 export const createApwContext = () => {
     return context();
@@ -13,5 +12,3 @@ export const createApwContext = () => {
 export const createApwGraphQL = () => {
     return graphql();
 };
-
-export const createApwHooks = () => hooks();
