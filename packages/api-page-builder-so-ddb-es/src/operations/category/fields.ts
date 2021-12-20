@@ -1,6 +1,6 @@
 import { CategoryDynamoDbElasticFieldPlugin } from "~/plugins/definitions/CategoryDynamoDbElasticFieldPlugin";
 
-export default () => {
+export const createCategoryDynamoDbFields = (): CategoryDynamoDbElasticFieldPlugin[] => {
     return [
         new CategoryDynamoDbElasticFieldPlugin({
             field: "id"
