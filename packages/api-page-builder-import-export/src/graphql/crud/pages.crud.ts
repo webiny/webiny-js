@@ -25,7 +25,7 @@ export default new ContextPlugin<PbPageImportExportContext>(context => {
             });
 
             // Bail out early if category not found
-            const category = await context.pageBuilder.categories.getCategory(categorySlug);
+            const category = await context.pageBuilder.getCategory(categorySlug);
             if (!category) {
                 throw new NotFoundError(`Category with slug "${categorySlug}" not found.`);
             }
