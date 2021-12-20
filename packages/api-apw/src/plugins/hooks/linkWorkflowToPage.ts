@@ -1,10 +1,9 @@
-import { PagePlugin } from "@webiny/api-page-builder/plugins/PagePlugin";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins";
 import get from "lodash/get";
+import WebinyError from "@webiny/error";
 import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
-import { CmsContext } from "@webiny/api-headless-cms/types";
-import { PbContext } from "@webiny/api-page-builder/graphql/types";
-import { ApwWorkflowApplications, PageWithWorkflow, WorkflowScopeTypes } from "~/types";
+import { ApwContext, ApwWorkflowApplications, PageWithWorkflow, WorkflowScopeTypes } from "~/types";
+import { OnBeforePageCreateTopicParams } from "@webiny/api-page-builder/graphql/types";
 
 const WORKFLOW_PRECEDENCE = {
     [WorkflowScopeTypes.DEFAULT]: 0,
@@ -70,49 +69,6 @@ export default () => [
             }
         `
     }),
-    new PagePlugin<PageWithWorkflow>({
-        // Why does Page is not generic here?
-        beforeCreate: async ({ context, page }) => {
-            // 1. Check if the page already has `workflow` assigned
-            if (page.workflow) {
-                console.warn(
-                    `Page "${page.pid}" already had a workflow "${page.workflow}" assigned!`
-                );
-                return;
-            }
-            try {
-                /*
-                 2. List all workflows for app pageBuilder
-                */
-                const [entries] = await context.apw.workflow.list({
-                    where: { app: "pageBuilder" }
-                });
-
-                /*
-                 3. Re-order them based on workflow scope and pre-defined rule i.e.
-                 "specific" entry -> entry for a "category" -> "default".
-                 There can be more than one workflow with same "scope" and "app".
-                 Therefore, we are also sorting the workflows by `createdOn` to get the latest workflow.
-                */
-                const sortedWorkflows = entries
-                    .sort(workflowByPrecedenceDesc)
-                    .sort(workflowByCreatedOnDesc);
-
-                for (const workflow of sortedWorkflows) {
-                    /**
-                     * We workflow if applicable to this page, we're done here.
-                     * Assign the workflow to the page and exit.
-                     */
-                    if (isWorkflowApplicable(page, workflow)) {
-                        page.workflow = workflow.id;
-                        break;
-                    }
-                }
-            } catch (e) {
-                console.info(`Failed to assign workflow to page "${page.pid}".`, e.message, e.code);
-            }
-        }
-    }),
     /*
      TODO: @ashutosh Make it configurable so that in case of `api-page-builder-so-ddb-es`,
       this plugin will be included automatically.
@@ -126,8 +82,51 @@ export default () => [
     //     // Let's modify it, by adding the value of the new `special` flag to it.
     //     data.workflow = page.workflow;
     // }),
-    new ContextPlugin<CmsContext & PbContext>(async context => {
-        context.cms.onAfterEntryCreate.subscribe(async ({ model, entry }) => {
+    new ContextPlugin<ApwContext>(context => {
+        const { pageBuilder, cms, apw } = context;
+
+        pageBuilder.onBeforePageCreate.subscribe(
+            async (event: OnBeforePageCreateTopicParams<PageWithWorkflow>) => {
+                const { page } = event;
+                try {
+                    /*
+                     * List all workflows for app pageBuilder
+                     */
+                    const [entries] = await apw.workflow.list({
+                        where: { app: ApwWorkflowApplications.PB }
+                    });
+
+                    /*
+                     *  Re-order them based on workflow scope and pre-defined rule i.e.
+                     *  "specific" entry -> entry for a "category" -> "default".
+                     *  There can be more than one workflow with same "scope" and "app".
+                     *  Therefore, we are also sorting the workflows by `createdOn` to get the latest workflow.
+                     */
+                    const sortedWorkflows = entries
+                        .sort(workflowByPrecedenceDesc)
+                        .sort(workflowByCreatedOnDesc);
+
+                    for (const workflow of sortedWorkflows) {
+                        /**
+                         * We workflow if applicable to this page, we're done here.
+                         * Assign the workflow to the page and exit.
+                         */
+                        if (isWorkflowApplicable(page, workflow)) {
+                            page.workflow = workflow.id;
+                            break;
+                        }
+                    }
+                } catch (e) {
+                    throw new WebinyError(
+                        `Failed to assign workflow to page "${page.pid}".`,
+                        e.code,
+                        e.data
+                    );
+                }
+            }
+        );
+
+        cms.onAfterEntryCreate.subscribe(async ({ model, entry }) => {
             if (model.modelId !== "apwWorkflowModelDefinition") {
                 return;
             }
@@ -146,25 +145,18 @@ export default () => [
                         /**
                          * Currently, we only assign "workflow" to latest page.
                          */
-                        const page = await context.pageBuilder.pages.get<PageWithWorkflow>(pid);
+                        const page = await pageBuilder.getPage<PageWithWorkflow>(pid);
                         /**
                          * There can be more than one workflow with same `scope` for same `app`. That is why;
                          * We'll update the workflow reference even though it already had one assign.
                          */
-                        if (page.workflow) {
-                            console.warn(
-                                `Overriding workflow "${page.workflow}" for page "${pid}".`
-                            );
-                        }
-                        await context.pageBuilder.pages.update(page.id, {
+                        await pageBuilder.updatePage(page.id, {
                             workflow: entry.id
                         });
                     } catch (e) {
-                        console.info(
-                            `Failed to assign workflow to page "${pid}".`,
-                            e.message,
-                            e.code
-                        );
+                        if (e.code !== "NOT_FOUND") {
+                            throw e;
+                        }
                     }
                 }
             }

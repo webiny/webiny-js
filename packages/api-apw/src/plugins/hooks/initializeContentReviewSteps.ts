@@ -11,7 +11,7 @@ export const getWorkflowIdFromContent = async (
 ): Promise<string> => {
     switch (params.type) {
         case "page":
-            const page = await context.pageBuilder.pages.get<PageWithWorkflow>(params.id);
+            const page = await context.pageBuilder.getPage<PageWithWorkflow>(params.id);
             return page.workflow;
         case "cms_entry":
             const model = await context.cms.getModel(params.settings.modelId);

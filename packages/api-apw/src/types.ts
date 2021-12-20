@@ -4,6 +4,7 @@ import {
     CmsEntry,
     CmsEntryContext,
     CmsEntryListParams,
+    CmsEntryListWhere,
     CmsEntryMeta,
     CmsModel,
     CmsModelContext,
@@ -96,7 +97,7 @@ interface UpdateWorkflowParams {
 }
 
 export interface ListWorkflowsParams extends CmsEntryListParams {
-    where: CmsEntryListParams & {
+    where: CmsEntryListWhere & {
         app?: ApwWorkflowApplications;
     };
 }
