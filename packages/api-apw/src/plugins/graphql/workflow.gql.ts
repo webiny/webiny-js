@@ -11,12 +11,7 @@ const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
         type ApwWorkflowListItem {
             # System generated fields
             id: ID
-            pid: ID
-            publishedOn: DateTime
-            locked: Boolean
-            version: Int
             savedOn: DateTime
-            createdFrom: ID
             createdOn: DateTime
             createdBy: ApwCreatedBy
             # Workflow specific fields
@@ -35,7 +30,6 @@ const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
         type ApwWorkflowReviewer {
             id: ID
             displayName: String
-            #            avatar: File
         }
 
         type ApwWorkflowStep {
@@ -53,12 +47,7 @@ const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
         type ApwWorkflow {
             # System generated fields
             id: ID
-            pid: ID
-            publishedOn: DateTime
-            locked: Boolean
-            version: Int
             savedOn: DateTime
-            createdFrom: ID
             createdOn: DateTime
             createdBy: ApwCreatedBy
             # Workflow specific fields
@@ -115,14 +104,14 @@ const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
         }
 
         input ApwUpdateWorkflowStepInput {
-            title: String
-            slug: String
-            type: ApwWorkflowStepTypes
+            title: String!
+            slug: String!
+            type: ApwWorkflowStepTypes!
             reviewers: [ApwRefFieldInput!]
         }
 
         input ApwWorkflowScopeInput {
-            type: String
+            type: String!
             data: JSON
         }
 

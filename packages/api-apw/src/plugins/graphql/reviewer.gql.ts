@@ -12,12 +12,7 @@ const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
         type ApwReviewerListItem {
             # System generated fields
             id: ID
-            pid: ID
-            publishedOn: DateTime
-            locked: Boolean
-            version: Int
             savedOn: DateTime
-            createdFrom: ID
             createdOn: DateTime
             createdBy: ApwCreatedBy
             # Reviewer specific fields
@@ -35,12 +30,7 @@ const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
         type ApwReviewer {
             # System generated fields
             id: ID
-            pid: ID
-            publishedOn: DateTime
-            locked: Boolean
-            version: Int
             savedOn: DateTime
-            createdFrom: ID
             createdOn: DateTime
             createdBy: ApwCreatedBy
             # Reviewer specific fields

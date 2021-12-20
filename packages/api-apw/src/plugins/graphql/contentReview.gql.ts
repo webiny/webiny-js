@@ -12,16 +12,10 @@ const contentReviewSchema = new GraphQLSchemaPlugin<ApwContext>({
         type ApwContentReviewListItem {
             # System generated fields
             id: ID
-            pid: ID
-            publishedOn: DateTime
-            locked: Boolean
-            version: Int
             savedOn: DateTime
-            createdFrom: ID
             createdOn: DateTime
             createdBy: ApwCreatedBy
             # ContentReview specific fields
-            #            changeRequested: [ApwContentReviewChangeRequested]
             steps: [ApwContentReviewStep]
             content: ApwContentReviewContent
             status: ApwContentReviewStatus
@@ -75,16 +69,10 @@ const contentReviewSchema = new GraphQLSchemaPlugin<ApwContext>({
         type ApwContentReview {
             # System generated fields
             id: ID
-            pid: ID
-            publishedOn: DateTime
-            locked: Boolean
-            version: Int
             savedOn: DateTime
-            createdFrom: ID
             createdOn: DateTime
             createdBy: ApwCreatedBy
             # ContentReview specific fields
-            # changeRequested: [ApwContentReviewChangeRequested]
             steps: [ApwContentReviewStep]
             content: ApwContentReviewContent
             workflow: ID
@@ -121,7 +109,6 @@ const contentReviewSchema = new GraphQLSchemaPlugin<ApwContext>({
         input ApwContentReviewScopeInput {
             type: String
             options: JSON
-            # More fields will come later on.
         }
 
         input ApwContentReviewCommentInput {
@@ -156,12 +143,7 @@ const contentReviewSchema = new GraphQLSchemaPlugin<ApwContext>({
         }
 
         input ApwCreateContentReviewInput {
-            #            workflow: ID!
             content: ApwContentReviewContentInput!
-        }
-
-        input ApwUpdateContentReviewInput {
-            changeRequested: [ApwContentReviewChangeRequestedInput]
         }
 
         input ApwListContentReviewsWhereInput {
@@ -193,11 +175,6 @@ const contentReviewSchema = new GraphQLSchemaPlugin<ApwContext>({
         extend type ApwMutation {
             createContentReview(data: ApwCreateContentReviewInput!): ApwContentReviewResponse
 
-            updateContentReview(
-                id: ID!
-                data: ApwUpdateContentReviewInput!
-            ): ApwContentReviewResponse
-
             deleteContentReview(id: ID!): ApwDeleteContentReviewResponse
 
             provideSignOff(id: ID!, step: String!): ApwProvideSignOffResponse
@@ -228,9 +205,6 @@ const contentReviewSchema = new GraphQLSchemaPlugin<ApwContext>({
         ApwMutation: {
             createContentReview: async (_, args, context) => {
                 return resolve(() => context.apw.contentReview.create(args.data));
-            },
-            updateContentReview: async (_, args, context) => {
-                return resolve(() => context.apw.contentReview.update(args.id, args.data));
             },
             deleteContentReview: async (_, args, context) => {
                 return resolve(() => context.apw.contentReview.delete(args.id));

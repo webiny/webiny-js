@@ -20,12 +20,7 @@ const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
         type ApwCommentListItem {
             # System generated fields
             id: ID
-            pid: ID
-            publishedOn: DateTime
-            locked: Boolean
-            version: Int
             savedOn: DateTime
-            createdFrom: ID
             createdOn: DateTime
             createdBy: ApwCreatedBy
             # Comment specific fields
@@ -42,12 +37,7 @@ const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
         type ApwComment {
             # System generated fields
             id: ID
-            pid: ID
-            publishedOn: DateTime
-            locked: Boolean
-            version: Int
             savedOn: DateTime
-            createdFrom: ID
             createdOn: DateTime
             createdBy: ApwCreatedBy
             # Comment specific fields
@@ -79,12 +69,12 @@ const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
         }
 
         input ApwCreateCommentInput {
-            body: JSON
-            changeRequest: ApwRefFieldInput
+            body: JSON!
+            changeRequest: ApwRefFieldInput!
         }
 
         input ApwUpdateCommentInput {
-            body: JSON
+            body: JSON!
         }
 
         input ApwListCommentsWhereInput {
