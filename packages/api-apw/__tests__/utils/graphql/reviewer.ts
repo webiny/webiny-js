@@ -15,6 +15,7 @@ const getDataFields = (fields = "") => `{
     }
     identityId
     displayName
+    type
     ${fields}
 }`;
 

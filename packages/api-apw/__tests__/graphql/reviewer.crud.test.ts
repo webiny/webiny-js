@@ -64,7 +64,8 @@ describe("Reviewer crud test", () => {
                                     type: "admin"
                                 },
                                 identityId: "12345678",
-                                displayName: "John Doe"
+                                displayName: "John Doe",
+                                type: "admin"
                             }
                         ],
                         error: null,
@@ -112,7 +113,8 @@ describe("Reviewer crud test", () => {
                                     type: identityRoot.type
                                 },
                                 identityId: identityRoot.id,
-                                displayName: identityRoot.displayName
+                                displayName: identityRoot.displayName,
+                                type: "admin"
                             },
                             {
                                 id: expect.any(String),
@@ -124,7 +126,8 @@ describe("Reviewer crud test", () => {
                                     type: "admin"
                                 },
                                 identityId: "12345678",
-                                displayName: "John Doe"
+                                displayName: "John Doe",
+                                type: "admin"
                             }
                         ],
                         error: null,
@@ -184,7 +187,8 @@ describe("Reviewer crud test", () => {
                                     type: "admin"
                                 },
                                 identityId: "12345678",
-                                displayName: "John Doe"
+                                displayName: "John Doe",
+                                type: "admin"
                             }
                         ],
                         error: null,
@@ -232,7 +236,8 @@ describe("Reviewer crud test", () => {
                                     type: "admin"
                                 },
                                 identityId: "12345678",
-                                displayName: "John Doe"
+                                displayName: "John Doe",
+                                type: "admin"
                             }
                         ],
                         error: null,
