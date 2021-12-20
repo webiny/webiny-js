@@ -104,6 +104,7 @@ export interface ListWorkflowsParams extends CmsEntryListParams {
 interface CreateReviewerParams {
     identityId: string;
     displayName: string;
+    type: string;
 }
 
 interface UpdateReviewerParams {

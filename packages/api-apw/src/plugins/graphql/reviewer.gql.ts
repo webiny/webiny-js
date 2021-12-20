@@ -5,7 +5,7 @@ import { ApwContext } from "~/types";
 import resolve from "~/utils/resolve";
 import { generateFieldResolvers } from "~/utils/fieldResolver";
 
-const fieldIds = ["identityId", "displayName"];
+const fieldIds = ["identityId", "displayName", "type"];
 
 const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
     typeDefs: /* GraphQL */ `
@@ -23,6 +23,7 @@ const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
             # Reviewer specific fields
             identityId: ID
             displayName: String
+            type: String
         }
 
         type ApwListReviewersResponse {
@@ -45,6 +46,7 @@ const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
             # Reviewer specific fields
             identityId: ID
             displayName: String
+            type: String
         }
 
         type ApwReviewerResponse {

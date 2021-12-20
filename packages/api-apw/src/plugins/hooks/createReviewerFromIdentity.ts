@@ -25,7 +25,8 @@ export const createReviewerFromIdentity = () =>
             if (!reviewer) {
                 await context.apw.reviewer.create({
                     identityId: identity.id,
-                    displayName: identity.displayName
+                    displayName: identity.displayName,
+                    type: identity.type
                 });
             }
         });
