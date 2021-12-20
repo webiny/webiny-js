@@ -17,7 +17,8 @@
     "../handler-aws",
     "../plugins",
     "../api-page-builder",
-    "../api-page-builder-so-ddb"
+    "../api-page-builder-so-ddb",
+    "../error"
   ],
   "references": [
     {
@@ -64,6 +65,9 @@
     },
     {
       "path": "../api-page-builder/tsconfig.build.json"
+    },
+    {
+      "path": "../error/tsconfig.build.json"
     }
   ],
   "compilerOptions": {

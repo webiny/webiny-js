@@ -46,6 +46,9 @@
     },
     {
       "path": "../api-page-builder"
+    },
+    {
+      "path": "../error"
     }
   ],
   "compilerOptions": {
