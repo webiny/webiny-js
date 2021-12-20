@@ -1,6 +1,7 @@
 import lodashSet from "lodash/set";
 import { ApwContext, PageWithWorkflow } from "~/types";
 import { getContentReviewStepInitialStatus, getValue } from "~/plugins/utils";
+import { NotFoundError } from "@webiny/handler-graphql";
 
 /**
  * TODO: @ashutosh Convert it to use plugins.
@@ -32,8 +33,9 @@ export const initializeContentReviewSteps = (context: ApwContext) => {
             // @ts-ignore
             const workflowId = await getWorkflowIdFromContent(context, input.content);
             if (!workflowId) {
-                console.info(`Unable to find linked workflow.`);
-                return;
+                throw new NotFoundError(
+                    `Unable to initiate a "Content review". No workflow found!`
+                );
             }
             const workflow = await apw.workflow.get(workflowId);
             const workflowSteps = getValue(workflow, "steps");

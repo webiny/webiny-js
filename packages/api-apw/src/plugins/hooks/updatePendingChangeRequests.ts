@@ -62,9 +62,7 @@ const updatePendingChangeRequests = async ({
                 })
             });
         } catch (e) {
-            if (e.code === "NOT_FOUND") {
-                console.info(`Trying to update a non-existing entry!`);
-            } else {
+            if (e.code !== "NOT_FOUND") {
                 throw e;
             }
         }
