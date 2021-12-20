@@ -1,4 +1,5 @@
 import { createModelField } from "../utils";
+import { stepTitleField, stepTypeField, stepSlugField, stepReviewersField } from "./workflow.model";
 
 const contentField = fields =>
     createModelField({
@@ -113,22 +114,6 @@ const stepStatusField = () => ({
     fieldId: "status"
 });
 
-const stepSlugField = () => ({
-    renderer: {
-        name: "text-input"
-    },
-    label: "Slug",
-    id: "contentReview_steps_slug",
-    type: "text",
-    validation: [
-        {
-            name: "required",
-            message: "Value is required."
-        }
-    ],
-    fieldId: "slug"
-});
-
 const stepPendingChangeRequests = () =>
     createModelField({
         label: "Pending change requests",
@@ -190,7 +175,7 @@ const stepsField = fields => ({
     }
 });
 
-export const createContentReviewModelDefinition = () => ({
+export const createContentReviewModelDefinition = ({ reviewerModelId }) => ({
     name: "APW - Content Review",
     modelId: "apwContentReviewModelDefinition",
     titleFieldId: "content",
@@ -204,8 +189,11 @@ export const createContentReviewModelDefinition = () => ({
         contentField([contentIdField(), contentTypeField(), contentSettingsField()]),
         contentStatus(),
         stepsField([
-            stepStatusField(),
+            stepTitleField(),
+            stepTypeField(),
             stepSlugField(),
+            stepReviewersField(reviewerModelId),
+            stepStatusField(),
             stepPendingChangeRequests(),
             stepSignOffProvidedOn(),
             stepSignOffProvidedBy([stepSignOffProvidedById(), stepSignOffProvidedByDisplayName()])

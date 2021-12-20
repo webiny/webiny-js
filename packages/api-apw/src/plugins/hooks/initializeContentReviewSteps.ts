@@ -48,6 +48,7 @@ const initializeContentReviewSteps = () =>
                     );
                     previousStepStatus = status;
                     return {
+                        ...step,
                         /**
                          * We're using the "slug" field from workflow step (which is non-unique string)
                          * to setup a link between "Change request" and "Content review".

@@ -72,6 +72,11 @@ export interface ApwWorkflowStep {
     reviewers: ApwReviewer[];
 }
 
+export interface ApwContentReviewStep extends ApwWorkflowStep {
+    status: ApwContentReviewStepStatus;
+    pendingChangeRequests: number;
+}
+
 interface CreateWorkflowParams {
     app: ApwWorkflowApplications;
     title: string;

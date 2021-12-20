@@ -2,8 +2,9 @@ import { CmsModelField } from "@webiny/api-headless-cms/types";
 import camelCase from "lodash/camelCase";
 import get from "lodash/get";
 import {
+    ApwContentReviewStep,
     ApwContentReviewStepStatus,
-    ApwContext,
+    ApwReviewerCrud,
     ApwWorkflowStep,
     ApwWorkflowStepTypes
 } from "~/types";
@@ -35,17 +36,17 @@ export const createModelField = (params: CreateModelFieldParams): CmsModelField 
 
 export interface HasReviewersParams {
     identity: SecurityIdentity;
-    context: ApwContext;
-    workflowStep: ApwWorkflowStep;
+    step: ApwContentReviewStep;
+    getReviewer: ApwReviewerCrud["get"];
 }
 
 export const hasReviewer = async ({
-    context,
+    getReviewer,
     identity,
-    workflowStep
+    step
 }: HasReviewersParams): Promise<Boolean> => {
-    for (const stepReviewer of workflowStep.reviewers) {
-        const entry = await context.apw.reviewer.get(stepReviewer.id);
+    for (const stepReviewer of step.reviewers) {
+        const entry = await getReviewer(stepReviewer.id);
 
         if (getValue(entry, "identityId") === identity.id) {
             return true;

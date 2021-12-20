@@ -44,7 +44,9 @@ export const createApwModels = () =>
         const commentModelDefinition = createCommentModelDefinition({
             modelId: changeRequestModelDefinition.modelId
         });
-        const contentReviewModelDefinition = createContentReviewModelDefinition();
+        const contentReviewModelDefinition = createContentReviewModelDefinition({
+            reviewerModelId: reviewerModelDefinition.modelId
+        });
 
         const modelDefinitions = [
             workflowModelDefinition,

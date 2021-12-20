@@ -24,7 +24,7 @@ const stepsField = fields =>
         multipleValues: true
     });
 
-const stepTitleField = () =>
+export const stepTitleField = () =>
     createModelField({
         label: "Title",
         type: "text",
@@ -37,7 +37,7 @@ const stepTitleField = () =>
         ]
     });
 
-const stepTypeField = () =>
+export const stepTypeField = () =>
     createModelField({
         label: "Type",
         type: "text",
@@ -67,7 +67,7 @@ const stepTypeField = () =>
         ]
     });
 
-const stepSlugField = () =>
+export const stepSlugField = () =>
     createModelField({
         label: "Slug",
         type: "text",
@@ -80,7 +80,7 @@ const stepSlugField = () =>
         ]
     });
 
-const stepReviewersField = reviewerModelId =>
+export const stepReviewersField = reviewerModelId =>
     createModelField({
         label: "Reviewers",
         type: "ref",

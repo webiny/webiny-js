@@ -2,11 +2,9 @@ import {
     ApwContext,
     ApwContentReviewCrud,
     ApwContentReviewStepStatus,
-    ApwWorkflowStep,
     ApwWorkflowStepTypes,
     ApwContentReviewStatus
 } from "~/types";
-import { getWorkflowIdFromContent } from "~/plugins/hooks/initializeContentReviewSteps";
 import { getValue, hasReviewer, getNextStepStatus } from "~/plugins/utils";
 
 export function createContentReviewMethods(context: ApwContext): ApwContentReviewCrud {
@@ -52,19 +50,10 @@ export function createContentReviewMethods(context: ApwContext): ApwContentRevie
             const previousStep = steps[stepIndex - 1];
 
             const identity = context.security.getIdentity();
-            /**
-             * TODO: @ashutosh
-             * Maybe we should copy the entire step data from "Workflow" while creating a "Content Review".
-             */
-            const workflowId = await getWorkflowIdFromContent(context, entry.values.content);
-            const workflow = await context.apw.workflow.get(workflowId);
-            const workflowSteps: ApwWorkflowStep[] = getValue(workflow, "steps");
-            const previousStepFromWorkflow = workflowSteps[stepIndex - 1];
-
             const hasPermission = await hasReviewer({
-                context,
+                getReviewer: context.apw.reviewer.get.bind(context.apw.reviewer),
                 identity,
-                workflowStep: workflowSteps[stepIndex]
+                step: currentStep
             });
 
             /**
@@ -83,7 +72,7 @@ export function createContentReviewMethods(context: ApwContext): ApwContentRevie
             if (
                 previousStep &&
                 previousStep.status !== ApwContentReviewStepStatus.DONE &&
-                previousStepFromWorkflow.type === ApwWorkflowStepTypes.MANDATORY_BLOCKING
+                previousStep.type === ApwWorkflowStepTypes.MANDATORY_BLOCKING
             ) {
                 throw {
                     code: "MISSING_STEP",
@@ -129,7 +118,7 @@ export function createContentReviewMethods(context: ApwContext): ApwContentRevie
                  * Update next steps status based on type.
                  */
                 if (index > stepIndex) {
-                    const previousStep = workflowSteps[index - 1];
+                    const previousStep = steps[index - 1];
 
                     previousStepStatus = getNextStepStatus(previousStep.type, previousStepStatus);
                     return {
@@ -153,19 +142,13 @@ export function createContentReviewMethods(context: ApwContext): ApwContentRevie
             const steps = getValue(entry, "steps");
             const stepIndex = steps.findIndex(step => step.slug === stepSlug);
             const currentStep = steps[stepIndex];
+
             const identity = context.security.getIdentity();
-            /**
-             * TODO: @ashutosh
-             * Maybe we should copy the entire step data from "Workflow" while creating a "Content Review".
-             */
-            const workflowId = await getWorkflowIdFromContent(context, entry.values.content);
-            const workflow = await context.apw.workflow.get(workflowId);
-            const workflowSteps: ApwWorkflowStep[] = getValue(workflow, "steps");
 
             const hasPermission = await hasReviewer({
-                context,
+                getReviewer: context.apw.reviewer.get.bind(context.apw.reviewer),
                 identity,
-                workflowStep: workflowSteps[stepIndex]
+                step: currentStep
             });
 
             /**
@@ -207,7 +190,7 @@ export function createContentReviewMethods(context: ApwContext): ApwContentRevie
                  * Set next step status as "inactive".
                  */
                 if (index > stepIndex) {
-                    const previousStep = workflowSteps[index - 1];
+                    const previousStep = steps[index - 1];
 
                     previousStepStatus = getNextStepStatus(previousStep.type, previousStepStatus);
 
