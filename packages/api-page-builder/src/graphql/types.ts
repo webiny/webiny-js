@@ -68,112 +68,112 @@ export interface GetPagesOptions {
 /**
  * @category Lifecycle events
  */
-export interface OnBeforePageCreateTopicParams {
-    page: Page;
+export interface OnBeforePageCreateTopicParams<TPage extends Page = Page> {
+    page: TPage;
 }
 /**
  * @category Lifecycle events
  */
-export interface OnAfterPageCreateTopicParams {
-    page: Page;
+export interface OnAfterPageCreateTopicParams<TPage extends Page = Page> {
+    page: TPage;
 }
 /**
  * @category Lifecycle events
  */
-export interface OnBeforePageUpdateTopicParams {
-    original: Page;
-    page: Page;
+export interface OnBeforePageUpdateTopicParams<TPage extends Page = Page> {
+    original: TPage;
+    page: TPage;
     input: Record<string, any>;
 }
 /**
  * @category Lifecycle events
  */
-export interface OnAfterPageUpdateTopicParams {
-    original: Page;
-    page: Page;
+export interface OnAfterPageUpdateTopicParams<TPage extends Page = Page> {
+    original: TPage;
+    page: TPage;
     input: Record<string, any>;
 }
 /**
  * @category Lifecycle events
  */
-export interface OnBeforePageCreateFromTopicParams {
-    original: Page;
-    page: Page;
+export interface OnBeforePageCreateFromTopicParams<TPage extends Page = Page> {
+    original: TPage;
+    page: TPage;
 }
 /**
  * @category Lifecycle events
  */
-export interface OnAfterPageCreateFromTopicParams {
-    original: Page;
-    page: Page;
+export interface OnAfterPageCreateFromTopicParams<TPage extends Page = Page> {
+    original: TPage;
+    page: TPage;
 }
 /**
  * @category Lifecycle events
  */
-export interface OnBeforePageDeleteTopicParams {
-    page: Page;
-    latestPage: Page;
-    publishedPage: Page;
+export interface OnBeforePageDeleteTopicParams<TPage extends Page = Page> {
+    page: TPage;
+    latestPage: TPage;
+    publishedPage: TPage;
 }
 /**
  * @category Lifecycle events
  */
-export interface OnAfterPageDeleteTopicParams {
-    page: Page;
-    latestPage: Page;
-    publishedPage: Page;
+export interface OnAfterPageDeleteTopicParams<TPage extends Page = Page> {
+    page: TPage;
+    latestPage: TPage;
+    publishedPage: TPage;
 }
 /**
  * @category Lifecycle events
  */
-export interface OnBeforePagePublishTopicParams {
-    page: Page;
-    latestPage: Page;
-    publishedPage?: Page;
+export interface OnBeforePagePublishTopicParams<TPage extends Page = Page> {
+    page: TPage;
+    latestPage: TPage;
+    publishedPage?: TPage;
 }
 /**
  * @category Lifecycle events
  */
-export interface OnAfterPagePublishTopicParams {
-    page: Page;
-    latestPage: Page;
-    publishedPage?: Page;
+export interface OnAfterPagePublishTopicParams<TPage extends Page = Page> {
+    page: TPage;
+    latestPage: TPage;
+    publishedPage?: TPage;
 }
 /**
  * @category Lifecycle events
  */
-export interface OnBeforePageUnpublishTopicParams {
-    page: Page;
+export interface OnBeforePageUnpublishTopicParams<TPage extends Page = Page> {
+    page: TPage;
 }
 /**
  * @category Lifecycle events
  */
-export interface OnAfterPageUnpublishTopicParams {
-    page: Page;
+export interface OnAfterPageUnpublishTopicParams<TPage extends Page = Page> {
+    page: TPage;
 }
 /**
  * @category Lifecycle events
  */
-export interface OnBeforePageRequestReviewTopicParams {
-    page: Page;
+export interface OnBeforePageRequestReviewTopicParams<TPage extends Page = Page> {
+    page: TPage;
 }
 /**
  * @category Lifecycle events
  */
-export interface OnAfterPageRequestReviewTopicParams {
-    page: Page;
+export interface OnAfterPageRequestReviewTopicParams<TPage extends Page = Page> {
+    page: TPage;
 }
 /**
  * @category Lifecycle events
  */
-export interface OnBeforePageRequestChangesTopicParams {
-    page: Page;
+export interface OnBeforePageRequestChangesTopicParams<TPage extends Page = Page> {
+    page: TPage;
 }
 /**
  * @category Lifecycle events
  */
-export interface OnAfterPageRequestChangesTopicParams {
-    page: Page;
+export interface OnAfterPageRequestChangesTopicParams<TPage extends Page = Page> {
+    page: TPage;
 }
 
 /**
