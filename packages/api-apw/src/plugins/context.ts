@@ -1,6 +1,5 @@
 import { createAdvancedPublishingWorkflow } from "~/createApw";
 import { PageDynamoDbAttributePlugin } from "./definitions/PageDynamoDbAttributePlugin";
-import { createReviewerFromIdentity } from "./hooks/createReviewerFromIdentity";
 import { createApwModels } from "./models";
 
 /* This is DynamoDB only entity attribute.
@@ -17,7 +16,6 @@ const createWorkflowFieldPlugin = () => {
 
 export default () => [
     createAdvancedPublishingWorkflow(),
-    createReviewerFromIdentity(),
     createWorkflowFieldPlugin(),
     createApwModels()
 ];
