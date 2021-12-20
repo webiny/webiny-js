@@ -9313,6 +9313,7 @@ __metadata:
     "@webiny/handler-graphql": ^5.19.0
     "@webiny/plugins": ^5.19.0
     "@webiny/project-utils": ^5.19.0
+    "@webiny/utils": ^5.19.0
     dataloader: ^2.0.0
     dynamodb-toolbox: ^0.3.4
     elastic-ts: ^0.7.0
@@ -9392,6 +9393,7 @@ __metadata:
     "@webiny/plugins": ^5.19.0
     "@webiny/project-utils": ^5.19.0
     "@webiny/pubsub": ^5.19.0
+    "@webiny/utils": ^5.19.0
     "@webiny/validation": ^5.19.0
     commodo-fields-object: ^1.0.6
     dataloader: ^2.0.0

@@ -45,7 +45,7 @@ import {
 } from "~/graphql/types";
 import { ContentCompressionPlugin } from "~/plugins/ContentCompressionPlugin";
 import { createTopic } from "@webiny/pubsub";
-import { parseIdentifier } from "../../../../utils/src";
+import { parseIdentifier } from "@webiny/utils";
 
 const STATUS_CHANGES_REQUESTED = "changesRequested";
 const STATUS_REVIEW_REQUESTED = "reviewRequested";
