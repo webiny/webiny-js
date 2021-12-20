@@ -13,7 +13,7 @@ export default () => [
         /**
          * Store "dynamic" flag into DB if page URL is a pattern
          */
-        context.pageBuilder.pages.onBeforePageUpdate.subscribe(async params => {
+        context.pageBuilder.onBeforePageUpdate.subscribe(async params => {
             const { page } = params;
             if (page.path && page.path.includes("{")) {
                 (page as any).dynamic = true;
