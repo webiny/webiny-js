@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.20.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.20.0-beta.0...v5.20.0-beta.1) (2021-12-20)
+
+
+### Bug Fixes
+
+* **api-headless-cms-ddb-es:** failed listing when missing index ([#2133](https://github.com/webiny/webiny-js/issues/2133)) ([2229877](https://github.com/webiny/webiny-js/commit/222987774ae09698cceff623ecc5012529b03f75))
+
+
+### Features
+
+* **api-headless-cms:** clone model into another locale ([#2132](https://github.com/webiny/webiny-js/issues/2132)) ([cba29bc](https://github.com/webiny/webiny-js/commit/cba29bcd5d75e10daec3672be32fbd3645dc0909))
+
+
+
+
+
 # [5.20.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.19.1...v5.20.0-beta.0) (2021-12-17)
 
 
