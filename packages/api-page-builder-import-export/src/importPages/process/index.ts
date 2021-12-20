@@ -95,10 +95,10 @@ export default (
             });
 
             // Create a page
-            let pbPage = await context.pageBuilder.pages.create(category);
+            let pbPage = await context.pageBuilder.pages.createPage(category);
 
             // Update page with data
-            pbPage = await context.pageBuilder.pages.update(pbPage.id, {
+            pbPage = await context.pageBuilder.pages.updatePage(pbPage.id, {
                 content: page.content,
                 title: page.title,
                 path: page.path,

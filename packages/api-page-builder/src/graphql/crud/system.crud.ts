@@ -2,36 +2,38 @@ import WebinyError from "@webiny/error";
 import { NotAuthorizedError } from "@webiny/api-security";
 import { UpgradePlugin } from "@webiny/api-upgrade/types";
 import { getApplicablePlugin } from "@webiny/api-upgrade";
-import executeCallbacks from "./utils/executeCallbacks";
 import { preparePageData } from "./install/welcome-to-webiny-page-data";
 import { notFoundPageData } from "./install/notFoundPageData";
 import savePageAssets from "./install/utils/savePageAssets";
-import { PbContext, System, SystemStorageOperations } from "~/types";
-import { InstallationPlugin } from "~/plugins/InstallationPlugin";
-import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
-import { SystemStorageOperationsProviderPlugin } from "~/plugins/SystemStorageOperationsProviderPlugin";
-import { createStorageOperations } from "./storageOperations";
+import {
+    OnAfterInstallTopicParams,
+    OnBeforeInstallTopicParams,
+    PageBuilderContextObject,
+    PbContext,
+    System,
+    SystemCrud,
+    SystemStorageOperations
+} from "~/types";
+import { createTopic } from "@webiny/pubsub";
 
-export default new ContextPlugin<PbContext>(async context => {
-    /**
-     * If pageBuilder is not defined on the context, do not continue, but log it.
-     */
-    if (!context.pageBuilder) {
-        console.log("Missing pageBuilder on context. Skipping System crud.");
-        return;
-    }
-
-    const storageOperations = await createStorageOperations<SystemStorageOperations>(
-        context,
-        SystemStorageOperationsProviderPlugin.type
-    );
+export interface Params {
+    context: PbContext;
+    storageOperations: SystemStorageOperations;
+}
+export const createSystemCrud = (params: Params): SystemCrud => {
+    const { context, storageOperations } = params;
 
     const getTenantId = (): string => {
         return context.tenancy.getCurrentTenant().id;
     };
 
-    context.pageBuilder.system = {
-        async get() {
+    const onBeforeInstall = createTopic<OnBeforeInstallTopicParams>();
+    const onAfterInstall = createTopic<OnAfterInstallTopicParams>();
+
+    return {
+        onBeforeInstall,
+        onAfterInstall,
+        async getSystem() {
             try {
                 return await storageOperations.get();
             } catch (ex) {
@@ -41,13 +43,13 @@ export default new ContextPlugin<PbContext>(async context => {
                 );
             }
         },
-        async getVersion() {
-            const system = await context.pageBuilder.system.get();
+        async getSystemVersion(this: PageBuilderContextObject) {
+            const system = await this.getSystem();
 
             return system ? system.version : null;
         },
-        async setVersion(version: string) {
-            const original = await context.pageBuilder.system.get();
+        async setSystemVersion(this: PageBuilderContextObject, version: string) {
+            const original = await this.getSystem();
 
             if (original) {
                 const system = {
@@ -90,34 +92,27 @@ export default new ContextPlugin<PbContext>(async context => {
                 );
             }
         },
-        async install({ name, insertDemoData }) {
-            const { pageBuilder, fileManager } = context;
+        async installSystem(this: PageBuilderContextObject, { name, insertDemoData }) {
+            const { fileManager } = context;
 
             // Check whether the PB app is already installed
-            const version = await pageBuilder.system.getVersion();
+            const version = await this.getSystemVersion();
             if (version) {
                 throw new WebinyError("Page builder is already installed.", "PB_INSTALL_ABORTED");
             }
 
-            const hookPlugins = context.plugins.byType<InstallationPlugin>(InstallationPlugin.type);
             /**
              * 1. Execute all beforeInstall installation hooks.
-             * In old code there was Elasticsearch index creation here and it was moved to the plugin because
-             * different storage operations need different things done.
              */
-            await executeCallbacks<InstallationPlugin["beforeInstall"]>(
-                hookPlugins,
-                "beforeInstall",
-                {
-                    context
-                }
-            );
+            await onBeforeInstall.publish({
+                context
+            });
 
             if (insertDemoData) {
                 // 2. Create initial page category.
-                let staticCategory = await pageBuilder.categories.get("static");
+                let staticCategory = await this.getCategory("static");
                 if (!staticCategory) {
-                    staticCategory = await pageBuilder.categories.create({
+                    staticCategory = await this.createCategory({
                         name: "Static",
                         slug: "static",
                         url: "/static/",
@@ -131,9 +126,9 @@ export default new ContextPlugin<PbContext>(async context => {
                 const fileIdToFileMap = await savePageAssets({ context });
 
                 // 4. Create initial menu.
-                const mainMenu = await pageBuilder.menus.get("main-menu");
+                const mainMenu = await this.getMenu("main-menu");
                 if (!mainMenu) {
-                    await pageBuilder.menus.create({
+                    await this.createMenu({
                         title: "Main Menu",
                         slug: "main-menu",
                         description:
@@ -142,7 +137,6 @@ export default new ContextPlugin<PbContext>(async context => {
                 }
 
                 // 5. Create sample pages.
-                const { pages } = pageBuilder;
                 const fmSettings = await fileManager.settings.getSettings();
 
                 const welcomeToWebinyPageContent = preparePageData({
@@ -171,18 +165,18 @@ export default new ContextPlugin<PbContext>(async context => {
                 ];
 
                 const initialPages = await Promise.all(
-                    initialPagesData.map(() => pages.create(staticCategory.slug))
+                    initialPagesData.map(() => this.createPage(staticCategory.slug))
                 );
                 const updatedPages = await Promise.all(
                     initialPagesData.map((data, index) => {
-                        return pages.update(initialPages[index].id, data);
+                        return this.updatePage(initialPages[index].id, data);
                     })
                 );
                 const [homePage, notFoundPage] = await Promise.all(
-                    updatedPages.map(page => pages.publish(page.id))
+                    updatedPages.map(page => this.publishPage(page.id))
                 );
 
-                await pageBuilder.settings.update({
+                await this.updateSettings({
                     name: name,
                     pages: {
                         home: homePage.pid,
@@ -192,17 +186,13 @@ export default new ContextPlugin<PbContext>(async context => {
             }
 
             // 6. Mark the Page Builder app as installed.
-            await context.pageBuilder.system.setVersion(context.WEBINY_VERSION);
+            await this.setSystemVersion(context.WEBINY_VERSION);
 
-            await executeCallbacks<InstallationPlugin["afterInstall"]>(
-                hookPlugins,
-                "afterInstall",
-                {
-                    context
-                }
-            );
+            await onAfterInstall.publish({
+                context
+            });
         },
-        async upgrade(version) {
+        async upgradeSystem(version) {
             const identity = context.security.getIdentity();
             if (!identity) {
                 throw new NotAuthorizedError();
@@ -214,7 +204,7 @@ export default new ContextPlugin<PbContext>(async context => {
 
             const plugin = getApplicablePlugin({
                 deployedVersion: context.WEBINY_VERSION,
-                installedAppVersion: await context.pageBuilder.system.getVersion(),
+                installedAppVersion: await this.getSystemVersion(),
                 upgradePlugins,
                 upgradeToVersion: version
             });
@@ -222,9 +212,9 @@ export default new ContextPlugin<PbContext>(async context => {
             await plugin.apply(context);
 
             // Store new app version
-            await context.pageBuilder.system.setVersion(version);
+            await this.setSystemVersion(version);
 
             return true;
         }
     };
-});
+};
