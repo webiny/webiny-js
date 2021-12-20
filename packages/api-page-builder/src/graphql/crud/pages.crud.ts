@@ -10,6 +10,7 @@ import {
     PagesCrud,
     PageSecurityPermission,
     PageStorageOperations,
+    PageStorageOperationsGetWhereParams,
     PageStorageOperationsListParams,
     PageStorageOperationsListTagsParams,
     PbContext
@@ -44,6 +45,7 @@ import {
 } from "~/graphql/types";
 import { ContentCompressionPlugin } from "~/plugins/ContentCompressionPlugin";
 import { createTopic } from "@webiny/pubsub";
+import { parseIdentifier } from "../../../../utils/src";
 
 const STATUS_CHANGES_REQUESTED = "changesRequested";
 const STATUS_REVIEW_REQUESTED = "reviewRequested";
@@ -106,7 +108,7 @@ const createSort = (sort?: string[]): string[] => {
 };
 
 const createDataLoaderKeys = (id: string): DataLoaderGetByIdKey[] => {
-    const [pid] = id.split("#");
+    const { id: pid } = parseIdentifier(id);
     return [
         {
             id
@@ -158,6 +160,14 @@ export const createPageCrud = (params: Params): PagesCrud => {
         );
     }
 
+    const getTenantId = (): string => {
+        return context.tenancy.getCurrentTenant().id;
+    };
+
+    const getLocaleCode = (): string => {
+        return context.i18nContent.getCurrentLocale().code;
+    };
+
     /**
      * We need a data loader to fetch a page by id because it is being called a lot throughout the code.
      * This used to be more complex, with checks if it is preview mode and some others.
@@ -165,15 +175,19 @@ export const createPageCrud = (params: Params): PagesCrud => {
      */
     const dataLoaderGetById = new DataLoader<DataLoaderGetByIdKey, Page, string>(
         async keys => {
+            const tenant = getTenantId();
+            const locale = getLocaleCode();
             try {
                 const pages: Page[] = [];
                 for (const key of keys) {
-                    const [pid, version] = key.id.split("#");
-                    const where = {
-                        pid,
+                    const { id, version } = parseIdentifier(key.id);
+                    const where: PageStorageOperationsGetWhereParams = {
+                        pid: id,
                         version: version ? Number(version) : undefined,
                         latest: key.latest,
-                        published: key.published
+                        published: key.published,
+                        tenant,
+                        locale
                     };
                     const page: Page | null = await storageOperations.get({
                         where
@@ -193,7 +207,9 @@ export const createPageCrud = (params: Params): PagesCrud => {
         },
         {
             cacheKeyFn: (key: DataLoaderGetByIdKey): string => {
-                const values: string[] = [key.id];
+                const tenant = getTenantId();
+                const locale = getLocaleCode();
+                const values: string[] = [tenant, locale, key.id];
                 if (key.latest) {
                     values.push(`#l`);
                 } else if (key.published) {
@@ -377,6 +393,8 @@ export const createPageCrud = (params: Params): PagesCrud => {
             const latestPage = await storageOperations.get({
                 where: {
                     pid: original.pid,
+                    tenant: getTenantId(),
+                    locale: getLocaleCode(),
                     latest: true
                 }
             });
@@ -447,7 +465,9 @@ export const createPageCrud = (params: Params): PagesCrud => {
             });
             const original = await storageOperations.get({
                 where: {
-                    id
+                    id,
+                    tenant: getTenantId(),
+                    locale: getLocaleCode()
                 }
             });
             if (!original) {
@@ -555,7 +575,9 @@ export const createPageCrud = (params: Params): PagesCrud => {
 
             const page = await storageOperations.get({
                 where: {
-                    id
+                    id,
+                    tenant: getTenantId(),
+                    locale: getLocaleCode()
                 }
             });
             if (!page) {
@@ -582,12 +604,16 @@ export const createPageCrud = (params: Params): PagesCrud => {
             let latestPage = await storageOperations.get({
                 where: {
                     pid: pageId,
+                    tenant: getTenantId(),
+                    locale: getLocaleCode(),
                     latest: true
                 }
             });
             const publishedPage = await storageOperations.get({
                 where: {
                     pid: pageId,
+                    tenant: getTenantId(),
+                    locale: getLocaleCode(),
                     published: true
                 }
             });
@@ -666,6 +692,8 @@ export const createPageCrud = (params: Params): PagesCrud => {
             const publishedPage = await storageOperations.get({
                 where: {
                     pid: original.pid,
+                    tenant: getTenantId(),
+                    locale: getLocaleCode(),
                     published: true
                 }
             });
@@ -675,6 +703,8 @@ export const createPageCrud = (params: Params): PagesCrud => {
             const publishedPathPage = await storageOperations.get({
                 where: {
                     path: original.path,
+                    tenant: getTenantId(),
+                    locale: getLocaleCode(),
                     published: true
                 }
             });
@@ -684,6 +714,8 @@ export const createPageCrud = (params: Params): PagesCrud => {
             const latestPage = await storageOperations.get({
                 where: {
                     pid: original.pid,
+                    tenant: getTenantId(),
+                    locale: getLocaleCode(),
                     latest: true
                 }
             });
@@ -775,6 +807,8 @@ export const createPageCrud = (params: Params): PagesCrud => {
             const latestPage = await storageOperations.get({
                 where: {
                     pid: original.pid,
+                    tenant: getTenantId(),
+                    locale: getLocaleCode(),
                     latest: true
                 }
             });
@@ -853,6 +887,8 @@ export const createPageCrud = (params: Params): PagesCrud => {
             const latestPage = await storageOperations.get({
                 where: {
                     pid: original.pid,
+                    tenant: getTenantId(),
+                    locale: getLocaleCode(),
                     latest: true
                 }
             });
@@ -913,6 +949,8 @@ export const createPageCrud = (params: Params): PagesCrud => {
             const latestPage = await storageOperations.get({
                 where: {
                     pid: original.pid,
+                    tenant: getTenantId(),
+                    locale: getLocaleCode(),
                     latest: true
                 }
             });
@@ -1035,6 +1073,8 @@ export const createPageCrud = (params: Params): PagesCrud => {
                 page = await storageOperations.get({
                     where: {
                         path: normalizedPath,
+                        tenant: getTenantId(),
+                        locale: getLocaleCode(),
                         published: true
                     }
                 });
@@ -1107,12 +1147,13 @@ export const createPageCrud = (params: Params): PagesCrud => {
                     ...initialWhere,
                     latest: true,
                     search: search ? search.query : undefined,
-                    locale: context.i18nContent.getCurrentLocale().code,
                     createdBy,
                     path_not_in: pathNotIn,
                     pid_not_in: pidNotIn,
                     tags_in: tags && tags.query ? tags.query : undefined,
-                    tags_rule: tags && tags.rule ? tags.rule : undefined
+                    tags_rule: tags && tags.rule ? tags.rule : undefined,
+                    tenant: getTenantId(),
+                    locale: getLocaleCode()
                 },
                 after
             };
@@ -1154,11 +1195,12 @@ export const createPageCrud = (params: Params): PagesCrud => {
                     ...initialWhere,
                     published: true,
                     search: search && search.query ? search.query : undefined,
-                    locale: context.i18nContent.getCurrentLocale().code,
                     path_not_in: pathNotIn,
                     pid_not_in: pidNotIn,
                     tags_in: tags && tags.query ? tags.query : undefined,
-                    tags_rule: tags && tags.rule ? tags.rule : undefined
+                    tags_rule: tags && tags.rule ? tags.rule : undefined,
+                    tenant: getTenantId(),
+                    locale: getLocaleCode()
                 },
                 after
             };
@@ -1191,7 +1233,9 @@ export const createPageCrud = (params: Params): PagesCrud => {
             try {
                 const pages = await storageOperations.listRevisions({
                     where: {
-                        pid
+                        pid,
+                        tenant: getTenantId(),
+                        locale: getLocaleCode()
                     },
                     /**
                      * Let's hope there will be no more than 10000 revisions.

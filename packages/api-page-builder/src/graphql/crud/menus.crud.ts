@@ -46,6 +46,14 @@ export interface Params {
 export const createMenuCrud = (params: Params): MenusCrud => {
     const { context, storageOperations } = params;
 
+    const getTenantId = (): string => {
+        return context.tenancy.getCurrentTenant().id;
+    };
+
+    const getLocaleCode = (): string => {
+        return context.i18nContent.getCurrentLocale().code;
+    };
+
     const onBeforeMenuCreate = createTopic<OnBeforeMenuCreateTopicParams>();
     const onAfterMenuCreate = createTopic<OnAfterMenuCreateTopicParams>();
     const onBeforeMenuUpdate = createTopic<OnBeforeMenuUpdateTopicParams>();
@@ -70,13 +78,11 @@ export const createMenuCrud = (params: Params): MenusCrud => {
                 });
             }
 
-            const tenant = context.tenancy.getCurrentTenant();
-            const locale = context.i18nContent.getCurrentLocale();
             const params: MenuStorageOperationsGetParams = {
                 where: {
                     slug,
-                    tenant: tenant.id,
-                    locale: locale.code
+                    tenant: getTenantId(),
+                    locale: getLocaleCode()
                 }
             };
 
@@ -129,14 +135,12 @@ export const createMenuCrud = (params: Params): MenusCrud => {
                 rwd: "r"
             });
 
-            const tenant = context.tenancy.getCurrentTenant();
-            const locale = context.i18nContent.getCurrentLocale();
             const { sort } = params || {};
 
             const listParams: MenuStorageOperationsListParams = {
                 where: {
-                    tenant: tenant.id,
-                    locale: locale.code
+                    tenant: getTenantId(),
+                    locale: getLocaleCode()
                 },
                 sort: Array.isArray(sort) && sort.length > 0 ? sort : ["createdOn_ASC"]
             };
@@ -169,14 +173,11 @@ export const createMenuCrud = (params: Params): MenusCrud => {
 
             const data: Menu = await createDataModel.toJSON();
 
-            const tenant = context.tenancy.getCurrentTenant();
-            const locale = context.i18nContent.getCurrentLocale();
-
             const existing = await storageOperations.get({
                 where: {
                     slug: data.slug,
-                    tenant: tenant.id,
-                    locale: locale.code
+                    tenant: getTenantId(),
+                    locale: getLocaleCode()
                 }
             });
             if (existing) {
@@ -193,8 +194,8 @@ export const createMenuCrud = (params: Params): MenusCrud => {
                     type: identity.type,
                     displayName: identity.displayName
                 },
-                tenant: tenant.id,
-                locale: locale.code
+                tenant: getTenantId(),
+                locale: getLocaleCode()
             };
 
             try {

@@ -35,7 +35,9 @@ export const createSystemCrud = (params: Params): SystemCrud => {
         onAfterInstall,
         async getSystem() {
             try {
-                return await storageOperations.get();
+                return await storageOperations.get({
+                    tenant: getTenantId()
+                });
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not load system data.",
@@ -105,7 +107,8 @@ export const createSystemCrud = (params: Params): SystemCrud => {
              * 1. Execute all beforeInstall installation hooks.
              */
             await onBeforeInstall.publish({
-                context
+                context,
+                tenant: getTenantId()
             });
 
             if (insertDemoData) {
@@ -189,7 +192,8 @@ export const createSystemCrud = (params: Params): SystemCrud => {
             await this.setSystemVersion(context.WEBINY_VERSION);
 
             await onAfterInstall.publish({
-                context
+                context,
+                tenant: getTenantId()
             });
         },
         async upgradeSystem(version) {

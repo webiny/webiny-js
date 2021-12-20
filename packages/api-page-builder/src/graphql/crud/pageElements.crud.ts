@@ -47,6 +47,14 @@ export interface Params {
 export const createPageElementsCrud = (params: Params): PageElementsCrud => {
     const { context, storageOperations } = params;
 
+    const getTenantId = (): string => {
+        return context.tenancy.getCurrentTenant().id;
+    };
+
+    const getLocaleCode = (): string => {
+        return context.i18nContent.getCurrentLocale().code;
+    };
+
     const onBeforePageElementCreate = createTopic<OnBeforePageElementCreateTopicParams>();
     const onAfterPageElementCreate = createTopic<OnAfterPageElementCreateTopicParams>();
     const onBeforePageElementUpdate = createTopic<OnBeforePageElementUpdateTopicParams>();
@@ -73,13 +81,10 @@ export const createPageElementsCrud = (params: Params): PageElementsCrud => {
                 rwd: "r"
             });
 
-            const tenant = context.tenancy.getCurrentTenant();
-            const locale = context.i18nContent.getCurrentLocale();
-
             const params = {
                 where: {
-                    tenant: tenant.id,
-                    locale: locale.code,
+                    tenant: getTenantId(),
+                    locale: getLocaleCode(),
                     id
                 }
             };
@@ -112,15 +117,12 @@ export const createPageElementsCrud = (params: Params): PageElementsCrud => {
                 rwd: "r"
             });
 
-            const tenant = context.tenancy.getCurrentTenant();
-            const locale = context.i18nContent.getCurrentLocale();
-
             const { sort } = params || {};
 
             const listParams: PageElementStorageOperationsListParams = {
                 where: {
-                    tenant: tenant.id,
-                    locale: locale.code
+                    tenant: getTenantId(),
+                    locale: getLocaleCode()
                 },
                 sort: Array.isArray(sort) && sort.length > 0 ? sort : ["createdOn_ASC"]
             };

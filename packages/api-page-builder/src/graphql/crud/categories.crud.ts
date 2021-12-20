@@ -54,6 +54,14 @@ export const createCategoriesCrud = (params: Params): CategoriesCrud => {
     const onBeforeCategoryDelete = createTopic<OnBeforeCategoryDeleteTopicParams>();
     const onAfterCategoryDelete = createTopic<OnAfterCategoryDeleteTopicParams>();
 
+    const getTenantId = (): string => {
+        return context.tenancy.getCurrentTenant().id;
+    };
+
+    const getLocaleCode = (): string => {
+        return context.i18nContent.getCurrentLocale().code;
+    };
+
     return {
         /**
          * Lifecycle events
@@ -71,13 +79,11 @@ export const createCategoriesCrud = (params: Params): CategoriesCrud => {
         async getCategory(slug, options = { auth: true }) {
             const { auth } = options;
 
-            const tenant = context.tenancy.getCurrentTenant();
-            const locale = context.i18nContent.getCurrentLocale();
             const params: CategoryStorageOperationsGetParams = {
                 where: {
                     slug,
-                    tenant: tenant.id,
-                    locale: locale.code
+                    tenant: getTenantId(),
+                    locale: getLocaleCode()
                 }
             };
 
@@ -146,13 +152,10 @@ export const createCategoriesCrud = (params: Params): CategoriesCrud => {
                 throw new NotAuthorizedError();
             }
 
-            const tenant = context.tenancy.getCurrentTenant();
-            const locale = context.i18nContent.getCurrentLocale();
-
             const params: CategoryStorageOperationsListParams = {
                 where: {
-                    tenant: tenant.id,
-                    locale: locale.code
+                    tenant: getTenantId(),
+                    locale: getLocaleCode()
                 },
                 sort: ["createdOn_ASC"]
             };
@@ -194,9 +197,6 @@ export const createCategoriesCrud = (params: Params): CategoriesCrud => {
 
             const data: Category = await createDataModel.toJSON();
 
-            const tenant = context.tenancy.getCurrentTenant();
-            const locale = context.i18nContent.getCurrentLocale();
-
             const category: Category = {
                 ...data,
                 createdOn: new Date().toISOString(),
@@ -205,8 +205,8 @@ export const createCategoriesCrud = (params: Params): CategoriesCrud => {
                     type: identity.type,
                     displayName: identity.displayName
                 },
-                tenant: tenant.id,
-                locale: locale.code
+                tenant: getTenantId(),
+                locale: getLocaleCode()
             };
 
             try {

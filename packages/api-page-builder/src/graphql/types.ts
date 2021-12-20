@@ -68,8 +68,8 @@ export interface GetPagesOptions {
 /**
  * @category Lifecycle events
  */
-export interface OnBeforePageCreateTopicParams {
-    page: Page;
+export interface OnBeforePageCreateTopicParams<TPage extends Page = Page> {
+    page: TPage;
 }
 /**
  * @category Lifecycle events
@@ -444,8 +444,8 @@ export interface MenusCrud {
  * The options passed into the crud methods
  */
 export interface DefaultSettingsCrudOptions {
-    tenant?: string | false;
-    locale?: string | false;
+    tenant: string | false;
+    locale: string | false;
 }
 
 export interface SettingsUpdateTopicMetaParams {
@@ -494,12 +494,14 @@ export interface SettingsCrud {
  */
 export interface OnBeforeInstallTopicParams {
     context: PbContext;
+    tenant: string;
 }
 /**
  * @category Lifecycle events
  */
 export interface OnAfterInstallTopicParams {
     context: PbContext;
+    tenant: string;
 }
 /**
  * @category System
