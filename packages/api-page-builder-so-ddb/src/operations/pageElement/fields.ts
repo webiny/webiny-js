@@ -1,12 +1,13 @@
 import { PageElementDynamoDbFieldPlugin } from "~/plugins/definitions/PageElementDynamoDbFieldPlugin";
 
-export default () => [
+export const createPageElementDynamoDbFields = (): PageElementDynamoDbFieldPlugin[] => [
     new PageElementDynamoDbFieldPlugin({
         field: "createdOn",
         type: "date"
     }),
     new PageElementDynamoDbFieldPlugin({
         field: "createdBy",
-        path: "createdBy.id"
+        path: "createdBy.id",
+        sortable: false
     })
 ];

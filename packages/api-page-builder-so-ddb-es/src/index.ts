@@ -1,3 +1,4 @@
+import dynamoDbValueFilters from "@webiny/db-dynamodb/plugins/filters";
 import { createSystemStorageOperations } from "~/operations/system";
 import { ENTITIES, StorageOperationsFactory } from "~/types";
 import { createTable } from "~/definitions/table";
@@ -10,7 +11,6 @@ import { createPageElementEntity } from "~/definitions/pageElementEntity";
 import { createPageEntity } from "~/definitions/pageEntity";
 import { createPageElasticsearchEntity } from "~/definitions/pageElasticsearchEntity";
 import { PluginsContainer } from "@webiny/plugins";
-import dynamoDbValueFilters from "@webiny/db-dynamodb/plugins/filters";
 import { getElasticsearchOperators } from "@webiny/api-elasticsearch/operators";
 import { execOnBeforeInstall } from "~/operations/system/installation";
 import { createSettingsStorageOperations } from "~/operations/settings";
@@ -101,7 +101,7 @@ export const createStorageOperations: StorageOperationsFactory = params => {
         }),
         pages: createPageEntity({
             entityName: ENTITIES.PAGES,
-            table: tableElasticsearchInstance,
+            table: tableInstance,
             attributes: attributes[ENTITIES.PAGES]
         }),
         pagesEs: createPageElasticsearchEntity({

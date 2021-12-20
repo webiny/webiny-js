@@ -504,7 +504,10 @@ export interface PageStorageOperationsListResponse {
     items: Page[];
     meta: MetaResponse;
 }
-
+/**
+ * @category StorageOperations
+ * @category PageStorageOperations
+ */
 export interface PageStorageOperationsGetWhereParams {
     /**
      * pid + version
@@ -528,7 +531,26 @@ export interface PageStorageOperationsGetWhereParams {
 export interface PageStorageOperationsGetParams {
     where: PageStorageOperationsGetWhereParams;
 }
-
+/**
+ * @category StorageOperations
+ * @category PageStorageOperations
+ */
+export interface PageStorageOperationsGetByPathWhereParams {
+    path: string;
+    tenant: string;
+    locale: string;
+}
+/**
+ * @category StorageOperations
+ * @category PageStorageOperations
+ */
+export interface PageStorageOperationsGetByPathParams {
+    where: PageStorageOperationsGetByPathWhereParams;
+}
+/**
+ * @category StorageOperations
+ * @category PageStorageOperations
+ */
 export interface PageStorageOperationsListWhere {
     /**
      * pid + version

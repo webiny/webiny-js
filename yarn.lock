@@ -9346,7 +9346,9 @@ __metadata:
     "@webiny/handler-aws": ^5.19.0
     "@webiny/handler-db": ^5.19.0
     "@webiny/handler-graphql": ^5.19.0
+    "@webiny/plugins": ^5.19.0
     "@webiny/project-utils": ^5.19.0
+    "@webiny/utils": ^5.19.0
     dataloader: ^2.0.0
     dynamodb-toolbox: ^0.3.4
     jest: ^26.6.3

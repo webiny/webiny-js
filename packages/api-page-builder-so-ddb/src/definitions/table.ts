@@ -1,7 +1,6 @@
 import { Table } from "dynamodb-toolbox";
-import { PbContext } from "@webiny/api-page-builder/graphql/types";
-import { getTable } from "@webiny/db-dynamodb/utils/table";
-import { getDocumentClient } from "@webiny/db-dynamodb/utils/documentClient";
+import { TableModifier } from "~/types";
+import { DocumentClient } from "aws-sdk/clients/dynamodb";
 
 interface IndexParams {
     partitionKey: string;
@@ -9,19 +8,22 @@ interface IndexParams {
 }
 
 export interface Params {
-    context: PbContext;
+    table?: TableModifier;
+    documentClient: DocumentClient;
     indexes?: {
         [key: string]: IndexParams;
     };
 }
-
-export const defineTable = (params: Params): Table => {
-    const { context, indexes } = params;
-    return new Table({
-        name: process.env.DB_TABLE || getTable(context),
+export const createTable = ({ table, documentClient, indexes }: Params): Table => {
+    const tableConfig = {
+        name: process.env.DB_PAGE_BUILDER || process.env.DB_TABLE,
         partitionKey: "PK",
         sortKey: "SK",
-        DocumentClient: getDocumentClient(context),
+        DocumentClient: documentClient,
         indexes
-    });
+    };
+
+    const config = typeof table === "function" ? table(tableConfig) : tableConfig;
+
+    return new Table(config);
 };
