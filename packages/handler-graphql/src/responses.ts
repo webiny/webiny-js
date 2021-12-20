@@ -17,13 +17,26 @@ export class ErrorResponse {
         message: string;
         data?: any;
     };
-    constructor(params: ErrorResponseParams) {
+    constructor(params: ErrorResponseParams | (Error & Partial<ErrorResponseParams>)) {
         this.data = null;
-        this.error = {
-            code: params.code || defaultParams.code,
-            message: params.message || defaultParams.message,
-            data: params.data || defaultParams.data
-        };
+
+        if (params instanceof Error) {
+            // usually we don't use env variables directly inside code
+            // but otherwise it would make it very tedious to pass this through multiple layers of code
+            const debug = process.env.DEBUG === "true";
+
+            this.error = {
+                code: params.code || defaultParams.code,
+                message: params.message || defaultParams.message,
+                data: debug ? { stacktrace: params.stack } : defaultParams.data
+            };
+        } else {
+            this.error = {
+                code: params.code || defaultParams.code,
+                message: params.message || defaultParams.message,
+                data: params.data || defaultParams.data
+            };
+        }
     }
 }
 
