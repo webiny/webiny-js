@@ -179,13 +179,11 @@ const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
         },
         ApwQuery: {
             getWorkflow: async (_, args, context) => {
-                return resolve(() => context.advancedPublishingWorkflow.workflow.get(args.id));
+                return resolve(() => context.apw.workflow.get(args.id));
             },
             listWorkflows: async (_, args: ListWorkflowsParams, context) => {
                 try {
-                    const [entries, meta] = await context.advancedPublishingWorkflow.workflow.list(
-                        args
-                    );
+                    const [entries, meta] = await context.apw.workflow.list(args);
                     return new ListResponse(entries, meta);
                 } catch (e) {
                     return new ErrorResponse(e);
@@ -194,15 +192,13 @@ const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
         },
         ApwMutation: {
             createWorkflow: async (_, args, context) => {
-                return resolve(() => context.advancedPublishingWorkflow.workflow.create(args.data));
+                return resolve(() => context.apw.workflow.create(args.data));
             },
             updateWorkflow: async (_, args, context) => {
-                return resolve(() =>
-                    context.advancedPublishingWorkflow.workflow.update(args.id, args.data)
-                );
+                return resolve(() => context.apw.workflow.update(args.id, args.data));
             },
             deleteWorkflow: async (_, args, context) => {
-                return resolve(() => context.advancedPublishingWorkflow.workflow.delete(args.id));
+                return resolve(() => context.apw.workflow.delete(args.id));
             }
         }
     }

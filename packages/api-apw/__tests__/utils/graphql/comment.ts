@@ -24,7 +24,7 @@ const getDataFields = (fields = "") => `{
 
 export const GET_COMMENT_QUERY = /* GraphQL */ `
     query GetComment($id: ID!) {
-        advancedPublishingWorkflow {
+        apw {
             getComment(id: $id) {
                 data ${getDataFields()}
                 error ${ERROR_FIELDS}
@@ -41,7 +41,7 @@ export const LIST_COMMENTS_QUERY = /* GraphQL */ `
         $sort: [ApwListCommentsSort!],
         $search: ApwListCommentsSearchInput
     ) {
-        advancedPublishingWorkflow {
+        apw {
             listComments(
                 where: $where,
                 limit: $limit,
@@ -63,7 +63,7 @@ export const LIST_COMMENTS_QUERY = /* GraphQL */ `
 
 export const CREATE_COMMENT_MUTATION = /* GraphQL */ `
     mutation CreateCommentMutation($data: ApwCreateCommentInput!) {
-        advancedPublishingWorkflow {
+        apw {
             createComment(data: $data) {
                 data ${getDataFields()}
                 error ${ERROR_FIELDS}
@@ -74,7 +74,7 @@ export const CREATE_COMMENT_MUTATION = /* GraphQL */ `
 
 export const UPDATE_COMMENT_MUTATION = /* GraphQL */ `
     mutation UpdateCommentMutation($id: ID!, $data: ApwUpdateCommentInput!) {
-        advancedPublishingWorkflow {
+        apw {
             updateComment(id: $id, data: $data) {
                 data ${getDataFields()}
                 error ${ERROR_FIELDS}
@@ -85,7 +85,7 @@ export const UPDATE_COMMENT_MUTATION = /* GraphQL */ `
 
 export const DELETE_COMMENT_MUTATION = /* GraphQL */ `
     mutation DeleteCommentMutation($id: ID!) {
-        advancedPublishingWorkflow {
+        apw {
             deleteComment(id: $id) {
                 data
                 error ${ERROR_FIELDS}

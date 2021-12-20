@@ -8,7 +8,7 @@ import { createContentReviewMethods } from "./createContentReviewMethods";
 
 export const createAdvancedPublishingWorkflow = () =>
     new ContextPlugin<ApwContext>(async context => {
-        context.advancedPublishingWorkflow = {
+        context.apw = {
             workflow: createWorkflowMethods(context),
             reviewer: createReviewerMethods(context),
             comment: createCommentMethods(context),

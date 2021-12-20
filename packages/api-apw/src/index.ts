@@ -14,4 +14,4 @@ export const createApwGraphQL = () => {
     return graphql();
 };
 
-export const createApwHooks = () => [hooks()];
+export const createApwHooks = () => hooks();

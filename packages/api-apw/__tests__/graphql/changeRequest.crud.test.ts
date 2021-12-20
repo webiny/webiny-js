@@ -81,12 +81,11 @@ describe("ChangeRequest crud test", () => {
         const [createChangeRequestResponse] = await createChangeRequestMutation({
             data: changeRequested
         });
-        const createdChangeRequest =
-            createChangeRequestResponse.data.advancedPublishingWorkflow.createChangeRequest.data;
+        const createdChangeRequest = createChangeRequestResponse.data.apw.createChangeRequest.data;
 
         expect(createChangeRequestResponse).toEqual({
             data: {
-                advancedPublishingWorkflow: {
+                apw: {
                     createChangeRequest: {
                         data: {
                             id: expect.any(String),
@@ -108,7 +107,7 @@ describe("ChangeRequest crud test", () => {
 
         await until(
             () => getChangeRequestQuery({ id: createdChangeRequest.id }).then(([data]) => data),
-            response => response.data.advancedPublishingWorkflow.getChangeRequest.data !== null,
+            response => response.data.apw.getChangeRequest.data !== null,
             {
                 name: "Wait for getChangeRequest query"
             }
@@ -122,7 +121,7 @@ describe("ChangeRequest crud test", () => {
         });
         expect(getChangeRequestByIdResponse).toEqual({
             data: {
-                advancedPublishingWorkflow: {
+                apw: {
                     getChangeRequest: {
                         data: {
                             id: expect.any(String),
@@ -154,7 +153,7 @@ describe("ChangeRequest crud test", () => {
         });
         expect(updateChangeRequestResponse).toEqual({
             data: {
-                advancedPublishingWorkflow: {
+                apw: {
                     updateChangeRequest: {
                         data: {
                             id: expect.any(String),
@@ -178,8 +177,7 @@ describe("ChangeRequest crud test", () => {
         await until(
             () => listChangeRequestsQuery({}).then(([data]) => data),
             response => {
-                const [updatedItem] =
-                    response.data.advancedPublishingWorkflow.listChangeRequests.data;
+                const [updatedItem] = response.data.apw.listChangeRequests.data;
                 return updatedItem && createdChangeRequest.savedOn !== updatedItem.savedOn;
             },
             {
@@ -193,7 +191,7 @@ describe("ChangeRequest crud test", () => {
         const [listChangeRequestsResponse] = await listChangeRequestsQuery({});
         expect(listChangeRequestsResponse).toEqual({
             data: {
-                advancedPublishingWorkflow: {
+                apw: {
                     listChangeRequests: {
                         data: [
                             {
@@ -229,7 +227,7 @@ describe("ChangeRequest crud test", () => {
         });
         expect(deleteChangeRequestResponse).toEqual({
             data: {
-                advancedPublishingWorkflow: {
+                apw: {
                     deleteChangeRequest: {
                         data: true,
                         error: null
@@ -241,7 +239,7 @@ describe("ChangeRequest crud test", () => {
         await until(
             () => listChangeRequestsQuery({}).then(([data]) => data),
             response => {
-                const list = response.data.advancedPublishingWorkflow.listChangeRequests.data;
+                const list = response.data.apw.listChangeRequests.data;
                 return list.length === 0;
             },
             {
@@ -255,7 +253,7 @@ describe("ChangeRequest crud test", () => {
         const [listChangeRequestsAgainResponse] = await listChangeRequestsQuery({});
         expect(listChangeRequestsAgainResponse).toEqual({
             data: {
-                advancedPublishingWorkflow: {
+                apw: {
                     listChangeRequests: {
                         data: [],
                         error: null,

@@ -37,7 +37,7 @@ const updatePendingChangeRequests = async ({
 
     let contentReviewEntry;
     try {
-        [[contentReviewEntry]] = await context.advancedPublishingWorkflow.contentReview.list({
+        [[contentReviewEntry]] = await context.apw.contentReview.list({
             where: {
                 entryId
             }
@@ -52,7 +52,7 @@ const updatePendingChangeRequests = async ({
          * Update "pendingChangeRequests" count of corresponding step in content review entry.
          */
         try {
-            await context.advancedPublishingWorkflow.contentReview.update(contentReviewEntry.id, {
+            await context.apw.contentReview.update(contentReviewEntry.id, {
                 steps: contentReviewEntry.values.steps.map(step => {
                     if (step.slug === stepSlug) {
                         return {
@@ -80,7 +80,7 @@ const isChangeRequestModel = async ({
     context: ApwContext;
     model: CmsModel;
 }): Promise<Boolean> => {
-    const changeRequestModel = await context.advancedPublishingWorkflow.changeRequest.getModel();
+    const changeRequestModel = await context.apw.changeRequest.getModel();
     return model.modelId === changeRequestModel.modelId;
 };
 
@@ -122,4 +122,4 @@ const updatePendingChangeRequestsCount = () =>
         });
     });
 
-export default () => [updatePendingChangeRequestsCount()];
+export default () => updatePendingChangeRequestsCount();

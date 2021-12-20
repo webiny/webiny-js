@@ -4,8 +4,7 @@ import { ApwContext } from "~/types";
 const deleteCommentsAfterChangeRequest = () =>
     new ContextPlugin<ApwContext>(async context => {
         context.cms.onAfterEntryDelete.subscribe(async ({ model, entry }) => {
-            const changeRequestedModel =
-                await context.advancedPublishingWorkflow.changeRequest.getModel();
+            const changeRequestedModel = await context.apw.changeRequest.getModel();
             /**
              * If deleted entry is of "changeRequested" model, also delete all associated comments.
              */
@@ -23,7 +22,7 @@ const deleteCommentsAfterChangeRequest = () =>
                      * Get all comments.
                      */
                     try {
-                        [comments, meta] = await context.advancedPublishingWorkflow.comment.list({
+                        [comments, meta] = await context.apw.comment.list({
                             where: {
                                 changeRequest: {
                                     id: entry.id
@@ -42,11 +41,11 @@ const deleteCommentsAfterChangeRequest = () =>
                      * Delete comments one by one.
                      */
                     for (const comment of comments) {
-                        await context.advancedPublishingWorkflow.comment.delete(comment.id);
+                        await context.apw.comment.delete(comment.id);
                     }
                 }
             }
         });
     });
 
-export default () => [deleteCommentsAfterChangeRequest()];
+export default () => deleteCommentsAfterChangeRequest();

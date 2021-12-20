@@ -33,7 +33,7 @@ const getDataFields = (fields = "") => `{
 
 export const GET_WORKFLOW_QUERY = /* GraphQL */ `
     query GetWorkflow($id: ID!) {
-        advancedPublishingWorkflow {
+        apw {
             getWorkflow(id: $id) {
                 data ${getDataFields()}
                 error ${ERROR_FIELDS}
@@ -50,7 +50,7 @@ export const LIST_WORKFLOWS_QUERY = /* GraphQL */ `
         $sort: [ApwListWorkflowsSort!],
         $search: ApwListWorkflowsSearchInput
     ) {
-        advancedPublishingWorkflow {
+        apw {
             listWorkflows(
                 where: $where,
                 limit: $limit,
@@ -72,7 +72,7 @@ export const LIST_WORKFLOWS_QUERY = /* GraphQL */ `
 
 export const CREATE_WORKFLOW_MUTATION = /* GraphQL */ `
     mutation CreateWorkflowMutation($data: ApwCreateWorkflowInput!) {
-        advancedPublishingWorkflow {
+        apw {
             createWorkflow(data: $data) {
                 data ${getDataFields()}
                 error ${ERROR_FIELDS}
@@ -83,7 +83,7 @@ export const CREATE_WORKFLOW_MUTATION = /* GraphQL */ `
 
 export const UPDATE_WORKFLOW_MUTATION = /* GraphQL */ `
     mutation UpdateWorkflowMutation($id: ID!, $data: ApwUpdateWorkflowInput!) {
-        advancedPublishingWorkflow {
+        apw {
             updateWorkflow(id: $id, data: $data) {
                 data ${getDataFields()}
                 error ${ERROR_FIELDS}
@@ -94,7 +94,7 @@ export const UPDATE_WORKFLOW_MUTATION = /* GraphQL */ `
 
 export const DELETE_WORKFLOW_MUTATION = /* GraphQL */ `
     mutation DeleteWorkflowMutation($id: ID!) {
-        advancedPublishingWorkflow {
+        apw {
             deleteWorkflow(id: $id) {
                 data
                 error ${ERROR_FIELDS}

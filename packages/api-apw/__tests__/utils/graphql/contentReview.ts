@@ -34,7 +34,7 @@ const getDataFields = (fields = "") => `{
 
 export const GET_CONTENT_REVIEW_QUERY = /* GraphQL */ `
     query GetContentReview($id: ID!) {
-        advancedPublishingWorkflow {
+        apw {
             getContentReview(id: $id) {
                 data ${getDataFields()}
                 error ${ERROR_FIELDS}
@@ -51,7 +51,7 @@ export const LIST_CONTENT_REVIEWS_QUERY = /* GraphQL */ `
         $sort: [ApwListContentReviewsSort!],
         $search: ApwListContentReviewsSearchInput
     ) {
-        advancedPublishingWorkflow {
+        apw {
             listContentReviews(
                 where: $where,
                 limit: $limit,
@@ -73,7 +73,7 @@ export const LIST_CONTENT_REVIEWS_QUERY = /* GraphQL */ `
 
 export const CREATE_CONTENT_REVIEW_MUTATION = /* GraphQL */ `
     mutation CreateContentReviewMutation($data: ApwCreateContentReviewInput!) {
-        advancedPublishingWorkflow {
+        apw {
             createContentReview(data: $data) {
                 data ${getDataFields()}
                 error ${ERROR_FIELDS}
@@ -84,7 +84,7 @@ export const CREATE_CONTENT_REVIEW_MUTATION = /* GraphQL */ `
 
 export const UPDATE_CONTENT_REVIEW_MUTATION = /* GraphQL */ `
     mutation UpdateContentReviewMutation($id: ID!, $data: ApwUpdateContentReviewInput!) {
-        advancedPublishingWorkflow {
+        apw {
             updateContentReview(id: $id, data: $data) {
                 data ${getDataFields()}
                 error ${ERROR_FIELDS}
@@ -95,7 +95,7 @@ export const UPDATE_CONTENT_REVIEW_MUTATION = /* GraphQL */ `
 
 export const DELETE_CONTENT_REVIEW_MUTATION = /* GraphQL */ `
     mutation DeleteContentReviewMutation($id: ID!) {
-        advancedPublishingWorkflow {
+        apw {
             deleteContentReview(id: $id) {
                 data
                 error ${ERROR_FIELDS}
@@ -106,7 +106,7 @@ export const DELETE_CONTENT_REVIEW_MUTATION = /* GraphQL */ `
 
 export const PROVIDE_SIGN_OFF_MUTATION = /* GraphQL */ `
     mutation ProvideSignOffMutation($id: ID!, $step: String!) {
-        advancedPublishingWorkflow {
+        apw {
             provideSignOff(id: $id, step: $step) {
                 data
                 error ${ERROR_FIELDS}
@@ -117,7 +117,7 @@ export const PROVIDE_SIGN_OFF_MUTATION = /* GraphQL */ `
 
 export const RETRACT_SIGN_OFF_MUTATION = /* GraphQL */ `
     mutation RetractSignOffMutation($id: ID!, $step: String!) {
-        advancedPublishingWorkflow {
+        apw {
             retractSignOff(id: $id, step: $step) {
                 data
                 error ${ERROR_FIELDS}

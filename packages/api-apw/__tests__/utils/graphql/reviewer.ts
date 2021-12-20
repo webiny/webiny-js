@@ -20,7 +20,7 @@ const getDataFields = (fields = "") => `{
 
 export const GET_REVIEWER_QUERY = /* GraphQL */ `
     query GetReviewer($id: ID!) {
-        advancedPublishingWorkflow {
+        apw {
             getReviewer(id: $id) {
                 data ${getDataFields()}
                 error ${ERROR_FIELDS}
@@ -37,7 +37,7 @@ export const LIST_REVIEWERS_QUERY = /* GraphQL */ `
         $sort: [ApwListReviewersSort!],
         $search: ApwListReviewersSearchInput
     ) {
-        advancedPublishingWorkflow {
+        apw {
             listReviewers(
                 where: $where,
                 limit: $limit,

@@ -47,18 +47,18 @@ const baseSchema = new GraphQLSchemaPlugin({
             data: JSON
         }
         extend type Query {
-            advancedPublishingWorkflow: ApwQuery
+            apw: ApwQuery
         }
         extend type Mutation {
-            advancedPublishingWorkflow: ApwMutation
+            apw: ApwMutation
         }
     `,
     resolvers: {
         Query: {
-            advancedPublishingWorkflow: emptyResolver
+            apw: emptyResolver
         },
         Mutation: {
-            advancedPublishingWorkflow: emptyResolver
+            apw: emptyResolver
         }
     }
 });

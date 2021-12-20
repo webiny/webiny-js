@@ -84,7 +84,7 @@ export default () => [
                 /*
                  2. List all workflows for app pageBuilder
                 */
-                const [entries] = await context.advancedPublishingWorkflow.workflow.list({
+                const [entries] = await context.apw.workflow.list({
                     where: { app: "pageBuilder" }
                 });
 

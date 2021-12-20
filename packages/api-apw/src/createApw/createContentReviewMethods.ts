@@ -57,7 +57,7 @@ export function createContentReviewMethods(context: ApwContext): ApwContentRevie
              * Maybe we should copy the entire step data from "Workflow" while creating a "Content Review".
              */
             const workflowId = await getWorkflowIdFromContent(context, entry.values.content);
-            const workflow = await context.advancedPublishingWorkflow.workflow.get(workflowId);
+            const workflow = await context.apw.workflow.get(workflowId);
             const workflowSteps: ApwWorkflowStep[] = getValue(workflow, "steps");
             const previousStepFromWorkflow = workflowSteps[stepIndex - 1];
 
@@ -143,7 +143,7 @@ export function createContentReviewMethods(context: ApwContext): ApwContentRevie
             /**
              * Save updated steps.
              */
-            await context.advancedPublishingWorkflow.contentReview.update(id, {
+            await context.apw.contentReview.update(id, {
                 steps: updatedSteps
             });
             return true;
@@ -159,7 +159,7 @@ export function createContentReviewMethods(context: ApwContext): ApwContentRevie
              * Maybe we should copy the entire step data from "Workflow" while creating a "Content Review".
              */
             const workflowId = await getWorkflowIdFromContent(context, entry.values.content);
-            const workflow = await context.advancedPublishingWorkflow.workflow.get(workflowId);
+            const workflow = await context.apw.workflow.get(workflowId);
             const workflowSteps: ApwWorkflowStep[] = getValue(workflow, "steps");
 
             const hasPermission = await hasReviewer({
@@ -220,7 +220,7 @@ export function createContentReviewMethods(context: ApwContext): ApwContentRevie
                 return step;
             });
 
-            await context.advancedPublishingWorkflow.contentReview.update(id, {
+            await context.apw.contentReview.update(id, {
                 steps: updatedSteps
             });
             return true;

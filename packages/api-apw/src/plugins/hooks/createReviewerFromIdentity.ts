@@ -10,7 +10,7 @@ export const createReviewerFromIdentity = () =>
         context.security.onLogin.subscribe(async ({ identity }) => {
             let reviewer;
             try {
-                [[reviewer]] = await context.advancedPublishingWorkflow.reviewer.list({
+                [[reviewer]] = await context.apw.reviewer.list({
                     where: { identityId: identity.id },
                     limit: 1
                 });
@@ -23,7 +23,7 @@ export const createReviewerFromIdentity = () =>
             }
 
             if (!reviewer) {
-                await context.advancedPublishingWorkflow.reviewer.create({
+                await context.apw.reviewer.create({
                     identityId: identity.id,
                     displayName: identity.displayName
                 });

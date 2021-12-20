@@ -4,8 +4,7 @@ import { ApwContext } from "~/types";
 const deleteChangeRequestsWithContentReview = () =>
     new ContextPlugin<ApwContext>(async context => {
         context.cms.onAfterEntryDelete.subscribe(async ({ model, entry }) => {
-            const contentReviewModel =
-                await context.advancedPublishingWorkflow.contentReview.getModel();
+            const contentReviewModel = await context.apw.contentReview.getModel();
             /**
              * If deleted entry is of "contentReview" model, also delete all associated changeRequests.
              */
@@ -30,13 +29,12 @@ const deleteChangeRequestsWithContentReview = () =>
                          * Get all change requests.
                          */
                         try {
-                            [changeRequests, meta] =
-                                await context.advancedPublishingWorkflow.changeRequest.list({
-                                    where: {
-                                        step: slug
-                                    },
-                                    after: meta.cursor
-                                });
+                            [changeRequests, meta] = await context.apw.changeRequest.list({
+                                where: {
+                                    step: slug
+                                },
+                                after: meta.cursor
+                            });
                         } catch (e) {
                             meta.hasMoreItems = false;
                             if (e.message !== "index_not_found_exception") {
@@ -48,9 +46,7 @@ const deleteChangeRequestsWithContentReview = () =>
                          * Delete change requests one by one.
                          */
                         for (const changeRequest of changeRequests) {
-                            await context.advancedPublishingWorkflow.changeRequest.delete(
-                                changeRequest.id
-                            );
+                            await context.apw.changeRequest.delete(changeRequest.id);
                         }
                     }
                 }
@@ -58,4 +54,4 @@ const deleteChangeRequestsWithContentReview = () =>
         });
     });
 
-export default () => [deleteChangeRequestsWithContentReview()];
+export default () => deleteChangeRequestsWithContentReview();

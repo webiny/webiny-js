@@ -192,5 +192,5 @@ interface AdvancedPublishingWorkflow {
 }
 
 export interface ApwContext extends Context, CmsContext, PbContext {
-    advancedPublishingWorkflow: AdvancedPublishingWorkflow;
+    apw: AdvancedPublishingWorkflow;
 }

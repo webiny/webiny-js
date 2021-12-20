@@ -45,7 +45,7 @@ export const hasReviewer = async ({
     workflowStep
 }: HasReviewersParams): Promise<Boolean> => {
     for (const stepReviewer of workflowStep.reviewers) {
-        const entry = await context.advancedPublishingWorkflow.reviewer.get(stepReviewer.id);
+        const entry = await context.apw.reviewer.get(stepReviewer.id);
 
         if (getValue(entry, "identityId") === identity.id) {
             return true;

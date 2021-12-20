@@ -47,8 +47,7 @@ describe("Comment on a change request test", () => {
         const [createChangeRequestResponse] = await createChangeRequestMutation({
             data: changeRequestMock.changeRequestA
         });
-        const changeRequested =
-            createChangeRequestResponse.data.advancedPublishingWorkflow.createChangeRequest.data;
+        const changeRequested = createChangeRequestResponse.data.apw.createChangeRequest.data;
 
         /**
          * Add a comment to this change request.
@@ -61,11 +60,10 @@ describe("Comment on a change request test", () => {
                 }
             }
         });
-        const firstComment =
-            createCommentResponse.data.advancedPublishingWorkflow.createComment.data;
+        const firstComment = createCommentResponse.data.apw.createComment.data;
         expect(createCommentResponse).toEqual({
             data: {
-                advancedPublishingWorkflow: {
+                apw: {
                     createComment: {
                         data: {
                             id: expect.any(String),
@@ -91,7 +89,7 @@ describe("Comment on a change request test", () => {
 
         await until(
             () => listCommentsQuery({}).then(([data]) => data),
-            response => response.data.advancedPublishingWorkflow.listComments.data.length === 1,
+            response => response.data.apw.listComments.data.length === 1,
             {
                 name: "Wait for entry to be available via list query"
             }
@@ -109,7 +107,7 @@ describe("Comment on a change request test", () => {
         });
         expect(listCommentsResponse).toEqual({
             data: {
-                advancedPublishingWorkflow: {
+                apw: {
                     listComments: {
                         data: [
                             {
@@ -151,12 +149,11 @@ describe("Comment on a change request test", () => {
                 }
             }
         });
-        const secondComment =
-            anotherCreateCommentResponse.data.advancedPublishingWorkflow.createComment.data;
+        const secondComment = anotherCreateCommentResponse.data.apw.createComment.data;
 
         await until(
             () => listCommentsQuery({}).then(([data]) => data),
-            response => response.data.advancedPublishingWorkflow.listComments.data.length === 2,
+            response => response.data.apw.listComments.data.length === 2,
             {
                 name: "Wait for entry to be available via list query"
             }
@@ -175,7 +172,7 @@ describe("Comment on a change request test", () => {
         });
         expect(listCommentsResponse2).toEqual({
             data: {
-                advancedPublishingWorkflow: {
+                apw: {
                     listComments: {
                         data: [
                             {
@@ -232,9 +229,7 @@ describe("Comment on a change request test", () => {
             const [createChangeRequestResponse] = await createChangeRequestMutation({
                 data: changeRequestMock.changeRequestA
             });
-            changesRequested.push(
-                createChangeRequestResponse.data.advancedPublishingWorkflow.createChangeRequest.data
-            );
+            changesRequested.push(createChangeRequestResponse.data.apw.createChangeRequest.data);
         }
 
         /**
@@ -251,15 +246,13 @@ describe("Comment on a change request test", () => {
                         }
                     }
                 });
-                comments.push(
-                    createCommentResponse.data.advancedPublishingWorkflow.createComment.data
-                );
+                comments.push(createCommentResponse.data.apw.createComment.data);
             }
         }
 
         await until(
             () => listCommentsQuery({}).then(([data]) => data),
-            response => response.data.advancedPublishingWorkflow.listComments.data.length === 4,
+            response => response.data.apw.listComments.data.length === 4,
             {
                 name: "Wait for entry to be available via list query"
             }
@@ -271,7 +264,7 @@ describe("Comment on a change request test", () => {
         let [listCommentsResponse] = await listCommentsQuery({ sort: ["createdOn_DESC"] });
         expect(listCommentsResponse).toEqual({
             data: {
-                advancedPublishingWorkflow: {
+                apw: {
                     listComments: {
                         data: [
                             {
@@ -357,7 +350,7 @@ describe("Comment on a change request test", () => {
         });
         expect(deleteChangeRequest).toEqual({
             data: {
-                advancedPublishingWorkflow: {
+                apw: {
                     deleteChangeRequest: {
                         data: true,
                         error: null
@@ -375,7 +368,7 @@ describe("Comment on a change request test", () => {
                         }
                     }
                 }).then(([data]) => data),
-            response => response.data.advancedPublishingWorkflow.listComments.data.length === 0,
+            response => response.data.apw.listComments.data.length === 0,
             {
                 name: "Wait for entry to be removed from list query"
             }
@@ -393,7 +386,7 @@ describe("Comment on a change request test", () => {
         });
         expect(listCommentsResponse).toEqual({
             data: {
-                advancedPublishingWorkflow: {
+                apw: {
                     listComments: {
                         data: [],
                         error: null,
@@ -415,7 +408,7 @@ describe("Comment on a change request test", () => {
         });
         expect(listCommentsResponse).toEqual({
             data: {
-                advancedPublishingWorkflow: {
+                apw: {
                     listComments: {
                         data: [
                             {

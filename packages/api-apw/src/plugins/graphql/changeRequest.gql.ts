@@ -8,7 +8,7 @@ import { CmsEntryListParams } from "@webiny/api-headless-cms/types";
 const fieldIds: Array<FieldResolversParams | string> = [
     {
         fieldId: "body",
-        getModel: context => context.advancedPublishingWorkflow.changeRequest.getModel(),
+        getModel: context => context.apw.changeRequest.getModel(),
         getField: (model, fieldId) => model.fields.find(field => field.fieldId === fieldId),
         isRoot: true
     },
@@ -143,12 +143,11 @@ const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
         },
         ApwQuery: {
             getChangeRequest: async (_, args, context) => {
-                return resolve(() => context.advancedPublishingWorkflow.changeRequest.get(args.id));
+                return resolve(() => context.apw.changeRequest.get(args.id));
             },
             listChangeRequests: async (_, args: CmsEntryListParams, context) => {
                 try {
-                    const [entries, meta] =
-                        await context.advancedPublishingWorkflow.changeRequest.list(args);
+                    const [entries, meta] = await context.apw.changeRequest.list(args);
                     return new ListResponse(entries, meta);
                 } catch (e) {
                     return new ErrorResponse(e);
@@ -157,19 +156,13 @@ const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
         },
         ApwMutation: {
             createChangeRequest: async (_, args, context) => {
-                return resolve(() =>
-                    context.advancedPublishingWorkflow.changeRequest.create(args.data)
-                );
+                return resolve(() => context.apw.changeRequest.create(args.data));
             },
             updateChangeRequest: async (_, args, context) => {
-                return resolve(() =>
-                    context.advancedPublishingWorkflow.changeRequest.update(args.id, args.data)
-                );
+                return resolve(() => context.apw.changeRequest.update(args.id, args.data));
             },
             deleteChangeRequest: async (_, args, context) => {
-                return resolve(() =>
-                    context.advancedPublishingWorkflow.changeRequest.delete(args.id)
-                );
+                return resolve(() => context.apw.changeRequest.delete(args.id));
             }
         }
     }

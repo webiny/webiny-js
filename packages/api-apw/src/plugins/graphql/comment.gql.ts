@@ -8,7 +8,7 @@ import { generateFieldResolvers } from "~/utils/fieldResolver";
 const fieldIds: Array<FieldResolversParams | string> = [
     {
         fieldId: "body",
-        getModel: context => context.advancedPublishingWorkflow.comment.getModel(),
+        getModel: context => context.apw.comment.getModel(),
         getField: (model, fieldId) => model.fields.find(field => field.fieldId === fieldId),
         isRoot: true
     },
@@ -154,13 +154,11 @@ const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
         },
         ApwQuery: {
             getComment: async (_, args, context) => {
-                return resolve(() => context.advancedPublishingWorkflow.comment.get(args.id));
+                return resolve(() => context.apw.comment.get(args.id));
             },
             listComments: async (_, args: CmsEntryListParams, context) => {
                 try {
-                    const [entries, meta] = await context.advancedPublishingWorkflow.comment.list(
-                        args
-                    );
+                    const [entries, meta] = await context.apw.comment.list(args);
                     return new ListResponse(entries, meta);
                 } catch (e) {
                     return new ErrorResponse(e);
@@ -169,15 +167,13 @@ const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
         },
         ApwMutation: {
             createComment: async (_, args, context) => {
-                return resolve(() => context.advancedPublishingWorkflow.comment.create(args.data));
+                return resolve(() => context.apw.comment.create(args.data));
             },
             updateComment: async (_, args, context) => {
-                return resolve(() =>
-                    context.advancedPublishingWorkflow.comment.update(args.id, args.data)
-                );
+                return resolve(() => context.apw.comment.update(args.id, args.data));
             },
             deleteComment: async (_, args, context) => {
-                return resolve(() => context.advancedPublishingWorkflow.comment.delete(args.id));
+                return resolve(() => context.apw.comment.delete(args.id));
             }
         }
     }

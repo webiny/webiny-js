@@ -100,13 +100,11 @@ const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
         },
         ApwQuery: {
             getReviewer: async (_, args, context) => {
-                return resolve(() => context.advancedPublishingWorkflow.reviewer.get(args.id));
+                return resolve(() => context.apw.reviewer.get(args.id));
             },
             listReviewers: async (_, args: CmsEntryListParams, context) => {
                 try {
-                    const [entries, meta] = await context.advancedPublishingWorkflow.reviewer.list(
-                        args
-                    );
+                    const [entries, meta] = await context.apw.reviewer.list(args);
                     return new ListResponse(entries, meta);
                 } catch (e) {
                     return new ErrorResponse(e);

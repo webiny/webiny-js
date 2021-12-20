@@ -75,7 +75,7 @@ describe("Comment crud test", () => {
         const [createChangeRequestResponse] = await createChangeRequestMutation({
             data: changeRequestMock.changeRequestA
         });
-        return createChangeRequestResponse.data.advancedPublishingWorkflow.createChangeRequest.data;
+        return createChangeRequestResponse.data.apw.createChangeRequest.data;
     };
 
     test("should able to create, update, get, list and delete a comment", async () => {
@@ -91,11 +91,11 @@ describe("Comment crud test", () => {
                 }
             }
         });
-        const comment = createCommentResponse.data.advancedPublishingWorkflow.createComment.data;
+        const comment = createCommentResponse.data.apw.createComment.data;
 
         expect(createCommentResponse).toEqual({
             data: {
-                advancedPublishingWorkflow: {
+                apw: {
                     createComment: {
                         data: {
                             id: expect.any(String),
@@ -121,7 +121,7 @@ describe("Comment crud test", () => {
 
         await until(
             () => getCommentQuery({ id: comment.id }).then(([data]) => data),
-            response => response.data.advancedPublishingWorkflow.getComment.data !== null,
+            response => response.data.apw.getComment.data !== null,
             {
                 name: "Wait for getComment query"
             }
@@ -133,7 +133,7 @@ describe("Comment crud test", () => {
         const [getCommentByIdResponse] = await getCommentQuery({ id: comment.id });
         expect(getCommentByIdResponse).toEqual({
             data: {
-                advancedPublishingWorkflow: {
+                apw: {
                     getComment: {
                         data: {
                             id: expect.any(String),
@@ -163,7 +163,7 @@ describe("Comment crud test", () => {
         const [getCommentResponse] = await getCommentQuery({ id: "123" });
         expect(getCommentResponse).toEqual({
             data: {
-                advancedPublishingWorkflow: {
+                apw: {
                     getComment: {
                         data: null,
                         error: {
@@ -187,7 +187,7 @@ describe("Comment crud test", () => {
         });
         expect(updateCommentResponse).toEqual({
             data: {
-                advancedPublishingWorkflow: {
+                apw: {
                     updateComment: {
                         data: {
                             id: expect.any(String),
@@ -214,7 +214,7 @@ describe("Comment crud test", () => {
         await until(
             () => listCommentsQuery({}).then(([data]) => data),
             response => {
-                const [updatedItem] = response.data.advancedPublishingWorkflow.listComments.data;
+                const [updatedItem] = response.data.apw.listComments.data;
                 return updatedItem && comment.savedOn !== updatedItem.savedOn;
             },
             {
@@ -228,7 +228,7 @@ describe("Comment crud test", () => {
         const [listCommentsResponse] = await listCommentsQuery({ where: {} });
         expect(listCommentsResponse).toEqual({
             data: {
-                advancedPublishingWorkflow: {
+                apw: {
                     listComments: {
                         data: [
                             {
@@ -265,7 +265,7 @@ describe("Comment crud test", () => {
         const [deleteCommentResponse] = await deleteCommentMutation({ id: comment.id });
         expect(deleteCommentResponse).toEqual({
             data: {
-                advancedPublishingWorkflow: {
+                apw: {
                     deleteComment: {
                         data: true,
                         error: null
@@ -277,7 +277,7 @@ describe("Comment crud test", () => {
         await until(
             () => listCommentsQuery({}).then(([data]) => data),
             response => {
-                const list = response.data.advancedPublishingWorkflow.listComments.data;
+                const list = response.data.apw.listComments.data;
                 return list.length === 0;
             },
             {
@@ -291,7 +291,7 @@ describe("Comment crud test", () => {
         const [listCommentsAgainResponse] = await listCommentsQuery({});
         expect(listCommentsAgainResponse).toEqual({
             data: {
-                advancedPublishingWorkflow: {
+                apw: {
                     listComments: {
                         data: [],
                         error: null,

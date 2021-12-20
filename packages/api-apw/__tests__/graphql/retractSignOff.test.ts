@@ -35,8 +35,7 @@ describe("Retract sign off for a step in content review process", function () {
                 }
             }
         });
-        const createdContentReview =
-            createContentReviewResponse.data.advancedPublishingWorkflow.createContentReview.data;
+        const createdContentReview = createContentReviewResponse.data.apw.createContentReview.data;
 
         const [step1] = createdContentReview.steps;
 
@@ -44,7 +43,7 @@ describe("Retract sign off for a step in content review process", function () {
 
         await until(
             () => getContentReviewQuery({ id: createdContentReview.id }).then(([data]) => data),
-            response => response.data.advancedPublishingWorkflow.getContentReview.data !== null,
+            response => response.data.apw.getContentReview.data !== null,
             {
                 name: "Wait for entry to be available in get query"
             }
@@ -59,7 +58,7 @@ describe("Retract sign off for a step in content review process", function () {
         });
         expect(retractSignOffResponse).toEqual({
             data: {
-                advancedPublishingWorkflow: {
+                apw: {
                     retractSignOff: {
                         data: null,
                         error: {
@@ -81,7 +80,7 @@ describe("Retract sign off for a step in content review process", function () {
         });
         expect(provideSignOffResponse).toEqual({
             data: {
-                advancedPublishingWorkflow: {
+                apw: {
                     provideSignOff: {
                         data: true,
                         error: null
@@ -93,7 +92,7 @@ describe("Retract sign off for a step in content review process", function () {
         await until(
             () => getContentReviewQuery({ id: createdContentReview.id }).then(([data]) => data),
             response => {
-                const entry = response.data.advancedPublishingWorkflow.getContentReview.data;
+                const entry = response.data.apw.getContentReview.data;
 
                 const hasChanged = entry && entry.savedOn !== previousSavedOn;
                 if (hasChanged) {
@@ -116,7 +115,7 @@ describe("Retract sign off for a step in content review process", function () {
         });
         expect(getContentReviewResponse).toEqual({
             data: {
-                advancedPublishingWorkflow: {
+                apw: {
                     getContentReview: {
                         data: {
                             id: expect.any(String),
@@ -175,7 +174,7 @@ describe("Retract sign off for a step in content review process", function () {
         });
         expect(retractSignOffResponse).toEqual({
             data: {
-                advancedPublishingWorkflow: {
+                apw: {
                     retractSignOff: {
                         data: true,
                         error: null
@@ -187,7 +186,7 @@ describe("Retract sign off for a step in content review process", function () {
         await until(
             () => getContentReviewQuery({ id: createdContentReview.id }).then(([data]) => data),
             response => {
-                const entry = response.data.advancedPublishingWorkflow.getContentReview.data;
+                const entry = response.data.apw.getContentReview.data;
 
                 const hasChanged = entry && entry.savedOn !== previousSavedOn;
                 if (hasChanged) {
@@ -209,7 +208,7 @@ describe("Retract sign off for a step in content review process", function () {
         });
         expect(getContentReviewResponseAgain).toEqual({
             data: {
-                advancedPublishingWorkflow: {
+                apw: {
                     getContentReview: {
                         data: {
                             id: expect.any(String),
@@ -281,14 +280,13 @@ describe("Retract sign off for a step in content review process", function () {
                 }
             }
         });
-        const createdContentReview =
-            createContentReviewResponse.data.advancedPublishingWorkflow.createContentReview.data;
+        const createdContentReview = createContentReviewResponse.data.apw.createContentReview.data;
 
         const [step1] = createdContentReview.steps;
 
         await until(
             () => getContentReviewQuery({ id: createdContentReview.id }).then(([data]) => data),
-            response => response.data.advancedPublishingWorkflow.getContentReview.data !== null,
+            response => response.data.apw.getContentReview.data !== null,
             {
                 name: "Wait for entry to be available in get query"
             }
@@ -308,7 +306,7 @@ describe("Retract sign off for a step in content review process", function () {
         });
         expect(retractSignOffResponse).toEqual({
             data: {
-                advancedPublishingWorkflow: {
+                apw: {
                     retractSignOff: {
                         data: null,
                         error: {

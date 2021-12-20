@@ -15,7 +15,7 @@ export function createCommentMethods(context: ApwContext): ApwCommentCrud {
         },
         async create(data) {
             const model = await this.getModel();
-            const refModel = await context.advancedPublishingWorkflow.changeRequest.getModel();
+            const refModel = await context.apw.changeRequest.getModel();
 
             return await context.cms.createEntry(model, {
                 ...data,

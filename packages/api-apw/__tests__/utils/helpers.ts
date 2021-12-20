@@ -72,14 +72,14 @@ export const createSetupForContentReview = async gqlHandler => {
 
         await gqlHandler.until(
             () => gqlHandler.reviewer.listReviewersQuery({}).then(([data]) => data),
-            response => response.data.advancedPublishingWorkflow.listReviewers.data.length === 1,
+            response => response.data.apw.listReviewers.data.length === 1,
             {
                 name: "Wait for listReviewer query"
             }
         );
 
         const [listReviewersResponse] = await gqlHandler.reviewer.listReviewersQuery({});
-        const [reviewer] = listReviewersResponse.data.advancedPublishingWorkflow.listReviewers.data;
+        const [reviewer] = listReviewersResponse.data.apw.listReviewers.data;
         return reviewer;
     };
 
@@ -107,7 +107,7 @@ export const createSetupForContentReview = async gqlHandler => {
         const [createWorkflowResponse] = await gqlHandler.createWorkflowMutation({
             data: workflowMocks.createWorkflowWithThreeSteps({}, [reviewer])
         });
-        return createWorkflowResponse.data.advancedPublishingWorkflow.createWorkflow.data;
+        return createWorkflowResponse.data.apw.createWorkflow.data;
     };
 
     const setup = async () => {
@@ -116,7 +116,7 @@ export const createSetupForContentReview = async gqlHandler => {
         await gqlHandler.until(
             () => gqlHandler.listWorkflowsQuery({}).then(([data]) => data),
             response => {
-                const list = response.data.advancedPublishingWorkflow.listWorkflows.data;
+                const list = response.data.apw.listWorkflows.data;
                 return list.length === 1;
             },
             {

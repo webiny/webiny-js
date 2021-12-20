@@ -25,8 +25,7 @@ export const getWorkflowIdFromContent = async (
 const initializeContentReviewSteps = () =>
     new ContextPlugin<ApwContext>(async context => {
         context.cms.onBeforeEntryCreate.subscribe(async ({ model, entry, input }) => {
-            const contentReviewModel =
-                await context.advancedPublishingWorkflow.contentReview.getModel();
+            const contentReviewModel = await context.apw.contentReview.getModel();
             /**
              * If created entry is of "contentReview" model, let's initialize the steps.
              */
@@ -37,7 +36,7 @@ const initializeContentReviewSteps = () =>
                     console.info(`Unable to find linked workflow.`);
                     return;
                 }
-                const workflow = await context.advancedPublishingWorkflow.workflow.get(workflowId);
+                const workflow = await context.apw.workflow.get(workflowId);
                 const workflowSteps = getValue(workflow, "steps");
 
                 let previousStepStatus;
@@ -69,4 +68,4 @@ const initializeContentReviewSteps = () =>
         });
     });
 
-export default () => [initializeContentReviewSteps()];
+export default () => initializeContentReviewSteps();

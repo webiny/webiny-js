@@ -37,12 +37,11 @@ describe("Content Review crud test", () => {
             }
         });
 
-        const createdContentReview =
-            createContentReviewResponse.data.advancedPublishingWorkflow.createContentReview.data;
+        const createdContentReview = createContentReviewResponse.data.apw.createContentReview.data;
 
         expect(createContentReviewResponse).toEqual({
             data: {
-                advancedPublishingWorkflow: {
+                apw: {
                     createContentReview: {
                         data: {
                             id: expect.any(String),
@@ -78,7 +77,7 @@ describe("Content Review crud test", () => {
 
         await until(
             () => getContentReviewQuery({ id: createdContentReview.id }).then(([data]) => data),
-            response => response.data.advancedPublishingWorkflow.getContentReview.data !== null,
+            response => response.data.apw.getContentReview.data !== null,
             {
                 name: "Wait for getContentReview query"
             }
@@ -92,7 +91,7 @@ describe("Content Review crud test", () => {
         });
         expect(getContentReviewByIdResponse).toEqual({
             data: {
-                advancedPublishingWorkflow: {
+                apw: {
                     getContentReview: {
                         data: {
                             id: expect.any(String),
@@ -136,7 +135,7 @@ describe("Content Review crud test", () => {
 
         expect(updateContentReviewResponse).toEqual({
             data: {
-                advancedPublishingWorkflow: {
+                apw: {
                     updateContentReview: {
                         data: {
                             id: expect.any(String),
@@ -173,8 +172,7 @@ describe("Content Review crud test", () => {
         await until(
             () => listContentReviewsQuery({}).then(([data]) => data),
             response => {
-                const [updatedEntry] =
-                    response.data.advancedPublishingWorkflow.listContentReviews.data;
+                const [updatedEntry] = response.data.apw.listContentReviews.data;
                 return updatedEntry && updatedEntry.savedOn !== createdContentReview.savedOn;
             },
             {
@@ -188,7 +186,7 @@ describe("Content Review crud test", () => {
         const [listContentReviewsResponse] = await listContentReviewsQuery({});
         expect(listContentReviewsResponse).toEqual({
             data: {
-                advancedPublishingWorkflow: {
+                apw: {
                     listContentReviews: {
                         data: [
                             {
@@ -237,7 +235,7 @@ describe("Content Review crud test", () => {
         });
         expect(deleteContentReviewResponse).toEqual({
             data: {
-                advancedPublishingWorkflow: {
+                apw: {
                     deleteContentReview: {
                         data: true,
                         error: null
@@ -249,7 +247,7 @@ describe("Content Review crud test", () => {
         await until(
             () => listContentReviewsQuery({}).then(([data]) => data),
             response => {
-                const list = response.data.advancedPublishingWorkflow.listContentReviews.data;
+                const list = response.data.apw.listContentReviews.data;
                 return list.length === 0;
             },
             {
@@ -263,7 +261,7 @@ describe("Content Review crud test", () => {
         const [listContentReviewsAgainResponse] = await listContentReviewsQuery({ where: {} });
         expect(listContentReviewsAgainResponse).toEqual({
             data: {
-                advancedPublishingWorkflow: {
+                apw: {
                     listContentReviews: {
                         data: [],
                         error: null,

@@ -37,7 +37,7 @@ describe("Reviewer crud test", () => {
         await until(
             () => reviewer.listReviewersQuery({}).then(([data]) => data),
             response => {
-                const list = response.data.advancedPublishingWorkflow.listReviewers.data;
+                const list = response.data.apw.listReviewers.data;
                 return list.length === 1;
             },
             {
@@ -51,7 +51,7 @@ describe("Reviewer crud test", () => {
         const [listReviewersResponse] = await reviewer.listReviewersQuery({});
         expect(listReviewersResponse).toEqual({
             data: {
-                advancedPublishingWorkflow: {
+                apw: {
                     listReviewers: {
                         data: [
                             {
@@ -85,7 +85,7 @@ describe("Reviewer crud test", () => {
         await until(
             () => reviewer.listReviewersQuery({}).then(([data]) => data),
             response => {
-                const list = response.data.advancedPublishingWorkflow.listReviewers.data;
+                const list = response.data.apw.listReviewers.data;
                 return list.length === 2;
             },
             {
@@ -99,7 +99,7 @@ describe("Reviewer crud test", () => {
         const [listReviewersAgainResponse] = await reviewer.listReviewersQuery({});
         expect(listReviewersAgainResponse).toEqual({
             data: {
-                advancedPublishingWorkflow: {
+                apw: {
                     listReviewers: {
                         data: [
                             {
@@ -157,7 +157,7 @@ describe("Reviewer crud test", () => {
         await until(
             () => reviewer.listReviewersQuery({}).then(([data]) => data),
             response => {
-                const list = response.data.advancedPublishingWorkflow.listReviewers.data;
+                const list = response.data.apw.listReviewers.data;
                 return list.length === 1;
             },
             {
@@ -171,7 +171,7 @@ describe("Reviewer crud test", () => {
         const [listReviewersResponse] = await reviewer.listReviewersQuery({});
         expect(listReviewersResponse).toEqual({
             data: {
-                advancedPublishingWorkflow: {
+                apw: {
                     listReviewers: {
                         data: [
                             {
@@ -205,7 +205,7 @@ describe("Reviewer crud test", () => {
         await until(
             () => reviewer.listReviewersQuery({}).then(([data]) => data),
             response => {
-                const list = response.data.advancedPublishingWorkflow.listReviewers.data;
+                const list = response.data.apw.listReviewers.data;
                 return list.length === 1;
             },
             {
@@ -219,7 +219,7 @@ describe("Reviewer crud test", () => {
         const [listReviewersAgainResponse] = await reviewer.listReviewersQuery({});
         expect(listReviewersAgainResponse).toEqual({
             data: {
-                advancedPublishingWorkflow: {
+                apw: {
                     listReviewers: {
                         data: [
                             {

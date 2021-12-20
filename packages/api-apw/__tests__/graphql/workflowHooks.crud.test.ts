@@ -40,14 +40,14 @@ describe("Workflow assignment to a PB Page", () => {
 
         await until(
             () => reviewerGQL.listReviewersQuery({}).then(([data]) => data),
-            response => response.data.advancedPublishingWorkflow.listReviewers.data.length === 1,
+            response => response.data.apw.listReviewers.data.length === 1,
             {
                 name: "Wait for listReviewers"
             }
         );
 
         const [listReviewersResponse] = await reviewerGQL.listReviewersQuery({});
-        const [reviewer] = listReviewersResponse.data.advancedPublishingWorkflow.listReviewers.data;
+        const [reviewer] = listReviewersResponse.data.apw.listReviewers.data;
         return reviewer;
     };
 
@@ -71,14 +71,13 @@ describe("Workflow assignment to a PB Page", () => {
             const [createWorkflowResponse] = await createWorkflowMutation({
                 data: createWorkflowInput
             });
-            const workflow =
-                createWorkflowResponse.data.advancedPublishingWorkflow.createWorkflow.data;
+            const workflow = createWorkflowResponse.data.apw.createWorkflow.data;
             workflows.push(workflow);
         }
 
         await until(
             () => listWorkflowsQuery({}).then(([data]) => data),
-            response => response.data.advancedPublishingWorkflow.listWorkflows.data.length === 5
+            response => response.data.apw.listWorkflows.data.length === 5
         );
         /**
          * Create a page and see what workflow has been assigned to it
@@ -114,14 +113,13 @@ describe("Workflow assignment to a PB Page", () => {
                 )
             });
 
-            const workflow =
-                createWorkflowResponse.data.advancedPublishingWorkflow.createWorkflow.data;
+            const workflow = createWorkflowResponse.data.apw.createWorkflow.data;
             workflows.push(workflow);
         }
 
         await until(
             () => listWorkflowsQuery({}).then(([data]) => data),
-            response => response.data.advancedPublishingWorkflow.listWorkflows.data.length === 5
+            response => response.data.apw.listWorkflows.data.length === 5
         );
         /**
          * Create a page and see what workflow has been assigned to it
@@ -148,18 +146,18 @@ describe("Workflow assignment to a PB Page", () => {
                 app: "cms"
             }
         });
-        const workflow = createWorkflowResponse.data.advancedPublishingWorkflow.createWorkflow.data;
+        const workflow = createWorkflowResponse.data.apw.createWorkflow.data;
 
         await until(
             () => listWorkflowsQuery({}).then(([data]) => data),
-            response => response.data.advancedPublishingWorkflow.listWorkflows.data.length === 1
+            response => response.data.apw.listWorkflows.data.length === 1
         );
 
         // List workflows
         const [listWorkflowsResponse] = await listWorkflowsQuery({});
         expect(listWorkflowsResponse).toEqual({
             data: {
-                advancedPublishingWorkflow: {
+                apw: {
                     listWorkflows: {
                         data: [workflow],
                         error: null,
@@ -213,11 +211,11 @@ describe("Workflow assignment to a PB Page", () => {
             )
         });
 
-        const workflow = createWorkflowResponse.data.advancedPublishingWorkflow.createWorkflow.data;
+        const workflow = createWorkflowResponse.data.apw.createWorkflow.data;
 
         await until(
             () => listWorkflowsQuery({}).then(([data]) => data),
-            response => response.data.advancedPublishingWorkflow.listWorkflows.data.length === 1
+            response => response.data.apw.listWorkflows.data.length === 1
         );
         /**
          * Now page should have this workflow assigned to it.
@@ -248,7 +246,7 @@ describe("Workflow assignment to a PB Page", () => {
             )
         });
         const anotherWorkflowWithSameScope =
-            createAnotherWorkflowResponse.data.advancedPublishingWorkflow.createWorkflow.data;
+            createAnotherWorkflowResponse.data.apw.createWorkflow.data;
 
         /**
          * Now page should have new newly created workflow assigned to it.

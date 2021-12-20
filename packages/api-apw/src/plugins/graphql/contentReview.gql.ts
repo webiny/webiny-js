@@ -214,12 +214,11 @@ const contentReviewSchema = new GraphQLSchemaPlugin<ApwContext>({
         },
         ApwQuery: {
             getContentReview: async (_, args, context) => {
-                return resolve(() => context.advancedPublishingWorkflow.contentReview.get(args.id));
+                return resolve(() => context.apw.contentReview.get(args.id));
             },
             listContentReviews: async (_, args: CmsEntryListParams, context) => {
                 try {
-                    const [entries, meta] =
-                        await context.advancedPublishingWorkflow.contentReview.list(args);
+                    const [entries, meta] = await context.apw.contentReview.list(args);
                     return new ListResponse(entries, meta);
                 } catch (e) {
                     return new ErrorResponse(e);
@@ -228,35 +227,19 @@ const contentReviewSchema = new GraphQLSchemaPlugin<ApwContext>({
         },
         ApwMutation: {
             createContentReview: async (_, args, context) => {
-                return resolve(() =>
-                    context.advancedPublishingWorkflow.contentReview.create(args.data)
-                );
+                return resolve(() => context.apw.contentReview.create(args.data));
             },
             updateContentReview: async (_, args, context) => {
-                return resolve(() =>
-                    context.advancedPublishingWorkflow.contentReview.update(args.id, args.data)
-                );
+                return resolve(() => context.apw.contentReview.update(args.id, args.data));
             },
             deleteContentReview: async (_, args, context) => {
-                return resolve(() =>
-                    context.advancedPublishingWorkflow.contentReview.delete(args.id)
-                );
+                return resolve(() => context.apw.contentReview.delete(args.id));
             },
             provideSignOff: async (_, args, context) => {
-                return resolve(() =>
-                    context.advancedPublishingWorkflow.contentReview.provideSignOff(
-                        args.id,
-                        args.step
-                    )
-                );
+                return resolve(() => context.apw.contentReview.provideSignOff(args.id, args.step));
             },
             retractSignOff: async (_, args, context) => {
-                return resolve(() =>
-                    context.advancedPublishingWorkflow.contentReview.retractSignOff(
-                        args.id,
-                        args.step
-                    )
-                );
+                return resolve(() => context.apw.contentReview.retractSignOff(args.id, args.step));
             }
         }
     }

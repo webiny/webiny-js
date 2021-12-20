@@ -30,7 +30,7 @@ describe("Workflow crud test", () => {
         await until(
             () => reviewerGQL.listReviewersQuery({}).then(([data]) => data),
             response => {
-                const list = response.data.advancedPublishingWorkflow.listReviewers.data;
+                const list = response.data.apw.listReviewers.data;
                 return list.length >= 1;
             },
             {
@@ -39,7 +39,7 @@ describe("Workflow crud test", () => {
         );
 
         const [listReviewersResponse] = await reviewerGQL.listReviewersQuery({});
-        const [reviewer] = listReviewersResponse.data.advancedPublishingWorkflow.listReviewers.data;
+        const [reviewer] = listReviewersResponse.data.apw.listReviewers.data;
         return reviewer;
     };
 
@@ -53,11 +53,11 @@ describe("Workflow crud test", () => {
             data: workflowData
         });
 
-        const workflow = createWorkflowResponse.data.advancedPublishingWorkflow.createWorkflow.data;
+        const workflow = createWorkflowResponse.data.apw.createWorkflow.data;
 
         expect(createWorkflowResponse).toEqual({
             data: {
-                advancedPublishingWorkflow: {
+                apw: {
                     createWorkflow: {
                         data: {
                             id: expect.any(String),
@@ -78,7 +78,7 @@ describe("Workflow crud test", () => {
 
         await until(
             () => getWorkflowQuery({ id: workflow.id }).then(([data]) => data),
-            response => response.data.advancedPublishingWorkflow.getWorkflow.data !== null,
+            response => response.data.apw.getWorkflow.data !== null,
             {
                 name: "Wait for getWorkflow query"
             }
@@ -90,7 +90,7 @@ describe("Workflow crud test", () => {
         const [getWorkflowByIdResponse] = await getWorkflowQuery({ id: workflow.id });
         expect(getWorkflowByIdResponse).toEqual({
             data: {
-                advancedPublishingWorkflow: {
+                apw: {
                     getWorkflow: {
                         data: {
                             id: expect.any(String),
@@ -114,7 +114,7 @@ describe("Workflow crud test", () => {
         const [getWorkflowResponse] = await getWorkflowQuery({ id: "123" });
         expect(getWorkflowResponse).toEqual({
             data: {
-                advancedPublishingWorkflow: {
+                apw: {
                     getWorkflow: {
                         data: null,
                         error: {
@@ -148,7 +148,7 @@ describe("Workflow crud test", () => {
         });
         expect(updateWorkflowResponse).toEqual({
             data: {
-                advancedPublishingWorkflow: {
+                apw: {
                     updateWorkflow: {
                         data: {
                             ...workflow,
@@ -171,7 +171,7 @@ describe("Workflow crud test", () => {
         await until(
             () => listWorkflowsQuery({}).then(([data]) => data),
             response => {
-                const [updatedEntry] = response.data.advancedPublishingWorkflow.listWorkflows.data;
+                const [updatedEntry] = response.data.apw.listWorkflows.data;
                 return updatedEntry && workflow.savedOn !== updatedEntry.savedOn;
             },
             {
@@ -185,7 +185,7 @@ describe("Workflow crud test", () => {
         const [listWorkflowsResponse] = await listWorkflowsQuery({});
         expect(listWorkflowsResponse).toEqual({
             data: {
-                advancedPublishingWorkflow: {
+                apw: {
                     listWorkflows: {
                         data: [
                             {
@@ -220,7 +220,7 @@ describe("Workflow crud test", () => {
         const [deleteWorkflowResponse] = await deleteWorkflowMutation({ id: workflow.id });
         expect(deleteWorkflowResponse).toEqual({
             data: {
-                advancedPublishingWorkflow: {
+                apw: {
                     deleteWorkflow: {
                         data: true,
                         error: null
@@ -232,7 +232,7 @@ describe("Workflow crud test", () => {
         await until(
             () => listWorkflowsQuery({}).then(([data]) => data),
             response => {
-                const list = response.data.advancedPublishingWorkflow.listWorkflows.data;
+                const list = response.data.apw.listWorkflows.data;
                 return list.length === 0;
             },
             {
@@ -246,7 +246,7 @@ describe("Workflow crud test", () => {
         const [listWorkflowsAgainResponse] = await listWorkflowsQuery({});
         expect(listWorkflowsAgainResponse).toEqual({
             data: {
-                advancedPublishingWorkflow: {
+                apw: {
                     listWorkflows: {
                         data: [],
                         error: null,
@@ -273,15 +273,13 @@ describe("Workflow crud test", () => {
                 data: mocks.createWorkflow({ app: i % 2 === 0 ? "pageBuilder" : "cms" }, [reviewer])
             });
 
-            workflows.push(
-                createWorkflowResponse.data.advancedPublishingWorkflow.createWorkflow.data
-            );
+            workflows.push(createWorkflowResponse.data.apw.createWorkflow.data);
         }
 
         await until(
             () => listWorkflowsQuery({}).then(([data]) => data),
             response => {
-                const list = response.data.advancedPublishingWorkflow.listWorkflows.data;
+                const list = response.data.apw.listWorkflows.data;
                 return list.length === 5;
             },
             {
@@ -295,7 +293,7 @@ describe("Workflow crud test", () => {
         const [listWorkflowsResponse] = await listWorkflowsQuery({});
         expect(listWorkflowsResponse).toEqual({
             data: {
-                advancedPublishingWorkflow: {
+                apw: {
                     listWorkflows: {
                         data: [...workflows.reverse()],
                         meta: {
@@ -317,7 +315,7 @@ describe("Workflow crud test", () => {
         });
         expect(listPBWorkflowsResponse).toEqual({
             data: {
-                advancedPublishingWorkflow: {
+                apw: {
                     listWorkflows: {
                         data: [workflows[0], workflows[2], workflows[4]],
                         meta: {

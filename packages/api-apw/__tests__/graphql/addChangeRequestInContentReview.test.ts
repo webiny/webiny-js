@@ -54,7 +54,7 @@ describe(`Add change requests on a step in a "Content Review"`, () => {
                 }
             }
         });
-        return createContentReviewResponse.data.advancedPublishingWorkflow.createContentReview.data;
+        return createContentReviewResponse.data.apw.createContentReview.data;
     };
 
     test("should able to add change request in a content review", async () => {
@@ -65,7 +65,7 @@ describe(`Add change requests on a step in a "Content Review"`, () => {
         await until(
             () => listContentReviewsQuery({}).then(([data]) => data),
             response => {
-                const list = response.data.advancedPublishingWorkflow.listContentReviews.data;
+                const list = response.data.apw.listContentReviews.data;
                 return list.length === 1;
             },
             {
@@ -78,13 +78,12 @@ describe(`Add change requests on a step in a "Content Review"`, () => {
         const [createChangeRequestResponse] = await createChangeRequestMutation({
             data: changeRequestMock.createChangeRequestInput({ step: step1.slug })
         });
-        const changeRequested =
-            createChangeRequestResponse.data.advancedPublishingWorkflow.createChangeRequest.data;
+        const changeRequested = createChangeRequestResponse.data.apw.createChangeRequest.data;
 
         await until(
             () => listChangeRequestsQuery({}).then(([data]) => data),
             response => {
-                const list = response.data.advancedPublishingWorkflow.listChangeRequests.data;
+                const list = response.data.apw.listChangeRequests.data;
                 return list.length === 1;
             },
             {
@@ -95,7 +94,7 @@ describe(`Add change requests on a step in a "Content Review"`, () => {
         await until(
             () => listContentReviewsQuery({}).then(([data]) => data),
             response => {
-                const [entry] = response.data.advancedPublishingWorkflow.listContentReviews.data;
+                const [entry] = response.data.apw.listContentReviews.data;
                 return (
                     entry &&
                     entry.steps.find(step => step.slug === step1.slug).pendingChangeRequests === 1
@@ -116,7 +115,7 @@ describe(`Add change requests on a step in a "Content Review"`, () => {
         });
         expect(listChangeRequestsResponse).toEqual({
             data: {
-                advancedPublishingWorkflow: {
+                apw: {
                     listChangeRequests: {
                         data: [
                             {
@@ -154,15 +153,12 @@ describe(`Add change requests on a step in a "Content Review"`, () => {
                 })
             });
 
-            changeRequests.push(
-                createChangeRequestResponse.data.advancedPublishingWorkflow.createChangeRequest.data
-            );
+            changeRequests.push(createChangeRequestResponse.data.apw.createChangeRequest.data);
 
             await until(
                 () => listContentReviewsQuery({}).then(([data]) => data),
                 response => {
-                    const [entry] =
-                        response.data.advancedPublishingWorkflow.listContentReviews.data;
+                    const [entry] = response.data.apw.listContentReviews.data;
                     return (
                         entry &&
                         entry.steps.find(step => step.slug === step2.slug).pendingChangeRequests ===
@@ -185,7 +181,7 @@ describe(`Add change requests on a step in a "Content Review"`, () => {
                     }
                 }).then(([data]) => data),
             response => {
-                const list = response.data.advancedPublishingWorkflow.listChangeRequests.data;
+                const list = response.data.apw.listChangeRequests.data;
                 return list.length === 2;
             },
             {
@@ -203,7 +199,7 @@ describe(`Add change requests on a step in a "Content Review"`, () => {
         });
         expect(listChangeRequestsResponse2).toEqual({
             data: {
-                advancedPublishingWorkflow: {
+                apw: {
                     listChangeRequests: {
                         data: [
                             {
@@ -246,7 +242,7 @@ describe(`Add change requests on a step in a "Content Review"`, () => {
         const [listChangeRequestsResponse3] = await listChangeRequestsQuery({});
         expect(listChangeRequestsResponse3).toEqual({
             data: {
-                advancedPublishingWorkflow: {
+                apw: {
                     listChangeRequests: {
                         data: [
                             {
@@ -300,7 +296,7 @@ describe(`Add change requests on a step in a "Content Review"`, () => {
         const [getContentReviewResponse] = await getContentReviewQuery({ id: contentReview.id });
         expect(getContentReviewResponse).toEqual({
             data: {
-                advancedPublishingWorkflow: {
+                apw: {
                     getContentReview: {
                         data: {
                             id: expect.any(String),
@@ -371,16 +367,14 @@ describe(`Add change requests on a step in a "Content Review"`, () => {
                         title: `Please change heading-${i}-${j}`
                     })
                 });
-                changeRequests.push(
-                    createCommentResponse.data.advancedPublishingWorkflow.createChangeRequest.data
-                );
+                changeRequests.push(createCommentResponse.data.apw.createChangeRequest.data);
             }
         }
 
         await until(
             () => listChangeRequestsQuery({}).then(([data]) => data),
             response => {
-                const list = response.data.advancedPublishingWorkflow.listChangeRequests.data;
+                const list = response.data.apw.listChangeRequests.data;
                 return list.length === 4;
             },
             {
@@ -394,7 +388,7 @@ describe(`Add change requests on a step in a "Content Review"`, () => {
         let [listChangeRequestsResponse] = await listChangeRequestsQuery({});
         expect(listChangeRequestsResponse).toEqual({
             data: {
-                advancedPublishingWorkflow: {
+                apw: {
                     listChangeRequests: {
                         data: [
                             {
@@ -461,7 +455,7 @@ describe(`Add change requests on a step in a "Content Review"`, () => {
         });
         expect(deleteContentReviewResponse).toEqual({
             data: {
-                advancedPublishingWorkflow: {
+                apw: {
                     deleteContentReview: {
                         data: true,
                         error: null
@@ -473,7 +467,7 @@ describe(`Add change requests on a step in a "Content Review"`, () => {
         await until(
             () => listChangeRequestsQuery({}).then(([data]) => data),
             response => {
-                const list = response.data.advancedPublishingWorkflow.listChangeRequests.data;
+                const list = response.data.apw.listChangeRequests.data;
                 return list.length === 2;
             },
             {
@@ -491,7 +485,7 @@ describe(`Add change requests on a step in a "Content Review"`, () => {
         });
         expect(listChangeRequestsResponse).toEqual({
             data: {
-                advancedPublishingWorkflow: {
+                apw: {
                     listChangeRequests: {
                         data: [],
                         error: null,
@@ -511,7 +505,7 @@ describe(`Add change requests on a step in a "Content Review"`, () => {
         [listChangeRequestsResponse] = await listChangeRequestsQuery({});
         expect(listChangeRequestsResponse).toEqual({
             data: {
-                advancedPublishingWorkflow: {
+                apw: {
                     listChangeRequests: {
                         data: [
                             {
