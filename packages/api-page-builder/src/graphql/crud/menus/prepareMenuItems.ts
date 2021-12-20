@@ -64,7 +64,7 @@ export default async ({ menu, context }: { menu: Menu; context: PbContext }) => 
                 if (item.type === "page") {
                     let page;
                     try {
-                        page = await context.pageBuilder.pages.getPublishedById({
+                        page = await context.pageBuilder.getPublishedPageById({
                             id: item.page
                         });
                     } catch {}
@@ -87,7 +87,7 @@ export default async ({ menu, context }: { menu: Menu; context: PbContext }) => 
                         where.tags = { query: tags, rule: tagsRule || "all" };
                     }
 
-                    const [children] = await context.pageBuilder.pages.listPublished({
+                    const [children] = await context.pageBuilder.listPublishedPages({
                         limit: 200,
                         where,
                         sort: [`${sortBy}_${sortDir.toUpperCase()}`]

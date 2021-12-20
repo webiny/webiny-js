@@ -1,10 +1,17 @@
-import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
 import {
     MenuStorageOperationsGetParams,
     Menu,
     PbContext,
     MenuStorageOperationsListParams,
-    MenuStorageOperations
+    MenuStorageOperations,
+    OnBeforeMenuCreateTopicParams,
+    OnAfterMenuCreateTopicParams,
+    OnBeforeMenuUpdateTopicParams,
+    OnAfterMenuUpdateTopicParams,
+    OnBeforeMenuDeleteTopicParams,
+    OnAfterMenuDeleteTopicParams,
+    MenusCrud,
+    PageBuilderContextObject
 } from "~/types";
 import { NotFoundError } from "@webiny/handler-graphql";
 import checkBasePermissions from "./utils/checkBasePermissions";
@@ -13,12 +20,9 @@ import Error from "@webiny/error";
 import { validation } from "@webiny/validation";
 import { withFields, string } from "@commodo/fields";
 import { object } from "commodo-fields-object";
-import executeCallbacks from "./utils/executeCallbacks";
 import prepareMenuItems from "./menus/prepareMenuItems";
-import { MenuPlugin } from "~/plugins/MenuPlugin";
 import WebinyError from "@webiny/error";
-import { MenuStorageOperationsProviderPlugin } from "~/plugins/MenuStorageOperationsProviderPlugin";
-import { createStorageOperations } from "./storageOperations";
+import { createTopic } from "@webiny/pubsub";
 
 const CreateDataModel = withFields({
     title: string({ validation: validation.create("required,minLength:1,maxLength:100") }),
@@ -35,28 +39,32 @@ const UpdateDataModel = withFields({
 
 const PERMISSION_NAME = "pb.menu";
 
-export default new ContextPlugin<PbContext>(async context => {
-    /**
-     * If pageBuilder is not defined on the context, do not continue, but log it.
-     */
-    if (!context.pageBuilder) {
-        console.log("Missing pageBuilder on context. Skipping Menus crud.");
-        return;
-    }
+export interface Params {
+    context: PbContext;
+    storageOperations: MenuStorageOperations;
+}
+export const createMenuCrud = (params: Params): MenusCrud => {
+    const { context, storageOperations } = params;
 
-    const storageOperations = await createStorageOperations<MenuStorageOperations>(
-        context,
-        MenuStorageOperationsProviderPlugin.type
-    );
+    const onBeforeMenuCreate = createTopic<OnBeforeMenuCreateTopicParams>();
+    const onAfterMenuCreate = createTopic<OnAfterMenuCreateTopicParams>();
+    const onBeforeMenuUpdate = createTopic<OnBeforeMenuUpdateTopicParams>();
+    const onAfterMenuUpdate = createTopic<OnAfterMenuUpdateTopicParams>();
+    const onBeforeMenuDelete = createTopic<OnBeforeMenuDeleteTopicParams>();
+    const onAfterMenuDelete = createTopic<OnAfterMenuDeleteTopicParams>();
 
-    const hookPlugins = context.plugins.byType<MenuPlugin>(MenuPlugin.type);
-
-    context.pageBuilder.menus = {
-        storageOperations,
-        async get(slug, options) {
+    return {
+        onBeforeMenuCreate,
+        onAfterMenuCreate,
+        onBeforeMenuUpdate,
+        onAfterMenuUpdate,
+        onBeforeMenuDelete,
+        onAfterMenuDelete,
+        menusStorageOperations: storageOperations,
+        async getMenu(slug, options) {
             let permission = undefined;
-            const auth = options && options.auth === false ? false : true;
-            if (auth) {
+            const { auth = true } = options || {};
+            if (auth !== false) {
                 permission = await checkBasePermissions(context, PERMISSION_NAME, {
                     rwd: "r"
                 });
@@ -103,8 +111,8 @@ export default new ContextPlugin<PbContext>(async context => {
          * Used to fetch menu data from a public website. Items are prepared for consumption too.
          * @param slug
          */
-        async getPublic(slug) {
-            const menu = await context.pageBuilder.menus.get(slug, {
+        async getPublicMenu(this: PageBuilderContextObject, slug) {
+            const menu = await this.getMenu(slug, {
                 auth: false
             });
 
@@ -116,7 +124,7 @@ export default new ContextPlugin<PbContext>(async context => {
             return menu;
         },
 
-        async list(params) {
+        async listMenus(params) {
             const permission = await checkBasePermissions(context, PERMISSION_NAME, {
                 rwd: "r"
             });
@@ -153,7 +161,7 @@ export default new ContextPlugin<PbContext>(async context => {
             }
         },
 
-        async create(input) {
+        async createMenu(input) {
             await checkBasePermissions(context, PERMISSION_NAME, { rwd: "w" });
 
             const createDataModel = new CreateDataModel().populate(input);
@@ -190,16 +198,17 @@ export default new ContextPlugin<PbContext>(async context => {
             };
 
             try {
-                await executeCallbacks<MenuPlugin["beforeCreate"]>(hookPlugins, "beforeCreate", {
-                    context,
+                await onBeforeMenuCreate.publish({
+                    input: data,
                     menu
                 });
+
                 const result = await storageOperations.create({
                     input: data,
                     menu
                 });
-                await executeCallbacks<MenuPlugin["afterCreate"]>(hookPlugins, "afterCreate", {
-                    context,
+                await onAfterMenuCreate.publish({
+                    input: data,
                     menu: result
                 });
                 return result;
@@ -215,12 +224,12 @@ export default new ContextPlugin<PbContext>(async context => {
             }
         },
 
-        async update(slug, input) {
+        async updateMenu(this: PageBuilderContextObject, slug, input) {
             const permission = await checkBasePermissions(context, PERMISSION_NAME, {
                 rwd: "w"
             });
 
-            const original = await context.pageBuilder.menus.get(slug);
+            const original = await this.getMenu(slug);
             if (!original) {
                 throw new NotFoundError(`Menu "${slug}" not found.`);
             }
@@ -239,8 +248,8 @@ export default new ContextPlugin<PbContext>(async context => {
             };
 
             try {
-                await executeCallbacks<MenuPlugin["beforeUpdate"]>(hookPlugins, "beforeUpdate", {
-                    context,
+                await onBeforeMenuUpdate.publish({
+                    original,
                     menu
                 });
 
@@ -250,10 +259,11 @@ export default new ContextPlugin<PbContext>(async context => {
                     menu
                 });
 
-                await executeCallbacks<MenuPlugin["afterUpdate"]>(hookPlugins, "afterUpdate", {
-                    context,
+                await onAfterMenuUpdate.publish({
+                    original,
                     menu: result
                 });
+
                 return result;
             } catch (ex) {
                 throw new WebinyError(
@@ -267,12 +277,12 @@ export default new ContextPlugin<PbContext>(async context => {
                 );
             }
         },
-        async delete(slug) {
+        async deleteMenu(this: PageBuilderContextObject, slug) {
             const permission = await checkBasePermissions(context, PERMISSION_NAME, {
                 rwd: "d"
             });
 
-            const menu = await context.pageBuilder.menus.get(slug);
+            const menu = await this.getMenu(slug);
             if (!menu) {
                 throw new NotFoundError(`Menu "${slug}" not found.`);
             }
@@ -281,8 +291,7 @@ export default new ContextPlugin<PbContext>(async context => {
             checkOwnPermissions(identity, permission, menu);
 
             try {
-                await executeCallbacks<MenuPlugin["beforeDelete"]>(hookPlugins, "beforeDelete", {
-                    context,
+                await onBeforeMenuDelete.publish({
                     menu
                 });
 
@@ -290,10 +299,10 @@ export default new ContextPlugin<PbContext>(async context => {
                     menu
                 });
 
-                await executeCallbacks<MenuPlugin["afterDelete"]>(hookPlugins, "afterDelete", {
-                    context,
+                await onAfterMenuDelete.publish({
                     menu: result
                 });
+
                 return result;
             } catch (ex) {
                 throw new WebinyError(
@@ -307,4 +316,4 @@ export default new ContextPlugin<PbContext>(async context => {
             }
         }
     };
-});
+};

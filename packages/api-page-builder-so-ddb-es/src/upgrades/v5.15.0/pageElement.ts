@@ -14,6 +14,7 @@ type DbRecord<T> = T & {
 export const upgradePageElements = async (context: PbContext) => {
     const tenant: string = context.tenancy.getCurrentTenant().id;
     const localeCodes: string[] = await context.i18n.getLocales().map(locale => locale.code);
+    // @ts-ignore
     const pageElementsStorageOperations = context.pageBuilder.pageElements
         .storageOperations as PageElementStorageOperationsDdbEs;
     if (pageElementsStorageOperations instanceof PageElementStorageOperationsDdbEs === false) {
