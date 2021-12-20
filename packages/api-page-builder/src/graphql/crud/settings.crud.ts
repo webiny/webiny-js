@@ -1,6 +1,7 @@
 import {
     OnAfterSettingsUpdateTopicParams,
     OnBeforeSettingsUpdateTopicParams,
+    PageBuilderContextObject,
     PageSpecialType,
     PbContext,
     Settings,
@@ -102,14 +103,14 @@ export const createSettingsCrud = (params: Params): SettingsCrud => {
         getSettingsCacheKey(options) {
             return storageOperations.createCacheKey(options || {});
         },
-        async getCurrentSettings() {
+        async getCurrentSettings(this: PageBuilderContextObject) {
             // With this line commented, we made this endpoint public.
             // We did this because of the public website pages which need to access the settings.
             // It's possible we'll create another GraphQL field, made for this exact purpose.
             // auth !== false && (await checkBasePermissions(context));
 
-            const current = await context.pageBuilder.settings.getSettings({});
-            const defaults = await context.pageBuilder.settings.getDefaultSettings();
+            const current = await this.getSettings({});
+            const defaults = await this.getDefaultSettings();
 
             return mergeWith({}, defaults, current, (prev, next) => {
                 // No need to use falsy value if we have it set in the default settings.
@@ -118,7 +119,7 @@ export const createSettingsCrud = (params: Params): SettingsCrud => {
                 }
             });
         },
-        async getSettings(options) {
+        async getSettings(this: PageBuilderContextObject, options) {
             // With this line commented, we made this endpoint public.
             // We did this because of the public website pages which need to access the settings.
             // It's possible we'll create another GraphQL field, made for this exact purpose.
@@ -147,12 +148,12 @@ export const createSettingsCrud = (params: Params): SettingsCrud => {
                 );
             }
         },
-        async getDefaultSettings(options) {
-            const allTenants = await context.pageBuilder.settings.getSettings({
+        async getDefaultSettings(this: PageBuilderContextObject, options) {
+            const allTenants = await this.getSettings({
                 tenant: false,
                 locale: false
             });
-            const tenantAllLocales = await context.pageBuilder.settings.getSettings({
+            const tenantAllLocales = await this.getSettings({
                 tenant: options ? options.tenant : undefined,
                 locale: false
             });
@@ -167,7 +168,7 @@ export const createSettingsCrud = (params: Params): SettingsCrud => {
                 }
             });
         },
-        async updateSettings(rawData, options) {
+        async updateSettings(this: PageBuilderContextObject, rawData, options) {
             if (!options) {
                 options = {};
             }
@@ -180,7 +181,7 @@ export const createSettingsCrud = (params: Params): SettingsCrud => {
                 context
             });
 
-            let original = (await context.pageBuilder.settings.getSettings(options)) as Settings;
+            let original = (await this.getSettings(options)) as Settings;
             if (!original) {
                 original = await new DefaultSettingsModel().populate({}).toJSON();
 
@@ -242,7 +243,7 @@ export const createSettingsCrud = (params: Params): SettingsCrud => {
                     // Only load if the next page (n) has been sent, which is always a
                     // must if previously a page was defined (p).
                     if (n) {
-                        const page = await context.pageBuilder.pages.getPublishedPageById({
+                        const page = await this.getPublishedPageById({
                             id: n
                         });
 

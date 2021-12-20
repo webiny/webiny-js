@@ -121,14 +121,13 @@ const setup = () => {
         });
 
         context.pageBuilder = {
-            ...context.pageBuilder,
             ...createPageBuilder(),
-            system,
-            settings,
-            menus,
-            pages,
-            pageElements,
-            categories
+            ...system,
+            ...settings,
+            ...menus,
+            ...pages,
+            ...pageElements,
+            ...categories
         };
     });
 };

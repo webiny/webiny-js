@@ -5,7 +5,7 @@ const NOT_FOUND_FOLDER = "_NOT_FOUND_PAGE_";
 
 export default () => {
     return new ContextPlugin<PbContext>(async context => {
-        context.pageBuilder.settings.onAfterSettingsUpdate.subscribe(async params => {
+        context.pageBuilder.onAfterSettingsUpdate.subscribe(async params => {
             const { settings, meta } = params;
             if (!settings) {
                 return;
@@ -14,7 +14,7 @@ export default () => {
              * TODO: optimize this.
              * TODO: right now, on each update of settings, we trigger a complete site rebuild.
              */
-            await context.pageBuilder.pages.prerendering.render({
+            await context.pageBuilder.prerendering.render({
                 context,
                 tags: [{ tag: { key: "pb-page" } }]
             });
@@ -26,13 +26,13 @@ export default () => {
                 const [type, , , page] = meta.diff.pages[i];
                 switch (type) {
                     case "home":
-                        await context.pageBuilder.pages.prerendering.render({
+                        await context.pageBuilder.prerendering.render({
                             context,
                             paths: [{ path: "/" }]
                         });
                         break;
                     case "notFound":
-                        await context.pageBuilder.pages.prerendering.render({
+                        await context.pageBuilder.prerendering.render({
                             context,
                             paths: [
                                 {

@@ -290,13 +290,13 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                     return uniquePageId;
                 },
                 category: async (page: Page, _, context) => {
-                    return context.pageBuilder.categories.getCategory(page.category);
+                    return context.pageBuilder.getCategory(page.category);
                 },
                 revisions: async (page: Page, _, context) => {
-                    return context.pageBuilder.pages.listPageRevisions(page.id);
+                    return context.pageBuilder.listPageRevisions(page.id);
                 },
                 url: async (page: Page, _, context) => {
-                    const settings = await context.pageBuilder.settings.getCurrentSettings();
+                    const settings = await context.pageBuilder.getCurrentSettings();
                     const websiteUrl = lodashGet(settings, "websiteUrl") || "";
                     return websiteUrl + page.path;
                 }
@@ -307,12 +307,12 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                     return uniquePageId;
                 },
                 category: async (page: Page, _, context) => {
-                    return context.pageBuilder.categories.getCategory(page.category, {
+                    return context.pageBuilder.getCategory(page.category, {
                         auth: false
                     });
                 },
                 url: async (page: Page, _, context) => {
-                    const settings = await context.pageBuilder.settings.getCurrentSettings();
+                    const settings = await context.pageBuilder.getCurrentSettings();
                     const websiteUrl = lodashGet(settings, "websiteUrl") || "";
                     return websiteUrl + page.path;
                 },
@@ -344,7 +344,7 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
             PbQuery: {
                 getPage: async (_, args: { id: string }, context) => {
                     try {
-                        return new Response(await context.pageBuilder.pages.getPage(args.id));
+                        return new Response(await context.pageBuilder.getPage(args.id));
                     } catch (e) {
                         return new ErrorResponse(e);
                     }
@@ -352,7 +352,7 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
 
                 listPages: async (_, args, context) => {
                     try {
-                        const [data, meta] = await context.pageBuilder.pages.listLatestPages(args);
+                        const [data, meta] = await context.pageBuilder.listLatestPages(args);
                         return new ListResponse(data, meta);
                     } catch (e) {
                         return new ErrorResponse(e);
@@ -361,16 +361,14 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
 
                 listPublishedPages: async (_, args, context) => {
                     try {
-                        const [data, meta] = await context.pageBuilder.pages.listPublishedPages(
-                            args
-                        );
+                        const [data, meta] = await context.pageBuilder.listPublishedPages(args);
                         return new ListResponse(data, meta);
                     } catch (e) {
                         return new ErrorResponse(e);
                     }
                 },
                 listPageTags: async (_, args: { search: { query: string } }, context) => {
-                    return resolve(() => context.pageBuilder.pages.listPagesTags(args));
+                    return resolve(() => context.pageBuilder.listPagesTags(args));
                 },
 
                 getPublishedPage: async (
@@ -380,7 +378,7 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                 ) => {
                     if (args.id) {
                         return resolve(() =>
-                            context.pageBuilder.pages.getPublishedPageById({
+                            context.pageBuilder.getPublishedPageById({
                                 id: args.id,
                                 preview: args.preview
                             })
@@ -388,7 +386,7 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                     }
 
                     return resolve(() =>
-                        context.pageBuilder.pages.getPublishedPageByPath({
+                        context.pageBuilder.getPublishedPageByPath({
                             path: args.path
                         })
                     );
@@ -424,16 +422,14 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                         }
 
                         if (from) {
-                            return context.pageBuilder.pages.createPageFrom(from);
+                            return context.pageBuilder.createPageFrom(from);
                         }
-                        return context.pageBuilder.pages.createPage(category);
+                        return context.pageBuilder.createPage(category);
                     });
                 },
                 deletePage: async (_, args: { id: string }, context: PbContext) => {
                     return resolve(async () => {
-                        const [page, latestPage] = await context.pageBuilder.pages.deletePage(
-                            args.id
-                        );
+                        const [page, latestPage] = await context.pageBuilder.deletePage(args.id);
                         return { page, latestPage };
                     });
                 },
@@ -445,24 +441,24 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                 ) => {
                     return resolve(() => {
                         const { data } = args;
-                        return context.pageBuilder.pages.updatePage(args.id, data);
+                        return context.pageBuilder.updatePage(args.id, data);
                     });
                 },
 
                 publishPage: async (_, args: { id: string }, context) => {
-                    return resolve(() => context.pageBuilder.pages.publishPage(args.id));
+                    return resolve(() => context.pageBuilder.publishPage(args.id));
                 },
 
                 unpublishPage: async (_, args: { id: string }, context) => {
-                    return resolve(() => context.pageBuilder.pages.unpublishPage(args.id));
+                    return resolve(() => context.pageBuilder.unpublishPage(args.id));
                 },
 
                 requestReview: async (_, args: { id: string }, context) => {
-                    return resolve(() => context.pageBuilder.pages.requestPageReview(args.id));
+                    return resolve(() => context.pageBuilder.requestPageReview(args.id));
                 },
 
                 requestChanges: async (_, args: { id: string }, context) => {
-                    return resolve(() => context.pageBuilder.pages.requestPageChanges(args.id));
+                    return resolve(() => context.pageBuilder.requestPageChanges(args.id));
                 },
 
                 rerenderPage: async (_, args: { id: string }, context) => {
@@ -473,14 +469,14 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
 
                         // If permissions-checks were successful, let's continue with the rest.
                         // Retrieve the original page. If it doesn't exist, immediately exit.
-                        const page = await context.pageBuilder.pages.getPage(args.id);
+                        const page = await context.pageBuilder.getPage(args.id);
                         if (!page) {
                             console.warn(`no page with id ${args.id}`);
                             return new NotFoundResponse("Page not found.");
                         }
 
                         // We only need the `id` of the newly created page.
-                        await context.pageBuilder.pages.prerendering.render({
+                        await context.pageBuilder.prerendering.render({
                             context,
                             paths: [{ path: page.path }]
                         });

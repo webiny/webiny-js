@@ -52,19 +52,19 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
             PbQuery: {
                 getPageElement: async (_, args: { id: string }, context) => {
                     return resolve(() => {
-                        return context.pageBuilder.pageElements.getPageElement(args.id);
+                        return context.pageBuilder.getPageElement(args.id);
                     });
                 },
                 listPageElements: async (_, __, context) => {
                     return resolve(() => {
-                        return context.pageBuilder.pageElements.listPageElements();
+                        return context.pageBuilder.listPageElements();
                     });
                 }
             },
             PbMutation: {
                 createPageElement: async (_, args: { data: Record<string, any> }, context) => {
                     return resolve(() => {
-                        return context.pageBuilder.pageElements.createPageElement(args.data);
+                        return context.pageBuilder.createPageElement(args.data);
                     });
                 },
                 updatePageElement: async (
@@ -73,15 +73,12 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                     context
                 ) => {
                     return resolve(() => {
-                        return context.pageBuilder.pageElements.updatePageElement(
-                            args.id,
-                            args.data
-                        );
+                        return context.pageBuilder.updatePageElement(args.id, args.data);
                     });
                 },
                 deletePageElement: async (_, args: { id: string }, context) => {
                     return resolve(() => {
-                        return context.pageBuilder.pageElements.deletePageElement(args.id);
+                        return context.pageBuilder.deletePageElement(args.id);
                     });
                 }
             }

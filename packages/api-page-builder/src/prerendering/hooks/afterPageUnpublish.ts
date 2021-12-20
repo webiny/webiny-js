@@ -3,10 +3,10 @@ import { PbContext } from "~/graphql/types";
 
 export default () => {
     return new ContextPlugin<PbContext>(async context => {
-        context.pageBuilder.pages.onAfterPageUnpublish.subscribe(async ({ page }) => {
+        context.pageBuilder.onAfterPageUnpublish.subscribe(async ({ page }) => {
             const promises = [];
             promises.push(
-                context.pageBuilder.pages.prerendering.flush({
+                context.pageBuilder.prerendering.flush({
                     context,
                     paths: [{ path: page.path }]
                 })

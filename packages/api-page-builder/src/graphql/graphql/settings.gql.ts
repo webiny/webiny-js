@@ -129,12 +129,12 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
         resolvers: {
             PbSettingsResponse: {
                 id: (_, __, context) => {
-                    return context.pageBuilder.settings.getSettingsCacheKey();
+                    return context.pageBuilder.getSettingsCacheKey();
                 }
             },
             PbDefaultSettingsResponse: {
                 id: (_, __, context) => {
-                    return context.pageBuilder.settings.getSettingsCacheKey({
+                    return context.pageBuilder.getSettingsCacheKey({
                         tenant: false,
                         locale: false
                     });
@@ -143,25 +143,21 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
             PbQuery: {
                 getCurrentSettings: async (_, __, context) => {
                     try {
-                        return new Response(
-                            await context.pageBuilder.settings.getCurrentSettings()
-                        );
+                        return new Response(await context.pageBuilder.getCurrentSettings());
                     } catch (err) {
                         return new ErrorResponse(err);
                     }
                 },
                 getSettings: async (_, __, context) => {
                     try {
-                        return new Response(await context.pageBuilder.settings.getSettings());
+                        return new Response(await context.pageBuilder.getSettings());
                     } catch (err) {
                         return new ErrorResponse(err);
                     }
                 },
                 getDefaultSettings: async (_, __, context) => {
                     try {
-                        return new Response(
-                            await context.pageBuilder.settings.getDefaultSettings()
-                        );
+                        return new Response(await context.pageBuilder.getDefaultSettings());
                     } catch (err) {
                         return new ErrorResponse(err);
                     }
@@ -170,9 +166,7 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
             PbMutation: {
                 updateSettings: async (_, args, context) => {
                     try {
-                        return new Response(
-                            await context.pageBuilder.settings.updateSettings(args.data)
-                        );
+                        return new Response(await context.pageBuilder.updateSettings(args.data));
                     } catch (err) {
                         return new ErrorResponse(err);
                     }

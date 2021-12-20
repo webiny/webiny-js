@@ -9,6 +9,7 @@ import {
     OnBeforePageElementCreateTopicParams,
     OnBeforePageElementDeleteTopicParams,
     OnBeforePageElementUpdateTopicParams,
+    PageBuilderContextObject,
     PageElement,
     PageElementsCrud,
     PageElementStorageOperations,
@@ -66,7 +67,7 @@ export const createPageElementsCrud = (params: Params): PageElementsCrud => {
         /**
          * Storage operations
          */
-        storageOperations,
+        pageElementsStorageOperations: storageOperations,
         async getPageElement(id) {
             const permission = await checkBasePermissions(context, PERMISSION_NAME, {
                 rwd: "r"
@@ -192,11 +193,11 @@ export const createPageElementsCrud = (params: Params): PageElementsCrud => {
             }
         },
 
-        async updatePageElement(id, input) {
+        async updatePageElement(this: PageBuilderContextObject, id, input) {
             const permission = await checkBasePermissions(context, PERMISSION_NAME, {
                 rwd: "w"
             });
-            const original = await context.pageBuilder.pageElements.getPageElement(id);
+            const original = await this.getPageElement(id);
             if (!original) {
                 throw new NotFoundError(`Page element "${id}" not found.`);
             }
@@ -242,12 +243,12 @@ export const createPageElementsCrud = (params: Params): PageElementsCrud => {
             }
         },
 
-        async deletePageElement(slug) {
+        async deletePageElement(this: PageBuilderContextObject, slug) {
             const permission = await checkBasePermissions(context, PERMISSION_NAME, {
                 rwd: "d"
             });
 
-            const pageElement = await context.pageBuilder.pageElements.getPageElement(slug);
+            const pageElement = await this.getPageElement(slug);
             if (!pageElement) {
                 throw new NotFoundError(`PageElement "${slug}" not found.`);
             }

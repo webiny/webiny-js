@@ -6,8 +6,8 @@ export default () => {
         /**
          * After a menu has changed, invalidate all pages that contain the updated menu.
          */
-        context.pageBuilder.menus.onAfterMenuUpdate.subscribe(async ({ menu }) => {
-            await context.pageBuilder.pages.prerendering.render({
+        context.pageBuilder.onAfterMenuUpdate.subscribe(async ({ menu }) => {
+            await context.pageBuilder.prerendering.render({
                 context,
                 tags: [{ tag: { key: "pb-menu", value: menu.slug } }]
             });

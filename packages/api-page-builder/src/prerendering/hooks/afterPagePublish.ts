@@ -9,12 +9,12 @@ export default () => {
         /**
          * After a page was published, we need to render the page.
          */
-        context.pageBuilder.pages.onAfterPagePublish.subscribe(async params => {
+        context.pageBuilder.onAfterPagePublish.subscribe(async params => {
             const { page, publishedPage } = params;
             /**
              * First, let's load settings.
              */
-            const settings = await context.pageBuilder.settings.getCurrentSettings();
+            const settings = await context.pageBuilder.getCurrentSettings();
             const notFoundPageId = lodashGet(settings, "pages.notFound");
 
             const promises = [];
@@ -24,7 +24,7 @@ export default () => {
              */
             if (page.pid !== notFoundPageId) {
                 promises.push(
-                    context.pageBuilder.pages.prerendering.render({
+                    context.pageBuilder.prerendering.render({
                         context,
                         paths: [{ path: page.path }]
                     })
@@ -37,7 +37,7 @@ export default () => {
              */
             if (homePageId === page.pid) {
                 promises.push(
-                    context.pageBuilder.pages.prerendering.render({
+                    context.pageBuilder.prerendering.render({
                         context,
                         paths: [{ path: "/" }]
                     })
@@ -50,7 +50,7 @@ export default () => {
              */
             if (notFoundPageId === page.pid) {
                 promises.push(
-                    context.pageBuilder.pages.prerendering.render({
+                    context.pageBuilder.prerendering.render({
                         context,
                         paths: [
                             {
@@ -80,7 +80,7 @@ export default () => {
              */
             if (publishedPage && publishedPage.path !== page.path) {
                 promises.push(
-                    context.pageBuilder.pages.prerendering.flush({
+                    context.pageBuilder.prerendering.flush({
                         context,
                         paths: [{ path: publishedPage.path }]
                     })

@@ -12,6 +12,7 @@ import {
     OnBeforeCategoryCreateTopicParams,
     OnBeforeCategoryDeleteTopicParams,
     OnBeforeCategoryUpdateTopicParams,
+    PageBuilderContextObject,
     PbContext
 } from "~/types";
 import { NotAuthorizedError } from "@webiny/api-security";
@@ -66,7 +67,7 @@ export const createCategoriesCrud = (params: Params): CategoriesCrud => {
         /**
          * Storage operations
          */
-        storageOperations,
+        categoriesStorageOperations: storageOperations,
         async getCategory(slug, options = { auth: true }) {
             const { auth } = options;
 
@@ -176,10 +177,10 @@ export const createCategoriesCrud = (params: Params): CategoriesCrud => {
                 );
             }
         },
-        async createCategory(input) {
+        async createCategory(this: PageBuilderContextObject, input) {
             await checkBasePermissions(context, PERMISSION_NAME, { rwd: "w" });
 
-            const existingCategory = await context.pageBuilder.categories.getCategory(input.slug, {
+            const existingCategory = await this.getCategory(input.slug, {
                 auth: false
             });
             if (existingCategory) {
@@ -231,12 +232,12 @@ export const createCategoriesCrud = (params: Params): CategoriesCrud => {
                 );
             }
         },
-        async updateCategory(slug, input) {
+        async updateCategory(this: PageBuilderContextObject, slug, input) {
             const permission = await checkBasePermissions(context, PERMISSION_NAME, {
                 rwd: "w"
             });
 
-            const original = await context.pageBuilder.categories.getCategory(slug);
+            const original = await this.getCategory(slug);
             if (!original) {
                 throw new NotFoundError(`Category "${slug}" not found.`);
             }
@@ -280,12 +281,12 @@ export const createCategoriesCrud = (params: Params): CategoriesCrud => {
                 );
             }
         },
-        async deleteCategory(slug) {
+        async deleteCategory(this: PageBuilderContextObject, slug) {
             const permission = await checkBasePermissions(context, PERMISSION_NAME, {
                 rwd: "d"
             });
 
-            const category = await context.pageBuilder.categories.getCategory(slug);
+            const category = await this.getCategory(slug);
             if (!category) {
                 throw new NotFoundError(`Category "${slug}" not found.`);
             }
@@ -295,7 +296,7 @@ export const createCategoriesCrud = (params: Params): CategoriesCrud => {
 
             // Before deleting, let's check if there is a page that's in this category.
             // If so, let's prevent this.
-            const [pages] = await context.pageBuilder.pages.listLatestPages(
+            const [pages] = await this.listLatestPages(
                 {
                     where: {
                         category: category.slug

@@ -8,6 +8,7 @@ import savePageAssets from "./install/utils/savePageAssets";
 import {
     OnAfterInstallTopicParams,
     OnBeforeInstallTopicParams,
+    PageBuilderContextObject,
     PbContext,
     System,
     SystemCrud,
@@ -42,13 +43,13 @@ export const createSystemCrud = (params: Params): SystemCrud => {
                 );
             }
         },
-        async getSystemVersion() {
-            const system = await context.pageBuilder.system.getSystem();
+        async getSystemVersion(this: PageBuilderContextObject) {
+            const system = await this.getSystem();
 
             return system ? system.version : null;
         },
-        async setSystemVersion(version: string) {
-            const original = await context.pageBuilder.system.getSystem();
+        async setSystemVersion(this: PageBuilderContextObject, version: string) {
+            const original = await this.getSystem();
 
             if (original) {
                 const system = {
@@ -91,11 +92,11 @@ export const createSystemCrud = (params: Params): SystemCrud => {
                 );
             }
         },
-        async installSystem({ name, insertDemoData }) {
-            const { pageBuilder, fileManager } = context;
+        async installSystem(this: PageBuilderContextObject, { name, insertDemoData }) {
+            const { fileManager } = context;
 
             // Check whether the PB app is already installed
-            const version = await pageBuilder.system.getSystemVersion();
+            const version = await this.getSystemVersion();
             if (version) {
                 throw new WebinyError("Page builder is already installed.", "PB_INSTALL_ABORTED");
             }
@@ -109,9 +110,9 @@ export const createSystemCrud = (params: Params): SystemCrud => {
 
             if (insertDemoData) {
                 // 2. Create initial page category.
-                let staticCategory = await pageBuilder.categories.getCategory("static");
+                let staticCategory = await this.getCategory("static");
                 if (!staticCategory) {
-                    staticCategory = await pageBuilder.categories.createCategory({
+                    staticCategory = await this.createCategory({
                         name: "Static",
                         slug: "static",
                         url: "/static/",
@@ -125,9 +126,9 @@ export const createSystemCrud = (params: Params): SystemCrud => {
                 const fileIdToFileMap = await savePageAssets({ context });
 
                 // 4. Create initial menu.
-                const mainMenu = await pageBuilder.menus.getMenu("main-menu");
+                const mainMenu = await this.getMenu("main-menu");
                 if (!mainMenu) {
-                    await pageBuilder.menus.createMenu({
+                    await this.createMenu({
                         title: "Main Menu",
                         slug: "main-menu",
                         description:
@@ -136,7 +137,6 @@ export const createSystemCrud = (params: Params): SystemCrud => {
                 }
 
                 // 5. Create sample pages.
-                const { pages } = pageBuilder;
                 const fmSettings = await fileManager.settings.getSettings();
 
                 const welcomeToWebinyPageContent = preparePageData({
@@ -165,18 +165,18 @@ export const createSystemCrud = (params: Params): SystemCrud => {
                 ];
 
                 const initialPages = await Promise.all(
-                    initialPagesData.map(() => pages.createPage(staticCategory.slug))
+                    initialPagesData.map(() => this.createPage(staticCategory.slug))
                 );
                 const updatedPages = await Promise.all(
                     initialPagesData.map((data, index) => {
-                        return pages.updatePage(initialPages[index].id, data);
+                        return this.updatePage(initialPages[index].id, data);
                     })
                 );
                 const [homePage, notFoundPage] = await Promise.all(
-                    updatedPages.map(page => pages.publishPage(page.id))
+                    updatedPages.map(page => this.publishPage(page.id))
                 );
 
-                await pageBuilder.settings.updateSettings({
+                await this.updateSettings({
                     name: name,
                     pages: {
                         home: homePage.pid,
@@ -186,7 +186,7 @@ export const createSystemCrud = (params: Params): SystemCrud => {
             }
 
             // 6. Mark the Page Builder app as installed.
-            await context.pageBuilder.system.setSystemVersion(context.WEBINY_VERSION);
+            await this.setSystemVersion(context.WEBINY_VERSION);
 
             await onAfterInstall.publish({
                 context
@@ -204,7 +204,7 @@ export const createSystemCrud = (params: Params): SystemCrud => {
 
             const plugin = getApplicablePlugin({
                 deployedVersion: context.WEBINY_VERSION,
-                installedAppVersion: await context.pageBuilder.system.getSystemVersion(),
+                installedAppVersion: await this.getSystemVersion(),
                 upgradePlugins,
                 upgradeToVersion: version
             });
@@ -212,7 +212,7 @@ export const createSystemCrud = (params: Params): SystemCrud => {
             await plugin.apply(context);
 
             // Store new app version
-            await context.pageBuilder.system.setSystemVersion(version);
+            await this.setSystemVersion(version);
 
             return true;
         }

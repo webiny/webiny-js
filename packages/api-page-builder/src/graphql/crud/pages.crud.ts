@@ -6,6 +6,7 @@ import { NotFoundError } from "@webiny/handler-graphql";
 import {
     OnBeforePageCreateTopicParams,
     Page,
+    PageBuilderContextObject,
     PagesCrud,
     PageSecurityPermission,
     PageStorageOperations,
@@ -254,11 +255,11 @@ export const createPageCrud = (params: Params): PagesCrud => {
         /**
          * Storage operations
          */
-        storageOperations,
-        async createPage(slug) {
+        pageStorageOperations: storageOperations,
+        async createPage(this: PageBuilderContextObject, slug) {
             await checkBasePermissions(context, PERMISSION_NAME, { rwd: "w" });
 
-            const category = await context.pageBuilder.categories.getCategory(slug);
+            const category = await this.getCategory(slug);
             if (!category) {
                 throw new NotFoundError(`Category with slug "${slug}" not found.`);
             }
@@ -354,12 +355,12 @@ export const createPageCrud = (params: Params): PagesCrud => {
             }
         },
 
-        async createPageFrom(id) {
+        async createPageFrom(this: PageBuilderContextObject, id) {
             const permission = await checkBasePermissions(context, PERMISSION_NAME, {
                 rwd: "w"
             });
 
-            const original = await context.pageBuilder.pages.getPage(id, {
+            const original = await this.getPage(id, {
                 decompress: false
             });
 
@@ -516,7 +517,7 @@ export const createPageCrud = (params: Params): PagesCrud => {
             }
         },
 
-        async deletePage(id) {
+        async deletePage(this: PageBuilderContextObject, id) {
             const permission = await checkBasePermissions(context, PERMISSION_NAME, {
                 rwd: "d"
             });
@@ -566,7 +567,7 @@ export const createPageCrud = (params: Params): PagesCrud => {
             const identity = context.security.getIdentity();
             checkOwnPermissions(identity, permission, page, "ownedBy");
 
-            const settings = await context.pageBuilder.settings.getCurrentSettings();
+            const settings = await this.getCurrentSettings();
             const pages = settings && settings.pages ? settings.pages : {};
             for (const key in pages) {
                 // We don't allow delete operation for "published" version of special pages.
@@ -647,12 +648,12 @@ export const createPageCrud = (params: Params): PagesCrud => {
             }
         },
 
-        async publishPage(id: string) {
+        async publishPage(this: PageBuilderContextObject, id: string) {
             await checkBasePermissions<PageSecurityPermission>(context, PERMISSION_NAME, {
                 pw: "p"
             });
 
-            const original = await context.pageBuilder.pages.getPage(id, {
+            const original = await this.getPage(id, {
                 decompress: false
             });
 
@@ -700,7 +701,7 @@ export const createPageCrud = (params: Params): PagesCrud => {
                  * now, it works like this. If there was only more ⏱.
                  * 2) If a user doesn't have the unpublish permission, again, the whole action will fail.
                  */
-                await context.pageBuilder.pages.unpublishPage(publishedPathPage.id);
+                await this.unpublishPage(publishedPathPage.id);
             }
 
             const page: Page = {
@@ -760,12 +761,12 @@ export const createPageCrud = (params: Params): PagesCrud => {
             }
         },
 
-        async unpublishPage(id: string) {
+        async unpublishPage(this: PageBuilderContextObject, id: string) {
             await checkBasePermissions<PageSecurityPermission>(context, PERMISSION_NAME, {
                 pw: "u"
             });
 
-            const original = await context.pageBuilder.pages.getPage(id, {
+            const original = await this.getPage(id, {
                 decompress: false
             });
             /**
@@ -782,7 +783,7 @@ export const createPageCrud = (params: Params): PagesCrud => {
                 throw new WebinyError(`Page is not published.`);
             }
 
-            const settings = await context.pageBuilder.settings.getCurrentSettings();
+            const settings = await this.getCurrentSettings();
             const pages = settings && settings.pages ? settings.pages : {};
             for (const key in pages) {
                 if (pages[key] === original.pid) {
@@ -830,12 +831,12 @@ export const createPageCrud = (params: Params): PagesCrud => {
             }
         },
 
-        async requestPageReview(id: string) {
+        async requestPageReview(this: PageBuilderContextObject, id: string) {
             await checkBasePermissions(context, PERMISSION_NAME, {
                 pw: "r"
             });
 
-            const original = await context.pageBuilder.pages.getPage(id, {
+            const original = await this.getPage(id, {
                 decompress: false
             });
 
@@ -885,12 +886,12 @@ export const createPageCrud = (params: Params): PagesCrud => {
             }
         },
 
-        async requestPageChanges(id: string) {
+        async requestPageChanges(this: PageBuilderContextObject, id: string) {
             await checkBasePermissions(context, PERMISSION_NAME, {
                 pw: "c"
             });
 
-            const original = await context.pageBuilder.pages.getPage(id, {
+            const original = await this.getPage(id, {
                 decompress: false
             });
             if (original.status !== STATUS_REVIEW_REQUESTED) {
@@ -977,7 +978,7 @@ export const createPageCrud = (params: Params): PagesCrud => {
             return (await extractPageContent(contentCompressionPlugins, page)) as any;
         },
 
-        async getPublishedPageById(params) {
+        async getPublishedPageById(this: PageBuilderContextObject, params) {
             const { id, preview } = params;
 
             let page: Page = null;
@@ -1007,7 +1008,7 @@ export const createPageCrud = (params: Params): PagesCrud => {
             return (await extractPageContent(contentCompressionPlugins, page)) as any;
         },
 
-        async getPublishedPageByPath(params) {
+        async getPublishedPageByPath(this: PageBuilderContextObject, params) {
             if (!params.path) {
                 throw new WebinyError(
                     'Cannot get published page - "path" not provided.',
@@ -1017,13 +1018,13 @@ export const createPageCrud = (params: Params): PagesCrud => {
 
             const normalizedPath = normalizePath(params.path);
             if (normalizedPath === "/") {
-                const settings = await context.pageBuilder.settings.getCurrentSettings();
+                const settings = await this.getCurrentSettings();
                 const homePage = lodashGet(settings, "pages.home");
                 if (!homePage) {
                     throw new NotFoundError("Page not found.");
                 }
 
-                return await context.pageBuilder.pages.getPublishedPageById({
+                return await this.getPublishedPageById({
                     id: homePage
                 });
             }

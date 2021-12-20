@@ -10,7 +10,8 @@ import {
     OnAfterMenuUpdateTopicParams,
     OnBeforeMenuDeleteTopicParams,
     OnAfterMenuDeleteTopicParams,
-    MenusCrud
+    MenusCrud,
+    PageBuilderContextObject
 } from "~/types";
 import { NotFoundError } from "@webiny/handler-graphql";
 import checkBasePermissions from "./utils/checkBasePermissions";
@@ -59,7 +60,7 @@ export const createMenuCrud = (params: Params): MenusCrud => {
         onAfterMenuUpdate,
         onBeforeMenuDelete,
         onAfterMenuDelete,
-        storageOperations,
+        menusStorageOperations: storageOperations,
         async getMenu(slug, options) {
             let permission = undefined;
             const { auth = true } = options || {};
@@ -110,8 +111,8 @@ export const createMenuCrud = (params: Params): MenusCrud => {
          * Used to fetch menu data from a public website. Items are prepared for consumption too.
          * @param slug
          */
-        async getPublicMenu(slug) {
-            const menu = await context.pageBuilder.menus.getMenu(slug, {
+        async getPublicMenu(this: PageBuilderContextObject, slug) {
+            const menu = await this.getMenu(slug, {
                 auth: false
             });
 
@@ -223,12 +224,12 @@ export const createMenuCrud = (params: Params): MenusCrud => {
             }
         },
 
-        async updateMenu(slug, input) {
+        async updateMenu(this: PageBuilderContextObject, slug, input) {
             const permission = await checkBasePermissions(context, PERMISSION_NAME, {
                 rwd: "w"
             });
 
-            const original = await context.pageBuilder.menus.getMenu(slug);
+            const original = await this.getMenu(slug);
             if (!original) {
                 throw new NotFoundError(`Menu "${slug}" not found.`);
             }
@@ -276,12 +277,12 @@ export const createMenuCrud = (params: Params): MenusCrud => {
                 );
             }
         },
-        async deleteMenu(slug) {
+        async deleteMenu(this: PageBuilderContextObject, slug) {
             const permission = await checkBasePermissions(context, PERMISSION_NAME, {
                 rwd: "d"
             });
 
-            const menu = await context.pageBuilder.menus.getMenu(slug);
+            const menu = await this.getMenu(slug);
             if (!menu) {
                 throw new NotFoundError(`Menu "${slug}" not found.`);
             }

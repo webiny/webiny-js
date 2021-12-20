@@ -184,7 +184,7 @@ export interface PagesCrud {
      * To be used internally in our code.
      * @internal
      */
-    storageOperations: PageStorageOperations;
+    pageStorageOperations: PageStorageOperations;
     getPage<TPage extends Page = Page>(id: string, options?: GetPagesOptions): Promise<TPage>;
     listLatestPages<TPage extends Page = Page>(
         args: ListPagesParams,
@@ -284,7 +284,7 @@ export interface PageElementsCrud {
      * To be used internally in our code.
      * @internal
      */
-    storageOperations: PageElementStorageOperations;
+    pageElementsStorageOperations: PageElementStorageOperations;
     getPageElement(id: string): Promise<PageElement>;
     listPageElements(params?: ListPageElementsParams): Promise<PageElement[]>;
     createPageElement(data: Record<string, any>): Promise<PageElement>;
@@ -348,7 +348,7 @@ export interface CategoriesCrud {
      * To be used internally in our code.
      * @internal
      */
-    storageOperations: CategoryStorageOperations;
+    categoriesStorageOperations: CategoryStorageOperations;
     getCategory(slug: string, options?: { auth: boolean }): Promise<Category>;
     listCategories(): Promise<Category[]>;
     createCategory(data: Record<string, any>): Promise<Category>;
@@ -422,7 +422,7 @@ export interface MenusCrud {
      * To be used internally in our code.
      * @internal
      */
-    storageOperations: MenuStorageOperations;
+    menusStorageOperations: MenuStorageOperations;
     getMenu(slug: string, options?: MenuGetOptions): Promise<Menu>;
     getPublicMenu(slug: string): Promise<Menu>;
     listMenus(params?: ListMenuParams): Promise<Menu[]>;
@@ -517,6 +517,24 @@ export interface SystemCrud {
     onAfterInstall: Topic<OnBeforeInstallTopicParams>;
 }
 
+export interface PageBuilderContextObject
+    extends PagesCrud,
+        PageElementsCrud,
+        CategoriesCrud,
+        MenusCrud,
+        SettingsCrud,
+        SystemCrud {
+    setPrerenderingHandlers: (configuration: PrerenderingHandlers) => void;
+    getPrerenderingHandlers: () => PrerenderingHandlers;
+    /**
+     * Lifecycle events
+     */
+    onPageBeforeRender: Topic<PageBeforeRenderEvent>;
+    onPageAfterRender: Topic<PageAfterRenderEvent>;
+    onPageBeforeFlush: Topic<PageBeforeFlushEvent>;
+    onPageAfterFlush: Topic<PageAfterFlushEvent>;
+}
+
 export interface PbContext
     extends I18NContentContext,
         I18NContext,
@@ -526,23 +544,7 @@ export interface PbContext
         TenancyContext,
         FileManagerContext,
         PrerenderingServiceClientContext {
-    pageBuilder: Record<string, any> & {
-        pages: PagesCrud;
-        pageElements: PageElementsCrud;
-        categories: CategoriesCrud;
-        menus: MenusCrud;
-        settings: SettingsCrud;
-        system: SystemCrud;
-        setPrerenderingHandlers: (configuration: PrerenderingHandlers) => void;
-        getPrerenderingHandlers: () => PrerenderingHandlers;
-        /**
-         * Lifecycle events
-         */
-        onPageBeforeRender: Topic<PageBeforeRenderEvent>;
-        onPageAfterRender: Topic<PageAfterRenderEvent>;
-        onPageBeforeFlush: Topic<PageBeforeFlushEvent>;
-        onPageAfterFlush: Topic<PageAfterFlushEvent>;
-    };
+    pageBuilder: PageBuilderContextObject;
 }
 
 // Permissions.

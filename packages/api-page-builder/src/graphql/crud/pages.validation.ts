@@ -4,7 +4,7 @@ import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
 
 export const createPageValidation = () => {
     return new ContextPlugin<PbContext>(async context => {
-        context.pageBuilder.pages.onBeforePageUpdate.subscribe(async params => {
+        context.pageBuilder.onBeforePageUpdate.subscribe(async params => {
             const { page, original, input } = params;
             const updateDataModel = new UpdateDataModel().populate(input);
             await updateDataModel.validate();
