@@ -11234,6 +11234,7 @@ __metadata:
     sass: 1.42.1
     sass-loader: 8.0.0
     scheduler: 0.19.1
+    source-map-support: ^0.5.21
     style-loader: 1.0.0
     terser-webpack-plugin: 2.2.1
     ts-pnp: 1.1.5
@@ -33325,7 +33326,6 @@ resolve@^2.0.0-next.3:
     rimraf: ^3.0.2
     rxjs: ^6.5.5
     semver: ^6.3.0
-    source-map-support: ^0.5.0
     ts-jest: ^26.4.4
     typescript: 4.1.3
     typescript-transform-paths: ^2.2.3
@@ -34367,13 +34367,23 @@ resolve@^2.0.0-next.3:
   languageName: node
   linkType: hard
 
-"source-map-support@npm:^0.5.0, source-map-support@npm:^0.5.16, source-map-support@npm:^0.5.6, source-map-support@npm:~0.5.12":
+"source-map-support@npm:^0.5.16, source-map-support@npm:^0.5.6, source-map-support@npm:~0.5.12":
   version: 0.5.20
   resolution: "source-map-support@npm:0.5.20"
   dependencies:
     buffer-from: ^1.0.0
     source-map: ^0.6.0
   checksum: 43946aff452011960d16154304b11011e0185549493e65dd90da045959409fb2d266ba1c854fff3d5949f8e59382e3fcc7f7c5fa66136007a6750ad06c6c0baa
+  languageName: node
+  linkType: hard
+
+"source-map-support@npm:^0.5.21":
+  version: 0.5.21
+  resolution: "source-map-support@npm:0.5.21"
+  dependencies:
+    buffer-from: ^1.0.0
+    source-map: ^0.6.0
+  checksum: 43e98d700d79af1d36f859bdb7318e601dfc918c7ba2e98456118ebc4c4872b327773e5a1df09b0524e9e5063bb18f0934538eace60cca2710d1fa687645d137
   languageName: node
   linkType: hard
 

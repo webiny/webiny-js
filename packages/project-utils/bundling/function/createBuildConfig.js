@@ -17,18 +17,22 @@ module.exports = options => {
         babelOptions = overrides.babel(babelOptions);
     }
 
+    const sourceMaps = process.env.DEBUG === "true";
+
     const definitions = overrides.define ? JSON.parse(overrides.define) : {};
 
     return {
-        entry: path.resolve(entry),
+        entry: [
+            sourceMaps && require.resolve("source-map-support/register"),
+            path.resolve(entry)
+        ].filter(Boolean),
         target: "node",
         output: {
             libraryTarget: "commonjs",
             path: output.path,
             filename: output.filename
         },
-        // Generate sourcemaps for proper error messages
-        devtool: options.debug ? "source-map" : false,
+        devtool: false,
         externals: [/^aws-sdk/],
         mode: "production",
         optimization: {
@@ -46,6 +50,13 @@ module.exports = options => {
                 ),
                 ...definitions
             }),
+            // Enable sourcemaps with separate plugin
+            // This allows to pass some additional config, like project root
+            sourceMaps &&
+                new webpack.SourceMapDevToolPlugin({
+                    filename: `${output.filename}.map`,
+                    sourceRoot: cwd
+                }),
             options.logs && new WebpackBar({ name: path.basename(cwd) })
         ].filter(Boolean),
         // Run babel on all .js files and skip those in node_modules
