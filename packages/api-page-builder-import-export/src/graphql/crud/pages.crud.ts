@@ -69,7 +69,7 @@ export default new ContextPlugin<PbPageImportExportContext>(context => {
                 let meta = { hasMoreItems: true, cursor: null };
                 // Paginate pages
                 while (meta.hasMoreItems) {
-                    [pages, meta] = await context.pageBuilder.pages.listLatestPages({
+                    [pages, meta] = await context.pageBuilder.listLatestPages({
                         after: meta.cursor,
                         where: where,
                         sort: sort,

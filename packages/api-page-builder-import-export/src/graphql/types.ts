@@ -1,4 +1,4 @@
-import { PagesCrud, PbContext } from "@webiny/api-page-builder/types";
+import { PbContext } from "@webiny/api-page-builder/types";
 import {
     PageExportRevisionType,
     PageImportExportTask,
@@ -77,7 +77,7 @@ export type PageImportExportTaskCrud = {
 
 export interface PbPageImportExportContext extends PbContext {
     pageBuilder: PbContext["pageBuilder"] & {
-        pages: PagesCrud & PagesImportExportCrud;
+        pages: PagesImportExportCrud;
         pageImportExportTask: PageImportExportTaskCrud;
     };
 }
