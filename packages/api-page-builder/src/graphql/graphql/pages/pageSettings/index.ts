@@ -1,5 +1,12 @@
-import general from "./general";
-import seo from "./seo";
-import social from "./social";
+import { createPageSettingsGeneralGraphQL } from "./general";
+import { createPageSettingsSeoGraphQL } from "./seo";
+import { createPageSettingsSocialGraphQL } from "./social";
+import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
 
-export default [general, seo, social];
+export const createPageSettingsGraphQL = (): GraphQLSchemaPlugin[] => {
+    return [
+        createPageSettingsGeneralGraphQL(),
+        createPageSettingsSeoGraphQL(),
+        createPageSettingsSocialGraphQL()
+    ];
+};

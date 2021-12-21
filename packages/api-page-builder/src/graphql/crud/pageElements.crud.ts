@@ -1,10 +1,17 @@
-import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
 import mdbid from "mdbid";
 import { withFields, string } from "@commodo/fields";
 import { object } from "commodo-fields-object";
 import { validation } from "@webiny/validation";
 import {
+    OnAfterPageElementCreateTopicParams,
+    OnAfterPageElementDeleteTopicParams,
+    OnAfterPageElementUpdateTopicParams,
+    OnBeforePageElementCreateTopicParams,
+    OnBeforePageElementDeleteTopicParams,
+    OnBeforePageElementUpdateTopicParams,
+    PageBuilderContextObject,
     PageElement,
+    PageElementsCrud,
     PageElementStorageOperations,
     PageElementStorageOperationsListParams,
     PbContext
@@ -13,8 +20,7 @@ import checkBasePermissions from "./utils/checkBasePermissions";
 import checkOwnPermissions from "./utils/checkOwnPermissions";
 import { NotFoundError } from "@webiny/handler-graphql";
 import WebinyError from "@webiny/error";
-import { PageElementStorageOperationsProviderPlugin } from "~/plugins/PageElementStorageOperationsProviderPlugin";
-import { createStorageOperations } from "~/graphql/crud/storageOperations";
+import { createTopic } from "@webiny/pubsub";
 
 const CreateDataModel = withFields({
     name: string({ validation: validation.create("required,maxLength:100") }),
@@ -34,23 +40,35 @@ const UpdateDataModel = withFields({
 
 const PERMISSION_NAME = "pb.page";
 
-export default new ContextPlugin<PbContext>(async context => {
-    /**
-     * If pageBuilder is not defined on the context, do not continue, but log it.
-     */
-    if (!context.pageBuilder) {
-        console.log("Missing pageBuilder on context. Skipping Page Elements crud.");
-        return;
-    }
+export interface Params {
+    context: PbContext;
+    storageOperations: PageElementStorageOperations;
+}
+export const createPageElementsCrud = (params: Params): PageElementsCrud => {
+    const { context, storageOperations } = params;
 
-    const storageOperations = await createStorageOperations<PageElementStorageOperations>(
-        context,
-        PageElementStorageOperationsProviderPlugin.type
-    );
+    const onBeforePageElementCreate = createTopic<OnBeforePageElementCreateTopicParams>();
+    const onAfterPageElementCreate = createTopic<OnAfterPageElementCreateTopicParams>();
+    const onBeforePageElementUpdate = createTopic<OnBeforePageElementUpdateTopicParams>();
+    const onAfterPageElementUpdate = createTopic<OnAfterPageElementUpdateTopicParams>();
+    const onBeforePageElementDelete = createTopic<OnBeforePageElementDeleteTopicParams>();
+    const onAfterPageElementDelete = createTopic<OnAfterPageElementDeleteTopicParams>();
 
-    context.pageBuilder.pageElements = {
-        storageOperations,
-        async get(id) {
+    return {
+        /**
+         * Lifecycle events
+         */
+        onBeforePageElementCreate,
+        onAfterPageElementCreate,
+        onBeforePageElementUpdate,
+        onAfterPageElementUpdate,
+        onBeforePageElementDelete,
+        onAfterPageElementDelete,
+        /**
+         * Storage operations
+         */
+        pageElementsStorageOperations: storageOperations,
+        async getPageElement(id) {
             const permission = await checkBasePermissions(context, PERMISSION_NAME, {
                 rwd: "r"
             });
@@ -89,7 +107,7 @@ export default new ContextPlugin<PbContext>(async context => {
             return pageElement;
         },
 
-        async list(params) {
+        async listPageElements(params) {
             const permission = await checkBasePermissions(context, PERMISSION_NAME, {
                 rwd: "r"
             });
@@ -127,7 +145,7 @@ export default new ContextPlugin<PbContext>(async context => {
             }
         },
 
-        async create(input) {
+        async createPageElement(input) {
             await checkBasePermissions(context, PERMISSION_NAME, { rwd: "w" });
 
             const createDataModel = new CreateDataModel().populate(input);
@@ -152,10 +170,17 @@ export default new ContextPlugin<PbContext>(async context => {
             };
 
             try {
-                return await storageOperations.create({
+                await onBeforePageElementCreate.publish({
+                    pageElement
+                });
+                const result = await storageOperations.create({
                     input: data,
                     pageElement
                 });
+                await onAfterPageElementCreate.publish({
+                    pageElement
+                });
+                return result;
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not create page element.",
@@ -168,11 +193,11 @@ export default new ContextPlugin<PbContext>(async context => {
             }
         },
 
-        async update(id, input) {
+        async updatePageElement(this: PageBuilderContextObject, id, input) {
             const permission = await checkBasePermissions(context, PERMISSION_NAME, {
                 rwd: "w"
             });
-            const original = await context.pageBuilder.pageElements.get(id);
+            const original = await this.getPageElement(id);
             if (!original) {
                 throw new NotFoundError(`Page element "${id}" not found.`);
             }
@@ -191,11 +216,20 @@ export default new ContextPlugin<PbContext>(async context => {
             };
 
             try {
-                return await storageOperations.update({
+                await onBeforePageElementUpdate.publish({
+                    original,
+                    pageElement
+                });
+                const result = await storageOperations.update({
                     input: data,
                     original,
                     pageElement
                 });
+                await onAfterPageElementUpdate.publish({
+                    original,
+                    pageElement: result
+                });
+                return result;
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not update page element.",
@@ -209,12 +243,12 @@ export default new ContextPlugin<PbContext>(async context => {
             }
         },
 
-        async delete(slug) {
+        async deletePageElement(this: PageBuilderContextObject, slug) {
             const permission = await checkBasePermissions(context, PERMISSION_NAME, {
                 rwd: "d"
             });
 
-            const pageElement = await context.pageBuilder.pageElements.get(slug);
+            const pageElement = await this.getPageElement(slug);
             if (!pageElement) {
                 throw new NotFoundError(`PageElement "${slug}" not found.`);
             }
@@ -223,9 +257,16 @@ export default new ContextPlugin<PbContext>(async context => {
             checkOwnPermissions(identity, permission, pageElement);
 
             try {
-                return await storageOperations.delete({
+                await onBeforePageElementDelete.publish({
                     pageElement
                 });
+                const result = await storageOperations.delete({
+                    pageElement
+                });
+                await onAfterPageElementDelete.publish({
+                    pageElement: result
+                });
+                return result;
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not delete page element.",
@@ -238,4 +279,4 @@ export default new ContextPlugin<PbContext>(async context => {
             }
         }
     };
-});
+};

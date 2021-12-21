@@ -14,7 +14,7 @@ export const prerenderingHandlers = new ContextPlugin<PbContext>(context => {
         async render(args): Promise<void> {
             const { paths, tags, context } = args;
 
-            const current = await context.pageBuilder.settings.getCurrent();
+            const current = await context.pageBuilder.getCurrentSettings();
             const appUrl = lodashGet(current, "prerendering.app.url");
             const storageName = lodashGet(current, "prerendering.storage.name");
 
@@ -116,7 +116,7 @@ export const prerenderingHandlers = new ContextPlugin<PbContext>(context => {
         async flush(args): Promise<void> {
             const { context } = args;
 
-            const current = await context.pageBuilder.settings.getCurrent();
+            const current = await context.pageBuilder.getCurrentSettings();
             const appUrl = lodashGet(current, "prerendering.app.url");
             const storageName = lodashGet(current, "prerendering.storage.name");
 
