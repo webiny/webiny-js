@@ -134,8 +134,5 @@ export default new ContextPlugin<PbPageImportExportContext>(context => {
         }
     };
     // Modify context
-    context.pageBuilder.pages = {
-        ...context.pageBuilder.pages,
-        ...importExportCrud
-    };
+    context.pageBuilder.pages = importExportCrud;
 });
