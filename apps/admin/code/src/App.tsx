@@ -5,7 +5,7 @@ import { Security } from "@webiny/app-security";
 import { I18N } from "@webiny/app-i18n";
 import { PageBuilder } from "@webiny/app-page-builder";
 import { HeadlessCMS } from "@webiny/app-headless-cms";
-import { createAuthentication } from "@webiny/app-admin-users-cognito";
+import { Cognito } from "@webiny/app-admin-users-cognito";
 import { createApolloClient } from "./components/apolloClient";
 import "./App.scss";
 
@@ -13,9 +13,10 @@ export const App = () => (
     <Admin apolloClient={createApolloClient({ uri: process.env.REACT_APP_GRAPHQL_API_URL })}>
         <Tenancy />
         <Security />
-        <AppInstaller Authentication={createAuthentication()} />
+        <AppInstaller />
         <I18N />
         <PageBuilder />
         <HeadlessCMS createApolloClient={createApolloClient} />
+        <Cognito />
     </Admin>
 );

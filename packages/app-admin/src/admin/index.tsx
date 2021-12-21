@@ -85,32 +85,6 @@ export const Compose = (props: ComposeProps) => {
     return null;
 };
 
-const useComponent = Component => {
-    const { wrappers } = useAdmin();
-    const recipe = wrappers.get(Component);
-
-    if (!recipe) {
-        return Component;
-    }
-
-    return recipe.component;
-};
-
-export function makeComposable<TProps>(name, Component: React.ComponentType<TProps>) {
-    const Proxy = (props: TProps & { children?: unknown }) => {
-        const WrappedComponent = useComponent(Component);
-
-        return <WrappedComponent {...props}>{props.children}</WrappedComponent>;
-    };
-
-    Component.displayName = name;
-
-    Proxy.original = Component;
-    Proxy.displayName = `Proxy<${name}>`;
-
-    return Proxy;
-}
-
 export const Routes = ({ children }) => {
     const { addRoute } = useAdmin();
 

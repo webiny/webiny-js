@@ -24,7 +24,7 @@ import {
     icon,
     searchWrapper
 } from "./styled";
-import { makeComposable } from "~/admin";
+import { makeComposable } from "~/index";
 
 type SearchBarProps = UseRouter;
 

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { default as localStorage } from "store";
+import { LoginScreen } from "~/index";
 import { useSecurity } from "@webiny/app-security";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { ButtonPrimary } from "@webiny/ui/Button";
@@ -19,7 +20,7 @@ import {
 } from "./styled";
 import { config as appConfig } from "@webiny/app/config";
 
-export const AppInstaller = ({ Authentication, children }) => {
+export const AppInstaller = ({ children }) => {
     const tenantId = localStorage.get("webiny_tenant") || "root";
 
     const lsKey = `webiny_installation_${tenantId}`;
@@ -52,7 +53,7 @@ export const AppInstaller = ({ Authentication, children }) => {
     }, [identity]);
 
     if (isInstallerCompleted()) {
-        return <Authentication>{children}</Authentication>;
+        return <LoginScreen>{children}</LoginScreen>;
     }
 
     const renderLayout = (content, secure = false) => {
@@ -67,7 +68,7 @@ export const AppInstaller = ({ Authentication, children }) => {
                 </LeftPanel>
                 <RightPanel span={10}>
                     {!showLogin && !secure && content}
-                    {(showLogin || secure) && <Authentication>{content}</Authentication>}
+                    {(showLogin || secure) && <LoginScreen>{content}</LoginScreen>}
                 </RightPanel>
             </SplitView>
         );
@@ -91,7 +92,7 @@ export const AppInstaller = ({ Authentication, children }) => {
     // This means there are no installers to run or installation was finished
     if (!loading && (installers.length === 0 || finished)) {
         markInstallerAsCompleted();
-        return <Authentication>{children}</Authentication>;
+        return <LoginScreen>{children}</LoginScreen>;
     }
 
     if (installer) {
