@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.20.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.20.0-beta.1...v5.20.0-beta.2) (2021-12-21)
+
+
+### Bug Fixes
+
+* **api-page-builder-import-export:** pb refactoring ([d2755c8](https://github.com/webiny/webiny-js/commit/d2755c83865e6ff5c9dea47cfe2a6084572121f8))
+* **api-page-builder-import-export:** remove pages from context ([1c83449](https://github.com/webiny/webiny-js/commit/1c834492b69922fce8aeb1b819333a6a9fde90a5))
+
+
+### Features
+
+* **api-page-builder:** add pub/sub methods ([#2136](https://github.com/webiny/webiny-js/issues/2136)) ([979505d](https://github.com/webiny/webiny-js/commit/979505dc3feffa6a9b1a895732327c71e25c8bb0))
+
+
+
+
+
 # [5.20.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.20.0-beta.0...v5.20.0-beta.1) (2021-12-20)
 
 
