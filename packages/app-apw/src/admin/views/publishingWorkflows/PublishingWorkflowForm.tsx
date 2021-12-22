@@ -1,0 +1,134 @@
+import React from "react";
+import styled from "@emotion/styled";
+import { css } from "emotion";
+import { i18n } from "@webiny/app/i18n";
+import { Form } from "@webiny/form";
+import { ButtonDefault, ButtonPrimary, ButtonIcon } from "@webiny/ui/Button";
+import { CircularProgress } from "@webiny/ui/Progress";
+import {
+    SimpleForm,
+    SimpleFormFooter,
+    SimpleFormContent
+} from "@webiny/app-admin/components/SimpleForm";
+import { Accordion, AccordionItem } from "@webiny/ui/Accordion";
+import EmptyView from "@webiny/app-admin/components/EmptyView";
+import { usePublishingWorkflowForm } from "./hooks/usePublishingWorkflowForm";
+
+import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
+import { ReactComponent as WorkflowScopeIcon } from "~/admin/assets/icons/workflow-scope.svg";
+import { ReactComponent as WorkflowStepIcon } from "~/admin/assets/icons/workflow-step.svg";
+
+import WorkflowStep from "./components/WorkflowStep";
+import Title, { WorkflowFormHeader } from "./components/WorkflowTitle";
+import WorkflowScope from "./components/WorkflowScope";
+import { ApwWorkflowStepTypes } from "~/types";
+
+const t = i18n.ns("app-i18n/admin/locales/form");
+
+const ButtonWrapper = styled("div")({
+    display: "flex",
+    justifyContent: "space-between"
+});
+
+const formFooterStyle = css`
+    border-top: none;
+`;
+
+const MOCK_STEP = {
+    title: "",
+    type: "",
+    reviewers: [
+        { id: 1, displayName: "Jack Wills" },
+        { id: 2, displayName: "Ted Bakers" }
+    ]
+};
+
+const WORKFLOW_DATA = {
+    title: "New Workflow",
+    steps: [
+        {
+            title: "Legal review",
+            type: ApwWorkflowStepTypes.MANDATORY_BLOCKING,
+            reviewers: [
+                { id: 1, displayName: "Jack Wills" },
+                { id: 2, displayName: "Ted Bakers" }
+            ]
+        }
+    ]
+};
+
+const workflowStepsDescription = t`Define the workflow steps and assign which users need to provide an approval.`;
+
+const PublishingWorkflowForm = () => {
+    const { loading, showEmptyView, cancelEditing, onSubmit } = usePublishingWorkflowForm();
+
+    /*
+     *  Render empty view.
+     */
+    if (showEmptyView) {
+        return (
+            <EmptyView
+                title={t`Click on the left side list to display workflow details...`}
+                action={null}
+            />
+        );
+    }
+
+    return (
+        <Form data={WORKFLOW_DATA} onSubmit={onSubmit}>
+            {({ data, form, Bind, setValue }) => (
+                <SimpleForm data-testid={"apw-publishing-workflow-form"}>
+                    {loading && <CircularProgress />}
+                    <Bind name="title">
+                        {props => <WorkflowFormHeader Title={<Title {...props} />} />}
+                    </Bind>
+                    <SimpleFormContent>
+                        <Accordion elevation={0}>
+                            <AccordionItem
+                                icon={<WorkflowStepIcon />}
+                                title={t`Workflow steps`}
+                                description={workflowStepsDescription}
+                            >
+                                <Bind name={"steps"}>
+                                    {({ value }) =>
+                                        value &&
+                                        value.map((step, index) => (
+                                            <WorkflowStep
+                                                key={index}
+                                                Bind={Bind}
+                                                index={index}
+                                                step={step}
+                                            />
+                                        ))
+                                    }
+                                </Bind>
+                                <ButtonPrimary
+                                    onClick={() => setValue("steps", [...data.steps, MOCK_STEP])}
+                                    style={{ backgroundColor: "var(--mdc-theme-secondary)" }}
+                                >
+                                    <ButtonIcon icon={<AddIcon />} />
+                                    {t`Add Step`}
+                                </ButtonPrimary>
+                            </AccordionItem>
+                            <AccordionItem
+                                icon={<WorkflowScopeIcon />}
+                                title={t`Scope`}
+                                description={t`Define the conditions when this workflow applies.`}
+                            >
+                                <WorkflowScope />
+                            </AccordionItem>
+                        </Accordion>
+                    </SimpleFormContent>
+                    <SimpleFormFooter className={formFooterStyle}>
+                        <ButtonWrapper>
+                            <ButtonDefault onClick={cancelEditing}>{t`Cancel`}</ButtonDefault>
+                            <ButtonPrimary onClick={form.submit}>{t`Save`}</ButtonPrimary>
+                        </ButtonWrapper>
+                    </SimpleFormFooter>
+                </SimpleForm>
+            )}
+        </Form>
+    );
+};
+
+export default PublishingWorkflowForm;
