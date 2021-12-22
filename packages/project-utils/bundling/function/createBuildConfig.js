@@ -17,7 +17,7 @@ module.exports = options => {
         babelOptions = overrides.babel(babelOptions);
     }
 
-    const sourceMaps = process.env.DEBUG === "true";
+    const sourceMaps = process.env.SOURCE_MAPS !== "false";
 
     const definitions = overrides.define ? JSON.parse(overrides.define) : {};
 
@@ -32,7 +32,7 @@ module.exports = options => {
             path: output.path,
             filename: output.filename
         },
-        devtool: false,
+        devtool: sourceMaps ? "source-map" : false,
         externals: [/^aws-sdk/],
         mode: "production",
         optimization: {
@@ -50,19 +50,17 @@ module.exports = options => {
                 ),
                 ...definitions
             }),
-            // Enable sourcemaps with separate plugin
-            // This allows to pass some additional config, like project root
-            sourceMaps &&
-                new webpack.SourceMapDevToolPlugin({
-                    filename: `${output.filename}.map`,
-                    sourceRoot: cwd
-                }),
             options.logs && new WebpackBar({ name: path.basename(cwd) })
         ].filter(Boolean),
         // Run babel on all .js files and skip those in node_modules
         module: {
             exprContextCritical: false,
             rules: [
+                sourceMaps && {
+                    test: /\.js$/,
+                    enforce: "pre",
+                    use: [require.resolve("source-map-loader")]
+                },
                 {
                     test: /\.mjs$/,
                     include: /node_modules/,
@@ -74,7 +72,7 @@ module.exports = options => {
                     exclude: /node_modules/,
                     options: babelOptions
                 }
-            ]
+            ].filter(Boolean)
         },
         resolve: {
             modules: [path.resolve(path.join(cwd, "node_modules")), "node_modules"],

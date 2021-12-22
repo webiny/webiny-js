@@ -11234,6 +11234,7 @@ __metadata:
     sass: 1.42.1
     sass-loader: 8.0.0
     scheduler: 0.19.1
+    source-map-loader: ^1.1.3
     source-map-support: ^0.5.21
     style-loader: 1.0.0
     terser-webpack-plugin: 2.2.1
@@ -34332,6 +34333,22 @@ resolve@^2.0.0-next.3:
   version: 2.0.1
   resolution: "source-list-map@npm:2.0.1"
   checksum: 806efc6f75e7cd31e4815e7a3aaf75a45c704871ea4075cb2eb49882c6fca28998f44fc5ac91adb6de03b2882ee6fb02f951fdc85e6a22b338c32bfe19557938
+  languageName: node
+  linkType: hard
+
+"source-map-loader@npm:^1.1.3":
+  version: 1.1.3
+  resolution: "source-map-loader@npm:1.1.3"
+  dependencies:
+    abab: ^2.0.5
+    iconv-lite: ^0.6.2
+    loader-utils: ^2.0.0
+    schema-utils: ^3.0.0
+    source-map: ^0.6.1
+    whatwg-mimetype: ^2.3.0
+  peerDependencies:
+    webpack: ^4.0.0 || ^5.0.0
+  checksum: 0ca16a1458f206e12925f242ce52913b5f35de657d2ec17fd60ab3de7fa85b72b6707951b7a18899bdf05679d679a8b9edeb660c557aafa66453886d6907e3ec
   languageName: node
   linkType: hard
 
