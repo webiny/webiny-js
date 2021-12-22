@@ -3,7 +3,7 @@ import styled from "@emotion/styled";
 import classNames from "classnames";
 import Loader from "./Loader";
 import NoData from "./NoData";
-import { Typography } from "../../Typography";
+import { Typography } from "~/Typography";
 import { css } from "emotion";
 import noop from "lodash/noop";
 import isEmpty from "lodash/isEmpty";
@@ -356,17 +356,22 @@ export const DataList = (props: Props) => {
         render = typeof props.children === "function" ? props.children(props) : null;
     }
 
+    const listHeaderActionsCellSpan = props.actions ? 7 : 0;
+    const listHeaderTitleCellSpan = 12 - listHeaderActionsCellSpan;
+
     return (
         <DataListModalOverlayProvider>
             <ListContainer className={"webiny-data-list"} data-testid={"ui.list.data-list"}>
                 {(props.title || props.actions) && (
                     <Grid className={listHeader}>
-                        <Cell span={5} className={listTitle}>
+                        <Cell span={listHeaderTitleCellSpan} className={listTitle}>
                             <Typography use="headline5">{props.title}</Typography>
                         </Cell>
-                        <Cell span={7} className={listActions}>
-                            {props.actions}
-                        </Cell>
+                        {props.actions && (
+                            <Cell span={listHeaderActionsCellSpan} className={listActions}>
+                                {props.actions}
+                            </Cell>
+                        )}
                     </Grid>
                 )}
 
@@ -429,7 +434,7 @@ export type ScrollListProps = ListProps & {
 
 export const ScrollList = (props: ScrollListProps) => {
     return (
-        <List {...props} className={scrollList}>
+        <List {...props} className={classNames(props.className, scrollList)}>
             {props.children}
         </List>
     );
