@@ -2,11 +2,11 @@ import {
     OnAfterSettingsUpdateTopicParams,
     OnBeforeSettingsUpdateTopicParams,
     PageBuilderContextObject,
+    PageBuilderStorageOperations,
     PageSpecialType,
     PbContext,
     Settings,
     SettingsCrud,
-    SettingsStorageOperations,
     SettingsStorageOperationsCreateParams,
     SettingsStorageOperationsGetParams,
     SettingsUpdateTopicMetaParams
@@ -65,7 +65,7 @@ const createSettingsParams = (params: SettingsParamsInput): SettingsParams => {
 
 export interface Params {
     context: PbContext;
-    storageOperations: SettingsStorageOperations;
+    storageOperations: PageBuilderStorageOperations;
 }
 export const createSettingsCrud = (params: Params): SettingsCrud => {
     const { context, storageOperations } = params;
@@ -79,7 +79,7 @@ export const createSettingsCrud = (params: Params): SettingsCrud => {
                         context
                     })
                 };
-                return storageOperations.get(params);
+                return storageOperations.settings.get(params);
             });
             return Promise.all(promises);
         },
@@ -109,7 +109,7 @@ export const createSettingsCrud = (params: Params): SettingsCrud => {
          * Initial, in the DynamoDB, it was PK + SK. It can be what ever
          */
         getSettingsCacheKey(options) {
-            return storageOperations.createCacheKey(
+            return storageOperations.settings.createCacheKey(
                 options || {
                     tenant: options.tenant === false ? false : options.tenant,
                     locale: options.locale === false ? false : options.locale
@@ -212,7 +212,7 @@ export const createSettingsCrud = (params: Params): SettingsCrud => {
                     }
                 };
                 try {
-                    original = await storageOperations.create(data);
+                    original = await storageOperations.settings.create(data);
                     /**
                      * Clear the cache of the data loader.
                      */
@@ -283,7 +283,7 @@ export const createSettingsCrud = (params: Params): SettingsCrud => {
                     meta
                 });
 
-                const result = await storageOperations.update({
+                const result = await storageOperations.settings.update({
                     input: rawData,
                     original,
                     settings

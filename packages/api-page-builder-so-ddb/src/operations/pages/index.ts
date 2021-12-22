@@ -804,11 +804,11 @@ export const createPageStorageOperations = (params: Params): PageStorageOperatio
 
         let partitionKey: string;
         if (published) {
-            partitionKey = createPublishedPartitionKey(where);
+            partitionKey = createPublishedPartitionKey(initialWhere);
             //
             where.listPublished_not = false;
         } else {
-            partitionKey = createLatestPartitionKey(where);
+            partitionKey = createLatestPartitionKey(initialWhere);
             where.listLatest_not = false;
         }
 

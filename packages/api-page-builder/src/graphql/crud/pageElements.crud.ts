@@ -10,9 +10,9 @@ import {
     OnBeforePageElementDeleteTopicParams,
     OnBeforePageElementUpdateTopicParams,
     PageBuilderContextObject,
+    PageBuilderStorageOperations,
     PageElement,
     PageElementsCrud,
-    PageElementStorageOperations,
     PageElementStorageOperationsListParams,
     PbContext
 } from "~/types";
@@ -42,7 +42,7 @@ const PERMISSION_NAME = "pb.page";
 
 export interface Params {
     context: PbContext;
-    storageOperations: PageElementStorageOperations;
+    storageOperations: PageBuilderStorageOperations;
 }
 export const createPageElementsCrud = (params: Params): PageElementsCrud => {
     const { context, storageOperations } = params;
@@ -72,10 +72,6 @@ export const createPageElementsCrud = (params: Params): PageElementsCrud => {
         onAfterPageElementUpdate,
         onBeforePageElementDelete,
         onAfterPageElementDelete,
-        /**
-         * Storage operations
-         */
-        pageElementsStorageOperations: storageOperations,
         async getPageElement(id) {
             const permission = await checkBasePermissions(context, PERMISSION_NAME, {
                 rwd: "r"
@@ -91,7 +87,7 @@ export const createPageElementsCrud = (params: Params): PageElementsCrud => {
 
             let pageElement: PageElement | undefined;
             try {
-                pageElement = await storageOperations.get(params);
+                pageElement = await storageOperations.pageElements.get(params);
                 if (!pageElement) {
                     return null;
                 }
@@ -134,7 +130,7 @@ export const createPageElementsCrud = (params: Params): PageElementsCrud => {
             }
 
             try {
-                const [items] = await storageOperations.list(listParams);
+                const [items] = await storageOperations.pageElements.list(listParams);
                 return items;
             } catch (ex) {
                 throw new WebinyError(
@@ -175,7 +171,7 @@ export const createPageElementsCrud = (params: Params): PageElementsCrud => {
                 await onBeforePageElementCreate.publish({
                     pageElement
                 });
-                const result = await storageOperations.create({
+                const result = await storageOperations.pageElements.create({
                     input: data,
                     pageElement
                 });
@@ -222,7 +218,7 @@ export const createPageElementsCrud = (params: Params): PageElementsCrud => {
                     original,
                     pageElement
                 });
-                const result = await storageOperations.update({
+                const result = await storageOperations.pageElements.update({
                     input: data,
                     original,
                     pageElement
@@ -262,7 +258,7 @@ export const createPageElementsCrud = (params: Params): PageElementsCrud => {
                 await onBeforePageElementDelete.publish({
                     pageElement
                 });
-                const result = await storageOperations.delete({
+                const result = await storageOperations.pageElements.delete({
                     pageElement
                 });
                 await onAfterPageElementDelete.publish({

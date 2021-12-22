@@ -9,19 +9,7 @@ import { Args as PsFlushParams } from "@webiny/api-prerendering-service/flush/ty
 import { Args as PsRenderParams } from "@webiny/api-prerendering-service/render/types";
 import { Args as PsQueueAddParams } from "@webiny/api-prerendering-service/queue/add/types";
 
-import {
-    Category,
-    CategoryStorageOperations,
-    Menu,
-    MenuStorageOperations,
-    Page,
-    PageElement,
-    PageElementStorageOperations,
-    PageSpecialType,
-    PageStorageOperations,
-    Settings,
-    System
-} from "~/types";
+import { Category, Menu, Page, PageElement, PageSpecialType, Settings, System } from "~/types";
 import { PrerenderingServiceClientContext } from "@webiny/api-prerendering-service/client/types";
 import { FileManagerContext } from "@webiny/api-file-manager/types";
 
@@ -180,11 +168,6 @@ export interface OnAfterPageRequestChangesTopicParams {
  * @category Pages
  */
 export interface PagesCrud {
-    /**
-     * To be used internally in our code.
-     * @internal
-     */
-    pageStorageOperations: PageStorageOperations;
     getPage<TPage extends Page = Page>(id: string, options?: GetPagesOptions): Promise<TPage>;
     listLatestPages<TPage extends Page = Page>(
         args: ListPagesParams,
@@ -280,11 +263,6 @@ export interface OnAfterPageElementDeleteTopicParams {
  * @category PageElements
  */
 export interface PageElementsCrud {
-    /**
-     * To be used internally in our code.
-     * @internal
-     */
-    pageElementsStorageOperations: PageElementStorageOperations;
     getPageElement(id: string): Promise<PageElement>;
     listPageElements(params?: ListPageElementsParams): Promise<PageElement[]>;
     createPageElement(data: Record<string, any>): Promise<PageElement>;
@@ -344,11 +322,6 @@ export interface OnAfterCategoryDeleteTopicParams {
  * @category Categories
  */
 export interface CategoriesCrud {
-    /**
-     * To be used internally in our code.
-     * @internal
-     */
-    categoriesStorageOperations: CategoryStorageOperations;
     getCategory(slug: string, options?: { auth: boolean }): Promise<Category>;
     listCategories(): Promise<Category[]>;
     createCategory(data: Record<string, any>): Promise<Category>;
@@ -418,11 +391,6 @@ export interface OnAfterMenuDeleteTopicParams {
  * @category Menu
  */
 export interface MenusCrud {
-    /**
-     * To be used internally in our code.
-     * @internal
-     */
-    menusStorageOperations: MenuStorageOperations;
     getMenu(slug: string, options?: MenuGetOptions): Promise<Menu>;
     getPublicMenu(slug: string): Promise<Menu>;
     listMenus(params?: ListMenuParams): Promise<Menu[]>;

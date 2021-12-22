@@ -29,7 +29,7 @@ export const createStorageOperations: StorageOperationsFactory = params => {
         elasticsearch,
         table,
         esTable,
-        attributes,
+        attributes = {},
         plugins: customPlugins
     } = params;
 

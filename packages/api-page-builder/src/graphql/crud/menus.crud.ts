@@ -3,7 +3,6 @@ import {
     Menu,
     PbContext,
     MenuStorageOperationsListParams,
-    MenuStorageOperations,
     OnBeforeMenuCreateTopicParams,
     OnAfterMenuCreateTopicParams,
     OnBeforeMenuUpdateTopicParams,
@@ -11,7 +10,8 @@ import {
     OnBeforeMenuDeleteTopicParams,
     OnAfterMenuDeleteTopicParams,
     MenusCrud,
-    PageBuilderContextObject
+    PageBuilderContextObject,
+    PageBuilderStorageOperations
 } from "~/types";
 import { NotFoundError } from "@webiny/handler-graphql";
 import checkBasePermissions from "./utils/checkBasePermissions";
@@ -41,7 +41,7 @@ const PERMISSION_NAME = "pb.menu";
 
 export interface Params {
     context: PbContext;
-    storageOperations: MenuStorageOperations;
+    storageOperations: PageBuilderStorageOperations;
 }
 export const createMenuCrud = (params: Params): MenusCrud => {
     const { context, storageOperations } = params;
@@ -68,7 +68,6 @@ export const createMenuCrud = (params: Params): MenusCrud => {
         onAfterMenuUpdate,
         onBeforeMenuDelete,
         onAfterMenuDelete,
-        menusStorageOperations: storageOperations,
         async getMenu(slug, options) {
             let permission = undefined;
             const { auth = true } = options || {};
@@ -89,7 +88,7 @@ export const createMenuCrud = (params: Params): MenusCrud => {
             let menu: Menu;
 
             try {
-                menu = await storageOperations.get(params);
+                menu = await storageOperations.menus.get(params);
                 if (!menu) {
                     return null;
                 }
@@ -152,7 +151,7 @@ export const createMenuCrud = (params: Params): MenusCrud => {
             }
 
             try {
-                const [items] = await storageOperations.list(listParams);
+                const [items] = await storageOperations.menus.list(listParams);
                 return items;
             } catch (ex) {
                 throw new WebinyError(
@@ -173,7 +172,7 @@ export const createMenuCrud = (params: Params): MenusCrud => {
 
             const data: Menu = await createDataModel.toJSON();
 
-            const existing = await storageOperations.get({
+            const existing = await storageOperations.menus.get({
                 where: {
                     slug: data.slug,
                     tenant: getTenantId(),
@@ -204,7 +203,7 @@ export const createMenuCrud = (params: Params): MenusCrud => {
                     menu
                 });
 
-                const result = await storageOperations.create({
+                const result = await storageOperations.menus.create({
                     input: data,
                     menu
                 });
@@ -254,7 +253,7 @@ export const createMenuCrud = (params: Params): MenusCrud => {
                     menu
                 });
 
-                const result = await storageOperations.update({
+                const result = await storageOperations.menus.update({
                     input: data,
                     original,
                     menu
@@ -296,7 +295,7 @@ export const createMenuCrud = (params: Params): MenusCrud => {
                     menu
                 });
 
-                const result = await storageOperations.delete({
+                const result = await storageOperations.menus.delete({
                     menu
                 });
 

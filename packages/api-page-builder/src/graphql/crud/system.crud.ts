@@ -9,16 +9,16 @@ import {
     OnAfterInstallTopicParams,
     OnBeforeInstallTopicParams,
     PageBuilderContextObject,
+    PageBuilderStorageOperations,
     PbContext,
     System,
-    SystemCrud,
-    SystemStorageOperations
+    SystemCrud
 } from "~/types";
 import { createTopic } from "@webiny/pubsub";
 
 export interface Params {
     context: PbContext;
-    storageOperations: SystemStorageOperations;
+    storageOperations: PageBuilderStorageOperations;
 }
 export const createSystemCrud = (params: Params): SystemCrud => {
     const { context, storageOperations } = params;
@@ -35,7 +35,7 @@ export const createSystemCrud = (params: Params): SystemCrud => {
         onAfterInstall,
         async getSystem() {
             try {
-                return await storageOperations.get({
+                return await storageOperations.system.get({
                     tenant: getTenantId()
                 });
             } catch (ex) {
@@ -60,7 +60,7 @@ export const createSystemCrud = (params: Params): SystemCrud => {
                     version
                 };
                 try {
-                    await storageOperations.update({
+                    await storageOperations.system.update({
                         original,
                         system
                     });
@@ -81,7 +81,7 @@ export const createSystemCrud = (params: Params): SystemCrud => {
                 tenant: getTenantId()
             };
             try {
-                await storageOperations.create({
+                await storageOperations.system.create({
                     system
                 });
             } catch (ex) {

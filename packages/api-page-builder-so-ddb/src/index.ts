@@ -20,7 +20,7 @@ import { createPageFields } from "~/operations/pages/fields";
 import { createPageStorageOperations } from "~/operations/pages";
 
 export const createStorageOperations: StorageOperationsFactory = params => {
-    const { documentClient, table, attributes, plugins: customPlugins } = params;
+    const { documentClient, table, attributes = {}, plugins: customPlugins } = params;
 
     const tableInstance = createTable({
         table,

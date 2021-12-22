@@ -7,9 +7,9 @@ import {
     OnBeforePageCreateTopicParams,
     Page,
     PageBuilderContextObject,
+    PageBuilderStorageOperations,
     PagesCrud,
     PageSecurityPermission,
-    PageStorageOperations,
     PageStorageOperationsGetWhereParams,
     PageStorageOperationsListParams,
     PageStorageOperationsListTagsParams,
@@ -137,7 +137,7 @@ const createDataLoaderKeys = (id: string): DataLoaderGetByIdKey[] => {
 
 export interface Params {
     context: PbContext;
-    storageOperations: PageStorageOperations;
+    storageOperations: PageBuilderStorageOperations;
 }
 export const createPageCrud = (params: Params): PagesCrud => {
     const { context, storageOperations } = params;
@@ -189,7 +189,7 @@ export const createPageCrud = (params: Params): PagesCrud => {
                         tenant,
                         locale
                     };
-                    const page: Page | null = await storageOperations.get({
+                    const page: Page | null = await storageOperations.pages.get({
                         where
                     });
                     pages.push(page);
@@ -268,10 +268,6 @@ export const createPageCrud = (params: Params): PagesCrud => {
         onAfterPageRequestChanges,
         onBeforePageRequestReview,
         onAfterPageRequestReview,
-        /**
-         * Storage operations
-         */
-        pageStorageOperations: storageOperations,
         async createPage(this: PageBuilderContextObject, slug) {
             await checkBasePermissions(context, PERMISSION_NAME, { rwd: "w" });
 
@@ -349,7 +345,7 @@ export const createPageCrud = (params: Params): PagesCrud => {
                     page
                 });
 
-                const result = await storageOperations.create({
+                const result = await storageOperations.pages.create({
                     input: {
                         slug
                     },
@@ -390,7 +386,7 @@ export const createPageCrud = (params: Params): PagesCrud => {
             const identity = context.security.getIdentity();
             checkOwnPermissions(identity, permission, original, "ownedBy");
 
-            const latestPage = await storageOperations.get({
+            const latestPage = await storageOperations.pages.get({
                 where: {
                     pid: original.pid,
                     tenant: getTenantId(),
@@ -430,7 +426,7 @@ export const createPageCrud = (params: Params): PagesCrud => {
                     page
                 });
 
-                const result = await storageOperations.createFrom({
+                const result = await storageOperations.pages.createFrom({
                     original,
                     latestPage,
                     page
@@ -463,7 +459,7 @@ export const createPageCrud = (params: Params): PagesCrud => {
             const permission = await checkBasePermissions(context, PERMISSION_NAME, {
                 rwd: "w"
             });
-            const original = await storageOperations.get({
+            const original = await storageOperations.pages.get({
                 where: {
                     id,
                     tenant: getTenantId(),
@@ -501,7 +497,7 @@ export const createPageCrud = (params: Params): PagesCrud => {
                     input
                 });
 
-                const result = await storageOperations.update({
+                const result = await storageOperations.pages.update({
                     input,
                     original,
                     page
@@ -573,7 +569,7 @@ export const createPageCrud = (params: Params): PagesCrud => {
 
             */
 
-            const page = await storageOperations.get({
+            const page = await storageOperations.pages.get({
                 where: {
                     id,
                     tenant: getTenantId(),
@@ -601,7 +597,7 @@ export const createPageCrud = (params: Params): PagesCrud => {
                 }
             }
 
-            let latestPage = await storageOperations.get({
+            let latestPage = await storageOperations.pages.get({
                 where: {
                     pid: pageId,
                     tenant: getTenantId(),
@@ -609,7 +605,7 @@ export const createPageCrud = (params: Params): PagesCrud => {
                     latest: true
                 }
             });
-            const publishedPage = await storageOperations.get({
+            const publishedPage = await storageOperations.pages.get({
                 where: {
                     pid: pageId,
                     tenant: getTenantId(),
@@ -620,7 +616,18 @@ export const createPageCrud = (params: Params): PagesCrud => {
             /**
              * We can either delete all of the records connected to given page or single revision.
              */
-            const deleteMethod = page.version === 1 ? "deleteAll" : "delete";
+            const deleteMethod: "deleteAll" | "delete" =
+                page.version === 1 ? "deleteAll" : "delete";
+
+            if (typeof storageOperations.pages[deleteMethod] !== "function") {
+                throw new WebinyError(
+                    `Missing delete function on storageOperations.pages object.`,
+                    "MISSING_DELETE_METHOD",
+                    {
+                        deleteMethod
+                    }
+                );
+            }
 
             try {
                 await onBeforePageDelete.publish({
@@ -629,7 +636,7 @@ export const createPageCrud = (params: Params): PagesCrud => {
                     publishedPage
                 });
 
-                const [resultPage, resultLatestPage] = await storageOperations[deleteMethod]({
+                const [resultPage, resultLatestPage] = await storageOperations.pages[deleteMethod]({
                     page,
                     publishedPage,
                     latestPage
@@ -689,7 +696,7 @@ export const createPageCrud = (params: Params): PagesCrud => {
             /**
              * Already published page revision of this page.
              */
-            const publishedPage = await storageOperations.get({
+            const publishedPage = await storageOperations.pages.get({
                 where: {
                     pid: original.pid,
                     tenant: getTenantId(),
@@ -700,7 +707,7 @@ export const createPageCrud = (params: Params): PagesCrud => {
             /**
              * We need a page that is published on given path.
              */
-            const publishedPathPage = await storageOperations.get({
+            const publishedPathPage = await storageOperations.pages.get({
                 where: {
                     path: original.path,
                     tenant: getTenantId(),
@@ -711,7 +718,7 @@ export const createPageCrud = (params: Params): PagesCrud => {
             /**
              * Latest revision of this page.
              */
-            const latestPage = await storageOperations.get({
+            const latestPage = await storageOperations.pages.get({
                 where: {
                     pid: original.pid,
                     tenant: getTenantId(),
@@ -751,7 +758,7 @@ export const createPageCrud = (params: Params): PagesCrud => {
                     publishedPage
                 });
 
-                const result = await storageOperations.publish({
+                const result = await storageOperations.pages.publish({
                     original,
                     page,
                     latestPage,
@@ -804,7 +811,7 @@ export const createPageCrud = (params: Params): PagesCrud => {
             /**
              * Latest revision of the this page.
              */
-            const latestPage = await storageOperations.get({
+            const latestPage = await storageOperations.pages.get({
                 where: {
                     pid: original.pid,
                     tenant: getTenantId(),
@@ -839,7 +846,7 @@ export const createPageCrud = (params: Params): PagesCrud => {
                     page
                 });
 
-                const result = await storageOperations.unpublish({
+                const result = await storageOperations.pages.unpublish({
                     original,
                     page,
                     latestPage
@@ -884,7 +891,7 @@ export const createPageCrud = (params: Params): PagesCrud => {
             /**
              * Latest revision of the this page.
              */
-            const latestPage = await storageOperations.get({
+            const latestPage = await storageOperations.pages.get({
                 where: {
                     pid: original.pid,
                     tenant: getTenantId(),
@@ -901,7 +908,7 @@ export const createPageCrud = (params: Params): PagesCrud => {
             };
 
             try {
-                const result: any = await storageOperations.requestReview({
+                const result: any = await storageOperations.pages.requestReview({
                     original,
                     page,
                     latestPage
@@ -946,7 +953,7 @@ export const createPageCrud = (params: Params): PagesCrud => {
             /**
              * Latest revision of the this page.
              */
-            const latestPage = await storageOperations.get({
+            const latestPage = await storageOperations.pages.get({
                 where: {
                     pid: original.pid,
                     tenant: getTenantId(),
@@ -961,7 +968,7 @@ export const createPageCrud = (params: Params): PagesCrud => {
                 locked: false
             };
             try {
-                const result: any = await storageOperations.requestChanges({
+                const result: any = await storageOperations.pages.requestChanges({
                     original,
                     page,
                     latestPage
@@ -1070,7 +1077,7 @@ export const createPageCrud = (params: Params): PagesCrud => {
             let page: Page = undefined;
 
             try {
-                page = await storageOperations.get({
+                page = await storageOperations.pages.get({
                     where: {
                         path: normalizedPath,
                         tenant: getTenantId(),
@@ -1159,7 +1166,7 @@ export const createPageCrud = (params: Params): PagesCrud => {
             };
 
             try {
-                const { items, meta } = await storageOperations.list(listParams);
+                const { items, meta } = await storageOperations.pages.list(listParams);
 
                 return [
                     items as any[],
@@ -1206,7 +1213,7 @@ export const createPageCrud = (params: Params): PagesCrud => {
             };
 
             try {
-                const { items, meta } = await storageOperations.list(listParams);
+                const { items, meta } = await storageOperations.pages.list(listParams);
 
                 return [
                     items as any[],
@@ -1231,7 +1238,7 @@ export const createPageCrud = (params: Params): PagesCrud => {
             const [pid] = pageId.split("#");
 
             try {
-                const pages = await storageOperations.listRevisions({
+                const pages = await storageOperations.pages.listRevisions({
                     where: {
                         pid,
                         tenant: getTenantId(),
@@ -1272,7 +1279,7 @@ export const createPageCrud = (params: Params): PagesCrud => {
             };
 
             try {
-                return await storageOperations.listTags(listTagsParams);
+                return await storageOperations.pages.listTags(listTagsParams);
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not load all tags by given params.",
