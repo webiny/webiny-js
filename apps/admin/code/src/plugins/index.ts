@@ -12,6 +12,7 @@ import pageBuilderPlugins from "./pageBuilder";
 import formBuilderPlugins from "./formBuilder";
 import headlessCmsPlugins from "./headlessCms";
 import fileManagerPlugins from "./fileManager";
+import apwPlugins from "./apw";
 import theme from "theme";
 
 // Imports plugins created via scaffolding utilities.
@@ -77,5 +78,9 @@ plugins.register([
     /**
      * File Manager app.
      */
-    fileManagerPlugins
+    fileManagerPlugins,
+    /**
+     * Advanced Publishing Workflow app.
+     */
+    apwPlugins
 ]);
