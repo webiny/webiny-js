@@ -80,9 +80,9 @@ export const SimpleFormHeader = (props: {
     );
 };
 
-export const SimpleFormFooter = (props: { children: React.ReactNode }) => {
+export const SimpleFormFooter = (props: { children: React.ReactNode; className?: string }) => {
     return (
-        <Grid className={footer}>
+        <Grid className={classNames(footer, props.className)}>
             <Cell span={12}>{props.children}</Cell>
         </Grid>
     );
