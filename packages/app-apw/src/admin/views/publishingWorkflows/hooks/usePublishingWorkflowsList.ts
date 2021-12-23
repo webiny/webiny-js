@@ -1,8 +1,9 @@
 import { useCallback, useState } from "react";
-import orderBy from "lodash/orderBy";
+import get from "lodash/get";
 import { useRouter } from "@webiny/react-router";
-
+import { useQuery } from "@apollo/react-hooks";
 import { useCurrentApp } from "./useCurrentApp";
+import { LIST_WORKFLOWS_QUERY } from "./graphql";
 
 const serializeSorters = data => {
     if (!data) {
@@ -12,17 +13,6 @@ const serializeSorters = data => {
     return `${key}:${value}`;
 };
 
-const deserializeSorters = (data: string): Record<string, "asc" | "desc" | boolean> => {
-    if (typeof data !== "string") {
-        return data;
-    }
-
-    const [key, value] = data.split(":") as [string, "asc" | "desc" | boolean];
-    return {
-        [key]: value
-    };
-};
-
 interface Config {
     sorters: { label: string; sorters: Record<string, string> }[];
 }
@@ -30,9 +20,9 @@ interface Config {
 interface UsePublishingWorkflowsListHook {
     (config: Config): {
         loading: boolean;
-        locales: Array<{
-            code: string;
-            default: boolean;
+        workflows: Array<{
+            id: string;
+            title: string;
             createdOn: string;
             [key: string]: any;
         }>;
@@ -56,30 +46,12 @@ export const usePublishingWorkflowsList: UsePublishingWorkflowsListHook = (confi
     const { history } = useRouter();
 
     const currentLocaleCode = useCurrentApp();
+    const listQuery = useQuery(LIST_WORKFLOWS_QUERY);
 
-    const filterLocales = useCallback(
-        ({ code }) => {
-            return code.toLowerCase().includes(filter);
-        },
-        [filter]
-    );
+    const data = listQuery.loading ? [] : get(listQuery, "data.apw.listWorkflows.data");
 
-    const sortLocaleList = useCallback(
-        locales => {
-            if (!sort) {
-                return locales;
-            }
-            const [[key, value]] = Object.entries(deserializeSorters(sort));
-            return orderBy(locales, [key], [value]);
-        },
-        [sort]
-    );
+    const loading = [listQuery].some(item => item.loading);
 
-    const data = [];
-
-    const loading = false;
-    const filteredData = filter === "" ? data : data.filter(filterLocales);
-    const locales = sortLocaleList(filteredData);
     const baseUrl = "/apw/publishing-workflows";
 
     const createPublishingWorkflow = useCallback(
@@ -96,7 +68,7 @@ export const usePublishingWorkflowsList: UsePublishingWorkflowsListHook = (confi
     }, []);
 
     return {
-        locales,
+        workflows: data,
         loading,
         currentLocaleCode,
         createPublishingWorkflow,
