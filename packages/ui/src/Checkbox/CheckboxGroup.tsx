@@ -3,7 +3,7 @@ import { FormComponentProps } from "./../types";
 import { webinyCheckboxTitle } from "./Checkbox.styles";
 import { FormElementMessage } from "../FormElementMessage";
 
-interface ChildrenRenderProp {
+export interface ChildrenRenderProp {
     onChange: (id: string | number) => () => void;
     getValue: (id: string | number) => boolean;
 }
