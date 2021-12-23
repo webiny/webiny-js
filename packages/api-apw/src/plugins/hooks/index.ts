@@ -13,7 +13,7 @@ export default () => [
     /**
      * Hook into CMS events and execute business logic.
      */
-    new ContextPlugin<ApwContext>(async context => {
+    new ContextPlugin<ApwContext>(context => {
         createReviewerFromIdentity(context);
 
         linkWorkflowToPage(context);

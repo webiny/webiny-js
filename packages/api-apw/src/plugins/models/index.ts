@@ -9,7 +9,7 @@ import { createCommentModelDefinition } from "./comment.model";
 import { createChangeRequestModelDefinition } from "./changeRequest.model";
 
 export const createApwModels = () =>
-    new ContextPlugin<ApwContext>(async context => {
+    new ContextPlugin<ApwContext>(context => {
         /**
          * This should never happen in the actual project.
          * It is to make sure that we load setup context before the CRUD init in our internal code.

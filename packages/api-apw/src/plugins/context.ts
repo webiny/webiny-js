@@ -5,7 +5,7 @@ import { createApwModels } from "./models";
 import apwHooks from "./hooks";
 
 export default () => [
-    new ContextPlugin<ApwContext>(async context => {
+    new ContextPlugin<ApwContext>(context => {
         const getLocale = () => {
             return context.cms.getLocale();
         };
