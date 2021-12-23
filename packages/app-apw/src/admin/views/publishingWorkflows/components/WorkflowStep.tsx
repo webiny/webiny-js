@@ -8,13 +8,16 @@ import { Select } from "@webiny/ui/Select";
 import { Checkbox } from "@webiny/ui/Checkbox";
 import { BindComponent } from "@webiny/form";
 import { Scrollbar } from "@webiny/ui/Scrollbar";
-
+import { IconButton } from "@webiny/ui/Button";
+import { css } from "emotion";
+// assets
 import WorkflowStepLabelLinkIcon from "~/admin/assets/icons/step-label-link.svg";
+import { ReactComponent as CloseIcon } from "~/admin/assets/icons/close_24dp.svg";
 
+import { ApwWorkflowStepTypes } from "~/types";
 import { i18n } from "@webiny/app/i18n";
 import { Box, Columns, Stack } from "./theme";
 import { restGridStyles } from "./Styled";
-import { ApwWorkflowStepTypes } from "~/types";
 
 export const GRADIENTS = [
     "135deg, #4158D0 0%, #C850C0 46%, #FFCC70 100%",
@@ -100,6 +103,13 @@ const Reviewer = ({ displayName, index }) => {
         </Grid>
     );
 };
+const removeStepStyles = css`
+    &.mdc-icon-button {
+        position: absolute;
+        top: -44px;
+        right: -12px;
+    }
+`;
 
 const t = i18n.ns("app-apw/admin/publishing-workflows/form");
 
@@ -107,11 +117,19 @@ interface WorkflowStepProps {
     Bind: BindComponent;
     index: number;
     step: any;
+    removeStep: () => void;
 }
 
-function WorkflowStep({ Bind, step, index }: WorkflowStepProps) {
+function WorkflowStep({ Bind, step, index, removeStep }: WorkflowStepProps) {
     return (
         <StepWrapper data-step-number={`Step ${index + 1}`}>
+            {index >= 1 && (
+                <IconButton
+                    icon={<CloseIcon />}
+                    className={removeStepStyles}
+                    onClick={removeStep}
+                />
+            )}
             <Grid className={restGridStyles}>
                 <Cell span={6}>
                     <Bind name={`steps.${index}.title`} validators={validation.create("required")}>

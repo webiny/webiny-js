@@ -1,6 +1,7 @@
 import React from "react";
 import styled from "@emotion/styled";
 import { css } from "emotion";
+import isEmpty from "lodash/isEmpty";
 import { i18n } from "@webiny/app/i18n";
 import { Form } from "@webiny/form";
 import { ButtonDefault, ButtonPrimary, ButtonIcon } from "@webiny/ui/Button";
@@ -21,9 +22,8 @@ import { ReactComponent as WorkflowStepIcon } from "~/admin/assets/icons/workflo
 import WorkflowStep from "./components/WorkflowStep";
 import Title, { WorkflowFormHeader } from "./components/WorkflowTitle";
 import WorkflowScope from "./components/WorkflowScope";
-import { ApwWorkflowStepTypes } from "~/types";
 
-const t = i18n.ns("app-i18n/admin/locales/form");
+const t = i18n.ns("app-apw/admin/publishing-workflows/form");
 
 const ButtonWrapper = styled("div")({
     display: "flex",
@@ -34,33 +34,17 @@ const formFooterStyle = css`
     border-top: none;
 `;
 
-const MOCK_STEP = {
+const initialStepData = {
     title: "",
     type: "",
-    reviewers: [
-        { id: 1, displayName: "Jack Wills" },
-        { id: 2, displayName: "Ted Bakers" }
-    ]
-};
-
-const WORKFLOW_DATA = {
-    title: "New Workflow",
-    steps: [
-        {
-            title: "Legal review",
-            type: ApwWorkflowStepTypes.MANDATORY_BLOCKING,
-            reviewers: [
-                { id: 1, displayName: "Jack Wills" },
-                { id: 2, displayName: "Ted Bakers" }
-            ]
-        }
-    ]
+    reviewers: []
 };
 
 const workflowStepsDescription = t`Define the workflow steps and assign which users need to provide an approval.`;
 
 const PublishingWorkflowForm = () => {
-    const { loading, showEmptyView, cancelEditing, onSubmit } = usePublishingWorkflowForm();
+    const { workflow, loading, showEmptyView, cancelEditing, onSubmit } =
+        usePublishingWorkflowForm();
 
     /*
      *  Render empty view.
@@ -75,58 +59,71 @@ const PublishingWorkflowForm = () => {
     }
 
     return (
-        <Form data={WORKFLOW_DATA} onSubmit={onSubmit}>
-            {({ data, form, Bind, setValue }) => (
-                <SimpleForm data-testid={"apw-publishing-workflow-form"}>
-                    {loading && <CircularProgress />}
-                    <Bind name="title">
-                        {props => <WorkflowFormHeader Title={<Title {...props} />} />}
-                    </Bind>
-                    <SimpleFormContent>
-                        <Accordion elevation={0}>
-                            <AccordionItem
-                                icon={<WorkflowStepIcon />}
-                                title={t`Workflow steps`}
-                                description={workflowStepsDescription}
-                            >
-                                <Bind name={"steps"}>
-                                    {({ value }) =>
-                                        value &&
-                                        value.map((step, index) => (
-                                            <WorkflowStep
-                                                key={index}
-                                                Bind={Bind}
-                                                index={index}
-                                                step={step}
-                                            />
-                                        ))
-                                    }
-                                </Bind>
-                                <ButtonPrimary
-                                    onClick={() => setValue("steps", [...data.steps, MOCK_STEP])}
-                                    style={{ backgroundColor: "var(--mdc-theme-secondary)" }}
+        <Form
+            data={isEmpty(workflow) ? { title: "Untitled", steps: [initialStepData] } : workflow}
+            onSubmit={onSubmit}
+        >
+            {({ data, form, Bind, setValue }) => {
+                const addStep = () => setValue("steps", [...data.steps, initialStepData]);
+                const removeStep = (index: number) =>
+                    setValue("steps", [
+                        ...data.steps.slice(0, index),
+                        ...data.steps.slice(index + 1)
+                    ]);
+
+                return (
+                    <SimpleForm data-testid={"apw-publishing-workflow-form"}>
+                        {loading && <CircularProgress />}
+                        <Bind name="title">
+                            {props => <WorkflowFormHeader Title={<Title {...props} />} />}
+                        </Bind>
+                        <SimpleFormContent>
+                            <Accordion elevation={0}>
+                                <AccordionItem
+                                    icon={<WorkflowStepIcon />}
+                                    title={t`Workflow steps`}
+                                    description={workflowStepsDescription}
                                 >
-                                    <ButtonIcon icon={<AddIcon />} />
-                                    {t`Add Step`}
-                                </ButtonPrimary>
-                            </AccordionItem>
-                            <AccordionItem
-                                icon={<WorkflowScopeIcon />}
-                                title={t`Scope`}
-                                description={t`Define the conditions when this workflow applies.`}
-                            >
-                                <WorkflowScope />
-                            </AccordionItem>
-                        </Accordion>
-                    </SimpleFormContent>
-                    <SimpleFormFooter className={formFooterStyle}>
-                        <ButtonWrapper>
-                            <ButtonDefault onClick={cancelEditing}>{t`Cancel`}</ButtonDefault>
-                            <ButtonPrimary onClick={form.submit}>{t`Save`}</ButtonPrimary>
-                        </ButtonWrapper>
-                    </SimpleFormFooter>
-                </SimpleForm>
-            )}
+                                    <Bind name={"steps"}>
+                                        {({ value }) =>
+                                            value &&
+                                            value.map((step, index) => (
+                                                <WorkflowStep
+                                                    key={index}
+                                                    Bind={Bind}
+                                                    index={index}
+                                                    step={step}
+                                                    removeStep={() => removeStep(index)}
+                                                />
+                                            ))
+                                        }
+                                    </Bind>
+                                    <ButtonPrimary
+                                        onClick={addStep}
+                                        style={{ backgroundColor: "var(--mdc-theme-secondary)" }}
+                                    >
+                                        <ButtonIcon icon={<AddIcon />} />
+                                        {t`Add Step`}
+                                    </ButtonPrimary>
+                                </AccordionItem>
+                                <AccordionItem
+                                    icon={<WorkflowScopeIcon />}
+                                    title={t`Scope`}
+                                    description={t`Define the conditions when this workflow applies.`}
+                                >
+                                    <WorkflowScope />
+                                </AccordionItem>
+                            </Accordion>
+                        </SimpleFormContent>
+                        <SimpleFormFooter className={formFooterStyle}>
+                            <ButtonWrapper>
+                                <ButtonDefault onClick={cancelEditing}>{t`Cancel`}</ButtonDefault>
+                                <ButtonPrimary onClick={form.submit}>{t`Save`}</ButtonPrimary>
+                            </ButtonWrapper>
+                        </SimpleFormFooter>
+                    </SimpleForm>
+                );
+            }}
         </Form>
     );
 };
