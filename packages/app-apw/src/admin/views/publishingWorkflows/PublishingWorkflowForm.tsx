@@ -22,6 +22,7 @@ import { ReactComponent as WorkflowStepIcon } from "~/admin/assets/icons/workflo
 import WorkflowStep from "./components/WorkflowStep";
 import Title, { WorkflowFormHeader } from "./components/WorkflowTitle";
 import WorkflowScope from "./components/WorkflowScope";
+import { ApwWorkflowScopeTypes } from "~/types";
 
 const t = i18n.ns("app-apw/admin/publishing-workflows/form");
 
@@ -38,6 +39,20 @@ const initialStepData = {
     title: "",
     type: "",
     reviewers: []
+};
+
+const initialWorkflow = {
+    title: "Untitled",
+    steps: [initialStepData],
+    scope: {
+        type: ApwWorkflowScopeTypes.PB,
+        data: {
+            pages: [],
+            categories: [],
+            entries: [],
+            models: []
+        }
+    }
 };
 
 const workflowStepsDescription = t`Define the workflow steps and assign which users need to provide an approval.`;
@@ -59,10 +74,7 @@ const PublishingWorkflowForm = () => {
     }
 
     return (
-        <Form
-            data={isEmpty(workflow) ? { title: "Untitled", steps: [initialStepData] } : workflow}
-            onSubmit={onSubmit}
-        >
+        <Form data={isEmpty(workflow) ? initialWorkflow : workflow} onSubmit={onSubmit}>
             {({ data, form, Bind, setValue }) => {
                 const addStep = () => setValue("steps", [...data.steps, initialStepData]);
                 const removeStep = (index: number) =>
@@ -87,12 +99,11 @@ const PublishingWorkflowForm = () => {
                                     <Bind name={"steps"}>
                                         {({ value }) =>
                                             value &&
-                                            value.map((step, index) => (
+                                            value.map((_, index) => (
                                                 <WorkflowStep
                                                     key={index}
                                                     Bind={Bind}
                                                     index={index}
-                                                    step={step}
                                                     removeStep={() => removeStep(index)}
                                                 />
                                             ))
@@ -111,7 +122,7 @@ const PublishingWorkflowForm = () => {
                                     title={t`Scope`}
                                     description={t`Define the conditions when this workflow applies.`}
                                 >
-                                    <WorkflowScope />
+                                    <WorkflowScope Bind={Bind} type={data.scope.type} />
                                 </AccordionItem>
                             </Accordion>
                         </SimpleFormContent>

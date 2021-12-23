@@ -48,32 +48,21 @@ const CheckboxWrapper = styled.div`
     justify-content: flex-end;
 `;
 
-interface ReviewerProps {
+interface ListItemTitleProps {
     label: string;
     index: number;
-    value: boolean;
-    onChange: () => void;
 }
 
-const Reviewer: React.FC<ReviewerProps> = ({ label, index, value, onChange }) => {
+const ListItemTitle: React.FC<ListItemTitleProps> = ({ index, label }) => {
     return (
-        <Grid className={restGridStyles}>
-            <Cell span={6} align={"middle"}>
-                <Columns space={3}>
-                    <Box>
-                        <Avatar index={index} />
-                    </Box>
-                    <Box>
-                        <Typography use={"subtitle1"}>{label}</Typography>
-                    </Box>
-                </Columns>
-            </Cell>
-            <Cell span={6}>
-                <CheckboxWrapper>
-                    <Checkbox value={value} onClick={onChange} />
-                </CheckboxWrapper>
-            </Cell>
-        </Grid>
+        <Columns space={3}>
+            <Box>
+                <Avatar index={index} />
+            </Box>
+            <Box>
+                <Typography use={"subtitle1"}>{label}</Typography>
+            </Box>
+        </Columns>
     );
 };
 
@@ -81,14 +70,44 @@ export const ReviewersList: React.FC<ChildrenRenderProp> = ({ onChange, getValue
     return (
         <Scrollbar style={{ width: "100%", height: "120px" }}>
             {REVIEWERS_MOCK.map((reviewer, index) => (
-                <Reviewer
+                <ListItemWithCheckbox
                     key={index}
-                    index={index}
-                    label={reviewer.displayName}
+                    label={<ListItemTitle index={index} label={reviewer.displayName} />}
                     value={getValue(reviewer.id)}
                     onChange={onChange(reviewer.id)}
                 />
             ))}
         </Scrollbar>
+    );
+};
+
+interface ListItemWithCheckboxProps {
+    label: string | React.ReactElement;
+    value: boolean;
+    onChange: () => void;
+}
+
+export const ListItemWithCheckbox: React.FC<ListItemWithCheckboxProps> = ({
+    label,
+    value,
+    onChange
+}) => {
+    return (
+        <Grid className={restGridStyles}>
+            <Cell span={6} align={"middle"}>
+                {typeof label === "string" ? (
+                    <Box>
+                        <Typography use={"subtitle1"}>{label}</Typography>
+                    </Box>
+                ) : (
+                    label
+                )}
+            </Cell>
+            <Cell span={6}>
+                <CheckboxWrapper>
+                    <Checkbox value={value} onClick={onChange} />
+                </CheckboxWrapper>
+            </Cell>
+        </Grid>
     );
 };

@@ -1,4 +1,4 @@
-export enum WorkflowScopeTypes {
+export enum ApwWorkflowScopeTypes {
     DEFAULT = "default",
     PB = "pb",
     CMS = "cms"
@@ -16,7 +16,7 @@ export enum ApwWorkflowApplications {
 }
 
 export interface ApwWorkflowScope {
-    type: WorkflowScopeTypes;
+    type: ApwWorkflowScopeTypes;
     data: {
         categories?: string[];
         pages?: string[];
