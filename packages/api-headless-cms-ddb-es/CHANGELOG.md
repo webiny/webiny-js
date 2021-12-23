@@ -3,6 +3,60 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.20.0](https://github.com/webiny/webiny-js/compare/v5.20.0-beta.2...v5.20.0) (2021-12-23)
+
+**Note:** Version bump only for package @webiny/api-headless-cms-ddb-es
+
+
+
+
+
+# [5.20.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.20.0-beta.1...v5.20.0-beta.2) (2021-12-21)
+
+**Note:** Version bump only for package @webiny/api-headless-cms-ddb-es
+
+
+
+
+
+# [5.20.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.20.0-beta.0...v5.20.0-beta.1) (2021-12-20)
+
+
+### Bug Fixes
+
+* **api-headless-cms-ddb-es:** failed listing when missing index ([#2133](https://github.com/webiny/webiny-js/issues/2133)) ([2229877](https://github.com/webiny/webiny-js/commit/222987774ae09698cceff623ecc5012529b03f75))
+
+
+
+
+
+# [5.20.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.19.1...v5.20.0-beta.0) (2021-12-17)
+
+
+### Bug Fixes
+
+* **api-headless-cms-ddb-es:** ref field id and entryId exact matches ([#2125](https://github.com/webiny/webiny-js/issues/2125)) ([b75b746](https://github.com/webiny/webiny-js/commit/b75b746d5b5a5162a9aa579622f81586b779e132))
+
+
+
+
+
+## [5.19.1](https://github.com/webiny/webiny-js/compare/v5.19.1-beta.0...v5.19.1) (2021-12-14)
+
+**Note:** Version bump only for package @webiny/api-headless-cms-ddb-es
+
+
+
+
+
+## [5.19.1-beta.0](https://github.com/webiny/webiny-js/compare/v5.19.0...v5.19.1-beta.0) (2021-12-14)
+
+**Note:** Version bump only for package @webiny/api-headless-cms-ddb-es
+
+
+
+
+
 # [5.19.0](https://github.com/webiny/webiny-js/compare/v5.19.0-beta.6...v5.19.0) (2021-12-13)
 
 **Note:** Version bump only for package @webiny/api-headless-cms-ddb-es
