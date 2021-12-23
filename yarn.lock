@@ -11061,6 +11061,7 @@ __metadata:
     "@webiny/handler-http": ^5.20.0
     "@webiny/plugins": ^5.20.0
     "@webiny/project-utils": ^5.20.0
+    "@webiny/utils": ^5.20.0
     boolean: ^3.0.1
     graphql: ^14.4.2
     graphql-scalars: 1.12.0
@@ -11082,6 +11083,7 @@ __metadata:
     "@webiny/cli": ^5.20.0
     "@webiny/handler": ^5.20.0
     "@webiny/project-utils": ^5.20.0
+    "@webiny/utils": ^5.20.0
     boolean: ^3.0.1
     merge: ^1.2.1
     rimraf: ^3.0.2

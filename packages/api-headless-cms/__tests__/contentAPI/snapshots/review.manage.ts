@@ -30,7 +30,7 @@ export default /* GraphQL */ `
     }
 
     input ReviewInput {
-        text: String
+        text: String!
         product: RefFieldInput
         rating: Number
         author: RefFieldInput
