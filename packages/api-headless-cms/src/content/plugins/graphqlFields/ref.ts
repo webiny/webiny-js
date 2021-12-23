@@ -1,6 +1,7 @@
 import { CmsEntry, CmsContext, CmsModelFieldToGraphQLPlugin } from "~/types";
 import { createReadTypeName } from "~/content/plugins/utils/createTypeName";
 import { parseIdentifier } from "@webiny/utils";
+import { attachRequiredFieldValue } from "~/content/plugins/graphqlFields/requiredField";
 
 interface RefFieldValue {
     id?: string;
@@ -219,10 +220,10 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
         },
         createInputField({ field }) {
             if (field.multipleValues) {
-                return field.fieldId + ": [RefFieldInput!]";
+                return attachRequiredFieldValue(field.fieldId + ": [RefFieldInput!]", field);
             }
 
-            return field.fieldId + ": RefFieldInput";
+            return attachRequiredFieldValue(field.fieldId + ": RefFieldInput", field);
         },
         createListFilters
     }
