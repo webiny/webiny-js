@@ -1,7 +1,10 @@
 import React from "react";
 import styled from "@emotion/styled";
+import { validation } from "@webiny/validation";
 import { Cell, Grid } from "@webiny/ui/Grid";
 import { Typography } from "@webiny/ui/Typography";
+import { Input } from "@webiny/ui/Input";
+import { Select } from "@webiny/ui/Select";
 import { Checkbox } from "@webiny/ui/Checkbox";
 import { BindComponent } from "@webiny/form";
 import { Scrollbar } from "@webiny/ui/Scrollbar";
@@ -10,7 +13,7 @@ import WorkflowStepLabelLinkIcon from "~/admin/assets/icons/step-label-link.svg"
 
 import { i18n } from "@webiny/app/i18n";
 import { Box, Columns, Stack } from "./theme";
-import { restGridStyles, InputField } from "./Styled";
+import { restGridStyles } from "./Styled";
 import { ApwWorkflowStepTypes } from "~/types";
 
 export const GRADIENTS = [
@@ -24,7 +27,7 @@ const StepWrapper = styled.div`
     box-sizing: border-box;
     position: relative;
     width: 100%;
-    height: 278px;
+    min-height: 300px;
     margin-top: 36px;
     margin-bottom: 30px;
     padding: 32px 24px 24px;
@@ -53,15 +56,6 @@ const StepWrapper = styled.div`
         background-image: url(${WorkflowStepLabelLinkIcon});
         background-repeat: no-repeat;
     }
-`;
-
-const SelectField = styled.select`
-    box-sizing: border-box;
-    width: 100%;
-    border: 1px solid var(--mdc-theme-on-background);
-    border-radius: 1px;
-    background-color: var(--mdc-theme-background);
-    padding: 7px 16px;
 `;
 
 const ReviewersStack = styled(Stack)`
@@ -120,16 +114,14 @@ function WorkflowStep({ Bind, step, index }: WorkflowStepProps) {
         <StepWrapper data-step-number={`Step ${index + 1}`}>
             <Grid className={restGridStyles}>
                 <Cell span={6}>
-                    <Bind name={`steps.${index}.title`}>
-                        <InputField type={"text"} placeholder={"Title"} />
+                    <Bind name={`steps.${index}.title`} validators={validation.create("required")}>
+                        <Input type={"text"} label={"Title"} />
                     </Bind>
                 </Cell>
                 <Cell span={6}>
-                    <Bind name={`steps.${index}.type`}>
-                        <SelectField>
-                            <option value={""} disabled={true}>
-                                Type
-                            </option>
+                    <Bind name={`steps.${index}.type`} validators={validation.create("required")}>
+                        <Select label={"Type"} box={"true"}>
+                            <option value={""} disabled={true} hidden={true} />
                             <option
                                 value={ApwWorkflowStepTypes.MANDATORY_BLOCKING}
                             >{t`Mandatory, blocking`}</option>
@@ -139,7 +131,7 @@ function WorkflowStep({ Bind, step, index }: WorkflowStepProps) {
                             <option
                                 value={ApwWorkflowStepTypes.NON_MANDATORY}
                             >{t`Not mandatory`}</option>
-                        </SelectField>
+                        </Select>
                     </Bind>
                 </Cell>
             </Grid>
