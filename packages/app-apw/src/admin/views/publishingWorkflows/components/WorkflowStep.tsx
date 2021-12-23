@@ -5,61 +5,17 @@ import { Cell, Grid } from "@webiny/ui/Grid";
 import { Typography } from "@webiny/ui/Typography";
 import { Input } from "@webiny/ui/Input";
 import { Select } from "@webiny/ui/Select";
-import { Checkbox } from "@webiny/ui/Checkbox";
+import { CheckboxGroup } from "@webiny/ui/Checkbox";
 import { BindComponent } from "@webiny/form";
-import { Scrollbar } from "@webiny/ui/Scrollbar";
 import { IconButton } from "@webiny/ui/Button";
 import { css } from "emotion";
-// assets
-import WorkflowStepLabelLinkIcon from "~/admin/assets/icons/step-label-link.svg";
 import { ReactComponent as CloseIcon } from "~/admin/assets/icons/close_24dp.svg";
 
 import { ApwWorkflowStepTypes } from "~/types";
 import { i18n } from "@webiny/app/i18n";
-import { Box, Columns, Stack } from "./theme";
-import { restGridStyles } from "./Styled";
-
-export const GRADIENTS = [
-    "135deg, #4158D0 0%, #C850C0 46%, #FFCC70 100%",
-    "135deg, #0093E9 0%, #80D0C7 100%",
-    "135deg, #FFFFFF 0%, #6284FF 50%, #FF0000 100%",
-    "135deg, #FBDA61 0%, #FF5ACD 100%"
-];
-
-const StepWrapper = styled.div`
-    box-sizing: border-box;
-    position: relative;
-    width: 100%;
-    min-height: 300px;
-    margin-top: 36px;
-    margin-bottom: 30px;
-    padding: 32px 24px 24px;
-    border: 1px dashed var(--mdc-theme-secondary);
-    border-radius: 6px;
-
-    &::before {
-        content: attr(data-step-number);
-        position: absolute;
-        top: -15px;
-        left: 20px;
-        background-color: white;
-        padding: 5px 30px 7px;
-        border: 1px dashed var(--mdc-theme-secondary);
-        border-radius: 6px;
-        line-height: 1;
-    }
-
-    &::after {
-        content: "";
-        position: absolute;
-        width: 8px;
-        height: 24px;
-        top: -36px;
-        left: 70px;
-        background-image: url(${WorkflowStepLabelLinkIcon});
-        background-repeat: no-repeat;
-    }
-`;
+import { Box, Stack } from "./theme";
+import { restGridStyles, StepWrapper } from "./Styled";
+import { ReviewersList } from "./ReviewersList";
 
 const ReviewersStack = styled(Stack)`
     box-sizing: border-box;
@@ -68,41 +24,6 @@ const ReviewersStack = styled(Stack)`
     border-radius: 1px;
 `;
 
-const Avatar = styled.div<{ index: number }>`
-    box-sizing: border-box;
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    background: linear-gradient(${props => GRADIENTS[props.index % GRADIENTS.length]});
-`;
-
-const CheckboxWrapper = styled.div`
-    box-sizing: border-box;
-    display: flex;
-    justify-content: flex-end;
-`;
-
-const Reviewer = ({ displayName, index }) => {
-    return (
-        <Grid className={restGridStyles}>
-            <Cell span={6} align={"middle"}>
-                <Columns space={3}>
-                    <Box>
-                        <Avatar index={index} />
-                    </Box>
-                    <Box>
-                        <Typography use={"subtitle1"}>{displayName}</Typography>
-                    </Box>
-                </Columns>
-            </Cell>
-            <Cell span={6}>
-                <CheckboxWrapper>
-                    <Checkbox />
-                </CheckboxWrapper>
-            </Cell>
-        </Grid>
-    );
-};
 const removeStepStyles = css`
     &.mdc-icon-button {
         position: absolute;
@@ -116,11 +37,10 @@ const t = i18n.ns("app-apw/admin/publishing-workflows/form");
 interface WorkflowStepProps {
     Bind: BindComponent;
     index: number;
-    step: any;
     removeStep: () => void;
 }
 
-function WorkflowStep({ Bind, step, index, removeStep }: WorkflowStepProps) {
+function WorkflowStep({ Bind, index, removeStep }: WorkflowStepProps) {
     return (
         <StepWrapper data-step-number={`Step ${index + 1}`}>
             {index >= 1 && (
@@ -160,13 +80,14 @@ function WorkflowStep({ Bind, step, index, removeStep }: WorkflowStepProps) {
                             <Typography use={"subtitle1"}>{t`Reviewers`}</Typography>
                         </Box>
                         <Box>
-                            <Scrollbar style={{ width: "100%", height: "120px" }}>
-                                {[...step.reviewers, ...step.reviewers, ...step.reviewers].map(
-                                    (reviewer, index) => (
-                                        <Reviewer key={index} {...reviewer} index={index} />
-                                    )
-                                )}
-                            </Scrollbar>
+                            <Bind
+                                name={`steps.${index}.reviewers`}
+                                validators={validation.create("minLength:1")}
+                            >
+                                <CheckboxGroup>
+                                    {props => <ReviewersList {...props} />}
+                                </CheckboxGroup>
+                            </Bind>
                         </Box>
                     </ReviewersStack>
                 </Cell>
