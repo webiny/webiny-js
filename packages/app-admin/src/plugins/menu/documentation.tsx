@@ -1,19 +1,7 @@
-import React from "react";
-import { NavigationMenuElement } from "~/ui/elements/NavigationMenuElement";
-import { ReactComponent as DocsIcon } from "~/assets/icons/icon-documentation.svg";
-import { UIViewPlugin } from "~/ui/UIView";
-import { NavigationView } from "~/ui/views/NavigationView";
-
+/**
+ * Leaving just a dummy plugin, in case someone still imports from this path.
+ */
 export default () => {
-    return new UIViewPlugin<NavigationView>(NavigationView, view => {
-        view.getFooterElement().addMenuElement(
-            new NavigationMenuElement("documentation", {
-                label: "Documentation",
-                icon: <DocsIcon />,
-                path: "https://docs.webiny.com/",
-                rel: "noopener noreferrer",
-                target: "_blank"
-            })
-        );
-    });
+    console.log("[DEPRECATED] @webiny/app-admin/plugins/menu/documentation is no longer used.");
+    return { type: "dummy" };
 };

@@ -11,7 +11,7 @@ export const LoginScreen: FC<LoginScreenProps> = ({ children }) => {
 
 export const LoginScreenRenderer = makeComposable<LoginScreenProps>("LoginScreenRenderer", () => {
     useEffect(() => {
-        console.warn(
+        console.info(
             `<LoginScreenRenderer/> is not implemented! To provide an implementation, use the <Compose/> component.`
         );
     }, []);

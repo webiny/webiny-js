@@ -1,5 +1,5 @@
 {
-  "name": "@webiny/app-admin-ui",
+  "name": "@webiny/app-admin-rmwc",
   "version": "5.18.3",
   "main": "index.js",
   "repository": {
@@ -14,7 +14,8 @@
     "@webiny/app-admin": "^5.18.3",
     "@webiny/app-security": "^5.18.3",
     "react": "^16.14.0",
-    "react-dom": "^16.14.0"
+    "react-dom": "^16.14.0",
+    "react-helmet": "^6.1.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",

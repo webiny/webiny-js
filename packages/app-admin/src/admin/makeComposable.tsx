@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useMemo } from "react";
-import { useAdmin } from "~/admin/index";
+import { useAdmin } from "./admin";
 
 const useComponent = Component => {
     const { wrappers } = useAdmin();
