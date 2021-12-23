@@ -3,8 +3,8 @@ import { useSecurity } from "@webiny/app-security";
 import get from "lodash/get";
 import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
 
-type ContentModelGroup = { id: string; [key: string]: any };
-type ContentModel = { modelId: string; [key: string]: any };
+export type ContentModelGroup = { id: string; [key: string]: any };
+export type ContentModel = { modelId: string; [key: string]: any };
 
 const usePermission = () => {
     const { identity } = useSecurity();

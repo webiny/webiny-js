@@ -1,5 +1,4 @@
 import routes from "./routes";
-import menus from "./menus";
 import icons from "./icons";
 import install from "./install";
 import contentFormTransformers from "./transformers";
@@ -13,7 +12,6 @@ import contentEntryHeader from "../views/contentEntries/ContentEntry/header";
 export default () => [
     install,
     routes,
-    menus,
     icons,
     contentFormTransformers(),
     defaultBar,

@@ -1,7 +1,8 @@
-import React from "react";
-import { Provider } from "@webiny/app-admin";
+import React, { Fragment } from "react";
+import { Extensions, Provider } from "@webiny/app-admin";
 import { ApolloClient } from "apollo-client";
 import { CmsProvider } from "./admin/contexts/Cms";
+import { CmsMenuLoader } from "~/admin/menus/CmsMenuLoader";
 
 const createHeadlessCMSProvider = (createApolloClient: CreateApolloClient) => Component => {
     return function HeadlessCMSProvider({ children }) {
@@ -22,5 +23,12 @@ export interface HeadlessCMSProps {
 }
 
 export const HeadlessCMS = ({ createApolloClient }: HeadlessCMSProps) => {
-    return <Provider hoc={createHeadlessCMSProvider(createApolloClient)} />;
+    return (
+        <Fragment>
+            <Provider hoc={createHeadlessCMSProvider(createApolloClient)} />
+            <Extensions>
+                <CmsMenuLoader />
+            </Extensions>
+        </Fragment>
+    );
 };

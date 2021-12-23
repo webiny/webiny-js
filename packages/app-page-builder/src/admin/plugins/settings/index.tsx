@@ -7,9 +7,6 @@ import { SecureRoute } from "@webiny/app-security/components";
 import { i18n } from "@webiny/app/i18n";
 import Helmet from "react-helmet";
 import { RoutePlugin } from "@webiny/app/plugins/RoutePlugin";
-import { NavigationMenuElement } from "@webiny/app-admin/ui/elements/NavigationMenuElement";
-import { UIViewPlugin } from "@webiny/app-admin/ui/UIView";
-import { NavigationView } from "@webiny/app-admin/ui/views/NavigationView";
 
 const t = i18n.ns("app-page-builder/admin/menus");
 
@@ -42,34 +39,6 @@ const allPlugins = [
                 )}
             />
         )
-    }),
-    new UIViewPlugin<NavigationView>(NavigationView, async view => {
-        await view.isRendered();
-
-        const { identity } = view.getSecurityHook();
-        if (!identity.getPermission("pb.settings")) {
-            return;
-        }
-
-        const pageBuilderMenu = view.addSettingsMenuElement(
-            new NavigationMenuElement("menu.settings.pageBuilder", {
-                label: "Page Builder"
-            })
-        );
-
-        pageBuilderMenu.addElement<NavigationMenuElement>(
-            new NavigationMenuElement("menu.settings.pageBuilder.website", {
-                label: "Website",
-                path: "/settings/page-builder/website"
-            })
-        );
-
-        pageBuilderMenu.addElement<NavigationMenuElement>(
-            new NavigationMenuElement("menu.settings.pageBuilder.prerendering", {
-                label: "Prerendering",
-                path: "/settings/page-builder/prerendering"
-            })
-        );
     })
 ];
 
