@@ -3,7 +3,7 @@ import jwkToPem from "jwk-to-pem";
 import fetch from "node-fetch";
 import util from "util";
 import { SecurityContext, SecurityIdentity } from "@webiny/api-security/types";
-import Error from "@webiny/error";
+import WebinyError from "@webiny/error";
 import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
 const verify = util.promisify<string, string, Record<string, any>>(jwt.verify);
 
@@ -48,13 +48,13 @@ export const createAuthenticator = (config: AuthenticatorConfig) => {
 
                 const token = await verify(idToken, jwkToPem(jwk));
                 if (!token.jti.startsWith("ID.")) {
-                    throw new Error("idToken is invalid!", "SECURITY_OKTA_INVALID_TOKEN");
+                    throw new WebinyError("idToken is invalid!", "SECURITY_OKTA_INVALID_TOKEN");
                 }
 
                 return token;
             } catch (err) {
                 console.log("OktaAuthenticationPlugin", err);
-                throw new Error(err.message, "SECURITY_OKTA_INVALID_TOKEN");
+                throw new WebinyError(err.message, "SECURITY_OKTA_INVALID_TOKEN");
             }
         }
     };

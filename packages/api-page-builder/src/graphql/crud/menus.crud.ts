@@ -16,7 +16,6 @@ import {
 import { NotFoundError } from "@webiny/handler-graphql";
 import checkBasePermissions from "./utils/checkBasePermissions";
 import checkOwnPermissions from "./utils/checkOwnPermissions";
-import Error from "@webiny/error";
 import { validation } from "@webiny/validation";
 import { withFields, string } from "@commodo/fields";
 import { object } from "commodo-fields-object";
@@ -180,7 +179,7 @@ export const createMenuCrud = (params: Params): MenusCrud => {
                 }
             });
             if (existing) {
-                throw new Error(`Menu "${data.slug}" already exists.`);
+                throw new WebinyError(`Menu "${data.slug}" already exists.`);
             }
 
             const identity = context.security.getIdentity();

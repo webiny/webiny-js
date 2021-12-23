@@ -1,5 +1,5 @@
 import { AdminUsersStorageOperations, CreateAdminUsersStorageOperations, ENTITIES } from "~/types";
-import Error from "@webiny/error";
+import WebinyError from "@webiny/error";
 import { createTable } from "~/definitions/table";
 import { createSystemEntity, createUserEntity } from "~/definitions/entities";
 import { cleanupItem, cleanupItems } from "@webiny/db-dynamodb/utils/cleanup";
@@ -12,7 +12,7 @@ const cleanupAttributes = ["TYPE"];
 
 const isReserved = name => {
     if (reservedFields.includes(name)) {
-        throw new Error(`Attribute name "${name}" is not allowed.`, "ATTRIBUTE_NOT_ALLOWED", {
+        throw new WebinyError(`Attribute name "${name}" is not allowed.`, "ATTRIBUTE_NOT_ALLOWED", {
             name
         });
     }
@@ -71,7 +71,7 @@ export const createStorageOperations: CreateAdminUsersStorageOperations = params
 
                 return user;
             } catch (err) {
-                throw Error.from(err, {
+                throw WebinyError.from(err, {
                     message: "Could not create admin user.",
                     code: "CREATE_ADMIN_USER_ERROR",
                     data: { keys }
@@ -88,7 +88,7 @@ export const createStorageOperations: CreateAdminUsersStorageOperations = params
                 });
                 return system;
             } catch (err) {
-                throw Error.from(err, {
+                throw WebinyError.from(err, {
                     message: "Could not create system.",
                     code: "CREATE_SYSTEM_ERROR",
                     data: { keys, system }
@@ -101,7 +101,7 @@ export const createStorageOperations: CreateAdminUsersStorageOperations = params
             try {
                 await entities.users.delete(keys);
             } catch (err) {
-                throw Error.from(err, {
+                throw WebinyError.from(err, {
                     message: "Could not delete group.",
                     code: "CREATE_DELETE_ERROR",
                     data: { keys, user }
@@ -129,7 +129,7 @@ export const createStorageOperations: CreateAdminUsersStorageOperations = params
 
                 return cleanupItem(entities.users, result, cleanupAttributes);
             } catch (err) {
-                throw Error.from(err, {
+                throw WebinyError.from(err, {
                     message: "Could not load user.",
                     code: "GET_ADMIN_USERS_ERROR",
                     data: { id, email }
@@ -145,7 +145,7 @@ export const createStorageOperations: CreateAdminUsersStorageOperations = params
                 }
                 return cleanupItem(entities.system, result.Item, cleanupAttributes);
             } catch (err) {
-                throw Error.from(err, {
+                throw WebinyError.from(err, {
                     message: "Could not load system.",
                     code: "GET_SYSTEM_ERROR",
                     data: { keys }
@@ -164,7 +164,7 @@ export const createStorageOperations: CreateAdminUsersStorageOperations = params
                     }
                 });
             } catch (err) {
-                throw Error.from(err, {
+                throw WebinyError.from(err, {
                     message: "Could not list users.",
                     code: "LIST_ADMIN_USERS_ERROR"
                 });
@@ -185,7 +185,7 @@ export const createStorageOperations: CreateAdminUsersStorageOperations = params
                 });
                 return user;
             } catch (err) {
-                throw Error.from(err, {
+                throw WebinyError.from(err, {
                     message: "Could not update user.",
                     code: "UPDATE_ADMIN_USER_ERROR",
                     data: { keys, user }
@@ -201,7 +201,7 @@ export const createStorageOperations: CreateAdminUsersStorageOperations = params
                 });
                 return system;
             } catch (err) {
-                throw Error.from(err, {
+                throw WebinyError.from(err, {
                     message: "Could not update system.",
                     code: "UPDATE_SYSTEM_ERROR",
                     data: { keys, system }

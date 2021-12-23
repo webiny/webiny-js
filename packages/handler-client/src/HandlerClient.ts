@@ -1,6 +1,6 @@
 import { Context } from "@webiny/handler/types";
 import { HandlerClientPlugin, HandlerClientHandlerPlugin, InvokeArgs } from "./types";
-import Error from "@webiny/error";
+import WebinyError from "@webiny/error";
 
 class HandlerClient {
     plugin: HandlerClientPlugin;
@@ -15,7 +15,7 @@ class HandlerClient {
                 async invoke({ name, payload, await: useAwait }) {
                     const plugin = context.plugins.byName<HandlerClientHandlerPlugin>(name);
                     if (!plugin) {
-                        throw new Error(`Could not find "${name}" handler plugin.`);
+                        throw new WebinyError(`Could not find "${name}" handler plugin.`);
                     }
 
                     const promise = plugin.invoke(payload);
@@ -35,7 +35,7 @@ class HandlerClient {
         try {
             return this.plugin.invoke(params);
         } catch (e) {
-            throw new Error(
+            throw new WebinyError(
                 `An error occurred while trying to invoke another handler with the following params: ${JSON.stringify(
                     params,
                     null,

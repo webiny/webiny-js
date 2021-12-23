@@ -1,4 +1,4 @@
-import Error from "@webiny/error";
+import WebinyError from "@webiny/error";
 import {
     System as SystemRecord,
     SecurityConfig,
@@ -35,7 +35,7 @@ export const createSystemMethods = ({ getTenant, storageOperations }: SecurityCo
                 try {
                     return await storageOperations.updateSystemData({ original, system });
                 } catch (ex) {
-                    throw new Error(
+                    throw new WebinyError(
                         ex.message || "Could not update existing system data.",
                         ex.code || "UPDATE_SYSTEM_ERROR",
                         { original, system }
@@ -45,7 +45,7 @@ export const createSystemMethods = ({ getTenant, storageOperations }: SecurityCo
             try {
                 return await storageOperations.createSystemData({ system });
             } catch (ex) {
-                throw new Error(
+                throw new WebinyError(
                     ex.message || "Could not create the system data.",
                     ex.code || "CREATE_SYSTEM_ERROR",
                     { system }
@@ -55,7 +55,7 @@ export const createSystemMethods = ({ getTenant, storageOperations }: SecurityCo
 
         async install(this: Security) {
             if (await this.getVersion()) {
-                throw new Error("Security is already installed.", "SECURITY_INSTALL_ABORTED");
+                throw new WebinyError("Security is already installed.", "SECURITY_INSTALL_ABORTED");
             }
 
             const installEvent = { tenant: getTenant() };
@@ -69,7 +69,7 @@ export const createSystemMethods = ({ getTenant, storageOperations }: SecurityCo
             } catch (err) {
                 await this.onCleanup.publish({ error: err, tenant: getTenant() });
 
-                throw new Error(err.message, "SECURITY_INSTALL_ABORTED", err.data || {});
+                throw new WebinyError(err.message, "SECURITY_INSTALL_ABORTED", err.data || {});
             }
 
             // Store app version

@@ -3,7 +3,7 @@ import deepEqual from "deep-equal";
 import { object } from "commodo-fields-object";
 import { withFields, string } from "@commodo/fields";
 import { validation } from "@webiny/validation";
-import Error from "@webiny/error";
+import WebinyError from "@webiny/error";
 import { NotFoundError } from "@webiny/handler-graphql";
 import { GetGroupParams, Group, GroupInput, GroupTenantLink, Security } from "~/types";
 import NotAuthorizedError from "../NotAuthorizedError";
@@ -62,7 +62,7 @@ export const createGroupsMethods = ({ getTenant, storageOperations }: SecurityCo
                     where: { ...where, tenant: where.tenant || getTenant() }
                 });
             } catch (ex) {
-                throw new Error(
+                throw new WebinyError(
                     ex.message || "Could not get group.",
                     ex.code || "GET_GROUP_ERROR",
                     where
@@ -84,7 +84,7 @@ export const createGroupsMethods = ({ getTenant, storageOperations }: SecurityCo
                     sort: ["createdOn_ASC"]
                 });
             } catch (ex) {
-                throw new Error(
+                throw new WebinyError(
                     ex.message || "Could not list API keys.",
                     ex.code || "LIST_API_KEY_ERROR"
                 );
@@ -107,7 +107,10 @@ export const createGroupsMethods = ({ getTenant, storageOperations }: SecurityCo
             });
 
             if (existing) {
-                throw new Error(`Group with slug "${input.slug}" already exists.`, "GROUP_EXISTS");
+                throw new WebinyError(
+                    `Group with slug "${input.slug}" already exists.`,
+                    "GROUP_EXISTS"
+                );
             }
 
             const group: Group = {
@@ -129,7 +132,7 @@ export const createGroupsMethods = ({ getTenant, storageOperations }: SecurityCo
             try {
                 return await storageOperations.createGroup({ group });
             } catch (ex) {
-                throw new Error(
+                throw new WebinyError(
                     ex.message || "Could not create group.",
                     ex.code || "CREATE_GROUP_ERROR",
                     {
@@ -167,7 +170,7 @@ export const createGroupsMethods = ({ getTenant, storageOperations }: SecurityCo
                 }
                 return result;
             } catch (ex) {
-                throw new Error(
+                throw new WebinyError(
                     ex.message || "Could not update group.",
                     ex.code || "UPDATE_GROUP_ERROR",
                     {
@@ -187,7 +190,7 @@ export const createGroupsMethods = ({ getTenant, storageOperations }: SecurityCo
             try {
                 await storageOperations.deleteGroup({ group });
             } catch (ex) {
-                throw new Error(
+                throw new WebinyError(
                     ex.message || "Could not delete group.",
                     ex.code || "DELETE_GROUP_ERROR",
                     {

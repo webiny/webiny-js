@@ -1,4 +1,4 @@
-import Error from "@webiny/error";
+import WebinyError from "@webiny/error";
 import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
 import { TenancyContext, TenancyStorageOperations } from "./types";
 import { createTenancy } from "./createTenancy";
@@ -20,7 +20,7 @@ export const createTenancyContext = ({ storageOperations }: TenancyPluginsParams
             tenantId = headers["x-tenant"];
 
             if (!tenantId && method === "POST") {
-                throw new Error({
+                throw new WebinyError({
                     message: `"x-tenant" header is missing in the request!`,
                     code: "MISSING_TENANT_HEADER"
                 });

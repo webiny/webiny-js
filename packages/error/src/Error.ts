@@ -5,18 +5,24 @@ interface ErrorOptions<TData> {
 }
 
 export default class WError<TData = any> extends Error {
-    message: string;
     code?: string;
     data?: TData;
-    constructor(message: string | ErrorOptions<TData>, code: string = null, data: TData = null) {
-        super();
 
-        if (typeof message === "string") {
-            this.message = message;
+    constructor(message: string, code?: string, data?: TData);
+    constructor(options: ErrorOptions<TData>);
+    constructor(
+        messageOrOptions: string | ErrorOptions<TData>,
+        code: string = null,
+        data: TData = null
+    ) {
+        if (typeof messageOrOptions === "string") {
+            super(messageOrOptions);
             this.code = code;
             this.data = data;
         } else {
-            Object.assign(this, message);
+            super(messageOrOptions.message);
+            this.code = messageOrOptions.code;
+            this.data = messageOrOptions.data;
         }
     }
 

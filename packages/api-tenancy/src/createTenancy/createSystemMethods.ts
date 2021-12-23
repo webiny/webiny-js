@@ -1,4 +1,4 @@
-import Error from "@webiny/error";
+import WebinyError from "@webiny/error";
 import { Tenancy, TenancyStorageOperations } from "~/types";
 
 export function createSystemMethods(storageOperations: TenancyStorageOperations) {
@@ -31,9 +31,13 @@ export function createSystemMethods(storageOperations: TenancyStorageOperations)
                     await storageOperations.updateSystemData(data);
                     return;
                 } catch (ex) {
-                    throw new Error("Could not update the system data.", "SYSTEM_UPDATE_ERROR", {
-                        data
-                    });
+                    throw new WebinyError(
+                        "Could not update the system data.",
+                        "SYSTEM_UPDATE_ERROR",
+                        {
+                            data
+                        }
+                    );
                 }
             }
 
@@ -42,7 +46,7 @@ export function createSystemMethods(storageOperations: TenancyStorageOperations)
                 await storageOperations.createSystemData(data);
                 return;
             } catch (ex) {
-                throw new Error("Could not create the system data.", "SYSTEM_CREATE_ERROR", {
+                throw new WebinyError("Could not create the system data.", "SYSTEM_CREATE_ERROR", {
                     data
                 });
             }
@@ -50,7 +54,7 @@ export function createSystemMethods(storageOperations: TenancyStorageOperations)
 
         async install(this: Tenancy) {
             if (await this.getVersion()) {
-                throw new Error("Tenancy is already installed.", "TENANCY_INSTALL_ABORTED");
+                throw new WebinyError("Tenancy is already installed.", "TENANCY_INSTALL_ABORTED");
             }
 
             try {
@@ -65,7 +69,7 @@ export function createSystemMethods(storageOperations: TenancyStorageOperations)
                 });
                 await this.setVersion(process.env.WEBINY_VERSION);
             } catch (err) {
-                throw new Error(err.message, "TENANCY_INSTALL_ABORTED", err.data || {});
+                throw new WebinyError(err.message, "TENANCY_INSTALL_ABORTED", err.data || {});
             }
         }
     };

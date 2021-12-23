@@ -1,4 +1,4 @@
-import Error from "@webiny/error";
+import WebinyError from "@webiny/error";
 import { NotFoundError } from "@webiny/handler-graphql";
 import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
 import checkBasePermissions from "@webiny/api-page-builder/graphql/crud/utils/checkBasePermissions";
@@ -81,7 +81,7 @@ export default new ContextPlugin<PbPageImportExportContext>(context => {
             }
 
             if (pageIds.length === 0) {
-                throw new Error(
+                throw new WebinyError(
                     "Cannot export pages - no pages found for provided inputs.",
                     "EMPTY_EXPORT_NO_PAGES_FOUND"
                 );

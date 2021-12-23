@@ -17,7 +17,7 @@ module.exports = options => {
         babelOptions = overrides.babel(babelOptions);
     }
 
-    const sourceMaps = process.env.SOURCE_MAPS !== "false";
+    const sourceMaps = options.sourceMaps !== false;
 
     const definitions = overrides.define ? JSON.parse(overrides.define) : {};
 
