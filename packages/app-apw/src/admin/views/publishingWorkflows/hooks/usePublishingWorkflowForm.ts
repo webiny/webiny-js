@@ -5,7 +5,7 @@ import get from "lodash/get";
 import pick from "lodash/pick";
 import omit from "lodash/omit";
 import { useQuery, useMutation } from "@apollo/react-hooks";
-import { useCurrentWorkflowId } from "./useCurrentApp";
+import { useCurrentWorkflowId } from "./useLocationSearch";
 import {
     GET_WORKFLOW_QUERY,
     CREATE_WORKFLOW_MUTATION,

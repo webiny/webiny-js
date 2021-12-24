@@ -2,7 +2,7 @@ import { useCallback, useState } from "react";
 import get from "lodash/get";
 import { useRouter } from "@webiny/react-router";
 import { useQuery } from "@apollo/react-hooks";
-import { useCurrentApp } from "./useCurrentApp";
+import { useCurrentApp } from "./useLocationSearch";
 import { LIST_WORKFLOWS_QUERY } from "./graphql";
 
 const serializeSorters = data => {
