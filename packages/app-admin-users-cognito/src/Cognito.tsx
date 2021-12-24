@@ -1,4 +1,4 @@
-import React, { Fragment } from "react";
+import React, { Fragment, memo } from "react";
 import {
     Compose,
     Extensions,
@@ -8,28 +8,37 @@ import {
     AddRoute,
     Layout
 } from "@webiny/app-admin";
+import { plugins } from "@webiny/plugins";
 import { HasPermission } from "@webiny/app-security";
 import { Permission } from "~/plugins/constants";
 import { createAuthentication } from "~/createAuthentication";
-import { UIViewComponent } from "@webiny/app-admin/ui/UIView";
 import { UsersView } from "~/ui/views/Users/UsersView";
 import { Account } from "~/ui/views/Account";
 import { UserInfo } from "./plugins/userMenu/userInfo";
 import { AccountDetails } from "./plugins/userMenu/accountDetails";
 import { SignOut } from "./plugins/userMenu/signOut";
 
+import { globalSearchUsers } from "./plugins/globalSearch";
+import installation from "./plugins/installation";
+import permissionRenderer from "./plugins/permissionRenderer";
+import cognito from "./plugins/cognito";
+
 const LoginScreen = createAuthentication();
 
 const CognitoLoginScreen = () => LoginScreen;
 
-export const Cognito = () => {
+const CognitoIdP = () => {
+    plugins.register([globalSearchUsers, installation, permissionRenderer, cognito()]);
+
     return (
         <Fragment>
             <Compose component={LoginScreenRenderer} with={CognitoLoginScreen} />
             <Extensions>
                 <HasPermission name={Permission.Users}>
                     <AddRoute exact path={"/admin-users"}>
-                        <UIViewComponent view={new UsersView()} />
+                        <Layout title={"Admin Users"}>
+                            <UsersView />
+                        </Layout>
                     </AddRoute>
                     <Menu id={"settings"}>
                         <Menu id={"cognito.adminUsers"} label={"Admin Users"}>
@@ -52,4 +61,6 @@ export const Cognito = () => {
             </Extensions>
         </Fragment>
     );
-};
+}
+
+export const Cognito = memo(CognitoIdP);

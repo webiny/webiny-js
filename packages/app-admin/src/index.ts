@@ -8,13 +8,14 @@ export * from "./admin/components/core/Extensions";
 export * from "./admin/components/core/Provider";
 export * from "./admin/components/core/Routes";
 // UI components
+export * from "./admin/components/ui/Tags";
 export * from "./admin/components/ui/Menu";
 export * from "./admin/components/ui/Layout";
+export * from "./admin/components/ui/LocaleSelector";
 export type { LayoutProps } from "./admin/components/ui/Layout";
 export * from "./admin/components/ui/Navigation";
 export type { MenuItemsProps } from "./admin/components/ui/Navigation";
 export * from "./admin/components/ui/Brand";
-export type { BrandProps, BrandRendererProps } from "./admin/components/ui/Brand";
 export * from "./admin/components/ui/Search";
 export type { SearchOptionData, SearchOptionProps } from "./admin/components/ui/Search";
 export * from "./admin/components/ui/UserMenu";
@@ -24,5 +25,3 @@ export * from "./admin/components/ui/LoginScreen";
 export { Shell } from "./admin/shell";
 
 export { AppInstaller } from "./components/AppInstaller";
-export { default as Logo } from "./plugins/logo/Logo";
-// export { default as SearchBar } from "./plugins/globalSearch/SearchBar";

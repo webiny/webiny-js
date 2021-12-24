@@ -1,10 +1,14 @@
-import React, { Fragment } from "react";
+import React, { memo, Fragment } from "react";
 import { Provider } from "./components/core/Provider";
 import { SearchProvider } from "~/admin/components/ui/Search";
 import { UserMenuProvider } from "~/admin/components/ui/UserMenu";
 import { NavigationProvider } from "~/admin/components/ui/Navigation";
+import { plugins } from "@webiny/plugins";
+import adminPlugins from "../plugins";
 
-export const Shell = () => {
+const ShellExtension = () => {
+    plugins.register(adminPlugins());
+
     return (
         <Fragment>
             <Provider hoc={SearchProvider} />
@@ -13,3 +17,5 @@ export const Shell = () => {
         </Fragment>
     );
 };
+
+export const Shell = memo(ShellExtension);

@@ -8,7 +8,7 @@ import React, {
     useContext
 } from "react";
 import { nanoid } from "nanoid";
-import { MenuData, makeComposable, MenuProps, Extensions, AddMenu as Menu } from "~/index";
+import { MenuData, makeComposable, MenuProps, Extensions, AddMenu as Menu, Tags } from "~/index";
 import { plugins } from "@webiny/plugins";
 import { AdminMenuPlugin } from "~/types";
 
@@ -131,7 +131,11 @@ export const NavigationProvider = (Component: React.ComponentType<unknown>) => {
 };
 
 export const Navigation = () => {
-    return <NavigationRenderer />;
+    return (
+        <Tags tags={{ location: "navigation" }}>
+            <NavigationRenderer />
+        </Tags>
+    );
 };
 
 export const NavigationRenderer = makeComposable("NavigationRenderer", () => {

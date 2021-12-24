@@ -2,18 +2,16 @@ import React from "react";
 import { IconButton } from "@webiny/ui/Button";
 import { ReactComponent as MenuIcon } from "./icons/hamburger.svg";
 import { useNavigation } from "./index";
+import { useTags } from "@webiny/app-admin";
 
-interface HamburgerProps {
-    location: string;
-}
-
-const Hamburger = ({ location }: HamburgerProps) => {
-    const [value, setValue] = useNavigation();
+const Hamburger = () => {
+    const { location } = useTags();
+    const { visible, setVisible } = useNavigation();
 
     return (
         <IconButton
-            icon={<MenuIcon style={{ color: location === "drawer" ? undefined : "white" }} />}
-            onClick={() => setValue(!value)}
+            icon={<MenuIcon style={{ color: location === "navigation" ? undefined : "white" }} />}
+            onClick={() => setVisible(!visible)}
             data-testid={"apps-menu"}
         />
     );

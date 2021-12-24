@@ -7,7 +7,6 @@ import {
     MenuItems,
     MenuItemRenderer,
     Brand as BrandSpec,
-    BrandProps,
     useNavigation as useAdminNavigation,
     MenuData,
     MenuItemsProps,
@@ -23,19 +22,24 @@ import { List, ListItem } from "@webiny/ui/List";
 import { MenuFooter, subFooter, MenuHeader, navHeader, navContent } from "./Styled";
 import { config as appConfig } from "@webiny/app/config";
 
-const NavigationContext = React.createContext(null);
+interface NavigationContext {
+    visible: boolean;
+    setVisible(visible: boolean): void;
+}
+
+const NavigationContext = React.createContext<NavigationContext>(null);
 NavigationContext.displayName = "NavigationContext";
 
 export function useNavigation() {
     return useContext(NavigationContext);
 }
 
-const BrandImpl: HigherOrderComponent<BrandProps> = Brand => {
-    return function BrandWithHamburger(props) {
+const BrandImpl: HigherOrderComponent = Brand => {
+    return function BrandWithHamburger() {
         return (
             <Fragment>
-                <Hamburger location={props.location} />
-                <Brand {...props} />
+                <Hamburger />
+                <Brand />
             </Fragment>
         );
     };
@@ -45,7 +49,7 @@ const NavigationProvider = Component => {
     return function NavigationProvider(props: unknown) {
         const [visible, setVisible] = useState(false);
 
-        const context = useMemo(() => [visible, setVisible], [visible]);
+        const context = useMemo(() => ({ visible, setVisible }), [visible]);
 
         return (
             <NavigationContext.Provider value={context}>
@@ -58,7 +62,7 @@ const NavigationProvider = Component => {
 export const NavigationImpl = () => {
     return function Navigation() {
         const { menuItems } = useAdminNavigation();
-        const [visible, setVisible] = useNavigation();
+        const { visible, setVisible } = useNavigation();
 
         const hideDrawer = useCallback(() => {
             setVisible(false);

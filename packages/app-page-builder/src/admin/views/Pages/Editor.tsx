@@ -5,9 +5,7 @@ import { useRouter } from "@webiny/react-router";
 import { useQuery, useMutation } from "@apollo/react-hooks";
 import { Editor as PbEditor } from "../../../editor";
 import { useSavedElements } from "../../hooks/useSavedElements";
-import Snackbar from "@webiny/app-admin/ui/views/AdminView/components/Snackbar";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
-import { DialogContainer } from "@webiny/app-admin/ui/views/AdminView/components/Dialog";
 import { Typography } from "@webiny/ui/Typography";
 import { LoadingEditor, LoadingTitle } from "./EditorStyled.js";
 import { GET_PAGE, CREATE_PAGE_FROM } from "./graphql";
@@ -62,17 +60,7 @@ const Editor: React.FunctionComponent = () => {
                 content: content || createElement("document")
             };
 
-            return (
-                <React.Fragment>
-                    <PbEditor page={page} revisions={revisions} />
-                    <div style={{ zIndex: 30, position: "absolute" }}>
-                        <Snackbar />
-                    </div>
-                    <div>
-                        <DialogContainer />
-                    </div>
-                </React.Fragment>
-            );
+            return <PbEditor page={page} revisions={revisions} />;
         },
         [ready]
     );

@@ -6,6 +6,7 @@ import {
     LayoutProps,
     Brand,
     Search,
+    LocaleSelector,
     UserMenu,
     Navigation
 } from "@webiny/app-admin";
@@ -18,12 +19,13 @@ const RMWCLayout = () => {
                 {title ? <Helmet title={title} /> : null}
                 <TopAppBarPrimary fixed>
                     <TopAppBarSection style={{ width: "25%" }} alignStart>
-                        <Brand location={"app-bar"} />
+                        <Brand />
                     </TopAppBarSection>
                     <TopAppBarSection style={{ width: "50%" }}>
                         <Search />
                     </TopAppBarSection>
                     <TopAppBarSection style={{ width: "25%" }} alignEnd>
+                        <LocaleSelector />
                         <UserMenu />
                     </TopAppBarSection>
                 </TopAppBarPrimary>

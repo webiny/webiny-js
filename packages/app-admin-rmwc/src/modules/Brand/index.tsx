@@ -1,25 +1,28 @@
-import React from "react";
-import {
-    Compose,
-    BrandRenderer,
-    BrandRendererProps,
-    HigherOrderComponent
-} from "@webiny/app-admin";
+import React, { useCallback } from "react";
+import { Compose, BrandRenderer, HigherOrderComponent, useTags } from "@webiny/app-admin";
 import { ReactComponent as Logo } from "./webiny-logo.svg";
 import { TopAppBarTitle } from "@webiny/ui/TopAppBar";
 import { Link } from "@webiny/react-router/";
+import { useNavigation } from "../Navigation";
 
-const BrandImpl: HigherOrderComponent<BrandRendererProps> = () => {
-    return function BrandRenderer({ location }) {
+const BrandImpl: HigherOrderComponent = () => {
+    return function BrandRenderer() {
+        const { location } = useTags();
+        const { setVisible } = useNavigation();
+
+        const onClick = useCallback(() => {
+            location === "navigation" ? setVisible(false) : null;
+        }, []);
+
         return (
             <TopAppBarTitle>
-                <Link to={"/"}>
+                <Link to={"/"} onClick={onClick}>
                     <Logo
                         style={{
                             width: 100,
                             marginTop: 8,
                             height: 30,
-                            color: location === "drawer" ? "var(--mdc-theme-primary)" : "white"
+                            color: location === "navigation" ? "var(--mdc-theme-primary)" : "white"
                         }}
                     />
                 </Link>

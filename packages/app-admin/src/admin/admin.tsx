@@ -26,7 +26,7 @@ export const compose = (...fns) => {
 interface AdminContext extends State {
     addRoute(route: JSX.Element): void;
     addProvider(hoc: HigherOrderComponent): void;
-    addExtension(extension: JSX.Element): void;
+    addExtension(extension: React.ReactNode): void;
     addComponentWrappers(
         component: React.ComponentType<unknown>,
         hocs: HigherOrderComponent[]
@@ -55,18 +55,18 @@ interface State {
 }
 
 export interface AdminProps {
-    apolloClient: ApolloClient<unknown>;
+    createApolloClient: ({ uri: string }) => ApolloClient<unknown>;
     children?: React.ReactNode | React.ReactNode[];
 }
 
-export const Admin = ({ apolloClient, children }: AdminProps) => {
+export const Admin = ({ createApolloClient, children }: AdminProps) => {
     const [state, setState] = useState<State>({
         routes: {},
         extensions: [],
         wrappers: new Map(),
         providers: [
             createTelemetryProvider(),
-            createApolloProvider(apolloClient),
+            createApolloProvider(createApolloClient),
             createUiStateProvider()
         ]
     });

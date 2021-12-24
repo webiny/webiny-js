@@ -4,15 +4,12 @@ import { Menu, MenuItem } from "@webiny/ui/Menu";
 import { ButtonPrimary, ButtonIcon } from "@webiny/ui/Button";
 import { css } from "emotion";
 import { useSecurity } from "@webiny/app-security";
-import { UIViewPlugin } from "@webiny/app-admin/ui/UIView";
-import { AdminView } from "@webiny/app-admin/ui/views/AdminView";
-import { GenericElement } from "@webiny/app-admin/ui/elements/GenericElement";
 import { ReactComponent as DoneIcon } from "./assets/done-24px.svg";
 import { ReactComponent as TranslateIcon } from "./assets/round-translate-24px.svg";
 
 const menuList = css({
     width: 160,
-    right: -220,
+    right: 80,
     left: "auto !important"
 });
 
@@ -20,10 +17,7 @@ const buttonStyles = css({
     marginRight: 10
 });
 
-// !GOOD FIRST ISSUE!
-// Convert this component into a proper LocaleSelectorElement class and implement a renderer via UIElementRenderer class.
-
-const LocaleSelector = () => {
+export const LocaleSelector = () => {
     const { setCurrentLocale, getCurrentLocale, getLocales } = useI18N();
     const { identity } = useSecurity();
 
@@ -44,6 +38,7 @@ const LocaleSelector = () => {
     const currentLocale = getCurrentLocale("content");
     return (
         <Menu
+            anchor={"topEnd"}
             className={menuList}
             handle={
                 <ButtonPrimary className={buttonStyles} flat>
@@ -76,8 +71,3 @@ const LocaleSelector = () => {
         </Menu>
     );
 };
-
-export default new UIViewPlugin<AdminView>(AdminView, view => {
-    const localeSelector = new GenericElement("localeSelector", () => <LocaleSelector />);
-    localeSelector.moveToTheBeginningOf(view.getHeaderElement().getRightSection());
-});

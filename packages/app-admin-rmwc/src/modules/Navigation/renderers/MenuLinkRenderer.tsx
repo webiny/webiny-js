@@ -16,7 +16,7 @@ const listItemStyle = css({
 
 export const MenuLinkRenderer = PrevMenuItem => {
     return function MenuLink() {
-        const [, setVisible] = useNavigation();
+        const { setVisible } = useNavigation();
         const { menuItem, depth } = useMenuItem();
 
         const hideMenu = useCallback(() => setVisible(false), []);

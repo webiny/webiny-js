@@ -1,4 +1,5 @@
-import React, { Fragment, useCallback } from "react";
+import React, { Fragment, useCallback, useState } from "react";
+import { default as localStorage } from "store";
 import { css } from "emotion";
 import { Transition } from "react-transition-group";
 import classNames from "classnames";
@@ -43,14 +44,43 @@ const menuTitleActive = css({
     backgroundColor: "var(--mdc-theme-background)"
 });
 
+const LOCAL_STORAGE_KEY = "webiny_navigation_groups";
+
+function loadState() {
+    return (localStorage.get(LOCAL_STORAGE_KEY) || "").split(",").filter(Boolean);
+}
+
+function storeState(state) {
+    localStorage.set(LOCAL_STORAGE_KEY, state.join(","));
+}
+
+function getState(id: string) {
+    const state = loadState();
+    return state.includes(id);
+}
+
 export const MenuGroupRenderer = PrevMenuItem => {
     return function MenuGroup() {
-        const [, setVisible] = useNavigation();
+        const { setVisible } = useNavigation();
         const { menuItem, depth } = useMenuItem();
         const shouldRender = depth === 0 && menuItem.children;
-        const isExpanded = true;
+        const [isExpanded, setExpanded] = useState(getState(menuItem.id));
 
         const hideMenu = useCallback(() => setVisible(false), []);
+
+        const toggleElement = useCallback(() => {
+            const state = loadState();
+            if (isExpanded && state.includes(menuItem.id)) {
+                state.splice(state.indexOf(menuItem.id), 1);
+            }
+
+            if (!isExpanded && !state.includes(menuItem.id)) {
+                state.push(menuItem.id);
+            }
+
+            setExpanded(!isExpanded);
+            storeState(state);
+        }, [isExpanded, setExpanded]);
 
         if (!shouldRender) {
             return <PrevMenuItem />;
@@ -74,16 +104,7 @@ export const MenuGroupRenderer = PrevMenuItem => {
 
         const item = (
             <List className={classNames(menuTitle, { [menuTitleActive]: isExpanded })}>
-                <ListItem
-                    data-testid={menuItem.testId}
-                    onClick={() => {
-                        // if (typeof menu.onClick === "function") {
-                        //     menu.onClick(() => element.toggleElement());
-                        // } else {
-                        //     element.toggleElement();
-                        // }
-                    }}
-                >
+                <ListItem data-testid={menuItem.testId} onClick={toggleElement}>
                     {menuItem.icon && (
                         <ListItemGraphic>
                             <IconButton icon={menuItem.icon} />
