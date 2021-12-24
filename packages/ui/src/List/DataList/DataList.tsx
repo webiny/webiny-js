@@ -188,6 +188,8 @@ type Props = {
     modalOverlay?: React.ReactElement;
     // Provide an action element that handle toggling the "Modal overlay".
     modalOverlayAction?: React.ReactElement;
+    // Provide additional UI for list sub-header.
+    subHeader?: React.ReactElement;
 };
 
 const MultiSelectAll = (props: Props) => {
@@ -393,6 +395,7 @@ export const DataList = (props: Props) => {
                 )}
 
                 <div className={classNames(dataListContent, "webiny-data-list__content")}>
+                    {props.subHeader}
                     {render}
                     {props.modalOverlay}
                 </div>
