@@ -70,6 +70,7 @@ const listStyles = css`
 
 const PublishingWorkflowsDataList = () => {
     const {
+        workflows,
         loading,
         currentLocaleCode,
         createPublishingWorkflow,
@@ -79,24 +80,6 @@ const PublishingWorkflowsDataList = () => {
         sorters: SORTERS
     });
 
-    const workflows = [
-        {
-            id: "1",
-            title: "Main workflow",
-            scope: {
-                type: "default"
-            },
-            steps: [
-                {
-                    title: "Legal Review"
-                },
-                {
-                    title: "Design Review"
-                }
-            ]
-        }
-    ];
-
     return (
         <DataList
             loading={loading}
@@ -104,10 +87,10 @@ const PublishingWorkflowsDataList = () => {
             data={workflows}
             title={t`Publishing Workflows`}
             showOptions={{}}
+            subHeader={<ListHeader title={t`Page Builder`} onClick={createPublishingWorkflow} />}
         >
             {({ data }) => (
                 <>
-                    <ListHeader title={t`Page Builder`} onClick={createPublishingWorkflow} />
                     <ScrollList data-testid="default-data-list" className={listStyles}>
                         {data.map(item => (
                             <ListItem key={item.id} selected={item.id === currentLocaleCode}>
