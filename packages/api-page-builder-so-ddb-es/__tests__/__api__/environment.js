@@ -13,7 +13,6 @@ const { ContextPlugin } = require("@webiny/handler/plugins/ContextPlugin");
 const {
     elasticIndexManager
 } = require("@webiny/project-utils/testing/helpers/elasticIndexManager");
-const dynamoDbPlugins = require("@webiny/db-dynamodb/plugins").default;
 /**
  * For this to work it must load plugins that have already been built
  */
@@ -73,10 +72,7 @@ class PageBuilderTestEnvironment extends NodeEnvironment {
                         elasticsearch: elasticsearchClient,
                         table: table => ({ ...table, name: process.env.DB_TABLE }),
                         esTable: table => ({ ...table, name: process.env.DB_TABLE_ELASTICSEARCH }),
-                        plugins: testPlugins.concat([
-                            elasticsearchDataGzipCompression(),
-                            dynamoDbPlugins()
-                        ])
+                        plugins: testPlugins.concat([elasticsearchDataGzipCompression()])
                     });
                 },
                 getPlugins: () => {
