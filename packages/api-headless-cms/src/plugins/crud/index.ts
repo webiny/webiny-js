@@ -27,7 +27,7 @@ export const createAdminCruds = (params: Params) => {
             return;
         }
         const getLocale = () => {
-            return context.i18n.getCurrentLocale();
+            return context.cms.getLocale();
         };
 
         const getIdentity = () => {

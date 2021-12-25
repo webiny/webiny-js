@@ -3,6 +3,228 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.20.0](https://github.com/webiny/webiny-js/compare/v5.20.0-beta.2...v5.20.0) (2021-12-23)
+
+**Note:** Version bump only for package webiny-js
+
+
+
+
+
+# [5.20.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.20.0-beta.1...v5.20.0-beta.2) (2021-12-21)
+
+
+### Bug Fixes
+
+* **api-page-builder-import-export:** pb refactoring ([d2755c8](https://github.com/webiny/webiny-js/commit/d2755c83865e6ff5c9dea47cfe2a6084572121f8))
+* **api-page-builder-import-export:** remove pages from context ([1c83449](https://github.com/webiny/webiny-js/commit/1c834492b69922fce8aeb1b819333a6a9fde90a5))
+
+
+### Features
+
+* **api-page-builder:** add pub/sub methods ([#2136](https://github.com/webiny/webiny-js/issues/2136)) ([979505d](https://github.com/webiny/webiny-js/commit/979505dc3feffa6a9b1a895732327c71e25c8bb0))
+
+
+
+
+
+# [5.20.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.20.0-beta.0...v5.20.0-beta.1) (2021-12-20)
+
+
+### Bug Fixes
+
+* **api-headless-cms-ddb-es:** failed listing when missing index ([#2133](https://github.com/webiny/webiny-js/issues/2133)) ([2229877](https://github.com/webiny/webiny-js/commit/222987774ae09698cceff623ecc5012529b03f75))
+
+
+### Features
+
+* **api-headless-cms:** clone model into another locale ([#2132](https://github.com/webiny/webiny-js/issues/2132)) ([cba29bc](https://github.com/webiny/webiny-js/commit/cba29bcd5d75e10daec3672be32fbd3645dc0909))
+
+
+
+
+
+# [5.20.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.19.1...v5.20.0-beta.0) (2021-12-17)
+
+
+### Bug Fixes
+
+* **api-headless-cms-ddb-es:** ref field id and entryId exact matches ([#2125](https://github.com/webiny/webiny-js/issues/2125)) ([b75b746](https://github.com/webiny/webiny-js/commit/b75b746d5b5a5162a9aa579622f81586b779e132))
+* **app-headless-cms:** date field value is sent as null if not changed ([#2126](https://github.com/webiny/webiny-js/issues/2126)) ([bc474da](https://github.com/webiny/webiny-js/commit/bc474da960e3c67b8f6da37b0cc91394da4d36e7))
+* **app-headless-cms:** title field when in object field ([#2127](https://github.com/webiny/webiny-js/issues/2127)) ([5cd06ef](https://github.com/webiny/webiny-js/commit/5cd06efba1e10ec177d3344873824e39ae228776))
+* fixes after code review ([753e3dc](https://github.com/webiny/webiny-js/commit/753e3dc12a3bc1414f8df10dcdbd61b440796f70))
+* system tenant ([#2119](https://github.com/webiny/webiny-js/issues/2119)) ([536031d](https://github.com/webiny/webiny-js/commit/536031de315dc163cda959326a53dba02575fb53))
+* update `remoteRuntimeLogs` command's type, description, and usage example ([3b836fb](https://github.com/webiny/webiny-js/commit/3b836fb3b954ffcc8cffa40af85fa47649fd5b0f))
+* update property name ([bfb0ff0](https://github.com/webiny/webiny-js/commit/bfb0ff08da2ab5c75cd4f57744ab0504e5728035))
+* use new build/watch methods ([810821d](https://github.com/webiny/webiny-js/commit/810821d9356681b5c18bce8d6f7ed69e6a3b4a28))
+* **api-file-manager:** list tags when no tags defined ([#2113](https://github.com/webiny/webiny-js/issues/2113)) ([eaee831](https://github.com/webiny/webiny-js/commit/eaee831e85bff957562f3fd3ca1a200d9eed5b76))
+* **api-headless-cms:** empty nested object as first field ([#2120](https://github.com/webiny/webiny-js/issues/2120)) ([c3e3829](https://github.com/webiny/webiny-js/commit/c3e382974c386e1f9201b5785d1a89293c207917))
+* **api-headless-cms:** get locale ([a27e06e](https://github.com/webiny/webiny-js/commit/a27e06e3cc3bed2550e3f48128ad42d356543de4))
+* **api-headless-cms:** schema break when no fields in nested obj ([#2098](https://github.com/webiny/webiny-js/issues/2098)) ([34f95dc](https://github.com/webiny/webiny-js/commit/34f95dceeedd0c12e71487c7f9ca3d5f627d905e))
+* **api-i18n-ddb:** missing locale plugin ([#2115](https://github.com/webiny/webiny-js/issues/2115)) ([b068f68](https://github.com/webiny/webiny-js/commit/b068f6844412338ee0cf332ec7927f31bbe09e44))
+
+
+### Features
+
+* **api-headless-cms:** clone model ([#2129](https://github.com/webiny/webiny-js/issues/2129)) ([9844b41](https://github.com/webiny/webiny-js/commit/9844b4187b7416c49f181e764bbca5b52c4029c0))
+* **app-headless-cms:** clone content model ([#2131](https://github.com/webiny/webiny-js/issues/2131)) ([58a574a](https://github.com/webiny/webiny-js/commit/58a574a7a8068a5ba042b0bda7622522e40cf37e))
+* removing the rerender button, only gql left ([e7c6e16](https://github.com/webiny/webiny-js/commit/e7c6e16158d80c78af472cdac620fd9b8a2dcc37))
+* **app-page-builder:** rerender page functionality ([45bfb1b](https://github.com/webiny/webiny-js/commit/45bfb1bac0c1303f039f082dc54b113786c6e270))
+* **deploy:** added hooks before & after build ([6f09113](https://github.com/webiny/webiny-js/commit/6f09113642044c114f1ca5bc70bfb985fbbcf0a9))
+
+
+
+
+
+## [5.19.1](https://github.com/webiny/webiny-js/compare/v5.19.1-beta.0...v5.19.1) (2021-12-14)
+
+**Note:** Version bump only for package webiny-js
+
+
+
+
+
+## [5.19.1-beta.0](https://github.com/webiny/webiny-js/compare/v5.19.0...v5.19.1-beta.0) (2021-12-14)
+
+
+### Bug Fixes
+
+* **api-file-manager:** tags listing when file with no tags ([#2114](https://github.com/webiny/webiny-js/issues/2114)) ([d9c638b](https://github.com/webiny/webiny-js/commit/d9c638b7fe0637703dae68115ce48f84896e3592))
+
+
+
+
+
+# [5.19.0](https://github.com/webiny/webiny-js/compare/v5.19.0-beta.6...v5.19.0) (2021-12-13)
+
+**Note:** Version bump only for package webiny-js
+
+
+
+
+
+# [5.19.0-beta.6](https://github.com/webiny/webiny-js/compare/v5.19.0-beta.5...v5.19.0-beta.6) (2021-12-13)
+
+
+### Features
+
+* **api-headless-cms:** take locale from cms context ([#2109](https://github.com/webiny/webiny-js/issues/2109)) ([5130234](https://github.com/webiny/webiny-js/commit/51302341619200aab5add9b9d4b9d39a85937e58))
+
+
+
+
+
+# [5.19.0-beta.5](https://github.com/webiny/webiny-js/compare/v5.19.0-beta.4...v5.19.0-beta.5) (2021-12-10)
+
+
+### Bug Fixes
+
+* **api-headless-cms:** add entry validation option, defaults to false ([87ae167](https://github.com/webiny/webiny-js/commit/87ae167419752662771fe1e6913d87f1c459ed2f))
+
+
+
+
+
+# [5.19.0-beta.4](https://github.com/webiny/webiny-js/compare/v5.19.0-beta.3...v5.19.0-beta.4) (2021-12-09)
+
+
+### Bug Fixes
+
+* **api-headless-cms:** republishing entries ([#2104](https://github.com/webiny/webiny-js/issues/2104)) ([3225aab](https://github.com/webiny/webiny-js/commit/3225aab0ec5eb4da841eafaa661e16065a2604ac))
+* examine line by line ([6ec201a](https://github.com/webiny/webiny-js/commit/6ec201a9b143e8dbdea2587f8423cb0d94fe96ad))
+* improve removal of empty lines ([f662ce1](https://github.com/webiny/webiny-js/commit/f662ce158d57cccbd51a1d0c86df9b92b4c7eb8a))
+
+
+
+
+
+# [5.19.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.19.0-beta.2...v5.19.0-beta.3) (2021-12-08)
+
+
+### Bug Fixes
+
+* add placeholder [no ci] ([3c878fc](https://github.com/webiny/webiny-js/commit/3c878fc835ba788e708a1372d033707a58680abb))
+
+
+### Features
+
+* **api-headless-cms:** republish existing entries ([#2100](https://github.com/webiny/webiny-js/issues/2100)) ([47aecba](https://github.com/webiny/webiny-js/commit/47aecbaf46afdfbb3f61a52bff1d808c0035cef8))
+* introduce `placeholder` prop ([06e7ad7](https://github.com/webiny/webiny-js/commit/06e7ad7adf246e631c79c48a7a377d1c8ead95ec))
+
+
+
+
+
+# [5.19.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.19.0-beta.1...v5.19.0-beta.2) (2021-12-06)
+
+
+### Bug Fixes
+
+* add missing plugin ([022aae4](https://github.com/webiny/webiny-js/commit/022aae4e3a08a8eff32b5e00c7fea6e6e65fe3f2))
+* remove console.log ([eeda02f](https://github.com/webiny/webiny-js/commit/eeda02f48802fad1ec3c10c687e7c558a4fd5126))
+* remove test plugins ([79fd5df](https://github.com/webiny/webiny-js/commit/79fd5dfa65159a83a7810e4b03b071fb0056d6b9))
+
+
+
+
+
+# [5.19.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.19.0-beta.0...v5.19.0-beta.1) (2021-12-06)
+
+
+### Bug Fixes
+
+* apply final polishes to the button's action setting ([9217c57](https://github.com/webiny/webiny-js/commit/9217c57703423a667f01ae39d50c533d8bde2515))
+* use `body2` instead of `caption` ([fbfef6f](https://github.com/webiny/webiny-js/commit/fbfef6f9b7717eb2564c3062da81ee9a6095dde7))
+
+
+
+
+
+# [5.19.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.18.3...v5.19.0-beta.0) (2021-12-06)
+
+
+### Bug Fixes
+
+* **api-headless-cms:** data loader fetch records ([#2095](https://github.com/webiny/webiny-js/issues/2095)) ([34de235](https://github.com/webiny/webiny-js/commit/34de2359c8256a3feb31710aaf09c1224a4cf262))
+* 2052 remaining issues with button custom clickHandler ([024680d](https://github.com/webiny/webiny-js/commit/024680d56b3de749958c4b94398311e2ee723ce2))
+* **@webiny/validation:** add exclamation mark to url validation regexp ([#2069](https://github.com/webiny/webiny-js/issues/2069)) ([f7dc3e8](https://github.com/webiny/webiny-js/commit/f7dc3e811dab12fb92f240c38f53270862ea14f0))
+* **api-headless-cms:** multiple values in ref field when searching ([#2090](https://github.com/webiny/webiny-js/issues/2090)) ([b3999e3](https://github.com/webiny/webiny-js/commit/b3999e3fb80733b2f20e84d2732ad003c1400f4b))
+* **api-headless-cms:** references validation ([#2093](https://github.com/webiny/webiny-js/issues/2093)) ([5409bfd](https://github.com/webiny/webiny-js/commit/5409bfd3da74e7e05c7e99fe7aed7665d6ce1e30))
+* add `uploadFolderToS3` utility function types ([f01245f](https://github.com/webiny/webiny-js/commit/f01245f9937cbd938e5e5ed29c3f9cf1dc2340e3))
+* added AWS access key id to the deploy logs ([41a4794](https://github.com/webiny/webiny-js/commit/41a4794b0241acdeed80c60e66c36d432728cb9b))
+* check if default export is function before calling it [no ci] ([e0f4dd1](https://github.com/webiny/webiny-js/commit/e0f4dd1bc30b4544f1e228d18acab1784efaade0))
+* code review fixes ([afdba20](https://github.com/webiny/webiny-js/commit/afdba202d67b2291a971e07894c48bd9cab3202d))
+* correct dependencies ([0319a4a](https://github.com/webiny/webiny-js/commit/0319a4afb3d6e689ed4b5351b607bbfb03e6335e))
+* lock version for `@pulumi/*` packages ([5a6209b](https://github.com/webiny/webiny-js/commit/5a6209b51ce7e610bc00ac83e7fd79493105abe8))
+* **api:** pulumi throwing error after version update ([#2039](https://github.com/webiny/webiny-js/issues/2039)) ([36cc6d1](https://github.com/webiny/webiny-js/commit/36cc6d1e71c500f381f1d231b80f4922410f038c))
+* **cli-plugin-deploy-pulumi:** watch with --debug throws on windows ([6d5a625](https://github.com/webiny/webiny-js/commit/6d5a625c4136c1adb8151d63312beef97ef84703))
+* **project-utils:** set process.env.SYSTEMROOT in Powershell ([245d885](https://github.com/webiny/webiny-js/commit/245d885bb1f65c990eebc65071cd5e68731ac58c))
+* change `api-ddb` back to `api` ([53220b0](https://github.com/webiny/webiny-js/commit/53220b0fa670ef02af357b240177518804b6c2fe))
+* correct dependencies ([799ed21](https://github.com/webiny/webiny-js/commit/799ed21ab4bf4a086c682a0104887b25a8201db6))
+* use ":" as a separator on non-win32 systems ([ea692a3](https://github.com/webiny/webiny-js/commit/ea692a3ee59591d5e2b20189e7c4a449108d170e))
+* **@webiny/cli-plugin-deploy-pulumi:** add acl parameter to uploadFolderToS3 ([c20ec87](https://github.com/webiny/webiny-js/commit/c20ec8778e2477da183f4ed8c9a2153138a28403))
+* **api-headless-cms:** publish flow ([#2044](https://github.com/webiny/webiny-js/issues/2044)) ([b53b481](https://github.com/webiny/webiny-js/commit/b53b481ab42c9d39502644a0ff10144357889d1a))
+* **api-headless-cms:** system version check ([#2070](https://github.com/webiny/webiny-js/issues/2070)) ([7695eee](https://github.com/webiny/webiny-js/commit/7695eeeb0717c78b79dae11d42136897cefd901f))
+* **app-headless-cms:** date time with timezone validation ([#2081](https://github.com/webiny/webiny-js/issues/2081)) ([3ec3e1e](https://github.com/webiny/webiny-js/commit/3ec3e1ec4d8ce6dfe3510ecaa3f9322ff9c93c28))
+* **cwp-template-aws:** logging incorrect profile during deploy ([7416a6f](https://github.com/webiny/webiny-js/commit/7416a6fb63ae358e8af7fbc5d8ea61a189c4db20))
+* use `interpolate` instead of `apply` ([6bd293c](https://github.com/webiny/webiny-js/commit/6bd293c4c4e1e161b4a7d26f7bd7706773f2d447))
+
+
+### Features
+
+* add `deploy` flag ([cf5b323](https://github.com/webiny/webiny-js/commit/cf5b3239fbf85b868f1dcc6a68a3f318545cfc5b))
+* **api-headless-cms:** filter by reference entryId or id ([#2068](https://github.com/webiny/webiny-js/issues/2068)) ([16a1c97](https://github.com/webiny/webiny-js/commit/16a1c9761bf142b3bc81127656438f27f1ffc4d6))
+* **api-headless-cms:** load model and entry crud in admin ([#2037](https://github.com/webiny/webiny-js/issues/2037)) ([424cbb7](https://github.com/webiny/webiny-js/commit/424cbb73cd0e826e8c85b1df4593e9164e5ebd42))
+* **app-headless-cms:** add url to reference entries ([#2082](https://github.com/webiny/webiny-js/issues/2082)) ([b5132ae](https://github.com/webiny/webiny-js/commit/b5132aede10f1fef0cdc5801355fae34509f0681))
+* **app-headless-cms:** ref field validators ([#2046](https://github.com/webiny/webiny-js/issues/2046)) ([056c79f](https://github.com/webiny/webiny-js/commit/056c79fecf6b2816bc631516f33ae818e91f3f56))
+* **app-headless-cms:** uppercase and lowercase with space ([#2080](https://github.com/webiny/webiny-js/issues/2080)) ([e7f9ba6](https://github.com/webiny/webiny-js/commit/e7f9ba61fa2a0224e40f3455b24c5283b20e192a))
+* add multi-tenancy website routing ([#2077](https://github.com/webiny/webiny-js/issues/2077)) ([fc2f0da](https://github.com/webiny/webiny-js/commit/fc2f0dafbb036bf26f1c24cce46edbcfcf38cca7))
+* **api-headless-cms:** ref field resolvers ([#2072](https://github.com/webiny/webiny-js/issues/2072)) ([d00d87d](https://github.com/webiny/webiny-js/commit/d00d87dfd49cb31b20edee744a2920b69a8b3031))
+
+
+
+
+
 ## [5.18.3](https://github.com/webiny/webiny-js/compare/v5.18.3-beta.0...v5.18.3) (2021-12-02)
 
 **Note:** Version bump only for package webiny-js

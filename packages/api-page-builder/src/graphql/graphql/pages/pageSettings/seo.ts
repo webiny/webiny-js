@@ -1,5 +1,7 @@
-export default [
-    {
+import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
+
+export const createPageSettingsSeoGraphQL = (): GraphQLSchemaPlugin => {
+    return {
         type: "graphql-schema",
         schema: {
             typeDefs: /* GraphQL */ `
@@ -34,5 +36,5 @@ export default [
                 }
             `
         }
-    }
-];
+    };
+};

@@ -50,6 +50,7 @@ const NewContentModelDialog: React.FC<NewContentModelDialogProps> = ({ open, onC
             const { data: model, error } = data.createContentModel;
 
             if (error) {
+                setLoading(false);
                 return showSnackbar(error.message);
             }
 

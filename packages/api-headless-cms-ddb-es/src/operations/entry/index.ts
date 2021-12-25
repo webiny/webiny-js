@@ -562,6 +562,33 @@ export const createEntriesStorageOperations = (params: Params): CmsEntryStorageO
 
     const list = async (model: CmsModel, params: CmsEntryStorageOperationsListParams) => {
         const limit = createLimit(params.limit, 50);
+        const { index } = configurations.es({
+            model
+        });
+
+        try {
+            const result = await elasticsearch.indices.exists({
+                index
+            });
+            if (!result || !result.body) {
+                return {
+                    hasMoreItems: false,
+                    totalCount: 0,
+                    cursor: null,
+                    items: []
+                };
+            }
+        } catch (ex) {
+            throw new WebinyError(
+                "Could not determine if Elasticsearch index exists.",
+                "ELASTICSEARCH_INDEX_CHECK_ERROR",
+                {
+                    error: ex,
+                    index
+                }
+            );
+        }
+
         const body = createElasticsearchQueryBody({
             model,
             args: {
@@ -573,9 +600,6 @@ export const createEntriesStorageOperations = (params: Params): CmsEntryStorageO
         });
 
         let response;
-        const { index } = configurations.es({
-            model
-        });
         try {
             response = await elasticsearch.search({
                 index,
@@ -682,7 +706,7 @@ export const createEntriesStorageOperations = (params: Params): CmsEntryStorageO
             model
         });
 
-        if (publishedStorageEntry) {
+        if (publishedStorageEntry && publishedStorageEntry.id !== entry.id) {
             /**
              * If there is a `published` entry already, we need to set it to `unpublished`. We need to
              * execute two updates: update the previously published entry's status and the published entry record.

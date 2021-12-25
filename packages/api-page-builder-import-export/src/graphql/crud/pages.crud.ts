@@ -25,7 +25,7 @@ export default new ContextPlugin<PbPageImportExportContext>(context => {
             });
 
             // Bail out early if category not found
-            const category = await context.pageBuilder.categories.get(categorySlug);
+            const category = await context.pageBuilder.getCategory(categorySlug);
             if (!category) {
                 throw new NotFoundError(`Category with slug "${categorySlug}" not found.`);
             }
@@ -69,7 +69,7 @@ export default new ContextPlugin<PbPageImportExportContext>(context => {
                 let meta = { hasMoreItems: true, cursor: null };
                 // Paginate pages
                 while (meta.hasMoreItems) {
-                    [pages, meta] = await context.pageBuilder.pages.listLatest({
+                    [pages, meta] = await context.pageBuilder.listLatestPages({
                         after: meta.cursor,
                         where: where,
                         sort: sort,
@@ -134,8 +134,5 @@ export default new ContextPlugin<PbPageImportExportContext>(context => {
         }
     };
     // Modify context
-    context.pageBuilder.pages = {
-        ...context.pageBuilder.pages,
-        ...importExportCrud
-    };
+    context.pageBuilder.pages = importExportCrud;
 });

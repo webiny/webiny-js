@@ -14,7 +14,6 @@ import {
     AfterEntryUpdateTopicParams,
     AfterEntryDeleteTopicParams,
     BeforeEntryDeleteTopicParams,
-    CmsEntryListParams,
     BeforeEntryRevisionCreateTopicParams,
     AfterEntryRevisionCreateTopicParams,
     BeforeEntryPublishTopicParams,
@@ -296,6 +295,11 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
                 id: entryId
             });
         },
+        /**
+         * TODO determine if this method is required at all.
+         *
+         * @internal
+         */
         getEntry: async (model, params) => {
             await checkEntryPermissions({ rwd: "r" });
 
@@ -317,11 +321,37 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
             }
             return items[0];
         },
+        /**
+         * @description Should not be used directly. Internal use only!
+         *
+         * @internal
+         */
         listEntries: async (model: CmsModel, params) => {
             const permission = await checkEntryPermissions({ rwd: "r" });
             await utils.checkModelAccess(context, model);
 
-            const where: CmsEntryListParams["where"] = params.where || {};
+            const { where } = params;
+            /**
+             * Where must contain either latest or published keys.
+             * We cannot list entries without one of those
+             */
+            if (where.latest && where.published) {
+                throw new WebinyError(
+                    "Cannot list entries that are both published and latest.",
+                    "LIST_ENTRIES_ERROR",
+                    {
+                        where
+                    }
+                );
+            } else if (!where.latest && !where.published) {
+                throw new WebinyError(
+                    "Cannot list entries if we do not have latest or published defined.",
+                    "LIST_ENTRIES_ERROR",
+                    {
+                        where
+                    }
+                );
+            }
             /**
              * Possibly only get records which are owned by current user.
              * Or if searching for the owner set that value - in the case that user can see other entries than their own.
@@ -397,7 +427,8 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
             const input = await referenceFieldsMapping({
                 context,
                 model,
-                input: initialInput
+                input: initialInput,
+                validateEntries: true
             });
 
             const identity = context.security.getIdentity();
@@ -513,7 +544,8 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
             const values = await referenceFieldsMapping({
                 context,
                 model,
-                input: initialValues
+                input: initialValues,
+                validateEntries: false
             });
 
             utils.checkOwnership(context, permission, originalEntry);
@@ -634,7 +666,8 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
             const values = await referenceFieldsMapping({
                 context,
                 model,
-                input: initialValues
+                input: initialValues,
+                validateEntries: false
             });
 
             /**
@@ -684,6 +717,93 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
                         storageEntry,
                         originalEntry,
                         input
+                    }
+                );
+            }
+        },
+        republishEntry: async (model, id) => {
+            await checkEntryPermissions({ rwd: "w" });
+            await utils.checkModelAccess(context, model);
+            /**
+             * Fetch the entry from the storage.
+             */
+            const originalStorageEntry = await storageOperations.entries.getRevisionById(model, {
+                id
+            });
+            if (!originalStorageEntry) {
+                throw new NotFoundError(`Entry "${id}" was not found!`);
+            }
+
+            const originalEntry = await entryFromStorageTransform(
+                context,
+                model,
+                originalStorageEntry
+            );
+            /**
+             * We can only process published entries.
+             */
+            if (originalEntry.status !== "published") {
+                throw new WebinyError(
+                    "Entry with given ID is not published!",
+                    "NOT_PUBLISHED_ERROR",
+                    {
+                        id,
+                        original: originalEntry
+                    }
+                );
+            }
+
+            const values = await referenceFieldsMapping({
+                context,
+                model,
+                input: originalEntry.values,
+                validateEntries: false
+            });
+
+            const entry: CmsEntry = {
+                ...originalEntry,
+                savedOn: new Date().toISOString(),
+                webinyVersion: context.WEBINY_VERSION,
+                values
+            };
+
+            const storageEntry = await entryToStorageTransform(context, model, entry);
+            /**
+             * First we need to update existing entry.
+             */
+            try {
+                await storageOperations.entries.update(model, {
+                    originalEntry,
+                    originalStorageEntry,
+                    entry,
+                    storageEntry,
+                    input: {}
+                });
+            } catch (ex) {
+                throw new WebinyError(
+                    "Could not update existing entry with new data while re-publishing.",
+                    "REPUBLISH_UPDATE_ERROR",
+                    {
+                        entry
+                    }
+                );
+            }
+            /**
+             * Then we move onto publishing it again.
+             */
+            try {
+                return await storageOperations.entries.publish(model, {
+                    originalEntry,
+                    originalStorageEntry,
+                    entry,
+                    storageEntry
+                });
+            } catch (ex) {
+                throw new WebinyError(
+                    "Could not publish existing entry while re-publishing.",
+                    "REPUBLISH_PUBLISH_ERROR",
+                    {
+                        entry
                     }
                 );
             }

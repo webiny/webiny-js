@@ -1,6 +1,6 @@
 {
   "name": "@webiny/cli-plugin-deploy-pulumi",
-  "version": "5.18.3",
+  "version": "5.20.0",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -11,8 +11,8 @@
   "description": "A tool to bootstrap a Webiny project.",
   "dependencies": {
     "@pulumi/pulumi": "< 3.18.0",
-    "@webiny/cli": "^5.18.3",
-    "@webiny/pulumi-sdk": "^5.18.3",
+    "@webiny/cli": "^5.20.0",
+    "@webiny/pulumi-sdk": "^5.20.0",
     "ansi-to-html": "0.6.15",
     "blessed": "0.1.81",
     "blessed-contrib": "4.10.1",
@@ -31,6 +31,7 @@
     "open": "8.3.0",
     "ora": "4.1.1",
     "rimraf": "3.0.2",
+    "strip-ansi": "^6.0.1",
     "ws": "7.5.5"
   },
   "license": "MIT",

@@ -123,6 +123,7 @@ export interface FileManagerSettings {
 
 export interface FileManagerSystem {
     version: string;
+    tenant: string;
 }
 
 export type SettingsCRUD = {

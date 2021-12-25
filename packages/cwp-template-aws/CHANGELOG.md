@@ -3,6 +3,133 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.20.0](https://github.com/webiny/webiny-js/compare/v5.20.0-beta.2...v5.20.0) (2021-12-23)
+
+**Note:** Version bump only for package @webiny/cwp-template-aws
+
+
+
+
+
+# [5.20.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.20.0-beta.1...v5.20.0-beta.2) (2021-12-21)
+
+**Note:** Version bump only for package @webiny/cwp-template-aws
+
+
+
+
+
+# [5.20.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.20.0-beta.0...v5.20.0-beta.1) (2021-12-20)
+
+**Note:** Version bump only for package @webiny/cwp-template-aws
+
+
+
+
+
+# [5.20.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.19.1...v5.20.0-beta.0) (2021-12-17)
+
+**Note:** Version bump only for package @webiny/cwp-template-aws
+
+
+
+
+
+## [5.19.1](https://github.com/webiny/webiny-js/compare/v5.19.1-beta.0...v5.19.1) (2021-12-14)
+
+**Note:** Version bump only for package @webiny/cwp-template-aws
+
+
+
+
+
+## [5.19.1-beta.0](https://github.com/webiny/webiny-js/compare/v5.19.0...v5.19.1-beta.0) (2021-12-14)
+
+**Note:** Version bump only for package @webiny/cwp-template-aws
+
+
+
+
+
+# [5.19.0](https://github.com/webiny/webiny-js/compare/v5.19.0-beta.6...v5.19.0) (2021-12-13)
+
+**Note:** Version bump only for package @webiny/cwp-template-aws
+
+
+
+
+
+# [5.19.0-beta.6](https://github.com/webiny/webiny-js/compare/v5.19.0-beta.5...v5.19.0-beta.6) (2021-12-13)
+
+**Note:** Version bump only for package @webiny/cwp-template-aws
+
+
+
+
+
+# [5.19.0-beta.5](https://github.com/webiny/webiny-js/compare/v5.19.0-beta.4...v5.19.0-beta.5) (2021-12-10)
+
+**Note:** Version bump only for package @webiny/cwp-template-aws
+
+
+
+
+
+# [5.19.0-beta.4](https://github.com/webiny/webiny-js/compare/v5.19.0-beta.3...v5.19.0-beta.4) (2021-12-09)
+
+**Note:** Version bump only for package @webiny/cwp-template-aws
+
+
+
+
+
+# [5.19.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.19.0-beta.2...v5.19.0-beta.3) (2021-12-08)
+
+**Note:** Version bump only for package @webiny/cwp-template-aws
+
+
+
+
+
+# [5.19.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.19.0-beta.1...v5.19.0-beta.2) (2021-12-06)
+
+
+### Bug Fixes
+
+* add missing plugin ([022aae4](https://github.com/webiny/webiny-js/commit/022aae4e3a08a8eff32b5e00c7fea6e6e65fe3f2))
+
+
+
+
+
+# [5.19.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.19.0-beta.0...v5.19.0-beta.1) (2021-12-06)
+
+**Note:** Version bump only for package @webiny/cwp-template-aws
+
+
+
+
+
+# [5.19.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.18.3...v5.19.0-beta.0) (2021-12-06)
+
+
+### Bug Fixes
+
+* added AWS access key id to the deploy logs ([41a4794](https://github.com/webiny/webiny-js/commit/41a4794b0241acdeed80c60e66c36d432728cb9b))
+* code review fixes ([afdba20](https://github.com/webiny/webiny-js/commit/afdba202d67b2291a971e07894c48bd9cab3202d))
+* lock version for `@pulumi/*` packages ([5a6209b](https://github.com/webiny/webiny-js/commit/5a6209b51ce7e610bc00ac83e7fd79493105abe8))
+* **cwp-template-aws:** logging incorrect profile during deploy ([7416a6f](https://github.com/webiny/webiny-js/commit/7416a6fb63ae358e8af7fbc5d8ea61a189c4db20))
+* use `interpolate` instead of `apply` ([6bd293c](https://github.com/webiny/webiny-js/commit/6bd293c4c4e1e161b4a7d26f7bd7706773f2d447))
+
+
+### Features
+
+* **app-headless-cms:** uppercase and lowercase with space ([#2080](https://github.com/webiny/webiny-js/issues/2080)) ([e7f9ba6](https://github.com/webiny/webiny-js/commit/e7f9ba61fa2a0224e40f3455b24c5283b20e192a))
+
+
+
+
+
 ## [5.18.3](https://github.com/webiny/webiny-js/compare/v5.18.3-beta.0...v5.18.3) (2021-12-02)
 
 **Note:** Version bump only for package @webiny/cwp-template-aws
