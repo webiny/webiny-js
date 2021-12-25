@@ -1,6 +1,6 @@
 {
   "name": "@webiny/app-admin-core",
-  "version": "5.18.3",
+  "version": "5.20.0",
   "main": "index.js",
   "description": "Core framework of the Webiny admin app.",
   "repository": {

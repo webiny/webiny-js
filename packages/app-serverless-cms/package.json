@@ -1,6 +1,6 @@
 {
   "name": "@webiny/app-serverless-cms",
-  "version": "5.18.3",
+  "version": "5.20.0",
   "main": "index.js",
   "repository": {
     "type": "git",
