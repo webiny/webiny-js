@@ -2,12 +2,9 @@ import React from "react";
 import { ListItem, ListItemGraphic } from "@webiny/ui/List";
 import { Icon } from "@webiny/ui/Icon";
 import { useSecurity } from "@webiny/app-security/hooks/useSecurity";
-import { GenericElement } from "@webiny/app-admin/ui/elements/GenericElement";
-import { UIViewPlugin } from "@webiny/app-admin/ui/UIView";
-import { AdminView } from "@webiny/app-admin/ui/views/AdminView";
-import { UserMenuElement } from "@webiny/app-admin/plugins/userMenu/UserMenuElement";
 import { ReactComponent as SignOutIcon } from "~/assets/icons/round-lock_open-24px.svg";
 
+// @ts-ignore
 const SignOut = () => {
     const { identity } = useSecurity();
 
@@ -29,11 +26,13 @@ const SignOut = () => {
 };
 
 export default () => {
-    return new UIViewPlugin<AdminView>(AdminView, view => {
-        const userMenu = view.getElement<UserMenuElement>("userMenu");
-        if (userMenu) {
-            const signOut = new GenericElement("signOut", () => <SignOut />);
-            signOut.moveToTheEndOf(userMenu);
-        }
-    });
+    return { type: "dummy" };
+
+    // return new UIViewPlugin<AdminView>(AdminView, view => {
+    //     const userMenu = view.getElement<UserMenuElement>("userMenu");
+    //     if (userMenu) {
+    //         const signOut = new GenericElement("signOut", () => <SignOut />);
+    //         signOut.moveToTheEndOf(userMenu);
+    //     }
+    // });
 };

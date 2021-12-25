@@ -4,9 +4,6 @@ import { useSecurity } from "@webiny/app-security/hooks/useSecurity";
 import { ListItem, ListItemGraphic } from "@webiny/ui/List";
 import { Typography } from "@webiny/ui/Typography";
 import { Avatar } from "@webiny/ui/Avatar";
-import { GenericElement } from "@webiny/app-admin/ui/elements/GenericElement";
-import { UIViewPlugin } from "@webiny/app-admin/ui/UIView";
-import { AdminView } from "@webiny/app-admin/ui/views/AdminView";
 
 const avatarImage = css({
     height: "40px !important",
@@ -60,6 +57,7 @@ const linkStyles = css({
     }
 });
 
+// @ts-ignore
 const UserInfo = () => {
     const security = useSecurity();
 
@@ -92,14 +90,15 @@ const UserInfo = () => {
 };
 
 export default () => {
-    return new UIViewPlugin<AdminView>(AdminView, view => {
-        const userMenu = view.getElement("userMenu");
-        if (!userMenu) {
-            return;
-        }
-
-        const userInfo = new GenericElement("userInfo", () => <UserInfo />);
-        userInfo.moveToTheBeginningOf(userMenu);
-        view.refresh();
-    });
+    return { type: "dummy" };
+    // return new UIViewPlugin<AdminView>(AdminView, view => {
+    //     const userMenu = view.getElement("userMenu");
+    //     if (!userMenu) {
+    //         return;
+    //     }
+    //
+    //     const userInfo = new GenericElement("userInfo", () => <UserInfo />);
+    //     userInfo.moveToTheBeginningOf(userMenu);
+    //     view.refresh();
+    // });
 };
