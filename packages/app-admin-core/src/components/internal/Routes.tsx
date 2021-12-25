@@ -3,11 +3,18 @@ import { plugins } from "@webiny/plugins";
 import { Switch } from "@webiny/react-router";
 import { RoutePlugin } from "@webiny/app/types";
 
-export const SortRoutes = () => {
-    // We cannot call `sort` on the array returned by the `plugins.byType` call - it is read-only.
-    const routes = [...plugins.byType<RoutePlugin>("route")].sort((a, b) => {
-        const pathA = a.route.props.path || "*";
-        const pathB = b.route.props.path || "*";
+interface RoutesProps {
+    routes: JSX.Element[];
+}
+
+export const Routes = (props: RoutesProps) => {
+    const routes = [
+        ...props.routes,
+        // For backwards compatibility, we need to support the RoutePlugin routes as well.
+        ...plugins.byType<RoutePlugin>("route").map(({ route }) => route)
+    ].sort((a, b) => {
+        const pathA = a.props.path || "*";
+        const pathB = b.props.path || "*";
 
         // This will sort paths at the very bottom of the list
         if (pathA === "/" && pathB === "*") {
@@ -26,8 +33,12 @@ export const SortRoutes = () => {
 
         return 0;
     });
-
+    
     return (
-        <Switch>{routes.map(({ route, name }) => React.cloneElement(route, { key: name }))}</Switch>
+        <Switch>
+            {routes.map((route, index) =>
+                React.cloneElement(route, { key: `${route.props.path}:${index}` })
+            )}
+        </Switch>
     );
 };

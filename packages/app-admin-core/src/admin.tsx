@@ -9,15 +9,11 @@ import React, {
     ComponentType,
     ReactElement
 } from "react";
-import { ApolloClient } from "apollo-client";
 import { BrowserRouter, RouteProps } from "@webiny/react-router";
-import { Routes as SortRoutes } from "../components/Routes";
-import { createApolloProvider } from "./providers/ApolloProvider";
-import { createUiStateProvider } from "./providers/UiStateProvider";
-import { createTelemetryProvider } from "./providers/TelemetryProvider";
+import { Routes as SortRoutes } from "./components/internal/Routes";
 import { ExtensionsProvider } from "./components/core/Extensions";
 
-export const compose = (...fns) => {
+const compose = (...fns) => {
     return Base => {
         return fns.reduceRight((Component, hoc) => hoc(Component), Base);
     };
@@ -55,20 +51,15 @@ interface State {
 }
 
 export interface AdminProps {
-    createApolloClient: ({ uri: string }) => ApolloClient<unknown>;
     children?: React.ReactNode | React.ReactNode[];
 }
 
-export const Admin = ({ createApolloClient, children }: AdminProps) => {
+export const Admin = ({ children }: AdminProps) => {
     const [state, setState] = useState<State>({
         routes: {},
         extensions: [],
         wrappers: new Map(),
-        providers: [
-            createTelemetryProvider(),
-            createApolloProvider(createApolloClient),
-            createUiStateProvider()
-        ]
+        providers: []
     });
 
     const addRoute = useCallback((route: FunctionComponentElement<RouteProps>) => {

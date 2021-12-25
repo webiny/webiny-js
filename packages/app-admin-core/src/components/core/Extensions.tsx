@@ -1,5 +1,5 @@
 import React, { Children, createContext, ReactNode, useContext, useEffect } from "react";
-import { useAdmin } from "~/admin/admin";
+import { useAdmin } from "~/admin";
 
 export const ExtensionContext = createContext(null);
 ExtensionContext.displayName = "ExtensionContext";
