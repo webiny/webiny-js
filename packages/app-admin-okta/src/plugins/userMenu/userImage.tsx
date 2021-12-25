@@ -1,8 +1,9 @@
+// @ts-nocheck
 import React from "react";
 import { Avatar } from "@webiny/ui/Avatar";
 import { useSecurity } from "@webiny/app-security/hooks/useSecurity";
 
-// @ts-ignore
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const UserImage = () => {
     const { identity } = useSecurity();
 

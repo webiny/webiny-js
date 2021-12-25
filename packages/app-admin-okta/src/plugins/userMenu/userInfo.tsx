@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React from "react";
 import { css } from "emotion";
 import { useSecurity } from "@webiny/app-security/hooks/useSecurity";
@@ -57,7 +58,7 @@ const linkStyles = css({
     }
 });
 
-// @ts-ignore
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const UserInfo = () => {
     const security = useSecurity();
 

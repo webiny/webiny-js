@@ -1,10 +1,11 @@
+// @ts-nocheck
 import React from "react";
 import { ListItem, ListItemGraphic } from "@webiny/ui/List";
 import { Icon } from "@webiny/ui/Icon";
 import { useSecurity } from "@webiny/app-security/hooks/useSecurity";
 import { ReactComponent as SignOutIcon } from "~/assets/icons/round-lock_open-24px.svg";
 
-// @ts-ignore
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const SignOut = () => {
     const { identity } = useSecurity();
 
