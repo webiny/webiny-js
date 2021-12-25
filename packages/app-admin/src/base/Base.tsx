@@ -1,4 +1,4 @@
-import React, {  memo } from "react";
+import React, { memo } from "react";
 import { Extensions } from "@webiny/app-admin-core";
 import { AddMenu } from "~/index";
 import { plugins } from "@webiny/plugins";

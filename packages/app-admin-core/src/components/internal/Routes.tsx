@@ -33,7 +33,7 @@ export const Routes = (props: RoutesProps) => {
 
         return 0;
     });
-    
+
     return (
         <Switch>
             {routes.map((route, index) =>

@@ -8,7 +8,7 @@ export const App = () => {
     return (
         <Admin>
             <Cognito />
-            <TenantManager/>
+            <TenantManager />
         </Admin>
     );
 };

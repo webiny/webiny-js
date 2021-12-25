@@ -61,6 +61,6 @@ const CognitoIdP = () => {
             </Extensions>
         </Fragment>
     );
-}
+};
 
 export const Cognito = memo(CognitoIdP);

@@ -7,7 +7,7 @@ export interface ProviderProps {
 
 /**
  * Register a new React context provider.
- * 
+ *
  * @param hoc
  * @constructor
  */

@@ -3,8 +3,4 @@ import installation from "./installation";
 import permissionRenderer from "./permissionRenderer";
 import secureRouteError from "~/plugins/secureRouteError";
 
-export default (): PluginCollection => [
-    installation,
-    permissionRenderer,
-    secureRouteError
-];
+export default (): PluginCollection => [installation, permissionRenderer, secureRouteError];
