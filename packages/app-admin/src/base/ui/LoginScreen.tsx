@@ -1,5 +1,5 @@
 import React, { FC, useEffect } from "react";
-import { makeComposable } from "~/index";
+import { makeComposable } from "@webiny/app-admin-core";
 
 export interface LoginScreenProps {
     children: React.ReactNode;

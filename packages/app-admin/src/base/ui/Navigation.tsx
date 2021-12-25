@@ -8,7 +8,8 @@ import React, {
     useContext
 } from "react";
 import { nanoid } from "nanoid";
-import { MenuData, makeComposable, MenuProps, Extensions, AddMenu as Menu, Tags } from "~/index";
+import { makeComposable, Extensions } from "@webiny/app-admin-core";
+import { MenuData, MenuProps, AddMenu as Menu, Tags } from "~/index";
 import { plugins } from "@webiny/plugins";
 import { AdminMenuPlugin } from "~/types";
 
@@ -46,10 +47,10 @@ const LegacyMenuPlugins = () => {
             return;
         }
 
-        const menuElements = menuPlugins.map(({ name, render }) => {
+        const menuElements = menuPlugins.map(plugin => {
             return (
-                <Extensions key={name}>
-                    {render({ Menu: LegacyMenu, Item: LegacyMenu, Section: LegacyMenu })}
+                <Extensions key={plugin.name}>
+                    {plugin.render({ Menu: LegacyMenu, Item: LegacyMenu, Section: LegacyMenu })}
                 </Extensions>
             );
         });

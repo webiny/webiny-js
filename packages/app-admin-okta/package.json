@@ -16,7 +16,6 @@
     "@okta/okta-react": "^6.1.0",
     "@okta/okta-signin-widget": "^5.9.4",
     "@webiny/app": "^5.19.0-next.0",
-    "@webiny/app-admin": "^5.19.0-next.0",
     "@webiny/app-security": "^5.19.0-next.0",
     "@webiny/app-tenancy": "^5.19.0-next.0",
     "@webiny/plugins": "^5.19.0-next.0",

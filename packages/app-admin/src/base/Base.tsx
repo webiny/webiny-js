@@ -1,5 +1,7 @@
-import React from "react";
-import { Extensions, AddMenu as Menu } from "~/index";
+import React, {  memo } from "react";
+import { Extensions } from "@webiny/app-admin-core";
+import { AddMenu } from "~/index";
+import { plugins } from "@webiny/plugins";
 import { ReactComponent as DocsIcon } from "~/assets/icons/icon-documentation.svg";
 import { ReactComponent as SlackIcon } from "~/assets/icons/slack-logo.svg";
 import { ReactComponent as GithubIcon } from "~/assets/icons/github-brands.svg";
@@ -7,13 +9,17 @@ import { ReactComponent as FileIcon } from "~/assets/icons/insert_drive_file-24p
 import { ReactComponent as SettingsIcon } from "~/assets/icons/round-settings-24px.svg";
 import { FileManager } from "~/components";
 
-export const Preset = () => {
+import adminPlugins from "../plugins";
+
+const BaseExtension = () => {
+    plugins.register(adminPlugins());
+
     return (
         <Extensions>
-            <Menu id={"settings"} label={"Settings"} icon={<SettingsIcon />} pin={"last"} />
+            <AddMenu id={"settings"} label={"Settings"} icon={<SettingsIcon />} pin={"last"} />
             <FileManager>
                 {({ showFileManager }) => (
-                    <Menu
+                    <AddMenu
                         id={"fileManager"}
                         label={"File Manager"}
                         icon={<FileIcon />}
@@ -22,7 +28,7 @@ export const Preset = () => {
                     />
                 )}
             </FileManager>
-            <Menu
+            <AddMenu
                 id={"documentation"}
                 label={"Documentation"}
                 icon={<DocsIcon />}
@@ -31,7 +37,7 @@ export const Preset = () => {
                 target={"_blank"}
                 tags={["footer"]}
             />
-            <Menu
+            <AddMenu
                 id={"slack"}
                 label={"Slack"}
                 icon={<SlackIcon />}
@@ -40,7 +46,7 @@ export const Preset = () => {
                 target={"_blank"}
                 tags={["footer"]}
             />
-            <Menu
+            <AddMenu
                 id={"github"}
                 label={"Github"}
                 icon={<GithubIcon />}
@@ -52,3 +58,5 @@ export const Preset = () => {
         </Extensions>
     );
 };
+
+export const Base = memo(BaseExtension);

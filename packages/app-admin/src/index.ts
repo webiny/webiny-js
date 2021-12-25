@@ -1,27 +1,26 @@
-// Admin framework
-export * from "./admin/admin";
-export * from "./admin/makeComposable";
-export type { AdminProps, HigherOrderComponent } from "./admin/admin";
-// Core components
-export * from "./admin/components/core/Compose";
-export * from "./admin/components/core/Extensions";
-export * from "./admin/components/core/Provider";
-export * from "./admin/components/core/Routes";
+export * from "@webiny/app-admin-core";
+export type {
+    HigherOrderComponent,
+    ProviderProps,
+    ComposeProps
+} from "@webiny/app-admin-core";
 // UI components
-export * from "./admin/components/ui/Tags";
-export * from "./admin/components/ui/Menu";
-export * from "./admin/components/ui/Layout";
-export * from "./admin/components/ui/LocaleSelector";
-export type { LayoutProps } from "./admin/components/ui/Layout";
-export * from "./admin/components/ui/Navigation";
-export type { MenuItemsProps } from "./admin/components/ui/Navigation";
-export * from "./admin/components/ui/Brand";
-export * from "./admin/components/ui/Search";
-export type { SearchOptionData, SearchOptionProps } from "./admin/components/ui/Search";
-export * from "./admin/components/ui/UserMenu";
-export type { UserMenuItemProps } from "./admin/components/ui/UserMenu";
-export * from "./admin/components/ui/LoginScreen";
-// UI Shell - registers the headless UI context providers
-export { Shell } from "./admin/shell";
+export * from "./base/ui/Tags";
+export * from "./base/ui/Menu";
+export * from "./base/ui/Layout";
+export * from "./base/ui/LocaleSelector";
+export type { LayoutProps } from "./base/ui/Layout";
+export * from "./base/ui/Navigation";
+export type { MenuItemsProps } from "./base/ui/Navigation";
+export * from "./base/ui/Brand";
+export * from "./base/ui/Search";
+export type { SearchOptionData, SearchOptionProps } from "./base/ui/Search";
+export * from "./base/ui/UserMenu";
+export type { UserMenuItemProps } from "./base/ui/UserMenu";
+export * from "./base/ui/LoginScreen";
+
+// Base admin app
+export { Admin } from "./base/Admin";
+export type { AdminProps } from "./base/Admin";
 
 export { AppInstaller } from "./components/AppInstaller";

@@ -1,4 +1,4 @@
-import { Provider } from "@webiny/app-admin";
+import { Provider } from "@webiny/app-admin-core";
 import React from "react";
 import { SecurityProvider as ContextProvider } from "./contexts/Security";
 

@@ -14,7 +14,7 @@
   "license": "MIT",
   "dependencies": {
     "@webiny/app": "^5.18.3",
-    "@webiny/app-admin": "^5.18.3",
+    "@webiny/app-admin-core": "^5.18.3",
     "@webiny/plugins": "^5.18.3",
     "minimatch": "^3.0.4",
     "react": "^16.14.0",
