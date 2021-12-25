@@ -1,5 +1,4 @@
 import { plugins } from "@webiny/plugins";
-import { plugins as tenancyPlugins } from "@webiny/app-tenancy";
 import pageBuilderPlugins from "./pageBuilder";
 import formBuilderPlugins from "./formBuilder";
 import headlessCmsPlugins from "./headlessCms";
@@ -9,10 +8,6 @@ import theme from "theme";
 import scaffoldsPlugins from "./scaffolds";
 
 plugins.register([
-    /**
-     * Tenant installation.
-     */
-    tenancyPlugins(),
     /**
      * Page Builder app.
      */
