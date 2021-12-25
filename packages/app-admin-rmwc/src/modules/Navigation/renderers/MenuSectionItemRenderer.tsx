@@ -13,7 +13,7 @@ const linkStyle = css({
     width: "100%",
     height: "100%",
     outline: "none",
-    paddingLeft: 65,
+    paddingLeft: 72,
     "&:hover": {
         textDecoration: "none"
     }

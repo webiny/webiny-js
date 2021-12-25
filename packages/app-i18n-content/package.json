@@ -12,6 +12,7 @@
     "@webiny/app": "^5.18.3",
     "@webiny/app-admin": "^5.18.3",
     "@webiny/app-i18n": "^5.18.3",
+    "@webiny/plugins": "^5.18.3",
     "@webiny/app-security": "^5.18.3",
     "@webiny/form": "^5.18.3",
     "@webiny/ui": "^5.18.3",

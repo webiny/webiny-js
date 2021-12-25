@@ -1,8 +1,9 @@
-import { Extensions, AddMenu, AddRoute, Layout } from "@webiny/app-admin";
+import { Extensions, AddMenu, AddRoute, Layout, Compose, LocaleSelector } from "@webiny/app-admin";
 import { HasPermission } from "@webiny/app-security/";
 import { useSecurity } from "@webiny/app-security/";
-import React, { memo } from "react";
+import React, { Fragment, memo } from "react";
 import { ReactComponent as TenantIcon } from "./assets/business_black_24dp.svg";
+import { CurrentTenant } from "./plugins/currentTenant";
 import { TenantsView } from "./views/tenants";
 
 const RoutesAndMenus = () => {
@@ -32,9 +33,21 @@ const RoutesAndMenus = () => {
     );
 };
 
+const TenantIndicator = LocaleSelector => {
+    return function TenantIndicator() {
+        return (
+            <Fragment>
+                <CurrentTenant />
+                <LocaleSelector />
+            </Fragment>
+        );
+    };
+};
+
 const TenantManagerExtension = () => {
     return (
         <Extensions>
+            <Compose component={LocaleSelector} with={TenantIndicator} />
             <RoutesAndMenus />
         </Extensions>
     );

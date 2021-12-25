@@ -1,5 +1,7 @@
+import React, { memo } from "react";
+import { plugins } from "@webiny/plugins";
 import { Provider } from "@webiny/app-admin";
-import React from "react";
+import installation from "./plugins/installation";
 import { TenancyProvider as ContextProvider } from "./contexts/Tenancy";
 
 const TenancyProviderHOC = Component => {
@@ -12,6 +14,10 @@ const TenancyProviderHOC = Component => {
     };
 };
 
-export const Tenancy = () => {
+export const TenancyExtension = () => {
+    plugins.register(installation);
+
     return <Provider hoc={TenancyProviderHOC} />;
 };
+
+export const Tenancy = memo(TenancyExtension);

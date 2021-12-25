@@ -19,6 +19,7 @@
     "@emotion/styled": "^10.0.27",
     "@types/react": "^16.9.56",
     "@webiny/app": "^5.18.3",
+    "@webiny/plugins": "^5.18.3",
     "@webiny/app-admin": "^5.18.3",
     "@webiny/app-security": "^5.18.3",
     "@webiny/form": "^5.18.3",
@@ -35,8 +36,7 @@
     "lodash": "^4.17.11",
     "prop-types": "^15.7.2",
     "react": "^16.14.0",
-    "react-dom": "^16.14.0",
-    "react-helmet": "^5.2.1"
+    "react-dom": "^16.14.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",

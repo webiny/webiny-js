@@ -15,7 +15,17 @@
     "@webiny/app-security": "^5.18.3",
     "react": "^16.14.0",
     "react-dom": "^16.14.0",
-    "react-helmet": "^6.1.0"
+    "react-helmet": "^6.1.0",
+    "@emotion/styled": "^10.0.27",
+    "emotion": "^10.0.27",
+    "@webiny/ui": "^5.18.3",
+    "@webiny/react-router": "^5.18.3",
+    "@webiny/app": "^5.18.3",
+    "store": "^2.0.12",
+    "react-transition-group": "^4.4.2",
+    "classnames": "^2.3.1",
+    "lodash": "^4.17.21",
+    "react-router-dom": "^5.0.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",

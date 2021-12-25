@@ -1,13 +1,17 @@
-import React from "react";
+import React, { memo } from "react";
+import { plugins } from "@webiny/plugins";
 import { Layout, Extensions, AddMenu, AddRoute } from "@webiny/app-admin";
 import { HasPermission } from "@webiny/app-security";
 import { Permission } from "~/plugins/constants";
 import { Groups } from "~/ui/views/Groups";
 import { ApiKeys } from "~/ui/views/ApiKeys";
+import accessManagementPugins from "./plugins";
 
 export default () => [];
 
-export const AccessManagement = () => {
+export const AccessManagementExtension = () => {
+    plugins.register(accessManagementPugins());
+
     return (
         <Extensions>
             <HasPermission name={Permission.Groups}>
@@ -47,3 +51,5 @@ export const AccessManagement = () => {
         </Extensions>
     );
 };
+
+export const AccessManagement = memo(AccessManagementExtension);
