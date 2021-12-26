@@ -48,15 +48,7 @@ export const Search = makeComposable("Search", () => {
     return <SearchRenderer />;
 });
 
-export const SearchRenderer = makeComposable("SearchRenderer", () => {
-    useEffect(() => {
-        console.info(
-            `<SearchRenderer/> is not implemented! To provide an implementation, use the <Compose/> component.`
-        );
-    }, []);
-
-    return null;
-});
+export const SearchRenderer = makeComposable("SearchRenderer");
 
 export type SearchOptionProps = SearchOptionData;
 

@@ -60,29 +60,13 @@ export const UserMenu = makeComposable("UserMenu", () => {
     return <UserMenuRenderer />;
 });
 
-export const UserMenuRenderer = makeComposable("UserMenuRenderer", () => {
-    useEffect(() => {
-        console.info(
-            `<UserMenuRenderer/> is not implemented! To provide an implementation, use the <Compose/> component.`
-        );
-    }, []);
-
-    return null;
-});
+export const UserMenuRenderer = makeComposable("UserMenuRenderer");
 
 export const UserMenuHandle = makeComposable("UserMenuHandle", () => {
     return <UserMenuHandleRenderer />;
 });
 
-export const UserMenuHandleRenderer = makeComposable("UserMenuHandleRenderer", () => {
-    useEffect(() => {
-        console.info(
-            `<UserMenuHandleRenderer/> is not implemented! To provide an implementation, use the <Compose/> component.`
-        );
-    }, []);
-
-    return null;
-});
+export const UserMenuHandleRenderer = makeComposable("UserMenuHandleRenderer");
 
 export interface UserMenuItemProps {
     menuItem: UserMenuItemData;
@@ -96,15 +80,7 @@ export const UserMenuItem = makeComposable<UserMenuItemProps>("UserMenuItem", ({
     );
 });
 
-export const UserMenuItemRenderer = makeComposable("UserMenuItemRenderer", () => {
-    useEffect(() => {
-        console.info(
-            `<UserMenuRenderer/> is not implemented! To provide an implementation, use the <Compose/> component.`
-        );
-    }, []);
-
-    return null;
-});
+export const UserMenuItemRenderer = makeComposable("UserMenuItemRenderer");
 
 export const AddUserMenuItem = (props: UserMenuItemProps["menuItem"]) => {
     const { addMenuItem } = useUserMenu();

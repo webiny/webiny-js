@@ -1,16 +1,8 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { makeComposable } from "@webiny/app-admin-core";
 
 export const Brand = makeComposable("Brand", () => {
     return <BrandRenderer />;
 });
 
-export const BrandRenderer = makeComposable("BrandRenderer", () => {
-    useEffect(() => {
-        console.info(
-            `<BrandRenderer/> is not implemented! To provide an implementation, use the <Compose/> component.`
-        );
-    }, []);
-
-    return null;
-});
+export const BrandRenderer = makeComposable("BrandRenderer");

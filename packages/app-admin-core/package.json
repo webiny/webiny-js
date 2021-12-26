@@ -15,6 +15,7 @@
     "@webiny/app": "^5.18.3",
     "@webiny/plugins": "^5.18.3",
     "@webiny/react-router": "^5.18.3",
+    "lodash.debounce": "^4.0.8",
     "react": "^16.14.0",
     "react-dom": "^16.14.0"
   },

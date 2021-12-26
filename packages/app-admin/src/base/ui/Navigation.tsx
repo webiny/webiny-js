@@ -139,15 +139,7 @@ export const Navigation = () => {
     );
 };
 
-export const NavigationRenderer = makeComposable("NavigationRenderer", () => {
-    useEffect(() => {
-        console.info(
-            `<NavigationRenderer/> is not implemented! To provide an implementation, use the <Compose/> component.`
-        );
-    }, []);
-
-    return null;
-});
+export const NavigationRenderer = makeComposable("NavigationRenderer");
 
 interface MenuItemContext {
     menuItem: MenuData;
@@ -185,12 +177,4 @@ export const MenuItem = () => {
     return <MenuItemRenderer />;
 };
 
-export const MenuItemRenderer = makeComposable("MenuItemRenderer", () => {
-    useEffect(() => {
-        console.info(
-            `<MenuItemRenderer/> is not implemented! To provide an implementation, use the <Compose/> component.`
-        );
-    }, []);
-
-    return null;
-});
+export const MenuItemRenderer = makeComposable("MenuItemRenderer");
