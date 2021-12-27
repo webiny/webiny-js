@@ -81,7 +81,7 @@ export const createSettingsCrud = (params: Params): SettingsCrud => {
                 };
                 return storageOperations.settings.get(params);
             });
-            return Promise.all(promises);
+            return await Promise.all(promises);
         },
         {
             cacheKeyFn: (key: SettingsParams) => {
@@ -109,10 +109,12 @@ export const createSettingsCrud = (params: Params): SettingsCrud => {
          * Initial, in the DynamoDB, it was PK + SK. It can be what ever
          */
         getSettingsCacheKey(options) {
+            const tenant = options ? options.tenant : null;
+            const locale = options ? options.locale : null;
             return storageOperations.settings.createCacheKey(
                 options || {
-                    tenant: options.tenant === false ? false : options.tenant,
-                    locale: options.locale === false ? false : options.locale
+                    tenant: tenant === false ? false : tenant || getTenantId(),
+                    locale: locale === false ? false : locale || getLocaleCode()
                 }
             );
         },

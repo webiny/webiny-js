@@ -715,17 +715,26 @@ export const createPageCrud = (params: Params): PagesCrud => {
                     published: true
                 }
             });
+
+            const latestPageWhere: PageStorageOperationsGetWhereParams = {
+                pid: original.pid,
+                tenant: original.tenant,
+                locale: original.locale,
+                latest: true
+            };
             /**
              * Latest revision of this page.
              */
             const latestPage = await storageOperations.pages.get({
-                where: {
-                    pid: original.pid,
-                    tenant: getTenantId(),
-                    locale: getLocaleCode(),
-                    latest: true
-                }
+                where: latestPageWhere
             });
+            if (!latestPage) {
+                throw new WebinyError(
+                    "Missing latest page record of the requested page. This should never happen.",
+                    "LATEST_PAGE_ERROR",
+                    latestPageWhere
+                );
+            }
             /**
              * If this is true, let's unpublish the page first. Note that we're not talking about this
              * same page, but a previous revision. We're talking about a completely different page

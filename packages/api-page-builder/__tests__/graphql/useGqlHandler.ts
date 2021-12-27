@@ -6,7 +6,7 @@ import i18nDynamoDbStorageOperations from "@webiny/api-i18n-ddb";
 import i18nContentPlugins from "@webiny/api-i18n-content/plugins";
 import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
 import fileManagerPlugins from "@webiny/api-file-manager/plugins";
-import fileManagerDdbEsPlugins from "@webiny/api-file-manager-ddb-es";
+import fileManagerDdbPlugins from "@webiny/api-file-manager-ddb";
 import prerenderingServicePlugins from "@webiny/api-prerendering-service/client";
 
 import prerenderingHookPlugins from "~/prerendering/hooks";
@@ -74,7 +74,7 @@ export default ({ permissions, identity, plugins, storageOperationPlugins }: Par
     const handler = createHandler(
         ...ops.plugins,
         // TODO figure out a way to load these automatically
-        fileManagerDdbEsPlugins(),
+        fileManagerDdbPlugins(),
         graphqlHandler(),
         ...createTenancyAndSecurity({ permissions, identity }),
         i18nContext(),

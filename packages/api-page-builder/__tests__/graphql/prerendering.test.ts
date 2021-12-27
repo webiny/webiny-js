@@ -14,7 +14,8 @@ describe("make sure that prerendering render and flush are running", () => {
     });
 
     const createPage = async (): Promise<Page> => {
-        const [categoryResponse] = await handler.createCategory({
+        const { createCategory } = useGqlHandler();
+        const [categoryResponse] = await createCategory({
             data: {
                 slug: `category`,
                 name: `name`,

@@ -21,18 +21,11 @@ export const createPartitionKey = (params: PartitionKeyParams): string => {
 };
 
 export interface SortKeyParams {
-    version: number | string;
+    version: number;
 }
 
 export const createSortKey = (params: SortKeyParams): string => {
-    let version = params.version;
-    if (typeof params.version !== "number") {
-        if (params.version.includes("#")) {
-            const { version: ver } = parseIdentifier(params.version);
-            version = ver;
-        }
-    }
-    return `REV#${getZeroPaddedVersionNumber(version)}`;
+    return `REV#${getZeroPaddedVersionNumber(params.version)}`;
 };
 
 export const createPathPartitionKey = (params: BasePartitionKeyParams): string => {

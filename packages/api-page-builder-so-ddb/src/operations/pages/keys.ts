@@ -27,10 +27,12 @@ export const createLatestPartitionKey = (params: BasePartitionKeyParams): string
 };
 
 export interface LatestSortKeyParams {
+    pid?: string;
     id: string;
 }
 export const createLatestSortKey = (params: LatestSortKeyParams): string => {
-    return params.id;
+    const { id } = parseIdentifier(params.pid || params.id);
+    return id;
 };
 
 export const createPathPartitionKey = (params: BasePartitionKeyParams): string => {

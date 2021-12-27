@@ -116,7 +116,7 @@ export const createPageStorageOperations = (params: Params): PageStorageOperatio
         try {
             await batchWriteAll({
                 table: entity.table,
-                items: items
+                items
             });
             return page;
         } catch (ex) {
@@ -333,10 +333,6 @@ export const createPageStorageOperations = (params: Params): PageStorageOperatio
                 gte: " "
             }
         };
-        const revisionKeys = {
-            PK: createRevisionPartitionKey(page),
-            SK: createRevisionSortKey(page)
-        };
         const latestKeys = {
             PK: createLatestPartitionKey(page),
             SK: createLatestSortKey(page)
@@ -371,7 +367,12 @@ export const createPageStorageOperations = (params: Params): PageStorageOperatio
                 items.push(entity.deleteBatch(publishedKeys));
                 deletedPublishedRecord = true;
             }
-            items.push(entity.deleteBatch(revisionKeys));
+            items.push(
+                entity.deleteBatch({
+                    PK: revision.PK,
+                    SK: revision.SK
+                })
+            );
         }
 
         try {
