@@ -9,7 +9,7 @@ import {
 } from "@webiny/api-page-builder/graphql";
 import { createStorageOperations as createPageBuilderStorageOperations } from "@webiny/api-page-builder-so-ddb";
 import pageBuilderImportExportPlugins from "@webiny/api-page-builder-import-export/graphql";
-import { createStorageOperations as createPageBuilderImportExportStorageOperations } from "@webiny/api-page-builder-import-export-so-ddb";
+import { createStorageOperations as createPageImportExportStorageOperations } from "@webiny/api-page-builder-import-export-so-ddb";
 import importPagesProcessPlugins from "@webiny/api-page-builder-import-export/importPages/process";
 import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
@@ -49,7 +49,7 @@ export const handler = createHandler({
         }),
         createPageBuilderGraphQL(),
         pageBuilderImportExportPlugins({
-            storageOperations: createPageBuilderImportExportStorageOperations({ documentClient })
+            storageOperations: createPageImportExportStorageOperations({ documentClient })
         }),
         importPagesProcessPlugins({
             handlers: { process: process.env.AWS_LAMBDA_FUNCTION_NAME }

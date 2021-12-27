@@ -4,11 +4,14 @@ import graphqlPlugins from "@webiny/handler-graphql";
 import i18nPlugins from "@webiny/api-i18n/graphql";
 import i18nDynamoDbStorageOperations from "@webiny/api-i18n-ddb";
 import i18nContentPlugins from "@webiny/api-i18n-content/plugins";
-import pageBuilderPlugins from "@webiny/api-page-builder/graphql";
-import pageBuilderDynamoDbPlugins from "@webiny/api-page-builder-so-ddb";
+import {
+    createPageBuilderContext,
+    createPageBuilderGraphQL
+} from "@webiny/api-page-builder/graphql";
+import { createStorageOperations as createPageBuilderStorageOperations } from "@webiny/api-page-builder-so-ddb";
 import pageBuilderPrerenderingPlugins from "@webiny/api-page-builder/prerendering";
 import pageBuilderImportExportPlugins from "@webiny/api-page-builder-import-export/graphql";
-import { createStorageOperations as createPageBuilderImportExportStorageOperations } from "@webiny/api-page-builder-import-export-so-ddb";
+import { createStorageOperations as createPageImportExportStorageOperations } from "@webiny/api-page-builder-import-export-so-ddb";
 import prerenderingServicePlugins from "@webiny/api-prerendering-service/client";
 import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
@@ -63,11 +66,15 @@ export const handler = createHandler({
                 }
             }
         }),
-        pageBuilderPlugins(),
-        pageBuilderDynamoDbPlugins(),
+        createPageBuilderContext({
+            storageOperations: createPageBuilderStorageOperations({
+                documentClient
+            })
+        }),
+        createPageBuilderGraphQL(),
         pageBuilderPrerenderingPlugins(),
         pageBuilderImportExportPlugins({
-            storageOperations: createPageBuilderImportExportStorageOperations({ documentClient })
+            storageOperations: createPageImportExportStorageOperations({ documentClient })
         }),
         createFormBuilder({
             storageOperations: createFormBuilderStorageOperations({

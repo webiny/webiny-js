@@ -4,8 +4,11 @@ import graphqlPlugins from "@webiny/handler-graphql";
 import i18nPlugins from "@webiny/api-i18n/graphql";
 import i18nDynamoDbStorageOperations from "@webiny/api-i18n-ddb";
 import i18nContentPlugins from "@webiny/api-i18n-content/plugins";
-import pageBuilderPlugins from "@webiny/api-page-builder/graphql";
-import pageBuilderDynamoDbElasticsearchPlugins from "@webiny/api-page-builder-so-ddb-es";
+import {
+    createPageBuilderContext,
+    createPageBuilderGraphQL
+} from "@webiny/api-page-builder/graphql";
+import { createStorageOperations as createPageBuilderStorageOperations } from "@webiny/api-page-builder-so-ddb-es";
 import pageBuilderPrerenderingPlugins from "@webiny/api-page-builder/prerendering";
 import pageBuilderImportExportPlugins from "@webiny/api-page-builder-import-export/graphql";
 import { createStorageOperations as createPageImportExportStorageOperations } from "@webiny/api-page-builder-import-export-so-ddb";
@@ -28,10 +31,10 @@ import { createStorageOperations as createHeadlessCmsStorageOperations } from "@
 import headlessCmsModelFieldToGraphQLPlugins from "@webiny/api-headless-cms/content/plugins/graphqlFields";
 import elasticsearchDataGzipCompression from "@webiny/api-elasticsearch/plugins/GzipCompression";
 import securityPlugins from "./security";
+import { createElasticsearchClient } from "@webiny/api-elasticsearch/client";
 
 // Imports plugins created via scaffolding utilities.
 import scaffoldsPlugins from "./plugins/scaffolds";
-import { createElasticsearchClient } from "@webiny/api-elasticsearch/client";
 
 const debug = process.env.DEBUG === "true";
 
@@ -71,8 +74,13 @@ export const handler = createHandler({
                 }
             }
         }),
-        pageBuilderPlugins(),
-        pageBuilderDynamoDbElasticsearchPlugins(),
+        createPageBuilderContext({
+            storageOperations: createPageBuilderStorageOperations({
+                documentClient,
+                elasticsearch: elasticsearchClient
+            })
+        }),
+        createPageBuilderGraphQL(),
         pageBuilderPrerenderingPlugins(),
         pageBuilderImportExportPlugins({
             storageOperations: createPageImportExportStorageOperations({ documentClient })
