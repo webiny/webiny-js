@@ -1,5 +1,6 @@
 import { createTenancyContext, createTenancyGraphQL } from "@webiny/api-tenancy";
 import { createStorageOperations as tenancyStorageOperations } from "@webiny/api-tenancy-so-ddb";
+import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { createSecurityContext, createSecurityGraphQL } from "@webiny/api-security";
 import { createStorageOperations as securityStorageOperations } from "@webiny/api-security-so-ddb";
 import { authenticateUsingHttpHeader } from "@webiny/api-security/plugins/authenticateUsingHttpHeader";
@@ -13,7 +14,7 @@ import createAdminUsersApp from "@webiny/api-admin-users-cognito";
 import { syncWithCognito } from "@webiny/api-admin-users-cognito/syncWithCognito";
 import { createStorageOperations as createAdminUsersStorageOperations } from "@webiny/api-admin-users-cognito-so-ddb";
 
-export default ({ documentClient }: { documentClient: any }) => [
+export default ({ documentClient }: { documentClient: DocumentClient }) => [
     /**
      * Create Tenancy app in the `context`.
      */
