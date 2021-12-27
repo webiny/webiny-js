@@ -6,7 +6,7 @@ import { createPrerenderingServiceStorageOperations } from "@webiny/api-prerende
 
 const documentClient = new DocumentClient({
     convertEmptyValues: true,
-    region: process.env.AWS_REGION as string
+    region: String(process.env.AWS_REGION)
 });
 
 export const handler = createHandler(
@@ -15,7 +15,7 @@ export const handler = createHandler(
             table(table) {
                 return {
                     ...table,
-                    name: process.env.DB_TABLE as string
+                    name: String(process.env.DB_TABLE)
                 };
             },
             documentClient

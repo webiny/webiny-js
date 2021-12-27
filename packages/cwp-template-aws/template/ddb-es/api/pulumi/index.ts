@@ -11,11 +11,11 @@ export = async () => {
     // Add tags to all resources that support tagging. Read more about the default environment variables:
     // https://www.webiny.com/docs/how-to-guides/environment-variables#webiny-environment-variables
     tagResources({
-        WbyProjectName: process.env.WEBINY_PROJECT_NAME as string,
-        WbyEnvironment: process.env.WEBINY_ENV as string
+        WbyProjectName: String(process.env.WEBINY_PROJECT_NAME),
+        WbyEnvironment: String(process.env.WEBINY_ENV)
     });
 
-    const environment = process.env.WEBINY_ENV as string;
+    const environment = String(process.env.WEBINY_ENV);
     if (PROD_STACK_ENVIRONMENTS.includes(environment)) {
         // Import "prod" resources config and initialize resources.
         return await import("./prod").then(module => module.default());

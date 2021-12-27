@@ -40,7 +40,7 @@ export const handler = createHandler({
         }),
         importPagesCreatePlugins({
             handlers: {
-                process: process.env.IMPORT_PAGE_QUEUE_PROCESS_HANDLER as string
+                process: String(process.env.IMPORT_PAGE_QUEUE_PROCESS_HANDLER)
             }
         })
     ],

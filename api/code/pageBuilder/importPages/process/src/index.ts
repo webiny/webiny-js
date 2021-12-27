@@ -46,7 +46,7 @@ export const handler = createHandler({
         }),
         importPagesProcessPlugins({
             handlers: {
-                process: process.env.AWS_LAMBDA_FUNCTION_NAME as string
+                process: String(process.env.AWS_LAMBDA_FUNCTION_NAME)
             }
         })
     ],

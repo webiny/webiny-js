@@ -45,8 +45,8 @@ export default ({ documentClient }: { documentClient: DocumentClient }) => [
      * This plugin will verify the JWT token against the provided User Pool.
      */
     cognitoAuthentication({
-        region: process.env.COGNITO_REGION as string,
-        userPoolId: process.env.COGNITO_USER_POOL_ID as string,
+        region: String(process.env.COGNITO_REGION),
+        userPoolId: String(process.env.COGNITO_USER_POOL_ID),
         identityType: "admin"
     }),
 
