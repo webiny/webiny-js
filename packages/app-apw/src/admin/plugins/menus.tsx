@@ -23,5 +23,12 @@ export default [
                 path: "/apw/publishing-workflows"
             })
         );
+
+        localesMenu.addElement<NavigationMenuElement>(
+            new NavigationMenuElement("apw.contentReviews", {
+                label: "Content reviews",
+                path: "/apw/content-reviews"
+            })
+        );
     })
 ];
