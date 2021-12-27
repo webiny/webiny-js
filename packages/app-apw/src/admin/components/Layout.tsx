@@ -126,11 +126,12 @@ const StyledBox = ({
 
 const IGNORED_PROPS = ["display", "width"];
 
-const boxConfig = {
+export const Box = styled("div", {
+    /**
+     * We don't want to pass "display" and "width" properties to underlying "div" HTML tag.
+     */
     shouldForwardProp: prop => isPropValid(prop) && !IGNORED_PROPS.includes(prop)
-};
-
-export const Box = styled("div", boxConfig)(StyledBox);
+})(StyledBox);
 
 interface ColumnsProps extends StyledBoxProps {
     space: SpacingScale;
