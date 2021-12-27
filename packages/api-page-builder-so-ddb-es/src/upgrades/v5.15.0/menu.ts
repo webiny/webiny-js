@@ -14,6 +14,7 @@ type DbRecord<T> = T & {
 export const upgradeMenus = async (context: PbContext) => {
     const tenant: string = context.tenancy.getCurrentTenant().id;
     const localeCodes: string[] = await context.i18n.getLocales().map(locale => locale.code);
+    // @ts-ignore
     const menuStorageOperations = context.pageBuilder.menus
         .storageOperations as MenuStorageOperationsDdbEs;
     if (menuStorageOperations instanceof MenuStorageOperationsDdbEs === false) {

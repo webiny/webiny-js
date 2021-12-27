@@ -477,7 +477,7 @@ export interface CmsModelFieldToGraphQLPlugin extends Plugin {
             model: CmsModel;
             field: CmsModelField;
             fieldTypePlugins: CmsFieldTypePlugins;
-        }): CmsModelFieldDefinition | string;
+        }): CmsModelFieldDefinition | string | null;
         /**
          * Definition for field resolver.
          * By default it is simple return of the `instance.values[fieldId]` but if required, users can define their own.
@@ -575,7 +575,7 @@ export interface CmsModelFieldToGraphQLPlugin extends Plugin {
             model: CmsModel;
             field: CmsModelField;
             fieldTypePlugins: CmsFieldTypePlugins;
-        }) => CmsModelFieldDefinition | string;
+        }) => CmsModelFieldDefinition | string | null;
         /**
          * Definition for input GraphQL field type.
          *
@@ -940,6 +940,23 @@ export interface CmsModelCreateInput {
      * Description of the content model.
      */
     description?: string;
+    /**
+     * Group where to put the content model in.
+     */
+    group: string;
+}
+
+/**
+ * A GraphQL params.data parameter received when creating content model from existing model.
+ *
+ * @category GraphQL params
+ * @category CmsModel
+ */
+export interface CmsModelCreateFromInput extends CmsModelCreateInput {
+    /**
+     * Locale into which we want to clone the model into.
+     */
+    locale?: string;
 }
 
 /**
@@ -1014,6 +1031,10 @@ export interface CmsModelUpdateInput {
      * A new content model name.
      */
     name?: string;
+    /**
+     * A group we want to move the model to.
+     */
+    group?: string;
     /**
      * A new description of the content model.
      */
@@ -1194,20 +1215,30 @@ export interface CmsModelManager {
 }
 
 export interface BeforeModelCreateTopicParams {
-    input: Partial<CmsModel>;
+    input: CmsModelCreateInput;
     model: CmsModel;
 }
 export interface AfterModelCreateTopicParams {
-    input: Partial<CmsModel>;
+    input: CmsModelCreateInput;
+    model: CmsModel;
+}
+export interface BeforeModelCreateFromTopicParams {
+    input: CmsModelCreateFromInput;
+    original: CmsModel;
+    model: CmsModel;
+}
+export interface AfterModelCreateFromTopicParams {
+    input: CmsModelCreateFromInput;
+    original: CmsModel;
     model: CmsModel;
 }
 export interface BeforeModelUpdateTopicParams {
-    input: Partial<CmsModel>;
+    input: CmsModelUpdateInput;
     original: CmsModel;
     model: CmsModel;
 }
 export interface AfterModelUpdateTopicParams {
-    input: Partial<CmsModel>;
+    input: CmsModelUpdateInput;
     original: CmsModel;
     model: CmsModel;
 }
@@ -1252,11 +1283,11 @@ export interface CmsModelContext {
      */
     createModel: (data: CmsModelCreateInput) => Promise<CmsModel>;
     /**
+     * Create a content model from the given model - clone.
+     */
+    createModelFrom: (modelId: string, data: CmsModelCreateFromInput) => Promise<CmsModel>;
+    /**
      * Update content model without data validation. Used internally.
-     *
-     * @param model - existing content model
-     * @param data - data to be updated
-     *
      * @hidden
      */
     updateModelDirect: (params: CmsModelUpdateDirectParams) => Promise<CmsModel>;
@@ -1284,6 +1315,8 @@ export interface CmsModelContext {
      */
     onBeforeModelCreate: Topic<BeforeModelCreateTopicParams>;
     onAfterModelCreate: Topic<AfterModelCreateTopicParams>;
+    onBeforeModelCreateFrom: Topic<BeforeModelCreateFromTopicParams>;
+    onAfterModelCreateFrom: Topic<AfterModelCreateFromTopicParams>;
     onBeforeModelUpdate: Topic<BeforeModelUpdateTopicParams>;
     onAfterModelUpdate: Topic<AfterModelUpdateTopicParams>;
     onBeforeModelDelete: Topic<BeforeModelDeleteTopicParams>;

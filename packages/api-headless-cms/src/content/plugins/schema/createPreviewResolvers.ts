@@ -19,6 +19,11 @@ export const createPreviewResolvers: CreateReadResolvers = ({
     model,
     fieldTypePlugins
 }) => {
+    if (model.fields.length === 0) {
+        return {
+            Query: {}
+        };
+    }
     const typeName = createTypeName(model.modelId);
     const rTypeName = createReadTypeName(typeName);
 

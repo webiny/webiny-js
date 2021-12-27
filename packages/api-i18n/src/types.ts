@@ -69,6 +69,7 @@ export interface ContextI18NGetLocales extends Plugin {
 
 export interface I18NSystem {
     version: string;
+    tenant: string;
 }
 
 /**

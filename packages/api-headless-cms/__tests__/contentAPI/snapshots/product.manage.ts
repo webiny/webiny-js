@@ -53,27 +53,27 @@ export default /* GraphQL */ `
     input Product_Variant_OptionsInput {
         name: String
         price: Number
-        category: RefFieldInput
+        category: RefFieldInput!
         categories: [RefFieldInput!]
     }
     
     input Product_VariantInput {
         name: String
         price: Number
-        category: RefFieldInput
+        category: RefFieldInput!
         options: [Product_Variant_OptionsInput!]
     }
 
     input ProductInput {
-        title: String
-        category: RefFieldInput
-        price: Number
+        title: String!
+        category: RefFieldInput!
+        price: Number!
         inStock: Boolean
         itemsInStock: Number
-        availableOn: Date
-        color: String
-        availableSizes: [String]
-        image: String
+        availableOn: Date!
+        color: String!
+        availableSizes: [String]!
+        image: String!
         richText: JSON
         variant: Product_VariantInput
     }

@@ -97,6 +97,7 @@ describe("content model test", () => {
         expect(getTypeFields(ReadMutation)).toEqual([]);
         expect(getTypeFields(ManageMutation)).toEqual([
             "createContentModel",
+            "createContentModelFrom",
             "updateContentModel",
             "deleteContentModel",
             "createContentModelGroup",

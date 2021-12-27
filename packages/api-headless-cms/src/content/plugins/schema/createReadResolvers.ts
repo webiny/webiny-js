@@ -15,6 +15,11 @@ export interface CreateReadResolvers {
 }
 
 export const createReadResolvers: CreateReadResolvers = ({ models, model, fieldTypePlugins }) => {
+    if (model.fields.length === 0) {
+        return {
+            Query: {}
+        };
+    }
     const typeName = createTypeName(model.modelId);
     const rTypeName = createReadTypeName(typeName);
 

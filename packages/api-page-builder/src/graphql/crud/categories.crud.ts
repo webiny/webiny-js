@@ -1,21 +1,27 @@
 import { withFields, string } from "@commodo/fields";
 import { validation } from "@webiny/validation";
 import {
+    CategoriesCrud,
     Category,
     CategoryStorageOperations,
     CategoryStorageOperationsGetParams,
     CategoryStorageOperationsListParams,
+    OnAfterCategoryCreateTopicParams,
+    OnAfterCategoryDeleteTopicParams,
+    OnAfterCategoryUpdateTopicParams,
+    OnBeforeCategoryCreateTopicParams,
+    OnBeforeCategoryDeleteTopicParams,
+    OnBeforeCategoryUpdateTopicParams,
+    PageBuilderContextObject,
     PbContext
 } from "~/types";
-import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
 import { NotAuthorizedError } from "@webiny/api-security";
 import hasRwd from "./utils/hasRwd";
 import { NotFoundError } from "@webiny/handler-graphql";
 import checkBasePermissions from "./utils/checkBasePermissions";
 import checkOwnPermissions from "./utils/checkOwnPermissions";
 import WebinyError from "@webiny/error";
-import { CategoryStorageOperationsProviderPlugin } from "~/plugins/CategoryStorageOperationsProviderPlugin";
-import { createStorageOperations } from "./storageOperations";
+import { createTopic } from "@webiny/pubsub";
 
 const CreateDataModel = withFields({
     slug: string({ validation: validation.create("required,minLength:1,maxLength:100") }),
@@ -32,25 +38,37 @@ const UpdateDataModel = withFields({
 
 const PERMISSION_NAME = "pb.category";
 
-export default new ContextPlugin<PbContext>(async context => {
-    /**
-     * If pageBuilder is not defined on the context, do not continue, but log it.
-     */
-    if (!context.pageBuilder) {
-        console.log("Missing pageBuilder on context. Skipping Categories crud.");
-        return;
-    }
-
-    const storageOperations = await createStorageOperations<CategoryStorageOperations>(
-        context,
-        CategoryStorageOperationsProviderPlugin.type
-    );
+export interface Params {
+    context: PbContext;
+    storageOperations: CategoryStorageOperations;
+}
+export const createCategoriesCrud = (params: Params): CategoriesCrud => {
+    const { context, storageOperations } = params;
 
     const getPermission = name => context.security.getPermission(name);
 
-    context.pageBuilder.categories = {
-        storageOperations,
-        async get(slug, options = { auth: true }) {
+    const onBeforeCategoryCreate = createTopic<OnBeforeCategoryCreateTopicParams>();
+    const onAfterCategoryCreate = createTopic<OnAfterCategoryCreateTopicParams>();
+    const onBeforeCategoryUpdate = createTopic<OnBeforeCategoryUpdateTopicParams>();
+    const onAfterCategoryUpdate = createTopic<OnAfterCategoryUpdateTopicParams>();
+    const onBeforeCategoryDelete = createTopic<OnBeforeCategoryDeleteTopicParams>();
+    const onAfterCategoryDelete = createTopic<OnAfterCategoryDeleteTopicParams>();
+
+    return {
+        /**
+         * Lifecycle events
+         */
+        onBeforeCategoryCreate,
+        onAfterCategoryCreate,
+        onBeforeCategoryUpdate,
+        onAfterCategoryUpdate,
+        onBeforeCategoryDelete,
+        onAfterCategoryDelete,
+        /**
+         * Storage operations
+         */
+        categoriesStorageOperations: storageOperations,
+        async getCategory(slug, options = { auth: true }) {
             const { auth } = options;
 
             const tenant = context.tenancy.getCurrentTenant();
@@ -107,7 +125,7 @@ export default new ContextPlugin<PbContext>(async context => {
             return category;
         },
 
-        async list() {
+        async listCategories() {
             await context.i18nContent.checkI18NContentPermission();
 
             let permission;
@@ -159,10 +177,10 @@ export default new ContextPlugin<PbContext>(async context => {
                 );
             }
         },
-        async create(input) {
+        async createCategory(this: PageBuilderContextObject, input) {
             await checkBasePermissions(context, PERMISSION_NAME, { rwd: "w" });
 
-            const existingCategory = await context.pageBuilder.categories.get(input.slug, {
+            const existingCategory = await this.getCategory(input.slug, {
                 auth: false
             });
             if (existingCategory) {
@@ -192,10 +210,17 @@ export default new ContextPlugin<PbContext>(async context => {
             };
 
             try {
-                return await storageOperations.create({
+                await onBeforeCategoryCreate.publish({
+                    category
+                });
+                const result = await storageOperations.create({
                     input: data,
                     category
                 });
+                await onBeforeCategoryCreate.publish({
+                    category: result
+                });
+                return result;
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not create category.",
@@ -207,12 +232,12 @@ export default new ContextPlugin<PbContext>(async context => {
                 );
             }
         },
-        async update(slug, input) {
+        async updateCategory(this: PageBuilderContextObject, slug, input) {
             const permission = await checkBasePermissions(context, PERMISSION_NAME, {
                 rwd: "w"
             });
 
-            const original = await context.pageBuilder.categories.get(slug);
+            const original = await this.getCategory(slug);
             if (!original) {
                 throw new NotFoundError(`Category "${slug}" not found.`);
             }
@@ -230,11 +255,20 @@ export default new ContextPlugin<PbContext>(async context => {
                 ...data
             };
             try {
-                return await storageOperations.update({
+                await onBeforeCategoryUpdate.publish({
+                    original,
+                    category
+                });
+                const result = await storageOperations.update({
                     input: data,
                     original,
                     category
                 });
+                await onAfterCategoryUpdate.publish({
+                    original,
+                    category
+                });
+                return result;
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not update category.",
@@ -247,12 +281,12 @@ export default new ContextPlugin<PbContext>(async context => {
                 );
             }
         },
-        async delete(slug) {
+        async deleteCategory(this: PageBuilderContextObject, slug) {
             const permission = await checkBasePermissions(context, PERMISSION_NAME, {
                 rwd: "d"
             });
 
-            const category = await context.pageBuilder.categories.get(slug);
+            const category = await this.getCategory(slug);
             if (!category) {
                 throw new NotFoundError(`Category "${slug}" not found.`);
             }
@@ -262,7 +296,7 @@ export default new ContextPlugin<PbContext>(async context => {
 
             // Before deleting, let's check if there is a page that's in this category.
             // If so, let's prevent this.
-            const [pages] = await context.pageBuilder.pages.listLatest(
+            const [pages] = await this.listLatestPages(
                 {
                     where: {
                         category: category.slug
@@ -281,9 +315,16 @@ export default new ContextPlugin<PbContext>(async context => {
             }
 
             try {
-                return await storageOperations.delete({
+                await onBeforeCategoryDelete.publish({
                     category
                 });
+                const result = await storageOperations.delete({
+                    category
+                });
+                await onAfterCategoryDelete.publish({
+                    category: result
+                });
+                return result;
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not delete category.",
@@ -296,4 +337,4 @@ export default new ContextPlugin<PbContext>(async context => {
             }
         }
     };
-});
+};

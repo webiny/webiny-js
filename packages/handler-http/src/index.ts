@@ -1,13 +1,15 @@
 import { HttpContext, HandlerHttpOptions } from "./types";
 import { ContextPlugin, HandlerErrorPlugin } from "@webiny/handler/types";
 import { boolean } from "boolean";
+import { getWebinyVersionHeaders } from "@webiny/utils";
 
 const DEFAULT_HEADERS = {
     "Cache-Control": "no-store",
     "Content-Type": "application/json",
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Headers": "*",
-    "Access-Control-Allow-Methods": "OPTIONS,POST"
+    "Access-Control-Allow-Methods": "OPTIONS,POST",
+    ...getWebinyVersionHeaders()
 };
 
 const lowercaseKeys = obj => {

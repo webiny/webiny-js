@@ -1,13 +1,13 @@
-import {
-    InstallationParams,
-    InstallationPlugin
-} from "@webiny/api-page-builder/plugins/InstallationPlugin";
+import { PbContext } from "@webiny/api-page-builder/types";
+import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
 import configurations from "~/operations/configurations";
 
-export const installation = () => {
-    return new InstallationPlugin({
-        beforeInstall: async (params: InstallationParams) => {
-            const { context } = params;
+export const installation = (): ContextPlugin<PbContext> => {
+    return new ContextPlugin<PbContext>(async context => {
+        /**
+         * Add the elasticsearch index for the page builder.
+         */
+        context.pageBuilder.onBeforeInstall.subscribe(async () => {
             const { elasticsearch } = context;
 
             const { index } = configurations.es(context);
@@ -48,6 +48,6 @@ export const installation = () => {
                     }
                 }
             });
-        }
+        });
     });
 };
