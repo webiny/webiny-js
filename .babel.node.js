@@ -1,6 +1,5 @@
 module.exports = ({ path }) => {
     return {
-        sourceMaps: true,
         presets: [
             [
                 "@babel/preset-env",

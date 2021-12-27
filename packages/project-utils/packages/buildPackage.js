@@ -58,7 +58,12 @@ const babelCompile = async ({ cwd }) => {
         const file = files[i];
         if (BABEL_COMPILE_EXTENSIONS.includes(extname(file))) {
             compilations.push(
-                babel.transformFileAsync(file, { cwd }).then(results => [file, results])
+                babel
+                    .transformFileAsync(file, {
+                        cwd,
+                        sourceMaps: true
+                    })
+                    .then(results => [file, results])
             );
         } else {
             copies.push(
