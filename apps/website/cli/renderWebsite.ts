@@ -19,11 +19,7 @@ export default {
         }
 
         // 2. Get exports from `site` stack, for `args.env` environment.
-        const apiOutput = getStackOutput({ folder: "api-ddb", env: args.env });
-        if (!apiOutput) {
-            // website was not yet deployed
-            return;
-        }
+        const apiOutput = getStackOutput({ folder: "api", env: args.env });
 
         context.info("Issuing a complete website render job...");
 

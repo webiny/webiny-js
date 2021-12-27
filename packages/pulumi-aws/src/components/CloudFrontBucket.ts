@@ -13,6 +13,8 @@ export class CloudFrontBucket extends pulumi.ComponentResource {
     constructor(name: string) {
         super("webiny:aws:CloudFrontBucket", name);
 
+        // Origin Identity is a kind of AWS user that represents Cloudfront distribution
+        // We can add IAM policies to it later, to allow accessing private S3 bucket
         const originIdentity = new aws.cloudfront.OriginAccessIdentity(`${name}-origin-identity`);
 
         this.s3Bucket = new aws.s3.Bucket(name, {
@@ -47,6 +49,8 @@ export class CloudFrontBucket extends pulumi.ComponentResource {
                         {
                             Effect: "Allow",
                             Principal: { AWS: originIdentity.iamArn },
+                            // we need GetObject to retrieve objects from S3
+                            // and ListBucket allows to properly handle non-existing files (404)
                             Action: ["s3:ListBucket", "s3:GetObject"],
                             Resource: [`${arn}`, `${arn}/*`]
                         }
