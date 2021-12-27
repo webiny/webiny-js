@@ -2,6 +2,7 @@ import React from "react";
 import styled from "@emotion/styled";
 
 const spacing = {
+    0: "0px",
     1: "4px",
     1.5: "6px",
     2: "8px",
@@ -17,7 +18,7 @@ const spacing = {
     10: "40px"
 };
 
-export type SpacingScale = 1 | 1.5 | 2 | 2.5 | 3 | 3.5 | 4 | 5 | 6 | 7 | 8 | 9 | 10;
+export type SpacingScale = 0 | 1 | 1.5 | 2 | 2.5 | 3 | 3.5 | 4 | 5 | 6 | 7 | 8 | 9 | 10;
 
 export interface StyledBoxProps {
     padding?: SpacingScale;
@@ -36,6 +37,17 @@ export interface StyledBoxProps {
     marginY?: SpacingScale;
     width?: string;
     display?: string;
+    useNegativeMargin?: boolean;
+    justifyContent?: string;
+    alignItems?: string;
+    boxSizing?:
+        | "-moz-initial"
+        | "inherit"
+        | "initial"
+        | "revert"
+        | "unset"
+        | "border-box"
+        | "content-box";
 }
 
 const StyledBox = ({
@@ -45,6 +57,9 @@ const StyledBox = ({
     marginY,
     width,
     display,
+    useNegativeMargin,
+    justifyContent,
+    alignItems,
     ...props
 }: StyledBoxProps) => {
     const padding = spacing[props.padding];
@@ -61,7 +76,7 @@ const StyledBox = ({
         paddingBottom = spacing[paddingY];
     }
 
-    const margin = spacing[props.margin];
+    let margin = spacing[props.margin];
     let marginTop = spacing[props.marginTop];
     let marginRight = spacing[props.marginRight];
     let marginBottom = spacing[props.marginBottom];
@@ -75,7 +90,26 @@ const StyledBox = ({
         marginTop = spacing[marginY];
         marginBottom = spacing[marginY];
     }
+
+    if (useNegativeMargin) {
+        margin = `-${margin}`;
+        marginTop = `-${marginTop}`;
+        marginRight = `-${marginRight}`;
+        marginBottom = `-${marginBottom}`;
+        marginLeft = `-${marginLeft}`;
+    }
+
+    /**
+     * Always have a width defined.
+     */
+    const boxSizing = props.boxSizing || "border-box";
+
     return {
+        boxSizing,
+        width,
+        display,
+        justifyContent,
+        alignItems,
         padding,
         paddingTop,
         paddingRight,
@@ -85,9 +119,7 @@ const StyledBox = ({
         marginTop,
         marginRight,
         marginBottom,
-        marginLeft,
-        width,
-        display
+        marginLeft
     };
 };
 
@@ -96,18 +128,19 @@ export const Box = styled("div")(StyledBox);
 interface ColumnsProps extends StyledBoxProps {
     space: SpacingScale;
     children: Array<React.ReactComponentElement<typeof Box>>;
+    className?: string;
 }
 
 export const Columns: React.FC<ColumnsProps> = ({ children, space, ...props }) => {
     return (
-        <Box display="flex" {...props}>
+        <Box display="flex" width={"100%"} {...props}>
             {React.Children.map(children, (child, index) => {
-                const childProps = {};
+                const childProps = { width: "100%" };
                 if (index > 0) {
                     childProps["marginLeft"] = space;
                 }
 
-                return React.cloneElement(child, childProps);
+                return React.cloneElement(child, { ...childProps, ...child.props });
             })}
         </Box>
     );
@@ -116,11 +149,12 @@ export const Columns: React.FC<ColumnsProps> = ({ children, space, ...props }) =
 interface StackProps extends StyledBoxProps {
     space: SpacingScale;
     children: Array<React.ReactComponentElement<typeof Box | typeof Columns>>;
+    className?: string;
 }
 
 export const Stack = ({ children, space, ...props }: StackProps) => {
     return (
-        <Box {...props}>
+        <Box width={"100%"} {...props}>
             {React.Children.map(children, (child, index) => {
                 if (index > 0) {
                     return React.cloneElement(child, { marginTop: space });
