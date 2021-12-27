@@ -25,7 +25,7 @@ const RightPanelWrapper = styled("div")({
     height: "calc(100vh - 70px)"
 });
 
-const leftPanel = css({
+export const leftPanel = css({
     backgroundColor: "var(--mdc-theme-surface)",
     ">.webiny-data-list": {
         display: "flex",
