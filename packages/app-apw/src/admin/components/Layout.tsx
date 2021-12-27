@@ -1,5 +1,6 @@
 import React from "react";
 import styled from "@emotion/styled";
+import isPropValid from "@emotion/is-prop-valid";
 
 const spacing = {
     0: "0px",
@@ -123,7 +124,13 @@ const StyledBox = ({
     };
 };
 
-export const Box = styled("div")(StyledBox);
+const IGNORED_PROPS = ["display", "width"];
+
+const boxConfig = {
+    shouldForwardProp: prop => isPropValid(prop) && !IGNORED_PROPS.includes(prop)
+};
+
+export const Box = styled("div", boxConfig)(StyledBox);
 
 interface ColumnsProps extends StyledBoxProps {
     space: SpacingScale;
