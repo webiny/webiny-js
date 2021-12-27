@@ -12,7 +12,7 @@ const documentClient = new DocumentClient({
 export const handler = createHandler(
     renderPlugins({
         storageOperations: createPrerenderingServiceStorageOperations({
-            table: (table: any) => {
+            table(table) {
                 return {
                     ...table,
                     name: process.env.DB_TABLE as string
