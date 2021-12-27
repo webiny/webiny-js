@@ -8,7 +8,7 @@ import { CheckboxGroup } from "@webiny/ui/Checkbox";
 import { Elevation } from "@webiny/ui/Elevation";
 import { IconButton } from "@webiny/ui/Button";
 import { ReactComponent as CloseIcon } from "~/admin/assets/icons/close_24dp.svg";
-import { Box, Columns, Stack } from "./theme";
+import { Box, Columns, Stack } from "~/admin/components/Layout";
 import { CheckboxWrapper, InputField, restGridStyles } from "./Styled";
 import { Scrollbar } from "@webiny/ui/Scrollbar";
 import { BindComponent } from "@webiny/form";

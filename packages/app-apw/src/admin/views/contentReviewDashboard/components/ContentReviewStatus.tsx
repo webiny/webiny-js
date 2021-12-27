@@ -1,7 +1,7 @@
 import React from "react";
 import upperCase from "lodash/upperCase";
 import { ApwContentReviewStatus } from "~/types";
-import { Box, Columns, Stack } from "~/admin/views/publishingWorkflows/components/theme";
+import { Box, Columns, Stack } from "~/admin/components/Layout";
 import {
     Circle,
     CommentCountBox,

@@ -5,7 +5,7 @@ import { Typography } from "@webiny/ui/Typography";
 import { Checkbox } from "@webiny/ui/Checkbox";
 import { Scrollbar } from "@webiny/ui/Scrollbar";
 import { ChildrenRenderProp } from "@webiny/ui/Checkbox/CheckboxGroup";
-import { Box, Columns } from "./theme";
+import { Box, Columns } from "~/admin/components/Layout";
 import { restGridStyles } from "./Styled";
 
 /**

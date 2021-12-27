@@ -20,7 +20,7 @@ import { ReactComponent as EditIcon } from "~/admin/assets/icons/edit_24dp.svg";
 
 import { usePublishingWorkflowsList } from "./hooks/usePublishingWorkflowsList";
 import { ApwWorkflowApplications } from "~/types";
-import { Box, Columns } from "./components/theme";
+import { Box, Columns } from "~/admin/components/Layout";
 
 const t = i18n.ns("app-apw/admin/publishing-workflows/data-list");
 

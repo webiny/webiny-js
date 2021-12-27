@@ -13,7 +13,7 @@ import { ReactComponent as CloseIcon } from "~/admin/assets/icons/close_24dp.svg
 
 import { ApwWorkflowStepTypes } from "~/types";
 import { i18n } from "@webiny/app/i18n";
-import { Box, Stack } from "./theme";
+import { Box, Stack } from "~/admin/components/Layout";
 import { restGridStyles, StepWrapper } from "./Styled";
 import { ReviewersList } from "./ReviewersList";
 

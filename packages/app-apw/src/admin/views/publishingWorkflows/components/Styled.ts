@@ -1,6 +1,6 @@
 import { css } from "emotion";
 import styled from "@emotion/styled";
-import { Box } from "./theme";
+import { Box } from "~/admin/components/Layout";
 import WorkflowStepLabelLinkIcon from "~/admin/assets/icons/step-label-link.svg";
 
 export const restGridStyles = css`

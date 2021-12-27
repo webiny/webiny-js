@@ -1,8 +1,7 @@
 import { css } from "emotion";
 import styled from "@emotion/styled";
-
-import { Box } from "~/admin/views/publishingWorkflows/components/theme";
 import { Typography } from "@webiny/ui/Typography";
+import { Box } from "~/admin/components/Layout";
 import commentBadgeImage from "~/admin/assets/icons/comment-badge_figma.svg";
 import checkmarkImage from "~/admin/assets/icons/checkmark_figma.svg";
 

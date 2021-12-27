@@ -1,6 +1,6 @@
 import React from "react";
 import { listItemStyles, StatusBox, TypographyBold } from "./Styled";
-import { Box, Columns, Stack } from "~/admin/views/publishingWorkflows/components/theme";
+import { Box, Columns, Stack } from "~/admin/components/Layout";
 import { Typography } from "@webiny/ui/Typography";
 import { i18n } from "@webiny/app/i18n";
 

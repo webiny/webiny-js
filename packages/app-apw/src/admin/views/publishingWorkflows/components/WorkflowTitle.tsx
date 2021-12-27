@@ -4,7 +4,7 @@ import { Tooltip } from "@webiny/ui/Tooltip";
 import styled from "@emotion/styled";
 import { css } from "emotion";
 import { Cell, Grid } from "@webiny/ui/Grid";
-import { Box } from "./theme";
+import { Box } from "~/admin/components/Layout";
 
 declare global {
     interface Window {

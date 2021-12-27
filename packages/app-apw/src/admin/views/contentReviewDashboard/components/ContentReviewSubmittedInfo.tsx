@@ -1,6 +1,6 @@
 import React from "react";
 import { i18n } from "@webiny/app/i18n";
-import { Box, Columns } from "~/admin/views/publishingWorkflows/components/theme";
+import { Box, Columns } from "~/admin/components/Layout";
 import { Typography } from "@webiny/ui/Typography";
 import { TypographySecondary } from "./Styled";
 
