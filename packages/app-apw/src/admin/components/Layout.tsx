@@ -133,9 +133,9 @@ interface ColumnsProps extends StyledBoxProps {
 
 export const Columns: React.FC<ColumnsProps> = ({ children, space, ...props }) => {
     return (
-        <Box display="flex" width={"100%"} {...props}>
+        <Box display="flex" {...props}>
             {React.Children.map(children, (child, index) => {
-                const childProps = { width: "100%" };
+                const childProps = {};
                 if (index > 0) {
                     childProps["marginLeft"] = space;
                 }
@@ -154,7 +154,7 @@ interface StackProps extends StyledBoxProps {
 
 export const Stack = ({ children, space, ...props }: StackProps) => {
     return (
-        <Box width={"100%"} {...props}>
+        <Box {...props}>
             {React.Children.map(children, (child, index) => {
                 if (index > 0) {
                     return React.cloneElement(child, { marginTop: space });

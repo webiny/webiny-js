@@ -14,10 +14,10 @@ export interface ContentReviewByProps {
 export const ContentReviewBy: React.FC<ContentReviewByProps> = ({ submittedBy, submittedOn }) => {
     return (
         <Columns space={2.5}>
-            <Box width={"fitContent"}>
+            <Box>
                 <Typography use={"caption"}>{t`Submitted by:`}</Typography>
             </Box>
-            <Box width={"fit-content"}>
+            <Box>
                 <TypographySecondary use={"caption"}>
                     {t`{submittedBy} on {submittedOn}`({ submittedBy, submittedOn })}
                 </TypographySecondary>

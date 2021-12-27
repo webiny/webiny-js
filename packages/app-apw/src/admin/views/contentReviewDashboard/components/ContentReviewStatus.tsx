@@ -41,7 +41,7 @@ export const ContentReviewStatus: React.FC<ContentReviewStatusProps> = ({
     const level = statusToLevel[status];
     return (
         <Stack {...boxProps} space={2} className={statusBoxStyle} padding={4} paddingBottom={3}>
-            <Columns space={4} width={"fit-content"}>
+            <Columns space={4}>
                 <Circle active={level >= 0} />
                 <Circle active={level >= 1} />
                 <Circle active={level >= 2} />
@@ -49,8 +49,8 @@ export const ContentReviewStatus: React.FC<ContentReviewStatusProps> = ({
             <Box display={"flex"}>
                 <StatusText>{upperCase(status)}</StatusText>
             </Box>
-            <Columns space={2.5} width={"fit-content"} alignItems={"center"}>
-                <Columns space={1.5} width={"fit-content"}>
+            <Columns space={2.5} alignItems={"center"}>
+                <Columns space={1.5}>
                     {reviewers.map((_, index) => (
                         <OverlappingAvatar key={index} useNegativeMargin={true} />
                     ))}
