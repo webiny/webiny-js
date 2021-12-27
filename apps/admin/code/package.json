@@ -52,9 +52,7 @@
   "scripts": {
     "analyze": "source-map-explorer build/static/js/main.*",
     "watch": "cross-env PORT=3001 yarn webiny run watch",
-    "build": "yarn webiny run build",
-    "build:dev": "yarn webiny run build --env dev",
-    "watch:dev": "cross-env PORT=3001 yarn webiny run watch  --env dev"
+    "build": "yarn webiny run build"
   },
   "browserslist": {
     "development": [

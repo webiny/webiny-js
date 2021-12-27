@@ -51,8 +51,7 @@ module.exports = options => {
                     messages.errors.length = 1;
                 }
 
-                console.error(messages.errors.join("\n\n"));
-                return reject();
+                return reject(messages.errors.join("\n\n"));
             }
 
             logs && console.log(`Compiled successfully in ${chalk.green(duration()) + "s"}.`);
