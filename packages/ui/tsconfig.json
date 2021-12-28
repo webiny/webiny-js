@@ -1,11 +1,6 @@
 {
   "extends": "../../tsconfig.json",
   "include": ["src", "__tests__/**/*.ts"],
-  "references": [
-    { "path": "../form" },
-    { "path": "../storybook-utils" },
-    { "path": "../validation" }
-  ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
     "outDir": "./dist",

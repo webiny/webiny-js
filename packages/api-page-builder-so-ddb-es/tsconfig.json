@@ -1,21 +1,6 @@
 {
   "extends": "../../tsconfig.json",
   "include": ["src", "__tests__/**/*.ts"],
-  "references": [
-    { "path": "../api-elasticsearch" },
-    { "path": "../api-page-builder" },
-    { "path": "../api-upgrade" },
-    { "path": "../db-dynamodb" },
-    { "path": "../error" },
-    { "path": "../handler-db" },
-    { "path": "../plugins" },
-    { "path": "../api-dynamodb-to-elasticsearch" },
-    { "path": "../api-security" },
-    { "path": "../api-tenancy" },
-    { "path": "../handler" },
-    { "path": "../handler-aws" },
-    { "path": "../handler-graphql" }
-  ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
     "outDir": "./dist",

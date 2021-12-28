@@ -1,15 +1,6 @@
 {
   "extends": "../../tsconfig.json",
   "include": ["src", "__tests__/**/*.ts"],
-  "references": [
-    { "path": "../app" },
-    { "path": "../app-cognito-authenticator" },
-    { "path": "../app-security" },
-    { "path": "../form" },
-    { "path": "../plugins" },
-    { "path": "../ui" },
-    { "path": "../validation" }
-  ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
     "outDir": "./dist",
