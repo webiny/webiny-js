@@ -6,6 +6,7 @@
       "apps/admin/code",
       "apps/website/code",
       "apps/theme",
+      "apps/theme-1",
       "api/code/fileManager/*",
       "api/code/graphql",
       "api/code/headlessCMS",

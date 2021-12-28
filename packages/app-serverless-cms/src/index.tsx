@@ -49,3 +49,8 @@ export type {
     UserMenuItemProps,
     UserMenuItemData
 } from "@webiny/app-admin";
+
+export { HasPermission, useSecurity, usePermission } from "@webiny/app-security";
+
+export { useTenancy } from "@webiny/app-tenancy";
+export type { Tenant } from "@webiny/app-tenancy";

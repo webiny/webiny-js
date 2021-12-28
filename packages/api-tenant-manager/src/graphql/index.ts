@@ -23,6 +23,7 @@ export default new GraphQLSchemaPlugin<Context>({
 
         input TenantSettingsInput {
             domains: [TenantDomainInput!]!
+            themes: [ID!]!
         }
 
         input CreateTenantInput {

@@ -1,37 +1,10 @@
-import { Extensions, AddMenu, AddRoute, Layout, Compose, LocaleSelector } from "@webiny/app-admin";
-import { HasPermission } from "@webiny/app-security/";
-import { useSecurity } from "@webiny/app-security/";
+import { Compose, LocaleSelector } from "@webiny/app-admin";
 import React, { Fragment, memo } from "react";
-import { ReactComponent as TenantIcon } from "./assets/business_black_24dp.svg";
-import { CurrentTenant } from "./plugins/currentTenant";
-import { TenantsView } from "./views/tenants";
-
-const RoutesAndMenus = () => {
-    const security = useSecurity();
-
-    if (!security) {
-        return;
-    }
-
-    const { currentTenant } = security.identity;
-
-    if (currentTenant.id !== "root") {
-        return null;
-    }
-
-    return (
-        <HasPermission name={"tenantManager.tenants"}>
-            <AddMenu id="tenantManager" label={`Tenant Manager`} icon={<TenantIcon />}>
-                <AddMenu id={"tenantManager.tenants"} label={`Tenants`} path="/tenants" />
-            </AddMenu>
-            <AddRoute exact path={"/tenants"}>
-                <Layout title={"Tenant Manager - Tenants"}>
-                    <TenantsView />
-                </Layout>
-            </AddRoute>
-        </HasPermission>
-    );
-};
+import { AddTenantFormField } from "./components/AddTenantFormField";
+import { CurrentTenant } from "./components/CurrentTenant";
+import { DomainsModule } from "./modules/domains";
+import { TenantsModule } from "./modules/tenants";
+import { ThemesModule } from "./modules/themes";
 
 const TenantIndicator = LocaleSelector => {
     return function TenantIndicator() {
@@ -46,11 +19,16 @@ const TenantIndicator = LocaleSelector => {
 
 const TenantManagerExtension = () => {
     return (
-        <Extensions>
+        <Fragment>
             <Compose component={LocaleSelector} with={TenantIndicator} />
-            <RoutesAndMenus />
-        </Extensions>
+            <TenantsModule />
+            <DomainsModule />
+            <ThemesModule />
+        </Fragment>
     );
 };
 
 export const TenantManager = memo(TenantManagerExtension);
+
+export { AddTenantFormField };
+export { AddTheme } from "./components/AddTheme";

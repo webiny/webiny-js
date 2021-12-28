@@ -59,6 +59,7 @@
       ],
       "src": [
         "@webiny/app-tenant-manager",
+        "@webiny/app-theme-manager",
         "@webiny/app-page-builder-elements"
       ]
     }
