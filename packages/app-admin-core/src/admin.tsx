@@ -11,6 +11,7 @@ import React, {
 } from "react";
 import { BrowserRouter, RouteProps } from "@webiny/react-router";
 import { Routes as SortRoutes } from "./components/internal/Routes";
+import { DebouncedRenderer } from "./components/internal/DebouncedRenderer";
 import { ExtensionsProvider } from "./components/core/Extensions";
 
 const compose = (...fns) => {
@@ -162,7 +163,7 @@ export const Admin = ({ children }: AdminProps) => {
     );
 
     const Providers = useMemo(
-        () => compose(...(state.providers || []))(({ children }) => children),
+        () => compose(...(state.providers || []))(DebouncedRenderer),
         [state.providers]
     );
 
