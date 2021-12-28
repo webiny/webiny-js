@@ -9,7 +9,7 @@ import {
 } from "@webiny/api-page-builder/graphql";
 import { createStorageOperations as createPageBuilderStorageOperations } from "@webiny/api-page-builder-so-ddb-es";
 import pageBuilderImportExportPlugins from "@webiny/api-page-builder-import-export/graphql";
-import { createStorageOperations as createPageImportExportStorageOperations } from "@webiny/api-page-builder-import-export-so-ddb";
+import { createStorageOperations as createPageBuilderImportExportStorageOperations } from "@webiny/api-page-builder-import-export-so-ddb";
 import exportPagesCombinePlugins from "@webiny/api-page-builder-import-export/exportPages/combine";
 import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
@@ -51,7 +51,7 @@ export const handler = createHandler({
         }),
         createPageBuilderGraphQL(),
         pageBuilderImportExportPlugins({
-            storageOperations: createPageImportExportStorageOperations({ documentClient })
+            storageOperations: createPageBuilderImportExportStorageOperations({ documentClient })
         }),
         exportPagesCombinePlugins()
     ],
