@@ -77,7 +77,8 @@ export const handler = createHandler({
         createPageBuilderContext({
             storageOperations: createPageBuilderStorageOperations({
                 documentClient,
-                elasticsearch: elasticsearchClient
+                elasticsearch: elasticsearchClient,
+                plugins: [elasticsearchDataGzipCompression()]
             })
         }),
         createPageBuilderGraphQL(),

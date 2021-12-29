@@ -13,11 +13,13 @@ const elasticsearchClient = createElasticsearchClient({
     endpoint: `https://${process.env.ELASTIC_SEARCH_ENDPOINT}`
 });
 
-export const handler = createHandler(
-    updateSettingsPlugins({
-        storageOperations: createPageBuilderStorageOperations({
-            documentClient,
-            elasticsearch: elasticsearchClient
+export const handler = createHandler({
+    plugins: [
+        updateSettingsPlugins({
+            storageOperations: createPageBuilderStorageOperations({
+                documentClient,
+                elasticsearch: elasticsearchClient
+            })
         })
-    })
-);
+    ]
+});

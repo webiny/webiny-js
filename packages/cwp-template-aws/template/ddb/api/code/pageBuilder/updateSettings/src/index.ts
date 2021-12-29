@@ -8,10 +8,12 @@ const documentClient = new DocumentClient({
     region: process.env.AWS_REGION
 });
 
-export const handler = createHandler(
-    updateSettingsPlugins({
-        storageOperations: createPageBuilderStorageOperations({
-            documentClient
+export const handler = createHandler({
+    plugins: [
+        updateSettingsPlugins({
+            storageOperations: createPageBuilderStorageOperations({
+                documentClient
+            })
         })
-    })
-);
+    ]
+});
