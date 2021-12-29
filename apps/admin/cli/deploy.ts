@@ -1,7 +1,16 @@
 const getStackOutput = require("@webiny/cli-plugin-deploy-pulumi/utils/getStackOutput");
 const uploadFolderToS3 = require("@webiny/cli-plugin-deploy-pulumi/utils/aws/uploadFolderToS3");
+const { getProject } = require("@webiny/cli/utils");
 const path = require("path");
 const fs = require("fs");
+
+type GatewayConfig = Record<
+    string,
+    {
+        url: string;
+        weight: number;
+    }
+>;
 
 /**
  * This plugin uploads the Admin Area React application to the deployed Amazon S3 bucket.
@@ -56,5 +65,56 @@ export default {
         context.success(
             `React application successfully uploaded in ${context.success.hl(duration)}s.`
         );
+
+        const gatewayConfigPath = getGatewayConfigFilePath("apps/admin-gateway", params.env);
+        if (!gatewayConfigPath) {
+            return;
+        }
+
+        const gatewayConfig = readGatewayConfigFile(gatewayConfigPath);
+
+        if (gatewayConfig[params.env]) {
+            // update existing config
+            gatewayConfig[params.env].url = adminOutput.appUrl;
+        } else {
+            gatewayConfig[params.env] = {
+                url: adminOutput.appUrl,
+                // every newly deployed stage has 0 percents of traffic
+                weight: 0
+            };
+        }
+
+        writeGatewayConfigFile(gatewayConfigPath, gatewayConfig);
     }
 };
+
+function getGatewayConfigFilePath(app: string, env: string) {
+    // matches strings like prod.v3
+    const envRegex = /^(.*?)(\.(.+))$/i;
+    const envMatch = envRegex.exec(env);
+    if (!envMatch) {
+        return null;
+    }
+
+    const envBase = envMatch[1];
+
+    const project = getProject();
+    const gatewayPath = path.join(project.root, app);
+
+    return path.join(gatewayPath, `config.${envBase}.json`);
+}
+
+function readGatewayConfigFile(filePath: string): GatewayConfig {
+    if (!fs.existsSync(filePath)) {
+        return {};
+    }
+
+    const configJson = fs.readFileSync(filePath, { encoding: "utf-8" });
+
+    return JSON.parse(configJson) || {};
+}
+
+function writeGatewayConfigFile(filePath: string, config: GatewayConfig) {
+    const configJson = JSON.stringify(config, null, 4);
+    fs.writeFileSync(filePath, configJson, { encoding: "utf-8" });
+}
