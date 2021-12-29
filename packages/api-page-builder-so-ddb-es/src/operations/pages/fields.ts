@@ -1,6 +1,6 @@
 import { PageElasticsearchFieldPlugin } from "~/plugins/definitions/PageElasticsearchFieldPlugin";
 
-export default () => [
+export const createPagesElasticsearchFields = (): PageElasticsearchFieldPlugin[] => [
     new PageElasticsearchFieldPlugin({
         field: "createdOn",
         unmappedType: "date",

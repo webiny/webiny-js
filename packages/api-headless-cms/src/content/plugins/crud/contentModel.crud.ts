@@ -10,13 +10,22 @@ import {
     BeforeModelUpdateTopicParams,
     AfterModelUpdateTopicParams,
     BeforeModelDeleteTopicParams,
-    AfterModelDeleteTopicParams
+    AfterModelDeleteTopicParams,
+    BeforeModelCreateFromTopicParams,
+    AfterModelCreateFromTopicParams,
+    CmsModelCreateInput,
+    CmsModelUpdateInput,
+    CmsModelCreateFromInput
 } from "~/types";
 import * as utils from "~/utils";
 import DataLoader from "dataloader";
 import { NotFoundError } from "@webiny/handler-graphql";
 import { contentModelManagerFactory } from "./contentModel/contentModelManagerFactory";
-import { CreateContentModelModel, UpdateContentModelModel } from "./contentModel/models";
+import {
+    CreateContentModelModel,
+    CreateContentModelModelFrom,
+    UpdateContentModelModel
+} from "./contentModel/models";
 import { createFieldModels } from "./contentModel/createFieldModels";
 import { validateLayout } from "./contentModel/validateLayout";
 import { NotAuthorizedError } from "@webiny/api-security";
@@ -151,7 +160,7 @@ export const createModelsCrud = (params: Params): CmsModelContext => {
         });
     };
 
-    const get = async (modelId: string) => {
+    const get = async (modelId: string): Promise<CmsModel> => {
         const permission = await checkModelPermissions("r");
 
         const model = await modelsGet(modelId);
@@ -176,6 +185,8 @@ export const createModelsCrud = (params: Params): CmsModelContext => {
 
     const onBeforeCreate = createTopic<BeforeModelCreateTopicParams>();
     const onAfterCreate = createTopic<AfterModelCreateTopicParams>();
+    const onBeforeCreateFrom = createTopic<BeforeModelCreateFromTopicParams>();
+    const onAfterCreateFrom = createTopic<AfterModelCreateFromTopicParams>();
     const onBeforeUpdate = createTopic<BeforeModelUpdateTopicParams>();
     const onAfterUpdate = createTopic<AfterModelUpdateTopicParams>();
     const onBeforeDelete = createTopic<BeforeModelDeleteTopicParams>();
@@ -185,6 +196,7 @@ export const createModelsCrud = (params: Params): CmsModelContext => {
      */
     assignBeforeModelCreate({
         onBeforeCreate,
+        onBeforeCreateFrom,
         plugins: context.plugins,
         storageOperations
     });
@@ -214,6 +226,8 @@ export const createModelsCrud = (params: Params): CmsModelContext => {
     return {
         onBeforeModelCreate: onBeforeCreate,
         onAfterModelCreate: onAfterCreate,
+        onBeforeModelCreateFrom: onBeforeCreateFrom,
+        onAfterModelCreateFrom: onAfterCreateFrom,
         onBeforeModelUpdate: onBeforeUpdate,
         onAfterModelUpdate: onAfterUpdate,
         onBeforeModelDelete: onBeforeDelete,
@@ -239,7 +253,7 @@ export const createModelsCrud = (params: Params): CmsModelContext => {
 
             const createdData = new CreateContentModelModel().populate(inputData);
             await createdData.validate();
-            const input = await createdData.toJSON();
+            const input: CmsModelCreateInput = await createdData.toJSON();
 
             context.security.disableAuthorization();
             const group = await context.cms.getGroup(input.group);
@@ -250,7 +264,9 @@ export const createModelsCrud = (params: Params): CmsModelContext => {
 
             const identity = getIdentity();
             const model: CmsModel = {
-                ...input,
+                name: input.name,
+                description: input.description,
+                modelId: input.modelId,
                 titleFieldId: "id",
                 locale: getLocale().code,
                 tenant: getTenant().id,
@@ -263,8 +279,8 @@ export const createModelsCrud = (params: Params): CmsModelContext => {
                     displayName: identity.displayName,
                     type: identity.type
                 },
-                createdOn: new Date().toISOString(),
-                savedOn: new Date().toISOString(),
+                createdOn: new Date().toISOString() as any,
+                savedOn: new Date().toISOString() as any,
                 fields: [],
                 lockedFields: [],
                 layout: [],
@@ -330,6 +346,85 @@ export const createModelsCrud = (params: Params): CmsModelContext => {
 
             return resultModel;
         },
+        async createModelFrom(modelId, data) {
+            await checkModelPermissions("w");
+            /**
+             * Get a model record; this will also perform ownership validation.
+             */
+            const original = await get(modelId);
+
+            const createdData = new CreateContentModelModelFrom().populate({
+                name: data.name,
+                modelId: data.modelId,
+                description: data.description || original.description,
+                group: data.group,
+                locale: data.locale
+            });
+
+            await createdData.validate();
+            const input: CmsModelCreateFromInput = await createdData.toJSON();
+
+            const locale = await context.i18n.getLocale(input.locale || original.locale);
+            if (!locale) {
+                throw new NotFoundError(`There is no locale "${input.locale}".`);
+            }
+            /**
+             * Use storage operations directly because we cannot get group from different locale via context methods.
+             */
+            const group = await context.cms.storageOperations.groups.get({
+                id: input.group,
+                tenant: original.tenant,
+                locale: locale.code
+            });
+            if (!group) {
+                throw new NotFoundError(`There is no group "${input.group}".`);
+            }
+
+            const identity = getIdentity();
+            const model: CmsModel = {
+                ...original,
+                locale: locale.code,
+                group: {
+                    id: group.id,
+                    name: group.name
+                },
+                name: input.name,
+                modelId: input.modelId,
+                description: input.description,
+                createdBy: {
+                    id: identity.id,
+                    displayName: identity.displayName,
+                    type: identity.type
+                },
+                createdOn: new Date().toISOString() as any,
+                savedOn: new Date().toISOString() as any,
+                lockedFields: [],
+                webinyVersion: context.WEBINY_VERSION
+            };
+
+            await onBeforeCreateFrom.publish({
+                model,
+                original,
+                input
+            });
+
+            const createdModel = await storageOperations.models.create({
+                input,
+                model
+            });
+
+            loaders.listModels.clearAll();
+
+            await updateManager(context, model);
+
+            await onAfterCreateFrom.publish({
+                input,
+                original,
+                model: createdModel
+            });
+
+            return createdModel;
+        },
         async updateModel(modelId, inputData) {
             await checkModelPermissions("w");
 
@@ -339,33 +434,38 @@ export const createModelsCrud = (params: Params): CmsModelContext => {
             const updatedData = new UpdateContentModelModel().populate(inputData);
             await updatedData.validate();
 
-            const input = await updatedData.toJSON({ onlyDirty: true });
+            const input: CmsModelUpdateInput = await updatedData.toJSON({ onlyDirty: true });
             if (Object.keys(input).length === 0) {
                 return {} as any;
             }
+            let group: CmsModel["group"] = {
+                id: original.group.id,
+                name: original.group.name
+            };
             if (input.group) {
                 context.security.disableAuthorization();
-                const group = await context.cms.getGroup(input.group);
+                const groupData = await context.cms.getGroup(input.group);
                 context.security.enableAuthorization();
-                if (!group) {
+                if (!groupData) {
                     throw new NotFoundError(`There is no group "${input.group}".`);
                 }
-                input.group = {
-                    id: group.id,
-                    name: group.name
+                group = {
+                    id: groupData.id,
+                    name: groupData.name
                 };
             }
             const modelFields = await createFieldModels(original, inputData);
-            validateLayout(input, modelFields);
             const model: CmsModel = {
                 ...original,
                 ...input,
+                group,
                 tenant: original.tenant || getTenant().id,
                 locale: original.locale || getLocale().code,
                 webinyVersion: context.WEBINY_VERSION,
                 fields: modelFields,
-                savedOn: new Date().toISOString()
+                savedOn: new Date().toISOString() as any
             };
+            validateLayout(model, modelFields);
 
             await onBeforeUpdate.publish({
                 input,

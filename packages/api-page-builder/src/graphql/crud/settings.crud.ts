@@ -1,22 +1,24 @@
-import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
 import {
+    OnAfterSettingsUpdateTopicParams,
+    OnBeforeSettingsUpdateTopicParams,
+    PageBuilderContextObject,
+    PageBuilderStorageOperations,
+    PageSpecialType,
     PbContext,
     Settings,
-    SettingsStorageOperations,
+    SettingsCrud,
     SettingsStorageOperationsCreateParams,
-    SettingsStorageOperationsGetParams
+    SettingsStorageOperationsGetParams,
+    SettingsUpdateTopicMetaParams
 } from "~/types";
 import { NotAuthorizedError } from "@webiny/api-security";
-import executeCallbacks from "./utils/executeCallbacks";
 import { DefaultSettingsModel } from "~/utils/models";
 import mergeWith from "lodash/mergeWith";
 import Error from "@webiny/error";
-import { SettingsPlugin } from "~/plugins/SettingsPlugin";
 import WebinyError from "@webiny/error";
-import { createStorageOperations } from "./storageOperations";
-import { SettingsStorageOperationsProviderPlugin } from "~/plugins/SettingsStorageOperationsProviderPlugin";
 import lodashGet from "lodash/get";
 import DataLoader from "dataloader";
+import { createTopic } from "@webiny/pubsub";
 
 interface SettingsParams {
     tenant: false | string | undefined;
@@ -61,21 +63,12 @@ const createSettingsParams = (params: SettingsParamsInput): SettingsParams => {
     };
 };
 
-export default new ContextPlugin<PbContext>(async context => {
-    /**
-     * If pageBuilder is not defined on the context, do not continue, but log it.
-     */
-    if (!context.pageBuilder) {
-        console.log("Missing pageBuilder on context. Skipping Settings crud.");
-        return;
-    }
-
-    const storageOperations = await createStorageOperations<SettingsStorageOperations>(
-        context,
-        SettingsStorageOperationsProviderPlugin.type
-    );
-
-    const settingsPlugins = context.plugins.byType<SettingsPlugin>(SettingsPlugin.type);
+export interface Params {
+    context: PbContext;
+    storageOperations: PageBuilderStorageOperations;
+}
+export const createSettingsCrud = (params: Params): SettingsCrud => {
+    const { context, storageOperations } = params;
 
     const settingsDataLoader = new DataLoader<SettingsParams, Settings, string>(
         async keys => {
@@ -86,9 +79,9 @@ export default new ContextPlugin<PbContext>(async context => {
                         context
                     })
                 };
-                return storageOperations.get(params);
+                return storageOperations.settings.get(params);
             });
-            return Promise.all(promises);
+            return await Promise.all(promises);
         },
         {
             cacheKeyFn: (key: SettingsParams) => {
@@ -97,22 +90,45 @@ export default new ContextPlugin<PbContext>(async context => {
         }
     );
 
-    context.pageBuilder.settings = {
+    const getTenantId = (): string => {
+        return context.tenancy.getCurrentTenant().id;
+    };
+
+    const getLocaleCode = (): string => {
+        return context.i18nContent.getCurrentLocale().code;
+    };
+
+    const onBeforeSettingsUpdate = createTopic<OnBeforeSettingsUpdateTopicParams>();
+    const onAfterSettingsUpdate = createTopic<OnAfterSettingsUpdateTopicParams>();
+
+    return {
+        onBeforeSettingsUpdate,
+        onAfterSettingsUpdate,
         /**
          * For the cache key we use the identifier created by the storage operations.
          * Initial, in the DynamoDB, it was PK + SK. It can be what ever
          */
         getSettingsCacheKey(options) {
-            return storageOperations.createCacheKey(options || {});
+            const tenant = options ? options.tenant : null;
+            const locale = options ? options.locale : null;
+            return storageOperations.settings.createCacheKey(
+                options || {
+                    tenant: tenant === false ? false : tenant || getTenantId(),
+                    locale: locale === false ? false : locale || getLocaleCode()
+                }
+            );
         },
-        async getCurrent() {
+        async getCurrentSettings(this: PageBuilderContextObject) {
             // With this line commented, we made this endpoint public.
             // We did this because of the public website pages which need to access the settings.
             // It's possible we'll create another GraphQL field, made for this exact purpose.
             // auth !== false && (await checkBasePermissions(context));
 
-            const current = await context.pageBuilder.settings.get({});
-            const defaults = await context.pageBuilder.settings.getDefault();
+            const current = await this.getSettings({
+                tenant: getTenantId(),
+                locale: getLocaleCode()
+            });
+            const defaults = await this.getDefaultSettings();
 
             return mergeWith({}, defaults, current, (prev, next) => {
                 // No need to use falsy value if we have it set in the default settings.
@@ -121,7 +137,7 @@ export default new ContextPlugin<PbContext>(async context => {
                 }
             });
         },
-        async get(options) {
+        async getSettings(this: PageBuilderContextObject, options) {
             // With this line commented, we made this endpoint public.
             // We did this because of the public website pages which need to access the settings.
             // It's possible we'll create another GraphQL field, made for this exact purpose.
@@ -150,12 +166,12 @@ export default new ContextPlugin<PbContext>(async context => {
                 );
             }
         },
-        async getDefault(options) {
-            const allTenants = await context.pageBuilder.settings.get({
+        async getDefaultSettings(this: PageBuilderContextObject, options) {
+            const allTenants = await this.getSettings({
                 tenant: false,
                 locale: false
             });
-            const tenantAllLocales = await context.pageBuilder.settings.get({
+            const tenantAllLocales = await this.getSettings({
                 tenant: options ? options.tenant : undefined,
                 locale: false
             });
@@ -170,14 +186,14 @@ export default new ContextPlugin<PbContext>(async context => {
                 }
             });
         },
-        async update(rawData, options) {
+        async updateSettings(this: PageBuilderContextObject, rawData, options) {
             if (!options) {
-                options = {};
+                options = {
+                    tenant: getTenantId(),
+                    locale: getLocaleCode()
+                };
             }
             options.auth !== false && (await checkBasePermissions(context));
-
-            // const targetTenant = options.tenant === false ? false : options.tenant;
-            // const targetLocale = options.locale === false ? false : options.locale;
 
             const params = createSettingsParams({
                 tenant: options.tenant,
@@ -186,7 +202,7 @@ export default new ContextPlugin<PbContext>(async context => {
                 context
             });
 
-            let original = (await context.pageBuilder.settings.get(options)) as Settings;
+            let original = (await this.getSettings(options)) as Settings;
             if (!original) {
                 original = await new DefaultSettingsModel().populate({}).toJSON();
 
@@ -198,7 +214,7 @@ export default new ContextPlugin<PbContext>(async context => {
                     }
                 };
                 try {
-                    original = await storageOperations.create(data);
+                    original = await storageOperations.settings.create(data);
                     /**
                      * Clear the cache of the data loader.
                      */
@@ -229,9 +245,9 @@ export default new ContextPlugin<PbContext>(async context => {
             // after save, make sure to trigger events, on which other plugins can do their tasks.
             const specialTypes = ["home", "notFound"];
 
-            const changedPages = [];
+            const changedPages: SettingsUpdateTopicMetaParams["diff"]["pages"] = [];
             for (let i = 0; i < specialTypes.length; i++) {
-                const specialType = specialTypes[i];
+                const specialType = specialTypes[i] as PageSpecialType;
                 const p = lodashGet(original, `pages.${specialType}`);
                 const n = lodashGet(settings, `pages.${specialType}`);
 
@@ -248,7 +264,7 @@ export default new ContextPlugin<PbContext>(async context => {
                     // Only load if the next page (n) has been sent, which is always a
                     // must if previously a page was defined (p).
                     if (n) {
-                        const page = await context.pageBuilder.pages.getPublishedById({
+                        const page = await this.getPublishedPageById({
                             id: n
                         });
 
@@ -257,32 +273,29 @@ export default new ContextPlugin<PbContext>(async context => {
                 }
             }
 
-            const callbackParams = {
-                context,
-                previousSettings: original,
-                nextSettings: settings,
-                meta: {
-                    diff: {
-                        pages: changedPages
-                    }
+            const meta: SettingsUpdateTopicMetaParams = {
+                diff: {
+                    pages: changedPages
                 }
             };
             try {
-                await executeCallbacks<SettingsPlugin["beforeUpdate"]>(
-                    settingsPlugins,
-                    "beforeUpdate",
-                    callbackParams
-                );
-                const result = await storageOperations.update({
+                await onBeforeSettingsUpdate.publish({
+                    original,
+                    settings,
+                    meta
+                });
+
+                const result = await storageOperations.settings.update({
                     input: rawData,
                     original,
                     settings
                 });
-                await executeCallbacks<SettingsPlugin["afterUpdate"]>(
-                    settingsPlugins,
-                    "afterUpdate",
-                    callbackParams
-                );
+
+                await onAfterSettingsUpdate.publish({
+                    original,
+                    settings,
+                    meta
+                });
                 /**
                  * Clear the cache of the data loader.
                  */
@@ -301,4 +314,4 @@ export default new ContextPlugin<PbContext>(async context => {
             }
         }
     };
-});
+};

@@ -9,18 +9,7 @@ import { Args as PsFlushParams } from "@webiny/api-prerendering-service/flush/ty
 import { Args as PsRenderParams } from "@webiny/api-prerendering-service/render/types";
 import { Args as PsQueueAddParams } from "@webiny/api-prerendering-service/queue/add/types";
 
-import {
-    Category,
-    CategoryStorageOperations,
-    Menu,
-    MenuStorageOperations,
-    Page,
-    PageElement,
-    PageElementStorageOperations,
-    PageStorageOperations,
-    Settings,
-    System
-} from "~/types";
+import { Category, Menu, Page, PageElement, PageSpecialType, Settings, System } from "~/types";
 import { PrerenderingServiceClientContext } from "@webiny/api-prerendering-service/client/types";
 import { FileManagerContext } from "@webiny/api-file-manager/types";
 
@@ -64,66 +53,289 @@ export interface GetPagesOptions {
     decompress?: boolean;
 }
 
+/**
+ * @category Lifecycle events
+ */
+export interface OnBeforePageCreateTopicParams<TPage extends Page = Page> {
+    page: TPage;
+}
+/**
+ * @category Lifecycle events
+ */
+export interface OnAfterPageCreateTopicParams {
+    page: Page;
+}
+/**
+ * @category Lifecycle events
+ */
+export interface OnBeforePageUpdateTopicParams {
+    original: Page;
+    page: Page;
+    input: Record<string, any>;
+}
+/**
+ * @category Lifecycle events
+ */
+export interface OnAfterPageUpdateTopicParams {
+    original: Page;
+    page: Page;
+    input: Record<string, any>;
+}
+/**
+ * @category Lifecycle events
+ */
+export interface OnBeforePageCreateFromTopicParams {
+    original: Page;
+    page: Page;
+}
+/**
+ * @category Lifecycle events
+ */
+export interface OnAfterPageCreateFromTopicParams {
+    original: Page;
+    page: Page;
+}
+/**
+ * @category Lifecycle events
+ */
+export interface OnBeforePageDeleteTopicParams {
+    page: Page;
+    latestPage: Page;
+    publishedPage: Page;
+}
+/**
+ * @category Lifecycle events
+ */
+export interface OnAfterPageDeleteTopicParams {
+    page: Page;
+    latestPage: Page;
+    publishedPage: Page;
+}
+/**
+ * @category Lifecycle events
+ */
+export interface OnBeforePagePublishTopicParams {
+    page: Page;
+    latestPage: Page;
+    publishedPage?: Page;
+}
+/**
+ * @category Lifecycle events
+ */
+export interface OnAfterPagePublishTopicParams {
+    page: Page;
+    latestPage: Page;
+    publishedPage?: Page;
+}
+/**
+ * @category Lifecycle events
+ */
+export interface OnBeforePageUnpublishTopicParams {
+    page: Page;
+}
+/**
+ * @category Lifecycle events
+ */
+export interface OnAfterPageUnpublishTopicParams {
+    page: Page;
+}
+/**
+ * @category Lifecycle events
+ */
+export interface OnBeforePageRequestReviewTopicParams {
+    page: Page;
+}
+/**
+ * @category Lifecycle events
+ */
+export interface OnAfterPageRequestReviewTopicParams {
+    page: Page;
+}
+/**
+ * @category Lifecycle events
+ */
+export interface OnBeforePageRequestChangesTopicParams {
+    page: Page;
+}
+/**
+ * @category Lifecycle events
+ */
+export interface OnAfterPageRequestChangesTopicParams {
+    page: Page;
+}
+
+/**
+ * @category Pages
+ */
 export interface PagesCrud {
-    /**
-     * To be used internally in our code.
-     * @internal
-     */
-    storageOperations: PageStorageOperations;
-    get<TPage extends Page = Page>(id: string, options?: GetPagesOptions): Promise<TPage>;
-    listLatest<TPage extends Page = Page>(
+    getPage<TPage extends Page = Page>(id: string, options?: GetPagesOptions): Promise<TPage>;
+    listLatestPages<TPage extends Page = Page>(
         args: ListPagesParams,
         options?: ListLatestPagesOptions
     ): Promise<[TPage[], ListMeta]>;
-    listPublished<TPage extends Page = Page>(args: ListPagesParams): Promise<[TPage[], ListMeta]>;
-    listTags(args: { search: { query: string } }): Promise<string[]>;
-    getPublishedById<TPage extends Page = Page>(args: {
+    listPublishedPages<TPage extends Page = Page>(
+        args: ListPagesParams
+    ): Promise<[TPage[], ListMeta]>;
+    listPagesTags(args: { search: { query: string } }): Promise<string[]>;
+    getPublishedPageById<TPage extends Page = Page>(args: {
         id: string;
         preview?: boolean;
     }): Promise<TPage>;
-    getPublishedByPath<TPage extends Page = Page>(args: { path: string }): Promise<TPage>;
+    getPublishedPageByPath<TPage extends Page = Page>(args: { path: string }): Promise<TPage>;
     listPageRevisions<TPage extends Page = Page>(id: string): Promise<TPage[]>;
-    create<TPage extends Page = Page>(category: string): Promise<TPage>;
-    createFrom<TPage extends Page = Page>(page: string): Promise<TPage>;
-    update<TPage extends Page = Page>(id: string, data: Record<string, any>): Promise<TPage>;
-    delete<TPage extends Page = Page>(id: string): Promise<[TPage, TPage]>;
-    publish<TPage extends Page = Page>(id: string): Promise<TPage>;
-    unpublish<TPage extends Page = Page>(id: string): Promise<TPage>;
-    requestReview<TPage extends Page = Page>(id: string): Promise<TPage>;
-    requestChanges<TPage extends Page = Page>(id: string): Promise<TPage>;
+    createPage<TPage extends Page = Page>(category: string): Promise<TPage>;
+    createPageFrom<TPage extends Page = Page>(page: string): Promise<TPage>;
+    updatePage<TPage extends Page = Page>(id: string, data: Record<string, any>): Promise<TPage>;
+    deletePage<TPage extends Page = Page>(id: string): Promise<[TPage, TPage]>;
+    publishPage<TPage extends Page = Page>(id: string): Promise<TPage>;
+    unpublishPage<TPage extends Page = Page>(id: string): Promise<TPage>;
+    requestPageReview<TPage extends Page = Page>(id: string): Promise<TPage>;
+    requestPageChanges<TPage extends Page = Page>(id: string): Promise<TPage>;
     prerendering: {
         render(args: RenderParams): Promise<void>;
         flush(args: FlushParams): Promise<void>;
     };
+    /**
+     * Lifecycle events
+     */
+    onBeforePageCreate: Topic<OnBeforePageCreateTopicParams>;
+    onAfterPageCreate: Topic<OnAfterPageCreateTopicParams>;
+    onBeforePageCreateFrom: Topic<OnBeforePageCreateFromTopicParams>;
+    onAfterPageCreateFrom: Topic<OnAfterPageCreateFromTopicParams>;
+    onBeforePageUpdate: Topic<OnBeforePageUpdateTopicParams>;
+    onAfterPageUpdate: Topic<OnAfterPageUpdateTopicParams>;
+    onBeforePageDelete: Topic<OnBeforePageDeleteTopicParams>;
+    onAfterPageDelete: Topic<OnAfterPageDeleteTopicParams>;
+    onBeforePagePublish: Topic<OnBeforePagePublishTopicParams>;
+    onAfterPagePublish: Topic<OnAfterPagePublishTopicParams>;
+    onBeforePageUnpublish: Topic<OnBeforePageUnpublishTopicParams>;
+    onAfterPageUnpublish: Topic<OnAfterPageUnpublishTopicParams>;
+    onBeforePageRequestReview: Topic<OnBeforePageRequestReviewTopicParams>;
+    onAfterPageRequestReview: Topic<OnAfterPageRequestReviewTopicParams>;
+    onBeforePageRequestChanges: Topic<OnBeforePageRequestChangesTopicParams>;
+    onAfterPageRequestChanges: Topic<OnAfterPageRequestChangesTopicParams>;
 }
 
 export interface ListPageElementsParams {
     sort?: string[];
 }
-export interface PageElementsCrud {
-    /**
-     * To be used internally in our code.
-     * @internal
-     */
-    storageOperations: PageElementStorageOperations;
-    get(id: string): Promise<PageElement>;
-    list(params?: ListPageElementsParams): Promise<PageElement[]>;
-    create(data: Record<string, any>): Promise<PageElement>;
-    update(id: string, data: Record<string, any>): Promise<PageElement>;
-    delete(id: string): Promise<PageElement>;
+
+/**
+ * @category Lifecycle events
+ */
+export interface OnBeforePageElementCreateTopicParams {
+    pageElement: PageElement;
+}
+/**
+ * @category Lifecycle events
+ */
+export interface OnAfterPageElementCreateTopicParams {
+    pageElement: PageElement;
+}
+/**
+ * @category Lifecycle events
+ */
+export interface OnBeforePageElementUpdateTopicParams {
+    original: PageElement;
+    pageElement: PageElement;
+}
+/**
+ * @category Lifecycle events
+ */
+export interface OnAfterPageElementUpdateTopicParams {
+    original: PageElement;
+    pageElement: PageElement;
+}
+/**
+ * @category Lifecycle events
+ */
+export interface OnBeforePageElementDeleteTopicParams {
+    pageElement: PageElement;
+}
+/**
+ * @category Lifecycle events
+ */
+export interface OnAfterPageElementDeleteTopicParams {
+    pageElement: PageElement;
 }
 
-export interface CategoriesCrud {
+/**
+ * @category PageElements
+ */
+export interface PageElementsCrud {
+    getPageElement(id: string): Promise<PageElement>;
+    listPageElements(params?: ListPageElementsParams): Promise<PageElement[]>;
+    createPageElement(data: Record<string, any>): Promise<PageElement>;
+    updatePageElement(id: string, data: Record<string, any>): Promise<PageElement>;
+    deletePageElement(id: string): Promise<PageElement>;
     /**
-     * To be used internally in our code.
-     * @internal
+     * Lifecycle events
      */
-    storageOperations: CategoryStorageOperations;
-    get(slug: string, options?: { auth: boolean }): Promise<Category>;
-    list(): Promise<Category[]>;
-    create(data: Record<string, any>): Promise<Category>;
-    update(slug: string, data: Record<string, any>): Promise<Category>;
-    delete(slug: string): Promise<Category>;
+    onBeforePageElementCreate: Topic<OnBeforePageElementCreateTopicParams>;
+    onAfterPageElementCreate: Topic<OnAfterPageElementCreateTopicParams>;
+    onBeforePageElementUpdate: Topic<OnBeforePageElementUpdateTopicParams>;
+    onAfterPageElementUpdate: Topic<OnAfterPageElementUpdateTopicParams>;
+    onBeforePageElementDelete: Topic<OnBeforePageElementDeleteTopicParams>;
+    onAfterPageElementDelete: Topic<OnAfterPageElementDeleteTopicParams>;
+}
+
+/**
+ * @category Lifecycle events
+ */
+export interface OnBeforeCategoryCreateTopicParams {
+    category: Category;
+}
+/**
+ * @category Lifecycle events
+ */
+export interface OnAfterCategoryCreateTopicParams {
+    category: Category;
+}
+/**
+ * @category Lifecycle events
+ */
+export interface OnBeforeCategoryUpdateTopicParams {
+    original: Category;
+    category: Category;
+}
+/**
+ * @category Lifecycle events
+ */
+export interface OnAfterCategoryUpdateTopicParams {
+    original: Category;
+    category: Category;
+}
+/**
+ * @category Lifecycle events
+ */
+export interface OnBeforeCategoryDeleteTopicParams {
+    category: Category;
+}
+/**
+ * @category Lifecycle events
+ */
+export interface OnAfterCategoryDeleteTopicParams {
+    category: Category;
+}
+
+/**
+ * @category Categories
+ */
+export interface CategoriesCrud {
+    getCategory(slug: string, options?: { auth: boolean }): Promise<Category>;
+    listCategories(): Promise<Category[]>;
+    createCategory(data: Record<string, any>): Promise<Category>;
+    updateCategory(slug: string, data: Record<string, any>): Promise<Category>;
+    deleteCategory(slug: string): Promise<Category>;
+    /**
+     * Lifecycle events
+     */
+    onBeforeCategoryCreate: Topic<OnBeforeCategoryCreateTopicParams>;
+    onAfterCategoryCreate: Topic<OnAfterCategoryCreateTopicParams>;
+    onBeforeCategoryUpdate: Topic<OnBeforeCategoryUpdateTopicParams>;
+    onAfterCategoryUpdate: Topic<OnAfterCategoryUpdateTopicParams>;
+    onBeforeCategoryDelete: Topic<OnBeforeCategoryDeleteTopicParams>;
+    onAfterCategoryDelete: Topic<OnAfterCategoryDeleteTopicParams>;
 }
 
 export interface MenuGetOptions {
@@ -134,45 +346,163 @@ export interface ListMenuParams {
     sort?: string[];
 }
 
+/**
+ * @category Lifecycle events
+ */
+export interface OnBeforeMenuCreateTopicParams {
+    menu: Menu;
+    input: Record<string, any>;
+}
+/**
+ * @category Lifecycle events
+ */
+export interface OnAfterMenuCreateTopicParams {
+    menu: Menu;
+    input: Record<string, any>;
+}
+/**
+ * @category Lifecycle events
+ */
+export interface OnBeforeMenuUpdateTopicParams {
+    original: Menu;
+    menu: Menu;
+}
+/**
+ * @category Lifecycle events
+ */
+export interface OnAfterMenuUpdateTopicParams {
+    original: Menu;
+    menu: Menu;
+}
+/**
+ * @category Lifecycle events
+ */
+export interface OnBeforeMenuDeleteTopicParams {
+    menu: Menu;
+}
+/**
+ * @category Lifecycle events
+ */
+export interface OnAfterMenuDeleteTopicParams {
+    menu: Menu;
+}
+
+/**
+ * @category Menu
+ */
 export interface MenusCrud {
+    getMenu(slug: string, options?: MenuGetOptions): Promise<Menu>;
+    getPublicMenu(slug: string): Promise<Menu>;
+    listMenus(params?: ListMenuParams): Promise<Menu[]>;
+    createMenu(data: Record<string, any>): Promise<Menu>;
+    updateMenu(slug: string, data: Record<string, any>): Promise<Menu>;
+    deleteMenu(slug: string): Promise<Menu>;
     /**
-     * To be used internally in our code.
-     * @internal
+     * Lifecycle events
      */
-    storageOperations: MenuStorageOperations;
-    get(slug: string, options?: MenuGetOptions): Promise<Menu>;
-    getPublic(slug: string): Promise<Menu>;
-    list(params?: ListMenuParams): Promise<Menu[]>;
-    create(data: Record<string, any>): Promise<Menu>;
-    update(slug: string, data: Record<string, any>): Promise<Menu>;
-    delete(slug: string): Promise<Menu>;
+    onBeforeMenuCreate: Topic<OnBeforeMenuCreateTopicParams>;
+    onAfterMenuCreate: Topic<OnAfterMenuCreateTopicParams>;
+    onBeforeMenuUpdate: Topic<OnBeforeMenuUpdateTopicParams>;
+    onAfterMenuUpdate: Topic<OnAfterMenuUpdateTopicParams>;
+    onBeforeMenuDelete: Topic<OnBeforeMenuDeleteTopicParams>;
+    onAfterMenuDelete: Topic<OnAfterMenuDeleteTopicParams>;
 }
 
 /**
  * The options passed into the crud methods
  */
 export interface DefaultSettingsCrudOptions {
-    tenant?: string | false;
-    locale?: string | false;
+    tenant: string | false;
+    locale: string | false;
 }
 
+export interface SettingsUpdateTopicMetaParams {
+    diff: {
+        pages: Array<[PageSpecialType, string, string, Page]>;
+    };
+}
+/**
+ * @category Lifecycle events
+ */
+export interface OnBeforeSettingsUpdateTopicParams {
+    original: Settings;
+    settings: Settings;
+    meta: SettingsUpdateTopicMetaParams;
+}
+/**
+ * @category Lifecycle events
+ */
+export interface OnAfterSettingsUpdateTopicParams {
+    original: Settings;
+    settings: Settings;
+    meta: SettingsUpdateTopicMetaParams;
+}
+
+/**
+ * @category Settings
+ */
 export interface SettingsCrud {
-    getCurrent: () => Promise<Settings>;
-    get: (options?: DefaultSettingsCrudOptions) => Promise<Settings>;
-    getDefault: (options?: Pick<DefaultSettingsCrudOptions, "tenant">) => Promise<Settings>;
-    update: (
+    getCurrentSettings: () => Promise<Settings>;
+    getSettings: (options?: DefaultSettingsCrudOptions) => Promise<Settings>;
+    getDefaultSettings: (options?: Pick<DefaultSettingsCrudOptions, "tenant">) => Promise<Settings>;
+    updateSettings: (
         data: Record<string, any>,
         options?: { auth?: boolean } & DefaultSettingsCrudOptions
     ) => Promise<Settings>;
     getSettingsCacheKey: (options?: DefaultSettingsCrudOptions) => string;
+    /**
+     * Lifecycle events
+     */
+    onBeforeSettingsUpdate: Topic<OnBeforeSettingsUpdateTopicParams>;
+    onAfterSettingsUpdate: Topic<OnAfterSettingsUpdateTopicParams>;
 }
 
+/**
+ * @category Lifecycle events
+ */
+export interface OnBeforeInstallTopicParams {
+    context: PbContext;
+    tenant: string;
+}
+/**
+ * @category Lifecycle events
+ */
+export interface OnAfterInstallTopicParams {
+    context: PbContext;
+    tenant: string;
+}
+/**
+ * @category System
+ */
 export interface SystemCrud {
-    get: () => Promise<System>;
-    getVersion(): Promise<string>;
-    setVersion(version: string): Promise<void>;
-    install(args: { name: string; insertDemoData: boolean }): Promise<void>;
-    upgrade(version: string, data?: Record<string, any>): Promise<boolean>;
+    getSystem: () => Promise<System>;
+    getSystemVersion(): Promise<string>;
+    setSystemVersion(version: string): Promise<void>;
+    installSystem(args: { name: string; insertDemoData: boolean }): Promise<void>;
+    upgradeSystem(version: string, data?: Record<string, any>): Promise<boolean>;
+    /**
+     * Lifecycle events
+     */
+    onBeforeInstall: Topic<OnBeforeInstallTopicParams>;
+    onAfterInstall: Topic<OnBeforeInstallTopicParams>;
+}
+
+export interface PageBuilderContextObject
+    extends PagesCrud,
+        PageElementsCrud,
+        CategoriesCrud,
+        MenusCrud,
+        SettingsCrud,
+        SystemCrud {
+    setPrerenderingHandlers: (configuration: PrerenderingHandlers) => void;
+    getPrerenderingHandlers: () => PrerenderingHandlers;
+    /**
+     * Lifecycle events
+     */
+    onPageBeforeRender: Topic<PageBeforeRenderEvent>;
+    onPageAfterRender: Topic<PageAfterRenderEvent>;
+    onPageBeforeFlush: Topic<PageBeforeFlushEvent>;
+    onPageAfterFlush: Topic<PageAfterFlushEvent>;
 }
 
 export interface PbContext
@@ -184,20 +514,7 @@ export interface PbContext
         TenancyContext,
         FileManagerContext,
         PrerenderingServiceClientContext {
-    pageBuilder: Record<string, any> & {
-        pages: PagesCrud;
-        pageElements: PageElementsCrud;
-        categories: CategoriesCrud;
-        menus: MenusCrud;
-        settings: SettingsCrud;
-        system: SystemCrud;
-        setPrerenderingHandlers: (configuration: PrerenderingHandlers) => void;
-        getPrerenderingHandlers: () => PrerenderingHandlers;
-        onPageBeforeRender: Topic<PageBeforeRenderEvent>;
-        onPageAfterRender: Topic<PageAfterRenderEvent>;
-        onPageBeforeFlush: Topic<PageBeforeFlushEvent>;
-        onPageAfterFlush: Topic<PageAfterFlushEvent>;
-    };
+    pageBuilder: PageBuilderContextObject;
 }
 
 // Permissions.

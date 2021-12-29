@@ -16,6 +16,7 @@ import {
     UPDATE_CONTENT_MODEL_GROUP_MUTATION
 } from "./graphql/contentModelGroup";
 import {
+    CREATE_CONTENT_MODEL_FROM_MUTATION,
     CREATE_CONTENT_MODEL_MUTATION,
     DELETE_CONTENT_MODEL_MUTATION,
     GET_CONTENT_MODEL_QUERY,
@@ -193,6 +194,9 @@ export const useGqlHandler = (params: GQLHandlerCallableParams) => {
         },
         async createContentModelMutation(variables: Record<string, any>) {
             return invoke({ body: { query: CREATE_CONTENT_MODEL_MUTATION, variables } });
+        },
+        async createContentModelFromMutation(variables: Record<string, any>) {
+            return invoke({ body: { query: CREATE_CONTENT_MODEL_FROM_MUTATION, variables } });
         },
         async updateContentModelMutation(variables: Record<string, any>) {
             return invoke({ body: { query: UPDATE_CONTENT_MODEL_MUTATION, variables } });

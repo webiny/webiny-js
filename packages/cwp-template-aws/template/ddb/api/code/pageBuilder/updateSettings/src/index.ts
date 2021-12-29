@@ -1,22 +1,19 @@
+import updateSettingsPlugins from "@webiny/api-page-builder/updateSettings";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { createHandler } from "@webiny/handler-aws";
-import dbPlugins from "@webiny/handler-db";
-import { DynamoDbDriver } from "@webiny/db-dynamodb";
-import updateSettingsPlugins from "@webiny/api-page-builder/updateSettings";
-import pageBuilderDynamoDbPlugins from "@webiny/api-page-builder-so-ddb";
-import dynamoDbPlugins from "@webiny/db-dynamodb/plugins";
+import { createStorageOperations as createPageBuilderStorageOperations } from "@webiny/api-page-builder-so-ddb";
 
-export const handler = createHandler(
-    updateSettingsPlugins(),
-    dbPlugins({
-        table: process.env.DB_TABLE,
-        driver: new DynamoDbDriver({
-            documentClient: new DocumentClient({
-                convertEmptyValues: true,
-                region: process.env.AWS_REGION
+const documentClient = new DocumentClient({
+    convertEmptyValues: true,
+    region: process.env.AWS_REGION
+});
+
+export const handler = createHandler({
+    plugins: [
+        updateSettingsPlugins({
+            storageOperations: createPageBuilderStorageOperations({
+                documentClient
             })
         })
-    }),
-    dynamoDbPlugins(),
-    pageBuilderDynamoDbPlugins()
-);
+    ]
+});

@@ -138,6 +138,9 @@ describe("fieldValidations", () => {
             }
         });
 
+        /**
+         * GraphQL response must break when not sending required value.
+         */
         const [requiredResponse] = await createFruit({
             data: {
                 ...defaultFruitData,
@@ -146,21 +149,17 @@ describe("fieldValidations", () => {
         });
 
         expect(requiredResponse).toEqual({
-            data: {
-                createFruit: {
-                    data: null,
-                    error: {
-                        message: "Validation failed.",
-                        code: "VALIDATION_FAILED",
-                        data: [
-                            {
-                                fieldId: "name",
-                                error: "This field is required."
-                            }
-                        ]
-                    }
+            errors: [
+                {
+                    message: expect.any(String),
+                    locations: [
+                        {
+                            column: expect.any(Number),
+                            line: expect.any(Number)
+                        }
+                    ]
                 }
-            }
+            ]
         });
     });
     /**

@@ -4,7 +4,7 @@ import { DynamicPage } from "~/types";
 
 export const loadDynamicPage = async (args, context: PbContext) => {
     // Find all pages that have a pattern instead of an exact slug
-    const [pages] = await context.pageBuilder.pages.listPublished<DynamicPage>({
+    const [pages] = await context.pageBuilder.listPublishedPages<DynamicPage>({
         where: { dynamic: true },
         limit: 100
     });
@@ -22,7 +22,7 @@ export const loadDynamicPage = async (args, context: PbContext) => {
             // Try matching
             const match = args.path.match(new RegExp(pattern));
             if (match) {
-                const fullPage = await context.pageBuilder.pages.getPublishedById<DynamicPage>({
+                const fullPage = await context.pageBuilder.getPublishedPageById<DynamicPage>({
                     id: page.id
                 });
                 // Load data sources
