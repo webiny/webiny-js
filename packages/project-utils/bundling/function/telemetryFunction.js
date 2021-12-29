@@ -100,7 +100,7 @@ module.exports.handler = async args => {
         await addToTelemetryPackage({
             error: true,
             executionDuration: duration,
-            functionName: process.env.WCP_TELEMETRY_FUNCTION_NAME,
+            functionName: process.env.AWS_LAMBDA_FUNCTION_NAME,
             createdOn: Date.now()
         });
     }
