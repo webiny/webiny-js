@@ -95,15 +95,12 @@ const babelCompile = async ({ cwd }) => {
         const paths = getDistFilePaths({ file, cwd });
         fs.mkdirSync(dirname(paths.code), { recursive: true });
 
-        // save the compiled JS file
+        // Save the compiled JS file.
         writes.push(fs.promises.writeFile(paths.code, code, "utf8"));
 
-        // save source maps file
-        // source map generation may be disabled, in this case we don't want to generate the file
-        if (map) {
-            const mapJson = JSON.stringify(map);
-            writes.push(fs.promises.writeFile(paths.map, mapJson, "utf8"));
-        }
+        // Save source maps file.
+        const mapJson = JSON.stringify(map);
+        writes.push(fs.promises.writeFile(paths.map, mapJson, "utf8"));
     }
 
     // Wait until all files have been written to disk.
