@@ -6,6 +6,7 @@
     "watch": "yarn webiny run watch"
   },
   "dependencies": {
+    "@webiny/api-elasticsearch": "latest",
     "@webiny/api-page-builder": "latest",
     "@webiny/api-page-builder-so-ddb-es": "latest",
     "@webiny/cli": "latest",
