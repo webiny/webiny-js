@@ -13,7 +13,7 @@ async function injectHandlerTelemetry() {
     );
 
     // Create a new handler.js.
-    const telemetryFunction = fs.readFileSync(__dirname + "/telemetryFunction.js", {
+    const telemetryFunction = fs.readFileSync(path.join(__dirname, "/telemetryFunction.js"), {
         encoding: "utf8",
         flag: "r"
     });
