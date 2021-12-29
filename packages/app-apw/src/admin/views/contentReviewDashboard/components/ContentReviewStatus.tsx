@@ -11,7 +11,7 @@ import {
     StatusText
 } from "./Styled";
 
-const statusToLevel = {
+export const statusToLevel = {
     [ApwContentReviewStatus.UNDER_REVIEW]: 0,
     [ApwContentReviewStatus.READY_TO_BE_PUBLISHED]: 1,
     [ApwContentReviewStatus.PUBLISHED]: 2

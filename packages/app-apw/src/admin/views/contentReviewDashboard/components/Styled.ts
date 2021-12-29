@@ -87,7 +87,8 @@ export const CommentStatusBox = styled(Box)`
 `;
 
 export const listItemStyles = css`
-    border-bottom: 1px solid var(--mdc-theme-on-background);
+    flex-grow: 1;
+    max-width: 100%;
 `;
 
 export const CommentCountBox = styled(Box)`

@@ -34,7 +34,7 @@ export const GRADIENTS = [
     "135deg, #FBDA61 0%, #FF5ACD 100%"
 ];
 
-const Avatar = styled.div<{ index: number }>`
+export const Avatar = styled.div<{ index: number }>`
     box-sizing: border-box;
     width: 24px;
     height: 24px;

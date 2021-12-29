@@ -42,3 +42,9 @@ export interface ApwWorkflowStep {
     type: ApwWorkflowStepTypes;
     reviewers: any[];
 }
+
+export interface ApwContentReviewStep extends ApwWorkflowStep {
+    status: ApwContentReviewStepStatus;
+    pendingChangeRequests: number;
+    signOffProvidedOn: string;
+}

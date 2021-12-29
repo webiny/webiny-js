@@ -1,11 +1,20 @@
-import React from "react";
+import React, { Suspense, lazy } from "react";
 import Helmet from "react-helmet";
 import { Route } from "@webiny/react-router";
+import { CircularProgress } from "@webiny/ui/Progress";
 import { AdminLayout } from "@webiny/app-admin/components/AdminLayout";
 import { SecureRoute } from "@webiny/app-security/components";
 import { RoutePlugin } from "@webiny/app/plugins/RoutePlugin";
 import { PublishingWorkflowsView } from "../views/publishingWorkflows";
 import { ContentReviewDashboard } from "../views/contentReviewDashboard";
+
+const ContentReviewEditor = lazy(
+    () => import("~/admin/views/contentReviewDashboard/ContentReviewEditor")
+);
+
+const Loader = ({ children, ...props }) => (
+    <Suspense fallback={<CircularProgress />}>{React.cloneElement(children, props)}</Suspense>
+);
 
 export default [
     new RoutePlugin({
@@ -35,6 +44,22 @@ export default [
                             <Helmet title={"APW - Content reviews"} />
                             <ContentReviewDashboard />
                         </AdminLayout>
+                    </SecureRoute>
+                )}
+            />
+        )
+    }),
+    new RoutePlugin({
+        route: (
+            <Route
+                exact
+                path={"/apw/content-reviews/:contentReviewId"}
+                render={() => (
+                    <SecureRoute permission={"apw"}>
+                        <Helmet title={"APW - Content review editor"} />
+                        <Loader>
+                            <ContentReviewEditor />
+                        </Loader>
                     </SecureRoute>
                 )}
             />

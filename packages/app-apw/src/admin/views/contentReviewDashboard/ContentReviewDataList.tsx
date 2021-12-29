@@ -1,15 +1,29 @@
 import React, { useMemo } from "react";
-import { DataList, List, DataListModalOverlayAction, DataListModalOverlay } from "@webiny/ui/List";
+import styled from "@emotion/styled";
+import { useRouter } from "@webiny/react-router";
+import {
+    DataList,
+    List,
+    DataListModalOverlayAction,
+    DataListModalOverlay,
+    ListItem
+} from "@webiny/ui/List";
 import { i18n } from "@webiny/app/i18n";
-import SearchUI from "@webiny/app-admin/components/SearchUI";
 import { Cell, Grid } from "@webiny/ui/Grid";
 import { Select } from "@webiny/ui/Select";
+import SearchUI from "@webiny/app-admin/components/SearchUI";
 import { ReactComponent as FilterIcon } from "@webiny/app-admin/assets/icons/filter-24px.svg";
 import { ApwContentReviewStatus } from "~/types";
 import ContentReviewListItem from "./components/ContentReviewItem";
-import { useDataListModal } from "~/admin/views/contentReviewDashboard/hooks/useDataListModal";
+import { useDataListModal } from "./hooks/useDataListModal";
 
 const t = i18n.ns("app-apw/admin/content-reviews/datalist");
+
+const DataListItem = styled(ListItem)`
+    &.mdc-list-item {
+        padding: 0;
+    }
+`;
 
 const MOCK_ITEM = {
     id: 1,
@@ -39,7 +53,6 @@ const MOCK_ITEM2 = {
     commentedBy: t`Adrian`,
     commentedOn: "Dec 27th, 2021"
 };
-
 const MOCK_ITEM3 = {
     id: 3,
     contentTitle: t`Pricing page`,
@@ -57,6 +70,7 @@ const MOCK_ITEM3 = {
 
 function ContentReviewDataList() {
     const { status, setStatus, sort, setFilter, setSort, filter } = useDataListModal();
+    const { history } = useRouter();
 
     const SORTERS = [];
     const serializeSorters = sorter => {
@@ -127,8 +141,13 @@ function ContentReviewDataList() {
         >
             {({ data }) => (
                 <List>
-                    {data.map((item, index) => (
-                        <ContentReviewListItem key={index} {...item} />
+                    {data.map(item => (
+                        <DataListItem
+                            key={item.id}
+                            onClick={() => history.push("/apw/content-reviews/" + item.id)}
+                        >
+                            <ContentReviewListItem {...item} />
+                        </DataListItem>
                     ))}
                 </List>
             )}
