@@ -3,7 +3,6 @@ import { validation } from "@webiny/validation";
 import {
     CategoriesCrud,
     Category,
-    CategoryStorageOperations,
     CategoryStorageOperationsGetParams,
     CategoryStorageOperationsListParams,
     OnAfterCategoryCreateTopicParams,
@@ -13,6 +12,7 @@ import {
     OnBeforeCategoryDeleteTopicParams,
     OnBeforeCategoryUpdateTopicParams,
     PageBuilderContextObject,
+    PageBuilderStorageOperations,
     PbContext
 } from "~/types";
 import { NotAuthorizedError } from "@webiny/api-security";
@@ -40,7 +40,7 @@ const PERMISSION_NAME = "pb.category";
 
 export interface Params {
     context: PbContext;
-    storageOperations: CategoryStorageOperations;
+    storageOperations: PageBuilderStorageOperations;
 }
 export const createCategoriesCrud = (params: Params): CategoriesCrud => {
     const { context, storageOperations } = params;
@@ -54,6 +54,14 @@ export const createCategoriesCrud = (params: Params): CategoriesCrud => {
     const onBeforeCategoryDelete = createTopic<OnBeforeCategoryDeleteTopicParams>();
     const onAfterCategoryDelete = createTopic<OnAfterCategoryDeleteTopicParams>();
 
+    const getTenantId = (): string => {
+        return context.tenancy.getCurrentTenant().id;
+    };
+
+    const getLocaleCode = (): string => {
+        return context.i18nContent.getCurrentLocale().code;
+    };
+
     return {
         /**
          * Lifecycle events
@@ -64,25 +72,19 @@ export const createCategoriesCrud = (params: Params): CategoriesCrud => {
         onAfterCategoryUpdate,
         onBeforeCategoryDelete,
         onAfterCategoryDelete,
-        /**
-         * Storage operations
-         */
-        categoriesStorageOperations: storageOperations,
         async getCategory(slug, options = { auth: true }) {
             const { auth } = options;
 
-            const tenant = context.tenancy.getCurrentTenant();
-            const locale = context.i18nContent.getCurrentLocale();
             const params: CategoryStorageOperationsGetParams = {
                 where: {
                     slug,
-                    tenant: tenant.id,
-                    locale: locale.code
+                    tenant: getTenantId(),
+                    locale: getLocaleCode()
                 }
             };
 
             if (auth === false) {
-                return await storageOperations.get(params);
+                return await storageOperations.categories.get(params);
             }
 
             await context.i18nContent.checkI18NContentPermission();
@@ -107,7 +109,7 @@ export const createCategoriesCrud = (params: Params): CategoriesCrud => {
 
             let category: Category;
             try {
-                category = await storageOperations.get(params);
+                category = await storageOperations.categories.get(params);
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not load category by slug.",
@@ -146,13 +148,10 @@ export const createCategoriesCrud = (params: Params): CategoriesCrud => {
                 throw new NotAuthorizedError();
             }
 
-            const tenant = context.tenancy.getCurrentTenant();
-            const locale = context.i18nContent.getCurrentLocale();
-
             const params: CategoryStorageOperationsListParams = {
                 where: {
-                    tenant: tenant.id,
-                    locale: locale.code
+                    tenant: getTenantId(),
+                    locale: getLocaleCode()
                 },
                 sort: ["createdOn_ASC"]
             };
@@ -164,7 +163,7 @@ export const createCategoriesCrud = (params: Params): CategoriesCrud => {
             }
 
             try {
-                const [items] = await storageOperations.list(params);
+                const [items] = await storageOperations.categories.list(params);
                 return items;
             } catch (ex) {
                 throw new WebinyError(
@@ -194,9 +193,6 @@ export const createCategoriesCrud = (params: Params): CategoriesCrud => {
 
             const data: Category = await createDataModel.toJSON();
 
-            const tenant = context.tenancy.getCurrentTenant();
-            const locale = context.i18nContent.getCurrentLocale();
-
             const category: Category = {
                 ...data,
                 createdOn: new Date().toISOString(),
@@ -205,15 +201,15 @@ export const createCategoriesCrud = (params: Params): CategoriesCrud => {
                     type: identity.type,
                     displayName: identity.displayName
                 },
-                tenant: tenant.id,
-                locale: locale.code
+                tenant: getTenantId(),
+                locale: getLocaleCode()
             };
 
             try {
                 await onBeforeCategoryCreate.publish({
                     category
                 });
-                const result = await storageOperations.create({
+                const result = await storageOperations.categories.create({
                     input: data,
                     category
                 });
@@ -259,7 +255,7 @@ export const createCategoriesCrud = (params: Params): CategoriesCrud => {
                     original,
                     category
                 });
-                const result = await storageOperations.update({
+                const result = await storageOperations.categories.update({
                     input: data,
                     original,
                     category
@@ -318,7 +314,7 @@ export const createCategoriesCrud = (params: Params): CategoriesCrud => {
                 await onBeforeCategoryDelete.publish({
                     category
                 });
-                const result = await storageOperations.delete({
+                const result = await storageOperations.categories.delete({
                     category
                 });
                 await onAfterCategoryDelete.publish({

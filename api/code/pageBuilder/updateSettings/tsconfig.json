@@ -4,9 +4,7 @@
   "references": [
     { "path": "../../../../packages/api-page-builder/tsconfig.build.json" },
     { "path": "../../../../packages/api-page-builder-so-ddb/tsconfig.build.json" },
-    { "path": "../../../../packages/db-dynamodb/tsconfig.build.json" },
-    { "path": "../../../../packages/handler-aws/tsconfig.build.json" },
-    { "path": "../../../../packages/handler-db/tsconfig.build.json" }
+    { "path": "../../../../packages/handler-aws/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "paths": {
@@ -15,12 +13,8 @@
       "@webiny/api-page-builder": ["../../../../packages/api-page-builder/src"],
       "@webiny/api-page-builder-so-ddb/*": ["../../../../packages/api-page-builder-so-ddb/src/*"],
       "@webiny/api-page-builder-so-ddb": ["../../../../packages/api-page-builder-so-ddb/src"],
-      "@webiny/db-dynamodb/*": ["../../../../packages/db-dynamodb/src/*"],
-      "@webiny/db-dynamodb": ["../../../../packages/db-dynamodb/src"],
       "@webiny/handler-aws/*": ["../../../../packages/handler-aws/src/*"],
-      "@webiny/handler-aws": ["../../../../packages/handler-aws/src"],
-      "@webiny/handler-db/*": ["../../../../packages/handler-db/src/*"],
-      "@webiny/handler-db": ["../../../../packages/handler-db/src"]
+      "@webiny/handler-aws": ["../../../../packages/handler-aws/src"]
     },
     "baseUrl": "."
   }

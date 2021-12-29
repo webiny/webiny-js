@@ -2,7 +2,7 @@ import WebinyError from "@webiny/error";
 import { SearchBody as esSearchBody } from "elastic-ts";
 import { decodeCursor } from "@webiny/api-elasticsearch/cursors";
 import { ElasticsearchBoolQueryConfig } from "@webiny/api-elasticsearch/types";
-import { PageStorageOperationsListWhere, PbContext } from "@webiny/api-page-builder/types";
+import { PageStorageOperationsListWhere } from "@webiny/api-page-builder/types";
 import { createSort } from "@webiny/api-elasticsearch/sort";
 import { createLimit } from "@webiny/api-elasticsearch/limit";
 import { ElasticsearchFieldPlugin } from "@webiny/api-elasticsearch/plugins/definition/ElasticsearchFieldPlugin";
@@ -12,9 +12,9 @@ import { PageElasticsearchSortModifierPlugin } from "~/plugins/definitions/PageE
 import { PageElasticsearchQueryModifierPlugin } from "~/plugins/definitions/PageElasticsearchQueryModifierPlugin";
 import { PageElasticsearchBodyModifierPlugin } from "~/plugins/definitions/PageElasticsearchBodyModifierPlugin";
 import { applyWhere } from "@webiny/api-elasticsearch/where";
+import { PluginsContainer } from "@webiny/plugins";
 
 interface CreateElasticsearchQueryArgs {
-    context: PbContext;
     where: PageStorageOperationsListWhere;
 }
 
@@ -26,7 +26,7 @@ interface CreateElasticsearchQueryArgs {
 const createInitialQueryValue = (
     args: CreateElasticsearchQueryArgs
 ): ElasticsearchBoolQueryConfig => {
-    const { where, context } = args;
+    const { where } = args;
 
     const query: ElasticsearchBoolQueryConfig = {
         must: [],
@@ -35,14 +35,6 @@ const createInitialQueryValue = (
         filter: []
     };
 
-    /**
-     * When ES index is shared between tenants, we need to filter records by tenant ID
-     */
-    const sharedIndex = process.env.ELASTICSEARCH_SHARED_INDEXES === "true";
-    if (sharedIndex) {
-        const tenant = context.tenancy.getCurrentTenant();
-        query.must.push({ term: { "tenant.keyword": tenant.id } });
-    }
     /**
      * We must transform published and latest where args into something that is understandable by our Elasticsearch
      */
@@ -84,7 +76,7 @@ const createInitialQueryValue = (
 };
 
 interface CreateElasticsearchBodyParams {
-    context: PbContext;
+    plugins: PluginsContainer;
     where: PageStorageOperationsListWhere;
     limit: number;
     after?: string;
@@ -92,17 +84,18 @@ interface CreateElasticsearchBodyParams {
 }
 
 const createElasticsearchQuery = (
-    params: CreateElasticsearchBodyParams & { plugins: Record<string, ElasticsearchFieldPlugin> }
+    params: CreateElasticsearchBodyParams & {
+        fieldPlugins: Record<string, ElasticsearchFieldPlugin>;
+    }
 ) => {
-    const { context, where: initialWhere, plugins: fieldPlugins } = params;
+    const { plugins, where: initialWhere, fieldPlugins } = params;
     const query = createInitialQueryValue({
-        context,
         where: initialWhere
     });
     /**
      * Be aware that, if having more registered operator plugins of same type, the last one will be used.
      */
-    const operatorPlugins: Record<string, ElasticsearchQueryBuilderOperatorPlugin> = context.plugins
+    const operatorPlugins: Record<string, ElasticsearchQueryBuilderOperatorPlugin> = plugins
         .byType<ElasticsearchQueryBuilderOperatorPlugin>(
             ElasticsearchQueryBuilderOperatorPlugin.type
         )
@@ -162,7 +155,7 @@ const createElasticsearchQuery = (
      */
     const sharedIndex = process.env.ELASTICSEARCH_SHARED_INDEXES === "true";
     if (sharedIndex) {
-        const tenant = where["tenant"] || context.tenancy.getCurrentTenant().id;
+        const tenant = where.tenant;
         query.must.push({ term: { "tenant.keyword": tenant } });
         /**
          * Remove so it is not applied again later.
@@ -184,7 +177,7 @@ const createElasticsearchQuery = (
 };
 
 interface CreateElasticsearchBodyParams {
-    context: PbContext;
+    plugins: PluginsContainer;
     where: PageStorageOperationsListWhere;
     limit: number;
     after?: string;
@@ -194,9 +187,9 @@ interface CreateElasticsearchBodyParams {
 export const createElasticsearchQueryBody = (
     params: CreateElasticsearchBodyParams
 ): esSearchBody => {
-    const { context, where, limit: initialLimit, sort: initialSort, after } = params;
+    const { plugins, where, limit: initialLimit, sort: initialSort, after } = params;
 
-    const fieldPlugins: Record<string, PageElasticsearchFieldPlugin> = context.plugins
+    const fieldPlugins: Record<string, PageElasticsearchFieldPlugin> = plugins
         .byType<PageElasticsearchFieldPlugin>(PageElasticsearchFieldPlugin.type)
         .reduce((acc, plugin) => {
             acc[plugin.field] = plugin;
@@ -207,7 +200,7 @@ export const createElasticsearchQueryBody = (
 
     const query = createElasticsearchQuery({
         ...params,
-        plugins: fieldPlugins
+        fieldPlugins
     });
 
     const sort = createSort({
@@ -215,7 +208,7 @@ export const createElasticsearchQueryBody = (
         fieldPlugins
     });
 
-    const queryModifiers = context.plugins.byType<PageElasticsearchQueryModifierPlugin>(
+    const queryModifiers = plugins.byType<PageElasticsearchQueryModifierPlugin>(
         PageElasticsearchQueryModifierPlugin.type
     );
     for (const plugin of queryModifiers) {
@@ -225,7 +218,7 @@ export const createElasticsearchQueryBody = (
         });
     }
 
-    const sortModifiers = context.plugins.byType<PageElasticsearchSortModifierPlugin>(
+    const sortModifiers = plugins.byType<PageElasticsearchSortModifierPlugin>(
         PageElasticsearchSortModifierPlugin.type
     );
     for (const plugin of sortModifiers) {
@@ -254,7 +247,7 @@ export const createElasticsearchQueryBody = (
         sort
     };
 
-    const bodyModifiers = context.plugins.byType<PageElasticsearchBodyModifierPlugin>(
+    const bodyModifiers = plugins.byType<PageElasticsearchBodyModifierPlugin>(
         PageElasticsearchBodyModifierPlugin.type
     );
     for (const plugin of bodyModifiers) {

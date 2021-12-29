@@ -1,22 +1,20 @@
+import { TableModifier } from "~/types";
+import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { Table } from "dynamodb-toolbox";
-import configurations from "~/operations/configurations";
-import { PbContext } from "@webiny/api-page-builder/graphql/types";
-import { getDocumentClient } from "@webiny/db-dynamodb/utils/documentClient";
-import WebinyError from "@webiny/error";
 
-export const defineTableElasticsearch = (params: { context: PbContext }): Table => {
-    const { context } = params;
-    const tableName = configurations.esDb().table;
-    if (!tableName) {
-        throw new WebinyError(
-            `Missing Elasticsearch table in the configuration.`,
-            "TABLE_NAME_ERROR"
-        );
-    }
-    return new Table({
-        name: tableName,
+export interface Params {
+    table?: TableModifier;
+    documentClient: DocumentClient;
+}
+export const createElasticsearchTable = ({ table, documentClient }: Params): Table => {
+    const tableConfig = {
+        name: process.env.DB_TABLE_ELASTICSEARCH,
         partitionKey: "PK",
         sortKey: "SK",
-        DocumentClient: getDocumentClient(context)
-    });
+        DocumentClient: documentClient
+    };
+
+    const config = typeof table === "function" ? table(tableConfig) : tableConfig;
+
+    return new Table(config);
 };

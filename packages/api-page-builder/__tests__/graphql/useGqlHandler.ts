@@ -1,12 +1,12 @@
 import { createHandler } from "@webiny/handler-aws";
 import graphqlHandler from "@webiny/handler-graphql";
-import pageBuilderPlugins from "@webiny/api-page-builder/graphql";
+import { createPageBuilderContext, createPageBuilderGraphQL } from "~/graphql";
 import i18nContext from "@webiny/api-i18n/graphql/context";
 import i18nDynamoDbStorageOperations from "@webiny/api-i18n-ddb";
 import i18nContentPlugins from "@webiny/api-i18n-content/plugins";
 import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
 import fileManagerPlugins from "@webiny/api-file-manager/plugins";
-import fileManagerDdbEsPlugins from "@webiny/api-file-manager-ddb-es";
+import fileManagerDdbPlugins from "@webiny/api-file-manager-ddb";
 import prerenderingServicePlugins from "@webiny/api-prerendering-service/client";
 
 import prerenderingHookPlugins from "~/prerendering/hooks";
@@ -57,30 +57,24 @@ import path from "path";
 import fs from "fs";
 import { until } from "@webiny/project-utils/testing/helpers/until";
 import { createTenancyAndSecurity } from "../tenancySecurity";
+import { getStorageOperations } from "../storageOperations";
 
 interface Params {
     permissions?: any;
     identity?: SecurityIdentity;
     plugins?: any[];
+    storageOperationPlugins?: any[];
 }
 
-export default ({ permissions, identity, plugins }: Params = {}) => {
-    // @ts-ignore
-    if (typeof __getStorageOperationsPlugins !== "function") {
-        throw new Error(`There is no global "__getStorageOperationsPlugins" function.`);
-    }
-    // @ts-ignore
-    const storageOperations = __getStorageOperationsPlugins();
-    if (typeof storageOperations !== "function") {
-        throw new Error(
-            `A product of "__getStorageOperationsPlugins" must be a function to initialize storage operations.`
-        );
-    }
+export default ({ permissions, identity, plugins, storageOperationPlugins }: Params = {}) => {
+    const ops = getStorageOperations({
+        plugins: storageOperationPlugins || []
+    });
 
     const handler = createHandler(
-        storageOperations(),
+        ...ops.plugins,
         // TODO figure out a way to load these automatically
-        fileManagerDdbEsPlugins(),
+        fileManagerDdbPlugins(),
         graphqlHandler(),
         ...createTenancyAndSecurity({ permissions, identity }),
         i18nContext(),
@@ -88,7 +82,10 @@ export default ({ permissions, identity, plugins }: Params = {}) => {
         i18nContentPlugins(),
         fileManagerPlugins(),
         mockLocalesPlugins(),
-        pageBuilderPlugins(),
+        createPageBuilderGraphQL(),
+        createPageBuilderContext({
+            storageOperations: ops.storageOperations
+        }),
         prerenderingHookPlugins(),
         prerenderingServicePlugins({
             handlers: {

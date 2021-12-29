@@ -1,11 +1,12 @@
 import DataLoader from "dataloader";
-import { CategoryStorageOperationsDdbEs } from "./CategoryStorageOperations";
 import { batchReadAll } from "@webiny/db-dynamodb/utils/batchRead";
 import { Category } from "@webiny/api-page-builder/types";
 import { cleanupItem } from "@webiny/db-dynamodb/utils/cleanup";
+import { Entity } from "dynamodb-toolbox";
+import { createPartitionKey, createSortKey } from "./keys";
 
 interface Params {
-    storageOperations: CategoryStorageOperationsDdbEs;
+    entity: Entity<any>;
 }
 
 interface DataLoaderGetItem {
@@ -15,11 +16,12 @@ interface DataLoaderGetItem {
 }
 
 export class CategoryDataLoader {
-    private readonly storageOperations: CategoryStorageOperationsDdbEs;
     private _getDataLoader: DataLoader<any, any>;
 
+    private readonly entity: Entity<any>;
+
     constructor(params: Params) {
-        this.storageOperations = params.storageOperations;
+        this.entity = params.entity;
     }
 
     public async getOne(item: DataLoaderGetItem): Promise<Category> {
@@ -42,14 +44,14 @@ export class CategoryDataLoader {
             this._getDataLoader = new DataLoader(
                 async (items: DataLoaderGetItem[]) => {
                     const batched = items.map(item => {
-                        return this.storageOperations.entity.getBatch({
-                            PK: this.storageOperations.createPartitionKey(item),
-                            SK: this.storageOperations.createSortKey(item)
+                        return this.entity.getBatch({
+                            PK: createPartitionKey(item),
+                            SK: createSortKey(item)
                         });
                     });
 
                     const records = await batchReadAll<Category>({
-                        table: this.storageOperations.table,
+                        table: this.entity.table,
                         items: batched
                     });
 
@@ -59,7 +61,7 @@ export class CategoryDataLoader {
                                 return collection;
                             }
                             const key = cacheKeyFn(result);
-                            collection[key] = cleanupItem(this.storageOperations.entity, result);
+                            collection[key] = cleanupItem(this.entity, result);
                             return collection;
                         },
                         {} as Record<string, Category>

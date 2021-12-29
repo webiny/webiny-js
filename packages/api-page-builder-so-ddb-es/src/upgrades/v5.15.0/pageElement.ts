@@ -1,4 +1,5 @@
 import { PbContext } from "@webiny/api-page-builder/graphql/types";
+// @ts-ignore
 import { PageElementStorageOperationsDdbEs } from "~/operations/pageElement/PageElementStorageOperations";
 import { PageElement } from "@webiny/api-page-builder/types";
 import { queryAll } from "@webiny/db-dynamodb/utils/query";
