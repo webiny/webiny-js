@@ -21,7 +21,7 @@ export interface QueryResult<T> {
     items: T[];
 }
 
-type DbItem<T> = T & {
+export type DbItem<T> = T & {
     PK: string;
     SK: string;
     TYPE: string;

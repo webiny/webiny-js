@@ -1,14 +1,14 @@
 import { Entity, Table } from "dynamodb-toolbox";
-import { getExtraAttributes } from "@webiny/db-dynamodb/utils/attributes";
-import { PbContext } from "@webiny/api-page-builder/graphql/types";
+import { Attributes } from "~/types";
 
-export const definePageElasticsearchEntity = (params: {
-    context: PbContext;
+export interface Params {
     table: Table;
-}): Entity<any> => {
-    const { context, table } = params;
-    const entityName = "PbPageElasticsearch";
-    const attributes = getExtraAttributes(context, entityName);
+    entityName: string;
+    attributes: Attributes;
+}
+
+export const createPageElasticsearchEntity = (params: Params): Entity<any> => {
+    const { entityName, attributes, table } = params;
     return new Entity({
         name: entityName,
         table,
@@ -25,7 +25,7 @@ export const definePageElasticsearchEntity = (params: {
             data: {
                 type: "map"
             },
-            ...attributes
+            ...(attributes || {})
         }
     });
 };

@@ -46,7 +46,17 @@ export const createTenancyAndSecurity = ({ permissions, identity }: Config = {})
         }),
         createSecurityGraphQL(),
         new ContextPlugin<SecurityContext & TenancyContext>(context => {
-            context.tenancy.setCurrentTenant({ id: "root", name: "Root" });
+            context.tenancy.setCurrentTenant({
+                id: "root",
+                name: "Root",
+                webinyVersion: process.env.WEBINY_VERSION,
+                description: "",
+                parent: null,
+                settings: {
+                    domains: []
+                },
+                status: "any"
+            });
 
             context.security.addAuthenticator(async () => {
                 return identity || defaultIdentity;

@@ -9313,6 +9313,7 @@ __metadata:
     "@webiny/handler-graphql": ^5.20.0
     "@webiny/plugins": ^5.20.0
     "@webiny/project-utils": ^5.20.0
+    "@webiny/utils": ^5.20.0
     dataloader: ^2.0.0
     dynamodb-toolbox: ^0.3.4
     elastic-ts: ^0.7.0
@@ -9345,7 +9346,9 @@ __metadata:
     "@webiny/handler-aws": ^5.20.0
     "@webiny/handler-db": ^5.20.0
     "@webiny/handler-graphql": ^5.20.0
+    "@webiny/plugins": ^5.20.0
     "@webiny/project-utils": ^5.20.0
+    "@webiny/utils": ^5.20.0
     dataloader: ^2.0.0
     dynamodb-toolbox: ^0.3.4
     jest: ^26.6.3
@@ -9371,7 +9374,7 @@ __metadata:
     "@commodo/fields": beta
     "@types/puppeteer": ^5.4.2
     "@webiny/api-file-manager": ^5.20.0
-    "@webiny/api-file-manager-ddb-es": ^5.20.0
+    "@webiny/api-file-manager-ddb": ^5.20.0
     "@webiny/api-i18n": ^5.20.0
     "@webiny/api-i18n-content": ^5.20.0
     "@webiny/api-i18n-ddb": ^5.20.0
@@ -9392,6 +9395,7 @@ __metadata:
     "@webiny/plugins": ^5.20.0
     "@webiny/project-utils": ^5.20.0
     "@webiny/pubsub": ^5.20.0
+    "@webiny/utils": ^5.20.0
     "@webiny/validation": ^5.20.0
     commodo-fields-object: ^1.0.6
     dataloader: ^2.0.0
@@ -12496,9 +12500,7 @@ __metadata:
     "@webiny/api-page-builder": ^5.20.0
     "@webiny/api-page-builder-so-ddb": ^5.20.0
     "@webiny/cli": ^5.20.0
-    "@webiny/db-dynamodb": ^5.20.0
     "@webiny/handler-aws": ^5.20.0
-    "@webiny/handler-db": ^5.20.0
     "@webiny/project-utils": ^5.20.0
   languageName: unknown
   linkType: soft
