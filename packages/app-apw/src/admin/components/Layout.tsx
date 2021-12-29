@@ -143,6 +143,9 @@ export const Columns: React.FC<ColumnsProps> = ({ children, space, ...props }) =
     return (
         <Box display="flex" {...props}>
             {React.Children.map(children, (child, index) => {
+                if (child === null) {
+                    return child;
+                }
                 const childProps = {};
                 if (index > 0) {
                     childProps["marginLeft"] = space;
@@ -164,6 +167,9 @@ export const Stack = ({ children, space, ...props }: StackProps) => {
     return (
         <Box {...props}>
             {React.Children.map(children, (child, index) => {
+                if (child === null) {
+                    return child;
+                }
                 if (index > 0) {
                     return React.cloneElement(child, { marginTop: space });
                 }
