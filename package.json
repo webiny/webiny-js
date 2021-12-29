@@ -228,9 +228,5 @@
     "@pulumi/pulumi": "3.19.0",
     "@pulumi/aws": "4.28.0"
   },
-  "packageManager": "yarn@3.1.0",
-  "dependencies": {
-    "https": "^1.0.0",
-    "mdbid": "^1.0.0"
-  }
+  "packageManager": "yarn@3.1.0"
 }

@@ -4,7 +4,7 @@ const chalk = require("chalk");
 const fs = require("fs");
 const telemetry = require("./telemetry");
 
-async function getLatestTelemetryCode() {
+async function injectHandlerTelemetry() {
     await telemetry.getLatestTelemetryFunction();
 
     fs.copyFileSync(
@@ -74,7 +74,7 @@ module.exports = async options => {
         });
     });
 
-    const handlerFile = fs.readFileSync(options.cwd + "/build/handler.js", {
+    const handlerFile = fs.readFileSync(path.join(options.cwd, "/build/handler.js"), {
         encoding: "utf8",
         flag: "r"
     });
@@ -82,10 +82,9 @@ module.exports = async options => {
 
     if (includesGraphQl) {
         try {
-            await getLatestTelemetryCode;
+            await injectHandlerTelemetry();
         } catch (err) {
-            console.log("Error loading telemtry code");
-            console.log(err);
+            throw new Error(err);
         }
     }
 
