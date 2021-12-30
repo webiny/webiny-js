@@ -1,21 +1,28 @@
-import React, { FC } from "react";
+import React from "react";
 import styled from "@emotion/styled";
 import { makeComposable } from "~/index";
 
-export const CenteredView: FC = makeComposable("CenteredView", ({ children }) => {
-    const Container = styled.div({
-        display: "flex",
-        justifyContent: "center"
-    });
+export interface CenteredViewProps {
+    maxWidth: number | string;
+}
 
-    const Width = styled.div({
-        maxWidth: 700,
-        width: "100%"
-    });
+export const CenteredView = makeComposable<CenteredViewProps>(
+    "CenteredView",
+    ({ maxWidth = 700, children }) => {
+        const Container = styled.div({
+            display: "flex",
+            justifyContent: "center"
+        });
 
-    return (
-        <Container>
-            <Width>{children}</Width>
-        </Container>
-    );
-});
+        const Width = styled.div({
+            maxWidth,
+            width: "100%"
+        });
+
+        return (
+            <Container>
+                <Width>{children}</Width>
+            </Container>
+        );
+    }
+);

@@ -6,11 +6,13 @@ import { Brand } from "./modules/Brand";
 import { Search } from "~/modules/Search";
 import { UserMenu } from "~/modules/UserMenu";
 import { Overlays } from "./modules/Overlays";
+import { NotFound } from "./modules/NotFound";
 
 export const RMWC = () => {
     return (
         <Fragment>
             <Layout />
+            <NotFound />
             <Brand />
             <Navigation />
             <Search />
