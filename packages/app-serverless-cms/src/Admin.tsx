@@ -17,7 +17,6 @@ import { RMWC } from "@webiny/app-admin-rmwc";
 import { FileManager } from "@webiny/app-file-manager";
 import { GraphQLPlayground } from "@webiny/app-graphql-playground";
 import { AccessManagement } from "@webiny/app-security-access-management";
-import welcomeScreenPlugins from "@webiny/app-plugin-admin-welcome-screen";
 import { imagePlugin } from "@webiny/app/plugins";
 import fileManagerPlugins from "@webiny/app-file-manager/admin/plugins";
 import fileStorageS3Plugin from "@webiny/app-file-manager-s3";
@@ -37,8 +36,7 @@ const App = (props: AdminProps) => {
         imagePlugin(),
         fileManagerPlugins(),
         fileStorageS3Plugin(),
-        apolloLinks,
-        welcomeScreenPlugins()
+        apolloLinks
     );
 
     return (

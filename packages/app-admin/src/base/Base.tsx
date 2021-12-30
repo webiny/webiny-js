@@ -1,6 +1,6 @@
 import React, { memo } from "react";
 import { Extensions } from "@webiny/app-admin-core";
-import { AddMenu, AddRoute, Layout, NotFound } from "~/index";
+import { AddMenu, AddRoute, Dashboard, Layout, NotFound } from "~/index";
 import { plugins } from "@webiny/plugins";
 import { ReactComponent as DocsIcon } from "~/assets/icons/icon-documentation.svg";
 import { ReactComponent as SlackIcon } from "~/assets/icons/slack-logo.svg";
@@ -55,6 +55,11 @@ const BaseExtension = () => {
                 target={"_blank"}
                 tags={["footer"]}
             />
+            <AddRoute path={"/"}>
+                <Layout title={"Welcome!"}>
+                    <Dashboard />
+                </Layout>
+            </AddRoute>
             <AddRoute path={"*"}>
                 <Layout title={"Not Accessible"}>
                     <NotFound />
