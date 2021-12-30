@@ -45,7 +45,7 @@ export = async () => {
     // Some resources _must_ be put in us-east-1, such as Lambda at Edge.
     const awsUsEast1 = new aws.Provider("us-east-1", { region: "us-east-1" });
 
-    const viewerRequest = new aws.lambda.Function(
+    const originRequest = new aws.lambda.Function(
         "origin-request",
         {
             publish: true,
@@ -56,6 +56,22 @@ export = async () => {
             memorySize: 128,
             code: new pulumi.asset.AssetArchive({
                 "index.js": new pulumi.asset.FileAsset(join(__dirname, "origin-request.js"))
+            })
+        },
+        { provider: awsUsEast1, parent: this }
+    );
+
+    const originResponse = new aws.lambda.Function(
+        "origin-response",
+        {
+            publish: true,
+            runtime: "nodejs14.x",
+            handler: "index.handler",
+            role: role.arn,
+            timeout: 5,
+            memorySize: 128,
+            code: new pulumi.asset.AssetArchive({
+                "index.js": new pulumi.asset.FileAsset(join(__dirname, "origin-response.js"))
             })
         },
         { provider: awsUsEast1, parent: this }
@@ -93,7 +109,11 @@ export = async () => {
             lambdaFunctionAssociations: [
                 {
                     eventType: "origin-request",
-                    lambdaArn: viewerRequest.qualifiedArn
+                    lambdaArn: originRequest.qualifiedArn
+                },
+                {
+                    eventType: "origin-response",
+                    lambdaArn: originResponse.qualifiedArn
                 }
             ]
         },
