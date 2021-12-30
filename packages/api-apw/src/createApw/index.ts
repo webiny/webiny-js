@@ -5,9 +5,7 @@ import { createChangeRequestMethods } from "./createChangeRequestMethods";
 import { createContentReviewMethods } from "./createContentReviewMethods";
 import { AdvancedPublishingWorkflow, CreateApwParams } from "~/types";
 
-export const createAdvancedPublishingWorkflow = (
-    params: CreateApwParams
-): AdvancedPublishingWorkflow => {
+export const createApw = (params: CreateApwParams): AdvancedPublishingWorkflow => {
     const workflowMethods = createWorkflowMethods(params);
     const reviewerMethods = createReviewerMethods(params);
     const changeRequestMethods = createChangeRequestMethods(params);

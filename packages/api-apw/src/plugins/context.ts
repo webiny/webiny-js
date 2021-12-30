@@ -1,35 +1,32 @@
 import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
 import { ApwContext } from "~/types";
-import { createAdvancedPublishingWorkflow } from "~/createApw";
+import { createApw } from "~/createApw";
 import { createApwModels } from "./models";
 import apwHooks from "./hooks";
+import { createStorageOperations } from "~/storageOperations";
 
 export default () => [
     new ContextPlugin<ApwContext>(async context => {
-        const getLocale = () => {
-            return context.cms.getLocale();
-        };
+        const { tenancy, security, i18nContent } = context;
 
-        const getIdentity = () => {
-            return context.security.getIdentity();
+        const getLocale = () => {
+            // TODO: Check which locale do we need here?
+            return i18nContent.locale;
         };
 
         const getTenant = () => {
-            return context.tenancy.getCurrentTenant();
+            return tenancy.getCurrentTenant();
         };
 
-        context.apw = createAdvancedPublishingWorkflow({
+        const getPermission = (name: string) => security.getPermission(name);
+        const getIdentity = () => security.getIdentity();
+
+        context.apw = createApw({
             getLocale,
             getIdentity,
             getTenant,
-            storageOperations: {
-                getModel: context.cms.getModel,
-                getEntryById: context.cms.getEntryById,
-                listLatestEntries: context.cms.listLatestEntries,
-                createEntry: context.cms.createEntry,
-                updateEntry: context.cms.updateEntry,
-                deleteEntry: context.cms.deleteEntry
-            }
+            getPermission,
+            storageOperations: createStorageOperations({ cms: context.cms })
         });
     }),
     createApwModels(),

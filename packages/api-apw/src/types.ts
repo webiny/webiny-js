@@ -12,7 +12,7 @@ import {
 } from "@webiny/api-headless-cms/types";
 import { Context } from "@webiny/handler/types";
 import { PbContext } from "@webiny/api-page-builder/graphql/types";
-import { SecurityIdentity } from "@webiny/api-security/types";
+import { SecurityIdentity, SecurityPermission } from "@webiny/api-security/types";
 import { I18NLocale } from "@webiny/api-i18n/types";
 import { Tenant } from "@webiny/api-tenancy/types";
 
@@ -211,12 +211,15 @@ export interface CreateApwParams {
     getLocale: () => I18NLocale;
     getIdentity: () => SecurityIdentity;
     getTenant: () => Tenant;
-    storageOperations: {
-        getModel: CmsModelContext["getModel"];
-        getEntryById: CmsEntryContext["getEntryById"];
-        listLatestEntries: CmsEntryContext["listLatestEntries"];
-        createEntry: CmsEntryContext["createEntry"];
-        updateEntry: CmsEntryContext["updateEntry"];
-        deleteEntry: CmsEntryContext["deleteEntry"];
-    };
+    getPermission: (name: string) => Promise<SecurityPermission>;
+    storageOperations: ApwStorageOperations;
+}
+
+export interface ApwStorageOperations {
+    getModel: CmsModelContext["getModel"];
+    getEntryById: CmsEntryContext["getEntryById"];
+    listLatestEntries: CmsEntryContext["listLatestEntries"];
+    createEntry: CmsEntryContext["createEntry"];
+    updateEntry: CmsEntryContext["updateEntry"];
+    deleteEntry: CmsEntryContext["deleteEntry"];
 }
