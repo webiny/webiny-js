@@ -3,6 +3,7 @@ import { HasPermission } from "@webiny/app-security";
 import { Extensions, AddMenu as Menu, Provider } from "@webiny/app-admin";
 import { PageBuilderProvider as ContextProvider } from "./contexts/PageBuilder";
 import { ReactComponent as PagesIcon } from "./admin/assets/table_chart-24px.svg";
+import { WebsiteSettings } from "./modules/WebsiteSettings/WebsiteSettings";
 
 const PageBuilderProviderHOC = Component => {
     return function PageBuilderProvider({ children }) {
@@ -68,6 +69,7 @@ export const PageBuilder = () => {
             <Provider hoc={PageBuilderProviderHOC} />
             <Extensions>
                 <PageBuilderMenu />
+                <WebsiteSettings />
             </Extensions>
         </Fragment>
     );

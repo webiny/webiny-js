@@ -4,6 +4,7 @@ import { Cell, Grid } from "@webiny/ui/Grid";
 import { Bind } from "@webiny/form";
 import { CheckboxGroup, Checkbox } from "@webiny/ui/Checkbox";
 import { useThemeManager } from "~/hooks/useThemeManager";
+import { validation } from "@webiny/validation";
 
 const WideOptions = styled.div(`
   .mdc-form-field {
@@ -17,7 +18,11 @@ export const ThemeCheckboxGroup = () => {
     return (
         <Grid>
             <Cell span={12}>
-                <Bind name={"settings.themes"} defaultValue={[]}>
+                <Bind
+                    name={"settings.themes"}
+                    defaultValue={[]}
+                    validators={validation.create("required,minLength:1")}
+                >
                     <CheckboxGroup
                         label="Themes"
                         description={"Choose themes that will be enabled for this tenant."}

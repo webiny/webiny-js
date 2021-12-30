@@ -4,14 +4,13 @@ import React, {
     useMemo,
     useState,
     useCallback,
-    cloneElement,
     FunctionComponentElement,
     ComponentType,
     ReactElement
 } from "react";
 import { BrowserRouter, RouteProps } from "@webiny/react-router";
-import { Routes as SortRoutes } from "./components/internal/Routes";
-import { DebouncedRenderer } from "./components/internal/DebouncedRenderer";
+import { Routes as SortRoutes } from "./components/utils/Routes";
+import { DebounceRender } from "./components/utils/DebounceRender";
 import { ExtensionsProvider } from "./components/core/Extensions";
 
 const compose = (...fns) => {
@@ -163,7 +162,7 @@ export const Admin = ({ children }: AdminProps) => {
     );
 
     const Providers = useMemo(
-        () => compose(...(state.providers || []))(DebouncedRenderer),
+        () => compose(...(state.providers || []))(DebounceRender),
         [state.providers]
     );
 
@@ -171,15 +170,15 @@ export const Admin = ({ children }: AdminProps) => {
 
     return (
         <AdminContext.Provider value={adminContext}>
-            <BrowserRouter>
-                {children}
-                <Providers>
-                    <ExtensionsProvider>
-                        {state.extensions.map((ext, key) => cloneElement(ext, { key }))}
-                    </ExtensionsProvider>
-                    <AdminRouter />
-                </Providers>
-            </BrowserRouter>
+            {children}
+            <Providers>
+                <BrowserRouter>
+                    <ExtensionsProvider>{state.extensions}</ExtensionsProvider>
+                    <DebounceRender>
+                        <AdminRouter />
+                    </DebounceRender>
+                </BrowserRouter>
+            </Providers>
         </AdminContext.Provider>
     );
 };

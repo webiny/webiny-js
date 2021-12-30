@@ -1,28 +1,20 @@
-import React, { Fragment } from "react";
+import React, { Fragment, memo } from "react";
 import gql from "graphql-tag";
-import { Provider, Extensions, AddMenu, AddRoute, Layout } from "@webiny/app-serverless-cms";
+import { Provider, Extensions } from "@webiny/app-serverless-cms";
+import { AddPbWebsiteSettings } from "@webiny/app-page-builder";
 import { AddTenantFormField } from "~/components/AddTenantFormField";
-import { Themes } from "./Themes";
 import { ThemeCheckboxGroup } from "~/components/ThemeCheckboxGroup";
 import { ThemeManagerProviderHOC } from "./ThemeManagerProvider";
-import { IsRootTenant } from "~/components/IsRootTenant";
+import { IsRootTenant, IsNotRootTenant } from "~/components/IsRootTenant";
+import { Bind } from "@webiny/form";
+import { Select } from "@webiny/ui/Select";
+import { useThemeManager } from "~/hooks/useThemeManager";
+import { useTenantThemes } from "~/hooks/useTenantThemes";
+import { validation } from "@webiny/validation";
 
-const RoutesAndMenus = () => {
-    return (
-        <IsRootTenant>
-            <AddMenu id="tenantManager">
-                <AddMenu id={"tenantManager.themes"} label={`Themes`} path="/themes" />
-            </AddMenu>
-            <AddRoute exact path={"/themes"}>
-                <Layout title={"Tenant Manager - Themes"}>
-                    <Themes />
-                </Layout>
-            </AddRoute>
-        </IsRootTenant>
-    );
-};
+const { Group, Element } = AddPbWebsiteSettings;
 
-const TenantFormFields = () => {
+const TenantFormFields = memo(function TenantFormFields() {
     const selection = gql`
         {
             settings {
@@ -32,6 +24,53 @@ const TenantFormFields = () => {
     `;
 
     return <AddTenantFormField querySelection={selection} element={<ThemeCheckboxGroup />} />;
+});
+
+const AllThemes = () => {
+    const { themes } = useThemeManager();
+
+    return <ThemeSelect themes={themes} />;
+};
+
+const TenantThemes = () => {
+    const themes = useTenantThemes();
+
+    return <ThemeSelect themes={themes} />;
+};
+
+const ThemeSelect = ({ themes }) => {
+    return (
+        <Bind name={"theme"} defaultValue={""} validators={validation.create("required")}>
+            <Select label="Theme" description={"Select a theme to use for your website."}>
+                {[{ name: "", label: null, hidden: true }, ...themes].map(theme => (
+                    <option key={theme.name} value={theme.name} hidden={theme.hidden}>
+                        {theme.label}
+                    </option>
+                ))}
+            </Select>
+        </Bind>
+    );
+};
+
+const WebsiteSettings = () => {
+    const selection = gql`
+        {
+            theme
+        }
+    `;
+
+    return (
+        <Group name={"theme"} label={"Theme"} querySelection={selection}>
+            <Element>
+                <IsNotRootTenant>
+                    <TenantThemes />
+                </IsNotRootTenant>
+                <IsRootTenant>
+                    <AllThemes />
+                </IsRootTenant>
+            </Element>
+        </Group>
+    );
 };
 
 export const ThemesModule = () => {
@@ -39,8 +78,8 @@ export const ThemesModule = () => {
         <Fragment>
             <Provider hoc={ThemeManagerProviderHOC} />
             <Extensions>
-                <RoutesAndMenus />
                 <TenantFormFields />
+                <WebsiteSettings />
             </Extensions>
         </Fragment>
     );

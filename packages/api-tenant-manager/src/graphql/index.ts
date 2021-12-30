@@ -48,8 +48,23 @@ export default new GraphQLSchemaPlugin<Context>({
             updateTenant(id: ID!, data: UpdateTenantInput): TenantResponse
             deleteTenant(id: ID!): TenancyBooleanResponse
         }
+
+        extend type PbSettings {
+            # leaving as optional for now, as root tenant will not have a theme
+            theme: ID
+        }
+
+        extend input PbSettingsInput {
+            theme: ID!
+        }
     `,
     resolvers: {
+        PbSettings: {
+            theme(settings, _, context) {
+                const tenant = context.tenancy.getCurrentTenant();
+                return settings.theme || tenant.settings.themes[0];
+            }
+        },
         TenancyQuery: {
             getTenant: async (_, { where }, context) => {
                 // TODO: add permission checks

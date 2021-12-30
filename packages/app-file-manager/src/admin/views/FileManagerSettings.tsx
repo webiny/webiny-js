@@ -26,68 +26,78 @@ const FileManagerSettings = () => {
                         const settings = get(data, "fileManager.getSettings.data") || {};
 
                         return (
-                            <Form
-                                data={settings}
-                                onSubmit={async data => {
-                                    await update({
-                                        variables: {
-                                            data: {
-                                                uploadMinFileSize: parseFloat(
-                                                    data.uploadMinFileSize
-                                                ),
-                                                uploadMaxFileSize: parseFloat(
-                                                    data.uploadMaxFileSize
-                                                )
-                                            }
-                                        }
-                                    });
-                                    showSnackbar("Settings updated successfully.");
-                                }}
-                            >
-                                {({ Bind, form }) => (
-                                    <SimpleForm>
-                                        {(queryInProgress || mutationInProgress) && (
-                                            <CircularProgress />
+                            <Grid>
+                                <Cell span={3} />
+                                <Cell span={6}>
+                                    <Form
+                                        data={settings}
+                                        onSubmit={async data => {
+                                            await update({
+                                                variables: {
+                                                    data: {
+                                                        uploadMinFileSize: parseFloat(
+                                                            data.uploadMinFileSize
+                                                        ),
+                                                        uploadMaxFileSize: parseFloat(
+                                                            data.uploadMaxFileSize
+                                                        )
+                                                    }
+                                                }
+                                            });
+                                            showSnackbar("Settings updated successfully.");
+                                        }}
+                                    >
+                                        {({ Bind, form }) => (
+                                            <SimpleForm>
+                                                {(queryInProgress || mutationInProgress) && (
+                                                    <CircularProgress />
+                                                )}
+                                                <SimpleFormHeader title="General Settings" />
+                                                <SimpleFormContent>
+                                                    <Grid>
+                                                        <Cell span={12}>
+                                                            <Grid>
+                                                                <Cell span={12}>
+                                                                    <Bind
+                                                                        name={"uploadMinFileSize"}
+                                                                    >
+                                                                        <Input
+                                                                            type="number"
+                                                                            label="Minimum file upload size"
+                                                                            description="In bytes"
+                                                                        />
+                                                                    </Bind>
+                                                                </Cell>
+                                                            </Grid>
+                                                        </Cell>
+                                                        <Cell span={12}>
+                                                            <Grid>
+                                                                <Cell span={12}>
+                                                                    <Bind
+                                                                        name={"uploadMaxFileSize"}
+                                                                    >
+                                                                        <Input
+                                                                            type="number"
+                                                                            label="Maximum file upload size"
+                                                                            description="In bytes"
+                                                                        />
+                                                                    </Bind>
+                                                                </Cell>
+                                                            </Grid>
+                                                        </Cell>
+                                                    </Grid>
+                                                </SimpleFormContent>
+                                                <SimpleFormFooter>
+                                                    <ButtonPrimary onClick={form.submit}>
+                                                        Save
+                                                    </ButtonPrimary>
+                                                </SimpleFormFooter>
+                                            </SimpleForm>
                                         )}
-                                        <SimpleFormHeader title="General File Manager Settings" />
-                                        <SimpleFormContent>
-                                            <Grid>
-                                                <Cell span={12}>
-                                                    <Grid>
-                                                        <Cell span={6}>
-                                                            <Bind name={"uploadMinFileSize"}>
-                                                                <Input
-                                                                    type="number"
-                                                                    label="Minimum file upload size"
-                                                                    description="In bytes"
-                                                                />
-                                                            </Bind>
-                                                        </Cell>
-                                                    </Grid>
-                                                </Cell>
-                                                <Cell span={12}>
-                                                    <Grid>
-                                                        <Cell span={6}>
-                                                            <Bind name={"uploadMaxFileSize"}>
-                                                                <Input
-                                                                    type="number"
-                                                                    label="Maximum file upload size"
-                                                                    description="In bytes"
-                                                                />
-                                                            </Bind>
-                                                        </Cell>
-                                                    </Grid>
-                                                </Cell>
-                                            </Grid>
-                                        </SimpleFormContent>
-                                        <SimpleFormFooter>
-                                            <ButtonPrimary onClick={form.submit}>
-                                                Save
-                                            </ButtonPrimary>
-                                        </SimpleFormFooter>
-                                    </SimpleForm>
-                                )}
-                            </Form>
+                                    </Form>
+                                </Cell>
+                                <Cell span={3} />
+                            </Grid>
                         );
                     }}
                 </Mutation>

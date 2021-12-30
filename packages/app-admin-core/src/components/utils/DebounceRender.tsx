@@ -6,14 +6,20 @@ import debounce from "lodash.debounce";
  * can add more and more Providers which will recompose the entire hierarchy of React Context providers.
  * During this stage, we don't want to render anything.
  */
-export const DebouncedRenderer = ({ children }) => {
-    const [render, setRender] = useState(false);
+export const DebounceRender = ({ wait = 50, children }) => {
+    const [render, setRender] = useState(wait === 0);
 
     const debouncedRender = useMemo(() => {
-        return debounce(() => setRender(true), 50);
+        return debounce(() => {
+            setRender(true);
+        }, wait);
     }, [setRender]);
 
     useEffect(() => {
+        if (render) {
+            return;
+        }
+
         debouncedRender();
 
         return () => {

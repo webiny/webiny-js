@@ -36,18 +36,20 @@ const fields = /* GraphQL */ `
 `;
 
 export const GET_SETTINGS = gql`
-        query GetSettings {
-            pageBuilder {
-                getSettings ${fields}
-                getDefaultSettings ${fields}
-            }
+    query PbGetSettings {
+        pageBuilder {
+            getSettings ${fields}
+            getDefaultSettings ${fields}
         }
-    `;
+    }
+`;
 
 export const UPDATE_SETTINGS = gql`
-    mutation updateSettings($data: PbSettingsInput!) {
+    mutation UpdateSettings($data: PbSettingsInput!) {
         pageBuilder {
-            updateSettings(data: $data) ${fields}
+            updateSettings(data: $data) {
+                id
+            }
         }
     }
 `;

@@ -1,8 +1,5 @@
-import React, { Fragment, useEffect, useMemo } from "react";
-import { nanoid } from "nanoid";
-import { AddQuerySelectionPlugin } from "@webiny/app/plugins/AddQuerySelectionPlugin";
-import { plugins } from "@webiny/plugins";
-import { Compose } from "@webiny/app-admin";
+import React, { Fragment, memo, useMemo } from "react";
+import { AddGraphQLQuerySelection, Compose } from "@webiny/app-admin";
 import { TenantFormFields } from "./TenantFormFields";
 import { DocumentNode } from "graphql";
 
@@ -24,21 +21,20 @@ const createFieldsHOC = (element: JSX.Element) => {
     };
 };
 
-export const AddTenantFormField = ({ querySelection, element }: AddTenantSettingsFieldProps) => {
+export const AddTenantFormField = memo(function AddTenantFormField({
+    querySelection,
+    element
+}: AddTenantSettingsFieldProps) {
     const FieldHOC = useMemo(() => createFieldsHOC(element), []);
 
-    useEffect(() => {
-        const plugin = new AddQuerySelectionPlugin({
-            operationName: "GetTenant",
-            selectionPath: "tenancy.getTenant.data",
-            addSelection: querySelection
-        });
-
-        plugin.name = nanoid();
-        plugins.register(plugin);
-
-        return () => plugins.unregister(plugin.name);
-    }, []);
-
-    return <Compose component={TenantFormFields} with={FieldHOC} />;
-};
+    return (
+        <Fragment>
+            <AddGraphQLQuerySelection
+                operationName={"GetTenant"}
+                selectionPath={"tenancy.getTenant.data"}
+                addSelection={querySelection}
+            />
+            <Compose component={TenantFormFields} with={FieldHOC} />
+        </Fragment>
+    );
+});

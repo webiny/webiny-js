@@ -1,6 +1,11 @@
 import React, { memo } from "react";
 import { plugins } from "@webiny/plugins";
-import { Admin as BaseAdmin, AdminProps as BaseAdminProps, AppInstaller } from "@webiny/app-admin";
+import {
+    Admin as BaseAdmin,
+    AdminProps as BaseAdminProps,
+    AppInstaller,
+    Provider
+} from "@webiny/app-admin";
 import { Tenancy } from "@webiny/app-tenancy";
 import { Security } from "@webiny/app-security";
 import { I18N } from "@webiny/app-i18n";
@@ -18,6 +23,7 @@ import fileManagerPlugins from "@webiny/app-file-manager/admin/plugins";
 import fileStorageS3Plugin from "@webiny/app-file-manager-s3";
 import { createApolloClient as defaultApolloClientFactory } from "./apolloClientFactory";
 import apolloLinks from "./apolloLinks";
+import { createViewCompositionProvider } from "@webiny/app-admin/base/providers/ViewCompositionProvider";
 
 export interface AdminProps extends BaseAdminProps {
     createApolloClient?: BaseAdminProps["createApolloClient"];
@@ -25,6 +31,7 @@ export interface AdminProps extends BaseAdminProps {
 
 const App = (props: AdminProps) => {
     const createApolloClient = props.createApolloClient || defaultApolloClientFactory;
+    const ViewCompositionProvider = createViewCompositionProvider();
 
     plugins.register(
         imagePlugin(),
@@ -45,6 +52,7 @@ const App = (props: AdminProps) => {
             <GraphQLPlayground createApolloClient={createApolloClient} />
             <I18N />
             <I18NContent />
+            <Provider hoc={ViewCompositionProvider} />
             <PageBuilder />
             <FormBuilder />
             <HeadlessCMS createApolloClient={createApolloClient} />

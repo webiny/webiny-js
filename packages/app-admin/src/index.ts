@@ -18,5 +18,16 @@ export * from "./base/ui/LoginScreen";
 // Base admin app
 export { Admin } from "./base/Admin";
 export type { AdminProps } from "./base/Admin";
+export { useViewComposition } from "./base/providers/ViewCompositionProvider";
+export type { ViewCompositionContext, ViewElement } from "./base/providers/ViewCompositionProvider";
 
+// Extensions
+export * from "./base/extensions/AddGraphQLQuerySelection";
+
+// Components
 export { AppInstaller } from "./components/AppInstaller";
+
+// Hooks
+export * from "./hooks/useSnackbar";
+export * from "./hooks/useConfirmationDialog";
+export * from "./hooks/useDialog";

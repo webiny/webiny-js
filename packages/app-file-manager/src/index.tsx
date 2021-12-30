@@ -8,7 +8,7 @@ export const FileManager = () => {
         <Extensions>
             <HasPermission name={"fm.settings"}>
                 <AddRoute path="/settings/file-manager/general">
-                    <Layout title={"File Manager Settings - General"}>
+                    <Layout title={"File Manager - General Settings"}>
                         <FileManagerSettings />
                     </Layout>
                 </AddRoute>

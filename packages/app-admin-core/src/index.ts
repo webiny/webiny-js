@@ -7,3 +7,4 @@ export * from "./components/core/Compose";
 export * from "./components/core/Extensions";
 export * from "./components/core/Provider";
 export * from "./components/core/Routes";
+export * from "./components/utils/DebounceRender";
