@@ -717,7 +717,9 @@ export const createPageCrud = (params: Params): PagesCrud => {
                     published: true
                 }
             });
-
+            /**
+             * Latest revision of this page.
+             */
             const latestPageWhere: PageStorageOperationsGetWhereParams = {
                 pid: original.pid,
                 tenant: original.tenant,
@@ -857,7 +859,8 @@ export const createPageCrud = (params: Params): PagesCrud => {
 
             try {
                 await onBeforePageUnpublish.publish({
-                    page
+                    page,
+                    latestPage
                 });
 
                 const result = await storageOperations.pages.unpublish({
@@ -866,7 +869,8 @@ export const createPageCrud = (params: Params): PagesCrud => {
                     latestPage
                 });
                 await onAfterPageUnpublish.publish({
-                    page: result
+                    page: result,
+                    latestPage
                 });
 
                 clearDataLoaderCache([original, latestPage]);
@@ -890,7 +894,7 @@ export const createPageCrud = (params: Params): PagesCrud => {
             }
         },
 
-        async requestPageReview(this: PageBuilderContextObject, id: string) {
+        async requestPageReview(this: PageBuilderContextObject, id: string): Promise<any> {
             await checkBasePermissions(context, PERMISSION_NAME, {
                 pw: "r"
             });
@@ -926,11 +930,21 @@ export const createPageCrud = (params: Params): PagesCrud => {
             };
 
             try {
-                const result: any = await storageOperations.pages.requestReview({
+                await onBeforePageRequestReview.publish({
+                    latestPage,
+                    page
+                });
+                const result = await storageOperations.pages.requestReview({
                     original,
                     page,
                     latestPage
                 });
+
+                await onAfterPageRequestReview.publish({
+                    latestPage,
+                    page: result
+                });
+
                 clearDataLoaderCache([original, latestPage]);
                 return {
                     ...result,
@@ -950,7 +964,7 @@ export const createPageCrud = (params: Params): PagesCrud => {
             }
         },
 
-        async requestPageChanges(this: PageBuilderContextObject, id: string) {
+        async requestPageChanges(this: PageBuilderContextObject, id: string): Promise<any> {
             await checkBasePermissions(context, PERMISSION_NAME, {
                 pw: "c"
             });
@@ -989,11 +1003,21 @@ export const createPageCrud = (params: Params): PagesCrud => {
                 locked: false
             };
             try {
-                const result: any = await storageOperations.pages.requestChanges({
+                await onBeforePageRequestChanges.publish({
+                    page,
+                    latestPage
+                });
+                const result = await storageOperations.pages.requestChanges({
                     original,
                     page,
                     latestPage
                 });
+
+                await onAfterPageRequestChanges.publish({
+                    page: result,
+                    latestPage
+                });
+
                 clearDataLoaderCache([original, latestPage]);
 
                 return {

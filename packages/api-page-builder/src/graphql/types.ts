@@ -132,36 +132,42 @@ export interface OnAfterPagePublishTopicParams {
  */
 export interface OnBeforePageUnpublishTopicParams {
     page: Page;
+    latestPage: Page;
 }
 /**
  * @category Lifecycle events
  */
 export interface OnAfterPageUnpublishTopicParams {
     page: Page;
+    latestPage: Page;
 }
 /**
  * @category Lifecycle events
  */
 export interface OnBeforePageRequestReviewTopicParams {
     page: Page;
+    latestPage: Page;
 }
 /**
  * @category Lifecycle events
  */
 export interface OnAfterPageRequestReviewTopicParams {
     page: Page;
+    latestPage: Page;
 }
 /**
  * @category Lifecycle events
  */
 export interface OnBeforePageRequestChangesTopicParams {
     page: Page;
+    latestPage: Page;
 }
 /**
  * @category Lifecycle events
  */
 export interface OnAfterPageRequestChangesTopicParams {
     page: Page;
+    latestPage: Page;
 }
 
 /**
