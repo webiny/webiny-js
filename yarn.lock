@@ -10526,7 +10526,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/app-tenant-manager@^5.20.0, @webiny/app-tenant-manager@workspace:packages/app-tenant-manager":
+"@webiny/app-tenant-manager@workspace:packages/app-tenant-manager":
   version: 0.0.0-use.local
   resolution: "@webiny/app-tenant-manager@workspace:packages/app-tenant-manager"
   dependencies:
@@ -10542,6 +10542,7 @@ __metadata:
     "@types/react": ^16.9.56
     "@webiny/app": ^5.20.0
     "@webiny/app-admin": ^5.20.0
+    "@webiny/app-page-builder": ^5.20.0
     "@webiny/app-security": ^5.20.0
     "@webiny/app-tenancy": ^5.20.0
     "@webiny/cli": ^5.20.0
@@ -10561,31 +10562,6 @@ __metadata:
     graphql-tag: ^2.10.1
     lodash: ^4.17.11
     prop-types: ^15.7.2
-    react: ^16.14.0
-    react-dom: ^16.14.0
-    rimraf: ^3.0.2
-    ttypescript: ^1.5.12
-    typescript: ^4.1.3
-  languageName: unknown
-  linkType: soft
-
-"@webiny/app-theme-manager@workspace:packages/app-theme-manager":
-  version: 0.0.0-use.local
-  resolution: "@webiny/app-theme-manager@workspace:packages/app-theme-manager"
-  dependencies:
-    "@babel/cli": ^7.5.5
-    "@babel/core": ^7.5.5
-    "@babel/preset-env": ^7.5.5
-    "@babel/preset-react": ^7.0.0
-    "@babel/preset-typescript": ^7.8.3
-    "@webiny/app-serverless-cms": ^5.20.0
-    "@webiny/app-tenant-manager": ^5.20.0
-    "@webiny/cli": ^5.20.0
-    "@webiny/form": ^5.20.0
-    "@webiny/project-utils": ^5.20.0
-    "@webiny/ui": ^5.20.0
-    babel-plugin-emotion: ^9.2.8
-    babel-plugin-named-asset-import: ^1.0.0-next.3e165448
     react: ^16.14.0
     react-dom: ^16.14.0
     rimraf: ^3.0.2
@@ -10656,6 +10632,7 @@ __metadata:
     graphql: ^14.5.8
     invariant: ^2.2.4
     lodash: ^4.17.4
+    nanoid: ^3.1.30
     react: ^16.14.0
     react-dom: ^16.14.0
     rimraf: ^3.0.2
@@ -27521,7 +27498,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"nanoid@npm:^3.1.20, nanoid@npm:^3.1.22, nanoid@npm:^3.1.23":
+"nanoid@npm:^3.1.20, nanoid@npm:^3.1.22, nanoid@npm:^3.1.23, nanoid@npm:^3.1.30":
   version: 3.1.30
   resolution: "nanoid@npm:3.1.30"
   bin:
