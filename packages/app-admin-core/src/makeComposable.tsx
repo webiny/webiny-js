@@ -1,6 +1,7 @@
-import React, { createContext, useContext, useEffect, useMemo } from "react";
+import React, { createContext, FC, useContext, useEffect, useMemo } from "react";
 import debounce from "lodash.debounce";
 import { useAdmin } from "./admin";
+import { ComponentType } from "react";
 
 const useComponent = Component => {
     const { wrappers } = useAdmin();
@@ -45,11 +46,16 @@ const createEmptyRenderer = (name: string) => {
     };
 };
 
-export function makeComposable<TProps>(name, Component?: React.ComponentType<TProps>) {
+type ComposableFC<TProps> = FC<TProps> & {
+    original: ComponentType<TProps>;
+    originalName: string;
+};
+
+export function makeComposable<TProps>(name, Component?: ComponentType<TProps>) {
     if (!Component) {
         Component = createEmptyRenderer(name);
     }
-    const Composable = (props: TProps & { children?: unknown }) => {
+    const Composable: ComposableFC<TProps> = props => {
         const parents = useComposableParents();
         const WrappedComponent = useComponent(Component);
 
