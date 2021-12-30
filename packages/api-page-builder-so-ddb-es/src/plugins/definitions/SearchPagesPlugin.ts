@@ -1,17 +1,16 @@
-import { Plugin } from "@webiny/plugins";
+import { Plugin, PluginsContainer } from "@webiny/plugins";
 import { ElasticsearchBoolQueryConfig, Sort as esSort } from "@webiny/api-elasticsearch/types";
-import { PbContext } from "@webiny/api-page-builder/graphql/types";
 
 interface ModifyQueryArgs {
     query: ElasticsearchBoolQueryConfig;
     args: Record<string, any>;
-    context: PbContext;
+    plugins: PluginsContainer;
 }
 
 interface ModifySortArgs {
     sort: esSort;
     args: Record<string, any>;
-    context: PbContext;
+    plugins: PluginsContainer;
 }
 
 interface Config {

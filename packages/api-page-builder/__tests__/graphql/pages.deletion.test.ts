@@ -6,20 +6,13 @@ jest.setTimeout(100000);
 describe("deleting pages", () => {
     const handler = useGqlHandler();
 
-    const {
-        getPage,
-        createCategory,
-        createPage,
-        deletePage,
-        listPages,
-        listPublishedPages,
-        publishPage,
-        until
-    } = handler;
+    const { getPage, createPage, deletePage, listPages, listPublishedPages, publishPage, until } =
+        handler;
 
     let p1v1, p1v2, p1v3, category;
 
     beforeEach(async () => {
+        const { createCategory } = useGqlHandler();
         category = await createCategory({
             data: {
                 slug: `slug`,

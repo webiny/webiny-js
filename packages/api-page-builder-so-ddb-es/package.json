@@ -25,6 +25,7 @@
     "@webiny/error": "^5.20.0",
     "@webiny/handler-db": "^5.20.0",
     "@webiny/plugins": "^5.20.0",
+    "@webiny/utils": "^5.20.0",
     "dataloader": "^2.0.0",
     "dynamodb-toolbox": "^0.3.4",
     "elastic-ts": "^0.7.0",

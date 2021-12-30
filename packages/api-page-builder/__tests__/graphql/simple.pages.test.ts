@@ -33,7 +33,8 @@ describe("pages simple actions", () => {
     const handlerB = useGqlHandler({ identity: identityB });
 
     const createCategory = async () => {
-        const [response] = await handler.createCategory({
+        const { createCategory } = useGqlHandler();
+        const [response] = await createCategory({
             data: {
                 slug: `category`,
                 name: `name`,
@@ -302,11 +303,11 @@ describe("pages simple actions", () => {
 
         await handler.until(
             () =>
-                handler.listPages({
+                handler.listPublishedPages({
                     sort
                 }),
             ([response]) => {
-                const data = response.data.pageBuilder.listPages.data as Page[];
+                const data = response.data.pageBuilder.listPublishedPages.data as Page[];
                 if (data.length !== 1) {
                     return false;
                 }

@@ -10,9 +10,9 @@ import {
     OnBeforePageElementDeleteTopicParams,
     OnBeforePageElementUpdateTopicParams,
     PageBuilderContextObject,
+    PageBuilderStorageOperations,
     PageElement,
     PageElementsCrud,
-    PageElementStorageOperations,
     PageElementStorageOperationsListParams,
     PbContext
 } from "~/types";
@@ -42,10 +42,18 @@ const PERMISSION_NAME = "pb.page";
 
 export interface Params {
     context: PbContext;
-    storageOperations: PageElementStorageOperations;
+    storageOperations: PageBuilderStorageOperations;
 }
 export const createPageElementsCrud = (params: Params): PageElementsCrud => {
     const { context, storageOperations } = params;
+
+    const getTenantId = (): string => {
+        return context.tenancy.getCurrentTenant().id;
+    };
+
+    const getLocaleCode = (): string => {
+        return context.i18nContent.getCurrentLocale().code;
+    };
 
     const onBeforePageElementCreate = createTopic<OnBeforePageElementCreateTopicParams>();
     const onAfterPageElementCreate = createTopic<OnAfterPageElementCreateTopicParams>();
@@ -64,29 +72,22 @@ export const createPageElementsCrud = (params: Params): PageElementsCrud => {
         onAfterPageElementUpdate,
         onBeforePageElementDelete,
         onAfterPageElementDelete,
-        /**
-         * Storage operations
-         */
-        pageElementsStorageOperations: storageOperations,
         async getPageElement(id) {
             const permission = await checkBasePermissions(context, PERMISSION_NAME, {
                 rwd: "r"
             });
 
-            const tenant = context.tenancy.getCurrentTenant();
-            const locale = context.i18nContent.getCurrentLocale();
-
             const params = {
                 where: {
-                    tenant: tenant.id,
-                    locale: locale.code,
+                    tenant: getTenantId(),
+                    locale: getLocaleCode(),
                     id
                 }
             };
 
             let pageElement: PageElement | undefined;
             try {
-                pageElement = await storageOperations.get(params);
+                pageElement = await storageOperations.pageElements.get(params);
                 if (!pageElement) {
                     return null;
                 }
@@ -112,15 +113,12 @@ export const createPageElementsCrud = (params: Params): PageElementsCrud => {
                 rwd: "r"
             });
 
-            const tenant = context.tenancy.getCurrentTenant();
-            const locale = context.i18nContent.getCurrentLocale();
-
             const { sort } = params || {};
 
             const listParams: PageElementStorageOperationsListParams = {
                 where: {
-                    tenant: tenant.id,
-                    locale: locale.code
+                    tenant: getTenantId(),
+                    locale: getLocaleCode()
                 },
                 sort: Array.isArray(sort) && sort.length > 0 ? sort : ["createdOn_ASC"]
             };
@@ -132,7 +130,7 @@ export const createPageElementsCrud = (params: Params): PageElementsCrud => {
             }
 
             try {
-                const [items] = await storageOperations.list(listParams);
+                const [items] = await storageOperations.pageElements.list(listParams);
                 return items;
             } catch (ex) {
                 throw new WebinyError(
@@ -173,7 +171,7 @@ export const createPageElementsCrud = (params: Params): PageElementsCrud => {
                 await onBeforePageElementCreate.publish({
                     pageElement
                 });
-                const result = await storageOperations.create({
+                const result = await storageOperations.pageElements.create({
                     input: data,
                     pageElement
                 });
@@ -220,7 +218,7 @@ export const createPageElementsCrud = (params: Params): PageElementsCrud => {
                     original,
                     pageElement
                 });
-                const result = await storageOperations.update({
+                const result = await storageOperations.pageElements.update({
                     input: data,
                     original,
                     pageElement
@@ -260,7 +258,7 @@ export const createPageElementsCrud = (params: Params): PageElementsCrud => {
                 await onBeforePageElementDelete.publish({
                     pageElement
                 });
-                const result = await storageOperations.delete({
+                const result = await storageOperations.pageElements.delete({
                     pageElement
                 });
                 await onAfterPageElementDelete.publish({

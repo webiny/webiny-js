@@ -1,40 +1,21 @@
 import WebinyError from "@webiny/error";
-import { PbContext } from "@webiny/api-page-builder/graphql/types";
+
+export interface ElasticsearchParams {
+    tenant: string;
+}
 
 export default {
-    db: () => ({
-        table: process.env.DB_TABLE,
-        keys: [
-            {
-                primary: true,
-                unique: true,
-                name: "primary",
-                fields: [{ name: "PK" }, { name: "SK" }]
-            },
-            { unique: true, name: "GSI1", fields: [{ name: "GSI1_PK" }, { name: "GSI1_SK" }] }
-        ]
-    }),
-    esDb: () => {
-        return {
-            table: process.env.DB_TABLE_ELASTICSEARCH,
-            keys: [
-                {
-                    primary: true,
-                    unique: true,
-                    name: "primary",
-                    fields: [{ name: "PK" }, { name: "SK" }]
-                }
-            ]
-        };
-    },
-    es: (context: PbContext) => {
-        const tenant = context.tenancy.getCurrentTenant();
+    es: (params: ElasticsearchParams) => {
+        const { tenant } = params;
         if (!tenant) {
-            throw new WebinyError("Tenant missing.", "MISSING_TENANT");
+            throw new WebinyError(
+                `Missing "tenant" parameter when trying to create Elasticsearch index name.`,
+                "TENANT_ERROR"
+            );
         }
 
         const sharedIndex = process.env.ELASTICSEARCH_SHARED_INDEXES === "true";
-        const index = `${sharedIndex ? "root" : tenant.id}-page-builder`;
+        const index = `${sharedIndex ? "root" : tenant}-page-builder`;
 
         const prefix = process.env.ELASTIC_SEARCH_INDEX_PREFIX;
         if (prefix) {

@@ -1,4 +1,6 @@
-import { DefaultSettingsCrudOptions } from "~/graphql/types";
+import { DefaultSettingsCrudOptions, PbContext } from "~/graphql/types";
+import { Plugin } from "@webiny/plugins/types";
+import { UpgradePlugin } from "@webiny/api-upgrade";
 
 export * from "./graphql/types";
 
@@ -18,10 +20,6 @@ export interface PageElement {
         id: string;
         displayName: string;
     };
-    /**
-     * Added with storage operations.
-     * TODO: add via upgrade script.
-     */
     tenant: string;
     locale: string;
 }
@@ -39,10 +37,6 @@ export interface Menu {
         id: string;
         displayName: string;
     };
-    /**
-     * Added with storage operations.
-     * TODO: add via upgrade script.
-     */
     tenant: string;
     locale: string;
 }
@@ -60,10 +54,6 @@ export interface Category {
         id: string;
         displayName: string;
     };
-    /**
-     * Added with storage operations.
-     * TODO: add via upgrade script.
-     */
     tenant: string;
     locale: string;
 }
@@ -390,6 +380,13 @@ export interface System {
  * @category StorageOperations
  * @category SystemStorageOperations
  */
+export interface SystemStorageOperationsGetParams {
+    tenant: string;
+}
+/**
+ * @category StorageOperations
+ * @category SystemStorageOperations
+ */
 export interface SystemStorageOperationsCreateParams {
     system: System;
 }
@@ -406,7 +403,7 @@ export interface SystemStorageOperationsUpdateParams {
  * @category SystemStorageOperations
  */
 export interface SystemStorageOperations {
-    get: () => Promise<System | null>;
+    get: (params: SystemStorageOperationsGetParams) => Promise<System | null>;
     create(params: SystemStorageOperationsCreateParams): Promise<System>;
     update(params: SystemStorageOperationsUpdateParams): Promise<System>;
 }
@@ -499,36 +496,56 @@ export interface PageStorageOperationsListResponse {
  * @category StorageOperations
  * @category PageStorageOperations
  */
-export interface PageStorageOperationsGetParams {
-    where: {
-        /**
-         * pid + version
-         */
-        id?: string;
-        /**
-         * TODO: check if required to rename to pageId
-         */
-        pid?: string;
-        version?: number;
-        path?: string;
-        published?: boolean;
-        latest?: boolean;
-    };
+export interface PageStorageOperationsGetWhereParams {
+    /**
+     * pid + version
+     */
+    id?: string;
+    pid?: string;
+    version?: number;
+    path?: string;
+    published?: boolean;
+    latest?: boolean;
+    tenant: string;
+    locale: string;
 }
-
+/**
+ * @category StorageOperations
+ * @category PageStorageOperations
+ */
+export interface PageStorageOperationsGetParams {
+    where: PageStorageOperationsGetWhereParams;
+}
+/**
+ * @category StorageOperations
+ * @category PageStorageOperations
+ */
+export interface PageStorageOperationsGetByPathWhereParams {
+    path: string;
+    tenant: string;
+    locale: string;
+}
+/**
+ * @category StorageOperations
+ * @category PageStorageOperations
+ */
+export interface PageStorageOperationsGetByPathParams {
+    where: PageStorageOperationsGetByPathWhereParams;
+}
+/**
+ * @category StorageOperations
+ * @category PageStorageOperations
+ */
 export interface PageStorageOperationsListWhere {
     /**
      * pid + version
      */
     id?: string;
-    /**
-     * TODO: check if required to rename to pageId
-     */
     pid?: string;
     search?: string;
     title_contains?: string;
     createdBy?: string;
-    tenant?: string;
+    tenant: string;
     locale: string;
     pid_not_in?: string[];
     path_not_in?: string[];
@@ -564,6 +581,8 @@ export interface PageStorageOperationsListParams {
 export interface PageStorageOperationsListRevisionsParams {
     where: {
         pid: string;
+        tenant: string;
+        locale: string;
     };
     limit: number;
     after?: string;
@@ -576,7 +595,7 @@ export interface PageStorageOperationsListTagsParams {
     where: {
         search: string;
         locale: string;
-        tenant?: string;
+        tenant: string;
     };
 }
 
@@ -692,4 +711,23 @@ export interface PageStorageOperations {
     unpublish: (params: PageStorageOperationsUnpublishParams) => Promise<Page>;
     requestReview: (params: PageStorageOperationsRequestReviewParams) => Promise<Page>;
     requestChanges: (params: PageStorageOperationsRequestChangesParams) => Promise<Page>;
+}
+
+export interface PageBuilderStorageOperations {
+    system: SystemStorageOperations;
+    settings: SettingsStorageOperations;
+    categories: CategoryStorageOperations;
+    menus: MenuStorageOperations;
+    pageElements: PageElementStorageOperations;
+    pages: PageStorageOperations;
+
+    init?: (context: PbContext) => Promise<void>;
+    /**
+     * Plugins to be attached to the main context.
+     */
+    plugins?: Plugin[] | Plugin[][];
+    /**
+     * An upgrade to run if necessary.
+     */
+    upgrade?: UpgradePlugin | null;
 }

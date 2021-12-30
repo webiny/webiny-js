@@ -1,5 +1,6 @@
 import { I18NContext, I18NSystem, I18NSystemStorageOperations, SystemCRUD } from "~/types";
 import WebinyError from "@webiny/error";
+import { NotAuthorizedError } from "@webiny/api-security";
 
 export interface Params {
     context: I18NContext;
@@ -59,6 +60,10 @@ export const createSystemCrud = (params: Params): SystemCRUD => {
             }
         },
         async installSystem(this: SystemCRUD, { code }) {
+            const identity = context.security.getIdentity();
+            if (!identity) {
+                throw new NotAuthorizedError();
+            }
             const { i18n } = context;
             const version = await this.getSystemVersion();
             if (version) {
