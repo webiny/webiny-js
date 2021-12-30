@@ -41,10 +41,6 @@ export interface Menu {
         id: string;
         displayName: string;
     };
-    /**
-     * Added with storage operations.
-     * TODO: add via upgrade script.
-     */
     tenant: string;
     locale: string;
 }
@@ -62,10 +58,6 @@ export interface Category {
         id: string;
         displayName: string;
     };
-    /**
-     * Added with storage operations.
-     * TODO: add via upgrade script.
-     */
     tenant: string;
     locale: string;
 }

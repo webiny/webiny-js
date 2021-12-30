@@ -461,14 +461,12 @@ export interface SettingsCrud {
  * @category Lifecycle events
  */
 export interface OnBeforeInstallTopicParams {
-    context: PbContext;
     tenant: string;
 }
 /**
  * @category Lifecycle events
  */
 export interface OnAfterInstallTopicParams {
-    context: PbContext;
     tenant: string;
 }
 /**
