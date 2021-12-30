@@ -95,6 +95,11 @@ export const createSystemCrud = (params: Params): SystemCrud => {
             }
         },
         async installSystem(this: PageBuilderContextObject, { name, insertDemoData }) {
+            const identity = context.security.getIdentity();
+            if (!identity) {
+                throw new NotAuthorizedError();
+            }
+
             const { fileManager } = context;
 
             // Check whether the PB app is already installed
