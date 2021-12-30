@@ -20,10 +20,6 @@ export interface PageElement {
         id: string;
         displayName: string;
     };
-    /**
-     * Added with storage operations.
-     * TODO: add via upgrade script.
-     */
     tenant: string;
     locale: string;
 }
@@ -41,10 +37,6 @@ export interface Menu {
         id: string;
         displayName: string;
     };
-    /**
-     * Added with storage operations.
-     * TODO: add via upgrade script.
-     */
     tenant: string;
     locale: string;
 }
@@ -62,10 +54,6 @@ export interface Category {
         id: string;
         displayName: string;
     };
-    /**
-     * Added with storage operations.
-     * TODO: add via upgrade script.
-     */
     tenant: string;
     locale: string;
 }
@@ -513,9 +501,6 @@ export interface PageStorageOperationsGetWhereParams {
      * pid + version
      */
     id?: string;
-    /**
-     * TODO: check if required to rename to pageId
-     */
     pid?: string;
     version?: number;
     path?: string;
@@ -556,9 +541,6 @@ export interface PageStorageOperationsListWhere {
      * pid + version
      */
     id?: string;
-    /**
-     * TODO: check if required to rename to pageId
-     */
     pid?: string;
     search?: string;
     title_contains?: string;

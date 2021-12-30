@@ -18,7 +18,6 @@ import {
 import checkBasePermissions from "./utils/checkBasePermissions";
 import checkOwnPermissions from "./utils/checkOwnPermissions";
 import normalizePath from "./pages/normalizePath";
-import { compressContent, extractContent } from "./pages/contentCompression";
 import { CreateDataModel, UpdateSettingsModel } from "./pages/models";
 import { PagePlugin } from "~/plugins/PagePlugin";
 import WebinyError from "@webiny/error";
@@ -43,9 +42,9 @@ import {
     OnBeforePageUpdateTopicParams,
     RenderParams
 } from "~/graphql/types";
-import { ContentCompressionPlugin } from "~/plugins/ContentCompressionPlugin";
 import { createTopic } from "@webiny/pubsub";
 import { parseIdentifier } from "@webiny/utils";
+import { createCompression } from "~/graphql/crud/pages/compression";
 
 const STATUS_CHANGES_REQUESTED = "changesRequested";
 const STATUS_REVIEW_REQUESTED = "reviewRequested";
@@ -83,20 +82,6 @@ const createNotIn = (exclude?: string[]): { paths: string[]; ids: string[] } => 
     return {
         paths: paths.length > 0 ? paths : undefined,
         ids: ids.length > 0 ? ids : undefined
-    };
-};
-
-const extractPageContent = async (
-    plugins: ContentCompressionPlugin[],
-    page?: Page
-): Promise<Page | null> => {
-    if (!page || !page.content) {
-        return page;
-    }
-    const content = await extractContent(plugins, page);
-    return {
-        ...page,
-        content
     };
 };
 
@@ -146,19 +131,10 @@ export const createPageCrud = (params: Params): PagesCrud => {
      * Used in a couple of key events - (un)publishing and pages deletion.
      */
     const pagePlugins = context.plugins.byType<PagePlugin>(PagePlugin.type);
-    /**
-     * Content compression plugins used when compressing and decompressing the content.
-     * We reverse it because we want to apply the last one if possible.
-     */
-    const contentCompressionPlugins = context.plugins
-        .byType<ContentCompressionPlugin>(ContentCompressionPlugin.type)
-        .reverse();
-    if (contentCompressionPlugins.length === 0) {
-        throw new WebinyError(
-            "Missing content compression plugins. Must have at least one registered.",
-            "MISSING_COMPRESSION_PLUGINS"
-        );
-    }
+
+    const { compressContent, decompressContent } = createCompression({
+        plugins: context.plugins
+    });
 
     const getTenantId = (): string => {
         return context.tenancy.getCurrentTenant().id;
@@ -268,7 +244,7 @@ export const createPageCrud = (params: Params): PagesCrud => {
         onAfterPageRequestChanges,
         onBeforePageRequestReview,
         onAfterPageRequestReview,
-        async createPage(this: PageBuilderContextObject, slug) {
+        async createPage(this: PageBuilderContextObject, slug): Promise<any> {
             await checkBasePermissions(context, PERMISSION_NAME, { rwd: "w" });
 
             const category = await this.getCategory(slug);
@@ -338,7 +314,7 @@ export const createPageCrud = (params: Params): PagesCrud => {
                 content: null,
                 webinyVersion: context.WEBINY_VERSION
             };
-            page.content = await compressContent(contentCompressionPlugins, page);
+            page.content = await compressContent(page);
 
             try {
                 await onBeforePageCreate.publish({
@@ -354,7 +330,11 @@ export const createPageCrud = (params: Params): PagesCrud => {
                 await onAfterPageCreate.publish({
                     page: result
                 });
-                return (await extractPageContent(contentCompressionPlugins, page)) as any;
+
+                return {
+                    ...result,
+                    content: await decompressContent(result)
+                };
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not create new page.",
@@ -367,7 +347,7 @@ export const createPageCrud = (params: Params): PagesCrud => {
             }
         },
 
-        async createPageFrom(this: PageBuilderContextObject, id) {
+        async createPageFrom(this: PageBuilderContextObject, id): Promise<any> {
             const permission = await checkBasePermissions(context, PERMISSION_NAME, {
                 rwd: "w"
             });
@@ -439,7 +419,10 @@ export const createPageCrud = (params: Params): PagesCrud => {
                  * Clear the dataLoader cache.
                  */
                 clearDataLoaderCache([original, page, latestPage]);
-                return (await extractPageContent(contentCompressionPlugins, page)) as any;
+                return {
+                    ...result,
+                    content: await decompressContent(result)
+                };
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not create from existing page.",
@@ -455,7 +438,7 @@ export const createPageCrud = (params: Params): PagesCrud => {
             }
         },
 
-        async updatePage(id, input) {
+        async updatePage(id, input): Promise<any> {
             const permission = await checkBasePermissions(context, PERMISSION_NAME, {
                 rwd: "w"
             });
@@ -484,7 +467,7 @@ export const createPageCrud = (params: Params): PagesCrud => {
             };
             const newContent = input.content;
             if (newContent) {
-                page.content = await compressContent(contentCompressionPlugins, {
+                page.content = await compressContent({
                     ...page,
                     content: newContent
                 });
@@ -513,12 +496,22 @@ export const createPageCrud = (params: Params): PagesCrud => {
                  * Clear the dataLoader cache.
                  */
                 clearDataLoaderCache([original, page]);
-
+                /**
+                 * If we have new content, return that.
+                 */
+                if (newContent) {
+                    return {
+                        ...result,
+                        content: newContent
+                    };
+                }
+                /**
+                 * Otherwise decompress original content and return with new page.
+                 */
                 return {
                     ...result,
-                    content:
-                        newContent || (await extractContent(contentCompressionPlugins, original))
-                } as any;
+                    content: await decompressContent(original)
+                };
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not update existing page.",
@@ -658,13 +651,22 @@ export const createPageCrud = (params: Params): PagesCrud => {
                  */
                 if (page.version === 1) {
                     return [
-                        await extractPageContent(contentCompressionPlugins, resultPage),
+                        {
+                            ...resultPage,
+                            content: await decompressContent(resultPage)
+                        },
                         null
                     ] as any;
                 }
                 return [
-                    await extractPageContent(contentCompressionPlugins, resultPage),
-                    await extractPageContent(contentCompressionPlugins, latestPage)
+                    {
+                        ...resultPage,
+                        content: await decompressContent(resultPage)
+                    },
+                    {
+                        ...latestPage,
+                        content: await decompressContent(latestPage)
+                    }
                 ] as any;
             } catch (ex) {
                 throw new WebinyError(
@@ -681,7 +683,7 @@ export const createPageCrud = (params: Params): PagesCrud => {
             }
         },
 
-        async publishPage(this: PageBuilderContextObject, id: string) {
+        async publishPage(this: PageBuilderContextObject, id: string): Promise<any> {
             await checkBasePermissions<PageSecurityPermission>(context, PERMISSION_NAME, {
                 pw: "p"
             });
@@ -715,7 +717,9 @@ export const createPageCrud = (params: Params): PagesCrud => {
                     published: true
                 }
             });
-
+            /**
+             * Latest revision of this page.
+             */
             const latestPageWhere: PageStorageOperationsGetWhereParams = {
                 pid: original.pid,
                 tenant: original.tenant,
@@ -792,7 +796,10 @@ export const createPageCrud = (params: Params): PagesCrud => {
                     publishedPage,
                     publishedPathPage
                 ]);
-                return (await extractPageContent(contentCompressionPlugins, result)) as any;
+                return {
+                    ...result,
+                    content: await decompressContent(result)
+                };
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not publish page.",
@@ -809,7 +816,7 @@ export const createPageCrud = (params: Params): PagesCrud => {
             }
         },
 
-        async unpublishPage(this: PageBuilderContextObject, id: string) {
+        async unpublishPage(this: PageBuilderContextObject, id: string): Promise<any> {
             await checkBasePermissions<PageSecurityPermission>(context, PERMISSION_NAME, {
                 pw: "u"
             });
@@ -852,7 +859,8 @@ export const createPageCrud = (params: Params): PagesCrud => {
 
             try {
                 await onBeforePageUnpublish.publish({
-                    page
+                    page,
+                    latestPage
                 });
 
                 const result = await storageOperations.pages.unpublish({
@@ -861,11 +869,16 @@ export const createPageCrud = (params: Params): PagesCrud => {
                     latestPage
                 });
                 await onAfterPageUnpublish.publish({
-                    page: result
+                    page: result,
+                    latestPage
                 });
 
                 clearDataLoaderCache([original, latestPage]);
-                return (await extractPageContent(contentCompressionPlugins, result)) as any;
+
+                return {
+                    ...result,
+                    content: await decompressContent(result)
+                };
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not unpublish page.",
@@ -881,7 +894,7 @@ export const createPageCrud = (params: Params): PagesCrud => {
             }
         },
 
-        async requestPageReview(this: PageBuilderContextObject, id: string) {
+        async requestPageReview(this: PageBuilderContextObject, id: string): Promise<any> {
             await checkBasePermissions(context, PERMISSION_NAME, {
                 pw: "r"
             });
@@ -917,13 +930,26 @@ export const createPageCrud = (params: Params): PagesCrud => {
             };
 
             try {
-                const result: any = await storageOperations.pages.requestReview({
+                await onBeforePageRequestReview.publish({
+                    latestPage,
+                    page
+                });
+                const result = await storageOperations.pages.requestReview({
                     original,
                     page,
                     latestPage
                 });
+
+                await onAfterPageRequestReview.publish({
+                    latestPage,
+                    page: result
+                });
+
                 clearDataLoaderCache([original, latestPage]);
-                return (await extractPageContent(contentCompressionPlugins, result)) as any;
+                return {
+                    ...result,
+                    content: await decompressContent(result)
+                };
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not request review for the page.",
@@ -938,7 +964,7 @@ export const createPageCrud = (params: Params): PagesCrud => {
             }
         },
 
-        async requestPageChanges(this: PageBuilderContextObject, id: string) {
+        async requestPageChanges(this: PageBuilderContextObject, id: string): Promise<any> {
             await checkBasePermissions(context, PERMISSION_NAME, {
                 pw: "c"
             });
@@ -977,13 +1003,27 @@ export const createPageCrud = (params: Params): PagesCrud => {
                 locked: false
             };
             try {
-                const result: any = await storageOperations.pages.requestChanges({
+                await onBeforePageRequestChanges.publish({
+                    page,
+                    latestPage
+                });
+                const result = await storageOperations.pages.requestChanges({
                     original,
                     page,
                     latestPage
                 });
+
+                await onAfterPageRequestChanges.publish({
+                    page: result,
+                    latestPage
+                });
+
                 clearDataLoaderCache([original, latestPage]);
-                return (await extractPageContent(contentCompressionPlugins, result)) as any;
+
+                return {
+                    ...result,
+                    content: await decompressContent(result)
+                };
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not request review for the page.",
@@ -998,7 +1038,7 @@ export const createPageCrud = (params: Params): PagesCrud => {
             }
         },
 
-        async getPage(id, options) {
+        async getPage(id, options): Promise<any> {
             const permission = await checkBasePermissions(context, PERMISSION_NAME, {
                 rwd: "r"
             });
@@ -1029,10 +1069,13 @@ export const createPageCrud = (params: Params): PagesCrud => {
                 return page;
             }
 
-            return (await extractPageContent(contentCompressionPlugins, page)) as any;
+            return {
+                ...page,
+                content: await decompressContent(page)
+            };
         },
 
-        async getPublishedPageById(this: PageBuilderContextObject, params) {
+        async getPublishedPageById(this: PageBuilderContextObject, params): Promise<any> {
             const { id, preview } = params;
 
             let page: Page = null;
@@ -1059,10 +1102,13 @@ export const createPageCrud = (params: Params): PagesCrud => {
                 throw new NotFoundError(`Page not found.`);
             }
 
-            return (await extractPageContent(contentCompressionPlugins, page)) as any;
+            return {
+                ...page,
+                content: await decompressContent(page)
+            };
         },
 
-        async getPublishedPageByPath(this: PageBuilderContextObject, params) {
+        async getPublishedPageByPath(this: PageBuilderContextObject, params): Promise<any> {
             if (!params.path) {
                 throw new WebinyError(
                     'Cannot get published page - "path" not provided.',
@@ -1122,14 +1168,13 @@ export const createPageCrud = (params: Params): PagesCrud => {
                 }
             }
 
-            if (page) {
-                /**
-                 * Extract compressed page content.
-                 */
-                return (await extractPageContent(contentCompressionPlugins, page)) as any;
+            if (!page) {
+                throw new NotFoundError("Page not found.");
             }
-
-            throw new NotFoundError("Page not found.");
+            return {
+                ...page,
+                content: await decompressContent(page)
+            };
         },
 
         async listLatestPages(params, options = {}) {
