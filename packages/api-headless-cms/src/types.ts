@@ -1223,12 +1223,12 @@ export interface AfterModelCreateTopicParams {
     model: CmsModel;
 }
 export interface BeforeModelCreateFromTopicParams {
-    input: CmsModelCreateFromInput;
+    input: CmsModelCreateInput;
     original: CmsModel;
     model: CmsModel;
 }
 export interface AfterModelCreateFromTopicParams {
-    input: CmsModelCreateFromInput;
+    input: CmsModelCreateInput;
     original: CmsModel;
     model: CmsModel;
 }
@@ -1261,15 +1261,6 @@ export interface CmsModelUpdateDirectParams {
  * @category CmsModel
  */
 export interface CmsModelContext {
-    /**
-     * A function defining usage of a method with authenticating the user but not throwing an error.
-     */
-    silentAuthModel: () => {
-        /**
-         * Get all content models.
-         */
-        list: () => Promise<CmsModel[]>;
-    };
     /**
      * Get a single content model.
      */
@@ -1304,7 +1295,7 @@ export interface CmsModelContext {
      *
      * @see CmsModelManager
      */
-    getModelManager: (modelId: string) => Promise<CmsModelManager>;
+    getModelManager: (model: CmsModel | string) => Promise<CmsModelManager>;
     /**
      * Get all content model managers mapped by modelId.
      * @see CmsModelManager

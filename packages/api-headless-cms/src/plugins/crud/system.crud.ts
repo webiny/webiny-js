@@ -111,7 +111,9 @@ export const createSystemCrud = (params: Params): CmsSystemContext => {
             if (version) {
                 return;
             }
-
+            /**
+             * First trigger before install event.
+             */
             await onBeforeInstall.publish({
                 tenant: getTenant().id
             });
@@ -127,10 +129,6 @@ export const createSystemCrud = (params: Params): CmsSystemContext => {
                 });
             }
 
-            await onAfterInstall.publish({
-                tenant: getTenant().id
-            });
-
             const system: CmsSystem = {
                 version: context.WEBINY_VERSION,
                 readAPIKey: createReadAPIKey(),
@@ -141,6 +139,12 @@ export const createSystemCrud = (params: Params): CmsSystemContext => {
              */
             await storageOperations.system.create({
                 system
+            });
+            /**
+             * And trigger after install event.
+             */
+            await onAfterInstall.publish({
+                tenant: getTenant().id
             });
         },
         async upgradeSystem(this: HeadlessCms, version) {

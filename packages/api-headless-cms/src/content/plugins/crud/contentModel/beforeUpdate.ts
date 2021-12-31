@@ -62,14 +62,14 @@ const getContentModelTitleFieldId = (fields: CmsModelField[], titleFieldId?: str
 };
 
 export interface Params {
-    onBeforeUpdate: Topic<BeforeModelUpdateTopicParams>;
+    onBeforeModelUpdate: Topic<BeforeModelUpdateTopicParams>;
     storageOperations: HeadlessCmsStorageOperations;
     plugins: PluginsContainer;
 }
 export const assignBeforeModelUpdate = (params: Params) => {
-    const { onBeforeUpdate, plugins } = params;
+    const { onBeforeModelUpdate, plugins } = params;
 
-    onBeforeUpdate.subscribe(async params => {
+    onBeforeModelUpdate.subscribe(async params => {
         const { model } = params;
 
         const modelPlugin: CmsModelPlugin = plugins
