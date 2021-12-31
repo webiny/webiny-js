@@ -378,7 +378,7 @@ interface StorageOperationsUpdateCommentParams {
     data: UpdateApwCommentParams;
 }
 
-export interface ApwStorageOperations {
+export interface ApwReviewerStorageOperations {
     /*
      * Reviewer methods
      */
@@ -395,7 +395,9 @@ export interface ApwStorageOperations {
     updateReviewer(params: StorageOperationsUpdateReviewerParams): Promise<ApwReviewer>;
 
     deleteReviewer(params: StorageOperationsDeleteReviewerParams): Promise<Boolean>;
+}
 
+export interface ApwWorkflowStorageOperations {
     /*
      * Workflow methods
      */
@@ -412,7 +414,9 @@ export interface ApwStorageOperations {
     updateWorkflow(params: StorageOperationsUpdateWorkflowParams): Promise<ApwWorkflow>;
 
     deleteWorkflow(params: StorageOperationsDeleteWorkflowParams): Promise<Boolean>;
+}
 
+export interface ApwContentReviewStorageOperations {
     /*
      * ContentReview methods
      */
@@ -433,7 +437,9 @@ export interface ApwStorageOperations {
     ): Promise<ApwContentReview>;
 
     deleteContentReview(params: StorageOperationsDeleteContentReviewParams): Promise<Boolean>;
+}
 
+export interface ApwChangeRequestStorageOperations {
     /*
      * ChangeRequest methods
      */
@@ -454,7 +460,9 @@ export interface ApwStorageOperations {
     ): Promise<ApwChangeRequest>;
 
     deleteChangeRequest(params: StorageOperationsDeleteChangeRequestParams): Promise<Boolean>;
+}
 
+export interface ApwCommentStorageOperations {
     /*
      * Comment methods
      */
@@ -472,3 +480,10 @@ export interface ApwStorageOperations {
 
     deleteComment(params: StorageOperationsDeleteCommentParams): Promise<Boolean>;
 }
+
+export interface ApwStorageOperations
+    extends ApwReviewerStorageOperations,
+        ApwWorkflowStorageOperations,
+        ApwContentReviewStorageOperations,
+        ApwChangeRequestStorageOperations,
+        ApwCommentStorageOperations {}
