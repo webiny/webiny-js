@@ -14,8 +14,8 @@ import {
     AfterEntryUpdateTopicParams,
     AfterEntryDeleteTopicParams,
     BeforeEntryDeleteTopicParams,
-    BeforeCreateEntryRevisionTopicParams,
-    AfterCreateEntryRevisionTopicParams,
+    BeforeEntryCreateRevisionTopicParams,
+    AfterEntryCreateRevisionTopicParams,
     BeforeEntryPublishTopicParams,
     AfterEntryPublishTopicParams,
     BeforeEntryUnpublishTopicParams,
@@ -24,8 +24,8 @@ import {
     AfterEntryRequestChangesTopicParams,
     BeforeEntryRequestReviewTopicParams,
     AfterEntryRequestReviewTopicParams,
-    BeforeDeleteEntryRevisionTopicParams,
-    AfterDeleteEntryRevisionTopicParams,
+    BeforeEntryDeleteRevisionTopicParams,
+    AfterEntryDeleteRevisionTopicParams,
     BeforeEntryGetTopicParams,
     BeforeEntryListTopicParams,
     CmsEntryListWhere,
@@ -138,8 +138,8 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
 
     const onBeforeEntryCreate = createTopic<BeforeEntryCreateTopicParams>();
     const onAfterEntryCreate = createTopic<AfterEntryCreateTopicParams>();
-    const onBeforeCreateEntryRevision = createTopic<BeforeCreateEntryRevisionTopicParams>();
-    const onAfterCreateEntryRevision = createTopic<AfterCreateEntryRevisionTopicParams>();
+    const onBeforeEntryCreateRevision = createTopic<BeforeEntryCreateRevisionTopicParams>();
+    const onAfterEntryCreateRevision = createTopic<AfterEntryCreateRevisionTopicParams>();
     const onBeforeEntryUpdate = createTopic<BeforeEntryUpdateTopicParams>();
     const onAfterEntryUpdate = createTopic<AfterEntryUpdateTopicParams>();
     const onBeforeEntryPublish = createTopic<BeforeEntryPublishTopicParams>();
@@ -152,8 +152,8 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
     const onAfterEntryRequestReview = createTopic<AfterEntryRequestReviewTopicParams>();
     const onBeforeEntryDelete = createTopic<BeforeEntryDeleteTopicParams>();
     const onAfterEntryDelete = createTopic<AfterEntryDeleteTopicParams>();
-    const onBeforeDeleteEntryRevision = createTopic<BeforeDeleteEntryRevisionTopicParams>();
-    const onAfterDeleteEntryRevision = createTopic<AfterDeleteEntryRevisionTopicParams>();
+    const onBeforeEntryDeleteRevision = createTopic<BeforeEntryDeleteRevisionTopicParams>();
+    const onAfterEntryDeleteRevision = createTopic<AfterEntryDeleteRevisionTopicParams>();
     const onBeforeEntryGet = createTopic<BeforeEntryGetTopicParams>();
     const onBeforeEntryList = createTopic<BeforeEntryListTopicParams>();
     /**
@@ -226,14 +226,14 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
     return {
         onBeforeEntryCreate,
         onAfterEntryCreate,
-        onBeforeCreateEntryRevision,
-        onAfterCreateEntryRevision,
+        onBeforeEntryCreateRevision,
+        onAfterEntryCreateRevision,
         onBeforeEntryUpdate,
         onAfterEntryUpdate,
         onBeforeEntryDelete,
         onAfterEntryDelete,
-        onBeforeDeleteEntryRevision,
-        onAfterDeleteEntryRevision,
+        onBeforeEntryDeleteRevision,
+        onAfterEntryDeleteRevision,
         onBeforeEntryPublish,
         onAfterEntryPublish,
         onBeforeEntryUnpublish,
@@ -579,9 +579,10 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
             let storageEntry: CmsStorageEntry = undefined;
 
             try {
-                await onBeforeCreateEntryRevision.publish({
+                await onBeforeEntryCreateRevision.publish({
                     input,
                     entry,
+                    original: originalEntry,
                     model
                 });
 
@@ -596,10 +597,11 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
                     latestStorageEntry
                 });
 
-                await onAfterCreateEntryRevision.publish({
+                await onAfterEntryCreateRevision.publish({
                     input,
                     entry,
                     model,
+                    original: originalEntry,
                     storageEntry: result
                 });
                 return result;
@@ -874,7 +876,7 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
             }
 
             try {
-                await onBeforeDeleteEntryRevision.publish({
+                await onBeforeEntryDeleteRevision.publish({
                     entry: entryToDelete,
                     model
                 });
@@ -886,7 +888,7 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
                     storageEntryToSetAsLatest
                 });
 
-                await onAfterDeleteEntryRevision.publish({
+                await onAfterEntryDeleteRevision.publish({
                     entry: entryToDelete,
                     model
                 });

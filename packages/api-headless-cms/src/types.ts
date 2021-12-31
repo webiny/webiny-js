@@ -1469,15 +1469,17 @@ export interface AfterEntryCreateTopicParams {
     storageEntry: CmsEntry;
 }
 
-export interface BeforeCreateEntryRevisionTopicParams {
+export interface BeforeEntryCreateRevisionTopicParams {
     input: CreateFromCmsEntryInput;
     entry: CmsEntry;
+    original: CmsEntry;
     model: CmsModel;
 }
 
-export interface AfterCreateEntryRevisionTopicParams {
+export interface AfterEntryCreateRevisionTopicParams {
     input: CreateFromCmsEntryInput;
     entry: CmsEntry;
+    original: CmsEntry;
     model: CmsModel;
     storageEntry: CmsEntry;
 }
@@ -1549,11 +1551,11 @@ export interface AfterEntryDeleteTopicParams {
     model: CmsModel;
 }
 
-export interface BeforeDeleteEntryRevisionTopicParams {
+export interface BeforeEntryDeleteRevisionTopicParams {
     entry: CmsEntry;
     model: CmsModel;
 }
-export interface AfterDeleteEntryRevisionTopicParams {
+export interface AfterEntryDeleteRevisionTopicParams {
     entry: CmsEntry;
     model: CmsModel;
 }
@@ -1693,14 +1695,14 @@ export interface CmsEntryContext {
      */
     onBeforeEntryCreate: Topic<BeforeEntryCreateTopicParams>;
     onAfterEntryCreate: Topic<AfterEntryCreateTopicParams>;
-    onBeforeCreateEntryRevision: Topic<BeforeCreateEntryRevisionTopicParams>;
-    onAfterCreateEntryRevision: Topic<AfterCreateEntryRevisionTopicParams>;
+    onBeforeEntryCreateRevision: Topic<BeforeEntryCreateRevisionTopicParams>;
+    onAfterEntryCreateRevision: Topic<AfterEntryCreateRevisionTopicParams>;
     onBeforeEntryUpdate: Topic<BeforeEntryUpdateTopicParams>;
     onAfterEntryUpdate: Topic<AfterEntryUpdateTopicParams>;
     onBeforeEntryDelete: Topic<BeforeEntryDeleteTopicParams>;
     onAfterEntryDelete: Topic<AfterEntryDeleteTopicParams>;
-    onBeforeDeleteEntryRevision: Topic<BeforeDeleteEntryRevisionTopicParams>;
-    onAfterDeleteEntryRevision: Topic<AfterDeleteEntryRevisionTopicParams>;
+    onBeforeEntryDeleteRevision: Topic<BeforeEntryDeleteRevisionTopicParams>;
+    onAfterEntryDeleteRevision: Topic<AfterEntryDeleteRevisionTopicParams>;
     onBeforeEntryPublish: Topic<BeforeEntryPublishTopicParams>;
     onAfterEntryPublish: Topic<AfterEntryPublishTopicParams>;
     onBeforeEntryUnpublish: Topic<BeforeEntryUnpublishTopicParams>;
