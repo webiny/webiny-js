@@ -23,19 +23,19 @@ export const CmsMenuLoader = React.memo(() => {
 
     return (
         <Fragment>
-            <Menu id={"headlessCMS"} label={"Headless CMS"} icon={<HeadlessCmsIcon />}>
+            <Menu name={"headlessCMS"} label={"Headless CMS"} icon={<HeadlessCmsIcon />}>
                 {(canCreateContentModels || canCreateContentModelGroups) && (
-                    <Menu id={"headlessCMS.contentModels"} label={"Content Models"} pin={"first"}>
+                    <Menu name={"headlessCMS.contentModels"} label={"Content Models"} pin={"first"}>
                         {canCreateContentModels && (
                             <Menu
-                                id={"headlessCMS.contentModels.models"}
+                                name={"headlessCMS.contentModels.models"}
                                 label={"Models"}
                                 path={"/cms/content-models"}
                             />
                         )}
                         {canCreateContentModelGroups && (
                             <Menu
-                                id={"headlessCMS.contentModels.groups"}
+                                name={"headlessCMS.contentModels.groups"}
                                 label={"Groups"}
                                 path={"/cms/content-model-groups"}
                             />

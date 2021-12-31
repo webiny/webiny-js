@@ -29,18 +29,18 @@ export const AccessManagementExtension = () => {
                 </AddRoute>
             </HasPermission>
             <HasPermission any={[Permission.Groups, Permission.ApiKeys]}>
-                <AddMenu id={"settings"}>
-                    <AddMenu id={"settings.accessManagement"} label={"Access Management"}>
+                <AddMenu name={"settings"}>
+                    <AddMenu name={"settings.accessManagement"} label={"Access Management"}>
                         <HasPermission name={Permission.Groups}>
                             <AddMenu
-                                id={"settings.accessManagement.groups"}
+                                name={"settings.accessManagement.groups"}
                                 label={"Groups"}
                                 path={"/access-management/groups"}
                             />
                         </HasPermission>
                         <HasPermission name={Permission.ApiKeys}>
                             <AddMenu
-                                id={"settings.accessManagement.apiKeys"}
+                                name={"settings.accessManagement.apiKeys"}
                                 label={"API Keys"}
                                 path={"/access-management/api-keys"}
                             />

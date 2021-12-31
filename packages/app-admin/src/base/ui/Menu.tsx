@@ -15,7 +15,7 @@ const useMenu = () => {
 };
 
 export interface MenuProps {
-    id: string;
+    name: string;
     label?: string;
     path?: string;
     icon?: JSX.Element;
@@ -47,20 +47,20 @@ export const AddMenu = ({ children, ...props }: MenuProps) => {
 
     useEffect(() => {
         if (menu) {
-            menu.setMenu(state.id, state);
+            menu.setMenu(state.name, state);
         } else {
-            navigation.setMenu(state.id, state);
+            navigation.setMenu(state.name, state);
         }
     }, [state]);
 
     useEffect(() => {
-        return () => navigation.removeMenu(state.id);
+        return () => navigation.removeMenu(state.name);
     }, []);
 
     const context = {
-        setMenu(id: string, props: MenuData) {
+        setMenu(name: string, props: MenuData) {
             setState(menu => {
-                const childIndex = menu.children.findIndex(ch => ch.id === id);
+                const childIndex = menu.children.findIndex(ch => ch.name === name);
                 if (childIndex === -1) {
                     return {
                         ...menu,

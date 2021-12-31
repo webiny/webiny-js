@@ -31,10 +31,10 @@ const I18NExtension = () => {
                             <LocalesView />
                         </Layout>
                     </AddRoute>
-                    <AddMenu id={"settings"}>
-                        <AddMenu id={"settings.i18n"} label={"Languages"}>
+                    <AddMenu name={"settings"}>
+                        <AddMenu name={"settings.i18n"} label={"Languages"}>
                             <AddMenu
-                                id={"settings.i18n.locales"}
+                                name={"settings.i18n.locales"}
                                 label={"Locales"}
                                 path={"/i18n/locales"}
                             />

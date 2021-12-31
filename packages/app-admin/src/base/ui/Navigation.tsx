@@ -31,7 +31,7 @@ export function useNavigation() {
 // scaffolded plugins in users' projects, as well as our own applications (Page Builder and Form Builder).
 const LegacyMenu = props => {
     return (
-        <Menu id={props.name || nanoid()} label={props.label} {...props}>
+        <Menu {...props} name={props.name || nanoid()} label={props.label}>
             {props.children}
         </Menu>
     );
@@ -72,7 +72,7 @@ export const NavigationProvider = (Component: React.ComponentType<unknown>) => {
                 icon: item2.icon ?? item1.icon,
                 children: item2.children.reduce(
                     (acc, menu) => {
-                        const index = acc.findIndex(i => i.id === menu.id);
+                        const index = acc.findIndex(i => i.name === menu.name);
                         if (index > -1) {
                             acc[index] = mergeMenuItems(acc[index], menu);
                         } else {
@@ -87,7 +87,7 @@ export const NavigationProvider = (Component: React.ComponentType<unknown>) => {
 
         const setMenu = (id, menuItem) => {
             setState(state => {
-                const index = state.findIndex(m => m.id === id);
+                const index = state.findIndex(m => m.name === id);
 
                 return index > -1
                     ? [
@@ -101,7 +101,7 @@ export const NavigationProvider = (Component: React.ComponentType<unknown>) => {
         const removeMenu = useCallback(
             id => {
                 setState(state => {
-                    const index = state.findIndex(m => m.id === id);
+                    const index = state.findIndex(m => m.name === id);
 
                     if (index < 0) {
                         return state;
@@ -165,7 +165,7 @@ export const MenuItems = makeComposable<MenuItemsProps>("MenuItems", ({ menuItem
     return (
         <Fragment>
             {menuItems.map(menuItem => (
-                <MenuItemContext.Provider key={menuItem.id} value={{ menuItem, depth: depth + 1 }}>
+                <MenuItemContext.Provider key={menuItem.name} value={{ menuItem, depth: depth + 1 }}>
                     <MenuItem />
                 </MenuItemContext.Provider>
             ))}

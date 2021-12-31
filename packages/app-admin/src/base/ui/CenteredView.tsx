@@ -3,7 +3,7 @@ import styled from "@emotion/styled";
 import { makeComposable } from "~/index";
 
 export interface CenteredViewProps {
-    maxWidth: number | string;
+    maxWidth?: number | string;
 }
 
 export const CenteredView = makeComposable<CenteredViewProps>(

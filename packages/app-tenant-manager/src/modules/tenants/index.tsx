@@ -24,8 +24,8 @@ export const TenantsModule = () => {
     return (
         <Extensions>
             <IsRootTenant>
-                <AddMenu id="tenantManager" label={`Tenant Manager`} icon={<TenantIcon />}>
-                    <AddMenu id={"tenantManager.tenants"} label={`Tenants`} path="/tenants" />
+                <AddMenu name="tenantManager" label={`Tenant Manager`} icon={<TenantIcon />}>
+                    <AddMenu name={"tenantManager.tenants"} label={`Tenants`} path="/tenants" />
                 </AddMenu>
                 <AddRoute exact path={"/tenants"}>
                     <Layout title={"Tenant Manager - Tenants"}>

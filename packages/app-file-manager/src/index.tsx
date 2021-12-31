@@ -12,10 +12,10 @@ export const FileManager = () => {
                         <FileManagerSettings />
                     </Layout>
                 </AddRoute>
-                <AddMenu id={"settings"}>
-                    <AddMenu id={"settings.fileManager"} label={"File Manager"}>
+                <AddMenu name={"settings"}>
+                    <AddMenu name={"settings.fileManager"} label={"File Manager"}>
                         <AddMenu
-                            id={"settings.fileManager.general"}
+                            name={"settings.fileManager.general"}
                             label={"General"}
                             path={"/settings/file-manager/general"}
                         />

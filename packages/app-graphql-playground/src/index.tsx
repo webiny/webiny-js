@@ -16,7 +16,7 @@ const GraphQLPlaygroundExtension = ({ createApolloClient }: GraphQLPlaygroundPro
     return (
         <Extensions>
             <AddMenu
-                id={"apiPlayground"}
+                name={"apiPlayground"}
                 label={"API Playground"}
                 path={"/api-playground"}
                 icon={<InfoIcon />}

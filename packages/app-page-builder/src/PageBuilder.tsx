@@ -18,25 +18,25 @@ const PageBuilderProviderHOC = Component => {
 const PageBuilderMenu = () => {
     return (
         <HasPermission any={["pb.menu", "pb.category", "pb.page"]}>
-            <Menu id="pageBuilder" label={"Page Builder"} icon={<PagesIcon />}>
-                <Menu id="pageBuilder.pages" label={"Pages"}>
+            <Menu name="pageBuilder" label={"Page Builder"} icon={<PagesIcon />}>
+                <Menu name="pageBuilder.pages" label={"Pages"}>
                     <HasPermission name={"pb.category"}>
                         <Menu
-                            id="pageBuilder.pages.categories"
+                            name="pageBuilder.pages.categories"
                             label={"Categories"}
                             path="/page-builder/categories"
                         />
                     </HasPermission>
                     <HasPermission name={"pb.page"}>
                         <Menu
-                            id="pageBuilder.pages.pages"
+                            name="pageBuilder.pages.pages"
                             label={"Pages"}
                             path="/page-builder/pages"
                         />
                     </HasPermission>
                     <HasPermission name={"pb.menu"}>
                         <Menu
-                            id="pageBuilder.pages.menus"
+                            name="pageBuilder.pages.menus"
                             label={"Menus"}
                             path="/page-builder/menus"
                         />
@@ -44,15 +44,15 @@ const PageBuilderMenu = () => {
                 </Menu>
             </Menu>
             <HasPermission name={"pb.settings"}>
-                <Menu id={"settings"}>
-                    <Menu id={"settings.pageBuilder"} label={"Page Builder"}>
+                <Menu name={"settings"}>
+                    <Menu name={"settings.pageBuilder"} label={"Page Builder"}>
                         <Menu
-                            id={"settings.pageBuilder.website"}
+                            name={"settings.pageBuilder.website"}
                             label={"Website"}
                             path={"/settings/page-builder/website"}
                         />
                         <Menu
-                            id={"settings.pageBuilder.prerendering"}
+                            name={"settings.pageBuilder.prerendering"}
                             label={"Prerendering"}
                             path={"/settings/page-builder/prerendering"}
                         />

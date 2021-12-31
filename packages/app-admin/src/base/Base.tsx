@@ -16,11 +16,11 @@ const BaseExtension = () => {
 
     return (
         <Extensions>
-            <AddMenu id={"settings"} label={"Settings"} icon={<SettingsIcon />} pin={"last"} />
+            <AddMenu name={"settings"} label={"Settings"} icon={<SettingsIcon />} pin={"last"} />
             <FileManager>
                 {({ showFileManager }) => (
                     <AddMenu
-                        id={"fileManager"}
+                        name={"fileManager"}
                         label={"File Manager"}
                         icon={<FileIcon />}
                         tags={["footer"]}
@@ -29,7 +29,7 @@ const BaseExtension = () => {
                 )}
             </FileManager>
             <AddMenu
-                id={"documentation"}
+                name={"documentation"}
                 label={"Documentation"}
                 icon={<DocsIcon />}
                 path={"https://docs.webiny.com/"}
@@ -38,7 +38,7 @@ const BaseExtension = () => {
                 tags={["footer"]}
             />
             <AddMenu
-                id={"slack"}
+                name={"slack"}
                 label={"Slack"}
                 icon={<SlackIcon />}
                 path={"https://www.webiny.com/slack/"}
@@ -47,7 +47,7 @@ const BaseExtension = () => {
                 tags={["footer"]}
             />
             <AddMenu
-                id={"github"}
+                name={"github"}
                 label={"Github"}
                 icon={<GithubIcon />}
                 path={"https://github.com/webiny/webiny-js"}

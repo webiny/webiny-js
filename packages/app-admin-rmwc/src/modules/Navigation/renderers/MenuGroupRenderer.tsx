@@ -64,18 +64,18 @@ export const MenuGroupRenderer = PrevMenuItem => {
         const { setVisible } = useNavigation();
         const { menuItem, depth } = useMenuItem();
         const shouldRender = depth === 0 && menuItem.children;
-        const [isExpanded, setExpanded] = useState(getState(menuItem.id));
+        const [isExpanded, setExpanded] = useState(getState(menuItem.name));
 
         const hideMenu = useCallback(() => setVisible(false), []);
 
         const toggleElement = useCallback(() => {
             const state = loadState();
-            if (isExpanded && state.includes(menuItem.id)) {
-                state.splice(state.indexOf(menuItem.id), 1);
+            if (isExpanded && state.includes(menuItem.name)) {
+                state.splice(state.indexOf(menuItem.name), 1);
             }
 
-            if (!isExpanded && !state.includes(menuItem.id)) {
-                state.push(menuItem.id);
+            if (!isExpanded && !state.includes(menuItem.name)) {
+                state.push(menuItem.name);
             }
 
             setExpanded(!isExpanded);

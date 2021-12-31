@@ -18,10 +18,10 @@ export const FormBuilder = () => {
     return (
         <Extensions>
             <HasPermission name={"fb.form"}>
-                <AddMenu id="formBuilder" label={"Form Builder"} icon={<FormsIcon />}>
-                    <AddMenu id="formBuilder.forms" label={"Forms"}>
+                <AddMenu name="formBuilder" label={"Form Builder"} icon={<FormsIcon />}>
+                    <AddMenu name="formBuilder.forms" label={"Forms"}>
                         <AddMenu
-                            id="formBuilder.forms.forms"
+                            name="formBuilder.forms.forms"
                             label={"Forms"}
                             path="/form-builder/forms"
                         />
@@ -46,10 +46,10 @@ export const FormBuilder = () => {
                         <FormsSettings />
                     </Layout>
                 </AddRoute>
-                <AddMenu id={"settings"}>
-                    <AddMenu id={"settings.formBuilder"} label={"Form Builder"}>
+                <AddMenu name={"settings"}>
+                    <AddMenu name={"settings.formBuilder"} label={"Form Builder"}>
                         <AddMenu
-                            id={"settings.formBuilder.recaptcha"}
+                            name={"settings.formBuilder.recaptcha"}
                             label={"reCAPTCHA"}
                             path={"/settings/form-builder/recaptcha"}
                         />

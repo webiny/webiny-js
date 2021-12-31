@@ -58,13 +58,13 @@ export const ContentGroupsMenuItems = () => {
         return (
             <HasContentEntryPermissions key={group.id} group={group}>
                 <Menu
-                    id={group.id}
+                    name={group.id}
                     label={group.name}
                     tags={["headlessCMS"]}
                     icon={<Icon group={group} />}
                 >
                     {group.contentModels.length === 0 && (
-                        <Menu id={`${group.id}-empty`} element={<NothingToShow />} />
+                        <Menu name={`${group.id}-empty`} element={<NothingToShow />} />
                     )}
                     {group.contentModels.length > 0 &&
                         group.contentModels.map(contentModel => (
@@ -74,7 +74,7 @@ export const ContentGroupsMenuItems = () => {
                                 contentModel={contentModel}
                             >
                                 <Menu
-                                    id={contentModel.modelId}
+                                    name={contentModel.modelId}
                                     label={pluralize(contentModel.name)}
                                     path={`/cms/content-entries/${contentModel.modelId}`}
                                 />

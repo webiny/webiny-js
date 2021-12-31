@@ -40,10 +40,10 @@ const CognitoIdP = () => {
                             <UsersView />
                         </Layout>
                     </AddRoute>
-                    <Menu id={"settings"}>
-                        <Menu id={"cognito.adminUsers"} label={"Admin Users"}>
+                    <Menu name={"settings"}>
+                        <Menu name={"cognito.adminUsers"} label={"Admin Users"}>
                             <Menu
-                                id={"cognito.adminUsers.users"}
+                                name={"cognito.adminUsers.users"}
                                 label={"Users"}
                                 path={"/admin-users"}
                             />
