@@ -1,13 +1,10 @@
 import { Page } from "@webiny/api-page-builder/types";
 import {
     CmsContext,
-    CmsEntry,
-    CmsEntryContext,
     CmsEntryListParams,
     CmsEntryListWhere,
     CmsEntryMeta,
     CmsModel,
-    CmsModelContext,
     CmsModelField
 } from "@webiny/api-headless-cms/types";
 import { Context } from "@webiny/handler/types";
@@ -16,7 +13,7 @@ import { SecurityIdentity, SecurityPermission } from "@webiny/api-security/types
 import { I18NLocale } from "@webiny/api-i18n/types";
 import { Tenant } from "@webiny/api-tenancy/types";
 
-export interface FieldResolversParams {
+export interface FieldResolverParams {
     fieldId: string;
     getModel: (context: ApwContext) => Promise<CmsModel>;
     getField: (model: CmsModel, fieldId: string) => CmsModelField;
@@ -44,11 +41,83 @@ export enum ApwWorkflowApplications {
     CMS = "cms"
 }
 
-export type ApwWorkflow = CmsEntry;
-export type ApwReviewer = CmsEntry;
-export type ApwComment = CmsEntry;
-export type ApwChangeRequest = CmsEntry;
-export type ApwContentReview = CmsEntry;
+/**
+ * A interface describing the reference to a user that created some data in the database.
+ *
+ * @category General
+ */
+export interface CreatedBy {
+    /**
+     * ID if the user.
+     */
+    id: string;
+    /**
+     * Full name of the user.
+     */
+    displayName: string;
+    /**
+     * Type of the user (admin, user)
+     */
+    type: string;
+}
+
+interface BaseFields {
+    id: string;
+    createdOn: string;
+    savedOn: string;
+    createdBy: CreatedBy;
+}
+
+export interface ApwReviewer extends BaseFields {
+    identityId: string;
+    displayName: string;
+    type: string;
+}
+
+export interface ApwComment extends BaseFields {
+    body: JSON;
+    changeRequest: {
+        id: string;
+        entryId: string;
+        modelId: string;
+    };
+}
+
+export interface ApwChangeRequest extends BaseFields {
+    body: JSON;
+    title: string;
+    resolved: boolean;
+    step: string;
+    media: File;
+}
+
+export interface ApwContentReviewStep {
+    type: ApwWorkflowStepTypes;
+    title: string;
+    slug: string;
+    reviewers: ApwReviewer[];
+    status: ApwContentReviewStepStatus;
+    pendingChangeRequests: number;
+    signOffProvidedOn: string;
+    signOffProvidedBy: CreatedBy;
+}
+
+export interface ApwContentReview extends BaseFields {
+    status: ApwContentReviewStatus;
+    content: {
+        id: string;
+        type: string;
+        settings: JSON;
+    };
+    steps: Array<ApwContentReviewStep>;
+}
+
+export interface ApwWorkflow extends BaseFields {
+    title: string;
+    steps: ApwWorkflowStep[];
+    scope: ApwWorkflowScope;
+    app: string;
+}
 
 interface ApwWorkflowScope {
     type: WorkflowScopeTypes;
@@ -76,6 +145,7 @@ export interface ApwWorkflowStep {
     title: string;
     type: ApwWorkflowStepTypes;
     reviewers: ApwReviewer[];
+    slug: string;
 }
 
 export interface ApwContentReviewStep extends ApwWorkflowStep {
@@ -108,10 +178,6 @@ interface CreateReviewerParams {
     type: string;
 }
 
-interface UpdateReviewerParams {
-    displayName: string;
-}
-
 interface CreateApwCommentParams {
     body: Record<string, any>;
     changeRequest: {
@@ -140,10 +206,12 @@ interface UpdateApwChangeRequestParams {
 interface CreateApwContentReviewParams {
     content: string;
     workflow: string;
+    steps: ApwContentReviewStep[];
+    status: ApwContentReviewStatus;
 }
 
 interface UpdateApwContentReviewParams {
-    steps: JSON;
+    steps: ApwContentReviewStep[];
 }
 
 interface BaseApwCrud<TEntry, TCreateEntryParams, TUpdateEntryParams> {
@@ -164,7 +232,7 @@ export interface ApwWorkflowCrud
 }
 
 export interface ApwReviewerCrud
-    extends BaseApwCrud<ApwReviewer, CreateReviewerParams, UpdateReviewerParams> {
+    extends BaseApwCrud<ApwReviewer, CreateReviewerParams, UpdateApwReviewerData> {
     list(params: CmsEntryListParams): Promise<[ApwReviewer[], CmsEntryMeta]>;
 }
 
@@ -215,11 +283,192 @@ export interface CreateApwParams {
     storageOperations: ApwStorageOperations;
 }
 
+interface StorageOperationsGetReviewerParams {
+    id: string;
+}
+
+type StorageOperationsListReviewersParams = CmsEntryListParams;
+
+interface CreateApwReviewerData {
+    identityId: string;
+    displayName: string;
+    type: string;
+}
+
+interface UpdateApwReviewerData {
+    identityId: string;
+    displayName: string;
+    type: string;
+}
+
+interface StorageOperationsCreateReviewerParams {
+    data: CreateApwReviewerData;
+}
+
+interface StorageOperationsUpdateReviewerParams {
+    id: string;
+    data: UpdateApwReviewerData;
+}
+
+interface StorageOperationsDeleteReviewerParams {
+    id: string;
+}
+
+interface StorageOperationsGetParams {
+    id: string;
+}
+
+interface StorageOperationsDeleteParams {
+    id: string;
+}
+
+type StorageOperationsGetWorkflowParams = StorageOperationsGetParams;
+
+type StorageOperationsListWorkflowsParams = CmsEntryListParams;
+
+interface StorageOperationsCreateWorkflowParams {
+    data: CreateWorkflowParams;
+}
+
+interface StorageOperationsUpdateWorkflowParams {
+    id: string;
+    data: UpdateWorkflowParams;
+}
+
+type StorageOperationsDeleteWorkflowParams = StorageOperationsDeleteParams;
+type StorageOperationsGetContentReviewParams = StorageOperationsGetParams;
+type StorageOperationsListContentReviewsParams = CmsEntryListParams;
+
+interface StorageOperationsCreateContentReviewParams {
+    data: CreateApwContentReviewParams;
+}
+
+interface StorageOperationsUpdateContentReviewParams {
+    id: string;
+    data: UpdateApwContentReviewParams;
+}
+
+type StorageOperationsDeleteContentReviewParams = StorageOperationsDeleteParams;
+
+type StorageOperationsGetChangeRequestParams = StorageOperationsGetParams;
+type StorageOperationsListChangeRequestsParams = CmsEntryListParams;
+
+interface StorageOperationsCreateChangeRequestParams {
+    data: CreateApwChangeRequestParams;
+}
+
+interface StorageOperationsUpdateChangeRequestParams {
+    id: string;
+    data: UpdateApwChangeRequestParams;
+}
+
+type StorageOperationsDeleteChangeRequestParams = StorageOperationsDeleteParams;
+
+type StorageOperationsGetCommentParams = StorageOperationsGetParams;
+
+type StorageOperationsDeleteCommentParams = StorageOperationsDeleteParams;
+type StorageOperationsListCommentsParams = CmsEntryListParams;
+
+interface StorageOperationsCreateCommentParams {
+    data: CreateApwCommentParams;
+}
+
+interface StorageOperationsUpdateCommentParams {
+    id: string;
+    data: UpdateApwCommentParams;
+}
+
 export interface ApwStorageOperations {
-    getModel: CmsModelContext["getModel"];
-    getEntryById: CmsEntryContext["getEntryById"];
-    listLatestEntries: CmsEntryContext["listLatestEntries"];
-    createEntry: CmsEntryContext["createEntry"];
-    updateEntry: CmsEntryContext["updateEntry"];
-    deleteEntry: CmsEntryContext["deleteEntry"];
+    /*
+     * Reviewer methods
+     */
+    getReviewerModel(): Promise<CmsModel>;
+
+    getReviewer(params: StorageOperationsGetReviewerParams): Promise<ApwReviewer>;
+
+    listReviewers(
+        params: StorageOperationsListReviewersParams
+    ): Promise<[ApwReviewer[], CmsEntryMeta]>;
+
+    createReviewer(params: StorageOperationsCreateReviewerParams): Promise<ApwReviewer>;
+
+    updateReviewer(params: StorageOperationsUpdateReviewerParams): Promise<ApwReviewer>;
+
+    deleteReviewer(params: StorageOperationsDeleteReviewerParams): Promise<Boolean>;
+
+    /*
+     * Workflow methods
+     */
+    getWorkflowModel(): Promise<CmsModel>;
+
+    getWorkflow(params: StorageOperationsGetWorkflowParams): Promise<ApwWorkflow>;
+
+    listWorkflows(
+        params: StorageOperationsListWorkflowsParams
+    ): Promise<[ApwWorkflow[], CmsEntryMeta]>;
+
+    createWorkflow(params: StorageOperationsCreateWorkflowParams): Promise<ApwWorkflow>;
+
+    updateWorkflow(params: StorageOperationsUpdateWorkflowParams): Promise<ApwWorkflow>;
+
+    deleteWorkflow(params: StorageOperationsDeleteWorkflowParams): Promise<Boolean>;
+
+    /*
+     * ContentReview methods
+     */
+    getContentReviewModel(): Promise<CmsModel>;
+
+    getContentReview(params: StorageOperationsGetContentReviewParams): Promise<ApwContentReview>;
+
+    listContentReviews(
+        params: StorageOperationsListContentReviewsParams
+    ): Promise<[ApwContentReview[], CmsEntryMeta]>;
+
+    createContentReview(
+        params: StorageOperationsCreateContentReviewParams
+    ): Promise<ApwContentReview>;
+
+    updateContentReview(
+        params: StorageOperationsUpdateContentReviewParams
+    ): Promise<ApwContentReview>;
+
+    deleteContentReview(params: StorageOperationsDeleteContentReviewParams): Promise<Boolean>;
+
+    /*
+     * ChangeRequest methods
+     */
+    getChangeRequestModel(): Promise<CmsModel>;
+
+    getChangeRequest(params: StorageOperationsGetChangeRequestParams): Promise<ApwChangeRequest>;
+
+    listChangeRequests(
+        params: StorageOperationsListChangeRequestsParams
+    ): Promise<[ApwChangeRequest[], CmsEntryMeta]>;
+
+    createChangeRequest(
+        params: StorageOperationsCreateChangeRequestParams
+    ): Promise<ApwChangeRequest>;
+
+    updateChangeRequest(
+        params: StorageOperationsUpdateChangeRequestParams
+    ): Promise<ApwChangeRequest>;
+
+    deleteChangeRequest(params: StorageOperationsDeleteChangeRequestParams): Promise<Boolean>;
+
+    /*
+     * Comment methods
+     */
+    getCommentModel(): Promise<CmsModel>;
+
+    getComment(params: StorageOperationsGetCommentParams): Promise<ApwComment>;
+
+    listComments(
+        params: StorageOperationsListCommentsParams
+    ): Promise<[ApwComment[], CmsEntryMeta]>;
+
+    createComment(params: StorageOperationsCreateCommentParams): Promise<ApwComment>;
+
+    updateComment(params: StorageOperationsUpdateCommentParams): Promise<ApwComment>;
+
+    deleteComment(params: StorageOperationsDeleteCommentParams): Promise<Boolean>;
 }

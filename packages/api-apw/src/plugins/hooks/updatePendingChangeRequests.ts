@@ -1,5 +1,5 @@
 import { CmsEntry, CmsModel } from "@webiny/api-headless-cms/types";
-import { ApwContentReviewCrud, ApwContext } from "~/types";
+import { ApwContentReview, ApwContentReviewCrud, ApwContext } from "~/types";
 
 const isEqual = ({
     entry,
@@ -33,7 +33,7 @@ const updatePendingChangeRequests = async ({
      */
     const entryId = stepSlug.split("#")[0];
 
-    let contentReviewEntry;
+    let contentReviewEntry: ApwContentReview;
     try {
         [[contentReviewEntry]] = await contentReview.list({
             where: {
@@ -51,7 +51,7 @@ const updatePendingChangeRequests = async ({
          */
         try {
             await contentReview.update(contentReviewEntry.id, {
-                steps: contentReviewEntry.values.steps.map(step => {
+                steps: contentReviewEntry.steps.map(step => {
                     if (step.slug === stepSlug) {
                         return {
                             ...step,

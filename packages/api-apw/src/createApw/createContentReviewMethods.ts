@@ -4,9 +4,10 @@ import {
     ApwWorkflowStepTypes,
     ApwContentReviewStatus,
     CreateApwParams,
-    ApwReviewerCrud
+    ApwReviewerCrud,
+    ApwContentReview
 } from "~/types";
-import { getValue, hasReviewer, getNextStepStatus } from "~/plugins/utils";
+import { hasReviewer, getNextStepStatus } from "~/plugins/utils";
 import {
     NoSignOffProvidedError,
     NotAuthorizedError,
@@ -26,41 +27,36 @@ export function createContentReviewMethods({
 }: CreateContentReviewMethodsParams): ApwContentReviewCrud {
     return {
         async getModel() {
-            return await storageOperations.getModel("apwContentReviewModelDefinition");
+            return await storageOperations.getContentReviewModel();
         },
         async get(id) {
-            const model = await this.getModel();
-            return await storageOperations.getEntryById(model, id);
+            return await storageOperations.getContentReview({ id });
         },
         async list(params) {
-            const model = await this.getModel();
-            return await storageOperations.listLatestEntries(model, params);
+            return await storageOperations.listContentReviews(params);
         },
         async create(data) {
-            const model = await this.getModel();
-            return await storageOperations.createEntry(model, {
-                ...data,
-                steps: [],
-                status: ApwContentReviewStatus.UNDER_REVIEW
+            return await storageOperations.createContentReview({
+                data: {
+                    ...data,
+                    steps: [],
+                    status: ApwContentReviewStatus.UNDER_REVIEW
+                }
             });
         },
         async update(id, data) {
-            const model = await this.getModel();
-            const existingEntry = await this.get(id);
-
-            return await storageOperations.updateEntry(model, id, {
-                ...existingEntry.values,
-                ...data
+            return await storageOperations.updateContentReview({
+                id,
+                data
             });
         },
         async delete(id) {
-            const model = await this.getModel();
-            await storageOperations.deleteEntry(model, id);
+            await storageOperations.deleteContentReview({ id });
             return true;
         },
         async provideSignOff(id, stepSlug) {
-            const entry = await this.get(id);
-            const steps = getValue(entry, "steps");
+            const entry: ApwContentReview = await this.get(id);
+            const { steps } = entry;
             const stepIndex = steps.findIndex(step => step.slug === stepSlug);
             const currentStep = steps[stepIndex];
             const previousStep = steps[stepIndex - 1];
@@ -138,8 +134,8 @@ export function createContentReviewMethods({
             return true;
         },
         async retractSignOff(id, stepSlug) {
-            const entry = await this.get(id);
-            const steps = getValue(entry, "steps");
+            const entry: ApwContentReview = await this.get(id);
+            const { steps } = entry;
             const stepIndex = steps.findIndex(step => step.slug === stepSlug);
             const currentStep = steps[stepIndex];
 

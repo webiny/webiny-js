@@ -48,7 +48,7 @@ export const hasReviewer = async ({
     for (const stepReviewer of step.reviewers) {
         const entry = await getReviewer(stepReviewer.id);
 
-        if (getValue(entry, "identityId") === identity.id) {
+        if (entry.identityId === identity.id) {
             return true;
         }
     }

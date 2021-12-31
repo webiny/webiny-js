@@ -3,32 +3,22 @@ import { ApwWorkflowCrud, CreateApwParams } from "~/types";
 export function createWorkflowMethods({ storageOperations }: CreateApwParams): ApwWorkflowCrud {
     return {
         async getModel() {
-            return await storageOperations.getModel("apwWorkflowModelDefinition");
+            return await storageOperations.getWorkflowModel();
         },
         async get(id) {
-            const model = await this.getModel();
-            return await storageOperations.getEntryById(model, id);
+            return await storageOperations.getWorkflow({ id });
         },
         async list(params) {
-            const model = await this.getModel();
-            return await storageOperations.listLatestEntries(model, params);
+            return await storageOperations.listWorkflows(params);
         },
         async create(data) {
-            const model = await this.getModel();
-            return await storageOperations.createEntry(model, data);
+            return await storageOperations.createWorkflow({ data });
         },
         async update(id, data) {
-            const model = await this.getModel();
-            const existingEntry = await this.get(id);
-
-            return await storageOperations.updateEntry(model, id, {
-                ...existingEntry.values,
-                ...data
-            });
+            return await storageOperations.updateWorkflow({ id, data });
         },
         async delete(id: string) {
-            const model = await this.getModel();
-            await storageOperations.deleteEntry(model, id);
+            await storageOperations.deleteWorkflow({ id });
             return true;
         }
     };

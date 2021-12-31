@@ -2,10 +2,7 @@ import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins";
 import { ErrorResponse, ListResponse } from "@webiny/handler-graphql";
 import { CmsEntryListParams } from "@webiny/api-headless-cms/types";
 import { ApwContext } from "~/types";
-import { generateFieldResolvers } from "~/utils/fieldResolver";
 import resolve from "~/utils/resolve";
-
-const fields = ["steps", "content", "status"];
 
 const contentReviewSchema = new GraphQLSchemaPlugin<ApwContext>({
     typeDefs: /* GraphQL */ `
@@ -183,12 +180,6 @@ const contentReviewSchema = new GraphQLSchemaPlugin<ApwContext>({
         }
     `,
     resolvers: {
-        ApwContentReview: {
-            ...generateFieldResolvers(fields)
-        },
-        ApwContentReviewListItem: {
-            ...generateFieldResolvers(fields)
-        },
         ApwQuery: {
             getContentReview: async (_, args, context) => {
                 return resolve(() => context.apw.contentReview.get(args.id));

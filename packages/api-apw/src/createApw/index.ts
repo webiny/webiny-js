@@ -14,10 +14,7 @@ export const createApw = (params: CreateApwParams): AdvancedPublishingWorkflow =
         workflow: workflowMethods,
         reviewer: reviewerMethods,
         changeRequest: changeRequestMethods,
-        comment: createCommentMethods({
-            ...params,
-            getChangeRequestModel: changeRequestMethods.getModel
-        }),
+        comment: createCommentMethods(params),
         contentReview: createContentReviewMethods({
             ...params,
             getReviewer: reviewerMethods.get.bind(reviewerMethods)

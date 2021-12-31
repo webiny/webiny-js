@@ -1,6 +1,12 @@
 import get from "lodash/get";
 import WebinyError from "@webiny/error";
-import { ApwContext, ApwWorkflowApplications, PageWithWorkflow, WorkflowScopeTypes } from "~/types";
+import {
+    ApwContext,
+    ApwWorkflow,
+    ApwWorkflowApplications,
+    PageWithWorkflow,
+    WorkflowScopeTypes
+} from "~/types";
 import { OnBeforePageCreateTopicParams } from "@webiny/api-page-builder/graphql/types";
 
 const WORKFLOW_PRECEDENCE = {
@@ -13,16 +19,16 @@ const getValue = (object: Record<string, any>, key: string) => {
     return get(object, `values.${key}`);
 };
 
-const workflowByPrecedenceDesc = (a, b) => {
-    const scoreA = WORKFLOW_PRECEDENCE[getValue(a, "scope.type")];
-    const scoreB = WORKFLOW_PRECEDENCE[getValue(b, "scope.type")];
+const workflowByPrecedenceDesc = (a: ApwWorkflow, b: ApwWorkflow) => {
+    const scoreA = WORKFLOW_PRECEDENCE[a.scope.type];
+    const scoreB = WORKFLOW_PRECEDENCE[b.scope.type];
     /**
      * In descending order of workflow precedence.
      */
     return scoreB - scoreA;
 };
 
-const workflowByCreatedOnDesc = (a, b) => {
+const workflowByCreatedOnDesc = (a: ApwWorkflow, b: ApwWorkflow) => {
     const createdOnA = get(a, "createdOn");
     const createdOnB = get(b, "createdOn");
     /**
@@ -31,26 +37,26 @@ const workflowByCreatedOnDesc = (a, b) => {
     return new Date(createdOnB).getTime() - new Date(createdOnA).getTime();
 };
 
-const isWorkflowApplicable = (page, workflow) => {
-    const application = getValue(workflow, "app");
+const isWorkflowApplicable = (page, workflow: ApwWorkflow) => {
+    const application = workflow.app;
     if (application !== ApwWorkflowApplications.PB) {
         return false;
     }
 
-    const scopeType = getValue(workflow, "scope.type");
+    const scopeType = workflow.scope.type;
 
     if (scopeType === WorkflowScopeTypes.DEFAULT) {
         return true;
     }
 
     if (scopeType === WorkflowScopeTypes.PB) {
-        const categories = getValue(workflow, "scope.data.categories");
+        const categories = get(workflow, "scope.data.categories");
 
         if (Array.isArray(categories) && categories.includes(page.category)) {
             return true;
         }
 
-        const pages = getValue(workflow, "scope.data.pages");
+        const pages = get(workflow, "scope.data.pages");
         if (Array.isArray(pages) && pages.includes(page.pid)) {
             return true;
         }

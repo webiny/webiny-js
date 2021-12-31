@@ -1,6 +1,6 @@
 import lodashSet from "lodash/set";
 import { ApwContext, PageWithWorkflow } from "~/types";
-import { getContentReviewStepInitialStatus, getValue } from "~/plugins/utils";
+import { getContentReviewStepInitialStatus } from "~/plugins/utils";
 import { NotFoundError } from "@webiny/handler-graphql";
 
 /**
@@ -38,10 +38,10 @@ export const initializeContentReviewSteps = (context: ApwContext) => {
                 );
             }
             const workflow = await apw.workflow.get(workflowId);
-            const workflowSteps = getValue(workflow, "steps");
+            const workflowSteps = workflow.steps;
 
             let previousStepStatus;
-            const updatedSteps = workflow.values.steps.map((step, index) => {
+            const updatedSteps = workflow.steps.map((step, index) => {
                 const status = getContentReviewStepInitialStatus(
                     workflowSteps,
                     index,

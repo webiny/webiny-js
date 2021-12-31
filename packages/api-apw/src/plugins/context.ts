@@ -26,7 +26,9 @@ export default () => [
             getIdentity,
             getTenant,
             getPermission,
-            storageOperations: createStorageOperations({ cms: context.cms })
+            storageOperations: createStorageOperations({
+                cms: context.cms
+            })
         });
     }),
     createApwModels(),

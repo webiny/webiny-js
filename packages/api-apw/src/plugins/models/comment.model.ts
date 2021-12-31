@@ -23,7 +23,7 @@ const changeRequestRef = modelId =>
 
 export const createCommentModelDefinition = ({ modelId }) => ({
     name: "APW - Comment",
-    modelId: "apwContentReviewCommentModelDefinition",
+    modelId: "apwCommentModelDefinition",
     titleFieldId: "displayName",
     layout: [["comment_body"], ["comment_displayName"]],
     fields: [commentBody(), changeRequestRef(modelId)]

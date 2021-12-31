@@ -1,53 +1,26 @@
-import { ApwChangeRequestCrud, ApwCommentCrud, CreateApwParams } from "~/types";
+import { ApwCommentCrud, CreateApwParams } from "~/types";
 
-interface CreateCommentMethodsParams extends CreateApwParams {
-    getChangeRequestModel: ApwChangeRequestCrud["getModel"];
-}
-
-export function createCommentMethods({
-    storageOperations,
-    getChangeRequestModel
-}: CreateCommentMethodsParams): ApwCommentCrud {
+export function createCommentMethods({ storageOperations }: CreateApwParams): ApwCommentCrud {
     return {
         async getModel() {
-            return await storageOperations.getModel("apwContentReviewCommentModelDefinition");
+            return await storageOperations.getCommentModel();
         },
         async get(id) {
-            const model = await this.getModel();
-            return await storageOperations.getEntryById(model, id);
+            return await storageOperations.getComment({ id });
         },
         async list(params) {
-            const model = await this.getModel();
-            return await storageOperations.listLatestEntries(model, params);
+            return await storageOperations.listComments(params);
         },
         async create(data) {
-            const model = await this.getModel();
-            const refModel = await getChangeRequestModel();
-
-            return await storageOperations.createEntry(model, {
-                ...data,
-                changeRequest: {
-                    ...data.changeRequest,
-                    modelId: refModel.modelId
-                }
+            return await storageOperations.createComment({
+                data
             });
         },
         async update(id, data) {
-            const model = await this.getModel();
-            /**
-             * We're fetching the existing entry here because we're not accepting "app" field as input,
-             * but, we still need to retain its value after the "update" operation.
-             */
-            const existingEntry = await this.get(id);
-
-            return await storageOperations.updateEntry(model, id, {
-                ...existingEntry.values,
-                ...data
-            });
+            return await storageOperations.updateComment({ id, data });
         },
         async delete(id: string) {
-            const model = await this.getModel();
-            await storageOperations.deleteEntry(model, id);
+            await storageOperations.deleteComment({ id });
             return true;
         }
     };

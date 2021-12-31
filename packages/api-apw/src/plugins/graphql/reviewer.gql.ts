@@ -3,9 +3,6 @@ import { ErrorResponse, ListResponse } from "@webiny/handler-graphql";
 import { CmsEntryListParams } from "@webiny/api-headless-cms/types";
 import { ApwContext } from "~/types";
 import resolve from "~/utils/resolve";
-import { generateFieldResolvers } from "~/utils/fieldResolver";
-
-const fieldIds = ["identityId", "displayName", "type"];
 
 const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
     typeDefs: /* GraphQL */ `
@@ -84,12 +81,6 @@ const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
         }
     `,
     resolvers: {
-        ApwReviewer: {
-            ...generateFieldResolvers(fieldIds)
-        },
-        ApwReviewerListItem: {
-            ...generateFieldResolvers(fieldIds)
-        },
         ApwQuery: {
             getReviewer: async (_, args, context) => {
                 return resolve(() => context.apw.reviewer.get(args.id));

@@ -5,36 +5,22 @@ export function createChangeRequestMethods({
 }: CreateApwParams): ApwChangeRequestCrud {
     return {
         async getModel() {
-            return await storageOperations.getModel("apwChangeRequestModelDefinition");
+            return await storageOperations.getChangeRequestModel();
         },
         async get(id) {
-            const model = await this.getModel();
-            return await storageOperations.getEntryById(model, id);
+            return await storageOperations.getChangeRequest({ id });
         },
         async list(params) {
-            const model = await this.getModel();
-            return await storageOperations.listLatestEntries(model, params);
+            return await storageOperations.listChangeRequests(params);
         },
         async create(data) {
-            const model = await this.getModel();
-            return await storageOperations.createEntry(model, data);
+            return await storageOperations.createChangeRequest({ data });
         },
         async update(id, data) {
-            const model = await this.getModel();
-            /**
-             * We're fetching the existing entry here because we're not accepting "app" field as input,
-             * but, we still need to retain its value after the "update" operation.
-             */
-            const existingEntry = await this.get(id);
-
-            return await storageOperations.updateEntry(model, id, {
-                ...existingEntry.values,
-                ...data
-            });
+            return await storageOperations.updateChangeRequest({ id, data });
         },
         async delete(id: string) {
-            const model = await this.getModel();
-            await storageOperations.deleteEntry(model, id);
+            await storageOperations.deleteChangeRequest({ id });
             return true;
         }
     };
