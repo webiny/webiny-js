@@ -63,10 +63,10 @@ export const assignEntryEvents = () => {
         context.cms.onAfterEntryCreate.subscribe(async () => {
             pubSubTracker.track("contentEntry:afterCreate");
         });
-        context.cms.onBeforeEntryRevisionCreate.subscribe(async () => {
+        context.cms.onBeforeCreateEntryRevision.subscribe(async () => {
             pubSubTracker.track("contentEntry:beforeCreateRevisionFrom");
         });
-        context.cms.onAfterEntryRevisionCreate.subscribe(async () => {
+        context.cms.onAfterCreateEntryRevision.subscribe(async () => {
             pubSubTracker.track("contentEntry:afterCreateRevisionFrom");
         });
         context.cms.onBeforeEntryUpdate.subscribe(async () => {
@@ -81,10 +81,10 @@ export const assignEntryEvents = () => {
         context.cms.onAfterEntryDelete.subscribe(async () => {
             pubSubTracker.track("contentEntry:afterDelete");
         });
-        context.cms.onBeforeEntryRevisionDelete.subscribe(async () => {
+        context.cms.onBeforeDeleteEntryRevision.subscribe(async () => {
             pubSubTracker.track("contentEntry:beforeDeleteRevision");
         });
-        context.cms.onAfterEntryRevisionDelete.subscribe(async () => {
+        context.cms.onAfterDeleteEntryRevision.subscribe(async () => {
             pubSubTracker.track("contentEntry:afterDeleteRevision");
         });
         context.cms.onBeforeEntryPublish.subscribe(async () => {

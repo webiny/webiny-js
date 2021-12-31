@@ -275,38 +275,26 @@ export const createModelsCrud = (params: Params): CmsModelContext => {
                 webinyVersion: context.WEBINY_VERSION
             };
 
-            try {
-                await onBeforeModelCreate.publish({
-                    input,
-                    model
-                });
+            await onBeforeModelCreate.publish({
+                input,
+                model
+            });
 
-                const createdModel = await storageOperations.models.create({
-                    input,
-                    model
-                });
+            const createdModel = await storageOperations.models.create({
+                input,
+                model
+            });
 
-                loaders.listModels.clearAll();
+            loaders.listModels.clearAll();
 
-                await updateManager(context, model);
+            await updateManager(context, model);
 
-                await onAfterModelCreate.publish({
-                    input,
-                    model: createdModel
-                });
+            await onAfterModelCreate.publish({
+                input,
+                model: createdModel
+            });
 
-                return createdModel;
-            } catch (ex) {
-                throw new WebinyError(
-                    ex.message || "Could not create CMS model.",
-                    ex.code || "CREATE_MODEL_ERROR",
-                    {
-                        error: ex,
-                        input,
-                        model
-                    }
-                );
-            }
+            return createdModel;
         },
         /**
          * Method does not check for permissions or ownership.
@@ -322,41 +310,29 @@ export const createModelsCrud = (params: Params): CmsModelContext => {
                 webinyVersion: context.WEBINY_VERSION
             };
 
-            try {
-                await onBeforeModelUpdate.publish({
-                    input: {} as any,
-                    original,
-                    model
-                });
+            await onBeforeModelUpdate.publish({
+                input: {} as any,
+                original,
+                model
+            });
 
-                const resultModel = await storageOperations.models.update({
-                    original,
-                    model,
-                    input: {} as any
-                });
+            const resultModel = await storageOperations.models.update({
+                original,
+                model,
+                input: {} as any
+            });
 
-                await updateManager(context, resultModel);
+            await updateManager(context, resultModel);
 
-                loaders.listModels.clearAll();
+            loaders.listModels.clearAll();
 
-                await onAfterModelUpdate.publish({
-                    input: {} as any,
-                    original,
-                    model: resultModel
-                });
+            await onAfterModelUpdate.publish({
+                input: {} as any,
+                original,
+                model: resultModel
+            });
 
-                return resultModel;
-            } catch (ex) {
-                throw new WebinyError(
-                    ex.message || "Could not directly update CMS model.",
-                    ex.code || "UPDATE_MODEL_DIRECT_ERROR",
-                    {
-                        error: ex,
-                        original,
-                        model
-                    }
-                );
-            }
+            return resultModel;
         },
         async createModelFrom(modelId, data) {
             await checkModelPermissions("w");
@@ -414,41 +390,28 @@ export const createModelsCrud = (params: Params): CmsModelContext => {
                 webinyVersion: context.WEBINY_VERSION
             };
 
-            try {
-                await onBeforeModelCreateFrom.publish({
-                    input,
-                    model,
-                    original
-                });
+            await onBeforeModelCreateFrom.publish({
+                input,
+                model,
+                original
+            });
 
-                const createdModel = await storageOperations.models.create({
-                    input,
-                    model
-                });
+            const createdModel = await storageOperations.models.create({
+                input,
+                model
+            });
 
-                loaders.listModels.clearAll();
+            loaders.listModels.clearAll();
 
-                await updateManager(context, model);
+            await updateManager(context, model);
 
-                await onAfterModelCreateFrom.publish({
-                    input,
-                    original,
-                    model: createdModel
-                });
+            await onAfterModelCreateFrom.publish({
+                input,
+                original,
+                model: createdModel
+            });
 
-                return createdModel;
-            } catch (ex) {
-                throw new WebinyError(
-                    ex.message || "Could not create CMS model from another model.",
-                    ex.code || "CREATE_MODEL_FROM_ERROR",
-                    {
-                        error: ex,
-                        input,
-                        original,
-                        model
-                    }
-                );
-            }
+            return createdModel;
         },
         async updateModel(modelId, inputData) {
             await checkModelPermissions("w");
@@ -492,40 +455,27 @@ export const createModelsCrud = (params: Params): CmsModelContext => {
             };
             validateLayout(model, modelFields);
 
-            try {
-                await onBeforeModelUpdate.publish({
-                    input,
-                    original,
-                    model
-                });
+            await onBeforeModelUpdate.publish({
+                input,
+                original,
+                model
+            });
 
-                const resultModel = await storageOperations.models.update({
-                    original,
-                    model,
-                    input
-                });
+            const resultModel = await storageOperations.models.update({
+                original,
+                model,
+                input
+            });
 
-                await updateManager(context, resultModel);
+            await updateManager(context, resultModel);
 
-                await onAfterModelUpdate.publish({
-                    input,
-                    original,
-                    model: resultModel
-                });
+            await onAfterModelUpdate.publish({
+                input,
+                original,
+                model: resultModel
+            });
 
-                return resultModel;
-            } catch (ex) {
-                throw new WebinyError(
-                    ex.message || "Could not update CMS model.",
-                    ex.code || "MODEL_UPDATE_ERROR",
-                    {
-                        error: ex,
-                        input,
-                        original,
-                        model
-                    }
-                );
-            }
+            return resultModel;
         },
         async deleteModel(modelId) {
             await checkModelPermissions("d");
