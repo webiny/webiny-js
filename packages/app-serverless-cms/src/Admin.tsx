@@ -32,12 +32,7 @@ const App = (props: AdminProps) => {
     const createApolloClient = props.createApolloClient || defaultApolloClientFactory;
     const ViewCompositionProvider = createViewCompositionProvider();
 
-    plugins.register(
-        imagePlugin(),
-        fileManagerPlugins(),
-        fileStorageS3Plugin(),
-        apolloLinks
-    );
+    plugins.register(imagePlugin(), fileManagerPlugins(), fileStorageS3Plugin(), apolloLinks);
 
     return (
         <BaseAdmin createApolloClient={createApolloClient}>

@@ -165,7 +165,10 @@ export const MenuItems = makeComposable<MenuItemsProps>("MenuItems", ({ menuItem
     return (
         <Fragment>
             {menuItems.map(menuItem => (
-                <MenuItemContext.Provider key={menuItem.name} value={{ menuItem, depth: depth + 1 }}>
+                <MenuItemContext.Provider
+                    key={menuItem.name}
+                    value={{ menuItem, depth: depth + 1 }}
+                >
                     <MenuItem />
                 </MenuItemContext.Provider>
             ))}
