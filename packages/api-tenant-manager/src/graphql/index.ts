@@ -23,7 +23,7 @@ export default new GraphQLSchemaPlugin<Context>({
 
         input TenantSettingsInput {
             domains: [TenantDomainInput!]!
-            themes: [ID!]!
+            # themes: [ID!]!
         }
 
         input CreateTenantInput {
@@ -55,7 +55,7 @@ export default new GraphQLSchemaPlugin<Context>({
         }
 
         extend input PbSettingsInput {
-            theme: ID!
+            theme: ID
         }
     `,
     resolvers: {
