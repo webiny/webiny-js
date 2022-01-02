@@ -1,3 +1,3 @@
-# @webiny/app-security-admin-users-okta
+# @webiny/app-admin-okta
 
-Plugins for @webiny/app-security-admin-users package that add functionality related to Okta.
+Plugins for @webiny/app-serverless-cms package that enable Okta authentication.

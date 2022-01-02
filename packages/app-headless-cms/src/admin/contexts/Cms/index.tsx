@@ -14,7 +14,7 @@ export const CmsContext = React.createContext<CmsContextValue>(null);
 
 const apolloClientsCache = {};
 
-type CmsProviderProps = {
+export type CmsProviderProps = {
     createApolloClient: (params: { uri: string }) => ApolloClient<any>;
     children: React.ReactNode;
 };

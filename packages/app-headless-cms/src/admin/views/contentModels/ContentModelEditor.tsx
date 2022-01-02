@@ -5,7 +5,6 @@ import { Editor } from "~/admin/components/ContentModelEditor/Editor";
 import { useRouter } from "@webiny/react-router";
 import { useCms } from "~/admin/hooks";
 import { ContentModelEditorProvider } from "~/admin/components/ContentModelEditor/Context";
-import Snackbar from "@webiny/app-admin/ui/views/AdminView/components/Snackbar";
 type QueryMatch = {
     modelId?: string;
 };
@@ -20,9 +19,6 @@ export default function ContentModelEditorView() {
         <ContentModelEditorProvider key={modelId} apolloClient={apolloClient} modelId={modelId}>
             <DndProvider backend={HTML5Backend}>
                 <Editor />
-                <div style={{ zIndex: 10, position: "absolute" }}>
-                    <Snackbar />
-                </div>
             </DndProvider>
         </ContentModelEditorProvider>
     );

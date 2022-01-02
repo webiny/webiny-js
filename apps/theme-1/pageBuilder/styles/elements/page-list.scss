@@ -1,0 +1,54 @@
+.webiny-pb-page-element-page-list {
+  &__items {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+  }
+  &__navigation {
+    display: flex;
+    width: 100%;
+    justify-content: space-around;
+    a {
+      font-size: 1rem;
+      display: flex;
+      align-content: center;
+      cursor: pointer;
+      svg {
+        height: 18px;
+        display: block;
+      }
+    }
+  }
+  &__item {
+    width: 280px;
+    flex: 0 0 280px;
+    margin-bottom: 35px;
+    &:hover {
+      text-decoration: none;
+    }
+  }
+  &__media {
+    width: 100%;
+    height: 180px;
+    background-size: cover;
+  }
+  &__title {
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+// Make items grow on tablet
+.webiny-pb-media-query--tablet .webiny-pb-page-element-page-list {
+  &__item {
+    flex: 1 1 280px;
+  }
+}
+
+// Make items grow on mobile
+.webiny-pb-media-query--mobile-landscape .hide-on-mobile,
+.webiny-pb-media-query--mobile-portrait .hide-on-mobile {
+  &__item {
+    flex: 1 1 280px;
+  }
+}

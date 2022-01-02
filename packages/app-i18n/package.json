@@ -22,6 +22,7 @@
     "@webiny/app-admin": "^5.20.0",
     "@webiny/app-security": "^5.20.0",
     "@webiny/form": "^5.20.0",
+    "@webiny/plugins": "^5.20.0",
     "@webiny/react-router": "^5.20.0",
     "@webiny/ui": "^5.20.0",
     "@webiny/validation": "^5.20.0",
@@ -35,8 +36,7 @@
     "lodash": "^4.17.11",
     "prop-types": "^15.7.2",
     "react": "^16.14.0",
-    "react-dom": "^16.14.0",
-    "react-helmet": "^5.2.1"
+    "react-dom": "^16.14.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",

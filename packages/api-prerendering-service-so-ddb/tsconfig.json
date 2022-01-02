@@ -1,35 +1,29 @@
 {
-  "extends": "../../tsconfig",
+  "extends": "../../tsconfig.json",
+  "include": ["src", "__tests__/**/*.ts"],
   "references": [
-    {
-      "path": "../error"
-    },
-    {
-      "path": "../handler-aws"
-    },
-    {
-      "path": "../db"
-    },
-    {
-      "path": "../api-prerendering-service"
-    },
-    {
-      "path": "../db-dynamodb"
-    }
+    { "path": "../api-prerendering-service" },
+    { "path": "../error" },
+    { "path": "../db" },
+    { "path": "../db-dynamodb" },
+    { "path": "../handler-aws" }
   ],
   "compilerOptions": {
+    "rootDirs": ["./src", "./__tests__"],
+    "outDir": "./dist",
+    "declarationDir": "./dist",
     "paths": {
       "~/*": ["./src/*"],
+      "@webiny/api-prerendering-service/*": ["../api-prerendering-service/src/*"],
+      "@webiny/api-prerendering-service": ["../api-prerendering-service/src"],
       "@webiny/error/*": ["../error/src/*"],
       "@webiny/error": ["../error/src"],
-      "@webiny/handler-aws/*": ["../handler-aws/src/*"],
-      "@webiny/handler-aws": ["../handler-aws/src"],
       "@webiny/db/*": ["../db/src/*"],
       "@webiny/db": ["../db/src"],
       "@webiny/db-dynamodb/*": ["../db-dynamodb/src/*"],
       "@webiny/db-dynamodb": ["../db-dynamodb/src"],
-      "@webiny/api-prerendering-service/*": ["../api-prerendering-service/src/*"],
-      "@webiny/api-prerendering-service": ["../api-prerendering-service/src"]
+      "@webiny/handler-aws/*": ["../handler-aws/src/*"],
+      "@webiny/handler-aws": ["../handler-aws/src"]
     },
     "baseUrl": "."
   }

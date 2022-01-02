@@ -1,39 +1,6 @@
-import React from "react";
-import { Avatar } from "@webiny/ui/Avatar";
-import { Image } from "@webiny/app/components";
-import { useSecurity } from "@webiny/app-security/hooks/useSecurity";
-import { GenericElement } from "@webiny/app-admin/ui/elements/GenericElement";
-import { UIViewPlugin } from "@webiny/app-admin/ui/UIView";
-import { AdminView } from "@webiny/app-admin/ui/views/AdminView";
-import { UserMenuElement } from "@webiny/app-admin/plugins/userMenu/UserMenuElement";
-
-const UserImage = () => {
-    const { identity } = useSecurity();
-
-    if (!identity) {
-        return null;
-    }
-
-    const { firstName, lastName, avatar, gravatar } = identity.profile || {};
-    const fullName = `${firstName} ${lastName}`;
-
-    return (
-        <Avatar
-            data-testid="logged-in-user-menu-avatar"
-            src={avatar ? avatar.src : gravatar}
-            alt={fullName}
-            fallbackText={fullName}
-            renderImage={props => <Image {...props} transform={{ width: 100 }} />}
-        />
-    );
-};
-
 export default () => {
-    return new UIViewPlugin<AdminView>(AdminView, view => {
-        const userMenu = view.getElement<UserMenuElement>("userMenu");
-
-        if (userMenu) {
-            userMenu.setMenuHandleElement(new GenericElement("handle", () => <UserImage />));
-        }
-    });
+    console.log(
+        `[DEPRECATED] Import "@webiny/app-admin-users-cognito/plugins/userMenu/userImage" is no longer used!`
+    );
+    return { type: "dummy" };
 };

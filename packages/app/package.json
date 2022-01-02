@@ -34,6 +34,7 @@
     "graphql": "^14.5.8",
     "invariant": "^2.2.4",
     "lodash": "^4.17.4",
+    "nanoid": "^3.1.30",
     "react": "^16.14.0",
     "react-dom": "^16.14.0",
     "warning": "^4.0.2"
