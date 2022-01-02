@@ -7,6 +7,7 @@ export {
     useMenuItem,
     useNavigation,
     useTags,
+    AddLogo,
     AddMenu,
     AddRoute,
     AddUserMenuItem,

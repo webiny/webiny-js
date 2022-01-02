@@ -9,6 +9,7 @@ export type { LayoutProps } from "./base/ui/Layout";
 export * from "./base/ui/Navigation";
 export type { MenuItemsProps } from "./base/ui/Navigation";
 export * from "./base/ui/Brand";
+export * from "./base/ui/Logo";
 export * from "./base/ui/Search";
 export type { SearchOptionData, SearchOptionProps } from "./base/ui/Search";
 export * from "./base/ui/UserMenu";

@@ -1,8 +1,14 @@
-import React, { useCallback } from "react";
-import { Compose, BrandRenderer, HigherOrderComponent, useTags } from "@webiny/app-admin";
-import { ReactComponent as Logo } from "./webiny-logo.svg";
-import { TopAppBarTitle } from "@webiny/ui/TopAppBar";
+import React, { Fragment, useCallback } from "react";
+import {
+    Compose,
+    BrandRenderer,
+    HigherOrderComponent,
+    useTags,
+    Logo,
+    AddLogo
+} from "@webiny/app-admin";
 import { Link } from "@webiny/react-router/";
+import { ReactComponent as LogoIcon } from "./webiny-logo.svg";
 import { useNavigation } from "../Navigation";
 
 const BrandImpl: HigherOrderComponent = () => {
@@ -15,22 +21,33 @@ const BrandImpl: HigherOrderComponent = () => {
         }, []);
 
         return (
-            <TopAppBarTitle>
-                <Link to={"/"} onClick={onClick}>
-                    <Logo
-                        style={{
-                            width: 100,
-                            marginTop: 8,
-                            height: 30,
-                            color: location === "navigation" ? "var(--mdc-theme-primary)" : "white"
-                        }}
-                    />
-                </Link>
-            </TopAppBarTitle>
+            <Link to={"/"} onClick={onClick}>
+                <Logo />
+            </Link>
         );
     };
 };
 
+const WebinyLogo = () => {
+    const { location } = useTags();
+
+    return (
+        <LogoIcon
+            style={{
+                width: 100,
+                height: 30,
+                paddingLeft: 20,
+                color: location === "navigation" ? "var(--mdc-theme-primary)" : "white"
+            }}
+        />
+    );
+};
+
 export const Brand = () => {
-    return <Compose component={BrandRenderer} with={BrandImpl} />;
+    return (
+        <Fragment>
+            <Compose component={BrandRenderer} with={BrandImpl} />
+            <AddLogo logo={<WebinyLogo />} />
+        </Fragment>
+    );
 };
