@@ -20,7 +20,7 @@ export default new GraphQLSchemaPlugin<TenancyContext>({
 
         type TenantSettings {
             domains: [TenantDomain!]!
-            // themes: [ID!]!
+            # themes: [ID!]!
         }
 
         type TenancyQuery {
