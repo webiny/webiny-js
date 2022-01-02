@@ -14,7 +14,7 @@ export interface Tenant {
     status: string;
     settings: {
         domains: TenantDomain[];
-        themes: string[];
+        // themes: string[];
     };
     parent: string | null;
     webinyVersion?: string;
@@ -56,7 +56,7 @@ export interface CreateTenantInput {
     status?: string;
     settings?: {
         domains: TenantDomain[];
-        themes: string[];
+        // themes: string[];
     };
     parent?: string | null;
 }

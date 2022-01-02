@@ -55,9 +55,9 @@ export const createSettingsEntity = (params: Params): Entity<any> => {
             TYPE: {
                 type: "string"
             },
-            theme: {
-                type: "string"
-            },
+            // theme: {
+            //     type: "string"
+            // },
             ...(attributes || {})
         }
     });
