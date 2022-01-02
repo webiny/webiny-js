@@ -9730,11 +9730,11 @@ __metadata:
     "@babel/preset-typescript": ^7.8.3
     "@babel/runtime": ^7.5.5
     "@types/react": ^16.9.56
-    "@webiny/app": ^5.20.0
-    "@webiny/cli": ^5.20.0
-    "@webiny/plugins": ^5.20.0
-    "@webiny/project-utils": ^5.20.0
-    "@webiny/react-router": ^5.20.0
+    "@webiny/app": ^5.18.3
+    "@webiny/cli": ^5.18.3
+    "@webiny/plugins": ^5.18.3
+    "@webiny/project-utils": ^5.18.3
+    "@webiny/react-router": ^5.18.3
     babel-plugin-named-asset-import: ^1.0.0-next.3e165448
     lodash.debounce: ^4.0.8
     react: ^16.14.0
@@ -10426,7 +10426,7 @@ __metadata:
     "@babel/preset-react": ^7.0.0
     "@babel/preset-typescript": ^7.8.3
     "@webiny/app": ^5.20.0
-    "@webiny/app-admin": ^5.20.0
+    "@webiny/app-admin-core": ^5.20.0
     "@webiny/cli": ^5.20.0
     "@webiny/plugins": ^5.20.0
     "@webiny/project-utils": ^5.20.0
@@ -10591,7 +10591,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/app@^5.19.0-next.0, @webiny/app@^5.20.0, @webiny/app@workspace:packages/app":
+"@webiny/app@^5.18.3, @webiny/app@^5.19.0-next.0, @webiny/app@^5.20.0, @webiny/app@workspace:packages/app":
   version: 0.0.0-use.local
   resolution: "@webiny/app@workspace:packages/app"
   dependencies:
@@ -10917,7 +10917,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/cli@^5.19.0-next.0, @webiny/cli@^5.20.0, @webiny/cli@workspace:packages/cli":
+"@webiny/cli@^5.18.3, @webiny/cli@^5.19.0-next.0, @webiny/cli@^5.20.0, @webiny/cli@workspace:packages/cli":
   version: 0.0.0-use.local
   resolution: "@webiny/cli@workspace:packages/cli"
   dependencies:
@@ -11271,7 +11271,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/plugins@^5.17.0-beta.1, @webiny/plugins@^5.19.0-next.0, @webiny/plugins@^5.20.0, @webiny/plugins@workspace:packages/plugins":
+"@webiny/plugins@^5.17.0-beta.1, @webiny/plugins@^5.18.3, @webiny/plugins@^5.19.0-next.0, @webiny/plugins@^5.20.0, @webiny/plugins@workspace:packages/plugins":
   version: 0.0.0-use.local
   resolution: "@webiny/plugins@workspace:packages/plugins"
   dependencies:
@@ -11286,7 +11286,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/project-utils@^5.19.0-next.0, @webiny/project-utils@^5.20.0, @webiny/project-utils@workspace:packages/project-utils":
+"@webiny/project-utils@^5.18.3, @webiny/project-utils@^5.19.0-next.0, @webiny/project-utils@^5.20.0, @webiny/project-utils@workspace:packages/project-utils":
   version: 0.0.0-use.local
   resolution: "@webiny/project-utils@workspace:packages/project-utils"
   dependencies:
@@ -11433,7 +11433,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/react-router@^5.20.0, @webiny/react-router@workspace:packages/react-router":
+"@webiny/react-router@^5.18.3, @webiny/react-router@^5.20.0, @webiny/react-router@workspace:packages/react-router":
   version: 0.0.0-use.local
   resolution: "@webiny/react-router@workspace:packages/react-router"
   dependencies:

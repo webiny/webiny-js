@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useSecurity } from "..";
+import { useSecurity } from "~/hooks/useSecurity";
 import { SecureRouteErrorPlugin } from "~/types";
 import { plugins } from "@webiny/plugins";
 
