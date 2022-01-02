@@ -24,8 +24,8 @@ export type { AdminProps } from "./base/Admin";
 export { useViewComposition } from "./base/providers/ViewCompositionProvider";
 export type { ViewCompositionContext, ViewElement } from "./base/providers/ViewCompositionProvider";
 
-// Extensions
-export * from "./base/extensions/AddGraphQLQuerySelection";
+// Plugins
+export * from "./base/plugins/AddGraphQLQuerySelection";
 
 // Components
 export { AppInstaller } from "./components/AppInstaller";

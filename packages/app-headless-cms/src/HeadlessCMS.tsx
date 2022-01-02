@@ -1,6 +1,6 @@
 import React, { Fragment, memo } from "react";
 import { plugins } from "@webiny/plugins";
-import { Extensions, Provider } from "@webiny/app-admin";
+import { Plugins, Provider } from "@webiny/app-admin";
 import { ApolloClient } from "apollo-client";
 import { CmsProvider } from "./admin/contexts/Cms";
 import { CmsMenuLoader } from "~/admin/menus/CmsMenuLoader";
@@ -30,9 +30,9 @@ const HeadlessCMSExtension = ({ createApolloClient }: HeadlessCMSProps) => {
     return (
         <Fragment>
             <Provider hoc={createHeadlessCMSProvider(createApolloClient)} />
-            <Extensions>
+            <Plugins>
                 <CmsMenuLoader />
-            </Extensions>
+            </Plugins>
         </Fragment>
     );
 };

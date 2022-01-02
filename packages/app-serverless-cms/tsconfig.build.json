@@ -13,7 +13,6 @@
     { "path": "../app-i18n/tsconfig.build.json" },
     { "path": "../app-i18n-content/tsconfig.build.json" },
     { "path": "../app-page-builder/tsconfig.build.json" },
-    { "path": "../app-plugin-admin-welcome-screen/tsconfig.build.json" },
     { "path": "../app-security/tsconfig.build.json" },
     { "path": "../app-security-access-management/tsconfig.build.json" },
     { "path": "../app-tenancy/tsconfig.build.json" },

@@ -1,7 +1,7 @@
 import React, { memo } from "react";
 import { ApolloClient } from "apollo-client";
 import { plugins } from "@webiny/plugins";
-import { Extensions, AddMenu, AddRoute, Layout } from "@webiny/app-admin";
+import { Plugins, AddMenu, AddRoute, Layout } from "@webiny/app-admin";
 import { ReactComponent as InfoIcon } from "./assets/graphql.svg";
 import Playground from "./plugins/Playground";
 import playgroundPlugins from "./plugins";
@@ -14,7 +14,7 @@ const GraphQLPlaygroundExtension = ({ createApolloClient }: GraphQLPlaygroundPro
     plugins.register(playgroundPlugins);
 
     return (
-        <Extensions>
+        <Plugins>
             <AddMenu
                 name={"apiPlayground"}
                 label={"API Playground"}
@@ -27,7 +27,7 @@ const GraphQLPlaygroundExtension = ({ createApolloClient }: GraphQLPlaygroundPro
                     <Playground createApolloClient={createApolloClient} />
                 </Layout>
             </AddRoute>
-        </Extensions>
+        </Plugins>
     );
 };
 

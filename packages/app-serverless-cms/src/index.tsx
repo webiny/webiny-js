@@ -20,7 +20,7 @@ export {
     BrandRenderer,
     Provider,
     Compose,
-    Extensions,
+    Plugins,
     makeComposable,
     MenuItem,
     MenuItemRenderer,

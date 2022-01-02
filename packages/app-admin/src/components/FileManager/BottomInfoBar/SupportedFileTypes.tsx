@@ -5,7 +5,7 @@ mime.define({ "image/x-icon": ["ico"] }, true);
 mime.define({ "image/jpg": ["jpg"] }, true);
 mime.define({ "image/vnd.microsoft.icon": ["ico"] }, true);
 
-const getUniqueFileExtensions = accept => {
+const getUniqueFilePlugins = accept => {
     const exts = {};
     accept.forEach(item => {
         exts[mime.getExtension(item)] = true;
@@ -25,7 +25,7 @@ const SupportedFileTypes = ({ accept }) => {
 
     return (
         <span>
-            Showing the following file extensions: {getUniqueFileExtensions(accept).join(", ")}.
+            Showing the following file extensions: {getUniqueFilePlugins(accept).join(", ")}.
         </span>
     );
 };

@@ -1,11 +1,11 @@
 import React from "react";
-import { Extensions, Layout, AddMenu, AddRoute } from "@webiny/app-admin";
+import { Plugins, Layout, AddMenu, AddRoute } from "@webiny/app-admin";
 import { HasPermission } from "@webiny/app-security";
 import FileManagerSettings from "~/admin/views/FileManagerSettings";
 
 export const FileManager = () => {
     return (
-        <Extensions>
+        <Plugins>
             <HasPermission name={"fm.settings"}>
                 <AddRoute path="/settings/file-manager/general">
                     <Layout title={"File Manager - General Settings"}>
@@ -22,6 +22,6 @@ export const FileManager = () => {
                     </AddMenu>
                 </AddMenu>
             </HasPermission>
-        </Extensions>
+        </Plugins>
     );
 };

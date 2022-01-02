@@ -35,6 +35,7 @@ export function usePbWebsiteSettings() {
 
     const onSubmit = useCallback(
         async data => {
+            // TODO: try useForm and onSubmit
             data.websiteUrl = (data.websiteUrl || "").replace(/\/+$/g, "");
 
             if (settings.websiteUrl !== data.websiteUrl && !data.websiteUrl.includes("localhost")) {

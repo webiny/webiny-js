@@ -1,5 +1,5 @@
 import React, { memo } from "react";
-import { Extensions } from "@webiny/app-admin-core";
+import { Plugins } from "@webiny/app-admin-core";
 import { AddMenu, AddRoute, Dashboard, Layout, NotFound } from "~/index";
 import { plugins } from "@webiny/plugins";
 import { ReactComponent as DocsIcon } from "~/assets/icons/icon-documentation.svg";
@@ -15,7 +15,7 @@ const BaseExtension = () => {
     plugins.register(adminPlugins());
 
     return (
-        <Extensions>
+        <Plugins>
             <AddMenu name={"settings"} label={"Settings"} icon={<SettingsIcon />} pin={"last"} />
             <FileManager>
                 {({ showFileManager }) => (
@@ -65,7 +65,7 @@ const BaseExtension = () => {
                     <NotFound />
                 </Layout>
             </AddRoute>
-        </Extensions>
+        </Plugins>
     );
 };
 

@@ -1,7 +1,7 @@
 import React, { Fragment, memo } from "react";
 import {
     Compose,
-    Extensions,
+    Plugins,
     LoginScreenRenderer,
     AddMenu as Menu,
     AddUserMenuItem,
@@ -33,7 +33,7 @@ const CognitoIdP = () => {
     return (
         <Fragment>
             <Compose component={LoginScreenRenderer} with={CognitoLoginScreen} />
-            <Extensions>
+            <Plugins>
                 <HasPermission name={Permission.Users}>
                     <AddRoute exact path={"/admin-users"}>
                         <Layout title={"Admin Users"}>
@@ -58,7 +58,7 @@ const CognitoIdP = () => {
                 <AddUserMenuItem element={<UserInfo />} />
                 <AddUserMenuItem element={<AccountDetails />} />
                 <AddUserMenuItem element={<SignOut />} />
-            </Extensions>
+            </Plugins>
         </Fragment>
     );
 };

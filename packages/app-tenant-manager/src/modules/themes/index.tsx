@@ -1,12 +1,12 @@
 import React, { Fragment, memo } from "react";
 import gql from "graphql-tag";
-import { Provider, Extensions } from "@webiny/app-serverless-cms";
+import { Provider, Plugins } from "@webiny/app-admin";
 import { AddPbWebsiteSettings } from "@webiny/app-page-builder";
 import { AddTenantFormField } from "~/components/AddTenantFormField";
 import { ThemeCheckboxGroup } from "~/components/ThemeCheckboxGroup";
 import { ThemeManagerProviderHOC } from "./ThemeManagerProvider";
 import { IsRootTenant, IsNotRootTenant } from "~/components/IsRootTenant";
-import { Bind } from "@webiny/form";
+import { useBind } from "@webiny/form";
 import { Select } from "@webiny/ui/Select";
 import { useThemeManager } from "~/hooks/useThemeManager";
 import { useTenantThemes } from "~/hooks/useTenantThemes";
@@ -39,16 +39,25 @@ const TenantThemes = () => {
 };
 
 const ThemeSelect = ({ themes }) => {
+    const bind = useBind({
+        name: "theme",
+        defaultValue: "",
+        validators: validation.create("required")
+    });
+
     return (
-        <Bind name={"theme"} defaultValue={""} validators={validation.create("required")}>
-            <Select label="Theme" description={"Select a theme to use for your website."}>
-                {[{ name: "", label: null, hidden: true }, ...themes].map(theme => (
-                    <option key={theme.name} value={theme.name} hidden={theme.hidden}>
-                        {theme.label}
-                    </option>
-                ))}
-            </Select>
-        </Bind>
+        <Select
+            label="Theme"
+            description={"Select a theme to use for your website."}
+            {...bind}
+            value={bind.value || ""}
+        >
+            {[{ name: "", label: null, hidden: true }, ...themes].map(theme => (
+                <option key={theme.name} value={theme.name} hidden={theme.hidden}>
+                    {theme.label}
+                </option>
+            ))}
+        </Select>
     );
 };
 
@@ -77,10 +86,10 @@ export const ThemesModule = () => {
     return (
         <Fragment>
             <Provider hoc={ThemeManagerProviderHOC} />
-            <Extensions>
+            <Plugins>
                 <TenantFormFields />
                 <WebsiteSettings />
-            </Extensions>
+            </Plugins>
         </Fragment>
     );
 };

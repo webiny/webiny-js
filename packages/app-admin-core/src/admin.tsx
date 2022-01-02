@@ -11,7 +11,7 @@ import React, {
 import { BrowserRouter, RouteProps } from "@webiny/react-router";
 import { Routes as SortRoutes } from "./components/utils/Routes";
 import { DebounceRender } from "./components/utils/DebounceRender";
-import { ExtensionsProvider } from "./components/core/Extensions";
+import { PluginsProvider } from "./components/core/Plugins";
 
 const compose = (...fns) => {
     return Base => {
@@ -22,7 +22,7 @@ const compose = (...fns) => {
 interface AdminContext extends State {
     addRoute(route: JSX.Element): void;
     addProvider(hoc: HigherOrderComponent): void;
-    addExtension(extension: React.ReactNode): void;
+    addPlugin(plugin: React.ReactNode): void;
     addComponentWrappers(
         component: React.ComponentType<unknown>,
         hocs: HigherOrderComponent[]
@@ -42,7 +42,7 @@ export interface HigherOrderComponent<TInputProps = unknown, TOutputProps = TInp
 
 interface State {
     routes: Record<string, ReactElement<RouteProps>>;
-    extensions: JSX.Element[];
+    plugins: JSX.Element[];
     wrappers: Map<
         ComponentType<unknown>,
         { component: ComponentType<unknown>; wrappers: HigherOrderComponent[] }
@@ -57,7 +57,7 @@ export interface AdminProps {
 export const Admin = ({ children }: AdminProps) => {
     const [state, setState] = useState<State>({
         routes: {},
-        extensions: [],
+        plugins: [],
         wrappers: new Map(),
         providers: []
     });
@@ -73,37 +73,22 @@ export const Admin = ({ children }: AdminProps) => {
 
     const addProvider = useCallback(component => {
         setState(state => {
+            if (state.providers.findIndex(m => m === component) > -1) {
+                return state;
+            }
+
             return {
                 ...state,
                 providers: [...state.providers, component]
             };
         });
-
-        // Return a function that will remove the added provider.
-        return () => {
-            setState(state => {
-                const index = state.providers.findIndex(m => m === component);
-
-                if (index < 0) {
-                    return state;
-                }
-
-                return {
-                    ...state,
-                    providers: [
-                        ...state.providers.slice(0, index),
-                        ...state.providers.slice(index + 1)
-                    ]
-                };
-            });
-        };
     }, []);
 
-    const addExtension = useCallback(element => {
+    const addPlugin = useCallback(element => {
         setState(state => {
             return {
                 ...state,
-                extensions: [...state.extensions, element]
+                plugins: [...state.plugins, element]
             };
         });
     }, []);
@@ -146,7 +131,7 @@ export const Admin = ({ children }: AdminProps) => {
             ...state,
             addRoute,
             addProvider,
-            addExtension,
+            addPlugin,
             addComponentWrappers
         }),
         [state]
@@ -171,14 +156,14 @@ export const Admin = ({ children }: AdminProps) => {
     return (
         <AdminContext.Provider value={adminContext}>
             {children}
-            <Providers>
-                <BrowserRouter>
-                    <ExtensionsProvider>{state.extensions}</ExtensionsProvider>
+            <BrowserRouter>
+                <Providers>
+                    <PluginsProvider>{state.plugins}</PluginsProvider>
                     <DebounceRender>
                         <AdminRouter />
                     </DebounceRender>
-                </BrowserRouter>
-            </Providers>
+                </Providers>
+            </BrowserRouter>
         </AdminContext.Provider>
     );
 };

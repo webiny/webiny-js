@@ -4,7 +4,7 @@ import { AddTenantFormField } from "./components/AddTenantFormField";
 import { CurrentTenant } from "./components/CurrentTenant";
 import { DomainsModule } from "./modules/domains";
 import { TenantsModule } from "./modules/tenants";
-import { ThemesModule } from "./modules/themes";
+// import { ThemesModule } from "./modules/themes";
 
 const TenantIndicator = LocaleSelector => {
     return function TenantIndicator() {
@@ -23,7 +23,7 @@ const TenantManagerExtension = () => {
             <Compose component={LocaleSelector} with={TenantIndicator} />
             <TenantsModule />
             <DomainsModule />
-            <ThemesModule />
+            {/*<ThemesModule />*/}
         </Fragment>
     );
 };
@@ -31,4 +31,4 @@ const TenantManagerExtension = () => {
 export const TenantManager = memo(TenantManagerExtension);
 
 export { AddTenantFormField };
-export { AddTheme } from "./components/AddTheme";
+// export { AddTheme } from "./components/AddTheme";

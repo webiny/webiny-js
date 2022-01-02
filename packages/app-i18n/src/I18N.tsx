@@ -1,6 +1,6 @@
 import React, { Fragment, memo } from "react";
 import { plugins } from "@webiny/plugins";
-import { Provider, Extensions, AddMenu } from "@webiny/app-admin";
+import { Provider, Plugins, AddMenu } from "@webiny/app-admin";
 import { I18NProvider as ContextProvider } from "./contexts/I18N";
 import { HasPermission } from "@webiny/app-security/";
 import { AddRoute } from "@webiny/app-admin";
@@ -24,7 +24,7 @@ const I18NExtension = () => {
     return (
         <Fragment>
             <Provider hoc={I18NProviderHOC} />
-            <Extensions>
+            <Plugins>
                 <HasPermission name={"i18n.locale"}>
                     <AddRoute exact path={"/i18n/locales"}>
                         <Layout title={"I18N - Locales"}>
@@ -41,7 +41,7 @@ const I18NExtension = () => {
                         </AddMenu>
                     </AddMenu>
                 </HasPermission>
-            </Extensions>
+            </Plugins>
         </Fragment>
     );
 };

@@ -1,5 +1,5 @@
 import React, { Suspense, lazy } from "react";
-import { Extensions, Layout, AddMenu, AddRoute } from "@webiny/app-admin";
+import { Plugins, Layout, AddMenu, AddRoute } from "@webiny/app-admin";
 import { HasPermission } from "@webiny/app-security";
 import { ReactComponent as FormsIcon } from "~/admin/icons/round-ballot-24px.svg";
 import { CircularProgress } from "@webiny/ui/Progress";
@@ -16,7 +16,7 @@ const Loader = ({ children, label, ...props }) => (
 
 export const FormBuilder = () => {
     return (
-        <Extensions>
+        <Plugins>
             <HasPermission name={"fb.form"}>
                 <AddMenu name="formBuilder" label={"Form Builder"} icon={<FormsIcon />}>
                     <AddMenu name="formBuilder.forms" label={"Forms"}>
@@ -56,6 +56,6 @@ export const FormBuilder = () => {
                     </AddMenu>
                 </AddMenu>
             </HasPermission>
-        </Extensions>
+        </Plugins>
     );
 };

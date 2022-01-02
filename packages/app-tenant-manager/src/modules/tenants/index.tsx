@@ -4,7 +4,7 @@ import { AddMenu, AddRoute, Layout } from "@webiny/app-admin";
 import { ReactComponent as TenantIcon } from "~/assets/business_black_24dp.svg";
 import TenantDataList from "./TenantDataList";
 import TenantForm from "./TenantForm";
-import { Extensions } from "@webiny/app-admin";
+import { Plugins } from "@webiny/app-admin";
 import { IsRootTenant } from "~/components/IsRootTenant";
 
 export const TenantsView = () => {
@@ -22,7 +22,7 @@ export const TenantsView = () => {
 
 export const TenantsModule = () => {
     return (
-        <Extensions>
+        <Plugins>
             <IsRootTenant>
                 <AddMenu name="tenantManager" label={`Tenant Manager`} icon={<TenantIcon />}>
                     <AddMenu name={"tenantManager.tenants"} label={`Tenants`} path="/tenants" />
@@ -33,6 +33,6 @@ export const TenantsModule = () => {
                     </Layout>
                 </AddRoute>
             </IsRootTenant>
-        </Extensions>
+        </Plugins>
     );
 };

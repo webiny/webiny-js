@@ -1,6 +1,6 @@
 import React, { memo } from "react";
 import { plugins } from "@webiny/plugins";
-import { Layout, Extensions, AddMenu, AddRoute } from "@webiny/app-admin";
+import { Layout, Plugins, AddMenu, AddRoute } from "@webiny/app-admin";
 import { HasPermission } from "@webiny/app-security";
 import { Permission } from "~/plugins/constants";
 import { Groups } from "~/ui/views/Groups";
@@ -13,7 +13,7 @@ export const AccessManagementExtension = () => {
     plugins.register(accessManagementPugins());
 
     return (
-        <Extensions>
+        <Plugins>
             <HasPermission name={Permission.Groups}>
                 <AddRoute exact path={"/access-management/groups"}>
                     <Layout title={"Access Management - Groups"}>
@@ -48,7 +48,7 @@ export const AccessManagementExtension = () => {
                     </AddMenu>
                 </AddMenu>
             </HasPermission>
-        </Extensions>
+        </Plugins>
     );
 };
 
