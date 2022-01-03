@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.21.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.20.0...v5.21.0-beta.0) (2022-01-03)
+
+
+### Bug Fixes
+
+* ensure any error within deploy hooks stops the deploy process ([5ac0186](https://github.com/webiny/webiny-js/commit/5ac01862d3b658b13ada4c391e4b8bcb25d1dab4))
+
+
+
+
+
 # [5.20.0](https://github.com/webiny/webiny-js/compare/v5.20.0-beta.2...v5.20.0) (2021-12-23)
 
 **Note:** Version bump only for package @webiny/cli-plugin-deploy-pulumi

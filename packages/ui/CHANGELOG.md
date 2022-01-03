@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.21.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.20.0...v5.21.0-beta.0) (2022-01-03)
+
+
+### Bug Fixes
+
+* **ui:** reduce the z-index of CircularProgress ([8cd0bd2](https://github.com/webiny/webiny-js/commit/8cd0bd23bd1d17f7e4605243528c9b2d9137b9fe))
+
+
+
+
+
 # [5.20.0](https://github.com/webiny/webiny-js/compare/v5.20.0-beta.2...v5.20.0) (2021-12-23)
 
 **Note:** Version bump only for package @webiny/ui
