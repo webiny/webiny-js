@@ -67,6 +67,7 @@ const ids = {
     field511: shortId.generate(),
     field512: shortId.generate(),
     field513: shortId.generate(),
+    field514: shortId.generate(),
     // bug
     field601: shortId.generate(),
     field602: shortId.generate(),
@@ -849,7 +850,8 @@ const models: CmsModel[] = [
             [ids.field510],
             [ids.field511],
             [ids.field512],
-            [ids.field513]
+            [ids.field513],
+            [ids.field514]
         ],
         fields: [
             // required, minLength, maxLength
@@ -1277,6 +1279,30 @@ const models: CmsModel[] = [
                 settings: {},
                 listValidation: [],
                 placeholderText: "Description",
+                predefinedValues: {
+                    enabled: false,
+                    values: []
+                },
+                renderer: {
+                    name: "renderer"
+                }
+            },
+            {
+                id: ids.field514,
+                multipleValues: false,
+                helpText: "",
+                label: "Slug",
+                type: "text",
+                fieldId: "slug",
+                validation: [
+                    {
+                        name: "unique",
+                        message: "Field value must be unique."
+                    }
+                ],
+                settings: {},
+                listValidation: [],
+                placeholderText: "Slug",
                 predefinedValues: {
                     enabled: false,
                     values: []

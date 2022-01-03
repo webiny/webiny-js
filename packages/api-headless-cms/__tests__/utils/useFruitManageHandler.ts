@@ -36,6 +36,7 @@ const fruitFields = `
     rating
     isSomething
     description
+    slug
 `;
 
 const errorFields = `
