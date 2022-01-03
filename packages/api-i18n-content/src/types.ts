@@ -1,8 +1,7 @@
-import { I18NLocale } from "@webiny/api-i18n/types";
-import { Context } from "@webiny/handler/types";
+import { I18NContext, I18NLocale } from "@webiny/api-i18n/types";
 import { SecurityContext } from "@webiny/api-security/types";
 
-export interface BaseI18NContentContext {
+export interface I18NContentContext extends SecurityContext, I18NContext {
     i18nContent: {
         locale: I18NLocale;
         // getLocale: () => I18NLocale;
@@ -11,5 +10,3 @@ export interface BaseI18NContentContext {
         checkI18NContentPermission: () => void;
     };
 }
-
-export type I18NContentContext = Context<SecurityContext, BaseI18NContentContext>;

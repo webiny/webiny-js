@@ -3,8 +3,9 @@ import S3 from "aws-sdk/clients/s3";
 import { HandlerPlugin } from "@webiny/handler/types";
 import { createHandler, getEnvironment } from "../utils";
 import managers from "../transform/managers";
+import { ArgsContext } from "@webiny/handler-args/types";
 
-export default (): HandlerPlugin => ({
+export default (): HandlerPlugin<ArgsContext> => ({
     type: "handler",
     name: "handler-download-file",
     async handle(context) {

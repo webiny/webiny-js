@@ -4,10 +4,10 @@ import {
     ContextPlugin,
     HandlerPlugin,
     HandlerErrorPlugin,
-    BeforeHandlerPlugin,
     ContextInterface
 } from "./types";
 import middleware from "./middleware";
+import { BeforeHandlerPlugin } from "~/plugins/BeforeHandlerPlugin";
 
 export default (...plugins) =>
     async (...args) => {
@@ -33,8 +33,8 @@ export default (...plugins) =>
 
         const handlerPlugins = context.plugins.byType<HandlerResultPlugin>("handler-result");
         for (let i = 0; i < handlerPlugins.length; i++) {
-            if (handlerPlugins[i].apply) {
-                await handlerPlugins[i].apply(result, context);
+            if (handlerPlugins[i].handle) {
+                await handlerPlugins[i].handle(result, context);
             }
         }
 
@@ -54,7 +54,9 @@ async function handle(_: any, context: ContextInterface) {
             }
         }
 
-        const beforeHandlerPlugins = context.plugins.byType<BeforeHandlerPlugin>("before-handler");
+        const beforeHandlerPlugins = context.plugins.byType<BeforeHandlerPlugin>(
+            BeforeHandlerPlugin.type
+        );
         for (let i = 0; i < beforeHandlerPlugins.length; i++) {
             if (!beforeHandlerPlugins[i].apply) {
                 continue;

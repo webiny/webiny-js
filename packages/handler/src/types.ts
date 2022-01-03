@@ -11,7 +11,7 @@ export interface HandlerContext {
 }
 
 // Left for backwards-compatibility.
-export interface ContextInterface {
+export interface Context {
     plugins: PluginsContainer;
     args: HandlerArgs;
     readonly WEBINY_VERSION: string;
@@ -39,38 +39,13 @@ export interface ContextInterface {
     getResult: () => void;
 }
 
-// Left for backwards-compatibility.
-export type Context<
-    C0 = Record<string, any>,
-    C1 = Record<string, any>,
-    C2 = Record<string, any>,
-    C3 = Record<string, any>,
-    C4 = Record<string, any>,
-    C5 = Record<string, any>,
-    C6 = Record<string, any>,
-    C7 = Record<string, any>,
-    C8 = Record<string, any>,
-    C9 = Record<string, any>
-> = {
-    plugins: PluginsContainer;
-    args: HandlerArgs;
-    readonly WEBINY_VERSION: string;
-} & C0 &
-    C1 &
-    C2 &
-    C3 &
-    C4 &
-    C5 &
-    C6 &
-    C7 &
-    C8 &
-    C9;
+export type ContextInterface = Context;
 
-export interface BeforeHandlerPlugin<T extends ContextInterface = ContextInterface> extends Plugin {
-    type: "before-handler";
-    apply: (context: T) => Promise<void>;
-}
-
+/**
+ * Left for backwards-compatibility.
+ *
+ * @internal
+ */
 export type ContextPlugin<
     C0 = Context,
     C1 = Context,
@@ -86,7 +61,11 @@ export type ContextPlugin<
     type: "context";
     apply(context: C0 & C1 & C2 & C3 & C4 & C5 & C6 & C7 & C8 & C9): Promise<void>;
 };
-
+/**
+ * Left for backwards-compatibility.
+ *
+ * @internal
+ */
 export type HandlerPlugin<
     C0 = Context,
     C1 = Context,
@@ -102,7 +81,11 @@ export type HandlerPlugin<
     type: "handler";
     handle(context: C0 & C1 & C2 & C3 & C4 & C5 & C6 & C7 & C8 & C9, next: Function): any;
 };
-
+/**
+ * Left for backwards-compatibility.
+ *
+ * @internal
+ */
 export type HandlerResultPlugin<
     C0 = Context,
     C1 = Context,
@@ -118,7 +101,11 @@ export type HandlerResultPlugin<
     type: "handler-result";
     handle(context: C0 & C1 & C2 & C3 & C4 & C5 & C6 & C7 & C8 & C9, result: any): any;
 };
-
+/**
+ * Left for backwards-compatibility.
+ *
+ * @internal
+ */
 export type HandlerErrorPlugin<
     C0 = Context,
     C1 = Context,

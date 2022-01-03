@@ -1,11 +1,11 @@
 import { graphql, GraphQLSchema } from "graphql";
 import { GraphQLAfterQueryPlugin, GraphQLBeforeQueryPlugin, GraphQLRequestBody } from "./types";
-import { Context } from "@webiny/handler/types";
+import { ContextInterface } from "@webiny/handler/types";
 
 const processRequestBody = async (
     body: GraphQLRequestBody,
     schema: GraphQLSchema,
-    context: Context
+    context: ContextInterface
 ) => {
     const { query, variables, operationName } = body;
 
@@ -22,7 +22,7 @@ const processRequestBody = async (
     return result;
 };
 
-export default async (requestBody, schema, context) => {
+export default async (requestBody, schema, context: ContextInterface) => {
     let result;
     if (Array.isArray(requestBody)) {
         result = [];
