@@ -99,7 +99,10 @@ export = async () => {
             allowedMethods: ["GET", "HEAD", "OPTIONS"],
             cachedMethods: ["GET", "HEAD", "OPTIONS"],
             forwardedValues: {
-                cookies: { forward: "none" },
+                cookies: {
+                    forward: "whitelist",
+                    whitelistedNames: ["webiny-stage"]
+                },
                 queryString: false
             },
             // MinTTL <= DefaultTTL <= MaxTTL

@@ -3,11 +3,12 @@ const uploadFolderToS3 = require("@webiny/cli-plugin-deploy-pulumi/utils/aws/upl
 const { getProject } = require("@webiny/cli/utils");
 const path = require("path");
 const fs = require("fs");
+const url = require("url");
 
 type GatewayConfig = Record<
     string,
     {
-        url: string;
+        domain: string;
         weight: number;
     }
 >;
@@ -73,12 +74,15 @@ export default {
 
         const gatewayConfig = readGatewayConfigFile(gatewayConfigPath);
 
+        const appUrl = url.parse(adminOutput.appUrl, true);
+        const appDomain = appUrl.host;
+
         if (gatewayConfig[params.env]) {
             // update existing config
-            gatewayConfig[params.env].url = adminOutput.appUrl;
+            gatewayConfig[params.env].domain = appDomain;
         } else {
             gatewayConfig[params.env] = {
-                url: adminOutput.appUrl,
+                domain: appDomain,
                 // every newly deployed stage has 0 percents of traffic
                 weight: 0
             };

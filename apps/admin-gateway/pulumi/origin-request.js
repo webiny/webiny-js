@@ -1,5 +1,7 @@
 const https = require("https");
 
+const stageCookie = "webiny-stage";
+
 exports.handler = async event => {
     const cf = event.Records[0].cf;
     const request = cf.request;
@@ -39,28 +41,93 @@ exports.handler = async event => {
         });
     });
 
+    let stage = getCookieStage(config, request);
+    if (stage) {
+        // If stage is selected via cookie it can be safely cached on CDN,
+        // because cookie is included into caching key.
+        selectStage({ request, stage, cache: true });
+        return request;
+    }
+
+    stage = getRandomStage(config);
+    if (stage) {
+        // For randomly selected stage we cannot cache it in CDN,
+        // because the same pair URL/cookie may result in different returned resources.
+        // That's because of randomization process
+        selectStage({ request, stage, cache: false });
+        return request;
+    }
+
+    return {
+        statusCode: 404,
+        body: "No deployed stage found"
+    };
+};
+
+function setHeader(headers, header) {
+    headers[header.key] = [header];
+}
+
+function getRequestCookies(request) {
+    const header = getRequestHeader(request, "cookie");
+    const cookies = {};
+
+    if (!header) {
+        return cookies;
+    }
+
+    const cookiesArray = decodeURIComponent(header).split(";");
+
+    for (const cookie of cookiesArray) {
+        const [name, value] = cookie.trim().split("=");
+        cookies[name] = value;
+    }
+
+    return cookies;
+}
+
+function getRequestHeader(request, name) {
+    const header = request.headers[name];
+    return header && header[0] && header[0].value;
+}
+
+function getCookieStage(config, request) {
+    const cookies = getRequestCookies(request);
+    const stageName = cookies[stageCookie];
+    const stageConfig = stageName ? config[stageName] : null;
+
+    if (!stageConfig) {
+        return null;
+    }
+
+    return {
+        name: stageName,
+        config: stageConfig
+    };
+}
+
+function getRandomStage(config) {
     let totalWeight = 0;
-    const versions = Object.keys(config);
-    for (const version of versions) {
-        const versionConfig = config[version];
-        if (versionConfig.weight) {
+
+    const stages = Object.keys(config);
+    for (const stage of stages) {
+        const stageConfig = config[stage];
+        if (stageConfig.weight) {
             // do not count bad or negative weights
-            totalWeight += versionConfig.weight;
+            totalWeight += stageConfig.weight;
         }
     }
 
     if (totalWeight <= 0) {
-        return {
-            statusCode: 404,
-            body: "No version deployed"
-        };
+        return null;
     }
 
     let random = Math.random() * totalWeight;
+    let selectedStageName = null;
+    let selectedStageConfig = null;
 
     console.log(`Randomized ${random}/${totalWeight}`);
-    let selectedVersion = null;
-    for (const version of versions) {
+    for (const version of stages) {
         const versionConfig = config[version];
         if (!versionConfig.weight) {
             continue;
@@ -69,25 +136,26 @@ exports.handler = async event => {
         console.log(`Version ${version}, weight ${versionConfig.weight}/${random}`);
 
         if (random <= versionConfig.weight) {
-            selectedVersion = versionConfig;
+            selectedStageName = version;
+            selectedStageConfig = versionConfig;
             break;
         } else {
             random -= versionConfig.weight;
         }
     }
 
-    if (!selectedVersion) {
-        return {
-            statusCode: 404,
-            body: "No version"
-        };
-    }
+    return {
+        name: selectedStageName,
+        config: selectedStageConfig
+    };
+}
 
-    console.log(`Forwarding to ${selectedVersion.url}`);
+function selectStage({ request, stage, cache }) {
+    console.log(`Forwarding to ${stage.config.domain}`);
 
     request.origin = {
         custom: {
-            domainName: selectedVersion.url,
+            domainName: stage.config.domain,
             port: 443,
             protocol: "https",
             path: "",
@@ -100,21 +168,16 @@ exports.handler = async event => {
 
     setHeader(request.headers, {
         key: "host",
-        value: selectedVersion.url
+        value: stage.config.domain
     });
 
     setHeader(request.headers, {
-        key: "x-webiny-no-cache",
-        value: "true"
+        key: "x-webiny-stage",
+        value: stage.name
     });
 
-    return request;
-};
-
-// function pointsToFile(uri) {
-//     return /\/[^/]+\.[^/]+$/.test(uri);
-// }
-
-function setHeader(headers, header) {
-    headers[header.key] = [header];
+    setHeader(request.headers, {
+        key: "x-webiny-cache",
+        value: String(cache || false)
+    });
 }
