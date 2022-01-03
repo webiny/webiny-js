@@ -11,9 +11,16 @@ export default (): CmsModelFieldValidatorPlugin => {
         name: "cms-model-field-validator-unique",
         validator: {
             name: "unique",
-            validate: async ({ field, value, context, model, entry }) => {
+            validate: async ({ field, value: initialValue, context, model, entry }) => {
                 const manager = await context.cms.getModelManager(model);
-
+                /**
+                 * If there is no value passed, we are assuming that user does not want any value to be validated.
+                 * If user needs something to passed into a unique field, they must add "required" validator.
+                 */
+                const value = (initialValue || "").trim();
+                if (!value) {
+                    return true;
+                }
                 try {
                     const [items] = await manager.listLatest({
                         where: {
