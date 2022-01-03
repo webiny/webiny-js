@@ -1,3 +1,6 @@
+import { ArgsContext } from "@webiny/handler-args/types";
+import { ContextInterface } from "@webiny/handler/types";
+
 type ResponseArgs = {
     statusCode?: number;
     headers?: {};
@@ -21,9 +24,9 @@ export type HttpObject = {
     request: HttpRequestObject;
 };
 
-export type HttpContext = {
+export interface HttpContext extends ContextInterface, ArgsContext {
     http: HttpObject;
-};
+}
 
 export type HandlerHttpOptions = {
     debug?: boolean;
