@@ -4,6 +4,8 @@ import { buildLambdaEdge } from "@webiny/project-utils";
 import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
 
+import { stageCookie, stageHeader } from "./utils/common";
+
 export = async () => {
     // Add tags to all resources that support tagging.
     tagResources({
@@ -46,6 +48,7 @@ export = async () => {
     // Some resources _must_ be put in us-east-1, such as Lambda at Edge.
     const awsUsEast1 = new aws.Provider("us-east-1", { region: "us-east-1" });
 
+    const viewerRequest = createLambda("viewer-request");
     const originRequest = createLambda("origin-request");
     const originResponse = createLambda("origin-response");
 
@@ -71,9 +74,10 @@ export = async () => {
             allowedMethods: ["GET", "HEAD", "OPTIONS"],
             cachedMethods: ["GET", "HEAD", "OPTIONS"],
             forwardedValues: {
+                headers: [stageHeader],
                 cookies: {
                     forward: "whitelist",
-                    whitelistedNames: ["webiny-stage"]
+                    whitelistedNames: [stageCookie]
                 },
                 queryString: false
             },
@@ -82,6 +86,10 @@ export = async () => {
             defaultTtl: 600,
             maxTtl: 600,
             lambdaFunctionAssociations: [
+                {
+                    eventType: "viewer-request",
+                    lambdaArn: viewerRequest.qualifiedArn
+                },
                 {
                     eventType: "origin-request",
                     lambdaArn: originRequest.qualifiedArn

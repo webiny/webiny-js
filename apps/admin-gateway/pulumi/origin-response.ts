@@ -1,6 +1,7 @@
 import { defineLambdaEdgeResponseHandler } from "@webiny/aws-helpers";
 
-const stageCookie = "webiny-stage";
+import { pointsToFile, stageCookie, stageHeader } from "./utils/common";
+import { getHeader, setResponseCookie } from "./utils/headers";
 
 export default defineLambdaEdgeResponseHandler(async event => {
     const cf = event.Records[0].cf;
@@ -11,38 +12,14 @@ export default defineLambdaEdgeResponseHandler(async event => {
         return response;
     }
 
-    const stage = getHeader(request.headers, "x-webiny-stage");
+    if (response.status !== "200") {
+        return response;
+    }
+
+    const stage = getHeader(request.headers, stageHeader);
     if (stage) {
         setResponseCookie(response, `${stageCookie}=${stage}; Secure; Path=/;`);
     }
 
-    const cache = getHeader(request.headers, "x-webiny-cache");
-    if (cache === "false") {
-        response.headers["cache-control"] = [
-            {
-                key: "cache-control",
-                value: "private, must-revalidate, max-age=0"
-            }
-        ];
-    }
-
     return response;
 });
-
-function pointsToFile(uri) {
-    return /\/[^/]+\.[^/]+$/.test(uri);
-}
-
-function getHeader(headers, header) {
-    return headers && headers[header] && headers[header][0].value;
-}
-
-function setResponseCookie(response, cookie) {
-    const headers = response.headers;
-    const cookies = headers["set-cookie"] || (headers["set-cookie"] = []);
-
-    cookies.push({
-        key: "set-cookie",
-        value: cookie
-    });
-}
