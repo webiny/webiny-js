@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import omit from "lodash/omit";
 import { useQuery, useMutation } from "@apollo/react-hooks";
 import { i18n } from "@webiny/app/i18n";
-import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { Form } from "@webiny/form";
 import { Input } from "@webiny/ui/Input";
 import { ButtonPrimary } from "@webiny/ui/Button";
@@ -22,6 +21,7 @@ import {
 } from "@webiny/app-admin/components/SimpleForm";
 import { useSecurity } from "@webiny/app-security";
 import { View } from "@webiny/app/components/View";
+import { CenteredView, useSnackbar } from "@webiny/app-admin";
 
 const t = i18n.ns("app-security-admin-users/account-form");
 
@@ -72,70 +72,64 @@ const UserAccountForm = () => {
     );
 
     return (
-        <Grid>
-            <Cell span={3} />
-            <Cell span={6}>
-                <Form data={user} onSubmit={onSubmit}>
-                    {({ data, form, Bind }) => (
-                        <>
-                            <div style={{ marginBottom: "32px" }}>
-                                <Bind name="avatar">
-                                    <AvatarImage round />
-                                </Bind>
-                            </div>
-                            <SimpleForm>
-                                {loading && <CircularProgress style={{ zIndex: 3 }} />}
-                                <SimpleFormHeader title={"Account"} />
-                                <SimpleFormContent>
-                                    <Grid>
-                                        <Cell span={12}>
-                                            <Bind
-                                                name="firstName"
-                                                validators={validation.create("required")}
-                                            >
-                                                <Input label={t`First Name`} />
-                                            </Bind>
-                                        </Cell>
-                                        <Cell span={12}>
-                                            <Bind
-                                                name="lastName"
-                                                validators={validation.create("required")}
-                                            >
-                                                <Input label={t`Last Name`} />
-                                            </Bind>
-                                        </Cell>
-                                        <Cell span={12}>
-                                            <Bind
-                                                name="email"
-                                                validators={validation.create("required,email")}
-                                            >
-                                                <Input
-                                                    value={data.email}
-                                                    label={t`Email`}
-                                                    disabled={emailIsDisabled}
-                                                    description={
-                                                        "Email is your unique identifier used to login!"
-                                                    }
-                                                />
-                                            </Bind>
-                                        </Cell>
-                                        <View
-                                            name={"adminUsers.account.form.fields"}
-                                            props={{ Bind, data }}
+        <CenteredView maxWidth={600}>
+            <Form data={user} onSubmit={onSubmit}>
+                {({ data, form, Bind }) => (
+                    <SimpleForm>
+                        {loading && <CircularProgress style={{ zIndex: 3 }} />}
+                        <SimpleFormHeader title={"Account"} />
+                        <SimpleFormContent>
+                            <Grid>
+                                <Cell span={12}>
+                                    <Bind name="avatar">
+                                        <AvatarImage round />
+                                    </Bind>
+                                </Cell>
+                                <Cell span={12}>
+                                    <Bind
+                                        name="firstName"
+                                        validators={validation.create("required")}
+                                    >
+                                        <Input label={t`First Name`} />
+                                    </Bind>
+                                </Cell>
+                                <Cell span={12}>
+                                    {" "}
+                                    <Bind
+                                        name="lastName"
+                                        validators={validation.create("required")}
+                                    >
+                                        <Input label={t`Last Name`} />
+                                    </Bind>
+                                </Cell>
+                                <Cell span={12}>
+                                    <Bind
+                                        name="email"
+                                        validators={validation.create("required,email")}
+                                    >
+                                        <Input
+                                            value={data.email}
+                                            label={t`Email`}
+                                            disabled={emailIsDisabled}
+                                            description={
+                                                "Email is your unique identifier used to login!"
+                                            }
                                         />
-                                    </Grid>
-                                </SimpleFormContent>
-                                <SimpleFormFooter>
-                                    <ButtonPrimary
-                                        onClick={form.submit}
-                                    >{t`Update account`}</ButtonPrimary>
-                                </SimpleFormFooter>
-                            </SimpleForm>
-                        </>
-                    )}
-                </Form>
-            </Cell>
-        </Grid>
+                                    </Bind>
+                                </Cell>
+                                <View
+                                    name={"adminUsers.account.form.fields"}
+                                    props={{ Bind, data }}
+                                />
+                            </Grid>
+                        </SimpleFormContent>
+                        <SimpleFormFooter>
+                            <ButtonPrimary onClick={form.submit}>{t`Update account`}</ButtonPrimary>
+                        </SimpleFormFooter>
+                    </SimpleForm>
+                )}
+            </Form>
+        </CenteredView>
     );
 };
 

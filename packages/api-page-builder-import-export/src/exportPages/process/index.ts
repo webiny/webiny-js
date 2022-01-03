@@ -88,10 +88,10 @@ export default (
             try {
                 if (revisionType === PageExportRevisionType.PUBLISHED) {
                     // Get "published" page.
-                    page = await pageBuilder.pages.getPublishedPageById({ id: pageId });
+                    page = await pageBuilder.getPublishedPageById({ id: pageId });
                 } else {
                     // Get "latest" page.
-                    page = await pageBuilder.pages.getPage(pageId);
+                    page = await pageBuilder.getPage(pageId);
                 }
             } catch (e) {
                 // If we're looking for "published" page and doesn't found it, get latest page.
@@ -99,7 +99,7 @@ export default (
                     revisionType === PageExportRevisionType.PUBLISHED &&
                     e instanceof NotFoundError
                 ) {
-                    page = await pageBuilder.pages.getPage(pageId);
+                    page = await pageBuilder.getPage(pageId);
                 } else {
                     throw e;
                 }

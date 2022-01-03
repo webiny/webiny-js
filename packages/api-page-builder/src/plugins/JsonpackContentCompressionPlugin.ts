@@ -12,6 +12,9 @@ export class JsonpackContentCompressionPlugin extends ContentCompressionPlugin {
     }
 
     public canDecompress(value: CompressedValue): boolean {
+        if (!value || !value.compression) {
+            return false;
+        }
         return value.compression === JSONPACK_COMPRESSION;
     }
 

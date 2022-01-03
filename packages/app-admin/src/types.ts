@@ -1,7 +1,7 @@
 import React, { ReactElement } from "react";
 import { Plugin } from "@webiny/plugins/types";
 import { ApolloClient } from "apollo-client";
-import { ItemProps, MenuProps, SectionProps } from "~/ui/views/NavigationView/legacyMenu";
+import { ItemProps, MenuProps, SectionProps } from "~/plugins/MenuPlugin";
 
 type RenderParams = {
     content: React.ReactNode;
@@ -38,17 +38,6 @@ export type AdminMenuLogoPlugin = Plugin & {
 
 export type AdminHeaderUserMenuPlugin = Plugin & {
     type: "admin-header-user-menu";
-    render(): React.ReactElement;
-};
-
-export type AdminHeaderUserMenuHandlePlugin = Plugin & {
-    name: "admin-header-user-menu-handle";
-    type: "admin-header-user-menu-handle";
-    render(): React.ReactElement;
-};
-
-export type AdminHeaderUserMenuUserInfoPlugin = Plugin & {
-    type: "admin-header-user-menu-user-info";
     render(): React.ReactElement;
 };
 

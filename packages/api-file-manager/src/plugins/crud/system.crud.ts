@@ -81,6 +81,10 @@ const systemCrudContextPlugin = new ContextPlugin<FileManagerContext>(async cont
             }
         },
         async install({ srcPrefix }) {
+            const identity = context.security.getIdentity();
+            if (!identity) {
+                throw new NotAuthorizedError();
+            }
             const { fileManager } = context;
             const version = await fileManager.system.getVersion();
 

@@ -1,7 +1,7 @@
-import { IndexPageDataPlugin } from "~/plugins/definitions/IndexPageDataPlugin";
-import { PbContext } from "@webiny/api-page-builder/graphql/types";
-import { Page } from "@webiny/api-page-builder/types";
 import lodashGet from "lodash/get";
+import { IndexPageDataPlugin } from "~/plugins/definitions/IndexPageDataPlugin";
+import { Page } from "@webiny/api-page-builder/types";
+import { PluginsContainer } from "@webiny/plugins";
 
 /**
  * Map our system fields to the Elasticsearch data.
@@ -40,21 +40,21 @@ export const getESPageData = (page: Page) => {
     };
 };
 
-export const getESLatestPageData = (context: PbContext, page: Page) => {
+export const getESLatestPageData = (plugins: PluginsContainer, page: Page) => {
     const data = { ...getESPageData(page), latest: true };
-    return modifyData(data, page, context);
+    return modifyData(data, page, plugins);
 };
 
-export const getESPublishedPageData = (context: PbContext, page: Page) => {
+export const getESPublishedPageData = (plugins: PluginsContainer, page: Page) => {
     const data = { ...getESPageData(page), published: true };
-    return modifyData(data, page, context);
+    return modifyData(data, page, plugins);
 };
 
-const modifyData = (data: Record<string, any>, page: Page, context: PbContext) => {
-    const pagePlugins = context.plugins.byType<IndexPageDataPlugin>(IndexPageDataPlugin.type);
+const modifyData = (data: Record<string, any>, page: Page, plugins: PluginsContainer) => {
+    const pagePlugins = plugins.byType<IndexPageDataPlugin>(IndexPageDataPlugin.type);
 
     for (const plugin of pagePlugins) {
-        plugin.apply({ context, page, data });
+        plugin.apply({ page, data, plugins });
     }
 
     return data;

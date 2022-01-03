@@ -7,7 +7,6 @@ jest.setTimeout(100000);
 
 describe("publishing workflow", () => {
     const {
-        createCategory,
         createPage,
         getPage,
         publishPage,
@@ -27,6 +26,7 @@ describe("publishing workflow", () => {
     });
 
     const createInitialData = async () => {
+        const { createCategory } = useGqlHandler();
         const pages: Page[] = [];
         const category = await createCategory({
             data: {

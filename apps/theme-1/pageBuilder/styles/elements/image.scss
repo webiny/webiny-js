@@ -1,0 +1,24 @@
+// make images responsive
+img {
+  max-width: 100%;
+}
+// Make images responsive on mobile
+.webiny-pb-media-query--mobile-landscape img,
+.webiny-pb-media-query--mobile-portrait img {
+  max-width: 100%;
+}
+
+.webiny-pb-page-element-image {
+  overflow: hidden;
+  box-sizing: border-box;
+  //display: flex; removed because of testimonial #2
+  img {
+    max-width: 100%;
+  }
+}
+// make images center align on mobile
+.webiny-pb-media-query--mobile-landscape img,
+.webiny-pb-media-query--mobile-portrait img {
+  display: block;
+  text-align: center !important;
+}

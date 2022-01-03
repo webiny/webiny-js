@@ -1,0 +1,28 @@
+{
+  "extends": "../../tsconfig.build.json",
+  "include": ["src"],
+  "references": [
+    { "path": "../app/tsconfig.build.json" },
+    { "path": "../app-admin/tsconfig.build.json" },
+    { "path": "../app-admin-rmwc/tsconfig.build.json" },
+    { "path": "../app-file-manager/tsconfig.build.json" },
+    { "path": "../app-file-manager-s3/tsconfig.build.json" },
+    { "path": "../app-form-builder/tsconfig.build.json" },
+    { "path": "../app-graphql-playground/tsconfig.build.json" },
+    { "path": "../app-headless-cms/tsconfig.build.json" },
+    { "path": "../app-i18n/tsconfig.build.json" },
+    { "path": "../app-i18n-content/tsconfig.build.json" },
+    { "path": "../app-page-builder/tsconfig.build.json" },
+    { "path": "../app-security/tsconfig.build.json" },
+    { "path": "../app-security-access-management/tsconfig.build.json" },
+    { "path": "../app-tenancy/tsconfig.build.json" },
+    { "path": "../plugins/tsconfig.build.json" }
+  ],
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "declarationDir": "./dist",
+    "paths": { "~/*": ["./src/*"] },
+    "baseUrl": "."
+  }
+}

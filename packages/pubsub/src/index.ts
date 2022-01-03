@@ -19,10 +19,10 @@ export const createTopic = <TEvent = any>(topicName?: string): Topic<TEvent> => 
         getTopicName() {
             return topicName || "unknown";
         },
-        subscribe(cb: Subscriber<TEvent>) {
+        subscribe(cb) {
             subscribers.push(cb);
         },
-        subscribeOnce(cb: Subscriber<TEvent>) {
+        subscribeOnce(cb) {
             subscribers.push(withUnsubscribe(cb));
         },
         getSubscribers() {

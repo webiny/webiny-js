@@ -1,6 +1,6 @@
 import { PageDynamoDbFieldPlugin } from "~/plugins/definitions/PageDynamoDbFieldPlugin";
 
-export default () => [
+export const createPageFields = (): PageDynamoDbFieldPlugin[] => [
     new PageDynamoDbFieldPlugin({
         field: "id"
     }),

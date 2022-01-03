@@ -9,6 +9,7 @@ import debugPlugins from "@webiny/handler-graphql/debugPlugins";
 import processRequestBody from "@webiny/handler-graphql/processRequestBody";
 import buildSchemaPlugins from "./plugins/buildSchemaPlugins";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins";
+import { getWebinyVersionHeaders } from "@webiny/utils";
 
 export interface CreateGraphQLHandlerOptions {
     debug?: boolean;
@@ -32,7 +33,8 @@ const DEFAULT_HEADERS = {
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Headers": "*",
     "Access-Control-Allow-Methods": "OPTIONS,POST",
-    "Content-Type": "application/json"
+    "Content-Type": "application/json",
+    ...getWebinyVersionHeaders()
 };
 
 const DEFAULT_CACHE_MAX_AGE = 30758400; // 1 year
