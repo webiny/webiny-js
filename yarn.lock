@@ -11181,6 +11181,7 @@ __metadata:
     "@babel/runtime": ^7.5.5
     "@webiny/cli": ^5.20.0
     "@webiny/handler": ^5.20.0
+    "@webiny/handler-args": ^5.20.0
     "@webiny/project-utils": ^5.20.0
     "@webiny/utils": ^5.20.0
     boolean: ^3.0.1

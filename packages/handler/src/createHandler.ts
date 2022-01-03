@@ -17,15 +17,15 @@ export default (...plugins) =>
             // @ts-ignore
             // this is injected using webpack.DefinePlugin at build time
             WEBINY_VERSION: process.env.WEBINY_VERSION,
-            hasAbort: function (this: ContextInterface) {
-                return !!this._abort;
+            hasResult: function (this: ContextInterface) {
+                return !!this._result;
             },
-            _abort: null,
-            getAbort: function (this: ContextInterface) {
-                return this._abort;
+            _result: null,
+            getResult: function (this: ContextInterface) {
+                return this._result;
             },
-            setAbort: function (this: ContextInterface, params: Record<string, any>) {
-                this._abort = params;
+            setResult: function (this: ContextInterface, params: Record<string, any>) {
+                this._result = params;
             }
         };
 
@@ -49,8 +49,8 @@ async function handle(_: any, context: ContextInterface) {
                 continue;
             }
             await contextPlugins[i].apply(context);
-            if (context.hasAbort()) {
-                return context.getAbort();
+            if (context.hasResult()) {
+                return context.getResult();
             }
         }
 
@@ -60,8 +60,8 @@ async function handle(_: any, context: ContextInterface) {
                 continue;
             }
             await beforeHandlerPlugins[i].apply(context);
-            if (context.hasAbort()) {
-                return context.getAbort();
+            if (context.hasResult()) {
+                return context.getResult();
             }
         }
 

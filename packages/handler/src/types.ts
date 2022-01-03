@@ -19,24 +19,24 @@ export interface ContextInterface {
      * Not to be used outside of Webiny internal code.
      * @internal
      */
-    hasAbort: () => boolean;
+    hasResult: () => boolean;
     /**
      * Not to be used outside of Webiny internal code.
      * @internal
      *
      * @private
      */
-    _abort?: any;
+    _result?: any;
     /**
      * Not to be used outside of Webiny internal code.
      * @internal
      */
-    setAbort: (value: any) => void;
+    setResult: (value: any) => void;
     /**
      * Not to be used outside of Webiny internal code.
      * @internal
      */
-    getAbort: () => void;
+    getResult: () => void;
 }
 
 // Left for backwards-compatibility.

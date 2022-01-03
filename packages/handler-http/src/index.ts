@@ -28,7 +28,7 @@ export default (options: HandlerHttpOptions = {}) => [
         }
 
         if (invocationArgs.method.toLowerCase() === "options") {
-            context.setAbort({
+            context.setResult({
                 statusCode: 204,
                 body: "",
                 headers: DEFAULT_HEADERS
