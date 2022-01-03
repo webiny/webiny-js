@@ -1,0 +1,34 @@
+{
+  "name": "@webiny/aws-helpers",
+  "version": "5.20.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git",
+    "directory": "packages/aws-helpers"
+  },
+  "author": "Webiny Ltd.",
+  "contributors": [
+    "Michał Kędrzyński <michal@webiny.com>"
+  ],
+  "description": "An utility package for developing AWS based services",
+  "license": "MIT",
+  "gitHead": "b8aec8a1be3f25c3b428b357fe1e352c7cbff9ae",
+  "dependencies": {
+    "@types/aws-lambda": "^8.10.89"
+  },
+  "devDependencies": {
+    "@webiny/project-utils": "^5.20.0"
+  },
+  "adio": {
+    "ignore": {
+      "src": [
+        "aws-lambda"
+      ],
+      "dependencies": [
+        "@types/aws-lambda"
+      ]
+    }
+  }
+}

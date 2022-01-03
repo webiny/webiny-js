@@ -1,20 +1,63 @@
-const https = require("https");
+import * as https from "https";
 
-const stageCookie = "webiny-stage";
+import { defineLambdaEdgeRequestHandler } from "@webiny/aws-helpers";
 
-exports.handler = async event => {
+import { stageCookie } from "./common";
+
+const configPath = "/_config.json";
+const configTTL = 60 * 1000; // 1 minute
+
+let configCache = null;
+let configTimestamp = 0;
+
+export default defineLambdaEdgeRequestHandler(async event => {
     const cf = event.Records[0].cf;
     const request = cf.request;
     const domain = cf.config.distributionDomainName;
-
-    const configPath = "/_config.json";
 
     if (request.uri === configPath) {
         // requesting the config file, pass it through
         return request;
     }
 
-    const config = await new Promise((resolve, reject) => {
+    const config = await loadConfigWithCache({ domain });
+
+    let stage = getCookieStage(config, request);
+    if (stage) {
+        // If stage is selected via cookie it can be safely cached on CDN,
+        // because cookie is included into caching key.
+        selectStage({ request, stage, cache: true });
+        return request;
+    }
+
+    stage = getRandomStage(config);
+    if (stage) {
+        // For randomly selected stage we cannot cache it in CDN,
+        // because the same pair URL/cookie may result in different returned resources.
+        // That's because of randomization process
+        selectStage({ request, stage, cache: false });
+        return request;
+    }
+
+    return {
+        status: "404",
+        body: "No deployed stage found"
+    };
+});
+
+async function loadConfigWithCache({ domain }) {
+    if (configCache && Date.now() - configTimestamp < configTTL) {
+        return Promise.resolve(configCache);
+    }
+
+    configCache = await loadConfig({ domain });
+    configTimestamp = Date.now();
+
+    return configCache;
+}
+
+function loadConfig({ domain }) {
+    return new Promise((resolve, reject) => {
         let dataString = "";
 
         const req = https.get(
@@ -40,29 +83,7 @@ exports.handler = async event => {
             });
         });
     });
-
-    let stage = getCookieStage(config, request);
-    if (stage) {
-        // If stage is selected via cookie it can be safely cached on CDN,
-        // because cookie is included into caching key.
-        selectStage({ request, stage, cache: true });
-        return request;
-    }
-
-    stage = getRandomStage(config);
-    if (stage) {
-        // For randomly selected stage we cannot cache it in CDN,
-        // because the same pair URL/cookie may result in different returned resources.
-        // That's because of randomization process
-        selectStage({ request, stage, cache: false });
-        return request;
-    }
-
-    return {
-        statusCode: 404,
-        body: "No deployed stage found"
-    };
-};
+}
 
 function setHeader(headers, header) {
     headers[header.key] = [header];

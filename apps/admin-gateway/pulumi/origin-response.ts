@@ -1,6 +1,8 @@
+import { defineLambdaEdgeResponseHandler } from "@webiny/aws-helpers";
+
 const stageCookie = "webiny-stage";
 
-exports.handler = async event => {
+export default defineLambdaEdgeResponseHandler(async event => {
     const cf = event.Records[0].cf;
     const request = cf.request;
     const response = cf.response;
@@ -25,7 +27,7 @@ exports.handler = async event => {
     }
 
     return response;
-};
+});
 
 function pointsToFile(uri) {
     return /\/[^/]+\.[^/]+$/.test(uri);

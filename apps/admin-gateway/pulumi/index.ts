@@ -1,5 +1,6 @@
 import { join } from "path";
 import { tagResources } from "@webiny/cli-plugin-deploy-pulumi/utils";
+import { buildLambdaEdge } from "@webiny/project-utils";
 import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
 
@@ -45,37 +46,8 @@ export = async () => {
     // Some resources _must_ be put in us-east-1, such as Lambda at Edge.
     const awsUsEast1 = new aws.Provider("us-east-1", { region: "us-east-1" });
 
-    const originRequest = new aws.lambda.Function(
-        "origin-request",
-        {
-            publish: true,
-            runtime: "nodejs14.x",
-            handler: "index.handler",
-            role: role.arn,
-            timeout: 5,
-            memorySize: 128,
-            code: new pulumi.asset.AssetArchive({
-                "index.js": new pulumi.asset.FileAsset(join(__dirname, "origin-request.js"))
-            })
-        },
-        { provider: awsUsEast1, parent: this }
-    );
-
-    const originResponse = new aws.lambda.Function(
-        "origin-response",
-        {
-            publish: true,
-            runtime: "nodejs14.x",
-            handler: "index.handler",
-            role: role.arn,
-            timeout: 5,
-            memorySize: 128,
-            code: new pulumi.asset.AssetArchive({
-                "index.js": new pulumi.asset.FileAsset(join(__dirname, "origin-response.js"))
-            })
-        },
-        { provider: awsUsEast1, parent: this }
-    );
+    const originRequest = createLambda("origin-request");
+    const originResponse = createLambda("origin-response");
 
     const cloudfront = new aws.cloudfront.Distribution("admin-gateway-cdn", {
         enabled: true,
@@ -138,4 +110,26 @@ export = async () => {
         appStorage: bucket.id,
         appUrl: cloudfront.domainName.apply(value => `https://${value}`)
     };
+
+    function createLambda(name: string) {
+        const output = buildLambdaEdge({
+            file: join(__dirname, `${name}.ts`)
+        });
+
+        return new aws.lambda.Function(
+            name,
+            {
+                publish: true,
+                runtime: "nodejs14.x",
+                handler: "index.default",
+                role: role.arn,
+                timeout: 5,
+                memorySize: 128,
+                code: new pulumi.asset.AssetArchive({
+                    "index.js": new pulumi.asset.StringAsset(output.then(o => o.code))
+                })
+            },
+            { provider: awsUsEast1 }
+        );
+    }
 };

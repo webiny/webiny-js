@@ -21,6 +21,9 @@
     "@babel/preset-react": "7.12.10",
     "@babel/preset-typescript": "7.12.7",
     "@hot-loader/react-dom": "16.14.0+4.13.0",
+    "@rollup/plugin-babel": "^5.3.0",
+    "@rollup/plugin-commonjs": "^21.0.1",
+    "@rollup/plugin-node-resolve": "^13.1.2",
     "@svgr/webpack": "4.3.3",
     "@types/webpack-env": "1.15.2",
     "@webiny/cli": "^5.20.0",
@@ -34,6 +37,7 @@
     "case-sensitive-paths-webpack-plugin": "2.2.0",
     "chalk": "4.1.0",
     "css-loader": "3.2.0",
+    "esbuild": "^0.14.10",
     "eslint": "6.8.0",
     "eslint-loader": "3.0.2",
     "file-loader": "4.3.0",
@@ -59,6 +63,8 @@
     "resolve": "1.12.2",
     "resolve-url-loader": "3.1.1",
     "rimraf": "3.0.2",
+    "rollup": "^2.62.0",
+    "rollup-plugin-esbuild": "^4.8.2",
     "sass": "1.42.1",
     "sass-loader": "8.0.0",
     "scheduler": "0.19.1",
@@ -89,7 +95,8 @@
         "babel-plugin-lodash",
         "chalk",
         "raw-loader",
-        "sass"
+        "sass",
+        "esbuild"
       ]
     }
   },
