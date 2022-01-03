@@ -15,6 +15,28 @@ export interface ContextInterface {
     plugins: PluginsContainer;
     args: HandlerArgs;
     readonly WEBINY_VERSION: string;
+    /**
+     * Not to be used outside of Webiny internal code.
+     * @internal
+     */
+    hasAbort: () => boolean;
+    /**
+     * Not to be used outside of Webiny internal code.
+     * @internal
+     *
+     * @private
+     */
+    _abort?: any;
+    /**
+     * Not to be used outside of Webiny internal code.
+     * @internal
+     */
+    setAbort: (value: any) => void;
+    /**
+     * Not to be used outside of Webiny internal code.
+     * @internal
+     */
+    getAbort: () => void;
 }
 
 // Left for backwards-compatibility.

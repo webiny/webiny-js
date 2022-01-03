@@ -1,22 +1,32 @@
 import { PluginsContainer } from "@webiny/plugins";
 import {
-    Context,
     HandlerResultPlugin,
     ContextPlugin,
     HandlerPlugin,
     HandlerErrorPlugin,
-    BeforeHandlerPlugin
+    BeforeHandlerPlugin,
+    ContextInterface
 } from "./types";
 import middleware from "./middleware";
 
 export default (...plugins) =>
     async (...args) => {
-        const context: Context = {
+        const context: ContextInterface = {
             plugins: new PluginsContainer(plugins),
             args,
             // @ts-ignore
             // this is injected using webpack.DefinePlugin at build time
-            WEBINY_VERSION: process.env.WEBINY_VERSION
+            WEBINY_VERSION: process.env.WEBINY_VERSION,
+            hasAbort: function (this: ContextInterface) {
+                return !!this._abort;
+            },
+            _abort: null,
+            getAbort: function (this: ContextInterface) {
+                return this._abort;
+            },
+            setAbort: function (this: ContextInterface, params: Record<string, any>) {
+                this._abort = params;
+            }
         };
 
         const result = await handle(args, context);
@@ -31,19 +41,27 @@ export default (...plugins) =>
         return result;
     };
 
-async function handle(_: any, context: Context) {
+async function handle(_: any, context: ContextInterface) {
     try {
         const contextPlugins = context.plugins.byType<ContextPlugin>("context");
         for (let i = 0; i < contextPlugins.length; i++) {
-            if (contextPlugins[i].apply) {
-                await contextPlugins[i].apply(context);
+            if (!contextPlugins[i].apply) {
+                continue;
+            }
+            await contextPlugins[i].apply(context);
+            if (context.hasAbort()) {
+                return context.getAbort();
             }
         }
 
         const beforeHandlerPlugins = context.plugins.byType<BeforeHandlerPlugin>("before-handler");
         for (let i = 0; i < beforeHandlerPlugins.length; i++) {
-            if (beforeHandlerPlugins[i].apply) {
-                await beforeHandlerPlugins[i].apply(context);
+            if (!beforeHandlerPlugins[i].apply) {
+                continue;
+            }
+            await beforeHandlerPlugins[i].apply(context);
+            if (context.hasAbort()) {
+                return context.getAbort();
             }
         }
 
@@ -51,7 +69,7 @@ async function handle(_: any, context: Context) {
         const handler = middleware(handlers.map(pl => pl.handle));
         const result = await handler(context);
         if (!result) {
-            throw Error(`No result was returned from registered handlers.`);
+            throw new Error(`No result was returned from registered handlers.`);
         }
 
         return result;
