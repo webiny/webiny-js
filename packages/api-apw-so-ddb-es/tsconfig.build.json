@@ -1,0 +1,34 @@
+{
+  "extends": "../../tsconfig.build.json",
+  "include": ["src"],
+  "exclude": [
+    "node_modules",
+    "../api-page-builder",
+    "../api-page-builder-so-ddb-es",
+    "../api-security-so-ddb",
+    "../api-tenancy-so-ddb"
+  ],
+  "references": [
+    {
+      "path": "../api-page-builder-so-ddb-es/tsconfig.build.json"
+    },
+    {
+      "path": "../api-page-builder/tsconfig.build.json"
+    },
+    {
+      "path": "../api-security-so-ddb/tsconfig.build.json"
+    },
+    {
+      "path": "../api-tenancy-so-ddb/tsconfig.build.json"
+    }
+  ],
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "declarationDir": "./dist",
+    "paths": {
+      "~/*": ["./src/*"]
+    },
+    "baseUrl": "."
+  }
+}

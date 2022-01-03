@@ -1,0 +1,31 @@
+{
+  "extends": "../../tsconfig.json",
+  "include": ["src", "__tests__/**/*.ts"],
+  "references": [
+    {
+      "path": "../api-page-builder-so-ddb-es"
+    },
+    {
+      "path": "../api-page-builder"
+    },
+    {
+      "path": "../api-security-so-ddb"
+    },
+    {
+      "path": "../api-tenancy-so-ddb"
+    }
+  ],
+  "compilerOptions": {
+    "rootDirs": ["./src", "./__tests__"],
+    "outDir": "./dist",
+    "declarationDir": "./dist",
+    "paths": {
+      "~/*": ["./src/*"],
+      "@webiny/api-page-builder/*": ["../api-page-builder/src/*"],
+      "@webiny/api-page-builder": ["../api-page-builder/src"],
+      "@webiny/api-page-builder-so-ddb-es/*": ["../api-page-builder-so-ddb-es/src/*"],
+      "@webiny/api-page-builder-so-ddb-es": ["../api-page-builder-so-ddb-es/src"]
+    },
+    "baseUrl": "."
+  }
+}
