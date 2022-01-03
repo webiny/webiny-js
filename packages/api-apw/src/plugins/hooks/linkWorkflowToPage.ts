@@ -8,7 +8,7 @@ import {
     WorkflowScopeTypes
 } from "~/types";
 import { OnBeforePageCreateTopicParams } from "@webiny/api-page-builder/graphql/types";
-import { PageBuilderContextObject } from "@webiny/api-page-builder/src/graphql/types";
+import { PageBuilderContextObject } from "@webiny/api-page-builder/graphql/types";
 
 const WORKFLOW_PRECEDENCE = {
     [WorkflowScopeTypes.DEFAULT]: 0,
