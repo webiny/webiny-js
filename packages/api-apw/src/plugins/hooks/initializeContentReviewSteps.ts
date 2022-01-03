@@ -1,23 +1,20 @@
 import lodashSet from "lodash/set";
-import { ApwContext, LifeCycleHookCallbackParams, PageWithWorkflow } from "~/types";
+import { AdvancedPublishingWorkflow, ApwContentTypes, LifeCycleHookCallbackParams } from "~/types";
 import { getContentReviewStepInitialStatus } from "~/plugins/utils";
 import { NotFoundError } from "@webiny/handler-graphql";
 
-/**
- * TODO: @ashutosh Convert it to use plugins.
- */
 export const getWorkflowIdFromContent = async (
-    context: ApwContext,
-    params: { type: string; id: string; settings: Record<string, any> }
+    apw: AdvancedPublishingWorkflow,
+    params: { type: ApwContentTypes; id: string; settings: Record<string, any> }
 ): Promise<string> => {
     switch (params.type) {
-        case "page":
-            const page = await context.pageBuilder.getPage<PageWithWorkflow>(params.id);
-            return page.workflow;
-        case "cms_entry":
-            const model = await context.cms.getModel(params.settings.modelId);
-            const entry = await context.cms.getEntry(model, { where: { id: params.id } });
-            return entry.values.workflow;
+        case ApwContentTypes.PAGE:
+            const getWorkflowFromPage = apw.getWorkflowGetter(ApwContentTypes.PAGE);
+            return getWorkflowFromPage(params.id, {});
+
+        case ApwContentTypes.CMS_ENTRY:
+            const getWorkflowFromCmsEntry = apw.getWorkflowGetter(ApwContentTypes.CMS_ENTRY);
+            return getWorkflowFromCmsEntry(params.id, params.settings);
     }
     return null;
 };
@@ -30,7 +27,7 @@ export const initializeContentReviewSteps = ({ cms, apw }: LifeCycleHookCallback
          */
         if (model.modelId === contentReviewModel.modelId) {
             // @ts-ignore
-            const workflowId = await getWorkflowIdFromContent(context, input.content);
+            const workflowId = await getWorkflowIdFromContent(apw, input.content);
             if (!workflowId) {
                 throw new NotFoundError(
                     `Unable to initiate a "Content review". No workflow found!`

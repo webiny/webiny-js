@@ -1,5 +1,5 @@
 import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
-import { ApwContext } from "~/types";
+import { ApwContentTypes, ApwContext, PageWithWorkflow } from "~/types";
 import { createApw } from "~/createApw";
 import { createApwModels } from "./models";
 import apwHooks from "./hooks";
@@ -29,6 +29,17 @@ export default () => [
             storageOperations: createStorageOperations({
                 cms: context.cms
             })
+        });
+
+        context.apw.addWorkflowGetter(ApwContentTypes.PAGE, async id => {
+            const page = await context.pageBuilder.getPage<PageWithWorkflow>(id);
+            return page.workflow;
+        });
+
+        context.apw.addWorkflowGetter(ApwContentTypes.CMS_ENTRY, async (id, settings) => {
+            const model = await context.cms.getModel(settings.modelId);
+            const entry = await context.cms.getEntry(model, { where: { id: id } });
+            return entry.values.workflow;
         });
     }),
     createApwModels(),

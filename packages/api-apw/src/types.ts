@@ -13,6 +13,11 @@ import { SecurityIdentity, SecurityPermission } from "@webiny/api-security/types
 import { I18NLocale } from "@webiny/api-i18n/types";
 import { Tenant } from "@webiny/api-tenancy/types";
 
+export enum ApwContentTypes {
+    PAGE = "page",
+    CMS_ENTRY = "cms_entry"
+}
+
 export interface FieldResolverParams {
     fieldId: string;
     getModel: (context: ApwContext) => Promise<CmsModel>;
@@ -263,7 +268,11 @@ export interface ApwContentReviewCrud
     retractSignOff(id: string, step: string): Promise<Boolean>;
 }
 
+export type WorkflowGetter = (id: string, settings: { modelId?: string }) => Promise<string>;
+
 export interface AdvancedPublishingWorkflow {
+    addWorkflowGetter: (type: ApwContentTypes, func: WorkflowGetter) => void;
+    getWorkflowGetter: (type: ApwContentTypes) => WorkflowGetter;
     workflow: ApwWorkflowCrud;
     reviewer: ApwReviewerCrud;
     comment: ApwCommentCrud;
