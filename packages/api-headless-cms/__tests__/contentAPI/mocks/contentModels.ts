@@ -19,6 +19,7 @@ export interface Fruit {
     dateTimeZ: string;
     time: string;
     description: string;
+    slug?: string;
 }
 
 const ids = {
