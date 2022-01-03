@@ -106,7 +106,7 @@ context("Forms Creation", () => {
         cy.findByTestId("fb.editor.default-bar.publish-dialog").within(() => {
             cy.findByText(/Confirm/i).click();
         });
-        cy.findByText(/Successfully published revision/i).should("exist");
+        cy.findByText(/Your form was published successfully/i).should("exist");
         cy.wait(1000);
         cy.findByTestId("default-data-list").within(() => {
             cy.get("div")
