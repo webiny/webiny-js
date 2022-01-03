@@ -132,36 +132,42 @@ export interface OnAfterPagePublishTopicParams<TPage extends Page = Page> {
  */
 export interface OnBeforePageUnpublishTopicParams<TPage extends Page = Page> {
     page: TPage;
+    latestPage: TPage;
 }
 /**
  * @category Lifecycle events
  */
 export interface OnAfterPageUnpublishTopicParams<TPage extends Page = Page> {
     page: TPage;
+    latestPage: TPage;
 }
 /**
  * @category Lifecycle events
  */
 export interface OnBeforePageRequestReviewTopicParams<TPage extends Page = Page> {
     page: TPage;
+    latestPage: TPage;
 }
 /**
  * @category Lifecycle events
  */
 export interface OnAfterPageRequestReviewTopicParams<TPage extends Page = Page> {
     page: TPage;
+    latestPage: TPage;
 }
 /**
  * @category Lifecycle events
  */
 export interface OnBeforePageRequestChangesTopicParams<TPage extends Page = Page> {
     page: TPage;
+    latestPage: TPage;
 }
 /**
  * @category Lifecycle events
  */
 export interface OnAfterPageRequestChangesTopicParams<TPage extends Page = Page> {
     page: TPage;
+    latestPage: TPage;
 }
 
 /**
