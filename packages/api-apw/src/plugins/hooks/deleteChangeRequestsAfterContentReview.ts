@@ -1,8 +1,9 @@
-import { ApwContext } from "~/types";
+import { LifeCycleHookCallbackParams } from "~/types";
 
-export const deleteChangeRequestsWithContentReview = (context: ApwContext) => {
-    const { cms, apw } = context;
-
+export const deleteChangeRequestsWithContentReview = ({
+    apw,
+    cms
+}: LifeCycleHookCallbackParams) => {
     cms.onAfterEntryDelete.subscribe(async ({ model, entry }) => {
         const contentReviewModel = await apw.contentReview.getModel();
         /**

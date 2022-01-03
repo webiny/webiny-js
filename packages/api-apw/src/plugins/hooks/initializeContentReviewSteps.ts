@@ -1,5 +1,5 @@
 import lodashSet from "lodash/set";
-import { ApwContext, PageWithWorkflow } from "~/types";
+import { ApwContext, LifeCycleHookCallbackParams, PageWithWorkflow } from "~/types";
 import { getContentReviewStepInitialStatus } from "~/plugins/utils";
 import { NotFoundError } from "@webiny/handler-graphql";
 
@@ -22,8 +22,7 @@ export const getWorkflowIdFromContent = async (
     return null;
 };
 
-export const initializeContentReviewSteps = (context: ApwContext) => {
-    const { cms, apw } = context;
+export const initializeContentReviewSteps = ({ cms, apw }: LifeCycleHookCallbackParams) => {
     cms.onBeforeEntryCreate.subscribe(async ({ model, entry, input }) => {
         const contentReviewModel = await apw.contentReview.getModel();
         /**

@@ -1,5 +1,5 @@
 import { CmsEntry, CmsModel } from "@webiny/api-headless-cms/types";
-import { ApwContentReview, ApwContentReviewCrud, ApwContext } from "~/types";
+import { ApwContentReview, ApwContentReviewCrud, LifeCycleHookCallbackParams } from "~/types";
 
 const isEqual = ({
     entry,
@@ -80,8 +80,7 @@ const isChangeRequestModel = async ({
     return model.modelId === changeRequestModel.modelId;
 };
 
-export const updatePendingChangeRequestsCount = (context: ApwContext) => {
-    const { cms, apw } = context;
+export const updatePendingChangeRequestsCount = ({ apw, cms }: LifeCycleHookCallbackParams) => {
     const getChangeRequestModel = apw.changeRequest.getModel;
 
     cms.onAfterEntryDelete.subscribe(async ({ model, entry }) => {

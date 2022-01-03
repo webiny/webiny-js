@@ -275,6 +275,12 @@ export interface ApwContext extends Context, CmsContext, PbContext {
     apw: AdvancedPublishingWorkflow;
 }
 
+export interface LifeCycleHookCallbackParams {
+    apw: ApwContext["apw"];
+    security?: ApwContext["security"];
+    cms?: ApwContext["cms"];
+}
+
 export interface CreateApwParams {
     getLocale: () => I18NLocale;
     getIdentity: () => SecurityIdentity;
