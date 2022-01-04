@@ -1,6 +1,6 @@
 import { Plugin } from "@webiny/plugins/types";
 import { I18NContext, I18NLocale } from "@webiny/api-i18n/types";
-import { ContextInterface } from "@webiny/handler/types";
+import { Context } from "@webiny/handler/types";
 import { TenancyContext } from "@webiny/api-tenancy/types";
 import {
     GraphQLFieldResolver,
@@ -56,7 +56,7 @@ export interface HeadlessCms
  * @category Context
  */
 export interface CmsContext
-    extends ContextInterface,
+    extends Context,
         DbContext,
         HttpContext,
         I18NContext,

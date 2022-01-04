@@ -2,10 +2,10 @@ import { I18NContentContext } from "@webiny/api-i18n-content/types";
 import { FileStorage } from "./plugins/storage/FileStorage";
 import { TenancyContext } from "@webiny/api-tenancy/types";
 import { SecurityContext, SecurityPermission } from "@webiny/api-security/types";
-import { ContextInterface } from "@webiny/handler/types";
+import { Context } from "@webiny/handler/types";
 
 export interface FileManagerContext
-    extends ContextInterface,
+    extends Context,
         SecurityContext,
         TenancyContext,
         I18NContentContext {

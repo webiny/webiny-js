@@ -1,33 +1,18 @@
-import { PluginsContainer } from "@webiny/plugins";
-import {
-    HandlerResultPlugin,
-    ContextPlugin,
-    HandlerPlugin,
-    HandlerErrorPlugin,
-    ContextInterface
-} from "./types";
+import { HandlerResultPlugin, ContextPlugin, HandlerPlugin, HandlerErrorPlugin } from "./types";
 import middleware from "./middleware";
 import { BeforeHandlerPlugin } from "~/plugins/BeforeHandlerPlugin";
+import { Context } from "~/plugins/Context";
 
 export default (...plugins) =>
     async (...args) => {
-        const context: ContextInterface = {
-            plugins: new PluginsContainer(plugins),
+        const context = new Context({
+            plugins,
             args,
-            // @ts-ignore
-            // this is injected using webpack.DefinePlugin at build time
-            WEBINY_VERSION: process.env.WEBINY_VERSION,
-            hasResult: function (this: ContextInterface) {
-                return !!this._result;
-            },
-            _result: null,
-            getResult: function (this: ContextInterface) {
-                return this._result;
-            },
-            setResult: function (this: ContextInterface, params: Record<string, any>) {
-                this._result = params;
-            }
-        };
+            /**
+             * Inserted via webpack on build time.
+             */
+            WEBINY_VERSION: process.env.WEBINY_VERSION
+        });
 
         const result = await handle(args, context);
 
@@ -41,7 +26,7 @@ export default (...plugins) =>
         return result;
     };
 
-async function handle(_: any, context: ContextInterface) {
+async function handle(_: any, context: Context) {
     try {
         const contextPlugins = context.plugins.byType<ContextPlugin>("context");
         for (let i = 0; i < contextPlugins.length; i++) {

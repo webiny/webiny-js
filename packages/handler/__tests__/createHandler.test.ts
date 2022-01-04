@@ -1,6 +1,6 @@
 import { BeforeHandlerPlugin, createHandler } from "~/index";
 import { ContextPlugin } from "~/plugins/ContextPlugin";
-import { ContextInterface, HandlerErrorPlugin, HandlerPlugin, HandlerResultPlugin } from "~/types";
+import { Context, HandlerErrorPlugin, HandlerPlugin, HandlerResultPlugin } from "~/types";
 import { TriggerTracker } from "./tracker";
 
 describe("createHandler", () => {
@@ -47,7 +47,7 @@ describe("createHandler", () => {
                 tracker.triggerHandlerResult();
             }
         };
-        const context = new ContextPlugin<ContextInterface>(async () => {
+        const context = new ContextPlugin<Context>(async () => {
             tracker.triggerContext();
         });
         const handler = createHandler([
@@ -80,7 +80,7 @@ describe("createHandler", () => {
                 return {};
             }
         };
-        const context = new ContextPlugin<ContextInterface>(async context => {
+        const context = new ContextPlugin<Context>(async context => {
             context.setResult({
                 customResult: true
             });
@@ -132,7 +132,7 @@ describe("createHandler", () => {
                 throw new Error("test");
             }
         };
-        const context = new ContextPlugin<ContextInterface>(async () => {
+        const context = new ContextPlugin<Context>(async () => {
             tracker.triggerContext();
         });
 

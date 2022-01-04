@@ -39,8 +39,6 @@ export interface Context {
     getResult: () => void;
 }
 
-export type ContextInterface = Context;
-
 /**
  * Left for backwards-compatibility.
  *

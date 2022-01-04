@@ -1,8 +1,8 @@
-import { ContextInterface, HandlerPlugin as DefaultHandlerPlugin } from "@webiny/handler/types";
+import { Context, HandlerPlugin as DefaultHandlerPlugin } from "@webiny/handler/types";
 import { Plugin } from "@webiny/plugins/types";
 import { ClientContext } from "@webiny/handler-client/types";
 
-export interface HandlerContext extends ContextInterface, ClientContext {
+export interface HandlerContext extends Context, ClientContext {
     //
 }
 export type HandlerPlugin = DefaultHandlerPlugin<HandlerContext>;

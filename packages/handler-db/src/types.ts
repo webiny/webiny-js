@@ -1,6 +1,6 @@
 import { Db } from "@webiny/db";
-import { ContextInterface } from "@webiny/handler/types";
+import { Context } from "@webiny/handler/types";
 
-export interface DbContext extends ContextInterface {
+export interface DbContext extends Context {
     db: Db;
 }

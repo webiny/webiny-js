@@ -1,11 +1,11 @@
 import { Plugin } from "@webiny/plugins";
-import { ContextInterface } from "~/types";
+import { Context } from "~/types";
 
-interface Callable<T extends ContextInterface = ContextInterface> {
+interface Callable<T extends Context = Context> {
     (context: T): void | Promise<void>;
 }
 
-export class BeforeHandlerPlugin<T extends ContextInterface = ContextInterface> extends Plugin {
+export class BeforeHandlerPlugin<T extends Context = Context> extends Plugin {
     public static readonly type: string = "before-handler";
     private readonly _callable: Callable<T>;
 
