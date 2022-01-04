@@ -1,4 +1,4 @@
-import { ContextInterface } from "@webiny/handler/types";
+import { Context } from "@webiny/handler/types";
 import { AttributePlugin, DefinitionParams } from "~/plugins/definitions/AttributePlugin";
 import { PluginsContainer } from "@webiny/plugins";
 
@@ -8,7 +8,7 @@ import { PluginsContainer } from "@webiny/plugins";
  * @deprecated
  */
 export const getExtraAttributes = (
-    context: ContextInterface,
+    context: Context,
     entity: string
 ): Record<string, DefinitionParams> => {
     return getExtraAttributesFromPlugins(context.plugins, entity);

@@ -12,7 +12,7 @@ const Hamburger = () => {
         <IconButton
             icon={<MenuIcon style={{ color: location === "navigation" ? undefined : "white" }} />}
             onClick={() => setVisible(!visible)}
-            data-testid={"apps-menu"}
+            data-testid={location === "navigation" ? undefined : "apps-menu"}
         />
     );
 };

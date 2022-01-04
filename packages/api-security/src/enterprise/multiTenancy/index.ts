@@ -1,4 +1,3 @@
-import { Context as BaseContext } from "@webiny/handler/types";
 import { TenancyContext, Tenant } from "@webiny/api-tenancy/types";
 import { Response } from "@webiny/handler-graphql";
 import { getDefaultTenant as baseGetDefaultTenant } from "./getDefaultTenant";
@@ -7,7 +6,7 @@ import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins";
 import { NotAuthorizedError } from "~/index";
 export { getDefaultTenant } from "./getDefaultTenant";
 
-type Context = BaseContext<SecurityContext, TenancyContext>;
+type Context = SecurityContext & TenancyContext;
 
 export interface MultiTenancyAppConfig {
     /**

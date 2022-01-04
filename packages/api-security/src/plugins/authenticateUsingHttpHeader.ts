@@ -1,4 +1,4 @@
-import { BeforeHandlerPlugin } from "@webiny/handler/plugins/BeforeHandlerPlugin";
+import { BeforeHandlerPlugin } from "@webiny/handler";
 import { SecurityContext } from "~/types";
 import { HttpContext } from "@webiny/handler-http/types";
 

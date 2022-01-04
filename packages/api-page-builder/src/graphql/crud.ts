@@ -5,7 +5,7 @@ import { createPageValidation } from "./crud/pages.validation";
 import { createPageElementsCrud } from "./crud/pageElements.crud";
 import { createSettingsCrud } from "./crud/settings.crud";
 import { createSystemCrud } from "./crud/system.crud";
-import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
+import { ContextPlugin } from "@webiny/handler";
 import { PbContext } from "~/graphql/types";
 import WebinyError from "@webiny/error";
 import { JsonpackContentCompressionPlugin } from "~/plugins/JsonpackContentCompressionPlugin";

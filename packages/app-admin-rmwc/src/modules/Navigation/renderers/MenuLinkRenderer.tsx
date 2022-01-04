@@ -40,6 +40,7 @@ export const MenuLinkRenderer = PrevMenuItem => {
 
         const item = (
             <ListItem
+                data-testid={menuItem.testId}
                 ripple={false}
                 className={listItemStyle}
                 onClick={menuItem.onClick || hideMenu}

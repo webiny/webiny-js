@@ -17,7 +17,7 @@ const RMWCLayout = () => {
         return (
             <Fragment>
                 {title ? <Helmet title={title} /> : null}
-                <TopAppBarPrimary fixed style={{ zIndex: 11 }}>
+                <TopAppBarPrimary fixed>
                     <TopAppBarSection style={{ width: "25%" }} alignStart>
                         <Brand />
                     </TopAppBarSection>
