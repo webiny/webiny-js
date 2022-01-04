@@ -22,7 +22,8 @@ const appleData: Fruit = {
     dateTime: new Date("2020-12-15T12:12:21").toISOString(),
     dateTimeZ: "2020-12-15T14:52:41+01:00",
     time: "11:39:58",
-    description: "fruit named apple"
+    description: "fruit named apple",
+    slug: null
 };
 
 const strawberryData: Fruit = {
@@ -38,7 +39,8 @@ const strawberryData: Fruit = {
     dateTime: new Date("2020-12-19T12:12:21").toISOString(),
     dateTimeZ: "2020-12-25T14:52:41+01:00",
     time: "12:44:55",
-    description: "strawberry named fruit"
+    description: "strawberry named fruit",
+    slug: null
 };
 
 const bananaData: Fruit = {
@@ -54,7 +56,8 @@ const bananaData: Fruit = {
     dateTime: new Date("2020-12-03T12:12:21").toISOString(),
     dateTimeZ: "2020-12-03T14:52:41+01:00",
     time: "11:59:01",
-    description: "fruit banana named"
+    description: "fruit banana named",
+    slug: null
 };
 
 jest.setTimeout(100000);

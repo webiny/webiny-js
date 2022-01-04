@@ -424,7 +424,11 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
              */
             const initialInput = cleanInputData(model, inputData);
 
-            await validateModelEntryData(context, model, initialInput);
+            await validateModelEntryData({
+                context,
+                model,
+                data: initialInput
+            });
 
             const input = await referenceFieldsMapping({
                 context,
@@ -541,7 +545,12 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
                 ...input
             };
 
-            await validateModelEntryData(context, model, initialValues);
+            await validateModelEntryData({
+                context,
+                model,
+                data: initialValues,
+                entry: originalEntry
+            });
 
             const values = await referenceFieldsMapping({
                 context,
@@ -629,10 +638,6 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
             const input = cleanUpdatedInputData(model, inputData);
 
             /**
-             * Validate data early. We don't want to query DB if input data is invalid.
-             */
-            await validateModelEntryData(context, model, input);
-            /**
              * The entry we are going to update.
              */
             const originalStorageEntry = await storageOperations.entries.getRevisionById(model, {
@@ -655,6 +660,13 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
                 model,
                 originalStorageEntry
             );
+
+            await validateModelEntryData({
+                context,
+                model,
+                data: input,
+                entry: originalEntry
+            });
 
             utils.checkOwnership(context, permission, originalEntry);
 
