@@ -30,7 +30,6 @@
     "@webiny/api-tenancy-so-ddb": "^5.20.0",
     "@webiny/cli": "^5.20.0",
     "@webiny/db-dynamodb": "^5.20.0",
-    "@webiny/handler": "^5.20.0",
     "@webiny/handler-args": "^5.20.0",
     "@webiny/handler-aws": "^5.20.0",
     "@webiny/handler-client": "^5.20.0",

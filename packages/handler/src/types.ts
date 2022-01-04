@@ -1,16 +1,16 @@
 import { Plugin, PluginsContainer } from "@webiny/plugins/types";
 
 export type HandlerArgs = any[];
+/**
+ * Left for backwards compatibility.
+ * @deprecated
+ */
+export type HandlerContext = Context;
 
-// There are a couple of different types that are used as a base Context type.
-// Ultimately, this is the one to be used, the rest are here just for backward-compatibility.
-export interface HandlerContext {
-    plugins: PluginsContainer;
-    args: HandlerArgs;
-    readonly WEBINY_VERSION: string;
-}
-
-// Left for backwards-compatibility.
+/**
+ * The main context which is constructed on every request.
+ * All other contexts should extend this one.
+ */
 export interface Context {
     plugins: PluginsContainer;
     args: HandlerArgs;
