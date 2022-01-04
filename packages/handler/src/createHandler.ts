@@ -17,7 +17,7 @@ export default (...plugins) =>
             WEBINY_VERSION: process.env.WEBINY_VERSION
         });
 
-        const result = await handle(args, context);
+        const result = await handle(context);
 
         const handlerPlugins = context.plugins.byType<HandlerResultPlugin>(
             HandlerResultPlugin.type
@@ -32,7 +32,7 @@ export default (...plugins) =>
         return result;
     };
 
-async function handle(_: any, context: Context) {
+async function handle(context: Context) {
     try {
         const contextPlugins = context.plugins.byType<ContextPlugin>(ContextPlugin.type);
         for (let i = 0; i < contextPlugins.length; i++) {
