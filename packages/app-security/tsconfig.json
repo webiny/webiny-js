@@ -9,6 +9,8 @@
       "~/*": ["./src/*"],
       "@webiny/app/*": ["../app/src/*"],
       "@webiny/app": ["../app/src"],
+      "@webiny/app-admin-core/*": ["../app-admin-core/src/*"],
+      "@webiny/app-admin-core": ["../app-admin-core/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"]
     },

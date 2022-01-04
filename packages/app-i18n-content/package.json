@@ -14,6 +14,7 @@
     "@webiny/app-i18n": "^5.20.0",
     "@webiny/app-security": "^5.20.0",
     "@webiny/form": "^5.20.0",
+    "@webiny/plugins": "^5.20.0",
     "@webiny/ui": "^5.20.0",
     "emotion": "^10.0.17",
     "react": "^17.0.2",

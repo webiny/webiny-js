@@ -71,16 +71,21 @@ context("I18N app", () => {
         cy.visit("/i18n/locales");
         // Create new locale
         cy.findAllByTestId("new-record-button").first().click();
-        cy.findByLabelText("Code").type(newCode);
-        /**
-         * Testing "Autocomplete" component is tricky.
-         * We're making sure option exist before triggering a click because;
-         * sometimes the option item gets detached from the DOM due to re-render.
-         *
-         * Read more about it: https://www.cypress.io/blog/2020/07/22/do-not-get-too-detached/#investigation
-         */
-        cy.findByText(newCode).as("code").should("exist");
-        cy.get("@code").click();
+
+        const formContainer = cy.get("webiny-form-container");
+
+        formContainer.within(() => {
+            cy.findByLabelText("Code").type(newCode);
+            /**
+             * Testing "Autocomplete" component is tricky.
+             * We're making sure option exist before triggering a click because
+             * sometimes the option item gets detached from the DOM due to re-render.
+             *
+             * Read more about it: https://www.cypress.io/blog/2020/07/22/do-not-get-too-detached/#investigation
+             */
+            cy.findByText(newCode).as("code").should("exist");
+            cy.get("@code").click();
+        });
 
         cy.findByText(/Save/i).click();
         // Loading should be completed

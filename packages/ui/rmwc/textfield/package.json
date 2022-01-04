@@ -28,8 +28,8 @@
   },
   "homepage": "https://github.com/jamesmfriedman/rmwc/tree/master/src/textfield#readme",
   "peerDependencies": {
-    "react": "^17.0.x",
-    "react-dom": "^17.0.x"
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2"
   },
   "dependencies": {
     "@material/textfield": "^3.1.0",

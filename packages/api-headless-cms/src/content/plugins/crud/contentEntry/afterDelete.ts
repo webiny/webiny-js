@@ -4,12 +4,12 @@ import { markUnlockedFields } from "./markLockedFields";
 
 export interface Params {
     context: CmsContext;
-    onAfterDelete: Topic<AfterEntryDeleteTopicParams>;
+    onAfterEntryDelete: Topic<AfterEntryDeleteTopicParams>;
 }
 export const assignAfterEntryDelete = (params: Params) => {
-    const { context, onAfterDelete } = params;
+    const { context, onAfterEntryDelete } = params;
 
-    onAfterDelete.subscribe(async params => {
+    onAfterEntryDelete.subscribe(async params => {
         const { entry, model } = params;
 
         const { items } = await context.cms.storageOperations.entries.list(model, {

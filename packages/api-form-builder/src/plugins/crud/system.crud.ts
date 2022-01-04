@@ -86,6 +86,10 @@ export const createSystemCrud = (params: Params): SystemCRUD => {
             }
         },
         async installSystem(this: FormBuilder, { domain }) {
+            const identity = context.security.getIdentity();
+            if (!identity) {
+                throw new NotAuthorizedError();
+            }
             const version = await this.getSystemVersion();
             if (version) {
                 throw new WebinyError(

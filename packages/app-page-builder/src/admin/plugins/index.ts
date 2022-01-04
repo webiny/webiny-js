@@ -6,7 +6,6 @@ import menuItems from "./menuItems";
 import globalSearch from "./globalSearch";
 import settings from "./settings";
 import routes from "./routes";
-import menus from "./menus";
 import installation from "./installation";
 import permissionRenderer from "./permissionRenderer";
 
@@ -19,7 +18,6 @@ export default () => [
     globalSearch,
     settings,
     routes,
-    menus,
     installation,
     permissionRenderer
 ];
