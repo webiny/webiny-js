@@ -3,6 +3,7 @@
   "include": ["src"],
   "references": [
     { "path": "../handler/tsconfig.build.json" },
+    { "path": "../handler-args/tsconfig.build.json" },
     { "path": "../utils/tsconfig.build.json" }
   ],
   "compilerOptions": {

@@ -1,6 +1,6 @@
 import Error from "@webiny/error";
 import { NotFoundError } from "@webiny/handler-graphql";
-import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
+import { ContextPlugin } from "@webiny/handler";
 import checkBasePermissions from "@webiny/api-page-builder/graphql/crud/utils/checkBasePermissions";
 import {
     PageImportExportTaskStatus,

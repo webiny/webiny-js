@@ -1,5 +1,5 @@
 import { Plugin } from "@webiny/plugins/types";
-import { ContextInterface } from "@webiny/handler/types";
+import { Context } from "@webiny/handler/types";
 import { Authentication, Identity } from "@webiny/api-authentication/types";
 import { Topic } from "@webiny/pubsub/types";
 import { GetTenant } from "~/createSecurity";
@@ -9,7 +9,7 @@ export type SecurityIdentity = Identity;
 
 export type SecurityAuthenticationPlugin = Plugin & {
     type: "security-authentication";
-    authenticate(context: ContextInterface): Promise<null> | Promise<SecurityIdentity>;
+    authenticate(context: Context): Promise<null> | Promise<SecurityIdentity>;
 };
 
 export interface SecurityAuthorizationPlugin extends Plugin {
@@ -134,7 +134,7 @@ export interface SecurityPermission {
     [key: string]: any;
 }
 
-export interface SecurityContext<TIdentity = SecurityIdentity> extends ContextInterface {
+export interface SecurityContext<TIdentity = SecurityIdentity> extends Context {
     security: Security<TIdentity>;
 }
 

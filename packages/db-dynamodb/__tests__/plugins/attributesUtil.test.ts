@@ -1,5 +1,4 @@
-import { ContextInterface } from "@webiny/handler/types";
-import { PluginsContainer } from "@webiny/plugins";
+import { Context } from "@webiny/handler";
 import { getExtraAttributes } from "~/utils/attributes";
 import { AttributePlugin, Params } from "~/plugins/definitions/AttributePlugin";
 
@@ -33,14 +32,13 @@ const booleanAttribute = new TestEntityAttributePlugin({
 });
 
 describe("get extra attributes", () => {
-    let context: ContextInterface;
+    let context: Context;
 
     beforeEach(() => {
-        context = {
+        context = new Context({
             args: [],
-            plugins: new PluginsContainer(),
             WEBINY_VERSION: process.env.WEBINY_VERSION
-        };
+        });
         context.plugins.register([stringAttribute, numberAttribute, booleanAttribute]);
     });
 

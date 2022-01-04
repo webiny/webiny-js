@@ -1,4 +1,6 @@
-export interface AuthenticationContext<TIdentity = Identity> {
+import { Context } from "@webiny/handler/types";
+
+export interface AuthenticationContext<TIdentity = Identity> extends Context {
     authentication: Authentication<TIdentity>;
 }
 
