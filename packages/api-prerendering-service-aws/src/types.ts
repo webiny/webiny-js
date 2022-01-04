@@ -19,7 +19,7 @@ export type Args = {
 };
 
 export type HandlerArgs = Args | Args[];
-export type HandlerContext = Context<ArgsContext<HandlerArgs>>;
+export interface HandlerContext extends Context, ArgsContext<HandlerArgs> {}
 export type HandlerResponse = { data: Record<string, any>; error: Record<string, any> };
 export type HandlerPlugin = DefaultHandlerPlugin<HandlerContext>;
 

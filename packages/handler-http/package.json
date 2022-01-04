@@ -16,6 +16,7 @@
   "dependencies": {
     "@babel/runtime": "^7.5.5",
     "@webiny/handler": "^5.21.0",
+    "@webiny/handler-args": "^5.21.0",
     "boolean": "^3.0.1"
   },
   "devDependencies": {

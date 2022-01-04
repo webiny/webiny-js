@@ -1,19 +1,20 @@
 import { Plugin } from "@webiny/plugins";
+import { Context } from "~/types";
 
-interface Callable<TContext> {
-    (context: TContext): void | Promise<void>;
+interface Callable<T extends Context = Context> {
+    (context: T): void | Promise<void>;
 }
 
-export class BeforeHandlerPlugin<TContext> extends Plugin {
-    public static readonly type = "before-handler";
-    private readonly _callable: Callable<TContext>;
+export class BeforeHandlerPlugin<T extends Context = Context> extends Plugin {
+    public static readonly type: string = "before-handler";
+    private readonly _callable: Callable<T>;
 
-    constructor(callable?: Callable<TContext>) {
+    constructor(callable?: Callable<T>) {
         super();
         this._callable = callable;
     }
 
-    apply(context: TContext): void | Promise<void> {
+    apply(context: T): void | Promise<void> {
         if (typeof this._callable !== "function") {
             throw Error(
                 `Missing callable in BeforeHandlerPlugin! Either pass a callable to plugin constructor or extend the plugin and override the "apply" method.`
