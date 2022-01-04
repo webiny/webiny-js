@@ -678,7 +678,7 @@ describe("fieldValidations", () => {
         const group = await setupContentModelGroup();
         await setupContentModels(group);
 
-        const { createFruit } = useFruitManageHandler({
+        const { createFruit, listFruits, until } = useFruitManageHandler({
             ...manageOpts
         });
         /**
@@ -696,6 +696,18 @@ describe("fieldValidations", () => {
                 }
             }
         });
+
+        /**
+         * If this `until` resolves successfully, we know entry is accessible via the "read" API
+         */
+        await until(
+            () => listFruits({}).then(([data]) => data),
+            ({ data }) => {
+                return data.listFruits.data.length === 1;
+            },
+            { name: "list all fruits" }
+        );
+
         /**
          * Should fail on creating another fruit with same slug.
          */
