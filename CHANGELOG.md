@@ -3,6 +3,39 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.21.0](https://github.com/webiny/webiny-js/compare/v5.21.0-beta.0...v5.21.0) (2022-01-04)
+
+**Note:** Version bump only for package webiny-js
+
+
+
+
+
+# [5.21.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.20.0...v5.21.0-beta.0) (2022-01-03)
+
+
+### Bug Fixes
+
+* **app-admin-rmwc:** remove z-index override ([98eeaff](https://github.com/webiny/webiny-js/commit/98eeaff18c70d87d17588f7897f5ab607d0342ea))
+* **cypress:** narrow down cypress selector ([17e1310](https://github.com/webiny/webiny-js/commit/17e1310ff5846b55c39a3693ed962d53c58602d4))
+* **ui:** reduce the z-index of CircularProgress ([8cd0bd2](https://github.com/webiny/webiny-js/commit/8cd0bd23bd1d17f7e4605243528c9b2d9137b9fe))
+* add missing test ids on UI elements ([26810d9](https://github.com/webiny/webiny-js/commit/26810d90df67bdd3cca7221200d24cbef6b2cbea))
+* ensure any error within deploy hooks stops the deploy process ([5ac0186](https://github.com/webiny/webiny-js/commit/5ac01862d3b658b13ada4c391e4b8bcb25d1dab4))
+* protect installers from unauthorized run ([#2160](https://github.com/webiny/webiny-js/issues/2160)) ([cb4ea8e](https://github.com/webiny/webiny-js/commit/cb4ea8ef36f99a2608599954454a3aa3211eb3a6))
+* update text in test assertion ([ba9bceb](https://github.com/webiny/webiny-js/commit/ba9bceb70e702469b6e6f12dfdb6d759f1af862f))
+
+
+### Features
+
+* introduce app-serverless-cms package ([bc78ef7](https://github.com/webiny/webiny-js/commit/bc78ef79695f7c7910fd1b8b9511ffd6de8f3fcb))
+* **api-page-builder:** storage operations as factory ([#2139](https://github.com/webiny/webiny-js/issues/2139)) ([f229719](https://github.com/webiny/webiny-js/commit/f229719b4499f871d944b21ad27d24bc814d5ab1))
+* add possibility to output api version in headers ([#2143](https://github.com/webiny/webiny-js/issues/2143)) ([cc3f5cc](https://github.com/webiny/webiny-js/commit/cc3f5cce2456a92bc977bb49bffcf7e281911720))
+* **api-headless-cms:** marked required fields in graphql ([#2144](https://github.com/webiny/webiny-js/issues/2144)) ([bb0277e](https://github.com/webiny/webiny-js/commit/bb0277eb1058f9e970e46d23c2333f592565cba4))
+
+
+
+
+
 # [5.20.0](https://github.com/webiny/webiny-js/compare/v5.20.0-beta.2...v5.20.0) (2021-12-23)
 
 **Note:** Version bump only for package webiny-js
