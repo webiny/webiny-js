@@ -1,4 +1,5 @@
 import { introspectionQuery } from "graphql";
+import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import i18nContext from "@webiny/api-i18n/graphql/context";
 import i18nContentPlugins from "@webiny/api-i18n-content/plugins";
 import { createHandler } from "@webiny/handler-aws";
@@ -23,8 +24,11 @@ import i18nDynamoDbStorageOperations from "@webiny/api-i18n-ddb";
 import { createTenancyAndSecurity } from "./tenancySecurity";
 import { getStorageOperations } from "./storageOperations";
 import { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
-import pageBuilderPlugins from "@webiny/api-page-builder/graphql";
-import pageBuilderDynamoDbPlugins from "@webiny/api-page-builder-so-ddb";
+import {
+    createPageBuilderContext,
+    createPageBuilderGraphQL
+} from "@webiny/api-page-builder/graphql";
+import { createStorageOperations as createPageBuilderStorageOperations } from "@webiny/api-page-builder-so-ddb";
 import { CREATE_CATEGORY } from "./graphql/categories";
 import { CREATE_PAGE, GET_PAGE } from "./graphql/pages";
 import {
@@ -65,6 +69,15 @@ export interface GQLHandlerCallableParams {
     path: string;
     createHeadlessCmsApp: (params: CreateHeadlessCmsAppParams) => any[];
 }
+
+const documentClient = new DocumentClient({
+    convertEmptyValues: true,
+    endpoint: process.env.MOCK_DYNAMODB_ENDPOINT || "http://localhost:8001",
+    sslEnabled: false,
+    region: "local",
+    accessKeyId: "test",
+    secretAccessKey: "test"
+});
 
 export const useGqlHandler = (params: GQLHandlerCallableParams) => {
     const ops = getStorageOperations({
@@ -152,8 +165,10 @@ export const useGqlHandler = (params: GQLHandlerCallableParams) => {
             i18nDynamoDbStorageOperations(),
             i18nContentPlugins(),
             mockLocalesPlugins(),
-            pageBuilderPlugins(),
-            pageBuilderDynamoDbPlugins(),
+            createPageBuilderGraphQL(),
+            createPageBuilderContext({
+                storageOperations: createPageBuilderStorageOperations({ documentClient })
+            }),
             ...headlessCmsApp,
             createApwContext(),
             createApwGraphQL(),
