@@ -31,7 +31,7 @@ module.exports = async ({ inputs, output, context }) => {
         packages.forEach(item => console.log("‣ " + item.name));
     }
 
-    const { env, debug } = inputs;
+    const { env, debug, logs } = inputs;
     const multipleWatches = packages.length > 1;
     if (multipleWatches) {
         output.log({
