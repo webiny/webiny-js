@@ -1,4 +1,4 @@
-import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
+import { ContextPlugin } from "@webiny/handler";
 import { AuthenticationContext } from "~/types";
 import { createAuthentication } from "~/createAuthentication";
 

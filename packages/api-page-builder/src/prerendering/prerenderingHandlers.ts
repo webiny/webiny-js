@@ -6,7 +6,7 @@ import WebinyError from "@webiny/error";
 import { Args as PsFlushParams } from "@webiny/api-prerendering-service/flush/types";
 import { Args as PsRenderParams } from "@webiny/api-prerendering-service/render/types";
 import { Args as PsQueueAddParams } from "@webiny/api-prerendering-service/queue/add/types";
-import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
+import { ContextPlugin } from "@webiny/handler";
 import { PbContext } from "~/graphql/types";
 
 export const prerenderingHandlers = new ContextPlugin<PbContext>(context => {

@@ -2,7 +2,7 @@ import { HttpContext, HandlerHttpOptions } from "./types";
 import { HandlerErrorPlugin } from "@webiny/handler/types";
 import { boolean } from "boolean";
 import { getWebinyVersionHeaders } from "@webiny/utils";
-import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
+import { ContextPlugin } from "@webiny/handler";
 
 const DEFAULT_HEADERS = {
     "Cache-Control": "no-store",
