@@ -4,13 +4,17 @@ import { boolean } from "boolean";
 import { getWebinyVersionHeaders } from "@webiny/utils";
 import { ContextPlugin } from "@webiny/handler";
 
-const DEFAULT_HEADERS = {
+const DEFAULT_HEADERS: Record<string, string> = {
     "Cache-Control": "no-store",
     "Content-Type": "application/json",
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Headers": "*",
     "Access-Control-Allow-Methods": "OPTIONS,POST",
     ...getWebinyVersionHeaders()
+};
+
+const OPTIONS_HEADERS: Record<string, string> = {
+    "Access-Control-Max-Age": "86400"
 };
 
 const lowercaseKeys = obj => {
@@ -31,7 +35,10 @@ export default (options: HandlerHttpOptions = {}) => [
             context.setResult({
                 statusCode: 204,
                 body: "",
-                headers: DEFAULT_HEADERS
+                headers: {
+                    ...DEFAULT_HEADERS,
+                    ...OPTIONS_HEADERS
+                }
             });
             return;
         }
