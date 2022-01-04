@@ -1,7 +1,10 @@
-import { HandlerResultPlugin, ContextPlugin, HandlerPlugin, HandlerErrorPlugin } from "./types";
+import { HandlerPlugin } from "~/plugins/HandlerPlugin";
+import { ContextPlugin } from "~/plugins/ContextPlugin";
 import middleware from "./middleware";
 import { BeforeHandlerPlugin } from "~/plugins/BeforeHandlerPlugin";
 import { Context } from "~/plugins/Context";
+import { HandlerErrorPlugin } from "~/plugins/HandlerErrorPlugin";
+import { HandlerResultPlugin } from "~/plugins/HandlerResultPlugin";
 
 export default (...plugins) =>
     async (...args) => {
@@ -16,11 +19,14 @@ export default (...plugins) =>
 
         const result = await handle(args, context);
 
-        const handlerPlugins = context.plugins.byType<HandlerResultPlugin>("handler-result");
+        const handlerPlugins = context.plugins.byType<HandlerResultPlugin>(
+            HandlerResultPlugin.type
+        );
         for (let i = 0; i < handlerPlugins.length; i++) {
-            if (handlerPlugins[i].handle) {
-                await handlerPlugins[i].handle(result, context);
+            if (!handlerPlugins[i].handle) {
+                continue;
             }
+            await handlerPlugins[i].handle(context, result);
         }
 
         return result;
@@ -28,7 +34,7 @@ export default (...plugins) =>
 
 async function handle(_: any, context: Context) {
     try {
-        const contextPlugins = context.plugins.byType<ContextPlugin>("context");
+        const contextPlugins = context.plugins.byType<ContextPlugin>(ContextPlugin.type);
         for (let i = 0; i < contextPlugins.length; i++) {
             if (!contextPlugins[i].apply) {
                 continue;
@@ -52,7 +58,7 @@ async function handle(_: any, context: Context) {
             }
         }
 
-        const handlers = context.plugins.byType<HandlerPlugin>("handler");
+        const handlers = context.plugins.byType<HandlerPlugin>(HandlerPlugin.type);
         const handler = middleware(handlers.map(pl => pl.handle));
         const result = await handler(context);
         if (!result) {
@@ -63,7 +69,7 @@ async function handle(_: any, context: Context) {
     } catch (error) {
         // Log error to cloud, as these can be extremely annoying to debug!
         console.log(error);
-        const handlers = context.plugins.byType<HandlerErrorPlugin>("handler-error");
+        const handlers = context.plugins.byType<HandlerErrorPlugin>(HandlerErrorPlugin.type);
         const handler = middleware(handlers.map(pl => pl.handle));
         return handler(context, error);
     }
