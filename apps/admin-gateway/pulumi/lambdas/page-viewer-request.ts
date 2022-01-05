@@ -1,8 +1,8 @@
 import { CloudFrontRequest, defineLambdaEdgeRequestHandler } from "@webiny/aws-helpers";
 
-import { stageCookie, stageHeader } from "./utils/common";
-import { GatewayConfig, isConfigRequest, loadConfig } from "./utils/config";
-import { getHeader, getRequestCookies, setHeader } from "./utils/headers";
+import { stageCookie, stageHeader } from "../utils/common";
+import { GatewayConfig, isConfigRequest, loadConfig } from "../utils/config";
+import { getHeader, getRequestCookies, setHeader } from "../utils/headers";
 
 export default defineLambdaEdgeRequestHandler(async event => {
     const cf = event.Records[0].cf;

@@ -1,14 +1,14 @@
 import { defineLambdaEdgeRequestHandler } from "@webiny/aws-helpers";
 
-import { stageCookie, stageHeader } from "./utils/common";
-import { isConfigRequest, loadConfig } from "./utils/config";
+import { stageCookie, stageHeader } from "../utils/common";
+import { isConfigRequest, loadConfig } from "../utils/config";
 import {
     getHeader,
-    setHeader,
     redirectResponse,
     setResponseCookie,
     getRequestCookies
-} from "./utils/headers";
+} from "../utils/headers";
+import { setDomainOrigin } from "../utils/origin";
 
 export default defineLambdaEdgeRequestHandler(async event => {
     const cf = event.Records[0].cf;
@@ -57,23 +57,7 @@ export default defineLambdaEdgeRequestHandler(async event => {
 
     console.log(`Forwarding to ${stageConfig.domain}`);
 
-    request.origin = {
-        custom: {
-            domainName: stageConfig.domain,
-            port: 443,
-            protocol: "https",
-            path: "",
-            sslProtocols: ["TLSv1", "TLSv1.1", "TLSv1.2"],
-            readTimeout: 5,
-            keepaliveTimeout: 5,
-            customHeaders: {}
-        }
-    };
-
-    setHeader(request.headers, {
-        key: "host",
-        value: stageConfig.domain
-    });
+    setDomainOrigin(request, stageConfig.domain);
 
     return request;
 });

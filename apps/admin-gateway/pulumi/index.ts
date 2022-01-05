@@ -48,9 +48,10 @@ export = async () => {
     // Some resources _must_ be put in us-east-1, such as Lambda at Edge.
     const awsUsEast1 = new aws.Provider("us-east-1", { region: "us-east-1" });
 
-    const viewerRequest = createLambda("viewer-request");
-    const originRequest = createLambda("origin-request");
-    const originResponse = createLambda("origin-response");
+    const pageViewerRequest = createLambda("page-viewer-request");
+    const pageOriginRequest = createLambda("page-origin-request");
+    const pageOriginResponse = createLambda("page-origin-response");
+    const assetOriginRequest = createLambda("asset-origin-request");
 
     const cloudfront = new aws.cloudfront.Distribution("admin-gateway-cdn", {
         enabled: true,
@@ -88,18 +89,38 @@ export = async () => {
             lambdaFunctionAssociations: [
                 {
                     eventType: "viewer-request",
-                    lambdaArn: viewerRequest.qualifiedArn
+                    lambdaArn: pageViewerRequest.qualifiedArn
                 },
                 {
                     eventType: "origin-request",
-                    lambdaArn: originRequest.qualifiedArn
+                    lambdaArn: pageOriginRequest.qualifiedArn
                 },
                 {
                     eventType: "origin-response",
-                    lambdaArn: originResponse.qualifiedArn
+                    lambdaArn: pageOriginResponse.qualifiedArn
                 }
             ]
         },
+        orderedCacheBehaviors: [
+            {
+                pathPattern: "/_assets/*",
+                compress: true,
+                targetOriginId: bucket.arn,
+                viewerProtocolPolicy: "redirect-to-https",
+                allowedMethods: ["GET", "HEAD", "OPTIONS"],
+                cachedMethods: ["GET", "HEAD", "OPTIONS"],
+                forwardedValues: {
+                    cookies: { forward: "none" },
+                    queryString: false
+                },
+                lambdaFunctionAssociations: [
+                    {
+                        eventType: "origin-request",
+                        lambdaArn: assetOriginRequest.qualifiedArn
+                    }
+                ]
+            }
+        ],
         priceClass: "PriceClass_100",
         customErrorResponses: [
             { errorCode: 404, responseCode: 404, responsePagePath: "/index.html" }
@@ -121,7 +142,7 @@ export = async () => {
 
     function createLambda(name: string) {
         const output = buildLambdaEdge({
-            file: join(__dirname, `${name}.ts`)
+            file: join(__dirname, `lambdas/${name}.ts`)
         });
 
         return new aws.lambda.Function(

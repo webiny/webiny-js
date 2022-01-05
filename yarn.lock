@@ -10768,6 +10768,7 @@ __metadata:
   resolution: "@webiny/aws-helpers@workspace:packages/aws-helpers"
   dependencies:
     "@types/aws-lambda": ^8.10.89
+    "@webiny/project-utils": ^5.20.0
   languageName: unknown
   linkType: soft
 
@@ -11426,7 +11427,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/project-utils@^5.21.0, @webiny/project-utils@workspace:packages/project-utils":
+"@webiny/project-utils@^5.20.0, @webiny/project-utils@^5.21.0, @webiny/project-utils@workspace:packages/project-utils":
   version: 0.0.0-use.local
   resolution: "@webiny/project-utils@workspace:packages/project-utils"
   dependencies:

@@ -1,7 +1,7 @@
 import { defineLambdaEdgeResponseHandler } from "@webiny/aws-helpers";
 
-import { pointsToFile, stageCookie, stageHeader } from "./utils/common";
-import { getHeader, setResponseCookie } from "./utils/headers";
+import { pointsToFile, stageCookie, stageHeader } from "../utils/common";
+import { getHeader, setResponseCookie } from "../utils/headers";
 
 export default defineLambdaEdgeResponseHandler(async event => {
     const cf = event.Records[0].cf;
