@@ -14,7 +14,8 @@ const DEFAULT_HEADERS: Record<string, string> = {
 };
 
 const OPTIONS_HEADERS: Record<string, string> = {
-    "Access-Control-Max-Age": "86400"
+    "Access-Control-Max-Age": "86400",
+    "Cache-Control": "public, max-age=86400"
 };
 
 const lowercaseKeys = obj => {
@@ -33,7 +34,7 @@ export default (options: HandlerHttpOptions = {}) => [
 
         if (invocationArgs.method.toLowerCase() === "options") {
             context.setResult({
-                statusCode: 204,
+                statusCode: 200,
                 body: "",
                 headers: {
                     ...DEFAULT_HEADERS,
