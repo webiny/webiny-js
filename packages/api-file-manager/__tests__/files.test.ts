@@ -397,7 +397,7 @@ describe("Files CRUD test", () => {
      * Testing the search locally and on deployed system shows that searching works.
      */
     // eslint-disable-next-line
-    it.skip("should find files by name", async () => {
+    it("should find files by name", async () => {
         const [createResponse] = await createFiles({
             data: [fileAData, fileBData, fileCData]
         });
