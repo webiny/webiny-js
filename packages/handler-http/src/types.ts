@@ -1,13 +1,13 @@
 import { ArgsContext } from "@webiny/handler-args/types";
 import { Context } from "@webiny/handler/types";
 
-type ResponseArgs = {
+interface ResponseArgs {
     statusCode?: number;
     headers?: {};
     body?: string;
-};
+}
 
-export type HttpRequestObject = {
+export interface HttpRequestObject {
     method: "POST" | "GET" | "PUT" | "DELETE" | "OPTIONS" | string;
     body: string;
     headers: { [key: string]: any };
@@ -17,17 +17,17 @@ export type HttpRequestObject = {
         parameters: { [key: string]: any };
         query: { [key: string]: any };
     };
-};
+}
 
-export type HttpObject = {
+export interface HttpObject {
     response: (args: ResponseArgs) => { [key: string]: any };
     request: HttpRequestObject;
-};
+}
 
 export interface HttpContext extends Context, ArgsContext {
     http: HttpObject;
 }
 
-export type HandlerHttpOptions = {
+export interface HandlerHttpOptions {
     debug?: boolean;
-};
+}

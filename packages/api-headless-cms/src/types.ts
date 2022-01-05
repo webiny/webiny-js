@@ -207,7 +207,12 @@ export interface CmsModelFieldValidatorValidateParams<T = any> {
     /**
      * An instance of the content model being validated.
      */
-    contentModel: CmsModel;
+    model: CmsModel;
+    /**
+     * If entry is sent it means it is an update operation.
+     * First usage is for the unique field value.
+     */
+    entry?: CmsEntry;
 }
 
 /**

@@ -1,21 +1,21 @@
 import { Plugin } from "@webiny/plugins";
 import { Context } from "~/types";
 
-export interface HandleError<T extends Context = Context> {
+export interface HandlerErrorCallable<T extends Context = Context> {
     (context: T, error: Error, next: Function): Promise<any>;
 }
 
 export class HandlerErrorPlugin<T extends Context = Context> extends Plugin {
     public static readonly type: string = "handler-error";
 
-    private readonly _handle: HandleError;
+    private readonly _callable: HandlerErrorCallable<T>;
 
-    public constructor(handle: HandleError) {
+    public constructor(callable: HandlerErrorCallable<T>) {
         super();
-        this._handle = handle;
+        this._callable = callable;
     }
 
     async handle(context: T, error: Error, next: Function): Promise<any> {
-        return this._handle(context, error, next);
+        return this._callable(context, error, next);
     }
 }
