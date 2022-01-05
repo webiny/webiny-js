@@ -59,7 +59,13 @@ async function handle(context: Context) {
         }
 
         const handlers = context.plugins.byType<HandlerPlugin>(HandlerPlugin.type);
-        const handler = middleware(handlers.map(pl => pl.handle));
+        const handler = middleware(
+            handlers.map(pl => {
+                return (context: Context, next: Function) => {
+                    return pl.handle(context, next);
+                };
+            })
+        );
         const result = await handler(context);
         if (!result) {
             throw new Error(`No result was returned from registered handlers.`);
@@ -70,7 +76,13 @@ async function handle(context: Context) {
         // Log error to cloud, as these can be extremely annoying to debug!
         console.log(error);
         const handlers = context.plugins.byType<HandlerErrorPlugin>(HandlerErrorPlugin.type);
-        const handler = middleware(handlers.map(pl => pl.handle));
+        const handler = middleware(
+            handlers.map(pl => {
+                return (context: Context, error: Error, next: Function) => {
+                    return pl.handle(context, error, next);
+                };
+            })
+        );
         return handler(context, error);
     }
 }
