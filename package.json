@@ -6,6 +6,7 @@
       "apps/admin/code",
       "apps/website/code",
       "apps/theme",
+      "apps/theme-1",
       "api/code/fileManager/*",
       "api/code/graphql",
       "api/code/headlessCMS",
@@ -14,16 +15,7 @@
       "api/code/pageBuilder/exportPages/*",
       "api/code/prerenderingService/render",
       "api/code/prerenderingService/flush",
-      "api/code/prerenderingService/queue/*",
-      "api-ddb/code/fileManager/*",
-      "api-ddb/code/graphql",
-      "api-ddb/code/headlessCMS",
-      "api-ddb/code/pageBuilder/updateSettings",
-      "api-ddb/code/pageBuilder/importPages/*",
-      "api-ddb/code/pageBuilder/exportPages/*",
-      "api-ddb/code/prerenderingService/render",
-      "api-ddb/code/prerenderingService/flush",
-      "api-ddb/code/prerenderingService/queue/*"
+      "api/code/prerenderingService/queue/*"
     ]
   },
   "author": "Webiny Ltd.",

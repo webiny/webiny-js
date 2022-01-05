@@ -3,6 +3,27 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.21.0](https://github.com/webiny/webiny-js/compare/v5.21.0-beta.0...v5.21.0) (2022-01-04)
+
+**Note:** Version bump only for package @webiny/api-headless-cms
+
+
+
+
+
+# [5.21.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.20.0...v5.21.0-beta.0) (2022-01-03)
+
+
+### Features
+
+* add possibility to output api version in headers ([#2143](https://github.com/webiny/webiny-js/issues/2143)) ([cc3f5cc](https://github.com/webiny/webiny-js/commit/cc3f5cce2456a92bc977bb49bffcf7e281911720))
+* introduce app-serverless-cms package ([bc78ef7](https://github.com/webiny/webiny-js/commit/bc78ef79695f7c7910fd1b8b9511ffd6de8f3fcb))
+* **api-headless-cms:** marked required fields in graphql ([#2144](https://github.com/webiny/webiny-js/issues/2144)) ([bb0277e](https://github.com/webiny/webiny-js/commit/bb0277eb1058f9e970e46d23c2333f592565cba4))
+
+
+
+
+
 # [5.20.0](https://github.com/webiny/webiny-js/compare/v5.20.0-beta.2...v5.20.0) (2021-12-23)
 
 **Note:** Version bump only for package @webiny/api-headless-cms

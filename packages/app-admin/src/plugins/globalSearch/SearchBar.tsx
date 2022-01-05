@@ -24,6 +24,7 @@ import {
     icon,
     searchWrapper
 } from "./styled";
+import { makeComposable } from "~/index";
 
 type SearchBarProps = UseRouter;
 
@@ -246,4 +247,4 @@ const SearchBarContainer = () => {
     return <SearchBar {...routerProps} />;
 };
 
-export default SearchBarContainer;
+export default makeComposable("SearchBarContainer", SearchBarContainer);

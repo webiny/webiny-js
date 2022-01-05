@@ -1,7 +1,7 @@
 import { Plugin } from "@webiny/plugins/types";
-import { ContextInterface } from "@webiny/handler/types";
+import { Context } from "@webiny/handler/types";
 
-export interface UpgradePlugin<T extends ContextInterface = ContextInterface> extends Plugin {
+export interface UpgradePlugin<T extends Context = Context> extends Plugin {
     type: "api-upgrade";
     app: string;
     version: string;

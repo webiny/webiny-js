@@ -1,13 +1,13 @@
 import { Plugin } from "@webiny/plugins/types";
 import { I18NContext, I18NLocale } from "@webiny/api-i18n/types";
-import { ContextInterface } from "@webiny/handler/types";
+import { Context } from "@webiny/handler/types";
 import { TenancyContext } from "@webiny/api-tenancy/types";
 import {
     GraphQLFieldResolver,
     GraphQLSchemaDefinition,
     Resolvers
 } from "@webiny/handler-graphql/types";
-import { BaseI18NContentContext } from "@webiny/api-i18n-content/types";
+import { I18NContentContext } from "@webiny/api-i18n-content/types";
 import { SecurityPermission } from "@webiny/api-security/types";
 import { HttpContext } from "@webiny/handler-http/types";
 import { DbContext } from "@webiny/handler-db/types";
@@ -56,12 +56,12 @@ export interface HeadlessCms
  * @category Context
  */
 export interface CmsContext
-    extends ContextInterface,
+    extends Context,
         DbContext,
         HttpContext,
         I18NContext,
         FileManagerContext,
-        BaseI18NContentContext,
+        I18NContentContext,
         TenancyContext {
     cms: HeadlessCms;
 }
@@ -207,7 +207,12 @@ export interface CmsModelFieldValidatorValidateParams<T = any> {
     /**
      * An instance of the content model being validated.
      */
-    contentModel: CmsModel;
+    model: CmsModel;
+    /**
+     * If entry is sent it means it is an update operation.
+     * First usage is for the unique field value.
+     */
+    entry?: CmsEntry;
 }
 
 /**
@@ -1223,12 +1228,12 @@ export interface AfterModelCreateTopicParams {
     model: CmsModel;
 }
 export interface BeforeModelCreateFromTopicParams {
-    input: CmsModelCreateFromInput;
+    input: CmsModelCreateInput;
     original: CmsModel;
     model: CmsModel;
 }
 export interface AfterModelCreateFromTopicParams {
-    input: CmsModelCreateFromInput;
+    input: CmsModelCreateInput;
     original: CmsModel;
     model: CmsModel;
 }
@@ -1261,15 +1266,6 @@ export interface CmsModelUpdateDirectParams {
  * @category CmsModel
  */
 export interface CmsModelContext {
-    /**
-     * A function defining usage of a method with authenticating the user but not throwing an error.
-     */
-    silentAuthModel: () => {
-        /**
-         * Get all content models.
-         */
-        list: () => Promise<CmsModel[]>;
-    };
     /**
      * Get a single content model.
      */
@@ -1304,7 +1300,7 @@ export interface CmsModelContext {
      *
      * @see CmsModelManager
      */
-    getModelManager: (modelId: string) => Promise<CmsModelManager>;
+    getModelManager: (model: CmsModel | string) => Promise<CmsModelManager>;
     /**
      * Get all content model managers mapped by modelId.
      * @see CmsModelManager
@@ -1467,36 +1463,40 @@ export interface CmsEntryMeta {
 }
 
 export interface BeforeEntryCreateTopicParams {
-    input: Partial<CmsEntry>;
+    input: CreateCmsEntryInput;
     entry: CmsEntry;
     model: CmsModel;
 }
 export interface AfterEntryCreateTopicParams {
-    input: Partial<CmsEntry>;
+    input: CreateCmsEntryInput;
     entry: CmsEntry;
     model: CmsModel;
     storageEntry: CmsEntry;
 }
 
-export interface BeforeEntryRevisionCreateTopicParams {
+export interface BeforeEntryCreateRevisionTopicParams {
+    input: CreateFromCmsEntryInput;
     entry: CmsEntry;
+    original: CmsEntry;
     model: CmsModel;
 }
 
-export interface AfterEntryRevisionCreateTopicParams {
+export interface AfterEntryCreateRevisionTopicParams {
+    input: CreateFromCmsEntryInput;
     entry: CmsEntry;
+    original: CmsEntry;
     model: CmsModel;
     storageEntry: CmsEntry;
 }
 
 export interface BeforeEntryUpdateTopicParams {
-    input: Partial<CmsEntry>;
+    input: UpdateCmsEntryInput;
     original: CmsEntry;
     entry: CmsEntry;
     model: CmsModel;
 }
 export interface AfterEntryUpdateTopicParams {
-    input: Partial<CmsEntry>;
+    input: UpdateCmsEntryInput;
     original: CmsEntry;
     entry: CmsEntry;
     model: CmsModel;
@@ -1556,11 +1556,11 @@ export interface AfterEntryDeleteTopicParams {
     model: CmsModel;
 }
 
-export interface BeforeEntryRevisionDeleteTopicParams {
+export interface BeforeEntryDeleteRevisionTopicParams {
     entry: CmsEntry;
     model: CmsModel;
 }
-export interface AfterEntryRevisionDeleteTopicParams {
+export interface AfterEntryDeleteRevisionTopicParams {
     entry: CmsEntry;
     model: CmsModel;
 }
@@ -1575,6 +1575,29 @@ export interface BeforeEntryListTopicParams {
     model: CmsModel;
 }
 
+/**
+ * @category Context
+ * @category CmsEntry
+ */
+export interface CreateCmsEntryInput {
+    [key: string]: any;
+}
+
+/**
+ * @category Context
+ * @category CmsEntry
+ */
+export interface CreateFromCmsEntryInput {
+    [key: string]: any;
+}
+
+/**
+ * @category Context
+ * @category CmsEntry
+ */
+export interface UpdateCmsEntryInput {
+    [key: string]: any;
+}
 /**
  * Cms Entry CRUD methods in the context.
  *
@@ -1626,19 +1649,19 @@ export interface CmsEntryContext {
     /**
      * Create a new content entry.
      */
-    createEntry: (model: CmsModel, data: Record<string, any>) => Promise<CmsEntry>;
+    createEntry: (model: CmsModel, input: CreateCmsEntryInput) => Promise<CmsEntry>;
     /**
      * Create a new entry from already existing entry.
      */
     createEntryRevisionFrom: (
         model: CmsModel,
         id: string,
-        data: Record<string, any>
+        input: CreateFromCmsEntryInput
     ) => Promise<CmsEntry>;
     /**
      * Update existing entry.
      */
-    updateEntry: (model: CmsModel, id: string, data?: Record<string, any>) => Promise<CmsEntry>;
+    updateEntry: (model: CmsModel, id: string, input?: UpdateCmsEntryInput) => Promise<CmsEntry>;
     /**
      * Method that republishes entry with given identifier.
      * @internal
@@ -1677,14 +1700,14 @@ export interface CmsEntryContext {
      */
     onBeforeEntryCreate: Topic<BeforeEntryCreateTopicParams>;
     onAfterEntryCreate: Topic<AfterEntryCreateTopicParams>;
-    onBeforeEntryRevisionCreate: Topic<BeforeEntryRevisionCreateTopicParams>;
-    onAfterEntryRevisionCreate: Topic<AfterEntryRevisionCreateTopicParams>;
+    onBeforeEntryCreateRevision: Topic<BeforeEntryCreateRevisionTopicParams>;
+    onAfterEntryCreateRevision: Topic<AfterEntryCreateRevisionTopicParams>;
     onBeforeEntryUpdate: Topic<BeforeEntryUpdateTopicParams>;
     onAfterEntryUpdate: Topic<AfterEntryUpdateTopicParams>;
     onBeforeEntryDelete: Topic<BeforeEntryDeleteTopicParams>;
     onAfterEntryDelete: Topic<AfterEntryDeleteTopicParams>;
-    onBeforeEntryRevisionDelete: Topic<BeforeEntryRevisionDeleteTopicParams>;
-    onAfterEntryRevisionDelete: Topic<AfterEntryRevisionDeleteTopicParams>;
+    onBeforeEntryDeleteRevision: Topic<BeforeEntryDeleteRevisionTopicParams>;
+    onAfterEntryDeleteRevision: Topic<AfterEntryDeleteRevisionTopicParams>;
     onBeforeEntryPublish: Topic<BeforeEntryPublishTopicParams>;
     onAfterEntryPublish: Topic<AfterEntryPublishTopicParams>;
     onBeforeEntryUnpublish: Topic<BeforeEntryUnpublishTopicParams>;

@@ -85,7 +85,11 @@ const plugin: AdminInstallationPlugin = {
     name: "admin-installation-fb",
     type: "admin-installation",
     title: t`Form Builder`,
-    dependencies: ["admin-installation-security"],
+    dependencies: [
+        "admin-installation-security",
+        "admin-installation-i18n",
+        "admin-installation-fm"
+    ],
     secure: true,
     async getInstalledVersion({ client }) {
         const { data } = await client.query({ query: IS_INSTALLED });

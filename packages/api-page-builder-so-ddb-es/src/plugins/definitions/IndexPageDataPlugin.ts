@@ -1,11 +1,10 @@
-import { Plugin } from "@webiny/plugins";
-import { PbContext } from "@webiny/api-page-builder/graphql/types";
+import { Plugin, PluginsContainer } from "@webiny/plugins";
 import { Page } from "@webiny/api-page-builder/types";
 
 interface ApplyPageDataParams<TPage> {
     data: Record<string, any>;
     page: TPage;
-    context: PbContext;
+    plugins: PluginsContainer;
 }
 
 interface ApplyPageDataCallable<TPage> {

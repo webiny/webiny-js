@@ -120,7 +120,11 @@ export default {
     name: "admin-installation-pb",
     type: "admin-installation",
     title: t`Page Builder`,
-    dependencies: [],
+    dependencies: [
+        "admin-installation-security",
+        "admin-installation-i18n",
+        "admin-installation-fm"
+    ],
     secure: true,
     async getInstalledVersion({ client }) {
         const { data } = await client.query({ query: IS_INSTALLED });

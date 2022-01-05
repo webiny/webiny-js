@@ -1,4 +1,5 @@
 import { ApolloLink } from "apollo-link";
+import { nanoid } from "nanoid";
 import { Plugin } from "@webiny/plugins";
 
 interface ApolloLinkFactory {
@@ -9,16 +10,23 @@ export class ApolloLinkPlugin extends Plugin {
     public static readonly type = "apollo-link";
     public readonly cacheKey;
     private factory: ApolloLinkFactory;
+    private cache;
 
     constructor(factory?: ApolloLinkFactory) {
         super();
         this.factory = factory;
-        this.cacheKey = Date.now();
+        this.cacheKey = nanoid();
     }
 
     createLink(): ApolloLink {
+        if (this.cache) {
+            return this.cache;
+        }
+
         if (typeof this.factory === "function") {
-            return this.factory();
+            this.cache = this.factory();
+
+            return this.cache;
         }
 
         throw Error(

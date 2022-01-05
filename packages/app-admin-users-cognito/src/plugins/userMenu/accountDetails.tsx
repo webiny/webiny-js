@@ -3,10 +3,6 @@ import { css } from "emotion";
 import { ListItem, ListItemGraphic } from "@webiny/ui/List";
 import { Icon } from "@webiny/ui/Icon";
 import { Link } from "@webiny/react-router";
-import { GenericElement } from "@webiny/app-admin/ui/elements/GenericElement";
-import { UIViewPlugin } from "@webiny/app-admin/ui/UIView";
-import { AdminView } from "@webiny/app-admin/ui/views/AdminView";
-import { UserMenuElement } from "@webiny/app-admin/plugins/userMenu/UserMenuElement";
 import { ReactComponent as AccountIcon } from "~/assets/icons/round-account_circle-24px.svg";
 import { ReactComponent as LogoutIcon } from "~/assets/icons/logout_black_24dp.svg";
 import { useSecurity } from "@webiny/app-security";
@@ -18,7 +14,7 @@ const linkStyles = css({
     }
 });
 
-const AccountDetails = () => {
+export const AccountDetails = () => {
     const security = useSecurity();
     const tenancy = useTenancy();
 
@@ -53,11 +49,8 @@ const AccountDetails = () => {
 };
 
 export default () => {
-    return new UIViewPlugin<AdminView>(AdminView, view => {
-        const userMenu = view.getElement<UserMenuElement>("userMenu");
-
-        if (userMenu) {
-            userMenu.addElement(new GenericElement("accountDetails", () => <AccountDetails />));
-        }
-    });
+    console.log(
+        `[DEPRECATED] Import "@webiny/app-admin-users-cognito/plugins/userMenu/accountDetails" is no longer used!`
+    );
+    return { type: "dummy" };
 };

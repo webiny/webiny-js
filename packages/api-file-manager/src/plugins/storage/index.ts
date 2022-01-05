@@ -1,5 +1,5 @@
 import { FileManagerContext } from "~/types";
-import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
+import { ContextPlugin } from "@webiny/handler";
 import { FileStorage } from "./FileStorage";
 
 const fileStorageContextPlugin = new ContextPlugin<FileManagerContext>(async context => {

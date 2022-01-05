@@ -1,8 +1,8 @@
 import { interceptConsole } from "./interceptConsole";
 import { GraphQLAfterQueryPlugin, GraphQLBeforeQueryPlugin } from "./types";
-import { ContextInterface, ContextPlugin } from "@webiny/handler/types";
+import { Context, ContextPlugin } from "@webiny/handler/types";
 
-interface DebugContext extends ContextInterface {
+interface DebugContext extends Context {
     debug: {
         logs?: { method: string; args: any }[];
     };

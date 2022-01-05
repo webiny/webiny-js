@@ -7,7 +7,7 @@
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSchemaPlugin";
 import { LocalesAttributePlugin } from "~/plugins/LocalesAttributePlugin";
 import WebinyError from "@webiny/error";
-import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
+import { ContextPlugin } from "@webiny/handler";
 import { I18NContext } from "@webiny/api-i18n/types";
 
 const fieldName = "origin";

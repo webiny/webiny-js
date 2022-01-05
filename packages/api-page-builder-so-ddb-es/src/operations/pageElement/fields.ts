@@ -1,6 +1,6 @@
 import { PageElementDynamoDbElasticFieldPlugin } from "~/plugins/definitions/PageElementDynamoDbElasticFieldPlugin";
 
-export default () => [
+export const createPageElementDynamoDbFields = (): PageElementDynamoDbElasticFieldPlugin[] => [
     new PageElementDynamoDbElasticFieldPlugin({
         field: "createdOn",
         type: "date"

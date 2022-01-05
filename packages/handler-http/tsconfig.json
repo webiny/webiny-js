@@ -5,7 +5,12 @@
     {
       "path": "../handler"
     },
-    { "path": "../utils" }
+    {
+      "path": "../handler-args"
+    },
+    {
+      "path": "../utils"
+    }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -15,6 +20,8 @@
       "~/*": ["./src/*"],
       "@webiny/handler/*": ["../handler/src/*"],
       "@webiny/handler": ["../handler/src"],
+      "@webiny/handler-args/*": ["../handler-args/src/*"],
+      "@webiny/handler-args": ["../handler-args/src"],
       "@webiny/utils/*": ["../utils/src/*"],
       "@webiny/utils": ["../utils/src"]
     },
