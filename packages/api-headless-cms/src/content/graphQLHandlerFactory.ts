@@ -29,7 +29,7 @@ interface ParsedBody {
     operationName: string;
 }
 
-const DEFAULT_HEADERS = {
+const DEFAULT_HEADERS: Record<string, string> = {
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Headers": "*",
     "Access-Control-Allow-Methods": "OPTIONS,POST",
@@ -38,6 +38,11 @@ const DEFAULT_HEADERS = {
 };
 
 const DEFAULT_CACHE_MAX_AGE = 30758400; // 1 year
+
+const OPTIONS_HEADERS: Record<string, string> = {
+    "Access-Control-Max-Age": `${DEFAULT_CACHE_MAX_AGE}`,
+    "Cache-Control": `public, max-age=${DEFAULT_CACHE_MAX_AGE}`
+};
 
 const respond = (http, result: unknown) => {
     return http.response({
@@ -137,7 +142,7 @@ export const graphQLHandlerFactory = (
                         statusCode: 204,
                         headers: {
                             ...DEFAULT_HEADERS,
-                            "Cache-Control": "public, max-age=" + DEFAULT_CACHE_MAX_AGE
+                            ...OPTIONS_HEADERS
                         }
                     });
                 }
