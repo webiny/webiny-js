@@ -24,6 +24,7 @@ const fruitFields = `
     isSomething
     rating
     description
+    slug
 `;
 
 const errorFields = `

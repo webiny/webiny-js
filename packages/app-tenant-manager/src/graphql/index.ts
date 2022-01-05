@@ -6,11 +6,6 @@ const fields = /* GraphQL */ `
         name
         description
         parent
-        settings {
-            domains {
-                fqdn
-            }
-        }
     }
 `;
 

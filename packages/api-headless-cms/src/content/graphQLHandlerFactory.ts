@@ -9,6 +9,7 @@ import debugPlugins from "@webiny/handler-graphql/debugPlugins";
 import processRequestBody from "@webiny/handler-graphql/processRequestBody";
 import buildSchemaPlugins from "./plugins/buildSchemaPlugins";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins";
+import { getWebinyVersionHeaders } from "@webiny/utils";
 
 export interface CreateGraphQLHandlerOptions {
     debug?: boolean;
@@ -28,14 +29,20 @@ interface ParsedBody {
     operationName: string;
 }
 
-const DEFAULT_HEADERS = {
+const DEFAULT_HEADERS: Record<string, string> = {
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Headers": "*",
     "Access-Control-Allow-Methods": "OPTIONS,POST",
-    "Content-Type": "application/json"
+    "Content-Type": "application/json",
+    ...getWebinyVersionHeaders()
 };
 
 const DEFAULT_CACHE_MAX_AGE = 30758400; // 1 year
+
+const OPTIONS_HEADERS: Record<string, string> = {
+    "Access-Control-Max-Age": `${DEFAULT_CACHE_MAX_AGE}`,
+    "Cache-Control": `public, max-age=${DEFAULT_CACHE_MAX_AGE}`
+};
 
 const respond = (http, result: unknown) => {
     return http.response({
@@ -135,7 +142,7 @@ export const graphQLHandlerFactory = (
                         statusCode: 204,
                         headers: {
                             ...DEFAULT_HEADERS,
-                            "Cache-Control": "public, max-age=" + DEFAULT_CACHE_MAX_AGE
+                            ...OPTIONS_HEADERS
                         }
                     });
                 }

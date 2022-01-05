@@ -40,7 +40,7 @@ const DATA_FIELDS = /* GraphQL */ `
 `;
 
 export const GET_SETTINGS = gql`
-    query GetSettings {
+    query PbGetSettings {
         pageBuilder {
             getSettings ${DATA_FIELDS}
             getDefaultSettings ${DATA_FIELDS}

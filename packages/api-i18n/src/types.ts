@@ -1,8 +1,9 @@
 import { Plugin } from "@webiny/plugins/types";
 import { ClientContext } from "@webiny/handler-client/types";
-import { ContextInterface } from "@webiny/handler/types";
+import { Context } from "@webiny/handler/types";
 import { TenancyContext } from "@webiny/api-tenancy/types";
 import { Topic } from "@webiny/pubsub/types";
+import { SecurityContext } from "@webiny/api-security/types";
 
 export interface I18NLocale {
     code: string;
@@ -57,7 +58,7 @@ export interface SystemCRUD {
     installSystem(params: SystemInstallParams): Promise<void>;
 }
 
-export interface I18NContext extends ContextInterface, ClientContext, TenancyContext {
+export interface I18NContext extends Context, ClientContext, TenancyContext, SecurityContext {
     i18n: I18NContextObject;
 }
 

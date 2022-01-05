@@ -1,10 +1,14 @@
-import { Context } from "@webiny/handler/types";
-import { HandlerClientPlugin, HandlerClientHandlerPlugin, InvokeArgs } from "./types";
+import {
+    HandlerClientPlugin,
+    HandlerClientHandlerPlugin,
+    InvokeArgs,
+    ClientContext
+} from "./types";
 import WebinyError from "@webiny/error";
 
 class HandlerClient {
-    plugin: HandlerClientPlugin;
-    constructor(context: Context) {
+    private readonly plugin: HandlerClientPlugin;
+    constructor(context: ClientContext) {
         this.plugin = context.plugins.byName<HandlerClientPlugin>("handler-client");
         if (!this.plugin) {
             // If not specified, use a fallback plugin that fetches different handlers via plugins.

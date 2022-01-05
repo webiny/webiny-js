@@ -6,9 +6,6 @@ import { Image } from "@webiny/app/components";
 import { ListItem, ListItemGraphic } from "@webiny/ui/List";
 import { Typography } from "@webiny/ui/Typography";
 import { Avatar } from "@webiny/ui/Avatar";
-import { GenericElement } from "@webiny/app-admin/ui/elements/GenericElement";
-import { UIViewPlugin } from "@webiny/app-admin/ui/UIView";
-import { AdminView } from "@webiny/app-admin/ui/views/AdminView";
 
 const avatarImage = css({
     height: "40px !important",
@@ -65,7 +62,7 @@ const linkStyles = css({
     }
 });
 
-const UserInfo = () => {
+export const UserInfo = () => {
     const security = useSecurity();
 
     if (!security || !security.identity) {
@@ -107,14 +104,8 @@ const UserInfo = () => {
 };
 
 export default () => {
-    return new UIViewPlugin<AdminView>(AdminView, view => {
-        const userMenu = view.getElement("userMenu");
-        if (!userMenu) {
-            return;
-        }
-
-        const userInfo = new GenericElement("userInfo", () => <UserInfo />);
-        userInfo.moveToTheBeginningOf(userMenu);
-        view.refresh();
-    });
+    console.log(
+        `[DEPRECATED] Import "@webiny/app-admin-users-cognito/plugins/userMenu/userInfo" is no longer used!`
+    );
+    return { type: "dummy" };
 };

@@ -1,7 +1,6 @@
 import gql from "graphql-tag";
 import { makeExecutableSchema } from "@graphql-tools/schema";
 import { GraphQLScalarPlugin } from "./types";
-import { Context } from "@webiny/handler/types";
 import { HttpContext } from "@webiny/handler-http/types";
 import {
     RefInput,
@@ -14,7 +13,7 @@ import {
     LongScalar
 } from "./builtInTypes";
 
-export const createGraphQLSchema = (context: Context<HttpContext>) => {
+export const createGraphQLSchema = (context: HttpContext) => {
     const scalars = context.plugins
         .byType<GraphQLScalarPlugin>("graphql-scalar")
         .map(item => item.scalar);

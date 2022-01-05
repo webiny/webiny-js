@@ -8,18 +8,11 @@ jest.setTimeout(100000);
 describe("listing latest pages", () => {
     const handler = useGqlHandler();
 
-    const {
-        createCategory,
-        createPage,
-        publishPage,
-        unpublishPage,
-        requestReview,
-        listPages,
-        updatePage,
-        until
-    } = handler;
+    const { createPage, publishPage, unpublishPage, requestReview, listPages, updatePage, until } =
+        handler;
 
     const createInitialCategory = async () => {
+        const { createCategory } = useGqlHandler();
         const [createCategoryResponse] = await createCategory({
             data: {
                 slug: `category`,
@@ -213,6 +206,7 @@ describe("listing latest pages", () => {
     });
 
     test("filtering by category", async () => {
+        const { createCategory } = useGqlHandler();
         await createInitialData();
         await createCategory({
             data: {
@@ -326,8 +320,35 @@ describe("listing latest pages", () => {
     test("filtering by status", async () => {
         const initialData = await createInitialData();
         // Let's publish first two pages and then only filter by `status: published`
-        await publishPage({ id: initialData.pages[0].id });
-        await publishPage({ id: initialData.pages[1].id });
+        const [page1PublishResponse] = await publishPage({ id: initialData.pages[0].id });
+
+        expect(page1PublishResponse).toMatchObject({
+            data: {
+                pageBuilder: {
+                    publishPage: {
+                        data: {
+                            id: initialData.pages[0].id
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+
+        const [page2PublishResponse] = await publishPage({ id: initialData.pages[1].id });
+
+        expect(page2PublishResponse).toMatchObject({
+            data: {
+                pageBuilder: {
+                    publishPage: {
+                        data: {
+                            id: initialData.pages[1].id
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
 
         // We should still get all results when no filters are applied.
         // 1. Check if all were returned and sorted `createdOn: desc`.
@@ -357,7 +378,9 @@ describe("listing latest pages", () => {
         // 2. We should only get two results here because we published two pages.
         const [listPagesPublishedCreatedOnDesc] = await until(
             () => listPages({ where: { status: "published" }, sort: ["createdOn_DESC"] }),
-            ([res]) => res.data.pageBuilder.listPages.data.length === 2,
+            ([res]) => {
+                return res.data.pageBuilder.listPages.data.length === 2;
+            },
             {
                 name: "list published pages createdOn desc"
             }
@@ -833,6 +856,7 @@ describe("listing latest pages", () => {
     });
 
     test("searching by text", async () => {
+        const { createCategory } = useGqlHandler();
         await createInitialCategory();
         await createCategory({
             data: {

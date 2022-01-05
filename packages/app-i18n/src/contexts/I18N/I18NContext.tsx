@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, memo, useMemo } from "react";
 import { useQuery } from "@apollo/react-hooks";
 import gql from "graphql-tag";
 
@@ -54,10 +54,11 @@ const updateLocaleStorage = currentLocales => {
     );
 };
 
-export const I18NProvider = (props: I18NProviderProps) => {
+export const I18NProvider = memo(function I18NProvider(props: I18NProviderProps) {
     const { children, loader } = props;
     const [state, setState] = useState<I18NContextState>(defaultState);
     const { loading, refetch } = useQuery(GET_I18N_INFORMATION, {
+        skip: state.locales.length > 0,
         onCompleted(data) {
             const { currentLocales: fetchedCurrentLocales, locales } =
                 data?.i18n?.getI18NInformation || {};
@@ -93,12 +94,15 @@ export const I18NProvider = (props: I18NProviderProps) => {
         return loader;
     }
 
-    const value = {
-        refetchLocales: refetch,
-        updateLocaleStorage,
-        state,
-        setState
-    };
+    const value = useMemo(
+        () => ({
+            refetchLocales: refetch,
+            updateLocaleStorage,
+            state,
+            setState
+        }),
+        [state]
+    );
 
     return <I18NContext.Provider value={value}>{children}</I18NContext.Provider>;
-};
+});

@@ -14,8 +14,8 @@ import {
     AfterEntryUpdateTopicParams,
     AfterEntryDeleteTopicParams,
     BeforeEntryDeleteTopicParams,
-    BeforeEntryRevisionCreateTopicParams,
-    AfterEntryRevisionCreateTopicParams,
+    BeforeEntryCreateRevisionTopicParams,
+    AfterEntryCreateRevisionTopicParams,
     BeforeEntryPublishTopicParams,
     AfterEntryPublishTopicParams,
     BeforeEntryUnpublishTopicParams,
@@ -24,11 +24,13 @@ import {
     AfterEntryRequestChangesTopicParams,
     BeforeEntryRequestReviewTopicParams,
     AfterEntryRequestReviewTopicParams,
-    BeforeEntryRevisionDeleteTopicParams,
-    AfterEntryRevisionDeleteTopicParams,
+    BeforeEntryDeleteRevisionTopicParams,
+    AfterEntryDeleteRevisionTopicParams,
     BeforeEntryGetTopicParams,
     BeforeEntryListTopicParams,
-    CmsEntryListWhere
+    CmsEntryListWhere,
+    UpdateCmsEntryInput,
+    CreateCmsEntryInput
 } from "~/types";
 import * as utils from "~/utils";
 import { validateModelEntryData } from "./contentEntry/entryDataValidation";
@@ -51,17 +53,17 @@ export const STATUS_UNPUBLISHED = "unpublished";
 export const STATUS_CHANGES_REQUESTED = "changesRequested";
 export const STATUS_REVIEW_REQUESTED = "reviewRequested";
 
-const cleanInputData = (model: CmsModel, inputData: Record<string, any>): Record<string, any> => {
+const cleanInputData = (model: CmsModel, input: CreateCmsEntryInput): CreateCmsEntryInput => {
     return model.fields.reduce((acc, field) => {
-        acc[field.fieldId] = inputData[field.fieldId];
+        acc[field.fieldId] = input[field.fieldId];
         return acc;
     }, {});
 };
 
 const cleanUpdatedInputData = (
     model: CmsModel,
-    input: Record<string, any>
-): Record<string, any> => {
+    input: UpdateCmsEntryInput
+): UpdateCmsEntryInput => {
     return model.fields.reduce((acc, field) => {
         if (input[field.fieldId] === undefined) {
             return acc;
@@ -134,40 +136,40 @@ export interface Params {
 export const createContentEntryCrud = (params: Params): CmsEntryContext => {
     const { storageOperations, context, getIdentity } = params;
 
-    const onBeforeCreate = createTopic<BeforeEntryCreateTopicParams>();
-    const onAfterCreate = createTopic<AfterEntryCreateTopicParams>();
-    const onBeforeCreateRevision = createTopic<BeforeEntryRevisionCreateTopicParams>();
-    const onAfterCreateRevision = createTopic<AfterEntryRevisionCreateTopicParams>();
-    const onBeforeUpdate = createTopic<BeforeEntryUpdateTopicParams>();
-    const onAfterUpdate = createTopic<AfterEntryUpdateTopicParams>();
-    const onBeforePublish = createTopic<BeforeEntryPublishTopicParams>();
-    const onAfterPublish = createTopic<AfterEntryPublishTopicParams>();
-    const onBeforeUnpublish = createTopic<BeforeEntryUnpublishTopicParams>();
-    const onAfterUnpublish = createTopic<AfterEntryUnpublishTopicParams>();
-    const onBeforeRequestChanges = createTopic<BeforeEntryRequestChangesTopicParams>();
-    const onAfterRequestChanges = createTopic<AfterEntryRequestChangesTopicParams>();
-    const onBeforeRequestReview = createTopic<BeforeEntryRequestReviewTopicParams>();
-    const onAfterRequestReview = createTopic<AfterEntryRequestReviewTopicParams>();
-    const onBeforeDelete = createTopic<BeforeEntryDeleteTopicParams>();
-    const onAfterDelete = createTopic<AfterEntryDeleteTopicParams>();
-    const onBeforeDeleteRevision = createTopic<BeforeEntryRevisionDeleteTopicParams>();
-    const onAfterDeleteRevision = createTopic<AfterEntryRevisionDeleteTopicParams>();
-    const onBeforeGet = createTopic<BeforeEntryGetTopicParams>();
-    const onBeforeList = createTopic<BeforeEntryListTopicParams>();
+    const onBeforeEntryCreate = createTopic<BeforeEntryCreateTopicParams>();
+    const onAfterEntryCreate = createTopic<AfterEntryCreateTopicParams>();
+    const onBeforeEntryCreateRevision = createTopic<BeforeEntryCreateRevisionTopicParams>();
+    const onAfterEntryCreateRevision = createTopic<AfterEntryCreateRevisionTopicParams>();
+    const onBeforeEntryUpdate = createTopic<BeforeEntryUpdateTopicParams>();
+    const onAfterEntryUpdate = createTopic<AfterEntryUpdateTopicParams>();
+    const onBeforeEntryPublish = createTopic<BeforeEntryPublishTopicParams>();
+    const onAfterEntryPublish = createTopic<AfterEntryPublishTopicParams>();
+    const onBeforeEntryUnpublish = createTopic<BeforeEntryUnpublishTopicParams>();
+    const onAfterEntryUnpublish = createTopic<AfterEntryUnpublishTopicParams>();
+    const onBeforeEntryRequestChanges = createTopic<BeforeEntryRequestChangesTopicParams>();
+    const onAfterEntryRequestChanges = createTopic<AfterEntryRequestChangesTopicParams>();
+    const onBeforeEntryRequestReview = createTopic<BeforeEntryRequestReviewTopicParams>();
+    const onAfterEntryRequestReview = createTopic<AfterEntryRequestReviewTopicParams>();
+    const onBeforeEntryDelete = createTopic<BeforeEntryDeleteTopicParams>();
+    const onAfterEntryDelete = createTopic<AfterEntryDeleteTopicParams>();
+    const onBeforeEntryDeleteRevision = createTopic<BeforeEntryDeleteRevisionTopicParams>();
+    const onAfterEntryDeleteRevision = createTopic<AfterEntryDeleteRevisionTopicParams>();
+    const onBeforeEntryGet = createTopic<BeforeEntryGetTopicParams>();
+    const onBeforeEntryList = createTopic<BeforeEntryListTopicParams>();
     /**
      * We need to assign some default behaviors.
      */
     assignBeforeEntryCreate({
         context,
-        onBeforeCreate
+        onBeforeEntryCreate
     });
     assignBeforeEntryUpdate({
         context,
-        onBeforeUpdate
+        onBeforeEntryUpdate
     });
     assignAfterEntryDelete({
         context,
-        onAfterDelete
+        onAfterEntryDelete
     });
 
     const checkEntryPermissions = (check: {
@@ -183,7 +185,7 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
     const deleteEntry = async (params: DeleteEntryParams): Promise<void> => {
         const { model, entry, storageEntry } = params;
         try {
-            await onBeforeDelete.publish({
+            await onBeforeEntryDelete.publish({
                 entry,
                 model
             });
@@ -193,7 +195,7 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
                 storageEntry
             });
 
-            await onAfterDelete.publish({
+            await onAfterEntryDelete.publish({
                 entry,
                 model
             });
@@ -222,26 +224,26 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
     };
 
     return {
-        onBeforeEntryCreate: onBeforeCreate,
-        onAfterEntryCreate: onAfterCreate,
-        onBeforeEntryRevisionCreate: onBeforeCreateRevision,
-        onAfterEntryRevisionCreate: onAfterCreateRevision,
-        onBeforeEntryUpdate: onBeforeUpdate,
-        onAfterEntryUpdate: onAfterUpdate,
-        onBeforeEntryDelete: onBeforeDelete,
-        onAfterEntryDelete: onAfterDelete,
-        onBeforeEntryRevisionDelete: onBeforeDeleteRevision,
-        onAfterEntryRevisionDelete: onAfterDeleteRevision,
-        onBeforeEntryPublish: onBeforePublish,
-        onAfterEntryPublish: onAfterPublish,
-        onBeforeEntryUnpublish: onBeforeUnpublish,
-        onAfterEntryUnpublish: onAfterUnpublish,
-        onBeforeEntryRequestChanges: onBeforeRequestChanges,
-        onAfterEntryRequestChanges: onAfterRequestChanges,
-        onBeforeEntryRequestReview: onBeforeRequestReview,
-        onAfterEntryRequestReview: onAfterRequestReview,
-        onBeforeEntryGet: onBeforeGet,
-        onBeforeEntryList: onBeforeList,
+        onBeforeEntryCreate,
+        onAfterEntryCreate,
+        onBeforeEntryCreateRevision,
+        onAfterEntryCreateRevision,
+        onBeforeEntryUpdate,
+        onAfterEntryUpdate,
+        onBeforeEntryDelete,
+        onAfterEntryDelete,
+        onBeforeEntryDeleteRevision,
+        onAfterEntryDeleteRevision,
+        onBeforeEntryPublish,
+        onAfterEntryPublish,
+        onBeforeEntryUnpublish,
+        onAfterEntryUnpublish,
+        onBeforeEntryRequestChanges,
+        onAfterEntryRequestChanges,
+        onBeforeEntryRequestReview,
+        onAfterEntryRequestReview,
+        onBeforeEntryGet,
+        onBeforeEntryList,
         /**
          * Get entries by exact revision IDs from the database.
          */
@@ -253,7 +255,7 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
             const where = {
                 id
             };
-            await onBeforeGet.publish({
+            await onBeforeEntryGet.publish({
                 where,
                 model
             });
@@ -305,7 +307,7 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
 
             const { where, sort } = params;
 
-            await onBeforeGet.publish({
+            await onBeforeEntryGet.publish({
                 where,
                 model
             });
@@ -366,7 +368,7 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
                 listWhere.ownedBy = ownedBy;
             }
 
-            await onBeforeList.publish({
+            await onBeforeEntryList.publish({
                 where: listWhere,
                 model
             });
@@ -422,7 +424,11 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
              */
             const initialInput = cleanInputData(model, inputData);
 
-            await validateModelEntryData(context, model, initialInput);
+            await validateModelEntryData({
+                context,
+                model,
+                data: initialInput
+            });
 
             const input = await referenceFieldsMapping({
                 context,
@@ -461,7 +467,7 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
 
             let storageEntry: CmsStorageEntry = null;
             try {
-                await onBeforeCreate.publish({
+                await onBeforeEntryCreate.publish({
                     entry,
                     input,
                     model
@@ -474,7 +480,7 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
                     storageEntry
                 });
 
-                await onAfterCreate.publish({
+                await onAfterEntryCreate.publish({
                     entry,
                     storageEntry: result,
                     model,
@@ -495,7 +501,7 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
                 );
             }
         },
-        createEntryRevisionFrom: async (model, sourceId, inputData = {}) => {
+        createEntryRevisionFrom: async (model, sourceId, inputData) => {
             const permission = await checkEntryPermissions({ rwd: "w" });
             await utils.checkModelAccess(context, model);
 
@@ -539,7 +545,12 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
                 ...input
             };
 
-            await validateModelEntryData(context, model, initialValues);
+            await validateModelEntryData({
+                context,
+                model,
+                data: initialValues,
+                entry: originalEntry
+            });
 
             const values = await referenceFieldsMapping({
                 context,
@@ -577,8 +588,10 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
             let storageEntry: CmsStorageEntry = undefined;
 
             try {
-                await onBeforeCreateRevision.publish({
+                await onBeforeEntryCreateRevision.publish({
+                    input,
                     entry,
+                    original: originalEntry,
                     model
                 });
 
@@ -593,9 +606,11 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
                     latestStorageEntry
                 });
 
-                await onAfterCreateRevision.publish({
+                await onAfterEntryCreateRevision.publish({
+                    input,
                     entry,
                     model,
+                    original: originalEntry,
                     storageEntry: result
                 });
                 return result;
@@ -620,12 +635,8 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
             /**
              * Make sure we only work with fields that are defined in the model.
              */
-            const input = cleanInputData(model, inputData);
+            const input = cleanUpdatedInputData(model, inputData);
 
-            /**
-             * Validate data early. We don't want to query DB if input data is invalid.
-             */
-            await validateModelEntryData(context, model, input);
             /**
              * The entry we are going to update.
              */
@@ -649,6 +660,13 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
                 model,
                 originalStorageEntry
             );
+
+            await validateModelEntryData({
+                context,
+                model,
+                data: input,
+                entry: originalEntry
+            });
 
             utils.checkOwnership(context, permission, originalEntry);
 
@@ -682,7 +700,7 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
             let storageEntry: CmsStorageEntry = undefined;
 
             try {
-                await onBeforeUpdate.publish({
+                await onBeforeEntryUpdate.publish({
                     entry,
                     model,
                     input,
@@ -699,7 +717,7 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
                     input
                 });
 
-                await onAfterUpdate.publish({
+                await onAfterEntryUpdate.publish({
                     entry,
                     storageEntry: result,
                     model,
@@ -870,7 +888,7 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
             }
 
             try {
-                await onBeforeDeleteRevision.publish({
+                await onBeforeEntryDeleteRevision.publish({
                     entry: entryToDelete,
                     model
                 });
@@ -882,7 +900,7 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
                     storageEntryToSetAsLatest
                 });
 
-                await onAfterDeleteRevision.publish({
+                await onAfterEntryDeleteRevision.publish({
                     entry: entryToDelete,
                     model
                 });
@@ -952,7 +970,7 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
             let storageEntry: CmsStorageEntry = undefined;
 
             try {
-                await onBeforePublish.publish({
+                await onBeforeEntryPublish.publish({
                     entry,
                     model
                 });
@@ -965,7 +983,7 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
                     originalStorageEntry
                 });
 
-                await onAfterPublish.publish({
+                await onAfterEntryPublish.publish({
                     entry,
                     storageEntry: result,
                     model
@@ -1027,7 +1045,7 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
             let storageEntry: CmsStorageEntry = undefined;
 
             try {
-                await onBeforeRequestChanges.publish({
+                await onBeforeEntryRequestChanges.publish({
                     entry,
                     model
                 });
@@ -1041,7 +1059,7 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
                     storageEntry
                 });
 
-                await onAfterRequestChanges.publish({
+                await onAfterEntryRequestChanges.publish({
                     entry,
                     storageEntry: result,
                     model
@@ -1106,7 +1124,7 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
             let storageEntry: CmsStorageEntry = undefined;
 
             try {
-                await onBeforeRequestReview.publish({
+                await onBeforeEntryRequestReview.publish({
                     entry,
                     model
                 });
@@ -1120,7 +1138,7 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
                     storageEntry
                 });
 
-                await onAfterRequestReview.publish({
+                await onAfterEntryRequestReview.publish({
                     entry,
                     storageEntry: result,
                     model
@@ -1174,7 +1192,7 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
             let storageEntry: CmsStorageEntry = undefined;
 
             try {
-                await onBeforeUnpublish.publish({
+                await onBeforeEntryUnpublish.publish({
                     entry,
                     model
                 });
@@ -1188,7 +1206,7 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
                     storageEntry
                 });
 
-                await onAfterUnpublish.publish({
+                await onAfterEntryUnpublish.publish({
                     entry,
                     storageEntry: result,
                     model

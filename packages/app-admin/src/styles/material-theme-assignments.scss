@@ -75,6 +75,7 @@
 
 // fix for drawer positioning
 .mdc-drawer {
+  z-index: 12;
   background-color: $mdc-theme-surface;
   &.mdc-drawer--modal.mdc-drawer--open {
     top: 0;

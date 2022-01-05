@@ -1,11 +1,14 @@
 import { Entity, Table } from "dynamodb-toolbox";
-import { getExtraAttributes } from "@webiny/db-dynamodb/utils/attributes";
-import { PbContext } from "@webiny/api-page-builder/graphql/types";
+import { Attributes } from "~/types";
 
-export const defineSystemEntity = (params: { context: PbContext; table: Table }): Entity<any> => {
-    const { context, table } = params;
-    const entityName = "PbSystem";
-    const attributes = getExtraAttributes(context, entityName);
+export interface Params {
+    table: Table;
+    entityName: string;
+    attributes: Attributes;
+}
+
+export const createSystemEntity = (params: Params): Entity<any> => {
+    const { entityName, attributes, table } = params;
     return new Entity({
         name: entityName,
         table,
@@ -22,7 +25,7 @@ export const defineSystemEntity = (params: { context: PbContext; table: Table })
             tenant: {
                 type: "string"
             },
-            ...attributes
+            ...(attributes || {})
         }
     });
 };

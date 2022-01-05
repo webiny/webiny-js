@@ -1,7 +1,7 @@
 import React, { useCallback } from "react";
 import { Image } from "@webiny/app/components";
 import * as Ui from "@webiny/ui/ImageUpload";
-import { createRenderImagePreview, imageExtensions } from "./utils";
+import { createRenderImagePreview, imagePlugins } from "./utils";
 import fileIcon from "../../fields/icons/round_insert_drive_file-24px.svg";
 import { FormElementMessage } from "@webiny/ui/FormElementMessage";
 
@@ -39,7 +39,7 @@ const File: React.FunctionComponent<Props> = props => {
     const validation = props.validation || defaultValidation;
 
     const isImage = useCallback(url => {
-        return imageExtensions.some(extension => url.includes(extension));
+        return imagePlugins.some(extension => url.includes(extension));
     }, []);
 
     const getImageSrc = useCallback(url => {

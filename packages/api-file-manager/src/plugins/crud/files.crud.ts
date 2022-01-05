@@ -10,7 +10,7 @@ import {
     FilesListOpts
 } from "~/types";
 import checkBasePermissions from "./utils/checkBasePermissions";
-import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
+import { ContextPlugin } from "@webiny/handler";
 import { FilePlugin } from "~/plugins/definitions/FilePlugin";
 import { FilesStorageOperationsProviderPlugin } from "~/plugins/definitions/FilesStorageOperationsProviderPlugin";
 import WebinyError from "@webiny/error";

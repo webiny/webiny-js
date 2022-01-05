@@ -52,4 +52,5 @@ export default withFields({
             notFound: onSet(extractPid)(string())
         })()
     })
+    // theme: string()
 })();

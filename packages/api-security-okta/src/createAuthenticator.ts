@@ -4,7 +4,7 @@ import fetch from "node-fetch";
 import util from "util";
 import { SecurityContext, SecurityIdentity } from "@webiny/api-security/types";
 import WebinyError from "@webiny/error";
-import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
+import { ContextPlugin } from "@webiny/handler";
 const verify = util.promisify<string, string, Record<string, any>>(jwt.verify);
 
 // All JWTs are split into 3 parts by two periods

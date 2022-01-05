@@ -2,11 +2,11 @@ import {
     OnAfterSettingsUpdateTopicParams,
     OnBeforeSettingsUpdateTopicParams,
     PageBuilderContextObject,
+    PageBuilderStorageOperations,
     PageSpecialType,
     PbContext,
     Settings,
     SettingsCrud,
-    SettingsStorageOperations,
     SettingsStorageOperationsCreateParams,
     SettingsStorageOperationsGetParams,
     SettingsUpdateTopicMetaParams
@@ -64,7 +64,7 @@ const createSettingsParams = (params: SettingsParamsInput): SettingsParams => {
 
 export interface Params {
     context: PbContext;
-    storageOperations: SettingsStorageOperations;
+    storageOperations: PageBuilderStorageOperations;
 }
 export const createSettingsCrud = (params: Params): SettingsCrud => {
     const { context, storageOperations } = params;
@@ -78,9 +78,9 @@ export const createSettingsCrud = (params: Params): SettingsCrud => {
                         context
                     })
                 };
-                return storageOperations.get(params);
+                return storageOperations.settings.get(params);
             });
-            return Promise.all(promises);
+            return await Promise.all(promises);
         },
         {
             cacheKeyFn: (key: SettingsParams) => {
@@ -88,6 +88,14 @@ export const createSettingsCrud = (params: Params): SettingsCrud => {
             }
         }
     );
+
+    const getTenantId = (): string => {
+        return context.tenancy.getCurrentTenant().id;
+    };
+
+    const getLocaleCode = (): string => {
+        return context.i18nContent.getCurrentLocale().code;
+    };
 
     const onBeforeSettingsUpdate = createTopic<OnBeforeSettingsUpdateTopicParams>();
     const onAfterSettingsUpdate = createTopic<OnAfterSettingsUpdateTopicParams>();
@@ -100,7 +108,14 @@ export const createSettingsCrud = (params: Params): SettingsCrud => {
          * Initial, in the DynamoDB, it was PK + SK. It can be what ever
          */
         getSettingsCacheKey(options) {
-            return storageOperations.createCacheKey(options || {});
+            const tenant = options ? options.tenant : null;
+            const locale = options ? options.locale : null;
+            return storageOperations.settings.createCacheKey(
+                options || {
+                    tenant: tenant === false ? false : tenant || getTenantId(),
+                    locale: locale === false ? false : locale || getLocaleCode()
+                }
+            );
         },
         async getCurrentSettings(this: PageBuilderContextObject) {
             // With this line commented, we made this endpoint public.
@@ -108,7 +123,10 @@ export const createSettingsCrud = (params: Params): SettingsCrud => {
             // It's possible we'll create another GraphQL field, made for this exact purpose.
             // auth !== false && (await checkBasePermissions(context));
 
-            const current = await this.getSettings({});
+            const current = await this.getSettings({
+                tenant: getTenantId(),
+                locale: getLocaleCode()
+            });
             const defaults = await this.getDefaultSettings();
 
             return mergeWith({}, defaults, current, (prev, next) => {
@@ -169,7 +187,10 @@ export const createSettingsCrud = (params: Params): SettingsCrud => {
         },
         async updateSettings(this: PageBuilderContextObject, rawData, options) {
             if (!options) {
-                options = {};
+                options = {
+                    tenant: getTenantId(),
+                    locale: getLocaleCode()
+                };
             }
             options.auth !== false && (await checkBasePermissions(context));
 
@@ -192,7 +213,7 @@ export const createSettingsCrud = (params: Params): SettingsCrud => {
                     }
                 };
                 try {
-                    original = await storageOperations.create(data);
+                    original = await storageOperations.settings.create(data);
                     /**
                      * Clear the cache of the data loader.
                      */
@@ -263,7 +284,7 @@ export const createSettingsCrud = (params: Params): SettingsCrud => {
                     meta
                 });
 
-                const result = await storageOperations.update({
+                const result = await storageOperations.settings.update({
                     input: rawData,
                     original,
                     settings

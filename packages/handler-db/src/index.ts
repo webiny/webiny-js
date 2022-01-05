@@ -1,5 +1,5 @@
 import { Db } from "@webiny/db";
-import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
+import { ContextPlugin } from "@webiny/handler";
 import { DbContext } from "./types";
 
 export default args => {

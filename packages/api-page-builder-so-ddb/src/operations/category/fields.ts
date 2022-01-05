@@ -1,6 +1,6 @@
 import { CategoryDynamoDbFieldPlugin } from "~/plugins/definitions/CategoryDynamoDbFieldPlugin";
 
-export default () => {
+export const createCategoryDynamoDbFields = (): CategoryDynamoDbFieldPlugin[] => {
     return [
         new CategoryDynamoDbFieldPlugin({
             field: "id"

@@ -1,13 +1,7 @@
 {
   "extends": "../../tsconfig.build.json",
   "include": ["src"],
-  "references": [
-    { "path": "../app-admin/tsconfig.build.json" },
-    { "path": "../app-security/tsconfig.build.json" },
-    { "path": "../plugins/tsconfig.build.json" },
-    { "path": "../react-router/tsconfig.build.json" },
-    { "path": "../ui/tsconfig.build.json" }
-  ],
+  "references": [{ "path": "../plugins/tsconfig.build.json" }],
   "compilerOptions": {
     "rootDir": "./src",
     "outDir": "./dist",

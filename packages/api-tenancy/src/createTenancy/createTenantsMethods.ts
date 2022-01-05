@@ -73,6 +73,7 @@ export function createTenantsMethods(storageOperations: TenancyStorageOperations
                 settings: {
                     ...(data.settings || {}),
                     domains: (data.settings && data.settings.domains) || []
+                    // themes: (data.settings && data.settings.themes) || []
                 },
                 parent: data.parent || null,
                 webinyVersion: process.env.WEBINY_VERSION

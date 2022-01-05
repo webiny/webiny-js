@@ -3,7 +3,7 @@ import { getApplicablePlugin } from "@webiny/api-upgrade";
 import { FileManagerContext, FileManagerSettings, FileManagerSystem } from "~/types";
 import { UpgradePlugin } from "@webiny/api-upgrade/types";
 import WebinyError from "@webiny/error";
-import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
+import { ContextPlugin } from "@webiny/handler";
 import { executeCallbacks } from "~/utils";
 import { InstallationPlugin } from "~/plugins/definitions/InstallationPlugin";
 import { SystemStorageOperationsProviderPlugin } from "~/plugins/definitions/SystemStorageOperationsProviderPlugin";
@@ -80,6 +80,10 @@ const systemCrudContextPlugin = new ContextPlugin<FileManagerContext>(async cont
             }
         },
         async install({ srcPrefix }) {
+            const identity = context.security.getIdentity();
+            if (!identity) {
+                throw new NotAuthorizedError();
+            }
             const { fileManager } = context;
             const version = await fileManager.system.getVersion();
 

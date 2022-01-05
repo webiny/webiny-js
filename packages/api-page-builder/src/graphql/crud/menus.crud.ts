@@ -3,7 +3,6 @@ import {
     Menu,
     PbContext,
     MenuStorageOperationsListParams,
-    MenuStorageOperations,
     OnBeforeMenuCreateTopicParams,
     OnAfterMenuCreateTopicParams,
     OnBeforeMenuUpdateTopicParams,
@@ -11,7 +10,8 @@ import {
     OnBeforeMenuDeleteTopicParams,
     OnAfterMenuDeleteTopicParams,
     MenusCrud,
-    PageBuilderContextObject
+    PageBuilderContextObject,
+    PageBuilderStorageOperations
 } from "~/types";
 import { NotFoundError } from "@webiny/handler-graphql";
 import checkBasePermissions from "./utils/checkBasePermissions";
@@ -40,10 +40,18 @@ const PERMISSION_NAME = "pb.menu";
 
 export interface Params {
     context: PbContext;
-    storageOperations: MenuStorageOperations;
+    storageOperations: PageBuilderStorageOperations;
 }
 export const createMenuCrud = (params: Params): MenusCrud => {
     const { context, storageOperations } = params;
+
+    const getTenantId = (): string => {
+        return context.tenancy.getCurrentTenant().id;
+    };
+
+    const getLocaleCode = (): string => {
+        return context.i18nContent.getCurrentLocale().code;
+    };
 
     const onBeforeMenuCreate = createTopic<OnBeforeMenuCreateTopicParams>();
     const onAfterMenuCreate = createTopic<OnAfterMenuCreateTopicParams>();
@@ -59,7 +67,6 @@ export const createMenuCrud = (params: Params): MenusCrud => {
         onAfterMenuUpdate,
         onBeforeMenuDelete,
         onAfterMenuDelete,
-        menusStorageOperations: storageOperations,
         async getMenu(slug, options) {
             let permission = undefined;
             const { auth = true } = options || {};
@@ -69,20 +76,18 @@ export const createMenuCrud = (params: Params): MenusCrud => {
                 });
             }
 
-            const tenant = context.tenancy.getCurrentTenant();
-            const locale = context.i18nContent.getCurrentLocale();
             const params: MenuStorageOperationsGetParams = {
                 where: {
                     slug,
-                    tenant: tenant.id,
-                    locale: locale.code
+                    tenant: getTenantId(),
+                    locale: getLocaleCode()
                 }
             };
 
             let menu: Menu;
 
             try {
-                menu = await storageOperations.get(params);
+                menu = await storageOperations.menus.get(params);
                 if (!menu) {
                     return null;
                 }
@@ -128,14 +133,12 @@ export const createMenuCrud = (params: Params): MenusCrud => {
                 rwd: "r"
             });
 
-            const tenant = context.tenancy.getCurrentTenant();
-            const locale = context.i18nContent.getCurrentLocale();
             const { sort } = params || {};
 
             const listParams: MenuStorageOperationsListParams = {
                 where: {
-                    tenant: tenant.id,
-                    locale: locale.code
+                    tenant: getTenantId(),
+                    locale: getLocaleCode()
                 },
                 sort: Array.isArray(sort) && sort.length > 0 ? sort : ["createdOn_ASC"]
             };
@@ -147,7 +150,7 @@ export const createMenuCrud = (params: Params): MenusCrud => {
             }
 
             try {
-                const [items] = await storageOperations.list(listParams);
+                const [items] = await storageOperations.menus.list(listParams);
                 return items;
             } catch (ex) {
                 throw new WebinyError(
@@ -168,14 +171,11 @@ export const createMenuCrud = (params: Params): MenusCrud => {
 
             const data: Menu = await createDataModel.toJSON();
 
-            const tenant = context.tenancy.getCurrentTenant();
-            const locale = context.i18nContent.getCurrentLocale();
-
-            const existing = await storageOperations.get({
+            const existing = await storageOperations.menus.get({
                 where: {
                     slug: data.slug,
-                    tenant: tenant.id,
-                    locale: locale.code
+                    tenant: getTenantId(),
+                    locale: getLocaleCode()
                 }
             });
             if (existing) {
@@ -192,8 +192,8 @@ export const createMenuCrud = (params: Params): MenusCrud => {
                     type: identity.type,
                     displayName: identity.displayName
                 },
-                tenant: tenant.id,
-                locale: locale.code
+                tenant: getTenantId(),
+                locale: getLocaleCode()
             };
 
             try {
@@ -202,7 +202,7 @@ export const createMenuCrud = (params: Params): MenusCrud => {
                     menu
                 });
 
-                const result = await storageOperations.create({
+                const result = await storageOperations.menus.create({
                     input: data,
                     menu
                 });
@@ -252,7 +252,7 @@ export const createMenuCrud = (params: Params): MenusCrud => {
                     menu
                 });
 
-                const result = await storageOperations.update({
+                const result = await storageOperations.menus.update({
                     input: data,
                     original,
                     menu
@@ -294,7 +294,7 @@ export const createMenuCrud = (params: Params): MenusCrud => {
                     menu
                 });
 
-                const result = await storageOperations.delete({
+                const result = await storageOperations.menus.delete({
                     menu
                 });
 

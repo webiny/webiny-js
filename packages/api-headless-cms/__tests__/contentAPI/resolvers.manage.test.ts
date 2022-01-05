@@ -478,7 +478,7 @@ describe("MANAGE - Resolvers", () => {
         await setupModel();
         const { createCategory } = useCategoryManageHandler(manageOpts);
 
-        const [response] = await createCategory({ data: { title: "Hardware" } });
+        const [response] = await createCategory({ data: { title: "Hardware", slug: "" } });
 
         expect(response).toEqual({
             data: {

@@ -1,14 +1,12 @@
+// @ts-nocheck
 import React from "react";
 import { ListItem, ListItemGraphic } from "@webiny/ui/List";
 import { Icon } from "@webiny/ui/Icon";
-import { GenericElement } from "@webiny/app-admin/ui/elements/GenericElement";
-import { UIViewPlugin } from "@webiny/app-admin/ui/UIView";
-import { AdminView } from "@webiny/app-admin/ui/views/AdminView";
-import { UserMenuElement } from "@webiny/app-admin/plugins/userMenu/UserMenuElement";
 import { ReactComponent as LogoutIcon } from "~/assets/icons/logout_black_24dp.svg";
 import { useSecurity } from "@webiny/app-security";
 import { useTenancy } from "@webiny/app-tenancy";
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const AccountDetails = () => {
     const security = useSecurity();
     const tenancy = useTenancy();
@@ -35,11 +33,12 @@ const AccountDetails = () => {
 };
 
 export default () => {
-    return new UIViewPlugin<AdminView>(AdminView, view => {
-        const userMenu = view.getElement<UserMenuElement>("userMenu");
-
-        if (userMenu) {
-            userMenu.addElement(new GenericElement("accountDetails", () => <AccountDetails />));
-        }
-    });
+    return { type: "dummy" };
+    // return new UIViewPlugin<AdminView>(AdminView, view => {
+    //     const userMenu = view.getElement<UserMenuElement>("userMenu");
+    //
+    //     if (userMenu) {
+    //         userMenu.addElement(new GenericElement("accountDetails", () => <AccountDetails />));
+    //     }
+    // });
 };

@@ -1,5 +1,5 @@
 import { TenancyContext, Tenant } from "@webiny/api-tenancy/types";
-import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
+import { ContextPlugin } from "@webiny/handler";
 import { Args as PsRenderArgs } from "@webiny/api-prerendering-service/render/types";
 import { PbContext } from "~/types";
 

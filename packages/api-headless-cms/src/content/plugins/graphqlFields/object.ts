@@ -3,6 +3,7 @@ import { CmsModelField, CmsModelFieldToGraphQLPlugin } from "~/types";
 import { renderField } from "~/content/plugins/utils/renderFields";
 import { renderInputField } from "~/content/plugins/utils/renderInputFields";
 import { createManageTypeName, createTypeName } from "~/content/plugins/utils/createTypeName";
+import { attachRequiredFieldValue } from "~/content/plugins/graphqlFields/requiredField";
 
 interface TypeFromFieldResponse {
     fieldType: string;
@@ -138,7 +139,10 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
             const { fieldType, typeDefs } = result;
 
             return {
-                fields: `${field.fieldId}: ${field.multipleValues ? `[${fieldType}!]` : fieldType}`,
+                fields: attachRequiredFieldValue(
+                    `${field.fieldId}: ${field.multipleValues ? `[${fieldType}!]` : fieldType}`,
+                    field
+                ),
                 typeDefs
             };
         },

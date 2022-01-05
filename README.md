@@ -1,7 +1,7 @@
 <p align="center">
   <img src="./static/webiny-logo.svg" width="250">
   <br><br>
-  <strong>Enterprise Open-Source Serverless CMS</strong>
+  <strong>Open-Source Serverless Enterprise CMS</strong>
 </p>
 <p align="center">
   <a href="https://www.webiny.com">Website</a> |
