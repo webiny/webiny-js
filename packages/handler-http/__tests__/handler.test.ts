@@ -20,11 +20,15 @@ describe("handler response", () => {
                 }
             };
         });
-        const handlerPlugin = new HandlerPlugin(async context => {
+        const handlerPlugin = new HandlerPlugin<HttpContext>(async context => {
             ctx.value = context;
-            return {
-                ok: true
-            };
+            return context.http.response({
+                body: JSON.stringify({
+                    ok: true
+                }),
+                statusCode: 200,
+                headers: {}
+            });
         });
 
         const handler = createHandler(
@@ -38,7 +42,11 @@ describe("handler response", () => {
         const result = await handler();
 
         expect(result).toEqual({
-            ok: true
+            body: JSON.stringify({
+                ok: true
+            }),
+            statusCode: 200,
+            headers: {}
         });
         expect(ctx.value).toMatchObject({
             invocationArgs: {
