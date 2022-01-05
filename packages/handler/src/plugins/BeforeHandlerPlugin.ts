@@ -1,15 +1,15 @@
 import { Plugin } from "@webiny/plugins";
 import { Context } from "~/types";
 
-interface Callable<T extends Context = Context> {
+export interface BeforeHandlerCallable<T extends Context = Context> {
     (context: T): void | Promise<void>;
 }
 
 export class BeforeHandlerPlugin<T extends Context = Context> extends Plugin {
     public static readonly type: string = "before-handler";
-    private readonly _callable: Callable<T>;
+    private readonly _callable: BeforeHandlerCallable<T>;
 
-    constructor(callable?: Callable<T>) {
+    constructor(callable?: BeforeHandlerCallable<T>) {
         super();
         this._callable = callable;
     }

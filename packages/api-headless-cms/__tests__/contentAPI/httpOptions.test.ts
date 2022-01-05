@@ -20,6 +20,7 @@ describe("HTTP Options request", () => {
                     "Access-Control-Allow-Methods": "OPTIONS,POST",
                     "Access-Control-Allow-Origin": "*",
                     "Content-Type": "application/json",
+                    "Access-Control-Max-Age": `30758400`,
                     "Cache-Control": "public, max-age=30758400"
                 },
                 isBase64Encoded: undefined,
