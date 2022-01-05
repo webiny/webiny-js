@@ -94,7 +94,7 @@ describe("handler response", () => {
 
         expect(result).toEqual({
             body: "",
-            statusCode: 200,
+            statusCode: 204,
             headers: {
                 "Cache-Control": "public, max-age=86400",
                 "Content-Type": "application/json",
