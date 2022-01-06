@@ -30,7 +30,9 @@ describe("Context", () => {
         });
 
         const tester = {
-            cms: false
+            cms: false,
+            formBuilder: false,
+            pageBuilder: false
         };
 
         context.waitFor<Context>("cms", () => {
@@ -42,6 +44,25 @@ describe("Context", () => {
             loaded: true
         };
         expect((context as any).cms).toEqual({
+            loaded: true
+        });
+
+        context.waitFor(["pageBuilder", "formBuilder"], () => {
+            tester.pageBuilder = true;
+            tester.formBuilder = true;
+        });
+
+        (context as any).pageBuilder = {
+            loaded: true
+        };
+        (context as any).formBuilder = {
+            loaded: true
+        };
+
+        expect((context as any).pageBuilder).toEqual({
+            loaded: true
+        });
+        expect((context as any).formBuilder).toEqual({
             loaded: true
         });
     });
