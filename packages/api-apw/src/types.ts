@@ -1,4 +1,4 @@
-import { Page } from "@webiny/api-page-builder/types";
+import { Page, OnBeforePageCreateFromTopicParams } from "@webiny/api-page-builder/types";
 import {
     CmsContext,
     CmsEntryListParams,
@@ -26,7 +26,15 @@ export interface FieldResolverParams {
 }
 
 export interface PageWithWorkflow extends Page {
-    workflow?: string;
+    settings: Page["settings"] & {
+        apw: {
+            workflowId: string;
+        };
+    };
+}
+
+export interface CustomEventParams extends OnBeforePageCreateFromTopicParams {
+    page: PageWithWorkflow;
 }
 
 export enum WorkflowScopeTypes {

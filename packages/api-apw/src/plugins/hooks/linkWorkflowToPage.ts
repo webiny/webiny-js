@@ -1,13 +1,14 @@
 import get from "lodash/get";
+import set from "lodash/set";
 import WebinyError from "@webiny/error";
 import {
     ApwWorkflow,
     ApwWorkflowApplications,
+    CustomEventParams,
     LifeCycleHookCallbackParams,
     PageWithWorkflow,
     WorkflowScopeTypes
 } from "~/types";
-import { OnBeforePageCreateTopicParams } from "@webiny/api-page-builder/graphql/types";
 import { PageBuilderContextObject } from "@webiny/api-page-builder/graphql/types";
 
 const WORKFLOW_PRECEDENCE = {
@@ -79,8 +80,7 @@ export const linkWorkflowToPage = ({
     updatePage,
     onBeforePageCreate
 }: LifeCycleHookCallbackParams & PageMethods) => {
-    onBeforePageCreate.subscribe(async (event: OnBeforePageCreateTopicParams<PageWithWorkflow>) => {
-        const { page } = event;
+    onBeforePageCreate.subscribe<CustomEventParams>(async ({ page }) => {
         try {
             /*
              * List all workflows for app pageBuilder
@@ -105,7 +105,9 @@ export const linkWorkflowToPage = ({
                  * Assign the workflow to the page and exit.
                  */
                 if (isWorkflowApplicable(page, workflow)) {
-                    page.workflow = workflow.id;
+                    page.settings.apw = {
+                        workflowId: workflow.id
+                    };
                     break;
                 }
             }
@@ -148,7 +150,7 @@ export const linkWorkflowToPage = ({
                      * We'll update the workflow reference even though it already had one assign.
                      */
                     await updatePage(page.id, {
-                        workflow: entry.id
+                        settings: set(page.settings, "apw.workflowId", entry.id)
                     });
                 } catch (e) {
                     if (e.code !== "NOT_FOUND") {

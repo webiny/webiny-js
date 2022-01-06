@@ -33,7 +33,7 @@ export default () => [
 
         context.apw.addWorkflowGetter(ApwContentTypes.PAGE, async id => {
             const page = await context.pageBuilder.getPage<PageWithWorkflow>(id);
-            return page.workflow;
+            return page.settings.apw.workflowId;
         });
 
         context.apw.addWorkflowGetter(ApwContentTypes.CMS_ENTRY, async (id, settings) => {
