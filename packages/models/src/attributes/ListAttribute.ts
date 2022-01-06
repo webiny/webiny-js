@@ -1,4 +1,4 @@
-import { Attribute, AttributeParams } from "~/Attribute";
+import { Attribute, AttributeParams } from "./Attribute";
 
 export type ListAttributeParams = Omit<AttributeParams, "type">;
 export class ListAttribute extends Attribute {

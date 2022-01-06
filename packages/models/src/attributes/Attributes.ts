@@ -1,6 +1,6 @@
 import WebinyError from "@webiny/error";
 import { Attribute } from "~/types";
-import { Attribute as AttributeImpl } from "~/Attribute";
+import { Attribute as AttributeImpl } from "./Attribute";
 
 export interface AttributeMap {
     [key: string]: Attribute;

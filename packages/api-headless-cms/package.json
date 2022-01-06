@@ -28,7 +28,6 @@
     "@webiny/api-security": "^5.21.0",
     "@webiny/api-tenancy": "^5.21.0",
     "@webiny/api-upgrade": "^5.21.0",
-    "@webiny/attributes": "^5.21.0",
     "@webiny/error": "^5.21.0",
     "@webiny/handler": "^5.21.0",
     "@webiny/handler-aws": "^5.21.0",

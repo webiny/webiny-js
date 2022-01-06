@@ -1,9 +1,9 @@
-import { Attribute } from "@webiny/attributes/types";
-import { Attributes, AttributeMap } from "@webiny/attributes";
+import { AttributeMap, Attributes } from "~/attributes/Attributes";
+import { Attribute } from "~/types";
 
 export interface ModelParams {
     name: string;
-    attributes: Attribute[];
+    attributes?: Attribute[];
 }
 export class Model {
     public readonly name: string;
@@ -11,7 +11,7 @@ export class Model {
 
     public constructor(params: ModelParams) {
         this.name = params.name;
-        this.addAttributes(params.attributes);
+        this.addAttributes(params.attributes || []);
     }
 
     public getAttributes(): AttributeMap {
@@ -24,7 +24,6 @@ export class Model {
         for (const attr of attributes) {
             this.addAttribute(attr);
         }
-        this.attributes.addAttributes(attributes);
     }
     /**
      * We allow passing both Attribute interface and Attribute interface implementation.

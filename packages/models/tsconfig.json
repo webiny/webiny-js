@@ -3,7 +3,7 @@
   "include": ["src", "__tests__/**/*.ts"],
   "references": [
     {
-      "path": "../attributes"
+      "path": "../error"
     }
   ],
   "compilerOptions": {
@@ -12,8 +12,8 @@
     "declarationDir": "./dist",
     "paths": {
       "~/*": ["./src/*"],
-      "@webiny/attributes/*": ["../attributes/src/*"],
-      "@webiny/attributes": ["../attributes/src"]
+      "@webiny/error/*": ["../error/src/*"],
+      "@webiny/error": ["../error/src"]
     },
     "baseUrl": "."
   }
