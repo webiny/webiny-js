@@ -37,34 +37,58 @@ describe("Context", () => {
         }) as unknown as DummyContextInterface;
 
         const tester = {
-            cms: false,
-            formBuilder: false,
-            pageBuilder: false
+            cms: 0,
+            formBuilder: 0,
+            pageBuilder: 0
         };
 
         context.waitFor("cms", () => {
-            tester.cms = true;
+            tester.cms++;
         });
         expect(context.cms).toBeUndefined();
 
         context.cms = {
-            loaded: true
+            loaded: 1
         };
+
+        expect(tester).toEqual({
+            cms: 1,
+            pageBuilder: 0,
+            formBuilder: 0
+        });
+
         expect(context.cms).toEqual({
-            loaded: true
+            loaded: 1
         });
 
         context.waitFor(["pageBuilder", "formBuilder"], () => {
-            tester.pageBuilder = true;
-            tester.formBuilder = true;
+            tester.pageBuilder++;
+            tester.formBuilder++;
         });
 
         context.pageBuilder = {
             loaded: true
         };
+
+        expect(tester).toEqual({
+            cms: 1,
+            pageBuilder: 0,
+            formBuilder: 0
+        });
+
         context.formBuilder = {
             loaded: true
         };
+
+        context.formBuilder = {
+            loaded: true
+        };
+
+        expect(tester).toEqual({
+            cms: 1,
+            pageBuilder: 1,
+            formBuilder: 1
+        });
 
         expect(context.pageBuilder).toEqual({
             loaded: true
