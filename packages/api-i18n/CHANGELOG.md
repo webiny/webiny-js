@@ -3,6 +3,30 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.21.0](https://github.com/webiny/webiny-js/compare/v5.21.0-beta.0...v5.21.0) (2022-01-04)
+
+**Note:** Version bump only for package @webiny/api-i18n
+
+
+
+
+
+# [5.21.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.20.0...v5.21.0-beta.0) (2022-01-03)
+
+
+### Bug Fixes
+
+* protect installers from unauthorized run ([#2160](https://github.com/webiny/webiny-js/issues/2160)) ([cb4ea8e](https://github.com/webiny/webiny-js/commit/cb4ea8ef36f99a2608599954454a3aa3211eb3a6))
+
+
+### Features
+
+* introduce app-serverless-cms package ([bc78ef7](https://github.com/webiny/webiny-js/commit/bc78ef79695f7c7910fd1b8b9511ffd6de8f3fcb))
+
+
+
+
+
 # [5.20.0](https://github.com/webiny/webiny-js/compare/v5.20.0-beta.2...v5.20.0) (2021-12-23)
 
 **Note:** Version bump only for package @webiny/api-i18n

@@ -10,6 +10,7 @@ import dateLte from "./dateLte";
 import dateGte from "./dateGte";
 import timeLte from "./timeLte";
 import timeGte from "./timeGte";
+import unique from "./unique";
 
 export default () => [
     gte,
@@ -23,5 +24,6 @@ export default () => [
     dateLte(),
     dateGte(),
     timeLte(),
-    timeGte()
+    timeGte(),
+    unique()
 ];

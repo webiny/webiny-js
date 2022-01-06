@@ -4,8 +4,9 @@ import optimizeImage from "./optimizeImage";
 import { createHandler, getEnvironment, getObjectParams } from "../utils";
 import { getImageKey } from "./utils";
 import { HandlerPlugin } from "@webiny/handler/types";
+import { ArgsContext } from "@webiny/handler-args/types";
 
-export default (): HandlerPlugin => ({
+export default (): HandlerPlugin<ArgsContext> => ({
     type: "handler",
     name: "handler-download-file",
     async handle(context) {

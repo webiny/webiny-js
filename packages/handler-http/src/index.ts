@@ -1,9 +1,10 @@
 import { HttpContext, HandlerHttpOptions } from "./types";
-import { ContextPlugin, HandlerErrorPlugin } from "@webiny/handler/types";
+import { HandlerErrorPlugin } from "@webiny/handler/types";
 import { boolean } from "boolean";
 import { getWebinyVersionHeaders } from "@webiny/utils";
+import { ContextPlugin } from "@webiny/handler";
 
-const DEFAULT_HEADERS = {
+const DEFAULT_HEADERS: Record<string, string> = {
     "Cache-Control": "no-store",
     "Content-Type": "application/json",
     "Access-Control-Allow-Origin": "*",
@@ -11,6 +12,13 @@ const DEFAULT_HEADERS = {
     "Access-Control-Allow-Methods": "OPTIONS,POST",
     ...getWebinyVersionHeaders()
 };
+
+const OPTIONS_HEADERS: Record<string, string> = {
+    "Access-Control-Max-Age": "86400",
+    "Cache-Control": "public, max-age=86400"
+};
+
+const OPTION_STATUS_CODE = 204;
 
 const lowercaseKeys = obj => {
     return Object.keys(obj).reduce((acc, key) => {
@@ -20,40 +28,49 @@ const lowercaseKeys = obj => {
 };
 
 export default (options: HandlerHttpOptions = {}) => [
-    {
-        type: "context",
-        apply(context) {
-            const { invocationArgs } = context;
-            if (!invocationArgs || !invocationArgs.method) {
-                return;
-            }
-
-            const path = invocationArgs.path ?? {};
-
-            const request = {
-                method: invocationArgs.method,
-                body: invocationArgs.body,
-                headers: lowercaseKeys(invocationArgs.headers || {}),
-                cookies: invocationArgs.cookies,
-                path: {
-                    base: path.base,
-                    parameters: path.parameters,
-                    query: path.query
-                }
-            };
-
-            context.http = {
-                request,
-                response({ statusCode = 200, body = "", headers = {} }) {
-                    return {
-                        statusCode,
-                        body,
-                        headers
-                    };
-                }
-            };
+    new ContextPlugin<HttpContext>(async context => {
+        const { invocationArgs } = context;
+        if (!invocationArgs || !invocationArgs.method) {
+            return;
         }
-    } as ContextPlugin<HttpContext>,
+
+        if (invocationArgs.method.toLowerCase() === "options") {
+            context.setResult({
+                statusCode: OPTION_STATUS_CODE,
+                body: "",
+                headers: {
+                    ...DEFAULT_HEADERS,
+                    ...OPTIONS_HEADERS
+                }
+            });
+            return;
+        }
+
+        const path = invocationArgs.path ?? {};
+
+        const request = {
+            method: invocationArgs.method,
+            body: invocationArgs.body,
+            headers: lowercaseKeys(invocationArgs.headers || {}),
+            cookies: invocationArgs.cookies,
+            path: {
+                base: path.base,
+                parameters: path.parameters,
+                query: path.query
+            }
+        };
+
+        context.http = {
+            request,
+            response({ statusCode = 200, body = "", headers = {} }) {
+                return {
+                    statusCode,
+                    body,
+                    headers
+                };
+            }
+        };
+    }),
     {
         type: "handler-error",
         handle: (context, error) => {

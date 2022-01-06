@@ -1,9 +1,9 @@
 import { Client } from "@elastic/elasticsearch";
 import { BoolQueryConfig as esBoolQueryConfig, Query as esQuery } from "elastic-ts";
-import { ContextInterface } from "@webiny/handler/types";
+import { Context } from "@webiny/handler/types";
 export * from "elastic-ts";
 
-export interface ElasticsearchContext extends ContextInterface {
+export interface ElasticsearchContext extends Context {
     elasticsearch: Client;
 }
 

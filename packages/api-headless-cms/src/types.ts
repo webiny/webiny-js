@@ -1,13 +1,13 @@
 import { Plugin } from "@webiny/plugins/types";
 import { I18NContext, I18NLocale } from "@webiny/api-i18n/types";
-import { ContextInterface } from "@webiny/handler/types";
+import { Context } from "@webiny/handler/types";
 import { TenancyContext } from "@webiny/api-tenancy/types";
 import {
     GraphQLFieldResolver,
     GraphQLSchemaDefinition,
     Resolvers
 } from "@webiny/handler-graphql/types";
-import { BaseI18NContentContext } from "@webiny/api-i18n-content/types";
+import { I18NContentContext } from "@webiny/api-i18n-content/types";
 import { SecurityPermission } from "@webiny/api-security/types";
 import { HttpContext } from "@webiny/handler-http/types";
 import { DbContext } from "@webiny/handler-db/types";
@@ -56,12 +56,12 @@ export interface HeadlessCms
  * @category Context
  */
 export interface CmsContext
-    extends ContextInterface,
+    extends Context,
         DbContext,
         HttpContext,
         I18NContext,
         FileManagerContext,
-        BaseI18NContentContext,
+        I18NContentContext,
         TenancyContext {
     cms: HeadlessCms;
 }
@@ -207,7 +207,12 @@ export interface CmsModelFieldValidatorValidateParams<T = any> {
     /**
      * An instance of the content model being validated.
      */
-    contentModel: CmsModel;
+    model: CmsModel;
+    /**
+     * If entry is sent it means it is an update operation.
+     * First usage is for the unique field value.
+     */
+    entry?: CmsEntry;
 }
 
 /**

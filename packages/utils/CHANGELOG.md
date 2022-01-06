@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.21.0](https://github.com/webiny/webiny-js/compare/v5.21.0-beta.0...v5.21.0) (2022-01-04)
+
+**Note:** Version bump only for package @webiny/utils
+
+
+
+
+
+# [5.21.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.20.0...v5.21.0-beta.0) (2022-01-03)
+
+
+### Features
+
+* add possibility to output api version in headers ([#2143](https://github.com/webiny/webiny-js/issues/2143)) ([cc3f5cc](https://github.com/webiny/webiny-js/commit/cc3f5cce2456a92bc977bb49bffcf7e281911720))
+
+
+
+
+
 # [5.20.0](https://github.com/webiny/webiny-js/compare/v5.20.0-beta.2...v5.20.0) (2021-12-23)
 
 **Note:** Version bump only for package @webiny/utils

@@ -13,6 +13,7 @@ const plugin: UpgradePlugin<PbContext> = {
     app: "page-builder",
     version: "5.0.0",
     async apply(context) {
+        // @ts-ignore
         const { elasticsearch, fileManager, db } = context;
         const limit = 1000;
         let hasMoreItems = true;

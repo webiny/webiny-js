@@ -25,6 +25,7 @@ const BaseExtension = () => {
                         icon={<FileIcon />}
                         tags={["footer"]}
                         onClick={showFileManager}
+                        testId={"admin-drawer-footer-menu-file-manager"}
                     />
                 )}
             </FileManager>
