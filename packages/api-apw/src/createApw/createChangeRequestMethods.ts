@@ -5,19 +5,19 @@ export function createChangeRequestMethods({
 }: CreateApwParams): ApwChangeRequestCrud {
     return {
         async getModel() {
-            return await storageOperations.getChangeRequestModel();
+            return storageOperations.getChangeRequestModel();
         },
         async get(id) {
-            return await storageOperations.getChangeRequest({ id });
+            return storageOperations.getChangeRequest({ id });
         },
         async list(params) {
-            return await storageOperations.listChangeRequests(params);
+            return storageOperations.listChangeRequests(params);
         },
         async create(data) {
-            return await storageOperations.createChangeRequest({ data });
+            return storageOperations.createChangeRequest({ data });
         },
         async update(id, data) {
-            return await storageOperations.updateChangeRequest({ id, data });
+            return storageOperations.updateChangeRequest({ id, data });
         },
         async delete(id: string) {
             await storageOperations.deleteChangeRequest({ id });

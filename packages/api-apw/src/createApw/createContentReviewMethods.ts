@@ -27,16 +27,16 @@ export function createContentReviewMethods({
 }: CreateContentReviewMethodsParams): ApwContentReviewCrud {
     return {
         async getModel() {
-            return await storageOperations.getContentReviewModel();
+            return storageOperations.getContentReviewModel();
         },
         async get(id) {
-            return await storageOperations.getContentReview({ id });
+            return storageOperations.getContentReview({ id });
         },
         async list(params) {
-            return await storageOperations.listContentReviews(params);
+            return storageOperations.listContentReviews(params);
         },
         async create(data) {
-            return await storageOperations.createContentReview({
+            return storageOperations.createContentReview({
                 data: {
                     ...data,
                     steps: [],
@@ -45,7 +45,7 @@ export function createContentReviewMethods({
             });
         },
         async update(id, data) {
-            return await storageOperations.updateContentReview({
+            return storageOperations.updateContentReview({
                 id,
                 data
             });
