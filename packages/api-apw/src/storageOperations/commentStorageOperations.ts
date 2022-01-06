@@ -1,4 +1,4 @@
-import { ApwChangeRequestStorageOperations, ApwCommentStorageOperations } from "~/types";
+import { ApwCommentStorageOperations, ApwStorageOperations } from "~/types";
 import {
     baseFields,
     CreateApwStorageOperationsParams,
@@ -6,11 +6,8 @@ import {
 } from "~/storageOperations/index";
 
 export const createCommentStorageOperations = ({
-    cms,
-    getChangeRequestModel
-}: CreateApwStorageOperationsParams & {
-    getChangeRequestModel: ApwChangeRequestStorageOperations["getChangeRequestModel"];
-}): ApwCommentStorageOperations => {
+    cms
+}: CreateApwStorageOperationsParams): ApwCommentStorageOperations => {
     const getCommentModel = () => {
         return cms.getModel("apwCommentModelDefinition");
     };
@@ -28,9 +25,9 @@ export const createCommentStorageOperations = ({
             const all = await Promise.all(entries.map(entry => getFieldValues(entry, baseFields)));
             return [all, meta];
         },
-        async createComment(params) {
+        async createComment(this: ApwStorageOperations, params) {
             const model = await getCommentModel();
-            const refModel = await getChangeRequestModel();
+            const refModel = await this.getChangeRequestModel();
             const entry = await cms.createEntry(model, {
                 ...params.data,
                 changeRequest: {

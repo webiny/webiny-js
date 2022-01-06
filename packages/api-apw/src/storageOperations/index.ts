@@ -27,8 +27,7 @@ export const createStorageOperations = ({
         ...createContentReviewStorageOperations({ cms }),
         ...changeRequestStorageOperations,
         ...createCommentStorageOperations({
-            cms,
-            getChangeRequestModel: changeRequestStorageOperations.getChangeRequestModel
+            cms
         })
     };
 };
