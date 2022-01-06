@@ -7,7 +7,7 @@ import {
 
 export const createReviewerStorageOperations = ({
     cms
-}: CreateApwStorageOperationsParams): ApwReviewerStorageOperations => {
+}: Pick<CreateApwStorageOperationsParams, "cms">): ApwReviewerStorageOperations => {
     const getReviewerModel = () => {
         return cms.getModel("apwReviewerModelDefinition");
     };

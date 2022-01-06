@@ -7,7 +7,7 @@ import {
 
 export const createWorkflowStorageOperations = ({
     cms
-}: CreateApwStorageOperationsParams): ApwWorkflowStorageOperations => {
+}: Pick<CreateApwStorageOperationsParams, "cms">): ApwWorkflowStorageOperations => {
     const getWorkflowModel = () => {
         return cms.getModel("apwWorkflowModelDefinition");
     };

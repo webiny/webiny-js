@@ -1,12 +1,10 @@
 import { ApwChangeRequestStorageOperations } from "~/types";
-import {
-    baseFields,
-    CreateApwStorageOperationsParams,
-    getFieldValues
-} from "~/storageOperations/index";
+import { baseFields, CreateApwStorageOperationsParams } from "~/storageOperations/index";
+import { getFieldValues, getTransformer } from "~/utils/fieldResolver";
 
 export const createChangeRequestStorageOperations = ({
-    cms
+    cms,
+    getCmsContext
 }: CreateApwStorageOperationsParams): ApwChangeRequestStorageOperations => {
     const getChangeRequestModel = () => {
         return cms.getModel("apwChangeRequestModelDefinition");
@@ -16,7 +14,12 @@ export const createChangeRequestStorageOperations = ({
     }) => {
         const model = await getChangeRequestModel();
         const entry = await cms.getEntryById(model, id);
-        return getFieldValues(entry, baseFields);
+        return getFieldValues({
+            entry,
+            fields: baseFields,
+            context: getCmsContext(),
+            transformers: [getTransformer(model, "body")]
+        });
     };
     return {
         getChangeRequestModel,
@@ -24,12 +27,27 @@ export const createChangeRequestStorageOperations = ({
         async listChangeRequests(params) {
             const model = await getChangeRequestModel();
             const [entries, meta] = await cms.listLatestEntries(model, params);
-            return [entries.map(entry => getFieldValues(entry, baseFields)), meta];
+            const all = await Promise.all(
+                entries.map(entry =>
+                    getFieldValues({
+                        entry,
+                        fields: baseFields,
+                        context: getCmsContext(),
+                        transformers: [getTransformer(model, "body")]
+                    })
+                )
+            );
+            return [all, meta];
         },
         async createChangeRequest(params) {
             const model = await getChangeRequestModel();
             const entry = await cms.createEntry(model, params.data);
-            return getFieldValues(entry, baseFields);
+            return getFieldValues({
+                entry,
+                fields: baseFields,
+                context: getCmsContext(),
+                transformers: [getTransformer(model, "body")]
+            });
         },
         async updateChangeRequest(params) {
             const model = await getChangeRequestModel();
@@ -43,7 +61,12 @@ export const createChangeRequestStorageOperations = ({
                 ...existingEntry,
                 ...params.data
             });
-            return getFieldValues(entry, baseFields);
+            return getFieldValues({
+                entry,
+                fields: baseFields,
+                context: getCmsContext(),
+                transformers: [getTransformer(model, "body")]
+            });
         },
         async deleteChangeRequest(params) {
             const model = await getChangeRequestModel();

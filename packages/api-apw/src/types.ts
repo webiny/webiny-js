@@ -4,8 +4,7 @@ import {
     CmsEntryListParams,
     CmsEntryListWhere,
     CmsEntryMeta,
-    CmsModel,
-    CmsModelField
+    CmsModel
 } from "@webiny/api-headless-cms/types";
 import { Context } from "@webiny/handler/types";
 import { PbContext } from "@webiny/api-page-builder/graphql/types";
@@ -16,13 +15,6 @@ import { Tenant } from "@webiny/api-tenancy/types";
 export enum ApwContentTypes {
     PAGE = "page",
     CMS_ENTRY = "cms_entry"
-}
-
-export interface FieldResolverParams {
-    fieldId: string;
-    getModel: (context: ApwContext) => Promise<CmsModel>;
-    getField: (model: CmsModel, fieldId: string) => CmsModelField;
-    isRoot: Boolean;
 }
 
 export interface PageWithWorkflow extends Page {

@@ -27,7 +27,8 @@ export default () => [
             getTenant,
             getPermission,
             storageOperations: createStorageOperations({
-                cms: context.cms
+                cms: context.cms,
+                getCmsContext: () => context
             })
         });
 

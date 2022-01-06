@@ -1,12 +1,10 @@
 import { ApwCommentStorageOperations, ApwStorageOperations } from "~/types";
-import {
-    baseFields,
-    CreateApwStorageOperationsParams,
-    getFieldValues
-} from "~/storageOperations/index";
+import { baseFields, CreateApwStorageOperationsParams } from "~/storageOperations/index";
+import { getFieldValues, getTransformer } from "~/utils/fieldResolver";
 
 export const createCommentStorageOperations = ({
-    cms
+    cms,
+    getCmsContext
 }: CreateApwStorageOperationsParams): ApwCommentStorageOperations => {
     const getCommentModel = () => {
         return cms.getModel("apwCommentModelDefinition");
@@ -14,7 +12,12 @@ export const createCommentStorageOperations = ({
     const getComment: ApwCommentStorageOperations["getComment"] = async ({ id }) => {
         const model = await getCommentModel();
         const entry = await cms.getEntryById(model, id);
-        return getFieldValues(entry, baseFields);
+        return getFieldValues({
+            entry,
+            fields: baseFields,
+            context: getCmsContext(),
+            transformers: [getTransformer(model, "body")]
+        });
     };
     return {
         getCommentModel,
@@ -22,7 +25,16 @@ export const createCommentStorageOperations = ({
         async listComments(params) {
             const model = await getCommentModel();
             const [entries, meta] = await cms.listLatestEntries(model, params);
-            const all = await Promise.all(entries.map(entry => getFieldValues(entry, baseFields)));
+            const all = await Promise.all(
+                entries.map(entry =>
+                    getFieldValues({
+                        entry,
+                        fields: baseFields,
+                        context: getCmsContext(),
+                        transformers: [getTransformer(model, "body")]
+                    })
+                )
+            );
             return [all, meta];
         },
         async createComment(this: ApwStorageOperations, params) {
@@ -36,7 +48,12 @@ export const createCommentStorageOperations = ({
                 }
             });
 
-            return getFieldValues(entry, baseFields);
+            return getFieldValues({
+                entry,
+                fields: baseFields,
+                context: getCmsContext(),
+                transformers: [getTransformer(model, "body")]
+            });
         },
         async updateComment(params) {
             const model = await getCommentModel();
@@ -50,7 +67,12 @@ export const createCommentStorageOperations = ({
                 ...existingEntry,
                 ...params.data
             });
-            return getFieldValues(entry, baseFields);
+            return getFieldValues({
+                entry,
+                fields: baseFields,
+                context: getCmsContext(),
+                transformers: [getTransformer(model, "body")]
+            });
         },
         async deleteComment(params) {
             const model = await getCommentModel();
