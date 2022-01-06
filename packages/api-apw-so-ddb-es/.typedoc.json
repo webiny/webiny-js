@@ -1,4 +1,0 @@
-{
-  "name": "API Advanced Publishing Workflow DynamoDB / Elasticsearch",
-  "entryPoints": ["types.ts"]
-}
