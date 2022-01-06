@@ -44,8 +44,9 @@ import {
     entryFromStorageTransform,
     entryToStorageTransform
 } from "~/content/plugins/utils/entryStorage";
-import { assignAfterEntryDelete } from "~/content/plugins/crud/contentEntry/afterDelete";
+import { assignAfterEntryDelete } from "./contentEntry/afterDelete";
 import { referenceFieldsMapping } from "./contentEntry/referenceFieldsMapping";
+import { createEntryModel } from "./contentEntry/model";
 
 export const STATUS_DRAFT = "draft";
 export const STATUS_PUBLISHED = "published";
@@ -223,6 +224,8 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
         return entries.filter(entry => utils.validateOwnership(context, permission, entry));
     };
 
+    const entryModel = createEntryModel();
+
     return {
         onBeforeEntryCreate,
         onAfterEntryCreate,
@@ -244,6 +247,7 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
         onAfterEntryRequestReview,
         onBeforeEntryGet,
         onBeforeEntryList,
+        entryModel,
         /**
          * Get entries by exact revision IDs from the database.
          */

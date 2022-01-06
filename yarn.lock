@@ -9089,6 +9089,7 @@ __metadata:
     "@webiny/api-tenancy": ^5.21.0
     "@webiny/api-tenancy-so-ddb": ^5.21.0
     "@webiny/api-upgrade": ^5.21.0
+    "@webiny/attributes": ^5.21.0
     "@webiny/cli": ^5.21.0
     "@webiny/error": ^5.21.0
     "@webiny/handler": ^5.21.0
@@ -9096,6 +9097,7 @@ __metadata:
     "@webiny/handler-db": ^5.21.0
     "@webiny/handler-graphql": ^5.21.0
     "@webiny/handler-http": ^5.21.0
+    "@webiny/models": ^5.21.0
     "@webiny/plugins": ^5.21.0
     "@webiny/project-utils": ^5.21.0
     "@webiny/pubsub": ^5.21.0
@@ -10634,6 +10636,24 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@webiny/attributes@^5.21.0, @webiny/attributes@workspace:packages/attributes":
+  version: 0.0.0-use.local
+  resolution: "@webiny/attributes@workspace:packages/attributes"
+  dependencies:
+    "@babel/cli": ^7.12.10
+    "@babel/core": ^7.5.5
+    "@babel/preset-env": ^7.5.5
+    "@babel/preset-typescript": ^7.8.3
+    "@babel/runtime": ^7.5.5
+    "@webiny/cli": ^5.21.0
+    "@webiny/error": ^5.21.0
+    "@webiny/project-utils": ^5.21.0
+    rimraf: ^3.0.2
+    ttypescript: ^1.5.12
+    typescript: ^4.1.3
+  languageName: unknown
+  linkType: soft
+
 "@webiny/aws-layers@workspace:packages/aws-layers":
   version: 0.0.0-use.local
   resolution: "@webiny/aws-layers@workspace:packages/aws-layers"
@@ -11271,6 +11291,24 @@ __metadata:
     yargs: 12.0.5
   peerDependencies:
     react: 16.14.0
+  languageName: unknown
+  linkType: soft
+
+"@webiny/models@^5.21.0, @webiny/models@workspace:packages/models":
+  version: 0.0.0-use.local
+  resolution: "@webiny/models@workspace:packages/models"
+  dependencies:
+    "@babel/cli": ^7.12.10
+    "@babel/core": ^7.5.5
+    "@babel/preset-env": ^7.5.5
+    "@babel/preset-typescript": ^7.8.3
+    "@babel/runtime": ^7.5.5
+    "@webiny/attributes": ^5.21.0
+    "@webiny/cli": ^5.21.0
+    "@webiny/project-utils": ^5.21.0
+    rimraf: ^3.0.2
+    ttypescript: ^1.5.12
+    typescript: ^4.1.3
   languageName: unknown
   linkType: soft
 

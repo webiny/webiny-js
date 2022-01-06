@@ -14,6 +14,7 @@ import { DbContext } from "@webiny/handler-db/types";
 import { FileManagerContext } from "@webiny/api-file-manager/types";
 import { UpgradePlugin } from "@webiny/api-upgrade/types";
 import { Topic } from "@webiny/pubsub/types";
+import { Model } from "@webiny/models";
 
 export interface HeadlessCms
     extends CmsSettingsContext,
@@ -1605,6 +1606,7 @@ export interface UpdateCmsEntryInput {
  * @category CmsEntry
  */
 export interface CmsEntryContext {
+    entryModel: Model;
     /**
      * Get a single content entry for a model.
      */

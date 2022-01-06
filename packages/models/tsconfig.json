@@ -1,0 +1,20 @@
+{
+  "extends": "../../tsconfig.json",
+  "include": ["src", "__tests__/**/*.ts"],
+  "references": [
+    {
+      "path": "../attributes"
+    }
+  ],
+  "compilerOptions": {
+    "rootDirs": ["./src", "./__tests__"],
+    "outDir": "./dist",
+    "declarationDir": "./dist",
+    "paths": {
+      "~/*": ["./src/*"],
+      "@webiny/attributes/*": ["../attributes/src/*"],
+      "@webiny/attributes": ["../attributes/src"]
+    },
+    "baseUrl": "."
+  }
+}

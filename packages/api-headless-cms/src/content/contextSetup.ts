@@ -19,9 +19,7 @@ const extractHandlerHttpParameters = (context: CmsContext) => {
 
 export default () => {
     return new ContextPlugin<CmsContext>(async context => {
-        if (context.http?.request?.method === "OPTIONS") {
-            return;
-        } else if (context.cms) {
+        if (context.cms) {
             throw new WebinyError(
                 "Context setup plugin must be first to be registered. Cannot have anything before it.",
                 "CMS_CONTEXT_INITIALIZED_ERROR"
