@@ -1,25 +1,15 @@
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins";
-import { PageDynamoDbAttributePlugin } from "~/plugins/definitions/PageDynamoDbAttributePlugin";
+import { ApwContext } from "~/types";
 
-/* This is DynamoDB only entity attribute.
- * TODO: Think on how to implement this generally, agnostic to the storage operation types.
- */
-const createWorkflowFieldPlugin = () => {
-    return new PageDynamoDbAttributePlugin({
-        attribute: "workflow",
-        params: {
-            type: "string"
-        }
-    });
-};
-
-export default () => [
-    new GraphQLSchemaPlugin({
+export default () =>
+    new GraphQLSchemaPlugin<ApwContext>({
         typeDefs: /* GraphQL */ `
-            extend type PbPage {
-                workflow: ID
+            type PbApwPageSettings {
+                workflowId: ID
+            }
+
+            extend type PbPageSettings {
+                apw: PbApwPageSettings
             }
         `
-    }),
-    createWorkflowFieldPlugin()
-];
+    });
