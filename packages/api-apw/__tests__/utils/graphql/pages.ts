@@ -23,6 +23,9 @@ export const DATA_FIELD = /* GraphQL */ `
             version
         }
         settings {
+            apw {
+                workflowId
+            }
             general {
                 snippet
                 tags
@@ -60,7 +63,6 @@ export const DATA_FIELD = /* GraphQL */ `
             displayName
             type
         }
-        workflow
     }
 `;
 

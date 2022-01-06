@@ -1,3 +1,4 @@
+import { setupCategory } from "../utils/helpers";
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
 import mocks from "./mocks/workflows";
 
@@ -10,6 +11,7 @@ describe("Workflow assignment to a PB Page", () => {
         createWorkflowMutation,
         listWorkflowsQuery,
         createCategory,
+        getCategory,
         createPage,
         getPageQuery,
         until,
@@ -18,18 +20,6 @@ describe("Workflow assignment to a PB Page", () => {
     } = useContentGqlHandler({
         ...options
     });
-
-    const setupCategory = async () => {
-        const [createCategoryResponse] = await createCategory({
-            data: {
-                name: "Static",
-                url: "/static/",
-                slug: "static",
-                layout: "static"
-            }
-        });
-        return createCategoryResponse.data.pageBuilder.createCategory.data;
-    };
 
     const login = async () => {
         await securityIdentity.login();
@@ -53,7 +43,7 @@ describe("Workflow assignment to a PB Page", () => {
 
     test("Page should have a workflow assigned right after create", async () => {
         const reviewer = await setupReviewer();
-        const category = await setupCategory();
+        const category = await setupCategory({ getCategory, createCategory });
         const workflows = [];
         /*
          Create 5 workflow entries
@@ -83,19 +73,16 @@ describe("Workflow assignment to a PB Page", () => {
          * Create a page and see what workflow has been assigned to it
          */
         const [createPageResponse] = await createPage({ category: category.slug });
+        const createdPageData = createPageResponse.data.pageBuilder.createPage.data;
 
-        expect(createPageResponse.data.pageBuilder.createPage.data.category.slug).toEqual(
-            category.slug
-        );
+        expect(createdPageData.category.slug).toEqual(category.slug);
 
-        expect(createPageResponse.data.pageBuilder.createPage.data.workflow).toEqual(
-            workflows[0].id
-        );
+        expect(createdPageData.settings.apw.workflowId).toEqual(workflows[0].id);
     });
 
     test("Page should have the latest created workflow assigned in case of multiple matching workflows", async () => {
         const reviewer = await setupReviewer();
-        const category = await setupCategory();
+        const category = await setupCategory({ getCategory, createCategory });
         const workflows = [];
         const workflowScopes = mocks.getPageBuilderScope("", "static");
         /*
@@ -125,19 +112,15 @@ describe("Workflow assignment to a PB Page", () => {
          * Create a page and see what workflow has been assigned to it
          */
         const [createPageResponse] = await createPage({ category: category.slug });
+        const createdPageData = createPageResponse.data.pageBuilder.createPage.data;
+        expect(createdPageData.category.slug).toEqual(category.slug);
 
-        expect(createPageResponse.data.pageBuilder.createPage.data.category.slug).toEqual(
-            category.slug
-        );
-
-        expect(createPageResponse.data.pageBuilder.createPage.data.workflow).toEqual(
-            workflows[3].id
-        );
+        expect(createdPageData.settings.apw.workflowId).toEqual(workflows[3].id);
     });
 
     test("Page should not have a workflow assigned in case of no workflow exist", async () => {
         const reviewer = await setupReviewer();
-        const category = await setupCategory();
+        const category = await setupCategory({ getCategory, createCategory });
 
         // Create a workflow entry
         const [createWorkflowResponse] = await createWorkflowMutation({
@@ -172,17 +155,15 @@ describe("Workflow assignment to a PB Page", () => {
         });
         // Create a page and check if there is a workflow assigned
         const [createPageResponse] = await createPage({ category: category.slug });
+        const createdPageData = createPageResponse.data.pageBuilder.createPage.data;
+        expect(createdPageData.category.slug).toEqual(category.slug);
 
-        expect(createPageResponse.data.pageBuilder.createPage.data.category.slug).toEqual(
-            category.slug
-        );
-
-        expect(createPageResponse.data.pageBuilder.createPage.data.workflow).toEqual(null);
+        expect(createdPageData.settings.apw).toEqual(null);
     });
 
     test("Page should have the workflow assigned even when the workflow is created after page", async () => {
         const reviewer = await setupReviewer();
-        const category = await setupCategory();
+        const category = await setupCategory({ getCategory, createCategory });
 
         /**
          * Create a page even before a workflow is created.
@@ -190,7 +171,7 @@ describe("Workflow assignment to a PB Page", () => {
         const [createPageResponse] = await createPage({ category: category.slug });
         const page = createPageResponse.data.pageBuilder.createPage.data;
         expect(page.category.slug).toEqual(category.slug);
-        expect(page.workflow).toEqual(null);
+        expect(page.settings.apw).toEqual(null);
 
         /*
          Create a workflow.
@@ -221,7 +202,9 @@ describe("Workflow assignment to a PB Page", () => {
          * Now page should have this workflow assigned to it.
          */
         const [getPageResponse] = await getPageQuery({ id: page.id });
-        expect(getPageResponse.data.pageBuilder.getPage.data.workflow).toBe(workflow.id);
+        expect(getPageResponse.data.pageBuilder.getPage.data.settings.apw.workflowId).toBe(
+            workflow.id
+        );
 
         /**
          * Let's try creating one more workflow with same scope.
@@ -252,7 +235,7 @@ describe("Workflow assignment to a PB Page", () => {
          * Now page should have new newly created workflow assigned to it.
          */
         const [getPageResponseAgain] = await getPageQuery({ id: page.id });
-        expect(getPageResponseAgain.data.pageBuilder.getPage.data.workflow).toBe(
+        expect(getPageResponseAgain.data.pageBuilder.getPage.data.settings.apw.workflowId).toBe(
             anotherWorkflowWithSameScope.id
         );
     });

@@ -21,6 +21,17 @@ export const ERROR_FIELD = /* GraphQL */ `
     }
 `;
 
+export const GET_CATEGORY = /* GraphQL */ `
+    query GetCategory($slug: String!) {
+        pageBuilder {
+            getCategory(slug: $slug) {
+                data ${DATA_FIELD}
+                error ${ERROR_FIELD}
+            }
+        }
+    }
+`;
+
 export const CREATE_CATEGORY = /* GraphQL */ `
     mutation CreateCategory($data: PbCategoryInput!) {
         pageBuilder {

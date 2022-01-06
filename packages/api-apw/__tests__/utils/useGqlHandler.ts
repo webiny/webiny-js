@@ -29,7 +29,7 @@ import {
     createPageBuilderGraphQL
 } from "@webiny/api-page-builder/graphql";
 import { createStorageOperations as createPageBuilderStorageOperations } from "@webiny/api-page-builder-so-ddb";
-import { CREATE_CATEGORY } from "./graphql/categories";
+import { CREATE_CATEGORY, GET_CATEGORY } from "./graphql/categories";
 import { CREATE_PAGE, GET_PAGE } from "./graphql/pages";
 import {
     CREATE_CONTENT_REVIEW_MUTATION,
@@ -265,6 +265,9 @@ export const useGqlHandler = (params: GQLHandlerCallableParams) => {
             return invoke({ body: { query: DELETE_CHANGE_REQUEST_MUTATION, variables } });
         },
         // Categories
+        async getCategory(variables) {
+            return invoke({ body: { query: GET_CATEGORY, variables } });
+        },
         async createCategory(variables) {
             return invoke({ body: { query: CREATE_CATEGORY, variables } });
         },

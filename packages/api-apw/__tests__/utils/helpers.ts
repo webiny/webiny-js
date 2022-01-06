@@ -66,6 +66,23 @@ export const createIdentity = (identity?: SecurityIdentity) => {
     return identity;
 };
 
+export const setupCategory = async ({ getCategory, createCategory }) => {
+    const [getCategoryResponse] = await getCategory({ slug: "static" });
+    const category = getCategoryResponse.data.pageBuilder.getCategory.data;
+    if (category) {
+        return category;
+    }
+    const [createCategoryResponse] = await createCategory({
+        data: {
+            name: "Static",
+            url: "/static/",
+            slug: "static",
+            layout: "static"
+        }
+    });
+    return createCategoryResponse.data.pageBuilder.createCategory.data;
+};
+
 export const createSetupForContentReview = async gqlHandler => {
     const setupReviewer = async () => {
         await gqlHandler.securityIdentity.login();
@@ -83,20 +100,11 @@ export const createSetupForContentReview = async gqlHandler => {
         return reviewer;
     };
 
-    const setupCategory = async () => {
-        const [createCategoryResponse] = await gqlHandler.createCategory({
-            data: {
-                name: "Static",
-                url: "/static/",
-                slug: "static",
-                layout: "static"
-            }
-        });
-        return createCategoryResponse.data.pageBuilder.createCategory.data;
-    };
-
     const setupPage = async () => {
-        const category = await setupCategory();
+        const category = await setupCategory({
+            getCategory: gqlHandler.getCategory,
+            createCategory: gqlHandler.createCategory
+        });
 
         const [createPageResponse] = await gqlHandler.createPage({ category: category.slug });
         return createPageResponse.data.pageBuilder.createPage.data;
