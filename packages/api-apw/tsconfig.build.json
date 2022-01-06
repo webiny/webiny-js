@@ -13,7 +13,6 @@
     "../api-tenancy",
     "../api-security-so-ddb",
     "../api-tenancy-so-ddb",
-    "../db-dynamodb",
     "../handler-aws",
     "../plugins",
     "../api-page-builder",
@@ -56,9 +55,6 @@
     },
     {
       "path": "../plugins/tsconfig.build.json"
-    },
-    {
-      "path": "../db-dynamodb/tsconfig.build.json"
     },
     {
       "path": "../api-page-builder-so-ddb/tsconfig.build.json"
