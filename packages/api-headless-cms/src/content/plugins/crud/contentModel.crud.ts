@@ -40,6 +40,7 @@ import { assignBeforeModelDelete } from "./contentModel/beforeDelete";
 import { assignAfterModelCreate } from "./contentModel/afterCreate";
 import { assignAfterModelUpdate } from "./contentModel/afterUpdate";
 import { assignAfterModelDelete } from "./contentModel/afterDelete";
+import { createModelDataModel } from "./contentModel/dataModel";
 
 export interface Params {
     getTenant: () => Tenant;
@@ -225,6 +226,8 @@ export const createModelsCrud = (params: Params): CmsModelContext => {
         onAfterModelDelete
     });
 
+    const modelDataModel = createModelDataModel();
+
     return {
         onBeforeModelCreate,
         onAfterModelCreate,
@@ -234,6 +237,7 @@ export const createModelsCrud = (params: Params): CmsModelContext => {
         onAfterModelUpdate,
         onBeforeModelDelete,
         onAfterModelDelete,
+        modelDataModel,
         getModel,
         listModels,
         async createModel(inputData) {

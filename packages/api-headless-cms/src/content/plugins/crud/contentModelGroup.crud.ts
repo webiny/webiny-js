@@ -24,9 +24,10 @@ import { Tenant } from "@webiny/api-tenancy/types";
 import { I18NLocale } from "@webiny/api-i18n/types";
 import { SecurityIdentity } from "@webiny/api-security/types";
 import { createTopic } from "@webiny/pubsub";
-import { assignBeforeGroupUpdate } from "~/content/plugins/crud/contentModelGroup/beforeUpdate";
-import { assignBeforeGroupCreate } from "~/content/plugins/crud/contentModelGroup/beforeCreate";
-import { assignBeforeGroupDelete } from "~/content/plugins/crud/contentModelGroup/beforeDelete";
+import { assignBeforeGroupUpdate } from "./contentModelGroup/beforeUpdate";
+import { assignBeforeGroupCreate } from "./contentModelGroup/beforeCreate";
+import { assignBeforeGroupDelete } from "./contentModelGroup/beforeDelete";
+import { createGroupDataModel } from "./contentModelGroup/dataModel";
 
 const CreateContentModelGroupModel = withFields({
     name: string({ validation: validation.create("required,maxLength:100") }),
@@ -176,6 +177,8 @@ export const createModelGroupsCrud = (params: Params): CmsGroupContext => {
         storageOperations
     });
 
+    const groupDataModel = createGroupDataModel();
+
     return {
         onBeforeGroupCreate: onBeforeCreate,
         onAfterGroupCreate: onAfterCreate,
@@ -183,6 +186,7 @@ export const createModelGroupsCrud = (params: Params): CmsGroupContext => {
         onAfterGroupUpdate: onAfterUpdate,
         onBeforeGroupDelete: onBeforeDelete,
         onAfterGroupDelete: onAfterDelete,
+        groupDataModel,
         getGroup: async id => {
             const permission = await checkPermissions("r");
 

@@ -885,6 +885,10 @@ export interface AfterGroupDeleteTopicParams {
  */
 export interface CmsGroupContext {
     /**
+     * Data model for our group.
+     */
+    groupDataModel: Model;
+    /**
      * Gets content model group by given id.
      */
     getGroup: (id: string) => Promise<CmsGroup | null>;
@@ -1268,6 +1272,10 @@ export interface CmsModelUpdateDirectParams {
  */
 export interface CmsModelContext {
     /**
+     * Data model for the model.
+     */
+    modelDataModel: Model;
+    /**
      * Get a single content model.
      */
     getModel: (modelId: string) => Promise<CmsModel | null>;
@@ -1606,7 +1614,7 @@ export interface UpdateCmsEntryInput {
  * @category CmsEntry
  */
 export interface CmsEntryContext {
-    entryModel: Model;
+    entryDataModel: Model;
     /**
      * Get a single content entry for a model.
      */

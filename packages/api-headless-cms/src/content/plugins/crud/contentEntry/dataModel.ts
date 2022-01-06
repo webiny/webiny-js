@@ -6,7 +6,7 @@ import {
     createObjectAttribute,
     createStringAttribute
 } from "@webiny/models";
-export const createEntryModel = () => {
+export const createEntryDataModel = () => {
     return createModel({
         name: "entry",
         attributes: [
