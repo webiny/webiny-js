@@ -3,7 +3,6 @@ import {
     CmsContext,
     CmsEntryListParams,
     CmsEntryListWhere,
-    CmsEntryMeta,
     CmsModel
 } from "@webiny/api-headless-cms/types";
 import { Context } from "@webiny/handler/types";
@@ -11,6 +10,21 @@ import { PbContext } from "@webiny/api-page-builder/graphql/types";
 import { SecurityIdentity, SecurityPermission } from "@webiny/api-security/types";
 import { I18NLocale } from "@webiny/api-i18n/types";
 import { Tenant } from "@webiny/api-tenancy/types";
+
+export interface ListMeta {
+    /**
+     * A cursor for pagination.
+     */
+    cursor: string;
+    /**
+     * Is there more items to load?
+     */
+    hasMoreItems: boolean;
+    /**
+     * Total count of the items in the storage.
+     */
+    totalCount: number;
+}
 
 export enum ApwContentTypes {
     PAGE = "page",
@@ -233,17 +247,17 @@ interface BaseApwCrud<TEntry, TCreateEntryParams, TUpdateEntryParams> {
 
 export interface ApwWorkflowCrud
     extends BaseApwCrud<ApwWorkflow, CreateWorkflowParams, UpdateWorkflowParams> {
-    list(params: ListWorkflowsParams): Promise<[ApwWorkflow[], CmsEntryMeta]>;
+    list(params: ListWorkflowsParams): Promise<[ApwWorkflow[], ListMeta]>;
 }
 
 export interface ApwReviewerCrud
     extends BaseApwCrud<ApwReviewer, CreateReviewerParams, UpdateApwReviewerData> {
-    list(params: CmsEntryListParams): Promise<[ApwReviewer[], CmsEntryMeta]>;
+    list(params: CmsEntryListParams): Promise<[ApwReviewer[], ListMeta]>;
 }
 
 export interface ApwCommentCrud
     extends BaseApwCrud<ApwComment, CreateApwCommentParams, UpdateApwCommentParams> {
-    list(params: CmsEntryListParams): Promise<[ApwComment[], CmsEntryMeta]>;
+    list(params: CmsEntryListParams): Promise<[ApwComment[], ListMeta]>;
 }
 
 export interface ApwChangeRequestCrud
@@ -252,7 +266,7 @@ export interface ApwChangeRequestCrud
         CreateApwChangeRequestParams,
         UpdateApwChangeRequestParams
     > {
-    list(params: CmsEntryListParams): Promise<[ApwChangeRequest[], CmsEntryMeta]>;
+    list(params: CmsEntryListParams): Promise<[ApwChangeRequest[], ListMeta]>;
 }
 
 export interface ApwContentReviewCrud
@@ -261,7 +275,7 @@ export interface ApwContentReviewCrud
         CreateApwContentReviewParams,
         UpdateApwContentReviewParams
     > {
-    list(params: CmsEntryListParams): Promise<[ApwContentReview[], CmsEntryMeta]>;
+    list(params: CmsEntryListParams): Promise<[ApwContentReview[], ListMeta]>;
 
     provideSignOff(id: string, step: string): Promise<Boolean>;
 
@@ -401,9 +415,7 @@ export interface ApwReviewerStorageOperations {
 
     getReviewer(params: StorageOperationsGetReviewerParams): Promise<ApwReviewer>;
 
-    listReviewers(
-        params: StorageOperationsListReviewersParams
-    ): Promise<[ApwReviewer[], CmsEntryMeta]>;
+    listReviewers(params: StorageOperationsListReviewersParams): Promise<[ApwReviewer[], ListMeta]>;
 
     createReviewer(params: StorageOperationsCreateReviewerParams): Promise<ApwReviewer>;
 
@@ -420,9 +432,7 @@ export interface ApwWorkflowStorageOperations {
 
     getWorkflow(params: StorageOperationsGetWorkflowParams): Promise<ApwWorkflow>;
 
-    listWorkflows(
-        params: StorageOperationsListWorkflowsParams
-    ): Promise<[ApwWorkflow[], CmsEntryMeta]>;
+    listWorkflows(params: StorageOperationsListWorkflowsParams): Promise<[ApwWorkflow[], ListMeta]>;
 
     createWorkflow(params: StorageOperationsCreateWorkflowParams): Promise<ApwWorkflow>;
 
@@ -441,7 +451,7 @@ export interface ApwContentReviewStorageOperations {
 
     listContentReviews(
         params: StorageOperationsListContentReviewsParams
-    ): Promise<[ApwContentReview[], CmsEntryMeta]>;
+    ): Promise<[ApwContentReview[], ListMeta]>;
 
     createContentReview(
         params: StorageOperationsCreateContentReviewParams
@@ -464,7 +474,7 @@ export interface ApwChangeRequestStorageOperations {
 
     listChangeRequests(
         params: StorageOperationsListChangeRequestsParams
-    ): Promise<[ApwChangeRequest[], CmsEntryMeta]>;
+    ): Promise<[ApwChangeRequest[], ListMeta]>;
 
     createChangeRequest(
         params: StorageOperationsCreateChangeRequestParams
@@ -485,9 +495,7 @@ export interface ApwCommentStorageOperations {
 
     getComment(params: StorageOperationsGetCommentParams): Promise<ApwComment>;
 
-    listComments(
-        params: StorageOperationsListCommentsParams
-    ): Promise<[ApwComment[], CmsEntryMeta]>;
+    listComments(params: StorageOperationsListCommentsParams): Promise<[ApwComment[], ListMeta]>;
 
     createComment(params: StorageOperationsCreateCommentParams): Promise<ApwComment>;
 
