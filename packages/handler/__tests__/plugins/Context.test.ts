@@ -12,8 +12,9 @@ describe("Context", () => {
                 _byTypeCache: {},
                 plugins: {}
             },
-            _version: "test",
-            _args: []
+            WEBINY_VERSION: "test",
+            args: [],
+            waiters: []
         });
         expect(context.plugins).toEqual({
             _byTypeCache: {},
@@ -28,6 +29,20 @@ describe("Context", () => {
             WEBINY_VERSION: "test"
         });
 
-        context.waitFor<Context>("cms", ctx => {});
+        const tester = {
+            cms: false
+        };
+
+        context.waitFor<Context>("cms", () => {
+            tester.cms = true;
+        });
+        expect((context as any).cms).toBeUndefined();
+
+        (context as any).cms = {
+            loaded: true
+        };
+        expect((context as any).cms).toEqual({
+            loaded: true
+        });
     });
 });
