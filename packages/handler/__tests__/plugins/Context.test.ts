@@ -1,4 +1,11 @@
 import { Context } from "~/index";
+import { Context as ContextInterface } from "~/types";
+
+interface DummyContextInterface extends ContextInterface {
+    cms: any;
+    pageBuilder: any;
+    formBuilder: any;
+}
 
 describe("Context", () => {
     it("should construct a base context", () => {
@@ -27,7 +34,7 @@ describe("Context", () => {
     it("should wait for a variable to be defined on context and then trigger the callable", async () => {
         const context = new Context({
             WEBINY_VERSION: "test"
-        });
+        }) as unknown as DummyContextInterface;
 
         const tester = {
             cms: false,
@@ -35,15 +42,15 @@ describe("Context", () => {
             pageBuilder: false
         };
 
-        context.waitFor<Context>("cms", () => {
+        context.waitFor("cms", () => {
             tester.cms = true;
         });
-        expect((context as any).cms).toBeUndefined();
+        expect(context.cms).toBeUndefined();
 
-        (context as any).cms = {
+        context.cms = {
             loaded: true
         };
-        expect((context as any).cms).toEqual({
+        expect(context.cms).toEqual({
             loaded: true
         });
 
@@ -52,17 +59,17 @@ describe("Context", () => {
             tester.formBuilder = true;
         });
 
-        (context as any).pageBuilder = {
+        context.pageBuilder = {
             loaded: true
         };
-        (context as any).formBuilder = {
+        context.formBuilder = {
             loaded: true
         };
 
-        expect((context as any).pageBuilder).toEqual({
+        expect(context.pageBuilder).toEqual({
             loaded: true
         });
-        expect((context as any).formBuilder).toEqual({
+        expect(context.formBuilder).toEqual({
             loaded: true
         });
     });
