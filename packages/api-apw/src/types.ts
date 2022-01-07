@@ -223,8 +223,14 @@ interface UpdateApwChangeRequestParams {
     media: JSON;
 }
 
-interface CreateApwContentReviewParams {
-    content: string;
+export interface ApwContentReviewContent {
+    id: string;
+    type: ApwContentTypes;
+    settings: Record<string, any>;
+}
+
+export interface CreateApwContentReviewParams {
+    content: ApwContentReviewContent;
     workflow: string;
     steps: ApwContentReviewStep[];
     status: ApwContentReviewStatus;
@@ -235,8 +241,6 @@ interface UpdateApwContentReviewParams {
 }
 
 interface BaseApwCrud<TEntry, TCreateEntryParams, TUpdateEntryParams> {
-    getModel(): Promise<CmsModel>;
-
     get(id: string): Promise<TEntry>;
 
     create(data: TCreateEntryParams): Promise<TEntry>;
@@ -316,6 +320,7 @@ export interface ApwContentReviewCrud
         CreateApwContentReviewParams,
         UpdateApwContentReviewParams
     > {
+    getModel(): Promise<CmsModel>;
     list(params: CmsEntryListParams): Promise<[ApwContentReview[], ListMeta]>;
 
     provideSignOff(id: string, step: string): Promise<Boolean>;

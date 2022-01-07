@@ -28,9 +28,6 @@ export function createCommentMethods({ storageOperations }: CreateApwParams): Ap
         onAfterCommentUpdate,
         onBeforeCommentDelete,
         onAfterCommentDelete,
-        async getModel() {
-            return storageOperations.getCommentModel();
-        },
         async get(id) {
             return storageOperations.getComment({ id });
         },

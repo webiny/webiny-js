@@ -27,9 +27,6 @@ export function createReviewerMethods({ storageOperations }: CreateApwParams): A
         onAfterReviewerUpdate,
         onBeforeReviewerDelete,
         onAfterReviewerDelete,
-        async getModel() {
-            return storageOperations.getReviewerModel();
-        },
         async get(id) {
             return storageOperations.getReviewer({ id });
         },

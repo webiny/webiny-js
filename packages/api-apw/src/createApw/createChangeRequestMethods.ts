@@ -21,9 +21,6 @@ export function createChangeRequestMethods({
     const onAfterChangeRequestDelete = createTopic<OnAfterChangeRequestDeleteTopicParams>();
 
     return {
-        async getModel() {
-            return storageOperations.getChangeRequestModel();
-        },
         async get(id) {
             return storageOperations.getChangeRequest({ id });
         },

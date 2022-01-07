@@ -65,6 +65,9 @@ export const getContentReviewStepInitialStatus = (
     index: number,
     previousStepStatus: ApwContentReviewStepStatus
 ): ApwContentReviewStepStatus => {
+    /**
+     * Always set first step 'active' by default.
+     */
     if (index === 0) {
         return ApwContentReviewStepStatus.ACTIVE;
     }

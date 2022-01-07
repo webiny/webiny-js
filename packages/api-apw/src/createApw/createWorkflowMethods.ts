@@ -27,9 +27,6 @@ export function createWorkflowMethods({ storageOperations }: CreateApwParams): A
         onAfterWorkflowUpdate,
         onBeforeWorkflowDelete,
         onAfterWorkflowDelete,
-        async getModel() {
-            return storageOperations.getWorkflowModel();
-        },
         async get(id) {
             return storageOperations.getWorkflow({ id });
         },
