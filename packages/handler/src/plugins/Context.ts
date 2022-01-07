@@ -98,12 +98,21 @@ export class Context implements ContextInterface {
                 },
                 configurable: false
             });
+            /**
+             * We add the target to be awaited.
+             */
             targets.push(target);
         }
+        /**
+         * If there are no targets to be awaited, just fire the callable.
+         */
         if (targets.length === 0) {
             cb(this as any);
             return;
         }
+        /**
+         * Otherwise add the waiter for the target properties.
+         */
         this.waiters.push({
             targets,
             cb
