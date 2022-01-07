@@ -32,6 +32,7 @@
     "@webiny/handler-aws": "^5.17.0",
     "@webiny/handler-graphql": "^5.17.0",
     "@webiny/plugins": "^5.17.0",
+    "@webiny/pubsub": "^5.21.0",
     "lodash": "^4.5.0"
   },
   "devDependencies": {

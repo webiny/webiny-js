@@ -17,7 +17,8 @@
     "../plugins",
     "../api-page-builder",
     "../api-page-builder-so-ddb",
-    "../error"
+    "../error",
+    "../pubsub"
   ],
   "references": [
     {
@@ -64,6 +65,9 @@
     },
     {
       "path": "../error/tsconfig.build.json"
+    },
+    {
+      "path": "../pubsub/tsconfig.build.json"
     }
   ],
   "compilerOptions": {
