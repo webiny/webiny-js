@@ -23,7 +23,6 @@ export const createApw = (params: CreateApwParams): AdvancedPublishingWorkflow =
         },
         getWorkflowGetter(type) {
             if (!workflowGetters.has(type)) {
-                console.warn(`No loader found for type: "${type}". You must define a loader.`);
                 throw new Error(`No loader found for type: "${type}". You must define a loader.`);
             }
             return workflowGetters.get(type);

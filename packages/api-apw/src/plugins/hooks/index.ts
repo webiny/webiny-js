@@ -23,14 +23,14 @@ export default () => [
 
         createReviewerFromIdentity({ security, apw });
 
-        linkWorkflowToPage({ apw, cms, ...pageMethods });
+        linkWorkflowToPage({ apw, ...pageMethods });
 
         initializeContentReviewSteps({ apw, cms });
 
-        updatePendingChangeRequestsCount({ apw, cms });
+        updatePendingChangeRequestsCount({ apw });
 
-        deleteCommentsAfterChangeRequest({ apw, cms });
+        deleteCommentsAfterChangeRequest({ apw });
 
-        deleteChangeRequestsWithContentReview({ apw, cms });
+        deleteChangeRequestsWithContentReview({ apw });
     })
 ];
