@@ -1,3 +1,4 @@
+import { createTopic } from "@webiny/pubsub";
 import {
     ApwContentReviewCrud,
     ApwContentReviewStepStatus,
@@ -5,7 +6,13 @@ import {
     ApwContentReviewStatus,
     CreateApwParams,
     ApwReviewerCrud,
-    ApwContentReview
+    ApwContentReview,
+    OnBeforeContentReviewCreateTopicParams,
+    OnAfterContentReviewCreateTopicParams,
+    OnBeforeContentReviewUpdateTopicParams,
+    OnAfterContentReviewUpdateTopicParams,
+    OnBeforeContentReviewDeleteTopicParams,
+    OnAfterContentReviewDeleteTopicParams
 } from "~/types";
 import { hasReviewer, getNextStepStatus } from "~/plugins/utils";
 import {
@@ -25,7 +32,22 @@ export function createContentReviewMethods({
     storageOperations,
     getReviewer
 }: CreateContentReviewMethodsParams): ApwContentReviewCrud {
+    const onBeforeContentReviewCreate = createTopic<OnBeforeContentReviewCreateTopicParams>();
+    const onAfterContentReviewCreate = createTopic<OnAfterContentReviewCreateTopicParams>();
+    const onBeforeContentReviewUpdate = createTopic<OnBeforeContentReviewUpdateTopicParams>();
+    const onAfterContentReviewUpdate = createTopic<OnAfterContentReviewUpdateTopicParams>();
+    const onBeforeContentReviewDelete = createTopic<OnBeforeContentReviewDeleteTopicParams>();
+    const onAfterContentReviewDelete = createTopic<OnAfterContentReviewDeleteTopicParams>();
     return {
+        /**
+         * Lifecycle events
+         */
+        onBeforeContentReviewCreate,
+        onAfterContentReviewCreate,
+        onBeforeContentReviewUpdate,
+        onAfterContentReviewUpdate,
+        onBeforeContentReviewDelete,
+        onAfterContentReviewDelete,
         async getModel() {
             return storageOperations.getContentReviewModel();
         },
@@ -36,22 +58,47 @@ export function createContentReviewMethods({
             return storageOperations.listContentReviews(params);
         },
         async create(data) {
-            return storageOperations.createContentReview({
+            await onBeforeContentReviewCreate.publish({ input: data });
+
+            const contentReview = await storageOperations.createContentReview({
                 data: {
                     ...data,
                     steps: [],
                     status: ApwContentReviewStatus.UNDER_REVIEW
                 }
             });
+
+            await onAfterContentReviewCreate.publish({ contentReview });
+
+            return contentReview;
         },
         async update(id, data) {
-            return storageOperations.updateContentReview({
+            const original = await storageOperations.getContentReview({ id });
+
+            await onBeforeContentReviewUpdate.publish({ original, input: { id, data } });
+
+            const contentReview = await storageOperations.updateContentReview({
                 id,
                 data
             });
+
+            await onAfterContentReviewUpdate.publish({
+                original,
+                input: { id, data },
+                contentReview
+            });
+
+            return contentReview;
         },
         async delete(id) {
+            const contentReview = await storageOperations.getContentReview({ id });
+
+            await onBeforeContentReviewDelete.publish({ contentReview });
+
             await storageOperations.deleteContentReview({ id });
+
+            await onAfterContentReviewDelete.publish({ contentReview });
+
             return true;
         },
         async provideSignOff(id, stepSlug) {
