@@ -17,10 +17,6 @@ const WORKFLOW_PRECEDENCE = {
     [WorkflowScopeTypes.CMS]: 1
 };
 
-const getValue = (object: Record<string, any>, key: string) => {
-    return get(object, `values.${key}`);
-};
-
 const workflowByPrecedenceDesc = (a: ApwWorkflow, b: ApwWorkflow) => {
     const scoreA = WORKFLOW_PRECEDENCE[a.scope.type];
     const scoreB = WORKFLOW_PRECEDENCE[b.scope.type];
@@ -75,7 +71,6 @@ interface PageMethods {
 
 export const linkWorkflowToPage = ({
     apw,
-    cms,
     getPage,
     updatePage,
     onBeforePageCreate
@@ -120,15 +115,8 @@ export const linkWorkflowToPage = ({
         }
     });
 
-    cms.onAfterEntryCreate.subscribe(async ({ model, entry }) => {
-        const workflowModel = await apw.workflow.getModel();
-
-        if (model.modelId !== workflowModel.modelId) {
-            return;
-        }
-
-        const scope = getValue(entry, "scope");
-        const app = getValue(entry, "app");
+    apw.workflow.onAfterWorkflowCreate.subscribe(async ({ workflow }) => {
+        const { app, scope } = workflow;
         /**
          * If the workflow is applicable PB application and pages are provided,
          * we'll assign workflow for each of those provided page.
@@ -150,7 +138,7 @@ export const linkWorkflowToPage = ({
                      * We'll update the workflow reference even though it already had one assign.
                      */
                     await updatePage(page.id, {
-                        settings: set(page.settings, "apw.workflowId", entry.id)
+                        settings: set(page.settings, "apw.workflowId", workflow.id)
                     });
                 } catch (e) {
                     if (e.code !== "NOT_FOUND") {
