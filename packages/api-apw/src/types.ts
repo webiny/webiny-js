@@ -320,7 +320,6 @@ export interface ApwContentReviewCrud
         CreateApwContentReviewParams,
         UpdateApwContentReviewParams
     > {
-    getModel(): Promise<CmsModel>;
     list(params: CmsEntryListParams): Promise<[ApwContentReview[], ListMeta]>;
 
     provideSignOff(id: string, step: string): Promise<Boolean>;

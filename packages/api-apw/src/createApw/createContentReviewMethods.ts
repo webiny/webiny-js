@@ -48,9 +48,6 @@ export function createContentReviewMethods({
         onAfterContentReviewUpdate,
         onBeforeContentReviewDelete,
         onAfterContentReviewDelete,
-        async getModel() {
-            return storageOperations.getContentReviewModel();
-        },
         async get(id) {
             return storageOperations.getContentReview({ id });
         },
