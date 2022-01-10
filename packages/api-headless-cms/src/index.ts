@@ -13,10 +13,11 @@ import {
     CreateGraphQLHandlerOptions,
     graphQLHandlerFactory
 } from "~/content/graphQLHandlerFactory";
-
 import { StorageTransformPlugin } from "~/content/plugins/storage/StorageTransformPlugin";
 import { createParametersPlugins, CreateParametersPluginsParams } from "~/content/parameterPlugins";
-import { CmsParametersPlugin } from "./content/plugins/CmsParametersPlugin";
+import { CmsParametersPlugin } from "~/content/plugins/CmsParametersPlugin";
+import { CmsGroupPlugin } from "~/content/plugins/CmsGroupPlugin";
+import { CmsModelPlugin } from "~/content/plugins/CmsModelPlugin";
 
 export type AdminContextParams = CreateAdminCrudsParams;
 
@@ -50,4 +51,4 @@ export const createContentHeadlessCmsGraphQL = (params?: ContentGraphQLParams) =
     return graphQLHandlerFactory(params);
 };
 
-export { StorageTransformPlugin, CmsParametersPlugin };
+export { StorageTransformPlugin, CmsParametersPlugin, CmsGroupPlugin, CmsModelPlugin };
