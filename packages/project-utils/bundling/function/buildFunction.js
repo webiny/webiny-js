@@ -31,7 +31,8 @@ module.exports = options => {
                     warnings: []
                 });
 
-                return reject(messages.errors.join("\n\n"));
+                console.error(messages.errors.join("\n\n"));
+                return reject();
             }
 
             if (stats.hasErrors()) {
@@ -51,7 +52,8 @@ module.exports = options => {
                     messages.errors.length = 1;
                 }
 
-                return reject(messages.errors.join("\n\n"));
+                console.error(messages.errors.join("\n\n"));
+                return reject();
             }
 
             logs && console.log(`Compiled successfully in ${chalk.green(duration()) + "s"}.`);
