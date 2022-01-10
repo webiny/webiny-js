@@ -19,49 +19,35 @@ export const getWorkflowIdFromContent = async (
     return null;
 };
 
-export const initializeContentReviewSteps = ({ cms, apw }: LifeCycleHookCallbackParams) => {
-    cms.onBeforeEntryCreate.subscribe(async ({ model, entry, input }) => {
-        const contentReviewModel = await apw.contentReview.getModel();
+export const initializeContentReviewSteps = ({ apw }: LifeCycleHookCallbackParams) => {
+    apw.contentReview.onBeforeContentReviewCreate.subscribe(async ({ input }) => {
         /**
-         * If created entry is of "contentReview" model, let's initialize the steps.
+         * Let's initialize the "ContentReview" steps.
          */
-        if (model.modelId === contentReviewModel.modelId) {
-            // @ts-ignore
-            const workflowId = await getWorkflowIdFromContent(apw, input.content);
-            if (!workflowId) {
-                throw new NotFoundError(
-                    `Unable to initiate a "Content review". No workflow found!`
-                );
-            }
-            const workflow = await apw.workflow.get(workflowId);
-            const workflowSteps = workflow.steps;
+        const workflowId = await getWorkflowIdFromContent(apw, input.content);
 
-            let previousStepStatus;
-            const updatedSteps = workflow.steps.map((step, index) => {
-                const status = getContentReviewStepInitialStatus(
-                    workflowSteps,
-                    index,
-                    previousStepStatus
-                );
-                previousStepStatus = status;
-                return {
-                    ...step,
-                    /**
-                     * We're using the "slug" field from workflow step (which is non-unique string)
-                     * to setup a link between "Change request" and "Content review".
-                     * And because there can be multiple "content reviews" for same workflow,
-                     * we're normalizing them to be unique here.
-                     */
-                    slug: `${entry.entryId}#${step.slug}`,
-                    /**
-                     * Always set first step 'active' by default.
-                     */
-                    status,
-                    pendingChangeRequests: 0
-                };
-            });
-
-            entry = lodashSet(entry, "values.steps", updatedSteps);
+        if (!workflowId) {
+            throw new NotFoundError(`Unable to initiate a "Content review". No workflow found!`);
         }
+
+        const workflow = await apw.workflow.get(workflowId);
+        const workflowSteps = workflow.steps;
+
+        let previousStepStatus;
+        const updatedSteps = workflow.steps.map((step, index) => {
+            const status = getContentReviewStepInitialStatus(
+                workflowSteps,
+                index,
+                previousStepStatus
+            );
+            previousStepStatus = status;
+            return {
+                ...step,
+                status,
+                pendingChangeRequests: 0
+            };
+        });
+
+        input = lodashSet(input, "steps", updatedSteps);
     });
 };

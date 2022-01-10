@@ -14,7 +14,7 @@ export default () => [
      * Hook into CMS events and execute business logic.
      */
     new ContextPlugin<ApwContext>(async context => {
-        const { security, apw, cms, pageBuilder } = context;
+        const { security, apw, pageBuilder } = context;
         const pageMethods = {
             onBeforePageCreate: pageBuilder.onBeforePageCreate,
             getPage: pageBuilder.getPage,
@@ -25,7 +25,7 @@ export default () => [
 
         linkWorkflowToPage({ apw, ...pageMethods });
 
-        initializeContentReviewSteps({ apw, cms });
+        initializeContentReviewSteps({ apw });
 
         updatePendingChangeRequestsCount({ apw });
 

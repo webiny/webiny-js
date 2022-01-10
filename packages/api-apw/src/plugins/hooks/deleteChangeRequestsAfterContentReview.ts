@@ -27,7 +27,7 @@ export const deleteChangeRequestsWithContentReview = ({ apw }: LifeCycleHookCall
                 try {
                     [changeRequests, meta] = await apw.changeRequest.list({
                         where: {
-                            step: slug
+                            step: `${contentReview.id}#${slug}`
                         },
                         after: meta.cursor
                     });

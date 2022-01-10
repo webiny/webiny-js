@@ -16,21 +16,18 @@ const updatePendingChangeRequests = async ({
     changeRequest,
     delta
 }: UpdatePendingChangeRequestsParams): Promise<void> => {
-    const stepSlug = changeRequest.step;
+    const { step: stepSlug } = changeRequest;
     /*
      * Get associated content review entry.
      */
-    const entryId = stepSlug.split("#")[0];
+    const [entryId, version, slug] = stepSlug.split("#");
+    const revisionId = `${entryId}#${version}`;
 
     let contentReviewEntry: ApwContentReview;
     try {
-        [[contentReviewEntry]] = await contentReviewMethods.list({
-            where: {
-                entryId
-            }
-        });
+        contentReviewEntry = await contentReviewMethods.get(revisionId);
     } catch (e) {
-        if (e.message !== "index_not_found_exception") {
+        if (e.message !== "index_not_found_exception" && e.code !== "NOT_FOUND") {
             throw e;
         }
     }
@@ -41,7 +38,7 @@ const updatePendingChangeRequests = async ({
         try {
             await contentReviewMethods.update(contentReviewEntry.id, {
                 steps: contentReviewEntry.steps.map(step => {
-                    if (step.slug === stepSlug) {
+                    if (step.slug === slug) {
                         return {
                             ...step,
                             pendingChangeRequests: step.pendingChangeRequests + delta

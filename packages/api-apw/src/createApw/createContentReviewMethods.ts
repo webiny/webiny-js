@@ -58,14 +58,14 @@ export function createContentReviewMethods({
             return storageOperations.listContentReviews(params);
         },
         async create(data) {
-            await onBeforeContentReviewCreate.publish({ input: data });
+            const input = {
+                ...data,
+                status: ApwContentReviewStatus.UNDER_REVIEW
+            };
+            await onBeforeContentReviewCreate.publish({ input });
 
             const contentReview = await storageOperations.createContentReview({
-                data: {
-                    ...data,
-                    steps: [],
-                    status: ApwContentReviewStatus.UNDER_REVIEW
-                }
+                data: input
             });
 
             await onAfterContentReviewCreate.publish({ contentReview });

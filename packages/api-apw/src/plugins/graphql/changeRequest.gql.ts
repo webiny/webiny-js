@@ -14,8 +14,8 @@ const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
             createdBy: ApwCreatedBy
             # ChangeRequest specific fields
             step: String!
-            title: String
-            body: JSON
+            title: String!
+            body: JSON!
             resolved: Boolean
             media: JSON
         }
@@ -34,8 +34,8 @@ const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
             createdBy: ApwCreatedBy
             # ChangeRequest specific fields
             step: String!
-            title: String
-            body: JSON
+            title: String!
+            body: JSON!
             resolved: Boolean
             media: JSON
         }
