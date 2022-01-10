@@ -1,16 +1,44 @@
 import { Page, OnBeforePageCreateFromTopicParams } from "@webiny/api-page-builder/types";
-import {
-    CmsContext,
-    CmsEntryListParams,
-    CmsEntryListWhere,
-    CmsModel
-} from "@webiny/api-headless-cms/types";
+import { CmsContext, CmsModel } from "@webiny/api-headless-cms/types";
 import { Context } from "@webiny/handler/types";
 import { PageBuilderContextObject } from "@webiny/api-page-builder/graphql/types";
 import { SecurityIdentity, SecurityPermission } from "@webiny/api-security/types";
 import { I18NLocale } from "@webiny/api-i18n/types";
 import { Tenant } from "@webiny/api-tenancy/types";
 import { Topic } from "@webiny/pubsub/types";
+
+export interface ListWhere {
+    /**
+     * Fields.
+     */
+    id?: string;
+    id_in?: string[];
+    id_not?: string;
+    id_not_in?: string[];
+    /**
+     * Entry is owned by whom?
+     *
+     * Can be sent via the API or set internal if user can see only their own entries.
+     */
+    ownedBy?: string;
+    ownedBy_not?: string;
+    ownedBy_in?: string[];
+    ownedBy_not_in?: string[];
+    /**
+     * Who created the entry?
+     */
+    createdBy?: string;
+    createdBy_not?: string;
+    createdBy_in?: string[];
+    createdBy_not_in?: string[];
+}
+
+export interface ListParams {
+    where: ListWhere;
+    sort?: string[];
+    limit?: number;
+    after?: string;
+}
 
 export interface ListMeta {
     /**
@@ -186,8 +214,8 @@ interface UpdateApwWorkflowParams {
     steps?: ApwWorkflowStep[];
 }
 
-export interface ListWorkflowsParams extends CmsEntryListParams {
-    where: CmsEntryListWhere & {
+export interface ListWorkflowsParams extends ListParams {
+    where: ListWhere & {
         app?: ApwWorkflowApplications;
     };
 }
@@ -267,7 +295,7 @@ export interface ApwWorkflowCrud
 
 export interface ApwReviewerCrud
     extends BaseApwCrud<ApwReviewer, CreateReviewerParams, UpdateApwReviewerData> {
-    list(params: CmsEntryListParams): Promise<[ApwReviewer[], ListMeta]>;
+    list(params: ListParams): Promise<[ApwReviewer[], ListMeta]>;
 
     /**
      * Lifecycle events
@@ -282,7 +310,7 @@ export interface ApwReviewerCrud
 
 export interface ApwCommentCrud
     extends BaseApwCrud<ApwComment, CreateApwCommentParams, UpdateApwCommentParams> {
-    list(params: CmsEntryListParams): Promise<[ApwComment[], ListMeta]>;
+    list(params: ListParams): Promise<[ApwComment[], ListMeta]>;
 
     /**
      * Lifecycle events
@@ -301,7 +329,7 @@ export interface ApwChangeRequestCrud
         CreateApwChangeRequestParams,
         UpdateApwChangeRequestParams
     > {
-    list(params: CmsEntryListParams): Promise<[ApwChangeRequest[], ListMeta]>;
+    list(params: ListParams): Promise<[ApwChangeRequest[], ListMeta]>;
 
     /**
      * Lifecycle events
@@ -320,7 +348,7 @@ export interface ApwContentReviewCrud
         CreateApwContentReviewParams,
         UpdateApwContentReviewParams
     > {
-    list(params: CmsEntryListParams): Promise<[ApwContentReview[], ListMeta]>;
+    list(params: ListParams): Promise<[ApwContentReview[], ListMeta]>;
 
     provideSignOff(id: string, step: string): Promise<Boolean>;
 
@@ -372,7 +400,7 @@ interface StorageOperationsGetReviewerParams {
     id: string;
 }
 
-type StorageOperationsListReviewersParams = CmsEntryListParams;
+type StorageOperationsListReviewersParams = ListParams;
 
 interface CreateApwReviewerData {
     identityId: string;
@@ -409,7 +437,7 @@ interface StorageOperationsDeleteParams {
 
 type StorageOperationsGetWorkflowParams = StorageOperationsGetParams;
 
-type StorageOperationsListWorkflowsParams = CmsEntryListParams;
+type StorageOperationsListWorkflowsParams = ListParams;
 
 interface StorageOperationsCreateWorkflowParams {
     data: CreateApwWorkflowParams;
@@ -422,7 +450,7 @@ interface StorageOperationsUpdateWorkflowParams {
 
 type StorageOperationsDeleteWorkflowParams = StorageOperationsDeleteParams;
 type StorageOperationsGetContentReviewParams = StorageOperationsGetParams;
-type StorageOperationsListContentReviewsParams = CmsEntryListParams;
+type StorageOperationsListContentReviewsParams = ListParams;
 
 interface StorageOperationsCreateContentReviewParams {
     data: CreateApwContentReviewParams;
@@ -436,7 +464,7 @@ interface StorageOperationsUpdateContentReviewParams {
 type StorageOperationsDeleteContentReviewParams = StorageOperationsDeleteParams;
 
 type StorageOperationsGetChangeRequestParams = StorageOperationsGetParams;
-type StorageOperationsListChangeRequestsParams = CmsEntryListParams;
+type StorageOperationsListChangeRequestsParams = ListParams;
 
 interface StorageOperationsCreateChangeRequestParams {
     data: CreateApwChangeRequestParams;
@@ -452,7 +480,7 @@ type StorageOperationsDeleteChangeRequestParams = StorageOperationsDeleteParams;
 type StorageOperationsGetCommentParams = StorageOperationsGetParams;
 
 type StorageOperationsDeleteCommentParams = StorageOperationsDeleteParams;
-type StorageOperationsListCommentsParams = CmsEntryListParams;
+type StorageOperationsListCommentsParams = ListParams;
 
 interface StorageOperationsCreateCommentParams {
     data: CreateApwCommentParams;
