@@ -133,7 +133,7 @@ export const graphQLHandlerFactory = (
             async handle(context: CmsContext, next) {
                 const { http } = context;
 
-                if (!http || !http.request || !http.request.path || !http.request.path.parameters) {
+                if (!http || !http.request) {
                     return next();
                 }
 
