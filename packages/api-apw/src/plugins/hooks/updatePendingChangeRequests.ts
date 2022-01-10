@@ -35,23 +35,17 @@ const updatePendingChangeRequests = async ({
         /**
          * Update "pendingChangeRequests" count of corresponding step in content review entry.
          */
-        try {
-            await contentReviewMethods.update(contentReviewEntry.id, {
-                steps: contentReviewEntry.steps.map(step => {
-                    if (step.slug === slug) {
-                        return {
-                            ...step,
-                            pendingChangeRequests: step.pendingChangeRequests + delta
-                        };
-                    }
-                    return step;
-                })
-            });
-        } catch (e) {
-            if (e.code !== "NOT_FOUND") {
-                throw e;
-            }
-        }
+        await contentReviewMethods.update(contentReviewEntry.id, {
+            steps: contentReviewEntry.steps.map(step => {
+                if (step.slug === slug) {
+                    return {
+                        ...step,
+                        pendingChangeRequests: step.pendingChangeRequests + delta
+                    };
+                }
+                return step;
+            })
+        });
     }
 };
 
