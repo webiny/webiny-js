@@ -202,8 +202,8 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
         return createContentFrom(entry.id, gqlData);
     };
 
-    const getDefaultValues = (overrides = {}) => {
-        const values = {};
+    const getDefaultValues = (overrides: Record<string, any> = {}): Record<string, any> => {
+        const values: Record<string, any> = {};
         /**
          * Assign the default values:
          * * check the settings.defaultValue
@@ -237,8 +237,8 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
              * When field is not a multiple values one, we find the first possible default selected value and set it as field value.
              */
             if (!multipleValues) {
-                const selectedValue = predefinedValues.values.find(value => {
-                    return !!value.selected;
+                const selectedValue = predefinedValues.values.find(({ selected }) => {
+                    return !!selected;
                 });
                 if (selectedValue) {
                     values[field.fieldId] = convertDefaultValue(field, selectedValue.value);
