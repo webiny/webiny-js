@@ -67,6 +67,9 @@ const DateTimeWithoutTimezone: React.FunctionComponent<DateTimeWithoutTimezonePr
                         ...bind,
                         value: date,
                         onChange: value => {
+                            if (!value) {
+                                value = new Date().toISOString().substr(0, 10);
+                            }
                             setState(prev => ({
                                 ...prev,
                                 date: value
@@ -87,6 +90,9 @@ const DateTimeWithoutTimezone: React.FunctionComponent<DateTimeWithoutTimezonePr
                         ...bind,
                         value: time,
                         onChange: value => {
+                            if (!value) {
+                                value = new Date().toISOString().substr(11, 8);
+                            }
                             setState(prev => ({
                                 ...prev,
                                 time: value
