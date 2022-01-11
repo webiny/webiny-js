@@ -1,0 +1,12 @@
+@mixin border($property) {
+  border-top: var(#{$property}-border-top-width) var(#{$property}-border-top-style)
+    var(#{$property}-border-top-color);
+  border-right: var(#{$property}-border-right-width) var(#{$property}-border-right-style)
+    var(#{$property}-border-right-color);
+  border-bottom: var(#{$property}-border-bottom-width) var(#{$property}-border-bottom-style)
+    var(#{$property}-border-bottom-color);
+  border-left: var(#{$property}-border-left-width) var(#{$property}-border-left-style)
+    var(#{$property}-border-left-color);
+  border-radius: var(#{$property}-border-top-left-radius) var(#{$property}-border-top-right-radius)
+    var(#{$property}-border-bottom-right-radius) var(#{$property}-border-bottom-left-radius);
+}

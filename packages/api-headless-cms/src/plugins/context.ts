@@ -1,9 +1,9 @@
-import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
+import { ContextPlugin } from "@webiny/handler";
 import { CmsContext } from "~/types";
 
 export default () => {
     return new ContextPlugin<CmsContext>(context => {
-        const locale = context.i18n.getCurrentLocale();
+        const locale = context.i18nContent.getCurrentLocale();
 
         context.cms = {
             ...(context.cms || ({} as any)),

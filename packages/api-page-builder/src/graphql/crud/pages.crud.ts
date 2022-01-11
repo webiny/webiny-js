@@ -3,29 +3,48 @@ import uniqid from "uniqid";
 import lodashGet from "lodash/get";
 import DataLoader from "dataloader";
 import { NotFoundError } from "@webiny/handler-graphql";
-import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
 import {
+    OnBeforePageCreateTopicParams,
     Page,
+    PageBuilderContextObject,
+    PageBuilderStorageOperations,
+    PagesCrud,
     PageSecurityPermission,
-    PageStorageOperations,
+    PageStorageOperationsGetWhereParams,
     PageStorageOperationsListParams,
     PageStorageOperationsListTagsParams,
     PbContext
 } from "~/types";
 import checkBasePermissions from "./utils/checkBasePermissions";
 import checkOwnPermissions from "./utils/checkOwnPermissions";
-import executeCallbacks from "./utils/executeCallbacks";
 import normalizePath from "./pages/normalizePath";
-import { compressContent, extractContent } from "./pages/contentCompression";
 import { CreateDataModel, UpdateSettingsModel } from "./pages/models";
 import { PagePlugin } from "~/plugins/PagePlugin";
 import WebinyError from "@webiny/error";
-import { PageStorageOperationsProviderPlugin } from "~/plugins/PageStorageOperationsProviderPlugin";
 import lodashTrimEnd from "lodash/trimEnd";
-import { createStorageOperations } from "./storageOperations";
 import { getZeroPaddedVersionNumber } from "~/utils/zeroPaddedVersionNumber";
-import { FlushParams, RenderParams } from "~/graphql/types";
-import { ContentCompressionPlugin } from "~/plugins/ContentCompressionPlugin";
+import {
+    FlushParams,
+    OnAfterPageCreateFromTopicParams,
+    OnAfterPageCreateTopicParams,
+    OnAfterPageDeleteTopicParams,
+    OnAfterPagePublishTopicParams,
+    OnAfterPageRequestChangesTopicParams,
+    OnAfterPageRequestReviewTopicParams,
+    OnAfterPageUnpublishTopicParams,
+    OnAfterPageUpdateTopicParams,
+    OnBeforePageCreateFromTopicParams,
+    OnBeforePageDeleteTopicParams,
+    OnBeforePagePublishTopicParams,
+    OnBeforePageRequestChangesTopicParams,
+    OnBeforePageRequestReviewTopicParams,
+    OnBeforePageUnpublishTopicParams,
+    OnBeforePageUpdateTopicParams,
+    RenderParams
+} from "~/graphql/types";
+import { createTopic } from "@webiny/pubsub";
+import { parseIdentifier } from "@webiny/utils";
+import { createCompression } from "~/graphql/crud/pages/compression";
 
 const STATUS_CHANGES_REQUESTED = "changesRequested";
 const STATUS_REVIEW_REQUESTED = "reviewRequested";
@@ -66,20 +85,6 @@ const createNotIn = (exclude?: string[]): { paths: string[]; ids: string[] } => 
     };
 };
 
-const extractPageContent = async (
-    plugins: ContentCompressionPlugin[],
-    page?: Page
-): Promise<Page | null> => {
-    if (!page || !page.content) {
-        return page;
-    }
-    const content = await extractContent(plugins, page);
-    return {
-        ...page,
-        content
-    };
-};
-
 const createSort = (sort?: string[]): string[] => {
     if (Array.isArray(sort) === false || sort.length === 0) {
         return ["createdOn_DESC"];
@@ -88,7 +93,7 @@ const createSort = (sort?: string[]): string[] => {
 };
 
 const createDataLoaderKeys = (id: string): DataLoaderGetByIdKey[] => {
-    const [pid] = id.split("#");
+    const { id: pid } = parseIdentifier(id);
     return [
         {
             id
@@ -115,37 +120,29 @@ const createDataLoaderKeys = (id: string): DataLoaderGetByIdKey[] => {
     ];
 };
 
-export default new ContextPlugin<PbContext>(async context => {
-    /**
-     * If pageBuilder is not defined on the context, do not continue, but log it.
-     */
-    if (!context.pageBuilder) {
-        console.log("Missing pageBuilder on context. Skipping Pages crud.");
-        return;
-    }
-
-    const storageOperations = await createStorageOperations<PageStorageOperations>(
-        context,
-        PageStorageOperationsProviderPlugin.type
-    );
+export interface Params {
+    context: PbContext;
+    storageOperations: PageBuilderStorageOperations;
+}
+export const createPageCrud = (params: Params): PagesCrud => {
+    const { context, storageOperations } = params;
 
     /**
      * Used in a couple of key events - (un)publishing and pages deletion.
      */
     const pagePlugins = context.plugins.byType<PagePlugin>(PagePlugin.type);
-    /**
-     * Content compression plugins used when compressing and decompressing the content.
-     * We reverse it because we want to apply the last one if possible.
-     */
-    const contentCompressionPlugins = context.plugins
-        .byType<ContentCompressionPlugin>(ContentCompressionPlugin.type)
-        .reverse();
-    if (contentCompressionPlugins.length === 0) {
-        throw new WebinyError(
-            "Missing content compression plugins. Must have at least one registered.",
-            "MISSING_COMPRESSION_PLUGINS"
-        );
-    }
+
+    const { compressContent, decompressContent } = createCompression({
+        plugins: context.plugins
+    });
+
+    const getTenantId = (): string => {
+        return context.tenancy.getCurrentTenant().id;
+    };
+
+    const getLocaleCode = (): string => {
+        return context.i18nContent.getCurrentLocale().code;
+    };
 
     /**
      * We need a data loader to fetch a page by id because it is being called a lot throughout the code.
@@ -154,17 +151,21 @@ export default new ContextPlugin<PbContext>(async context => {
      */
     const dataLoaderGetById = new DataLoader<DataLoaderGetByIdKey, Page, string>(
         async keys => {
+            const tenant = getTenantId();
+            const locale = getLocaleCode();
             try {
                 const pages: Page[] = [];
                 for (const key of keys) {
-                    const [pid, version] = key.id.split("#");
-                    const where = {
-                        pid,
+                    const { id, version } = parseIdentifier(key.id);
+                    const where: PageStorageOperationsGetWhereParams = {
+                        pid: id,
                         version: version ? Number(version) : undefined,
                         latest: key.latest,
-                        published: key.published
+                        published: key.published,
+                        tenant,
+                        locale
                     };
-                    const page: Page | null = await storageOperations.get({
+                    const page: Page | null = await storageOperations.pages.get({
                         where
                     });
                     pages.push(page);
@@ -182,7 +183,9 @@ export default new ContextPlugin<PbContext>(async context => {
         },
         {
             cacheKeyFn: (key: DataLoaderGetByIdKey): string => {
-                const values: string[] = [key.id];
+                const tenant = getTenantId();
+                const locale = getLocaleCode();
+                const values: string[] = [tenant, locale, key.id];
                 if (key.latest) {
                     values.push(`#l`);
                 } else if (key.published) {
@@ -204,12 +207,47 @@ export default new ContextPlugin<PbContext>(async context => {
         }
     };
 
-    context.pageBuilder.pages = {
-        storageOperations,
-        async create(slug) {
+    const onBeforePageCreate = createTopic<OnBeforePageCreateTopicParams>();
+    const onAfterPageCreate = createTopic<OnAfterPageCreateTopicParams>();
+    const onBeforePageCreateFrom = createTopic<OnBeforePageCreateFromTopicParams>();
+    const onAfterPageCreateFrom = createTopic<OnAfterPageCreateFromTopicParams>();
+    const onBeforePageUpdate = createTopic<OnBeforePageUpdateTopicParams>();
+    const onAfterPageUpdate = createTopic<OnAfterPageUpdateTopicParams>();
+    const onBeforePageDelete = createTopic<OnBeforePageDeleteTopicParams>();
+    const onAfterPageDelete = createTopic<OnAfterPageDeleteTopicParams>();
+    const onBeforePagePublish = createTopic<OnBeforePagePublishTopicParams>();
+    const onAfterPagePublish = createTopic<OnAfterPagePublishTopicParams>();
+    const onBeforePageUnpublish = createTopic<OnBeforePageUnpublishTopicParams>();
+    const onAfterPageUnpublish = createTopic<OnAfterPageUnpublishTopicParams>();
+    const onBeforePageRequestReview = createTopic<OnBeforePageRequestReviewTopicParams>();
+    const onAfterPageRequestReview = createTopic<OnAfterPageRequestReviewTopicParams>();
+    const onBeforePageRequestChanges = createTopic<OnBeforePageRequestChangesTopicParams>();
+    const onAfterPageRequestChanges = createTopic<OnAfterPageRequestChangesTopicParams>();
+
+    return {
+        /**
+         * Lifecycle events
+         */
+        onBeforePageCreate,
+        onAfterPageCreate,
+        onBeforePageCreateFrom,
+        onAfterPageCreateFrom,
+        onBeforePageUpdate,
+        onAfterPageUpdate,
+        onBeforePageDelete,
+        onAfterPageDelete,
+        onBeforePagePublish,
+        onAfterPagePublish,
+        onBeforePageUnpublish,
+        onAfterPageUnpublish,
+        onBeforePageRequestChanges,
+        onAfterPageRequestChanges,
+        onBeforePageRequestReview,
+        onAfterPageRequestReview,
+        async createPage(this: PageBuilderContextObject, slug): Promise<any> {
             await checkBasePermissions(context, PERMISSION_NAME, { rwd: "w" });
 
-            const category = await context.pageBuilder.categories.get(slug);
+            const category = await this.getCategory(slug);
             if (!category) {
                 throw new NotFoundError(`Category with slug "${slug}" not found.`);
             }
@@ -251,7 +289,7 @@ export default new ContextPlugin<PbContext>(async context => {
             const page: Page = {
                 id,
                 pid: pageId,
-                locale: context.i18nContent.getLocale().code,
+                locale: context.i18nContent.getCurrentLocale().code,
                 tenant: context.tenancy.getCurrentTenant().id,
                 editor: DEFAULT_EDITOR,
                 category: category.slug,
@@ -276,24 +314,27 @@ export default new ContextPlugin<PbContext>(async context => {
                 content: null,
                 webinyVersion: context.WEBINY_VERSION
             };
-            page.content = await compressContent(contentCompressionPlugins, page);
+            page.content = await compressContent(page);
 
             try {
-                await executeCallbacks<PagePlugin["beforeCreate"]>(pagePlugins, "beforeCreate", {
-                    context,
+                await onBeforePageCreate.publish({
                     page
                 });
-                const result = await storageOperations.create({
+
+                const result = await storageOperations.pages.create({
                     input: {
                         slug
                     },
                     page
                 });
-                await executeCallbacks<PagePlugin["afterCreate"]>(pagePlugins, "afterCreate", {
-                    context,
+                await onAfterPageCreate.publish({
                     page: result
                 });
-                return (await extractPageContent(contentCompressionPlugins, page)) as any;
+
+                return {
+                    ...result,
+                    content: await decompressContent(result)
+                };
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not create new page.",
@@ -306,12 +347,12 @@ export default new ContextPlugin<PbContext>(async context => {
             }
         },
 
-        async createFrom(id) {
+        async createPageFrom(this: PageBuilderContextObject, id): Promise<any> {
             const permission = await checkBasePermissions(context, PERMISSION_NAME, {
                 rwd: "w"
             });
 
-            const original = await context.pageBuilder.pages.get(id, {
+            const original = await this.getPage(id, {
                 decompress: false
             });
 
@@ -325,9 +366,11 @@ export default new ContextPlugin<PbContext>(async context => {
             const identity = context.security.getIdentity();
             checkOwnPermissions(identity, permission, original, "ownedBy");
 
-            const latestPage = await storageOperations.get({
+            const latestPage = await storageOperations.pages.get({
                 where: {
                     pid: original.pid,
+                    tenant: getTenantId(),
+                    locale: getLocaleCode(),
                     latest: true
                 }
             });
@@ -358,24 +401,28 @@ export default new ContextPlugin<PbContext>(async context => {
             };
 
             try {
-                await executeCallbacks<PagePlugin["beforeCreate"]>(pagePlugins, "beforeCreate", {
-                    context,
+                await onBeforePageCreateFrom.publish({
+                    original,
                     page
                 });
-                const result = await storageOperations.createFrom({
+
+                const result = await storageOperations.pages.createFrom({
                     original,
                     latestPage,
                     page
                 });
-                await executeCallbacks<PagePlugin["afterCreate"]>(pagePlugins, "afterCreate", {
-                    page: result,
-                    context
+                await onAfterPageCreateFrom.publish({
+                    original,
+                    page: result
                 });
                 /**
                  * Clear the dataLoader cache.
                  */
                 clearDataLoaderCache([original, page, latestPage]);
-                return (await extractPageContent(contentCompressionPlugins, page)) as any;
+                return {
+                    ...result,
+                    content: await decompressContent(result)
+                };
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not create from existing page.",
@@ -391,13 +438,15 @@ export default new ContextPlugin<PbContext>(async context => {
             }
         },
 
-        async update(id, input) {
+        async updatePage(id, input): Promise<any> {
             const permission = await checkBasePermissions(context, PERMISSION_NAME, {
                 rwd: "w"
             });
-            const original = await storageOperations.get({
+            const original = await storageOperations.pages.get({
                 where: {
-                    id
+                    id,
+                    tenant: getTenantId(),
+                    locale: getLocaleCode()
                 }
             });
             if (!original) {
@@ -418,41 +467,51 @@ export default new ContextPlugin<PbContext>(async context => {
             };
             const newContent = input.content;
             if (newContent) {
-                page.content = await compressContent(contentCompressionPlugins, {
+                page.content = await compressContent({
                     ...page,
                     content: newContent
                 });
             }
 
             try {
-                await executeCallbacks<PagePlugin["beforeUpdate"]>(pagePlugins, "beforeUpdate", {
-                    context,
-                    existingPage: original,
-                    inputData: input,
-                    updateData: page
+                await onBeforePageUpdate.publish({
+                    original,
+                    page,
+                    input
                 });
-                const result = await storageOperations.update({
+
+                const result = await storageOperations.pages.update({
                     input,
                     original,
                     page
                 });
 
-                await executeCallbacks<PagePlugin["afterUpdate"]>(pagePlugins, "afterUpdate", {
-                    context,
+                await onBeforePageUpdate.publish({
+                    original,
                     page: result,
-                    inputData: input
+                    input
                 });
 
                 /**
                  * Clear the dataLoader cache.
                  */
                 clearDataLoaderCache([original, page]);
-
+                /**
+                 * If we have new content, return that.
+                 */
+                if (newContent) {
+                    return {
+                        ...result,
+                        content: newContent
+                    };
+                }
+                /**
+                 * Otherwise decompress original content and return with new page.
+                 */
                 return {
                     ...result,
-                    content:
-                        newContent || (await extractContent(contentCompressionPlugins, original))
-                } as any;
+                    content: await decompressContent(original)
+                };
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not update existing page.",
@@ -467,7 +526,7 @@ export default new ContextPlugin<PbContext>(async context => {
             }
         },
 
-        async delete(id) {
+        async deletePage(this: PageBuilderContextObject, id) {
             const permission = await checkBasePermissions(context, PERMISSION_NAME, {
                 rwd: "d"
             });
@@ -503,9 +562,11 @@ export default new ContextPlugin<PbContext>(async context => {
 
             */
 
-            const page = await storageOperations.get({
+            const page = await storageOperations.pages.get({
                 where: {
-                    id
+                    id,
+                    tenant: getTenantId(),
+                    locale: getLocaleCode()
                 }
             });
             if (!page) {
@@ -517,7 +578,7 @@ export default new ContextPlugin<PbContext>(async context => {
             const identity = context.security.getIdentity();
             checkOwnPermissions(identity, permission, page, "ownedBy");
 
-            const settings = await context.pageBuilder.settings.getCurrent();
+            const settings = await this.getCurrentSettings();
             const pages = settings && settings.pages ? settings.pages : {};
             for (const key in pages) {
                 // We don't allow delete operation for "published" version of special pages.
@@ -529,42 +590,58 @@ export default new ContextPlugin<PbContext>(async context => {
                 }
             }
 
-            let latestPage = await storageOperations.get({
+            let latestPage = await storageOperations.pages.get({
                 where: {
                     pid: pageId,
+                    tenant: getTenantId(),
+                    locale: getLocaleCode(),
                     latest: true
                 }
             });
-            const publishedPage = await storageOperations.get({
+            const publishedPage = await storageOperations.pages.get({
                 where: {
                     pid: pageId,
+                    tenant: getTenantId(),
+                    locale: getLocaleCode(),
                     published: true
                 }
             });
             /**
              * We can either delete all of the records connected to given page or single revision.
              */
-            const deleteMethod = page.version === 1 ? "deleteAll" : "delete";
+            const deleteMethod: "deleteAll" | "delete" =
+                page.version === 1 ? "deleteAll" : "delete";
+
+            if (typeof storageOperations.pages[deleteMethod] !== "function") {
+                throw new WebinyError(
+                    `Missing delete function on storageOperations.pages object.`,
+                    "MISSING_DELETE_METHOD",
+                    {
+                        deleteMethod
+                    }
+                );
+            }
 
             try {
-                await executeCallbacks<PagePlugin["beforeDelete"]>(pagePlugins, "beforeDelete", {
-                    context,
+                await onBeforePageDelete.publish({
                     page,
                     latestPage,
                     publishedPage
                 });
-                const [resultPage, resultLatestPage] = await storageOperations[deleteMethod]({
+
+                const [resultPage, resultLatestPage] = await storageOperations.pages[deleteMethod]({
                     page,
                     publishedPage,
                     latestPage
                 });
                 latestPage = resultLatestPage || latestPage;
-                await executeCallbacks<PagePlugin["afterDelete"]>(pagePlugins, "afterDelete", {
-                    context,
+
+                await onAfterPageDelete.publish({
                     page: resultPage,
-                    latestPage: latestPage,
-                    publishedPage: publishedPage
+                    latestPage: resultLatestPage,
+                    publishedPage
                 });
+
                 /**
                  * Clear the dataLoader cache.
                  */
@@ -574,13 +651,22 @@ export default new ContextPlugin<PbContext>(async context => {
                  */
                 if (page.version === 1) {
                     return [
-                        await extractPageContent(contentCompressionPlugins, resultPage),
+                        {
+                            ...resultPage,
+                            content: await decompressContent(resultPage)
+                        },
                         null
                     ] as any;
                 }
                 return [
-                    await extractPageContent(contentCompressionPlugins, resultPage),
-                    await extractPageContent(contentCompressionPlugins, latestPage)
+                    {
+                        ...resultPage,
+                        content: await decompressContent(resultPage)
+                    },
+                    {
+                        ...latestPage,
+                        content: await decompressContent(latestPage)
+                    }
                 ] as any;
             } catch (ex) {
                 throw new WebinyError(
@@ -597,12 +683,12 @@ export default new ContextPlugin<PbContext>(async context => {
             }
         },
 
-        async publish(id: string) {
+        async publishPage(this: PageBuilderContextObject, id: string): Promise<any> {
             await checkBasePermissions<PageSecurityPermission>(context, PERMISSION_NAME, {
                 pw: "p"
             });
 
-            const original = await context.pageBuilder.pages.get(id, {
+            const original = await this.getPage(id, {
                 decompress: false
             });
 
@@ -612,30 +698,47 @@ export default new ContextPlugin<PbContext>(async context => {
             /**
              * Already published page revision of this page.
              */
-            const publishedPage = await storageOperations.get({
+            const publishedPage = await storageOperations.pages.get({
                 where: {
                     pid: original.pid,
+                    tenant: getTenantId(),
+                    locale: getLocaleCode(),
                     published: true
                 }
             });
             /**
              * We need a page that is published on given path.
              */
-            const publishedPathPage = await storageOperations.get({
+            const publishedPathPage = await storageOperations.pages.get({
                 where: {
                     path: original.path,
+                    tenant: getTenantId(),
+                    locale: getLocaleCode(),
                     published: true
                 }
             });
             /**
              * Latest revision of this page.
              */
-            const latestPage = await storageOperations.get({
-                where: {
-                    pid: original.pid,
-                    latest: true
-                }
+            const latestPageWhere: PageStorageOperationsGetWhereParams = {
+                pid: original.pid,
+                tenant: original.tenant,
+                locale: original.locale,
+                latest: true
+            };
+            /**
+             * Latest revision of this page.
+             */
+            const latestPage = await storageOperations.pages.get({
+                where: latestPageWhere
             });
+            if (!latestPage) {
+                throw new WebinyError(
+                    "Missing latest page record of the requested page. This should never happen.",
+                    "LATEST_PAGE_ERROR",
+                    latestPageWhere
+                );
+            }
             /**
              * If this is true, let's unpublish the page first. Note that we're not talking about this
              * same page, but a previous revision. We're talking about a completely different page
@@ -650,7 +753,7 @@ export default new ContextPlugin<PbContext>(async context => {
                  * now, it works like this. If there was only more ⏱.
                  * 2) If a user doesn't have the unpublish permission, again, the whole action will fail.
                  */
-                await context.pageBuilder.pages.unpublish(publishedPathPage.id);
+                await this.unpublishPage(publishedPathPage.id);
             }
 
             const page: Page = {
@@ -662,14 +765,13 @@ export default new ContextPlugin<PbContext>(async context => {
             };
 
             try {
-                await executeCallbacks<PagePlugin["beforePublish"]>(pagePlugins, "beforePublish", {
-                    context,
+                await onBeforePagePublish.publish({
                     page,
                     latestPage,
                     publishedPage
                 });
 
-                const result = await storageOperations.publish({
+                const result = await storageOperations.pages.publish({
                     original,
                     page,
                     latestPage,
@@ -677,12 +779,12 @@ export default new ContextPlugin<PbContext>(async context => {
                     publishedPathPage
                 });
 
-                await executeCallbacks<PagePlugin["afterPublish"]>(pagePlugins, "afterPublish", {
-                    context,
+                await onAfterPagePublish.publish({
                     page: result,
                     latestPage,
                     publishedPage
                 });
+
                 /**
                  * Clear the dataLoader cache.
                  * We need to clear cache for original publish, latest and path page.
@@ -694,7 +796,10 @@ export default new ContextPlugin<PbContext>(async context => {
                     publishedPage,
                     publishedPathPage
                 ]);
-                return (await extractPageContent(contentCompressionPlugins, result)) as any;
+                return {
+                    ...result,
+                    content: await decompressContent(result)
+                };
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not publish page.",
@@ -711,20 +816,22 @@ export default new ContextPlugin<PbContext>(async context => {
             }
         },
 
-        async unpublish(id: string) {
+        async unpublishPage(this: PageBuilderContextObject, id: string): Promise<any> {
             await checkBasePermissions<PageSecurityPermission>(context, PERMISSION_NAME, {
                 pw: "u"
             });
 
-            const original = await context.pageBuilder.pages.get(id, {
+            const original = await this.getPage(id, {
                 decompress: false
             });
             /**
              * Latest revision of the this page.
              */
-            const latestPage = await storageOperations.get({
+            const latestPage = await storageOperations.pages.get({
                 where: {
                     pid: original.pid,
+                    tenant: getTenantId(),
+                    locale: getLocaleCode(),
                     latest: true
                 }
             });
@@ -733,7 +840,7 @@ export default new ContextPlugin<PbContext>(async context => {
                 throw new WebinyError(`Page is not published.`);
             }
 
-            const settings = await context.pageBuilder.settings.getCurrent();
+            const settings = await this.getCurrentSettings();
             const pages = settings && settings.pages ? settings.pages : {};
             for (const key in pages) {
                 if (pages[key] === original.pid) {
@@ -751,29 +858,27 @@ export default new ContextPlugin<PbContext>(async context => {
             };
 
             try {
-                await executeCallbacks<PagePlugin["beforeUnpublish"]>(
-                    pagePlugins,
-                    "beforeUnpublish",
-                    {
-                        context,
-                        page
-                    }
-                );
-                const result = await storageOperations.unpublish({
+                await onBeforePageUnpublish.publish({
+                    page,
+                    latestPage
+                });
+
+                const result = await storageOperations.pages.unpublish({
                     original,
                     page,
                     latestPage
                 });
-                await executeCallbacks<PagePlugin["afterUnpublish"]>(
-                    pagePlugins,
-                    "afterUnpublish",
-                    {
-                        context,
-                        page: result
-                    }
-                );
+                await onAfterPageUnpublish.publish({
+                    page: result,
+                    latestPage
+                });
+
                 clearDataLoaderCache([original, latestPage]);
-                return (await extractPageContent(contentCompressionPlugins, result)) as any;
+
+                return {
+                    ...result,
+                    content: await decompressContent(result)
+                };
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not unpublish page.",
@@ -789,12 +894,12 @@ export default new ContextPlugin<PbContext>(async context => {
             }
         },
 
-        async requestReview(id: string) {
+        async requestPageReview(this: PageBuilderContextObject, id: string): Promise<any> {
             await checkBasePermissions(context, PERMISSION_NAME, {
                 pw: "r"
             });
 
-            const original = await context.pageBuilder.pages.get(id, {
+            const original = await this.getPage(id, {
                 decompress: false
             });
 
@@ -808,9 +913,11 @@ export default new ContextPlugin<PbContext>(async context => {
             /**
              * Latest revision of the this page.
              */
-            const latestPage = await storageOperations.get({
+            const latestPage = await storageOperations.pages.get({
                 where: {
                     pid: original.pid,
+                    tenant: getTenantId(),
+                    locale: getLocaleCode(),
                     latest: true
                 }
             });
@@ -823,13 +930,26 @@ export default new ContextPlugin<PbContext>(async context => {
             };
 
             try {
-                const result: any = await storageOperations.requestReview({
+                await onBeforePageRequestReview.publish({
+                    latestPage,
+                    page
+                });
+                const result = await storageOperations.pages.requestReview({
                     original,
                     page,
                     latestPage
                 });
+
+                await onAfterPageRequestReview.publish({
+                    latestPage,
+                    page: result
+                });
+
                 clearDataLoaderCache([original, latestPage]);
-                return (await extractPageContent(contentCompressionPlugins, result)) as any;
+                return {
+                    ...result,
+                    content: await decompressContent(result)
+                };
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not request review for the page.",
@@ -844,12 +964,12 @@ export default new ContextPlugin<PbContext>(async context => {
             }
         },
 
-        async requestChanges(id: string) {
+        async requestPageChanges(this: PageBuilderContextObject, id: string): Promise<any> {
             await checkBasePermissions(context, PERMISSION_NAME, {
                 pw: "c"
             });
 
-            const original = await context.pageBuilder.pages.get(id, {
+            const original = await this.getPage(id, {
                 decompress: false
             });
             if (original.status !== STATUS_REVIEW_REQUESTED) {
@@ -868,9 +988,11 @@ export default new ContextPlugin<PbContext>(async context => {
             /**
              * Latest revision of the this page.
              */
-            const latestPage = await storageOperations.get({
+            const latestPage = await storageOperations.pages.get({
                 where: {
                     pid: original.pid,
+                    tenant: getTenantId(),
+                    locale: getLocaleCode(),
                     latest: true
                 }
             });
@@ -881,13 +1003,27 @@ export default new ContextPlugin<PbContext>(async context => {
                 locked: false
             };
             try {
-                const result: any = await storageOperations.requestChanges({
+                await onBeforePageRequestChanges.publish({
+                    page,
+                    latestPage
+                });
+                const result = await storageOperations.pages.requestChanges({
                     original,
                     page,
                     latestPage
                 });
+
+                await onAfterPageRequestChanges.publish({
+                    page: result,
+                    latestPage
+                });
+
                 clearDataLoaderCache([original, latestPage]);
-                return (await extractPageContent(contentCompressionPlugins, result)) as any;
+
+                return {
+                    ...result,
+                    content: await decompressContent(result)
+                };
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not request review for the page.",
@@ -902,7 +1038,7 @@ export default new ContextPlugin<PbContext>(async context => {
             }
         },
 
-        async get(id, options) {
+        async getPage(id, options): Promise<any> {
             const permission = await checkBasePermissions(context, PERMISSION_NAME, {
                 rwd: "r"
             });
@@ -933,10 +1069,13 @@ export default new ContextPlugin<PbContext>(async context => {
                 return page;
             }
 
-            return (await extractPageContent(contentCompressionPlugins, page)) as any;
+            return {
+                ...page,
+                content: await decompressContent(page)
+            };
         },
 
-        async getPublishedById(params) {
+        async getPublishedPageById(this: PageBuilderContextObject, params): Promise<any> {
             const { id, preview } = params;
 
             let page: Page = null;
@@ -963,10 +1102,13 @@ export default new ContextPlugin<PbContext>(async context => {
                 throw new NotFoundError(`Page not found.`);
             }
 
-            return (await extractPageContent(contentCompressionPlugins, page)) as any;
+            return {
+                ...page,
+                content: await decompressContent(page)
+            };
         },
 
-        async getPublishedByPath(params) {
+        async getPublishedPageByPath(this: PageBuilderContextObject, params): Promise<any> {
             if (!params.path) {
                 throw new WebinyError(
                     'Cannot get published page - "path" not provided.',
@@ -976,13 +1118,13 @@ export default new ContextPlugin<PbContext>(async context => {
 
             const normalizedPath = normalizePath(params.path);
             if (normalizedPath === "/") {
-                const settings = await context.pageBuilder.settings.getCurrent();
+                const settings = await this.getCurrentSettings();
                 const homePage = lodashGet(settings, "pages.home");
                 if (!homePage) {
                     throw new NotFoundError("Page not found.");
                 }
 
-                return await context.pageBuilder.pages.getPublishedById({
+                return await this.getPublishedPageById({
                     id: homePage
                 });
             }
@@ -990,9 +1132,11 @@ export default new ContextPlugin<PbContext>(async context => {
             let page: Page = undefined;
 
             try {
-                page = await storageOperations.get({
+                page = await storageOperations.pages.get({
                     where: {
                         path: normalizedPath,
+                        tenant: getTenantId(),
+                        locale: getLocaleCode(),
                         published: true
                     }
                 });
@@ -1009,7 +1153,10 @@ export default new ContextPlugin<PbContext>(async context => {
 
             if (!page) {
                 /**
-                 * Try loading dynamic pages
+                 * Try loading dynamic pages.
+                 * TODO: @pavel do this some other way possibly?
+                 * TODO: There are no more events in PagePlugin, so maybe produce some other kind of plugin
+                 * TODO: that will only do stuff related to dynamic pages?
                  */
                 for (const plugin of pagePlugins) {
                     if (typeof plugin.notFound === "function") {
@@ -1021,17 +1168,16 @@ export default new ContextPlugin<PbContext>(async context => {
                 }
             }
 
-            if (page) {
-                /**
-                 * Extract compressed page content.
-                 */
-                return (await extractPageContent(contentCompressionPlugins, page)) as any;
+            if (!page) {
+                throw new NotFoundError("Page not found.");
             }
-
-            throw new NotFoundError("Page not found.");
+            return {
+                ...page,
+                content: await decompressContent(page)
+            };
         },
 
-        async listLatest(params, options = {}) {
+        async listLatestPages(params, options = {}) {
             const { auth } = options;
             let permission: { own?: boolean } = null;
             if (auth !== false) {
@@ -1062,18 +1208,19 @@ export default new ContextPlugin<PbContext>(async context => {
                     ...initialWhere,
                     latest: true,
                     search: search ? search.query : undefined,
-                    locale: context.i18nContent.getLocale().code,
                     createdBy,
                     path_not_in: pathNotIn,
                     pid_not_in: pidNotIn,
                     tags_in: tags && tags.query ? tags.query : undefined,
-                    tags_rule: tags && tags.rule ? tags.rule : undefined
+                    tags_rule: tags && tags.rule ? tags.rule : undefined,
+                    tenant: getTenantId(),
+                    locale: getLocaleCode()
                 },
                 after
             };
 
             try {
-                const { items, meta } = await storageOperations.list(listParams);
+                const { items, meta } = await storageOperations.pages.list(listParams);
 
                 return [
                     items as any[],
@@ -1094,7 +1241,7 @@ export default new ContextPlugin<PbContext>(async context => {
             }
         },
 
-        async listPublished(params) {
+        async listPublishedPages(params) {
             const { after, limit, sort, search, exclude, where: initialWhere = {} } = params;
 
             const { paths: pathNotIn, ids: pidNotIn } = createNotIn(exclude);
@@ -1109,17 +1256,18 @@ export default new ContextPlugin<PbContext>(async context => {
                     ...initialWhere,
                     published: true,
                     search: search && search.query ? search.query : undefined,
-                    locale: context.i18nContent.getLocale().code,
                     path_not_in: pathNotIn,
                     pid_not_in: pidNotIn,
                     tags_in: tags && tags.query ? tags.query : undefined,
-                    tags_rule: tags && tags.rule ? tags.rule : undefined
+                    tags_rule: tags && tags.rule ? tags.rule : undefined,
+                    tenant: getTenantId(),
+                    locale: getLocaleCode()
                 },
                 after
             };
 
             try {
-                const { items, meta } = await storageOperations.list(listParams);
+                const { items, meta } = await storageOperations.pages.list(listParams);
 
                 return [
                     items as any[],
@@ -1144,9 +1292,11 @@ export default new ContextPlugin<PbContext>(async context => {
             const [pid] = pageId.split("#");
 
             try {
-                const pages = await storageOperations.listRevisions({
+                const pages = await storageOperations.pages.listRevisions({
                     where: {
-                        pid
+                        pid,
+                        tenant: getTenantId(),
+                        locale: getLocaleCode()
                     },
                     /**
                      * Let's hope there will be no more than 10000 revisions.
@@ -1168,7 +1318,7 @@ export default new ContextPlugin<PbContext>(async context => {
             }
         },
 
-        async listTags(params) {
+        async listPagesTags(params) {
             const search = params && params.search ? params.search.query : "";
             if (search.length < 2) {
                 throw new WebinyError("Please provide at least two characters.", "LIST_TAGS_ERROR");
@@ -1177,13 +1327,13 @@ export default new ContextPlugin<PbContext>(async context => {
             const listTagsParams: PageStorageOperationsListTagsParams = {
                 where: {
                     tenant: context.tenancy.getCurrentTenant().id,
-                    locale: context.i18nContent.getLocale().code,
+                    locale: context.i18nContent.getCurrentLocale().code,
                     search
                 }
             };
 
             try {
-                return await storageOperations.listTags(listTagsParams);
+                return await storageOperations.pages.listTags(listTagsParams);
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not load all tags by given params.",
@@ -1204,4 +1354,4 @@ export default new ContextPlugin<PbContext>(async context => {
             }
         }
     };
-});
+};

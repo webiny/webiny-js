@@ -3,6 +3,144 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.21.0](https://github.com/webiny/webiny-js/compare/v5.21.0-beta.0...v5.21.0) (2022-01-04)
+
+**Note:** Version bump only for package @webiny/api-file-manager
+
+
+
+
+
+# [5.21.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.20.0...v5.21.0-beta.0) (2022-01-03)
+
+
+### Bug Fixes
+
+* protect installers from unauthorized run ([#2160](https://github.com/webiny/webiny-js/issues/2160)) ([cb4ea8e](https://github.com/webiny/webiny-js/commit/cb4ea8ef36f99a2608599954454a3aa3211eb3a6))
+
+
+
+
+
+# [5.20.0](https://github.com/webiny/webiny-js/compare/v5.20.0-beta.2...v5.20.0) (2021-12-23)
+
+**Note:** Version bump only for package @webiny/api-file-manager
+
+
+
+
+
+# [5.20.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.20.0-beta.1...v5.20.0-beta.2) (2021-12-21)
+
+**Note:** Version bump only for package @webiny/api-file-manager
+
+
+
+
+
+# [5.20.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.20.0-beta.0...v5.20.0-beta.1) (2021-12-20)
+
+**Note:** Version bump only for package @webiny/api-file-manager
+
+
+
+
+
+# [5.20.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.19.1...v5.20.0-beta.0) (2021-12-17)
+
+
+### Bug Fixes
+
+* system tenant ([#2119](https://github.com/webiny/webiny-js/issues/2119)) ([536031d](https://github.com/webiny/webiny-js/commit/536031de315dc163cda959326a53dba02575fb53))
+* **api-file-manager:** list tags when no tags defined ([#2113](https://github.com/webiny/webiny-js/issues/2113)) ([eaee831](https://github.com/webiny/webiny-js/commit/eaee831e85bff957562f3fd3ca1a200d9eed5b76))
+
+
+
+
+
+## [5.19.1](https://github.com/webiny/webiny-js/compare/v5.19.1-beta.0...v5.19.1) (2021-12-14)
+
+**Note:** Version bump only for package @webiny/api-file-manager
+
+
+
+
+
+## [5.19.1-beta.0](https://github.com/webiny/webiny-js/compare/v5.19.0...v5.19.1-beta.0) (2021-12-14)
+
+
+### Bug Fixes
+
+* **api-file-manager:** tags listing when file with no tags ([#2114](https://github.com/webiny/webiny-js/issues/2114)) ([d9c638b](https://github.com/webiny/webiny-js/commit/d9c638b7fe0637703dae68115ce48f84896e3592))
+
+
+
+
+
+# [5.19.0](https://github.com/webiny/webiny-js/compare/v5.19.0-beta.6...v5.19.0) (2021-12-13)
+
+**Note:** Version bump only for package @webiny/api-file-manager
+
+
+
+
+
+# [5.19.0-beta.6](https://github.com/webiny/webiny-js/compare/v5.19.0-beta.5...v5.19.0-beta.6) (2021-12-13)
+
+**Note:** Version bump only for package @webiny/api-file-manager
+
+
+
+
+
+# [5.19.0-beta.5](https://github.com/webiny/webiny-js/compare/v5.19.0-beta.4...v5.19.0-beta.5) (2021-12-10)
+
+**Note:** Version bump only for package @webiny/api-file-manager
+
+
+
+
+
+# [5.19.0-beta.4](https://github.com/webiny/webiny-js/compare/v5.19.0-beta.3...v5.19.0-beta.4) (2021-12-09)
+
+**Note:** Version bump only for package @webiny/api-file-manager
+
+
+
+
+
+# [5.19.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.19.0-beta.2...v5.19.0-beta.3) (2021-12-08)
+
+**Note:** Version bump only for package @webiny/api-file-manager
+
+
+
+
+
+# [5.19.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.19.0-beta.1...v5.19.0-beta.2) (2021-12-06)
+
+**Note:** Version bump only for package @webiny/api-file-manager
+
+
+
+
+
+# [5.19.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.19.0-beta.0...v5.19.0-beta.1) (2021-12-06)
+
+**Note:** Version bump only for package @webiny/api-file-manager
+
+
+
+
+
+# [5.19.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.18.3...v5.19.0-beta.0) (2021-12-06)
+
+**Note:** Version bump only for package @webiny/api-file-manager
+
+
+
+
+
 ## [5.18.3](https://github.com/webiny/webiny-js/compare/v5.18.3-beta.0...v5.18.3) (2021-12-02)
 
 **Note:** Version bump only for package @webiny/api-file-manager

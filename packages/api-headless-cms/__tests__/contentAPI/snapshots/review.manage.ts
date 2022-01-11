@@ -30,7 +30,7 @@ export default /* GraphQL */ `
     }
 
     input ReviewInput {
-        text: String
+        text: String!
         product: RefFieldInput
         rating: Number
         author: RefFieldInput
@@ -150,6 +150,8 @@ export default /* GraphQL */ `
         deleteReview(revision: ID!): CmsDeleteResponse
 
         publishReview(revision: ID!): ReviewResponse
+    
+        republishReview(revision: ID!): ReviewResponse
 
         unpublishReview(revision: ID!): ReviewResponse
         

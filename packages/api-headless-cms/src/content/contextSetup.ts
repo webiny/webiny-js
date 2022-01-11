@@ -1,6 +1,6 @@
 import { CmsContext } from "~/types";
 import WebinyError from "@webiny/error";
-import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
+import { ContextPlugin } from "@webiny/handler";
 
 const extractHandlerHttpParameters = (context: CmsContext) => {
     const { key = "" } = context.http?.request?.path?.parameters || {};

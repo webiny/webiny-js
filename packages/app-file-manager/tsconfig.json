@@ -7,7 +7,6 @@
     { "path": "../app-security" },
     { "path": "../form" },
     { "path": "../plugins" },
-    { "path": "../react-router" },
     { "path": "../ui" }
   ],
   "compilerOptions": {
@@ -26,8 +25,6 @@
       "@webiny/form": ["../form/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"],
-      "@webiny/react-router/*": ["../react-router/src/*"],
-      "@webiny/react-router": ["../react-router/src"],
       "@webiny/ui/*": ["../ui/src/*"],
       "@webiny/ui": ["../ui/src"]
     },

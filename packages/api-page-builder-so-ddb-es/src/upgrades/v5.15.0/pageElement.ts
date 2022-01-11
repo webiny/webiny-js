@@ -1,4 +1,5 @@
 import { PbContext } from "@webiny/api-page-builder/graphql/types";
+// @ts-ignore
 import { PageElementStorageOperationsDdbEs } from "~/operations/pageElement/PageElementStorageOperations";
 import { PageElement } from "@webiny/api-page-builder/types";
 import { queryAll } from "@webiny/db-dynamodb/utils/query";
@@ -14,6 +15,7 @@ type DbRecord<T> = T & {
 export const upgradePageElements = async (context: PbContext) => {
     const tenant: string = context.tenancy.getCurrentTenant().id;
     const localeCodes: string[] = await context.i18n.getLocales().map(locale => locale.code);
+    // @ts-ignore
     const pageElementsStorageOperations = context.pageBuilder.pageElements
         .storageOperations as PageElementStorageOperationsDdbEs;
     if (pageElementsStorageOperations instanceof PageElementStorageOperationsDdbEs === false) {

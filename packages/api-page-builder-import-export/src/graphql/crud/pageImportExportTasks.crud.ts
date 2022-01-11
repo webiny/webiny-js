@@ -2,7 +2,7 @@ import mdbid from "mdbid";
 import { string, withFields } from "@commodo/fields";
 import { object } from "commodo-fields-object";
 import { validation } from "@webiny/validation";
-import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
+import { ContextPlugin } from "@webiny/handler";
 import checkBasePermissions from "@webiny/api-page-builder/graphql/crud/utils/checkBasePermissions";
 import checkOwnPermissions from "@webiny/api-page-builder/graphql/crud/utils/checkOwnPermissions";
 import { NotFoundError } from "@webiny/handler-graphql";
@@ -59,7 +59,7 @@ export default ({ storageOperations }: PageImportExportPluginsParams) =>
                 });
 
                 const tenant = context.tenancy.getCurrentTenant();
-                const locale = context.i18nContent.getLocale();
+                const locale = context.i18nContent.getCurrentLocale();
 
                 const params = {
                     where: {
@@ -99,7 +99,7 @@ export default ({ storageOperations }: PageImportExportPluginsParams) =>
                 });
 
                 const tenant = context.tenancy.getCurrentTenant();
-                const locale = context.i18nContent.getLocale();
+                const locale = context.i18nContent.getCurrentLocale();
 
                 const { sort, limit } = params || {};
 
@@ -146,7 +146,7 @@ export default ({ storageOperations }: PageImportExportPluginsParams) =>
                 const pageImportExportTask: PageImportExportTask = {
                     ...data,
                     tenant: context.tenancy.getCurrentTenant().id,
-                    locale: context.i18nContent.getLocale().code,
+                    locale: context.i18nContent.getCurrentLocale().code,
                     id,
                     createdOn: new Date().toISOString(),
                     createdBy: {
@@ -287,7 +287,7 @@ export default ({ storageOperations }: PageImportExportPluginsParams) =>
                 const pageImportExportSubTask: PageImportExportTask = {
                     ...data,
                     tenant: context.tenancy.getCurrentTenant().id,
-                    locale: context.i18nContent.getLocale().code,
+                    locale: context.i18nContent.getCurrentLocale().code,
                     id: id,
                     parent: parent,
                     createdOn: new Date().toISOString(),
@@ -366,7 +366,7 @@ export default ({ storageOperations }: PageImportExportPluginsParams) =>
                     rwd: "r"
                 });
                 const tenant = context.tenancy.getCurrentTenant();
-                const locale = context.i18nContent.getLocale();
+                const locale = context.i18nContent.getCurrentLocale();
 
                 const params = {
                     where: {
@@ -407,7 +407,7 @@ export default ({ storageOperations }: PageImportExportPluginsParams) =>
                 });
 
                 const tenant = context.tenancy.getCurrentTenant();
-                const locale = context.i18nContent.getLocale();
+                const locale = context.i18nContent.getCurrentLocale();
 
                 const listParams: PageImportExportTaskStorageOperationsListSubTaskParams = {
                     where: {

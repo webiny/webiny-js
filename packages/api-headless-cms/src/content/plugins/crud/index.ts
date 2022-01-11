@@ -1,4 +1,4 @@
-import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
+import { ContextPlugin } from "@webiny/handler";
 import { CmsContext, HeadlessCmsStorageOperations } from "~/types";
 import { createModelGroupsCrud } from "~/content/plugins/crud/contentModelGroup.crud";
 import { createModelsCrud } from "~/content/plugins/crud/contentModel.crud";
@@ -27,7 +27,7 @@ export const createContentCruds = (params: Params) => {
             return;
         }
         const getLocale = () => {
-            return context.i18n.getCurrentLocale();
+            return context.cms.getLocale();
         };
 
         const getIdentity = () => {

@@ -1,6 +1,6 @@
 import crypto from "crypto";
 import { NotAuthorizedError } from "@webiny/api-security";
-import { getApplicablePlugin } from "@webiny/api-upgrade";
+import { ErrorCode, getApplicablePlugin } from "@webiny/api-upgrade";
 import { UpgradePlugin } from "@webiny/api-upgrade/types";
 import WebinyError from "@webiny/error";
 import {
@@ -111,7 +111,9 @@ export const createSystemCrud = (params: Params): CmsSystemContext => {
             if (version) {
                 return;
             }
-
+            /**
+             * First trigger before install event.
+             */
             await onBeforeInstall.publish({
                 tenant: getTenant().id
             });
@@ -127,10 +129,6 @@ export const createSystemCrud = (params: Params): CmsSystemContext => {
                 });
             }
 
-            await onAfterInstall.publish({
-                tenant: getTenant().id
-            });
-
             const system: CmsSystem = {
                 version: context.WEBINY_VERSION,
                 readAPIKey: createReadAPIKey(),
@@ -141,6 +139,12 @@ export const createSystemCrud = (params: Params): CmsSystemContext => {
              */
             await storageOperations.system.create({
                 system
+            });
+            /**
+             * And trigger after install event.
+             */
+            await onAfterInstall.publish({
+                tenant: getTenant().id
             });
         },
         async upgradeSystem(this: HeadlessCms, version) {
@@ -154,14 +158,29 @@ export const createSystemCrud = (params: Params): CmsSystemContext => {
                 .filter(pl => pl.app === "headless-cms");
 
             const installedAppVersion = await this.getSystemVersion();
-            const plugin = getApplicablePlugin({
-                deployedVersion: context.WEBINY_VERSION,
-                installedAppVersion,
-                upgradePlugins,
-                upgradeToVersion: version
-            });
 
-            await plugin.apply(context);
+            let plugin: UpgradePlugin;
+            try {
+                plugin = getApplicablePlugin({
+                    deployedVersion: context.WEBINY_VERSION,
+                    installedAppVersion,
+                    upgradePlugins,
+                    upgradeToVersion: version
+                });
+            } catch (ex) {
+                /**
+                 * We just let the error disappear if is UPGRADE_NOT_AVAILABLE code
+                 * and rethrow if is not.
+                 * This is because we want upgrade to pass if there is no plugin available.
+                 */
+                if (ex.code !== ErrorCode.UPGRADE_NOT_AVAILABLE) {
+                    throw ex;
+                }
+            }
+
+            if (plugin) {
+                await plugin.apply(context);
+            }
 
             /**
              * Store new app version.

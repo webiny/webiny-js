@@ -106,7 +106,7 @@ export default (): UpgradePlugin<FormBuilderContext> => {
         version: "5.16.0",
         apply: async context => {
             const tenant = context.tenancy.getCurrentTenant();
-            const locale = context.i18nContent.getLocale();
+            const locale = context.i18nContent.getCurrentLocale();
             const storageOperations = context.formBuilder
                 .storageOperations as FormBuilderStorageOperations;
 

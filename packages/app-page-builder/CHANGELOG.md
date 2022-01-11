@@ -3,6 +3,159 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.21.0](https://github.com/webiny/webiny-js/compare/v5.21.0-beta.0...v5.21.0) (2022-01-04)
+
+**Note:** Version bump only for package @webiny/app-page-builder
+
+
+
+
+
+# [5.21.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.20.0...v5.21.0-beta.0) (2022-01-03)
+
+
+### Features
+
+* introduce app-serverless-cms package ([bc78ef7](https://github.com/webiny/webiny-js/commit/bc78ef79695f7c7910fd1b8b9511ffd6de8f3fcb))
+
+
+
+
+
+# [5.20.0](https://github.com/webiny/webiny-js/compare/v5.20.0-beta.2...v5.20.0) (2021-12-23)
+
+**Note:** Version bump only for package @webiny/app-page-builder
+
+
+
+
+
+# [5.20.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.20.0-beta.1...v5.20.0-beta.2) (2021-12-21)
+
+**Note:** Version bump only for package @webiny/app-page-builder
+
+
+
+
+
+# [5.20.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.20.0-beta.0...v5.20.0-beta.1) (2021-12-20)
+
+**Note:** Version bump only for package @webiny/app-page-builder
+
+
+
+
+
+# [5.20.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.19.1...v5.20.0-beta.0) (2021-12-17)
+
+
+### Features
+
+* removing the rerender button, only gql left ([e7c6e16](https://github.com/webiny/webiny-js/commit/e7c6e16158d80c78af472cdac620fd9b8a2dcc37))
+* **app-page-builder:** rerender page functionality ([45bfb1b](https://github.com/webiny/webiny-js/commit/45bfb1bac0c1303f039f082dc54b113786c6e270))
+
+
+
+
+
+## [5.19.1](https://github.com/webiny/webiny-js/compare/v5.19.1-beta.0...v5.19.1) (2021-12-14)
+
+**Note:** Version bump only for package @webiny/app-page-builder
+
+
+
+
+
+## [5.19.1-beta.0](https://github.com/webiny/webiny-js/compare/v5.19.0...v5.19.1-beta.0) (2021-12-14)
+
+**Note:** Version bump only for package @webiny/app-page-builder
+
+
+
+
+
+# [5.19.0](https://github.com/webiny/webiny-js/compare/v5.19.0-beta.6...v5.19.0) (2021-12-13)
+
+**Note:** Version bump only for package @webiny/app-page-builder
+
+
+
+
+
+# [5.19.0-beta.6](https://github.com/webiny/webiny-js/compare/v5.19.0-beta.5...v5.19.0-beta.6) (2021-12-13)
+
+**Note:** Version bump only for package @webiny/app-page-builder
+
+
+
+
+
+# [5.19.0-beta.5](https://github.com/webiny/webiny-js/compare/v5.19.0-beta.4...v5.19.0-beta.5) (2021-12-10)
+
+**Note:** Version bump only for package @webiny/app-page-builder
+
+
+
+
+
+# [5.19.0-beta.4](https://github.com/webiny/webiny-js/compare/v5.19.0-beta.3...v5.19.0-beta.4) (2021-12-09)
+
+**Note:** Version bump only for package @webiny/app-page-builder
+
+
+
+
+
+# [5.19.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.19.0-beta.2...v5.19.0-beta.3) (2021-12-08)
+
+
+### Bug Fixes
+
+* add placeholder [no ci] ([3c878fc](https://github.com/webiny/webiny-js/commit/3c878fc835ba788e708a1372d033707a58680abb))
+
+
+### Features
+
+* introduce `placeholder` prop ([06e7ad7](https://github.com/webiny/webiny-js/commit/06e7ad7adf246e631c79c48a7a377d1c8ead95ec))
+
+
+
+
+
+# [5.19.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.19.0-beta.1...v5.19.0-beta.2) (2021-12-06)
+
+
+### Bug Fixes
+
+* remove console.log ([eeda02f](https://github.com/webiny/webiny-js/commit/eeda02f48802fad1ec3c10c687e7c558a4fd5126))
+
+
+
+
+
+# [5.19.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.19.0-beta.0...v5.19.0-beta.1) (2021-12-06)
+
+
+### Bug Fixes
+
+* apply final polishes to the button's action setting ([9217c57](https://github.com/webiny/webiny-js/commit/9217c57703423a667f01ae39d50c533d8bde2515))
+* use `body2` instead of `caption` ([fbfef6f](https://github.com/webiny/webiny-js/commit/fbfef6f9b7717eb2564c3062da81ee9a6095dde7))
+
+
+
+
+
+# [5.19.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.18.3...v5.19.0-beta.0) (2021-12-06)
+
+
+### Bug Fixes
+
+* 2052 remaining issues with button custom clickHandler ([024680d](https://github.com/webiny/webiny-js/commit/024680d56b3de749958c4b94398311e2ee723ce2))
+
+
+
+
+
 ## [5.18.3](https://github.com/webiny/webiny-js/compare/v5.18.3-beta.0...v5.18.3) (2021-12-02)
 
 **Note:** Version bump only for package @webiny/app-page-builder

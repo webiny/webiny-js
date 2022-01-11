@@ -22,7 +22,7 @@ const processRequestBody = async (
     return result;
 };
 
-export default async (requestBody, schema, context) => {
+export default async (requestBody, schema, context: Context) => {
     let result;
     if (Array.isArray(requestBody)) {
         result = [];

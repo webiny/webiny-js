@@ -1,7 +1,12 @@
 import WebinyError from "@webiny/error";
 import camelCase from "lodash/camelCase";
 import pluralize from "pluralize";
-import { BeforeModelCreateTopicParams, CmsModel, HeadlessCmsStorageOperations } from "~/types";
+import {
+    BeforeModelCreateFromTopicParams,
+    BeforeModelCreateTopicParams,
+    CmsModel,
+    HeadlessCmsStorageOperations
+} from "~/types";
 import { Topic } from "@webiny/pubsub/types";
 import { PluginsContainer } from "@webiny/plugins";
 import { CmsModelPlugin } from "~/content/plugins/CmsModelPlugin";
@@ -112,16 +117,12 @@ const getModelId = (model: CmsModel): string => {
     );
 };
 
-export interface Params {
-    onBeforeCreate: Topic<BeforeModelCreateTopicParams>;
-    storageOperations: HeadlessCmsStorageOperations;
+interface CreateOnBeforeCreateCbParams {
     plugins: PluginsContainer;
+    storageOperations: HeadlessCmsStorageOperations;
 }
-
-export const assignBeforeModelCreate = (params: Params) => {
-    const { onBeforeCreate, storageOperations, plugins } = params;
-
-    onBeforeCreate.subscribe(async params => {
+const createOnBeforeCb = ({ plugins, storageOperations }: CreateOnBeforeCreateCbParams) => {
+    return async (params: BeforeModelCreateTopicParams | BeforeModelCreateFromTopicParams) => {
         const { model } = params;
 
         const modelId = getModelId(model);
@@ -158,5 +159,34 @@ export const assignBeforeModelCreate = (params: Params) => {
         checkModelIdEndingAllowed(modelId);
         checkModelIdUniqueness(modelIdList, modelId);
         model.modelId = modelId;
-    });
+    };
+};
+
+export interface Params {
+    onBeforeModelCreate: Topic<BeforeModelCreateTopicParams>;
+    onBeforeModelCreateFrom: Topic<BeforeModelCreateTopicParams>;
+    storageOperations: HeadlessCmsStorageOperations;
+    plugins: PluginsContainer;
+}
+
+/**
+ * We attach both on before create and createFrom events here.
+ * Callables are identical.
+ */
+export const assignBeforeModelCreate = (params: Params) => {
+    const { onBeforeModelCreate, onBeforeModelCreateFrom, storageOperations, plugins } = params;
+
+    onBeforeModelCreate.subscribe(
+        createOnBeforeCb({
+            storageOperations,
+            plugins
+        })
+    );
+
+    onBeforeModelCreateFrom.subscribe(
+        createOnBeforeCb({
+            storageOperations,
+            plugins
+        })
+    );
 };

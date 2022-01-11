@@ -1,21 +1,23 @@
 import { UpdateDataModel, UpdateSettingsModel } from "./pages/models";
-import { PagePlugin } from "~/plugins/PagePlugin";
+import { PbContext } from "~/graphql/types";
+import { ContextPlugin } from "@webiny/handler";
 
-export default new PagePlugin({
-    async beforeUpdate({ inputData, existingPage, updateData }) {
-        const updateDataModel = new UpdateDataModel().populate(inputData);
-        await updateDataModel.validate();
+export const createPageValidation = () => {
+    return new ContextPlugin<PbContext>(async context => {
+        context.pageBuilder.onBeforePageUpdate.subscribe(async params => {
+            const { page, original, input } = params;
+            const updateDataModel = new UpdateDataModel().populate(input);
+            await updateDataModel.validate();
 
-        const updateSettingsModel = new UpdateSettingsModel()
-            .populate(existingPage.settings)
-            .populate(inputData.settings);
+            const updateSettingsModel = new UpdateSettingsModel()
+                .populate(original.settings)
+                .populate(page.settings);
 
-        await updateSettingsModel.validate();
+            await updateSettingsModel.validate();
 
-        updateData.settings = Object.assign(
-            {},
-            updateData.settings,
-            await updateSettingsModel.toJSON()
-        );
-    }
-});
+            const newData = (await updateSettingsModel.toJSON()) as Record<string, any>;
+
+            page.settings = Object.assign({}, page.settings, newData);
+        });
+    });
+};

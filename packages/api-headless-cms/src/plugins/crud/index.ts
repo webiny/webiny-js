@@ -1,7 +1,7 @@
 import { createSettingsCrud } from "./settings.crud";
 import { createSystemCrud } from "./system.crud";
 import { CmsContext, HeadlessCmsStorageOperations } from "~/types";
-import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
+import { ContextPlugin } from "@webiny/handler";
 import { createModelGroupsCrud } from "~/content/plugins/crud/contentModelGroup.crud";
 import { createModelsCrud } from "~/content/plugins/crud/contentModel.crud";
 import { createContentEntryCrud } from "~/content/plugins/crud/contentEntry.crud";
@@ -27,7 +27,7 @@ export const createAdminCruds = (params: Params) => {
             return;
         }
         const getLocale = () => {
-            return context.i18n.getCurrentLocale();
+            return context.cms.getLocale();
         };
 
         const getIdentity = () => {

@@ -1,5 +1,5 @@
 import { Response } from "@webiny/handler-graphql";
-import { CmsEntry, CmsContext, CmsModel } from "~/types";
+import { CmsEntry, CmsContext, CmsModel, CmsEntryListWhere } from "~/types";
 import { NotAuthorizedResponse } from "@webiny/api-security";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSchemaPlugin";
 import { getEntryTitle } from "~/content/plugins/utils/getEntryTitle";
@@ -68,11 +68,13 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
                         .map(async model => {
                             const latest = query === "__latest__";
                             const modelManager = await context.cms.getModelManager(model.modelId);
+                            const where: CmsEntryListWhere = {};
+                            if (!latest) {
+                                where[`${model.titleFieldId}_contains`] = query;
+                            }
                             const [items] = await modelManager.listLatest({
                                 limit,
-                                where: latest
-                                    ? undefined
-                                    : { [`${model.titleFieldId}_contains`]: query }
+                                where
                             });
 
                             return items.map((entry: CmsEntry) => ({

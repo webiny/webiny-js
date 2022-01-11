@@ -10,6 +10,7 @@ import { resolveRequestReview } from "./resolvers/manage/resolveRequestReview";
 import { resolveRequestChanges } from "./resolvers/manage/resolveRequestChanges";
 import { resolveDelete } from "./resolvers/manage/resolveDelete";
 import { resolvePublish } from "./resolvers/manage/resolvePublish";
+import { resolveRepublish } from "./resolvers/manage/resolveRepublish";
 import { resolveUnpublish } from "./resolvers/manage/resolveUnpublish";
 import { resolveCreateFrom } from "./resolvers/manage/resolveCreateFrom";
 import { createFieldResolversFactory } from "~/content/plugins/schema/createFieldResolvers";
@@ -31,6 +32,12 @@ export const createManageResolvers: CreateManageResolvers = ({
     model,
     fieldTypePlugins
 }) => {
+    if (model.fields.length === 0) {
+        return {
+            Query: {},
+            Mutation: {}
+        };
+    }
     const typeName = createTypeName(model.modelId);
     const mTypeName = createManageTypeName(typeName);
     const createFieldResolvers = createFieldResolversFactory({
@@ -65,6 +72,7 @@ export const createManageResolvers: CreateManageResolvers = ({
             [`update${typeName}`]: resolveUpdate({ model }),
             [`delete${typeName}`]: resolveDelete({ model }),
             [`publish${typeName}`]: resolvePublish({ model }),
+            [`republish${typeName}`]: resolveRepublish({ model }),
             [`unpublish${typeName}`]: resolveUnpublish({ model }),
             [`create${typeName}From`]: resolveCreateFrom({ model }),
             [`request${typeName}Review`]: resolveRequestReview({ model }),

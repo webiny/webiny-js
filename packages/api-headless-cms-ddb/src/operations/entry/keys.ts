@@ -1,4 +1,5 @@
 import { parseIdentifier, zeroPad } from "@webiny/utils";
+import WebinyError from "@webiny/error";
 
 interface BasePartitionKeyParams {
     tenant: string;
@@ -6,6 +7,11 @@ interface BasePartitionKeyParams {
 }
 const createBasePartitionKey = (params: BasePartitionKeyParams): string => {
     const { tenant, locale } = params;
+    if (!tenant) {
+        throw new WebinyError(`Missing tenant variable when creating entry basePartitionKey`);
+    } else if (!locale) {
+        throw new WebinyError(`Missing tenant variable when creating entry basePartitionKey`);
+    }
     return `T#${tenant}#L#${locale}#CMS#CME`;
 };
 

@@ -1,7 +1,9 @@
 import { Plugin } from "@webiny/plugins/types";
 import { ClientContext } from "@webiny/handler-client/types";
-import { ContextInterface } from "@webiny/handler/types";
+import { Context } from "@webiny/handler/types";
 import { TenancyContext } from "@webiny/api-tenancy/types";
+import { Topic } from "@webiny/pubsub/types";
+import { SecurityContext } from "@webiny/api-security/types";
 
 export interface I18NLocale {
     code: string;
@@ -45,35 +47,30 @@ export interface SystemCRUD {
     /**
      * Get the current version of the i18n.
      */
-    getVersion(): Promise<string>;
+    getSystemVersion(): Promise<string>;
     /**
      * Set the current version of the i18n.
      */
-    setVersion(version: string): Promise<void>;
+    setSystemVersion(version: string): Promise<void>;
     /**
      * Run the install process for the i18n.
      */
-    install(params: SystemInstallParams): Promise<void>;
+    installSystem(params: SystemInstallParams): Promise<void>;
 }
 
-export interface I18NContext extends ContextInterface, ClientContext, TenancyContext {
+export interface I18NContext extends Context, ClientContext, TenancyContext, SecurityContext {
     i18n: I18NContextObject;
 }
 
 export interface ContextI18NGetLocales extends Plugin {
     name: "context-i18n-get-locales";
+    type: "context-i18n-get-locales";
     resolve(params: { context: I18NContext }): Promise<any[]>;
-}
-
-export interface I18NLocaleContextPlugin extends Plugin {
-    name: "api-i18n-locale-context";
-    context: {
-        name: string;
-    };
 }
 
 export interface I18NSystem {
     version: string;
+    tenant: string;
 }
 
 /**
@@ -101,34 +98,72 @@ export interface LocalesCRUDListParams {
     limit?: number;
     after?: string;
 }
+
+export interface OnBeforeCreateLocaleTopicParams {
+    context: I18NContext;
+    locale: I18NLocale;
+}
+export interface OnAfterCreateLocaleTopicParams {
+    context: I18NContext;
+    locale: I18NLocale;
+}
+export interface OnBeforeUpdateLocaleTopicParams {
+    context: I18NContext;
+    original: I18NLocale;
+    locale: I18NLocale;
+}
+export interface OnAfterUpdateLocaleTopicParams {
+    context: I18NContext;
+    original: I18NLocale;
+    locale: I18NLocale;
+}
+export interface OnBeforeDeleteLocaleTopicParams {
+    context: I18NContext;
+    locale: I18NLocale;
+}
+export interface OnAfterDeleteLocaleTopicParams {
+    context: I18NContext;
+    locale: I18NLocale;
+}
 /**
  * Definition for the locales part crud of the i18n.
  */
 export interface LocalesCRUD {
     /**
+     * Lifecycle events.
+     */
+    onBeforeCreate: Topic<OnBeforeCreateLocaleTopicParams>;
+    onAfterCreate: Topic<OnAfterCreateLocaleTopicParams>;
+    onBeforeUpdate: Topic<OnBeforeUpdateLocaleTopicParams>;
+    onAfterUpdate: Topic<OnAfterUpdateLocaleTopicParams>;
+    onBeforeDelete: Topic<OnBeforeDeleteLocaleTopicParams>;
+    onAfterDelete: Topic<OnAfterDeleteLocaleTopicParams>;
+    /**
      * Get the default locale.
      */
-    getDefault: () => Promise<I18NLocale>;
+    getDefaultLocale: () => Promise<I18NLocale>;
     /**
      * Get the locale by given code.
      */
-    get: (code: string) => Promise<I18NLocale>;
+    getLocale: (code: string) => Promise<I18NLocale>;
     /**
      * List all locales in the storage.
      */
-    list: (params?: LocalesCRUDListParams) => Promise<I18NLocalesStorageOperationsListResponse>;
+    listLocales: (
+        params?: LocalesCRUDListParams
+    ) => Promise<I18NLocalesStorageOperationsListResponse>;
     /**
      * Create a new locale.
      */
-    create: (data: LocalesCRUDCreate) => Promise<I18NLocale>;
+    createLocale: (data: LocalesCRUDCreate) => Promise<I18NLocale>;
     /**
      * Update the locale with new data.
      */
-    update: (code: string, data: LocalesCRUDUpdate) => Promise<I18NLocale>;
+    updateLocale: (code: string, data: LocalesCRUDUpdate) => Promise<I18NLocale>;
     /**
      * Delete the given locale by code.
      */
-    delete: (code: string) => Promise<I18NLocale>;
+    deleteLocale: (code: string) => Promise<I18NLocale>;
 }
 
 export interface I18NLocalesStorageOperationsListParams {

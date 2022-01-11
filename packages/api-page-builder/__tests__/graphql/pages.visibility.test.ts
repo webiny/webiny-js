@@ -13,7 +13,7 @@ describe("page visibility test", () => {
         until
     } = useGqlHandler();
 
-    test("changing visibility of a page should affect results from get and list operations ", async () => {
+    test("changing visibility of a page should affect results from get and list operations", async () => {
         const category = await createCategory({
             data: {
                 slug: `slug`,

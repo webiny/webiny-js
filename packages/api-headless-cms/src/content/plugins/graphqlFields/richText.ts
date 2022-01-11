@@ -1,4 +1,5 @@
 import { CmsModelFieldToGraphQLPlugin } from "~/types";
+import { attachRequiredFieldValue } from "~/content/plugins/graphqlFields/requiredField";
 
 const plugin: CmsModelFieldToGraphQLPlugin = {
     name: "cms-model-field-to-graphql-rich-text",
@@ -28,9 +29,9 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
         },
         createInputField({ field }) {
             if (field.multipleValues) {
-                return field.fieldId + ": [JSON]";
+                return attachRequiredFieldValue(field.fieldId + ": [JSON]", field);
             }
-            return field.fieldId + ": JSON";
+            return attachRequiredFieldValue(field.fieldId + ": JSON", field);
         }
     }
 };

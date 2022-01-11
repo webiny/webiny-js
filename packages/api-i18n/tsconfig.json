@@ -12,6 +12,7 @@
     { "path": "../handler-client" },
     { "path": "../handler-graphql" },
     { "path": "../plugins" },
+    { "path": "../pubsub" },
     { "path": "../handler-http" }
   ],
   "compilerOptions": {
@@ -40,6 +41,8 @@
       "@webiny/handler-graphql": ["../handler-graphql/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"],
+      "@webiny/pubsub/*": ["../pubsub/src/*"],
+      "@webiny/pubsub": ["../pubsub/src"],
       "@webiny/handler-http/*": ["../handler-http/src/*"],
       "@webiny/handler-http": ["../handler-http/src"]
     },

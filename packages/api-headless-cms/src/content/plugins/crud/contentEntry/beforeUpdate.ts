@@ -4,12 +4,12 @@ import { markLockedFields } from "./markLockedFields";
 
 export interface Params {
     context: CmsContext;
-    onBeforeUpdate: Topic<BeforeEntryUpdateTopicParams>;
+    onBeforeEntryUpdate: Topic<BeforeEntryUpdateTopicParams>;
 }
 export const assignBeforeEntryUpdate = (params: Params) => {
-    const { context, onBeforeUpdate } = params;
+    const { context, onBeforeEntryUpdate } = params;
 
-    onBeforeUpdate.subscribe(async params => {
+    onBeforeEntryUpdate.subscribe(async params => {
         const { entry, model } = params;
 
         await markLockedFields({

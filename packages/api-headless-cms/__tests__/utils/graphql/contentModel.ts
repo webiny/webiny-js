@@ -84,6 +84,15 @@ export const CREATE_CONTENT_MODEL_MUTATION = /* GraphQL */ `
     }
 `;
 
+export const CREATE_CONTENT_MODEL_FROM_MUTATION = /* GraphQL */ `
+    mutation CreateContentModelFromMutation($modelId: ID!, $data: CmsContentModelCreateFromInput!) {
+        createContentModelFrom(modelId: $modelId, data: $data) {
+            data ${DATA_FIELD}
+            error ${ERROR_FIELD}
+        }
+    }
+`;
+
 export const UPDATE_CONTENT_MODEL_MUTATION = /* GraphQL */ `
     mutation UpdateContentModelMutation($modelId: ID!, $data: CmsContentModelUpdateInput!) {
         updateContentModel(modelId: $modelId, data: $data) {

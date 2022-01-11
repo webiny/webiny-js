@@ -68,7 +68,7 @@ module.exports = [
                         "$0 watch api --env=dev --scope my-package-1 --scope my-package-2"
                     );
                     yargs.example("$0 watch api --env=dev --depth 2");
-                    yargs.example('$0 watch api --env=dev --logs "my-function*"');
+                    yargs.example('$0 watch api --env=dev -r "my-function*"');
                     yargs.example('$0 watch --env=dev --scope "my/{package1,package2}" ');
 
                     yargs.positional("folder", {
@@ -109,8 +109,8 @@ module.exports = [
                     });
                     yargs.option("remoteRuntimeLogs", {
                         alias: "r",
-                        describe: `Forward logs from deployed application code to your terminal`,
-                        type: "boolean"
+                        describe: `Forward logs from deployed application code to your terminal (optionally accepts a glob pattern for filtering purposes)`,
+                        type: "string"
                     });
                     yargs.option("debug", {
                         default: false,

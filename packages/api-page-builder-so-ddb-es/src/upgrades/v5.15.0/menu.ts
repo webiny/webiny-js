@@ -1,4 +1,5 @@
 import { PbContext } from "@webiny/api-page-builder/graphql/types";
+// @ts-ignore
 import { MenuStorageOperationsDdbEs } from "~/operations/menu/MenuStorageOperations";
 import { Menu } from "@webiny/api-page-builder/types";
 import { queryAll } from "@webiny/db-dynamodb/utils/query";
@@ -14,6 +15,7 @@ type DbRecord<T> = T & {
 export const upgradeMenus = async (context: PbContext) => {
     const tenant: string = context.tenancy.getCurrentTenant().id;
     const localeCodes: string[] = await context.i18n.getLocales().map(locale => locale.code);
+    // @ts-ignore
     const menuStorageOperations = context.pageBuilder.menus
         .storageOperations as MenuStorageOperationsDdbEs;
     if (menuStorageOperations instanceof MenuStorageOperationsDdbEs === false) {

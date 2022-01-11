@@ -3,6 +3,148 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.21.0](https://github.com/webiny/webiny-js/compare/v5.21.0-beta.0...v5.21.0) (2022-01-04)
+
+**Note:** Version bump only for package @webiny/app-admin
+
+
+
+
+
+# [5.21.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.20.0...v5.21.0-beta.0) (2022-01-03)
+
+
+### Bug Fixes
+
+* add missing test ids on UI elements ([26810d9](https://github.com/webiny/webiny-js/commit/26810d90df67bdd3cca7221200d24cbef6b2cbea))
+
+
+### Features
+
+* introduce app-serverless-cms package ([bc78ef7](https://github.com/webiny/webiny-js/commit/bc78ef79695f7c7910fd1b8b9511ffd6de8f3fcb))
+
+
+
+
+
+# [5.20.0](https://github.com/webiny/webiny-js/compare/v5.20.0-beta.2...v5.20.0) (2021-12-23)
+
+**Note:** Version bump only for package @webiny/app-admin
+
+
+
+
+
+# [5.20.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.20.0-beta.1...v5.20.0-beta.2) (2021-12-21)
+
+**Note:** Version bump only for package @webiny/app-admin
+
+
+
+
+
+# [5.20.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.20.0-beta.0...v5.20.0-beta.1) (2021-12-20)
+
+**Note:** Version bump only for package @webiny/app-admin
+
+
+
+
+
+# [5.20.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.19.1...v5.20.0-beta.0) (2021-12-17)
+
+**Note:** Version bump only for package @webiny/app-admin
+
+
+
+
+
+## [5.19.1](https://github.com/webiny/webiny-js/compare/v5.19.1-beta.0...v5.19.1) (2021-12-14)
+
+**Note:** Version bump only for package @webiny/app-admin
+
+
+
+
+
+## [5.19.1-beta.0](https://github.com/webiny/webiny-js/compare/v5.19.0...v5.19.1-beta.0) (2021-12-14)
+
+**Note:** Version bump only for package @webiny/app-admin
+
+
+
+
+
+# [5.19.0](https://github.com/webiny/webiny-js/compare/v5.19.0-beta.6...v5.19.0) (2021-12-13)
+
+**Note:** Version bump only for package @webiny/app-admin
+
+
+
+
+
+# [5.19.0-beta.6](https://github.com/webiny/webiny-js/compare/v5.19.0-beta.5...v5.19.0-beta.6) (2021-12-13)
+
+**Note:** Version bump only for package @webiny/app-admin
+
+
+
+
+
+# [5.19.0-beta.5](https://github.com/webiny/webiny-js/compare/v5.19.0-beta.4...v5.19.0-beta.5) (2021-12-10)
+
+
+### Bug Fixes
+
+* **api-headless-cms:** add entry validation option, defaults to false ([87ae167](https://github.com/webiny/webiny-js/commit/87ae167419752662771fe1e6913d87f1c459ed2f))
+
+
+
+
+
+# [5.19.0-beta.4](https://github.com/webiny/webiny-js/compare/v5.19.0-beta.3...v5.19.0-beta.4) (2021-12-09)
+
+**Note:** Version bump only for package @webiny/app-admin
+
+
+
+
+
+# [5.19.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.19.0-beta.2...v5.19.0-beta.3) (2021-12-08)
+
+**Note:** Version bump only for package @webiny/app-admin
+
+
+
+
+
+# [5.19.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.19.0-beta.1...v5.19.0-beta.2) (2021-12-06)
+
+**Note:** Version bump only for package @webiny/app-admin
+
+
+
+
+
+# [5.19.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.19.0-beta.0...v5.19.0-beta.1) (2021-12-06)
+
+**Note:** Version bump only for package @webiny/app-admin
+
+
+
+
+
+# [5.19.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.18.3...v5.19.0-beta.0) (2021-12-06)
+
+
+### Features
+
+* **app-headless-cms:** ref field validators ([#2046](https://github.com/webiny/webiny-js/issues/2046)) ([056c79f](https://github.com/webiny/webiny-js/commit/056c79fecf6b2816bc631516f33ae818e91f3f56))
+
+
+
+
+
 ## [5.18.3](https://github.com/webiny/webiny-js/compare/v5.18.3-beta.0...v5.18.3) (2021-12-02)
 
 **Note:** Version bump only for package @webiny/app-admin

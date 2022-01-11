@@ -6,7 +6,7 @@ import WebinyError from "@webiny/error";
 import { Args as PsFlushParams } from "@webiny/api-prerendering-service/flush/types";
 import { Args as PsRenderParams } from "@webiny/api-prerendering-service/render/types";
 import { Args as PsQueueAddParams } from "@webiny/api-prerendering-service/queue/add/types";
-import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
+import { ContextPlugin } from "@webiny/handler";
 import { PbContext } from "~/graphql/types";
 
 export const prerenderingHandlers = new ContextPlugin<PbContext>(context => {
@@ -14,7 +14,7 @@ export const prerenderingHandlers = new ContextPlugin<PbContext>(context => {
         async render(args): Promise<void> {
             const { paths, tags, context } = args;
 
-            const current = await context.pageBuilder.settings.getCurrent();
+            const current = await context.pageBuilder.getCurrentSettings();
             const appUrl = lodashGet(current, "prerendering.app.url");
             const storageName = lodashGet(current, "prerendering.storage.name");
 
@@ -26,7 +26,7 @@ export const prerenderingHandlers = new ContextPlugin<PbContext>(context => {
 
             const meta = merge(currentPrerenderingMeta || {}, {
                 tenant: context.tenancy.getCurrentTenant().id,
-                locale: context.i18nContent.getLocale().code
+                locale: context.i18nContent.getCurrentLocale().code
             });
 
             const dbNamespace = "T#" + context.tenancy.getCurrentTenant().id;
@@ -116,7 +116,7 @@ export const prerenderingHandlers = new ContextPlugin<PbContext>(context => {
         async flush(args): Promise<void> {
             const { context } = args;
 
-            const current = await context.pageBuilder.settings.getCurrent();
+            const current = await context.pageBuilder.getCurrentSettings();
             const appUrl = lodashGet(current, "prerendering.app.url");
             const storageName = lodashGet(current, "prerendering.storage.name");
 

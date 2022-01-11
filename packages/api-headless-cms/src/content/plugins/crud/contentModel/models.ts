@@ -14,6 +14,14 @@ export const CreateContentModelModel = withFields({
     group: string({ validation: requiredShortString })
 })();
 
+export const CreateContentModelModelFrom = withFields({
+    name: string({ validation: requiredShortString }),
+    modelId: string({ validation: shortString }),
+    description: string({ validation: shortString }),
+    group: string({ validation: requiredShortString }),
+    locale: string({ validation: shortString })
+})();
+
 const RendererModel = withFields({
     name: string({ validation: requiredShortString })
 })();

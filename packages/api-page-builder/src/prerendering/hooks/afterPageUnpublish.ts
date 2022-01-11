@@ -1,20 +1,21 @@
-import { PagePlugin } from "~/plugins/PagePlugin";
+import { ContextPlugin } from "@webiny/handler";
+import { PbContext } from "~/graphql/types";
 
-export default () => [
-    new PagePlugin({
-        // After a page was unpublished, we need to flush the page.
-        async afterUnpublish({ context, page }) {
+export default () => {
+    return new ContextPlugin<PbContext>(async context => {
+        context.pageBuilder.onAfterPageUnpublish.subscribe(async ({ page }) => {
             const promises = [];
             promises.push(
-                context.pageBuilder.pages.prerendering.flush({
+                context.pageBuilder.prerendering.flush({
                     context,
                     paths: [{ path: page.path }]
                 })
             );
-
-            // Note: special pages (404 / home) cannot be unpublished, that's why
-            // there is no special handling in regards to that here.
+            /**
+             * Note: special pages (404 / home) cannot be unpublished, that's why
+             * there is no special handling in regards to that here.
+             */
             await Promise.all(promises);
-        }
-    })
-];
+        });
+    });
+};

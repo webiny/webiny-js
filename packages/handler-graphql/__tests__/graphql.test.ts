@@ -1,5 +1,5 @@
 import useGqlHandler from "./useGqlHandler";
-import { GraphQLSchemaPlugin } from "../src/types";
+import { GraphQLSchemaPlugin } from "~/types";
 
 const books = [{ name: "Book 1" }, { name: "Book 2" }];
 
@@ -34,7 +34,7 @@ const booksSchema: GraphQLSchemaPlugin = {
         `,
         resolvers: {
             Query: {
-                books(_, args, context: any) {
+                books(_, __, context: any) {
                     console.group("books resolver");
                     const books = context.getBooks();
                     console.groupEnd();
@@ -59,7 +59,7 @@ const booksSchema: GraphQLSchemaPlugin = {
 };
 
 describe("GraphQL Handler", () => {
-    test("should return errors if schema doesn't exist ", async () => {
+    test("should return errors if schema doesn't exist", async () => {
         const { introspect } = useGqlHandler();
 
         const [response] = await introspect();

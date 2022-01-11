@@ -5,6 +5,7 @@ import ContentModelsDataList from "./ContentModelsDataList";
 import NewContentModelDialog from "./NewContentModelDialog";
 import { Cell } from "@webiny/ui/Grid";
 import { Grid } from "@webiny/ui/Grid";
+import CloneContentModelDialog from "./CloneContentModelDialog";
 
 const grid = css({
     "&.mdc-layout-grid": {
@@ -37,6 +38,8 @@ const centeredContent = css({
 function ContentModels() {
     const [newContentModelDialogOpened, openNewContentModelDialog] = React.useState(false);
 
+    const [cloneContentModel, setCloneContentModel] = React.useState(null);
+
     const { identity } = useSecurity();
 
     const canCreate = useMemo(() => {
@@ -52,16 +55,32 @@ function ContentModels() {
         return permission.rwd.includes("w");
     }, []);
 
+    const closeModal = useCallback(() => {
+        setCloneContentModel(null);
+    }, []);
+
     const onCreate = useCallback(() => openNewContentModelDialog(true), []);
     const onClose = useCallback(() => openNewContentModelDialog(false), []);
+    const onClone = useCallback(contentModel => setCloneContentModel(contentModel), []);
+    const onCloneClose = useCallback(() => setCloneContentModel(null), []);
 
     return (
         <>
             <NewContentModelDialog open={newContentModelDialogOpened} onClose={onClose} />
+            <CloneContentModelDialog
+                open={!!cloneContentModel}
+                contentModel={cloneContentModel}
+                onClose={onCloneClose}
+                closeModal={closeModal}
+            />
             <Grid className={grid}>
                 <Cell span={3} />
                 <Cell span={6} className={centeredContent}>
-                    <ContentModelsDataList canCreate={canCreate} onCreate={onCreate} />
+                    <ContentModelsDataList
+                        canCreate={canCreate}
+                        onCreate={onCreate}
+                        onClone={onClone}
+                    />
                 </Cell>
                 <Cell span={3} />
             </Grid>

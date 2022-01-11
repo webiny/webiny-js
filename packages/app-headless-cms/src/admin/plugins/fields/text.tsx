@@ -12,7 +12,7 @@ const plugin: CmsEditorFieldTypePlugin = {
     name: "cms-editor-field-type-text",
     field: {
         type: "text",
-        validators: ["required", "minLength", "maxLength", "pattern"],
+        validators: ["required", "minLength", "maxLength", "pattern", "unique"],
         label: t`Text`,
         description: t`Titles, names, single line values.`,
         icon: <TextIcon />,

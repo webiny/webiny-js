@@ -22,7 +22,11 @@ describe("fieldValidations", () => {
         date: "2020-12-15",
         dateTime: new Date("2020-12-15T12:12:21").toISOString(),
         dateTimeZ: "2020-12-15T14:52:41+01:00",
-        time: "13:29:58"
+        time: "13:29:58",
+        /**
+         * unique field
+         */
+        slug: "apple"
     };
 
     // This function is not directly within `beforeEach` as we don't always setup the same content model.
@@ -138,6 +142,9 @@ describe("fieldValidations", () => {
             }
         });
 
+        /**
+         * GraphQL response must break when not sending required value.
+         */
         const [requiredResponse] = await createFruit({
             data: {
                 ...defaultFruitData,
@@ -146,21 +153,17 @@ describe("fieldValidations", () => {
         });
 
         expect(requiredResponse).toEqual({
-            data: {
-                createFruit: {
-                    data: null,
-                    error: {
-                        message: "Validation failed.",
-                        code: "VALIDATION_FAILED",
-                        data: [
-                            {
-                                fieldId: "name",
-                                error: "This field is required."
-                            }
-                        ]
-                    }
+            errors: [
+                {
+                    message: expect.any(String),
+                    locations: [
+                        {
+                            column: expect.any(Number),
+                            line: expect.any(Number)
+                        }
+                    ]
                 }
-            }
+            ]
         });
     });
     /**
@@ -671,6 +674,66 @@ describe("fieldValidations", () => {
         }
     );
 
+    test("should return error when slug already exists", async () => {
+        const group = await setupContentModelGroup();
+        await setupContentModels(group);
+
+        const { createFruit, listFruits, until } = useFruitManageHandler({
+            ...manageOpts
+        });
+        /**
+         * Should create first fruit without any problems.
+         */
+        const [createResponse] = await createFruit({
+            data: defaultFruitData
+        });
+
+        expect(createResponse).toEqual({
+            data: {
+                createFruit: {
+                    data: expect.any(Object),
+                    error: null
+                }
+            }
+        });
+
+        /**
+         * If this `until` resolves successfully, we know entry is accessible via the "read" API
+         */
+        await until(
+            () => listFruits({}).then(([data]) => data),
+            ({ data }) => {
+                return data.listFruits.data.length === 1;
+            },
+            { name: "list all fruits" }
+        );
+
+        /**
+         * Should fail on creating another fruit with same slug.
+         */
+        const [createAgainResponse] = await createFruit({
+            data: defaultFruitData
+        });
+
+        expect(createAgainResponse).toEqual({
+            data: {
+                createFruit: {
+                    data: null,
+                    error: {
+                        message: "Validation failed.",
+                        code: "VALIDATION_FAILED",
+                        data: [
+                            {
+                                error: "Field value must be unique.",
+                                fieldId: "slug"
+                            }
+                        ]
+                    }
+                }
+            }
+        });
+    });
+
     test("should create a fruit without validation errors", async () => {
         const group = await setupContentModelGroup();
         await setupContentModels(group);
@@ -723,7 +786,8 @@ describe("fieldValidations", () => {
                         dateTimeZ: defaultFruitData.dateTimeZ,
                         rating: null,
                         isSomething: null,
-                        description: ""
+                        description: "",
+                        slug: "apple"
                     },
                     error: null
                 }
@@ -774,7 +838,8 @@ describe("fieldValidations", () => {
                         dateTimeZ: defaultFruitData.dateTimeZ,
                         rating: null,
                         isSomething: null,
-                        description: ""
+                        description: "",
+                        slug: "apple"
                     },
                     error: null
                 }

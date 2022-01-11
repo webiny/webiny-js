@@ -5,14 +5,14 @@ import WebinyError from "@webiny/error";
 import { CmsModelPlugin } from "~/content/plugins/CmsModelPlugin";
 
 export interface Params {
-    onBeforeDelete: Topic<BeforeModelDeleteTopicParams>;
+    onBeforeModelDelete: Topic<BeforeModelDeleteTopicParams>;
     storageOperations: HeadlessCmsStorageOperations;
     plugins: PluginsContainer;
 }
 export const assignBeforeModelDelete = (params: Params) => {
-    const { onBeforeDelete, storageOperations, plugins } = params;
+    const { onBeforeModelDelete, storageOperations, plugins } = params;
 
-    onBeforeDelete.subscribe(async params => {
+    onBeforeModelDelete.subscribe(async params => {
         const { model } = params;
 
         const modelPlugin: CmsModelPlugin = plugins
@@ -34,7 +34,8 @@ export const assignBeforeModelDelete = (params: Params) => {
             const result = await storageOperations.entries.list(model, {
                 where: {
                     tenant: model.tenant,
-                    locale: model.locale
+                    locale: model.locale,
+                    latest: true
                 },
                 limit: 1
             });

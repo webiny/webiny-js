@@ -32,6 +32,7 @@ const INSTALL = gql`
                 error {
                     code
                     message
+                    data
                 }
             }
         }

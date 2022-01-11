@@ -1,13 +1,13 @@
 import { Plugin } from "@webiny/plugins/types";
 import { I18NContext, I18NLocale } from "@webiny/api-i18n/types";
-import { ContextInterface } from "@webiny/handler/types";
+import { Context } from "@webiny/handler/types";
 import { TenancyContext } from "@webiny/api-tenancy/types";
 import {
     GraphQLFieldResolver,
     GraphQLSchemaDefinition,
     Resolvers
 } from "@webiny/handler-graphql/types";
-import { BaseI18NContentContext } from "@webiny/api-i18n-content/types";
+import { I18NContentContext } from "@webiny/api-i18n-content/types";
 import { SecurityPermission } from "@webiny/api-security/types";
 import { HttpContext } from "@webiny/handler-http/types";
 import { DbContext } from "@webiny/handler-db/types";
@@ -56,12 +56,12 @@ export interface HeadlessCms
  * @category Context
  */
 export interface CmsContext
-    extends ContextInterface,
+    extends Context,
         DbContext,
         HttpContext,
         I18NContext,
         FileManagerContext,
-        BaseI18NContentContext,
+        I18NContentContext,
         TenancyContext {
     cms: HeadlessCms;
 }
@@ -207,7 +207,12 @@ export interface CmsModelFieldValidatorValidateParams<T = any> {
     /**
      * An instance of the content model being validated.
      */
-    contentModel: CmsModel;
+    model: CmsModel;
+    /**
+     * If entry is sent it means it is an update operation.
+     * First usage is for the unique field value.
+     */
+    entry?: CmsEntry;
 }
 
 /**
@@ -477,7 +482,7 @@ export interface CmsModelFieldToGraphQLPlugin extends Plugin {
             model: CmsModel;
             field: CmsModelField;
             fieldTypePlugins: CmsFieldTypePlugins;
-        }): CmsModelFieldDefinition | string;
+        }): CmsModelFieldDefinition | string | null;
         /**
          * Definition for field resolver.
          * By default it is simple return of the `instance.values[fieldId]` but if required, users can define their own.
@@ -575,7 +580,7 @@ export interface CmsModelFieldToGraphQLPlugin extends Plugin {
             model: CmsModel;
             field: CmsModelField;
             fieldTypePlugins: CmsFieldTypePlugins;
-        }) => CmsModelFieldDefinition | string;
+        }) => CmsModelFieldDefinition | string | null;
         /**
          * Definition for input GraphQL field type.
          *
@@ -940,6 +945,23 @@ export interface CmsModelCreateInput {
      * Description of the content model.
      */
     description?: string;
+    /**
+     * Group where to put the content model in.
+     */
+    group: string;
+}
+
+/**
+ * A GraphQL params.data parameter received when creating content model from existing model.
+ *
+ * @category GraphQL params
+ * @category CmsModel
+ */
+export interface CmsModelCreateFromInput extends CmsModelCreateInput {
+    /**
+     * Locale into which we want to clone the model into.
+     */
+    locale?: string;
 }
 
 /**
@@ -1014,6 +1036,10 @@ export interface CmsModelUpdateInput {
      * A new content model name.
      */
     name?: string;
+    /**
+     * A group we want to move the model to.
+     */
+    group?: string;
     /**
      * A new description of the content model.
      */
@@ -1160,17 +1186,13 @@ export interface CmsStorageEntry extends CmsEntry {
  */
 export interface CmsModelManager {
     /**
-     * List entries in this content model.
-     */
-    list: (params?: CmsEntryListParams) => Promise<[CmsEntry[], CmsEntryMeta]>;
-    /**
      * List only published entries in the content model.
      */
-    listPublished: (params?: CmsEntryListParams) => Promise<[CmsEntry[], CmsEntryMeta]>;
+    listPublished: (params: CmsEntryListParams) => Promise<[CmsEntry[], CmsEntryMeta]>;
     /**
      * List latest entries in the content model. Used for administration.
      */
-    listLatest: (params?: CmsEntryListParams) => Promise<[CmsEntry[], CmsEntryMeta]>;
+    listLatest: (params: CmsEntryListParams) => Promise<[CmsEntry[], CmsEntryMeta]>;
     /**
      * Get a list of published entries by the ID list.
      */
@@ -1198,20 +1220,30 @@ export interface CmsModelManager {
 }
 
 export interface BeforeModelCreateTopicParams {
-    input: Partial<CmsModel>;
+    input: CmsModelCreateInput;
     model: CmsModel;
 }
 export interface AfterModelCreateTopicParams {
-    input: Partial<CmsModel>;
+    input: CmsModelCreateInput;
+    model: CmsModel;
+}
+export interface BeforeModelCreateFromTopicParams {
+    input: CmsModelCreateInput;
+    original: CmsModel;
+    model: CmsModel;
+}
+export interface AfterModelCreateFromTopicParams {
+    input: CmsModelCreateInput;
+    original: CmsModel;
     model: CmsModel;
 }
 export interface BeforeModelUpdateTopicParams {
-    input: Partial<CmsModel>;
+    input: CmsModelUpdateInput;
     original: CmsModel;
     model: CmsModel;
 }
 export interface AfterModelUpdateTopicParams {
-    input: Partial<CmsModel>;
+    input: CmsModelUpdateInput;
     original: CmsModel;
     model: CmsModel;
 }
@@ -1235,15 +1267,6 @@ export interface CmsModelUpdateDirectParams {
  */
 export interface CmsModelContext {
     /**
-     * A function defining usage of a method with authenticating the user but not throwing an error.
-     */
-    silentAuthModel: () => {
-        /**
-         * Get all content models.
-         */
-        list: () => Promise<CmsModel[]>;
-    };
-    /**
      * Get a single content model.
      */
     getModel: (modelId: string) => Promise<CmsModel | null>;
@@ -1256,11 +1279,11 @@ export interface CmsModelContext {
      */
     createModel: (data: CmsModelCreateInput) => Promise<CmsModel>;
     /**
+     * Create a content model from the given model - clone.
+     */
+    createModelFrom: (modelId: string, data: CmsModelCreateFromInput) => Promise<CmsModel>;
+    /**
      * Update content model without data validation. Used internally.
-     *
-     * @param model - existing content model
-     * @param data - data to be updated
-     *
      * @hidden
      */
     updateModelDirect: (params: CmsModelUpdateDirectParams) => Promise<CmsModel>;
@@ -1277,7 +1300,7 @@ export interface CmsModelContext {
      *
      * @see CmsModelManager
      */
-    getModelManager: (modelId: string) => Promise<CmsModelManager>;
+    getModelManager: (model: CmsModel | string) => Promise<CmsModelManager>;
     /**
      * Get all content model managers mapped by modelId.
      * @see CmsModelManager
@@ -1288,6 +1311,8 @@ export interface CmsModelContext {
      */
     onBeforeModelCreate: Topic<BeforeModelCreateTopicParams>;
     onAfterModelCreate: Topic<AfterModelCreateTopicParams>;
+    onBeforeModelCreateFrom: Topic<BeforeModelCreateFromTopicParams>;
+    onAfterModelCreateFrom: Topic<AfterModelCreateFromTopicParams>;
     onBeforeModelUpdate: Topic<BeforeModelUpdateTopicParams>;
     onAfterModelUpdate: Topic<AfterModelUpdateTopicParams>;
     onBeforeModelDelete: Topic<BeforeModelDeleteTopicParams>;
@@ -1438,36 +1463,40 @@ export interface CmsEntryMeta {
 }
 
 export interface BeforeEntryCreateTopicParams {
-    input: Partial<CmsEntry>;
+    input: CreateCmsEntryInput;
     entry: CmsEntry;
     model: CmsModel;
 }
 export interface AfterEntryCreateTopicParams {
-    input: Partial<CmsEntry>;
+    input: CreateCmsEntryInput;
     entry: CmsEntry;
     model: CmsModel;
     storageEntry: CmsEntry;
 }
 
-export interface BeforeEntryRevisionCreateTopicParams {
+export interface BeforeEntryCreateRevisionTopicParams {
+    input: CreateFromCmsEntryInput;
     entry: CmsEntry;
+    original: CmsEntry;
     model: CmsModel;
 }
 
-export interface AfterEntryRevisionCreateTopicParams {
+export interface AfterEntryCreateRevisionTopicParams {
+    input: CreateFromCmsEntryInput;
     entry: CmsEntry;
+    original: CmsEntry;
     model: CmsModel;
     storageEntry: CmsEntry;
 }
 
 export interface BeforeEntryUpdateTopicParams {
-    input: Partial<CmsEntry>;
+    input: UpdateCmsEntryInput;
     original: CmsEntry;
     entry: CmsEntry;
     model: CmsModel;
 }
 export interface AfterEntryUpdateTopicParams {
-    input: Partial<CmsEntry>;
+    input: UpdateCmsEntryInput;
     original: CmsEntry;
     entry: CmsEntry;
     model: CmsModel;
@@ -1527,11 +1556,11 @@ export interface AfterEntryDeleteTopicParams {
     model: CmsModel;
 }
 
-export interface BeforeEntryRevisionDeleteTopicParams {
+export interface BeforeEntryDeleteRevisionTopicParams {
     entry: CmsEntry;
     model: CmsModel;
 }
-export interface AfterEntryRevisionDeleteTopicParams {
+export interface AfterEntryDeleteRevisionTopicParams {
     entry: CmsEntry;
     model: CmsModel;
 }
@@ -1546,6 +1575,29 @@ export interface BeforeEntryListTopicParams {
     model: CmsModel;
 }
 
+/**
+ * @category Context
+ * @category CmsEntry
+ */
+export interface CreateCmsEntryInput {
+    [key: string]: any;
+}
+
+/**
+ * @category Context
+ * @category CmsEntry
+ */
+export interface CreateFromCmsEntryInput {
+    [key: string]: any;
+}
+
+/**
+ * @category Context
+ * @category CmsEntry
+ */
+export interface UpdateCmsEntryInput {
+    [key: string]: any;
+}
 /**
  * Cms Entry CRUD methods in the context.
  *
@@ -1570,7 +1622,7 @@ export interface CmsEntryContext {
      */
     listEntries: (
         model: CmsModel,
-        params?: CmsEntryListParams
+        params: CmsEntryListParams
     ) => Promise<[CmsEntry[], CmsEntryMeta]>;
     /**
      * Lists latest entries. Used for manage API.
@@ -1597,19 +1649,24 @@ export interface CmsEntryContext {
     /**
      * Create a new content entry.
      */
-    createEntry: (model: CmsModel, data: Record<string, any>) => Promise<CmsEntry>;
+    createEntry: (model: CmsModel, input: CreateCmsEntryInput) => Promise<CmsEntry>;
     /**
      * Create a new entry from already existing entry.
      */
     createEntryRevisionFrom: (
         model: CmsModel,
         id: string,
-        data: Record<string, any>
+        input: CreateFromCmsEntryInput
     ) => Promise<CmsEntry>;
     /**
      * Update existing entry.
      */
-    updateEntry: (model: CmsModel, id: string, data?: Record<string, any>) => Promise<CmsEntry>;
+    updateEntry: (model: CmsModel, id: string, input?: UpdateCmsEntryInput) => Promise<CmsEntry>;
+    /**
+     * Method that republishes entry with given identifier.
+     * @internal
+     */
+    republishEntry: (model: CmsModel, id: string) => Promise<CmsEntry>;
     /**
      * Delete only a certain revision of the entry.
      */
@@ -1643,14 +1700,14 @@ export interface CmsEntryContext {
      */
     onBeforeEntryCreate: Topic<BeforeEntryCreateTopicParams>;
     onAfterEntryCreate: Topic<AfterEntryCreateTopicParams>;
-    onBeforeEntryRevisionCreate: Topic<BeforeEntryRevisionCreateTopicParams>;
-    onAfterEntryRevisionCreate: Topic<AfterEntryRevisionCreateTopicParams>;
+    onBeforeEntryCreateRevision: Topic<BeforeEntryCreateRevisionTopicParams>;
+    onAfterEntryCreateRevision: Topic<AfterEntryCreateRevisionTopicParams>;
     onBeforeEntryUpdate: Topic<BeforeEntryUpdateTopicParams>;
     onAfterEntryUpdate: Topic<AfterEntryUpdateTopicParams>;
     onBeforeEntryDelete: Topic<BeforeEntryDeleteTopicParams>;
     onAfterEntryDelete: Topic<AfterEntryDeleteTopicParams>;
-    onBeforeEntryRevisionDelete: Topic<BeforeEntryRevisionDeleteTopicParams>;
-    onAfterEntryRevisionDelete: Topic<AfterEntryRevisionDeleteTopicParams>;
+    onBeforeEntryDeleteRevision: Topic<BeforeEntryDeleteRevisionTopicParams>;
+    onAfterEntryDeleteRevision: Topic<AfterEntryDeleteRevisionTopicParams>;
     onBeforeEntryPublish: Topic<BeforeEntryPublishTopicParams>;
     onAfterEntryPublish: Topic<AfterEntryPublishTopicParams>;
     onBeforeEntryUnpublish: Topic<BeforeEntryUnpublishTopicParams>;

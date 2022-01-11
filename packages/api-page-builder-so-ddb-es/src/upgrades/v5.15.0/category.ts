@@ -1,4 +1,5 @@
 import { PbContext } from "@webiny/api-page-builder/graphql/types";
+// @ts-ignore
 import { CategoryStorageOperationsDdbEs } from "~/operations/category/CategoryStorageOperations";
 import { Category } from "@webiny/api-page-builder/types";
 import { queryAll } from "@webiny/db-dynamodb/utils/query";
@@ -14,6 +15,7 @@ type DbRecord<T> = T & {
 export const upgradeCategories = async (context: PbContext) => {
     const tenant: string = context.tenancy.getCurrentTenant().id;
     const localeCodes: string[] = await context.i18n.getLocales().map(locale => locale.code);
+    // @ts-ignore
     const categoryStorageOperations = context.pageBuilder.categories
         .storageOperations as CategoryStorageOperationsDdbEs;
     if (categoryStorageOperations instanceof CategoryStorageOperationsDdbEs === false) {

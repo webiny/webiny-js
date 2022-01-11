@@ -11,7 +11,7 @@ import {
     FilesListOpts
 } from "~/types";
 import checkBasePermissions from "./utils/checkBasePermissions";
-import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
+import { ContextPlugin } from "@webiny/handler";
 import { FilePlugin } from "~/plugins/definitions/FilePlugin";
 import { FilesStorageOperationsProviderPlugin } from "~/plugins/definitions/FilesStorageOperationsProviderPlugin";
 import WebinyError from "@webiny/error";
@@ -103,6 +103,7 @@ const filesContextCrudPlugin = new ContextPlugin<FileManagerContext>(async conte
 
             const file: File = {
                 ...input,
+                tags: Array.isArray(input.tags) ? input.tags : [],
                 id,
                 meta: {
                     private: false,
@@ -163,9 +164,14 @@ const filesContextCrudPlugin = new ContextPlugin<FileManagerContext>(async conte
 
             checkOwnership(original, permission, context);
 
-            const file = {
+            const file: File = {
                 ...original,
                 ...input,
+                tags: Array.isArray(input.tags)
+                    ? input.tags
+                    : Array.isArray(original.tags)
+                    ? original.tags
+                    : [],
                 id: original.id,
                 webinyVersion: context.WEBINY_VERSION
             };
@@ -277,6 +283,7 @@ const filesContextCrudPlugin = new ContextPlugin<FileManagerContext>(async conte
             const files: File[] = inputs.map(input => {
                 return {
                     ...input,
+                    tags: Array.isArray(input.tags) ? input.tags : [],
                     meta: {
                         private: false,
                         ...(input.meta || {})
@@ -334,7 +341,7 @@ const filesContextCrudPlugin = new ContextPlugin<FileManagerContext>(async conte
             const where: FileManagerFilesStorageOperationsListParamsWhere = {
                 ...initialWhere,
                 private: false,
-                locale: context.i18nContent.getLocale().code,
+                locale: context.i18nContent.getCurrentLocale().code,
                 tenant: context.tenancy.getCurrentTenant().id
             };
             /**
@@ -413,11 +420,10 @@ const filesContextCrudPlugin = new ContextPlugin<FileManagerContext>(async conte
             };
 
             try {
-                /**
-                 * There is a meta object on the second key.
-                 * TODO: use when changing GraphQL output of the tags.
-                 */
                 const [tags] = await storageOperations.tags(params);
+                if (Array.isArray(tags) === false) {
+                    return [];
+                }
                 /**
                  * just to keep it standardized, sort by the tag ASC
                  */

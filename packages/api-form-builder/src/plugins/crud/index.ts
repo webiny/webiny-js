@@ -1,5 +1,5 @@
 import { FormBuilderContext, FormBuilderStorageOperations } from "~/types";
-import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
+import { ContextPlugin } from "@webiny/handler";
 import { createSystemCrud } from "~/plugins/crud/system.crud";
 import { createSettingsCrud } from "~/plugins/crud/settings.crud";
 import { createFormsCrud } from "~/plugins/crud/forms.crud";
@@ -15,7 +15,7 @@ export default (params: Params) => {
 
     return new ContextPlugin<FormBuilderContext>(async context => {
         const getLocale = () => {
-            return context.i18nContent.getLocale();
+            return context.i18nContent.getCurrentLocale();
         };
 
         const getIdentity = () => {

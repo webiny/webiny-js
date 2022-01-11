@@ -6,12 +6,14 @@ import { createGraphQLSchema } from "./createGraphQLSchema";
 import { PluginCollection } from "@webiny/plugins/types";
 import debugPlugins from "./debugPlugins";
 import processRequestBody from "./processRequestBody";
+import { getWebinyVersionHeaders } from "@webiny/utils";
 
 const DEFAULT_HEADERS = {
     "Content-Type": "application/json",
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Headers": "*",
-    "Access-Control-Allow-Methods": "OPTIONS,POST"
+    "Access-Control-Allow-Methods": "OPTIONS,POST",
+    ...getWebinyVersionHeaders()
 };
 
 const DEFAULT_CACHE_MAX_AGE = 30758400; // 1 year

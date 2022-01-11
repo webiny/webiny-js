@@ -10,16 +10,24 @@ import {
     BeforeModelUpdateTopicParams,
     AfterModelUpdateTopicParams,
     BeforeModelDeleteTopicParams,
-    AfterModelDeleteTopicParams
+    AfterModelDeleteTopicParams,
+    BeforeModelCreateFromTopicParams,
+    AfterModelCreateFromTopicParams,
+    CmsModelCreateInput,
+    CmsModelUpdateInput,
+    CmsModelCreateFromInput
 } from "~/types";
 import * as utils from "~/utils";
 import DataLoader from "dataloader";
 import { NotFoundError } from "@webiny/handler-graphql";
 import { contentModelManagerFactory } from "./contentModel/contentModelManagerFactory";
-import { CreateContentModelModel, UpdateContentModelModel } from "./contentModel/models";
+import {
+    CreateContentModelModel,
+    CreateContentModelModelFrom,
+    UpdateContentModelModel
+} from "./contentModel/models";
 import { createFieldModels } from "./contentModel/createFieldModels";
 import { validateLayout } from "./contentModel/validateLayout";
-import { NotAuthorizedError } from "@webiny/api-security";
 import WebinyError from "@webiny/error";
 import { CmsModelPlugin } from "~/content/plugins/CmsModelPlugin";
 import { Tenant } from "@webiny/api-tenancy/types";
@@ -140,7 +148,7 @@ export const createModelsCrud = (params: Params): CmsModelContext => {
         return databaseModels.concat(pluginsModels);
     };
 
-    const listOperations = async () => {
+    const listModels = async () => {
         const permission = await checkModelPermissions("r");
         const models = await modelsList();
         return utils.filterAsync(models, async model => {
@@ -151,7 +159,7 @@ export const createModelsCrud = (params: Params): CmsModelContext => {
         });
     };
 
-    const get = async (modelId: string) => {
+    const getModel = async (modelId: string): Promise<CmsModel> => {
         const permission = await checkModelPermissions("r");
 
         const model = await modelsGet(modelId);
@@ -162,7 +170,10 @@ export const createModelsCrud = (params: Params): CmsModelContext => {
         return model;
     };
 
-    const getManager = async (modelId: string): Promise<CmsModelManager> => {
+    const getModelManager: CmsModelContext["getModelManager"] = async (
+        target
+    ): Promise<CmsModelManager> => {
+        const modelId = typeof target === "string" ? target : target.modelId;
         if (managers.has(modelId)) {
             return managers.get(modelId);
         }
@@ -174,72 +185,63 @@ export const createModelsCrud = (params: Params): CmsModelContext => {
         return await updateManager(context, model);
     };
 
-    const onBeforeCreate = createTopic<BeforeModelCreateTopicParams>();
-    const onAfterCreate = createTopic<AfterModelCreateTopicParams>();
-    const onBeforeUpdate = createTopic<BeforeModelUpdateTopicParams>();
-    const onAfterUpdate = createTopic<AfterModelUpdateTopicParams>();
-    const onBeforeDelete = createTopic<BeforeModelDeleteTopicParams>();
-    const onAfterDelete = createTopic<AfterModelDeleteTopicParams>();
+    const onBeforeModelCreate = createTopic<BeforeModelCreateTopicParams>();
+    const onAfterModelCreate = createTopic<AfterModelCreateTopicParams>();
+    const onBeforeModelCreateFrom = createTopic<BeforeModelCreateFromTopicParams>();
+    const onAfterModelCreateFrom = createTopic<AfterModelCreateFromTopicParams>();
+    const onBeforeModelUpdate = createTopic<BeforeModelUpdateTopicParams>();
+    const onAfterModelUpdate = createTopic<AfterModelUpdateTopicParams>();
+    const onBeforeModelDelete = createTopic<BeforeModelDeleteTopicParams>();
+    const onAfterModelDelete = createTopic<AfterModelDeleteTopicParams>();
     /**
      * We need to assign some default behaviors.
      */
     assignBeforeModelCreate({
-        onBeforeCreate,
+        onBeforeModelCreate,
+        onBeforeModelCreateFrom,
         plugins: context.plugins,
         storageOperations
     });
     assignAfterModelCreate({
         context,
-        onAfterCreate
+        onAfterModelCreate
     });
     assignBeforeModelUpdate({
-        onBeforeUpdate,
+        onBeforeModelUpdate,
         plugins: context.plugins,
         storageOperations
     });
     assignAfterModelUpdate({
         context,
-        onAfterUpdate
+        onAfterModelUpdate
     });
     assignBeforeModelDelete({
-        onBeforeDelete,
+        onBeforeModelDelete,
         plugins: context.plugins,
         storageOperations
     });
     assignAfterModelDelete({
         context,
-        onAfterDelete
+        onAfterModelDelete
     });
 
     return {
-        onBeforeModelCreate: onBeforeCreate,
-        onAfterModelCreate: onAfterCreate,
-        onBeforeModelUpdate: onBeforeUpdate,
-        onAfterModelUpdate: onAfterUpdate,
-        onBeforeModelDelete: onBeforeDelete,
-        onAfterModelDelete: onAfterDelete,
-        silentAuthModel: () => {
-            return {
-                list: async () => {
-                    try {
-                        return await listOperations();
-                    } catch (ex) {
-                        if (ex instanceof NotAuthorizedError) {
-                            return [];
-                        }
-                        throw ex;
-                    }
-                }
-            };
-        },
-        getModel: get,
-        listModels: listOperations,
+        onBeforeModelCreate,
+        onAfterModelCreate,
+        onBeforeModelCreateFrom,
+        onAfterModelCreateFrom,
+        onBeforeModelUpdate,
+        onAfterModelUpdate,
+        onBeforeModelDelete,
+        onAfterModelDelete,
+        getModel,
+        listModels,
         async createModel(inputData) {
             await checkModelPermissions("w");
 
             const createdData = new CreateContentModelModel().populate(inputData);
             await createdData.validate();
-            const input = await createdData.toJSON();
+            const input: CmsModelCreateInput = await createdData.toJSON();
 
             context.security.disableAuthorization();
             const group = await context.cms.getGroup(input.group);
@@ -250,7 +252,9 @@ export const createModelsCrud = (params: Params): CmsModelContext => {
 
             const identity = getIdentity();
             const model: CmsModel = {
-                ...input,
+                name: input.name,
+                description: input.description,
+                modelId: input.modelId,
                 titleFieldId: "id",
                 locale: getLocale().code,
                 tenant: getTenant().id,
@@ -263,17 +267,17 @@ export const createModelsCrud = (params: Params): CmsModelContext => {
                     displayName: identity.displayName,
                     type: identity.type
                 },
-                createdOn: new Date().toISOString(),
-                savedOn: new Date().toISOString(),
+                createdOn: new Date().toISOString() as any,
+                savedOn: new Date().toISOString() as any,
                 fields: [],
                 lockedFields: [],
                 layout: [],
                 webinyVersion: context.WEBINY_VERSION
             };
 
-            await onBeforeCreate.publish({
-                model,
-                input
+            await onBeforeModelCreate.publish({
+                input,
+                model
             });
 
             const createdModel = await storageOperations.models.create({
@@ -285,7 +289,7 @@ export const createModelsCrud = (params: Params): CmsModelContext => {
 
             await updateManager(context, model);
 
-            await onAfterCreate.publish({
+            await onAfterModelCreate.publish({
                 input,
                 model: createdModel
             });
@@ -306,7 +310,7 @@ export const createModelsCrud = (params: Params): CmsModelContext => {
                 webinyVersion: context.WEBINY_VERSION
             };
 
-            await onBeforeUpdate.publish({
+            await onBeforeModelUpdate.publish({
                 input: {} as any,
                 original,
                 model
@@ -322,7 +326,7 @@ export const createModelsCrud = (params: Params): CmsModelContext => {
 
             loaders.listModels.clearAll();
 
-            await onAfterUpdate.publish({
+            await onAfterModelUpdate.publish({
                 input: {} as any,
                 original,
                 model: resultModel
@@ -330,44 +334,128 @@ export const createModelsCrud = (params: Params): CmsModelContext => {
 
             return resultModel;
         },
+        async createModelFrom(modelId, data) {
+            await checkModelPermissions("w");
+            /**
+             * Get a model record; this will also perform ownership validation.
+             */
+            const original = await getModel(modelId);
+
+            const createdData = new CreateContentModelModelFrom().populate({
+                name: data.name,
+                modelId: data.modelId,
+                description: data.description || original.description,
+                group: data.group,
+                locale: data.locale
+            });
+
+            await createdData.validate();
+            const input: CmsModelCreateFromInput = await createdData.toJSON();
+
+            const locale = await context.i18n.getLocale(input.locale || original.locale);
+            if (!locale) {
+                throw new NotFoundError(`There is no locale "${input.locale}".`);
+            }
+            /**
+             * Use storage operations directly because we cannot get group from different locale via context methods.
+             */
+            const group = await context.cms.storageOperations.groups.get({
+                id: input.group,
+                tenant: original.tenant,
+                locale: locale.code
+            });
+            if (!group) {
+                throw new NotFoundError(`There is no group "${input.group}".`);
+            }
+
+            const identity = getIdentity();
+            const model: CmsModel = {
+                ...original,
+                locale: locale.code,
+                group: {
+                    id: group.id,
+                    name: group.name
+                },
+                name: input.name,
+                modelId: input.modelId,
+                description: input.description,
+                createdBy: {
+                    id: identity.id,
+                    displayName: identity.displayName,
+                    type: identity.type
+                },
+                createdOn: new Date().toISOString() as any,
+                savedOn: new Date().toISOString() as any,
+                lockedFields: [],
+                webinyVersion: context.WEBINY_VERSION
+            };
+
+            await onBeforeModelCreateFrom.publish({
+                input,
+                model,
+                original
+            });
+
+            const createdModel = await storageOperations.models.create({
+                input,
+                model
+            });
+
+            loaders.listModels.clearAll();
+
+            await updateManager(context, model);
+
+            await onAfterModelCreateFrom.publish({
+                input,
+                original,
+                model: createdModel
+            });
+
+            return createdModel;
+        },
         async updateModel(modelId, inputData) {
             await checkModelPermissions("w");
 
             // Get a model record; this will also perform ownership validation.
-            const original = await get(modelId);
+            const original = await getModel(modelId);
 
             const updatedData = new UpdateContentModelModel().populate(inputData);
             await updatedData.validate();
 
-            const input = await updatedData.toJSON({ onlyDirty: true });
+            const input: CmsModelUpdateInput = await updatedData.toJSON({ onlyDirty: true });
             if (Object.keys(input).length === 0) {
                 return {} as any;
             }
+            let group: CmsModel["group"] = {
+                id: original.group.id,
+                name: original.group.name
+            };
             if (input.group) {
                 context.security.disableAuthorization();
-                const group = await context.cms.getGroup(input.group);
+                const groupData = await context.cms.getGroup(input.group);
                 context.security.enableAuthorization();
-                if (!group) {
+                if (!groupData) {
                     throw new NotFoundError(`There is no group "${input.group}".`);
                 }
-                input.group = {
-                    id: group.id,
-                    name: group.name
+                group = {
+                    id: groupData.id,
+                    name: groupData.name
                 };
             }
             const modelFields = await createFieldModels(original, inputData);
-            validateLayout(input, modelFields);
             const model: CmsModel = {
                 ...original,
                 ...input,
+                group,
                 tenant: original.tenant || getTenant().id,
                 locale: original.locale || getLocale().code,
                 webinyVersion: context.WEBINY_VERSION,
                 fields: modelFields,
-                savedOn: new Date().toISOString()
+                savedOn: new Date().toISOString() as any
             };
+            validateLayout(model, modelFields);
 
-            await onBeforeUpdate.publish({
+            await onBeforeModelUpdate.publish({
                 input,
                 original,
                 model
@@ -381,10 +469,10 @@ export const createModelsCrud = (params: Params): CmsModelContext => {
 
             await updateManager(context, resultModel);
 
-            await onAfterUpdate.publish({
+            await onAfterModelUpdate.publish({
+                input,
                 original,
-                model: resultModel,
-                input
+                model: resultModel
             });
 
             return resultModel;
@@ -392,9 +480,9 @@ export const createModelsCrud = (params: Params): CmsModelContext => {
         async deleteModel(modelId) {
             await checkModelPermissions("d");
 
-            const model = await get(modelId);
+            const model = await getModel(modelId);
 
-            await onBeforeDelete.publish({
+            await onBeforeModelDelete.publish({
                 model
             });
 
@@ -413,13 +501,13 @@ export const createModelsCrud = (params: Params): CmsModelContext => {
                 );
             }
 
-            await onAfterDelete.publish({
+            await onAfterModelDelete.publish({
                 model
             });
 
             managers.delete(model.modelId);
         },
-        getModelManager: getManager,
+        getModelManager,
         getManagers: () => managers
     };
 };
