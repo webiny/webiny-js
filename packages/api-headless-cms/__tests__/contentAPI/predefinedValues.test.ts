@@ -313,4 +313,130 @@ describe("predefined values", () => {
             }
         });
     });
+
+    it("should be able to create an entry with default bug type value", async () => {
+        const contentModelGroup = await setupContentModelGroup();
+        const bugModel = await setupBugModel(contentModelGroup, {
+            titleFieldId: "bugValue"
+        });
+
+        const { createBug } = useBugManageHandler({
+            ...manageOpts
+        });
+
+        const [responseNothing] = await createBug({
+            data: {
+                name: "A hard debuggable bug - none",
+                /**
+                 * do not send bug type at all
+                 */
+                bugValue: 3,
+                bugFixed: 3
+            }
+        });
+
+        expect(responseNothing).toEqual({
+            data: {
+                createBug: {
+                    data: {
+                        id: expect.any(String),
+                        createdOn: expect.stringMatching(/^20/),
+                        savedOn: expect.stringMatching(/^20/),
+                        createdBy: {
+                            id: "12345678",
+                            displayName: "John Doe",
+                            type: "admin"
+                        },
+                        meta: {
+                            locked: false,
+                            modelId: "bug",
+                            publishedOn: null,
+                            status: "draft",
+                            title: "High bug value",
+                            version: 1
+                        },
+                        name: "A hard debuggable bug - none",
+                        bugType: "critical",
+                        bugValue: 3,
+                        bugFixed: 3
+                    },
+                    error: null
+                }
+            }
+        });
+        /**
+         * Lets update field default value to something else.
+         */
+        const fields = bugModel.fields.concat([]);
+        for (const field of fields) {
+            if (field.fieldId !== "bugType") {
+                continue;
+            }
+            field.settings.defaultValue = "when-you-have-time";
+        }
+        /**
+         * Make sure that content model is updated
+         */
+        const [updateBugModelResponse] = await updateContentModelMutation({
+            modelId: bugModel.modelId,
+            data: {
+                fields,
+                layout: bugModel.layout
+            }
+        });
+        expect(updateBugModelResponse).toEqual({
+            data: {
+                updateContentModel: {
+                    data: {
+                        ...bugModel,
+                        fields,
+                        savedOn: expect.stringMatching(/^20/)
+                    },
+                    error: null
+                }
+            }
+        });
+
+        const [responseUndefined] = await createBug({
+            data: {
+                name: "A hard debuggable bug - undefined",
+                /**
+                 * send a bug type as undefined
+                 */
+                bugType: undefined,
+                bugValue: 3,
+                bugFixed: 3
+            }
+        });
+
+        expect(responseUndefined).toEqual({
+            data: {
+                createBug: {
+                    data: {
+                        id: expect.any(String),
+                        createdOn: expect.stringMatching(/^20/),
+                        savedOn: expect.stringMatching(/^20/),
+                        createdBy: {
+                            id: "12345678",
+                            displayName: "John Doe",
+                            type: "admin"
+                        },
+                        meta: {
+                            locked: false,
+                            modelId: "bug",
+                            publishedOn: null,
+                            status: "draft",
+                            title: "High bug value",
+                            version: 1
+                        },
+                        name: "A hard debuggable bug - undefined",
+                        bugType: "when-you-have-time",
+                        bugValue: 3,
+                        bugFixed: 3
+                    },
+                    error: null
+                }
+            }
+        });
+    });
 });
