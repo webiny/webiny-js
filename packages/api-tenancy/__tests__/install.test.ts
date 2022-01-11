@@ -53,9 +53,7 @@ describe(`Test "Tenancy" install`, () => {
         try {
             await tenancy.install();
         } catch (err) {
-            // eslint-disable-next-line jest/no-try-expect
             expect(err.message).toEqual("Tenancy is already installed.");
-            // eslint-disable-next-line jest/no-try-expect
             expect(err.code).toEqual("TENANCY_INSTALL_ABORTED");
         }
     });
