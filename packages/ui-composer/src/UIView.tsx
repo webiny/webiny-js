@@ -115,7 +115,7 @@ export interface ApplyFunction<TView> {
 
 type Class<T> = new (...args: any[]) => T;
 
-export class UIViewPlugin<TView> extends Plugin {
+export class UIViewPlugin<TView extends UIView> extends Plugin {
     public static readonly type: string = "UIViewPlugin";
     private _apply: ApplyFunction<TView>;
     private _viewClass: Class<TView>;
