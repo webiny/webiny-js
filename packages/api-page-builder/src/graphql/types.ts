@@ -601,6 +601,9 @@ export interface TagItem {
 export interface PathItem {
     path: string;
     configuration?: {
+        db?: {
+            namespace: string;
+        };
         meta?: Record<string, any>;
         storage?: {
             folder?: string;
