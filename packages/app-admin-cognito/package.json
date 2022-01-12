@@ -16,6 +16,7 @@
     "@aws-amplify/auth": "^4.3.10",
     "@emotion/styled": "^10.0.27",
     "@webiny/app": "^5.21.0",
+    "@webiny/app-admin": "^5.21.0",
     "@webiny/app-cognito-authenticator": "^5.21.0",
     "@webiny/app-security": "^5.21.0",
     "@webiny/form": "^5.21.0",

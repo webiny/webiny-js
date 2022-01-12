@@ -1,6 +1,7 @@
 {
   "extends": "../../tsconfig.json",
   "include": ["src", "__tests__/**/*.ts"],
+    { "path": "../app-admin" },
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
     "outDir": "./dist",
@@ -9,6 +10,8 @@
       "~/*": ["./src/*"],
       "@webiny/app/*": ["../app/src/*"],
       "@webiny/app": ["../app/src"],
+      "@webiny/app-admin/*": ["../app-admin/src/*"],
+      "@webiny/app-admin": ["../app-admin/src"],
       "@webiny/app-cognito-authenticator/*": ["../app-cognito-authenticator/src/*"],
       "@webiny/app-cognito-authenticator": ["../app-cognito-authenticator/src"],
       "@webiny/app-security/*": ["../app-security/src/*"],

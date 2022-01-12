@@ -12,6 +12,7 @@ export const FIELDS_FIELDS = `
         values {
             label
             value
+            selected
         }
     }
     multipleValues 
