@@ -1377,6 +1377,9 @@ const models: CmsModel[] = [
                         }
                     ]
                 },
+                settings: {
+                    defaultValue: "critical"
+                },
                 renderer: {
                     name: "renderer"
                 }

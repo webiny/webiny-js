@@ -136,8 +136,9 @@ export interface CmsEditorFieldTypePlugin extends Plugin {
          */
         renderPredefinedValues?: (params: {
             form: FormRenderPropParams;
+            field: CmsEditorField;
             getBind: (index?: number) => any;
-        }) => React.ReactNode;
+        }) => React.ReactElement;
         /**
          * Object wrapper for GraphQL stuff
          */
@@ -239,6 +240,7 @@ export interface CmsEditorFieldRendererPlugin extends Plugin {
 export interface CmsEditorFieldPredefinedValuesEntry {
     label: string;
     value: string;
+    selected?: boolean;
 }
 
 export interface CmsEditorFieldPredefinedValues {
@@ -257,7 +259,10 @@ export type CmsEditorField<T = unknown> = T & {
     listValidation?: CmsEditorFieldValidator[];
     multipleValues?: boolean;
     predefinedValues?: CmsEditorFieldPredefinedValues;
-    settings?: { [key: string]: any };
+    settings?: {
+        defaultValue?: string | null | undefined;
+        [key: string]: any;
+    };
     renderer: {
         name: string;
     };
