@@ -4,9 +4,9 @@ import policies from "./policies";
 
 interface GraphqlParams {
     env: Record<string, any>;
-    primaryDynamodbTable: aws.dynamodb.Table;
-    bucket: aws.s3.Bucket;
-    cognitoUserPool: aws.cognito.UserPool;
+    primaryDynamodbTableArn: string;
+    fileManagerBucketId: string;
+    cognitoUserPoolArn: string;
 }
 
 class Graphql {
@@ -15,7 +15,7 @@ class Graphql {
     };
     role: aws.iam.Role;
 
-    constructor({ env, primaryDynamodbTable, bucket, cognitoUserPool }: GraphqlParams) {
+    constructor(params: GraphqlParams) {
         const roleName = "api-lambda-role";
         this.role = new aws.iam.Role(roleName, {
             assumeRolePolicy: {
@@ -33,9 +33,9 @@ class Graphql {
         });
 
         const policy = policies.getApiGraphqlLambdaPolicy({
-            primaryDynamodbTable,
-            bucket,
-            cognitoUserPool
+            bucketId: params.fileManagerBucketId,
+            cognitoUserPoolArn: params.cognitoUserPoolArn,
+            primaryDynamodbTableArn: params.primaryDynamodbTableArn
         });
 
         new aws.iam.RolePolicyAttachment(`${roleName}-ApiGraphqlLambdaPolicy`, {
@@ -60,7 +60,7 @@ class Graphql {
                 }),
                 environment: {
                     variables: {
-                        ...env,
+                        ...params.env,
                         AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1"
                     }
                 }

@@ -93,6 +93,19 @@ export default {
 };
 
 function getGatewayConfigFilePath(app: string, env: string) {
+    const envBase = getBaseEnv(env);
+    if (!envBase) {
+        return null;
+    }
+
+    const project = getProject();
+    const gatewayPath = path.join(project.root, app);
+
+    return path.join(gatewayPath, `config.${envBase}.json`);
+}
+
+// TODO move to one of oure packages (used in API pulumi code also)
+function getBaseEnv(env: string) {
     // matches strings like prod.v3
     const envRegex = /^(.*?)(\.(.+))$/i;
     const envMatch = envRegex.exec(env);
@@ -100,12 +113,7 @@ function getGatewayConfigFilePath(app: string, env: string) {
         return null;
     }
 
-    const envBase = envMatch[1];
-
-    const project = getProject();
-    const gatewayPath = path.join(project.root, app);
-
-    return path.join(gatewayPath, `config.${envBase}.json`);
+    return envMatch[1];
 }
 
 function readGatewayConfigFile(filePath: string): GatewayConfig {

@@ -8,9 +8,9 @@ import { createInstallationZip } from "@webiny/api-page-builder/installation";
 
 interface PageBuilderParams {
     env: Record<string, any>;
-    primaryDynamodbTable: aws.dynamodb.Table;
-    bucket: aws.s3.Bucket;
-    cognitoUserPool: aws.cognito.UserPool;
+    primaryDynamodbTableArn: string;
+    fileManagerBucketId: string;
+    cognitoUserPoolArn: string;
 }
 
 class PageBuilder {
@@ -29,24 +29,19 @@ class PageBuilder {
         };
     };
 
-    constructor({ env, bucket, primaryDynamodbTable, cognitoUserPool }: PageBuilderParams) {
+    constructor(params: PageBuilderParams) {
         const pbInstallationZipPath = path.join(path.resolve(), ".tmp", "pbInstallation.zip");
 
         createInstallationZip(pbInstallationZipPath);
 
-        new aws.s3.BucketObject(
-            "./pbInstallation.zip",
-            {
-                key: "pbInstallation.zip",
-                acl: "public-read",
-                bucket: bucket,
-                contentType: "application/octet-stream",
-                source: new pulumi.asset.FileAsset(pbInstallationZipPath)
-            },
-            {
-                parent: bucket
-            }
-        );
+        // TODO what about installation in B/G deployments?
+        new aws.s3.BucketObject("./pbInstallation.zip", {
+            key: "pbInstallation.zip",
+            acl: "public-read",
+            bucket: params.fileManagerBucketId,
+            contentType: "application/octet-stream",
+            source: new pulumi.asset.FileAsset(pbInstallationZipPath)
+        });
 
         this.role = new aws.iam.Role("pb-update-settings-lambda-role", {
             assumeRolePolicy: {
@@ -63,7 +58,7 @@ class PageBuilder {
             }
         });
 
-        const policy = policies.getPbUpdateSettingsLambdaPolicy(primaryDynamodbTable);
+        const policy = policies.getPbUpdateSettingsLambdaPolicy(params.primaryDynamodbTableArn);
 
         new aws.iam.RolePolicyAttachment(`pb-update-settings-lambda-role-policy-attachment`, {
             role: this.role,
@@ -88,7 +83,7 @@ class PageBuilder {
             }),
             environment: {
                 variables: {
-                    ...env
+                    ...params.env
                 }
             }
         });
@@ -109,8 +104,8 @@ class PageBuilder {
         });
 
         const exportPagesLambdaPolicy = policies.getPbExportPagesLambdaPolicy(
-            primaryDynamodbTable,
-            bucket
+            params.primaryDynamodbTableArn,
+            params.fileManagerBucketId
         );
 
         new aws.iam.RolePolicyAttachment(`pb-export-pages-lambda-role-policy-attachment`, {
@@ -135,8 +130,8 @@ class PageBuilder {
             }),
             environment: {
                 variables: {
-                    ...env,
-                    S3_BUCKET: bucket.id
+                    ...params.env,
+                    S3_BUCKET: params.fileManagerBucketId
                 }
             }
         });
@@ -153,8 +148,8 @@ class PageBuilder {
             }),
             environment: {
                 variables: {
-                    ...env,
-                    S3_BUCKET: bucket.id,
+                    ...params.env,
+                    S3_BUCKET: params.fileManagerBucketId,
                     EXPORT_PAGE_COMBINE_HANDLER: exportPagesCombineLambda.arn
                 }
             }
@@ -176,9 +171,9 @@ class PageBuilder {
         });
 
         const importPageLambdaPolicy = policies.getImportPagesLambdaPolicy({
-            primaryDynamodbTable,
-            cognitoUserPool,
-            bucket
+            bucketId: params.fileManagerBucketId,
+            cognitoUserPoolArn: params.cognitoUserPoolArn,
+            primaryDynamodbTableArn: params.primaryDynamodbTableArn
         });
 
         new aws.iam.RolePolicyAttachment(`pb-import-page-lambda-role-policy-attachment`, {
@@ -203,8 +198,8 @@ class PageBuilder {
             }),
             environment: {
                 variables: {
-                    ...env,
-                    S3_BUCKET: bucket.id
+                    ...params.env,
+                    S3_BUCKET: params.fileManagerBucketId
                 }
             }
         });
@@ -221,8 +216,8 @@ class PageBuilder {
             }),
             environment: {
                 variables: {
-                    ...env,
-                    S3_BUCKET: bucket.id,
+                    ...params.env,
+                    S3_BUCKET: params.fileManagerBucketId,
                     IMPORT_PAGE_QUEUE_PROCESS_HANDLER: importPagesQueueProcess.arn
                 }
             }

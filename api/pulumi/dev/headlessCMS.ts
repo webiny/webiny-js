@@ -4,7 +4,7 @@ import policies from "./policies";
 
 interface HeadlessCMSParams {
     env: Record<string, any>;
-    primaryDynamodbTable: aws.dynamodb.Table;
+    primaryDynamodbTableArn: string;
 }
 
 class HeadlessCMS {
@@ -13,7 +13,7 @@ class HeadlessCMS {
     };
     role: aws.iam.Role;
 
-    constructor({ env, primaryDynamodbTable }: HeadlessCMSParams) {
+    constructor(params: HeadlessCMSParams) {
         const roleName = "headless-cms-lambda-role";
         this.role = new aws.iam.Role(roleName, {
             assumeRolePolicy: {
@@ -31,7 +31,7 @@ class HeadlessCMS {
         });
 
         const policy = policies.getHeadlessCmsLambdaPolicy({
-            primaryDynamodbTable
+            primaryDynamodbTableArn: params.primaryDynamodbTableArn
         });
 
         new aws.iam.RolePolicyAttachment(`${roleName}-HeadlessCmsLambdaPolicy`, {
@@ -56,7 +56,7 @@ class HeadlessCMS {
                 }),
                 environment: {
                     variables: {
-                        ...env,
+                        ...params.env,
                         AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1"
                     }
                 }

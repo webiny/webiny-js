@@ -1,10 +1,10 @@
 {
-    "dev.1": {
-        "domain": "d2pu40z1vf2o7b.cloudfront.net",
+    "dev.v1": {
+        "domain": "d1cu6d7sxv3mte.cloudfront.net",
         "weight": 50
     },
-    "dev.2": {
-        "domain": "d24iwtp0tvqs1n.cloudfront.net",
+    "dev.v2": {
+        "domain": "d2nl99bfmg4qjb.cloudfront.net",
         "weight": 50
     }
 }

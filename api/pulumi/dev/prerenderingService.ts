@@ -7,8 +7,8 @@ import { getLayerArn } from "@webiny/aws-layers";
 
 interface PreRenderingServiceParams {
     env: Record<string, any>;
-    primaryDynamodbTable: aws.dynamodb.Table;
-    bucket: aws.s3.Bucket;
+    primaryDynamodbTableArn: string;
+    fileManagerBucketId: string;
 }
 
 class PageBuilder {
@@ -22,7 +22,7 @@ class PageBuilder {
         };
     };
 
-    constructor({ env, primaryDynamodbTable, bucket }: PreRenderingServiceParams) {
+    constructor(params: PreRenderingServiceParams) {
         const roleName = "pre-rendering-service-lambda-role";
         this.role = new aws.iam.Role(roleName, {
             assumeRolePolicy: {
@@ -39,7 +39,10 @@ class PageBuilder {
             }
         });
 
-        const policy = policies.getPreRenderingServiceLambdaPolicy(primaryDynamodbTable, bucket);
+        const policy = policies.getPreRenderingServiceLambdaPolicy(
+            params.primaryDynamodbTableArn,
+            params.fileManagerBucketId
+        );
 
         new aws.iam.RolePolicyAttachment(`${roleName}-PreRenderingServiceLambdaPolicy`, {
             role: this.role,
@@ -60,7 +63,7 @@ class PageBuilder {
             layers: [getLayerArn("shelf-io-chrome-aws-lambda-layer")],
             environment: {
                 variables: {
-                    ...env
+                    ...params.env
                 }
             },
             description: "Renders pages and stores output in an S3 bucket of choice.",
@@ -77,7 +80,7 @@ class PageBuilder {
             memorySize: 512,
             environment: {
                 variables: {
-                    ...env
+                    ...params.env
                 }
             },
             description: "Flushes previously render pages.",
@@ -94,7 +97,7 @@ class PageBuilder {
             memorySize: 512,
             environment: {
                 variables: {
-                    ...env
+                    ...params.env
                 }
             },
             description: "Adds a prerendering task to the prerendering queue.",
@@ -111,7 +114,7 @@ class PageBuilder {
             memorySize: 1024,
             environment: {
                 variables: {
-                    ...env,
+                    ...params.env,
                     PRERENDERING_RENDER_HANDLER: render.arn,
                     PRERENDERING_FLUSH_HANDLER: flush.arn
                 }

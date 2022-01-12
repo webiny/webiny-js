@@ -1,0 +1,4 @@
+name: storage
+runtime: nodejs
+description: Represents cloud infrastructure for persistent storages
+main: pulumi/

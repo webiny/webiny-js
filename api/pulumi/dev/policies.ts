@@ -11,32 +11,9 @@ class Policies {
         this.awsRegion = aws.config.requireRegion();
     }
 
-    getFileManagerLambdaPolicy(bucket: aws.s3.Bucket): aws.iam.Policy {
-        return new aws.iam.Policy("FileManagerLambdaPolicy", {
-            description: "This policy enables access to Lambda and S3",
-            policy: {
-                Version: "2012-10-17",
-                Statement: [
-                    {
-                        Sid: "PermissionForLambda",
-                        Effect: "Allow",
-                        Action: "lambda:InvokeFunction",
-                        Resource: "*"
-                    },
-                    {
-                        Sid: "PermissionForS3",
-                        Effect: "Allow",
-                        Action: "s3:*",
-                        Resource: pulumi.interpolate`arn:aws:s3:::${bucket.id}/*`
-                    }
-                ]
-            }
-        });
-    }
-
     getPreRenderingServiceLambdaPolicy(
-        primaryDynamodbTable: aws.dynamodb.Table,
-        bucket: aws.s3.Bucket
+        primaryDynamodbTableArn: string,
+        bucketId: string
     ): aws.iam.Policy {
         return new aws.iam.Policy("PreRenderingServicePolicy", {
             description: "This policy enables access to Lambda, S3, Cloudfront and Dynamodb",
@@ -57,8 +34,8 @@ class Policies {
                             "dynamodb:UpdateItem"
                         ],
                         Resource: [
-                            pulumi.interpolate`${primaryDynamodbTable.arn}`,
-                            pulumi.interpolate`${primaryDynamodbTable.arn}/*`
+                            pulumi.interpolate`${primaryDynamodbTableArn}`,
+                            pulumi.interpolate`${primaryDynamodbTableArn}/*`
                         ]
                     },
                     {
@@ -78,7 +55,7 @@ class Policies {
                             "s3:PutObjectAcl"
                         ],
                         Resource: [
-                            pulumi.interpolate`arn:aws:s3:::${bucket.id}/*`,
+                            pulumi.interpolate`arn:aws:s3:::${bucketId}/*`,
                             /**
                              * We're using the hard-coded value for "delivery" S3 bucket because;
                              * It is created during deployment of the `apps/website` stack which is after the api stack,
@@ -99,8 +76,8 @@ class Policies {
     }
 
     getPbExportPagesLambdaPolicy(
-        primaryDynamodbTable: aws.dynamodb.Table,
-        bucket: aws.s3.Bucket
+        primaryDynamodbTableArn: string,
+        bucketId: string
     ): aws.iam.Policy {
         return new aws.iam.Policy("PbExportPageTaskLambdaPolicy", {
             description: "This policy enables access to Dynamodb",
@@ -120,8 +97,8 @@ class Policies {
                             "dynamodb:UpdateItem"
                         ],
                         Resource: [
-                            pulumi.interpolate`${primaryDynamodbTable.arn}`,
-                            pulumi.interpolate`${primaryDynamodbTable.arn}/*`
+                            pulumi.interpolate`${primaryDynamodbTableArn}`,
+                            pulumi.interpolate`${primaryDynamodbTableArn}/*`
                         ]
                     },
                     {
@@ -136,9 +113,9 @@ class Policies {
                             "s3:ListBucket"
                         ],
                         Resource: [
-                            pulumi.interpolate`arn:aws:s3:::${bucket.id}/*`,
+                            pulumi.interpolate`arn:aws:s3:::${bucketId}/*`,
                             // We need to explicitly add bucket ARN to "Resource" list for "s3:ListBucket" action.
-                            pulumi.interpolate`arn:aws:s3:::${bucket.id}`
+                            pulumi.interpolate`arn:aws:s3:::${bucketId}`
                         ]
                     },
                     {
@@ -152,14 +129,10 @@ class Policies {
         });
     }
 
-    getImportPagesLambdaPolicy({
-        primaryDynamodbTable,
-        bucket,
-        cognitoUserPool
-    }: {
-        primaryDynamodbTable: aws.dynamodb.Table;
-        bucket: aws.s3.Bucket;
-        cognitoUserPool: aws.cognito.UserPool;
+    getImportPagesLambdaPolicy(params: {
+        primaryDynamodbTableArn: string;
+        bucketId: string;
+        cognitoUserPoolArn: string;
     }): aws.iam.Policy {
         return new aws.iam.Policy("ImportPageLambdaPolicy", {
             description: "This policy enables access Dynamodb, S3, Lambda and Cognito IDP",
@@ -179,8 +152,8 @@ class Policies {
                             "dynamodb:UpdateItem"
                         ],
                         Resource: [
-                            pulumi.interpolate`${primaryDynamodbTable.arn}`,
-                            pulumi.interpolate`${primaryDynamodbTable.arn}/*`
+                            pulumi.interpolate`${params.primaryDynamodbTableArn}`,
+                            pulumi.interpolate`${params.primaryDynamodbTableArn}/*`
                         ]
                     },
                     {
@@ -195,9 +168,9 @@ class Policies {
                             "s3:ListBucket"
                         ],
                         Resource: [
-                            pulumi.interpolate`arn:aws:s3:::${bucket.id}/*`,
+                            pulumi.interpolate`arn:aws:s3:::${params.bucketId}/*`,
                             // We need to explicitly add bucket ARN to "Resource" list for "s3:ListBucket" action.
-                            pulumi.interpolate`arn:aws:s3:::${bucket.id}`
+                            pulumi.interpolate`arn:aws:s3:::${params.bucketId}`
                         ]
                     },
                     {
@@ -210,14 +183,14 @@ class Policies {
                         Sid: "PermissionForCognitoIdp",
                         Effect: "Allow",
                         Action: "cognito-idp:*",
-                        Resource: pulumi.interpolate`${cognitoUserPool.arn}`
+                        Resource: pulumi.interpolate`${params.cognitoUserPoolArn}`
                     }
                 ]
             }
         });
     }
 
-    getPbUpdateSettingsLambdaPolicy(primaryDynamodbTable: aws.dynamodb.Table): aws.iam.Policy {
+    getPbUpdateSettingsLambdaPolicy(primaryDynamodbTableArn: string): aws.iam.Policy {
         return new aws.iam.Policy("PbUpdateSettingsLambdaPolicy", {
             description: "This policy enables access to Dynamodb",
             policy: {
@@ -236,8 +209,8 @@ class Policies {
                             "dynamodb:UpdateItem"
                         ],
                         Resource: [
-                            pulumi.interpolate`${primaryDynamodbTable.arn}`,
-                            pulumi.interpolate`${primaryDynamodbTable.arn}/*`
+                            pulumi.interpolate`${primaryDynamodbTableArn}`,
+                            pulumi.interpolate`${primaryDynamodbTableArn}/*`
                         ]
                     }
                 ]
@@ -245,14 +218,10 @@ class Policies {
         });
     }
 
-    getApiGraphqlLambdaPolicy({
-        primaryDynamodbTable,
-        bucket,
-        cognitoUserPool
-    }: {
-        primaryDynamodbTable: aws.dynamodb.Table;
-        bucket: aws.s3.Bucket;
-        cognitoUserPool: aws.cognito.UserPool;
+    getApiGraphqlLambdaPolicy(params: {
+        primaryDynamodbTableArn: string;
+        bucketId: string;
+        cognitoUserPoolArn: string;
     }): aws.iam.Policy {
         return new aws.iam.Policy("ApiGraphqlLambdaPolicy", {
             description: "This policy enables access to Dynamodb, S3, Lambda and Cognito IDP",
@@ -315,8 +284,8 @@ class Policies {
                             "dynamodb:UpdateTimeToLive"
                         ],
                         Resource: [
-                            pulumi.interpolate`${primaryDynamodbTable.arn}`,
-                            pulumi.interpolate`${primaryDynamodbTable.arn}/*`
+                            pulumi.interpolate`${params.primaryDynamodbTableArn}`,
+                            pulumi.interpolate`${params.primaryDynamodbTableArn}/*`
                         ]
                     },
                     {
@@ -329,7 +298,7 @@ class Policies {
                             "s3:PutObject",
                             "s3:GetObject"
                         ],
-                        Resource: pulumi.interpolate`arn:aws:s3:::${bucket.id}/*`
+                        Resource: pulumi.interpolate`arn:aws:s3:::${params.bucketId}/*`
                     },
                     {
                         Sid: "PermissionForLambda",
@@ -341,18 +310,14 @@ class Policies {
                         Sid: "PermissionForCognitoIdp",
                         Effect: "Allow",
                         Action: "cognito-idp:*",
-                        Resource: pulumi.interpolate`${cognitoUserPool.arn}`
+                        Resource: pulumi.interpolate`${params.cognitoUserPoolArn}`
                     }
                 ]
             }
         });
     }
 
-    getHeadlessCmsLambdaPolicy({
-        primaryDynamodbTable
-    }: {
-        primaryDynamodbTable: aws.dynamodb.Table;
-    }): aws.iam.Policy {
+    getHeadlessCmsLambdaPolicy(params: { primaryDynamodbTableArn: string }): aws.iam.Policy {
         return new aws.iam.Policy("HeadlessCmsLambdaPolicy", {
             description: "This policy enables access to Dynamodb streams",
             policy: {
@@ -414,8 +379,8 @@ class Policies {
                             "dynamodb:UpdateTimeToLive"
                         ],
                         Resource: [
-                            pulumi.interpolate`${primaryDynamodbTable.arn}`,
-                            pulumi.interpolate`${primaryDynamodbTable.arn}/*`
+                            pulumi.interpolate`${params.primaryDynamodbTableArn}`,
+                            pulumi.interpolate`${params.primaryDynamodbTableArn}/*`
                         ]
                     }
                 ]

@@ -1,5 +1,9 @@
 import { tagResources } from "@webiny/cli-plugin-deploy-pulumi/utils";
 
+import { DynamoDB } from "./dynamoDb";
+import { Cognito } from "./cognito";
+import { FileManagerStorage } from "./fileManagerStorage";
+
 // By default, we only deploy "prod" stack when the WEBINY_ENV environment variable is equal to "prod".
 // But do note that it's recommended the same application code and cloud infrastructure resources are
 // deployed into staging environments too (these should be as equal to the prod environment as possible).
@@ -15,30 +19,29 @@ export = async () => {
         WbyEnvironment: process.env.WEBINY_ENV as string
     });
 
-    const env = process.env.WEBINY_ENV as string;
-    const envBase = getBaseEnv(env) ?? env;
+    const environment = process.env.WEBINY_ENV as string;
 
-    if (PROD_STACK_ENVIRONMENTS.includes(envBase)) {
-        // Import "prod" resources config and initialize resources.
-        return await import("./prod").then(module => module.default());
-    }
+    const production = PROD_STACK_ENVIRONMENTS.includes(environment);
 
-    // Import "dev" resources config and initialize resources.
-    return await import("./dev").then(module =>
-        module.default({
-            envBase
-        })
-    );
+    const db = new DynamoDB({
+        protected: production
+    });
+
+    const cognito = new Cognito({
+        protected: production
+    });
+
+    const fileManagerStorage = new FileManagerStorage({
+        protected: production
+    });
+
+    return {
+        fileManagerBucketId: fileManagerStorage.bucket.id,
+        primaryDynamodbTableArn: db.table.arn,
+        primaryDynamodbTableName: db.table.name,
+        cognitoUserPoolId: cognito.userPool.id,
+        cognitoUserPoolArn: cognito.userPool.arn,
+        cognitoUserPoolPasswordPolicy: cognito.userPool.passwordPolicy,
+        cognitoAppClientId: cognito.userPoolClient.id
+    };
 };
-
-// TODO move to one of oure packages (used in admin deploy plugin also)
-function getBaseEnv(env: string) {
-    // matches strings like prod.v3
-    const envRegex = /^(.*?)(\.(.+))$/i;
-    const envMatch = envRegex.exec(env);
-    if (!envMatch) {
-        return null;
-    }
-
-    return envMatch[1];
-}

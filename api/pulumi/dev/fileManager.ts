@@ -1,12 +1,23 @@
 import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
-import policies from "./policies";
+
+import { Vpc } from "./vpc";
 
 // @ts-ignore
 import { getLayerArn } from "@webiny/aws-layers";
 
-class FileManager {
-    bucket: aws.s3.Bucket;
+export interface FileManagerOptions {
+    /**
+     * Don't allow to delete the resource.
+     * Useful for production environments to avoid losing data.
+     */
+    protected: boolean;
+    vpc?: Vpc;
+    /** Id of file manager S3 bucket. */
+    bucketId: string;
+}
+
+export class FileManager {
     manageS3LambdaPermission?: aws.lambda.Permission;
     bucketNotification?: aws.s3.BucketNotification;
     role: aws.iam.Role;
@@ -15,21 +26,11 @@ class FileManager {
         transform: aws.lambda.Function;
         download: aws.lambda.Function;
     };
-    constructor() {
-        this.bucket = new aws.s3.Bucket("fm-bucket", {
-            acl: "private",
-            forceDestroy: true,
-            corsRules: [
-                {
-                    allowedHeaders: ["*"],
-                    allowedMethods: ["POST", "GET"],
-                    allowedOrigins: ["*"],
-                    maxAgeSeconds: 3000
-                }
-            ]
-        });
 
+    constructor(options: FileManagerOptions) {
         const roleName = "fm-lambda-role";
+        const bucketArn = `arn:aws:s3:::${options.bucketId}`;
+
         this.role = new aws.iam.Role(roleName, {
             assumeRolePolicy: {
                 Version: "2012-10-17",
@@ -45,17 +46,43 @@ class FileManager {
             }
         });
 
-        const policy = policies.getFileManagerLambdaPolicy(this.bucket);
+        const policy = new aws.iam.Policy("FileManagerLambdaPolicy", {
+            description: "This policy enables access to Lambda and S3",
+            policy: {
+                Version: "2012-10-17",
+                Statement: [
+                    {
+                        Sid: "PermissionForLambda",
+                        Effect: "Allow",
+                        Action: "lambda:InvokeFunction",
+                        Resource: "*"
+                    },
+                    {
+                        Sid: "PermissionForS3",
+                        Effect: "Allow",
+                        Action: "s3:*",
+                        Resource: `${bucketArn}/*`
+                    }
+                ]
+            }
+        });
 
         new aws.iam.RolePolicyAttachment(`${roleName}-FileManagerLambdaPolicy`, {
             role: this.role,
-            policyArn: policy.arn.apply(arn => arn)
+            policyArn: policy.arn
         });
 
-        new aws.iam.RolePolicyAttachment(`${roleName}-AWSLambdaBasicExecutionRole`, {
-            role: this.role,
-            policyArn: aws.iam.ManagedPolicy.AWSLambdaBasicExecutionRole
-        });
+        if (options.vpc) {
+            new aws.iam.RolePolicyAttachment(`${roleName}-AWSLambdaVPCAccessExecutionRole`, {
+                role: this.role,
+                policyArn: aws.iam.ManagedPolicy.AWSLambdaVPCAccessExecutionRole
+            });
+        } else {
+            new aws.iam.RolePolicyAttachment(`${roleName}-AWSLambdaBasicExecutionRole`, {
+                role: this.role,
+                policyArn: aws.iam.ManagedPolicy.AWSLambdaBasicExecutionRole
+            });
+        }
 
         const transform = new aws.lambda.Function("fm-image-transformer", {
             handler: "handler.handler",
@@ -69,8 +96,9 @@ class FileManager {
             }),
             layers: [getLayerArn("sharp")],
             environment: {
-                variables: { S3_BUCKET: this.bucket.id }
-            }
+                variables: { S3_BUCKET: options.bucketId }
+            },
+            vpcConfig: options.vpc?.getFunctionVpcConfig()
         });
 
         const manage = new aws.lambda.Function("fm-manage", {
@@ -84,8 +112,9 @@ class FileManager {
                 ".": new pulumi.asset.FileArchive("../code/fileManager/manage/build")
             }),
             environment: {
-                variables: { S3_BUCKET: this.bucket.id }
-            }
+                variables: { S3_BUCKET: options.bucketId }
+            },
+            vpcConfig: options.vpc?.getFunctionVpcConfig()
         });
 
         const download = new aws.lambda.Function("fm-download", {
@@ -100,10 +129,11 @@ class FileManager {
             }),
             environment: {
                 variables: {
-                    S3_BUCKET: this.bucket.id,
+                    S3_BUCKET: options.bucketId,
                     IMAGE_TRANSFORMER_FUNCTION: transform.arn
                 }
-            }
+            },
+            vpcConfig: options.vpc?.getFunctionVpcConfig()
         });
 
         this.functions = {
@@ -118,17 +148,17 @@ class FileManager {
                 action: "lambda:InvokeFunction",
                 function: this.functions.manage.arn,
                 principal: "s3.amazonaws.com",
-                sourceArn: this.bucket.arn
+                sourceArn: bucketArn
             },
             {
-                dependsOn: [this.bucket, this.functions.manage]
+                dependsOn: [this.functions.manage]
             }
         );
 
         this.bucketNotification = new aws.s3.BucketNotification(
             "bucketNotification",
             {
-                bucket: this.bucket.id,
+                bucket: options.bucketId,
                 lambdaFunctions: [
                     {
                         lambdaFunctionArn: this.functions.manage.arn,
@@ -137,10 +167,8 @@ class FileManager {
                 ]
             },
             {
-                dependsOn: [this.bucket, this.functions.manage, this.manageS3LambdaPermission]
+                dependsOn: [this.functions.manage, this.manageS3LambdaPermission]
             }
         );
     }
 }
-
-export default FileManager;
