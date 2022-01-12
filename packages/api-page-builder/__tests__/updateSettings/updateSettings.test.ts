@@ -55,7 +55,9 @@ describe("Update Settings Handler Test", () => {
                 pages: {
                     home: null,
                     notFound: null
-                }
+                },
+                // TODO [REMOVE]:  this has to be here until we make PB settings properly extendable
+                theme: null
             },
             error: null
         });
