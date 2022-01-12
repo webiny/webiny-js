@@ -5540,17 +5540,18 @@ __metadata:
   linkType: hard
 
 "@okta/okta-react@npm:^6.1.0":
-  version: 6.4.0
-  resolution: "@okta/okta-react@npm:6.4.0"
+  version: 6.4.1
+  resolution: "@okta/okta-react@npm:6.4.1"
   dependencies:
     "@babel/runtime": ^7.11.2
+    compare-versions: ^4.1.2
   peerDependencies:
     "@okta/okta-auth-js": ^5.3.1
     "@types/react-router-dom": ^5.1.6
     react: ">=16.8.0"
     react-dom: ">=16.8.0"
     react-router-dom: ">=5.1.0"
-  checksum: 9a9156c3689a1b67aacb248a1e200e17b89917de3cab6f4e3a155f8d276bef6ca632e2c1c81f798df61ae25c5aaa79fdb516aa272206335406aef12a3120a10e
+  checksum: 9fbdc47e62938e9e6be765152f063c140e089bf65de14b5a1c7f23bd0ec1aa5484dbc38aa2caa4ff2628accb1f306a57c2ee9eb6a958817cf292f377a154b30f
   languageName: node
   linkType: hard
 
@@ -7550,11 +7551,11 @@ __metadata:
   linkType: hard
 
 "@types/jsonwebtoken@npm:^8.3.3, @types/jsonwebtoken@npm:^8.5.1":
-  version: 8.5.6
-  resolution: "@types/jsonwebtoken@npm:8.5.6"
+  version: 8.5.7
+  resolution: "@types/jsonwebtoken@npm:8.5.7"
   dependencies:
     "@types/node": "*"
-  checksum: c1c0e40cb1366d3b5f72c2c283abee8e5aedc5656d8857752ed4cb318eb8e117dad87f35431f73cdc03e7b02d169d19b3a1e58422ef94776c17cfd003ee05a33
+  checksum: 3be419834af4d4f90cd34535a0ccf4a075239641ff9f49af220e67222f963a343427de82f7e78fa8891ec48d5fde5171cebc4071bbc970ce06f04ec9c7f0771a
   languageName: node
   linkType: hard
 
@@ -10514,12 +10515,12 @@ __metadata:
     apollo-utilities: ^1.3.4
     babel-plugin-emotion: ^9.2.8
     babel-plugin-named-asset-import: ^1.0.0-next.3e165448
-    graphql: ^14.7.0
-    graphql-tag: ^2.10.1
+    graphql: ^15.7.2
+    graphql-tag: ^2.12.6
     lodash: ^4.17.11
     prop-types: ^15.7.2
-    react: ^16.14.0
-    react-dom: ^16.14.0
+    react: ^17.0.2
+    react-dom: ^17.0.2
     rimraf: ^3.0.2
     ttypescript: ^1.5.12
     typescript: ^4.1.3
@@ -13298,8 +13299,8 @@ __metadata:
   linkType: hard
 
 "aws-sdk@npm:^2.0.0, aws-sdk@npm:^2.971.0":
-  version: 2.1055.0
-  resolution: "aws-sdk@npm:2.1055.0"
+  version: 2.1056.0
+  resolution: "aws-sdk@npm:2.1056.0"
   dependencies:
     buffer: 4.9.2
     events: 1.1.1
@@ -13310,7 +13311,7 @@ __metadata:
     url: 0.10.3
     uuid: 3.3.2
     xml2js: 0.4.19
-  checksum: a54b0435352aad9b704955262e10034948f46396048adcaffd740fa146ad71aedc8b34f6fd0b77c80f7903953e67ba4752ad6c90dfb755fbf85e138158eb818f
+  checksum: 5809a6eb4116e25621e15aa61094797d87fbe8bbcaf2ec7ac45659a1d6345556ff0cfc50aa3c1a8821cbb6506e57f3e82f2fc90425b2dc705aca9a2c22bfcb48
   languageName: node
   linkType: hard
 
@@ -15839,6 +15840,13 @@ __metadata:
   version: 3.6.0
   resolution: "compare-versions@npm:3.6.0"
   checksum: 7492a50cdaa2c27f5254eee7c4b38856e1c164991bab3d98d7fd067fe4b570d47123ecb92523b78338be86aa221668fd3868bfe8caa5587dc3ebbe1a03d52b5d
+  languageName: node
+  linkType: hard
+
+"compare-versions@npm:^4.1.2":
+  version: 4.1.3
+  resolution: "compare-versions@npm:4.1.3"
+  checksum: 54460756ab2d62f8a9d672db249b248fec7ca41c3e8ed242925e2f2257793ad3e83cecb2cdfd60b46a3aabc962a3a4cbf37a4b928c8f30517822d2bde937a3d1
   languageName: node
   linkType: hard
 
@@ -18379,9 +18387,9 @@ __metadata:
   linkType: hard
 
 "electron-to-chromium@npm:^1.3.247, electron-to-chromium@npm:^1.4.17":
-  version: 1.4.43
-  resolution: "electron-to-chromium@npm:1.4.43"
-  checksum: c096a42ec6af0c22736f7151d1386e6597b125ad9a6379a747e67d33d03b3b2923336dbe17edad0037299e7aa1daa0f3feb726d797375e652b6918c1a467b39a
+  version: 1.4.44
+  resolution: "electron-to-chromium@npm:1.4.44"
+  checksum: 76b0c723cf4fa3f542e4e34add8c559d5c3668192d1f359d24b45546b34791dff716e9fd905fbcddd6875cb849b72106c6f5edd682bba2f78c1c2eb6bccd647d
   languageName: node
   linkType: hard
 
@@ -21708,7 +21716,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphql-tag@npm:2.12.6, graphql-tag@npm:^2.10.1, graphql-tag@npm:^2.12.6":
+"graphql-tag@npm:2.12.6, graphql-tag@npm:^2.12.6":
   version: 2.12.6
   resolution: "graphql-tag@npm:2.12.6"
   dependencies:
@@ -29643,14 +29651,14 @@ __metadata:
   linkType: hard
 
 "postcss-calc@npm:^8.2.0":
-  version: 8.2.1
-  resolution: "postcss-calc@npm:8.2.1"
+  version: 8.2.2
+  resolution: "postcss-calc@npm:8.2.2"
   dependencies:
     postcss-selector-parser: ^6.0.2
     postcss-value-parser: ^4.0.2
   peerDependencies:
     postcss: ^8.2.2
-  checksum: 0eb0d7d78d26d2b4a141e78b1dcb6633203b0bb65cd15e3b2bc5340a0353b73656e7ace796bd3dc078f7956186c0404b8cacddbc4e3f1cf458d22dab62a0b964
+  checksum: aa60cbb01ae48ae8b708bc8c056e8ad6ddcc9f56af88c8e898c0b5d5d7c24f3448ec61698628d6c2e70893a657e99917ad77f18214c3d3bcab32477e855bccb4
   languageName: node
   linkType: hard
 
