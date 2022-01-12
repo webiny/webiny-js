@@ -1,10 +1,10 @@
 import React from "react";
 import styled from "@emotion/styled";
-import {Cell, Grid} from "@webiny/ui/Grid";
-import {Bind} from "@webiny/form";
-import {CheckboxGroup, Checkbox} from "@webiny/ui/Checkbox";
-import {validation} from "@webiny/validation";
-import {useThemeManager} from "~/hooks/useThemeManager";
+import { Cell, Grid } from "@webiny/ui/Grid";
+import { Bind } from "@webiny/form";
+import { CheckboxGroup, Checkbox } from "@webiny/ui/Checkbox";
+import { validation } from "@webiny/validation";
+import { useThemeManager } from "~/hooks/useThemeManager";
 
 const WideOptions = styled.div(`
   .mdc-form-field {
@@ -13,7 +13,7 @@ const WideOptions = styled.div(`
 `);
 
 export const ThemeCheckboxGroup = () => {
-    const {themes} = useThemeManager();
+    const { themes } = useThemeManager();
 
     return (
         <Grid>
@@ -27,9 +27,9 @@ export const ThemeCheckboxGroup = () => {
                         label="Themes"
                         description={"Choose themes that will be enabled for this tenant."}
                     >
-                        {({onChange, getValue}) => (
+                        {({ onChange, getValue }) => (
                             <WideOptions>
-                                {themes.map(({label, name}) => (
+                                {themes.map(({ label, name }) => (
                                     <Checkbox
                                         key={name}
                                         label={label}

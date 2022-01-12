@@ -1,5 +1,5 @@
-import {Entity, Table} from "dynamodb-toolbox";
-import {Attributes} from "~/types";
+import { Entity, Table } from "dynamodb-toolbox";
+import { Attributes } from "~/types";
 
 export interface Params {
     table: Table;
@@ -8,7 +8,7 @@ export interface Params {
 }
 
 export const createSettingsEntity = (params: Params): Entity<any> => {
-    const {entityName, table, attributes} = params;
+    const { entityName, table, attributes } = params;
     return new Entity({
         name: entityName,
         table,

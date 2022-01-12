@@ -12,8 +12,7 @@
   "dependencies": {
     "@webiny/api-security": "^5.21.0",
     "@webiny/api-tenancy": "^5.21.0",
-    "@webiny/handler-graphql": "^5.21.0",
-    "mdbid": "^1.0.0"
+    "@webiny/handler-graphql": "^5.21.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",
