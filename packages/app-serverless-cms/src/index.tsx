@@ -11,6 +11,8 @@ export {
     AddMenu,
     AddRoute,
     AddUserMenuItem,
+    Dashboard,
+    DashboardRenderer,
     Layout,
     LayoutRenderer,
     LoginScreen,
