@@ -3,8 +3,8 @@ import styled from "@emotion/styled";
 import { Cell, Grid } from "@webiny/ui/Grid";
 import { Bind } from "@webiny/form";
 import { CheckboxGroup, Checkbox } from "@webiny/ui/Checkbox";
-import { useThemeManager } from "~/hooks/useThemeManager";
 import { validation } from "@webiny/validation";
+import { useThemeManager } from "~/hooks/useThemeManager";
 
 const WideOptions = styled.div(`
   .mdc-form-field {

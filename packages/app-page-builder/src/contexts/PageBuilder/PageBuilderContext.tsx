@@ -1,6 +1,6 @@
 import * as React from "react";
 import { plugins } from "@webiny/plugins";
-import { PbThemePlugin, PbTheme, DisplayMode } from "../../types";
+import { PbThemePlugin, PbTheme, DisplayMode } from "~/types";
 
 export const PageBuilderContext = React.createContext(null);
 
@@ -33,21 +33,13 @@ export const PageBuilderProvider = ({ children }: PageBuilderProviderProps) => {
     const [displayMode, setDisplayMode] = React.useState(DisplayMode.DESKTOP);
     const [revisionType, setRevisionType] = React.useState("published");
 
-    const value: PageBuilderContextValue = React.useMemo(() => {
-        const theme = Object.assign(
-            {},
-            ...plugins.byType<PbThemePlugin>("pb-theme").map(pl => pl.theme)
-        );
-
-        return {
-            theme
-        };
-    }, []);
-
     return (
         <PageBuilderContext.Provider
             value={{
-                ...value,
+                get theme() {
+                    const [themePlugin] = plugins.byType<PbThemePlugin>("pb-theme");
+                    return themePlugin ? themePlugin.theme : null;
+                },
                 responsiveDisplayMode: {
                     displayMode,
                     setDisplayMode

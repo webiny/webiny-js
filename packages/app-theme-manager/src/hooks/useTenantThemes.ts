@@ -1,4 +1,4 @@
-import { useCurrentTenant } from "./useCurrentTenant";
+import { useCurrentTenant } from "@webiny/app-tenant-manager";
 import { useThemeManager } from "./useThemeManager";
 
 export function useTenantThemes() {

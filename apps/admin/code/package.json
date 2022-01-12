@@ -50,6 +50,8 @@
   "adio": {
     "ignore": {
       "dependencies": [
+        "theme",
+        "theme-1",
         "@webiny/cli"
       ],
       "src": [
