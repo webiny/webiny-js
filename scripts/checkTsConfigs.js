@@ -96,12 +96,7 @@ const TSCONFIG = {
                         });
                     }
                 };
-
-                // 1.1 Check tsconfig.json - "references" property.
-                if (wpObject.tsConfigJson) {
-                    checkReferences(wpObject.tsConfigJson, TSCONFIG.DEV);
-                }
-
+                
                 if (wpObject.tsConfigBuildJson) {
                     checkReferences(wpObject.tsConfigBuildJson, TSCONFIG.BUILD);
                 }
