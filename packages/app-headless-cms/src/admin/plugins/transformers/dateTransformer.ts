@@ -17,7 +17,8 @@ const throwTransformError = (params: ThrowTransformErrorParams): void => {
 
 const dateOnly = (value?: string): string => {
     if (!value) {
-        return new Date().toISOString().substr(0, 10);
+        return null;
+        // return new Date().toISOString().substr(0, 10);
     }
     try {
         const date = new Date(value).toISOString();
@@ -54,7 +55,8 @@ const extractTimeZone = (value?: string): [string, string] => {
 
 const extractTime = (value?: string): string => {
     if (!value) {
-        return "00:00:00";
+        return null;
+        // return "00:00:00";
     } else if (value.includes(":") === false) {
         throw new WebinyError("Time value is missing : separators.", "TIME_ERROR", {
             value
@@ -70,8 +72,9 @@ const extractTime = (value?: string): string => {
 
 const dateTimeWithTimezone = (value?: string): string => {
     if (!value) {
-        const date = new Date().toISOString();
-        return date.replace(/\.([0-9]+)Z/, "+00:00");
+        return null;
+        // const date = new Date().toISOString();
+        // return date.replace(/\.([0-9]+)Z/, "+00:00");
     } else if (value.includes("T") === false) {
         return value;
     }
@@ -103,7 +106,8 @@ const dateTimeWithTimezone = (value?: string): string => {
 
 const dateTimeWithoutTimezone = (value?: string): string => {
     if (!value) {
-        return new Date().toISOString();
+        return null;
+        // return new Date().toISOString();
     } else if (value.includes(" ") === false) {
         return value;
     }
@@ -120,7 +124,8 @@ const dateTimeWithoutTimezone = (value?: string): string => {
 
 const time = (value?: string) => {
     if (!value) {
-        return "00:00:00";
+        return null;
+        // return "00:00:00";
     }
     return extractTime(value);
 };

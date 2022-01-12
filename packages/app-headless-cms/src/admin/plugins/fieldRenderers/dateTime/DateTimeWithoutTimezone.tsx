@@ -1,61 +1,75 @@
 import React, { useEffect, useState } from "react";
 import { Grid, Cell } from "@webiny/ui/Grid";
-import { DEFAULT_DATE, DEFAULT_TIME, RemoveFieldButton } from "./utils";
-import Input from "./Input";
+import { getFieldValue, RemoveFieldButton } from "./utils";
+import { Input } from "./Input";
+import { CmsEditorField } from "~/types";
 
-interface DateTimeWithoutTimezoneProps {
-    bind: any;
-    trailingIcon?: any;
-    field: any;
-}
-
-interface DateTimeWithoutTimezoneState {
+interface State {
     date: string;
     time: string;
 }
 
-const parseDateTime = (value?: string) => {
+const parseDateTime = (value?: string): State => {
     if (!value) {
-        return {};
-    }
-    if (value.includes("T")) {
-        const [formattedDate, formattedTime] = value.split(".")[0].split("T");
         return {
-            formattedDate,
-            formattedTime
+            date: null,
+            time: null
         };
     }
-    const [formattedDate, formattedTime] = value.split(" ");
-    if (!formattedDate || !formattedTime) {
+    if (value.includes("T")) {
+        const [date, time] = value.split(".")[0].split("T");
+        return {
+            date,
+            time
+        };
+    }
+    const [date, time] = value.split(" ");
+    if (!date || !time) {
         throw new Error(`Could not extract date and time from "${value}".`);
     }
     return {
-        formattedDate,
-        formattedTime
+        date,
+        time
     };
 };
 
-const DateTimeWithoutTimezone: React.FunctionComponent<DateTimeWithoutTimezoneProps> = ({
+export interface Props {
+    bind: any;
+    trailingIcon?: any;
+    field: CmsEditorField;
+}
+export const DateTimeWithoutTimezone: React.FunctionComponent<Props> = ({
     field,
     bind,
     trailingIcon
 }) => {
     // "2020-05-18 09:00:00"
-    const { formattedDate, formattedTime } = parseDateTime(bind.value);
-    const [state, setState] = useState<DateTimeWithoutTimezoneState>({
-        date: formattedDate || DEFAULT_DATE,
-        time: formattedTime || DEFAULT_TIME
+    const initialValue = getFieldValue(field, bind, () => {
+        const val = new Date().toISOString();
+        const date = val.substr(0, 10);
+        const time = val.substr(11, 8);
+        return `${date} ${time}`;
+    });
+    const { date: initialDate, time: initialTime } = parseDateTime(initialValue);
+    const [state, setState] = useState<State>({
+        date: "",
+        time: ""
     });
     const { date, time } = state;
+
     useEffect(() => {
-        if (!formattedDate || !formattedTime) {
+        if (!initialDate || !initialTime) {
             return;
         }
-        setState(() => ({
-            date: formattedDate,
-            time: formattedTime
-        }));
-    }, [formattedDate, formattedTime]);
+        setState(prev => {
+            return {
+                ...prev,
+                date: initialDate,
+                time: initialTime
+            };
+        });
+        bind.onChange(`${initialDate} ${initialTime}`);
+    }, []);
 
     const cellSize = trailingIcon ? 5 : 6;
 
@@ -67,13 +81,9 @@ const DateTimeWithoutTimezone: React.FunctionComponent<DateTimeWithoutTimezonePr
                         ...bind,
                         value: date,
                         onChange: value => {
-                            if (!value) {
-                                value = new Date().toISOString().substr(0, 10);
+                            if (!value && initialDate) {
+                                value = initialDate;
                             }
-                            setState(prev => ({
-                                ...prev,
-                                date: value
-                            }));
                             return bind.onChange(`${value} ${time}`);
                         }
                     }}
@@ -90,13 +100,9 @@ const DateTimeWithoutTimezone: React.FunctionComponent<DateTimeWithoutTimezonePr
                         ...bind,
                         value: time,
                         onChange: value => {
-                            if (!value) {
-                                value = new Date().toISOString().substr(11, 8);
+                            if (!value && initialTime) {
+                                value = initialTime;
                             }
-                            setState(prev => ({
-                                ...prev,
-                                time: value
-                            }));
                             return bind.onChange(`${date} ${value}`);
                         }
                     }}
@@ -112,5 +118,3 @@ const DateTimeWithoutTimezone: React.FunctionComponent<DateTimeWithoutTimezonePr
         </Grid>
     );
 };
-
-export default DateTimeWithoutTimezone;

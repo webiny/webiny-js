@@ -1,78 +1,88 @@
-import React, { useState, useEffect } from "react";
-import Input from "./Input";
-import Select from "./Select";
+import React, { useEffect, useState } from "react";
+import { Input } from "./Input";
+import { Select } from "./Select";
 import { Grid, Cell } from "@webiny/ui/Grid";
-import {
-    UTC_TIMEZONES,
-    DEFAULT_TIME,
-    DEFAULT_DATE,
-    DEFAULT_TIMEZONE,
-    RemoveFieldButton
-} from "./utils";
+import { UTC_TIMEZONES, RemoveFieldButton, getFieldValue } from "./utils";
 import { CmsEditorField } from "~/types";
 
-interface DateTimeWithTimezoneProps {
-    bind: any;
-    trailingIcon?: any;
-    field: CmsEditorField;
-}
-interface DateTimeWithTimezoneState {
+interface State {
     date: string;
     time: string;
     timezone: string;
 }
-const parseDateTime = (value?: string) => {
+
+const parseDateTime = (value?: string): Pick<State, "date"> & { rest: string } => {
     if (!value || typeof value !== "string") {
-        return {};
+        return {
+            date: null,
+            rest: null
+        };
     }
     const [formattedDate, rest] = value.split("T");
     if (!formattedDate || !rest) {
         throw new Error(`Could not extract date and time from "${value}".`);
     }
     return {
-        formattedDate,
+        date: formattedDate,
         rest
     };
 };
 
-const parseTime = (value?: string) => {
+const parseTime = (value?: string): Pick<State, "time" | "timezone"> => {
     if (!value) {
-        return {};
+        return {
+            time: null,
+            timezone: null
+        };
     }
     const sign = value.includes("+") ? "+" : "-";
     const [fullTime, zone] = value.split(sign);
 
     return {
-        formattedTime: fullTime,
-        formattedTimezone: sign + zone
+        time: fullTime,
+        timezone: sign + zone
     };
 };
 
-const DateTimeWithTimezone: React.FunctionComponent<DateTimeWithTimezoneProps> = ({
+export interface Props {
+    bind: any;
+    trailingIcon?: any;
+    field: CmsEditorField;
+}
+export const DateTimeWithTimezone: React.FunctionComponent<Props> = ({
     bind,
     trailingIcon,
     field
 }) => {
     // "2020-05-18T09:00+10:00"
-    const { formattedDate, rest } = parseDateTime(bind.value);
-    const { formattedTime, formattedTimezone } = parseTime(rest);
-    const [state, setState] = useState<DateTimeWithTimezoneState>({
-        date: formattedDate || DEFAULT_DATE,
-        time: formattedTime || DEFAULT_TIME,
-        timezone: formattedTimezone || DEFAULT_TIMEZONE
+    const initialValue = getFieldValue(field, bind, () => {
+        const val = new Date().toISOString();
+        const date = val.substr(0, 10);
+        const time = val.substr(11, 8);
+        return `${date}T${time}+00:00`;
+    });
+    const { date: initialDate, rest } = parseDateTime(initialValue);
+    const { time: initialTime, timezone: initialTimezone } = parseTime(rest);
+
+    const [state, setState] = useState<State>({
+        date: "",
+        time: "",
+        timezone: "+00:00"
     });
     const { date, time, timezone } = state;
 
     useEffect(() => {
-        if (!formattedDate || !formattedTime || !formattedTimezone) {
+        if (!initialDate || !initialTime || !initialTimezone) {
             return;
         }
         setState(() => ({
-            date: formattedDate,
-            time: formattedTime,
-            timezone: formattedTimezone
+            date: initialDate,
+            time: initialTime,
+            timezone: initialTimezone
         }));
-    }, [formattedDate, formattedTime, formattedTimezone]);
+
+        bind.onChange(`${initialDate}T${initialTime}${initialTimezone}`);
+    }, []);
 
     const cellSize = trailingIcon ? 3 : 4;
 
@@ -84,13 +94,9 @@ const DateTimeWithTimezone: React.FunctionComponent<DateTimeWithTimezoneProps> =
                         ...bind,
                         value: date,
                         onChange: (value: string) => {
-                            if (!value) {
-                                value = new Date().toISOString().substr(0, 10);
+                            if (!value && initialDate) {
+                                value = initialDate;
                             }
-                            setState(prev => ({
-                                ...prev,
-                                date: value
-                            }));
                             return bind.onChange(`${value}T${time}${timezone}`);
                         }
                     }}
@@ -107,13 +113,9 @@ const DateTimeWithTimezone: React.FunctionComponent<DateTimeWithTimezoneProps> =
                         ...bind,
                         value: time,
                         onChange: value => {
-                            if (!value) {
-                                value = new Date().toISOString().substr(11, 8);
+                            if (!value && initialTime) {
+                                value = initialTime;
                             }
-                            setState(prev => ({
-                                ...prev,
-                                time: value
-                            }));
                             return bind.onChange(`${date}T${value}${timezone}`);
                         }
                     }}
@@ -130,10 +132,9 @@ const DateTimeWithTimezone: React.FunctionComponent<DateTimeWithTimezoneProps> =
                     label="Timezone"
                     value={timezone}
                     onChange={value => {
-                        setState(prev => ({
-                            ...prev,
-                            timezone: value
-                        }));
+                        if (!value) {
+                            value = initialTimezone || "+00:00";
+                        }
                         return bind.onChange(`${date}T${time}${value}`);
                     }}
                     options={UTC_TIMEZONES.map(t => ({ value: t.value, label: t.label }))}
@@ -143,5 +144,3 @@ const DateTimeWithTimezone: React.FunctionComponent<DateTimeWithTimezoneProps> =
         </Grid>
     );
 };
-
-export default DateTimeWithTimezone;

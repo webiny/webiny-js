@@ -2,6 +2,7 @@ import React from "react";
 import { css } from "emotion";
 import { Cell } from "@webiny/ui/Grid";
 import { IconButton } from "@webiny/ui/Button";
+import { CmsEditorField } from "~/types";
 
 export const UTC_TIMEZONES = [
     {
@@ -172,6 +173,21 @@ export const getCurrentDateString = () => {
 export const DEFAULT_TIME = "00:00:00";
 export const DEFAULT_DATE = getCurrentDateString();
 export const DEFAULT_TIMEZONE = "+01:00";
+
+export const getFieldValue = (
+    field: CmsEditorField,
+    bind: { value: any },
+    getCurrent: () => string
+) => {
+    if (bind.value) {
+        return bind.value;
+    }
+    const def = field.settings ? field.settings.defaultSetValue || "null" : "null";
+    if (def === "current") {
+        return getCurrent();
+    }
+    return null;
+};
 
 const deleteIconStyles = css({
     width: "100% !important",
