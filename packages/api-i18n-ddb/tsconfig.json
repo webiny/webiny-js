@@ -1,19 +1,6 @@
 {
   "extends": "../../tsconfig.json",
   "include": ["src", "__tests__/**/*.ts"],
-  "references": [
-    { "path": "../api-i18n" },
-    { "path": "../db-dynamodb" },
-    { "path": "../error" },
-    { "path": "../handler-db" },
-    { "path": "../api-security" },
-    { "path": "../api-security-so-ddb" },
-    { "path": "../api-tenancy" },
-    { "path": "../api-tenancy-so-ddb" },
-    { "path": "../handler" },
-    { "path": "../handler-aws" },
-    { "path": "../handler-graphql" }
-  ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
     "outDir": "./dist",

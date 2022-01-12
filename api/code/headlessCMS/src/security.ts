@@ -1,3 +1,4 @@
+import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { createTenancyContext } from "@webiny/api-tenancy";
 import { createStorageOperations as tenancyStorageOperations } from "@webiny/api-tenancy-so-ddb";
 import { createSecurityContext } from "@webiny/api-security";
@@ -10,7 +11,7 @@ import parentTenantGroupAuthorization from "@webiny/api-security/plugins/parentT
 import cognitoAuthentication from "@webiny/api-security-cognito";
 import anonymousAuthorization from "@webiny/api-security/plugins/anonymousAuthorization";
 
-export default ({ documentClient }) => [
+export default ({ documentClient }: { documentClient: DocumentClient }) => [
     /**
      * Create Tenancy app in the `context`.
      */
@@ -44,8 +45,8 @@ export default ({ documentClient }) => [
      * This plugin will verify the JWT token against the provided User Pool.
      */
     cognitoAuthentication({
-        region: process.env.COGNITO_REGION,
-        userPoolId: process.env.COGNITO_USER_POOL_ID,
+        region: String(process.env.COGNITO_REGION),
+        userPoolId: String(process.env.COGNITO_USER_POOL_ID),
         identityType: "admin"
     }),
 

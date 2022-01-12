@@ -85,7 +85,7 @@ const TSCONFIG = {
                             ? depPackageRelativePath
                             : `${depPackageRelativePath}/tsconfig.build.json`;
 
-                    const exists = config.references.find(item => item.path === checkPath);
+                    const exists = (config.references || []).find(item => item.path === checkPath);
 
                     if (!exists) {
                         errorsCount++;
@@ -97,18 +97,13 @@ const TSCONFIG = {
                     }
                 };
 
-                // 1.1 Check tsconfig.json - "references" property.
-                if (wpObject.tsConfigJson) {
-                    checkReferences(wpObject.tsConfigJson, TSCONFIG.DEV);
-                }
-
                 if (wpObject.tsConfigBuildJson) {
                     checkReferences(wpObject.tsConfigBuildJson, TSCONFIG.BUILD);
                 }
             }
 
             const checkForExtraPackagesInTsConfig = (wpObject, config, configType) => {
-                for (const ref of config.references) {
+                for (const ref of config.references || []) {
                     // Check if a package is defined in TS config, but not listed in package.json.
                     const referencePath = resolve(
                         join(wpObject.packageFolder, dirname(ref.path))

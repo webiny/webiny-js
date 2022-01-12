@@ -1,15 +1,6 @@
 {
   "extends": "../../tsconfig.json",
   "include": ["src", "__tests__/**/*.ts"],
-  "references": [
-    { "path": "../app-admin" },
-    { "path": "../app-page-builder" },
-    { "path": "../app-tenant-manager" },
-    { "path": "../form" },
-    { "path": "../plugins" },
-    { "path": "../ui" },
-    { "path": "../validation" }
-  ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
     "outDir": "./dist",

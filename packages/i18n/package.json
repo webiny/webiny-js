@@ -13,7 +13,7 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@babel/runtime": "^7.5.5",
+    "@babel/runtime": "^7.16.3",
     "accounting": "^0.4.1",
     "fecha": "^2.3.3",
     "lodash": "^4.17.4",
@@ -21,14 +21,14 @@
     "yargs": "12.0.5"
   },
   "peerDependencies": {
-    "react": "16.14.0"
+    "react": "17.0.2"
   },
   "devDependencies": {
-    "@babel/cli": "^7.5.5",
-    "@babel/core": "^7.5.5",
-    "@babel/preset-env": "^7.5.5",
-    "@babel/preset-typescript": "^7.8.3",
-    "@babel/register": "^7.5.5",
+    "@babel/cli": "^7.16.0",
+    "@babel/core": "^7.16.0",
+    "@babel/preset-env": "^7.16.4",
+    "@babel/preset-typescript": "^7.16.0",
+    "@babel/register": "^7.16.0",
     "@webiny/cli": "^5.21.0",
     "@webiny/project-utils": "^5.21.0",
     "babel-plugin-lodash": "^3.3.4",

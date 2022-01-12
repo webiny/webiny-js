@@ -1,12 +1,6 @@
 {
   "extends": "../../tsconfig.json",
   "include": ["src", "__tests__/**/*.ts"],
-  "references": [
-    { "path": "../cli-plugin-scaffold" },
-    { "path": "../cli-plugin-scaffold-graphql-api" },
-    { "path": "../handler" },
-    { "path": "../plugins" }
-  ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
     "outDir": "./dist",

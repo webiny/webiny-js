@@ -1,14 +1,6 @@
 {
   "extends": "../../tsconfig.json",
   "include": ["src", "__tests__/**/*.ts"],
-  "references": [
-    { "path": "../api-form-builder" },
-    { "path": "../db-dynamodb" },
-    { "path": "../error" },
-    { "path": "../plugins" },
-    { "path": "../utils" },
-    { "path": "../handler-db" }
-  ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
     "outDir": "./dist",

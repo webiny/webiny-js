@@ -30,7 +30,6 @@ import { createStorageOperations as createHeadlessCmsStorageOperations } from "@
 import headlessCmsModelFieldToGraphQLPlugins from "@webiny/api-headless-cms/content/plugins/graphqlFields";
 import securityPlugins from "./security";
 import tenantManager from "@webiny/api-tenant-manager";
-import themeManager from "@webiny/api-theme-manager";
 
 // Imports plugins created via scaffolding utilities.
 import scaffoldsPlugins from "./plugins/scaffolds";
@@ -61,11 +60,11 @@ export const handler = createHandler({
         fileManagerS3(),
         prerenderingServicePlugins({
             handlers: {
-                render: process.env.PRERENDERING_RENDER_HANDLER as string,
-                flush: process.env.PRERENDERING_FLUSH_HANDLER as string,
+                render: String(process.env.PRERENDERING_RENDER_HANDLER),
+                flush: String(process.env.PRERENDERING_FLUSH_HANDLER),
                 queue: {
-                    add: process.env.PRERENDERING_QUEUE_ADD_HANDLER as string,
-                    process: process.env.PRERENDERING_QUEUE_PROCESS_HANDLER as string
+                    add: String(process.env.PRERENDERING_QUEUE_ADD_HANDLER),
+                    process: String(process.env.PRERENDERING_QUEUE_PROCESS_HANDLER)
                 }
             }
         }),
@@ -91,7 +90,6 @@ export const handler = createHandler({
                 modelFieldToGraphQLPlugins: headlessCmsModelFieldToGraphQLPlugins()
             })
         }),
-        themeManager(),
         scaffoldsPlugins()
     ],
     http: { debug }
