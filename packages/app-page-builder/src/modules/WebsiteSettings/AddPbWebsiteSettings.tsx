@@ -90,11 +90,18 @@ const Group: FC<GroupProps> = ({ name, label, querySelection, children }) => {
                 <GenerateElements name={name} />
             </DebounceRender>
             {querySelection && (
-                <AddGraphQLQuerySelection
-                    operationName={"PbGetSettings"}
-                    selectionPath={"pageBuilder.getSettings.data"}
-                    addSelection={querySelection}
-                />
+                <Fragment>
+                    <AddGraphQLQuerySelection
+                        operationName={"UpdateSettings"}
+                        selectionPath={"pageBuilder.updateSettings.data"}
+                        addSelection={querySelection}
+                    />
+                    <AddGraphQLQuerySelection
+                        operationName={"PbGetSettings"}
+                        selectionPath={"pageBuilder.getSettings.data"}
+                        addSelection={querySelection}
+                    />
+                </Fragment>
             )}
         </GroupContext.Provider>
     );

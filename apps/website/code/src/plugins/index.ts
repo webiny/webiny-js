@@ -4,6 +4,6 @@ import apolloLinks from "./apolloLinks";
 import pageBuilder from "./pageBuilder";
 import formBuilder from "./formBuilder";
 
-import theme from "theme";
+// import theme from "theme";
 
-plugins.register([imageComponent(), pageBuilder, formBuilder, apolloLinks(), theme()]);
+plugins.register([imageComponent(), pageBuilder, formBuilder, apolloLinks() /*theme()*/]);

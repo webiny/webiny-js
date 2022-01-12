@@ -16,7 +16,8 @@ export default () => {
              */
             await context.pageBuilder.prerendering.render({
                 context,
-                tags: [{ tag: { key: "pb-page" } }]
+                queue: true,
+                paths: [{ path: "*" }]
             });
 
             /**

@@ -4,7 +4,6 @@ import { AddTenantFormField } from "./components/AddTenantFormField";
 import { CurrentTenant } from "./components/CurrentTenant";
 import { DomainsModule } from "./modules/domains";
 import { TenantsModule } from "./modules/tenants";
-// import { ThemesModule } from "./modules/themes";
 
 const TenantIndicator = LocaleSelector => {
     return function TenantIndicator() {
@@ -23,12 +22,12 @@ const TenantManagerExtension = () => {
             <Compose component={LocaleSelector} with={TenantIndicator} />
             <TenantsModule />
             <DomainsModule />
-            {/*<ThemesModule />*/}
         </Fragment>
     );
 };
 
 export const TenantManager = memo(TenantManagerExtension);
 
+export { useCurrentTenant } from "./hooks/useCurrentTenant";
+export { IsRootTenant, IsNotRootTenant, IsTenant } from "./components/IsRootTenant";
 export { AddTenantFormField };
-// export { AddTheme } from "./components/AddTheme";
