@@ -9699,6 +9699,7 @@ __metadata:
     "@babel/preset-typescript": ^7.8.3
     "@emotion/styled": ^10.0.27
     "@webiny/app": ^5.21.0
+    "@webiny/app-admin": ^5.21.0
     "@webiny/app-cognito-authenticator": ^5.21.0
     "@webiny/app-security": ^5.21.0
     "@webiny/cli": ^5.21.0
