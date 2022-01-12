@@ -1,8 +1,16 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { Input } from "./Input";
 import { Select } from "./Select";
 import { Grid, Cell } from "@webiny/ui/Grid";
-import { UTC_TIMEZONES, RemoveFieldButton, getFieldValue } from "./utils";
+import {
+    UTC_TIMEZONES,
+    RemoveFieldButton,
+    getDefaultFieldValue,
+    DEFAULT_TIMEZONE,
+    getCurrentDate,
+    getCurrentLocalTime,
+    getCurrentTimeZone
+} from "./utils";
 import { CmsEditorField } from "~/types";
 
 interface State {
@@ -14,8 +22,8 @@ interface State {
 const parseDateTime = (value?: string): Pick<State, "date"> & { rest: string } => {
     if (!value || typeof value !== "string") {
         return {
-            date: null,
-            rest: null
+            date: "",
+            rest: ""
         };
     }
     const [formattedDate, rest] = value.split("T");
@@ -31,8 +39,8 @@ const parseDateTime = (value?: string): Pick<State, "date"> & { rest: string } =
 const parseTime = (value?: string): Pick<State, "time" | "timezone"> => {
     if (!value) {
         return {
-            time: null,
-            timezone: null
+            time: "",
+            timezone: ""
         };
     }
     const sign = value.includes("+") ? "+" : "-";
@@ -54,35 +62,23 @@ export const DateTimeWithTimezone: React.FunctionComponent<Props> = ({
     trailingIcon,
     field
 }) => {
+    const defaultTimeZone = getCurrentTimeZone() || DEFAULT_TIMEZONE;
+
     // "2020-05-18T09:00+10:00"
-    const initialValue = getFieldValue(field, bind, () => {
-        const val = new Date().toISOString();
-        const date = val.substr(0, 10);
-        const time = val.substr(11, 8);
-        return `${date}T${time}+00:00`;
+    const initialValue = getDefaultFieldValue(field, bind, () => {
+        const date = new Date();
+        return `${getCurrentDate(date)}T${getCurrentLocalTime(date)}${defaultTimeZone}`;
     });
-    const { date: initialDate, rest } = parseDateTime(initialValue);
-    const { time: initialTime, timezone: initialTimezone } = parseTime(rest);
+    const { date, rest } = parseDateTime(initialValue);
+    const { time, timezone = defaultTimeZone } = parseTime(rest);
 
-    const [state, setState] = useState<State>({
-        date: "",
-        time: "",
-        timezone: "+00:00"
-    });
-    const { date, time, timezone } = state;
-
+    const bindValue = bind.value || "";
     useEffect(() => {
-        if (!initialDate || !initialTime || !initialTimezone) {
+        if (!date || !time || !timezone || bindValue === initialValue) {
             return;
         }
-        setState(() => ({
-            date: initialDate,
-            time: initialTime,
-            timezone: initialTimezone
-        }));
-
-        bind.onChange(`${initialDate}T${initialTime}${initialTimezone}`);
-    }, []);
+        bind.onChange(initialValue);
+    }, [bindValue]);
 
     const cellSize = trailingIcon ? 3 : 4;
 
@@ -94,10 +90,17 @@ export const DateTimeWithTimezone: React.FunctionComponent<Props> = ({
                         ...bind,
                         value: date,
                         onChange: (value: string) => {
-                            if (!value && initialDate) {
-                                value = initialDate;
+                            if (!value) {
+                                if (!bind.value) {
+                                    return;
+                                }
+                                return bind.onChange("");
                             }
-                            return bind.onChange(`${value}T${time}${timezone}`);
+                            return bind.onChange(
+                                `${value}T${time || getCurrentLocalTime()}${
+                                    timezone || defaultTimeZone
+                                }`
+                            );
                         }
                     }}
                     field={{
@@ -113,10 +116,15 @@ export const DateTimeWithTimezone: React.FunctionComponent<Props> = ({
                         ...bind,
                         value: time,
                         onChange: value => {
-                            if (!value && initialTime) {
-                                value = initialTime;
+                            if (!value) {
+                                if (!bind.value) {
+                                    return;
+                                }
+                                return bind.onChange("");
                             }
-                            return bind.onChange(`${date}T${value}${timezone}`);
+                            return bind.onChange(
+                                `${date || getCurrentDate()}T${value}${timezone || defaultTimeZone}`
+                            );
                         }
                     }}
                     field={{
@@ -130,12 +138,17 @@ export const DateTimeWithTimezone: React.FunctionComponent<Props> = ({
             <Cell span={cellSize}>
                 <Select
                     label="Timezone"
-                    value={timezone}
+                    value={timezone || defaultTimeZone}
                     onChange={value => {
                         if (!value) {
-                            value = initialTimezone || "+00:00";
+                            if (!bind.value) {
+                                return;
+                            }
+                            return bind.onChange("");
                         }
-                        return bind.onChange(`${date}T${time}${value}`);
+                        return bind.onChange(
+                            `${date || getCurrentDate()}T${time || getCurrentLocalTime()}${value}`
+                        );
                     }}
                     options={UTC_TIMEZONES.map(t => ({ value: t.value, label: t.label }))}
                 />

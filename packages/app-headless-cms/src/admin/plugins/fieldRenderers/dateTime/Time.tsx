@@ -1,33 +1,39 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { Input, Props } from "./Input";
-import { getFieldValue } from "~/admin/plugins/fieldRenderers/dateTime/utils";
+import {
+    getCurrentLocalTime,
+    getDefaultFieldValue
+} from "~/admin/plugins/fieldRenderers/dateTime/utils";
 
 export const Time: React.FC<Props> = props => {
-    const initialTime = getFieldValue(props.field, props.bind, () => {
-        return new Date().toISOString().substr(11, 8);
+    const { field, bind } = props;
+    const time = getDefaultFieldValue(field, bind, () => {
+        return getCurrentLocalTime(new Date());
     });
 
-    const [time, setTime] = useState<string>("");
+    const bindValue = bind.value || "";
 
     useEffect(() => {
-        if (!initialTime) {
+        if (!time || bindValue === time) {
             return;
         }
-        setTime(initialTime);
-        props.bind.onChange(initialTime);
-    }, []);
+        bind.onChange(time);
+    }, [bindValue]);
 
-    // "09:00:00"
     return (
         <Input
             {...props}
             bind={{
-                ...props.bind,
+                ...bind,
                 value: time,
                 onChange: (value: string) => {
                     if (!value) {
+                        if (bind.value) {
+                            return;
+                        }
+                        return bind.onChange("");
                     }
-                    return props.bind.onChange(value);
+                    return bind.onChange(value);
                 }
             }}
             type={"time"}

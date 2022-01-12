@@ -1,7 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { Input, TrailingIcon } from "./Input";
 import { CmsEditorField } from "~/types";
-import { getFieldValue } from "~/admin/plugins/fieldRenderers/dateTime/utils";
+import {
+    getCurrentDate,
+    getDefaultFieldValue
+} from "~/admin/plugins/fieldRenderers/dateTime/utils";
 
 export interface Props {
     field: CmsEditorField;
@@ -11,19 +14,18 @@ export interface Props {
 
 export const DateOnly: React.FC<Props> = props => {
     const { field, bind, trailingIcon } = props;
-    const initialDate = getFieldValue(field, bind, () => {
-        return new Date().toISOString().substr(0, 10);
+    const date = getDefaultFieldValue(field, bind, () => {
+        return getCurrentDate(new Date());
     });
 
-    const [date, setDate] = useState<string>("");
+    const bindValue = bind.value || "";
 
     useEffect(() => {
-        if (!initialDate) {
+        if (!date || bindValue === date) {
             return;
         }
-        setDate(initialDate);
-        bind.onChange(initialDate);
-    }, []);
+        bind.onChange(date);
+    }, [bindValue]);
 
     return (
         <Input
@@ -31,8 +33,11 @@ export const DateOnly: React.FC<Props> = props => {
                 ...bind,
                 value: date,
                 onChange: (value: string) => {
-                    if (!value && initialDate) {
-                        value = initialDate;
+                    if (!value) {
+                        if (!bindValue) {
+                            return;
+                        }
+                        return bind.onChange("");
                     }
                     return bind.onChange(value);
                 }

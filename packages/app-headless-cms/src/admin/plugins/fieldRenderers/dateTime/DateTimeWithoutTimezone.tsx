@@ -1,6 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { Grid, Cell } from "@webiny/ui/Grid";
-import { getFieldValue, RemoveFieldButton } from "./utils";
+import {
+    getCurrentDate,
+    getCurrentLocalTime,
+    getDefaultFieldValue,
+    RemoveFieldButton
+} from "./utils";
 import { Input } from "./Input";
 import { CmsEditorField } from "~/types";
 
@@ -12,8 +17,8 @@ interface State {
 const parseDateTime = (value?: string): State => {
     if (!value) {
         return {
-            date: null,
-            time: null
+            date: "",
+            time: ""
         };
     }
     if (value.includes("T")) {
@@ -25,7 +30,12 @@ const parseDateTime = (value?: string): State => {
     }
     const [date, time] = value.split(" ");
     if (!date || !time) {
-        throw new Error(`Could not extract date and time from "${value}".`);
+        console.error(`Could not extract date and time from "${value}".`);
+
+        return {
+            date: "",
+            time: ""
+        };
     }
     return {
         date,
@@ -44,32 +54,21 @@ export const DateTimeWithoutTimezone: React.FunctionComponent<Props> = ({
     trailingIcon
 }) => {
     // "2020-05-18 09:00:00"
-    const initialValue = getFieldValue(field, bind, () => {
-        const val = new Date().toISOString();
-        const date = val.substr(0, 10);
-        const time = val.substr(11, 8);
-        return `${date} ${time}`;
+    const initialValue = getDefaultFieldValue(field, bind, () => {
+        const date = new Date();
+        return `${getCurrentDate(date)} ${getCurrentLocalTime(date)}`;
     });
-    const { date: initialDate, time: initialTime } = parseDateTime(initialValue);
-    const [state, setState] = useState<State>({
-        date: "",
-        time: ""
-    });
-    const { date, time } = state;
+
+    const { date, time } = parseDateTime(initialValue);
+
+    const bindValue = bind.value || "";
 
     useEffect(() => {
-        if (!initialDate || !initialTime) {
+        if (!date || !time || bindValue === initialValue) {
             return;
         }
-        setState(prev => {
-            return {
-                ...prev,
-                date: initialDate,
-                time: initialTime
-            };
-        });
-        bind.onChange(`${initialDate} ${initialTime}`);
-    }, []);
+        bind.onChange(initialValue);
+    }, [bindValue]);
 
     const cellSize = trailingIcon ? 5 : 6;
 
@@ -81,10 +80,13 @@ export const DateTimeWithoutTimezone: React.FunctionComponent<Props> = ({
                         ...bind,
                         value: date,
                         onChange: value => {
-                            if (!value && initialDate) {
-                                value = initialDate;
+                            if (!value) {
+                                if (!bind.value) {
+                                    return;
+                                }
+                                return bind.onChange("");
                             }
-                            return bind.onChange(`${value} ${time}`);
+                            return bind.onChange(`${value} ${time || getCurrentLocalTime()}`);
                         }
                     }}
                     field={{
@@ -100,10 +102,13 @@ export const DateTimeWithoutTimezone: React.FunctionComponent<Props> = ({
                         ...bind,
                         value: time,
                         onChange: value => {
-                            if (!value && initialTime) {
-                                value = initialTime;
+                            if (!value) {
+                                if (!bind.value) {
+                                    return;
+                                }
+                                return bind.onChange("");
                             }
-                            return bind.onChange(`${date} ${value}`);
+                            return bind.onChange(`${date || getCurrentDate()} ${value}`);
                         }
                     }}
                     field={{
