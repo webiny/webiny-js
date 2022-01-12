@@ -10,12 +10,12 @@ interface RefFieldValue {
 }
 
 const createUnionTypeName = (model, field) => {
-    return `${createReadTypeName(model.modelId)}${createReadTypeName(field.fieldId)}`;
+    return `${createReadTypeName(model.modelId)}${createReadTypeName(field.alias)}`;
 };
 
 const createListFilters = ({ field }) => {
     return `
-        ${field.fieldId}: RefFieldWhereInput
+        ${field.alias}: RefFieldWhereInput
     `;
 };
 
@@ -62,7 +62,7 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
                     ? createUnionTypeName(model, field)
                     : createReadTypeName(field.settings.models[0].modelId);
 
-            return field.fieldId + `: ${field.multipleValues ? `[${gqlType}]` : gqlType}`;
+            return field.alias + `: ${field.multipleValues ? `[${gqlType}]` : gqlType}`;
         },
         createResolver({ field }) {
             // Create a map of model types and corresponding modelIds so resolvers don't need to perform the lookup.
@@ -74,7 +74,7 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
                 const { cms } = context;
 
                 // Get field value for this entry
-                const value = parent[field.fieldId];
+                const value = parent[field.alias];
 
                 if (!value) {
                     return null;
@@ -213,17 +213,17 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
         },
         createTypeField({ field }) {
             if (field.multipleValues) {
-                return `${field.fieldId}: [RefField!]`;
+                return `${field.alias}: [RefField!]`;
             }
 
-            return `${field.fieldId}: RefField`;
+            return `${field.alias}: RefField`;
         },
         createInputField({ field }) {
             if (field.multipleValues) {
-                return attachRequiredFieldValue(field.fieldId + ": [RefFieldInput!]", field);
+                return attachRequiredFieldValue(field.alias + ": [RefFieldInput!]", field);
             }
 
-            return attachRequiredFieldValue(field.fieldId + ": RefFieldInput", field);
+            return attachRequiredFieldValue(field.alias + ": RefFieldInput", field);
         },
         createListFilters
     }

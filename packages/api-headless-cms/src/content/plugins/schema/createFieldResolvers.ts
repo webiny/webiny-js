@@ -27,6 +27,14 @@ export function createFieldResolversFactory({ endpointType, models, model, field
                 continue;
             }
 
+            /**
+             * If no alias defined, it means field is not being used in the GraphQL.
+             */
+            const { fieldId, alias } = field;
+            if (!alias) {
+                continue;
+            }
+
             const createResolver: CmsModelFieldToGraphQLCreateResolver = get(
                 fieldTypePlugins,
                 `${field.type}.${endpointType}.createResolver`
@@ -50,9 +58,7 @@ export function createFieldResolversFactory({ endpointType, models, model, field
                 Object.assign(typeResolvers, fieldResolver.typeResolvers);
             }
 
-            const { fieldId } = field;
-
-            fieldResolvers[fieldId] = async (parent, args, context: CmsContext, info) => {
+            fieldResolvers[alias] = async (parent, args, context: CmsContext, info) => {
                 // Get transformed value (eg. data decompression)
                 const transformedValue = await entryFieldFromStorageTransform({
                     context,

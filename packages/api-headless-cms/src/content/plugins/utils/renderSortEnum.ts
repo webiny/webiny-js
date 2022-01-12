@@ -6,7 +6,7 @@ interface RenderSortEnum {
 }
 
 export const renderSortEnum: RenderSortEnum = ({ model, fieldTypePlugins }) => {
-    const sorters = [
+    const sorters: string[] = [
         `id_ASC`,
         `id_DESC`,
         "savedOn_ASC",
@@ -16,12 +16,15 @@ export const renderSortEnum: RenderSortEnum = ({ model, fieldTypePlugins }) => {
     ];
 
     for (const field of model.fields) {
+        if (!field.alias) {
+            continue;
+        }
         const isSortable = get(fieldTypePlugins, `${field.type}.isSortable`);
         if (!isSortable) {
             continue;
         }
-        sorters.push(`${field.fieldId}_ASC`);
-        sorters.push(`${field.fieldId}_DESC`);
+        sorters.push(`${field.alias}_ASC`);
+        sorters.push(`${field.alias}_DESC`);
     }
 
     return sorters.join("\n");

@@ -15,7 +15,8 @@ import {
     AfterModelCreateFromTopicParams,
     CmsModelCreateInput,
     CmsModelUpdateInput,
-    CmsModelCreateFromInput
+    CmsModelCreateFromInput,
+    HeadlessCms
 } from "~/types";
 import * as utils from "~/utils";
 import DataLoader from "dataloader";
@@ -97,10 +98,10 @@ export const createModelsCrud = (params: Params): CmsModelContext => {
                  * If it does not have tenant or locale define, it is for every locale and tenant
                  */
                 .filter(plugin => {
-                    const { tenant: t, locale: l } = plugin.contentModel;
-                    if (t && t !== tenant) {
+                    const model = plugin.contentModel;
+                    if (model.tenant && model.tenant !== tenant) {
                         return false;
-                    } else if (l && l !== locale) {
+                    } else if (model.locale && model.locale !== locale) {
                         return false;
                     }
                     return true;
@@ -146,43 +147,6 @@ export const createModelsCrud = (params: Params): CmsModelContext => {
         const pluginsModels = getModelsAsPlugins();
 
         return databaseModels.concat(pluginsModels);
-    };
-
-    const listModels = async () => {
-        const permission = await checkModelPermissions("r");
-        const models = await modelsList();
-        return utils.filterAsync(models, async model => {
-            if (!utils.validateOwnership(context, permission, model)) {
-                return false;
-            }
-            return utils.validateModelAccess(context, model);
-        });
-    };
-
-    const getModel = async (modelId: string): Promise<CmsModel> => {
-        const permission = await checkModelPermissions("r");
-
-        const model = await modelsGet(modelId);
-
-        utils.checkOwnership(context, permission, model);
-        await utils.checkModelAccess(context, model);
-
-        return model;
-    };
-
-    const getModelManager: CmsModelContext["getModelManager"] = async (
-        target
-    ): Promise<CmsModelManager> => {
-        const modelId = typeof target === "string" ? target : target.modelId;
-        if (managers.has(modelId)) {
-            return managers.get(modelId);
-        }
-        const models = await modelsList();
-        const model = models.find(m => m.modelId === modelId);
-        if (!model) {
-            throw new NotFoundError(`There is no content model "${modelId}".`);
-        }
-        return await updateManager(context, model);
     };
 
     const onBeforeModelCreate = createTopic<BeforeModelCreateTopicParams>();
@@ -234,8 +198,26 @@ export const createModelsCrud = (params: Params): CmsModelContext => {
         onAfterModelUpdate,
         onBeforeModelDelete,
         onAfterModelDelete,
-        getModel,
-        listModels,
+        getModel: async (modelId: string): Promise<CmsModel> => {
+            const permission = await checkModelPermissions("r");
+
+            const model = await modelsGet(modelId);
+
+            utils.checkOwnership(context, permission, model);
+            await utils.checkModelAccess(context, model);
+
+            return model;
+        },
+        listModels: async () => {
+            const permission = await checkModelPermissions("r");
+            const models = await modelsList();
+            return await utils.filterAsync(models, async model => {
+                if (!utils.validateOwnership(context, permission, model)) {
+                    return false;
+                }
+                return utils.validateModelAccess(context, model);
+            });
+        },
         async createModel(inputData) {
             await checkModelPermissions("w");
 
@@ -334,12 +316,12 @@ export const createModelsCrud = (params: Params): CmsModelContext => {
 
             return resultModel;
         },
-        async createModelFrom(modelId, data) {
+        async createModelFrom(this: HeadlessCms, modelId, data) {
             await checkModelPermissions("w");
             /**
              * Get a model record; this will also perform ownership validation.
              */
-            const original = await getModel(modelId);
+            const original = await this.getModel(modelId);
 
             const createdData = new CreateContentModelModelFrom().populate({
                 name: data.name,
@@ -413,11 +395,11 @@ export const createModelsCrud = (params: Params): CmsModelContext => {
 
             return createdModel;
         },
-        async updateModel(modelId, inputData) {
+        async updateModel(this: HeadlessCms, modelId, inputData) {
             await checkModelPermissions("w");
 
             // Get a model record; this will also perform ownership validation.
-            const original = await getModel(modelId);
+            const original = await this.getModel(modelId);
 
             const updatedData = new UpdateContentModelModel().populate(inputData);
             await updatedData.validate();
@@ -442,7 +424,7 @@ export const createModelsCrud = (params: Params): CmsModelContext => {
                     name: groupData.name
                 };
             }
-            const modelFields = await createFieldModels(original, inputData);
+            const fields = await createFieldModels(original, inputData);
             const model: CmsModel = {
                 ...original,
                 ...input,
@@ -450,10 +432,10 @@ export const createModelsCrud = (params: Params): CmsModelContext => {
                 tenant: original.tenant || getTenant().id,
                 locale: original.locale || getLocale().code,
                 webinyVersion: context.WEBINY_VERSION,
-                fields: modelFields,
+                fields,
                 savedOn: new Date().toISOString() as any
             };
-            validateLayout(model, modelFields);
+            validateLayout(model, fields);
 
             await onBeforeModelUpdate.publish({
                 input,
@@ -477,10 +459,10 @@ export const createModelsCrud = (params: Params): CmsModelContext => {
 
             return resultModel;
         },
-        async deleteModel(modelId) {
+        async deleteModel(this: HeadlessCms, modelId) {
             await checkModelPermissions("d");
 
-            const model = await getModel(modelId);
+            const model = await this.getModel(modelId);
 
             await onBeforeModelDelete.publish({
                 model
@@ -507,7 +489,18 @@ export const createModelsCrud = (params: Params): CmsModelContext => {
 
             managers.delete(model.modelId);
         },
-        getModelManager,
+        getModelManager: async (target): Promise<CmsModelManager> => {
+            const modelId = typeof target === "string" ? target : target.modelId;
+            if (managers.has(modelId)) {
+                return managers.get(modelId);
+            }
+            const models = await modelsList();
+            const model = models.find(m => m.modelId === modelId);
+            if (!model) {
+                throw new NotFoundError(`There is no content model "${modelId}".`);
+            }
+            return await updateManager(context, model);
+        },
         getManagers: () => managers
     };
 };

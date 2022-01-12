@@ -52,12 +52,12 @@ const setupContentModel = async (manager: any, contentModelGroup: CmsGroup, name
     });
     if (updateResponse.errors) {
         console.error(`[setupContentModel] ${updateResponse.errors[0].message}`);
-        process.exit(1);
+        throw new Error(updateResponse.errors[0].message);
     } else if (updateResponse.data.updateContentModel.error) {
         console.error(
             `[setupContentModel] ${updateResponse.data.updateContentModel.error.message}`
         );
-        process.exit(1);
+        throw new Error(updateResponse.data.updateContentModel.error.message);
     }
     return updateResponse.data.updateContentModel.data;
 };

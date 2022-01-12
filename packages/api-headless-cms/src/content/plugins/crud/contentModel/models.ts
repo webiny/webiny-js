@@ -2,7 +2,7 @@ import { validation } from "@webiny/validation";
 import flow from "lodash/flow";
 import { object } from "commodo-fields-object";
 import { withFields, string, setOnce, onSet, boolean, fields } from "@commodo/fields";
-import idValidation from "./idValidation";
+import { validateId, validateAlias } from "./fieldValidations";
 
 const requiredShortString = validation.create("required,maxLength:255");
 const shortString = validation.create("maxLength:255");
@@ -31,7 +31,8 @@ export const ContentModelFieldModel = withFields({
     fieldId: flow(
         onSet(value => value && value.trim()),
         setOnce()
-    )(string({ validation: idValidation })),
+    )(string({ validation: validateId })),
+    alias: string({ validation: validateAlias }),
     label: string({ validation: requiredShortString }),
     helpText: string({ validation: shortString }),
     placeholderText: string({ validation: shortString }),

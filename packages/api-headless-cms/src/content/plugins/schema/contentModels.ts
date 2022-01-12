@@ -3,7 +3,8 @@ import {
     CmsModelCreateInput,
     CmsModelUpdateInput,
     CmsContext,
-    CmsModelCreateFromInput
+    CmsModelCreateFromInput,
+    CmsModelField
 } from "~/types";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSchemaPlugin";
 import { Resolvers } from "@webiny/handler-graphql/types";
@@ -57,6 +58,28 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
                     .find((item: CmsModelPlugin) => item.contentModel.modelId === model.modelId);
 
                 return Boolean(modelPlugin);
+            }
+        },
+        /**
+         * We need fallback for field.alias because old systems did not have this field.
+         * !!! do not remove !!!
+         */
+        CmsContentModelField: {
+            alias: async (field: CmsModelField) => {
+                /**
+                 * When we don't have alias defined it means it's an old system so return the fieldId as alias.
+                 * TODO: remove after the upgrade.
+                 */
+                if (field.alias === undefined) {
+                    return field.fieldId;
+                }
+                /**
+                 * If alias is null or empty, return null. This means field is not used in the GraphQL
+                 */
+                if (field.alias === null || field.alias === "") {
+                    return null;
+                }
+                return field.alias;
             }
         }
     };
@@ -131,6 +154,7 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
                 helpText: String
                 placeholderText: String
                 fieldId: String!
+                alias: String
                 type: String!
                 multipleValues: Boolean
                 predefinedValues: CmsPredefinedValuesInput
@@ -208,6 +232,7 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
             type CmsContentModelField {
                 id: ID!
                 fieldId: String!
+                alias: String
                 label: String!
                 helpText: String
                 placeholderText: String

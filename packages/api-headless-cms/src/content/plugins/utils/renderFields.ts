@@ -24,6 +24,8 @@ export const renderField = ({ model, type, field, fieldTypePlugins }) => {
     if (!plugin) {
         // Let's not render the field if it does not exist in the field plugins.
         return;
+    } else if (!field.alias) {
+        return;
     }
     const defs = plugin[type].createTypeField({
         model,

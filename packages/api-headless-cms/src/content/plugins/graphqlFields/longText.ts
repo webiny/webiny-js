@@ -3,8 +3,8 @@ import { attachRequiredFieldValue } from "~/content/plugins/graphqlFields/requir
 
 const createListFilters = ({ field }) => {
     return `
-        ${field.fieldId}_contains: String
-        ${field.fieldId}_not_contains: String
+        ${field.alias}_contains: String
+        ${field.alias}_not_contains: String
     `;
 };
 
@@ -17,10 +17,10 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
     read: {
         createTypeField({ field }) {
             if (field.multipleValues) {
-                return `${field.fieldId}: [String]`;
+                return `${field.alias}: [String]`;
             }
 
-            return `${field.fieldId}: String`;
+            return `${field.alias}: String`;
         },
         createListFilters
     },
@@ -28,17 +28,17 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
         createListFilters,
         createTypeField({ field }) {
             if (field.multipleValues) {
-                return field.fieldId + ": [String]";
+                return field.alias + ": [String]";
             }
 
-            return field.fieldId + ": String";
+            return field.alias + ": String";
         },
         createInputField({ field }) {
             if (field.multipleValues) {
-                return attachRequiredFieldValue(field.fieldId + ": [String]", field);
+                return attachRequiredFieldValue(field.alias + ": [String]", field);
             }
 
-            return attachRequiredFieldValue(field.fieldId + ": String", field);
+            return attachRequiredFieldValue(field.alias + ": String", field);
         }
     }
 };

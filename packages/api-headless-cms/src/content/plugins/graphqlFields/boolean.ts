@@ -3,8 +3,8 @@ import { attachRequiredFieldValue } from "~/content/plugins/graphqlFields/requir
 
 const createListFilters = ({ field }) => {
     return `
-        ${field.fieldId}: Boolean
-        ${field.fieldId}_not: Boolean
+        ${field.alias}: Boolean
+        ${field.alias}_not: Boolean
     `;
 };
 
@@ -17,31 +17,31 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
     read: {
         createListFilters,
         createGetFilters({ field }) {
-            return `${field.fieldId}: Boolean`;
+            return `${field.alias}: Boolean`;
         },
         createTypeField({ field }) {
             if (field.multipleValues) {
-                return `${field.fieldId}: [Boolean]`;
+                return `${field.alias}: [Boolean]`;
             }
 
-            return `${field.fieldId}: Boolean`;
+            return `${field.alias}: Boolean`;
         }
     },
     manage: {
         createListFilters,
         createTypeField({ field }) {
             if (field.multipleValues) {
-                return field.fieldId + ": [Boolean]";
+                return field.alias + ": [Boolean]";
             }
 
-            return field.fieldId + ": Boolean";
+            return field.alias + ": Boolean";
         },
         createInputField({ field }) {
             if (field.multipleValues) {
-                return attachRequiredFieldValue(field.fieldId + ": [Boolean]", field);
+                return attachRequiredFieldValue(field.alias + ": [Boolean]", field);
             }
 
-            return attachRequiredFieldValue(field.fieldId + ": Boolean", field);
+            return attachRequiredFieldValue(field.alias + ": Boolean", field);
         }
     }
 };

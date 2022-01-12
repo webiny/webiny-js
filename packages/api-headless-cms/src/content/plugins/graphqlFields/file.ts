@@ -10,24 +10,24 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
     read: {
         createTypeField({ field }) {
             if (field.multipleValues) {
-                return `${field.fieldId}: [String]`;
+                return `${field.alias}: [String]`;
             }
 
-            return `${field.fieldId}: String`;
+            return `${field.alias}: String`;
         }
     },
     manage: {
         createTypeField({ field }) {
             if (field.multipleValues) {
-                return field.fieldId + ": [String]";
+                return field.alias + ": [String]";
             }
-            return field.fieldId + ": String";
+            return field.alias + ": String";
         },
         createInputField({ field }) {
             if (field.multipleValues) {
-                return attachRequiredFieldValue(field.fieldId + ": [String]", field);
+                return attachRequiredFieldValue(field.alias + ": [String]", field);
             }
-            return attachRequiredFieldValue(field.fieldId + ": String", field);
+            return attachRequiredFieldValue(field.alias + ": String", field);
         }
     }
 };

@@ -438,6 +438,7 @@ describe("content model test", () => {
         const textField: CmsModelFieldInput = {
             id: mdbid(),
             fieldId: "textField",
+            alias: "textField",
             label: "Text field",
             helpText: "help text",
             multipleValues: false,
@@ -457,6 +458,7 @@ describe("content model test", () => {
         const numberField: CmsModelFieldInput = {
             id: mdbid(),
             fieldId: "numberField",
+            alias: "numberField",
             label: "Number field",
             helpText: "number help text",
             multipleValues: false,
@@ -527,6 +529,7 @@ describe("content model test", () => {
         const field: CmsModelFieldInput = {
             id: mdbid(),
             fieldId: "field1",
+            alias: "field1",
             label: "Field 1",
             helpText: "help text",
             multipleValues: false,

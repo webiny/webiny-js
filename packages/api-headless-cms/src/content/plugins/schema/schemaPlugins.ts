@@ -20,7 +20,9 @@ export const generateSchemaPlugins = async (
             return acc;
         }, {});
 
-    // Load model data
+    /**
+     * Load the model data with fields that have alias.
+     */
     context.security.disableAuthorization();
     const models = await cms.listModels();
     context.security.enableAuthorization();

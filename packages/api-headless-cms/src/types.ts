@@ -124,6 +124,12 @@ export interface CmsModelField {
      */
     fieldId: string;
     /**
+     * Field identifier for outside world. Read: GraphQL
+     * If field is undefined it means it's old system and we will use fieldId as alias.
+     * If field is not needed, alias should be set as null.
+     */
+    alias: string | null | undefined;
+    /**
      * A label for the field
      */
     label: string;
@@ -1003,6 +1009,11 @@ export interface CmsModelFieldInput {
      * A unique ID for the field. Values will be mapped via this value.
      */
     fieldId: string;
+    /**
+     * A unique name by which the field will be displayed in the GraphQL.
+     * Must be either string or null. Can be empty string and will be treated as null
+     */
+    alias: string | null;
     /**
      * Label for the field.
      */

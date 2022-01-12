@@ -88,6 +88,7 @@ describe("multiple values in field", () => {
                 helpText: "",
                 label: "Available sizes",
                 fieldId: "availableSizes",
+                alias: "availableSizes",
                 type: "text",
                 settings: {
                     type: "text"

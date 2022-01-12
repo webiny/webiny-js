@@ -105,6 +105,7 @@ const models: CmsModel[] = [
                 label: "Title",
                 type: "text",
                 fieldId: "title",
+                alias: "title",
                 validation: [
                     {
                         name: "required",
@@ -135,6 +136,7 @@ const models: CmsModel[] = [
                 label: "Slug",
                 type: "text",
                 fieldId: "slug",
+                alias: "slug",
                 validation: [
                     {
                         name: "required",
@@ -190,6 +192,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "Title",
                 fieldId: "title",
+                alias: "title",
                 type: "text",
                 validation: [
                     {
@@ -213,6 +216,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "Category",
                 fieldId: "category",
+                alias: "category",
                 type: "ref",
                 validation: [
                     {
@@ -240,6 +244,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "Price",
                 fieldId: "price",
+                alias: "price",
                 type: "number",
                 validation: [
                     {
@@ -263,6 +268,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "Price",
                 fieldId: "inStock",
+                alias: "inStock",
                 type: "boolean",
                 validation: [],
                 listValidation: [],
@@ -281,6 +287,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "Price",
                 fieldId: "itemsInStock",
+                alias: "itemsInStock",
                 type: "number",
                 validation: [],
                 listValidation: [],
@@ -299,6 +306,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "Available on",
                 fieldId: "availableOn",
+                alias: "availableOn",
                 type: "datetime",
                 settings: {
                     type: "date"
@@ -325,6 +333,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "Color",
                 fieldId: "color",
+                alias: "color",
                 type: "text",
                 settings: {
                     type: "text"
@@ -368,6 +377,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "Available sizes",
                 fieldId: "availableSizes",
+                alias: "availableSizes",
                 type: "text",
                 settings: {
                     type: "text"
@@ -411,6 +421,7 @@ const models: CmsModel[] = [
                 helpText: "Upload an image of the product",
                 label: "Image",
                 fieldId: "image",
+                alias: "image",
                 type: "file",
                 settings: {
                     type: "file"
@@ -437,6 +448,7 @@ const models: CmsModel[] = [
                 helpText: "Rich text",
                 label: "Rich text",
                 fieldId: "richText",
+                alias: "richText",
                 type: "rich-text",
                 settings: {
                     type: "text"
@@ -458,6 +470,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "Variant",
                 fieldId: "variant",
+                alias: "variant",
                 type: "object",
                 settings: {
                     fields: [
@@ -467,6 +480,7 @@ const models: CmsModel[] = [
                             helpText: "",
                             label: "Name",
                             fieldId: "name",
+                            alias: "name",
                             type: "text",
                             settings: {
                                 type: "text"
@@ -488,6 +502,7 @@ const models: CmsModel[] = [
                             helpText: "",
                             label: "Price",
                             fieldId: "price",
+                            alias: "price",
                             type: "number",
                             settings: {
                                 type: "number"
@@ -509,6 +524,7 @@ const models: CmsModel[] = [
                             helpText: "",
                             label: "Category",
                             fieldId: "category",
+                            alias: "category",
                             type: "ref",
                             validation: [
                                 {
@@ -535,6 +551,7 @@ const models: CmsModel[] = [
                             helpText: "",
                             label: "Options",
                             fieldId: "options",
+                            alias: "options",
                             type: "object",
                             settings: {
                                 fields: [
@@ -544,6 +561,7 @@ const models: CmsModel[] = [
                                         helpText: "",
                                         label: "Name",
                                         fieldId: "name",
+                                        alias: "name",
                                         type: "text",
                                         settings: {
                                             type: "text"
@@ -565,6 +583,7 @@ const models: CmsModel[] = [
                                         helpText: "",
                                         label: "Price",
                                         fieldId: "price",
+                                        alias: "price",
                                         type: "number",
                                         settings: {
                                             type: "number"
@@ -586,6 +605,7 @@ const models: CmsModel[] = [
                                         helpText: "",
                                         label: "Category",
                                         fieldId: "category",
+                                        alias: "category",
                                         type: "ref",
                                         validation: [
                                             {
@@ -612,6 +632,7 @@ const models: CmsModel[] = [
                                         helpText: "",
                                         label: "Categories",
                                         fieldId: "categories",
+                                        alias: "categories",
                                         type: "ref",
                                         validation: [],
                                         listValidation: [],
@@ -659,6 +680,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "No fields object",
                 fieldId: "noFieldsObject",
+                alias: "noFieldsObject",
                 type: "object",
                 settings: {
                     fields: []
@@ -701,6 +723,7 @@ const models: CmsModel[] = [
                 label: "Text",
                 type: "text",
                 fieldId: "text",
+                alias: "text",
                 validation: [
                     {
                         name: "required",
@@ -724,6 +747,7 @@ const models: CmsModel[] = [
                 label: "Product",
                 type: "ref",
                 fieldId: "product",
+                alias: "product",
                 validation: [],
                 listValidation: [],
                 settings: {
@@ -745,6 +769,7 @@ const models: CmsModel[] = [
                 label: "Rating",
                 type: "number",
                 fieldId: "rating",
+                alias: "rating",
                 validation: [],
                 listValidation: [],
                 placeholderText: "placeholder text",
@@ -763,6 +788,7 @@ const models: CmsModel[] = [
                 label: "Author",
                 type: "ref",
                 fieldId: "author",
+                alias: "author",
                 validation: [],
                 listValidation: [],
                 settings: {
@@ -804,6 +830,7 @@ const models: CmsModel[] = [
                 label: "Full name",
                 type: "text",
                 fieldId: "fullName",
+                alias: "fullName",
                 validation: [
                     {
                         name: "required",
@@ -863,6 +890,7 @@ const models: CmsModel[] = [
                 label: "Name",
                 type: "text",
                 fieldId: "name",
+                alias: "name",
                 validation: [
                     {
                         name: "required",
@@ -901,6 +929,7 @@ const models: CmsModel[] = [
                 label: "Numbers",
                 type: "number",
                 fieldId: "numbers",
+                alias: "numbers",
                 validation: [
                     {
                         name: "required",
@@ -954,6 +983,7 @@ const models: CmsModel[] = [
                 label: "E-mail",
                 type: "text",
                 fieldId: "email",
+                alias: "email",
                 validation: [
                     {
                         name: "pattern",
@@ -981,6 +1011,7 @@ const models: CmsModel[] = [
                 label: "Url",
                 type: "text",
                 fieldId: "url",
+                alias: "url",
                 validation: [
                     {
                         name: "pattern",
@@ -1007,6 +1038,7 @@ const models: CmsModel[] = [
                 label: "LowerCase",
                 type: "text",
                 fieldId: "lowerCase",
+                alias: "lowerCase",
                 validation: [
                     {
                         name: "pattern",
@@ -1034,6 +1066,7 @@ const models: CmsModel[] = [
                 label: "UpperCase",
                 type: "text",
                 fieldId: "upperCase",
+                alias: "upperCase",
                 validation: [
                     {
                         name: "pattern",
@@ -1061,6 +1094,7 @@ const models: CmsModel[] = [
                 label: "Date",
                 type: "datetime",
                 fieldId: "date",
+                alias: "date",
                 validation: [
                     {
                         name: "dateGte",
@@ -1104,6 +1138,7 @@ const models: CmsModel[] = [
                 label: "DateTime",
                 type: "datetime",
                 fieldId: "dateTime",
+                alias: "dateTime",
                 validation: [
                     {
                         name: "dateGte",
@@ -1147,6 +1182,7 @@ const models: CmsModel[] = [
                 label: "DateTime",
                 type: "datetime",
                 fieldId: "dateTimeZ",
+                alias: "dateTimeZ",
                 validation: [
                     {
                         name: "dateGte",
@@ -1190,6 +1226,7 @@ const models: CmsModel[] = [
                 label: "Time",
                 type: "datetime",
                 fieldId: "time",
+                alias: "time",
                 validation: [
                     {
                         name: "dateGte",
@@ -1233,6 +1270,7 @@ const models: CmsModel[] = [
                 label: "Is Something",
                 type: "boolean",
                 fieldId: "isSomething",
+                alias: "isSomething",
                 validation: [],
                 settings: {
                     type: "boolean"
@@ -1255,6 +1293,7 @@ const models: CmsModel[] = [
                 label: "Rating",
                 type: "number",
                 fieldId: "rating",
+                alias: "rating",
                 validation: [],
                 settings: {
                     type: "number"
@@ -1276,6 +1315,7 @@ const models: CmsModel[] = [
                 label: "Description",
                 type: "long-text",
                 fieldId: "description",
+                alias: "description",
                 validation: [],
                 settings: {},
                 listValidation: [],
@@ -1295,6 +1335,7 @@ const models: CmsModel[] = [
                 label: "Slug",
                 type: "text",
                 fieldId: "slug",
+                alias: "slug",
                 validation: [
                     {
                         name: "unique",
@@ -1339,6 +1380,7 @@ const models: CmsModel[] = [
                 label: "Name",
                 type: "text",
                 fieldId: "name",
+                alias: "name",
                 validation: [],
                 listValidation: [],
                 placeholderText: "placeholder text",
@@ -1357,6 +1399,7 @@ const models: CmsModel[] = [
                 label: "Bug type",
                 type: "text",
                 fieldId: "bugType",
+                alias: "bugType",
                 validation: [],
                 listValidation: [],
                 placeholderText: "A bug type selectable field",
@@ -1391,6 +1434,7 @@ const models: CmsModel[] = [
                 label: "Bug developer value",
                 type: "number",
                 fieldId: "bugValue",
+                alias: "bugValue",
                 validation: [],
                 listValidation: [],
                 placeholderText: "A bug developer value selectable field",
@@ -1422,6 +1466,7 @@ const models: CmsModel[] = [
                 label: "Bug fixed?",
                 type: "number",
                 fieldId: "bugFixed",
+                alias: "bugFixed",
                 validation: [],
                 listValidation: [],
                 placeholderText: "A bug is fixed",
@@ -1472,6 +1517,7 @@ const models: CmsModel[] = [
                 label: "Title",
                 type: "text",
                 fieldId: "title",
+                alias: "title",
                 validation: [],
                 listValidation: [],
                 placeholderText: "Title",
@@ -1490,6 +1536,7 @@ const models: CmsModel[] = [
                 label: "Body",
                 type: "rich-text",
                 fieldId: "body",
+                alias: "body",
                 validation: [],
                 listValidation: [],
                 placeholderText: "Body",
@@ -1508,6 +1555,7 @@ const models: CmsModel[] = [
                 label: "Categories",
                 type: "ref",
                 fieldId: "categories",
+                alias: "categories",
                 validation: [],
                 listValidation: [],
                 placeholderText: "Categories",
@@ -1529,6 +1577,7 @@ const models: CmsModel[] = [
                 label: "Category",
                 type: "ref",
                 fieldId: "category",
+                alias: "category",
                 validation: [],
                 listValidation: [],
                 placeholderText: "Category",
