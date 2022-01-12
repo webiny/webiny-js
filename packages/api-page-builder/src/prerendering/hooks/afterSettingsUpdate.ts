@@ -14,17 +14,10 @@ export default () => {
              * TODO: optimize this.
              * TODO: right now, on each update of settings, we trigger a complete site rebuild.
              */
-            const tenant = context.tenancy.getCurrentTenant();
-
-            await context.prerenderingServiceClient.queue.add({
-                render: {
-                    path: "*",
-                    configuration: {
-                        db: {
-                            namespace: `T#${tenant.id}`
-                        }
-                    }
-                }
+            await context.pageBuilder.prerendering.render({
+                context,
+                queue: true,
+                paths: [{ path: "*" }]
             });
 
             /**

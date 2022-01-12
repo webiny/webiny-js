@@ -613,6 +613,7 @@ export interface PathItem {
 }
 
 export interface RenderParams {
+    queue?: boolean;
     context: PbContext;
     tags?: TagItem[];
     paths?: PathItem[];
