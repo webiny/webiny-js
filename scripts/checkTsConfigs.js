@@ -96,7 +96,7 @@ const TSCONFIG = {
                         });
                     }
                 };
-                
+
                 if (wpObject.tsConfigBuildJson) {
                     checkReferences(wpObject.tsConfigBuildJson, TSCONFIG.BUILD);
                 }
