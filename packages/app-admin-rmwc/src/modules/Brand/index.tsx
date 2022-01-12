@@ -30,14 +30,18 @@ const BrandImpl: HigherOrderComponent = () => {
 
 const WebinyLogo = () => {
     const { location } = useTags();
+    const isLoginScreen = location === "loginScreen";
+    const isAppBar = location === "appBar";
+
+    const color = isAppBar ? "white" : "var(--mdc-theme-primary)";
 
     return (
         <LogoIcon
             style={{
-                width: 100,
-                height: 30,
-                paddingLeft: 20,
-                color: location === "navigation" ? "var(--mdc-theme-primary)" : "white"
+                width: isLoginScreen ? 125 : 100,
+                height: isLoginScreen ? "auto" : 30,
+                paddingLeft: isLoginScreen ? 0 : 20,
+                color
             }}
         />
     );
