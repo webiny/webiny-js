@@ -7710,7 +7710,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react-dom@npm:^17.0.0":
+"@types/react-dom@npm:^17.0.2":
   version: 17.0.11
   resolution: "@types/react-dom@npm:17.0.11"
   dependencies:
@@ -7758,7 +7758,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react@npm:*, @types/react@npm:^17.0.0, @types/react@npm:^17.0.2":
+"@types/react@npm:*, @types/react@npm:^17.0.2":
   version: 17.0.38
   resolution: "@types/react@npm:17.0.38"
   dependencies:
@@ -33125,8 +33125,8 @@ __metadata:
     "@types/jest": ^24.0.24
     "@types/jquery": ^3.3.31
     "@types/node": ^12.12.22
-    "@types/react": ^17.0.0
-    "@types/react-dom": ^17.0.0
+    "@types/react": ^17.0.2
+    "@types/react-dom": ^17.0.2
     "@typescript-eslint/eslint-plugin": ^5.5.0
     "@typescript-eslint/parser": ^5.5.0
     adio: ^1.0.1
