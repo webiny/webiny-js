@@ -2,8 +2,11 @@ import { ValueTransformPlugin, Params, TransformParams } from "./ValueTransformP
 import WebinyError from "@webiny/error";
 import { parseISO } from "date-fns";
 
-const transformDateTime = (params: TransformParams): number => {
+const transformDateTime = (params: TransformParams): number | null => {
     const { value } = params;
+    if (value === null) {
+        return null;
+    }
     if (value && typeof (value as any).getTime === "function") {
         /**
          * In this case we assume this is a date object and we just get the time.

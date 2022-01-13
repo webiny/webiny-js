@@ -173,7 +173,7 @@ export const getDefaultFieldValue = (
     getCurrent: () => string
 ): string => {
     const def = field.settings ? field.settings.defaultSetValue || "null" : "null";
-    if (bind.value || def === "null") {
+    if (bind.value || def !== "current") {
         return bind.value || "";
     }
     return getCurrent();
