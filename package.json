@@ -34,7 +34,7 @@
     "@types/jest": "^24.0.24",
     "@types/jquery": "^3.3.31",
     "@types/node": "^12.12.22",
-    "@types/react": "16.14.2",
+    "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",
     "@typescript-eslint/eslint-plugin": "^5.5.0",
     "@typescript-eslint/parser": "^5.5.0",
@@ -210,7 +210,6 @@
   },
   "resolutions": {
     "@rmwc/textfield": "link:./packages/ui/rmwc/textfield",
-    "@types/react": "16.14.2",
     "react": "17.0.2",
     "react-dom": "17.0.2",
     "pretty-format": "25.5.0",

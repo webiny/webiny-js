@@ -18,7 +18,7 @@
     "@emotion/styled": "^10.0.17",
     "@svgr/webpack": "^6.1.1",
     "@types/mime": "^2.0.3",
-    "@types/react": "^16.9.56",
+    "@types/react": "^17.0.2",
     "@webiny/app": "^5.21.0",
     "@webiny/app-admin-core": "^5.21.0",
     "@webiny/app-security": "^5.21.0",
