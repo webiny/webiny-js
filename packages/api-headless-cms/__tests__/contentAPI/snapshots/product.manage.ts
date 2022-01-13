@@ -70,7 +70,7 @@ export default /* GraphQL */ `
         price: Number!
         inStock: Boolean
         itemsInStock: Number
-        availableOn: Date!
+        availableOn: Date
         color: String!
         availableSizes: [String]!
         image: String!
