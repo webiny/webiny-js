@@ -15,7 +15,7 @@ export type DraggableProps = {
     target?: string[];
 };
 
-const Draggable = React.memo((props: DraggableProps) => {
+function Draggable(props: DraggableProps) {
     const { children, beginDrag, endDrag, target } = props;
 
     const [{ isDragging }, drag, preview] = useDrag({
@@ -43,6 +43,6 @@ const Draggable = React.memo((props: DraggableProps) => {
             {children({ isDragging, drag })}
         </>
     );
-});
+}
 
-export default Draggable;
+export default React.memo(Draggable);

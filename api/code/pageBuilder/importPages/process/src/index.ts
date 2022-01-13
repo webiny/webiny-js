@@ -52,7 +52,9 @@ export const handler = createHandler({
             storageOperations: createPageBuilderImportExportStorageOperations({ documentClient })
         }),
         importPagesProcessPlugins({
-            handlers: { process: process.env.AWS_LAMBDA_FUNCTION_NAME }
+            handlers: {
+                process: String(process.env.AWS_LAMBDA_FUNCTION_NAME)
+            }
         })
     ],
     http: { debug }

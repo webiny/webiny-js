@@ -14,17 +14,17 @@
     "@webiny/plugins": "^5.21.0",
     "@webiny/project-utils": "^5.21.0",
     "@webiny/react-router": "^5.21.0",
-    "apollo-client": "^2.2.8",
+    "apollo-client": "^2.6.10",
     "apollo-link": "^1.2.14",
     "apollo-link-batch-http": "^1.2.14",
     "core-js": "^3.0.1",
     "cross-fetch": "^3.0.4",
-    "graphql": "^14.7.0",
-    "graphql-tag": "^2.11.0",
+    "graphql": "^15.7.2",
+    "graphql-tag": "^2.12.6",
     "invariant": "^2.2.4",
     "lodash.trim": "^4.4.2",
-    "react": "^16.14.0",
-    "react-dom": "^16.14.0",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
     "react-helmet": "^6.1.0",
     "regenerator-runtime": "^0.13.5",
     "theme": "^0.1.0"
@@ -48,11 +48,6 @@
       "not op_mini all",
       "ie 11"
     ]
-  },
-  "svgo": {
-    "plugins": {
-      "removeViewBox": false
-    }
   },
   "adio": {
     "ignore": {

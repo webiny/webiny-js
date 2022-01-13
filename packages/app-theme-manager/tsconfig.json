@@ -1,0 +1,27 @@
+{
+  "extends": "../../tsconfig.json",
+  "include": ["src", "__tests__/**/*.ts"],
+  "compilerOptions": {
+    "rootDirs": ["./src", "./__tests__"],
+    "outDir": "./dist",
+    "declarationDir": "./dist",
+    "paths": {
+      "~/*": ["./src/*"],
+      "@webiny/app-admin/*": ["../app-admin/src/*"],
+      "@webiny/app-admin": ["../app-admin/src"],
+      "@webiny/app-page-builder/*": ["../app-page-builder/src/*"],
+      "@webiny/app-page-builder": ["../app-page-builder/src"],
+      "@webiny/app-tenant-manager/*": ["../app-tenant-manager/src/*"],
+      "@webiny/app-tenant-manager": ["../app-tenant-manager/src"],
+      "@webiny/form/*": ["../form/src/*"],
+      "@webiny/form": ["../form/src"],
+      "@webiny/plugins/*": ["../plugins/src/*"],
+      "@webiny/plugins": ["../plugins/src"],
+      "@webiny/ui/*": ["../ui/src/*"],
+      "@webiny/ui": ["../ui/src"],
+      "@webiny/validation/*": ["../validation/src/*"],
+      "@webiny/validation": ["../validation/src"]
+    },
+    "baseUrl": "."
+  }
+}

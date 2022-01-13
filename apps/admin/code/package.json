@@ -22,8 +22,8 @@
     "cross-fetch": "^3.0.4",
     "invariant": "^2.2.4",
     "prop-types": "^15.7.2",
-    "react": "^16.14.0",
-    "react-dom": "^16.14.0",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
     "regenerator-runtime": "^0.13.5",
     "theme": "^0.1.0"
   },
@@ -47,14 +47,11 @@
       "ie 11"
     ]
   },
-  "svgo": {
-    "plugins": {
-      "removeViewBox": false
-    }
-  },
   "adio": {
     "ignore": {
       "dependencies": [
+        "theme",
+        "theme-1",
         "@webiny/cli"
       ],
       "src": [
