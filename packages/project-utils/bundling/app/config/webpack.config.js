@@ -26,15 +26,9 @@ const sassIncludePaths = [
     materialNodeModules
 ];
 
-if (typeof process.env["GENERATE_SOURCEMAP"] === "undefined") {
-    process.env.GENERATE_SOURCEMAP = "false";
-}
-
 // Generates a unique static folder name, for example "static-mi7aan0cqpo".
 const STATIC_FOLDER = "static";
 
-// Source maps are resource heavy and can cause out of memory issue for large source files.
-const shouldUseSourceMap = process.env.GENERATE_SOURCEMAP !== "false";
 // Some apps do not need the benefits of saving a web request, so not inlining the chunk
 // makes for a smoother build process.
 const shouldInlineRuntimeChunk = process.env.INLINE_RUNTIME_CHUNK !== "false";
@@ -86,6 +80,9 @@ module.exports = function (webpackEnv, { paths, options }) {
     // For these, "homepage" can be set to "." to enable relative asset paths.
     const shouldUseRelativeAssetPaths = publicPath === "./";
 
+    // Source maps are resource heavy and can cause out of memory issue for large source files.
+    const shouldUseSourceMap = isEnvDevelopment || process.env.GENERATE_SOURCEMAP === "true";
+
     // `publicUrl` is just like `publicPath`, but we will provide it to our app
     // as %PUBLIC_URL% in `index.html` and `process.env.PUBLIC_URL` in JavaScript.
     // Omit trailing slash as %PUBLIC_URL%/xyz looks better than %PUBLIC_URL%xyz.
@@ -97,11 +94,7 @@ module.exports = function (webpackEnv, { paths, options }) {
         mode: isEnvProduction ? "production" : isEnvDevelopment && "development",
         // Stop compilation early in production
         bail: isEnvProduction,
-        devtool: isEnvProduction
-            ? shouldUseSourceMap
-                ? "source-map"
-                : false
-            : isEnvDevelopment && "cheap-module-source-map",
+        devtool: shouldUseSourceMap ? "source-map" : false,
         // These are the "entry points" to our application.
         // This means they will be the "root" imports that are included in JS bundle.
         entry: [
@@ -224,7 +217,6 @@ module.exports = function (webpackEnv, { paths, options }) {
                 // Support React Native Web
                 // https://www.smashingmagazine.com/2016/08/a-glimpse-into-the-future-with-react-native-for-web/
                 "react-native": require.resolve("react-native-web"),
-                "react-dom$": require.resolve("@hot-loader/react-dom"),
                 "react/jsx-runtime": require.resolve("react/jsx-runtime.js"),
                 react: require.resolve("react"),
                 // Allows for better profiling with ReactDevTools
@@ -311,7 +303,8 @@ module.exports = function (webpackEnv, { paths, options }) {
                                 cacheDirectory: true,
                                 // See #6846 for context on why cacheCompression is disabled
                                 cacheCompression: false,
-                                compact: isEnvProduction
+                                compact: isEnvProduction,
+                                sourceMaps: shouldUseSourceMap
                             })
                         },
 
