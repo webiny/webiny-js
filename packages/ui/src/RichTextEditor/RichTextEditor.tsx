@@ -87,7 +87,7 @@ export const RichTextEditor = (props: RichTextEditorProps) => {
             }, {})
         });
 
-        return async () => {
+        return () => {
             if (!editorRef.current || typeof editorRef.current.destroy !== "function") {
                 return;
             }
