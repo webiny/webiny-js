@@ -2,10 +2,10 @@ import React from "react";
 import get from "lodash/get";
 import { CmsEditorFieldRendererPlugin } from "~/types";
 import { i18n } from "@webiny/app/i18n";
-import DateTimeWithoutTimezone from "./DateTimeWithoutTimezone";
-import DateTimeWithTimezone from "./DateTimeWithTimezone";
-import Time from "./Time";
-import Input from "./Input";
+import { DateOnly } from "./DateOnly";
+import { DateTimeWithoutTimezone } from "./DateTimeWithoutTimezone";
+import { DateTimeWithTimezone } from "./DateTimeWithTimezone";
+import { Time } from "./Time";
 
 const t = i18n.ns("app-headless-cms/admin/fields/date-time");
 
@@ -31,14 +31,12 @@ const plugin: CmsEditorFieldRendererPlugin = {
                     {bind => {
                         if (field.settings.type === "dateTimeWithoutTimezone") {
                             return <DateTimeWithoutTimezone field={field} bind={bind} />;
-                        }
-                        if (field.settings.type === "dateTimeWithTimezone") {
+                        } else if (field.settings.type === "dateTimeWithTimezone") {
                             return <DateTimeWithTimezone field={field} bind={bind} />;
-                        }
-                        if (field.settings.type === "time") {
+                        } else if (field.settings.type === "time") {
                             return <Time field={field} bind={bind} />;
                         }
-                        return <Input bind={bind} field={field} type={field.settings.type} />;
+                        return <DateOnly bind={bind} field={field} />;
                     }}
                 </Bind>
             );

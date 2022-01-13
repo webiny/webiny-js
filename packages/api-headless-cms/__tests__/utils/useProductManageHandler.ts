@@ -202,7 +202,7 @@ export const useProductManageHandler = (
                 headers
             });
         },
-        async listProducts(variables, headers: Record<string, any> = {}) {
+        async listProducts(variables = {}, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
                 body: { query: listProductsQuery, variables },
                 headers
