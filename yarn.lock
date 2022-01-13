@@ -7758,13 +7758,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react@npm:16.14.2":
-  version: 16.14.2
-  resolution: "@types/react@npm:16.14.2"
+"@types/react@npm:*, @types/react@npm:^17.0.0, @types/react@npm:^17.0.2":
+  version: 17.0.38
+  resolution: "@types/react@npm:17.0.38"
   dependencies:
     "@types/prop-types": "*"
+    "@types/scheduler": "*"
     csstype: ^3.0.2
-  checksum: 1be44c708f3e6e2597223806d83590dae68f296cef8e3ddc6696440c4f2f66775e62f9c46f5e210c29dd13729937923fc50d26aea60d3ed59e8585039cfa4c54
+  checksum: 4079f4f959cd4a4bfaeda8b89fe8a1b1f8bdc9d87acfdc5f74a0b39cec9ec6a470724357c62778c0f063180b360c250e920c5a142f1dbcda67d9cc25a6d43a85
   languageName: node
   linkType: hard
 
@@ -7797,6 +7798,13 @@ __metadata:
   version: 0.12.1
   resolution: "@types/retry@npm:0.12.1"
   checksum: 5f46b2556053655f78262bb33040dc58417c900457cc63ff37d6c35349814471453ef511af0cec76a540c601296cd2b22f64bab1ab649c0dacc0223765ba876c
+  languageName: node
+  linkType: hard
+
+"@types/scheduler@npm:*":
+  version: 0.16.2
+  resolution: "@types/scheduler@npm:0.16.2"
+  checksum: b6b4dcfeae6deba2e06a70941860fb1435730576d3689225a421280b7742318d1548b3d22c1f66ab68e414f346a9542f29240bc955b6332c5b11e561077583bc
   languageName: node
   linkType: hard
 
@@ -9652,7 +9660,7 @@ __metadata:
     "@babel/preset-react": ^7.0.0
     "@babel/preset-typescript": ^7.8.3
     "@babel/runtime": ^7.5.5
-    "@types/react": ^16.9.56
+    "@types/react": ^17.0.2
     "@webiny/app": ^5.21.0
     "@webiny/cli": ^5.21.0
     "@webiny/plugins": ^5.21.0
@@ -9715,7 +9723,7 @@ __metadata:
     "@babel/preset-typescript": ^7.8.3
     "@babel/runtime": ^7.5.5
     "@emotion/styled": ^10.0.27
-    "@types/react": ^16.9.56
+    "@types/react": ^17.0.2
     "@webiny/app": ^5.21.0
     "@webiny/app-admin": ^5.21.0
     "@webiny/app-security": ^5.21.0
@@ -9799,7 +9807,7 @@ __metadata:
     "@emotion/styled": ^10.0.17
     "@svgr/webpack": ^6.1.1
     "@types/mime": ^2.0.3
-    "@types/react": ^16.9.56
+    "@types/react": ^17.0.2
     "@webiny/app": ^5.21.0
     "@webiny/app-admin-core": ^5.21.0
     "@webiny/app-security": ^5.21.0
@@ -9903,7 +9911,7 @@ __metadata:
     "@emotion/core": ^10.0.27
     "@emotion/styled": ^10.0.27
     "@svgr/webpack": ^6.1.1
-    "@types/react": ^16.9.56
+    "@types/react": ^17.0.2
     "@webiny/app": ^5.21.0
     "@webiny/app-admin": ^5.21.0
     "@webiny/app-security": ^5.21.0
@@ -9944,7 +9952,7 @@ __metadata:
     "@emotion/styled": ^10.0.17
     "@rmwc/menu": ^5.6.0
     "@svgr/webpack": ^6.1.1
-    "@types/react": ^16.9.56
+    "@types/react": ^17.0.2
     "@webiny/app": ^5.21.0
     "@webiny/app-admin": ^5.21.0
     "@webiny/app-page-builder": ^5.21.0
@@ -10040,7 +10048,7 @@ __metadata:
     "@fortawesome/free-solid-svg-icons": ^5.5.0
     "@fortawesome/react-fontawesome": ^0.1.3
     "@svgr/webpack": ^6.1.1
-    "@types/react": ^16.9.56
+    "@types/react": ^17.0.2
     "@webiny/app": ^5.21.0
     "@webiny/app-admin": ^5.21.0
     "@webiny/app-graphql-playground": ^5.21.0
@@ -10132,7 +10140,7 @@ __metadata:
     "@babel/runtime": ^7.16.3
     "@emotion/core": ^10.0.27
     "@emotion/styled": ^10.0.27
-    "@types/react": ^16.9.56
+    "@types/react": ^17.0.2
     "@webiny/app": ^5.21.0
     "@webiny/app-admin": ^5.21.0
     "@webiny/app-security": ^5.21.0
@@ -10173,7 +10181,7 @@ __metadata:
     "@babel/preset-typescript": ^7.16.0
     "@babel/runtime": ^7.16.3
     "@emotion/css": ^11.1.3
-    "@types/react": ^16.9.56
+    "@types/react": ^17.0.2
     "@types/resize-observer-browser": ^0.1.4
     "@webiny/cli": ^5.21.0
     "@webiny/project-utils": ^5.21.0
@@ -10211,7 +10219,7 @@ __metadata:
     "@rmwc/menu": ^5.6.0
     "@svgr/webpack": ^6.1.1
     "@types/medium-editor": ^5.0.3
-    "@types/react": ^16.9.56
+    "@types/react": ^17.0.2
     "@types/resize-observer-browser": ^0.1.4
     "@webiny/app": ^5.21.0
     "@webiny/app-admin": ^5.21.0
@@ -10411,7 +10419,7 @@ __metadata:
     "@babel/preset-typescript": ^7.16.0
     "@babel/runtime": ^7.16.3
     "@emotion/styled": ^10.0.17
-    "@types/react": ^16.9.56
+    "@types/react": ^17.0.2
     "@webiny/app": ^5.21.0
     "@webiny/app-admin": ^5.21.0
     "@webiny/cli": ^5.21.0
@@ -10443,7 +10451,7 @@ __metadata:
     "@babel/runtime": ^7.16.3
     "@emotion/core": ^10.0.27
     "@emotion/styled": ^10.0.27
-    "@types/react": ^16.9.56
+    "@types/react": ^17.0.2
     "@webiny/app": ^5.21.0
     "@webiny/app-admin": ^5.21.0
     "@webiny/app-security": ^5.21.0
@@ -10485,7 +10493,7 @@ __metadata:
     "@babel/runtime": ^7.5.5
     "@emotion/core": ^10.0.27
     "@emotion/styled": ^10.0.27
-    "@types/react": ^16.9.56
+    "@types/react": ^17.0.2
     "@webiny/app-admin": ^5.21.0
     "@webiny/app-page-builder": ^5.21.0
     "@webiny/app-tenant-manager": ^5.21.0
@@ -10554,7 +10562,7 @@ __metadata:
     "@babel/preset-typescript": ^7.16.0
     "@babel/runtime": ^7.16.3
     "@emotion/styled": ^10.0.17
-    "@types/react": ^16.9.56
+    "@types/react": ^17.0.2
     "@webiny/cli": ^5.21.0
     "@webiny/i18n": ^5.21.0
     "@webiny/i18n-react": ^5.21.0
@@ -11374,7 +11382,7 @@ __metadata:
     "@babel/preset-typescript": ^7.16.0
     "@babel/runtime": ^7.16.3
     "@editorjs/editorjs": ^2.20.1
-    "@types/react": ^16.9.56
+    "@types/react": ^17.0.2
     "@webiny/cli": ^5.21.0
     "@webiny/project-utils": ^5.21.0
     classnames: ^2.3.1
@@ -11921,7 +11929,7 @@ __metadata:
     "@editorjs/list": ^1.6.0
     "@editorjs/quote": ^2.4.0
     "@editorjs/underline": ^1.0.0
-    "@types/react": ^16.14.2
+    "@types/react": ^17.0.2
     "@webiny/app-admin": ^5.21.0
     "@webiny/app-admin-users-cognito": ^5.21.0
     "@webiny/app-form-builder": ^5.21.0
@@ -33117,7 +33125,7 @@ __metadata:
     "@types/jest": ^24.0.24
     "@types/jquery": ^3.3.31
     "@types/node": ^12.12.22
-    "@types/react": 16.14.2
+    "@types/react": ^17.0.0
     "@types/react-dom": ^17.0.0
     "@typescript-eslint/eslint-plugin": ^5.5.0
     "@typescript-eslint/parser": ^5.5.0
@@ -37392,7 +37400,7 @@ __metadata:
   dependencies:
     "@apollo/react-components": ^3.1.5
     "@apollo/react-hooks": ^3.1.5
-    "@types/react": ^16.14.2
+    "@types/react": ^17.0.2
     "@webiny/app": ^5.21.0
     "@webiny/app-form-builder": ^5.21.0
     "@webiny/app-page-builder": ^5.21.0
