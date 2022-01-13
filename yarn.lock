@@ -3311,20 +3311,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@hot-loader/react-dom@npm:16.14.0+4.13.0":
-  version: 16.14.0
-  resolution: "@hot-loader/react-dom@npm:16.14.0"
-  dependencies:
-    loose-envify: ^1.1.0
-    object-assign: ^4.1.1
-    prop-types: ^15.6.2
-    scheduler: ^0.19.1
-  peerDependencies:
-    react: ^16.14.0
-  checksum: 9362ef1dfcea97eb833983c3cfcd3bb813ef5cd7dc3f91ad4927fabbaf05db2b81751aaa98e5c233004081771ca5d5478bd648a9a969e08eb9cf1c6a1ee0de00
-  languageName: node
-  linkType: hard
-
 "@humanwhocodes/config-array@npm:^0.9.2":
   version: 0.9.2
   resolution: "@humanwhocodes/config-array@npm:0.9.2"
@@ -11263,7 +11249,6 @@ __metadata:
     "@babel/preset-env": 7.16.4
     "@babel/preset-react": 7.16.0
     "@babel/preset-typescript": 7.16.0
-    "@hot-loader/react-dom": 16.14.0+4.13.0
     "@pmmmwh/react-refresh-webpack-plugin": ^0.5.3
     "@svgr/webpack": 6.1.1
     "@types/webpack-env": 1.16.3
@@ -33465,7 +33450,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"scheduler@npm:0.19.1, scheduler@npm:^0.19.1":
+"scheduler@npm:0.19.1":
   version: 0.19.1
   resolution: "scheduler@npm:0.19.1"
   dependencies:

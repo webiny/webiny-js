@@ -20,7 +20,6 @@
     "@babel/preset-env": "7.16.4",
     "@babel/preset-react": "7.16.0",
     "@babel/preset-typescript": "7.16.0",
-    "@hot-loader/react-dom": "16.14.0+4.13.0",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.3",
     "@svgr/webpack": "6.1.1",
     "@types/webpack-env": "1.16.3",
