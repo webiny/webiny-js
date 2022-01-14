@@ -36,7 +36,12 @@ export class ErrorResponse {
             }
 
             if ("data" in params && params.data) {
-                this.error.data = Object.assign(this.error.data || {}, params.data);
+                if (Array.isArray(params.data)) {
+                    // Some errors put arrays into data field, for example field validation.
+                    this.error.data = params.data;
+                } else {
+                    this.error.data = Object.assign(this.error.data || {}, params.data);
+                }
             }
         } else {
             this.error = {
