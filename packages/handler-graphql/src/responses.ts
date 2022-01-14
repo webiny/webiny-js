@@ -31,11 +31,11 @@ export class ErrorResponse {
                 data: debug ? { stacktrace: params.stack } : defaultParams.data
             };
 
-            if ("code" in params) {
+            if ("code" in params && params.data) {
                 this.error.code = params.code;
             }
 
-            if ("data" in params) {
+            if ("data" in params && params.data) {
                 this.error.data = Object.assign(this.error.data || {}, params.data);
             }
         } else {
