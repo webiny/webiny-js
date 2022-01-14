@@ -2,6 +2,7 @@ import React from "react";
 import { css } from "emotion";
 import { Cell } from "@webiny/ui/Grid";
 import { IconButton } from "@webiny/ui/Button";
+import { CmsEditorField } from "~/types";
 
 export const UTC_TIMEZONES = [
     {
@@ -161,17 +162,60 @@ export const UTC_TIMEZONES = [
         label: "UTC+14:00"
     }
 ];
-/**
- * @returns Current date string in format `YYYY-MM-DD`
- */
-export const getCurrentDateString = () => {
-    const today = new Date().toISOString();
-    return today.substr(0, 10);
+
+export const DEFAULT_TIMEZONE = "+01:00";
+
+export const getDefaultFieldValue = (
+    field: CmsEditorField,
+    bind: {
+        value: string | null | undefined;
+    },
+    getCurrent: () => string
+): string => {
+    const def = field.settings ? field.settings.defaultSetValue || "null" : "null";
+    if (bind.value || def !== "current") {
+        return bind.value || "";
+    }
+    return getCurrent();
 };
 
-export const DEFAULT_TIME = "00:00:00";
-export const DEFAULT_DATE = getCurrentDateString();
-export const DEFAULT_TIMEZONE = "+01:00";
+export const getCurrentTimeZone = (date?: Date): string => {
+    if (!date) {
+        date = new Date();
+    }
+    const value = date.toTimeString();
+
+    const matches = value.match(/GMT([+-][0-9]{4})/);
+    if (!matches) {
+        return null;
+    }
+    const timezone = matches[1];
+    return `${timezone.substr(0, 3)}:${timezone.substr(3)}`;
+};
+
+export const getCurrentLocalTime = (date?: Date): string => {
+    if (!date) {
+        date = new Date();
+    }
+    const value = date.toTimeString();
+
+    const [time] = value.split(" ");
+    if (!time || time.match(/^([0-9]{2}):([0-9]{2}):([0-9]{2})$/) === null) {
+        return "00:00:00";
+    }
+    return time;
+};
+
+export const getCurrentDate = (date?: Date): string => {
+    if (!date) {
+        date = new Date();
+    }
+    const year = String(date.getFullYear()).padStart(4, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+
+    return `${year}-${month}-${day}`;
+};
 
 const deleteIconStyles = css({
     width: "100% !important",

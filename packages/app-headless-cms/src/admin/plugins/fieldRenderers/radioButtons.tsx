@@ -26,15 +26,21 @@ const plugin: CmsEditorFieldRendererPlugin = {
                     <RadioGroup label={field.label} description={field.helpText}>
                         {({ onChange, getValue }) => (
                             <React.Fragment>
-                                {options.map((option, index) => (
-                                    <div key={option.value + index}>
-                                        <Radio
-                                            label={option.label}
-                                            value={getValue(option.value)}
-                                            onChange={onChange(option.value)}
-                                        />
-                                    </div>
-                                ))}
+                                {options.map((option, index) => {
+                                    const value =
+                                        field.type === "number"
+                                            ? Number(option.value)
+                                            : option.value;
+                                    return (
+                                        <div key={String(option.value) + index}>
+                                            <Radio
+                                                label={option.label}
+                                                value={getValue(value)}
+                                                onChange={onChange(value)}
+                                            />
+                                        </div>
+                                    );
+                                })}
                             </React.Fragment>
                         )}
                     </RadioGroup>

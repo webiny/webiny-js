@@ -9,10 +9,9 @@ export const Wrapper = styled("section")({
     color: "var(--mdc-theme-on-surface)"
 });
 
-export const Logo = styled("img")({
+export const LogoWrapper = styled("div")({
     margin: "0 auto",
-    marginBottom: 30,
-    width: 125
+    marginBottom: 30
 });
 
 export const LoginContent = styled("div")({

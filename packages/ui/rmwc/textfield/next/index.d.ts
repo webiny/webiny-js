@@ -81,8 +81,8 @@ export declare class TextField extends FoundationComponent<MDCTextFieldFoundatio
         hasOutline: () => boolean;
     };
     getInputAdapterMethods(): {
-        registerInputInteractionHandler: <K extends any>(evtType: K, handler: SpecificEventListener<any>) => void;
-        deregisterInputInteractionHandler: <K extends any>(evtType: K, handler: SpecificEventListener<any>) => void;
+        registerInputInteractionHandler: <K>(evtType: K, handler: SpecificEventListener<any>) => void;
+        deregisterInputInteractionHandler: <K>(evtType: K, handler: SpecificEventListener<any>) => void;
         getNativeInput: () => (HTMLInputElement & HTMLTextAreaElement) | null;
     };
     getFoundationMap(): {

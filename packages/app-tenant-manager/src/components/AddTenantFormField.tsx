@@ -34,6 +34,11 @@ export const AddTenantFormField = memo(function AddTenantFormField({
                 selectionPath={"tenancy.getTenant.data"}
                 addSelection={querySelection}
             />
+            <AddGraphQLQuerySelection
+                operationName={"CreateTenant"}
+                selectionPath={"tenancy.createTenant.data"}
+                addSelection={querySelection}
+            />
             <Compose component={TenantFormFields} with={FieldHOC} />
         </Fragment>
     );

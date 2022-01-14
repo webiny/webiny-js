@@ -1,19 +1,6 @@
 {
   "extends": "../../tsconfig.json",
   "include": ["src", "__tests__/**/*.ts"],
-  "references": [
-    { "path": "../api-headless-cms" },
-    { "path": "../api-upgrade" },
-    { "path": "../db-dynamodb" },
-    { "path": "../error" },
-    { "path": "../handler" },
-    { "path": "../handler-aws" },
-    { "path": "../handler-db" },
-    { "path": "../plugins" },
-    { "path": "../utils" },
-    { "path": "../api-dynamodb-to-elasticsearch" },
-    { "path": "../api-elasticsearch" }
-  ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
     "outDir": "./dist",

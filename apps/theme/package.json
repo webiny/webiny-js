@@ -14,12 +14,12 @@
     "@webiny/validation": "^5.21.0",
     "classnames": "^2.2.6",
     "emotion": "^10.0.17",
-    "graphql": "^14.7.0",
-    "graphql-tag": "2.10.1",
+    "graphql": "^15.7.2",
+    "graphql-tag": "2.12.6",
     "invariant": "^2.2.4",
     "lodash.get": "^4.4.2",
-    "react": "^16.14.0",
+    "react": "16.14.0",
     "react-hamburger-menu": "^1.1.1",
-    "react-helmet": "^5.2.0"
+    "react-helmet": "^6.1.0"
   }
 }

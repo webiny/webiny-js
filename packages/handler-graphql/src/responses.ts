@@ -75,7 +75,7 @@ export class ListErrorResponse {
     }
 }
 
-export class Response<T extends any = any> {
+export class Response<T = any> {
     data: T;
     error: null;
     constructor(data: T) {
@@ -84,7 +84,7 @@ export class Response<T extends any = any> {
     }
 }
 
-export class ListResponse<T extends any, M extends any> {
+export class ListResponse<T, M> {
     data: Array<T>;
     meta: M;
     error: null;

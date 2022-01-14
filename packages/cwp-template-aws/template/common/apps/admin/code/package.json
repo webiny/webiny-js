@@ -7,7 +7,7 @@
     "@editorjs/list": "^1.6.0",
     "@editorjs/quote": "^2.4.0",
     "@editorjs/underline": "^1.0.0",
-    "@types/react": "^16.14.2",
+    "@types/react": "^16.14.0",
     "@webiny/app-admin": "latest",
     "@webiny/app-admin-users-cognito": "latest",
     "@webiny/app-form-builder": "latest",
@@ -22,8 +22,8 @@
     "cross-fetch": "^3.0.4",
     "invariant": "^2.2.4",
     "prop-types": "^15.7.2",
-    "react": "^16.14.0",
-    "react-dom": "^16.14.0",
+    "react": "16.14.0",
+    "react-dom": "16.14.0",
     "regenerator-runtime": "^0.13.5",
     "theme": "^0.1.0"
   },
@@ -46,11 +46,6 @@
       "not op_mini all",
       "ie 11"
     ]
-  },
-  "svgo": {
-    "plugins": {
-      "removeViewBox": false
-    }
   },
   "adio": {
     "ignore": {

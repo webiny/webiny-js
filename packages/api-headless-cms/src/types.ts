@@ -69,6 +69,10 @@ export interface CmsContext
 interface CmsModelFieldPredefinedValuesValue {
     value: string;
     label: string;
+    /**
+     * Default selected predefined value.
+     */
+    selected?: boolean;
 }
 
 /**
@@ -163,7 +167,16 @@ export interface CmsModelField {
      *
      * @default {}
      */
-    settings?: { [key: string]: any };
+    settings?: {
+        /**
+         * The default value for the field in case it is not predefined values field.
+         */
+        defaultValue?: string | number | null | undefined;
+        /**
+         * There are a lot of other settings that are possible to add so we keep the type opened.
+         */
+        [key: string]: any;
+    };
 }
 
 /**
@@ -433,6 +446,9 @@ export interface CmsModelFieldToGraphQLPlugin extends Plugin {
      * ```
      */
     isSortable: boolean;
+    /**
+     * Read API methods.
+     */
     read: {
         /**
          * Definition for get filtering for GraphQL.

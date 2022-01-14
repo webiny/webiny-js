@@ -1,15 +1,18 @@
 const path = require("path");
+const webpack = require("webpack");
+const WebpackBar = require("webpackbar");
+const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
+
 const { version } = require("@webiny/project-utils/package.json");
+const { getOutput, getEntry } = require("./utils");
 
 module.exports = options => {
-    const webpack = require("webpack");
-    let babelOptions = require("./babelrc");
-    const { getOutput, getEntry } = require("./utils");
     const output = getOutput(options);
     const entry = getEntry(options);
 
-    const { overrides, cwd } = options;
+    const { cwd, overrides, production } = options;
 
+    let babelOptions = require("./babelrc");
     // Customize Babel options.
     if (typeof overrides.babel === "function") {
         babelOptions = overrides.babel(babelOptions);
@@ -32,9 +35,9 @@ module.exports = options => {
         },
         devtool: sourceMaps ? "source-map" : false,
         externals: [/^aws-sdk/],
-        mode: "development",
+        mode: production ? "production" : "development",
         optimization: {
-            minimize: false
+            minimize: production
         },
         performance: {
             // Turn off size warnings for entry points
@@ -50,7 +53,15 @@ module.exports = options => {
                     process.env.WEBINY_MULTI_TENANCY || false
                 ),
                 ...definitions
-            })
+            }),
+            new ForkTsCheckerWebpackPlugin({
+                typescript: {
+                    configFile: path.resolve(cwd, "./tsconfig.json"),
+                    typescriptPath: require.resolve("typescript")
+                },
+                async: !production
+            }),
+            options.logs && new WebpackBar({ name: path.basename(cwd) })
         ].filter(Boolean),
         // Run babel on all .js files and skip those in node_modules
         module: {
