@@ -1,5 +1,3 @@
-import WebinyError from "@webiny/error";
-
 type ErrorResponseParams = {
     code?: string;
     message?: string;
@@ -19,7 +17,7 @@ export class ErrorResponse {
         message: string;
         data?: any;
     };
-    constructor(params: ErrorResponseParams | Error) {
+    constructor(params: ErrorResponseParams | Error | (Error & ErrorResponseParams)) {
         this.data = null;
 
         if (params instanceof Error) {
@@ -33,11 +31,12 @@ export class ErrorResponse {
                 data: debug ? { stacktrace: params.stack } : defaultParams.data
             };
 
-            if (params instanceof WebinyError) {
-                this.error.code = params.code || defaultParams.code;
-                if (params.data) {
-                    this.error.data = Object.assign(this.error.data || {}, params.data);
-                }
+            if ("code" in params) {
+                this.error.code = params.code;
+            }
+
+            if ("data" in params) {
+                this.error.data = Object.assign(this.error.data || {}, params.data);
             }
         } else {
             this.error = {
