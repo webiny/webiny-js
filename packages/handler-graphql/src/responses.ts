@@ -31,7 +31,7 @@ export class ErrorResponse {
                 data: debug ? { stacktrace: params.stack } : defaultParams.data
             };
 
-            if ("code" in params && params.data) {
+            if ("code" in params && params.code) {
                 this.error.code = params.code;
             }
 
