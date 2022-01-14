@@ -3,6 +3,40 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.22.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.21.0...v5.22.0-beta.0) (2022-01-14)
+
+
+### Bug Fixes
+
+* **app-headless-cms:** date time field crashes on clear ([#2185](https://github.com/webiny/webiny-js/issues/2185)) ([864164b](https://github.com/webiny/webiny-js/commit/864164ba4338d534dbd20a716b629489fdcd14fa))
+* **app-headless-cms:** types in default entry values ([c4f1539](https://github.com/webiny/webiny-js/commit/c4f15398c731ad5632287f7137fd7d1e6717dca5))
+* **cli-plugin-deploy-pulumi:** allow finer control of cache settings ([#2180](https://github.com/webiny/webiny-js/issues/2180)) ([8857096](https://github.com/webiny/webiny-js/commit/8857096d8d8eaa7a9e02d1434b5cd7917d4ad4f0))
+* **cwp-template-aws:** set the correct @types/react version ([85578e3](https://github.com/webiny/webiny-js/commit/85578e3cc56aa4e43cb6ae11dab93320706fc7a3))
+* **handler-http:** add cache to options response ([#2174](https://github.com/webiny/webiny-js/issues/2174)) ([21a4f7e](https://github.com/webiny/webiny-js/commit/21a4f7ea60e8b1766efe65598f6fb8c98e6c9005))
+* **project-utils:** add ENV variable to run TS checks for functions ([93e3353](https://github.com/webiny/webiny-js/commit/93e335384d20d3a1ced2f2b71c05dfe79ec38cd2))
+* **project-utils:** exclude empty file name from file-loader ([2b7ddb5](https://github.com/webiny/webiny-js/commit/2b7ddb5957a918bc42e4892422e834274ffa201e))
+* **project-utils:** update order or extensions and add mjs rule ([8f4e3a1](https://github.com/webiny/webiny-js/commit/8f4e3a1e7908a736d49893dc7474a95746d25eff))
+* login screen logo ([#2188](https://github.com/webiny/webiny-js/issues/2188)) ([62c9ca6](https://github.com/webiny/webiny-js/commit/62c9ca6d78287245f2501d39748c7839a9f5214d))
+* remove react hot-loader and fix TS types ([#2193](https://github.com/webiny/webiny-js/issues/2193)) ([986fce5](https://github.com/webiny/webiny-js/commit/986fce5029dd392fcfdd60bceb2f0bc63ce8805a))
+* revert react to v16 due to Material incompatibility with v17 ([f073521](https://github.com/webiny/webiny-js/commit/f073521af9327d95535296d4275b42968888bb77))
+* update cwp template dependencies ([7e69a47](https://github.com/webiny/webiny-js/commit/7e69a4763479c8b32d6ac865ed4c7142dade0b45))
+
+
+### Features
+
+* add theme manager ([#2190](https://github.com/webiny/webiny-js/issues/2190)) ([97eae22](https://github.com/webiny/webiny-js/commit/97eae22be5d5af639fa7c57e221ac55e26b67318))
+* upgrade webpack to version 5 ([#2101](https://github.com/webiny/webiny-js/issues/2101)) ([d3bdfac](https://github.com/webiny/webiny-js/commit/d3bdfac4b08b453f6d2ff836d8e56e1f0073ae62))
+* **api-headless-cms:** default field values ([bb430d5](https://github.com/webiny/webiny-js/commit/bb430d569703041546a4a9b265e4c37200847ba1))
+* **app-file-manager:** add data field to installation graphql ([e50e3d3](https://github.com/webiny/webiny-js/commit/e50e3d32fff3d54408efc4eaffa53ecc215b789d))
+* **app-headless-cms:** default field values ([1f1e9da](https://github.com/webiny/webiny-js/commit/1f1e9dadcbb5007202a23e3032871c80b10bd118))
+* **app-page-builder:** support multiple pd-plugin-loader plugins ([#1889](https://github.com/webiny/webiny-js/issues/1889)) ([6b0861e](https://github.com/webiny/webiny-js/commit/6b0861ec7f0ab52f0fa20d8009c048102275120f))
+* add unique validator to headless cms ([#2166](https://github.com/webiny/webiny-js/issues/2166)) ([084f68d](https://github.com/webiny/webiny-js/commit/084f68df39a95226e97481cd47e9de6acdd024d0))
+* **handler:** handler early response ([#2167](https://github.com/webiny/webiny-js/issues/2167)) ([7539743](https://github.com/webiny/webiny-js/commit/753974398c120255c03a33ea9584312e3e1b4e7f))
+
+
+
+
+
 # [5.21.0](https://github.com/webiny/webiny-js/compare/v5.21.0-beta.0...v5.21.0) (2022-01-04)
 
 **Note:** Version bump only for package webiny-js

@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.22.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.21.0...v5.22.0-beta.0) (2022-01-14)
+
+
+### Bug Fixes
+
+* **handler-http:** add cache to options response ([#2174](https://github.com/webiny/webiny-js/issues/2174)) ([21a4f7e](https://github.com/webiny/webiny-js/commit/21a4f7ea60e8b1766efe65598f6fb8c98e6c9005))
+
+
+### Features
+
+* upgrade webpack to version 5 ([#2101](https://github.com/webiny/webiny-js/issues/2101)) ([d3bdfac](https://github.com/webiny/webiny-js/commit/d3bdfac4b08b453f6d2ff836d8e56e1f0073ae62))
+* **handler:** handler early response ([#2167](https://github.com/webiny/webiny-js/issues/2167)) ([7539743](https://github.com/webiny/webiny-js/commit/753974398c120255c03a33ea9584312e3e1b4e7f))
+
+
+
+
+
 # [5.21.0](https://github.com/webiny/webiny-js/compare/v5.21.0-beta.0...v5.21.0) (2022-01-04)
 
 **Note:** Version bump only for package @webiny/handler-http
