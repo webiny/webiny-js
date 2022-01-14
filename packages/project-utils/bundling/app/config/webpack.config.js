@@ -240,6 +240,14 @@ module.exports = function (webpackEnv, { paths, options }) {
                     // back to the "file" loader at the end of the loader list.
                     oneOf: [
                         {
+                            test: /\.m?js$/,
+                            include: /node_modules/,
+                            type: "javascript/auto",
+                            resolve: {
+                                fullySpecified: false
+                            }
+                        },
+                        {
                             test: /\.svg$/i,
                             issuer: /\.[jt]sx?$/,
                             use: [
