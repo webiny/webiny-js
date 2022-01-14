@@ -35,7 +35,9 @@ export class ErrorResponse {
 
             if (params instanceof WebinyError) {
                 this.error.code = params.code || defaultParams.code;
-                this.error.data = Object.assign(this.error.data || {}, params.data);
+                if (params.data) {
+                    this.error.data = Object.assign(this.error.data || {}, params.data);
+                }
             }
         } else {
             this.error = {
