@@ -50,7 +50,7 @@ export default () => {
             COGNITO_REGION: String(process.env.AWS_REGION),
             COGNITO_USER_POOL_ID: cognito.userPool.id,
             DB_TABLE: dynamoDb.table.name,
-
+            OKTA_ISSUER: process.env.OKTA_ISSUER,
             PRERENDERING_RENDER_HANDLER: prerenderingService.functions.render.arn,
             PRERENDERING_FLUSH_HANDLER: prerenderingService.functions.flush.arn,
             PRERENDERING_QUEUE_ADD_HANDLER: prerenderingService.functions.queue.add.arn,
@@ -72,6 +72,7 @@ export default () => {
             COGNITO_USER_POOL_ID: cognito.userPool.id,
             DB_TABLE: dynamoDb.table.name,
             S3_BUCKET: fileManager.bucket.id,
+            OKTA_ISSUER: process.env.OKTA_ISSUER,
             DEBUG,
             WEBINY_LOGS_FORWARD_URL
         },

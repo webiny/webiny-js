@@ -3,7 +3,7 @@ import { setContext } from "apollo-link-context";
 import ApolloClient from "apollo-client";
 import { DocumentNode } from "graphql";
 import { useApolloClient } from "@apollo/react-hooks";
-import { Security } from "@okta/okta-react";
+import { Security, LoginCallback } from "@okta/okta-react";
 import { OktaAuth, AuthStateManager } from "@okta/okta-auth-js";
 import OktaSignIn from "@okta/okta-signin-widget";
 import { plugins } from "@webiny/plugins";
@@ -130,10 +130,11 @@ export const createAuthentication = ({ oktaAuth, oktaSignIn, ...config }: Config
 
         return (
             <Security oktaAuth={oktaAuth} restoreOriginalUri={noop}>
+                <LoginCallback />
                 {identity ? (
                     children
                 ) : isAuthenticated ? (
-                    <CircularProgress label={"Checking user..."} />
+                    <CircularProgress label={"Logging in..."} />
                 ) : (
                     <OktaSignInWidget oktaSignIn={oktaSignIn} />
                 )}

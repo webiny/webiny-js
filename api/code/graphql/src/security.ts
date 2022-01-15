@@ -5,13 +5,12 @@ import { createStorageOperations as securityStorageOperations } from "@webiny/ap
 import { authenticateUsingHttpHeader } from "@webiny/api-security/plugins/authenticateUsingHttpHeader";
 import apiKeyAuthentication from "@webiny/api-security/plugins/apiKeyAuthentication";
 import apiKeyAuthorization from "@webiny/api-security/plugins/apiKeyAuthorization";
-import groupAuthorization from "@webiny/api-security/plugins/groupAuthorization";
-import parentTenantGroupAuthorization from "@webiny/api-security/plugins/parentTenantGroupAuthorization";
-import cognitoAuthentication from "@webiny/api-security-cognito";
 import anonymousAuthorization from "@webiny/api-security/plugins/anonymousAuthorization";
-import createAdminUsersApp from "@webiny/api-admin-users-cognito";
-import { syncWithCognito } from "@webiny/api-admin-users-cognito/syncWithCognito";
-import { createStorageOperations as createAdminUsersStorageOperations } from "@webiny/api-admin-users-cognito-so-ddb";
+import {
+    createAuthenticator,
+    createGroupAuthorizer,
+    createIdentityType
+} from "@webiny/api-security-okta";
 
 export default ({ documentClient }) => [
     /**
@@ -39,25 +38,33 @@ export default ({ documentClient }) => [
     createSecurityGraphQL(),
 
     /**
-     * Create Admin Users app.
-     */
-    createAdminUsersApp({
-        storageOperations: createAdminUsersStorageOperations({ documentClient })
-    }),
-
-    /**
-     * Sync Admin Users with Cognito User Pool.
-     */
-    syncWithCognito({
-        region: process.env.COGNITO_REGION,
-        userPoolId: process.env.COGNITO_USER_POOL_ID
-    }),
-
-    /**
      * Perform authentication using the common "Authorization" HTTP header.
      * This will fetch the value of the header, and execute the authentication process.
      */
     authenticateUsingHttpHeader(),
+
+    createAuthenticator({
+        issuer: process.env.OKTA_ISSUER as string,
+        getIdentity({ token }) {
+            return {
+                id: token.sub,
+                type: "admin",
+                displayName: token.name
+            };
+        }
+    }),
+
+    createGroupAuthorizer({
+        identityType: "admin",
+        getGroupSlug() {
+            return "full-access";
+        }
+    }),
+
+    createIdentityType({
+        identityType: "admin",
+        name: "OktaIdentity"
+    }),
 
     /**
      * API Key authenticator.
@@ -68,30 +75,10 @@ export default ({ documentClient }) => [
     apiKeyAuthentication({ identityType: "api-key" }),
 
     /**
-     * Cognito authentication plugin.
-     * This plugin will verify the JWT token against the provided User Pool.
-     */
-    cognitoAuthentication({
-        region: process.env.COGNITO_REGION,
-        userPoolId: process.env.COGNITO_USER_POOL_ID,
-        identityType: "admin"
-    }),
-
-    /**
      * Authorization plugin to fetch permissions for a verified API key.
      * The "identityType" must match the authentication plugin used to load the identity.
      */
     apiKeyAuthorization({ identityType: "api-key" }),
-
-    /**
-     * Authorization plugin to fetch permissions from a security group associated with the identity.
-     */
-    groupAuthorization({ identityType: "admin" }),
-
-    /**
-     * Authorization plugin to fetch permissions from the parent tenant.
-     */
-    parentTenantGroupAuthorization({ identityType: "admin" }),
 
     /**
      * Authorization plugin to load permissions for anonymous requests.

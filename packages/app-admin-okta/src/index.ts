@@ -1,1 +1,1 @@
-export * from "./createAuthentication";
+export * from "./Okta";
