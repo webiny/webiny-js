@@ -98,7 +98,7 @@ const Content = () => {
     const pluginsByType = plugins.byType<PbEditorContentPlugin>("pb-editor-content");
     const layouts = React.useMemo(() => {
         const layoutPlugins = plugins.byType<PbPageLayoutPlugin>("pb-page-layout");
-        return layoutPlugins.map(pl => pl.layout);
+        return (layoutPlugins || []).map(pl => pl.layout);
     }, []);
     const themeLayout = layouts.find(l => l.name === layout);
     if (renderLayout && !themeLayout) {

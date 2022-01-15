@@ -1,13 +1,6 @@
 {
   "extends": "../../tsconfig.json",
   "include": ["src", "__tests__/**/*.ts"],
-  "references": [
-    { "path": "../app" },
-    { "path": "../app-security" },
-    { "path": "../app-tenancy" },
-    { "path": "../plugins" },
-    { "path": "../ui" }
-  ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
     "outDir": "./dist",
@@ -16,6 +9,8 @@
       "~/*": ["./src/*"],
       "@webiny/app/*": ["../app/src/*"],
       "@webiny/app": ["../app/src"],
+      "@webiny/app-serverless-cms/*": ["../app-serverless-cms/src/*"],
+      "@webiny/app-serverless-cms": ["../app-serverless-cms/src"],
       "@webiny/app-security/*": ["../app-security/src/*"],
       "@webiny/app-security": ["../app-security/src"],
       "@webiny/app-tenancy/*": ["../app-tenancy/src/*"],

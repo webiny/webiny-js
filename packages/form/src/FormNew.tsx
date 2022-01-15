@@ -37,7 +37,7 @@ export const useBind = (props: BindComponentProps) => {
     return form.createField(props);
 };
 
-export const Form = React.forwardRef((props: FormProps, ref) => {
+export const Form = React.forwardRef(function Form(props: FormProps, ref) {
     const [state, setState] = useState(() => ({
         data: props.data || {},
         originalData: props.data || {},

@@ -18,7 +18,7 @@ export type DroppableProps = {
     onDrop?: (item: DragSource) => void;
 };
 
-const Droppable = React.memo((props: DroppableProps) => {
+function Droppable(props: DroppableProps) {
     const { children, onDrop, isVisible = () => true } = props;
 
     const [{ item, isOver }, drop] = useDrop({
@@ -39,6 +39,6 @@ const Droppable = React.memo((props: DroppableProps) => {
     }
 
     return children({ isDragging: Boolean(item), isOver, item, drop });
-});
+}
 
-export default Droppable;
+export default React.memo(Droppable);

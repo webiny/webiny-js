@@ -14,6 +14,15 @@ export class ElasticsearchQueryBuilderOperatorNotPlugin extends ElasticsearchQue
     ): void {
         const { value, path, basePath } = params;
 
+        if (value === null) {
+            query.must.push({
+                exists: {
+                    field: path
+                }
+            });
+            return;
+        }
+
         const useBasePath = typeof value !== "string";
         query.must_not.push({
             term: {

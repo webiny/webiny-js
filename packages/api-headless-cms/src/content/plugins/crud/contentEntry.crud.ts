@@ -30,7 +30,8 @@ import {
     BeforeEntryListTopicParams,
     CmsEntryListWhere,
     UpdateCmsEntryInput,
-    CreateCmsEntryInput
+    CreateCmsEntryInput,
+    CmsModelField
 } from "~/types";
 import * as utils from "~/utils";
 import { validateModelEntryData } from "./contentEntry/entryDataValidation";
@@ -53,18 +54,71 @@ export const STATUS_UNPUBLISHED = "unpublished";
 export const STATUS_CHANGES_REQUESTED = "changesRequested";
 export const STATUS_REVIEW_REQUESTED = "reviewRequested";
 
+/**
+ * Used for some fields to convert their values.
+ */
+const convertDefaultValue = (field: CmsModelField, value: any): string | number | boolean => {
+    switch (field.type) {
+        case "boolean":
+            return Boolean(value);
+        case "number":
+            return Number(value);
+        default:
+            return value;
+    }
+};
+const getDefaultValue = (field: CmsModelField): any => {
+    const { settings, multipleValues } = field;
+    if (settings && settings.defaultValue !== undefined) {
+        return convertDefaultValue(field, settings.defaultValue);
+    }
+    const { predefinedValues } = field;
+    if (
+        !predefinedValues ||
+        !predefinedValues.enabled ||
+        Array.isArray(predefinedValues.values) === false
+    ) {
+        return undefined;
+    }
+    if (!multipleValues) {
+        const selectedValue = predefinedValues.values.find(value => {
+            return !!value.selected;
+        });
+        if (selectedValue) {
+            return convertDefaultValue(field, selectedValue.value);
+        }
+        return undefined;
+    }
+    return predefinedValues.values
+        .filter(({ selected }) => !!selected)
+        .map(({ value }) => {
+            return convertDefaultValue(field, value);
+        });
+};
+/**
+ * Cleans and adds default values to create input data.
+ */
 const cleanInputData = (model: CmsModel, input: CreateCmsEntryInput): CreateCmsEntryInput => {
     return model.fields.reduce((acc, field) => {
-        acc[field.fieldId] = input[field.fieldId];
+        const value = input[field.fieldId];
+        /**
+         * We set the default value on create input if value is not defined.
+         */
+        acc[field.fieldId] = value === undefined ? getDefaultValue(field) : value;
         return acc;
     }, {});
 };
-
+/**
+ * Cleans the update input entry data.
+ */
 const cleanUpdatedInputData = (
     model: CmsModel,
     input: UpdateCmsEntryInput
 ): UpdateCmsEntryInput => {
     return model.fields.reduce((acc, field) => {
+        /**
+         * We cannot set default value here because user might want to updated only certain field values.
+         */
         if (input[field.fieldId] === undefined) {
             return acc;
         }

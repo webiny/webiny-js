@@ -47,9 +47,7 @@ export const GET_SETTINGS = gql`
 export const UPDATE_SETTINGS = gql`
     mutation UpdateSettings($data: PbSettingsInput!) {
         pageBuilder {
-            updateSettings(data: $data) {
-                id
-            }
+            updateSettings(data: $data) ${fields}
         }
     }
 `;

@@ -1,6 +1,6 @@
 {
   "name": "@webiny/cli-plugin-scaffold",
-  "version": "5.21.0",
+  "version": "5.22.0-beta.0",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -13,7 +13,7 @@
   ],
   "description": "A tool to bootstrap a Webiny project.",
   "dependencies": {
-    "@babel/runtime": "^7.5.5",
+    "@babel/runtime": "^7.16.3",
     "inquirer": "^7.3.3",
     "load-json-file": "^6.2.0",
     "ora": "4.1.1",
@@ -21,15 +21,15 @@
     "write-json-file": "^4.3.0"
   },
   "devDependencies": {
-    "@babel/cli": "^7.5.5",
-    "@babel/core": "^7.5.5",
-    "@babel/preset-env": "^7.5.5",
-    "@babel/preset-flow": "^7.0.0",
+    "@babel/cli": "^7.16.0",
+    "@babel/core": "^7.16.0",
+    "@babel/preset-env": "^7.16.4",
+    "@babel/preset-flow": "^7.16.0",
     "@types/inquirer": "^7.3.1",
-    "@webiny/cli": "^5.21.0",
-    "@webiny/handler": "^5.21.0",
-    "@webiny/plugins": "^5.21.0",
-    "@webiny/project-utils": "^5.21.0",
+    "@webiny/cli": "^5.22.0-beta.0",
+    "@webiny/handler": "^5.22.0-beta.0",
+    "@webiny/plugins": "^5.22.0-beta.0",
+    "@webiny/project-utils": "^5.22.0-beta.0",
     "chalk": "^4.1.0",
     "fast-glob": "^3.2.5",
     "find-up": "^5.0.0",

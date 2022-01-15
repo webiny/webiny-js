@@ -7,7 +7,7 @@ import { DynamoDbContainsFilter } from "~/types";
 
 type TransformValue = (value: any) => any;
 
-export interface Params<T extends any = any> {
+export interface Params<T = any> {
     plugins: PluginsContainer;
     items: T[];
     where: Record<string, any>;
@@ -189,7 +189,7 @@ const createFilterCallable = (params: Omit<Params, "items">): ((item: any) => bo
     };
 };
 
-export const filterItems = <T extends any = any>(params: Params<T>): T[] => {
+export const filterItems = <T = any>(params: Params<T>): T[] => {
     const filter = createFilterCallable(params);
     /**
      * No point in going through all the items when there are no filters to be applied.

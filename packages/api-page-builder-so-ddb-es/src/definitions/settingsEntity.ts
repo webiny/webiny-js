@@ -55,6 +55,7 @@ export const createSettingsEntity = (params: Params): Entity<any> => {
             TYPE: {
                 type: "string"
             },
+            // TODO: implement this via a plugin when https://github.com/webiny/webiny-js/issues/2169 is resolved.
             theme: {
                 type: "string"
             },

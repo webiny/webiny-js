@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { ThemeManagerContext } from "~/modules/themes/ThemeManagerProvider";
+import { ThemeManagerContext } from "~/components/ThemeManagerProvider";
 
 export function useThemeManager() {
     return useContext(ThemeManagerContext);

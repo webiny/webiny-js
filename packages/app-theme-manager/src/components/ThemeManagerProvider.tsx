@@ -3,7 +3,7 @@ import React, { createContext, useCallback, useMemo, useState } from "react";
 export interface Theme {
     name: string;
     label: string;
-    loader: () => Promise<any>;
+    load: () => Promise<any>;
 }
 
 export interface ThemeManagerContext {

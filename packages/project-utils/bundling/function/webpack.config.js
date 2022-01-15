@@ -1,23 +1,25 @@
-module.exports = options => {
-    const path = require("path");
-    const webpack = require("webpack");
-    const WebpackBar = require("webpackbar");
-    const { version } = require("@webiny/project-utils/package.json");
+const path = require("path");
+const webpack = require("webpack");
+const WebpackBar = require("webpackbar");
+const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
 
-    const { getOutput, getEntry } = require("./utils");
+const { version } = require("@webiny/project-utils/package.json");
+const { getOutput, getEntry } = require("./utils");
+
+module.exports = options => {
     const output = getOutput(options);
     const entry = getEntry(options);
 
-    const { cwd, overrides } = options;
+    const { cwd, debug, overrides, production } = options;
 
     let babelOptions = require("./babelrc");
-
     // Customize Babel options.
     if (typeof overrides.babel === "function") {
         babelOptions = overrides.babel(babelOptions);
     }
 
     const definitions = overrides.define ? JSON.parse(overrides.define) : {};
+    const tsCheksEnabled = process.env.WEBINY_ENABLE_TS_CHECKS === "true";
 
     return {
         entry: path.resolve(entry),
@@ -28,11 +30,11 @@ module.exports = options => {
             filename: output.filename
         },
         // Generate sourcemaps for proper error messages
-        devtool: options.debug ? "source-map" : false,
+        devtool: debug ? "source-map" : false,
         externals: [/^aws-sdk/],
-        mode: "production",
+        mode: production ? "production" : "development",
         optimization: {
-            minimize: true
+            minimize: production
         },
         performance: {
             // Turn off size warnings for entry points
@@ -49,6 +51,14 @@ module.exports = options => {
                 ),
                 ...definitions
             }),
+            tsCheksEnabled &&
+                new ForkTsCheckerWebpackPlugin({
+                    typescript: {
+                        configFile: path.resolve(cwd, "./tsconfig.json"),
+                        typescriptPath: require.resolve("typescript")
+                    },
+                    async: !production
+                }),
             options.logs && new WebpackBar({ name: path.basename(cwd) })
         ].filter(Boolean),
         // Run babel on all .js files and skip those in node_modules
@@ -58,7 +68,10 @@ module.exports = options => {
                 {
                     test: /\.mjs$/,
                     include: /node_modules/,
-                    type: "javascript/auto"
+                    type: "javascript/auto",
+                    resolve: {
+                        fullySpecified: false
+                    }
                 },
                 {
                     test: /\.(js|ts)$/,
@@ -70,7 +83,7 @@ module.exports = options => {
         },
         resolve: {
             modules: [path.resolve(path.join(cwd, "node_modules")), "node_modules"],
-            extensions: [".mjs", ".ts", ".tsx", ".js", ".jsx", ".json"]
+            extensions: [".ts", ".mjs", ".js", ".json"]
         }
     };
 };

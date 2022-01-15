@@ -1,3 +1,4 @@
+import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { createTenancyContext, createTenancyGraphQL } from "@webiny/api-tenancy";
 import { createStorageOperations as tenancyStorageOperations } from "@webiny/api-tenancy-so-ddb";
 import { createSecurityContext, createSecurityGraphQL } from "@webiny/api-security";
@@ -12,7 +13,7 @@ import {
     createIdentityType
 } from "@webiny/api-security-okta";
 
-export default ({ documentClient }) => [
+export default ({ documentClient }: { documentClient: DocumentClient }) => [
     /**
      * Create Tenancy app in the `context`.
      */

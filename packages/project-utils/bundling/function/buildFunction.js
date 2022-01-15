@@ -10,7 +10,10 @@ module.exports = options => {
 
     logs && console.log(`Compiling ${chalk.green(path.basename(cwd))}...`);
 
-    let webpackConfig = require("./createBuildConfig")(options);
+    let webpackConfig = require("./webpack.config")({
+        production: true,
+        ...options
+    });
 
     // Customize Webpack config.
     if (typeof overrides.webpack === "function") {
@@ -28,7 +31,8 @@ module.exports = options => {
                     warnings: []
                 });
 
-                return reject(new Error(messages.errors.join("\n\n")));
+                console.error(messages.errors.join("\n\n"));
+                return reject();
             }
 
             if (stats.hasErrors()) {
@@ -47,7 +51,9 @@ module.exports = options => {
                 if (messages.errors.length > 1) {
                     messages.errors.length = 1;
                 }
-                return reject(new Error(messages.errors.join("\n\n")));
+
+                console.error(messages.errors.join("\n\n"));
+                return reject();
             }
 
             logs && console.log(`Compiled successfully in ${chalk.green(duration()) + "s"}.`);

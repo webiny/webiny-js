@@ -1032,6 +1032,165 @@ describe("filtering", () => {
         });
     });
 
+    test("should filter entries by empty datetime field", async () => {
+        const categoryManager = useCategoryManageHandler(manageOpts);
+        const productManager = useProductManageHandler(manageOpts);
+        // const productReader = useProductReadHandler(readOpts);
+
+        const group = await setupContentModelGroup(mainManager);
+        const { category: categoryModel } = await setupContentModels(mainManager, group, [
+            "category",
+            "product"
+        ]);
+
+        const [createFruitResponse] = await categoryManager.createCategory({
+            data: {
+                title: "Fruit category 123",
+                slug: "fruit-category-123"
+            }
+        });
+        expect(createFruitResponse).toEqual({
+            data: {
+                createCategory: {
+                    data: expect.any(Object),
+                    error: null
+                }
+            }
+        });
+        const fruitCategoryId = createFruitResponse.data.createCategory.data.id;
+
+        const [createBananaResponse] = await productManager.createProduct({
+            data: {
+                title: "Banana",
+                price: 100,
+                availableOn: "2021-04-19",
+                color: "red",
+                availableSizes: ["l"],
+                image: "banana.jpg",
+                category: {
+                    modelId: categoryModel.modelId,
+                    id: fruitCategoryId
+                }
+            }
+        });
+        expect(createBananaResponse).toMatchObject({
+            data: {
+                createProduct: {
+                    data: {
+                        id: expect.any(String)
+                    },
+                    error: null
+                }
+            }
+        });
+        const banana = createBananaResponse.data.createProduct.data;
+
+        const [createPlumResponse] = await productManager.createProduct({
+            data: {
+                title: "Plum",
+                price: 100,
+                availableOn: "2021-04-22",
+                color: "white",
+                availableSizes: ["s"],
+                image: "plum.jpg",
+                category: {
+                    modelId: categoryModel.modelId,
+                    id: fruitCategoryId
+                }
+            }
+        });
+        expect(createPlumResponse).toMatchObject({
+            data: {
+                createProduct: {
+                    data: {
+                        id: expect.any(String)
+                    },
+                    error: null
+                }
+            }
+        });
+        const plum = createPlumResponse.data.createProduct.data;
+
+        const [createAppleResponse] = await productManager.createProduct({
+            data: {
+                title: "Apple",
+                price: 100,
+                availableOn: null,
+                color: "red",
+                availableSizes: ["s"],
+                image: "apple.jpg",
+                category: {
+                    modelId: categoryModel.modelId,
+                    id: fruitCategoryId
+                }
+            }
+        });
+        expect(createAppleResponse).toMatchObject({
+            data: {
+                createProduct: {
+                    data: {
+                        id: expect.any(String)
+                    },
+                    error: null
+                }
+            }
+        });
+        const apple = createAppleResponse.data.createProduct.data;
+
+        /**
+         * Make sure that we have something in the list response
+         */
+        await until(
+            () => productManager.listProducts().then(([data]) => data),
+            ({ data }) => {
+                return data.listProducts.data.length === 3;
+            },
+            { name: "list products after create" }
+        );
+
+        const [listNullResponse] = await productManager.listProducts({
+            where: {
+                availableOn: null
+            },
+            sort: ["createdOn_ASC"]
+        });
+
+        expect(listNullResponse).toEqual({
+            data: {
+                listProducts: {
+                    data: [apple],
+                    error: null,
+                    meta: {
+                        cursor: null,
+                        hasMoreItems: false,
+                        totalCount: 1
+                    }
+                }
+            }
+        });
+
+        const [listNotNullResponse] = await productManager.listProducts({
+            where: {
+                availableOn_not: null
+            },
+            sort: ["createdOn_ASC"]
+        });
+
+        expect(listNotNullResponse).toEqual({
+            data: {
+                listProducts: {
+                    data: [banana, plum],
+                    error: null,
+                    meta: {
+                        cursor: null,
+                        hasMoreItems: false,
+                        totalCount: 2
+                    }
+                }
+            }
+        });
+    });
+
     test("should filter entries by entryId", async () => {
         const articleManager = useArticleManageHandler(manageOpts);
         const articleReader = useArticleReadHandler(readOpts);

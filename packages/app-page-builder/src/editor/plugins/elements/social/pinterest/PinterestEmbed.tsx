@@ -50,30 +50,29 @@ const getHTML = data => {
     />`;
 };
 
-export default React.memo(
-    (props: { element: PbEditorElement }) => {
-        const { element } = props;
+function PinterestEmbed(props: { element: PbEditorElement }) {
+    const { element } = props;
 
-        useEffect(() => {
-            appendSDK(props).then(() => initEmbed(props));
-        }, [element]);
+    useEffect(() => {
+        appendSDK(props).then(() => initEmbed(props));
+    }, [element]);
 
-        const renderEmpty = useRenderEmptyEmbed(element);
+    const renderEmpty = useRenderEmptyEmbed(element);
 
-        const renderEmbed = useCallback(() => {
-            const data = get(element, "data.source");
-            return (
-                <div
-                    id={element.id}
-                    className={centerAlign}
-                    dangerouslySetInnerHTML={{ __html: getHTML(data) }}
-                />
-            );
-        }, [element]);
+    const renderEmbed = useCallback(() => {
+        const data = get(element, "data.source");
+        return (
+            <div
+                id={element.id}
+                className={centerAlign}
+                dangerouslySetInnerHTML={{ __html: getHTML(data) }}
+            />
+        );
+    }, [element]);
 
-        const { url } = get(element, "data.source") || {};
+    const { url } = get(element, "data.source") || {};
 
-        return url ? renderEmbed() : renderEmpty();
-    },
-    (props, nextProps) => isEqual(props, nextProps)
-);
+    return url ? renderEmbed() : renderEmpty();
+}
+
+export default React.memo(PinterestEmbed, (props, nextProps) => isEqual(props, nextProps));

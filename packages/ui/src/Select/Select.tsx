@@ -5,7 +5,7 @@ import { FormComponentProps } from "./../types";
 import { css } from "emotion";
 import classNames from "classnames";
 
-type SelectProps = FormComponentProps &
+export type SelectProps = FormComponentProps &
     RmwcSelectProps & {
         // Component label.
         label?: string;

@@ -3,20 +3,20 @@ import { CmsEditorField } from "~/types";
 import { BindComponentRenderProp } from "@webiny/form";
 import { Input as UiInput } from "@webiny/ui/Input";
 
-type TrailingIconType = {
+export interface TrailingIcon {
     icon: React.ReactNode;
     onClick: any;
-};
+}
 
-type Props = {
+export interface Props {
     step?: number;
     type?: string;
     bind: BindComponentRenderProp;
     field: CmsEditorField;
-    trailingIcon?: TrailingIconType;
-};
+    trailingIcon?: TrailingIcon;
+}
 
-const Input = ({ bind, ...props }: Props) => {
+export const Input: React.FC<Props> = ({ bind, ...props }) => {
     return (
         <UiInput
             {...props}
@@ -35,5 +35,3 @@ const Input = ({ bind, ...props }: Props) => {
         />
     );
 };
-
-export default Input;

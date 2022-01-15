@@ -1,12 +1,6 @@
 {
   "extends": "../../tsconfig.json",
   "include": ["src", "__tests__/**/*.ts"],
-  "references": [
-    { "path": "../api-page-builder" },
-    { "path": "../api-page-builder-so-ddb-es" },
-    { "path": "../handler-graphql" },
-    { "path": "../plugins" }
-  ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
     "outDir": "./dist",

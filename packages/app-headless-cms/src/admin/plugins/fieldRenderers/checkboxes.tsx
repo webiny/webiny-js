@@ -23,21 +23,35 @@ const plugin: CmsEditorFieldRendererPlugin = {
 
             return (
                 <Bind>
-                    <CheckboxGroup label={field.label} description={field.helpText}>
-                        {({ onChange, getValue }) => (
-                            <React.Fragment>
-                                {options.map((option, index) => (
-                                    <div key={option.value + index}>
-                                        <Checkbox
-                                            label={option.label}
-                                            value={getValue(option.value)}
-                                            onChange={onChange(option.value)}
-                                        />
-                                    </div>
-                                ))}
-                            </React.Fragment>
-                        )}
-                    </CheckboxGroup>
+                    {bind => {
+                        return (
+                            <CheckboxGroup
+                                {...bind}
+                                label={field.label}
+                                description={field.helpText}
+                            >
+                                {({ onChange, getValue }) => (
+                                    <React.Fragment>
+                                        {options.map((option, index) => {
+                                            const value =
+                                                field.type === "number"
+                                                    ? Number(option.value)
+                                                    : option.value;
+                                            return (
+                                                <div key={String(option.value) + index}>
+                                                    <Checkbox
+                                                        label={option.label}
+                                                        value={getValue(value)}
+                                                        onChange={onChange(value)}
+                                                    />
+                                                </div>
+                                            );
+                                        })}
+                                    </React.Fragment>
+                                )}
+                            </CheckboxGroup>
+                        );
+                    }}
                 </Bind>
             );
         }

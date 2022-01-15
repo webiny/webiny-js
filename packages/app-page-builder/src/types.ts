@@ -671,7 +671,7 @@ export interface EventActionHandlerActionCallableResponse {
     actions?: BaseEventAction[];
 }
 
-export interface EventActionHandlerMutationActionCallable<T, A extends any = any> {
+export interface EventActionHandlerMutationActionCallable<T, A = any> {
     (state: T, args?: A): T;
 }
 
