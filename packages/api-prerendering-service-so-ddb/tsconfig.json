@@ -1,6 +1,13 @@
 {
   "extends": "../../tsconfig.json",
   "include": ["src", "__tests__/**/*.ts"],
+  "references": [
+    { "path": "../api-prerendering-service" },
+    { "path": "../error" },
+    { "path": "../db" },
+    { "path": "../db-dynamodb" },
+    { "path": "../handler-aws" }
+  ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
     "outDir": "./dist",
