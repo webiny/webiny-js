@@ -1,7 +1,7 @@
 import { Context as ContextInterface, HandlerArgs } from "~/types";
 import { PluginsContainer } from "@webiny/plugins";
 
-export interface Params {
+export interface ContextParams {
     args: HandlerArgs;
     plugins?: Plugin | Plugin[] | Plugin[][] | PluginsContainer;
     WEBINY_VERSION: string;
@@ -24,7 +24,7 @@ export class Context implements ContextInterface {
         return this._version;
     }
 
-    public constructor(params: Params) {
+    public constructor(params: ContextParams) {
         const { plugins, args, WEBINY_VERSION } = params;
         this._plugins = new PluginsContainer(plugins || []);
         this._args = args;

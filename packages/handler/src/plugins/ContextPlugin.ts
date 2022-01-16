@@ -1,15 +1,15 @@
 import { Plugin } from "@webiny/plugins";
 import { Context } from "~/types";
 
-export interface ContextCallable<T extends Context = Context> {
+export interface ContextPluginCallable<T extends Context = Context> {
     (context: T): void | Promise<void>;
 }
 
 export class ContextPlugin<T extends Context = Context> extends Plugin {
-    public static readonly type = "context";
-    private readonly _callable: ContextCallable<T>;
+    public static readonly type: string = "context";
+    private readonly _callable: ContextPluginCallable<T>;
 
-    constructor(callable?: ContextCallable<T>) {
+    constructor(callable?: ContextPluginCallable<T>) {
         super();
         this._callable = callable;
     }
