@@ -1,6 +1,13 @@
 {
   "extends": "../../tsconfig.json",
   "include": ["src", "__tests__/**/*.ts"],
+  "references": [
+    { "path": "../app" },
+    { "path": "../app-security" },
+    { "path": "../app-tenancy" },
+    { "path": "../plugins" },
+    { "path": "../ui" }
+  ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
     "outDir": "./dist",

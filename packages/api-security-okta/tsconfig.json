@@ -1,6 +1,13 @@
 {
   "extends": "../../tsconfig.json",
   "include": ["src", "__tests__/**/*.ts"],
+  "references": [
+    { "path": "../api-security" },
+    { "path": "../api-tenancy" },
+    { "path": "../error" },
+    { "path": "../handler" },
+    { "path": "../handler-graphql" }
+  ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
     "outDir": "./dist",

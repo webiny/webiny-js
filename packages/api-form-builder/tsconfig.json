@@ -1,6 +1,27 @@
 {
   "extends": "../../tsconfig.json",
   "include": ["src", "__tests__/**/*.ts"],
+  "references": [
+    { "path": "../api-file-manager" },
+    { "path": "../api-i18n" },
+    { "path": "../api-i18n-content" },
+    { "path": "../api-i18n-ddb" },
+    { "path": "../api-security" },
+    { "path": "../api-tenancy" },
+    { "path": "../api-upgrade" },
+    { "path": "../error" },
+    { "path": "../handler" },
+    { "path": "../handler-aws" },
+    { "path": "../handler-graphql" },
+    { "path": "../plugins" },
+    { "path": "../pubsub" },
+    { "path": "../utils" },
+    { "path": "../validation" },
+    { "path": "../api-dynamodb-to-elasticsearch" },
+    { "path": "../api-file-manager-ddb" },
+    { "path": "../api-security-so-ddb" },
+    { "path": "../api-tenancy-so-ddb" }
+  ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
     "outDir": "./dist",

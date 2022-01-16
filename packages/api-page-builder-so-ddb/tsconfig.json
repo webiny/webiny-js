@@ -1,6 +1,19 @@
 {
   "extends": "../../tsconfig.json",
   "include": ["src", "__tests__/**/*.ts"],
+  "references": [
+    { "path": "../api-page-builder" },
+    { "path": "../db-dynamodb" },
+    { "path": "../error" },
+    { "path": "../handler-db" },
+    { "path": "../utils" },
+    { "path": "../api-security" },
+    { "path": "../api-tenancy" },
+    { "path": "../handler" },
+    { "path": "../handler-aws" },
+    { "path": "../handler-graphql" },
+    { "path": "../plugins" }
+  ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
     "outDir": "./dist",
