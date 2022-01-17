@@ -25,11 +25,6 @@ export default () => {
     return new ContextPlugin<CmsContext>(async context => {
         if (context.http?.request?.method === "OPTIONS") {
             return;
-        } else if (context.cms) {
-            throw new WebinyError(
-                "Context setup plugin must be first to be registered. Cannot have anything before it.",
-                "CMS_CONTEXT_INITIALIZED_ERROR"
-            );
         }
 
         const { type, locale } = await getParameters(context);
@@ -40,6 +35,7 @@ export default () => {
         }
 
         context.cms = {
+            ...((context.cms || {}) as any),
             type,
             locale,
             getLocale: () => systemLocale,
