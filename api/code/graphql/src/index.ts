@@ -24,7 +24,8 @@ import { createFormBuilder } from "@webiny/api-form-builder";
 import { createFormBuilderStorageOperations } from "@webiny/api-form-builder-so-ddb";
 import {
     createAdminHeadlessCmsGraphQL,
-    createAdminHeadlessCmsContext
+    createAdminHeadlessCmsContext,
+    createContentHeadlessCmsContext
 } from "@webiny/api-headless-cms";
 import { createStorageOperations as createHeadlessCmsStorageOperations } from "@webiny/api-headless-cms-ddb";
 import headlessCmsModelFieldToGraphQLPlugins from "@webiny/api-headless-cms/content/plugins/graphqlFields";
@@ -33,12 +34,19 @@ import tenantManager from "@webiny/api-tenant-manager";
 
 // Imports plugins created via scaffolding utilities.
 import scaffoldsPlugins from "./plugins/scaffolds";
+import { createApwContext, createApwGraphQL } from "@webiny/api-apw";
+import { createManageCMSPlugin } from "@webiny/api-apw/plugins/createManageCMSPlugin";
 
 const debug = process.env.DEBUG === "true";
 
 const documentClient = new DocumentClient({
     convertEmptyValues: true,
     region: process.env.AWS_REGION
+});
+
+const headlessCmsStorageOperations = createHeadlessCmsStorageOperations({
+    documentClient,
+    modelFieldToGraphQLPlugins: headlessCmsModelFieldToGraphQLPlugins()
 });
 
 export const handler = createHandler({
@@ -85,11 +93,14 @@ export const handler = createHandler({
         }),
         createAdminHeadlessCmsGraphQL(),
         createAdminHeadlessCmsContext({
-            storageOperations: createHeadlessCmsStorageOperations({
-                documentClient,
-                modelFieldToGraphQLPlugins: headlessCmsModelFieldToGraphQLPlugins()
-            })
+            storageOperations: headlessCmsStorageOperations
         }),
+        createManageCMSPlugin(),
+        createContentHeadlessCmsContext({
+            storageOperations: headlessCmsStorageOperations
+        }),
+        createApwContext(),
+        createApwGraphQL(),
         scaffoldsPlugins()
     ],
     http: { debug }
