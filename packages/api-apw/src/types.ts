@@ -293,9 +293,15 @@ export interface ApwWorkflowCrud
     onAfterWorkflowDelete: Topic<OnAfterWorkflowDeleteTopicParams>;
 }
 
+export interface ApwReviewerListParams extends ListParams {
+    where: ListParams["where"] & {
+        identityId?: string;
+    };
+}
+
 export interface ApwReviewerCrud
     extends BaseApwCrud<ApwReviewer, CreateReviewerParams, UpdateApwReviewerData> {
-    list(params: ListParams): Promise<[ApwReviewer[], ListMeta]>;
+    list(params: ApwReviewerListParams): Promise<[ApwReviewer[], ListMeta]>;
 
     /**
      * Lifecycle events
@@ -308,9 +314,17 @@ export interface ApwReviewerCrud
     onAfterReviewerDelete: Topic<OnAfterReviewerDeleteTopicParams>;
 }
 
+export interface ApwCommentListParams extends ListParams {
+    where: ListParams["where"] & {
+        changeRequest?: {
+            id?: string;
+        };
+    };
+}
+
 export interface ApwCommentCrud
     extends BaseApwCrud<ApwComment, CreateApwCommentParams, UpdateApwCommentParams> {
-    list(params: ListParams): Promise<[ApwComment[], ListMeta]>;
+    list(params: ApwCommentListParams): Promise<[ApwComment[], ListMeta]>;
 
     /**
      * Lifecycle events
@@ -323,13 +337,19 @@ export interface ApwCommentCrud
     onAfterCommentDelete: Topic<OnAfterCommentDeleteTopicParams>;
 }
 
+export interface ApwChangeRequestListParams extends ListParams {
+    where: ListParams["where"] & {
+        step?: string;
+    };
+}
+
 export interface ApwChangeRequestCrud
     extends BaseApwCrud<
         ApwChangeRequest,
         CreateApwChangeRequestParams,
         UpdateApwChangeRequestParams
     > {
-    list(params: ListParams): Promise<[ApwChangeRequest[], ListMeta]>;
+    list(params: ApwChangeRequestListParams): Promise<[ApwChangeRequest[], ListMeta]>;
 
     /**
      * Lifecycle events
@@ -400,7 +420,7 @@ interface StorageOperationsGetReviewerParams {
     id: string;
 }
 
-type StorageOperationsListReviewersParams = ListParams;
+type StorageOperationsListReviewersParams = ApwReviewerListParams;
 
 interface CreateApwReviewerData {
     identityId: string;
@@ -464,7 +484,7 @@ interface StorageOperationsUpdateContentReviewParams {
 type StorageOperationsDeleteContentReviewParams = StorageOperationsDeleteParams;
 
 type StorageOperationsGetChangeRequestParams = StorageOperationsGetParams;
-type StorageOperationsListChangeRequestsParams = ListParams;
+type StorageOperationsListChangeRequestsParams = ApwChangeRequestListParams;
 
 interface StorageOperationsCreateChangeRequestParams {
     data: CreateApwChangeRequestParams;
@@ -480,7 +500,7 @@ type StorageOperationsDeleteChangeRequestParams = StorageOperationsDeleteParams;
 type StorageOperationsGetCommentParams = StorageOperationsGetParams;
 
 type StorageOperationsDeleteCommentParams = StorageOperationsDeleteParams;
-type StorageOperationsListCommentsParams = ListParams;
+type StorageOperationsListCommentsParams = ApwCommentListParams;
 
 interface StorageOperationsCreateCommentParams {
     data: CreateApwCommentParams;
