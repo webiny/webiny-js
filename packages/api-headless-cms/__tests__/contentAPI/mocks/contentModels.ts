@@ -303,12 +303,7 @@ const models: CmsModel[] = [
                 settings: {
                     type: "date"
                 },
-                validation: [
-                    {
-                        name: "required",
-                        message: "Please enter a date"
-                    }
-                ],
+                validation: [],
                 listValidation: [],
                 placeholderText: "placeholder text",
                 predefinedValues: {
@@ -1376,6 +1371,9 @@ const models: CmsModel[] = [
                             value: "when-you-have-time"
                         }
                     ]
+                },
+                settings: {
+                    defaultValue: "critical"
                 },
                 renderer: {
                     name: "renderer"

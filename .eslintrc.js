@@ -29,7 +29,10 @@ module.exports = {
         "@typescript-eslint/no-var-requires": 0,
         "@typescript-eslint/no-explicit-any": 0,
         curly: ["error"],
-        "jest/expect-expect": 0
+        "jest/expect-expect": 0,
+        // Sometimes we have to use expect() inside try/catch clause (for async calls).
+        // This rule raises an error when you do that, so we disabled it.
+        "jest/no-conditional-expect": 0
     },
     settings: {
         react: {

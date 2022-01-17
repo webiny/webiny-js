@@ -45,9 +45,10 @@ const cleanupModelDataFields = (fields: CmsEditorField[]): CmsEditorField[] => {
             ...field,
             predefinedValues: {
                 enabled,
-                values: values.map(({ label, value }) => {
+                values: values.map(({ label, value, selected }) => {
                     return {
                         label,
+                        selected: selected || false,
                         value: String(value)
                     };
                 })

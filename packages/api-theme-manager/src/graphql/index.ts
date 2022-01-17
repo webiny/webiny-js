@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins";
 import { SecurityContext } from "@webiny/api-security/types";
 import { TenancyContext } from "@webiny/api-tenancy/types";
@@ -9,6 +8,10 @@ export default new GraphQLSchemaPlugin<Context>({
     typeDefs: /* GraphQL */ `
         extend input TenantSettingsInput {
             themes: [ID!]!
+        }
+
+        extend type TenantSettings {
+            themes: [ID]!
         }
 
         extend type PbSettings {

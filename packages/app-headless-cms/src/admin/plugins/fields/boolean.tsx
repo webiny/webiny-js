@@ -2,6 +2,8 @@ import React from "react";
 import { ReactComponent as BooleanIcon } from "./icons/toggle_on-black-24px.svg";
 import { CmsEditorFieldTypePlugin } from "~/types";
 import { i18n } from "@webiny/app/i18n";
+import { Grid, Cell } from "@webiny/ui/Grid";
+import { Select } from "@webiny/ui/Select";
 
 const t = i18n.ns("app-headless-cms/admin/fields");
 
@@ -24,6 +26,23 @@ const plugin: CmsEditorFieldTypePlugin = {
                     name: ""
                 }
             };
+        },
+        renderSettings({ form: { Bind } }) {
+            return (
+                <Grid>
+                    <Cell span={12}>
+                        <Bind name={"settings.defaultValue"}>
+                            <Select
+                                label={t`Default value`}
+                                description={"Default value for the field"}
+                            >
+                                <option value={"true"}>True</option>
+                                <option value={""}>False</option>
+                            </Select>
+                        </Bind>
+                    </Cell>
+                </Grid>
+            );
         }
     }
 };

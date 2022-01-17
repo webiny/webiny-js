@@ -4,7 +4,10 @@ module.exports = options => {
     const { overrides } = options;
 
     // Load base webpack config
-    let webpackConfig = require("./createWatchConfig")(options);
+    let webpackConfig = require("./webpack.config")({
+        production: false,
+        ...options
+    });
 
     // Customize Webpack config.
     if (typeof overrides.webpack === "function") {

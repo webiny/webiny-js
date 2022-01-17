@@ -4,7 +4,7 @@ import { useThemeManager } from "~/hooks/useThemeManager";
 export interface AddThemeProps {
     name: string;
     label: string;
-    loader: () => Promise<any>;
+    load: () => Promise<any>;
 }
 
 export const AddTheme = (props: AddThemeProps) => {

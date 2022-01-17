@@ -70,7 +70,7 @@ const extractValues = (target: any) => {
     });
 };
 
-export const parseWhere = <T extends any = WhereParserResult>(args: WhereParserArgs): T => {
+export const parseWhere = <T = WhereParserResult>(args: WhereParserArgs): T => {
     const { where } = args;
     const keys = Object.keys(where || {});
     if (keys.length === 0) {

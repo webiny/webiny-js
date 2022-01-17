@@ -26,7 +26,7 @@ export type DraggableItem = DragObjectWithType & {
     target: string[];
 };
 
-const Draggable = React.memo((props: DraggableProps) => {
+const Draggable = React.memo(function Draggable(props: DraggableProps) {
     const { children, beginDrag, endDrag, target, enabled = true } = props;
 
     const [{ isDragging }, drag, preview] = useDrag({

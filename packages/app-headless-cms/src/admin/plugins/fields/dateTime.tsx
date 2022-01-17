@@ -43,34 +43,49 @@ const plugin: CmsEditorFieldTypePlugin = {
             }>;
 
             return (
-                <Grid>
-                    <Cell span={12}>
-                        <Bind name={"placeholderText"}>
-                            <Input
-                                label={t`Placeholder text`}
-                                description={t`Placeholder text (optional)`}
-                            />
-                        </Bind>
-                    </Cell>
-                    <Cell span={12}>
-                        <Bind name={"settings.type"}>
-                            <Select
-                                label={t`Format`}
-                                description={t`Cannot be changed later`}
-                                disabled={lockedField && Boolean(lockedField.formatType)}
-                            >
-                                <option value={t`date`}>{t`Date only`}</option>
-                                <option value={t`time`}>{t`Time only`}</option>
-                                <option
-                                    value={t`dateTimeWithTimezone`}
-                                >{t`Date and time with timezone`}</option>
-                                <option
-                                    value={t`dateTimeWithoutTimezone`}
-                                >{t`Date and time without timezone`}</option>
-                            </Select>
-                        </Bind>
-                    </Cell>
-                </Grid>
+                <>
+                    <Grid>
+                        <Cell span={12}>
+                            <Bind name={"placeholderText"}>
+                                <Input
+                                    label={t`Placeholder text`}
+                                    description={t`Placeholder text (optional)`}
+                                />
+                            </Bind>
+                        </Cell>
+                    </Grid>
+                    <Grid>
+                        <Cell span={6}>
+                            <Bind name={"settings.type"}>
+                                <Select
+                                    label={t`Format`}
+                                    description={t`Cannot be changed later`}
+                                    disabled={lockedField && Boolean(lockedField.formatType)}
+                                >
+                                    <option value={t`date`}>{t`Date only`}</option>
+                                    <option value={t`time`}>{t`Time only`}</option>
+                                    <option
+                                        value={t`dateTimeWithTimezone`}
+                                    >{t`Date and time with timezone`}</option>
+                                    <option
+                                        value={t`dateTimeWithoutTimezone`}
+                                    >{t`Date and time without timezone`}</option>
+                                </Select>
+                            </Bind>
+                        </Cell>
+                        <Cell span={6}>
+                            <Bind name={"settings.defaultSetValue"}>
+                                <Select
+                                    label={t`Default Admin UI value`}
+                                    description={"Affects the Admin UI only"}
+                                >
+                                    <option value={t`null`}>{t`Leave empty (null value)`}</option>
+                                    <option value={t`current`}>{t`Current date/time`}</option>
+                                </Select>
+                            </Bind>
+                        </Cell>
+                    </Grid>
+                </>
             );
         }
     }

@@ -1,8 +1,15 @@
 import React, { useCallback, useRef, cloneElement } from "react";
 import getValue from "./functions/getValue";
 import setValue from "./functions/setValue";
+import { CmsEditorField, CmsEditorFieldTypePlugin } from "~/types";
+import { FormRenderPropParams } from "@webiny/form";
 
-export default function PredefinedValues({ field, fieldPlugin, form }) {
+export interface Props {
+    field: CmsEditorField;
+    fieldPlugin: CmsEditorFieldTypePlugin;
+    form: FormRenderPropParams;
+}
+const PredefinedValues: React.FC<Props> = ({ field, fieldPlugin, form }) => {
     const memoizedBindComponents = useRef({});
     const { Bind: BaseFormBind } = form;
 
@@ -37,5 +44,7 @@ export default function PredefinedValues({ field, fieldPlugin, form }) {
         return memoizedBindComponents.current[memoKey];
     }, []);
 
-    return fieldPlugin.field.renderPredefinedValues({ field, getBind });
-}
+    return <>{fieldPlugin.field.renderPredefinedValues({ field, getBind, form })}</>;
+};
+
+export default PredefinedValues;

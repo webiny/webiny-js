@@ -59,7 +59,7 @@ const booksSchema: GraphQLSchemaPlugin = {
 };
 
 describe("GraphQL Handler", () => {
-    test("should return errors if schema doesn't exist ", async () => {
+    test("should return errors if schema doesn't exist", async () => {
         const { introspect } = useGqlHandler();
 
         const [response] = await introspect();

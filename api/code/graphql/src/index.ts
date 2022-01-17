@@ -68,11 +68,11 @@ export const handler = createHandler({
         fileManagerS3(),
         prerenderingServicePlugins({
             handlers: {
-                render: process.env.PRERENDERING_RENDER_HANDLER as string,
-                flush: process.env.PRERENDERING_FLUSH_HANDLER as string,
+                render: String(process.env.PRERENDERING_RENDER_HANDLER),
+                flush: String(process.env.PRERENDERING_FLUSH_HANDLER),
                 queue: {
-                    add: process.env.PRERENDERING_QUEUE_ADD_HANDLER as string,
-                    process: process.env.PRERENDERING_QUEUE_PROCESS_HANDLER as string
+                    add: String(process.env.PRERENDERING_QUEUE_ADD_HANDLER),
+                    process: String(process.env.PRERENDERING_QUEUE_PROCESS_HANDLER)
                 }
             }
         }),
