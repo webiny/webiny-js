@@ -93,7 +93,6 @@ export const useGqlHandler = (params: GQLHandlerCallableParams) => {
         permissions,
         identity,
         plugins = [],
-        path,
         setupTenancyAndSecurityGraphQL,
         createHeadlessCmsApp
     } = params;
@@ -137,26 +136,6 @@ export const useGqlHandler = (params: GQLHandlerCallableParams) => {
                             webinyVersion: context.WEBINY_VERSION
                         };
                     };
-                }
-            },
-            {
-                type: "context",
-                name: "context-path-parameters",
-                apply(context) {
-                    if (!context.http) {
-                        context.http = {
-                            request: {
-                                path: {
-                                    parameters: null
-                                }
-                            }
-                        };
-                    } else if (!context.http.request.path) {
-                        context.http.request.path = {
-                            parameters: null
-                        };
-                    }
-                    context.http.request.path.parameters = { key: path };
                 }
             },
             apiKeyAuthentication({ identityType: "api-key" }),
