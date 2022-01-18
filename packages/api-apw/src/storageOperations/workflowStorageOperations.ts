@@ -1,4 +1,4 @@
-import { ApwWorkflowStorageOperations } from "~/types";
+import { ApwWorkflowStorageOperations } from "./types";
 import {
     baseFields,
     CreateApwStorageOperationsParams,

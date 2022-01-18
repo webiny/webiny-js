@@ -1,5 +1,5 @@
 import { Page, OnBeforePageCreateFromTopicParams } from "@webiny/api-page-builder/types";
-import { CmsContext, CmsModel } from "@webiny/api-headless-cms/types";
+import { CmsContext } from "@webiny/api-headless-cms/types";
 import { Context } from "@webiny/handler/types";
 import { PageBuilderContextObject } from "@webiny/api-page-builder/graphql/types";
 import { SecurityIdentity, SecurityPermission } from "@webiny/api-security/types";
@@ -15,15 +15,6 @@ export interface ListWhere {
     id_in?: string[];
     id_not?: string;
     id_not_in?: string[];
-    /**
-     * Entry is owned by whom?
-     *
-     * Can be sent via the API or set internal if user can see only their own entries.
-     */
-    ownedBy?: string;
-    ownedBy_not?: string;
-    ownedBy_in?: string[];
-    ownedBy_not_in?: string[];
     /**
      * Who created the entry?
      */
@@ -515,8 +506,6 @@ export interface ApwReviewerStorageOperations {
     /*
      * Reviewer methods
      */
-    getReviewerModel(): Promise<CmsModel>;
-
     getReviewer(params: StorageOperationsGetReviewerParams): Promise<ApwReviewer>;
 
     listReviewers(params: StorageOperationsListReviewersParams): Promise<[ApwReviewer[], ListMeta]>;
@@ -532,8 +521,6 @@ export interface ApwWorkflowStorageOperations {
     /*
      * Workflow methods
      */
-    getWorkflowModel(): Promise<CmsModel>;
-
     getWorkflow(params: StorageOperationsGetWorkflowParams): Promise<ApwWorkflow>;
 
     listWorkflows(params: StorageOperationsListWorkflowsParams): Promise<[ApwWorkflow[], ListMeta]>;
@@ -549,8 +536,6 @@ export interface ApwContentReviewStorageOperations {
     /*
      * ContentReview methods
      */
-    getContentReviewModel(): Promise<CmsModel>;
-
     getContentReview(params: StorageOperationsGetContentReviewParams): Promise<ApwContentReview>;
 
     listContentReviews(
@@ -572,8 +557,6 @@ export interface ApwChangeRequestStorageOperations {
     /*
      * ChangeRequest methods
      */
-    getChangeRequestModel(): Promise<CmsModel>;
-
     getChangeRequest(params: StorageOperationsGetChangeRequestParams): Promise<ApwChangeRequest>;
 
     listChangeRequests(
@@ -595,8 +578,6 @@ export interface ApwCommentStorageOperations {
     /*
      * Comment methods
      */
-    getCommentModel(): Promise<CmsModel>;
-
     getComment(params: StorageOperationsGetCommentParams): Promise<ApwComment>;
 
     listComments(params: StorageOperationsListCommentsParams): Promise<[ApwComment[], ListMeta]>;

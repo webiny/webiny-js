@@ -1,4 +1,5 @@
-import { ApwCommentStorageOperations, ApwStorageOperations } from "~/types";
+import { ApwStorageOperations } from "./types";
+import { ApwCommentStorageOperations } from "./types";
 import { baseFields, CreateApwStorageOperationsParams } from "~/storageOperations/index";
 import { getFieldValues, getTransformer } from "~/utils/fieldResolver";
 

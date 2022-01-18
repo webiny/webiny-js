@@ -1,4 +1,4 @@
-import { ApwChangeRequestStorageOperations } from "~/types";
+import { ApwChangeRequestStorageOperations } from "./types";
 import { baseFields, CreateApwStorageOperationsParams } from "~/storageOperations/index";
 import { getFieldValues, getTransformer } from "~/utils/fieldResolver";
 

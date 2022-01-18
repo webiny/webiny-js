@@ -1,4 +1,4 @@
-import { ApwContentReviewStorageOperations } from "~/types";
+import { ApwContentReviewStorageOperations } from "./types";
 import {
     baseFields,
     CreateApwStorageOperationsParams,
