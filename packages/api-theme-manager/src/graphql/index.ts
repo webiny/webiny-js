@@ -24,6 +24,11 @@ export default new GraphQLSchemaPlugin<Context>({
         }
     `,
     resolvers: {
+        TenantSettings: {
+            themes(tenant) {
+                return tenant.themes || [];
+            }
+        },
         PbSettings: {
             theme(settings, _, context) {
                 const tenant = context.tenancy.getCurrentTenant();
