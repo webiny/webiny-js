@@ -1,7 +1,6 @@
 import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
 import { ApwContentTypes, ApwContext, PageWithWorkflow } from "~/types";
 import { createApw } from "~/createApw";
-import { createApwModels } from "./models";
 import apwHooks from "./hooks";
 import { createStorageOperations } from "~/storageOperations";
 
@@ -27,11 +26,20 @@ export default () => [
             getTenant,
             getPermission,
             storageOperations: createStorageOperations({
+                /**
+                 * TODO: We need to figure out a way to pass "cms" from outside (e.g. api/code/graphql)
+                 */
                 cms: context.cms,
+                /**
+                 * TODO: This is required for "entryFieldFromStorageTransform" which access plugins from context.
+                 */
                 getCmsContext: () => context
             })
         });
-
+        /**
+         * TODO: @ashutosh
+         * Move these call into a separate package let say "ap-apw-page-builder"
+         */
         context.apw.addWorkflowGetter(ApwContentTypes.PAGE, async id => {
             const page = await context.pageBuilder.getPage<PageWithWorkflow>(id);
             return page.settings.apw.workflowId;
@@ -43,6 +51,5 @@ export default () => [
             return entry.values.workflow;
         });
     }),
-    createApwModels(),
     apwHooks()
 ];
