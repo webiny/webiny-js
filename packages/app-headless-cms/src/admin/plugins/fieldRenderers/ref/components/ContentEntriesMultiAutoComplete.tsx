@@ -6,7 +6,6 @@ import { i18n } from "@webiny/app/i18n";
 import { useReferences } from "./useReferences";
 import { renderItem } from "./renderItem";
 import NewRefEntryFormDialog, { NewEntryButton } from "./NewRefEntryFormDialog";
-import MissingEntryHelpText from "./MissingEntryHelpText";
 import { useNewRefEntry } from "../hooks/useNewRefEntry";
 
 const t = i18n.ns("app-headless-cms/admin/fields/ref");
@@ -16,7 +15,7 @@ const warn = t`Before publishing the main content entry, make sure you publish t
 function ContentEntriesMultiAutocomplete({ bind, field }) {
     const { options, setSearch, entries, loading, onChange } = useReferences({ bind, field });
 
-    const { renderNewEntryModal, refModelId } = useNewRefEntry({ field });
+    const { renderNewEntryModal, refModelId, helpText } = useNewRefEntry({ field });
 
     const entryWarning = ({ id, modelId, name, published }, index) =>
         !published && (
@@ -90,9 +89,7 @@ function ContentEntriesMultiAutocomplete({ bind, field }) {
                     {warning}
                 </>
             }
-            noResultFound={
-                !renderNewEntryModal ? <MissingEntryHelpText refModelId={refModelId} /> : null
-            }
+            noResultFound={helpText}
         />
     );
 }

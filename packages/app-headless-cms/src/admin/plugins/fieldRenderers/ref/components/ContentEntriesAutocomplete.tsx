@@ -8,7 +8,6 @@ import { useReference } from "./useReference";
 import { renderItem } from "./renderItem";
 import { createEntryUrl } from "./createEntryUrl";
 import NewRefEntryFormDialog, { NewEntryButton } from "./NewRefEntryFormDialog";
-import MissingEntryHelpText from "./MissingEntryHelpText";
 
 const t = i18n.ns("app-headless-cms/admin/fields/ref");
 
@@ -31,7 +30,7 @@ function ContentEntriesAutocomplete({ bind, field }) {
             here: <Link to={link}>{t`here`}</Link>
         });
     }
-    const { renderNewEntryModal, refModelId } = useNewRefEntry({ field });
+    const { renderNewEntryModal, refModelId, helpText } = useNewRefEntry({ field });
 
     /*
      * Wrap AutoComplete input in NewRefEntry modal.
@@ -82,9 +81,7 @@ function ContentEntriesAutocomplete({ bind, field }) {
                 </>
             }
             onInput={debounce(search => setSearch(search), 250)}
-            noResultFound={
-                !renderNewEntryModal ? <MissingEntryHelpText refModelId={refModelId} /> : null
-            }
+            noResultFound={helpText}
         />
     );
 }
