@@ -25,13 +25,10 @@ export default ({ documentClient }: { documentClient: DocumentClient }) => [
      * Create Security app in the `context`.
      */
     createSecurityContext({
+        // For Okta, this must be set to `false`.
+        verifyIdentityToTenantLink: false,
         storageOperations: securityStorageOperations({ documentClient })
     }),
-
-    /**
-     * Expose security GraphQL schema.
-     */
-    createSecurityGraphQL(),
 
     /**
      * Perform authentication using the common "Authorization" HTTP header.
@@ -41,7 +38,6 @@ export default ({ documentClient }: { documentClient: DocumentClient }) => [
 
     createAuthenticator({
         issuer: process.env.OKTA_ISSUER as string,
-        clientId: process.env.OKTA_CLIENT_ID as string,
         getIdentity({ token }) {
             return {
                 id: token.sub,

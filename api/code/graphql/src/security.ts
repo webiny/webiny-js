@@ -7,11 +7,7 @@ import { authenticateUsingHttpHeader } from "@webiny/api-security/plugins/authen
 import apiKeyAuthentication from "@webiny/api-security/plugins/apiKeyAuthentication";
 import apiKeyAuthorization from "@webiny/api-security/plugins/apiKeyAuthorization";
 import anonymousAuthorization from "@webiny/api-security/plugins/anonymousAuthorization";
-import {
-    createAuthenticator,
-    createGroupAuthorizer,
-    createIdentityType
-} from "@webiny/api-security-okta";
+import { createOkta } from "@webiny/api-security-okta";
 
 export default ({ documentClient }: { documentClient: DocumentClient }) => [
     /**
@@ -30,13 +26,22 @@ export default ({ documentClient }: { documentClient: DocumentClient }) => [
      * Create Security app in the `context`.
      */
     createSecurityContext({
+        // For Okta, this must be set to `false`.
+        verifyIdentityToTenantLink: false,
         storageOperations: securityStorageOperations({ documentClient })
     }),
 
     /**
      * Expose security GraphQL schema.
      */
-    createSecurityGraphQL(),
+    createSecurityGraphQL({
+        // For Okta, we must provide custom logic to determine the "default" tenant for current identity.
+        // For `dev` environments, we can just return the `root` tenant.
+        // For other environments, we can extract this information from the tenant:group map provided via the Okta JWT.
+        getDefaultTenant(context) {
+            return context.tenancy.getRootTenant();
+        }
+    }),
 
     /**
      * Perform authentication using the common "Authorization" HTTP header.
@@ -44,27 +49,19 @@ export default ({ documentClient }: { documentClient: DocumentClient }) => [
      */
     authenticateUsingHttpHeader(),
 
-    createAuthenticator({
+    createOkta({
         issuer: process.env.OKTA_ISSUER as string,
+        getGroupSlug(context) {
+            return context.security.getIdentity().group;
+        },
         getIdentity({ token }) {
             return {
                 id: token.sub,
                 type: "admin",
-                displayName: token.name
+                displayName: token.name,
+                group: token.webiny_group
             };
         }
-    }),
-
-    createGroupAuthorizer({
-        identityType: "admin",
-        getGroupSlug() {
-            return "full-access";
-        }
-    }),
-
-    createIdentityType({
-        identityType: "admin",
-        name: "OktaIdentity"
     }),
 
     /**
