@@ -1,4 +1,4 @@
-import { createModelField } from "../utils";
+import { createModelField } from "./utils";
 import { stepTitleField, stepTypeField, stepSlugField, stepReviewersField } from "./workflow.model";
 
 const contentField = fields =>

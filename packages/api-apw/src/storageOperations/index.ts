@@ -6,6 +6,7 @@ import { createWorkflowStorageOperations } from "./workflowStorageOperations";
 import { createContentReviewStorageOperations } from "./contentReviewStorageOperations";
 import { createChangeRequestStorageOperations } from "./changeRequestStorageOperations";
 import { createCommentStorageOperations } from "~/storageOperations/commentStorageOperations";
+import { createApwModels } from "./models";
 
 export interface CreateApwStorageOperationsParams {
     cms: HeadlessCms;
@@ -22,6 +23,12 @@ export const createStorageOperations = ({
     cms,
     getCmsContext
 }: CreateApwStorageOperationsParams): ApwStorageOperations => {
+    const context = getCmsContext();
+    /**
+     * Register Apw models.
+     */
+    createApwModels(context);
+
     return {
         ...createReviewerStorageOperations({ cms }),
         ...createWorkflowStorageOperations({ cms }),

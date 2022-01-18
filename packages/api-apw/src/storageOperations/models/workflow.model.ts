@@ -1,4 +1,4 @@
-import { createModelField } from "../utils";
+import { createModelField } from "./utils";
 
 const titleField = () =>
     createModelField({
