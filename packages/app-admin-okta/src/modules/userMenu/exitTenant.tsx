@@ -1,13 +1,12 @@
-// @ts-nocheck
 import React from "react";
+import { makeComposable } from "@webiny/app-serverless-cms";
 import { ListItem, ListItemGraphic } from "@webiny/ui/List";
 import { Icon } from "@webiny/ui/Icon";
 import { ReactComponent as LogoutIcon } from "~/assets/icons/logout_black_24dp.svg";
 import { useSecurity } from "@webiny/app-security";
 import { useTenancy } from "@webiny/app-tenancy";
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const AccountDetails = () => {
+export const ExitTenant = makeComposable("ExitTenant", () => {
     const security = useSecurity();
     const tenancy = useTenancy();
 
@@ -30,15 +29,4 @@ const AccountDetails = () => {
     }
 
     return null;
-};
-
-export default () => {
-    return { type: "dummy" };
-    // return new UIViewPlugin<AdminView>(AdminView, view => {
-    //     const userMenu = view.getElement<UserMenuElement>("userMenu");
-    //
-    //     if (userMenu) {
-    //         userMenu.addElement(new GenericElement("accountDetails", () => <AccountDetails />));
-    //     }
-    // });
-};
+});
