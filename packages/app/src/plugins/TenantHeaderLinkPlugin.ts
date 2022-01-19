@@ -23,8 +23,6 @@ export class TenantHeaderLinkPlugin extends ApolloLinkPlugin {
         }
 
         this.tenant = tenant;
-
-        console.log("Detected tenant", this.tenant);
     }
 
     createLink() {

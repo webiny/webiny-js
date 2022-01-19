@@ -1,5 +1,3 @@
 import graphqlPlugins from "./graphql";
 
-export default () => {
-    return graphqlPlugins;
-};
+export default () => graphqlPlugins();

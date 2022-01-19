@@ -50,9 +50,11 @@ describe(`Test "Tenancy" install`, () => {
         await tenancy.install();
         expect.assertions(2);
 
-        return tenancy.install().catch(err => {
+        try {
+            await tenancy.install();
+        } catch (err) {
             expect(err.message).toEqual("Tenancy is already installed.");
             expect(err.code).toEqual("TENANCY_INSTALL_ABORTED");
-        });
+        }
     });
 });

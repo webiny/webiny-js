@@ -1,11 +1,14 @@
 import { Entity, Table } from "dynamodb-toolbox";
-import { getExtraAttributes } from "@webiny/db-dynamodb/utils/attributes";
-import { PbContext } from "@webiny/api-page-builder/graphql/types";
+import { Attributes } from "~/types";
 
-export const defineSettingsEntity = (params: { context: PbContext; table: Table }): Entity<any> => {
-    const { context, table } = params;
-    const entityName = "PbSettings";
-    const attributes = getExtraAttributes(context, entityName);
+export interface Params {
+    table: Table;
+    entityName: string;
+    attributes: Attributes;
+}
+
+export const createSettingsEntity = (params: Params): Entity<any> => {
+    const { entityName, table, attributes } = params;
     return new Entity({
         name: entityName,
         table,
@@ -52,7 +55,11 @@ export const defineSettingsEntity = (params: { context: PbContext; table: Table 
             TYPE: {
                 type: "string"
             },
-            ...attributes
+            // TODO: implement this via a plugin when https://github.com/webiny/webiny-js/issues/2169 is resolved.
+            theme: {
+                type: "string"
+            },
+            ...(attributes || {})
         }
     });
 };

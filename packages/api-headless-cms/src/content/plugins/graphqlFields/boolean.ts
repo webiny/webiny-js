@@ -1,4 +1,5 @@
 import { CmsModelFieldToGraphQLPlugin } from "~/types";
+import { attachRequiredFieldValue } from "~/content/plugins/graphqlFields/requiredField";
 
 const createListFilters = ({ field }) => {
     return `
@@ -37,10 +38,10 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
         },
         createInputField({ field }) {
             if (field.multipleValues) {
-                return field.fieldId + ": [Boolean]";
+                return attachRequiredFieldValue(field.fieldId + ": [Boolean]", field);
             }
 
-            return field.fieldId + ": Boolean";
+            return attachRequiredFieldValue(field.fieldId + ": Boolean", field);
         }
     }
 };

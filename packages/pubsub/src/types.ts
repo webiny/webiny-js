@@ -7,9 +7,9 @@ export type Event = Record<string, any>;
 export interface Topic<TEvent = Event> {
     getTopicName(): string;
 
-    subscribe(cb: (event: TEvent) => void | Promise<void>): void;
+    subscribe<TCEvent extends TEvent = TEvent>(cb: Subscriber<TCEvent>): void;
 
-    subscribeOnce(cb: (event: TEvent) => void | Promise<void>): void;
+    subscribeOnce<TCEvent extends TEvent = TEvent>(cb: Subscriber<TCEvent>): void;
 
     getSubscribers(): Subscriber<TEvent>[];
 

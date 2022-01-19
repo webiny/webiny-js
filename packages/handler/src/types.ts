@@ -1,54 +1,50 @@
 import { Plugin, PluginsContainer } from "@webiny/plugins/types";
 
 export type HandlerArgs = any[];
+/**
+ * Left for backwards compatibility.
+ * @deprecated
+ */
+export type HandlerContext = Context;
 
-// There are a couple of different types that are used as a base Context type.
-// Ultimately, this is the one to be used, the rest are here just for backward-compatibility.
-export interface HandlerContext {
+/**
+ * The main context which is constructed on every request.
+ * All other contexts should extend this one.
+ */
+export interface Context {
     plugins: PluginsContainer;
     args: HandlerArgs;
     readonly WEBINY_VERSION: string;
+    /**
+     * Not to be used outside of Webiny internal code.
+     * @internal
+     */
+    hasResult: () => boolean;
+    /**
+     * Not to be used outside of Webiny internal code.
+     * @internal
+     *
+     * @private
+     */
+    _result?: any;
+    /**
+     * Not to be used outside of Webiny internal code.
+     * @internal
+     */
+    setResult: (value: any) => void;
+    /**
+     * Not to be used outside of Webiny internal code.
+     * @internal
+     */
+    getResult: () => void;
 }
 
-// Left for backwards-compatibility.
-export interface ContextInterface {
-    plugins: PluginsContainer;
-    args: HandlerArgs;
-    readonly WEBINY_VERSION: string;
-}
-
-// Left for backwards-compatibility.
-export type Context<
-    C0 = Record<string, any>,
-    C1 = Record<string, any>,
-    C2 = Record<string, any>,
-    C3 = Record<string, any>,
-    C4 = Record<string, any>,
-    C5 = Record<string, any>,
-    C6 = Record<string, any>,
-    C7 = Record<string, any>,
-    C8 = Record<string, any>,
-    C9 = Record<string, any>
-> = {
-    plugins: PluginsContainer;
-    args: HandlerArgs;
-    readonly WEBINY_VERSION: string;
-} & C0 &
-    C1 &
-    C2 &
-    C3 &
-    C4 &
-    C5 &
-    C6 &
-    C7 &
-    C8 &
-    C9;
-
-export interface BeforeHandlerPlugin<T extends ContextInterface = ContextInterface> extends Plugin {
-    type: "before-handler";
-    apply: (context: T) => Promise<void>;
-}
-
+/**
+ * Left for backwards-compatibility.
+ *
+ * @internal
+ * @deprecated
+ */
 export type ContextPlugin<
     C0 = Context,
     C1 = Context,
@@ -64,7 +60,12 @@ export type ContextPlugin<
     type: "context";
     apply(context: C0 & C1 & C2 & C3 & C4 & C5 & C6 & C7 & C8 & C9): Promise<void>;
 };
-
+/**
+ * Left for backwards-compatibility.
+ *
+ * @internal
+ * @deprecated
+ */
 export type HandlerPlugin<
     C0 = Context,
     C1 = Context,
@@ -80,7 +81,12 @@ export type HandlerPlugin<
     type: "handler";
     handle(context: C0 & C1 & C2 & C3 & C4 & C5 & C6 & C7 & C8 & C9, next: Function): any;
 };
-
+/**
+ * Left for backwards-compatibility.
+ *
+ * @internal
+ * @deprecated
+ */
 export type HandlerResultPlugin<
     C0 = Context,
     C1 = Context,
@@ -96,7 +102,12 @@ export type HandlerResultPlugin<
     type: "handler-result";
     handle(context: C0 & C1 & C2 & C3 & C4 & C5 & C6 & C7 & C8 & C9, result: any): any;
 };
-
+/**
+ * Left for backwards-compatibility.
+ *
+ * @internal
+ * @deprecated
+ */
 export type HandlerErrorPlugin<
     C0 = Context,
     C1 = Context,

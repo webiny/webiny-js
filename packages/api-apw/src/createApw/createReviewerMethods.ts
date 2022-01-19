@@ -1,38 +1,67 @@
-import { ApwReviewerCrud, CreateApwParams } from "~/types";
+import {
+    ApwReviewerCrud,
+    CreateApwParams,
+    OnAfterReviewerCreateTopicParams,
+    OnAfterReviewerDeleteTopicParams,
+    OnAfterReviewerUpdateTopicParams,
+    OnBeforeReviewerCreateTopicParams,
+    OnBeforeReviewerDeleteTopicParams,
+    OnBeforeReviewerUpdateTopicParams
+} from "~/types";
+import { createTopic } from "@webiny/pubsub";
 
 export function createReviewerMethods({ storageOperations }: CreateApwParams): ApwReviewerCrud {
+    const onBeforeReviewerCreate = createTopic<OnBeforeReviewerCreateTopicParams>();
+    const onAfterReviewerCreate = createTopic<OnAfterReviewerCreateTopicParams>();
+    const onBeforeReviewerUpdate = createTopic<OnBeforeReviewerUpdateTopicParams>();
+    const onAfterReviewerUpdate = createTopic<OnAfterReviewerUpdateTopicParams>();
+    const onBeforeReviewerDelete = createTopic<OnBeforeReviewerDeleteTopicParams>();
+    const onAfterReviewerDelete = createTopic<OnAfterReviewerDeleteTopicParams>();
     return {
-        async getModel() {
-            return await storageOperations.getModel("apwReviewerModelDefinition");
-        },
+        /**
+         * Lifecycle events
+         */
+        onBeforeReviewerCreate,
+        onAfterReviewerCreate,
+        onBeforeReviewerUpdate,
+        onAfterReviewerUpdate,
+        onBeforeReviewerDelete,
+        onAfterReviewerDelete,
         async get(id) {
-            const model = await this.getModel();
-            return await storageOperations.getEntryById(model, id);
+            return storageOperations.getReviewer({ id });
         },
         async list(params) {
-            const model = await this.getModel();
-            return await storageOperations.listLatestEntries(model, params);
+            return storageOperations.listReviewers(params);
         },
         async create(data) {
-            const model = await this.getModel();
-            return await storageOperations.createEntry(model, data);
+            await onBeforeReviewerCreate.publish({ input: data });
+
+            const reviewer = await storageOperations.createReviewer({ data });
+
+            await onAfterReviewerCreate.publish({ reviewer });
+
+            return reviewer;
         },
         async update(id, data) {
-            const model = await this.getModel();
-            /**
-             * We're fetching the existing entry here because we're not accepting "app" field as input,
-             * but, we still need to retain its value after the "update" operation.
-             */
-            const existingEntry = await this.get(id);
+            const original = await storageOperations.getReviewer({ id });
 
-            return await storageOperations.updateEntry(model, id, {
-                ...data,
-                app: existingEntry.values.app
-            });
+            await onBeforeReviewerUpdate.publish({ original, input: { id, data } });
+
+            const reviewer = await storageOperations.updateReviewer({ id, data });
+
+            await onAfterReviewerUpdate.publish({ original, input: { id, data }, reviewer });
+
+            return reviewer;
         },
         async delete(id: string) {
-            const model = await this.getModel();
-            await storageOperations.deleteEntry(model, id);
+            const reviewer = await storageOperations.getReviewer({ id });
+
+            await onBeforeReviewerDelete.publish({ reviewer });
+
+            await storageOperations.deleteReviewer({ id });
+
+            await onAfterReviewerDelete.publish({ reviewer });
+
             return true;
         }
     };

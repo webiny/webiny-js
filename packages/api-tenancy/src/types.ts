@@ -7,14 +7,16 @@ export interface TenantDomain {
     fqdn: string;
 }
 
+export interface TenantSettings {
+    domains: TenantDomain[];
+}
+
 export interface Tenant {
     id: string;
     name: string;
     description: string;
     status: string;
-    settings: {
-        domains: TenantDomain[];
-    };
+    settings: TenantSettings;
     parent: string | null;
     webinyVersion?: string;
 }
@@ -55,6 +57,7 @@ export interface CreateTenantInput {
     status?: string;
     settings?: {
         domains: TenantDomain[];
+        // themes: string[];
     };
     parent?: string | null;
 }

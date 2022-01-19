@@ -28,8 +28,8 @@ export default /* GraphQL */ `
     }
 
     input CategoryInput {
-        title: String
-        slug: String
+        title: String!
+        slug: String!
     }
 
     input CategoryGetWhereInput {

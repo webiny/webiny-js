@@ -1,53 +1,69 @@
-import { ApwChangeRequestCrud, ApwCommentCrud, CreateApwParams } from "~/types";
+import { createTopic } from "@webiny/pubsub";
+import {
+    ApwCommentCrud,
+    CreateApwParams,
+    OnBeforeCommentCreateTopicParams,
+    OnAfterCommentCreateTopicParams,
+    OnBeforeCommentUpdateTopicParams,
+    OnAfterCommentUpdateTopicParams,
+    OnBeforeCommentDeleteTopicParams,
+    OnAfterCommentDeleteTopicParams
+} from "~/types";
 
-interface CreateCommentMethodsParams extends CreateApwParams {
-    getChangeRequestModel: ApwChangeRequestCrud["getModel"];
-}
+export function createCommentMethods({ storageOperations }: CreateApwParams): ApwCommentCrud {
+    const onBeforeCommentCreate = createTopic<OnBeforeCommentCreateTopicParams>();
+    const onAfterCommentCreate = createTopic<OnAfterCommentCreateTopicParams>();
+    const onBeforeCommentUpdate = createTopic<OnBeforeCommentUpdateTopicParams>();
+    const onAfterCommentUpdate = createTopic<OnAfterCommentUpdateTopicParams>();
+    const onBeforeCommentDelete = createTopic<OnBeforeCommentDeleteTopicParams>();
+    const onAfterCommentDelete = createTopic<OnAfterCommentDeleteTopicParams>();
 
-export function createCommentMethods({
-    storageOperations,
-    getChangeRequestModel
-}: CreateCommentMethodsParams): ApwCommentCrud {
     return {
-        async getModel() {
-            return await storageOperations.getModel("apwContentReviewCommentModelDefinition");
-        },
+        /**
+         * Lifecycle events
+         */
+        onBeforeCommentCreate,
+        onAfterCommentCreate,
+        onBeforeCommentUpdate,
+        onAfterCommentUpdate,
+        onBeforeCommentDelete,
+        onAfterCommentDelete,
         async get(id) {
-            const model = await this.getModel();
-            return await storageOperations.getEntryById(model, id);
+            return storageOperations.getComment({ id });
         },
         async list(params) {
-            const model = await this.getModel();
-            return await storageOperations.listLatestEntries(model, params);
+            return storageOperations.listComments(params);
         },
         async create(data) {
-            const model = await this.getModel();
-            const refModel = await getChangeRequestModel();
+            await onBeforeCommentCreate.publish({ input: data });
 
-            return await storageOperations.createEntry(model, {
-                ...data,
-                changeRequest: {
-                    ...data.changeRequest,
-                    modelId: refModel.modelId
-                }
+            const comment = await storageOperations.createComment({
+                data
             });
+            await onAfterCommentCreate.publish({ comment });
+
+            return comment;
         },
         async update(id, data) {
-            const model = await this.getModel();
-            /**
-             * We're fetching the existing entry here because we're not accepting "app" field as input,
-             * but, we still need to retain its value after the "update" operation.
-             */
-            const existingEntry = await this.get(id);
+            const original = await storageOperations.getComment({ id });
 
-            return await storageOperations.updateEntry(model, id, {
-                ...existingEntry.values,
-                ...data
-            });
+            await onBeforeCommentUpdate.publish({ original, input: { id, data } });
+
+            const comment = await storageOperations.updateComment({ id, data });
+
+            await onAfterCommentUpdate.publish({ original, comment, input: { id, data } });
+
+            return comment;
         },
         async delete(id: string) {
-            const model = await this.getModel();
-            await storageOperations.deleteEntry(model, id);
+            const comment = await storageOperations.getComment({ id });
+
+            await onBeforeCommentDelete.publish({ comment });
+
+            await storageOperations.deleteComment({ id });
+
+            await onAfterCommentDelete.publish({ comment });
+
             return true;
         }
     };

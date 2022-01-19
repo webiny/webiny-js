@@ -1,19 +1,20 @@
 import { Plugin } from "@webiny/plugins";
+import { Context } from "~/types";
 
-interface Callable<TContext> {
-    (context: TContext): void | Promise<void>;
+export interface ContextCallable<T extends Context = Context> {
+    (context: T): void | Promise<void>;
 }
 
-export class ContextPlugin<TContext> extends Plugin {
+export class ContextPlugin<T extends Context = Context> extends Plugin {
     public static readonly type = "context";
-    private readonly _callable: Callable<TContext>;
+    private readonly _callable: ContextCallable<T>;
 
-    constructor(callable?: Callable<TContext>) {
+    constructor(callable?: ContextCallable<T>) {
         super();
         this._callable = callable;
     }
 
-    apply(context: TContext): void | Promise<void> {
+    apply(context: T): void | Promise<void> {
         if (typeof this._callable !== "function") {
             throw Error(
                 `Missing callable in ContextPlugin! Either pass a callable to plugin constructor or extend the plugin and override the "apply" method.`

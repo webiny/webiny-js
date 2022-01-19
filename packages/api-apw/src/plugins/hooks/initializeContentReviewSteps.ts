@@ -1,71 +1,53 @@
 import lodashSet from "lodash/set";
-import { ApwContext, PageWithWorkflow } from "~/types";
-import { getContentReviewStepInitialStatus, getValue } from "~/plugins/utils";
+import { AdvancedPublishingWorkflow, ApwContentTypes, LifeCycleHookCallbackParams } from "~/types";
+import { getContentReviewStepInitialStatus } from "~/plugins/utils";
 import { NotFoundError } from "@webiny/handler-graphql";
 
-/**
- * TODO: @ashutosh Convert it to use plugins.
- */
 export const getWorkflowIdFromContent = async (
-    context: ApwContext,
-    params: { type: string; id: string; settings: Record<string, any> }
+    apw: AdvancedPublishingWorkflow,
+    params: { type: ApwContentTypes; id: string; settings: Record<string, any> }
 ): Promise<string> => {
     switch (params.type) {
-        case "page":
-            const page = await context.pageBuilder.getPage<PageWithWorkflow>(params.id);
-            return page.workflow;
-        case "cms_entry":
-            const model = await context.cms.getModel(params.settings.modelId);
-            const entry = await context.cms.getEntry(model, { where: { id: params.id } });
-            return entry.values.workflow;
+        case ApwContentTypes.PAGE:
+            const getWorkflowFromPage = apw.getWorkflowGetter(ApwContentTypes.PAGE);
+            return getWorkflowFromPage(params.id, {});
+
+        case ApwContentTypes.CMS_ENTRY:
+            const getWorkflowFromCmsEntry = apw.getWorkflowGetter(ApwContentTypes.CMS_ENTRY);
+            return getWorkflowFromCmsEntry(params.id, params.settings);
     }
     return null;
 };
 
-export const initializeContentReviewSteps = (context: ApwContext) => {
-    const { cms, apw } = context;
-    cms.onBeforeEntryCreate.subscribe(async ({ model, entry, input }) => {
-        const contentReviewModel = await apw.contentReview.getModel();
+export const initializeContentReviewSteps = ({ apw }: LifeCycleHookCallbackParams) => {
+    apw.contentReview.onBeforeContentReviewCreate.subscribe(async ({ input }) => {
         /**
-         * If created entry is of "contentReview" model, let's initialize the steps.
+         * Let's initialize the "ContentReview" steps.
          */
-        if (model.modelId === contentReviewModel.modelId) {
-            // @ts-ignore
-            const workflowId = await getWorkflowIdFromContent(context, input.content);
-            if (!workflowId) {
-                throw new NotFoundError(
-                    `Unable to initiate a "Content review". No workflow found!`
-                );
-            }
-            const workflow = await apw.workflow.get(workflowId);
-            const workflowSteps = getValue(workflow, "steps");
+        const workflowId = await getWorkflowIdFromContent(apw, input.content);
 
-            let previousStepStatus;
-            const updatedSteps = workflow.values.steps.map((step, index) => {
-                const status = getContentReviewStepInitialStatus(
-                    workflowSteps,
-                    index,
-                    previousStepStatus
-                );
-                previousStepStatus = status;
-                return {
-                    ...step,
-                    /**
-                     * We're using the "slug" field from workflow step (which is non-unique string)
-                     * to setup a link between "Change request" and "Content review".
-                     * And because there can be multiple "content reviews" for same workflow,
-                     * we're normalizing them to be unique here.
-                     */
-                    slug: `${entry.entryId}#${step.slug}`,
-                    /**
-                     * Always set first step 'active' by default.
-                     */
-                    status,
-                    pendingChangeRequests: 0
-                };
-            });
-
-            entry = lodashSet(entry, "values.steps", updatedSteps);
+        if (!workflowId) {
+            throw new NotFoundError(`Unable to initiate a "Content review". No workflow found!`);
         }
+
+        const workflow = await apw.workflow.get(workflowId);
+        const workflowSteps = workflow.steps;
+
+        let previousStepStatus;
+        const updatedSteps = workflow.steps.map((step, index) => {
+            const status = getContentReviewStepInitialStatus(
+                workflowSteps,
+                index,
+                previousStepStatus
+            );
+            previousStepStatus = status;
+            return {
+                ...step,
+                status,
+                pendingChangeRequests: 0
+            };
+        });
+
+        input = lodashSet(input, "steps", updatedSteps);
     });
 };

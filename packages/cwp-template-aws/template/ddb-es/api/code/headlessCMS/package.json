@@ -21,7 +21,6 @@
     "@webiny/api-tenancy-so-ddb": "latest",
     "@webiny/cli": "latest",
     "@webiny/db-dynamodb": "latest",
-    "@webiny/handler": "latest",
     "@webiny/handler-aws": "latest",
     "@webiny/handler-args": "latest",
     "@webiny/handler-client": "latest",

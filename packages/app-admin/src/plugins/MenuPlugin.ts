@@ -1,6 +1,26 @@
 import * as React from "react";
 import { Plugin } from "@webiny/plugins";
-import { ItemProps, MenuProps, SectionProps } from "~/ui/views/NavigationView/legacyMenu";
+
+export type MenuProps = {
+    name: string;
+    label: React.ReactNode;
+    icon: React.ReactElement;
+    children: React.ReactNode;
+    onClick?: (toggleSection: () => void) => void;
+};
+
+export interface SectionProps {
+    label: React.ReactNode;
+    children: React.ReactNode;
+    icon?: React.ReactElement;
+}
+
+export interface ItemProps {
+    label: React.ReactNode;
+    path: string;
+    style?: React.CSSProperties;
+    onClick?: () => any;
+}
 
 interface Props {
     Menu: React.ComponentType<MenuProps>;

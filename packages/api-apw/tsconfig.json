@@ -39,9 +39,6 @@
       "path": "../plugins"
     },
     {
-      "path": "../db-dynamodb"
-    },
-    {
       "path": "../api-page-builder-so-ddb"
     },
     {
@@ -49,6 +46,9 @@
     },
     {
       "path": "../error"
+    },
+    {
+      "path": "../pubsub"
     }
   ],
   "compilerOptions": {
@@ -65,10 +65,10 @@
       "@webiny/api-tenancy-so-ddb": ["../api-tenancy-so-ddb/src"],
       "@webiny/api-security-so-ddb/*": ["../api-security-so-ddb/src/*"],
       "@webiny/api-security-so-ddb": ["../api-security-so-ddb/src"],
-      "@webiny/db-dynamodb/*": ["../db-dynamodb/src/*"],
-      "@webiny/db-dynamodb": ["../db-dynamodb/src"],
       "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
-      "@webiny/handler-graphql": ["../handler-graphql/src"]
+      "@webiny/handler-graphql": ["../handler-graphql/src"],
+      "@webiny/pubsub/*": ["../pubsub/src/*"],
+      "@webiny/pubsub": ["../pubsub/src"]
     },
     "baseUrl": "."
   }

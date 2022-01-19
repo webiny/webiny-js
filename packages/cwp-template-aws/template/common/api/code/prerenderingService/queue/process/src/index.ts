@@ -15,10 +15,10 @@ export const handler = createHandler(
             flush: process.env.PRERENDERING_FLUSH_HANDLER
         },
         storageOperations: createPrerenderingServiceStorageOperations({
-            table: table => {
+            table(table) {
                 return {
                     ...table,
-                    name: process.env.DB_TABLE
+                    name: String(process.env.DB_TABLE)
                 };
             },
             documentClient

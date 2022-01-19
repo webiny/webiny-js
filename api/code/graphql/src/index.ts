@@ -4,8 +4,11 @@ import graphqlPlugins from "@webiny/handler-graphql";
 import i18nPlugins from "@webiny/api-i18n/graphql";
 import i18nDynamoDbStorageOperations from "@webiny/api-i18n-ddb";
 import i18nContentPlugins from "@webiny/api-i18n-content/plugins";
-import pageBuilderPlugins from "@webiny/api-page-builder/graphql";
-import pageBuilderDynamoDbPlugins from "@webiny/api-page-builder-so-ddb";
+import {
+    createPageBuilderGraphQL,
+    createPageBuilderContext
+} from "@webiny/api-page-builder/graphql";
+import { createStorageOperations as createPageBuilderStorageOperations } from "@webiny/api-page-builder-so-ddb";
 import pageBuilderPrerenderingPlugins from "@webiny/api-page-builder/prerendering";
 import pageBuilderImportExportPlugins from "@webiny/api-page-builder-import-export/graphql";
 import { createStorageOperations as createPageBuilderImportExportStorageOperations } from "@webiny/api-page-builder-import-export-so-ddb";
@@ -26,9 +29,11 @@ import {
 import { createStorageOperations as createHeadlessCmsStorageOperations } from "@webiny/api-headless-cms-ddb";
 import headlessCmsModelFieldToGraphQLPlugins from "@webiny/api-headless-cms/content/plugins/graphqlFields";
 import securityPlugins from "./security";
+import tenantManager from "@webiny/api-tenant-manager";
 
 // Imports plugins created via scaffolding utilities.
 import scaffoldsPlugins from "./plugins/scaffolds";
+import { createApwContext, createApwGraphQL } from "@webiny/api-apw";
 
 const debug = process.env.DEBUG === "true";
 
@@ -47,6 +52,7 @@ export const handler = createHandler({
             driver: new DynamoDbDriver({ documentClient })
         }),
         securityPlugins({ documentClient }),
+        tenantManager(),
         i18nPlugins(),
         i18nDynamoDbStorageOperations(),
         i18nContentPlugins(),
@@ -55,16 +61,20 @@ export const handler = createHandler({
         fileManagerS3(),
         prerenderingServicePlugins({
             handlers: {
-                render: process.env.PRERENDERING_RENDER_HANDLER as string,
-                flush: process.env.PRERENDERING_FLUSH_HANDLER as string,
+                render: String(process.env.PRERENDERING_RENDER_HANDLER),
+                flush: String(process.env.PRERENDERING_FLUSH_HANDLER),
                 queue: {
-                    add: process.env.PRERENDERING_QUEUE_ADD_HANDLER as string,
-                    process: process.env.PRERENDERING_QUEUE_PROCESS_HANDLER as string
+                    add: String(process.env.PRERENDERING_QUEUE_ADD_HANDLER),
+                    process: String(process.env.PRERENDERING_QUEUE_PROCESS_HANDLER)
                 }
             }
         }),
-        pageBuilderPlugins(),
-        pageBuilderDynamoDbPlugins(),
+        createPageBuilderContext({
+            storageOperations: createPageBuilderStorageOperations({
+                documentClient
+            })
+        }),
+        createPageBuilderGraphQL(),
         pageBuilderPrerenderingPlugins(),
         pageBuilderImportExportPlugins({
             storageOperations: createPageBuilderImportExportStorageOperations({ documentClient })
@@ -81,6 +91,8 @@ export const handler = createHandler({
                 modelFieldToGraphQLPlugins: headlessCmsModelFieldToGraphQLPlugins()
             })
         }),
+        createApwContext(),
+        createApwGraphQL(),
         scaffoldsPlugins()
     ],
     http: { debug }

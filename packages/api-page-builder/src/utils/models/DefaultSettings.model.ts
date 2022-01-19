@@ -51,5 +51,7 @@ export default withFields({
             home: onSet(extractPid)(string()),
             notFound: onSet(extractPid)(string())
         })()
-    })
+    }),
+    // TODO: implement this via a plugin when https://github.com/webiny/webiny-js/issues/2168 is resolved.
+    theme: string()
 })();

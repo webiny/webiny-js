@@ -1,5 +1,5 @@
 import { CmsContext } from "~/types";
-import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
+import { ContextPlugin } from "@webiny/handler";
 
 class PubSubTracker {
     private _tracked: Record<string, number> = {};
@@ -63,10 +63,10 @@ export const assignEntryEvents = () => {
         context.cms.onAfterEntryCreate.subscribe(async () => {
             pubSubTracker.track("contentEntry:afterCreate");
         });
-        context.cms.onBeforeEntryRevisionCreate.subscribe(async () => {
+        context.cms.onBeforeEntryCreateRevision.subscribe(async () => {
             pubSubTracker.track("contentEntry:beforeCreateRevisionFrom");
         });
-        context.cms.onAfterEntryRevisionCreate.subscribe(async () => {
+        context.cms.onAfterEntryCreateRevision.subscribe(async () => {
             pubSubTracker.track("contentEntry:afterCreateRevisionFrom");
         });
         context.cms.onBeforeEntryUpdate.subscribe(async () => {
@@ -81,10 +81,10 @@ export const assignEntryEvents = () => {
         context.cms.onAfterEntryDelete.subscribe(async () => {
             pubSubTracker.track("contentEntry:afterDelete");
         });
-        context.cms.onBeforeEntryRevisionDelete.subscribe(async () => {
+        context.cms.onBeforeEntryDeleteRevision.subscribe(async () => {
             pubSubTracker.track("contentEntry:beforeDeleteRevision");
         });
-        context.cms.onAfterEntryRevisionDelete.subscribe(async () => {
+        context.cms.onAfterEntryDeleteRevision.subscribe(async () => {
             pubSubTracker.track("contentEntry:afterDeleteRevision");
         });
         context.cms.onBeforeEntryPublish.subscribe(async () => {

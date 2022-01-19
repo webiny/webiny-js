@@ -1,34 +1,67 @@
-import { ApwWorkflowCrud, CreateApwParams } from "~/types";
+import {
+    ApwWorkflowCrud,
+    CreateApwParams,
+    OnAfterWorkflowCreateTopicParams,
+    OnAfterWorkflowDeleteTopicParams,
+    OnAfterWorkflowUpdateTopicParams,
+    OnBeforeWorkflowCreateTopicParams,
+    OnBeforeWorkflowDeleteTopicParams,
+    OnBeforeWorkflowUpdateTopicParams
+} from "~/types";
+import { createTopic } from "@webiny/pubsub";
 
 export function createWorkflowMethods({ storageOperations }: CreateApwParams): ApwWorkflowCrud {
+    const onBeforeWorkflowCreate = createTopic<OnBeforeWorkflowCreateTopicParams>();
+    const onAfterWorkflowCreate = createTopic<OnAfterWorkflowCreateTopicParams>();
+    const onBeforeWorkflowUpdate = createTopic<OnBeforeWorkflowUpdateTopicParams>();
+    const onAfterWorkflowUpdate = createTopic<OnAfterWorkflowUpdateTopicParams>();
+    const onBeforeWorkflowDelete = createTopic<OnBeforeWorkflowDeleteTopicParams>();
+    const onAfterWorkflowDelete = createTopic<OnAfterWorkflowDeleteTopicParams>();
     return {
-        async getModel() {
-            return await storageOperations.getModel("apwWorkflowModelDefinition");
-        },
+        /**
+         * Lifecycle events
+         */
+        onBeforeWorkflowCreate,
+        onAfterWorkflowCreate,
+        onBeforeWorkflowUpdate,
+        onAfterWorkflowUpdate,
+        onBeforeWorkflowDelete,
+        onAfterWorkflowDelete,
         async get(id) {
-            const model = await this.getModel();
-            return await storageOperations.getEntryById(model, id);
+            return storageOperations.getWorkflow({ id });
         },
         async list(params) {
-            const model = await this.getModel();
-            return await storageOperations.listLatestEntries(model, params);
+            return storageOperations.listWorkflows(params);
         },
         async create(data) {
-            const model = await this.getModel();
-            return await storageOperations.createEntry(model, data);
+            await onBeforeWorkflowCreate.publish({ input: data });
+
+            const workflow = await storageOperations.createWorkflow({ data });
+
+            await onAfterWorkflowCreate.publish({ workflow });
+
+            return workflow;
         },
         async update(id, data) {
-            const model = await this.getModel();
-            const existingEntry = await this.get(id);
+            const original = await storageOperations.getWorkflow({ id });
 
-            return await storageOperations.updateEntry(model, id, {
-                ...existingEntry.values,
-                ...data
-            });
+            await onBeforeWorkflowUpdate.publish({ original, input: { id, data } });
+
+            const workflow = await storageOperations.updateWorkflow({ id, data });
+
+            await onAfterWorkflowUpdate.publish({ original, input: { id, data }, workflow });
+
+            return workflow;
         },
         async delete(id: string) {
-            const model = await this.getModel();
-            await storageOperations.deleteEntry(model, id);
+            const workflow = await storageOperations.getWorkflow({ id });
+
+            await onBeforeWorkflowDelete.publish({ workflow });
+
+            await storageOperations.deleteWorkflow({ id });
+
+            await onAfterWorkflowDelete.publish({ workflow });
+
             return true;
         }
     };

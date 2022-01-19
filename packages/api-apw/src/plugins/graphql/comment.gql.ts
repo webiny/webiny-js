@@ -1,19 +1,8 @@
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins";
 import { ErrorResponse, ListResponse } from "@webiny/handler-graphql";
 import { CmsEntryListParams } from "@webiny/api-headless-cms/types";
-import { ApwContext, FieldResolversParams } from "~/types";
+import { ApwContext } from "~/types";
 import resolve from "~/utils/resolve";
-import { generateFieldResolvers } from "~/utils/fieldResolver";
-
-const fieldIds: Array<FieldResolversParams | string> = [
-    {
-        fieldId: "body",
-        getModel: context => context.apw.comment.getModel(),
-        getField: (model, fieldId) => model.fields.find(field => field.fieldId === fieldId),
-        isRoot: true
-    },
-    "changeRequest"
-];
 
 const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
     typeDefs: /* GraphQL */ `
@@ -136,12 +125,6 @@ const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
         }
     `,
     resolvers: {
-        ApwComment: {
-            ...generateFieldResolvers(fieldIds)
-        },
-        ApwCommentListItem: {
-            ...generateFieldResolvers(fieldIds)
-        },
         ApwQuery: {
             getComment: async (_, args, context) => {
                 return resolve(() => context.apw.comment.get(args.id));

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-const { getPackages, getPackage } = require("./utils/getPackages");
-const { relative } = require("path");
+const { getPackages, getPackage, PROJECT_ROOT } = require("./utils/getPackages");
+const path = require("path");
 const prettier = require("prettier");
 const fs = require("fs");
 
@@ -9,7 +9,7 @@ const fs = require("fs");
  */
 
 function getRelativePath(a, b) {
-    return relative(a, b).replace(/\\/g, "/");
+    return path.relative(a, b).replace(/\\/g, "/");
 }
 
 async function output(target, content) {
@@ -23,6 +23,8 @@ async function output(target, content) {
 
 (async () => {
     const workspaces = getPackages();
+
+    const apiTsConfigPath = path.join(PROJECT_ROOT, "api/tsconfig.json");
 
     for (const wpObject of workspaces) {
         if (!wpObject.isTs) {
@@ -44,10 +46,13 @@ async function output(target, content) {
 
         // Generate `tsconfig.json`
         const tsconfigJson = {
-            extends: "../../tsconfig.json",
+            extends: getRelativePath(wpObject.packageFolder, apiTsConfigPath),
             include: ["src"],
             references: dependencies.map(dep => ({
-                path: `${getRelativePath(wpObject.packageFolder, dep.packageFolder)}`
+                path: `${getRelativePath(
+                    wpObject.packageFolder,
+                    dep.packageFolder
+                )}/tsconfig.build.json`
             })),
             compilerOptions: {
                 paths: {

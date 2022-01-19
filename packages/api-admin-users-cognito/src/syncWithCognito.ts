@@ -1,6 +1,6 @@
 import CognitoIdentityServiceProvider from "aws-sdk/clients/cognitoidentityserviceprovider";
 import Error from "@webiny/error";
-import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
+import { ContextPlugin } from "@webiny/handler";
 import { SecurityContext } from "@webiny/api-security/types";
 import { AdminUsersContext, BaseUserAttributes } from "~/types";
 

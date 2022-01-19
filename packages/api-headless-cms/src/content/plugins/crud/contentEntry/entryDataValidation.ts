@@ -4,7 +4,8 @@ import {
     CmsModelFieldValidation,
     CmsContext,
     CmsModelFieldValidatorPlugin,
-    CmsModelFieldValidatorValidateParams
+    CmsModelFieldValidatorValidateParams,
+    CmsEntry
 } from "~/types";
 import WebinyError from "@webiny/error";
 
@@ -15,9 +16,10 @@ type InputData = Record<string, any>;
 interface ValidateArgs {
     validatorList: PluginValidationList;
     field: CmsModelField;
-    contentModel: CmsModel;
+    model: CmsModel;
     data: InputData;
     context: CmsContext;
+    entry: CmsEntry;
 }
 
 const validateValue = async (
@@ -29,7 +31,7 @@ const validateValue = async (
         return null;
     }
 
-    const { validatorList, context, field, contentModel } = args;
+    const { validatorList, context, field, model, entry } = args;
     try {
         for (const fieldValidator of fieldValidators) {
             const name = fieldValidator.name;
@@ -43,7 +45,8 @@ const validateValue = async (
                     context,
                     validator: fieldValidator,
                     field,
-                    contentModel
+                    model,
+                    entry
                 });
                 if (!result) {
                     return fieldValidator.message;
@@ -118,11 +121,14 @@ const execValidation = async (args: ValidateArgs): Promise<string | null> => {
     return await runFieldValueValidations(args);
 };
 
-export const validateModelEntryData = async (
-    context: CmsContext,
-    contentModel: CmsModel,
-    data: InputData
-) => {
+export interface Params {
+    context: CmsContext;
+    model: CmsModel;
+    data: InputData;
+    entry?: CmsEntry;
+}
+export const validateModelEntryData = async (params: Params) => {
+    const { context, model, entry, data } = params;
     /**
      * To later simplify searching for the validations we map them to a name.
      * @see CmsModelFieldValidatorPlugin.validator.validate
@@ -144,8 +150,15 @@ export const validateModelEntryData = async (
      * Run validation only if the field has validation configured.
      */
     const invalidFields = [];
-    for (const field of contentModel.fields) {
-        const error = await execValidation({ contentModel, validatorList, field, data, context });
+    for (const field of model.fields) {
+        const error = await execValidation({
+            model,
+            validatorList,
+            field,
+            data,
+            context,
+            entry
+        });
         if (!error) {
             continue;
         }

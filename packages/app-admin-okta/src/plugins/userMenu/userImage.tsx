@@ -1,11 +1,9 @@
+// @ts-nocheck
 import React from "react";
 import { Avatar } from "@webiny/ui/Avatar";
 import { useSecurity } from "@webiny/app-security/hooks/useSecurity";
-import { GenericElement } from "@webiny/app-admin/ui/elements/GenericElement";
-import { UIViewPlugin } from "@webiny/app-admin/ui/UIView";
-import { AdminView } from "@webiny/app-admin/ui/views/AdminView";
-import { UserMenuElement } from "@webiny/app-admin/plugins/userMenu/UserMenuElement";
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const UserImage = () => {
     const { identity } = useSecurity();
 
@@ -26,11 +24,13 @@ const UserImage = () => {
 };
 
 export default () => {
-    return new UIViewPlugin<AdminView>(AdminView, view => {
-        const userMenu = view.getElement<UserMenuElement>("userMenu");
+    return { type: "dummy" };
 
-        if (userMenu) {
-            userMenu.setMenuHandleElement(new GenericElement("handle", () => <UserImage />));
-        }
-    });
+    // return new UIViewPlugin<AdminView>(AdminView, view => {
+    //     const userMenu = view.getElement<UserMenuElement>("userMenu");
+    //
+    //     if (userMenu) {
+    //         userMenu.setMenuHandleElement(new GenericElement("handle", () => <UserImage />));
+    //     }
+    // });
 };

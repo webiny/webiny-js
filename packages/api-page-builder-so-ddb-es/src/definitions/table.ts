@@ -1,19 +1,20 @@
+import { TableModifier } from "~/types";
+import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { Table } from "dynamodb-toolbox";
-import configurations from "~/operations/configurations";
-import { PbContext } from "@webiny/api-page-builder/graphql/types";
-import { getTable } from "@webiny/db-dynamodb/utils/table";
-import { getDocumentClient } from "@webiny/db-dynamodb/utils/documentClient";
 
 export interface Params {
-    context: PbContext;
+    table?: TableModifier;
+    documentClient: DocumentClient;
 }
-
-export const defineTable = (params: Params): Table => {
-    const { context } = params;
-    return new Table({
-        name: configurations.db().table || getTable(context),
+export const createTable = ({ table, documentClient }: Params): Table => {
+    const tableConfig = {
+        name: process.env.DB_PAGE_BUILDER || process.env.DB_TABLE,
         partitionKey: "PK",
         sortKey: "SK",
-        DocumentClient: getDocumentClient(context)
-    });
+        DocumentClient: documentClient
+    };
+
+    const config = typeof table === "function" ? table(tableConfig) : tableConfig;
+
+    return new Table(config);
 };

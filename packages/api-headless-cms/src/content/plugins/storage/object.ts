@@ -27,6 +27,9 @@ const processValue: ProcessValue = async ({
         fields,
         async (values, field) => {
             const plugin = getStoragePlugin(field.type);
+            if (!plugin) {
+                throw new Error(`Missing storage plugin for field type "${field.type}".`);
+            }
             const value = await plugin[operation]({
                 plugins,
                 model,

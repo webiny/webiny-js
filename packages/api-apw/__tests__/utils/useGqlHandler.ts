@@ -1,4 +1,5 @@
 import { introspectionQuery } from "graphql";
+import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import i18nContext from "@webiny/api-i18n/graphql/context";
 import i18nContentPlugins from "@webiny/api-i18n-content/plugins";
 import { createHandler } from "@webiny/handler-aws";
@@ -23,9 +24,12 @@ import i18nDynamoDbStorageOperations from "@webiny/api-i18n-ddb";
 import { createTenancyAndSecurity } from "./tenancySecurity";
 import { getStorageOperations } from "./storageOperations";
 import { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
-import pageBuilderPlugins from "@webiny/api-page-builder/graphql";
-import pageBuilderDynamoDbPlugins from "@webiny/api-page-builder-so-ddb";
-import { CREATE_CATEGORY } from "./graphql/categories";
+import {
+    createPageBuilderContext,
+    createPageBuilderGraphQL
+} from "@webiny/api-page-builder/graphql";
+import { createStorageOperations as createPageBuilderStorageOperations } from "@webiny/api-page-builder-so-ddb";
+import { CREATE_CATEGORY, GET_CATEGORY } from "./graphql/categories";
 import { CREATE_PAGE, GET_PAGE } from "./graphql/pages";
 import {
     CREATE_CONTENT_REVIEW_MUTATION,
@@ -66,6 +70,15 @@ export interface GQLHandlerCallableParams {
     createHeadlessCmsApp: (params: CreateHeadlessCmsAppParams) => any[];
 }
 
+const documentClient = new DocumentClient({
+    convertEmptyValues: true,
+    endpoint: process.env.MOCK_DYNAMODB_ENDPOINT || "http://localhost:8001",
+    sslEnabled: false,
+    region: "local",
+    accessKeyId: "test",
+    secretAccessKey: "test"
+});
+
 export const useGqlHandler = (params: GQLHandlerCallableParams) => {
     const ops = getStorageOperations({
         plugins: params.storageOperationPlugins || []
@@ -80,7 +93,6 @@ export const useGqlHandler = (params: GQLHandlerCallableParams) => {
         permissions,
         identity,
         plugins = [],
-        path,
         setupTenancyAndSecurityGraphQL,
         createHeadlessCmsApp
     } = params;
@@ -126,34 +138,16 @@ export const useGqlHandler = (params: GQLHandlerCallableParams) => {
                     };
                 }
             },
-            {
-                type: "context",
-                name: "context-path-parameters",
-                apply(context) {
-                    if (!context.http) {
-                        context.http = {
-                            request: {
-                                path: {
-                                    parameters: null
-                                }
-                            }
-                        };
-                    } else if (!context.http.request.path) {
-                        context.http.request.path = {
-                            parameters: null
-                        };
-                    }
-                    context.http.request.path.parameters = { key: path };
-                }
-            },
             apiKeyAuthentication({ identityType: "api-key" }),
             apiKeyAuthorization({ identityType: "api-key" }),
             i18nContext(),
             i18nDynamoDbStorageOperations(),
             i18nContentPlugins(),
             mockLocalesPlugins(),
-            pageBuilderPlugins(),
-            pageBuilderDynamoDbPlugins(),
+            createPageBuilderGraphQL(),
+            createPageBuilderContext({
+                storageOperations: createPageBuilderStorageOperations({ documentClient })
+            }),
             ...headlessCmsApp,
             createApwContext(),
             createApwGraphQL(),
@@ -250,6 +244,9 @@ export const useGqlHandler = (params: GQLHandlerCallableParams) => {
             return invoke({ body: { query: DELETE_CHANGE_REQUEST_MUTATION, variables } });
         },
         // Categories
+        async getCategory(variables) {
+            return invoke({ body: { query: GET_CATEGORY, variables } });
+        },
         async createCategory(variables) {
             return invoke({ body: { query: CREATE_CATEGORY, variables } });
         },

@@ -1,7 +1,15 @@
 import get from "lodash/get";
+import set from "lodash/set";
 import WebinyError from "@webiny/error";
-import { ApwContext, ApwWorkflowApplications, PageWithWorkflow, WorkflowScopeTypes } from "~/types";
-import { OnBeforePageCreateTopicParams } from "@webiny/api-page-builder/graphql/types";
+import {
+    ApwWorkflow,
+    ApwWorkflowApplications,
+    CustomEventParams,
+    LifeCycleHookCallbackParams,
+    PageWithWorkflow,
+    WorkflowScopeTypes
+} from "~/types";
+import { PageBuilderContextObject } from "@webiny/api-page-builder/graphql/types";
 
 const WORKFLOW_PRECEDENCE = {
     [WorkflowScopeTypes.DEFAULT]: 0,
@@ -9,20 +17,16 @@ const WORKFLOW_PRECEDENCE = {
     [WorkflowScopeTypes.CMS]: 1
 };
 
-const getValue = (object: Record<string, any>, key: string) => {
-    return get(object, `values.${key}`);
-};
-
-const workflowByPrecedenceDesc = (a, b) => {
-    const scoreA = WORKFLOW_PRECEDENCE[getValue(a, "scope.type")];
-    const scoreB = WORKFLOW_PRECEDENCE[getValue(b, "scope.type")];
+const workflowByPrecedenceDesc = (a: ApwWorkflow, b: ApwWorkflow) => {
+    const scoreA = WORKFLOW_PRECEDENCE[a.scope.type];
+    const scoreB = WORKFLOW_PRECEDENCE[b.scope.type];
     /**
      * In descending order of workflow precedence.
      */
     return scoreB - scoreA;
 };
 
-const workflowByCreatedOnDesc = (a, b) => {
+const workflowByCreatedOnDesc = (a: ApwWorkflow, b: ApwWorkflow) => {
     const createdOnA = get(a, "createdOn");
     const createdOnB = get(b, "createdOn");
     /**
@@ -31,26 +35,26 @@ const workflowByCreatedOnDesc = (a, b) => {
     return new Date(createdOnB).getTime() - new Date(createdOnA).getTime();
 };
 
-const isWorkflowApplicable = (page, workflow) => {
-    const application = getValue(workflow, "app");
+const isWorkflowApplicable = (page, workflow: ApwWorkflow) => {
+    const application = workflow.app;
     if (application !== ApwWorkflowApplications.PB) {
         return false;
     }
 
-    const scopeType = getValue(workflow, "scope.type");
+    const scopeType = workflow.scope.type;
 
     if (scopeType === WorkflowScopeTypes.DEFAULT) {
         return true;
     }
 
     if (scopeType === WorkflowScopeTypes.PB) {
-        const categories = getValue(workflow, "scope.data.categories");
+        const categories = get(workflow, "scope.data.categories");
 
         if (Array.isArray(categories) && categories.includes(page.category)) {
             return true;
         }
 
-        const pages = getValue(workflow, "scope.data.pages");
+        const pages = get(workflow, "scope.data.pages");
         if (Array.isArray(pages) && pages.includes(page.pid)) {
             return true;
         }
@@ -59,59 +63,60 @@ const isWorkflowApplicable = (page, workflow) => {
     return false;
 };
 
-export const linkWorkflowToPage = (context: ApwContext) => {
-    const { pageBuilder, cms, apw } = context;
+interface PageMethods {
+    getPage: PageBuilderContextObject["getPage"];
+    updatePage: PageBuilderContextObject["updatePage"];
+    onBeforePageCreate: PageBuilderContextObject["onBeforePageCreate"];
+}
 
-    pageBuilder.onBeforePageCreate.subscribe(
-        async (event: OnBeforePageCreateTopicParams<PageWithWorkflow>) => {
-            const { page } = event;
-            try {
-                /*
-                 * List all workflows for app pageBuilder
+export const linkWorkflowToPage = ({
+    apw,
+    getPage,
+    updatePage,
+    onBeforePageCreate
+}: LifeCycleHookCallbackParams & PageMethods) => {
+    onBeforePageCreate.subscribe<CustomEventParams>(async ({ page }) => {
+        try {
+            /*
+             * List all workflows for app pageBuilder
+             */
+            const [entries] = await apw.workflow.list({
+                where: { app: ApwWorkflowApplications.PB }
+            });
+
+            /*
+             *  Re-order them based on workflow scope and pre-defined rule i.e.
+             *  "specific" entry -> entry for a "category" -> "default".
+             *  There can be more than one workflow with same "scope" and "app".
+             *  Therefore, we are also sorting the workflows by `createdOn` to get the latest workflow.
+             */
+            const sortedWorkflows = entries
+                .sort(workflowByPrecedenceDesc)
+                .sort(workflowByCreatedOnDesc);
+
+            for (const workflow of sortedWorkflows) {
+                /**
+                 * We workflow if applicable to this page, we're done here.
+                 * Assign the workflow to the page and exit.
                  */
-                const [entries] = await apw.workflow.list({
-                    where: { app: ApwWorkflowApplications.PB }
-                });
-
-                /*
-                 *  Re-order them based on workflow scope and pre-defined rule i.e.
-                 *  "specific" entry -> entry for a "category" -> "default".
-                 *  There can be more than one workflow with same "scope" and "app".
-                 *  Therefore, we are also sorting the workflows by `createdOn` to get the latest workflow.
-                 */
-                const sortedWorkflows = entries
-                    .sort(workflowByPrecedenceDesc)
-                    .sort(workflowByCreatedOnDesc);
-
-                for (const workflow of sortedWorkflows) {
-                    /**
-                     * We workflow if applicable to this page, we're done here.
-                     * Assign the workflow to the page and exit.
-                     */
-                    if (isWorkflowApplicable(page, workflow)) {
-                        page.workflow = workflow.id;
-                        break;
-                    }
+                if (isWorkflowApplicable(page, workflow)) {
+                    page.settings.apw = {
+                        workflowId: workflow.id
+                    };
+                    break;
                 }
-            } catch (e) {
-                throw new WebinyError(
-                    `Failed to assign workflow to page "${page.pid}".`,
-                    e.code,
-                    e.data
-                );
             }
+        } catch (e) {
+            throw new WebinyError(
+                `Failed to assign workflow to page "${page.pid}".`,
+                e.code,
+                e.data
+            );
         }
-    );
+    });
 
-    cms.onAfterEntryCreate.subscribe(async ({ model, entry }) => {
-        const workflowModel = await apw.workflow.getModel();
-
-        if (model.modelId !== workflowModel.modelId) {
-            return;
-        }
-
-        const scope = getValue(entry, "scope");
-        const app = getValue(entry, "app");
+    apw.workflow.onAfterWorkflowCreate.subscribe(async ({ workflow }) => {
+        const { app, scope } = workflow;
         /**
          * If the workflow is applicable PB application and pages are provided,
          * we'll assign workflow for each of those provided page.
@@ -127,13 +132,13 @@ export const linkWorkflowToPage = (context: ApwContext) => {
                     /**
                      * Currently, we only assign "workflow" to latest page.
                      */
-                    const page = await pageBuilder.getPage<PageWithWorkflow>(pid);
+                    const page = await getPage<PageWithWorkflow>(pid);
                     /**
                      * There can be more than one workflow with same `scope` for same `app`. That is why;
                      * We'll update the workflow reference even though it already had one assign.
                      */
-                    await pageBuilder.updatePage(page.id, {
-                        workflow: entry.id
+                    await updatePage(page.id, {
+                        settings: set(page.settings, "apw.workflowId", workflow.id)
                     });
                 } catch (e) {
                     if (e.code !== "NOT_FOUND") {

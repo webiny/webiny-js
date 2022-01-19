@@ -13,17 +13,24 @@ export default () => [
     /**
      * Hook into CMS events and execute business logic.
      */
-    new ContextPlugin<ApwContext>(context => {
-        createReviewerFromIdentity(context);
+    new ContextPlugin<ApwContext>(async context => {
+        const { security, apw, pageBuilder } = context;
+        const pageMethods = {
+            onBeforePageCreate: pageBuilder.onBeforePageCreate,
+            getPage: pageBuilder.getPage,
+            updatePage: pageBuilder.updatePage
+        };
 
-        linkWorkflowToPage(context);
+        createReviewerFromIdentity({ security, apw });
 
-        initializeContentReviewSteps(context);
+        linkWorkflowToPage({ apw, ...pageMethods });
 
-        updatePendingChangeRequestsCount(context);
+        initializeContentReviewSteps({ apw });
 
-        deleteCommentsAfterChangeRequest(context);
+        updatePendingChangeRequestsCount({ apw });
 
-        deleteChangeRequestsWithContentReview(context);
+        deleteCommentsAfterChangeRequest({ apw });
+
+        deleteChangeRequestsWithContentReview({ apw });
     })
 ];

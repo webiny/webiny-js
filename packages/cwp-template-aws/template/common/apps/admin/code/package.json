@@ -3,46 +3,27 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@apollo/react-components": "^3.1.5",
     "@editorjs/delimiter": "^1.2.0",
     "@editorjs/list": "^1.6.0",
     "@editorjs/quote": "^2.4.0",
     "@editorjs/underline": "^1.0.0",
-    "@types/react": "^16.14.2",
-    "@webiny/app": "latest",
+    "@types/react": "^16.14.0",
     "@webiny/app-admin": "latest",
     "@webiny/app-admin-users-cognito": "latest",
-    "@webiny/app-file-manager": "latest",
-    "@webiny/app-file-manager-s3": "latest",
     "@webiny/app-form-builder": "latest",
-    "@webiny/app-graphql-playground": "latest",
     "@webiny/app-headless-cms": "latest",
-    "@webiny/app-i18n": "latest",
-    "@webiny/app-i18n-content": "latest",
     "@webiny/app-page-builder": "latest",
-    "@webiny/app-page-builder-elements": "latest",
-    "@webiny/app-plugin-admin-welcome-screen": "latest",
-    "@webiny/app-security": "latest",
-    "@webiny/app-security-access-management": "latest",
-    "@webiny/app-tenancy": "latest",
+    "@webiny/app-serverless-cms": "latest",
     "@webiny/cli": "latest",
     "@webiny/cli-plugin-deploy-pulumi": "latest",
     "@webiny/plugins": "latest",
     "@webiny/project-utils": "latest",
-    "@webiny/react-router": "latest",
-    "@webiny/telemetry": "latest",
-    "@webiny/ui": "latest",
-    "apollo-cache": "^1.3.5",
-    "apollo-client": "^2.2.8",
-    "apollo-link": "^1.2.14",
-    "apollo-link-batch-http": "^1.2.14",
-    "apollo-utilities": "^1.3.4",
     "core-js": "^3.0.1",
     "cross-fetch": "^3.0.4",
     "invariant": "^2.2.4",
     "prop-types": "^15.7.2",
-    "react": "^16.14.0",
-    "react-dom": "^16.14.0",
+    "react": "16.14.0",
+    "react-dom": "16.14.0",
     "regenerator-runtime": "^0.13.5",
     "theme": "^0.1.0"
   },
@@ -65,11 +46,6 @@
       "not op_mini all",
       "ie 11"
     ]
-  },
-  "svgo": {
-    "plugins": {
-      "removeViewBox": false
-    }
   },
   "adio": {
     "ignore": {

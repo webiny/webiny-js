@@ -1,22 +1,8 @@
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins";
 import { ErrorResponse, ListResponse } from "@webiny/handler-graphql";
-import { ApwContext, FieldResolversParams } from "~/types";
-import resolve from "~/utils/resolve";
-import { generateFieldResolvers } from "~/utils/fieldResolver";
 import { CmsEntryListParams } from "@webiny/api-headless-cms/types";
-
-const fieldIds: Array<FieldResolversParams | string> = [
-    {
-        fieldId: "body",
-        getModel: context => context.apw.changeRequest.getModel(),
-        getField: (model, fieldId) => model.fields.find(field => field.fieldId === fieldId),
-        isRoot: true
-    },
-    "title",
-    "resolved",
-    "media",
-    "step"
-];
+import { ApwContext } from "~/types";
+import resolve from "~/utils/resolve";
 
 const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
     typeDefs: /* GraphQL */ `
@@ -28,8 +14,8 @@ const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
             createdBy: ApwCreatedBy
             # ChangeRequest specific fields
             step: String!
-            title: String
-            body: JSON
+            title: String!
+            body: JSON!
             resolved: Boolean
             media: JSON
         }
@@ -48,8 +34,8 @@ const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
             createdBy: ApwCreatedBy
             # ChangeRequest specific fields
             step: String!
-            title: String
-            body: JSON
+            title: String!
+            body: JSON!
             resolved: Boolean
             media: JSON
         }
@@ -125,12 +111,6 @@ const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
         }
     `,
     resolvers: {
-        ApwChangeRequest: {
-            ...generateFieldResolvers(fieldIds)
-        },
-        ApwChangeRequestListItem: {
-            ...generateFieldResolvers(fieldIds)
-        },
         ApwQuery: {
             getChangeRequest: async (_, args, context) => {
                 return resolve(() => context.apw.changeRequest.get(args.id));

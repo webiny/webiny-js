@@ -1,0 +1,210 @@
+@mixin button-loading {
+  background-image: linear-gradient(
+    var(--webiny-theme-color-primary, #ee896b) 0%,
+    var(--webiny-theme-color-primary, #ee896b) 100%
+  ) !important;
+  color: transparent;
+}
+@mixin button-primary {
+  background-color: var(--webiny-theme-color-primary, #ee896b);
+  color: var(--webiny-theme-color-on-primary, #ffffff);
+}
+@mixin button-secondary {
+  background-color: var(--webiny-theme-color-secondary, #00ccb0);
+  color: var(--webiny-theme-color-on-secondary, #ffffff);
+}
+@mixin button-outline-primary {
+  border: 2px solid var(--webiny-theme-color-primary, #ee896b);
+  color: var(--webiny-theme-color-primary, #ee896b);
+  padding: 10px 16px !important;
+  background-color: transparent;
+}
+@mixin button-outline-secondary {
+  border: 2px solid var(--webiny-theme-color-secondary, #ee896b);
+  color: var(--webiny-theme-color-secondary, #ee896b);
+  padding: 10px 16px !important;
+  background-color: transparent;
+}
+@mixin button-simple {
+  background-color: transparent;
+  color: var(--webiny-theme-color-primary, #ee896b);
+  padding: 0 !important;
+  min-width: 0;
+  &:hover {
+    box-shadow: none;
+    transform: none;
+    text-decoration: underline;
+  }
+}
+
+@keyframes webiny-pb-page-element-button-animation-rotate {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.webiny-pb-page-element-button {
+  display: flex;
+  align-items: center !important;
+  justify-content: center;
+  padding: 14px 20px !important;
+  vertical-align: top;
+  text-align: center;
+  font-size: 14px;
+  line-height: 1;
+  border-radius: 4px;
+  will-change: opacity;
+  transition: all 0.2s;
+  cursor: pointer;
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+  font-weight: 600;
+  box-sizing: border-box;
+  outline: none;
+  border: none;
+  min-width: 100px;
+  width: auto;
+  background-color: var(--webiny-theme-color-background, #fafbfb);
+  font-family: var(--webiny-theme-typography-primary-font-family, "IBM Plex Sans, sans-serif");
+  color: var(--webiny-theme-color-on-background, #131313);
+  > span {
+    display: block;
+    font-size: 1px;
+    line-height: 100%;
+  }
+  &:hover {
+    box-shadow: 0 7px 14px rgba(50, 50, 93, 0.1), 0 3px 6px rgba(0, 0, 0, 0.08);
+    transform: translateY(-1px);
+  }
+  &:active {
+    transform: translateY(1px);
+  }
+  &:disabled {
+    opacity: 0.5;
+    transform: translateY(0px);
+    box-shadow: none;
+    cursor: wait;
+  }
+  &--loading {
+    background-image: linear-gradient(
+      var(--webiny-theme-color-primary, #ee896b) 0%,
+      var(--webiny-theme-color-primary, #ee896b) 100%
+    ) !important;
+    color: transparent;
+    position: relative;
+    text-transform: uppercase;
+    font-size: 0;
+    height: 42px;
+    transition: all 350ms ease;
+
+    &:before {
+      margin: -13px 0 0 -13px;
+      width: 24px;
+      height: 24px;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      color: #fff;
+      content: "";
+      border-radius: 24px;
+      background-clip: padding-box;
+      border: rgba(255, 255, 255, 0.25) 2px solid;
+      border-top-color: #fff;
+      animation: webiny-pb-page-element-button-animation-rotate 750ms linear infinite;
+      span {
+        color: transparent;
+      }
+    }
+  }
+  &--primary {
+    @include button-primary();
+  }
+  &--secondary {
+    @include button-secondary();
+  }
+  &--outline-primary {
+    @include button-outline-primary();
+  }
+  &--outline-secondary {
+    @include button-outline-secondary();
+  }
+  &--simple {
+    @include button-simple();
+  }
+  &__icon {
+    &--left {
+      flex-direction: row;
+      svg {
+        margin-right: 5px;
+      }
+    }
+    &--right {
+      flex-direction: row-reverse;
+      svg {
+        margin-left: 5px;
+      }
+    }
+    &--top {
+      flex-direction: column;
+      svg {
+        margin-bottom: 5px;
+      }
+    }
+    &--bottom {
+      flex-direction: column-reverse;
+      svg {
+        margin-top: 5px;
+      }
+    }
+  }
+  > div {
+    // this is a fix for the screen shot tool which changes the font and then breaks button text into multiple lines
+    white-space: nowrap !important;
+    word-break: keep-all !important;
+    overflow: hidden !important;
+  }
+}
+.webiny-pb-media-query--tablet .webiny-pb-page-element-button {
+  border-radius: 4px;
+  background-color: var(--webiny-theme-color-background, #fafbfb);
+  color: var(--webiny-theme-color-on-background, #131313);
+
+  &--primary {
+    @include button-primary();
+  }
+  &--secondary {
+    @include button-secondary();
+  }
+  &--outline-primary {
+    @include button-outline-primary();
+  }
+  &--outline-secondary {
+    @include button-outline-secondary();
+  }
+  &--simple {
+    @include button-simple();
+  }
+}
+.webiny-pb-media-query--mobile-landscape .webiny-pb-page-element-button,
+.webiny-pb-media-query--mobile-portrait .webiny-pb-page-element-button {
+  border-radius: 4px;
+  background-color: var(--webiny-theme-color-background, #fafbfb);
+  color: var(--webiny-theme-color-on-background, #131313);
+
+  &--primary {
+    @include button-primary();
+  }
+  &--secondary {
+    @include button-secondary();
+  }
+  &--outline-primary {
+    @include button-outline-primary();
+  }
+  &--outline-secondary {
+    @include button-outline-secondary();
+  }
+  &--simple {
+    @include button-simple();
+  }
+}

@@ -163,8 +163,8 @@ const createOnBeforeCb = ({ plugins, storageOperations }: CreateOnBeforeCreateCb
 };
 
 export interface Params {
-    onBeforeCreate: Topic<BeforeModelCreateTopicParams>;
-    onBeforeCreateFrom: Topic<BeforeModelCreateTopicParams>;
+    onBeforeModelCreate: Topic<BeforeModelCreateTopicParams>;
+    onBeforeModelCreateFrom: Topic<BeforeModelCreateTopicParams>;
     storageOperations: HeadlessCmsStorageOperations;
     plugins: PluginsContainer;
 }
@@ -174,16 +174,16 @@ export interface Params {
  * Callables are identical.
  */
 export const assignBeforeModelCreate = (params: Params) => {
-    const { onBeforeCreate, onBeforeCreateFrom, storageOperations, plugins } = params;
+    const { onBeforeModelCreate, onBeforeModelCreateFrom, storageOperations, plugins } = params;
 
-    onBeforeCreate.subscribe(
+    onBeforeModelCreate.subscribe(
         createOnBeforeCb({
             storageOperations,
             plugins
         })
     );
 
-    onBeforeCreateFrom.subscribe(
+    onBeforeModelCreateFrom.subscribe(
         createOnBeforeCb({
             storageOperations,
             plugins

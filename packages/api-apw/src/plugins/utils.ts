@@ -1,5 +1,4 @@
 import { CmsModelField } from "@webiny/api-headless-cms/types";
-import camelCase from "lodash/camelCase";
 import get from "lodash/get";
 import {
     ApwContentReviewStep,
@@ -13,26 +12,6 @@ import { SecurityIdentity } from "@webiny/api-security/types";
 export interface CreateModelFieldParams extends Omit<CmsModelField, "id" | "fieldId"> {
     parent: string;
 }
-
-export const createModelField = (params: CreateModelFieldParams): CmsModelField => {
-    const { label, type, parent } = params;
-    const fieldId = camelCase(label);
-
-    return {
-        id: `${camelCase(parent)}_${fieldId}`,
-        fieldId,
-        label,
-        type,
-        settings: params.settings || {},
-        listValidation: params.listValidation || [],
-        validation: params.validation || [],
-        multipleValues: params.multipleValues || false,
-        predefinedValues: params.predefinedValues || {
-            values: [],
-            enabled: false
-        }
-    };
-};
 
 export interface HasReviewersParams {
     identity: SecurityIdentity;
@@ -48,7 +27,7 @@ export const hasReviewer = async ({
     for (const stepReviewer of step.reviewers) {
         const entry = await getReviewer(stepReviewer.id);
 
-        if (getValue(entry, "identityId") === identity.id) {
+        if (entry.identityId === identity.id) {
             return true;
         }
     }
@@ -65,6 +44,9 @@ export const getContentReviewStepInitialStatus = (
     index: number,
     previousStepStatus: ApwContentReviewStepStatus
 ): ApwContentReviewStepStatus => {
+    /**
+     * Always set first step 'active' by default.
+     */
     if (index === 0) {
         return ApwContentReviewStepStatus.ACTIVE;
     }

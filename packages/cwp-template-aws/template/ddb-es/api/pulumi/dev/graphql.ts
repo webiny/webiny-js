@@ -61,7 +61,7 @@ class Graphql {
 
         this.functions = {
             api: new aws.lambda.Function("graphql", {
-                runtime: "nodejs12.x",
+                runtime: "nodejs14.x",
                 handler: "handler.handler",
                 role: this.role.arn,
                 timeout: 30,

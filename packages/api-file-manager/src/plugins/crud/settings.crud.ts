@@ -3,7 +3,7 @@ import { validation } from "@webiny/validation";
 import { FileManagerContext, FileManagerSettings } from "~/types";
 import { SettingsStorageOperationsProviderPlugin } from "~/plugins/definitions/SettingsStorageOperationsProviderPlugin";
 import WebinyError from "@webiny/error";
-import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
+import { ContextPlugin } from "@webiny/handler";
 
 export const SETTINGS_KEY = "file-manager";
 

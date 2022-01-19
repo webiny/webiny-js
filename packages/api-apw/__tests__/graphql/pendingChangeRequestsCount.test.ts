@@ -52,7 +52,9 @@ describe(`Pending change requests count test`, () => {
          * Create a new change request entry for step 1.
          */
         const [createChangeRequestResponse] = await createChangeRequestMutation({
-            data: changeRequestMock.createChangeRequestInput({ step: step1.slug })
+            data: changeRequestMock.createChangeRequestInput({
+                step: `${contentReview.id}#${step1.slug}`
+            })
         });
         const changeRequested = createChangeRequestResponse.data.apw.createChangeRequest.data;
 
@@ -140,7 +142,7 @@ describe(`Pending change requests count test`, () => {
         for (let i = 0; i < 2; i++) {
             const [createChangeRequestResponse] = await createChangeRequestMutation({
                 data: changeRequestMock.createChangeRequestInput({
-                    step: step2.slug,
+                    step: `${contentReview.id}#${step2.slug}`,
                     title: "Please make change in heading-" + i
                 })
             });

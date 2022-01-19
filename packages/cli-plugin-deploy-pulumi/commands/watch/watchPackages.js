@@ -78,13 +78,15 @@ module.exports = async ({ inputs, output, context }) => {
                     }
                 });
 
-                worker.on("error", () => {
+                worker.on("error", e => {
                     log(
                         current.name,
                         `An unknown error occurred while watching ${context.error.hl(
                             current.name
                         )}:`
                     );
+
+                    log(e);
 
                     resolve({
                         package: current,
@@ -96,7 +98,7 @@ module.exports = async ({ inputs, output, context }) => {
 
                 worker.postMessage(
                     JSON.stringify({
-                        options: { env, debug, logs },
+                        options: { env, debug, logs: !multipleWatches || logs },
                         package: current
                     })
                 );

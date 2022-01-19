@@ -1,5 +1,5 @@
 import { PbContext } from "~/graphql/types";
-import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
+import { ContextPlugin } from "@webiny/handler";
 
 const NOT_FOUND_FOLDER = "_NOT_FOUND_PAGE_";
 
@@ -16,7 +16,8 @@ export default () => {
              */
             await context.pageBuilder.prerendering.render({
                 context,
-                tags: [{ tag: { key: "pb-page" } }]
+                queue: true,
+                paths: [{ path: "*" }]
             });
 
             /**

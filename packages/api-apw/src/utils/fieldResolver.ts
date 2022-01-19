@@ -1,41 +1,46 @@
+import pick from "lodash/pick";
+import { CmsContext, CmsModel } from "@webiny/api-headless-cms/types";
 import { entryFieldFromStorageTransform } from "@webiny/api-headless-cms/content/plugins/utils/entryStorage";
-import { FieldResolversParams } from "~/types";
 
-const resolveFieldValue = (parent, _, __, info) => {
-    const { fieldName } = info;
-    return parent.values[fieldName];
-};
+interface Transformer {
+    fieldId: string;
+    model: any;
+    field: any;
+}
 
-const resolveFieldValueWithTransform =
-    ({ getModel, getField, isRoot }) =>
-    async (parent, _, context, info) => {
-        const { fieldName } = info;
-        const model = await getModel(context);
+interface GetFieldValuesParams {
+    entry: Record<string, any>;
+    fields: string[];
+    transformers?: Array<Transformer>;
+    context: CmsContext;
+}
 
-        const field = getField(model, fieldName);
-
+export const getFieldValues = async ({
+    entry,
+    context,
+    transformers,
+    fields
+}: GetFieldValuesParams) => {
+    const values = { ...pick(entry, fields), ...entry.values };
+    /**
+     * Transform field value for each transformers.
+     */
+    for (let i = 0; i < transformers.length; i++) {
+        const { fieldId, model, field } = transformers[i];
         // Get transformed value (eg. data decompression)
-        return await entryFieldFromStorageTransform({
+        values[fieldId] = await entryFieldFromStorageTransform({
             context,
             model,
             field,
-            value: isRoot ? parent.values[fieldName] : parent[fieldName]
+            value: values[fieldId]
         });
-    };
+    }
 
-export const generateFieldResolvers = (fieldIds: Array<string | FieldResolversParams>) => {
-    return fieldIds.reduce((previousValue, currentValue) => {
-        const fieldId = typeof currentValue !== "string" ? currentValue.fieldId : currentValue;
-
-        if (typeof previousValue[fieldId] !== "function") {
-            if (typeof currentValue !== "string") {
-                previousValue[fieldId] = resolveFieldValueWithTransform({
-                    ...currentValue
-                });
-            } else {
-                previousValue[fieldId] = resolveFieldValue;
-            }
-        }
-        return previousValue;
-    }, {});
+    return values;
 };
+
+export const getTransformer = (model: CmsModel, fieldId: string): Transformer => ({
+    fieldId,
+    model: model,
+    field: model.fields.find(field => field.fieldId === fieldId)
+});

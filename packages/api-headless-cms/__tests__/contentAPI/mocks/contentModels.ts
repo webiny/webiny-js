@@ -19,6 +19,7 @@ export interface Fruit {
     dateTimeZ: string;
     time: string;
     description: string;
+    slug?: string;
 }
 
 const ids = {
@@ -67,6 +68,7 @@ const ids = {
     field511: shortId.generate(),
     field512: shortId.generate(),
     field513: shortId.generate(),
+    field514: shortId.generate(),
     // bug
     field601: shortId.generate(),
     field602: shortId.generate(),
@@ -301,12 +303,7 @@ const models: CmsModel[] = [
                 settings: {
                     type: "date"
                 },
-                validation: [
-                    {
-                        name: "required",
-                        message: "Please enter a date"
-                    }
-                ],
+                validation: [],
                 listValidation: [],
                 placeholderText: "placeholder text",
                 predefinedValues: {
@@ -849,7 +846,8 @@ const models: CmsModel[] = [
             [ids.field510],
             [ids.field511],
             [ids.field512],
-            [ids.field513]
+            [ids.field513],
+            [ids.field514]
         ],
         fields: [
             // required, minLength, maxLength
@@ -1284,6 +1282,30 @@ const models: CmsModel[] = [
                 renderer: {
                     name: "renderer"
                 }
+            },
+            {
+                id: ids.field514,
+                multipleValues: false,
+                helpText: "",
+                label: "Slug",
+                type: "text",
+                fieldId: "slug",
+                validation: [
+                    {
+                        name: "unique",
+                        message: "Field value must be unique."
+                    }
+                ],
+                settings: {},
+                listValidation: [],
+                placeholderText: "Slug",
+                predefinedValues: {
+                    enabled: false,
+                    values: []
+                },
+                renderer: {
+                    name: "renderer"
+                }
             }
         ],
         tenant: "root",
@@ -1349,6 +1371,9 @@ const models: CmsModel[] = [
                             value: "when-you-have-time"
                         }
                     ]
+                },
+                settings: {
+                    defaultValue: "critical"
                 },
                 renderer: {
                     name: "renderer"

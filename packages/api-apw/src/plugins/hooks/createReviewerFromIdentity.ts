@@ -1,7 +1,6 @@
-import { ApwContext } from "~/types";
+import { LifeCycleHookCallbackParams } from "~/types";
 
-export const createReviewerFromIdentity = (context: ApwContext) => {
-    const { security, apw } = context;
+export const createReviewerFromIdentity = ({ security, apw }: LifeCycleHookCallbackParams) => {
     /**
      * Replicate identity in "AdvancedPublishingWorkflow" system after login.
      */

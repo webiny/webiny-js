@@ -60,7 +60,7 @@ class FileManager {
         const transform = new aws.lambda.Function("fm-image-transformer", {
             handler: "handler.handler",
             timeout: 30,
-            runtime: "nodejs12.x",
+            runtime: "nodejs14.x",
             memorySize: 1600,
             role: this.role.arn,
             description: "Performs image optimization, resizing, etc.",
@@ -75,7 +75,7 @@ class FileManager {
 
         const manage = new aws.lambda.Function("fm-manage", {
             role: this.role.arn,
-            runtime: "nodejs12.x",
+            runtime: "nodejs14.x",
             handler: "handler.handler",
             timeout: 30,
             memorySize: 512,
@@ -90,7 +90,7 @@ class FileManager {
 
         const download = new aws.lambda.Function("fm-download", {
             role: this.role.arn,
-            runtime: "nodejs12.x",
+            runtime: "nodejs14.x",
             handler: "handler.handler",
             timeout: 30,
             memorySize: 512,

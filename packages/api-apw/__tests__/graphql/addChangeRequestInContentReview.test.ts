@@ -76,7 +76,9 @@ describe(`Add change requests on a step in a "Content Review"`, () => {
          * Create a new change request entry for step 1.
          */
         const [createChangeRequestResponse] = await createChangeRequestMutation({
-            data: changeRequestMock.createChangeRequestInput({ step: step1.slug })
+            data: changeRequestMock.createChangeRequestInput({
+                step: `${contentReview.id}#${step1.slug}`
+            })
         });
         const changeRequested = createChangeRequestResponse.data.apw.createChangeRequest.data;
 
@@ -110,7 +112,7 @@ describe(`Add change requests on a step in a "Content Review"`, () => {
          */
         const [listChangeRequestsResponse] = await listChangeRequestsQuery({
             where: {
-                step: step1.slug
+                step: `${contentReview.id}#${step1.slug}`
             }
         });
         expect(listChangeRequestsResponse).toEqual({
@@ -148,7 +150,7 @@ describe(`Add change requests on a step in a "Content Review"`, () => {
         for (let i = 0; i < 2; i++) {
             const [createChangeRequestResponse] = await createChangeRequestMutation({
                 data: changeRequestMock.createChangeRequestInput({
-                    step: step2.slug,
+                    step: `${contentReview.id}#${step2.slug}`,
                     title: "Please make change in heading-" + i
                 })
             });
@@ -177,7 +179,7 @@ describe(`Add change requests on a step in a "Content Review"`, () => {
             () =>
                 listChangeRequestsQuery({
                     where: {
-                        step: step2.slug
+                        step: `${contentReview.id}#${step2.slug}`
                     }
                 }).then(([data]) => data),
             response => {
@@ -194,7 +196,7 @@ describe(`Add change requests on a step in a "Content Review"`, () => {
          */
         const [listChangeRequestsResponse2] = await listChangeRequestsQuery({
             where: {
-                step: step2.slug
+                step: `${contentReview.id}#${step2.slug}`
             }
         });
         expect(listChangeRequestsResponse2).toEqual({
@@ -360,10 +362,11 @@ describe(`Add change requests on a step in a "Content Review"`, () => {
          */
         const changeRequests = [];
         for (let i = 0; i < contentReviews.length; i++) {
+            const contentReview = contentReviews[i];
             for (let j = 0; j < 2; j++) {
                 const [createCommentResponse] = await createChangeRequestMutation({
                     data: changeRequestMock.createChangeRequestInput({
-                        step: contentReviews[i].steps[0].slug,
+                        step: `${contentReview.id}#${contentReview.steps[0].slug}`,
                         title: `Please change heading-${i}-${j}`
                     })
                 });
@@ -480,7 +483,7 @@ describe(`Add change requests on a step in a "Content Review"`, () => {
          */
         [listChangeRequestsResponse] = await listChangeRequestsQuery({
             where: {
-                step: contentReviews[0].steps[0].slug
+                step: `${contentReviews[0].id}#${contentReviews[0].steps[0].slug}`
             }
         });
         expect(listChangeRequestsResponse).toEqual({

@@ -1,47 +1,33 @@
-import { CmsEntry, CmsModel } from "@webiny/api-headless-cms/types";
-import { ApwContentReviewCrud, ApwContext } from "~/types";
-
-const isEqual = ({
-    entry,
-    original,
-    property
-}: {
-    entry: CmsEntry;
-    original: CmsEntry;
-    property: string;
-}): Boolean => {
-    const currentValue = entry.values[property];
-    const previousValue = original.values[property];
-
-    return currentValue === previousValue;
-};
+import {
+    ApwChangeRequest,
+    ApwContentReview,
+    ApwContentReviewCrud,
+    LifeCycleHookCallbackParams
+} from "~/types";
 
 interface UpdatePendingChangeRequestsParams {
-    contentReview: ApwContentReviewCrud;
-    entry: CmsEntry;
+    contentReviewMethods: ApwContentReviewCrud;
+    changeRequest: ApwChangeRequest;
     delta: number;
 }
 
 const updatePendingChangeRequests = async ({
-    contentReview,
-    entry,
+    contentReviewMethods,
+    changeRequest,
     delta
 }: UpdatePendingChangeRequestsParams): Promise<void> => {
-    const stepSlug = entry.values.step;
+    const { step: stepSlug } = changeRequest;
     /*
      * Get associated content review entry.
      */
-    const entryId = stepSlug.split("#")[0];
+    const [entryId, version, slug] = stepSlug.split("#");
+    const revisionId = `${entryId}#${version}`;
 
-    let contentReviewEntry;
+    let contentReviewEntry: ApwContentReview;
     try {
-        [[contentReviewEntry]] = await contentReview.list({
-            where: {
-                entryId
-            }
-        });
+        contentReviewEntry = await contentReviewMethods.get(revisionId);
     } catch (e) {
-        if (e.message !== "index_not_found_exception") {
+        if (e.message !== "index_not_found_exception" && e.code !== "NOT_FOUND") {
             throw e;
         }
     }
@@ -49,81 +35,59 @@ const updatePendingChangeRequests = async ({
         /**
          * Update "pendingChangeRequests" count of corresponding step in content review entry.
          */
-        try {
-            await contentReview.update(contentReviewEntry.id, {
-                steps: contentReviewEntry.values.steps.map(step => {
-                    if (step.slug === stepSlug) {
-                        return {
-                            ...step,
-                            pendingChangeRequests: step.pendingChangeRequests + delta
-                        };
-                    }
-                    return step;
-                })
-            });
-        } catch (e) {
-            if (e.code !== "NOT_FOUND") {
-                throw e;
-            }
-        }
+        await contentReviewMethods.update(contentReviewEntry.id, {
+            steps: contentReviewEntry.steps.map(step => {
+                if (step.slug === slug) {
+                    return {
+                        ...step,
+                        pendingChangeRequests: step.pendingChangeRequests + delta
+                    };
+                }
+                return step;
+            })
+        });
     }
 };
 
-const isChangeRequestModel = async ({
-    getChangeRequestModel,
-    model
-}: {
-    getChangeRequestModel: () => Promise<CmsModel>;
-    model: CmsModel;
-}): Promise<Boolean> => {
-    const changeRequestModel = await getChangeRequestModel();
-    return model.modelId === changeRequestModel.modelId;
-};
-
-export const updatePendingChangeRequestsCount = (context: ApwContext) => {
-    const { cms, apw } = context;
-    const getChangeRequestModel = apw.changeRequest.getModel;
-
-    cms.onAfterEntryDelete.subscribe(async ({ model, entry }) => {
+export const updatePendingChangeRequestsCount = ({ apw }: LifeCycleHookCallbackParams) => {
+    apw.changeRequest.onAfterChangeRequestDelete.subscribe(async ({ changeRequest }) => {
         /**
-         * If deleted entry is of "changeRequest" model, decrement the "pendingChangeRequests" count
+         * After a "changeRequest" is deleted, decrement the "pendingChangeRequests" count
          * in the corresponding step of the content review entry.
          */
-        if (await isChangeRequestModel({ getChangeRequestModel, model })) {
-            await updatePendingChangeRequests({
-                contentReview: apw.contentReview,
-                entry,
-                delta: -1
-            });
-        }
+        await updatePendingChangeRequests({
+            contentReviewMethods: apw.contentReview,
+            changeRequest: changeRequest,
+            delta: -1
+        });
     });
 
-    cms.onAfterEntryCreate.subscribe(async ({ model, entry }) => {
+    apw.changeRequest.onAfterChangeRequestCreate.subscribe(async ({ changeRequest }) => {
         /**
-         * If the created entry is of "changeRequest" type, increment the "pendingChangeRequests" count
+         * After a "changeRequest" is created, increment the "pendingChangeRequests" count
          * of the corresponding step in the content review entry.
          */
-        if (await isChangeRequestModel({ getChangeRequestModel, model })) {
-            await updatePendingChangeRequests({
-                contentReview: apw.contentReview,
-                entry,
-                delta: 1
-            });
-        }
+        await updatePendingChangeRequests({
+            contentReviewMethods: apw.contentReview,
+            changeRequest,
+            delta: 1
+        });
     });
 
-    cms.onAfterEntryUpdate.subscribe(async ({ model, entry, original }) => {
+    apw.changeRequest.onAfterChangeRequestUpdate.subscribe(async ({ changeRequest, original }) => {
         /**
-         * If the updated entry is of "changeRequest" type and the value of "resolved" field has changed;
+         * After a "changeRequest" is created, and the value of "resolved" field has changed;
          * then we also need to update the "pendingChangeRequests" count of the corresponding step in the content review entry.
          */
-        if (
-            (await isChangeRequestModel({ getChangeRequestModel, model })) &&
-            !isEqual({ entry, original, property: "resolved" })
-        ) {
-            const resolved = entry.values.resolved;
+        if (original.resolved !== changeRequest.resolved) {
+            const resolved = changeRequest.resolved;
             const delta = resolved === true ? -1 : 1;
-            await updatePendingChangeRequests({ contentReview: apw.contentReview, entry, delta });
+
+            await updatePendingChangeRequests({
+                contentReviewMethods: apw.contentReview,
+                changeRequest,
+                delta
+            });
         }
     });
 };

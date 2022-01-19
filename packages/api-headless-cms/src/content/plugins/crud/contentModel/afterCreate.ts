@@ -2,13 +2,13 @@ import { AfterModelCreateTopicParams, CmsContext } from "~/types";
 import { Topic } from "@webiny/pubsub/types";
 
 export interface Params {
-    onAfterCreate: Topic<AfterModelCreateTopicParams>;
+    onAfterModelCreate: Topic<AfterModelCreateTopicParams>;
     context: CmsContext;
 }
 export const assignAfterModelCreate = (params: Params) => {
-    const { onAfterCreate, context } = params;
+    const { onAfterModelCreate, context } = params;
 
-    onAfterCreate.subscribe(async () => {
+    onAfterModelCreate.subscribe(async () => {
         await context.cms.updateModelLastChange();
     });
 };

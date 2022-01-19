@@ -1,4 +1,4 @@
-import { introspectionQuery } from "graphql";
+import { getIntrospectionQuery } from "graphql";
 import i18nContext from "@webiny/api-i18n/graphql/context";
 import i18nContentPlugins from "@webiny/api-i18n-content/plugins";
 import { createHandler } from "@webiny/handler-aws";
@@ -160,7 +160,7 @@ export const useGqlHandler = (params: GQLHandlerCallableParams) => {
         invoke,
         storageOperations: ops.storageOperations,
         async introspect() {
-            return invoke({ body: { query: introspectionQuery } });
+            return invoke({ body: { query: getIntrospectionQuery() } });
         },
         // settings
         async isInstalledQuery() {
