@@ -137,7 +137,7 @@ class ElasticSearch {
          */
         const streamTarget = new aws.lambda.Function("dynamo-to-elastic", {
             role: this.role.arn,
-            runtime: "nodejs12.x",
+            runtime: "nodejs14.x",
             handler: "handler.handler",
             timeout: 600,
             memorySize: 512,
