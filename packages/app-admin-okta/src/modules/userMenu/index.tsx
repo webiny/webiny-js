@@ -6,7 +6,6 @@ import {
     Plugins
 } from "@webiny/app-serverless-cms";
 import { UserInfo } from "~/modules/userMenu/userInfo";
-import { ExitTenant } from "~/modules/userMenu/exitTenant";
 import { SignOut } from "~/modules/userMenu/signOut";
 import { UserImage } from "~/modules/userMenu/userImage";
 
@@ -22,7 +21,6 @@ export const UserMenuModule = () => {
             <Compose component={UserMenuHandleRenderer} with={UserImageHOC} />
             <Plugins>
                 <AddUserMenuItem element={<UserInfo />} />
-                <AddUserMenuItem element={<ExitTenant />} />
                 <AddUserMenuItem element={<SignOut />} />
             </Plugins>
         </Fragment>
