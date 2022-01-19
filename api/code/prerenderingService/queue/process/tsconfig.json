@@ -1,10 +1,10 @@
 {
-  "extends": "../../tsconfig.json",
+  "extends": "../../../../tsconfig.json",
   "include": ["src"],
   "references": [
-    { "path": "../../../../../packages/api-prerendering-service" },
-    { "path": "../../../../../packages/api-prerendering-service-so-ddb" },
-    { "path": "../../../../../packages/handler-aws" }
+    { "path": "../../../../../packages/api-prerendering-service/tsconfig.build.json" },
+    { "path": "../../../../../packages/api-prerendering-service-so-ddb/tsconfig.build.json" },
+    { "path": "../../../../../packages/handler-aws/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "paths": {

@@ -18,8 +18,8 @@
     "graphql-tag": "2.10.1",
     "invariant": "^2.2.4",
     "lodash.get": "^4.4.2",
-    "react": "^16.14.0",
+    "react": "16.14.0",
     "react-hamburger-menu": "^1.1.1",
-    "react-helmet": "^5.2.0"
+    "react-helmet": "^6.1.0"
   }
 }

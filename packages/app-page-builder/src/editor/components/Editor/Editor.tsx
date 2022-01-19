@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import HTML5Backend from "react-dnd-html5-backend";
+import { HTML5Backend } from "react-dnd-html5-backend";
 import classSet from "classnames";
 import { useEventActionHandler } from "../../hooks/useEventActionHandler";
 import { EventActionHandler, PbEditorEventActionPlugin } from "../../../types";

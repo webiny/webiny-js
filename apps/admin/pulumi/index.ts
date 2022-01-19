@@ -5,8 +5,8 @@ import { CloudFrontBucket } from "@webiny/pulumi-aws";
 export = async () => {
     // Add tags to all resources that support tagging.
     tagResources({
-        WbyProjectName: process.env.WEBINY_PROJECT_NAME as string,
-        WbyEnvironment: process.env.WEBINY_ENV as string
+        WbyProjectName: String(process.env.WEBINY_PROJECT_NAME),
+        WbyEnvironment: String(process.env.WEBINY_ENV)
     });
 
     const bucket = new CloudFrontBucket("admin-app");

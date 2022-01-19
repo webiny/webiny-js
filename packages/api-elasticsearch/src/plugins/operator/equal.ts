@@ -13,6 +13,15 @@ export class ElasticsearchQueryBuilderOperatorEqualPlugin extends ElasticsearchQ
         params: ElasticsearchQueryBuilderArgsPlugin
     ): void {
         const { value, path, basePath } = params;
+
+        if (value === null) {
+            query.must_not.push({
+                exists: {
+                    field: path
+                }
+            });
+            return;
+        }
         /**
          * In case we are searching for a string, use regular path.
          * Otherwise use base path

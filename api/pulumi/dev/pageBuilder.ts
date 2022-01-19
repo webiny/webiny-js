@@ -77,7 +77,7 @@ class PageBuilder {
 
         const updateSettings = new aws.lambda.Function("pb-update-settings", {
             role: this.role.arn,
-            runtime: "nodejs12.x",
+            runtime: "nodejs14.x",
             handler: "handler.handler",
             timeout: 10,
             memorySize: 128,
@@ -125,7 +125,7 @@ class PageBuilder {
 
         const exportPagesCombineLambda = new aws.lambda.Function("pb-export-pages-combine", {
             role: this.exportPagesLambdaRole.arn,
-            runtime: "nodejs12.x",
+            runtime: "nodejs14.x",
             handler: "handler.handler",
             timeout: 60,
             memorySize: 128,
@@ -143,7 +143,7 @@ class PageBuilder {
 
         const exportPagesProcessLambda = new aws.lambda.Function("pb-export-pages-process", {
             role: this.exportPagesLambdaRole.arn,
-            runtime: "nodejs12.x",
+            runtime: "nodejs14.x",
             handler: "handler.handler",
             timeout: 60,
             memorySize: 128,
@@ -193,7 +193,7 @@ class PageBuilder {
 
         const importPagesQueueProcess = new aws.lambda.Function("pb-import-page-queue-process", {
             role: this.importPagesLambdaRole.arn,
-            runtime: "nodejs12.x",
+            runtime: "nodejs14.x",
             handler: "handler.handler",
             timeout: 60,
             memorySize: 512,
@@ -211,7 +211,7 @@ class PageBuilder {
 
         const importPagesQueueCreate = new aws.lambda.Function("pb-import-page-queue-create", {
             role: this.importPagesLambdaRole.arn,
-            runtime: "nodejs12.x",
+            runtime: "nodejs14.x",
             handler: "handler.handler",
             timeout: 60,
             memorySize: 512,

@@ -1,13 +1,13 @@
 import React from "react";
 import get from "lodash/get";
+import DynamicSection from "../DynamicSection";
 import { CmsEditorFieldRendererPlugin } from "~/types";
 import { i18n } from "@webiny/app/i18n";
 import { ReactComponent as DeleteIcon } from "~/admin/icons/close.svg";
-import DynamicSection from "../DynamicSection";
-import DateTimeWithoutTimezone from "./DateTimeWithoutTimezone";
-import DateTimeWithTimezone from "./DateTimeWithTimezone";
-import Time from "./Time";
-import Input from "./Input";
+import { DateTimeWithoutTimezone } from "./DateTimeWithoutTimezone";
+import { DateTimeWithTimezone } from "./DateTimeWithTimezone";
+import { DateOnly } from "./DateOnly";
+import { Time } from "./Time";
 
 const t = i18n.ns("app-headless-cms/admin/fields/date-time");
 
@@ -64,14 +64,13 @@ const plugin: CmsEditorFieldRendererPlugin = {
                                             t` Value {number}`({ number: index + 1 })
                                     }}
                                     bind={bind.index}
-                                    label={t`Value {number}`({ number: index + 1 })}
                                     trailingIcon={trailingIcon}
                                 />
                             );
                         }
 
                         return (
-                            <Input
+                            <DateOnly
                                 bind={bind.index}
                                 field={{
                                     ...props.field,
@@ -79,7 +78,6 @@ const plugin: CmsEditorFieldRendererPlugin = {
                                         props.field.label +
                                         t` Value {number}`({ number: index + 1 })
                                 }}
-                                type={field.settings.type}
                                 trailingIcon={trailingIcon}
                             />
                         );

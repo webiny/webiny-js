@@ -1,7 +1,15 @@
 import * as React from "react";
-import { Select as UiSelect } from "@webiny/ui/Select";
+import { Select as UiSelect, SelectProps } from "@webiny/ui/Select";
 
-const Select = props => {
+export interface Option {
+    value: string;
+    label: string;
+}
+
+export interface Props extends SelectProps {
+    options: Option[];
+}
+export const Select: React.FC<Props> = props => {
     return (
         <UiSelect {...props}>
             {props.options.map(t => {
@@ -14,5 +22,3 @@ const Select = props => {
         </UiSelect>
     );
 };
-
-export default Select;

@@ -11,14 +11,14 @@ const documentClient = new DocumentClient({
 export const handler = createHandler(
     queueProcessPlugins({
         handlers: {
-            render: process.env.PRERENDERING_RENDER_HANDLER,
-            flush: process.env.PRERENDERING_FLUSH_HANDLER
+            render: String(process.env.PRERENDERING_RENDER_HANDLER),
+            flush: String(process.env.PRERENDERING_FLUSH_HANDLER)
         },
         storageOperations: createPrerenderingServiceStorageOperations({
-            table: table => {
+            table(table) {
                 return {
                     ...table,
-                    name: process.env.DB_TABLE
+                    name: String(process.env.DB_TABLE)
                 };
             },
             documentClient
