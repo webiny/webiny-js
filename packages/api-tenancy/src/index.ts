@@ -33,10 +33,10 @@ export const createTenancyContext = ({ storageOperations }: TenancyPluginsParams
             multiTenancy,
             storageOperations
         });
-        
+
         // Even though we don't have a full GraphQL schema when using the `context` plugins,
         // we still need to register the base tenancy types, so other plugins can extend and use them
-        // in other GraphQLSchema plugins. 
+        // in other GraphQLSchema plugins.
         context.plugins.register(baseGraphQLTypes);
     });
 };

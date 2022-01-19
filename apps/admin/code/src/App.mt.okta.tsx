@@ -9,7 +9,7 @@ import { oktaFactory, rootAppClientId } from "./okta";
 export const App = () => {
     return (
         <Admin>
-            <Okta factory={oktaFactory} rootAppClientId={rootAppClientId}/>
+            <Okta factory={oktaFactory} rootAppClientId={rootAppClientId} />
             <TenantManager />
         </Admin>
     );

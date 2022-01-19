@@ -36,10 +36,9 @@ export default ({ documentClient }: { documentClient: DocumentClient }) => [
      */
     createSecurityGraphQL({
         // For Okta, we must provide custom logic to determine the "default" tenant for current identity.
-        // For `dev` environments, we can just return the `root` tenant.
-        // For other environments, we can extract this information from the tenant:group map provided via the Okta JWT.
-        getDefaultTenant(context) {
-            return context.tenancy.getRootTenant();
+        // Since we're not linking identities to tenants via DB records, we can just return the current tenant.
+        async getDefaultTenant(context) {
+            return context.tenancy.getCurrentTenant();
         }
     }),
 
@@ -51,9 +50,6 @@ export default ({ documentClient }: { documentClient: DocumentClient }) => [
 
     createOkta({
         issuer: process.env.OKTA_ISSUER as string,
-        getGroupSlug(context) {
-            return context.security.getIdentity().group;
-        },
         getIdentity({ token }) {
             return {
                 id: token.sub,
@@ -61,6 +57,9 @@ export default ({ documentClient }: { documentClient: DocumentClient }) => [
                 displayName: token.name,
                 group: token.webiny_group
             };
+        },
+        getGroupSlug(context) {
+            return context.security.getIdentity().group;
         }
     }),
 
