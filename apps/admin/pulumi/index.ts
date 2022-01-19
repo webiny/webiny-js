@@ -9,7 +9,13 @@ export = async () => {
         WbyEnvironment: String(process.env.WEBINY_ENV)
     });
 
-    const bucket = new CloudFrontBucket("admin-app");
+    const bucket = new CloudFrontBucket("admin-app", {
+        bucketConfig(config) {
+            config.versioning = {
+                enabled: true
+            };
+        }
+    });
 
     const cloudfront = new aws.cloudfront.Distribution("admin-app-cdn", {
         enabled: true,

@@ -1,23 +1,29 @@
 import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
 import { PulumiInputValue } from "../types";
+import { createResource, ResourceOverride } from "./createResource";
 
 type OriginConfig = PulumiInputValue<
     PulumiInputValue<aws.cloudfront.DistributionArgs["origins"]>[number]
 >;
 
+export interface CloudFrontBucketConfig {
+    bucketConfig: ResourceOverride<typeof aws.s3.Bucket>;
+}
+
 export class CloudFrontBucket extends pulumi.ComponentResource {
     public readonly s3Bucket: aws.s3.Bucket;
     public readonly origin: OriginConfig;
+    public readonly originIdentity: aws.cloudfront.OriginAccessIdentity;
 
-    constructor(name: string) {
+    constructor(name: string, config?: CloudFrontBucketConfig) {
         super("webiny:aws:CloudFrontBucket", name);
 
         // Origin Identity is a kind of AWS user that represents Cloudfront distribution
         // We can add IAM policies to it later, to allow accessing private S3 bucket
-        const originIdentity = new aws.cloudfront.OriginAccessIdentity(`${name}-origin-identity`);
+        this.originIdentity = new aws.cloudfront.OriginAccessIdentity(`${name}-origin-identity`);
 
-        this.s3Bucket = new aws.s3.Bucket(name, {
+        this.s3Bucket = createResource(aws.s3.Bucket, name, config?.bucketConfig, {
             acl: aws.s3.CannedAcl.Private,
             forceDestroy: true
         });
@@ -26,7 +32,7 @@ export class CloudFrontBucket extends pulumi.ComponentResource {
             originId: this.s3Bucket.arn,
             domainName: this.s3Bucket.bucketDomainName,
             s3OriginConfig: {
-                originAccessIdentity: originIdentity.cloudfrontAccessIdentityPath
+                originAccessIdentity: this.originIdentity.cloudfrontAccessIdentityPath
             }
         };
 
@@ -48,7 +54,7 @@ export class CloudFrontBucket extends pulumi.ComponentResource {
                     const statements: aws.iam.PolicyStatement[] = [
                         {
                             Effect: "Allow",
-                            Principal: { AWS: originIdentity.iamArn },
+                            Principal: { AWS: this.originIdentity.iamArn },
                             // we need GetObject to retrieve objects from S3
                             // and ListBucket allows to properly handle non-existing files (404)
                             Action: ["s3:ListBucket", "s3:GetObject"],
