@@ -1,0 +1,4 @@
+{
+  "name": "API APW",
+  "entryPoints": ["types.ts"]
+}

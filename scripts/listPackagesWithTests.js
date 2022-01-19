@@ -39,6 +39,13 @@ const CUSTOM_HANDLERS = {
             "packages/api-headless-cms/* --keyword=cms:ddb --keyword=cms:base",
             "packages/api-headless-cms/* --keyword=cms:ddb-es --keyword=cms:base"
         ];
+    },
+    // Split "api-apw" tests into batches of
+    "api-apw": () => {
+        return [
+            "packages/api-apw/* --keyword=cms:ddb --keyword=apw:base",
+            "packages/api-apw/* --keyword=cms:ddb-es --keyword=apw:base"
+        ];
     }
 };
 

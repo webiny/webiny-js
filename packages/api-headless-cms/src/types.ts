@@ -1001,6 +1001,7 @@ export interface CmsModelFieldInput {
     type: string;
     /**
      * A unique ID for the field. Values will be mapped via this value.
+     * This field MUST be in range of "a-zA-Z".
      */
     fieldId: string;
     /**
