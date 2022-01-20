@@ -8514,7 +8514,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-apw@^5.21.0, @webiny/api-apw@workspace:packages/api-apw":
+"@webiny/api-apw@workspace:packages/api-apw":
   version: 0.0.0-use.local
   resolution: "@webiny/api-apw@workspace:packages/api-apw"
   dependencies:
@@ -12443,7 +12443,6 @@ __metadata:
   dependencies:
     "@webiny/api-admin-users-cognito": ^5.21.0
     "@webiny/api-admin-users-cognito-so-ddb": ^5.21.0
-    "@webiny/api-apw": ^5.21.0
     "@webiny/api-file-manager": ^5.21.0
     "@webiny/api-file-manager-ddb": ^5.21.0
     "@webiny/api-file-manager-s3": ^5.21.0
