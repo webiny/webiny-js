@@ -1,4 +1,3 @@
-name: admin
+name: Admin Area
 runtime: nodejs
-description: Represents cloud infrastructure that hosts your project's Admin area.
-main: pulumi/
+description: Your project's admin area.

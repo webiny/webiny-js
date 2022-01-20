@@ -1,7 +1,7 @@
 import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
 import { PulumiInputValue } from "../types";
-import { createResource, ResourceOverride } from "./createResource";
+import { createResource, ResourceOverride } from "../createResource";
 
 type OriginConfig = PulumiInputValue<
     PulumiInputValue<aws.cloudfront.DistributionArgs["origins"]>[number]
