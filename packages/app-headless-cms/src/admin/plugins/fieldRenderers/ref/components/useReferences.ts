@@ -57,7 +57,12 @@ export const useReferences = ({ bind, field }) => {
                     modelIds: models.map(m => m.modelId),
                     query: "__latest__",
                     limit: 10
-                }
+                },
+                /**
+                 * We cannot update this query response in cache after a reference entry being created/deleted,
+                 * which result in cached response being stale, therefore, we're setting the fetchPolicy to "network-only" to by passing cache.
+                 */
+                fetchPolicy: "network-only"
             })
             .then(({ data }) => {
                 setLatestEntries(data.content.data);
