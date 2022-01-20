@@ -32,7 +32,7 @@
   },
   "scripts": {
     "analyze": "source-map-explorer build/static/js/main.*",
-    "watch": "cross-env PORT=3001 yarn webiny run watch",
+    "watch": "yarn webiny run watch",
     "build": "yarn webiny run build"
   },
   "browserslist": {
@@ -55,6 +55,9 @@
         "@webiny/cli"
       ],
       "src": [
+        "@okta/okta-signin-widget",
+        "@okta/okta-auth-js",
+        "@webiny/app-admin-okta",
         "@webiny/app-tenant-manager",
         "@webiny/app-theme-manager",
         "@webiny/app-page-builder-elements"

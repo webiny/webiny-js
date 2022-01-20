@@ -28,7 +28,11 @@
   },
   "adio": {
     "ignore": {
+      "dependencies": [
+        "@webiny/api-security-cognito"
+      ],
       "src": [
+        "@webiny/api-security-okta",
         "@webiny/cli-plugin-deploy-pulumi"
       ]
     }

@@ -27,7 +27,7 @@ export default {
             Object.assign(process.env, output);
 
             // Starts the local development server at port 3001.
-            Object.assign(process.env, { PORT: 3001 });
+            Object.assign(process.env, { PORT: options.port || 3001 });
 
             const watch = createWatchApp({ cwd: __dirname });
             await watch(options);

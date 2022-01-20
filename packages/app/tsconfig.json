@@ -1,6 +1,13 @@
 {
   "extends": "../../tsconfig.json",
   "include": ["src", "__tests__/**/*.ts"],
+  "references": [
+    { "path": "../i18n" },
+    { "path": "../i18n-react" },
+    { "path": "../plugins" },
+    { "path": "../react-router" },
+    { "path": "../ui" }
+  ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
     "outDir": "./dist",

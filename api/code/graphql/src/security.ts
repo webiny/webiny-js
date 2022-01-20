@@ -6,13 +6,8 @@ import { createStorageOperations as securityStorageOperations } from "@webiny/ap
 import { authenticateUsingHttpHeader } from "@webiny/api-security/plugins/authenticateUsingHttpHeader";
 import apiKeyAuthentication from "@webiny/api-security/plugins/apiKeyAuthentication";
 import apiKeyAuthorization from "@webiny/api-security/plugins/apiKeyAuthorization";
-import groupAuthorization from "@webiny/api-security/plugins/groupAuthorization";
-import parentTenantGroupAuthorization from "@webiny/api-security/plugins/parentTenantGroupAuthorization";
-import cognitoAuthentication from "@webiny/api-security-cognito";
 import anonymousAuthorization from "@webiny/api-security/plugins/anonymousAuthorization";
-import createAdminUsersApp from "@webiny/api-admin-users-cognito";
-import { syncWithCognito } from "@webiny/api-admin-users-cognito/syncWithCognito";
-import { createStorageOperations as createAdminUsersStorageOperations } from "@webiny/api-admin-users-cognito-so-ddb";
+import { createOkta } from "@webiny/api-security-okta";
 
 export default ({ documentClient }: { documentClient: DocumentClient }) => [
     /**
@@ -31,27 +26,24 @@ export default ({ documentClient }: { documentClient: DocumentClient }) => [
      * Create Security app in the `context`.
      */
     createSecurityContext({
+        /**
+         * For Okta, this must be set to `false`, as we don't have links in the database.
+         */
+        verifyIdentityToTenantLink: false,
         storageOperations: securityStorageOperations({ documentClient })
     }),
 
     /**
      * Expose security GraphQL schema.
      */
-    createSecurityGraphQL(),
-
-    /**
-     * Create Admin Users app.
-     */
-    createAdminUsersApp({
-        storageOperations: createAdminUsersStorageOperations({ documentClient })
-    }),
-
-    /**
-     * Sync Admin Users with Cognito User Pool.
-     */
-    syncWithCognito({
-        region: String(process.env.COGNITO_REGION),
-        userPoolId: String(process.env.COGNITO_USER_POOL_ID)
+    createSecurityGraphQL({
+        /**
+         * For Okta, we must provide custom logic to determine the "default" tenant for current identity.
+         * Since we're not linking identities to tenants via DB records, we can just return the current tenant.
+         */
+        async getDefaultTenant(context) {
+            return context.tenancy.getCurrentTenant();
+        }
     }),
 
     /**
@@ -59,6 +51,33 @@ export default ({ documentClient }: { documentClient: DocumentClient }) => [
      * This will fetch the value of the header, and execute the authentication process.
      */
     authenticateUsingHttpHeader(),
+
+    /**
+     * Configure Okta authentication and authorization.
+     */
+    createOkta({
+        /**
+         * `issuer` is required for token verification.
+         */
+        issuer: process.env.OKTA_ISSUER as string,
+        /**
+         * Construct the identity object and map token claims to arbitrary identity properties.
+         */
+        getIdentity({ token }) {
+            return {
+                id: token.sub,
+                type: "admin",
+                displayName: token.name,
+                group: token.webiny_group
+            };
+        },
+        /**
+         * Get the slug of a security group to fetch permissions from.
+         */
+        getGroupSlug(context) {
+            return context.security.getIdentity().group;
+        }
+    }),
 
     /**
      * API Key authenticator.
@@ -69,30 +88,10 @@ export default ({ documentClient }: { documentClient: DocumentClient }) => [
     apiKeyAuthentication({ identityType: "api-key" }),
 
     /**
-     * Cognito authentication plugin.
-     * This plugin will verify the JWT token against the provided User Pool.
-     */
-    cognitoAuthentication({
-        region: String(process.env.COGNITO_REGION),
-        userPoolId: String(process.env.COGNITO_USER_POOL_ID),
-        identityType: "admin"
-    }),
-
-    /**
      * Authorization plugin to fetch permissions for a verified API key.
      * The "identityType" must match the authentication plugin used to load the identity.
      */
     apiKeyAuthorization({ identityType: "api-key" }),
-
-    /**
-     * Authorization plugin to fetch permissions from a security group associated with the identity.
-     */
-    groupAuthorization({ identityType: "admin" }),
-
-    /**
-     * Authorization plugin to fetch permissions from the parent tenant.
-     */
-    parentTenantGroupAuthorization({ identityType: "admin" }),
 
     /**
      * Authorization plugin to load permissions for anonymous requests.

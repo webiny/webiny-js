@@ -1,6 +1,7 @@
 {
   "extends": "../../tsconfig.json",
   "include": ["src", "__tests__/**/*.ts"],
+  "references": [{ "path": "../app" }, { "path": "../plugins" }, { "path": "../react-router" }],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
     "outDir": "./dist",

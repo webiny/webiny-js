@@ -9434,7 +9434,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-security-okta@workspace:packages/api-security-okta":
+"@webiny/api-security-okta@^5.22.0-beta.1, @webiny/api-security-okta@workspace:packages/api-security-okta":
   version: 0.0.0-use.local
   resolution: "@webiny/api-security-okta@workspace:packages/api-security-okta"
   dependencies:
@@ -9442,6 +9442,7 @@ __metadata:
     "@babel/core": ^7.16.0
     "@webiny/api-security": ^5.22.0-beta.1
     "@webiny/api-tenancy": ^5.22.0-beta.1
+    "@webiny/api-tenant-manager": ^5.22.0-beta.1
     "@webiny/cli": ^5.22.0-beta.1
     "@webiny/error": ^5.22.0-beta.1
     "@webiny/handler": ^5.22.0-beta.1
@@ -9618,7 +9619,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@webiny/api-tenant-manager@workspace:packages/api-tenant-manager":
+"@webiny/api-tenant-manager@^5.22.0-beta.1, @webiny/api-tenant-manager@workspace:packages/api-tenant-manager":
   version: 0.0.0-use.local
   resolution: "@webiny/api-tenant-manager@workspace:packages/api-tenant-manager"
   dependencies:
@@ -9769,18 +9770,24 @@ __metadata:
     "@okta/okta-react": ^6.1.0
     "@okta/okta-signin-widget": ^5.9.4
     "@webiny/app": ^5.22.0-beta.1
+    "@webiny/app-admin": ^5.22.0-beta.1
     "@webiny/app-security": ^5.22.0-beta.1
+    "@webiny/app-serverless-cms": ^5.22.0-beta.1
     "@webiny/app-tenancy": ^5.22.0-beta.1
+    "@webiny/app-tenant-manager": ^5.22.0-beta.1
     "@webiny/cli": ^5.22.0-beta.1
+    "@webiny/form": ^5.22.0-beta.1
     "@webiny/plugins": ^5.22.0-beta.1
     "@webiny/project-utils": ^5.22.0-beta.1
     "@webiny/ui": ^5.22.0-beta.1
+    "@webiny/validation": ^5.22.0-beta.1
     apollo-client: ^2.6.10
     apollo-link-context: ^1.0.20
     babel-plugin-lodash: ^3.3.4
     emotion: ^10.0.27
     graphql: ^15.7.2
     graphql-tag: ^2.12.6
+    lodash.get: ^4.4.2
     react: 16.14.0
     react-dom: 16.14.0
     rimraf: ^3.0.2
@@ -12648,6 +12655,7 @@ __metadata:
     "@webiny/api-prerendering-service": ^5.22.0-beta.1
     "@webiny/api-security": ^5.22.0-beta.1
     "@webiny/api-security-cognito": ^5.22.0-beta.1
+    "@webiny/api-security-okta": ^5.22.0-beta.1
     "@webiny/api-security-so-ddb": ^5.22.0-beta.1
     "@webiny/api-tenancy": ^5.22.0-beta.1
     "@webiny/api-tenancy-so-ddb": ^5.22.0-beta.1

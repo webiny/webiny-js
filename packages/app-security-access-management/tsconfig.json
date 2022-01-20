@@ -1,6 +1,16 @@
 {
   "extends": "../../tsconfig.json",
   "include": ["src", "__tests__/**/*.ts"],
+  "references": [
+    { "path": "../app" },
+    { "path": "../app-admin" },
+    { "path": "../app-security" },
+    { "path": "../form" },
+    { "path": "../plugins" },
+    { "path": "../react-router" },
+    { "path": "../ui" },
+    { "path": "../validation" }
+  ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
     "outDir": "./dist",

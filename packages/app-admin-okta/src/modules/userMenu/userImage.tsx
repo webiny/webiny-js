@@ -1,10 +1,9 @@
-// @ts-nocheck
 import React from "react";
+import { makeComposable } from "@webiny/app-serverless-cms";
 import { Avatar } from "@webiny/ui/Avatar";
 import { useSecurity } from "@webiny/app-security/hooks/useSecurity";
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const UserImage = () => {
+export const UserImage = makeComposable("UserImage", () => {
     const { identity } = useSecurity();
 
     if (!identity) {
@@ -21,16 +20,4 @@ const UserImage = () => {
             fallbackText={displayName}
         />
     );
-};
-
-export default () => {
-    return { type: "dummy" };
-
-    // return new UIViewPlugin<AdminView>(AdminView, view => {
-    //     const userMenu = view.getElement<UserMenuElement>("userMenu");
-    //
-    //     if (userMenu) {
-    //         userMenu.setMenuHandleElement(new GenericElement("handle", () => <UserImage />));
-    //     }
-    // });
-};
+});

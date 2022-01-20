@@ -41,6 +41,9 @@ export type Props = AutoCompleteBaseProps & {
 
     /* If true, will show a loading spinner on the right side of the input. */
     loading?: boolean;
+
+    /* A component that renders supporting UI in case of no result found. */
+    noResultFound?: Function;
 };
 
 type State = {
@@ -141,6 +144,7 @@ class AutoComplete extends React.Component<Props, State> {
                     >
                         <li>
                             <Typography use={"body2"}>No results.</Typography>
+                            {this.props.noResultFound}
                         </li>
                     </ul>
                 </Elevation>

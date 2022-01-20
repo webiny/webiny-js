@@ -1,6 +1,12 @@
 {
   "extends": "../../tsconfig.json",
   "include": ["src", "__tests__/**/*.ts"],
+  "references": [
+    { "path": "../error" },
+    { "path": "../handler" },
+    { "path": "../plugins" },
+    { "path": "../utils" }
+  ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
     "outDir": "./dist",
