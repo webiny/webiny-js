@@ -33,7 +33,6 @@ import tenantManager from "@webiny/api-tenant-manager";
 
 // Imports plugins created via scaffolding utilities.
 import scaffoldsPlugins from "./plugins/scaffolds";
-import { createApwContext, createApwGraphQL } from "@webiny/api-apw";
 
 const debug = process.env.DEBUG === "true";
 
@@ -91,8 +90,6 @@ export const handler = createHandler({
                 modelFieldToGraphQLPlugins: headlessCmsModelFieldToGraphQLPlugins()
             })
         }),
-        createApwContext(),
-        createApwGraphQL(),
         scaffoldsPlugins()
     ],
     http: { debug }
