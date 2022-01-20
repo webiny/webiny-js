@@ -9442,6 +9442,7 @@ __metadata:
     "@babel/core": ^7.16.0
     "@webiny/api-security": ^5.22.0-beta.0
     "@webiny/api-tenancy": ^5.22.0-beta.0
+    "@webiny/api-tenant-manager": ^5.22.0-beta.0
     "@webiny/cli": ^5.22.0-beta.0
     "@webiny/error": ^5.22.0-beta.0
     "@webiny/handler": ^5.22.0-beta.0
@@ -9618,7 +9619,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@webiny/api-tenant-manager@workspace:packages/api-tenant-manager":
+"@webiny/api-tenant-manager@^5.22.0-beta.0, @webiny/api-tenant-manager@workspace:packages/api-tenant-manager":
   version: 0.0.0-use.local
   resolution: "@webiny/api-tenant-manager@workspace:packages/api-tenant-manager"
   dependencies:

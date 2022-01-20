@@ -1,5 +1,5 @@
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
-import { createTenancyContext } from "@webiny/api-tenancy";
+import { createTenancyContext, createTenancyGraphQL } from "@webiny/api-tenancy";
 import { createStorageOperations as tenancyStorageOperations } from "@webiny/api-tenancy-so-ddb";
 import { createSecurityContext, createSecurityGraphQL } from "@webiny/api-security";
 import { createStorageOperations as securityStorageOperations } from "@webiny/api-security-so-ddb";
@@ -7,11 +7,7 @@ import { authenticateUsingHttpHeader } from "@webiny/api-security/plugins/authen
 import apiKeyAuthentication from "@webiny/api-security/plugins/apiKeyAuthentication";
 import apiKeyAuthorization from "@webiny/api-security/plugins/apiKeyAuthorization";
 import anonymousAuthorization from "@webiny/api-security/plugins/anonymousAuthorization";
-import {
-    createAuthenticator,
-    createGroupAuthorizer,
-    createIdentityType
-} from "@webiny/api-security-okta";
+import { createOkta } from "@webiny/api-security-okta";
 
 export default ({ documentClient }: { documentClient: DocumentClient }) => [
     /**
@@ -22,12 +18,32 @@ export default ({ documentClient }: { documentClient: DocumentClient }) => [
     }),
 
     /**
+     * Expose tenancy GraphQL schema.
+     */
+    createTenancyGraphQL(),
+
+    /**
      * Create Security app in the `context`.
      */
     createSecurityContext({
-        // For Okta, this must be set to `false`.
+        /**
+         * For Okta, this must be set to `false`, as we don't have links in the database.
+         */
         verifyIdentityToTenantLink: false,
         storageOperations: securityStorageOperations({ documentClient })
+    }),
+
+    /**
+     * Expose security GraphQL schema.
+     */
+    createSecurityGraphQL({
+        /**
+         * For Okta, we must provide custom logic to determine the "default" tenant for current identity.
+         * Since we're not linking identities to tenants via DB records, we can just return the current tenant.
+         */
+        async getDefaultTenant(context) {
+            return context.tenancy.getCurrentTenant();
+        }
     }),
 
     /**
@@ -36,27 +52,31 @@ export default ({ documentClient }: { documentClient: DocumentClient }) => [
      */
     authenticateUsingHttpHeader(),
 
-    createAuthenticator({
+    /**
+     * Configure Okta authentication and authorization.
+     */
+    createOkta({
+        /**
+         * `issuer` is required for token verification.
+         */
         issuer: process.env.OKTA_ISSUER as string,
+        /**
+         * Construct the identity object and map token claims to arbitrary identity properties.
+         */
         getIdentity({ token }) {
             return {
                 id: token.sub,
                 type: "admin",
-                displayName: token.name
+                displayName: token.name,
+                group: token.webiny_group
             };
+        },
+        /**
+         * Get the slug of a security group to fetch permissions from.
+         */
+        getGroupSlug(context) {
+            return context.security.getIdentity().group;
         }
-    }),
-
-    createGroupAuthorizer({
-        identityType: "admin",
-        getGroupSlug() {
-            return "full-access";
-        }
-    }),
-
-    createIdentityType({
-        identityType: "admin",
-        name: "OktaIdentity"
     }),
 
     /**
