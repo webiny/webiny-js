@@ -18,6 +18,7 @@ const findObject = (source: Array<any>, id: string): any => {
                 return false;
             }
         }
+        return true;
     });
 
     return res;

@@ -50,7 +50,7 @@ const ReactMediumEditor = ({
      */
     useEffect(() => {
         if (!elementRef && !elementRef.current) {
-            return;
+            return null;
         }
         let mediumEditorOptions = merge(
             {

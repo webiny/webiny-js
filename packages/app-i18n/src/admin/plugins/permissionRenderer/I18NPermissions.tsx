@@ -54,6 +54,7 @@ export const I18NPermissions = ({ value, onChange }) => {
         if (!permission) {
             return { level: NO_ACCESS };
         }
+        return {};
     }, []);
 
     return (

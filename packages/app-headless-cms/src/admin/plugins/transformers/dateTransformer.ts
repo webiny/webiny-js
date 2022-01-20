@@ -6,25 +6,24 @@ interface ThrowTransformErrorParams {
     type: string;
     value: string;
 }
-const throwTransformError = (params: ThrowTransformErrorParams): void => {
+const throwTransformError = (params: ThrowTransformErrorParams): WebinyError => {
     const { type, value, ex: error } = params;
-    throw new WebinyError(`Could not transform value to a date.`, "TRANSFORM_ERROR", {
+    return new WebinyError(`Could not transform value to a date.`, "TRANSFORM_ERROR", {
         error,
         type,
         value
     });
 };
 
-const dateOnly = (value?: string): string => {
+const dateOnly = (value?: string): string | null => {
     if (!value) {
         return null;
-        // return new Date().toISOString().substr(0, 10);
     }
     try {
         const date = new Date(value).toISOString();
         return date.substr(0, 10);
     } catch (ex) {
-        throwTransformError({
+        throw throwTransformError({
             ex,
             value,
             type: "date"
@@ -53,7 +52,7 @@ const extractTimeZone = (value?: string): [string, string] => {
     return result as [string, string];
 };
 
-const extractTime = (value?: string): string => {
+const extractTime = (value?: string): string | null => {
     if (!value) {
         return null;
     } else if (value.includes(":") === false) {
@@ -67,6 +66,7 @@ const extractTime = (value?: string): string => {
     } else if (result.length === 2) {
         return `${value}:00`;
     }
+    return null;
 };
 
 const dateTimeWithTimezone = (value?: string): string => {
@@ -101,7 +101,7 @@ const dateTimeWithTimezone = (value?: string): string => {
     return value.replace(initialDate, date).replace(initialTime, time);
 };
 
-const dateTimeWithoutTimezone = (value?: string): string => {
+const dateTimeWithoutTimezone = (value?: string): string | null => {
     if (!value) {
         return null;
     } else if (value.includes(" ") === false) {
@@ -110,7 +110,7 @@ const dateTimeWithoutTimezone = (value?: string): string => {
     try {
         return new Date(`${value.replace(" ", "T")}.000Z`).toISOString();
     } catch (ex) {
-        throwTransformError({
+        throw throwTransformError({
             ex,
             value,
             type: "dateTimeWithoutTimezone"

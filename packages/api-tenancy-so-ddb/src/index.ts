@@ -59,7 +59,7 @@ export const createStorageOperations: CreateTenancyStorageOperations = params =>
             .map(({ fqdn }) => {
                 // If domain is already in the DB, skip it.
                 if (existingDomains.find(d => d.fqdn === fqdn)) {
-                    return;
+                    return null;
                 }
 
                 // Add a new domain.
