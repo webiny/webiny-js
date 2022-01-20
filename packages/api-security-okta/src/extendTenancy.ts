@@ -5,34 +5,32 @@ import { TenantManagerContext } from "@webiny/api-tenant-manager/types";
 
 export const extendTenancy = () => {
     return new ContextPlugin<TenantManagerContext>(context => {
-        if (!context.tenantManager) {
-            return;
-        }
+        context.waitFor("tenantManager", () => {
+            context.plugins.register(
+                new GraphQLSchemaPlugin<TenancyContext>({
+                    typeDefs: /* GraphQL */ `
+                        extend input TenantSettingsInput {
+                            appClientId: String!
+                        }
 
-        context.plugins.register(
-            new GraphQLSchemaPlugin<TenancyContext>({
-                typeDefs: /* GraphQL */ `
-                    extend input TenantSettingsInput {
-                        appClientId: String!
-                    }
+                        extend type TenantSettings {
+                            appClientId: String!
+                        }
 
-                    extend type TenantSettings {
-                        appClientId: String!
-                    }
-
-                    extend type TenancyQuery {
-                        appClientId: String
-                    }
-                `,
-                resolvers: {
-                    TenancyQuery: {
-                        appClientId(_, __, context) {
-                            const tenant = context.tenancy.getCurrentTenant();
-                            return tenant.settings.appClientId;
+                        extend type TenancyQuery {
+                            appClientId: String
+                        }
+                    `,
+                    resolvers: {
+                        TenancyQuery: {
+                            appClientId(_, __, context) {
+                                const tenant = context.tenancy.getCurrentTenant();
+                                return tenant.settings.appClientId;
+                            }
                         }
                     }
-                }
-            })
-        );
+                })
+            );
+        });
     });
 };

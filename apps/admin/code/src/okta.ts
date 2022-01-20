@@ -1,14 +1,12 @@
-// okta.ts
 import { OktaFactory } from "@webiny/app-admin-okta";
 import OktaSignIn from "@okta/okta-signin-widget";
 import { OktaAuth } from "@okta/okta-auth-js";
 import "@okta/okta-signin-widget/dist/css/okta-sign-in.min.css";
-import logo from "./webiny-orange-logo.svg";
 
 const oktaDomain = `https://dev-844500.oktapreview.com`;
-const redirectUri = window.location.origin + "/";
-
 export const rootAppClientId = "0oa1149zslypdjy5B0h8";
+
+const redirectUri = window.location.origin + "/";
 
 // These scopes are required to populate all the necessary user data on the API side.
 const scopes = ["openid", "email", "profile"];
@@ -19,7 +17,7 @@ export const oktaFactory: OktaFactory = ({ clientId }) => {
         baseUrl: oktaDomain,
         clientId,
         redirectUri,
-        logo,
+        logo: "https://raw.githubusercontent.com/webiny/webiny-js/next/static/webiny-logo.svg",
         authParams: {
             scopes
         }
