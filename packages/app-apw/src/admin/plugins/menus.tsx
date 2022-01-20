@@ -1,34 +1,18 @@
-import { NavigationMenuElement } from "@webiny/app-admin/ui/elements/NavigationMenuElement";
-import { UIViewPlugin } from "@webiny/app-admin/ui/UIView";
-import { NavigationView } from "@webiny/app-admin/ui/views/NavigationView";
+import React from "react";
+import { AddMenu as Menu } from "@webiny/app-admin";
 
-export default [
-    new UIViewPlugin<NavigationView>(NavigationView, async view => {
-        await view.isRendered();
+const Menus = () => {
+    return (
+        <Menu name={"apw"} label={"Apw"}>
+            <Menu
+                name={"apw.publishingWorkflows"}
+                label={"Publishing workflows"}
+                path={"/apw/publishing-workflows"}
+            />
+        </Menu>
+    );
+};
 
-        const { identity } = view.getSecurityHook();
-        if (!identity.getPermission("apw")) {
-            return;
-        }
+export default Menus;
 
-        const localesMenu = view.addSettingsMenuElement(
-            new NavigationMenuElement("apw", {
-                label: "APW"
-            })
-        );
 
-        localesMenu.addElement<NavigationMenuElement>(
-            new NavigationMenuElement("apw.publishingWorkflows", {
-                label: "Publishing workflows",
-                path: "/apw/publishing-workflows"
-            })
-        );
-
-        localesMenu.addElement<NavigationMenuElement>(
-            new NavigationMenuElement("apw.contentReviews", {
-                label: "Content reviews",
-                path: "/apw/content-reviews"
-            })
-        );
-    })
-];
