@@ -1,9 +1,9 @@
 import * as React from "react";
-import Downshift from "downshift";
-import { Input } from "../Input";
+import Downshift, { ControllerStateAndHelpers } from "downshift";
+import { Input } from "~/Input";
 import classNames from "classnames";
-import { Elevation } from "../Elevation";
-import { Typography } from "../Typography";
+import { Elevation } from "~/Elevation";
+import { Typography } from "~/Typography";
 import keycode from "keycode";
 import { autoCompleteStyle, suggestionList } from "./styles";
 import { AutoCompleteBaseProps } from "./types";
@@ -51,14 +51,27 @@ function Spinner() {
     return <MaterialSpinner size={24} spinnerColor={"#fa5723"} spinnerWidth={2} visible />;
 }
 
+interface RenderOptionsParams
+    extends Omit<ControllerStateAndHelpers<any>, "getInputProps" | "openMenu"> {
+    options: Props["options"];
+    placement: Props["placement"];
+}
+
 class AutoComplete extends React.Component<Props, State> {
     static defaultProps = {
         valueProp: "id",
         textProp: "name",
         options: [],
         placement: Placement.bottom,
+        /**
+         * We cast this as AutoComplete because renderItem() is executed via .call() where AutoComplete instance is assigned as this.
+         */
         renderItem(item: any) {
-            return <Typography use={"body2"}>{getOptionText(item, this.props)}</Typography>;
+            return (
+                <Typography use={"body2"}>
+                    {getOptionText(item, (this as unknown as AutoComplete).props)}
+                </Typography>
+            );
         }
     };
 
@@ -105,7 +118,7 @@ class AutoComplete extends React.Component<Props, State> {
         getMenuProps,
         getItemProps,
         placement
-    }: any) {
+    }: RenderOptionsParams) {
         if (!isOpen) {
             return null;
         }
@@ -282,7 +295,11 @@ class AutoComplete extends React.Component<Props, State> {
                             />
                             {!otherInputProps.disabled &&
                                 !otherInputProps.readOnly &&
-                                this.renderOptions({ ...rest, options, placement })}
+                                this.renderOptions({
+                                    ...rest,
+                                    options,
+                                    placement
+                                })}
                         </div>
                     )}
                 </Downshift>
