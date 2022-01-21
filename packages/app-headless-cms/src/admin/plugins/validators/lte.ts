@@ -6,11 +6,12 @@ export default {
     name: "cms-model-field-validator-lte",
     validator: {
         name: "lte",
-        validate: (value, validator) => {
+        validate: async (value, validator) => {
             const lteValue = validator.settings.value;
-            if (typeof lteValue !== "undefined") {
-                return validation.validate(value, `lte:${lteValue}`);
+            if (typeof lteValue === "undefined") {
+                return true;
             }
+            return validation.validate(value, `lte:${lteValue}`);
         }
     }
 } as CmsModelFieldValidatorPlugin;

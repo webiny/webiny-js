@@ -6,7 +6,7 @@ export default {
     name: "cms-model-field-validator-pattern",
     validator: {
         name: "pattern",
-        validate: (value, validator) => {
+        validate: async (value, validator) => {
             if (!value) {
                 return true;
             }

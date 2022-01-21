@@ -3,7 +3,7 @@ import { ElementStylesModifier } from "~/types";
 const margin: ElementStylesModifier = ({ element, theme }) => {
     const { margin } = element.data.settings;
     if (!margin) {
-        return;
+        return null;
     }
 
     return Object.keys(theme.breakpoints).reduce((returnStyles, breakpointName) => {

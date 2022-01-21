@@ -25,7 +25,7 @@ export const renderInputField = ({ model, field, fieldTypePlugins }) => {
 
     if (!plugin) {
         // Let's not render the field if it does not exist in the field plugins.
-        return;
+        return null;
     }
 
     const def = plugin.manage.createInputField({ model, field, fieldTypePlugins });

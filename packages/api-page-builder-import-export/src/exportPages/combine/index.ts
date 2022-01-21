@@ -89,5 +89,9 @@ export default (): HandlerPlugin<PbPageImportExportContext, ArgsContext<HandlerA
                 }
             };
         }
+        return {
+            data: "",
+            error: null
+        };
     }
 });

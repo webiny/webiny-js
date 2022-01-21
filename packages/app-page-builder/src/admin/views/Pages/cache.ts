@@ -126,7 +126,7 @@ export const removeRevisionFromEntryCache = (cache, revision) => {
     const data = cache.readQuery(gqlParams);
     const revisions = get(data, "pageBuilder.getPage.data.revisions");
     if (!revisions) {
-        return;
+        return null;
     }
     const index = revisions.findIndex(item => item.id === revision.id);
     const newRevisions = dotProp.delete(revisions, index);

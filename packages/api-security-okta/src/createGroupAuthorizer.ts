@@ -20,7 +20,7 @@ export const createGroupAuthorizer = (config: GroupAuthorizerConfig) => {
 
             // If `identityType` is specified, we'll only execute this authorizer for a matching identity.
             if (config.identityType && identity.type !== config.identityType) {
-                return;
+                return null;
             }
 
             const groupSlug = config.getGroupSlug(context);

@@ -11607,6 +11607,7 @@ __metadata:
     sass: ^1.38.0
     sass-loader: ^12.1.0
     shortid: ^2.2.16
+    ttypescript: ^1.5.13
     typescript: ^4.1.3
     webpack: ^4.46.0
   peerDependencies:

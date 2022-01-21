@@ -11,9 +11,9 @@ import {
     PbEditorPageElementSettingsRenderComponentProps,
     PbEditorResponsiveModePlugin,
     PbEditorElement
-} from "../../../../types";
+} from "~/types";
 import { useEventActionHandler } from "../../../hooks/useEventActionHandler";
-import { UpdateElementActionEvent } from "../../../../editor/recoil/actions";
+import { UpdateElementActionEvent } from "~/editor/recoil/actions";
 import {
     activeElementAtom,
     elementWithChildrenByIdSelector,
@@ -108,7 +108,7 @@ const Settings: React.FunctionComponent<PbEditorPageElementSettingsRenderCompone
     const updateSettings = async (data, form) => {
         const valid = await form.validate();
         if (!valid) {
-            return;
+            return null;
         }
 
         const newElement: PbEditorElement = merge(

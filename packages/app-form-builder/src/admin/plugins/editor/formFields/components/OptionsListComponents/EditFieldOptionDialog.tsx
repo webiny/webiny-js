@@ -73,6 +73,7 @@ const EditFieldOptionDialog = (props: EditFieldOptionDialogProps) => {
                                                             );
                                                         }
                                                     }
+                                                    return true;
                                                 }}
                                             >
                                                 <Input label={t`Value`} />

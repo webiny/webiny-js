@@ -1,3 +1,6 @@
+/**
+ * We use @ts-ignore because __getCreateStorageOperations and __getCreateStorageOperations are attached from other projects directly to JEST context.
+ */
 import { Plugin, PluginCollection } from "@webiny/plugins/types";
 
 export interface Params {

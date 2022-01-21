@@ -22,7 +22,7 @@ const getError = (item: any): string | null => {
 };
 const checkErrors = (result: any) => {
     if (!result || !result.body || !result.body.items) {
-        return;
+        return null;
     }
     for (const item of result.body.items) {
         const err = getError(item);
@@ -37,6 +37,7 @@ const checkErrors = (result: any) => {
         console.log(item.error);
         throw new WebinyError(err, "DYNAMODB_TO_ELASTICSEARCH_ERROR", item);
     }
+    return null;
 };
 
 export default (): HandlerPlugin<ElasticsearchContext> => ({
@@ -96,7 +97,7 @@ export default (): HandlerPlugin<ElasticsearchContext> => ({
         }
 
         if (!operations.length) {
-            return;
+            return false;
         }
 
         try {

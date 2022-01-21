@@ -30,7 +30,7 @@ const OktaSignInWidget = ({ oktaSignIn }: OktaSignInWidgetProps) => {
 
     useEffect(() => {
         if (!widgetRef.current) {
-            return;
+            return null;
         }
 
         oktaSignIn.renderEl(

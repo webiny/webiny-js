@@ -1,3 +1,6 @@
+/**
+ * We use @ts-ignore because __getStorageOperationsPlugins and __getStorageOperationsPlugins are attached from other projects directly to JEST context.
+ */
 import { createHandler } from "@webiny/handler-aws";
 import graphqlHandler from "@webiny/handler-graphql";
 import { SecurityIdentity, SecurityPermission } from "@webiny/api-security/types";

@@ -6,11 +6,12 @@ export default {
     name: "cms-model-field-validator-in",
     validator: {
         name: "in",
-        validate: (value, validator) => {
+        validate: async (value, validator) => {
             const values = validator.settings.values;
-            if (Array.isArray(values)) {
-                return validation.validate(value, `in:${values.join(":")}`);
+            if (Array.isArray(values) === false || values.length === 0) {
+                return true;
             }
+            return validation.validate(value, `in:${values.join(":")}`);
         }
     }
 } as CmsModelFieldValidatorPlugin;

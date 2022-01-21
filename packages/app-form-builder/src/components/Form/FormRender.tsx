@@ -86,7 +86,7 @@ const FormRender = (props: FbFormRenderComponentProps) => {
                             !validatorPlugin ||
                             typeof validatorPlugin.validator.validate !== "function"
                         ) {
-                            return;
+                            return null;
                         }
 
                         return async value => {

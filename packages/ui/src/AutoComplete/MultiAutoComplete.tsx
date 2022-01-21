@@ -1,17 +1,17 @@
 import * as React from "react";
-import Downshift from "downshift";
+import Downshift, { ControllerStateAndHelpers } from "downshift";
 import MaterialSpinner from "react-spinner-material";
-import { Input } from "../Input";
+import { Input } from "~/Input";
 import { Chips, Chip } from "../Chips";
 import { getOptionValue, getOptionText, findInAliases } from "./utils";
 import { List, ListItem, ListItemMeta } from "~/List";
 import { IconButton } from "~/Button";
 import classNames from "classnames";
-import { Elevation } from "../Elevation";
-import { Typography } from "../Typography";
+import { Elevation } from "~/Elevation";
+import { Typography } from "~/Typography";
 import { autoCompleteStyle, suggestionList } from "./styles";
 import { AutoCompleteBaseProps } from "./types";
-import { FormElementMessage } from "../FormElementMessage";
+import { FormElementMessage } from "~/FormElementMessage";
 
 import { ReactComponent as BaselineCloseIcon } from "./icons/baseline-close-24px.svg";
 import { ReactComponent as PrevIcon } from "./icons/navigate_before-24px.svg";
@@ -22,7 +22,8 @@ import { ReactComponent as DeleteIcon } from "./icons/baseline-close-24px.svg";
 import { ReactComponent as ReorderIcon } from "./icons/reorder_black_24dp.svg";
 
 import { css } from "emotion";
-import { ListItemGraphic } from "../List";
+import { ListItemGraphic } from "~/List";
+import { Props } from "~/AutoComplete/AutoComplete";
 const style = {
     pagination: {
         bar: css({
@@ -144,6 +145,12 @@ function paginateMultipleSelection(multipleSelection, limit, page, search) {
     return { data, meta };
 }
 
+interface RenderOptionsParams
+    extends Omit<ControllerStateAndHelpers<any>, "getInputProps" | "openMenu"> {
+    options: Props["options"];
+    unique: boolean;
+}
+
 export class MultiAutoComplete extends React.Component<MultiAutoCompleteProps, State> {
     static defaultProps = {
         valueProp: "id",
@@ -152,11 +159,21 @@ export class MultiAutoComplete extends React.Component<MultiAutoCompleteProps, S
         options: [],
         useSimpleValues: false,
         useMultipleSelectionList: false,
+        /**
+         * We cast this as MultiAutoComplete because renderItem() is executed via .call() where this is MultiAutoComplete instance.
+         */
         renderItem(item: any) {
-            return <Typography use={"body2"}>{getOptionText(item, this.props)}</Typography>;
+            return (
+                <Typography use={"body2"}>
+                    {getOptionText(item, (this as unknown as MultiAutoComplete).props)}
+                </Typography>
+            );
         },
+        /**
+         * We cast this as MultiAutoComplete because renderListItemLabel() is executed via .call() where this is MultiAutoComplete instance.
+         */
         renderListItemLabel(item: any) {
-            return getOptionText(item, this.props);
+            return getOptionText(item, (this as unknown as MultiAutoComplete).props);
         }
     };
 
@@ -171,7 +188,7 @@ export class MultiAutoComplete extends React.Component<MultiAutoCompleteProps, S
     /**
      * Helps us trigger some of the downshift's methods (eg. clearSelection) and helps us to avoid adding state.
      */
-    downshift: any = React.createRef();
+    downshift = React.createRef<any>();
 
     assignedValueAfterClearing = {
         set: false,
@@ -243,15 +260,9 @@ export class MultiAutoComplete extends React.Component<MultiAutoCompleteProps, S
 
     /**
      * Renders options - based on user's input. It will try to match input text with available options.
-     * @param options
-     * @param isOpen
-     * @param highlightedIndex
-     * @param selectedItem
-     * @param getMenuProps
-     * @param getItemProps
-     * @returns {*}
      */
-    renderOptions({ options, isOpen, highlightedIndex, getMenuProps, getItemProps }: any) {
+    renderOptions(params: RenderOptionsParams) {
+        const { options, isOpen, highlightedIndex, getMenuProps, getItemProps } = params;
         if (!isOpen) {
             return null;
         }
