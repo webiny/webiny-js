@@ -172,7 +172,7 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
                     GQLCache.addRevisionToRevisionsCache(contentModel, cache, newRevision);
 
                     showSnackbar("A new revision was created!");
-                    goToRevision(revision.id);
+                    goToRevision(newRevision.id);
                 }
             });
             setLoading(false);
