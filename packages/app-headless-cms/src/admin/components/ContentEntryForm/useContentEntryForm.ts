@@ -25,6 +25,11 @@ const convertDefaultValue = (field: CmsEditorField, value: any): string | number
     }
 };
 
+interface InvalidFieldError {
+    fieldId: string;
+    error: string;
+}
+
 interface UseContentEntryForm {
     data: Record<string, any>;
     loading: boolean;
@@ -72,11 +77,11 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
     const [updateMutation] = useMutation(UPDATE_CONTENT);
     const [createFromMutation] = useMutation(CREATE_CONTENT_FROM);
 
-    const setInvalidFieldValues = errors => {
+    const setInvalidFieldValues = (errors?: InvalidFieldError[]) => {
         const values = (errors || []).reduce((acc, er) => {
             acc[er.fieldId] = er.error;
             return acc;
-        }, {});
+        }, {} as Record<string, string>);
         setInvalidFields(() => values);
     };
 
@@ -140,7 +145,7 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
     );
 
     const createContentFrom = useCallback(
-        async (revision, formData) => {
+        async (revision: string, formData: Record<string, any>) => {
             setLoading(true);
             const response = await createFromMutation({
                 variables: { revision, data: formData },
@@ -184,7 +189,7 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
         [contentModel.modelId, listQueryVariables]
     );
 
-    const onSubmit = async data => {
+    const onSubmit = async (data: Record<string, any>) => {
         const fieldsIds = contentModel.fields.map(item => item.fieldId);
         const formData = pick(data, [...fieldsIds]);
 

@@ -5,7 +5,10 @@ export const linkState = (component: any, key: string) => {
     return (value: any, inlineCallback: Function = noop): Promise<any> => {
         return new Promise(resolve => {
             component.setState(
-                state => set(key, value, state),
+                /**
+                 * We do not know which type of state can this be, so we use any.
+                 */
+                (state: any) => set(key, value, state),
                 () => {
                     if (typeof inlineCallback === "function") {
                         inlineCallback(value);

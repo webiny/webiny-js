@@ -9,8 +9,16 @@ interface SignIn {
     error: Error;
 }
 
+interface State {
+    error: Error | null;
+    loading: boolean;
+}
+interface Reducer {
+    (prev: State, next: Partial<State>): State;
+}
+
 export function useSignIn(): SignIn {
-    const [state, setState] = useReducer((prev, next) => ({ ...prev, ...next }), {
+    const [state, setState] = useReducer<Reducer>((prev, next) => ({ ...prev, ...next }), {
         error: null,
         loading: false
     });

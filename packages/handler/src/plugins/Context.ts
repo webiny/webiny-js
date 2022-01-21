@@ -1,9 +1,10 @@
 import { Context as ContextInterface, HandlerArgs } from "~/types";
 import { PluginsContainer } from "@webiny/plugins";
+import { PluginCollection } from "@webiny/plugins/types";
 
 export interface Params {
     args: HandlerArgs;
-    plugins?: Plugin | Plugin[] | Plugin[][] | PluginsContainer;
+    plugins?: PluginCollection;
     WEBINY_VERSION: string;
 }
 export class Context implements ContextInterface {

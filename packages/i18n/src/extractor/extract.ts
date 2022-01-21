@@ -1,3 +1,7 @@
+/**
+ * Package short-hash has no types.
+ */
+// @ts-ignore
 import hash from "short-hash";
 
 /**
@@ -6,11 +10,11 @@ import hash from "short-hash";
  * {ns1: 'Webiny.Ns1', ns2: 'Webiny.Ns2', i18n: 'NewNamespace', t: 'Some.Other.Namespace'}
  * @param source
  */
-const getNamespaces = source => {
+const getNamespaces = (source: string) => {
     const regex = /([a-zA-Z0-9]+)[ ]+=[ ]+i18n.namespace\(['"`]([a-zA-Z0-9.]+)['"`]\)/g;
     let m;
 
-    const results = {};
+    const results: Record<string, string> = {};
 
     while ((m = regex.exec(source)) !== null) {
         if (m.index === regex.lastIndex) {
@@ -24,7 +28,7 @@ const getNamespaces = source => {
 };
 
 export default (source: string) => {
-    const results = {};
+    const results: Record<string, string> = {};
     const allDeclaredNamespaces = getNamespaces(source);
 
     for (const variable in allDeclaredNamespaces) {

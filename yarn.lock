@@ -7255,6 +7255,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/accounting@npm:^0.4.2":
+  version: 0.4.2
+  resolution: "@types/accounting@npm:0.4.2"
+  checksum: 5303a2038a53c4c5fb639fd58b2b3fc7783c75e0e3a82b0ae913515d210681e1000d74d4241ab9a3e8790dc4370d4a269346dd981f916c6b34913d3cdde21964
+  languageName: node
+  linkType: hard
+
 "@types/aria-query@npm:^4.2.0":
   version: 4.2.2
   resolution: "@types/aria-query@npm:4.2.2"
@@ -7398,6 +7405,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/highlight.js@npm:^9.12.0":
+  version: 9.12.4
+  resolution: "@types/highlight.js@npm:9.12.4"
+  checksum: 1a491cc59b58c906b4e1c7263c839b8741f4ef3af395f7e0c90350792d89a832f4c4c39010df577f9c9dd447544c854a45a7c999a7901dc16dc20faedf73e7b5
+  languageName: node
+  linkType: hard
+
 "@types/history@npm:*":
   version: 4.7.10
   resolution: "@types/history@npm:4.7.10"
@@ -7452,6 +7466,13 @@ __metadata:
     "@types/through": "*"
     rxjs: ^6.4.0
   checksum: 49b21d883ab533dbb84b400fa1aeab2638c37b87978d16f15636316c8d9f70d93a185479cf32081d9013fe2b362db05a83bdc3725771cc93d8bdab9182a96ab9
+  languageName: node
+  linkType: hard
+
+"@types/invariant@npm:^2.2.35":
+  version: 2.2.35
+  resolution: "@types/invariant@npm:2.2.35"
+  checksum: af1b624057c89789ed0917838fea3d42bb0c101cc22b829a24d8777c678be3bc79d6ae05992a13bdf607b94731262467a2e62a809602ea1f7eea5e8c2242660d
   languageName: node
   linkType: hard
 
@@ -7545,12 +7566,35 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/jwk-to-pem@npm:^2.0.1":
+  version: 2.0.1
+  resolution: "@types/jwk-to-pem@npm:2.0.1"
+  checksum: 4fb0e1918c55bd2b794b2a497c14fd898028ae0b9f21f73b4400167358f4767df898d032875ca3655ea4e49234480cf9d21524374913664007e4e9011b2f28e8
+  languageName: node
+  linkType: hard
+
 "@types/keyv@npm:*, @types/keyv@npm:^3.1.1":
   version: 3.1.3
   resolution: "@types/keyv@npm:3.1.3"
   dependencies:
     "@types/node": "*"
   checksum: b5f8aa592cc21c16d99e69aec0976f12b893b055e4456d90148a610a6b6088e297b2ba5f38f8c8280cef006cfd8f9ec99e069905020882619dc5fc8aa46f5f27
+  languageName: node
+  linkType: hard
+
+"@types/lodash.get@npm:^4.4.6":
+  version: 4.4.6
+  resolution: "@types/lodash.get@npm:4.4.6"
+  dependencies:
+    "@types/lodash": "*"
+  checksum: 1f0f11a3fde2b7347482550cff4d1ba4d109c53e3f374dbe8a243f01b50e50446dd6b4d4bc897890caea50eac1157cdd0d627fb7390202b1aa5376cc27c077e6
+  languageName: node
+  linkType: hard
+
+"@types/lodash@npm:*":
+  version: 4.14.178
+  resolution: "@types/lodash@npm:4.14.178"
+  checksum: a69a04a60bfc5257c3130a554b4efa0c383f0141b7b3db8ab7cf07ad2a46ea085fce66d0242da41da7e5647b133d5dfb2c15add9cbed8d7fef955e4a1e5b3128
   languageName: node
   linkType: hard
 
@@ -7874,6 +7918,13 @@ __metadata:
   dependencies:
     source-map: ^0.6.1
   checksum: def36fd2c698a33d8f67f5e21aab926eb9bda2d7951eab544941e1feb1231f020ff1c210d840dcc0fc9f07b5d22ef8b566887ddec9753b8b9f7223cceaa70993
+  languageName: node
+  linkType: hard
+
+"@types/uniqid@npm:^5.3.2":
+  version: 5.3.2
+  resolution: "@types/uniqid@npm:5.3.2"
+  checksum: 001e0b03f29ee2e25729451a0012707e929a01ee06b092d23d1219d083dfeed556d2e119442f9e996414a77cdf99021230eb318ab4ed7f3bc5db46077cb54ff7
   languageName: node
   linkType: hard
 
@@ -8600,6 +8651,7 @@ __metadata:
     "@babel/cli": ^7.16.0
     "@babel/core": ^7.16.0
     "@types/jsonwebtoken": 8.5.7
+    "@types/jwk-to-pem": ^2.0.1
     "@webiny/cli": ^5.21.0
     "@webiny/project-utils": ^5.21.0
     jsonwebtoken: ^8.5.1
@@ -9911,6 +9963,7 @@ __metadata:
     "@babel/preset-env": ^7.16.4
     "@babel/preset-react": ^7.16.0
     "@babel/preset-typescript": ^7.16.0
+    "@types/lodash.get": ^4.4.6
     "@webiny/cli": ^5.21.0
     "@webiny/project-utils": ^5.21.0
     babel-plugin-lodash: ^3.3.4
@@ -11045,6 +11098,7 @@ __metadata:
     "@babel/preset-env": ^7.16.4
     "@babel/preset-typescript": ^7.16.0
     "@babel/runtime": ^7.16.3
+    "@types/invariant": ^2.2.35
     "@webiny/cli": ^5.21.0
     "@webiny/project-utils": ^5.21.0
     babel-plugin-lodash: ^3.3.4
@@ -11077,6 +11131,7 @@ __metadata:
     "@babel/preset-typescript": ^7.16.0
     "@babel/runtime": ^7.16.3
     "@webiny/cli": ^5.21.0
+    "@webiny/handler": ^5.21.0
     "@webiny/project-utils": ^5.21.0
     rimraf: ^3.0.2
     typescript: ^4.1.3
@@ -11258,6 +11313,7 @@ __metadata:
     "@babel/preset-typescript": ^7.16.0
     "@babel/register": ^7.16.0
     "@babel/runtime": ^7.16.3
+    "@types/accounting": ^0.4.2
     "@webiny/cli": ^5.21.0
     "@webiny/project-utils": ^5.21.0
     accounting: ^0.4.1
@@ -11267,6 +11323,7 @@ __metadata:
     lodash: ^4.17.4
     rimraf: ^3.0.2
     short-hash: ^1.0.0
+    ttypescript: ^1.5.13
     typescript: ^4.1.3
     yargs: 12.0.5
   peerDependencies:
@@ -11281,6 +11338,7 @@ __metadata:
     "@babel/cli": ^7.16.0
     "@babel/core": ^7.16.0
     "@babel/runtime": ^7.16.3
+    "@types/uniqid": ^5.3.2
     "@webiny/cli": ^5.21.0
     "@webiny/project-utils": ^5.21.0
     rimraf: ^3.0.2
@@ -11475,6 +11533,7 @@ __metadata:
     "@babel/runtime": ^7.16.3
     "@emotion/core": ^10.0.27
     "@emotion/styled": ^10.0.17
+    "@types/highlight.js": ^9.12.0
     "@webiny/cli": ^5.21.0
     "@webiny/project-utils": ^5.21.0
     copy-to-clipboard: ^3.0.8
@@ -11651,6 +11710,7 @@ __metadata:
     lodash: ^4.17.4
     merge: ^1.2.1
     rimraf: ^3.0.2
+    ttypescript: ^1.5.13
     typescript: ^4.1.3
   languageName: unknown
   linkType: soft

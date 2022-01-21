@@ -24,7 +24,7 @@ const SetNewPassword = () => {
         <StateContainer>
             <Form onSubmit={setPassword} submitOnEnter>
                 {({ Bind, submit, data }) => {
-                    const retypePasswordValidator = value => {
+                    const retypePasswordValidator = (value: string) => {
                         if (value !== data.password) {
                             throw Error("Passwords do not match!");
                         }

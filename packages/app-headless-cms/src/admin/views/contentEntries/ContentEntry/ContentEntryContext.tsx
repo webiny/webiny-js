@@ -19,6 +19,16 @@ import { CmsContentEntryRevision, CmsEditorContentEntry } from "~/types";
 import { Tabs } from "@webiny/ui/Tabs";
 import { parseIdentifier } from "@webiny/utils";
 
+interface EntryQueryData {
+    content: {
+        error?: {
+            message: string;
+            code: string;
+            data: Record<string, any>;
+        };
+    };
+}
+
 export interface ContentEntryContext extends ContentEntriesContext {
     createEntry: () => void;
     entry: CmsEditorContentEntry;
@@ -35,7 +45,7 @@ export interface ContentEntryContext extends ContentEntriesContext {
 
 export const Context = React.createContext<ContentEntryContext>(null);
 
-export const Provider = ({ children }) => {
+export const Provider: React.FC = ({ children }) => {
     const { contentModel, canCreate, listQueryVariables, setListQueryVariables, sorters } =
         useContentEntries();
 
@@ -88,16 +98,17 @@ export const Provider = ({ children }) => {
     const getEntry = useQuery(READ_CONTENT, {
         variables: { revision: decodeURIComponent(contentId) },
         skip: !contentId,
-        onCompleted: data => {
+        onCompleted: (data?: EntryQueryData) => {
             if (!data) {
                 return;
             }
 
             const { error } = data.content;
-            if (error) {
-                history.push(`/cms/content-entries/${contentModel.modelId}`);
-                showSnackbar(error.message);
+            if (!error) {
+                return;
             }
+            history.push(`/cms/content-entries/${contentModel.modelId}`);
+            showSnackbar(error.message);
         }
     });
 

@@ -1,9 +1,28 @@
 import React from "react";
 import classNames from "classnames";
-import { OutputBlockData } from "@editorjs/editorjs";
+import { OutputBlockData as BaseOutputBlockData } from "@editorjs/editorjs";
 
-function renderParagraph(block: OutputBlockData) {
-    const props = { style: {}, className: null };
+interface OutputBlockData extends BaseOutputBlockData {
+    data: {
+        className?: string;
+        textAlign?: string;
+        text: string;
+        caption?: string;
+        file?: string;
+        level: number;
+        items: string[];
+        style: string;
+    };
+}
+
+interface RenderParagraphProps {
+    style: {
+        [key: string]: string;
+    };
+    className: string;
+}
+const renderParagraph = (block: OutputBlockData): React.ReactElement => {
+    const props: RenderParagraphProps = { style: {}, className: null };
 
     if (block.data.textAlign) {
         props.style["textAlign"] = block.data.textAlign;
@@ -18,14 +37,21 @@ function renderParagraph(block: OutputBlockData) {
             dangerouslySetInnerHTML={{ __html: block.data.text }}
         />
     );
-}
+};
 
-function renderDelimiter() {
+const renderDelimiter = () => {
     return <div className="rte-block-delimiter" />;
+};
+
+interface RenderHeaderProps {
+    style: {
+        [key: string]: string;
+    };
+    className: string;
 }
 
-function renderHeader(block: OutputBlockData) {
-    const props = { style: {}, className: null };
+const renderHeader = (block: OutputBlockData) => {
+    const props: RenderHeaderProps = { style: {}, className: null };
 
     if (block.data.textAlign) {
         props.style["textAlign"] = block.data.textAlign;
@@ -109,7 +135,7 @@ function renderHeader(block: OutputBlockData) {
         default:
             return null;
     }
-}
+};
 
 function renderImage(block: OutputBlockData) {
     return <img className={"rte-block-image"} alt={block.data.caption} src={block.data.file} />;

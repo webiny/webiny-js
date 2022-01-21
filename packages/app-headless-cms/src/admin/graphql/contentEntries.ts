@@ -20,7 +20,7 @@ const CONTENT_META_FIELDS = /* GraphQL */ `
     status
 `;
 
-export const createReadQuery = model => {
+export const createReadQuery = (model: CmsEditorContentModel) => {
     const ucFirstModelId = upperFirst(model.modelId);
 
     return gql`
@@ -43,7 +43,7 @@ export const createReadQuery = model => {
     `;
 };
 
-export const createRevisionsQuery = model => {
+export const createRevisionsQuery = (model: CmsEditorContentModel) => {
     const ucFirstModelId = upperFirst(model.modelId);
 
     return gql`
@@ -99,7 +99,7 @@ export const createListQuery = (model: CmsEditorContentModel) => {
     `;
 };
 
-export const createDeleteMutation = model => {
+export const createDeleteMutation = (model: CmsEditorContentModel) => {
     const ucFirstModelId = upperFirst(model.modelId);
 
     return gql`
@@ -112,7 +112,7 @@ export const createDeleteMutation = model => {
     `;
 };
 
-export const createCreateMutation = model => {
+export const createCreateMutation = (model: CmsEditorContentModel) => {
     const ucFirstModelId = upperFirst(model.modelId);
 
     return gql`
@@ -132,7 +132,7 @@ export const createCreateMutation = model => {
     `;
 };
 
-export const createCreateFromMutation = model => {
+export const createCreateFromMutation = (model: CmsEditorContentModel) => {
     const ucFirstModelId = upperFirst(model.modelId);
 
     return gql`
@@ -151,7 +151,7 @@ export const createCreateFromMutation = model => {
         }`;
 };
 
-export const createUpdateMutation = model => {
+export const createUpdateMutation = (model: CmsEditorContentModel) => {
     const ucFirstModelId = upperFirst(model.modelId);
 
     return gql`
@@ -171,7 +171,7 @@ export const createUpdateMutation = model => {
     `;
 };
 
-export const createPublishMutation = model => {
+export const createPublishMutation = (model: CmsEditorContentModel) => {
     const ucFirstModelId = upperFirst(model.modelId);
 
     return gql`
@@ -188,7 +188,7 @@ export const createPublishMutation = model => {
         }`;
 };
 
-export const createUnpublishMutation = model => {
+export const createUnpublishMutation = (model: CmsEditorContentModel) => {
     const ucFirstModelId = upperFirst(model.modelId);
 
     return gql`
@@ -205,7 +205,7 @@ export const createUnpublishMutation = model => {
         }`;
 };
 
-export const createRequestReviewMutation = model => {
+export const createRequestReviewMutation = (model: CmsEditorContentModel) => {
     const ucFirstModelId = upperFirst(model.modelId);
 
     return gql`
@@ -222,7 +222,7 @@ export const createRequestReviewMutation = model => {
         }`;
 };
 
-export const createRequestChangesMutation = model => {
+export const createRequestChangesMutation = (model: CmsEditorContentModel) => {
     const ucFirstModelId = upperFirst(model.modelId);
 
     return gql`

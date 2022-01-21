@@ -66,9 +66,10 @@ const ForgotPassword = () => {
                                                 <Bind
                                                     name="username"
                                                     validators={validation.create("required")}
-                                                    beforeChange={(val, cb) =>
-                                                        cb(val.toLowerCase())
-                                                    }
+                                                    beforeChange={(
+                                                        val: string,
+                                                        cb: (value: string) => void
+                                                    ) => cb(val.toLowerCase())}
                                                 >
                                                     <Input
                                                         label={"Email"}

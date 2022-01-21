@@ -1,11 +1,10 @@
-export * from "repropose";
-export * from "@commodo/name";
-export * from "@commodo/fields";
-export * from "@commodo/hooks";
-export * from "commodo-fields-int";
-export * from "commodo-fields-float";
-export * from "commodo-fields-date";
-export * from "commodo-fields-object";
-
-export { default as pipe } from "ramda/src/pipe";
-export { default as compose } from "ramda/src/compose";
+export * from "./repropose";
+export * from "./name";
+export * from "./fields";
+export * from "./hooks";
+export * from "./fields-int";
+export * from "./fields-float";
+export * from "./fields-date";
+export * from "./fields-object";
+export * from "./pipe";
+export * from "./compose";

@@ -6,28 +6,42 @@ import { linkState } from "./linkState";
 import { BindComponent } from "./Bind";
 import ValidationError from "./ValidationError";
 
-export type FormRenderPropParamsSubmit = (event?: React.SyntheticEvent<any, any>) => Promise<void>;
+export interface FormRenderPropParamsSubmit {
+    (event?: React.SyntheticEvent<any, any>): Promise<void>;
+}
 
-export type FormSetValue = (name: string, value: any) => void;
+export interface FormSetValue {
+    (name: string, value: any): void;
+}
 
-export type FormRenderPropParams = {
-    data: { [key: string]: any };
+export interface FormRenderPropParams {
+    data: {
+        [key: string]: any;
+    };
     form: Form;
     submit: FormRenderPropParamsSubmit;
     Bind: BindComponent;
     setValue: FormSetValue;
-};
+}
 
 export type FormRenderProp = (params: FormRenderPropParams) => React.ReactElement;
 
-export type FormData = { [key: string]: any };
+export interface FormData {
+    [key: string]: any;
+}
 
-export type Validation = { [key: string]: any };
+export interface Validation {
+    [key: string]: any;
+}
 
-export type FormOnSubmit = (data: FormData, form?: Form) => void;
+export interface FormOnSubmit {
+    (data: FormData, form?: Form): void;
+}
 
-export type FormProps = {
-    invalidFields?: { [key: string]: any };
+export interface FormProps {
+    invalidFields?: {
+        [key: string]: any;
+    };
     data?: FormData;
     disabled?: boolean | Function;
     validateOnFirstSubmit?: boolean;
@@ -36,7 +50,7 @@ export type FormProps = {
     onInvalid?: () => void;
     onChange?: FormOnSubmit;
     children: FormRenderProp;
-};
+}
 
 /**
  * Use when creating standalone form components which receives props from the parent Bind component.
@@ -61,33 +75,33 @@ export interface FormComponentProps {
     onChange?: (value: any) => void;
 }
 
-type State = {
+interface State {
     data: FormData;
     originalData: FormData;
     wasSubmitted: boolean;
     validation: Validation;
-};
+}
 
 export class Form extends React.Component<FormProps, State> {
-    static defaultProps = {
+    static defaultProps: Partial<FormProps> = {
         data: {},
         disabled: false,
         validateOnFirstSubmit: false,
         onSubmit: null
     };
 
-    state = {
+    public state: State = {
         data: this.props.data || {},
         originalData: this.props.data || {},
         wasSubmitted: false,
         validation: {}
     };
 
-    isValid = null;
-    inputs = {};
-    lastRender = [];
-    validateFns = {};
-    onChangeFns = {};
+    public isValid: boolean = null;
+    public inputs: Record<string, any> = {};
+    public lastRender: Record<string, any> = [];
+    public validateFns: Record<string, any> = {};
+    public onChangeFns: Record<string, any> = {};
     Bind = createBind(this);
 
     static getDerivedStateFromProps({ data, invalidFields = {} }: FormProps, state: State) {
@@ -125,7 +139,7 @@ export class Form extends React.Component<FormProps, State> {
     ): Promise<any> => {
         validators = Array.isArray(validators) ? [...validators] : [validators];
 
-        const results = {};
+        const results: Record<string, any> = {};
         for (let i = 0; i < validators.length; i++) {
             const validator = validators[i];
             try {
@@ -308,7 +322,7 @@ export class Form extends React.Component<FormProps, State> {
         if (!this.onChangeFns[name]) {
             const linkStateChange = linkState(this, `data.${name}`);
 
-            const baseOnChange = (newValue, cb) => {
+            const baseOnChange = (newValue: string, cb: (value: string) => void) => {
                 // When linkState is done processing the value change...
                 return linkStateChange(newValue, cb).then(value => {
                     // call the Form onChange with updated data
@@ -324,7 +338,7 @@ export class Form extends React.Component<FormProps, State> {
             };
 
             const onChange = beforeChange
-                ? newValue => beforeChange(newValue, baseOnChange)
+                ? (newValue: string) => beforeChange(newValue, baseOnChange)
                 : baseOnChange;
 
             this.onChangeFns[name] = onChange;

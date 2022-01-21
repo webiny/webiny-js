@@ -14,7 +14,11 @@ const getPulumiVersion = () => {
     return semver.clean(version);
 };
 
-export default async (downloadFolder, beforeInstall, afterInstall) => {
+export default async (
+    downloadFolder: string,
+    beforeInstall?: () => void,
+    afterInstall?: () => void
+) => {
     if (fs.existsSync(downloadFolder)) {
         return false;
     }
@@ -47,7 +51,7 @@ export default async (downloadFolder, beforeInstall, afterInstall) => {
     return true;
 };
 
-async function setupDarwin(downloadFolder) {
+async function setupDarwin(downloadFolder: string) {
     const version = getPulumiVersion();
     const filename = `pulumi-v${version}-darwin-x64.tar.gz`;
     const downloadUrl = "https://get.pulumi.com/releases/sdk/" + filename;
@@ -62,7 +66,7 @@ async function setupDarwin(downloadFolder) {
     fs.unlinkSync(path.join(downloadFolder, filename));
 }
 
-async function setupWindows(downloadFolder) {
+async function setupWindows(downloadFolder: string) {
     const version = getPulumiVersion();
     const filename = `pulumi-v${version}-windows-x64.zip`;
     const downloadUrl = "https://get.pulumi.com/releases/sdk/" + filename;
@@ -76,7 +80,7 @@ async function setupWindows(downloadFolder) {
     fs.unlinkSync(path.join(downloadFolder, filename));
 }
 
-async function setupLinux(downloadFolder) {
+async function setupLinux(downloadFolder: string) {
     const version = getPulumiVersion();
     const filename = `pulumi-v${version}-linux-x64.tar.gz`;
     const downloadUrl = "https://get.pulumi.com/releases/sdk/" + filename;

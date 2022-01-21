@@ -1,6 +1,11 @@
-import ValidationError from "../../validationError";
+import ValidationError from "~/validationError";
 
-const parseTime = (value: string) => {
+interface ParsedTimeResult {
+    hours: number;
+    minutes: number;
+    seconds: number;
+}
+const parseTime = (value: string): ParsedTimeResult => {
     const parsed = value.split(":").map(Number);
     if (parsed.length < 2) {
         throw new ValidationError(`Value "${value}" does not look like time.`);
