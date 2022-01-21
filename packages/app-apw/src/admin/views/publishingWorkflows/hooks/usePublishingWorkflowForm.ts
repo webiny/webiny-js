@@ -14,8 +14,29 @@ import {
 } from "./graphql";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { i18n } from "@webiny/app/i18n";
+import { ApwWorkflowScopeTypes } from "~/types";
 
 const t = i18n.ns("app-apw/admin/publishing-workflows/form");
+
+const initialStepData = {
+    title: "",
+    type: "",
+    reviewers: []
+};
+
+const newFormData = {
+    title: "Untitled",
+    steps: [initialStepData],
+    scope: {
+        type: ApwWorkflowScopeTypes.PB,
+        data: {
+            pages: [],
+            categories: [],
+            entries: [],
+            models: []
+        }
+    }
+};
 
 export const usePublishingWorkflowForm = () => {
     const { location, history } = useRouter();
@@ -66,7 +87,7 @@ export const usePublishingWorkflowForm = () => {
         [currentWorkflowId]
     );
 
-    const workflow = get(getQuery, "data.apw.getWorkflow.data", {});
+    const workflow = get(getQuery, "data.apw.getWorkflow.data", newFormData);
 
     const showEmptyView = !newEntry && !loading && isEmpty(workflow);
     const baseUrl = "/apw/publishing-workflows";

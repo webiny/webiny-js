@@ -1,3 +1,18 @@
+export interface CreatedBy {
+    /**
+     * ID if the user.
+     */
+    id: string;
+    /**
+     * Full name of the user.
+     */
+    displayName: string;
+    /**
+     * Type of the user (admin, user)
+     */
+    type: string;
+}
+
 export enum ApwWorkflowScopeTypes {
     DEFAULT = "default",
     PB = "pb",
@@ -47,4 +62,17 @@ export interface ApwContentReviewStep extends ApwWorkflowStep {
     status: ApwContentReviewStepStatus;
     pendingChangeRequests: number;
     signOffProvidedOn: string;
+}
+
+interface BaseFields {
+    id: string;
+    createdOn: string;
+    savedOn: string;
+    createdBy: CreatedBy;
+}
+
+export interface ApwReviewer extends BaseFields {
+    identityId: string;
+    displayName: string;
+    type: string;
 }

@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "@emotion/styled";
 import { css } from "emotion";
-import isEmpty from "lodash/isEmpty";
+import get from "lodash/get";
 import { i18n } from "@webiny/app/i18n";
 import { Form } from "@webiny/form";
 import { ButtonDefault, ButtonPrimary, ButtonIcon } from "@webiny/ui/Button";
@@ -22,7 +22,6 @@ import { ReactComponent as WorkflowStepIcon } from "~/admin/assets/icons/workflo
 import WorkflowStep from "./components/WorkflowStep";
 import Title, { WorkflowFormHeader } from "./components/WorkflowTitle";
 import WorkflowScope from "./components/WorkflowScope";
-import { ApwWorkflowScopeTypes } from "~/types";
 
 const t = i18n.ns("app-apw/admin/publishing-workflows/form");
 
@@ -39,20 +38,6 @@ const initialStepData = {
     title: "",
     type: "",
     reviewers: []
-};
-
-const initialWorkflow = {
-    title: "Untitled",
-    steps: [initialStepData],
-    scope: {
-        type: ApwWorkflowScopeTypes.PB,
-        data: {
-            pages: [],
-            categories: [],
-            entries: [],
-            models: []
-        }
-    }
 };
 
 const workflowStepsDescription = t`Define the workflow steps and assign which users need to provide an approval.`;
@@ -74,7 +59,7 @@ const PublishingWorkflowForm = () => {
     }
 
     return (
-        <Form data={isEmpty(workflow) ? initialWorkflow : workflow} onSubmit={onSubmit}>
+        <Form data={workflow} onSubmit={onSubmit}>
             {({ data, form, Bind, setValue }) => {
                 const addStep = () => setValue("steps", [...data.steps, initialStepData]);
                 const removeStep = (index: number) =>
@@ -122,7 +107,10 @@ const PublishingWorkflowForm = () => {
                                     title={t`Scope`}
                                     description={t`Define the conditions when this workflow applies.`}
                                 >
-                                    <WorkflowScope Bind={Bind} type={data.scope.type} />
+                                    <WorkflowScope
+                                        Bind={Bind}
+                                        type={get(data, "scope.type", null)}
+                                    />
                                 </AccordionItem>
                             </Accordion>
                         </SimpleFormContent>

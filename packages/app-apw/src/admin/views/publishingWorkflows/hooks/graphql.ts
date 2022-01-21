@@ -104,3 +104,56 @@ export const DELETE_WORKFLOW_MUTATION = /* GraphQL */ gql`
         }
     }
 `;
+
+const REVIEWER_DATA_FIELDS = `{
+    id
+    createdOn
+    savedOn
+    createdBy {
+        id
+        displayName
+        type
+    }
+    identityId
+    displayName
+    type
+}`;
+
+export const GET_REVIEWER_QUERY = /* GraphQL */ gql`
+    query GetReviewer($id: ID!) {
+        apw {
+            getWorkflow(id: $id) {
+                data ${REVIEWER_DATA_FIELDS}
+                error ${ERROR_FIELDS}
+            }
+        }
+    }
+`;
+
+export const LIST_REVIEWS_QUERY = /* GraphQL */ gql`
+    query ListReviewers(
+        $where: ApwListReviewersWhereInput
+        $limit: Int
+        $after: String
+        $sort: [ApwListReviewersSort!]
+        $search: ApwListReviewersSearchInput
+    ) {
+        apw {
+            listReviewers(
+                where: $where,
+                limit: $limit,
+                after: $after,
+                sort: $sort,
+                search: $search
+            ) {
+                data ${REVIEWER_DATA_FIELDS}
+                error ${ERROR_FIELDS}
+                meta {
+                    hasMoreItems
+                    totalCount
+                    cursor
+                }
+            }
+        }
+    }
+`;

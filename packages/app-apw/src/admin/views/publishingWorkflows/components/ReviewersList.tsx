@@ -7,25 +7,7 @@ import { Scrollbar } from "@webiny/ui/Scrollbar";
 import { ChildrenRenderProp } from "@webiny/ui/Checkbox/CheckboxGroup";
 import { Box, Columns } from "~/admin/components/Layout";
 import { restGridStyles } from "./Styled";
-
-/**
- * TODO: @ashutosh
- * Fetch reviewers list from API.
- */
-const REVIEWERS_MOCK = [
-    {
-        id: "1234567890",
-        displayName: "Jack Wills"
-    },
-    {
-        id: "1234567891",
-        displayName: "Ted Bakers"
-    },
-    {
-        id: "1234567892",
-        displayName: "Ryan Reynolds"
-    }
-];
+import { useReviewers } from "../hooks/useReviewers";
 
 export const GRADIENTS = [
     "135deg, #4158D0 0%, #C850C0 46%, #FFCC70 100%",
@@ -48,6 +30,10 @@ const CheckboxWrapper = styled.div`
     justify-content: flex-end;
 `;
 
+const ReviewerName = styled(Typography)`
+    text-transform: capitalize;
+`;
+
 interface ListItemTitleProps {
     label: string;
     index: number;
@@ -55,21 +41,31 @@ interface ListItemTitleProps {
 
 const ListItemTitle: React.FC<ListItemTitleProps> = ({ index, label }) => {
     return (
-        <Columns space={3}>
+        <Columns space={3} alignItems={"center"}>
             <Box>
                 <Avatar index={index} />
             </Box>
             <Box>
-                <Typography use={"subtitle1"}>{label}</Typography>
+                <ReviewerName use={"subtitle1"}>{label}</ReviewerName>
             </Box>
         </Columns>
     );
 };
 
 export const ReviewersList: React.FC<ChildrenRenderProp> = ({ onChange, getValue }) => {
+    const { reviewers, loading } = useReviewers();
+
+    if (loading) {
+        return (
+            <div style={{ width: "100%", height: "120px" }}>
+                <Typography use={"subtitle2"}>Loading reviewers...</Typography>
+            </div>
+        );
+    }
+
     return (
         <Scrollbar style={{ width: "100%", height: "120px" }}>
-            {REVIEWERS_MOCK.map((reviewer, index) => (
+            {reviewers.map((reviewer, index) => (
                 <ListItemWithCheckbox
                     key={index}
                     label={<ListItemTitle index={index} label={reviewer.displayName} />}
