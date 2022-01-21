@@ -108,7 +108,7 @@ module.exports = async ({ projectApplication, inputs, context }) => {
                     context.error(
                         `An unknown error occurred while building ${context.error.hl(
                             current.name
-                        )}:`
+                        )} package.`
                     );
 
                     resolve({
