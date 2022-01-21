@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.22.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.22.0-beta.2...v5.22.0-beta.3) (2022-01-21)
+
+
+### Bug Fixes
+
+* **css-loader:** disable esModule output for CSS assets ([79c005d](https://github.com/webiny/webiny-js/commit/79c005d11eb120f9ff40de0e16e19e9e129953e6))
+
+
+
+
+
 # [5.22.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.22.0-beta.1...v5.22.0-beta.2) (2022-01-21)
 
 **Note:** Version bump only for package @webiny/project-utils

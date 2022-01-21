@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.22.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.22.0-beta.2...v5.22.0-beta.3) (2022-01-21)
+
+
+### Bug Fixes
+
+* **api-theme-manager:** handle empty theme settings gracefully ([b2f60fb](https://github.com/webiny/webiny-js/commit/b2f60fbd4d83c5bd06cae597cb5ab8f40c126636))
+* **app-admin-okta:** use root as a fallback tenant ID [skip ci] ([e459053](https://github.com/webiny/webiny-js/commit/e45905321ecdbfa44b427f1831225d51e5d20581))
+* **css-loader:** disable esModule output for CSS assets ([79c005d](https://github.com/webiny/webiny-js/commit/79c005d11eb120f9ff40de0e16e19e9e129953e6))
+* **deps:** lock @types/jsonwebtoken version ([24c65f1](https://github.com/webiny/webiny-js/commit/24c65f1d54d3c55165b37a770558e3614cf37ba7))
+
+
+
+
+
 # [5.22.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.22.0-beta.1...v5.22.0-beta.2) (2022-01-21)
 
 

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.22.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.22.0-beta.2...v5.22.0-beta.3) (2022-01-21)
+
+
+### Bug Fixes
+
+* **deps:** lock @types/jsonwebtoken version ([24c65f1](https://github.com/webiny/webiny-js/commit/24c65f1d54d3c55165b37a770558e3614cf37ba7))
+
+
+
+
+
 # [5.22.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.22.0-beta.1...v5.22.0-beta.2) (2022-01-21)
 
 

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.22.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.22.0-beta.2...v5.22.0-beta.3) (2022-01-21)
+
+
+### Bug Fixes
+
+* **app-admin-okta:** use root as a fallback tenant ID [skip ci] ([e459053](https://github.com/webiny/webiny-js/commit/e45905321ecdbfa44b427f1831225d51e5d20581))
+
+
+
+
+
 # [5.22.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.22.0-beta.1...v5.22.0-beta.2) (2022-01-21)
 
 
