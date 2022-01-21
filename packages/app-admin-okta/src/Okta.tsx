@@ -35,7 +35,8 @@ const AppClientIdLoader: FC<AppClientIdLoaderProps> = ({
     useEffect(() => {
         // Check if `tenantId` query parameter is set.
         const searchParams = new URLSearchParams(location.search);
-        const tenantId = searchParams.get("tenantId") || tenant;
+        const tenantId = searchParams.get("tenantId") || tenant || "root";
+
         if (tenantId && tenantId !== tenant) {
             setTenant(tenantId);
         }
