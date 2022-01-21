@@ -119,6 +119,26 @@ module.exports = async ({ projectApplication, inputs, context }) => {
                     });
                 });
 
+                worker.on("exit", code => {
+                    if (code === 0) {
+                        return;
+                    }
+
+                    stats.error++;
+                    context.error(
+                        `An error occurred while building ${context.error.hl(
+                            current.name
+                        )} package.`
+                    );
+
+                    resolve({
+                        package: current,
+                        result: {
+                            message: `Process exited with a non-zero exit code.`
+                        }
+                    });
+                });
+
                 let enableLogs = inputs.logs;
                 if (typeof enableLogs === "undefined") {
                     enableLogs = !multipleBuilds;
