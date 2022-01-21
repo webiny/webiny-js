@@ -1,33 +1,18 @@
 const fs = require("fs");
 const path = require("path");
-const { addHook } = require("pirates");
+const tsnode = require("ts-node");
 
-/**
- * Add support for TS
- */
-
-addHook(
-    code => {
-        const ts = require("typescript");
-        const { outputText } = ts.transpileModule(code, {
-            compilerOptions: {
-                target: "es6",
-                allowJs: true,
-                allowSyntheticDefaultImports: true,
-                esModuleInterop: true,
-                outDir: "bin",
-                moduleResolution: "node",
-                module: "commonjs"
-            }
-        });
-
-        return outputText;
-    },
-    {
-        exts: [".ts"],
-        matcher: () => true
+// Register ts-node to support running typescript files from CLI
+tsnode.register({
+    compilerOptions: {
+        target: "es6",
+        allowJs: true,
+        allowSyntheticDefaultImports: true,
+        esModuleInterop: true,
+        moduleResolution: "node",
+        module: "commonjs"
     }
-);
+});
 
 module.exports.importModule = configPath => {
     if (!fs.existsSync(configPath)) {
@@ -35,9 +20,11 @@ module.exports.importModule = configPath => {
     }
 
     const extension = path.extname(configPath);
+    const importedModule = require(configPath);
+
     if (extension === ".ts") {
-        return require(configPath).default;
+        return importedModule.default || importedModule;
     } else {
-        return require(configPath);
+        return importedModule;
     }
 };
