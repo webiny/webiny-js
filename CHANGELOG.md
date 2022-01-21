@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.22.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.22.0-beta.1...v5.22.0-beta.2) (2022-01-21)
+
+
+### Bug Fixes
+
+* **app-headless-cms:** temporarily disable new ref field ([d89f0d8](https://github.com/webiny/webiny-js/commit/d89f0d8978323a14cae45c565027ab51c43980ec))
+* **app-headless-cms:** use the correct revision id ([ad3b16d](https://github.com/webiny/webiny-js/commit/ad3b16d45f0d4621a0dce667d6410652959bfc0a))
+* add "package" word after the package name ([94d82db](https://github.com/webiny/webiny-js/commit/94d82db1f554577ccd4b50eca44f15db133e3fbe))
+* add extra check for loading screen ([f7482d9](https://github.com/webiny/webiny-js/commit/f7482d9b4d326a64a6e3895a70b7c414a79f2a7e))
+* handle worker's "exit" event ([f5c3cc0](https://github.com/webiny/webiny-js/commit/f5c3cc0cc42e3575ec0de95f59fc66c6a87191a6))
+* slightly adjust the final error message ([481d621](https://github.com/webiny/webiny-js/commit/481d62118a10e268872d342d3dc790a26d240dcd))
+
+
+### Features
+
+* enable okta integration in multi-tenant projects ([#2211](https://github.com/webiny/webiny-js/issues/2211)) ([50f3626](https://github.com/webiny/webiny-js/commit/50f3626b0fbfc684ad4c6f476dfb1b7f8b6db616))
+* **handler:** wait for context property ([#2177](https://github.com/webiny/webiny-js/issues/2177)) [skip ci] ([139a0ef](https://github.com/webiny/webiny-js/commit/139a0ef770314f5312016f9a075b8fff8ff43264))
+
+
+
+
+
 # [5.22.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.22.0-beta.0...v5.22.0-beta.1) (2022-01-19)
 
 

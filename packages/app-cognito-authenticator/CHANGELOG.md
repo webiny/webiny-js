@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.22.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.22.0-beta.1...v5.22.0-beta.2) (2022-01-21)
+
+
+### Features
+
+* enable okta integration in multi-tenant projects ([#2211](https://github.com/webiny/webiny-js/issues/2211)) ([50f3626](https://github.com/webiny/webiny-js/commit/50f3626b0fbfc684ad4c6f476dfb1b7f8b6db616))
+
+
+
+
+
 # [5.22.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.22.0-beta.0...v5.22.0-beta.1) (2022-01-19)
 
 **Note:** Version bump only for package @webiny/app-cognito-authenticator

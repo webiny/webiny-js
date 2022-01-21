@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.22.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.22.0-beta.1...v5.22.0-beta.2) (2022-01-21)
+
+
+### Bug Fixes
+
+* **app-headless-cms:** temporarily disable new ref field ([d89f0d8](https://github.com/webiny/webiny-js/commit/d89f0d8978323a14cae45c565027ab51c43980ec))
+* **app-headless-cms:** use the correct revision id ([ad3b16d](https://github.com/webiny/webiny-js/commit/ad3b16d45f0d4621a0dce667d6410652959bfc0a))
+
+
+### Features
+
+* enable okta integration in multi-tenant projects ([#2211](https://github.com/webiny/webiny-js/issues/2211)) ([50f3626](https://github.com/webiny/webiny-js/commit/50f3626b0fbfc684ad4c6f476dfb1b7f8b6db616))
+
+
+
+
+
 # [5.22.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.22.0-beta.0...v5.22.0-beta.1) (2022-01-19)
 
 **Note:** Version bump only for package @webiny/app-headless-cms

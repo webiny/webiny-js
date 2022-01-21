@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.22.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.22.0-beta.1...v5.22.0-beta.2) (2022-01-21)
+
+
+### Bug Fixes
+
+* add "package" word after the package name ([94d82db](https://github.com/webiny/webiny-js/commit/94d82db1f554577ccd4b50eca44f15db133e3fbe))
+* handle worker's "exit" event ([f5c3cc0](https://github.com/webiny/webiny-js/commit/f5c3cc0cc42e3575ec0de95f59fc66c6a87191a6))
+* slightly adjust the final error message ([481d621](https://github.com/webiny/webiny-js/commit/481d62118a10e268872d342d3dc790a26d240dcd))
+
+
+
+
+
 # [5.22.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.22.0-beta.0...v5.22.0-beta.1) (2022-01-19)
 
 **Note:** Version bump only for package @webiny/cli-plugin-deploy-pulumi
