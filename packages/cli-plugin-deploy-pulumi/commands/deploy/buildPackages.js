@@ -138,10 +138,12 @@ module.exports = async ({ projectApplication, inputs, context }) => {
 
     console.log();
 
-    if (stats.error) {
-        throw new Error(
-            `Failed to build all packages (${context.error.hl(stats.error)} error(s) occurred).`
-        );
+    if (stats.error > 0) {
+        const errorsCount = context.error.hl(stats.error);
+        const errorsWord = stats.error === 1 ? "error" : "errors";
+        const errorsOccurred = `(${errorsCount} ${errorsWord} occurred)`;
+
+        throw new Error(`Failed to build all packages ${errorsOccurred}.`);
     }
 
     const duration = (new Date() - start) / 1000 + "s";
