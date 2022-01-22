@@ -3,8 +3,8 @@ import pWaitFor from "p-wait-for";
 import { Plugin, plugins } from "@webiny/plugins";
 import { UIElement, UIElementConfig } from "./UIElement";
 
-const UIViewID = ({ children }) => {
-    return children;
+const UIViewID: React.FC = ({ children }) => {
+    return <>{children}</>;
 };
 
 export interface UIElementWrapperProps {
@@ -24,7 +24,7 @@ export class UIView<TConfig = UIElementConfig> extends UIElement<TConfig> {
     private _isRendered = false;
     private _wrappers: UIElementWrapper[] = [];
 
-    constructor(id, config?: TConfig) {
+    constructor(id: string, config?: TConfig) {
         super(id, config);
 
         this.useGrid(false);
@@ -145,7 +145,13 @@ interface UIViewComponentProps {
     [key: string]: any;
 }
 
-const UIViewHooks = ({ view, props, render }) => {
+interface UIViewHooksProps {
+    view: UIView;
+    props: Record<string, any>;
+    render: any;
+}
+
+const UIViewHooks: React.FC<UIViewHooksProps> = ({ view, props, render }) => {
     const hooks = view.getHookDefinitions();
     if (hooks) {
         view.setHookValues(
@@ -153,7 +159,7 @@ const UIViewHooks = ({ view, props, render }) => {
         );
     }
 
-    return view.render({ ...props, render });
+    return <>{view.render({ ...props, render })}</>;
 };
 
 export const UIViewComponent = ({ view, ...props }: UIViewComponentProps): React.ReactElement => {

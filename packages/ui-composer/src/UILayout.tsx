@@ -23,7 +23,7 @@ export class UILayout {
     private _renderer: UILayoutRenderer;
     private _grid = true;
     private _layout: LayoutItem[][] = [];
-    private _getElement: ElementGetter;
+    private readonly _getElement: ElementGetter;
 
     constructor(elementGetter: ElementGetter) {
         this._getElement = elementGetter;
@@ -48,7 +48,7 @@ export class UILayout {
         this._renderer = renderer;
     }
 
-    getElement(id) {
+    getElement(id: string): UIElement {
         return this._getElement(id);
     }
 
@@ -149,7 +149,7 @@ export class UILayout {
         return this;
     }
 
-    render(props, hasParentGrid = false) {
+    render(props: Record<string, any>, hasParentGrid = false) {
         if (!this._renderer) {
             throw Error(
                 `UILayout needs a renderer! Register a UILayoutPlugin to configure a renderer.`
@@ -166,7 +166,7 @@ interface ApplyFunction<TElement> {
 
 export class UILayoutPlugin<TLayout extends UILayout = UILayout> extends Plugin {
     public static readonly type: string = "UILayoutPlugin";
-    private _apply: ApplyFunction<TLayout>;
+    private readonly _apply: ApplyFunction<TLayout>;
 
     constructor(apply: ApplyFunction<TLayout>) {
         super();

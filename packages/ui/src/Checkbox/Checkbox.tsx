@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Checkbox as RmwcCheckbox } from "@rmwc/checkbox";
-import { FormElementMessage } from "../FormElementMessage";
-import { FormComponentProps } from "./../types";
+import { FormElementMessage } from "~/FormElementMessage";
+import { FormComponentProps } from "~/types";
 
 type Props = FormComponentProps & {
     // Component label.
@@ -27,8 +27,11 @@ type Props = FormComponentProps & {
  * In that case, each Checkbox component must receive value and onChange callback via props.
  */
 class Checkbox extends React.Component<Props> {
-    static defaultProps = {
-        validation: { isValid: null }
+    static defaultProps: Partial<Props> = {
+        validation: {
+            isValid: null,
+            message: null
+        }
     };
 
     onChange = (e: React.SyntheticEvent<HTMLInputElement>) => {

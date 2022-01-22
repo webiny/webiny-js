@@ -11,15 +11,15 @@ import { Tooltip } from "~/Tooltip";
 import { debounce } from "lodash";
 import styled from "@emotion/styled";
 
-type State = {
-    values: Object;
+interface State {
+    values: Record<string, any>;
     processing: boolean;
-};
+}
 
-type Props = {
+interface Props {
     canvas: any;
-    renderApplyCancel: Function;
-};
+    renderApplyCancel?: Function;
+}
 
 const Wrapper = styled("div")({
     ul: {
@@ -93,7 +93,7 @@ const sliders = [
 ];
 
 class RenderForm extends React.Component<Props, State> {
-    state = {
+    state: State = {
         processing: false,
         values: {}
     };
@@ -144,7 +144,7 @@ class RenderForm extends React.Component<Props, State> {
                                 min={0}
                                 max={100}
                                 disabled={this.state.processing}
-                                onInput={value => {
+                                onInput={(value: string) => {
                                     this.setState(state => {
                                         const values = { ...state.values };
                                         values[props.key] = value;
@@ -181,7 +181,7 @@ const tool: ImageEditorTool = {
     icon({ activateTool }) {
         return (
             <Tooltip placement={"bottom"} content={"Filter"}>
-                <IconButton icon={<FilterIcon />} onClick={activateTool} />
+                <IconButton icon={<FilterIcon />} onClick={() => activateTool("filter")} />
             </Tooltip>
         );
     },

@@ -23,9 +23,9 @@ function defaultShouldRender() {
 export class UIElement<TConfig extends UIElementConfig = UIElementConfig> {
     protected _elements = new Map<string, UIElement>();
     protected _layout: UILayout;
-    private _config: TConfig;
-    private _tags = new Set();
-    private _id: string;
+    private readonly _config: TConfig;
+    private readonly _tags: Set<string>;
+    private readonly _id: string;
     private _parent: UIElement;
     private _renderers: UIRenderer<any>[] = [];
     private _shouldRender: ShouldRender[] = [defaultShouldRender];
@@ -50,11 +50,11 @@ export class UIElement<TConfig extends UIElementConfig = UIElementConfig> {
         this.applyPlugins(UIElement);
     }
 
-    get id() {
+    get id(): string {
         return this._id;
     }
 
-    isGridEnabled() {
+    isGridEnabled(): boolean {
         return this._layout.getGrid();
     }
 
@@ -299,8 +299,8 @@ export class UIElement<TConfig extends UIElementConfig = UIElementConfig> {
         return pWaitFor(() => this.getView() !== undefined, { interval: 50 });
     }
 
-    render(props?: any): React.ReactNode {
-        const layoutRenderer = props => {
+    render(props?: Record<string, any>): React.ReactNode {
+        const layoutRenderer = (props: Record<string, any>) => {
             return this._layout.render(props, this.hasParentGrid);
         };
 
@@ -308,7 +308,7 @@ export class UIElement<TConfig extends UIElementConfig = UIElementConfig> {
             pl.canRender(this, props)
         );
 
-        const next = (props: any) => {
+        const next = (props: Record<string, any>): React.ReactNode => {
             if (renderers.length > 0) {
                 return renderers.pop().render({
                     element: this,
@@ -333,7 +333,7 @@ export class UIElement<TConfig extends UIElementConfig = UIElementConfig> {
         this.remove();
     }
 
-    shouldRender(props) {
+    shouldRender(props: Record<string, any>) {
         const shouldRender = [...this._shouldRender];
         const next = (props: any) => {
             return shouldRender.pop()({ props, next: () => next(props) });
@@ -391,8 +391,8 @@ export interface ApplyFunction<TElement> {
 
 export class UIElementPlugin<TElement extends UIElement> extends Plugin {
     public static readonly type: string = "UIElementPlugin";
-    private _apply: ApplyFunction<TElement>;
-    private _elementClass: Class<TElement>;
+    private readonly _apply: ApplyFunction<TElement>;
+    private readonly _elementClass: Class<TElement>;
 
     constructor(elementClass: Class<TElement>, apply: ApplyFunction<TElement>) {
         super();
@@ -401,11 +401,11 @@ export class UIElementPlugin<TElement extends UIElement> extends Plugin {
         this._apply = apply;
     }
 
-    get type() {
+    get type(): string {
         return `UIElementPlugin.${this._elementClass.prototype.constructor.name}`;
     }
 
-    canHandle(elementClass: Class<UIElement>) {
+    canHandle(elementClass: Class<UIElement>): boolean {
         /**
          * We need to compare exact classes because we only want to run plugins for an exact class
          * and not the entire inheritance tree.
@@ -413,7 +413,7 @@ export class UIElementPlugin<TElement extends UIElement> extends Plugin {
         return elementClass === this._elementClass;
     }
 
-    apply(element: TElement) {
+    apply(element: TElement): void {
         this._apply(element);
     }
 }

@@ -1,3 +1,4 @@
+import React from "react";
 export interface UIRenderParams<TElement, TProps = any> {
     element: TElement;
     props: TProps;

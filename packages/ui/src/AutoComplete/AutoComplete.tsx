@@ -58,7 +58,7 @@ interface RenderOptionsParams
 }
 
 class AutoComplete extends React.Component<Props, State> {
-    static defaultProps = {
+    static defaultProps: Partial<Props> = {
         valueProp: "id",
         textProp: "name",
         options: [],
@@ -208,11 +208,11 @@ class AutoComplete extends React.Component<Props, State> {
             className,
             options,
             onChange,
-            value, // eslint-disable-line
-            valueProp, // eslint-disable-line
-            textProp, // eslint-disable-line
+            value,
+            valueProp,
+            textProp,
             onInput,
-            validation = { isValid: null },
+            validation = { isValid: null } as { isValid: boolean },
             placement,
             ...otherInputProps
         } = this.props;
@@ -220,9 +220,9 @@ class AutoComplete extends React.Component<Props, State> {
         // Downshift related props.
         const downshiftProps = {
             className: autoCompleteStyle,
-            itemToString: item => getOptionText(item, this.props),
+            itemToString: (item: Record<string, string>) => getOptionText(item, this.props),
             defaultSelectedItem: value,
-            onChange: selection => {
+            onChange: (selection: string) => {
                 if (!selection || !onChange) {
                     return;
                 }

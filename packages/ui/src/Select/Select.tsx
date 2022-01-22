@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Select as RmwcSelect, SelectProps as RmwcSelectProps } from "@rmwc/select";
-import { FormElementMessage } from "../FormElementMessage";
-import { FormComponentProps } from "./../types";
+import { FormElementMessage } from "~/FormElementMessage";
+import { FormComponentProps } from "~/types";
 import { css } from "emotion";
 import classNames from "classnames";
 
@@ -52,16 +52,17 @@ const noLabel = css({
  */
 const skipProps = ["validate"];
 
-const getRmwcProps = props => {
-    const newProps = {};
+const getRmwcProps = (props: SelectProps): FormComponentProps & RmwcSelectProps => {
+    const newProps: FormComponentProps & RmwcSelectProps = {};
     Object.keys(props)
         .filter(name => !skipProps.includes(name))
-        .forEach(name => (newProps[name] = props[name]));
+        // @ts-ignore
+        .forEach((name: any) => (newProps[name] = props[name]));
 
     return newProps;
 };
 
-export const Select = (props: SelectProps) => {
+export const Select: React.FC<SelectProps> = props => {
     const { value, description, validation, ...other } = props;
 
     return (
@@ -89,7 +90,7 @@ export const Select = (props: SelectProps) => {
 };
 
 Select.defaultProps = {
-    validation: { isValid: null }
+    validation: { isValid: null, message: null }
 };
 
 export default Select;

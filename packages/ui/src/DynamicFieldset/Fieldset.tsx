@@ -1,6 +1,6 @@
 import * as React from "react";
 import dotProp from "dot-prop-immutable";
-import { FormElementMessage } from "../FormElementMessage";
+import { FormElementMessage } from "~/FormElementMessage";
 import styled from "@emotion/styled";
 
 interface ChildrenRenderProp {
@@ -10,13 +10,13 @@ interface ChildrenRenderProp {
     empty: Function;
 }
 
-type FieldsetProps = {
+interface FieldsetProps {
     value?: Array<Object>;
     description?: string;
     validation?: { isValid: null | boolean; message?: string };
     onChange?: Function;
     children: (props: ChildrenRenderProp) => React.ReactNode;
-};
+}
 
 const DynamicFieldsetRow = styled("div")({
     paddingBottom: 10,
@@ -26,7 +26,7 @@ const DynamicFieldsetRow = styled("div")({
 });
 
 class Fieldset extends React.Component<FieldsetProps> {
-    static defaultProps = {
+    static defaultProps: Partial<FieldsetProps> = {
         value: [],
         description: null
     };

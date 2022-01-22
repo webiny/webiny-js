@@ -3,7 +3,7 @@ import styled from "@emotion/styled";
 import classNames from "classnames";
 import Loader from "./Loader";
 import NoData from "./NoData";
-import { Typography } from "../../Typography";
+import { Typography } from "~/Typography";
 import { css } from "emotion";
 import noop from "lodash/noop";
 import isEmpty from "lodash/isEmpty";
@@ -131,7 +131,7 @@ const dataListContent = css({
 });
 
 // This was copied from "./types" so that it can be outputted in docs.
-type Props = {
+interface Props {
     // Pass a function to take full control of list render.
     children?: Function;
 
@@ -188,9 +188,17 @@ type Props = {
     modalOverlay?: React.ReactElement;
     // Provide an action element that handle toggling the "Modal overlay".
     modalOverlayAction?: React.ReactElement;
-};
 
-const MultiSelectAll = (props: Props) => {
+    meta?: Record<string, any>;
+
+    setPage?: (page: string) => void;
+
+    setPerPage?: (page: string) => void;
+
+    perPageOptions?: number[];
+}
+
+const MultiSelectAll: React.FC<Props> = props => {
     const { multiSelectActions } = props;
     if (!multiSelectActions) {
         return null;
@@ -216,7 +224,7 @@ const MultiSelectAll = (props: Props) => {
     );
 };
 
-const MultiSelectActions = (props: Props) => {
+const MultiSelectActions: React.FC<Props> = props => {
     const { multiSelectActions } = props;
     if (!multiSelectActions) {
         return null;
@@ -225,7 +233,7 @@ const MultiSelectActions = (props: Props) => {
     return <ListHeaderItem>{multiSelectActions}</ListHeaderItem>;
 };
 
-const RefreshButton = (props: Props) => {
+const RefreshButton: React.FC<Props> = props => {
     const refresh = props.refresh;
     if (!refresh) {
         return null;
@@ -238,7 +246,7 @@ const RefreshButton = (props: Props) => {
     );
 };
 
-const Sorters = (props: Props) => {
+const Sorters: React.FC<Props> = props => {
     const sorters = props.sorters;
     if (!sorters) {
         return null;
@@ -264,7 +272,7 @@ const Sorters = (props: Props) => {
     );
 };
 
-const Filters = (props: Props) => {
+const Filters: React.FC<Props> = props => {
     const filters = props.filters;
     if (!filters) {
         return null;
@@ -277,7 +285,7 @@ const Filters = (props: Props) => {
     );
 };
 
-const Pagination = (props: Props) => {
+const Pagination: React.FC<Props> = props => {
     const { pagination } = props;
     if (!pagination) {
         return null;
@@ -338,14 +346,14 @@ const Pagination = (props: Props) => {
     );
 };
 
-const Search = (props: Props) => {
+const Search: React.FC<Props> = props => {
     if (!props.search) {
         return null;
     }
     return <Cell span={7}>{React.cloneElement(props.search, props)}</Cell>;
 };
 
-export const DataList = (props: Props) => {
+export const DataList: React.FC<Props> = props => {
     let render = null;
 
     if (props.loading) {
@@ -353,7 +361,11 @@ export const DataList = (props: Props) => {
     } else if (isEmpty(props.data)) {
         render = props.noData;
     } else {
-        render = typeof props.children === "function" ? props.children(props) : null;
+        /**
+         * TODO: figure out the correct type.
+         */
+        const ch = props.children as any;
+        render = typeof ch === "function" ? ch(props) : null;
     }
 
     return (
@@ -423,11 +435,11 @@ DataList.defaultProps = {
     }
 };
 
-export type ScrollListProps = ListProps & {
+export interface ScrollListProps extends ListProps {
     children: React.ReactElement<typeof ListItem>[];
-};
+}
 
-export const ScrollList = (props: ScrollListProps) => {
+export const ScrollList: React.FC<ScrollListProps> = props => {
     return (
         <List {...props} className={scrollList}>
             {props.children}

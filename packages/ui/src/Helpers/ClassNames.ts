@@ -10,7 +10,7 @@ import { clone } from "lodash";
  * @param {*} appendClasses
  */
 
-const getClasses = (propList, appendClasses) => {
+const getClasses = (propList: Record<string, any>, appendClasses: string[] | string) => {
     let classes = {};
     const props = clone(propList);
     if (propList.hasOwnProperty("className")) {

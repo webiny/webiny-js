@@ -62,6 +62,11 @@ const listStyles = css({
     }
 });
 
+interface SelectionItem {
+    name: string;
+}
+type MultiAutoCompletePropsValue = SelectionItem[];
+
 export type MultiAutoCompleteProps = AutoCompleteBaseProps & {
     /**
      * Prevents adding the same item to the list twice.
@@ -87,22 +92,31 @@ export type MultiAutoCompleteProps = AutoCompleteBaseProps & {
      * Render list item when `useMultipleSelectionList` is used.
      */
     renderListItemLabel?: Function;
+    /**
+     * Value is an array of strings. But can be undefined.
+     */
+    value?: MultiAutoCompletePropsValue;
 };
 
-type State = {
+interface State {
     inputValue: string;
     multipleSelectionPage: number;
     multipleSelectionSearch: string;
     reorderFormVisible: string;
     reorderFormValue: string;
-};
+}
 
 function Spinner() {
     return <MaterialSpinner size={24} spinnerColor={"#fa5723"} spinnerWidth={2} visible />;
 }
 
 const DEFAULT_PER_PAGE = 10;
-function paginateMultipleSelection(multipleSelection, limit, page, search) {
+function paginateMultipleSelection(
+    multipleSelection: MultiAutoCompletePropsValue,
+    limit: number,
+    page: number,
+    search: string
+) {
     // Assign a real index, so that later when we press delete, we know what is the actual index we're deleting.
     let data = Array.isArray(multipleSelection)
         ? multipleSelection.map((item, index) => ({ ...item, index }))
@@ -151,8 +165,13 @@ interface RenderOptionsParams
     unique: boolean;
 }
 
+interface AssignedValueAfterClearing {
+    set: boolean;
+    selection: string | null;
+}
+
 export class MultiAutoComplete extends React.Component<MultiAutoCompleteProps, State> {
-    static defaultProps = {
+    static defaultProps: Partial<MultiAutoCompleteProps> = {
         valueProp: "id",
         textProp: "name",
         unique: true,
@@ -177,7 +196,7 @@ export class MultiAutoComplete extends React.Component<MultiAutoCompleteProps, S
         }
     };
 
-    state = {
+    public state: State = {
         inputValue: "",
         multipleSelectionPage: 0,
         multipleSelectionSearch: "",
@@ -190,16 +209,16 @@ export class MultiAutoComplete extends React.Component<MultiAutoCompleteProps, S
      */
     downshift = React.createRef<any>();
 
-    assignedValueAfterClearing = {
+    public assignedValueAfterClearing: AssignedValueAfterClearing = {
         set: false,
         selection: null
     };
 
-    setMultipleSelectionPage = multipleSelectionPage => {
+    setMultipleSelectionPage = (multipleSelectionPage: number) => {
         this.setState({ multipleSelectionPage });
     };
 
-    setMultipleSelectionSearch = multipleSelectionSearch => {
+    setMultipleSelectionSearch = (multipleSelectionSearch: string) => {
         this.setState({ multipleSelectionSearch });
     };
 
@@ -495,7 +514,7 @@ export class MultiAutoComplete extends React.Component<MultiAutoCompleteProps, S
 
         return (
             <Chips disabled={disabled}>
-                {value.map((item, index) => (
+                {(value as MultiAutoCompletePropsValue).map((item, index) => (
                     <Chip
                         label={getOptionText(item, this.props)}
                         key={`${getOptionValue(item, this.props)}-${index}`}
@@ -515,16 +534,16 @@ export class MultiAutoComplete extends React.Component<MultiAutoCompleteProps, S
         const {
             props,
             props: {
-                options: rawOptions, // eslint-disable-line
-                allowFreeInput, // eslint-disable-line
-                useSimpleValues, // eslint-disable-line
+                options: rawOptions,
+                allowFreeInput,
+                useSimpleValues,
                 unique,
                 value,
                 onChange,
-                valueProp, // eslint-disable-line
-                textProp, // eslint-disable-line
+                valueProp,
+                textProp,
                 onInput,
-                validation = { isValid: null },
+                validation = { isValid: null } as { isValid: boolean },
                 useMultipleSelectionList,
                 description,
                 ...otherInputProps

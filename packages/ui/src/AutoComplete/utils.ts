@@ -21,5 +21,7 @@ export const getOptionText = (option: any, props: Props) => {
 };
 
 export const findInAliases = (option: any, search?: string) => {
-    return option.aliases.some(alias => alias.toLowerCase().includes(search.toLowerCase()));
+    return option.aliases.some((alias: string) =>
+        alias.toLowerCase().includes(search.toLowerCase())
+    );
 };

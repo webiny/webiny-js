@@ -7,7 +7,7 @@ import {
     StorySandboxExample,
     StorySandboxCode
 } from "@webiny/storybook-utils/Story";
-import { ButtonPrimary } from "./../Button";
+import { ButtonPrimary } from "~/Button";
 import readme from "./../Menu/README.md";
 import { Menu, MenuItem, MenuDivider } from "./Menu";
 

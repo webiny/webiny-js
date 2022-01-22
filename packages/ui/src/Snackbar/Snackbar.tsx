@@ -12,7 +12,7 @@ type Props = SnackbarProps;
 class Snackbar extends React.Component<Props> {
     container?: Element;
 
-    constructor(props) {
+    constructor(props: Props) {
         super(props);
 
         this.container = document.getElementById("snackbar-container");

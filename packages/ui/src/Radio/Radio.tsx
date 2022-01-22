@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Radio as RmwcRadio } from "@rmwc/radio";
-import { FormComponentProps } from "./../types";
-import { FormElementMessage } from "../FormElementMessage";
+import { FormComponentProps } from "~/types";
+import { FormElementMessage } from "~/FormElementMessage";
 
 type Props = FormComponentProps & {
     // Component label.
@@ -19,8 +19,8 @@ type Props = FormComponentProps & {
  * Each Radio component must receive value and onChange callback via props.
  */
 class Radio extends React.Component<Props> {
-    static defaultProps = {
-        validation: { isValid: null }
+    static defaultProps: Partial<Props> = {
+        validation: { isValid: null, message: null }
     };
 
     onChange = (e: React.SyntheticEvent<HTMLInputElement>) => {

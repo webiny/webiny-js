@@ -7701,6 +7701,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/nprogress@npm:^0.2.0":
+  version: 0.2.0
+  resolution: "@types/nprogress@npm:0.2.0"
+  checksum: 561384775008ae58111f038f8f9468b3de8987cd753feef9bf6d07af0e1343390d492a078bb08a7b53ac7370208e31e06ac069cb852c435d49f5fe218e9769c4
+  languageName: node
+  linkType: hard
+
 "@types/parse-json@npm:^4.0.0":
   version: 4.0.0
   resolution: "@types/parse-json@npm:4.0.0"
@@ -7745,6 +7752,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/rc-tooltip@npm:3.7.3":
+  version: 3.7.3
+  resolution: "@types/rc-tooltip@npm:3.7.3"
+  dependencies:
+    "@types/react": "*"
+  checksum: fc65ea368df75b12026413381ded9a1f8624803a3dfb155b4184eabb27e0efa9d1f3eea29f1aa0d536749f6e7ee657c44aadb05a2d393f5a29371e825614c845
+  languageName: node
+  linkType: hard
+
 "@types/reach__router@npm:^1.2.3":
   version: 1.3.10
   resolution: "@types/reach__router@npm:1.3.10"
@@ -7761,6 +7777,15 @@ __metadata:
     "@types/react": "*"
     "@types/reactcss": "*"
   checksum: 8cd881d6eb725190be942c1d71f7917d3dd1b418417740f64fa6c03ae3ba16cb91d07c4b3b348cf5bae20071c8ca5d4aaf514c9a5318077d5e50bd782a5e8da2
+  languageName: node
+  linkType: hard
+
+"@types/react-custom-scrollbars@npm:^4.0.10":
+  version: 4.0.10
+  resolution: "@types/react-custom-scrollbars@npm:4.0.10"
+  dependencies:
+    "@types/react": "*"
+  checksum: 9b41b78c9f20e6d417f74d2b3847f140722bbb4b1b8fc567a17bab26f9084fc6be8cd423f0b05d57a126ea7cbdb4a1fb08bed60cd8a5d73a95ce6fc3157233cb
   languageName: node
   linkType: hard
 
@@ -7812,6 +7837,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/react-transition-group@npm:^4.4.4":
+  version: 4.4.4
+  resolution: "@types/react-transition-group@npm:4.4.4"
+  dependencies:
+    "@types/react": "*"
+  checksum: 86e9ff9731798e12bc2afe0304678918769633b531dcf6397f86af81718fb7930ef8648e894eeb3718fc6eab6eb885cfb9b82a44d1d74e10951ee11ebc4643ae
+  languageName: node
+  linkType: hard
+
 "@types/react@npm:16.14.2":
   version: 16.14.2
   resolution: "@types/react@npm:16.14.2"
@@ -7858,6 +7892,13 @@ __metadata:
   version: 7.3.9
   resolution: "@types/semver@npm:7.3.9"
   checksum: 60bfcfdfa7f937be2c6f4b37ddb6714fb0f27b05fe4cbdfdd596a97d35ed95d13ee410efdd88e72a66449d0384220bf20055ab7d6b5df10de4990fbd20e5cbe0
+  languageName: node
+  linkType: hard
+
+"@types/shortid@npm:^0.0.29":
+  version: 0.0.29
+  resolution: "@types/shortid@npm:0.0.29"
+  checksum: 06d940fabc5774ff2221da6ba3496cef97ae7c2f7f0fee4740144a68cf2b630b109db2f934133096daa58045e4e7aaffba687934166bb0b2b0d5c52679b10d08
   languageName: node
   linkType: hard
 
@@ -11626,6 +11667,11 @@ __metadata:
     "@storybook/addon-links": ^5.0.5
     "@storybook/react": ^5.2.8
     "@svgr/webpack": ^6.1.1
+    "@types/nprogress": ^0.2.0
+    "@types/rc-tooltip": 3.7.3
+    "@types/react-custom-scrollbars": ^4.0.10
+    "@types/react-transition-group": ^4.4.4
+    "@types/shortid": ^0.0.29
     "@webiny/cli": ^5.21.0
     "@webiny/form": ^5.21.0
     "@webiny/project-utils": ^5.21.0
