@@ -7969,6 +7969,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/validate-npm-package-name@npm:^3.0.3":
+  version: 3.0.3
+  resolution: "@types/validate-npm-package-name@npm:3.0.3"
+  checksum: 6c68d9e83a144c2b328985ac42adb8acd2f21ed540eac210fbbdac7037885648b1e629d2e906c200e0b9043ed95317b0032685a66284bb4a5153bda14c75328c
+  languageName: node
+  linkType: hard
+
 "@types/warning@npm:^3.0.0":
   version: 3.0.0
   resolution: "@types/warning@npm:3.0.0"
@@ -10813,6 +10820,7 @@ __metadata:
     "@types/inquirer": ^7.3.1
     "@types/ncp": ^2.0.4
     "@types/pluralize": ^0.0.29
+    "@types/validate-npm-package-name": ^3.0.3
     "@webiny/cli": ^5.21.0
     "@webiny/cli-plugin-scaffold": ^5.21.0
     "@webiny/plugins": ^5.21.0
@@ -10958,6 +10966,7 @@ __metadata:
     "@types/inquirer": ^7.3.1
     "@types/ncp": ^2.0.4
     "@types/pluralize": ^0.0.29
+    "@types/validate-npm-package-name": ^3.0.3
     "@webiny/cli": ^5.21.0
     "@webiny/cli-plugin-scaffold": ^5.21.0
     "@webiny/error": ^5.21.0
