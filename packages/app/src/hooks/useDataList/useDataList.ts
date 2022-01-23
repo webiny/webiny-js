@@ -46,7 +46,10 @@ const useDataList = (params: UseDataListParams) => {
     const [multiSelectedItems, multiSelect] = useState([]);
 
     let history = null;
-    let location = null;
+    /**
+     * TODO: figure out the location type.
+     */
+    let location: any = null;
     const routerHook = useRouter();
 
     if (params.useRouter !== false) {

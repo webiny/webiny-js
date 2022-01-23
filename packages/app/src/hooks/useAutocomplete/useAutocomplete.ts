@@ -1,13 +1,19 @@
 import { useDataList } from "../useDataList";
 import { debounce } from "lodash";
+import { DocumentNode } from "graphql";
 
 interface UseAutocompleteHook {
     options: any[];
     onInput(value: string): void;
 }
 
-export const useAutocomplete = (props): UseAutocompleteHook => {
-    const useDataListProps = props.query ? props : { query: props };
+interface Props {
+    query: DocumentNode;
+    search: string | (() => void);
+}
+
+export const useAutocomplete = (props: Partial<Props>): UseAutocompleteHook => {
+    const useDataListProps = (props.query ? props : { query: props, search: undefined }) as Props;
 
     const dataList = useDataList({ useRouter: false, ...useDataListProps });
 

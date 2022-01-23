@@ -13,12 +13,15 @@ export function useHandlers(props: HandlerProps, factories: HandlerFactories) {
         (() => {
             const names = Object.keys(factories);
             return names.reduce((handlers, name) => {
-                handlers[name] = (...args) => {
+                /**
+                 * TODO: figure out args types
+                 */
+                handlers[name] = (...args: any) => {
                     const handler = factories[name](propsRef.current);
                     return handler(...args);
                 };
                 return handlers;
-            }, {});
+            }, {} as Record<string, any>);
         })()
     );
 

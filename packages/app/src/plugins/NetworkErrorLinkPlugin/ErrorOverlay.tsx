@@ -11,7 +11,12 @@ const t = i18n.ns("app/graphql/error-overlay");
 const ENVIRONMENT_VARIABLES_ARTICLE_LINK =
     "https://www.webiny.com/docs/how-to-guides/environment-variables";
 
-const ErrorOverlay = ({ query, networkError }) => {
+interface Props {
+    query: string;
+    networkError: Record<string, any>;
+}
+const ErrorOverlay: React.FC<Props> = props => {
+    const { query, networkError } = props;
     const [open, setOpen] = useState(true);
     // Log error in browser's developer console for further inspection.
     console.error({ networkError });

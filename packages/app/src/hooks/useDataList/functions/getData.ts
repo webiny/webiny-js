@@ -1,3 +1,3 @@
 import searchDataByKey from "./searchDataByKey";
 
-export default response => searchDataByKey("data", response);
+export default (response: Record<string, string>) => searchDataByKey("data", response);

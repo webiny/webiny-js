@@ -1,6 +1,6 @@
 import React from "react";
 import { Image } from "@webiny/ui/Image";
-import { ImageComponentPlugin } from "../types";
+import { ImageComponentPlugin } from "~/types";
 
 const SUPPORTED_IMAGE_RESIZE_WIDTHS = [100, 300, 500, 750, 1000, 1500, 2500];
 
@@ -8,7 +8,7 @@ const SUPPORTED_IMAGE_RESIZE_WIDTHS = [100, 300, 500, 750, 1000, 1500, 2500];
  * Width of the image should not be just any random number. For optimization reasons,
  * we only allow the ones listed in SUPPORTED_IMAGE_RESIZE_WIDTHS list (Webiny Cloud supports only these).
  */
-const getSupportedImageResizeWidth = width => {
+const getSupportedImageResizeWidth = (width: number) => {
     let output = SUPPORTED_IMAGE_RESIZE_WIDTHS[0];
     let i = SUPPORTED_IMAGE_RESIZE_WIDTHS.length;
     while (i >= 0) {
@@ -66,7 +66,7 @@ const getSizes = (width: any): string | null => {
     return null;
 };
 
-const isFixedImageWidth = width => {
+const isFixedImageWidth = (width: number | string) => {
     if (Number.isFinite(width)) {
         return true;
     }
@@ -85,7 +85,7 @@ const getSrcSetAutoSizes = (max: number | undefined) => {
     });
 };
 
-const convertTransformToQueryParams = (transform: Object): string => {
+const convertTransformToQueryParams = (transform: Record<string, any>): string => {
     return Object.keys(transform)
         .map(key => `${key}=${transform[key]}`)
         .join("&");
