@@ -3,6 +3,7 @@ import { HandlerPlugin } from "@webiny/handler/types";
 import { ElasticsearchContext } from "@webiny/api-elasticsearch/types";
 import WebinyError from "@webiny/error";
 import { decompress } from "@webiny/api-elasticsearch/compression";
+import { ApiResponse } from "@elastic/elasticsearch/lib/Transport";
 
 enum Operations {
     INSERT = "INSERT",
@@ -10,7 +11,15 @@ enum Operations {
     REMOVE = "REMOVE"
 }
 
-const getError = (item: any): string | null => {
+interface ItemError {
+    index?: {
+        error?: {
+            reason?: string;
+        };
+    };
+}
+
+const getError = (item: ItemError): string | null => {
     if (!item.index || !item.index.error || !item.index.error.reason) {
         return null;
     }
@@ -20,9 +29,9 @@ const getError = (item: any): string | null => {
     }
     return reason;
 };
-const checkErrors = (result: any) => {
+const checkErrors = (result?: ApiResponse<any, any>): void => {
     if (!result || !result.body || !result.body.items) {
-        return null;
+        return;
     }
     for (const item of result.body.items) {
         const err = getError(item);
@@ -37,7 +46,6 @@ const checkErrors = (result: any) => {
         console.log(item.error);
         throw new WebinyError(err, "DYNAMODB_TO_ELASTICSEARCH_ERROR", item);
     }
-    return null;
 };
 
 export default (): HandlerPlugin<ElasticsearchContext> => ({
