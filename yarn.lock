@@ -7969,6 +7969,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/warning@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "@types/warning@npm:3.0.0"
+  checksum: 120dcf90600d583c68a60872200061eab9318ae15ea898581f8e9a6dc71b7941095dd81d8324e36d2a6006e5e12b6fc1cf8eda00cc514ee12bb39a912cc4e040
+  languageName: node
+  linkType: hard
+
 "@types/webpack-env@npm:1.16.3, @types/webpack-env@npm:^1.15.0":
   version: 1.16.3
   resolution: "@types/webpack-env@npm:1.16.3"
@@ -10700,6 +10707,7 @@ __metadata:
     "@babel/runtime": ^7.16.3
     "@emotion/styled": ^10.0.17
     "@types/react": ^16.14.0
+    "@types/warning": ^3.0.0
     "@webiny/cli": ^5.21.0
     "@webiny/i18n": ^5.21.0
     "@webiny/i18n-react": ^5.21.0
