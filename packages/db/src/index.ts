@@ -1,7 +1,20 @@
-export type Key = { primary?: boolean; unique?: boolean; name: string; fields: { name: string }[] };
+interface KeyField {
+    name: string;
+}
 
-export type Args = {
-    __batch?: { instance: Batch; operation: Operation };
+export interface Key {
+    primary?: boolean;
+    unique?: boolean;
+    name: string;
+    fields: KeyField[];
+}
+
+export interface ArgsBatch {
+    instance: Batch;
+    operation: Operation;
+}
+export interface Args {
+    __batch?: ArgsBatch;
     table?: string;
     meta?: boolean;
     limit?: number;
@@ -9,7 +22,7 @@ export type Args = {
     data?: Record<string, any>;
     query?: Record<string, any>;
     keys?: Key[];
-};
+}
 
 export type Result<T = any> = [T, Record<string, any>];
 
